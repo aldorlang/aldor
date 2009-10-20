@@ -20,7 +20,7 @@
 #  line
 #
 SHELL=/bin/bash
-ALDOR_PROJECT=d:\projects\aldor\aldorsvn
+ALDOR_PROJECT=/home/pab/aldor/git/aldor
 
 # All these things under $(ALDOR_PROJECT) can actually be in unrelated places,
 # and don't need to be under any common parent directory.
@@ -32,7 +32,7 @@ ALDOR_VERSION=1.1.0
 
 # MACHINE should be one of: linux, win32gcc, win32msvc, sun4os55g64
 # or the machines listed in:  $(ALDOR_PROJECT)/aldor/tools/unix/docc.
-MACHINE=win32msvc
+MACHINE=linux
 
 # This varible sets the name of the libraries to be built
 # aldor builds the basic libaldor library.
