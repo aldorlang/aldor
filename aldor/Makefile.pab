@@ -1,0 +1,36 @@
+rootdir = $(shell pwd)
+#rootdir := .
+# Special rule to force include
+ifeq ($(rolling),)
+all:
+	echo $(rootdir)
+	make -I $(rootdir)/scripts rolling=1 -f Makefile.pab all
+clean:
+	echo $(rootdir)
+	make -I $(rootdir)/scripts rolling=1 -f Makefile.pab clean
+wc:
+	echo $(rootdir)
+	make -I $(rootdir)/scripts rolling=1 -f Makefile.pab wc
+
+else
+
+# Root directory
+builddir := $(rootdir)/build
+all_targets := 
+
+include rules.mk
+
+all: $(all_targets)
+
+clean:
+	rm -rf $(builddir)/*
+
+wc:
+	wc $(_srcs)
+
+subdirs:=aldor lib scripts
+include subrules.mk
+include lastrules.mk
+endif
+
+
