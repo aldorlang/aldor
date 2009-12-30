@@ -1,14 +1,29 @@
+# THIS IS A GENERATED FILE
+MAKEFLAGS += -rR --no-print-directory
+
 rootdir = $(shell pwd)
 #rootdir := .
+
+LIBTOOL_DEPS = /ltmain.sh
+libtool: $(LIBTOOL_DEPS)
+	$(SHELL) ./config.status --recheck
+
+$(rootdir)/configure: $(rootdir)/configure.ac
+	aclocal
+	autoconf -I m4
+
+$(rootdir)/Makefile.pab: $(rootdir)/Makefile.pab.in
+	./configure
+
 # Special rule to force include
 ifeq ($(rolling),)
-all:
+all: $(rootdir)/Makefile.pab
 	echo $(rootdir)
 	make -I $(rootdir)/scripts rolling=1 -f Makefile.pab all
-clean:
+clean: $(rootdir)/Makefile.pab
 	echo $(rootdir)
 	make -I $(rootdir)/scripts rolling=1 -f Makefile.pab clean
-wc:
+wc: $(rootdir)/Makefile.pab
 	echo $(rootdir)
 	make -I $(rootdir)/scripts rolling=1 -f Makefile.pab wc
 
@@ -20,8 +35,6 @@ all_targets :=
 
 include rules.mk
 
-all: $(all_targets)
-
 clean:
 	rm -rf $(builddir)/*
 
@@ -29,8 +42,12 @@ wc:
 	wc $(_srcs)
 
 subdirs:=aldor lib scripts
+
 include subrules.mk
 include lastrules.mk
+
+all: $(all_targets)
+
 endif
 
 
