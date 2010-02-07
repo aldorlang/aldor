@@ -3,3 +3,5 @@ build
 *.o
 *.ao
 .deps
+*.a
+autom4te.cache
