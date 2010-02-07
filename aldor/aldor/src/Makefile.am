@@ -1,0 +1,80 @@
+
+
+bin_PROGRAMS = aldor
+
+aldor_SOURCES = main.c axlcomp.c cmdline.c
+aldor_LDADD = libphase.a libstruct.a libgen.a libport.a 
+aldor_LDFLAGS = -lm
+noinst_LIBRARIES = libphase.a libstruct.a libgen.a libport.a 
+
+libport_a_SOURCES = stdc.c cport.c opsys.c
+
+# Foam stuff does not belong!
+libgen_a_SOURCES = debug.c format.c fluid.c util.c store.c memclim.c test.c \
+		foam_c.c foam_i.c foam_cfp.c foamopt.c compopt.c dword.c \
+		bigint.c bitv.c btree.c buffer.c dnf.c file.c fname.c list.c \
+		msg.c path.c srcpos.c strops.c symbol.c table.c ccode.c \
+		sexpr.c xfloat.c priq.c timer.c cfgfile.c \
+		termtype.c textansi.c texthp.c textcolour.c
+#libgen_a_LIBADD = libport.a
+
+libstruct_a_SOURCES = axlobs.c srcline.c token.c doc.c absyn.c absub.c ablogic.c \
+		fint.c output.c simpl.c compcfg.c depdag.c \
+		sefo.c syme.c freevar.c tform.c tfsat.c tposs.c tconst.c \
+		tqual.c stab.c lib.c archive.c foam.c flog.c dflow.c spesym.c \
+		abpretty.c version.c comsg.c loops.c comsgdb.c
+#libstruct_a_LIBADD = libgen.a libport.a
+
+libphase_a_SOURCES = phase.c bloop.c \
+		include.c scan.c syscmd.c linear.c parseby.c macex.c \
+		abnorm.c abcheck.c abuse.c scobind.c \
+		ti_decl.c \
+		tinfer.c ti_bup.c ti_tdn.c ti_sef.c terror.c \
+		genfoam.c gf_fortran.c gf_add.c gf_gener.c gf_imps.c \
+		gf_excpt.c gf_reference.c gf_implicit.c \
+		gf_prog.c gf_rtime.c gf_seq.c opttools.c \
+		optfoam.c of_util.c  of_inlin.c of_cfold.c of_hfold.c \
+		of_emerg.c of_env.c of_cprop.c of_jflow.c of_peep.c \
+		of_deadv.c of_comex.c of_loops.c of_retyp.c of_deada.c \
+		of_rrfmt.c of_killp.c \
+		emit.c ccomp.c usedef.c flatten.c \
+		inlutil.c genc.c genlisp.c fortran.c gencpp.c \
+		axl_y.c 
+
+#libphase_a_LIBADD = libstruct.a libgen.a libport.a
+
+
+grammar axl_y.c axl_y.yt: axl.z token.h axl_y.sed
+	$(abs_top_builddir)/aldor/tools/unix/zacc -p -y axl_y.yt -c axl_y.c axl.z
+	@sed -f axl_y.sed axl_y.c > axl_y.c.tmp
+	@if diff axl_y.c axl_y.c.tmp > /dev/null ; then \
+		rm $axl_y.c.tmp ; \
+	else \
+		echo "Applied fixups to axl_y.c" ; \
+		mv axl_y.c.tmp axl_y.c  ; \
+	f
+tmpdir=$(abs_top_builddir)/build/tmp
+toolexedir=$(abs_top_builddir)/aldor/tools/unix
+
+DUMMY:
+$(tmpdir): DUMMY
+	mkdir -p $(tmpdir)
+
+comsgdb.h comsgdb.c: comsgdb.msg $(tmpdir)
+	@if [ ! -f comsgdb.h ] ; then touch comsgdb.h ; fi
+	@if [ ! -f comsgdb.c ] ; then touch comsgdb.c ; fi
+	@cp comsgdb.msg $(tmpdir)/comsgdb.msg
+	@(cd $(tmpdir); $(toolexedir)/msgcat -h -c -detab comsgdb)
+	@if diff comsgdb.h $(tmpdir)/comsgdb.h > /dev/null ; then \
+		rm $(tmpdir)/comsgdb.h ; \
+	else \
+		echo "Created new version of comsgdb.h" ; \
+		mv $(tmpdir)/comsgdb.h . ; \
+	fi
+	@if diff comsgdb.c $(tmpdir)/comsgdb.c > /dev/null ; then \
+		rm $(tmpdir)/comsgdb.c ; \
+	else \
+		echo "Created new version of comsgdb.c" ; \
+		mv $(tmpdir)/comsgdb.c . ; \
+	fi
+
