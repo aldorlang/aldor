@@ -204,8 +204,11 @@
 #    elif defined (__GLIBC_MINOR__) && __GLIBC_MINOR__ == 6
 #      define      CONFIG "LINUX(glibc2.6)"
 #      define      CONFIGSYS "linuxglibc2.6"
+#    elif defined (__GLIBC_MINOR__) && __GLIBC_MINOR__ >= 10
+#      define      CONFIG "LINUX(glibc2.10+)"
+#      define      CONFIGSYS "linuxglibc2.10+"
 #    else
-#      define      CONFIG "LINUX(glibc-unknown)"
+#      define      CONFIG "LINUX(glibc-unknown)" 
 #      define      CONFIGSYS "linuxglibc-unknown"
 #    endif
 #  elif defined(__GLIBC__)
