@@ -8,6 +8,11 @@
 /* This program uses "of" and "stdarg" simulation. */
 # include "zcport.h"
 
+#define YYSTYPE yystype
+typedef union yystype {
+	char	*str;
+} yystype;
+
 extern void	token   	of((int, char *));
 
 extern void	startProlog	of((void));

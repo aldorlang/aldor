@@ -1,17 +1,15 @@
+
 %{
 # include "zacc.h"
 %}
-
-%union yystype {
-	char	*str;
-}
-
-%token TK_Id TK_Num TK_String TK_Char TK_Comment TK_Space
-%token TK_Colon TK_Semicolon TK_Comma TK_VBar 
-%token TK_OPren TK_CPren TK_OBrace TK_CBrace TK_OAngle TK_CAngle 
-%token TK_OPct TK_CPct TK_PctPct TK_PctId
-%token TK_PctTokenType TK_PctRuleType TK_PctIncludeEnum
-%token TK_CTok TK_Other TK_NewLine
+%no-lines
+%defines
+%token  TK_Id TK_Num TK_String TK_Char TK_Comment TK_Space
+%token  TK_Colon TK_Semicolon TK_Comma TK_VBar 
+%token  TK_OPren TK_CPren TK_OBrace TK_CBrace TK_OAngle TK_CAngle 
+%token  TK_OPct TK_CPct TK_PctPct TK_PctId
+%token  TK_PctTokenType TK_PctRuleType TK_PctIncludeEnum
+%token  TK_CTok TK_Other TK_NewLine
 
 %type<str> TK_Id TK_String
 
