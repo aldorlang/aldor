@@ -26,6 +26,24 @@ libfoamlib_ALDOR=\
 	textwrit.as	\
 	tuple.as	
 
+
+basics= lang machine 
+
+lang.ao:
+machine.ao: lang.ao
+
+
 noinst_LIBRARIES=libfoamlib.a
 
-libfoamlib_a_SOURCES=$(libfoamlib_ALDOR)
+libfoamlib_a_SOURCES=lang.c machine.c
+
+aldorexedir=$(abs_top_builddir)/aldor/src
+$(patsubst %, %.c, $(basics)): %.c: %.ao
+	ALDORROOT=$(aldorexedir) 	\
+	 $(aldorexedir)/aldor -Fc $<	
+
+$(patsubst %, %.ao, $(basics)): %.ao: %.as
+	ALDORROOT=$(aldorexedir) 	\
+	 $(aldorexedir)/aldor -Fas $<	
+
+
