@@ -1,1 +1,2 @@
-SUBDIRS=libfoamlib
+SUBDIRS=libfoamlib libfoam
+
