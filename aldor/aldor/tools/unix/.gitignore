@@ -1,2 +1,5 @@
 zacc
 msgcat
+zaccgram.c
+zaccgram.h
+zaccscan.c
