@@ -25,7 +25,7 @@ Partial(T: Type): with {
 	import from Rep, Rec, String;
 
 	failed? (p: %): Boolean          == nil? rep p;
-	failed: %                        == per nil;
+	failed: %                        == per nil();
 	coerce(v: T): %                  == [v]$Rec pretend %;
 	[v: T]: %                        == v::%;
 	(p: %) case (f: String): Boolean == failed? p;

@@ -15,7 +15,7 @@
 +++ Keywords: pointer
 
 extend Pointer: Conditional with {
-	nil:	 %;
+	nil:	 () -> %;
   	nil?:	 % -> Boolean;
 
 	coerce:	 BPtr -> %;
@@ -28,7 +28,7 @@ extend Pointer: Conditional with {
 
 	sample: %                == per nil;
 
-	nil: %		         == per nil;
+	nil(): %	         == per nil;
   	nil?(p: %): Boolean      == nil?(rep p)::Boolean;
 	(p: %) = (q: %): Boolean == (rep p = rep q)::Boolean;
 	(w: TextWriter) << (p: %): TextWriter ==

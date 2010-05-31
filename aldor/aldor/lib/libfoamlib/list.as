@@ -15,7 +15,7 @@ define ListCategory(S: Type): Category
 	export from 'first';
 	export from 'rest';
 
-        nil: %;
+        nil: () -> %;
                 ++ nil is a literal constant that is an empty list.
 
         cons: (S, %) -> %;
@@ -118,7 +118,7 @@ List(S: Type): ListCategory S with == FakedConditionalOperations S add {
                 macro  Rep == Pointer;
                 import from Rep;
                 nil? (p: %): Boolean == nil? rep p;
-                nilptr: %        == per (nil$Pointer);
+                nilptr: %        == per (nil()$Pointer);
                 recptr(r: R): %  == r pretend %;
                 value(p: %): R   == p pretend R;
         }
@@ -132,11 +132,11 @@ List(S: Type): ListCategory S with == FakedConditionalOperations S add {
 
         empty?(l: %): Boolean  == nil? rep l;
         #(l: %): SingleInteger == { n:=0; for i in l repeat n:=n+1; n }
-        nil: %     == per nilptr;
-        empty():%  == nil;
+        nil(): %     == per nilptr;
+        empty():%  == nil();
         cons(a: S, l: %): % == per recptr [a, rep l];
 
-	sample: %  == nil; --!! Should get from Aggregate(S)
+	sample: %  == nil(); --!! Should get from Aggregate(S)
 
         list(its: Generator S): %    == [its];
         list(tup: Tuple S): %        == [tup];
@@ -179,12 +179,12 @@ List(S: Type): ListCategory S with == FakedConditionalOperations S add {
         copy(l: %): % == [x for x in l];
 
         reverse(l: %): % ==  {
-                revl := nil;
+                revl := nil();
                 for e in l repeat revl := cons(e, revl);
                 revl;
         }
         reverse!(l: %): % == {
-                r := nil;
+                r := nil();
                 while l repeat {
 			-- (l.rest, r, l) := (r, l, l.rest);
                         t := l.rest;
@@ -274,17 +274,17 @@ List(S: Type): ListCategory S with == FakedConditionalOperations S add {
 	}
 
         [t: Tuple S]: % == {
-                l := nil;
+                l := nil();
                 for i in length t..1 by -1 repeat
                         l := cons(element(t, i), l);
                 l;
         }
 
         [g: Generator S]: % == {
-                h := l := nil;
+                h := l := nil();
                 for a in g repeat {
                         t := l;
-                        l := cons(a, nil);
+                        l := cons(a, nil());
                         empty? t => h := l;
                         t.rest := l;
                 }

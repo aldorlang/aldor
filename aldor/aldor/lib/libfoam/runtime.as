@@ -43,8 +43,8 @@ macro {
 	Int		== SingleInteger;
 	Bit		== Boolean;
 	ptr x		== x @ % pretend Ptr;
-	Nil S		== nil @ Ptr pretend S;
-	Nil?(S)(x)	== x @ S pretend Ptr = nil;
+	Nil S		== nil() @ Ptr pretend S;
+	Nil?(S)(x)	== x @ S pretend Ptr = nil();
 	Reserved	== Pointer;
 }
 
@@ -923,7 +923,7 @@ DispatchVector: Conditional with {
 
 	new(n: DomNamer, g: DomGetter, h: DomHasher, 
 	    i: DomInheritTo): %
-		== per [axiomxlDispatchTag, n, nil, g, h, i];
+		== per [axiomxlDispatchTag, n, nil(), g, h, i];
 
 	tag(dv: %)   : Int	 == rep(dv).tag;
 	reserved(dv: %): Reserved == rep(dv).noname;
@@ -1387,7 +1387,7 @@ CatDispatchVector: Conditional with {
 		 parentCounter:	CatParentCounter,
 		 parentGetter:	CatParentGetter) : %
 
-		== per[axiomxlCatDispatchTag, namer, nil, getter, hasher,
+		== per[axiomxlCatDispatchTag, namer, nil(), getter, hasher,
 		       builder, parentCounter, parentGetter];
 
 	builder	(cdv: %): CatBuilder		== rep(cdv).builder;
@@ -1609,7 +1609,7 @@ PtrCache: with {
 		for v in values(cache) repeat {
 			not Nil?(BasicTuple) k and k = key => return(v, true);
 		}
-		(nil, false)
+		(nil(), false)
 	}
 }
 
@@ -1673,7 +1673,7 @@ CacheTable: BasicType with {
 	import from Rep;
 
 	local new(): % ==
-		per [0, new(InitBuckC, nil)];
+		per [0, new(InitBuckC, nil())];
 
 	local buckv(t: %):Array List Entry	 == rep(t).buckv;
 	local buckc(t: %):SingleInteger	 == #rep(t).buckv;
@@ -1696,7 +1696,7 @@ CacheTable: BasicType with {
 		h := hash(k);
 		n := h mod buckc(t) + 1;
 		b := buckv(t).n;
-		p := nil@List Entry;	-- Previous link or nil.
+		p := nil()@List Entry;	-- Previous link or nil.
 
 		while not empty? b repeat {
 			e := first b;
@@ -1725,7 +1725,7 @@ CacheTable: BasicType with {
 		sizeix < 1 or sizeix > #primes => t;
 
 		nbuckc := primes sizeix;
-		nbuckv := new(nbuckc, nil);
+		nbuckv := new(nbuckc, nil());
 
 		for b0 in buckv t repeat {
 			b := b0;
@@ -1830,7 +1830,7 @@ VariablePtrCache: with {
 	}
 
 	getEntry(cache: %, key: BasicTuple): (Ptr, Boolean) == {
-		(found, result) := search(rep cache, key, (nil@Ptr) pretend Value);
+		(found, result) := search(rep cache, key, (nil()@Ptr) pretend Value);
 		(result pretend Ptr, found);
 	}
 }
@@ -2261,13 +2261,13 @@ rtDebugPaused!(state:Boolean):Boolean ==
 -- only makes sense if all events are handled by the same debug system.
 rtDebugInit(f:String, l:Int, e:Domain, n:String, t:Domain, c:Int):Ptr ==
 {
-	rtDebugPaused?() => return nil;
+	rtDebugPaused?() => return nil();
 	((fiGetDebugger DbgInit) pretend DbgInitSIG)(f, l, e, n, t, c);
 }
 
 rtDebugEnter(f:String, l:Int, e:Domain, n:String, t:Domain, c:Int):Ptr ==
 {
-	rtDebugPaused?() => return nil;
+	rtDebugPaused?() => return nil();
 	((fiGetDebugger DbgEnter) pretend DbgEnterSIG)(f, l, e, n, t, c);
 }
 
@@ -2322,8 +2322,8 @@ rtDebugStep(f:String, l:Int, x:Ptr):() ==
 
 -- Local dummy call-backs for the default debugging system.
 local dEnter, dInit, dReturn, dExit, dAssign, dThrow, dCatch, dCall, dStep;
-dInit(f:String, l:Int, e:Domain, n:String, t:Domain, c:Int):Ptr == nil;
-dEnter(f:String, l:Int, e:Domain, n:String, t:Domain, c:Int):Ptr == nil;
+dInit(f:String, l:Int, e:Domain, n:String, t:Domain, c:Int):Ptr == nil();
+dEnter(f:String, l:Int, e:Domain, n:String, t:Domain, c:Int):Ptr == nil();
 dInside(x:Ptr):() == {}
 dReturn(f:String, l:Int, x:Ptr, t:Domain, v:Value):() == {}
 dExit(f:String, l:Int, x:Ptr):() == {}
