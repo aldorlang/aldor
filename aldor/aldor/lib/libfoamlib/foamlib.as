@@ -100,6 +100,7 @@ macro {
 #	library LangLib "lang.ao"
 {
 	import from LangLib;
+	inline from LangLib;
 }
 #endif
 
@@ -109,6 +110,8 @@ macro {
 {
 	import from LangLib, MachLib;
 	import from Machine;
+	inline from LangLib, MachLib;
+	inline from Machine;
 }
 #endif
 
@@ -119,6 +122,8 @@ macro {
 {
 	import from LangLib, MachLib, BasicLib;
 	import from Machine;
+	inline from LangLib, MachLib, BasicLib;
+	inline from Machine;
 }
 #endif
 
@@ -129,12 +134,15 @@ macro {
 #	library AsCatLib "axlcat.ao"
 {
 	import from LangLib, MachLib, BasicLib, AsCatLib;
+	inline from LangLib, MachLib, BasicLib, AsCatLib;
 	import from Machine;
+	inline from Machine;
 }
 #endif
 
+
 #if LibraryAxlLib
-#	library AxlLib "foamlib"
+--#	library AxlLib "foamlib"
 {
 	import from AxlLib;
 	inline from AxlLib;
@@ -144,6 +152,7 @@ macro {
 #if ImportBoolean
 {
 	import from Boolean;
+	inline from Boolean;
 }
 #endif
 
