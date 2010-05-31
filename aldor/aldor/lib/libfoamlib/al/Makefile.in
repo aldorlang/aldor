@@ -1,0 +1,118 @@
+# ..From autoconf
+@SET_MAKE@
+
+VPATH = @srcdir@
+abs_top_builddir = @abs_top_builddir@
+srcdir = @srcdir@
+top_builddir = @top_builddir@
+builddir = @builddir@
+abs_top_srcdir = @abs_top_srcdir@
+subdir = aldor/lib/libfoamlib/al
+
+# Check the makefile
+.PRECIOUS: Makefile
+Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
+	@case '$?' in \
+	  *config.status*) \
+	    cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh;; \
+	  *) \
+	    echo ' cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ '; \
+	    cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ ;; \
+	esac;
+
+
+# Build starts here
+aldorexedir = $(abs_top_builddir)/aldor/src
+
+library= lang machine basic foamcat tuple gener boolean segment		\
+	 sinteger sfloat pointer char parray array list langx string	\
+	 oslow fname file format textwrit opsys partial
+
+lang_deps    :=
+machine_deps := lang
+basic_deps   := lang machine
+foamcat_deps := basic
+tuple_deps   := foamcat
+gener_deps   := foamcat
+boolean_deps := foamcat
+segment_deps := foamcat boolean
+sinteger_deps := foamcat segment
+sfloat_deps   := foamcat sinteger
+pointer_deps  := foamcat
+char_deps     := foamcat
+parray_deps   := foamcat sinteger
+array_deps    := foamcat tuple sinteger parray 
+list_deps     := foamcat tuple segment sinteger pointer 
+langx_deps    := foamcat tuple sinteger list 
+string_deps   := foamcat char array
+oslow_deps    := foamcat parray pointer string
+fname_deps    := foamcat parray string oslow
+file_deps     := foamcat fname
+opsys_deps    := foamcat oslow file
+format_deps   := foamcat sinteger
+textwrit_deps := foamcat fname file array opsys
+partial_deps  := foamcat pointer
+
+aldorexedir=$(abs_top_builddir)/aldor/src
+
+$(patsubst %, %.c, $(library)): %.c: %.ao %.dep
+	 $(aldorexedir)/aldor -Nfile=$(aldorexedir)/aldor.conf -Fc=$(builddir)/$@ $<	
+
+$(patsubst %, %.ao, $(library)): %.ao: $(srcdir)/../foamlib.as
+$(patsubst %, %.ao, $(library)): %.ao: $(srcdir)/../%.as
+$(patsubst %, %.ao, $(library)): %.ao: 
+	rm -f libfoamlib_$*.al;	rm -f $*.c; rm -f $*.ao
+	ar r libfoamlib_$*.al Makefile
+	for i in $$(cat $*.dep); do ar r libfoamlib_$*.al $$i.ao; done
+	$(aldorexedir)/aldor -I$(srcdir)/.. -O			\
+			     -Nfile=$(aldorexedir)/aldor.conf 	\
+			     -lAxlLib=foamlib_$* 		\
+			     -Fao=$@ $(srcdir)/../$*.as
+
+
+define dep_template
+$(1).ao: $(1).dep $$(patsubst %,%.ao,$$($(1)_deps))
+$(1).dep: $$(patsubst %,%.dep,$$($(1)_deps))
+endef
+
+$(patsubst %, %.dep,$(library) libfoamlib): 
+	echo > $@
+	for i in $(filter %.dep, $^); \
+	do d=$$(basename $$i .dep); \
+	   cat $$i >> $@; echo $(basename $$d .dep)>> $@;  \
+	done
+
+$(foreach l,$(library), $(eval $(call dep_template,$(l))))
+
+$(patsubst %,%.dep,$(library)): %.dep: $%
+
+all: Makefile libfoamlib.al $(patsubst %, %.c, $(library))
+
+libfoamlib.dep: $(patsubst %,%.dep,$(library))
+libfoamlib.al: $(patsubst %,%.dep, $(library))
+libfoamlib.al: $(patsubst %,%.ao, $(library))
+libfoamlib.al: libfoamlib.dep
+	rm -f libfoamlib.al
+	for i in $$(cat libfoamlib.dep); do ar r libfoamlib.al $$i.ao; done
+
+# 
+# :: Automake requires this little lot
+#
+mostlyclean: 
+	rm $(patsubst %, %.c, $(library))/%.c
+	rm $(patsubst %, %.c, $(library))/%.ao
+
+clean: mostlyclean
+distclean: clean 
+	rm Makefile
+maintainer-clean: distclean
+
+
+EMPTY_AUTOMAKE_TARGETS  = dvi pdf ps info html tags ctags
+EMPTY_AUTOMAKE_TARGETS += install install-data install-exec uninstall
+EMPTY_AUTOMAKE_TARGETS += install-dvi install-html install-info install-ps install-pdf
+EMPTY_AUTOMAKE_TARGETS += installdirs
+EMPTY_AUTOMAKE_TARGETS += check installcheck
+
+.PHONY: $(EMPTY_AUTOMAKE_TARGETS)
+$(EMPTY_AUTOMAKE_TARGETS):
