@@ -1,0 +1,69 @@
+# ..From autoconf
+@SET_MAKE@
+
+VPATH = @srcdir@
+abs_top_builddir = @abs_top_builddir@
+srcdir = @srcdir@
+top_builddir = @top_builddir@
+builddir = @builddir@
+abs_top_srcdir = @abs_top_srcdir@
+subdir = aldor/lib/libfoam/al
+
+# Check the makefile
+.PRECIOUS: Makefile
+Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
+	@case '$?' in \
+	  *config.status*) \
+	    cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh;; \
+	  *) \
+	    echo ' cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ '; \
+	    cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ ;; \
+	esac;
+
+
+# Build starts here
+aldorexedir = $(abs_top_builddir)/aldor/src
+foamlibdir = $(abs_top_builddir)/aldor/lib/libfoamlib
+
+runtime.c: runtime.ao
+	 $(aldorexedir)/aldor -Nfile=$(aldorexedir)/aldor.conf -Fc=$(builddir)/$@ $<	
+
+all:
+	-@grep 'fiFileInitializer(' runtime.c | grep -v rtexns > runtime-gets.txt
+	@cat runtime-gets.txt | sed -e 's/^[^"]*"\([^"]*\).*$$/*** Error from Makefile: gets from \1 are not allowed./' 
+	[ ! -s runtime-gets.txt ]
+
+#AXLCDB	  = -W check -Csmax=0 -Fc -Zdb -Qno-cc
+AXLFLAGS  = -Z db -Fc -Q8 -Qinline-all $(AXLCDB) -WD+inline
+
+runtime.ao: ../runtime.as $(foamlibdir)/al/libfoamlib.al
+	$(aldorexedir)/aldor -Nfile=$(aldorexedir)/aldor.conf 	\
+			     -Y$(foamlibdir)/al			\
+			     -I$(foamlibdir)			\
+			     -lAxlLib=foamlib 			\
+			     $(AXLFLAGS)			\
+			     -Fao=$@ $<
+
+all: Makefile runtime.c
+
+# 
+# :: Automake requires this little lot
+#
+mostlyclean: 
+	rm $(patsubst %, %.c, $(library))/%.c
+	rm $(patsubst %, %.c, $(library))/%.ao
+
+clean: mostlyclean
+distclean: clean 
+	rm Makefile
+maintainer-clean: distclean
+
+
+EMPTY_AUTOMAKE_TARGETS  = dvi pdf ps info html tags ctags
+EMPTY_AUTOMAKE_TARGETS += install install-data install-exec uninstall
+EMPTY_AUTOMAKE_TARGETS += install-dvi install-html install-info install-ps install-pdf
+EMPTY_AUTOMAKE_TARGETS += installdirs
+EMPTY_AUTOMAKE_TARGETS += check installcheck
+
+.PHONY: $(EMPTY_AUTOMAKE_TARGETS)
+$(EMPTY_AUTOMAKE_TARGETS):
