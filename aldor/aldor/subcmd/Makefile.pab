@@ -1,5 +1,0 @@
-#
-$(warning subcmd makefile)
-
-subdirs := lno testaldor unitools
-

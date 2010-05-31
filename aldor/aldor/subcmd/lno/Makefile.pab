@@ -1,4 +1,0 @@
-#
-
-srcs := renum.c unnum.c
-
