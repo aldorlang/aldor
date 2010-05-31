@@ -1,49 +1,18 @@
 
-libfoamlib_ALDOR=\
-	array.as	\
-	basic.as	\
-	boolean.as	\
-	char.as		\
-	file.as		\
-	fname.as	\
-	foamcat.as	\
-	foamlib.as	\
-	format.as	\
-	gener.as	\
-	lang.as		\
-	langx.as	\
-	list.as		\
-	machine.as	\
-	opsys.as	\
-	oslow.as	\
-	parray.as	\
-	partial.as	\
-	pointer.as	\
-	segment.as	\
-	sfloat.as	\
-	sinteger.as	\
-	string.as	\
-	textwrit.as	\
-	tuple.as	
+SUBDIRS=al
+libfoamlib_ALDOR=al/array.c al/basic.c al/boolean.c al/char.c		\
+	         al/file.c al/fname.c al/foamcat.c al/format.c		\
+	         al/gener.c al/lang.c al/langx.c al/list.c		\
+	         al/machine.c al/opsys.c al/oslow.c al/parray.c		\
+	         al/partial.c al/pointer.c al/segment.c al/sfloat.c	\
+	         al/sinteger.c al/string.c al/textwrit.c al/tuple.c
 
+other_files=al/libfoamlib.al
+aldorexedir = $(abs_top_builddir)/aldor/src
 
-basics= lang machine 
-
-lang.ao:
-machine.ao: lang.ao
-
+AM_CFLAGS = -I$(aldorexedir)
+libfoamlib_a_SOURCES=$(libfoamlib_ALDOR)
 
 noinst_LIBRARIES=libfoamlib.a
-
-libfoamlib_a_SOURCES=lang.c machine.c
-
-aldorexedir=$(abs_top_builddir)/aldor/src
-$(patsubst %, %.c, $(basics)): %.c: %.ao
-	ALDORROOT=$(aldorexedir) 	\
-	 $(aldorexedir)/aldor -Fc $<	
-
-$(patsubst %, %.ao, $(basics)): %.ao: %.as
-	ALDORROOT=$(aldorexedir) 	\
-	 $(aldorexedir)/aldor -Fas $<	
 
 
