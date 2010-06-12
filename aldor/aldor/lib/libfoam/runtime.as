@@ -24,7 +24,7 @@
 -- #assert DebugGets
 -- #assert ProfGets
 
-#assert DynamicCache
+--#assert DynamicCache
 
 #if DebugGets
 DEBUG(x) ==> x;
@@ -37,6 +37,16 @@ PROFILE(x) ==> x;
 #else
 PROFILE(x) ==> ();
 #endif
+
+macro {
+	Ptr		== Pointer;
+	Int		== SingleInteger;
+	Bit		== Boolean;
+	ptr x		== x @ % pretend Ptr;
+	Nil S		== nil() @ Ptr pretend S;
+	Nil?(S)(x)	== x @ S pretend Ptr = nil();
+	Reserved	== Pointer;
+}
 
 macro {
 	Ptr		== Pointer;
@@ -1525,10 +1535,10 @@ BasicTuple: BasicType with {
 
         import { PtrMagicEQ: (Ptr,Ptr) -> Boolean }  from Builtin ;
 	(a: %) = (b: %): Boolean == {
-		(length a) ~= (length b) => false;
-		for i in 1..length a repeat {
-			if not PtrMagicEQ( element(a,i) , element(b,i)) then return false
-		}
+--		(length a) ~= (length b) => false;
+--		for i in 1..length a repeat {
+--			if not PtrMagicEQ( element(a,i) , element(b,i)) then return false
+--		}
 		return true;
 	}
 	(a: %) ~= (b: %): Boolean == not (a = b);
@@ -1604,11 +1614,20 @@ PtrCache: with {
 		value
 	}
 
+--	getEntry(cache: %, key: BasicTuple): (Ptr, Boolean) == {
+--		for k in keys(cache)
+--		for v in values(cache) repeat {
+--			not Nil?(BasicTuple) k and k = key => return(v, true);
+--		}
+--		(nil(), false)
+--	}
+
 	getEntry(cache: %, key: BasicTuple): (Ptr, Boolean) == {
-		for k in keys(cache)
-		for v in values(cache) repeat {
-			not Nil?(BasicTuple) k and k = key => return(v, true);
-		}
+--		for i in 1..#keys(cache) repeat {
+--		    k := keys(cache)(i);
+--		    v := values(cache)(i);
+--		    not Nil?(BasicTuple) k and k = key => return(v, true);
+--		}
 		(nil(), false)
 	}
 }
