@@ -1,3 +1,6 @@
 /runtime.c
 /Makefile
 /runtime-gets.txt
+/*.c
+/*.fm
+/*.txt
