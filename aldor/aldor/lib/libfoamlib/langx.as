@@ -93,7 +93,7 @@ extend Enumeration(T: Tuple Type): BasicType with == add {
 
 DomNameType ==>  'ID, APPLY, TUPLE, OTHER';
 
-DomainName: with {
+extend DomainName: with {
 	type:  % -> DomNameType;
 	name:  % -> String;
 	args:  % -> List %;
