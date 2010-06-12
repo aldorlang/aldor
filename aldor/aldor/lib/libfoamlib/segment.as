@@ -73,12 +73,12 @@ Segment(S: Steppable): BasicType with {
 		a := low (s::%);
 		repeat (yield a; a := a + 1);
 	}
-	generator(s: CSeg): Generator S == generate to size s of {
+	generator(s: CSeg): Generator S == generate { -- to size s of {
 		a := low (s::%);
 		b := high(s::%);
 		while a <= b repeat (yield a; a := a + 1);
 	}
-	generator(s: %): Generator S == generate to size s of {
+	generator(s: %): Generator S == generate { -- to size s of {
 		a := low  s;
 		b := high s;
 		d := step s;
