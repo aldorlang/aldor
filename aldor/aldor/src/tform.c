@@ -4022,6 +4022,7 @@ tfStabGetDomImports(Stab stab, TForm tf)
 		tfInitBasicTypes(tf);
 
 	tfImportDEBUG({
+	    symeListPrintDb(symes);
 		fprintf(dbOut, ")\n");
 		tfPrint(dbOut, tf);
 		fnewline(dbOut);
