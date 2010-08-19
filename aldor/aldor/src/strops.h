@@ -33,6 +33,8 @@ extern String		strCopyIf	(String);
 
 extern String           strConcat       (String, String);
 extern String           strlConcat      (String, ...);
+extern String           strNConcat      (String s1, String s2); // Frees 1st arg
+
 			/*
 			 * These functions allocate a new string
 			 * and concatenate the arguments into it.
@@ -68,6 +70,8 @@ extern String           strAIsSuffix    (String suf, String);
 
 extern String		strUpper	(String);
 extern String		strLower	(String);
+extern String		strReplace	(String, String, String);
+extern String		strNReplace	(String, String, String);
 
 extern String		strnToAsciiStatic(String, Length);
 extern String		strnFrAsciiStatic(String, Length);

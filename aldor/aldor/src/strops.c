@@ -95,6 +95,14 @@ strConcat(String s1, String s2)
 	return r;
 }
 
+String 
+strNConcat(String s1, String s2)
+{
+	String s3 = strConcat(s1, s2);
+	strFree(s1);
+	return s3;
+}
+
 String
 strlConcat(String s1, ...)
 {
@@ -301,6 +309,35 @@ strLower(String s)
         String t;
 
 	for (t = s; *t; t++) *t = tolower(*t);
+	return s;
+}
+
+String
+strNReplace(String txt, String orig, String repl)
+{
+	String s = strReplace(txt, orig, repl);
+	strFree(txt);
+	return s;
+}
+
+String
+strReplace(String txt, String orig, String repl)
+{
+	Buffer buf = bufNew();
+	bufNeed(buf, strlen(orig));
+	int replLen = strlen(repl);
+	while (true) {
+		char *nxt = strstr(txt, orig);
+		if (nxt == NULL)
+			break;
+		bufAddn(buf, txt, nxt-txt);
+		bufAddn(buf, repl, replLen);
+		txt = nxt;
+		txt += strlen(orig);
+	}
+	bufAddn(buf, txt, strlen(txt));
+	bufAdd1(buf, '\0');
+	String s = bufLiberate(buf);
 	return s;
 }
 
