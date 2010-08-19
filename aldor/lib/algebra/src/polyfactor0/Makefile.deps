@@ -1,0 +1,17 @@
+sit_fhensel_deps := 
+sit_zfactor_deps := sit_fhensel
+sit_zfring0_deps :=
+sit_zfring_deps :=
+sit_zfringg_deps :=
+
+sit_zfring.ao: sit_zfring0 
+sit_zfringg.ao: sit_zfring0 
+
+extra_files := sit_zfring0
+
+library_deps := util numbers extree extree/operators extree/parser	\
+	        categories basic mat mat/modular mat/modular/compbug	\
+	        mat/gauss mat/linalg univpoly/categories		\
+	        multpoly/multpolydata mat/linalg2 univpoly		\
+	        univpoly/gcd fraction series series/compbug algext	\
+		polyfactorp ffield

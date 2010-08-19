@@ -1,0 +1,8 @@
+sit_dfge_deps := sit_linelim
+sit_ff2ge_deps := sit_linelim
+sit_ffge_deps := sit_linelim
+sit_hermge_deps := sit_linelim
+sit_linelim_deps :=
+sit_oge_deps := sit_linelim
+
+library_deps := util numbers extree extree/operators extree/parser categories basic mat

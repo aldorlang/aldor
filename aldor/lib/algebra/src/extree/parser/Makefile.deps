@@ -1,0 +1,10 @@
+alg_tokens_deps :=
+alg_tokens_deps	:=
+sit_infexpr_deps := sit_parser sit_token sit_scanner
+sit_lspexpr_deps := sit_parser sit_token sit_scanner
+sit_maple_deps   := sit_infexpr
+sit_parser_deps  :=
+sit_scanner_deps := sit_token
+sit_token_deps   :=
+
+library_deps := extree util extree/operators

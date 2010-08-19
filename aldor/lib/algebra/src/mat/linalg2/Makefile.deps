@@ -1,0 +1,8 @@
+
+alg_ffupla_deps:= sit_popov
+sit_popov_deps  :=
+sit_upcrtla_deps :=
+
+library_deps := util numbers extree extree/operators extree/parser \
+	        categories basic mat mat/gauss mat/modular mat/modular \
+	        mat/modular/compbug mat/linalg univpoly/categories

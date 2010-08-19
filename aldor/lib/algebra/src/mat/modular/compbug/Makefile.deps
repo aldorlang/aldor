@@ -1,0 +1,4 @@
+sit_speclin_deps :=
+
+library_deps := util numbers extree extree/operators extree/parser \
+	     	categories basic mat mat/modular

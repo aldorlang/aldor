@@ -1,0 +1,19 @@
+
+alg_sup0_deps :=
+alg_sup1_deps := alg_sup0
+alg_sup_deps := sit_upolc alg_sup1 sit_spread
+alg_unitool_deps :=
+alg_uprcr_deps :=
+sit_dup_deps := sit_polkara sit_spread alg_sup
+sit_polkara_deps :=
+sit_spread_deps := sit_upolc
+sit_ufacpol_deps := sit_upolc
+sit_upolc_deps := alg_uprcr
+
+extra_files := alg_debugdup
+library_deps := util numbers extree extree/operators extree/parser \
+	        categories basic mat mat/gauss mat/modular mat/modular \
+	        mat/modular/compbug mat/linalg univpoly/categories \
+	        mat/linalg2 multpoly/multpolydata
+
+

@@ -1,0 +1,8 @@
+sit_complex_deps :=
+sit_indvar_deps  :=
+sit_mkpring_deps := sit_pring
+sit_permut_deps  :=
+sit_pring_deps   :=
+sit_product_deps :=
+
+library_deps := util numbers extree extree/operators extree/parser categories

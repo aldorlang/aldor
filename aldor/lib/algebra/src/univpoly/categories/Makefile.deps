@@ -1,0 +1,19 @@
+alg_chrem2_deps  := sit_upolc0
+alg_modgcdp_deps := sit_upolc0 alg_chrem2
+alg_polydio_deps := sit_upolc0 sit_resprs
+sit_fftring_deps := sit_upolc0
+sit_fring_deps := sit_upolc0 sit_froot sit_zring
+sit_froot_deps :=
+sit_resprs_deps := sit_upolc0
+sit_sqfree_deps := sit_upolc0
+sit_ufalg_deps :=
+sit_uffalg_deps := sit_ufalg
+sit_ugring_deps := sit_upolc0
+sit_umonom_deps :=
+sit_upolalg_deps := sit_uffalg sit_umonom
+sit_upolc0_deps := sit_upolalg
+sit_zring_deps := sit_upolc0 sit_froot
+
+library_deps := util numbers extree extree/operators extree/parser \
+	        categories basic mat mat/gauss mat/modular mat/modular \
+	        mat/modular/compbug mat/linalg

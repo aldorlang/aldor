@@ -1,0 +1,6 @@
+sit_hensela_deps := 
+
+library_deps := util numbers extree extree/operators extree/parser	\
+	        categories basic mat mat/modular mat/modular/compbug	\
+	        mat/gauss mat/linalg univpoly/categories		\
+	        multpoly/multpolydata mat/linalg2 univpoly fraction

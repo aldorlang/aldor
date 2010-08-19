@@ -1,0 +1,8 @@
+sit_bsolve_deps :=
+sit_laring_deps :=
+sit_linalg_deps := sit_bsolve sit_overdet sit_laring
+sit_overdet_deps :=
+
+library_deps := util numbers extree extree/operators extree/parser \
+	     	categories basic mat mat/gauss mat/modular \
+	     	mat/modular/compbug

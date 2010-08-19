@@ -1,0 +1,15 @@
+alg_pf2_deps := sit_spf sit_sprfcat
+sit_prfcat_deps :=
+sit_spf_deps := sit_sprfcat
+sit_sprfcat_deps := sit_sprfgcd sit_sprfmat sit_prfcat
+sit_sprfgcd_deps :=
+sit_sprfmat_deps :=
+sit_zpf_deps := sit_sprfcat
+
+
+library_deps := util numbers extree extree/operators extree/parser	\
+	        categories basic mat mat/modular mat/modular/compbug	\
+	        mat/gauss mat/linalg univpoly/categories		\
+	        multpoly/multpolydata mat/linalg2 univpoly		\
+	        univpoly/gcd fraction series series/compbug algext	\
+		polyfactorp

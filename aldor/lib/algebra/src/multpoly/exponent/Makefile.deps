@@ -1,0 +1,16 @@
+sm_dirprod_deps := sm_dirprodc
+sm_dirprodc_deps :=
+sm_expocat_deps := sm_vt
+sm_fvt_deps := sm_vt
+sm_listovar_deps := sm_fvt
+sm_midl_deps := sm_fvt sm_mievc sm_midrl
+sm_midrl_deps := sm_dirprod sm_fvt sm_mievc
+sm_mievc_deps := sm_fvt sm_expocat
+sm_milex_deps := sm_fvt sm_mievc sm_midrl
+sm_osymbol_deps := sm_vt
+sm_tuplovar_deps := sm_fvt sm_listovar
+sm_vt_deps :=
+sm_zevc_deps := sm_fvt sm_dirprodc sm_expocat
+
+
+library_deps := util numbers extree extree/operators extree/parser categories 

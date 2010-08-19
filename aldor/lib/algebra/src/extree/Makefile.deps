@@ -1,0 +1,3 @@
+library := sit_extree sit_optools 
+sit_optools_deps := sit_extree
+library_deps := util

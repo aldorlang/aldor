@@ -1,0 +1,56 @@
+alg_cansimp_deps := sit_comring sit_euclid
+alg_ffield_deps := sit_field sit_charp sit_fset sit_charp
+alg_frering_deps := sit_charp sit_char0 sit_freemod sit_freelar alg_rring sit_qring
+alg_idxfrng_deps := sit_freelar alg_frering sit_idxfmod sit_idxflar
+alg_modcmp_deps := alg_rescls sit_chrem sit_euclid alg_cansimp
+alg_primsrc_deps := sit_comring sit_euclid
+alg_rescls_deps :=  sit_comring alg_primsrc sit_field
+alg_rring_deps := sit_ring sit_module sit_linarit
+sit_abgroup_deps := sit_abmon
+sit_abmon_deps := sit_basic 
+sit_algebra_deps := sit_ring alg_rring
+sit_automor_deps := sit_ring sit_group sit_gexpcat
+sit_basic_deps := sit_pable
+sit_char0_deps := sit_ring
+sit_charp_deps := sit_ring
+sit_chrem_deps := sit_euclid
+sit_comring_deps := sit_ring
+sit_dcmprng_deps := sit_comring
+sit_deriv_deps := sit_module sit_ring sit_gexpcat
+sit_diffext_deps := sit_comring sit_deriv sit_difring
+sit_difring_deps := sit_comring sit_deriv
+sit_euclid_deps := sit_gcd 
+sit_field_deps := sit_euclid sit_group
+sit_freealg_deps := alg_frering sit_algebra
+sit_freelar_deps := sit_basic sit_freelc sit_linarit
+sit_freelc_deps := sit_basic sit_ring
+sit_freemod_deps := sit_gcd sit_freelar sit_freelc sit_module sit_field
+sit_fset_deps := sit_basic sit_integer
+sit_gcd_deps := sit_intdom 
+sit_gexpcat_deps := sit_basic sit_pable sit_ptools
+sit_group_deps := sit_monoid
+sit_idxfalg_deps := alg_frering alg_idxfrng
+sit_idxflar_deps := sit_freelar sit_freelc sit_idxflc sit_idxflar
+sit_idxflc_deps := sit_basic sit_freelc
+sit_idxfmod_deps := sit_freelc sit_freemod sit_idxflc
+sit_intdom_deps := sit_comring
+
+sit_integer_deps := sit_comring alg_rescls alg_primsrc sit_char0 \
+		    alg_modcmp sit_spzble sit_gexpcat
+
+sit_intgmp_deps := sit_basic sit_integer
+sit_linarit_deps := sit_basic sit_ring
+sit_module_deps := sit_abgroup sit_ring
+sit_monoid_deps := sit_basic
+sit_ncid_deps := sit_ring
+sit_pable_deps := 
+sit_prfcat0_deps := alg_ffield sit_integer
+sit_ptools_deps := sit_comring sit_intdom
+sit_qring_deps := sit_char0 sit_field
+sit_ring_deps := sit_abgroup sit_monoid
+sit_spf0_deps := sit_spfcat0
+sit_spfcat0_deps := sit_prfcat0
+sit_spzble_deps := sit_comring
+
+library_deps := util extree extree/operators extree/parser numbers
+extra_files := sit_power.as

@@ -1,0 +1,21 @@
+sit_lcqotct_deps := sit_quotcat sit_qotbyc0 sit_qotfct0
+sit_matquot_deps := sit_quotcat sit_qotbyc0 sit_vecquot 
+sit_qotbyc0_deps := sit_quotcat
+sit_qotbyct_deps := sit_qotbyc0 sit_vecquot sit_matquot sit_uflgqot
+sit_qotfcat_deps := sit_vecquot sit_uflgqot sit_matquot
+sit_qotfct0_deps := sit_quotcat
+sit_qotient_deps := sit_qotfcat
+sit_quotby_deps := sit_qotbyct
+sit_quotcat_deps :=
+sit_uflgqot_deps := sit_quotcat sit_qotbyct sit_qotbyc0 sit_lcqotct sit_qotfct0
+sit_vecquot_deps := sit_quotcat sit_qotbyc0 sit_lcqotct sit_qotfct0
+
+library_deps := util numbers extree extree/operators extree/parser	\
+	        categories basic mat mat/modular mat/modular/compbug	\
+	        mat/gauss mat/linalg univpoly/categories		\
+	        multpoly/multpolydata mat/linalg2 univpoly
+
+
+#basic mat mat/gauss mat/modular mat/modular \
+#	        mat/modular/compbug mat/linalg univpoly/categories \
+#	        mat/linalg2 multpoly/multpolydata

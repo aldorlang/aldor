@@ -1,0 +1,4 @@
+sit_interp_deps :=
+sit_shell_deps  := sit_interp
+
+library_deps := util numbers extree extree/operators extree/parser categories basic

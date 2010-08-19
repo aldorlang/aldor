@@ -1,0 +1,5 @@
+sit_zcrtla_deps := sit_modpoge
+sit_modpoge_deps :=
+extra_files := sit_halfge sit_fullge
+
+library_deps := util numbers extree extree/operators extree/parser categories basic mat

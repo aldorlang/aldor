@@ -1,0 +1,6 @@
+
+sit_OPcase_deps := sit_OPif
+sit_OPllist_deps := sit_OPlist
+sit_OPplus_deps := sit_OPminus
+
+library_deps := extree util
