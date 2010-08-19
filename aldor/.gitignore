@@ -16,4 +16,4 @@ make.out
 configure.scan
 autoscan.log
 config.status
-
+/configure
