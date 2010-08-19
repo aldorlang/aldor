@@ -1,1 +1,1 @@
-SUBDIRS=aldor
+SUBDIRS=aldor lib
