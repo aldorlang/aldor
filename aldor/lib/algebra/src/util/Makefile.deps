@@ -1,0 +1,2 @@
+library := alg_version
+library_deps :=
