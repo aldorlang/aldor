@@ -71,19 +71,18 @@
 
 # include "axlgen.h"
 
-Bool	sexprDebug	= false;
+Bool sexprDebug = false;
 #define sexprDEBUG(s)	DEBUG_IF(sexprDebug, s)
-
 
 # define RUBOUT		0177
 
-local  int		sxiIoIsNeedingEscape(String);
+local int sxiIoIsNeedingEscape(String);
 
-local  void		sxiRdError	    (int errnum, ...);
-local  SExpr		sxiUseError	    (int errnum, ...);
-local  SExpr		sxiDefaultHandler   (SrcPos, int errnum, va_list argp);
+local void sxiRdError(int errnum, ...);
+local SExpr sxiUseError(int errnum, ...);
+local SExpr sxiDefaultHandler(SrcPos, int errnum, va_list argp);
 
-static SExprErrorFun	sxiError = sxiDefaultHandler;
+static SExprErrorFun sxiError = sxiDefaultHandler;
 
 /*****************************************************************************
  *
@@ -102,55 +101,52 @@ static SExprErrorFun	sxiError = sxiDefaultHandler;
  *
  ****************************************************************************/
 
+static Buffer sxiIoBuf;
+static Buffer sxiCommentBuf;
 
-static	Buffer	sxiIoBuf;
-static	Buffer	sxiCommentBuf;
+static SrcPos sxiCurrentPos;
+static Length sxiCurrentLineNo;
+static FileName sxiCurrentFName;
 
-static	SrcPos		sxiCurrentPos;
-static	Length		sxiCurrentLineNo;
-static	FileName	sxiCurrentFName;
+String sxiLispFileType = "lsp";
 
-String	sxiLispFileType = "lsp";
+SExpr sxiSmallInts[sxiHowManySmallInts];
 
-SExpr	sxiSmallInts[sxiHowManySmallInts];
+SExpr sxSTAR_Package_STAR;
+SExpr sxSTAR_Features_STAR;
 
-SExpr	sxSTAR_Package_STAR;
-SExpr	sxSTAR_Features_STAR;
+FILE * sxiSTAR_StandardInput_STAR;
+FILE * sxiSTAR_StandardOutput_STAR;
 
-FILE *	sxiSTAR_StandardInput_STAR;
-FILE *	sxiSTAR_StandardOutput_STAR;
+SExpr sxT, sxNil, sx0Quote, sx0Function, sxNot, sxAnd, sxOr;
 
-SExpr	sxT, sxNil, sx0Quote, sx0Function, sxNot, sxAnd, sxOr;
-
-SExpr	sx0PackageList;
-SExpr	sx0KeywordPackage, sx0LispPackage,
-	sx0SystemPackage,  sx0UserPackage;
-SExpr	sx0BackQuote,sx0BackQuoteComma,sx0BackQuoteCommaAt,sx0BackQuoteCommaDot,
-	sx0ReadTimeEval, sx0LoadTimeEval;
+SExpr sx0PackageList;
+SExpr sx0KeywordPackage, sx0LispPackage, sx0SystemPackage, sx0UserPackage;
+SExpr sx0BackQuote, sx0BackQuoteComma, sx0BackQuoteCommaAt,
+		sx0BackQuoteCommaDot, sx0ReadTimeEval, sx0LoadTimeEval;
 
 /* Markers to ease recursive reading of lists */
-static SExpr	sxiRd_ADot, sxiRd_AParen;
-
+static SExpr sxiRd_ADot, sxiRd_AParen;
 /* Forward declarations */
-local SExpr sxiNew	  (SExprTag, Length size);
-local SExpr sxiNewInteger (long n);
-local SExpr sxiNewNil	  (void);
-local void  sxiIoTableInit(void);
+local SExpr sxiNew(SExprTag, Length size);
+local SExpr sxiNewInteger(long n);
+local SExpr sxiNewNil(void);
+local void sxiIoTableInit(void);
 
-void
-sxiInit(void)
+void sxiInit(void)
 {
-	int	i;
-	static Bool	isInit = false;
+	int i;
+	static Bool isInit = false;
 
-	if (isInit) return;
+	if (isInit)
+		return;
 
 	/*
 	 * Initialize IO
 	 */
 	sposInit();
-	sxiIoBuf        = bufNew();
-	sxiCommentBuf   = bufNew();
+	sxiIoBuf = bufNew();
+	sxiCommentBuf = bufNew();
 	sxiIoTableInit();
 
 	/*
@@ -162,7 +158,7 @@ sxiInit(void)
 	/*
 	 * Initialize small integers
 	 */
-	for (i = 0; i < sxiHowManySmallInts; i++)  {
+	for (i = 0; i < sxiHowManySmallInts; i++) {
 		sxiSmallInts[i] = sxiNewInteger(i);
 		sxiSmallInts[i]->sxHdr.isShared = true;
 	}
@@ -170,47 +166,46 @@ sxiInit(void)
 	/*
 	 * Set for symbol initialization
 	 */
-	sx0KeywordPackage     = sxNil;
-	sx0LispPackage	      = sxNil;
+	sx0KeywordPackage = sxNil;
+	sx0LispPackage = sxNil;
 
 	/*
 	 * Initialize symbols
 	 */
-	sx0PackageList	      = sxNil;
-	sxSTAR_Features_STAR  = sxNil;
+	sx0PackageList = sxNil;
+	sxSTAR_Features_STAR = sxNil;
 
-	sx0KeywordPackage     = sxMakePackage(sxiFrString("KEYWORD"));
-	sx0LispPackage	      = sxMakePackage(sxiFrString("LISP"));
-	sx0SystemPackage      = sxMakePackage(sxiFrString("SYSTEM"));
-	sx0UserPackage	      = sxMakePackage(sxiFrString("USER"));
+	sx0KeywordPackage = sxMakePackage(sxiFrString("KEYWORD"));
+	sx0LispPackage = sxMakePackage(sxiFrString("LISP"));
+	sx0SystemPackage = sxMakePackage(sxiFrString("SYSTEM"));
+	sx0UserPackage = sxMakePackage(sxiFrString("USER"));
 
-	sxSTAR_Package_STAR   = sx0LispPackage;
+	sxSTAR_Package_STAR = sx0LispPackage;
 
-	sxT		      = sxIntern(sxiFrString("T"));
-	sx0Quote	      = sxIntern(sxiFrString("QUOTE"));
-	sx0Function	      = sxIntern(sxiFrString("FUNCTION"));
-	sxAnd		      = sxIntern(sxiFrString("AND"));
-	sxOr		      = sxIntern(sxiFrString("OR"));
-	sxNot		      = sxIntern(sxiFrString("NOT"));
+	sxT = sxIntern(sxiFrString("T"));
+	sx0Quote = sxIntern(sxiFrString("QUOTE"));
+	sx0Function = sxIntern(sxiFrString("FUNCTION"));
+	sxAnd = sxIntern(sxiFrString("AND"));
+	sxOr = sxIntern(sxiFrString("OR"));
+	sxNot = sxIntern(sxiFrString("NOT"));
 
-	sxSTAR_Package_STAR   = sx0SystemPackage;
+	sxSTAR_Package_STAR = sx0SystemPackage;
 
-	sx0BackQuote	      = sxIntern(sxiFrString("BACK-QUOTE"));
-	sx0BackQuoteComma     = sxIntern(sxiFrString("BACK-QUOTE-COMMA"));
-	sx0BackQuoteCommaAt   = sxIntern(sxiFrString("BACK-QUOTE-COMMA-AT"));
-	sx0BackQuoteCommaDot  = sxIntern(sxiFrString("BACK-QUOTE-COMMA-DOT"));
+	sx0BackQuote = sxIntern(sxiFrString("BACK-QUOTE"));
+	sx0BackQuoteComma = sxIntern(sxiFrString("BACK-QUOTE-COMMA"));
+	sx0BackQuoteCommaAt = sxIntern(sxiFrString("BACK-QUOTE-COMMA-AT"));
+	sx0BackQuoteCommaDot = sxIntern(sxiFrString("BACK-QUOTE-COMMA-DOT"));
 
-	sx0ReadTimeEval	      = sxIntern(sxiFrString("READ-TIME-EVAL"));
-	sx0LoadTimeEval	      = sxIntern(sxiFrString("LOAD-TIME-EVAL"));
+	sx0ReadTimeEval = sxIntern(sxiFrString("READ-TIME-EVAL"));
+	sx0LoadTimeEval = sxIntern(sxiFrString("LOAD-TIME-EVAL"));
 
-	sxiRd_ADot	      = sxMakeSymbol(sxiFrString("Read-a-."));
-	sxiRd_AParen	      = sxMakeSymbol(sxiFrString("Read-a-)"));
+	sxiRd_ADot = sxMakeSymbol(sxiFrString("Read-a-."));
+	sxiRd_AParen = sxMakeSymbol(sxiFrString("Read-a-)"));
 
-	sxSTAR_Package_STAR   = sx0UserPackage;
+	sxSTAR_Package_STAR = sx0UserPackage;
 
 	isInit = true;
 }
-
 
 /*****************************************************************************
  *
@@ -218,10 +213,9 @@ sxiInit(void)
  *
  ****************************************************************************/
 
-local SExpr
-sxiNewNil(void)
+local SExpr sxiNewNil(void)
 {
-	SExpr	sx;
+	SExpr sx;
 	sx = sxiNew(SX_Nil, sizeof(sx->sxNil));
 	sx->sxNil.sxCarField = sx;
 	sx->sxNil.sxCdrField = sx;
@@ -235,28 +229,26 @@ sxiNewNil(void)
  *
  ****************************************************************************/
 
-local SExpr
-sx0MakeSymbol(Symbol cymbal, SExpr pkg)
+local SExpr sx0MakeSymbol(Symbol cymbal, SExpr pkg)
 {
-	SExpr	sym;
+	SExpr sym;
 
 	sym = sxiNew(SX_Symbol, sizeof(sym->sxSymbol));
-	sym->sxSymbol.homePkg  = pkg;
-	sym->sxSymbol.sym      = cymbal;
-	sym->sxSymbol.wrInfo   = sxiIoIsNeedingEscape(symString(cymbal));
+	sym->sxSymbol.homePkg = pkg;
+	sym->sxSymbol.sym = cymbal;
+	sym->sxSymbol.wrInfo = sxiIoIsNeedingEscape(symString(cymbal));
 
 	return sym;
 }
 
-SExpr
-sxMakeSymbol(SExpr name)
+SExpr sxMakeSymbol(SExpr name)
 {
-	if (!sxiStringP(name)) return sxiUseError(SX_ErrInternNeeds);
+	if (!sxiStringP(name))
+		return sxiUseError(SX_ErrInternNeeds);
 	return sx0InternInFrString(sxiToTheString(name), sxNil);
 }
 
-SExpr
-sxiFrSymbol(Symbol sym)
+SExpr sxiFrSymbol(Symbol sym)
 {
 	return sx0InternInFrSymbol(sym, sxSTAR_Package_STAR);
 }
@@ -272,10 +264,9 @@ sxiFrSymbol(Symbol sym)
 #define sx0PackagePut(p,s,x) \
 	((SExpr) tblSetElt((p)->sxPackage.symbolTable, (TblKey)(s),(TblElt)(x)))
 
-SExpr
-sxiFindPackage(String name)
+SExpr sxiFindPackage(String name)
 {
-	SExpr	l;
+	SExpr l;
 
 	for (l = sx0PackageList; sxiConsP(l); l = sxCdr(l)) {
 		SExpr sym = sxCar(l)->sxPackage.nameSymbol;
@@ -285,17 +276,14 @@ sxiFindPackage(String name)
 	return sxNil;
 }
 
-
-SExpr
-sxFindPackage(SExpr name)
+SExpr sxFindPackage(SExpr name)
 {
 	return sxiFindPackage(sxiToTheString(sxString(name)));
 }
 
-SExpr
-sxMakePackage(SExpr name)
+SExpr sxMakePackage(SExpr name)
 {
-	SExpr	p;
+	SExpr p;
 
 	name = sxString(name);
 
@@ -305,46 +293,45 @@ sxMakePackage(SExpr name)
 	p = sxiNew(SX_Package, sizeof(p->sxPackage));
 	p->sxHdr.isShared = true;
 
-	p->sxPackage.nameSymbol	 = sxMakeSymbol(name);
+	p->sxPackage.nameSymbol = sxMakeSymbol(name);
 	p->sxPackage.symbolTable = tblNew((TblHashFun) 0, (TblEqFun) 0);
 
-	sx0PackageList	       = sxCons(p, sx0PackageList);
+	sx0PackageList = sxCons(p, sx0PackageList);
 
 	/*!! Should copy here rather than probe twice in Intern */
 	return p;
 }
 
-SExpr
-sxIntern(SExpr name)
+SExpr sxIntern(SExpr name)
 {
 	return sxIntern_In(name, sxSTAR_Package_STAR);
 }
 
-SExpr
-sxIntern_In(SExpr name, SExpr pkg)
+SExpr sxIntern_In(SExpr name, SExpr pkg)
 {
-	if (!sxiStringP(name)) return sxiUseError(SX_ErrInternNeeds);
+	if (!sxiStringP(name))
+		return sxiUseError(SX_ErrInternNeeds);
 	return sx0InternInFrString(sxiToTheString(name), pkg);
 }
 
-SExpr
-sx0InternInFrString(String str, SExpr pkg)
+SExpr sx0InternInFrString(String str, SExpr pkg)
 {
 	return sx0InternInFrSymbol(symIntern(str), pkg);
 }
 
-SExpr
-sx0InternInFrSymbol(Symbol cymbal, SExpr pkg)
+SExpr sx0InternInFrSymbol(Symbol cymbal, SExpr pkg)
 {
-	SExpr	sym;
+	SExpr sym;
 
 	if (!sxiNull(pkg)) {
 		sym = sx0PackageGet(pkg, cymbal);
-		if (sym) return sym;
+		if (sym)
+			return sym;
 	}
 	if (!sxiNull(sx0LispPackage)) {
 		sym = sx0PackageGet(sx0LispPackage, cymbal);
-		if (sym) return sym;
+		if (sym)
+			return sym;
 	}
 
 	sym = sx0MakeSymbol(cymbal, pkg);
@@ -363,17 +350,15 @@ sx0InternInFrSymbol(Symbol cymbal, SExpr pkg)
  *
  ****************************************************************************/
 
-local SExpr
-sxiNewInteger(long n)
+local SExpr sxiNewInteger(long n)
 {
-	SExpr	s;
+	SExpr s;
 	s = sxiNew(SX_Integer, sizeof(s->sxInteger));
-	s->sxInteger.val  = bintNew(n);
+	s->sxInteger.val = bintNew(n);
 	return s;
 }
 
-SExpr
-sxiFrInteger(long n)
+SExpr sxiFrInteger(long n)
 {
 	if (0 <= n && n < sxiHowManySmallInts)
 		return sxiSmallInts[n];
@@ -381,28 +366,24 @@ sxiFrInteger(long n)
 		return sxiNewInteger(n);
 }
 
-SExpr
-sxiFrBigInteger(BInt b)
+SExpr sxiFrBigInteger(BInt b)
 {
-	SExpr	s;
+	SExpr s;
 	s = sxiNew(SX_Integer, sizeof(s->sxInteger));
-	s->sxInteger.val  = bintCopy(b);
+	s->sxInteger.val = bintCopy(b);
 	return s;
 }
 
-
-SExpr
-sxiMakeRatio(int n, int d)
+SExpr sxiMakeRatio(int n, int d)
 {
-	SExpr	s;
+	SExpr s;
 	s = sxiNew(SX_Ratio, sizeof(s->sxRatio));
-	s->sxRatio.num	  = sxiFrInteger(n);
-	s->sxRatio.den	  = sxiFrInteger(d);
+	s->sxRatio.num = sxiFrInteger(n);
+	s->sxRatio.den = sxiFrInteger(d);
 	return s;
 }
 
-SExpr
-sxNumerator(SExpr s)
+SExpr sxNumerator(SExpr s)
 {
 	if (sxiRatioP(s))
 		return s->sxRatio.num;
@@ -411,8 +392,7 @@ sxNumerator(SExpr s)
 	return sxiUseError(SX_ErrNumDenNeeds, "Numerator");
 }
 
-SExpr
-sxDenominator(SExpr s)
+SExpr sxDenominator(SExpr s)
 {
 	if (sxiRatioP(s))
 		return s->sxRatio.den;
@@ -421,10 +401,9 @@ sxDenominator(SExpr s)
 	return sxiUseError(SX_ErrNumDenNeeds, "Denominator");
 }
 
-SExpr
-sxComplex(SExpr r, SExpr i)
+SExpr sxComplex(SExpr r, SExpr i)
 {
-	SExpr	s;
+	SExpr s;
 	s = sxiNew(SX_Complex, sizeof(s->sxComplex));
 	s->sxComplex.real = r;
 	s->sxComplex.imag = i;
@@ -432,8 +411,7 @@ sxComplex(SExpr r, SExpr i)
 	return s;
 }
 
-SExpr
-sxRealpart(SExpr c)
+SExpr sxRealpart(SExpr c)
 {
 	if (sxiComplexP(c))
 		return c->sxComplex.real;
@@ -441,8 +419,7 @@ sxRealpart(SExpr c)
 		return c;
 }
 
-SExpr
-sxImagpart(SExpr c)
+SExpr sxImagpart(SExpr c)
 {
 	if (sxiComplexP(c))
 		return c->sxComplex.imag;
@@ -450,14 +427,13 @@ sxImagpart(SExpr c)
 		return sxiFrInteger(int0);
 }
 
-SExpr
-sxiFrFloat(DFloat f, int marker)
+SExpr sxiFrFloat(DFloat f, int marker)
 {
-	SExpr	s;
+	SExpr s;
 
 	s = sxiNew(SX_Float, sizeof(s->sxFloat));
-	s->sxFloat.val	   = f;
-	s->sxFloat.marker  = marker;
+	s->sxFloat.val = f;
+	s->sxFloat.marker = marker;
 
 	return s;
 }
@@ -468,10 +444,9 @@ sxiFrFloat(DFloat f, int marker)
  *
  ****************************************************************************/
 
-SExpr
-sxiFrChar(int c)
+SExpr sxiFrChar(int c)
 {
-	SExpr	s;
+	SExpr s;
 
 	s = sxiNew(SX_Char, sizeof(s->sxChar));
 	s->sxChar.val = c;
@@ -479,26 +454,23 @@ sxiFrChar(int c)
 	return s;
 }
 
-
 /*****************************************************************************
  *
  * :: Strings
  *
  ****************************************************************************/
 
-SExpr
-sxiFrString(String str)
+SExpr sxiFrString(String str)
 {
-	SExpr	s;
+	SExpr s;
 
 	s = sxiNew(SX_String, sizeof(s->sxString));
-	s->sxString.val	= strCopy(str);
+	s->sxString.val = strCopy(str);
 
 	return s;
 }
 
-SExpr
-sxString(SExpr s)
+SExpr sxString(SExpr s)
 {
 	if (sxiStringP(s))
 		return s;
@@ -508,8 +480,7 @@ sxString(SExpr s)
 	return sxiUseError(SX_ErrBadArgumentTo, "String");
 }
 
-SExpr
-sxString_EQ(SExpr s1, SExpr s2)
+SExpr sxString_EQ(SExpr s1, SExpr s2)
 {
 	return strcmp(sxiToTheString(s1), sxiToTheString(s2)) ? sxNil : sxT;
 }
@@ -523,31 +494,31 @@ sxString_EQ(SExpr s1, SExpr s2)
 #define sx0Size(s)	((s)->sxVector.argc)
 #define sx0Elt(s,i)	((s)->sxVector.argv[i])
 
-SExpr
-sxiMakeVector(Length n)
+SExpr sxiMakeVector(Length n)
 {
-	SExpr	s;
-	Length	i;
+	SExpr s;
+	Length i;
 
 	s = sxiNew(SX_Vector, fullsizeof(s->sxVector, n, SExpr));
-	s->sxVector.argc  = n;
-	for (i = 0; i < n; i++) s->sxVector.argv[i] = sxNil;
+	s->sxVector.argc = n;
+	for (i = 0; i < n; i++)
+		s->sxVector.argv[i] = sxNil;
 
 	return s;
 }
 
-SExpr
-sxiVector(Length n, ...)
+SExpr sxiVector(Length n, ...)
 {
-	SExpr	s;
-	Length	i;
+	SExpr s;
+	Length i;
 	va_list argp;
 
 	s = sxiNew(SX_Vector, fullsizeof(s->sxVector, n, SExpr));
-	s->sxVector.argc  = n;
+	s->sxVector.argc = n;
 
 	va_start(argp, n);
-	for (i = 0; i < n; i++) s->sxVector.argv[i] = va_arg(argp, SExpr);
+	for (i = 0; i < n; i++)
+		s->sxVector.argv[i] = va_arg(argp, SExpr);
 	va_end(argp);
 
 	return s;
@@ -559,14 +530,13 @@ sxiVector(Length n, ...)
  *
  ****************************************************************************/
 
-SExpr
-sxCons(SExpr a, SExpr d)
+SExpr sxCons(SExpr a, SExpr d)
 {
 	SExpr s;
 
 	s = sxiNew(SX_Cons, sizeof(s->sxCons));
-	s->sxCons.sxCarField   = a;
-	s->sxCons.sxCdrField   = d;
+	s->sxCons.sxCarField = a;
+	s->sxCons.sxCdrField = d;
 
 	return s;
 }
@@ -577,24 +547,23 @@ sxCons(SExpr a, SExpr d)
  *
  ****************************************************************************/
 
-SExpr
-sxiList(Length n, ...)
+SExpr sxiList(Length n, ...)
 {
-	SExpr	sx;
+	SExpr sx;
 	va_list argp;
-	Length	i;
+	Length i;
 
 	va_start(argp, n);
-	sx  =  sxNil;
-	for (i = 0; i < n; i++) sx = sxCons(va_arg(argp, SExpr), sx);
+	sx = sxNil;
+	for (i = 0; i < n; i++)
+		sx = sxCons(va_arg(argp, SExpr), sx);
 	sx = sxNReverse(sx);
 	va_end(argp);
 
 	return sx;
 }
 
-SExpr
-sxiNthCdr(Length n, SExpr sx)
+SExpr sxiNthCdr(Length n, SExpr sx)
 {
 	while (n-- > 0)
 		sx = sxCdr(sx);
@@ -607,55 +576,54 @@ sxiNthCdr(Length n, SExpr sx)
  *
  ****************************************************************************/
 
-SExpr
-sxNReverse(SExpr sx)
+SExpr sxNReverse(SExpr sx)
 {
-	if (sxiNull(sx)) return sx;
+	if (sxiNull(sx))
+		return sx;
 	if (sxiConsP(sx)) {
-		SExpr	r, t;
+		SExpr r, t;
 		r = sxNil;
 		while (sxiConsP(sx)) {
-			t  = sxCdr(sx);
+			t = sxCdr(sx);
 			sxCdr(sx) = r;
-			r  = sx;
+			r = sx;
 			sx = t;
 		}
-		if (!sxiNull(sx)) return sxiUseError(SX_ErrNReverseNeeds);
+		if (!sxiNull(sx))
+			return sxiUseError(SX_ErrNReverseNeeds);
 		sx = r;
-	}
-	else if (sxiVectorP(sx)) {
-		Length	s, e, n;
-		SExpr	t;
-		n  = sx->sxVector.argc;
-		for (s = 0, e = n-1; s <= e; s++, e--) {
+	} else if (sxiVectorP(sx)) {
+		Length s, e, n;
+		SExpr t;
+		n = sx->sxVector.argc;
+		for (s = 0, e = n - 1; s <= e; s++, e--) {
 			t = sx->sxVector.argv[s];
 			sx->sxVector.argv[s] = sx->sxVector.argv[e];
 			sx->sxVector.argv[e] = t;
 		}
-	}
-	else if (sxiStringP(sx)) {
-		Length	s, e, n;
-		int	t;
-		n  = strlen(sx->sxString.val);
-		for (s = 0, e = n-1; s <= e; s++, e--) {
+	} else if (sxiStringP(sx)) {
+		Length s, e, n;
+		int t;
+		n = strlen(sx->sxString.val);
+		for (s = 0, e = n - 1; s <= e; s++, e--) {
 			t = sx->sxString.val[s];
 			sx->sxString.val[s] = sx->sxString.val[e];
 			sx->sxString.val[e] = t;
 		}
-	}
-	else
+	} else
 		sx = sxiUseError(SX_ErrBadArgumentTo, "NReverse");
 	return sx;
 }
 
-Length
-sxiLength(SExpr sx)
+Length sxiLength(SExpr sx)
 {
 	Length n;
 
-	if (sxiNull(sx)) n = 0;
+	if (sxiNull(sx))
+		n = 0;
 	else if (sxiConsP(sx))
-		for (n = 0; sxiConsP(sx); n++) sx = sxCdr(sx);
+		for (n = 0; sxiConsP(sx); n++)
+			sx = sxCdr(sx);
 	else if (sxiVectorP(sx))
 		n = sx->sxVector.argc;
 	else if (sxiStringP(sx))
@@ -667,19 +635,19 @@ sxiLength(SExpr sx)
 	return n;
 }
 
-SExpr
-sxLength(SExpr sx)
+SExpr sxLength(SExpr sx)
 {
 	return sxiFrInteger(sxiLength(sx));
 }
 
-SExpr
-sxNConc(SExpr sx1, SExpr sx2)
+SExpr sxNConc(SExpr sx1, SExpr sx2)
 {
 	SExpr sx = sx1;
-	if (sxiNull(sx1)) return sx2;
+	if (sxiNull(sx1))
+		return sx2;
 	assert(sxiConsP(sx));
-	while (!sxiNull(sxCdr(sx))) sx = sxCdr(sx);
+	while (!sxiNull(sxCdr(sx)))
+		sx = sxCdr(sx);
 	sxCdr(sx) = sx2;
 	return sx1;
 }
@@ -690,35 +658,34 @@ sxNConc(SExpr sx1, SExpr sx2)
  *
  ****************************************************************************/
 
-SExpr
-sx0Memq(SExpr ob, SExpr l)
+SExpr sx0Memq(SExpr ob, SExpr l)
 {
-	for ( ; sxiConsP(l); l = sxCdr(l))
-		if (ob == sxCar(l)) return sxT;
+	for (; sxiConsP(l); l = sxCdr(l))
+		if (ob == sxCar(l))
+			return sxT;
 	return sxNil;
 }
 
-SExpr
-sx0EvalFeatureForm(SExpr f, SExpr errval)
+SExpr sx0EvalFeatureForm(SExpr f, SExpr errval)
 {
-	if (sxiSymbolP(f)) return sx0Memq(f, sxSTAR_Features_STAR);
+	if (sxiSymbolP(f))
+		return sx0Memq(f, sxSTAR_Features_STAR);
 
 	if (sxiConsP(f)) {
 		if (sxCar(f) == sxNot) {
 			f = sxCdr(f);
-			if (!sxiConsP(f) || sxiConsP(sxCdr(f))) return errval;
+			if (!sxiConsP(f) || sxiConsP(sxCdr(f)))
+				return errval;
 
 			if (sx0EvalFeatureForm(sxCar(f), errval))
 				return sxNil;
 			return sxT;
-		}
-		else if (sxCar(f) == sxAnd) {
+		} else if (sxCar(f) == sxAnd) {
 			for (f = sxCdr(f); sxiConsP(f); f = sxCdr(f))
 				if (!sx0EvalFeatureForm(sxCar(f), errval))
 					return sxNil;
 			return sxT;
-		}
-		else if (sxCar(f) == sxOr) {
+		} else if (sxCar(f) == sxOr) {
 			for (f = sxCdr(f); sxiConsP(f); f = sxCdr(f))
 				if (sx0EvalFeatureForm(sxCar(f), errval))
 					return sxT;
@@ -738,25 +705,26 @@ sx0EvalFeatureForm(SExpr f, SExpr errval)
  * Common Lisp syntax.
  */
 
-int		sxiIoMixedCase   = 0;		/* This is settable */
-int		sxiIoKeepSrcPos  = 0;		/* This is settable */
-int 		sxiIoOutPackages = 0;		/* This is settable */
+int sxiIoMixedCase = 0; /* This is settable */
+int sxiIoKeepSrcPos = 0; /* This is settable */
+int sxiIoOutPackages = 0; /* This is settable */
 /*
  * One byte of info is stored for each character.
  * The low 3 bits indicate the character kind and the 4th bit indicates
  * whether the character is an exponent marker.	  Bits 5-8 are unused.
  */
 
-unsigned char	sxiIoTable[MAX_BYTE + 1];
+unsigned char sxiIoTable[MAX_BYTE + 1];
 
 enum sxiIoKindEnum {
-	SX_IoIllegal = 0,	/* Illegal */
-	SX_IoSpace   = 1,	/* White Space */
-	SX_IoConstit = 2,	/* Constituent */
-	SX_IoSingEsc = 3,	/* Single Escape */
-	SX_IoMultEsc = 4,	/* Multiple Escape */
-	SX_IoTermMac = 5,	/* Terminating Macro */
-	SX_IoNonTMac = 6	/* Non-terminating Macro */
+	SX_IoIllegal = 0, /* Illegal */
+	SX_IoSpace = 1, /* White Space */
+	SX_IoConstit = 2, /* Constituent */
+	SX_IoSingEsc = 3, /* Single Escape */
+	SX_IoMultEsc = 4, /* Multiple Escape */
+	SX_IoTermMac = 5, /* Terminating Macro */
+	SX_IoNonTMac = 6
+/* Non-terminating Macro */
 };
 
 #define sxiIoExptMarker 0x08
@@ -764,40 +732,43 @@ enum sxiIoKindEnum {
 #define sxiIoKind(c)		(sxiIoTable[c] & 0x07)
 #define sxiIoIsExptMarker(c)	(sxiIoTable[c] & sxiIoExptMarker)
 
-
-local void
-sxiIoTableInit(void)
+local void sxiIoTableInit(void)
 {
-	static int	isInitialized = 0;
-	int	c;
-	UByte	*s;
+	static int isInitialized = 0;
+	int c;
+	UByte *s;
 
-	if (isInitialized) return;
+	if (isInitialized)
+		return;
 
 	for (c = 0; c <= MAX_BYTE; c++)
 		sxiIoTable[c] = SX_IoIllegal;
 
-	s = (UByte *)
-		"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-	while (*s) sxiIoTable[*s++] = SX_IoConstit;
+	s = (UByte *) "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+	while (*s)
+		sxiIoTable[*s++] = SX_IoConstit;
 
 	s = (UByte *) "0123456789!$%&*+-./:<=>?@[]^_{}~";
-	while (*s) sxiIoTable[*s++] = SX_IoConstit;
-	sxiIoTable['\b']   = SX_IoConstit;
+	while (*s)
+		sxiIoTable[*s++] = SX_IoConstit;
+	sxiIoTable['\b'] = SX_IoConstit;
 	sxiIoTable[RUBOUT] = SX_IoConstit;
 
 	s = (UByte *) " \t\f\n\r";
-	while (*s) sxiIoTable[*s++] = SX_IoSpace;
+	while (*s)
+		sxiIoTable[*s++] = SX_IoSpace;
 
 	s = (UByte *) "`\"'(),;";
-	while (*s) sxiIoTable[*s++] = SX_IoTermMac;
+	while (*s)
+		sxiIoTable[*s++] = SX_IoTermMac;
 
-	sxiIoTable['#' ] = SX_IoNonTMac;
+	sxiIoTable['#'] = SX_IoNonTMac;
 	sxiIoTable['\\'] = SX_IoSingEsc;
-	sxiIoTable['|' ] = SX_IoMultEsc;
+	sxiIoTable['|'] = SX_IoMultEsc;
 
 	s = (UByte *) "esfdlESFDL";
-	while (*s) sxiIoTable[*s++] |= sxiIoExptMarker;
+	while (*s)
+		sxiIoTable[*s++] |= sxiIoExptMarker;
 
 	isInitialized = 1;
 }
@@ -806,24 +777,23 @@ sxiIoTableInit(void)
  * Values returned by sxiIoIsPotentialNumber.
  */
 enum {
-	SX_IoNumNot	  = 0,	/* 0 here allows use in boolean context */
-	SX_IoNumInteger	  = 1,
-	SX_IoNumRatio	  = 2,
-	SX_IoNumFloat	  = 3,
+	SX_IoNumNot = 0, /* 0 here allows use in boolean context */
+	SX_IoNumInteger = 1,
+	SX_IoNumRatio = 2,
+	SX_IoNumFloat = 3,
 	SX_IoNumPotential = 4
 };
 
-int
-sxiIoIsPotentialNumber(String s)
+int sxiIoIsPotentialNumber(String s)
 {
 	UByte *t;
 
-	int	n;	/* n should equal to the sum of the nXxxx below. */
-	int	nDigits = 0, nSigns = 0, nDecimals = 0,
-		nRatios = 0, nExtensions = 0, nMarkers = 0,  nOthers = 0;
+	int n; /* n should equal to the sum of the nXxxx below. */
+	int nDigits = 0, nSigns = 0, nDecimals = 0, nRatios = 0, nExtensions =
+			0, nMarkers = 0, nOthers = 0;
 
 	for (n = 0, t = (UByte *) s; *t; n++, t++) {
-		int	c = *t;
+		int c = *t;
 		if (isdigit(c))
 			nDigits++;
 		else if (c == '+' || c == '-')
@@ -839,12 +809,12 @@ sxiIoIsPotentialNumber(String s)
 				nMarkers++;
 			else
 				nOthers++;
-		}
-		else
+		} else
 			nOthers++;
 
 		/* Don't need to finish */
-		if (nOthers > 0) return SX_IoNumNot;
+		if (nOthers > 0)
+			return SX_IoNumNot;
 	}
 
 	/*
@@ -852,7 +822,7 @@ sxiIoIsPotentialNumber(String s)
 	 */
 	if (nDigits == 0)
 		return SX_IoNumNot;
-	if (isalpha(s[0]) || s[0] == '/' || s[n-1] == '-' || s[n-1] == '+')
+	if (isalpha(s[0]) || s[0] == '/' || s[n - 1] == '-' || s[n - 1] == '+')
 		return SX_IoNumNot;
 
 	/*
@@ -860,10 +830,9 @@ sxiIoIsPotentialNumber(String s)
 	 *
 	 * [sign] {digit}+ [decimal-point]
 	 */
-	if (nSigns <= 1 && nDecimals <= 1 && nDigits+nSigns+nDecimals == n) {
-		if ((nSigns    == 0 || s[0] == '-' || s[0] == '+') &&
-		    (nDecimals == 0 || s[n-1] == '.'))
-		{
+	if (nSigns <= 1 && nDecimals <= 1 && nDigits + nSigns + nDecimals == n) {
+		if ((nSigns == 0 || s[0] == '-' || s[0] == '+') && (nDecimals
+				== 0 || s[n - 1] == '.')) {
 			return SX_IoNumInteger;
 		}
 	}
@@ -873,14 +842,13 @@ sxiIoIsPotentialNumber(String s)
 	 *
 	 * [sign] {digit}+ / {digit}+
 	 */
-	if (nSigns <= 1 && nRatios == 1 && nDigits+nSigns+nRatios == n) {
+	if (nSigns <= 1 && nRatios == 1 && nDigits + nSigns + nRatios == n) {
 		if (nSigns == 0) {
-			if (isdigit(s[0]) && isdigit(s[n-1]))
+			if (isdigit(s[0]) && isdigit(s[n - 1]))
 				return SX_IoNumRatio;
-		}
-		else {
-			if ((s[0] == '-' || s[0] == '+') &&
-			    isdigit(s[1]) && isdigit(s[n-1]))
+		} else {
+			if ((s[0] == '-' || s[0] == '+') && isdigit(s[1])
+					&& isdigit(s[n - 1]))
 				return SX_IoNumRatio;
 		}
 	}
@@ -893,9 +861,8 @@ sxiIoIsPotentialNumber(String s)
 	 *
 	 * where exponent ::= exponent-marker [sign] {digit}+
 	 */
-	if (nSigns <= 2 && nDecimals <= 1 && nMarkers <= 1 &&
-	    nSigns+nDecimals+nMarkers+nDigits == n)
-	{
+	if (nSigns <= 2 && nDecimals <= 1 && nMarkers <= 1 && nSigns
+			+ nDecimals + nMarkers + nDigits == n) {
 		/* Constraints seem to be insufficient here. Have to scan. */
 		UByte *t = (UByte *) s;
 		if (t[0] == '-' || t[0] == '+') {
@@ -903,17 +870,23 @@ sxiIoIsPotentialNumber(String s)
 			t++;
 		}
 		if (nDecimals == 1) {
-			while (isdigit(*t)) t++;
-			if (*t != '.') goto notFloat;
+			while (isdigit(*t))
+				t++;
+			if (*t != '.')
+				goto notFloat;
 			t++;
-			if (!isdigit(*t)) goto notFloat;
-			while (isdigit(*t)) t++;
+			if (!isdigit(*t))
+				goto notFloat;
+			while (isdigit(*t))
+				t++;
 			/* At exponent marker or End */
-		}
-		else {
-			if (!isdigit(*t)) goto notFloat;
-			while (isdigit(*t)) t++;
-			if (!sxiIoIsExptMarker(*t)) goto notFloat;
+		} else {
+			if (!isdigit(*t))
+				goto notFloat;
+			while (isdigit(*t))
+				t++;
+			if (!sxiIoIsExptMarker(*t))
+				goto notFloat;
 			/* At exponent marker */
 		}
 		/* At exponent marker or End */
@@ -921,21 +894,22 @@ sxiIoIsPotentialNumber(String s)
 			return SX_IoNumPotential;
 		if (*t) {
 			t++;
-			if (*t == '-' || *t == '+') t++;
-			if (!isdigit(*t)) goto notFloat;
-			while (isdigit(*t)) t++;
-			if (*t != 0) goto notFloat;
+			if (*t == '-' || *t == '+')
+				t++;
+			if (!isdigit(*t))
+				goto notFloat;
+			while (isdigit(*t))
+				t++;
+			if (*t != 0)
+				goto notFloat;
 		}
 		return SX_IoNumFloat;
 	}
 
-notFloat:
-	return SX_IoNumPotential;
+	notFloat: return SX_IoNumPotential;
 }
 
-
-int
-sxiExponentCharacter(String s)
+int sxiExponentCharacter(String s)
 {
 	int i, c = 'e';
 	for (i = 0; s[i]; i++)
@@ -943,7 +917,7 @@ sxiExponentCharacter(String s)
 			c = s[i];
 			s[i] = 'e';
 			break;
-		      }
+		}
 	return c;
 }
 
@@ -951,24 +925,24 @@ sxiExponentCharacter(String s)
  * Values returned by sxiIoIsNeedingEscape.
  */
 enum {
-	SX_IoEscDont	      = 0, /* 0 here allows enum in boolean contexts */
-	SX_IoEscForSpecials   = 1,
-	SX_IoEscForDoubleColon= 2,
-	SX_IoEscForNumber     = 3,
-	SX_IoEscForLower      = 4,
-	SX_IoEscForLowerNumber= 5
+	SX_IoEscDont = 0, /* 0 here allows enum in boolean contexts */
+	SX_IoEscForSpecials = 1,
+	SX_IoEscForDoubleColon = 2,
+	SX_IoEscForNumber = 3,
+	SX_IoEscForLower = 4,
+	SX_IoEscForLowerNumber = 5
 };
 
-local int
-sxiIoIsNeedingEscape(String s)
+local int sxiIoIsNeedingEscape(String s)
 {
-	int	k, hasLower = 0, hasOnlyDots = 1;
-	UByte	*t = (UByte *) s;
+	int k, hasLower = 0, hasOnlyDots = 1;
+	UByte *t = (UByte *) s;
 
-	if (sxiIoKind(*t) == SX_IoNonTMac) return SX_IoEscForSpecials;
+	if (sxiIoKind(*t) == SX_IoNonTMac)
+		return SX_IoEscForSpecials;
 
-	for ( ; *t; t++) {
-		if (*t == ':' && *(t+1) == ':')
+	for (; *t; t++) {
+		if (*t == ':' && *(t + 1) == ':')
 			return SX_IoEscForDoubleColon;
 		if ((k = sxiIoKind(*t)) != SX_IoConstit && k != SX_IoNonTMac)
 			return SX_IoEscForSpecials;
@@ -1011,68 +985,65 @@ sxiIoIsNeedingEscape(String s)
  *
  ****************************************************************************/
 
-static SExpr	*sxiShareV    = 0;
-static int	sxiShareVSize = 0;
-static int	sxiShareVIx;
+static SExpr *sxiShareV = 0;
+static int sxiShareVSize = 0;
+static int sxiShareVIx;
 
 #define sxiShareVUninit 0
 
-local void
-sxiShareVStart(void)
+local void sxiShareVStart(void)
 {
-	int	i;
+	int i;
 	sxiShareVIx = 0;
-	for (i = 0; i < sxiShareVSize; i++) sxiShareV[i] = sxiShareVUninit;
+	for (i = 0; i < sxiShareVSize; i++)
+		sxiShareV[i] = sxiShareVUninit;
 }
 
-local SExpr
-sxiShareVAdd(int n, SExpr s)
+local SExpr sxiShareVAdd(int n, SExpr s)
 {
 	if (n == -1) {
 		n = ++sxiShareVIx;
 	}
 	if (n >= sxiShareVSize) {
-		SExpr	*oldV = sxiShareV;
-		int	oldVSize = sxiShareVSize;
-		int	i;
+		SExpr *oldV = sxiShareV;
+		int oldVSize = sxiShareVSize;
+		int i;
 
 		sxiShareVSize = n + 200;
-		sxiShareV = (SExpr *)
-			stoAlloc(OB_SExpr, sxiShareVSize * sizeof(SExpr));
+		sxiShareV = (SExpr *) stoAlloc(OB_SExpr, sxiShareVSize
+				* sizeof(SExpr));
 		memcpy(sxiShareV, oldV, oldVSize * sizeof(SExpr));
 
 		for (i = oldVSize; i < sxiShareVSize; i++)
 			sxiShareV[i] = sxiShareVUninit;
 	}
 	sxiShareV[n] = s;
-	if (!sxiNull(s)) s->sxHdr.isShared = true;
+	if (!sxiNull(s))
+		s->sxHdr.isShared = true;
 	return s;
 }
 
-local int
-sxiShareVFind(SExpr s)
+local int sxiShareVFind(SExpr s)
 {
-	int	i;
+	int i;
 	for (i = 0; i < sxiShareVSize; i++)
-		if (s == sxiShareV[i]) return i;
+		if (s == sxiShareV[i])
+			return i;
 	return -1;
 }
 
-local SExpr
-sxiShareVGet(int n)
+local SExpr sxiShareVGet(int n)
 {
 	return (n >= sxiShareVSize) ? sxiShareVUninit : sxiShareV[n];
 }
-
 /*****************************************************************************
  *
  * :: S-Expression Reader
  *
  ****************************************************************************/
-
-local SExpr	sxiRd		(FILE *, int context);
-local SExpr	sxiRd0		(FILE *, int context);
-local SExpr	sxiRdScanToken	(FILE *, int context, int firstChar);
+local SExpr sxiRd(FILE *, int context);
+local SExpr sxiRd0(FILE *, int context);
+local SExpr sxiRdScanToken(FILE *, int context, int firstChar);
 
 #define sxiRd_PackageMarker	'\01'
 
@@ -1086,17 +1057,17 @@ enum sxiRdContext {
 };
 
 /* Reader state is the sxiIoBuf, sxiShareV, plus: */
-static FileName	sxiRdFName = NULL;	/* Name of current file */
-static int	sxiRdLineNo;		/* Line number in file  */
-static int	sxiRdGLineNo;		/* Global line number in file  */
-static int	sxiRdCharNo;		/* Character position   */
-static int	sxiRdLastCharNo;	/* Position before \n 	*/
-static SrcPos	sxiRdPos;		/* Source position      */
+static FileName sxiRdFName = NULL; /* Name of current file */
+static int sxiRdLineNo; /* Line number in file  */
+static int sxiRdGLineNo; /* Global line number in file  */
+static int sxiRdCharNo; /* Character position   */
+static int sxiRdLastCharNo; /* Position before \n 	*/
+static SrcPos sxiRdPos; /* Source position      */
 
-static jmp_buf	sxiRdCatch;
-static int	sxiRdBackQuoteDepth;
-static SExpr	sxiRdEofVal;
-static SExpr	sxiRdErrVal;
+static jmp_buf sxiRdCatch;
+static int sxiRdBackQuoteDepth;
+static SExpr sxiRdEofVal;
+static SExpr sxiRdErrVal;
 
 /* Macros for getting characters */
 #define sxiRdGetc(pc, inf)  { 					\
@@ -1138,33 +1109,37 @@ static SExpr	sxiRdErrVal;
 	*(pc) = _c;						\
 }
 
-
 /*
  * Read an expression from the input stream.  Return sxNil if not possible.
  */
-SExpr
-sxiRead(FILE *inf, FileName *pfname, int *plineno, SExpr eofval, ULong iomode)
+SExpr sxiRead(FILE *inf, FileName *pfname, int *plineno, SExpr eofval,
+		ULong iomode)
 {
 	Scope("sxiRead");
 
-	SExpr	 sx;
+	SExpr sx;
 	FileName fn = 0;
-	int	 fluid(sxiIoMixedCase), fluid(sxiIoKeepSrcPos);
+	int fluid(sxiIoMixedCase), fluid(sxiIoKeepSrcPos);
 
-	if (iomode & SXRW_MixedCase) sxiIoMixedCase  = 1;
-	if (iomode & SXRW_FoldCase)  sxiIoMixedCase  = 0;
-	if (iomode & SXRW_SrcPos)    sxiIoKeepSrcPos = 1;
-	if (iomode & SXRW_NoSrcPos)  sxiIoKeepSrcPos = 0;
-	if (iomode & SXRW_Packages)  bug("package input not supported");
+	if (iomode & SXRW_MixedCase)
+		sxiIoMixedCase = 1;
+	if (iomode & SXRW_FoldCase)
+		sxiIoMixedCase = 0;
+	if (iomode & SXRW_SrcPos)
+		sxiIoKeepSrcPos = 1;
+	if (iomode & SXRW_NoSrcPos)
+		sxiIoKeepSrcPos = 0;
+	if (iomode & SXRW_Packages)
+		bug("package input not supported");
 
-	sxiRdFName      = pfname  ? *pfname  : NULL;
-	sxiRdLineNo     = plineno ? *plineno : 1;
-	sxiRdGLineNo    = 1; /* plineno ? *plineno : 1; */
-	sxiRdCharNo     = 1;
-	sxiRdPos        = sposNew(sxiRdFName, sxiRdLineNo, sxiRdGLineNo, 1);
+	sxiRdFName = pfname ? *pfname : NULL;
+	sxiRdLineNo = plineno ? *plineno : 1;
+	sxiRdGLineNo = 1; /* plineno ? *plineno : 1; */
+	sxiRdCharNo = 1;
+	sxiRdPos = sposNew(sxiRdFName, sxiRdLineNo, sxiRdGLineNo, 1);
 
 	sxiRdBackQuoteDepth = 0;
-	sxiRdEofVal	    = eofval;
+	sxiRdEofVal = eofval;
 
 	sxiIoTableInit();
 	sxiShareVStart();
@@ -1177,57 +1152,73 @@ sxiRead(FILE *inf, FileName *pfname, int *plineno, SExpr eofval, ULong iomode)
 	sxiRdEofVal = 0;
 	sxiRdErrVal = 0;
 
-	if (plineno) *plineno = sxiRdLineNo;
-	if (pfname)  *pfname  = sxiRdFName;
-	if (fn)      fnameFree(fn);
+	if (plineno)
+		*plineno = sxiRdLineNo;
+	if (pfname)
+		*pfname = sxiRdFName;
+	if (fn)
+		fnameFree(fn);
 
-	Return(sx);
-}
+	Return(sx)
+;}
 
-
-void
-sxiCommentChk(void)
+void sxiCommentChk(void)
 {
-	int		i, lflag = 0, glflag = 0, fnflag = 0;
-	String		str, name;
-	Buffer		blno, bglno, bfn;
-	Length		lno, glno;
-	FileName	fn;
+	int i, lflag = 0, glflag = 0, fnflag = 0;
+	String str, name;
+	Buffer blno, bglno, bfn;
+	Length lno, glno;
+	FileName fn;
 
 	sxiCommentBufStart();
 	str = sxiCommentBufChars();
-	if (!strIsPrefix("line", str)) return;
-	sexprDEBUG({
-		if (strIsPrefix("line", str))
-			fprintf(dbOut, "!!! %s\n", str);
-	});
-	blno  = bufNew();
+	if (!strIsPrefix("line", str))
+		return; sexprDEBUG( {
+				if (strIsPrefix("line", str))
+				fprintf(dbOut, "!!! %s\n", str);
+			});
+	blno = bufNew();
 	bglno = bufNew();
-	bfn   = bufNew();
+	bfn = bufNew();
 	BUF_START(blno);
 	BUF_START(bglno);
 	BUF_START(bfn);
 	for (i = 0; i < bufSize(sxiCommentBuf); i++) {
-		if (str[i] == ' ') {lflag = !lflag; i++;}
-		if (str[i] == '[') {glflag = !glflag; i++;}
-		if (str[i] == ']') {glflag = !glflag; i++;}
-		if (str[i] == '"') {fnflag = !fnflag; i++;}
-		if (lflag) BUF_ADD1(blno, str[i]);
-		if (glflag) BUF_ADD1(bglno, str[i]);
-		if (fnflag && str[i] != '\n') BUF_ADD1(bfn, str[i]);
+		if (str[i] == ' ') {
+			lflag = !lflag;
+			i++;
+		}
+		if (str[i] == '[') {
+			glflag = !glflag;
+			i++;
+		}
+		if (str[i] == ']') {
+			glflag = !glflag;
+			i++;
+		}
+		if (str[i] == '"') {
+			fnflag = !fnflag;
+			i++;
+		}
+		if (lflag)
+			BUF_ADD1(blno, str[i]);
+		if (glflag)
+			BUF_ADD1(bglno, str[i]);
+		if (fnflag && str[i] != '\n')
+			BUF_ADD1(bfn, str[i]);
 	}
-	BUF_ADD1(blno,  char0);
+	BUF_ADD1(blno, char0);
 	BUF_ADD1(bglno, char0);
-	BUF_ADD1(bfn,   char0);
-	sexprDEBUG({
-		fprintf(dbOut, "\n!!! %d, %d ", sxiRdLineNo, sxiRdGLineNo);
-		if (sxiRdFName)
-			fprintf(dbOut, "%s\n", fnameUnparseStatic(sxiRdFName));
-	});
-	lno   = atol(bufChars(blno));
-	glno  = atol(bufChars(bglno));
+	BUF_ADD1(bfn, char0);
+	sexprDEBUG( {
+				fprintf(dbOut, "\n!!! %d, %d ", sxiRdLineNo, sxiRdGLineNo);
+				if (sxiRdFName)
+				fprintf(dbOut, "%s\n", fnameUnparseStatic(sxiRdFName));
+			});
+	lno = atol(bufChars(blno));
+	glno = atol(bufChars(bglno));
 	sxiRdGLineNo = glno;
-	name  = bufChars(bfn);
+	name = bufChars(bfn);
 	if (lno != sxiRdLineNo)
 		sxiRdLineNo = lno;
 	if (name && strlen(name) > 1) {
@@ -1236,26 +1227,27 @@ sxiCommentChk(void)
 			sxiRdFName = fnameCopy(fn);
 	}
 	sxiRdPos = sposNew(sxiRdFName, sxiRdLineNo, sxiRdGLineNo, sxiRdCharNo);
-	sexprDEBUG({
-		fprintf(dbOut, "\n!!! %d, %d ", sxiRdLineNo, sxiRdGLineNo);
-		fprintf(dbOut, "%s\n", fnameUnparseStatic(sxiRdFName));
-		fprintf(dbOut, "%ld\n", sxiRdPos);
-	});
+	sexprDEBUG( {
+				fprintf(dbOut, "\n!!! %d, %d ", sxiRdLineNo, sxiRdGLineNo);
+				fprintf(dbOut, "%s\n", fnameUnparseStatic(sxiRdFName));
+				fprintf(dbOut, "%ld\n", sxiRdPos);
+			});
 	bufFree(blno);
 	bufFree(bglno);
 	bufFree(bfn);
 }
 
-local SExpr
-sxiRdSlurpSpaces(FILE *inf, int context)
+local SExpr sxiRdSlurpSpaces(FILE *inf, int context)
 {
-	int	c;
+	int c;
 
 	for (;;) {
 		sxiRdGetc(&c, inf);
 		if (c == EOF) {
-			if (context == sxiRd_Top) return sxiRdEofVal;
-			else sxiRdError(SX_ErrReadEOF);
+			if (context == sxiRd_Top)
+				return sxiRdEofVal;
+			else
+				sxiRdError(SX_ErrReadEOF);
 		}
 		if (sxiIoKind(c) == SX_IoSpace)
 			continue;
@@ -1265,8 +1257,7 @@ sxiRdSlurpSpaces(FILE *inf, int context)
 			do {
 				sxiRdGetc(&c, inf);
 				sxiCommentBufAdd(c);
-			}
-			while (c != '\n' && c != EOF);
+			} while (c != '\n' && c != EOF);
 			sxiCommentBufEnd();
 			sxiCommentChk();
 			continue;
@@ -1278,36 +1269,36 @@ sxiRdSlurpSpaces(FILE *inf, int context)
 	return 0;
 }
 
-
-local SExpr
-sxiRd(FILE *inf, int context)
+local SExpr sxiRd(FILE *inf, int context)
 {
-	SrcPos	pos0;
-	Length	off0;
-	SExpr	sx;
+	SrcPos pos0;
+	Length off0;
+	SExpr sx;
 
-	sx  = sxiRdSlurpSpaces(inf, context);
-	if (sx) return sx;
+	sx = sxiRdSlurpSpaces(inf, context);
+	if (sx)
+		return sx;
 
 	pos0 = sxiRdPos;
-	off0 = sxiRdCharNo-1;
-	sx   = sxiRd0(inf, context);
+	off0 = sxiRdCharNo - 1;
+	sx = sxiRd0(inf, context);
 	if (sxiIoKeepSrcPos)
-		sx = sxiRepos(sposOffset(pos0,off0), sx);
+		sx = sxiRepos(sposOffset(pos0, off0), sx);
 	return sx;
 }
 
-
-local SExpr
-sxiRd0(FILE *inf, int context)
+local SExpr sxiRd0(FILE *inf, int context)
 {
-	int	c;
-	SExpr	s;
+	int c;
+	SExpr s;
 
-start:	sxiRdGetc(&c, inf);
+	start:
+	sxiRdGetc(&c, inf);
 	if (c == EOF) {
-		if (context == sxiRd_Top) return sxiRdEofVal;
-		else sxiRdError(SX_ErrReadEOF);
+		if (context == sxiRd_Top)
+			return sxiRdEofVal;
+		else
+			sxiRdError(SX_ErrReadEOF);
 	}
 
 	/*
@@ -1332,8 +1323,10 @@ start:	sxiRdGetc(&c, inf);
 			sxiIoBufStart();
 			for (;;) {
 				sxiRdGetcOrElse(&c, inf);
-				if (c == '"') break;
-				if (c == '\\') sxiRdGetcOrElse(&c, inf);
+				if (c == '"')
+					break;
+				if (c == '\\')
+					sxiRdGetcOrElse(&c, inf);
 				sxiIoBufAdd(c);
 			}
 			sxiIoBufEnd();
@@ -1343,9 +1336,10 @@ start:	sxiRdGetc(&c, inf);
 			s = sxCons(sx0Quote, sxCons(s, sxNil));
 			return s;
 		case '(': {
-			SExpr	s0, t;
+			SExpr s0, t;
 			s = sxiRd(inf, sxiRd_InList);
-			if (s == sxiRd_AParen) return sxNil;
+			if (s == sxiRd_AParen)
+				return sxNil;
 			if (s == sxiRd_ADot)
 				sxiRdError(SX_ErrBadPunct, ".");
 
@@ -1353,19 +1347,22 @@ start:	sxiRdGetc(&c, inf);
 			for (;;) {
 				s = sxiRd(inf, sxiRd_InList);
 				if (s == sxiRd_ADot) {
-					sxCdr(t) = sxiRd(inf, sxiRd_Neutral);
+					sxCdr(t) = sxiRd(inf,
+							sxiRd_Neutral);
 					s = sxiRd(inf, sxiRd_InList);
 					if (s != sxiRd_AParen)
 						sxiRdError(SX_ErrBadPunct, ".");
 					return s0;
 				}
-				if (s == sxiRd_AParen) return s0;
+				if (s == sxiRd_AParen)
+					return s0;
 				sxCdr(t) = sxCons(s, sxNil);
 				t = sxCdr(t);
 			}
-		    }
+		}
 		case ')':
-			if (context!=sxiRd_InList && context!=sxiRd_InVector)
+			if (context != sxiRd_InList && context
+					!= sxiRd_InVector)
 				sxiRdError(SX_ErrBadPunct, ")");
 			return sxiRd_AParen;
 		case '`':
@@ -1383,36 +1380,58 @@ start:	sxiRdGetc(&c, inf);
 			sxiRdGetcOrElse(&c, inf);
 
 			switch (c) {
-			case '.': op = sx0BackQuoteCommaDot; break;
-			case '@': op = sx0BackQuoteCommaAt;  break;
-			default:   sxiRdUngetc(c, inf); op = sx0BackQuoteComma;
+			case '.':
+				op = sx0BackQuoteCommaDot;
+				break;
+			case '@':
+				op = sx0BackQuoteCommaAt;
+				break;
+			default:
+				sxiRdUngetc(c, inf)
+				;
+				op = sx0BackQuoteComma;
 			}
 			s = sxiRd(inf, sxiRd_Neutral);
-			return sxCons(op, sxCons(s,sxNil));
-		    }
+			return sxCons(op, sxCons(s, sxNil));
+		}
 		default:
 			bugBadCase(c);
 		}
 
 	case SX_IoNonTMac: {
-		int	numericArg = -1;	/* E.g.	 #16Rxxx */
+		int numericArg = -1; /* E.g.	 #16Rxxx */
 
-M_More:		sxiRdGetcOrElse(&c, inf);
+		M_More:
+		sxiRdGetcOrElse(&c, inf);
 		if (sxiIoKind(c) == SX_IoIllegal)
 			sxiRdError(SX_ErrMacroIlleg, c);
 
 		switch (c) {
 
-		case '0': case '1': case '2': case '3': case '4':
-		case '5': case '6': case '7': case '8': case '9':
+		case '0':
+		case '1':
+		case '2':
+		case '3':
+		case '4':
+		case '5':
+		case '6':
+		case '7':
+		case '8':
+		case '9':
 			if (numericArg == -1)
 				numericArg = c - '0';
 			else
-				numericArg = 10*numericArg + (c - '0');
+				numericArg = 10 * numericArg + (c - '0');
 			goto M_More;
 
-		case ')':  case '<':  case ' ':
-		case '\t': case '\n': case '\f': case '\r': case '\b':
+		case ')':
+		case '<':
+		case ' ':
+		case '\t':
+		case '\n':
+		case '\f':
+		case '\r':
+		case '\b':
 			sxiRdError(SX_ErrMacroIlleg, c);
 
 		case '\'':
@@ -1423,37 +1442,47 @@ M_More:		sxiRdGetcOrElse(&c, inf);
 			return s;
 
 		case '\\': {
-			char	*str;
+			char *str;
 			if (numericArg != -1)
 				sxiRdError(SX_ErrCantMacroArg, c);
-			sxiRdUngetc(c, inf);	/* Put \ back */
+			sxiRdUngetc(c, inf); /* Put \ back */
 			s = sxiRd(inf, sxiRd_Neutral);
 			if (!sxiSymbolP(s))
 				sxiRdError(SX_ErrBadCharName);
 
 			str = strUpper(sxiToTheString(sxSymbolName(s)));
 
-			if (str[0] && !str[1])	     return sxiFrChar(str[0]);
-			if (!strcmp(str,"SPACE"))    return sxiFrChar(' ');
-			if (!strcmp(str,"NEWLINE"))  return sxiFrChar('\n');
-			if (!strcmp(str,"LINEFEED")) return sxiFrChar('\n');
-			if (!strcmp(str,"PAGE"))     return sxiFrChar('\f');
-			if (!strcmp(str,"TAB"))	     return sxiFrChar('\t');
-			if (!strcmp(str,"BACKSPACE"))return sxiFrChar('\b');
-			if (!strcmp(str,"RETURN"))   return sxiFrChar('\r');
-			if (!strcmp(str,"RUBOUT"))   return sxiFrChar(RUBOUT);
+			if (str[0] && !str[1])
+				return sxiFrChar(str[0]);
+			if (!strcmp(str, "SPACE"))
+				return sxiFrChar(' ');
+			if (!strcmp(str, "NEWLINE"))
+				return sxiFrChar('\n');
+			if (!strcmp(str, "LINEFEED"))
+				return sxiFrChar('\n');
+			if (!strcmp(str, "PAGE"))
+				return sxiFrChar('\f');
+			if (!strcmp(str, "TAB"))
+				return sxiFrChar('\t');
+			if (!strcmp(str, "BACKSPACE"))
+				return sxiFrChar('\b');
+			if (!strcmp(str, "RETURN"))
+				return sxiFrChar('\r');
+			if (!strcmp(str, "RUBOUT"))
+				return sxiFrChar(RUBOUT);
 
 			sxiRdError(SX_ErrBadCharName);
-		    }
+		}
 		case ':':
 			if (numericArg != -1)
 				sxiRdError(SX_ErrCantMacroArg, c);
-			sxiRdGetcOrElse(&c, inf);
+			sxiRdGetcOrElse(&c, inf)
+			;
 			return sxiRdScanToken(inf, sxiRd_UninternedSymbol, c);
 
 		case '+':
 		case '-': {
-			SExpr	f, b;
+			SExpr f, b;
 			if (numericArg != -1)
 				sxiRdError(SX_ErrCantMacroArg, c);
 			f = sxiRd(inf, sxiRd_Neutral);
@@ -1467,7 +1496,7 @@ M_More:		sxiRdGetcOrElse(&c, inf);
 				return s;
 			else
 				goto start;
-		    }
+		}
 		case '=':
 			if (numericArg == -1)
 				sxiRdError(SX_ErrMustMacroArg, c);
@@ -1488,32 +1517,33 @@ M_More:		sxiRdGetcOrElse(&c, inf);
 			return s;
 
 		case '(': {
-			SExpr	s0;
-			int	i, n;
+			SExpr s0;
+			int i, n;
 
 			s0 = sxNil;
-			n  = 0;
+			n = 0;
 
-			while ((s=sxiRd(inf,sxiRd_InVector)) != sxiRd_AParen) {
+			while ((s = sxiRd(inf, sxiRd_InVector)) != sxiRd_AParen) {
 				s0 = sxCons(s, s0);
 				n++;
 			}
 
-			if (numericArg == -1) numericArg = n;
+			if (numericArg == -1)
+				numericArg = n;
 			if (numericArg < n)
 				sxiRdError(SX_ErrTooManyElts);
 
 			s = sxiMakeVector(numericArg);
 
 			for (i = 0; i < n; i++, s0 = sxCdr(s0))
-				s->sxVector.argv[n-i-1] = sxCar(s0);
+				s->sxVector.argv[n - i - 1] = sxCar(s0);
 
-			for (i = n ; i < numericArg; i++)
-				s->sxVector.argv[i] = s->sxVector.argv[n-1];
+			for (i = n; i < numericArg; i++)
+				s->sxVector.argv[i] = s->sxVector.argv[n - 1];
 
 			return s;
-		    }
-		case '|':  {
+		}
+		case '|': {
 			/*  Balanced comments: #| ... |# */
 			int depth = 1;
 
@@ -1521,22 +1551,26 @@ M_More:		sxiRdGetcOrElse(&c, inf);
 				sxiRdGetcOrElse(&c, inf);
 				if (c == '|') {
 					sxiRdGetcOrElse(&c, inf);
-					if (c == '#') --depth;
+					if (c == '#')
+						--depth;
 					continue;
 				}
 				if (c == '#') {
 					sxiRdGetcOrElse(&c, inf);
-					if (c == '|') ++depth;
+					if (c == '|')
+						++depth;
 					continue;
 				}
 			}
 			goto start;
-		    }
+		}
 
-		case 'C': case 'c':
+		case 'C':
+		case 'c':
 			s = sxiRd(inf, sxiRd_Neutral);
-			if (!sxiConsP(s) || !sxiConsP(sxCdr(s)) ||
-			    !sxiNull(sxCddr(s)))
+			if (!sxiConsP(s) || !sxiConsP(sxCdr(s))
+					||
+					!sxiNull(sxCddr(s)))
 				sxiRdError(SX_ErrBadComplexNum);
 			return sxComplex(sxCar(s), sxCadr(s));
 
@@ -1548,13 +1582,23 @@ M_More:		sxiRdGetcOrElse(&c, inf);
 			return sxCons(sx0ReadTimeEval, sxCons(s, sxNil));
 
 		case '*':
-		case 'A': case 'B': case 'O': case 'R': case 'S': case 'X':
-		case 'a': case 'b': case 'o': case 'r': case 's': case 'x':
+		case 'A':
+		case 'B':
+		case 'O':
+		case 'R':
+		case 'S':
+		case 'X':
+		case 'a':
+		case 'b':
+		case 'o':
+		case 'r':
+		case 's':
+		case 'x':
 			sxiRdError(SX_ErrMacroUnimp, c);
 		default:
 			sxiRdError(SX_ErrMacroUndef, c);
 		}
-	    }
+	}
 
 	case SX_IoIllegal:
 		sxiRdError(SX_ErrBadChar, c);
@@ -1562,47 +1606,55 @@ M_More:		sxiRdGetcOrElse(&c, inf);
 	default:
 		bugBadCase(c);
 	}
-	NotReached(return sxNil);
+NotReached(return sxNil);
 }
 
-
-local SExpr
-sxiRdScanToken(FILE *inf /* rest */, int context, int c /* first */)
+local SExpr sxiRdScanToken(FILE *inf /* rest */, int context, int c /* first */)
 {
 	/*
 	 * Finite state machine to collect token
 	 */
-	int	anyEscaped = 0;
-	int	anyPkgMark = 0;
-	int	i;
-	int	numKind;
-	char	*str;
+	int anyEscaped = 0;
+	int anyPkgMark = 0;
+	int i;
+	int numKind;
+	char *str;
 
 	sxiIoBufStart();
 
-T_norm: /* Not in multi-escape collection. Dispatch on char. */
-	if (c == EOF) goto T_done;
+	T_norm: /* Not in multi-escape collection. Dispatch on char. */
+	if (c == EOF)
+		goto T_done;
 
 	switch (sxiIoKind(c)) {
 	case SX_IoSpace:
 	case SX_IoTermMac:
-		sxiRdUngetc(c, inf);
+		sxiRdUngetc(c, inf)
+		;
 		goto T_done;
 	case SX_IoNonTMac:
 	case SX_IoConstit:
-		if (!sxiIoMixedCase) c = toupper(c);
-		if (c == ':') { c = sxiRd_PackageMarker; anyPkgMark = 1; }
+		if (!sxiIoMixedCase)
+			c = toupper(c);
+		if (c == ':') {
+			c = sxiRd_PackageMarker;
+			anyPkgMark = 1;
+		}
 		sxiIoBufAdd(c);
-		sxiRdGetcOrGoto(&c, inf, T_done);
+		sxiRdGetcOrGoto(&c, inf, T_done)
+		;
 		goto T_norm;
 	case SX_IoSingEsc:
-		sxiRdGetcOrElse(&c, inf);
+		sxiRdGetcOrElse(&c, inf)
+		;
 		sxiIoBufAdd(c);
-		sxiRdGetcOrGoto(&c, inf, T_done);
+		sxiRdGetcOrGoto(&c, inf, T_done)
+		;
 		anyEscaped = 1;
 		goto T_norm;
 	case SX_IoMultEsc:
-		sxiRdGetcOrElse(&c, inf);
+		sxiRdGetcOrElse(&c, inf)
+		;
 		goto T_multi;
 	case SX_IoIllegal:
 		sxiRdError(SX_ErrBadChar, c);
@@ -1610,9 +1662,10 @@ T_norm: /* Not in multi-escape collection. Dispatch on char. */
 		bugBadCase(c);
 	}
 
-T_multi:/* In multi-escape collection. Dispatch on char. */
-	if (c == EOF) sxiRdError(SX_ErrReadEOF);	/* redundant */
-	anyEscaped = 1;			/* considered escaped even if empty */
+	T_multi: /* In multi-escape collection. Dispatch on char. */
+	if (c == EOF)
+		sxiRdError(SX_ErrReadEOF); /* redundant */
+	anyEscaped = 1; /* considered escaped even if empty */
 
 	switch (sxiIoKind(c)) {
 	case SX_IoSpace:
@@ -1620,15 +1673,19 @@ T_multi:/* In multi-escape collection. Dispatch on char. */
 	case SX_IoNonTMac:
 	case SX_IoConstit:
 		sxiIoBufAdd(c);
-		sxiRdGetcOrElse(&c, inf);
+		sxiRdGetcOrElse(&c, inf)
+		;
 		goto T_multi;
 	case SX_IoSingEsc:
-		sxiRdGetcOrElse(&c, inf);
+		sxiRdGetcOrElse(&c, inf)
+		;
 		sxiIoBufAdd(c);
-		sxiRdGetcOrElse(&c, inf);
+		sxiRdGetcOrElse(&c, inf)
+		;
 		goto T_multi;
 	case SX_IoMultEsc:
-		sxiRdGetcOrGoto(&c, inf, T_done);
+		sxiRdGetcOrGoto(&c, inf, T_done)
+		;
 		goto T_norm;
 	case SX_IoIllegal:
 		sxiRdError(SX_ErrBadChar, c);
@@ -1636,7 +1693,7 @@ T_multi:/* In multi-escape collection. Dispatch on char. */
 		bugBadCase(c);
 	}
 
-T_done: sxiIoBufEnd();
+	T_done: sxiIoBufEnd();
 
 	/*
 	 * Now decide how to convert token to S-expression.
@@ -1645,7 +1702,8 @@ T_done: sxiIoBufEnd();
 	str = sxiIoBufChars();
 
 	if (context == sxiRd_UninternedSymbol) {
-		if (anyPkgMark) sxiRdError(SX_ErrBadUninterned);
+		if (anyPkgMark)
+			sxiRdError(SX_ErrBadUninterned);
 		return sx0InternInFrString(str, sxNil);
 	}
 	if (strEqual(str, "NIL"))
@@ -1664,43 +1722,47 @@ T_done: sxiIoBufEnd();
 		SExpr s = sxiFrBigInteger(bintFrString(str));
 		s->sxHdr.wrWidth = strlen(str);
 		return s;
-	    }
+	}
 	case SX_IoNumRatio: {
-		char	*s = str, *t;
-		long	n, d;
+		char *s = str, *t;
+		long n, d;
 
 		t = strchr(s, '/');
 		if (s == t) {
 			d = 1;
-		}
-		else {
+		} else {
 			*t++ = 0;
 			d = atol(t);
 		}
 		n = atol(s);
 		return sxiMakeRatio(n, d);
-	    }
+	}
 	case SX_IoNumFloat: {
-		char	*s = str, exp;
+		char *s = str, exp;
 		/* Convert exponent marker to an 'e' then use C fn. */
 		exp = sxiExponentCharacter(s);
-		return sxiFrFloat(DFloatScan(s) , exp);
-	    }
+		return sxiFrFloat(DFloatScan(s), exp);
+	}
 	case SX_IoNumNot: {
 		/* It must be a symbol! */
 		/* Check for all dots  and package markers */
-		char	*s = str, *t;
-		int	nDots = 0;
-		int	nPkgs = 0;
-		SExpr	pkg;
+		char *s = str, *t;
+		int nDots = 0;
+		int nPkgs = 0;
+		SExpr pkg;
 
 		for (i = 0; s[i] != 0; i++) {
-			if (s[i] == '.') nDots++;
-			if (s[i] == sxiRd_PackageMarker) nPkgs++;
+			if (s[i] == '.')
+				nDots++;
+			if (s[i] == sxiRd_PackageMarker)
+				nPkgs++;
 		}
-		if (nDots == i) sxiRdError(SX_ErrBadToken);
-		if (nPkgs >  2) sxiRdError(SX_ErrBadToken);
-		if (nPkgs == 0) return sxIntern(sxiFrString(s));
+		if (nDots == i)
+			sxiRdError(SX_ErrBadToken);
+		if (nPkgs > 2)
+			sxiRdError(SX_ErrBadToken);
+		if (nPkgs == 0)
+			return sxIntern(sxiFrString(s));
 
 		/* Split into package and name */
 		t = strchr(s, sxiRd_PackageMarker);
@@ -1712,19 +1774,20 @@ T_done: sxiIoBufEnd();
 		else {
 			*t = 0;
 			pkg = sxiFindPackage(s);
-			if (sxiNull(pkg)) pkg = sxMakePackage(sxiFrString(s));
+			if (sxiNull(pkg))
+				pkg = sxMakePackage(sxiFrString(s));
 		}
 		t += nPkgs;
 
 		return sx0InternInFrString(t, pkg);
-	    }
+	}
 	case SX_IoNumPotential:
 		sxiRdError(SX_ErrBadPotNum, str);
 	default:
 		bugBadCase(numKind);
 	}
 
-	NotReached(return sxNil);
+NotReached(return sxNil);
 }
 
 /*****************************************************************************
@@ -1733,72 +1796,74 @@ T_done: sxiIoBufEnd();
  *
  ****************************************************************************/
 
-int	sxiWrite0			(FILE *, SExpr);
-int	sxiWrWidth			(SExpr);
-int	sxiWrUnscanToken		(SExpr);	/* To sxiIoBuf */
-void	sxiWrUnscan0SymbolName		(SExpr);	/* To sxiIoBuf */
-void	sxiWrUnscan0DoubleColonName	(String);
-int	sxiWrNewline			(FILE *);
+int sxiWrite0(FILE *, SExpr);
+int sxiWrWidth(SExpr);
+int sxiWrUnscanToken(SExpr); /* To sxiIoBuf */
+void sxiWrUnscan0SymbolName(SExpr); /* To sxiIoBuf */
+void sxiWrUnscan0DoubleColonName(String);
+int sxiWrNewline(FILE *);
 
-int	sxiWrLead;		/* Current leading spaces */
-int	sxiWrIndent	=  2;	/* Per-level indentation */
-int	sxiWrMaxText	= 70;	/* Maximum text on a line */
+int sxiWrLead; /* Current leading spaces */
+int sxiWrIndent = 2; /* Per-level indentation */
+int sxiWrMaxText = 70; /* Maximum text on a line */
 
-int
-sxiWrite(FILE *outf, SExpr s, ULong iomode)
+int sxiWrite(FILE *outf, SExpr s, ULong iomode)
 {
 	Scope("sxiWrite");
-	int	cc = 0;
-	int	fluid(sxiIoMixedCase), fluid(sxiIoKeepSrcPos);
-	int	fluid(sxiIoOutPackages);
+	int cc = 0;
+	int fluid(sxiIoMixedCase), fluid(sxiIoKeepSrcPos);
+	int fluid(sxiIoOutPackages);
 
-	if (iomode & SXRW_MixedCase) sxiIoMixedCase   = 1;
-	if (iomode & SXRW_FoldCase)  sxiIoMixedCase   = 0;
-	if (iomode & SXRW_SrcPos)    sxiIoKeepSrcPos  = 1;
-	if (iomode & SXRW_NoSrcPos)  sxiIoKeepSrcPos  = 0;
-	if (iomode & SXRW_Packages)  sxiIoOutPackages = 1;
+	if (iomode & SXRW_MixedCase)
+		sxiIoMixedCase = 1;
+	if (iomode & SXRW_FoldCase)
+		sxiIoMixedCase = 0;
+	if (iomode & SXRW_SrcPos)
+		sxiIoKeepSrcPos = 1;
+	if (iomode & SXRW_NoSrcPos)
+		sxiIoKeepSrcPos = 0;
+	if (iomode & SXRW_Packages)
+		sxiIoOutPackages = 1;
 
-	sxiWrLead       = 0;
+	sxiWrLead = 0;
 	sxiShareVStart();
 	sxiWrWidth(s);
 	sxiShareVStart();
 
 	if (sxiIoKeepSrcPos) {
-		sxiCurrentLineNo= 1;
+		sxiCurrentLineNo = 1;
 		if (sxiRdFName) {
-			sxiCurrentPos   = sxiPos(s);
+			sxiCurrentPos = sxiPos(s);
 			sxiCurrentFName = sposFile(sxiCurrentPos);
 			cc += fprintf(outf, ";line %d [%d]",
 #if EDIT_1_0_n1_07
-				      (int) sxiCurrentLineNo,
-				      (int) sposGlobalLine(sxiCurrentPos));
+					(int) sxiCurrentLineNo,
+					(int) sposGlobalLine(sxiCurrentPos));
 #else
-				      sxiCurrentLineNo,
-				      sposGlobalLine(sxiCurrentPos));
+			sxiCurrentLineNo,
+			sposGlobalLine(sxiCurrentPos));
 #endif
-			cc += fprintf(outf, " \"%s\"\n", 
-				      fnameUnparseStatic(sxiCurrentFName));
-		}
-		else {
-			sxiCurrentPos   = sposNone;
+			cc += fprintf(outf, " \"%s\"\n", fnameUnparseStatic(
+					sxiCurrentFName));
+		} else {
+			sxiCurrentPos = sposNone;
 			sxiCurrentFName = sposFile(sxiCurrentPos);
 		}
 	}
 	cc += sxiWrite0(outf, s);
 	cc += fprintf(outf, "\n");
 
-	Return(cc);
-}
+	Return(cc)
+;}
 
-int
-sxiWrite0(FILE *outf, SExpr s)
+int sxiWrite0(FILE *outf, SExpr s)
 {
-	int	cc = 0;
+	int cc = 0;
 
-	sexprDEBUG({
-		SrcPos spos = sxiPos(s);
-		fprintf(outf,"{%d.%d}", (int) sposLine(spos), (int) sposChar(spos));
-	});
+	sexprDEBUG( {
+				SrcPos spos = sxiPos(s);
+				fprintf(outf,"{%d.%d}", (int) sposLine(spos), (int) sposChar(spos));
+			});
 
 	/*
 	 * Things which are not displayed using #nn#, even if shared.
@@ -1819,14 +1884,13 @@ sxiWrite0(FILE *outf, SExpr s)
 	}
 
 	if (sxiIsShared(s)) {
-		int	f = sxiShareVFind(s);
+		int f = sxiShareVFind(s);
 		sxiCurrentPos = sxiPos(s);
 		if (f == -1) {
 			sxiShareVAdd(-1, s);
 			cc += fprintf(outf, "#%d=", sxiShareVIx);
 			/* Continue */
-		}
-		else {
+		} else {
 			cc += fprintf(outf, "#%d#", f);
 			return cc;
 		}
@@ -1850,8 +1914,8 @@ sxiWrite0(FILE *outf, SExpr s)
 		cc += fprintf(outf, ")");
 		break;
 	case SX_Vector: {
-		int	newl = s->sxHdr.wrWidth	 > sxiWrMaxText;
-		int	i;
+		int newl = s->sxHdr.wrWidth > sxiWrMaxText;
+		int i;
 
 		sxiWrLead += sxiWrIndent;
 		cc += fprintf(outf, "#(");
@@ -1861,8 +1925,8 @@ sxiWrite0(FILE *outf, SExpr s)
 		for (i = 0; i < sx0Size(s); i++) {
 			if (i > 0) {
 				if (newl)
-					cc += fprintf(outf, "\n%*s",
-						      sxiWrLead, "");
+					cc += fprintf(outf, "\n%*s", sxiWrLead,
+							"");
 				else
 					cc += fprintf(outf, " ");
 			}
@@ -1871,30 +1935,37 @@ sxiWrite0(FILE *outf, SExpr s)
 		cc += fprintf(outf, ")");
 		sxiWrLead -= sxiWrIndent;
 		break;
-	    }
+	}
 	case SX_Cons: {
-		SExpr kar  = sxCar(s);
-		SExpr kdr  = sxCdr(s);
-		char *str  = 0;
-		int   newl = s->sxHdr.wrWidth  > sxiWrMaxText;
+		SExpr kar = sxCar(s);
+		SExpr kdr = sxCdr(s);
+		char *str = 0;
+		int newl = s->sxHdr.wrWidth > sxiWrMaxText;
 
 		sxiWrLead += sxiWrIndent;
 
 		if (sxiConsP(kdr) && sxiNull(sxCdr(kdr))) {
-			if	(kar == sx0Quote)		str = "'";
-			else if (kar == sx0Function)		str = "#'";
-			else if (kar == sx0BackQuote)		str = "`";
-			else if (kar == sx0BackQuoteComma)	str = ",";
-			else if (kar == sx0BackQuoteCommaAt)	str = ",@";
-			else if (kar == sx0BackQuoteCommaDot)	str = ",.";
-			else if (kar == sx0LoadTimeEval)	str = "#,";
-			else if (kar == sx0ReadTimeEval)	str = "#.";
+			if (kar == sx0Quote)
+				str = "'";
+			else if (kar == sx0Function)
+				str = "#'";
+			else if (kar == sx0BackQuote)
+				str = "`";
+			else if (kar == sx0BackQuoteComma)
+				str = ",";
+			else if (kar == sx0BackQuoteCommaAt)
+				str = ",@";
+			else if (kar == sx0BackQuoteCommaDot)
+				str = ",.";
+			else if (kar == sx0LoadTimeEval)
+				str = "#,";
+			else if (kar == sx0ReadTimeEval)
+				str = "#.";
 		}
 		if (str) {
 			cc += fprintf(outf, "%s", str);
 			cc += sxiWrite0(outf, sxCar(kdr));
-		}
-		else {
+		} else {
 			sxiCurrentPos = sxiPos(s);
 			if (sxiIoKeepSrcPos)
 				cc += sxiWrNewline(outf);
@@ -1907,9 +1978,8 @@ sxiWrite0(FILE *outf, SExpr s)
 						cc += sxiWrNewline(outf);
 					else
 						cc += fprintf(outf, "\n%*s",
-							      sxiWrLead, "");
-				}
-				else
+								sxiWrLead, "");
+				} else
 					cc += fprintf(outf, " ");
 				cc += sxiWrite0(outf, sxCar(s));
 				s = sxCdr(s);
@@ -1917,7 +1987,7 @@ sxiWrite0(FILE *outf, SExpr s)
 			if (!sxiNull(s)) {
 				if (newl)
 					cc += fprintf(outf, " .\n%*s",
-						      sxiWrLead, "");
+							sxiWrLead, "");
 				else
 					cc += fprintf(outf, " . ");
 				cc += sxiWrite0(outf, s);
@@ -1926,7 +1996,7 @@ sxiWrite0(FILE *outf, SExpr s)
 		}
 		sxiWrLead -= sxiWrIndent;
 		break;
-	    }
+	}
 	default:
 		cc += fprintf(outf, "#<Unknown>");
 	}
@@ -1934,16 +2004,16 @@ sxiWrite0(FILE *outf, SExpr s)
 	return cc;
 }
 
-int
-sxiWrNewline(FILE *outf)
+int sxiWrNewline(FILE *outf)
 {
-	int		cc=0;
-	FileName	fn;
-	Length		ln;
+	int cc = 0;
+	FileName fn;
+	Length ln;
 
 	fn = sposFile(sxiCurrentPos);
 	ln = sposLine(sxiCurrentPos);
-	if (ln < 1) ln = 1;
+	if (ln < 1)
+		ln = 1;
 	/* If compiled with -g, write out ;line information. */
 	if (sxiIoKeepSrcPos && fn) {
 		if (!sxiCurrentFName)
@@ -1951,17 +2021,16 @@ sxiWrNewline(FILE *outf)
 		if (ln != sxiCurrentLineNo)
 			sxiCurrentLineNo = ln;
 #if EDIT_1_0_n1_07
-		cc += fprintf(outf, "\n;line %d [%d] ",
-		              (int) sxiCurrentLineNo,
-		              (int) sposGlobalLine(sxiCurrentPos));
+		cc += fprintf(outf, "\n;line %d [%d] ", (int) sxiCurrentLineNo,
+				(int) sposGlobalLine(sxiCurrentPos));
 #else
 		cc += fprintf(outf, "\n;line %d [%d] ", sxiCurrentLineNo,
-			      sposGlobalLine(sxiCurrentPos));
+				sposGlobalLine(sxiCurrentPos));
 #endif
 		if (!fnameEqual(sxiCurrentFName, fn)) {
 			sxiCurrentFName = fnameCopy(fn);
-			cc += fprintf(outf, " \"%s\"", 
-				      fnameUnparseStatic(sxiCurrentFName));
+			cc += fprintf(outf, " \"%s\"", fnameUnparseStatic(
+					sxiCurrentFName));
 		}
 	}
 	cc += fprintf(outf, "\n%*s", sxiWrLead, "");
@@ -1975,21 +2044,19 @@ sxiWrNewline(FILE *outf)
 
 #define SX_PrWIDE	((MAX_BYTE + 1)/2 - 1)		/* BYTE_BITS-1 bits */
 
-int
-sxiWrWidth(SExpr s)
+int sxiWrWidth(SExpr s)
 {
-	int	n, nmore = 0;
+	int n, nmore = 0;
 
-	if (sxiIsShared(s) && sxiTag(s)!=SX_Symbol) {
-		char	buf[25];
-		int	f = sxiShareVFind(s);
+	if (sxiIsShared(s) && sxiTag(s) != SX_Symbol) {
+		char buf[25];
+		int f = sxiShareVFind(s);
 
 		if ((f -= -1) != 0) {
 			sxiShareVAdd(-1, s);
 			sprintf(buf, "#%d=", sxiShareVIx);
 			nmore = strlen(buf);
-		}
-		else {
+		} else {
 			sprintf(buf, "#%d#", f);
 			return strlen(buf);
 		}
@@ -1997,14 +2064,15 @@ sxiWrWidth(SExpr s)
 
 	switch (sxiTag(s)) {
 	case SX_Nil:
-		n = 2;	/* () */
+		n = 2; /* () */
 		break;
 	case SX_Symbol:
 		n = sxiWrUnscanToken(s);
 		break;
 	case SX_Integer:
 		n = s->sxHdr.wrWidth;
-		if (n != 0) break;
+		if (n != 0)
+			break;
 		n = sxiWrUnscanToken(s);
 		break;
 	case SX_Float:
@@ -2013,93 +2081,98 @@ sxiWrWidth(SExpr s)
 		n = sxiWrUnscanToken(s);
 		break;
 	case SX_Ratio:
-		n = 1+sxiWrWidth(sxNumerator(s))+sxiWrWidth(sxDenominator(s));
+		n = 1 + sxiWrWidth(sxNumerator(s)) + sxiWrWidth(
+				sxDenominator(s));
 		break;
 	case SX_Complex:
-		n = 5+sxiWrWidth(sxRealpart(s))+sxiWrWidth(sxImagpart(s));
+		n = 5 + sxiWrWidth(sxRealpart(s)) + sxiWrWidth(sxImagpart(s));
 		break;
 	case SX_Vector: {
-		int	i;
+		int i;
 
 		if (sx0Size(s) > 1)
-			n = 3 + sx0Size(s)-1; /* #() plus blank seps */
+			n = 3 + sx0Size(s) - 1; /* #() plus blank seps */
 		else
-			n = 3;			 /* #() */
+			n = 3; /* #() */
 
 		for (i = 0; i < sx0Size(s); i++)
 			n += sxiWrWidth(sx0Elt(s, i));
 		break;
-	    }
+	}
 	case SX_Cons: {
-		char	*str = 0;
-		SExpr	kar  = sxCar(s);
-		SExpr	kdr  = sxCdr(s);
-		int	karWidth, kdrWidth;
+		char *str = 0;
+		SExpr kar = sxCar(s);
+		SExpr kdr = sxCdr(s);
+		int karWidth, kdrWidth;
 
 		if (sxiConsP(kdr) && sxiNull(sxCdr(kdr))) {
-			if	(kar == sx0Quote)		str = "'";
-			else if (kar == sx0Function)		str = "#'";
-			else if (kar == sx0BackQuote)		str = "`";
-			else if (kar == sx0BackQuoteComma)	str = ",";
-			else if (kar == sx0BackQuoteCommaAt)	str = ",@";
-			else if (kar == sx0BackQuoteCommaDot)	str = ",.";
+			if (kar == sx0Quote)
+				str = "'";
+			else if (kar == sx0Function)
+				str = "#'";
+			else if (kar == sx0BackQuote)
+				str = "`";
+			else if (kar == sx0BackQuoteComma)
+				str = ",";
+			else if (kar == sx0BackQuoteCommaAt)
+				str = ",@";
+			else if (kar == sx0BackQuoteCommaDot)
+				str = ",.";
 		}
 		if (str) {
 			n = strlen(str) + sxiWrWidth(sxSecond(s));
-		}
-		else {
+		} else {
 			karWidth = sxiWrWidth(kar);
 			kdrWidth = sxiWrWidth(kdr);
 
-			if (sxiNull(kdr))	/* (E) */
+			if (sxiNull(kdr)) /* (E) */
 				n = 1 + karWidth + 1;
 			else if (sxiConsP(kdr)) /* (A d) where D = (d) */
 				n = 1 + karWidth + 1 + kdrWidth + 1 - 2;
-			else			/* (A . D) */
+			else
+				/* (A . D) */
 				n = 1 + karWidth + 3 + kdrWidth + 1;
 		}
 		break;
-	    }
+	}
 	default:
 		n = 10;
 	}
 
 	s->sxHdr.wrWidth = (n > SX_PrWIDE) ? SX_PrWIDE : n;
-	return n+nmore;
+	return n + nmore;
 }
 
-int
-sxiWrUnscanToken(SExpr s)
+int sxiWrUnscanToken(SExpr s)
 {
-	char	*str;
+	char *str;
 
 	sxiIoBufStart();
 
 	switch (sxiTag(s)) {
-	case SX_Integer:  {
-		BInt	b;
+	case SX_Integer: {
+		BInt b;
 
 		b = sxiToTheBigInteger(s);
 
 		if (bintIsSmall(b)) {
-			char	buf[50];
+			char buf[50];
 			sprintf(buf, "%ld", (long) bintSmall(b));
 			sxiIoBufPuts(buf);
-		}
-		else {
-			char	*str0 = bintToString(b);
+		} else {
+			char *str0 = bintToString(b);
 			sxiIoBufPuts(str0);
 			strFree(str0);
 		}
 		break;
-	    }
+	}
 	case SX_Float: {
-		char	buf[MAX_FLOAT_SIZE];
-		char	*c;
+		char buf[MAX_FLOAT_SIZE];
+		char *c;
 
 		DFloatSprint(buf, sxiToFloat(s));
 
-		for(c = buf; *c; c++)
+		for (c = buf; *c; c++)
 			if (isalpha(*c)) {
 				*c = s->sxFloat.marker;
 				break;
@@ -2113,26 +2186,44 @@ sxiWrUnscanToken(SExpr s)
 
 		sxiIoBufPuts(buf);
 		break;
-	    }
+	}
 	case SX_Char: {
 		char buf[25];
-		int	c = sxiToChar(s);
+		int c = sxiToChar(s);
 
 		switch (c) {
-		case ' ':	sprintf(buf, "#\\Space");	break;
-		case '\n':	sprintf(buf, "#\\Newline");	break;
-		case '\f':	sprintf(buf, "#\\Page");	break;
-		case '\t':	sprintf(buf, "#\\Tab");		break;
-		case '\b':	sprintf(buf, "#\\Backspace");	break;
-		case '\r':	sprintf(buf, "#\\Return");	break;
-		case RUBOUT:	sprintf(buf, "#\\Rubout");	break;
-                case 0:         sprintf(buf, "#.(code-char 0)"); break;
-		default:	sprintf(buf, "#\\%c", c);	break;
+		case ' ':
+			sprintf(buf, "#\\Space");
+			break;
+		case '\n':
+			sprintf(buf, "#\\Newline");
+			break;
+		case '\f':
+			sprintf(buf, "#\\Page");
+			break;
+		case '\t':
+			sprintf(buf, "#\\Tab");
+			break;
+		case '\b':
+			sprintf(buf, "#\\Backspace");
+			break;
+		case '\r':
+			sprintf(buf, "#\\Return");
+			break;
+		case RUBOUT:
+			sprintf(buf, "#\\Rubout");
+			break;
+		case 0:
+			sprintf(buf, "#.(code-char 0)");
+			break;
+		default:
+			sprintf(buf, "#\\%c", c);
+			break;
 		}
 		for (str = buf; *str; str++)
 			sxiIoBufAdd(*str);
 		break;
-	    }
+	}
 	case SX_String:
 		sxiIoBufAdd('"');
 		for (str = sxiToTheString(s); *str; str++) {
@@ -2143,21 +2234,18 @@ sxiWrUnscanToken(SExpr s)
 		sxiIoBufAdd('"');
 		break;
 	case SX_Symbol: {
-		SExpr	pkg  = sxSymbolPackage(s);
+		SExpr pkg = sxSymbolPackage(s);
 
 		/* Package portion */
 		if (sxiNull(pkg)) {
 			sxiIoBufAdd('#');
 			sxiIoBufAdd(':');
-		}
-		else if (pkg == sx0KeywordPackage) {
+		} else if (pkg == sx0KeywordPackage) {
 			sxiIoBufAdd(':');
-		}
-		else if (pkg == sxSTAR_Package_STAR || pkg == sx0LispPackage){
+		} else if (pkg == sxSTAR_Package_STAR || pkg == sx0LispPackage) {
 			/* Nothing */
 			/*!! Assume everyone inherits Lisp */
-		}
-		else {
+		} else {
 			sxiWrUnscan0SymbolName(pkg->sxPackage.nameSymbol);
 			sxiIoBufAdd(':');
 			sxiIoBufAdd(':');
@@ -2166,7 +2254,7 @@ sxiWrUnscanToken(SExpr s)
 		/* Name portion */
 		sxiWrUnscan0SymbolName(s);
 		break;
-	    }
+	}
 	default:
 		break;
 	}
@@ -2175,11 +2263,10 @@ sxiWrUnscanToken(SExpr s)
 	return strlen(sxiIoBufChars());
 }
 
-void
-sxiWrUnscan0SymbolName(SExpr sym)
+void sxiWrUnscan0SymbolName(SExpr sym)
 {
-	char	*str = sxiToTheString(sxSymbolName(sym));
-	int	nesc = (sym)->sxSymbol.wrInfo;
+	char *str = sxiToTheString(sxSymbolName(sym));
+	int nesc = (sym)->sxSymbol.wrInfo;
 
 	if (sxiIoMixedCase)
 		switch (nesc) {
@@ -2195,7 +2282,7 @@ sxiWrUnscan0SymbolName(SExpr sym)
 		case SX_IoEscForDoubleColon:
 		case SX_IoEscForSpecials:
 			sxiIoBufAdd('|');
-			for ( ; *str; str++) {
+			for (; *str; str++) {
 				if (*str == '|' || *str == '\\')
 					sxiIoBufAdd('\\');
 				sxiIoBufAdd(*str);
@@ -2206,7 +2293,7 @@ sxiWrUnscan0SymbolName(SExpr sym)
 	else
 		switch (nesc) {
 		case SX_IoEscDont:
-			for ( ; *str; str++)
+			for (; *str; str++)
 				sxiIoBufAdd(tolower(*str));
 			break;
 		case SX_IoEscForNumber:
@@ -2220,7 +2307,7 @@ sxiWrUnscan0SymbolName(SExpr sym)
 		case SX_IoEscForLower:
 		case SX_IoEscForLowerNumber:
 			sxiIoBufAdd('|');
-			for ( ; *str; str++) {
+			for (; *str; str++) {
 				if (*str == '|' || *str == '\\')
 					sxiIoBufAdd('\\');
 				sxiIoBufAdd(*str);
@@ -2235,32 +2322,31 @@ sxiWrUnscan0SymbolName(SExpr sym)
  * generated.
  */
 
-void
-sxiWrUnscan0DoubleColonName(String str)
+void sxiWrUnscan0DoubleColonName(String str)
 {
-	int    nesc;
-	
+	int nesc;
+
 	for (; *str != ':'; str++)
 		sxiIoBufAdd(*str);
 	sxiIoBufPuts("::");
 	str += 2;
 	nesc = sxiIoIsNeedingEscape(str);
 
-	switch(nesc) {
-	  case SX_IoEscDont:
-		for ( ; *str; str++)
+	switch (nesc) {
+	case SX_IoEscDont:
+		for (; *str; str++)
 			sxiIoBufAdd(tolower(*str));
 		break;
-	  case SX_IoEscForNumber:
+	case SX_IoEscForNumber:
 		sxiIoBufAdd('\\');
 		sxiIoBufPuts(str);
 		break;
-	  case SX_IoEscForDoubleColon:
-	  case SX_IoEscForSpecials:
-	  case SX_IoEscForLower:
-	  case SX_IoEscForLowerNumber:
+	case SX_IoEscForDoubleColon:
+	case SX_IoEscForSpecials:
+	case SX_IoEscForLower:
+	case SX_IoEscForLowerNumber:
 		sxiIoBufAdd('|');
-		for ( ; *str; str++) {
+		for (; *str; str++) {
 			if (*str == '|' || *str == '\\')
 				sxiIoBufAdd('\\');
 			sxiIoBufAdd(*str);
@@ -2268,7 +2354,7 @@ sxiWrUnscan0DoubleColonName(String str)
 		sxiIoBufAdd('|');
 		break;
 	}
-	
+
 }
 
 /*****************************************************************************
@@ -2277,8 +2363,7 @@ sxiWrUnscan0DoubleColonName(String str)
  *
  ****************************************************************************/
 
-Bool
-sxiEq(SExpr a, SExpr b)
+Bool sxiEq(SExpr a, SExpr b)
 {
 	if (sxiTag(a) != sxiTag(b))
 		return false;
@@ -2286,36 +2371,35 @@ sxiEq(SExpr a, SExpr b)
 	switch (sxiTag(a)) {
 	case SX_Nil:
 		return true;
-	case SX_Symbol: 
-		return a->sxSymbol.sym    == b->sxSymbol.sym &&
-		       sxSymbolPackage(a) == sxSymbolPackage(b);
+	case SX_Symbol:
+		return a->sxSymbol.sym == b->sxSymbol.sym && sxSymbolPackage(a)
+				== sxSymbolPackage(b);
 	default:
 		return a == b;
 	}
 }
 
-local SExpr
-sxiNew(SExprTag tag, Length size)
+local SExpr sxiNew(SExprTag tag, Length size)
 {
-	SExpr	s;
+	SExpr s;
 
 	s = (SExpr) stoAlloc(OB_SExpr, size);
 
-	s->sxHdr.tag	  = tag;
+	s->sxHdr.tag = tag;
 	s->sxHdr.isShared = false;
-	s->sxHdr.pos      = sposNone;
-	s->sxHdr.wrWidth  = 0;
+	s->sxHdr.pos = sposNone;
+	s->sxHdr.wrWidth = 0;
 
 	return s;
 }
 
-void
-sxiFree(SExpr s)
+void sxiFree(SExpr s)
 {
-	Length	i;
-	SExpr	s0;
+	Length i;
+	SExpr s0;
 
-	if (sxiIsShared(s)) return;
+	if (sxiIsShared(s))
+		return;
 
 	switch (sxiTag(s)) {
 	case SX_String:
@@ -2337,36 +2421,36 @@ sxiFree(SExpr s)
 		stoFree((Pointer) s);
 		break;
 	case SX_Vector:
-		for (i = 0; i < sx0Size(s); i++) sxiFree(sx0Elt(s,i));
+		for (i = 0; i < sx0Size(s); i++)
+			sxiFree(sx0Elt(s,i));
 		stoFree((Pointer) s);
 		break;
 	case SX_Cons:
 		while (sxiConsP(s)) {
 			s0 = s;
-			s  = sxCdr(s);
+			s = sxCdr(s);
 			sxiFree(sxCar(s0));
 			stoFree((Pointer) s0);
 		}
-		if (!sxiNull(s)) sxiFree(s);
+		if (!sxiNull(s))
+			sxiFree(s);
 		break;
 	default:
 		break;
 	}
 }
 
-void
-sxiFreeList(SExpr s)
+void sxiFreeList(SExpr s)
 {
-	SExpr	s0;
+	SExpr s0;
 	while (sxiConsP(s)) {
 		s0 = s;
-		s  = sxCdr(s);
+		s = sxCdr(s);
 		stoFree((Pointer) s0);
 	}
 }
 
-SExpr
-sxiRepos(SrcPos pos, SExpr sx)
+SExpr sxiRepos(SrcPos pos, SExpr sx)
 {
 	if (sx->sxHdr.isShared) {
 		switch (sxiTag(sx)) {
@@ -2378,7 +2462,7 @@ sxiRepos(SrcPos pos, SExpr sx)
 			break;
 		case SX_Symbol:
 			sx = sx0MakeSymbol(sx->sxSymbol.sym,
-					   sxSymbolPackage(sx));
+					sxSymbolPackage(sx));
 			break;
 		default:
 			bug("Inappropriate shared structure for reposition");
@@ -2388,46 +2472,44 @@ sxiRepos(SrcPos pos, SExpr sx)
 	return sx;
 }
 
-
-void
-sxiReadPrintLoop(FILE *inf, FILE *outf, ULong iomode)
+void sxiReadPrintLoop(FILE *inf, FILE *outf, ULong iomode)
 {
-	int	lineno = 1;
-	SExpr	sx, sxeof;
+	int lineno = 1;
+	SExpr sx, sxeof;
 	SExprErrorFun errfun = sxiSetHandler((SExprErrorFun) 0);
 
 	sxiSTAR_StandardInput_STAR = inf;
 	sxiSTAR_StandardOutput_STAR = outf;
 
-	sxeof = sxMakeSymbol(sxiFrString("End of File"));	/* unique */
+	sxeof = sxMakeSymbol(sxiFrString("End of File")); /* unique */
 
 	for (;;) {
 		prompt(inf, outf, "> ");
 		sx = sxiRead(inf, NULL, &lineno, sxeof, iomode);
-		if (sx == sxeof) break;
+		if (sx == sxeof)
+			break;
 		sxiWrite(outf, sx, iomode);
 	}
 
 	sxiSetHandler(errfun);
 }
 
-
-void
-sxiReadEvalPrintLoop(FILE *inf, FILE *outf, ULong iomode)
+void sxiReadEvalPrintLoop(FILE *inf, FILE *outf, ULong iomode)
 {
-	int	lineno = 1;
-	SExpr	sx, sxeof;
+	int lineno = 1;
+	SExpr sx, sxeof;
 	SExprErrorFun errfun = sxiSetHandler((SExprErrorFun) 0);
 
 	sxiSTAR_StandardInput_STAR = inf;
 	sxiSTAR_StandardOutput_STAR = outf;
 
-	sxeof = sxMakeSymbol(sxiFrString("End of File"));	/* unique */
+	sxeof = sxMakeSymbol(sxiFrString("End of File")); /* unique */
 
 	for (;;) {
 		prompt(inf, outf, "> ");
 		sx = sxiRead(inf, NULL, &lineno, sxeof, iomode);
-		if (sx == sxeof) break;
+		if (sx == sxeof)
+			break;
 		sx = sxEval(sx);
 		sxiWrite(outf, sx, iomode);
 	}
@@ -2442,19 +2524,18 @@ sxiReadEvalPrintLoop(FILE *inf, FILE *outf, ULong iomode)
  *
  *****************************************************************************/
 
-Bool	sxiTableIsInitialized = false;
-Table	sxiValueTable;
-Table	sxiFunctionTable;
+Bool sxiTableIsInitialized = false;
+Table sxiValueTable;
+Table sxiFunctionTable;
 
 /*
  * We box functions since we cannot legally cast function to void *.
  */
 typedef struct funbox {
-	SExprFun	fun;
-} *SExprFunBox;
+	SExprFun fun;
+}*SExprFunBox;
 
-local SExprFunBox
-sxiNewFunBox(SExprFun fun)
+local SExprFunBox sxiNewFunBox(SExprFun fun)
 {
 	SExprFunBox fbox = (SExprFunBox) stoAlloc(OB_Other, sizeof(*fbox));
 	fbox->fun = fun;
@@ -2472,85 +2553,81 @@ sxiNewFunBox(SExprFun fun)
 			  (TblElt) sxiNewFunBox(fn)))
 
 /* 12.2 */
-SExpr	sx0ZeroP, sx0PlusP, sx0MinusP, sx0OddP, sx0EvenP;
+SExpr sx0ZeroP, sx0PlusP, sx0MinusP, sx0OddP, sx0EvenP;
 
 /* 12.3 */
-SExpr	sx0EQ /* =  */,  sx0LT /* < */,  sx0LE /* <= */,
-	sx0NE /* /= */,  sx0GT /* > */,  sx0GE /* >= */;
-SExpr	sx0Min, sx0Max;
+SExpr sx0EQ /* =  */, sx0LT /* < */, sx0LE /* <= */, sx0NE /* /= */,
+		sx0GT /* > */, sx0GE /* >= */;
+SExpr sx0Min, sx0Max;
 
 /* 12.4 -- omitted: 1+, 1-, incf, decf, conjugate */
-SExpr	sx0PLUS  /* + */, sx0MINUS  /* - */,
-	sx0TIMES /* * */, sx0DIVIDE /* / */;
-SExpr	sx0Gcd, sx0Lcm;
+SExpr sx0PLUS /* + */, sx0MINUS /* - */, sx0TIMES /* * */, sx0DIVIDE /* / */;
+SExpr sx0Gcd, sx0Lcm;
 
 /* 22.1 */
-SExpr	sx0Undef, sx0Apply, sx0Bye, sx0Eval, sx0Set, sx0Setq;
+SExpr sx0Undef, sx0Apply, sx0Bye, sx0Eval, sx0Set, sx0Setq;
+local SExpr sxFunUndef(SExpr);
+local SExpr sxFunApply(SExpr);
+local SExpr sxFunBye(SExpr);
+local SExpr sxFunEval(SExpr);
+local SExpr sxFunSet(SExpr);
+local SExpr sxFunPLUS(SExpr);
+local SExpr sxFunMINUS(SExpr);
+local SExpr sxFunTIMES(SExpr);
+local SExpr sxFunZeroP(SExpr);
+local SExpr sxFunPlusP(SExpr);
+local SExpr sxFunMinusP(SExpr);
 
-local SExpr		sxFunUndef		(SExpr);
-local SExpr		sxFunApply		(SExpr);
-local SExpr		sxFunBye		(SExpr);
-local SExpr		sxFunEval		(SExpr);
-local SExpr		sxFunSet		(SExpr);
-local SExpr		sxFunPLUS		(SExpr);
-local SExpr		sxFunMINUS		(SExpr);
-local SExpr		sxFunTIMES		(SExpr);
-local SExpr		sxFunZeroP		(SExpr);
-local SExpr		sxFunPlusP		(SExpr);
-local SExpr		sxFunMinusP		(SExpr);
-
-void
-sxiTableInit(void)
+void sxiTableInit(void)
 {
-	sx0ZeroP	= sxIntern(sxiFrString("ZEROP"));
-	sx0PlusP	= sxIntern(sxiFrString("PLUSP"));
-	sx0MinusP	= sxIntern(sxiFrString("MINUSP"));
-	sx0OddP		= sxIntern(sxiFrString("ODDP"));
-	sx0EvenP	= sxIntern(sxiFrString("EVENP"));
+	sx0ZeroP = sxIntern(sxiFrString("ZEROP"));
+	sx0PlusP = sxIntern(sxiFrString("PLUSP"));
+	sx0MinusP = sxIntern(sxiFrString("MINUSP"));
+	sx0OddP = sxIntern(sxiFrString("ODDP"));
+	sx0EvenP = sxIntern(sxiFrString("EVENP"));
 
-	sx0EQ		= sxIntern(sxiFrString("="));
-	sx0LT		= sxIntern(sxiFrString("<"));
-	sx0LE		= sxIntern(sxiFrString("<="));
-	sx0NE		= sxIntern(sxiFrString("/="));
-	sx0GT		= sxIntern(sxiFrString(">"));
-	sx0GE		= sxIntern(sxiFrString(">="));
-	sx0Min		= sxIntern(sxiFrString("MIN"));
-	sx0Max		= sxIntern(sxiFrString("MAX"));
+	sx0EQ = sxIntern(sxiFrString("="));
+	sx0LT = sxIntern(sxiFrString("<"));
+	sx0LE = sxIntern(sxiFrString("<="));
+	sx0NE = sxIntern(sxiFrString("/="));
+	sx0GT = sxIntern(sxiFrString(">"));
+	sx0GE = sxIntern(sxiFrString(">="));
+	sx0Min = sxIntern(sxiFrString("MIN"));
+	sx0Max = sxIntern(sxiFrString("MAX"));
 
-	sx0PLUS		= sxIntern(sxiFrString("+"));
-	sx0MINUS	= sxIntern(sxiFrString("-"));
-	sx0TIMES	= sxIntern(sxiFrString("*"));
-	sx0DIVIDE	= sxIntern(sxiFrString("/"));
-	sx0Gcd		= sxIntern(sxiFrString("GCD"));
-	sx0Lcm		= sxIntern(sxiFrString("LCM"));
+	sx0PLUS = sxIntern(sxiFrString("+"));
+	sx0MINUS = sxIntern(sxiFrString("-"));
+	sx0TIMES = sxIntern(sxiFrString("*"));
+	sx0DIVIDE = sxIntern(sxiFrString("/"));
+	sx0Gcd = sxIntern(sxiFrString("GCD"));
+	sx0Lcm = sxIntern(sxiFrString("LCM"));
 
-	sx0Undef	= sxIntern(sxiFrString("*UNDEFINED*"));
-	sx0Apply	= sxIntern(sxiFrString("APPLY"));
-	sx0Bye		= sxIntern(sxiFrString("BYE"));
-	sx0Eval		= sxIntern(sxiFrString("EVAL"));
-	sx0Set		= sxIntern(sxiFrString("SET"));
-	sx0Setq		= sxIntern(sxiFrString("SETQ"));
+	sx0Undef = sxIntern(sxiFrString("*UNDEFINED*"));
+	sx0Apply = sxIntern(sxiFrString("APPLY"));
+	sx0Bye = sxIntern(sxiFrString("BYE"));
+	sx0Eval = sxIntern(sxiFrString("EVAL"));
+	sx0Set = sxIntern(sxiFrString("SET"));
+	sx0Setq = sxIntern(sxiFrString("SETQ"));
 
-	sxiValueTable	= tblNew((TblHashFun) 0, (TblEqFun) 0); /* == hash */
-	sxiFunctionTable= tblNew((TblHashFun) 0, (TblEqFun) 0); /* == hash */
+	sxiValueTable = tblNew((TblHashFun) 0, (TblEqFun) 0); /* == hash */
+	sxiFunctionTable = tblNew((TblHashFun) 0, (TblEqFun) 0); /* == hash */
 
-	sxiSetFunction(sx0Undef,	sxFunUndef);
-	sxiSetFunction(sx0Apply,	sxFunApply);
-	sxiSetFunction(sx0Bye,		sxFunBye);
-	sxiSetFunction(sx0Eval,		sxFunEval);
-	sxiSetFunction(sx0Set,		sxFunSet);
-	sxiSetFunction(sx0PLUS,		sxFunPLUS);
-	sxiSetFunction(sx0MINUS,	sxFunMINUS);
-	sxiSetFunction(sx0TIMES,	sxFunTIMES);
-	sxiSetFunction(sx0ZeroP,        sxFunZeroP);
-	sxiSetFunction(sx0PlusP,        sxFunPlusP);
-	sxiSetFunction(sx0MinusP,       sxFunMinusP);
+	sxiSetFunction(sx0Undef, sxFunUndef);
+	sxiSetFunction(sx0Apply, sxFunApply);
+	sxiSetFunction(sx0Bye, sxFunBye);
+	sxiSetFunction(sx0Eval, sxFunEval);
+	sxiSetFunction(sx0Set, sxFunSet);
+	sxiSetFunction(sx0PLUS, sxFunPLUS);
+	sxiSetFunction(sx0MINUS, sxFunMINUS);
+	sxiSetFunction(sx0TIMES, sxFunTIMES);
+	sxiSetFunction(sx0ZeroP, sxFunZeroP);
+	sxiSetFunction(sx0PlusP, sxFunPlusP);
+	sxiSetFunction(sx0MinusP, sxFunMinusP);
 
 	sxiTableIsInitialized = true;
 }
 
-SExpr
-sxSymbolValue(SExpr sy)
+SExpr sxSymbolValue(SExpr sy)
 {
 	SExpr rx = sx0Undef;
 
@@ -2558,15 +2635,13 @@ sxSymbolValue(SExpr sy)
 		sxiTableInit();
 
 	if (sxiSymbolP(sy))
-		rx = (SExpr) tblElt(sxiValueTable,
-				    (TblKey) sxiToSymbol(sy),
-				    (TblElt) sx0Undef);
+		rx = (SExpr) tblElt(sxiValueTable, (TblKey) sxiToSymbol(sy),
+				(TblElt) sx0Undef);
 
 	return rx;
 }
 
-SExprFun
-sxiSymbolFunction(SExpr sy)
+SExprFun sxiSymbolFunction(SExpr sy)
 {
 	SExprFunBox fn = 0;
 
@@ -2575,31 +2650,26 @@ sxiSymbolFunction(SExpr sy)
 
 	if (sxiSymbolP(sy))
 		fn = (SExprFunBox) tblElt(sxiFunctionTable,
-				       (TblKey) sxiToSymbol(sy),
-				       (TblElt) 0);
+				(TblKey) sxiToSymbol(sy), (TblElt) 0);
 
 	return fn ? fn->fun : sxFunUndef;
 }
-
 /******************************************************************************
  *
  * :: SExprFun implementations.
  *
  *****************************************************************************/
-
-local Bool	sxiIsQuoteForm	(SExpr);
-local Bool	sxiIsSetqForm	(SExpr);
-
-local SExpr	sxiEvalArgs	(SExpr);
-local SExpr	sxiReduceBigint (BInt (*)(BInt, BInt), BInt, SExpr);
-local SExpr	sxiTest1Bigint  (Bool (*)(BInt),       SExpr);
+local Bool sxiIsQuoteForm(SExpr);
+local Bool sxiIsSetqForm(SExpr);
+local SExpr sxiEvalArgs(SExpr);
+local SExpr sxiReduceBigint(BInt(*)(BInt, BInt), BInt, SExpr);
+local SExpr sxiTest1Bigint(Bool(*)(BInt), SExpr);
 
 /*
  * sxUndef
  */
 
-local SExpr
-sxFunUndef(SExpr form)
+local SExpr sxFunUndef(SExpr form)
 {
 	return sx0Undef;
 }
@@ -2608,15 +2678,13 @@ sxFunUndef(SExpr form)
  * sxApply
  */
 
-local SExpr
-sxFunApply(SExpr form)
+local SExpr sxFunApply(SExpr form)
 {
-	SExpr	args = sxRest(form);
+	SExpr args = sxRest(form);
 	return sxApply(sxFirst(args), sxSecond(args));
 }
 
-SExpr
-sxApply(SExpr sy, SExpr args)
+SExpr sxApply(SExpr sy, SExpr args)
 {
 	return (*(sxiSymbolFunction(sy)))(sxCons(sy, args));
 }
@@ -2625,41 +2693,37 @@ sxApply(SExpr sy, SExpr args)
  * sxBye
  */
 
-local SExpr
-sxFunBye(SExpr form)
+local SExpr sxFunBye(SExpr form)
 {
 	return sxBye();
 }
 
-SExpr
-sxBye(void)
+SExpr sxBye(void)
 {
 	exitSuccess();
-	NotReached(return sx0Undef);
+NotReached(return sx0Undef);
 }
 
 /*
  * sxEval
  */
 
-local SExpr
-sxFunEval(SExpr form)
+local SExpr sxFunEval(SExpr form)
 {
-	SExpr	args = sxRest(form);
+	SExpr args = sxRest(form);
 	return sxEval(sxFirst(args));
 }
 
-SExpr
-sxEval(SExpr sx)
+SExpr sxEval(SExpr sx)
 {
-	SExpr	rx;
+	SExpr rx;
 
 	if (!sxiTableIsInitialized)
 		sxiTableInit();
 
-	if (sxiNull(sx)	    || sxiPackageP(sx) || sxiIntegerP(sx) ||
-	    sxiRatioP(sx)   || sxiFloatP(sx)   || sxiComplexP(sx) ||
-	    sxiCharP(sx)    || sxiStringP(sx)  || sxiVectorP(sx)  )
+	if (sxiNull(sx) || sxiPackageP(sx) || sxiIntegerP(sx)
+			|| sxiRatioP(sx) || sxiFloatP(sx) || sxiComplexP(sx)
+			|| sxiCharP(sx) || sxiStringP(sx) || sxiVectorP(sx))
 		rx = sx;
 
 	else if (sxiSymbolP(sx))
@@ -2672,7 +2736,7 @@ sxEval(SExpr sx)
 		rx = sxSet(sxSecond(sx), sxEval(sxThird(sx)));
 
 	else if (sxiConsP(sx)) {
-		SExpr	args = sxiEvalArgs(sxCdr(sx));
+		SExpr args = sxiEvalArgs(sxCdr(sx));
 		rx = sxApply(sxCar(sx), args);
 		sxiFreeList(args);
 	}
@@ -2683,8 +2747,7 @@ sxEval(SExpr sx)
 	return rx;
 }
 
-local SExpr
-sxiEvalArgs(SExpr args)
+local SExpr sxiEvalArgs(SExpr args)
 {
 	if (sxiNull(args))
 		return sxNil;
@@ -2692,36 +2755,29 @@ sxiEvalArgs(SExpr args)
 		return sxCons(sxEval(sxCar(args)), sxiEvalArgs(sxCdr(args)));
 }
 
-local Bool
-sxiIsQuoteForm(SExpr sx)
+local Bool sxiIsQuoteForm(SExpr sx)
 {
-	return sxConsP(sx)
-	    && sxSymbolP(sxCar(sx))
-	    && sxiToSymbol(sxCar(sx)) == sxiToSymbol(sx0Quote)
-	    && sxConsP(sxCdr(sx))
-	    && sxNull(sxCddr(sx));
+	return sxConsP(sx) && sxSymbolP(sxCar(sx)) && sxiToSymbol(sxCar(sx))
+			== sxiToSymbol(sx0Quote) && sxConsP(sxCdr(sx))
+			&& sxNull(sxCddr(sx));
 }
 
-local Bool
-sxiIsSetqForm(SExpr sx)
+local Bool sxiIsSetqForm(SExpr sx)
 {
-	return sxConsP(sx)
-	    && sxSymbolP(sxCar(sx))
-	    && sxiToSymbol(sxCar(sx)) == sxiToSymbol(sx0Setq)
-	    && sxConsP(sxCdr(sx))
-	    && sxSymbolP(sxCadr(sx))
-	    && sxConsP(sxCddr(sx))
-	    && sxNull(sxCdr(sxCddr(sx)));
+	return sxConsP(sx) && sxSymbolP(sxCar(sx)) && sxiToSymbol(sxCar(sx))
+			== sxiToSymbol(sx0Setq) && sxConsP(sxCdr(sx))
+			&& sxSymbolP(sxCadr(sx))
+			&& sxConsP(sxCddr(sx))
+			&& sxNull(sxCdr(sxCddr(sx)));
 }
 
 /*
  * sxSet
  */
 
-local SExpr
-sxFunSet(SExpr form)
+local SExpr sxFunSet(SExpr form)
 {
-	SExpr	args = sxRest(form);
+	SExpr args = sxRest(form);
 	return sxSet(sxFirst(args), sxSecond(args));
 }
 
@@ -2729,38 +2785,32 @@ sxFunSet(SExpr form)
  * sxPLUS, sxMINUS, sxTIMES
  */
 
-local SExpr
-sxFunPLUS(SExpr form)
+local SExpr sxFunPLUS(SExpr form)
 {
 	return sxPLUS(sxRest(form));
 }
 
-SExpr
-sxPLUS(SExpr args)
+SExpr sxPLUS(SExpr args)
 {
 	return sxiReduceBigint(bintPlus, bint0, args);
 }
 
-local SExpr
-sxFunMINUS(SExpr form)
+local SExpr sxFunMINUS(SExpr form)
 {
 	return sxMINUS(sxRest(form));
 }
 
-SExpr
-sxMINUS(SExpr args)
+SExpr sxMINUS(SExpr args)
 {
 	return sxiReduceBigint(bintMinus, bint0, args);
 }
 
-local SExpr
-sxFunTIMES(SExpr form)
+local SExpr sxFunTIMES(SExpr form)
 {
 	return sxTIMES(sxRest(form));
 }
 
-SExpr
-sxTIMES(SExpr args)
+SExpr sxTIMES(SExpr args)
 {
 	return sxiReduceBigint(bintTimes, bint1, args);
 }
@@ -2768,38 +2818,32 @@ sxTIMES(SExpr args)
 /*
  * sxZeroP, sxPlusP, sxMinusP
  */
-local SExpr	
-sxFunZeroP(SExpr form)
+local SExpr sxFunZeroP(SExpr form)
 {
 	return sxZeroP(sxRest(form));
 }
 
-SExpr	
-sxZeroP(SExpr form)
+SExpr sxZeroP(SExpr form)
 {
 	return sxiTest1Bigint(bintIsZero, sxRest(form));
 }
 
-local SExpr	
-sxFunPlusP(SExpr form)
+local SExpr sxFunPlusP(SExpr form)
 {
 	return sxPlusP(sxRest(form));
 }
 
-SExpr	
-sxPlusP(SExpr form)
+SExpr sxPlusP(SExpr form)
 {
 	return sxiTest1Bigint(bintIsPos, sxRest(form));
 }
 
-local SExpr	
-sxFunMinusP(SExpr form)
+local SExpr sxFunMinusP(SExpr form)
 {
 	return sxMinusP(sxRest(form));
 }
 
-SExpr	
-sxMinusP(SExpr form)
+SExpr sxMinusP(SExpr form)
 {
 	return sxiTest1Bigint(bintIsNeg, sxRest(form));
 }
@@ -2812,28 +2856,31 @@ sxMinusP(SExpr form)
  * [a,b,c] ==> a op b op c
  */
 
-local SExpr
-sxiReduceBigint(BInt (*op)(BInt, BInt), BInt x0, SExpr args)
+local SExpr sxiReduceBigint(BInt(*op)(BInt, BInt), BInt x0, SExpr args)
 {
-	SExpr	sx;
-	BInt	x1;
+	SExpr sx;
+	BInt x1;
 
 	/* 0 args, return x0 */
-	if (!sxiConsP(args)) return sxiFrBigInteger(x0);
+	if (!sxiConsP(args))
+		return sxiFrBigInteger(x0);
 
-	sx   = sxEval(sxCar(args));
-	if (!sxiIntegerP(sx)) return sx0Undef;
-	x1   = sxiToBigInteger(sx);
+	sx = sxEval(sxCar(args));
+	if (!sxiIntegerP(sx))
+		return sx0Undef;
+	x1 = sxiToBigInteger(sx);
 	args = sxCdr(args);
 
 	/* 1 arg, return x0 op x1 */
-	if (!sxConsP(args)) return sxiFrBigInteger((*op)(x0, x1));
+	if (!sxConsP(args))
+		return sxiFrBigInteger((*op)(x0, x1));
 
 	/* 2 or more args */
 	x0 = x1;
 	while (sxiConsP(args)) {
 		sx = sxEval(sxCar(args));
-		if (!sxiIntegerP(sx)) return sx0Undef;
+		if (!sxiIntegerP(sx))
+			return sx0Undef;
 
 		x0 = (*op)(x0, sxiToBigInteger(sx));
 		args = sxCdr(args);
@@ -2844,23 +2891,23 @@ sxiReduceBigint(BInt (*op)(BInt, BInt), BInt x0, SExpr args)
 		return sxiFrBigInteger(x0);
 }
 
-local SExpr
-sxiTest1Bigint(Bool (*op)(BInt), SExpr args)
+local SExpr sxiTest1Bigint(Bool(*op)(BInt), SExpr args)
 {
-	SExpr	sx;
-	BInt	x0;
-	Bool	b;
+	SExpr sx;
+	BInt x0;
+	Bool b;
 
-	if (!sxiConsP(args)) return sx0Undef;
+	if (!sxiConsP(args))
+		return sx0Undef;
 
-	sx   = sxEval(sxCar(args));
-	if (!sxiIntegerP(sx)) return sx0Undef;
-	x0   = sxiToBigInteger(sx);
+	sx = sxEval(sxCar(args));
+	if (!sxiIntegerP(sx))
+		return sx0Undef;
+	x0 = sxiToBigInteger(sx);
 
 	b = (*op)(x0);
 	return b ? sxT : sxNil;
 }
-
 
 /*****************************************************************************
  *
@@ -2868,11 +2915,10 @@ sxiTest1Bigint(Bool (*op)(BInt), SExpr args)
  *
  ****************************************************************************/
 
-local void
-sxiRdError(int errnum, ...)
+local void sxiRdError(int errnum, ...)
 {
 	va_list argp;
-	SrcPos	spos = sposOffset(sxiRdPos, sxiRdCharNo);
+	SrcPos spos = sposOffset(sxiRdPos, sxiRdCharNo);
 
 	va_start(argp, errnum);
 	sxiRdErrVal = (*sxiError)(spos, errnum, argp);
@@ -2881,10 +2927,9 @@ sxiRdError(int errnum, ...)
 	longjmp(sxiRdCatch, errnum);
 }
 
-local SExpr
-sxiUseError(int errnum,...)
+local SExpr sxiUseError(int errnum, ...)
 {
-	SExpr	sx;
+	SExpr sx;
 	va_list argp;
 
 	va_start(argp, errnum);
@@ -2894,10 +2939,9 @@ sxiUseError(int errnum,...)
 	return sx;
 }
 
-local SExpr
-sxiDefaultHandler(SrcPos spos, int errnum, va_list argp)
+local SExpr sxiDefaultHandler(SrcPos spos, int errnum, va_list argp)
 {
-	char	*s;
+	char *s;
 	switch (errnum) {
 	case SX_ErrPackageExists:
 		s = "A package with the name %s already exists.";
@@ -2972,18 +3016,143 @@ sxiDefaultHandler(SrcPos spos, int errnum, va_list argp)
 
 	if (spos != sposNone) {
 		sposPrint(stderr, spos);
-		fprintf  (stderr, ": ");
+		fprintf(stderr, ": ");
 	}
 	vfprintf(stderr, s, argp);
-	fprintf (stderr, "\n");
+	fprintf(stderr, "\n");
 
 	return sxNil;
 }
 
-SExprErrorFun
-sxiSetHandler(SExprErrorFun newFun)
+SExprErrorFun sxiSetHandler(SExprErrorFun newFun)
 {
 	SExprErrorFun oldFun = sxiError;
 	sxiError = newFun ? newFun : (SExprErrorFun) sxiDefaultHandler;
 	return oldFun;
+}
+
+String
+sxiFormat(SExpr sx)
+{
+
+	Buffer buf = bufNew();
+	sxiToBuffer(buf, sx);
+	bufAdd1(buf, '\0');
+	return bufLiberate(buf);
+}
+
+void 
+sxiToBuffer(Buffer buf, SExpr s)
+{
+	sxiWrWidth(s);
+
+	switch (sxiTag(s)) {
+	case SX_Nil:
+		bufPrintf(buf, "()");
+		return;
+	case SX_Symbol:
+	case SX_Integer:
+	case SX_Float:
+	case SX_Char:
+		sxiWrUnscanToken(s);
+		bufPrintf(buf, "%s", sxiIoBufChars());
+		return;
+	case SX_String:
+		sxiWrUnscanToken(s);
+		bufPrintf(buf, "%s", sxiIoBufChars());
+		break;
+	case SX_Ratio:
+		sxiToBuffer(buf, sxNumerator(s));
+		bufPrintf(buf, "/");
+		sxiToBuffer(buf, sxDenominator(s));
+		break;
+	case SX_Complex:
+		bufPrintf(buf, "#C(");
+		sxiToBuffer(buf, sxRealpart(s));
+		bufPrintf(buf, " ");
+		sxiToBuffer(buf, sxImagpart(s));
+		bufPrintf(buf, ")");
+		break;
+	case SX_Vector: {
+		int newl = s->sxHdr.wrWidth > sxiWrMaxText;
+		int i;
+
+		sxiWrLead += sxiWrIndent;
+		bufPrintf(buf, "#(");
+
+		sxiCurrentPos = sxiPos(s);
+
+		for (i = 0; i < sx0Size(s); i++) {
+			if (i > 0) {
+				if (newl)
+					bufPrintf(buf, "\n%*s", sxiWrLead,
+							"");
+				else
+					bufPrintf(buf, " ");
+			}
+			sxiToBuffer(buf, sx0Elt(s, i));
+		}
+		bufPrintf(buf, ")");
+		sxiWrLead -= sxiWrIndent;
+		break;
+	}
+	case SX_Cons: {
+		SExpr kar = sxCar(s);
+		SExpr kdr = sxCdr(s);
+		char *str = 0;
+		int newl = s->sxHdr.wrWidth > sxiWrMaxText;
+
+		sxiWrLead += sxiWrIndent;
+
+		if (sxiConsP(kdr) && sxiNull(sxCdr(kdr))) {
+			if (kar == sx0Quote)
+				str = "'";
+			else if (kar == sx0Function)
+				str = "#'";
+			else if (kar == sx0BackQuote)
+				str = "`";
+			else if (kar == sx0BackQuoteComma)
+				str = ",";
+			else if (kar == sx0BackQuoteCommaAt)
+				str = ",@";
+			else if (kar == sx0BackQuoteCommaDot)
+				str = ",.";
+			else if (kar == sx0LoadTimeEval)
+				str = "#,";
+			else if (kar == sx0ReadTimeEval)
+				str = "#.";
+		}
+		if (str) {
+			bufPrintf(buf, "%s", str);
+			sxiToBuffer(buf, sxCar(kdr));
+		} else {
+			sxiCurrentPos = sxiPos(s);
+			bufPrintf(buf, "(");
+			sxiToBuffer(buf, sxCar(s));
+			s = sxCdr(s);
+			while (sxiConsP(s)) {
+				if (newl) {
+					bufPrintf(buf, "\n%*s",sxiWrLead, " ");
+				} else
+					bufPrintf(buf, " ");
+				sxiToBuffer(buf, sxCar(s));
+				s = sxCdr(s);
+			}
+			if (!sxiNull(s)) {
+				if (newl)
+					bufPrintf(buf, " .\n%*s",
+							sxiWrLead, "");
+				else
+					bufPrintf(buf, " . ");
+				sxiToBuffer(buf, s);
+			}
+			bufPrintf(buf, ")");
+		}
+		sxiWrLead -= sxiWrIndent;
+		break;
+	}
+	default:
+		bufPrintf(buf, "#<Unknown>");
+	}
+
 }
