@@ -1,10 +1,19 @@
+#SUBDIRS = . java
 
+bin_PROGRAMS =  javagen aldor
 
-bin_PROGRAMS = aldor
+javagen_SOURCES = java/main.c java/genjava.c java/javacode.c		\
+		java/javaobj.c java/ostream.c axlcomp.c cmdline.c
+
+javagen_LDADD = libphase.a libstruct.a libgen.a libport.a 
+javagen_LDFLAGS = -lm
+javagen_CFLAGS = -g
 
 aldor_SOURCES = main.c axlcomp.c cmdline.c
 aldor_LDADD = libphase.a libstruct.a libgen.a libport.a 
 aldor_LDFLAGS = -lm
+aldor_CFLAGS  = -g
+
 noinst_LIBRARIES = libphase.a libstruct.a libgen.a libport.a 
 
 libport_a_SOURCES = stdc.c cport.c opsys.c
