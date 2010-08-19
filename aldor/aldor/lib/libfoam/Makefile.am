@@ -1,9 +1,28 @@
 SUBDIRS=al
 
-libfoamlib_ALDOR=al/runtime.c
-aldorexedir = $(abs_top_builddir)/aldor/src
+libfoam_ALDOR=al/runtime.c
+libfoam_SRC=\
+	$(aldorsrcdir)/bigint.c \
+	$(aldorsrcdir)/btree.c  \
+	$(aldorsrcdir)/dword.c \
+	$(aldorsrcdir)/foamopt.c \
+	$(aldorsrcdir)/output.c \
+	$(aldorsrcdir)/opsys.c \
+	$(aldorsrcdir)/store.c \
+	$(aldorsrcdir)/table.c \
+	$(aldorsrcdir)/foam_c.c \
+	$(aldorsrcdir)/foam_i.c \
+	$(aldorsrcdir)/foam_cfp.c \
+	$(aldorsrcdir)/format.c  \
+	$(aldorsrcdir)/stdc.c  \
+	$(aldorsrcdir)/util.c	\
+	$(aldorsrcdir)/timer.c	\
+	$(aldorsrcdir)/compopt.c	\
+	$(aldorsrcdir)/xfloat.c  
 
-AM_CFLAGS = -I$(aldorexedir)
-libfoamlib_a_SOURCES=$(libfoam_ALDOR)
+aldorsrcdir = $(abs_top_builddir)/aldor/src
 
-noinst_LIBRARIES=libfoamlib.a
+AM_CFLAGS = -I$(aldorsrcdir)
+libfoam_a_SOURCES=$(libfoam_SRC) $(libfoam_ALDOR)
+
+noinst_LIBRARIES=libfoam.a

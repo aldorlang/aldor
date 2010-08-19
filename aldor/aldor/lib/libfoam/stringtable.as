@@ -36,29 +36,29 @@ macro {
 pcentPcentHash ==> 51482908;
 
 StringTable: with {
-	addNames: (Array Hash, Array String)->();
-	find: Hash->String;
+	addNames: (%, Array Hash, Array String)->();
+	find: (%, Hash) -> String;
+	new: () -> %;
 } == add {
 	import from List String, List Hash, Format;
-	names: List String := empty();
-	codes: List SingleInteger := empty();
+	Rep ==> Record(names: List String, codes: List SingleInteger);
+	import from Rep;
 
-	addNames(a1: Array Hash, a2: Array String):() == {
-		free names, codes;
-		if empty?(names) then {
-			names := cons("%%", names);
-			codes := cons(pcentPcentHash, codes);
-		}
+	new(): % == per [ ["%%"], [pcentPcentHash]];
+	names(x: %): List String == rep(x).names;
+	codes(x: %): List SingleInteger == rep(x).codes;
+
+	addNames(t: %, a1: Array Hash, a2: Array String):() == {
 		for code in a1 
 		for name in a2 repeat {
-			codes := cons(code, codes);
-			names := cons(name, names);
+			rep(t).codes := cons(code, codes t);
+			rep(t).names := cons(name, names t);
 		}
 	}
 
-	find(i: Hash): String == {
-		for code in codes
-		for name in names repeat {
+	find(t: %, i: Hash): String == {
+		for code in codes t
+		for name in names t repeat {
 			if code = i then return name
 		}	
 		x: String := copy "??:             ";

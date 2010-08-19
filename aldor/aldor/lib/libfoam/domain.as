@@ -51,7 +51,7 @@ Domain: Conditional with {
 --	prepare!:		% -> ();
 --		++ prepare(dom) forces a domain to fully instantiate.
 
-	getExport!:		(%, Hash, Hash) -> Value;
+	getExport!:		(%, Hash, Hash, Box) -> Value;
 		++ getExport!(dom, name, type) gets an export from a domain, 
 		++ given the hash codes for its name and type.  Takes a hard 
 		++ error on failure.
@@ -90,9 +90,10 @@ Domain: Conditional with {
 	dispatcher (td: %): DispatchVector	== rep(td).dispatcher;
 
 
-	new (dv: DispatchVector, d: DomainRep) : % ==
+	new (dv: DispatchVector, d: DomainRep) : % == {
+	        Nil?(DispatchVector) dv => never;
 		per [dv, d];
-
+	}
 
 	fill!(dom: %, val: %): () == {
 		rep(dom).dispatcher := dispatcher(val);
@@ -118,21 +119,20 @@ Domain: Conditional with {
 --		prepare! domainRep td;
 
 	-- Create a box to use for all calls to getExport.
-	local box: Box := new Nil Value;
 
-	getExport0! (td: %, name: Hash, type: Hash) : Box == {
+	getExport0! (td: %, name: Hash, type: Hash, outbox: Box) : Box == {
 		-- check to make sure that we haven't got a category..
 		-- we need a more generic technique than this.
 		--tag dispatcher td = ObjCategory => nullBox();
 		get := getter dispatcher td;
 		val := get(domainRep td, td pretend DomainPtr, 
-			   name, type, box, false);
+			   name, type, outbox, false);
 		val
 	}
 
-	getExport! (td: %, name: Hash, type: Hash) : Value == {
+	getExport! (td: %, name: Hash, type: Hash, outbox: Box) : Value == {
 		import from StringTable;
-		val := getExport0!(td, name, type);
+		val := getExport0!(td, name, type, outbox);
 		val => value val;
 		failmsg(td, name, type);
 		ERROR "Export not found";
@@ -154,8 +154,10 @@ Domain: Conditional with {
 	getHash! (td: %) : Hash ==
 		(hasher dispatcher td)(domainRep td);
 
-	testExport! (td: %, name: Hash, type: Hash) : Bit ==
-		test getExport0!(td, name, type);
+	testExport! (td: %, name: Hash, type: Hash) : Bit == {
+		    import from Box;
+		test getExport0!(td, name, type, new Nil Value);
+	}
 
 	getName(td: %): DomainName == {
 		 f := (namer dispatcher td);

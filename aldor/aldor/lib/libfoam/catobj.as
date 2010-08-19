@@ -32,6 +32,8 @@ CatObj: Conditional with {
 --		++ new(cr) creates a new category by wrapping
 --		++ a dispatch vector around a CatRep.
 
+	new: (cdv: CatDispatchVector, crep: CatRep) -> %;
+
 	getDefault!:	(%, Domain, Hash, Hash, Box) -> Box;
 		++ getDefault!(cat, pcent, name, type, box)
 		++ Find a default from the given category,
@@ -60,12 +62,10 @@ CatObj: Conditional with {
 	catRep     (cat: %): CatRep		== rep(cat).catRep;
 	dispatcher (cat: %): CatDispatchVector	== rep(cat).cdv;
 
-	new (cdv: CatDispatchVector, crep: CatRep) : % ==
+	new (cdv: CatDispatchVector, crep: CatRep) : % == {
+	        Nil?(CatDispatchVector) cdv => never;
 		per [cdv, crep];
---	new (crep: CatRep) : % ==
---		per [axiomxlCatDispatchVector(), crep];
-
---	makeDummy(): % == per [ dummyDispatchVector(), Nil CatRep];
+	}
 
 	fill!(cat: %, val: %): () == {
 		rep(cat).cdv 	:= dispatcher(val);
@@ -76,7 +76,8 @@ CatObj: Conditional with {
 		rep(cat).cdv 	:= dv;
 		rep(cat).catRep	:= r;
 	}
-		
+
+#if NOPE		
 	getDefault!(cat: %, pcent: Domain, 
 		    nm: Hash, type: Hash, box: Box): Box == {
 		DEBUG(PRINT() << "(Default lookup: ");
@@ -104,6 +105,39 @@ CatObj: Conditional with {
 		DEBUG(PRINT() << " Failed))");
 		nullBox();
 	}
+
+#endif	
+	getDefault!(cat: %, pcent: Domain, 
+		    nm: Hash, type: Hash, box: Box): Box == {
+		stack: List % := nil();
+		stack := cons(cat, stack);
+		DEBUG(PRINT() << "(Default lookup: ");
+
+		while (not empty? stack) repeat {
+			cat := first(stack);
+			stack := rest(stack);		      
+			val := (getter dispatcher cat)(catRep cat, pcent, 
+		      	  			       nm, type, box);
+                        val => {
+			  DEBUG(PRINT() << "Found locally)");
+			  return val
+		        }
+	
+		      	l := parentCount(cat);
+			DEBUG(PRINT() << "(Iterating " << l << " parents: ");
+			while l > 0 repeat {
+			      p := getParent(cat, l);
+			      if p then {
+			          stack := cons(p, stack);
+			      }
+			      l := l - 1;
+			}
+			DEBUG(PRINT() << " Added))");
+		}
+		DEBUG(PRINT() << "Not found)");
+		nullBox();
+	}
+
 
 	parentCount(cat: %): Int == (parentCounter dispatcher cat)(catRep cat);
 
