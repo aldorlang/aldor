@@ -1,2 +1,4 @@
 *.fm
 *.c
+*.dep
+*.dep_tmp
