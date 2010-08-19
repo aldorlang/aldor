@@ -1,4 +1,4 @@
 /Makefile
 *.c
-.cmd
-.fm
+*.cmd
+*.fm
