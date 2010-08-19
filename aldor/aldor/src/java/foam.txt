@@ -1,0 +1,21 @@
+
+Calls
+Records
+Envs
+Closures
+Arrays
+Builtins
+
+
+--------------
+Need to decide how to implement foam units
+
+
+class XX {
+      // struct per format
+      
+      // Each function mappped to a static method
+
+      // Formats implemented as Object[] 
+      
+}
