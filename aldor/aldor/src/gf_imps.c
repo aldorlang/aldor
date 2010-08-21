@@ -51,8 +51,6 @@ local Foam	gen0DelayedInit		(Foam, int);
 local Foam	gen0DelayedGetExport	(Foam, Foam, Foam);
 local Foam 	gen0GetBuiltin		(String, AInt, Length, Length);
 
-local FoamSig	gen0FoamSigNew		(AIntList, FoamTag, int, FoamTag *);
-
 local Foam	gen0StdLazyRef		(FoamSig sig);
 local Bool	gen0IsStdLazySig	(FoamSig sig);
 
@@ -359,8 +357,6 @@ gen0GetDomImport(Syme syme, Foam dom)
 local Foam	gen0LazySigCall		(FoamSig, Foam);
 local Foam	gen0StdLazySigCall	(FoamSig, Foam);
 local FoamSig	gen0AddLazySig		(FoamSig);
-local void	gen0FoamSigFree		(FoamSig);
-local Bool	gen0FoamSigEqual	(FoamSig, FoamSig);
 
 local Foam
 gen0LazyFunGet(TForm tf, Foam forcingFn)
@@ -489,7 +485,7 @@ gen0FindLazySig(AIntList inArgs, FoamTag retType, AIntList outVals,
 		}
 	}
 	
-	sig = gen0FoamSigNew(inArgs, retType, nRets, rets);
+	sig = foamSigNew(inArgs, retType, nRets, rets);
 
 	if (gen0IsStdLazySig(sig))
 		foam = gen0StdLazySigCall(sig, forcingFn);
@@ -497,7 +493,7 @@ gen0FindLazySig(AIntList inArgs, FoamTag retType, AIntList outVals,
 		FoamSigList 	siglst;
 		siglst = gen0LazySigList;
 		while (siglst != listNil(FoamSig)) {
-			if (gen0FoamSigEqual(car(siglst), sig))
+			if (foamSigEqual(car(siglst), sig))
 				break;
 			siglst = cdr(siglst);
 		}
@@ -510,7 +506,7 @@ gen0FindLazySig(AIntList inArgs, FoamTag retType, AIntList outVals,
 		foam = gen0LazySigCall(realsig, forcingFn);
 	}
 
-	if (sig != realsig) gen0FoamSigFree(sig);
+	if (sig != realsig) foamSigFree(sig);
 	return foam;
 }
 
@@ -553,56 +549,6 @@ gen0AddLazySig(FoamSig sig)
 	return sig;
 }
 
-local FoamSig
-gen0FoamSigNew(AIntList inArgs, FoamTag retType, int nRets, FoamTag *rets)
-{
-	FoamSig new;
-
-	new = (FoamSig) stoAlloc(OB_Other, sizeof(*new));
-	
-	new->inArgs   = listCopy(AInt)(inArgs);
-	new->retType  = retType;
-	new->nRets    = nRets;
-	new->rets     = rets;
-	new->constNum = -1;
-	new->ref      = NULL;
-
-	return new;
-}
-
-local void
-gen0FoamSigFree(FoamSig sig)
-{
-	if (sig->rets)
-		stoFree(sig->rets);
-
-	stoFree(sig);
-}
-
-local Bool
-gen0FoamSigEqual(FoamSig sig1, FoamSig sig2)
-{
-	int i;
-	
-	if (sig1->retType != sig2->retType)
-		return false;
-
-	if (sig1->nRets != sig2->nRets)
-		return false;
-	
-	if (!listEqual(AInt)(sig1->inArgs, sig2->inArgs, gen0AIntEqual))
-		return false;
-
-	if (sig1->rets != sig2->rets) {
-		if (sig1->rets == NULL || sig2->rets == NULL)
-			return false;
-		for (i=0; i<sig1->nRets; i++)
-			if (sig1->rets[i] != sig2->rets[i])
-				return false;
-	}
-
-	return true;
-}
 
 
 local Bool
@@ -934,7 +880,7 @@ gen0StdGetsCreate1(AIntList args, FoamTag retType, int nRets)
 
 	retType = retType + (emptyFormatSlot << 8);
 
-	sig = gen0FoamSigNew(args, retType, nRets, NULL);
+	sig = foamSigNew(args, retType, nRets, NULL);
 	gen0AddLazySig(sig);
 	foam = foamNewClos(foamNewEnv(int0), foamCopy(sig->ref));
 	name = gen0StdLazyName(args, retType, nRets);
