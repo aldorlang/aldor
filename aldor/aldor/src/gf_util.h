@@ -10,6 +10,7 @@
 #define _GF_UTIL_H_
 
 # include "axlobs.h"
+# include "foamsig.h"
 
 extern Bool genfoamDebug, genfoamHashDebug, genfoamConstDebug;
 
@@ -31,24 +32,9 @@ typedef struct domainCache {
 	Foam		hashVar;
 } *DomainCache;
 
-/* 
- * For re-using boiler-plate code
- * nRets == NULL indicates that all return values
- * are FOAM_Words.
- */
-typedef struct {
-	AIntList inArgs;
-	int	 nRets;
-	AInt     retType;
-	FoamTag *rets;
-	/* These are filled in as needed */
-	int 	 constNum;
-	Foam	 ref;
-} *FoamSig;
 
 DECLARE_LIST(DomainCache);
 DECLARE_LIST(VarPool);
-DECLARE_LIST(FoamSig);
 
 /*
  * The types of lambda levels that the code generator creates.
