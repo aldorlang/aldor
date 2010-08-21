@@ -30,7 +30,7 @@ libgen_a_SOURCES = debug.c format.c fluid.c util.c store.c memclim.c test.c \
 libstruct_a_SOURCES = axlobs.c srcline.c token.c doc.c absyn.c absub.c ablogic.c \
 		fint.c output.c simpl.c compcfg.c depdag.c \
 		sefo.c syme.c freevar.c tform.c tfsat.c tposs.c tconst.c \
-		tqual.c stab.c lib.c archive.c foam.c flog.c dflow.c spesym.c \
+		tqual.c stab.c lib.c archive.c foam.c foamsig.c flog.c dflow.c spesym.c \
 		abpretty.c version.c comsg.c loops.c comsgdb.c
 #libstruct_a_LIBADD = libgen.a libport.a
 
