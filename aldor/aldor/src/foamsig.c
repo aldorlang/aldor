@@ -54,11 +54,11 @@ foamSigEqual(FoamSig sig1, FoamSig sig2)
 	return true;
 }
 
-local Hash
+Hash
 foamSigHash(FoamSig s1)
 {
 	AIntList ltmp;
-	Hash h = retType;;
+	Hash h = s1->retType;;
 	ltmp = s1->inArgs;
 	while (ltmp) {
 		h = hashCombine(h, car(ltmp));
