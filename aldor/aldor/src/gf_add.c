@@ -515,9 +515,9 @@ gen0TypeInit()
 	place = gen0State->inits;
 
 	/* Create the foam arrays for the domain vectors. */
-	names = gen0TempLocal0(FOAM_Arr, FOAM_Word);
+	names = gen0TempLocal0(FOAM_Arr, FOAM_SInt);
 	types = gen0TempLocal0(FOAM_Arr, FOAM_SInt);
-	vals  = gen0TempLocal0(FOAM_Arr, FOAM_SInt);
+	vals  = gen0TempLocal0(FOAM_Arr, FOAM_Word);
 
 	gen0AddInit(foamNewSet(names, foamNewANew(FOAM_SInt, 
 						  foamCopy(szVar))));
