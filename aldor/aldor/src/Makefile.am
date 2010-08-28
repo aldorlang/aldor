@@ -16,7 +16,22 @@ aldor_CFLAGS  = -g
 
 noinst_LIBRARIES = libphase.a libstruct.a libgen.a libport.a 
 
+
+aldortest_CFLAGS=-DTEST_STAND_ALONE -DTEST_ALL
+aldortest_SOURCES = test.c
+aldortest_LDADD = libtest.a libstruct.a libgen.a libport.a 
+aldortest_LDFLAGS = -lm
+
+noinst_LIBRARIES = libtest.a libphase.a libstruct.a libgen.a libport.a 
 libport_a_SOURCES = stdc.c cport.c opsys.c
+
+libtest_a_CFLAGS  = -DTEST_ALL
+libtest_a_SOURCES = bigint_t.c bitv_t.c btree_t.c buffer_t.c ccode_t.c	\
+	            cport_t.c dnf_t.c file_t.c float_t.c fluid_t.c	\
+	            fname_t.c format_t.c link_t.c list_t.c main_t.c	\
+	            msg_t.c opsys_t.c priq_t.c store1_t.c store2_t.c	\
+	            store3_t.c strops_t.c symbol_t.c table_t.c		\
+	            util_t.c xfloat_t.c
 
 # Foam stuff does not belong!
 libgen_a_SOURCES = debug.c format.c fluid.c util.c store.c memclim.c test.c \

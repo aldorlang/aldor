@@ -33,6 +33,7 @@
 
 
 #  define listSingleton(Type)           (*(ListOps(Type)->Singleton))
+#  define listList(Type)                (*(ListOps(Type)->List))
 #  define listCons(Type)                (*(ListOps(Type)->Cons))
 #  define listEqual(Type)               (*(ListOps(Type)->Equal))
 #  define listFind(Type)                (*(ListOps(Type)->Find))
@@ -102,6 +103,7 @@ Statement({							\
 	struct ListOpsStructName(Type) { \
 		List(Type)      (*Cons)         (Type, List(Type)); \
 		List(Type)      (*Singleton)    (Type); \
+		List(Type)      (*List)         (int n, ...);		\
 		Bool            (*Equal)        (List(Type), List(Type), \
 						 Bool (*f) (Type, Type)); \
 		Type            (*Find)         (List(Type), Type, \

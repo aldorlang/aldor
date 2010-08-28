@@ -27,6 +27,31 @@ ptrlistSingleton(Pointer x)
 	return t;
 }
 
+local PointerList
+ptrlistList(int n, ...)
+{
+	va_list  argp;
+	int i;
+	PointerList head = listNil(Pointer);
+	PointerList tail;
+
+	va_start(argp, n);
+	for (i=0; i<n; i++) {
+		PointerList cell = listCons(Pointer)((Pointer) va_arg(argp, Pointer), 
+						     listNil(Pointer));
+		if (head == listNil(Pointer))
+			head = cell;
+		else {
+			cdr(tail) = cell;
+		}
+		tail = cell;
+				
+	}
+	va_end(argp);
+
+	return head;
+}
+
 /*
  * Create a new list with first element x, and tail l.  The tail is shared.
  */
@@ -475,6 +500,7 @@ ptrlistPrint(FILE *fout, PointerList l, PointerListEltPrFun prf)
 const struct ListOpsStructName(Pointer) ptrlistOps = {
 	ptrlistCons,
 	ptrlistSingleton,
+	ptrlistList,
 	ptrlistEqual,
 	ptrlistFind,
 	ptrlistFreeCons,                                
