@@ -82,6 +82,8 @@ testRun(String name, void (*fun)(void))
 	printf("===========================================================\n");
 	printf("===  Test \"%s\"\n", name);
 	printf("===========================================================\n");
+	
+        osInit();
 
 	testStartNetStore();
 
