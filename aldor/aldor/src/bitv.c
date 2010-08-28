@@ -229,6 +229,24 @@ bitvMinus(BitvClass class, Bitv r, Bitv a, Bitv b)
 	for (i = 0; i < class->nwords; i++) *r++ = *a++ & ~*b++;
 }
 
+/**
+ * Returns last set bit.
+ * Returns -1 if none set.
+ */
+int 
+bitvMax(BitvClass class, Bitv bv)
+{
+	int i;
+	/* FIXME: Could be _much_ more efficient */
+	for (i=class->nbits-1; i>= 0; i--) {
+		if (bitvTest(class, bv, i))
+			return i;
+	}
+	return i;
+}
+
+
+
 int
 bitvUnique1IndexInRange(BitvClass class, Bitv bv, int org, int lim)
 {

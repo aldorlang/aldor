@@ -44,6 +44,7 @@ extern void	bitvManyFree	(Bitv *);
 extern int	bitvPrint	(FILE *, BitvClass, Bitv);
 extern int	bitvPrintDb	(BitvClass, Bitv);
 extern Bool	bitvEqual	(BitvClass, Bitv, Bitv);
+extern int      bitvMax         (BitvClass, Bitv);
 
 /*
  * Arithmetic: These update the result 'r'.
