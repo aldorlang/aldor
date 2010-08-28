@@ -239,6 +239,7 @@ bitvMax(BitvClass class, Bitv bv)
 	int i;
 	/* FIXME: Could be _much_ more efficient */
 	for (i=class->nbits-1; i>= 0; i--) {
+	for (i=class->nbits; i>= 0; i--) {
 		if (bitvTest(class, bv, i))
 			return i;
 	}
