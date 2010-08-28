@@ -101,7 +101,17 @@ testList(void)
 	listFree(Pointer)(l);
 	listFreeTo(Pointer)(l2,l1);	/* l1 is contained in l2 */
 	listFree(Pointer)(l1);
-
+	printf("\n");
+	
+	printf("listList: ");
+	l = listList(Pointer)(2, (Pointer) (long) 4, (Pointer)(long) 5);
+	listPrint(Pointer)(osStdout,l,testListPrintElt);
+	l = listList(Pointer)(1, (Pointer) (long) 1);
+	listPrint(Pointer)(osStdout,l,testListPrintElt);
+	l = listList(Pointer)(0);
+	listPrint(Pointer)(osStdout,l,testListPrintElt);
+	listFree(Pointer)(l);
+	printf("\n");
 }
 
 #endif
