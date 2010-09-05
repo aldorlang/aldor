@@ -1513,9 +1513,6 @@ extern int 		 foamCountSubtreesOfKind(Foam foam, FoamTag kind);
 #define foamParNo(fm,n) \
 	(((fm) && foamTag(fm) == FOAM_Par) ? (fm)->foamPar.index : -1)
 
-#define foamDDeclArgc(foam)	(foamArgc(foam) - 1)
-#define foamBCallArgc(foam)	(foamArgc(foam) - 1)
-
 #define	foamIsDecl(foam)	(foamTag(foam) == FOAM_Decl)
 
 #define foamTRDDeclIDeclN(ddecl)   ((ddecl)->foamDDecl.argv[0]->foamDecl.format)
@@ -1524,6 +1521,10 @@ extern int 		 foamCountSubtreesOfKind(Foam foam, FoamTag kind);
 #define foamTRDDeclIDecl(ddecl, n) ((ddecl)->foamDDecl.argv[1+(n)])
 #define foamTRDDeclTDecl(ddecl, n) ((ddecl)->foamDDecl.argv	\
 				    [1+ foamTRDDeclIDeclN(ddecl) + (n)])
+
+#define foamDDeclArgc(foam)	(foamArgc(foam) - 1)
+#define foamBCallArgc(foam)	(foamArgc(foam) - 1)
+#define foamSelectArgc(foam)    (foamArgc(foam) - 1)
 
 /*
  * This macro can be used to strip multiple casts from an expression. Be
