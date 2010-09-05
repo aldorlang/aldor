@@ -173,7 +173,7 @@ bloopHandleCmds()
 		/*
 		 * Test for commands alphabetically.
 		 */
-		sprintf(msg, "%s", "");
+		strcpy(msg, "");
 		if (strEqual("", cmd)) {
 			bloopSendMsg(ALDOR_M_BreakMsgHelpAvail);
 		}
@@ -779,7 +779,7 @@ bloopShow(void)
 
 	if (bloopInterface) {
 		if (bloopIsNice) {
-			sprintf(msg, "%s", abPretty(bloopAbCurr));
+			strcpy(msg, abPretty(bloopAbCurr));
 			bloopSendString("msg", msg);
 		}
 		else {
@@ -1009,7 +1009,7 @@ bloopMeans(void)
 		  }
 		case AB_State_HasUnique:
 			if (bloopInterface) {
-				sprintf(msg, "%s", comsgString(ALDOR_M_BreakMsg1Type));
+				strcpy(msg, comsgString(ALDOR_M_BreakMsg1Type));
 				if (bloopIsNice)
 					strcat(msg, tfPretty(abTUnique(bloopAbCurr)));
 				else
