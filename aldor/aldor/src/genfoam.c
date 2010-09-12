@@ -2870,7 +2870,7 @@ gen0UnionCase(TForm key, Length argc, AbSyn *argv, Foam *vals)
 	foam->foamBCall.argv[0] = foamNewRElt(format, whole, (AInt) 0);
 	foam->foamBCall.argv[1] = foamNewSInt(index);
 
-	return foam;
+	return foamNewCast(FOAM_Word, foam);
 }
 
 local Foam
@@ -2910,7 +2910,7 @@ gen0EnumEqual(AbSyn *argv, Foam *vals)
 	foam->foamBCall.argv[0] = arg0;
 	foam->foamBCall.argv[1] = arg1;
 
-	return foam;
+	return foamNewCast(FOAM_Word, foam);
 }
 
 local Foam
@@ -2924,7 +2924,7 @@ gen0EnumNotEqual(AbSyn *argv, Foam *vals)
 	foam->foamBCall.argv[0] = arg0;
 	foam->foamBCall.argv[1] = arg1;
 
-	return foam;
+	return foamNewCast(FOAM_Word, foam);
 }
 
 /* TrailingArrays. */
