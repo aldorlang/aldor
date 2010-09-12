@@ -12,12 +12,15 @@ int main(int argc, char *argv[])
 
 	FILE *file  = fopen(argv[1], "r");
 	Foam f      = foamRdSExpr(file, NULL, NULL);
-	JavaCode jc = gjGenJavaUnit(f, "foo");
+	PathList pl = pathListFrString(argv[1]);
+	String lastElt = car(listLastCons(String)(pl));
+	lastElt[strlen(lastElt)-3] = '\0';
+	JavaCode jc = gjGenJavaUnit(f, lastElt);
 	foamFree(f);
 
-	printf("SExpr...\n");
+	printf("/*...\n");
 	jcoPrint(stdout, jc);
-	printf("Java...\n");
+	printf("...*/\n");
 	OStream o = ostreamNewFrStdout();
 	JavaCodePContext ctxt = jcoPContextNew(o, true);
 	jcoWrite(ctxt, jc);
