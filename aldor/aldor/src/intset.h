@@ -10,6 +10,7 @@ extern IntSet intSetNew(int sz);
 extern void   intSetFree(IntSet s);
 extern void   intSetAdd(IntSet s, int i);
 extern void   intSetRemove(IntSet s, int i);
+extern Bool   intSetMember(IntSet s, int i);
 
 #endif
 
