@@ -5387,6 +5387,9 @@ gen0Type(TForm tf, AInt *pfmt)
 		else if (tfIsCross(tf)) {
 			tag = FOAM_Word;
 		}
+		else if (tfIsEnum(tf)) {
+			tag = FOAM_SInt;
+ 		}
 		else if (tfIsUnknown(tf))	tag = FOAM_Word;
  		else if ((sym = gen0MachineType(tf)) == NULL)
 			tag = FOAM_Word;
