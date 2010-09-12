@@ -26,11 +26,13 @@ foamlibdir = $(abs_top_builddir)/aldor/lib/libfoamlib
 fmtests := rectest enumtest simple_j
 ctests  := rectest enumtest
 otests  := enumtest
+jtests  :=
 
-_aotests := $(sort $(fmtests) $(ctests))
-_fmtests := $(sort $(fmtests))
-_ctests  := $(sort $(ctests) $(otests))
+_aotests := $(sort $(fmtests) $(ctests) $(jtests))
+_fmtests := $(sort $(fmtests) $(jtests))
+_ctests  := $(sort $(ctests)  $(otests))
 _otests  := $(sort $(otests))
+_jtests  := $(sort $(jtests))
 
 $(patsubst %, out/fm/%.fm, $(_fmtests)): out/fm/%.fm: out/ao/%.ao
 	mkdir -p $$(dirname $@)
@@ -39,6 +41,15 @@ $(patsubst %, out/fm/%.fm, $(_fmtests)): out/fm/%.fm: out/ao/%.ao
 $(patsubst %, out/c/%.c, $(_ctests)): out/c/%.c: out/ao/%.ao
 	mkdir -p $$(dirname $@)
 	$(aldorexedir)/aldor -Nfile=$(aldorexedir)/aldor.conf -Fc=$(builddir)/$@ $<	
+
+$(patsubst %, out/java/%.java, $(_ctests)): out/java/%.java: out/fm/%.fm
+	mkdir -p $$(dirname $@)
+	 $(aldorexedir)/javagen $< > $@
+
+javaopts=-cp $(abs_top_builddir)/aldor/lib/java/build/foamj.jar
+
+$(patsubst %, out/java/%.class, $(tests)): %.class: out/java/%.java
+	javac $(javaopts) $<
 
 # Create .o files locally as unicl creates files in the
 # current directory...
