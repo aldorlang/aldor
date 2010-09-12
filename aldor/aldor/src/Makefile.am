@@ -16,13 +16,11 @@ aldor_CFLAGS  = -g
 
 noinst_LIBRARIES = libphase.a libstruct.a libgen.a libport.a 
 
-
 aldortest_CFLAGS=-DTEST_STAND_ALONE -DTEST_ALL
 aldortest_SOURCES = test.c
 aldortest_LDADD = libtest.a libstruct.a libgen.a libport.a 
 aldortest_LDFLAGS = -lm
 
-noinst_LIBRARIES = libtest.a libphase.a libstruct.a libgen.a libport.a 
 libport_a_SOURCES = stdc.c cport.c opsys.c
 
 libtest_a_CFLAGS  = -DTEST_ALL
