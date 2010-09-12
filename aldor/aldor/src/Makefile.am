@@ -23,12 +23,14 @@ libtest_a_SOURCES = bigint_t.c bitv_t.c btree_t.c buffer_t.c ccode_t.c	\
 	            util_t.c xfloat_t.c
 
 # Foam stuff does not belong!
-libgen_a_SOURCES = debug.c format.c fluid.c util.c store.c memclim.c test.c \
-		foam_c.c foam_i.c foam_cfp.c foamopt.c compopt.c dword.c \
-		bigint.c bitv.c btree.c buffer.c dnf.c file.c fname.c list.c \
-		msg.c path.c srcpos.c strops.c symbol.c table.c ccode.c \
-		sexpr.c xfloat.c priq.c timer.c cfgfile.c \
-		termtype.c textansi.c texthp.c textcolour.c
+libgen_a_SOURCES = debug.c format.c fluid.c util.c store.c memclim.c	\
+		test.c foam_c.c foam_i.c foam_cfp.c foamopt.c		\
+		compopt.c dword.c bigint.c bitv.c btree.c buffer.c	\
+		dnf.c file.c fname.c intset.c list.c msg.c path.c	\
+		srcpos.c strops.c symbol.c table.c ccode.c sexpr.c	\
+		xfloat.c priq.c timer.c cfgfile.c termtype.c		\
+		textansi.c texthp.c textcolour.c
+
 #libgen_a_LIBADD = libport.a
 
 libstruct_a_SOURCES = axlobs.c srcline.c token.c doc.c absyn.c absub.c ablogic.c \
