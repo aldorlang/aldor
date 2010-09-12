@@ -1,3 +1,6 @@
-SUBDIRS = subcmd tools src lib
 
-
+SUBDIRS = subcmd \
+	  tools  \
+	  src    \
+	  lib    \
+	  test
