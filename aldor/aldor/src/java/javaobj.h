@@ -824,15 +824,19 @@ extern JavaCode jcoNewToken(JavaCodeClass class, Symbol sym);
 extern JavaCode jcoNewLiteral(JavaCodeClass class, String str);
 extern JavaCode jcoNewImport(JavaCodeClass class, String pkg, String id, Bool flg);
 extern JavaCode jcoNew(JavaCodeClass class, int argc, ...);
-extern JavaCode jcoNewV(JavaCodeClass clss, int argc, va_list argp);
+extern JavaCode jcoNewP(JavaCodeClass clss, int argc, va_list argp);
 extern JavaCode jcoNewFrList(JavaCodeClass class, JavaCodeList lst);
 extern JavaCode jcoCopy(JavaCode code);
+extern void     jcoFree(JavaCode code) ;
+
 extern SExpr    jcoSExpr(JavaCode c);
 extern Hash     jcoHash(JavaCode c);
+extern Bool     jcoEqual(JavaCode c1, JavaCode c2);
 
 #define jcoIsLiteral(x) (jcoTag(x) == JCO_LIT)
 #define jcoIsNode(x) (jcoTag(x) == JCO_JAVA)
 #define jcoIsImport(x) (jcoTag(x) == JCO_IMPORT)
+#define jcoIsToken(x) (jcoTag(x) == JCO_TOKEN)
 
 /*
  * :: Classes
@@ -841,13 +845,22 @@ extern Hash     jcoHash(JavaCode c);
 typedef void  JWriteFn(JavaCodePContext ctxt, JavaCode c);
 typedef SExpr JSExprFn(JavaCode c);
 
+enum jcoAssoc {
+	JCO_LR,
+	JCO_RL,
+	JCO_NONE,
+};
+
+typedef Enum(jcoAssoc) JcoAssoc;
+
 struct jclss {
 	int   id;
 	JWriteFn *writer;
 	JSExprFn *sexpr;
 	char *name;
-	int   val;
 	char *txt;
+	int   prec;
+	JcoAssoc assoc;
 };
 
 /*

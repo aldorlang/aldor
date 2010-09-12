@@ -9,6 +9,8 @@ jcoNewNode(JavaCodeClass clss, int argc)
 {
 	JavaCode jc = (JavaCode) (stoAlloc( (int) OB_JCode, 
 					    fullsizeof(struct jcoNode, argc, JavaCode)));
+	assert(clss);
+
 	jcoTag(jc) = JCO_JAVA;
 	jcoClass(jc) = clss;
 	jcoPos(jc) = sposNone;
@@ -20,6 +22,9 @@ JavaCode
 jcoNewToken(JavaCodeClass clss, Symbol sym) 
 {
 	JavaCode	jco;
+
+	assert(clss && sym);
+
 	jco = (JavaCode) stoAlloc((int) OB_JCode, sizeof(struct jcoToken));
 	jcoTag(jco) = JCO_TOKEN;
 	jcoClass(jco) = clss;
@@ -34,7 +39,8 @@ JavaCode
 jcoNewLiteral(JavaCodeClass clss, String txt) 
 {
 	JavaCode	jco;
-	jco = (JavaCode) stoAlloc((int) OB_JCode, sizeof(struct jcoToken));
+	assert(clss && txt);
+	jco = (JavaCode) stoAlloc((int) OB_JCode, sizeof(struct jcoLiteral));
 	jcoTag(jco) = JCO_LIT;
 	jcoClass(jco) = clss;
 	jcoPos(jco) = sposNone;
@@ -50,6 +56,8 @@ jcoNewImport(JavaCodeClass clss, String pkg, String name, Bool isImported)
 {
 	JavaCode	jco;
 	jco = (JavaCode) stoAlloc((int) OB_JCode, sizeof(struct jcoImport));
+	assert(clss && pkg && name);
+
 	jcoTag(jco) = JCO_IMPORT;
 	jcoClass(jco)     = clss;
 	jcoPos(jco)       = sposNone;
@@ -67,7 +75,7 @@ jcoNew(JavaCodeClass clss, int argc, ...)
 
 	va_start(argp, argc);
 	
-	jco = jcoNewV(clss, argc, argp);
+	jco = jcoNewP(clss, argc, argp);
 	
 	va_end(argp);
 
@@ -75,16 +83,15 @@ jcoNew(JavaCodeClass clss, int argc, ...)
 }
 
 JavaCode 
-jcoNewV(JavaCodeClass clss, int argc, va_list argp)
+jcoNewP(JavaCodeClass clss, int argc, va_list argp)
 {
 	JavaCode jco;
 	int i;
+
 	jco = jcoNewNode(clss, argc);
 	for (i = 0; i < argc; i++)
-		jcoArgv(jco)[i] = (JavaCode) va_arg(argp, CCode);
+		jcoArgv(jco)[i] = (JavaCode) va_arg(argp, JavaCode);
 
-	va_end(argp);
-	
 	return jco;
 }
 
@@ -120,6 +127,30 @@ jcoFree(JavaCode code)
 	stoFree(code);
 }
 
+JavaCode 
+jcoCopy(JavaCode code)
+{
+	if (code == 0)
+		return 0;
+	if (jcoIsLiteral(code))
+		return jcoNewLiteral(jcoClass(code), strCopy(jcoLiteral(code)));
+	if (jcoIsToken(code))
+		return jcoNewToken(jcoClass(code), jcoToken(code));
+	if (jcoIsImport(code))
+		return jcoNewImport(jcoClass(code), 
+				    jcoImportPkg(code), jcoImportId(code),
+				    jcoImportIsImported(code));
+	if (jcoIsNode(code)) {
+		JavaCodeList l = listNil(JavaCode);
+		int i=0;
+		for (i=0; i<jcoArgc(code); i++) {
+			l = listCons(JavaCode)(jcoCopy(jcoArgv(code)[i]), l);
+		}
+		l = listNReverse(JavaCode)(l);
+		return jcoNewFrList(jcoClass(code), l);
+	}
+	assert(false);
+}
 
 /*
  * :: Java code classes 
@@ -222,11 +253,55 @@ Hash
 jcoHash(JavaCode c)
 {
 	// FIXME:
-	assert(jcoIsImport(c));
-	return strHash(jcoImportId(c)) + strHash(jcoImportPkg(c));
+	if (c == 0)
+		return 20041;
+	if (jcoIsImport(c))
+		return strHash(jcoImportId(c)) + strHash(jcoImportPkg(c));
+	if (jcoIsToken(c))
+		return symHash(jcoToken(c));
+	if (jcoIsImport(c))
+		return hashCombine(strHash(jcoImportPkg(c)), strHash(jcoImportId(c)));
+	if (jcoIsLiteral(c))
+		return strHash(jcoLiteral(c));
+	if (jcoIsNode(c)) {
+		Hash h = jcoClass(c)->id;
+		int i;
+		for (i=0; i < jcoArgc(c); i++)
+			h = hashCombine(h, jcoHash(jcoArgv(c)[i]));
+		return h;
+	}
+	assert(false);
 }
 
+Bool 
+jcoEqual(JavaCode c1, JavaCode c2)
+{
+	if ( (c1 == 0) != (c2 == 0))
+		return false;
+	if (c1 == 0)
+		return true;
+	if (jcoTag(c1) != jcoTag(c2))
+		return false;
+	if (jcoClass(c1) != jcoClass(c2))
+		return false;
 
+	if (jcoIsImport(c1))
+		return strcmp(jcoImportPkg(c1), jcoImportPkg(c2)) == 0
+			&& strcmp(jcoImportId(c1), jcoImportId(c2)) == 0;
+	if (jcoIsToken(c1))
+		return strcmp(symString(jcoToken(c1)), 
+			      symString(jcoToken(c2))) == 0;
+	if (jcoIsNode(c1)) {
+		int i;
+		if (jcoArgc(c1) != jcoArgc(c2))
+			return false;
+		for (i=0; i < jcoArgc(c1); i++) {
+			if (!jcoEqual(jcoArgv(c1)[i], jcoArgv(c2)[i]))
+				return false;
+		}
+		return true;
+	}
+}
 
 SExpr 
 jcoNodeSExpr(JavaCodePContext ctxt, JavaCode code) 
