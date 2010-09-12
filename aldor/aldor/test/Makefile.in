@@ -23,7 +23,7 @@ aldorexedir = $(abs_top_builddir)/aldor/src
 aldortooldir = $(abs_top_builddir)/aldor/subcmd/unitools
 foamlibdir = $(abs_top_builddir)/aldor/lib/libfoamlib
 
-fmtests := 
+fmtests := rectest simple_j
 ctests  := 
 otests  := 
 
