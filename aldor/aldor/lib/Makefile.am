@@ -1,2 +1,2 @@
-SUBDIRS=libfoamlib libfoam
+SUBDIRS=libfoamlib libfoam java
 
