@@ -18,6 +18,7 @@ intSetNew(int sz)
 	IntSet s = (IntSet) stoAlloc(OB_Other, sizeof(*s));
 	s->clss = bitvClassCreate(sz);
 	s->bitv = bitvNew(s->clss);
+	bitvClearAll(s->clss, s->bitv);
 	return s;
 }
 
@@ -41,7 +42,7 @@ intSetAdd(IntSet s, int i)
 void 
 intSetRemove(IntSet s, int i)
 {
-	bitvSet(s->clss, s->bitv, i);
+	bitvClear(s->clss, s->bitv, i);
 }
 
 Bool 
