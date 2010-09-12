@@ -5,7 +5,7 @@ Envs
 Closures
 Arrays
 Builtins
-
+Gotos
 
 --------------
 Need to decide how to implement foam units
@@ -19,3 +19,12 @@ class XX {
       // Formats implemented as Object[] 
       
 }
+
+=================
+
+
+Gotos:
+
+1: extract flow graph
+2: Find blocks though which control must pass (ignoring returns)
+
