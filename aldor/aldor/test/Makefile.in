@@ -20,16 +20,31 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	esac;
 
 aldorexedir = $(abs_top_builddir)/aldor/src
+aldortooldir = $(abs_top_builddir)/aldor/subcmd/unitools
 foamlibdir = $(abs_top_builddir)/aldor/lib/libfoamlib
 
-fmtests :=
-ctests  :=
+fmtests := 
+ctests  := 
+otests  := 
 
-_aotests := $(fmtests) $(ctests)
-_fmtests := $(fmtests) 
+_aotests := $(sort $(fmtests) $(ctests))
+_fmtests := $(sort $(fmtests))
+_ctests  := $(sort $(ctests) $(otests))
+_otests  := $(sort $(otests))
 
-$(patsubst %, %.fm, $(_fmtests)): %.fm: %.ao
+$(patsubst %, out/fm/%.fm, $(_fmtests)): out/fm/%.fm: out/ao/%.ao
 	 $(aldorexedir)/aldor -Nfile=$(aldorexedir)/aldor.conf -Ffm=$(builddir)/$@ $<	
+
+$(patsubst %, out/c/%.c, $(_ctests)): out/c/%.c: out/ao/%.ao
+	 $(aldorexedir)/aldor -Nfile=$(aldorexedir)/aldor.conf -Fc=$(builddir)/$@ $<	
+
+# Create .o files locally as unicl creates files in the
+# current directory...
+$(patsubst %, %.o, $(_otests)): %.o: out/ao/%.ao
+	 $(aldorexedir)/aldor -Nfile=$(aldorexedir)/aldor.conf 	\
+			      -Ccc=$(aldortooldir)/unicl	\
+			      -Cargs="-Wconfig=$(aldorexedir)/aldor.conf -I$(aldorexedir)" \
+			      -Fo=$(builddir)/$@ $<		\
 
 define aldor_args
 	-Nfile=$(aldorexedir)/aldor.conf 	\
@@ -37,14 +52,15 @@ define aldor_args
 	-I$(foamlibdir)			\
 	-lAxlLib=foamlib 		\
 	$(AXLFLAGS) $($*_AXLFLAGS)	\
-	-Fao=$*.ao $(srcdir)/$*.as
+	-Fao=out/ao/$*.ao $(srcdir)/$*.as
 endef
 
-$(patsubst %, %.ao, $(_aotests)): %.ao: %.as
+$(patsubst %, out/ao/%.ao, $(_aotests)): out/ao/%.ao: %.as
 	$(aldorexedir)/aldor $(aldor_args)
 
-all: $(patsubst %,%.fm,$(fmtests)) \
-     $(patsubst %,%.c,$(ctests)) 
+all: $(patsubst %,out/fm/%.fm,$(fmtests)) \
+     $(patsubst %,out/c/%.c,$(ctests)) \
+     $(patsubst %,%.o,$(otests)) 
 
 .PHONY: all
 
