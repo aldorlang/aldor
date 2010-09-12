@@ -46,10 +46,14 @@ $(patsubst %, out/java/%.java, $(_ctests)): out/java/%.java: out/fm/%.fm
 	mkdir -p $$(dirname $@)
 	 $(aldorexedir)/javagen $< > $@
 
+$(patsubst %, out/java/%.java, $(_jtests)): out/java/%.java: out/fm/%.fm
+	mkdir -p $$(dirname $@)
+	(cd $(builddir)/out/fm; $(aldorexedir)/javagen $*.fm > ../java/$*.java)
+
 javaopts=-cp $(abs_top_builddir)/aldor/lib/java/build/foamj.jar
 
-$(patsubst %, out/java/%.class, $(tests)): %.class: out/java/%.java
-	javac $(javaopts) $<
+$(patsubst %, out/java/%.class, $(jtests)): out/java/%.class: out/java/%.java
+	(cd $(builddir)/out/java; javac $(javaopts) $*.java)
 
 # Create .o files locally as unicl creates files in the
 # current directory...
@@ -75,6 +79,8 @@ $(patsubst %, out/ao/%.ao, $(_aotests)): out/ao/%.ao: %.as
 
 all: $(patsubst %,out/fm/%.fm,$(fmtests)) \
      $(patsubst %,out/c/%.c,$(ctests)) \
+     $(patsubst %,out/java/%.java,$(jtests)) \
+     $(patsubst %,out/java/%.class,$(jtests)) \
      $(patsubst %,%.o,$(otests)) 
 
 .PHONY: all
