@@ -57,6 +57,9 @@ runtime_AXLFLAGS := -Wruntime
 $(patsubst %, %.c, $(library)): %.c: %.ao %.dep
 	 $(aldorexedir)/aldor -Nfile=$(aldorexedir)/aldor.conf -Fc=$(builddir)/$@ $<	
 
+$(patsubst %, %.java, $(library)): %.java: %.fm $(aldorexedir)/javagen
+	 $(aldorexedir)/javagen $< > $@
+
 #AXLCDB	  = -W check -Csmax=0 -Fc -Zdb -Qno-cc
 AXLFLAGS  := -Z db -Fc -Q9 -Qinline-all $(AXLCDB) 
 
@@ -102,8 +105,18 @@ $(patsubst %, %.dep,$(library)):
 
 $(foreach l,$(library), $(eval $(call dep_template,$(l))))
 
+# Java->class
+javaopts=-cp $(abs_top_builddir)/aldor/lib/java/build/foamj.jar
 
-all: Makefile $(patsubst %,%.fm,$(library)) libfoam.al
+$(patsubst %, %.class, $(library)): %.class: %.java
+	javac $(javaopts) $<
+
+# All..
+all: Makefile \
+	$(patsubst %,%.fm,$(library)) 	\
+	$(patsubst %,%.java,$(library)) \
+	libfoam.al 			
+
 libfoam.al: $($(patsubst %,%.ao,$(library))
 	ar r $@ runtime.ao
 

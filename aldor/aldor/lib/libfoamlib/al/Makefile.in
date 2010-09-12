@@ -77,6 +77,9 @@ $(patsubst %, %.ao, $(library)): %.ao:
 $(patsubst %, %.cmd, $(library)): %.cmd: Makefile
 	echo "run $(aldor_args)" > $@
 
+$(patsubst %, %.java, $(library)): %.java: %.fm $(aldorexedir)/javagen
+	 $(aldorexedir)/javagen $< > $@
+
 define dep_template
 $(1).ao: $(1).dep $$(patsubst %,%.ao,$$($(1)_deps))
 $(1).dep: $$(patsubst %,%.dep,$$($(1)_deps))
@@ -91,12 +94,22 @@ $(patsubst %, %.dep,$(library) libfoamlib):
 
 $(foreach l,$(library), $(eval $(call dep_template,$(l))))
 
-$(patsubst %,%.fm,$(library)): %.fm: %.ao
+$(patsubst %,%.fm,$(library)): %.fm: %.ao 
 	$(aldorexedir)/aldor \
 		     -Nfile=$(aldorexedir)/aldor.conf 	\
 		     -Ffm=$@ $*.ao
 
-all: Makefile libfoamlib.al $(patsubst %, %.c, $(library)) $(patsubst %, %.fm, $(library))
+# Java->class
+javaopts=-cp $(abs_top_builddir)/aldor/lib/java/build/foamj.jar
+
+$(patsubst %, %.class, $(library)): %.class: %.java
+	javac $(javaopts) $<
+
+all: Makefile libfoamlib.al 			\
+	$(patsubst %, %.c, $(library)) 		\
+	$(patsubst %, %.fm, $(library))		\
+	$(patsubst %, %.java, $(library))
+
 
 libfoamlib.dep: $(patsubst %,%.dep,$(library))
 libfoamlib.al: $(patsubst %,%.dep, $(library))
