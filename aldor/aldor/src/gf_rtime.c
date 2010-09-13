@@ -757,7 +757,7 @@ gen0CacheCheck(RTCacheInfo cache, int argc, Foam *argv)
 	chk = gen0BuiltinCacheCheck(foamCopy(cache->cache),
 				    foamCopy(cache->tuple));
 	gen0AddStmt(foamNewSet(values, chk), posn);
-	gen0AddStmt(foamNewIf(foamCopy(flag), cache->exitLabel), posn);
+	gen0AddStmt(foamNewIf(foamNewCast(FOAM_Bool, foamCopy(flag)), cache->exitLabel), posn);
 }
 
 Foam
