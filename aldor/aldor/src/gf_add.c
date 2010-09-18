@@ -1982,7 +1982,7 @@ gen0RtSymSpecialTag(Symbol sym)
 local Foam
 gen0RtSefoHashSpecialExporter(Sefo sf, Sefo osf)
 {
-	Foam	Tt = gen0TempLocal(FOAM_Word);
+	Foam	Tt = gen0TempLocal0(FOAM_Rec, gen0MakeTupleFormat());
 	Foam 	Tn = gen0TempLocal(FOAM_SInt);
 	Foam 	Ti = gen0TempLocal(FOAM_SInt);
 	Foam 	Th = gen0TempLocal(FOAM_SInt);
@@ -2025,7 +2025,7 @@ gen0RtSefoHashSpecialExporter(Sefo sf, Sefo osf)
 		assert(abTag(arg) == AB_Declare);
 		arg = arg->abDeclare.id;
 
-		GSTAT(GSET(Tt, genFoamVal(arg)));
+		GSTAT(GSET(Tt, foamNewCast(FOAM_Rec, genFoamVal(arg))));
 		GSTAT(GSET(Tn, gen0NewTupleSizeRef(foamCopy(Tt))));
 		GSTAT(GSET(Ti, foamNewSInt(int0)));
 		GSTAT(foamNewLabel(TS));
@@ -3209,7 +3209,7 @@ gen0NameTuple(Syme id, TForm tf, Bool isEnum)
 	int l1 = gen0State->labelNo++;
 	int l2 = gen0State->labelNo++;
 
-	tuple = gen0Syme(id);
+	tuple = foamNewCast(FOAM_Rec, gen0Syme(id));
 	n     = gen0TempLocal(FOAM_SInt);
 
 	/*
@@ -3224,7 +3224,8 @@ gen0NameTuple(Syme id, TForm tf, Bool isEnum)
 	 * l2:
 	 *   buildName(t2);
 	 */
-	gen0AddStmt(foamNewSet(foamCopy(n), gen0NewTupleSizeRef(tuple)), NULL);
+	gen0AddStmt(foamNewSet(foamCopy(n), 
+			       gen0NewTupleSizeRef(tuple)), NULL);
 	gen0MakeEmptyTuple(foamCopy(n), t2, NULL);
 	newarr = t2[1];
 	gen0AddStmt(foamNewLabel(l1), NULL);
