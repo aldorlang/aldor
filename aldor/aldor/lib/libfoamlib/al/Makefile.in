@@ -122,9 +122,10 @@ libfoamlib.al: libfoamlib.dep
 # :: Automake requires this little lot
 #
 mostlyclean: 
-	rm $(patsubst %, %.c, $(library))/%.c
-	rm $(patsubst %, %.c, $(library))/%.ao
-	rm $(patsubst %, %.c, $(library))/%.fm
+	rm -f $(patsubst %, %.c, $(library))
+	rm -f $(patsubst %, %.ao, $(library))
+	rm -f $(patsubst %, %.fm, $(library))
+	rm -f $(patsubst %, %.java, $(library))
 
 clean: mostlyclean
 distclean: clean 
