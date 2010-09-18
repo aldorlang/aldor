@@ -42,10 +42,7 @@ $(patsubst %, out/c/%.c, $(_ctests)): out/c/%.c: out/ao/%.ao
 	mkdir -p $$(dirname $@)
 	$(aldorexedir)/aldor -Nfile=$(aldorexedir)/aldor.conf -Fc=$(builddir)/$@ $<	
 
-$(patsubst %, out/java/%.java, $(_ctests)): out/java/%.java: out/fm/%.fm
-	mkdir -p $$(dirname $@)
-	 $(aldorexedir)/javagen $< > $@
-
+$(patsubst %, out/java/%.java, $(_jtests)): $(aldorexedir)/javagen
 $(patsubst %, out/java/%.java, $(_jtests)): out/java/%.java: out/fm/%.fm
 	mkdir -p $$(dirname $@)
 	(cd $(builddir)/out/fm; $(aldorexedir)/javagen $*.fm > ../java/$*.java)
