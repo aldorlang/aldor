@@ -125,7 +125,7 @@ bitvPrint(FILE *fout, BitvClass class, Bitv a)
 	for (i = 0; i < class->nbits; i++) {
 		cc += fprintf(fout, "%d",
 			      bitvTest(class, a,i));
-		if (i % 5 == 4) cc += fprintf(dbOut, " ");
+		if (i % 5 == 4) cc += fprintf(fout, " ");
 	}
 	cc += fprintf(fout, "]");
 	return cc;
@@ -138,6 +138,31 @@ bitvPrintDb(BitvClass class, Bitv a)
 	fprintf(dbOut, "\n");
 	return i;
 }
+
+String
+bitvToString(BitvClass class, Bitv a)
+{
+	Buffer buf;
+	int    i;
+
+	buf = bufNew();
+	if (!class) {
+		bufPrintf(buf,
+			      "[** Unprintable bitv: bitvClass required **]");
+		return buf;
+	}
+
+	bufPrintf(buf, "[");
+	for (i = 0; i < class->nbits; i++) {
+		bufPrintf(buf, "%d",
+				bitvTest(class, a,i));
+		if (i % 5 == 4) bufPrintf(buf, " ");
+	}
+	bufPrintf(buf, "]");
+
+	return bufLiberate(buf);
+}
+
 
 Bool
 bitvEqual(BitvClass class, Bitv a, Bitv b)
