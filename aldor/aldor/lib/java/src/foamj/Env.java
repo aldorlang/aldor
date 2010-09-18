@@ -24,5 +24,9 @@ public class Env {
     public Env parent() {
     	return parent;
     }
+
+    public void ensure() {
+	throw new RuntimeException();
+    }
     
 }

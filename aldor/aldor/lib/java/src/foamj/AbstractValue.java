@@ -8,5 +8,6 @@ public abstract class AbstractValue implements Value {
 	public Object  toArray() { throw new CastException(); }
 	public Record toRecord() { throw new CastException(); }
 	public Clos   toClos() { throw new CastException(); }
+	public boolean toBool() { throw new CastException(); }
 	public MultiRecord toMulti() { throw new CastException(); }
 }

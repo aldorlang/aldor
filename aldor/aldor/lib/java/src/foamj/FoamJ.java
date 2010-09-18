@@ -48,4 +48,19 @@ public class FoamJ {
 		}
 	}
 
+	static public class Bool extends AbstractValue implements Value, Word {
+		private boolean value;
+
+		public Bool(boolean b) {
+			this.value = b;
+		}
+
+		public boolean toBool() { return value; }
+
+		@Override
+		public Value toValue() {
+			return this;
+		}
+	}
+
 }
