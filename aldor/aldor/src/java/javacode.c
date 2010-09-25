@@ -173,7 +173,7 @@ static struct jclss jcClss[] = {
 
 	{ JCO_CLSS_ArrRef,     jcARefPrint,  jcNodeSExpr, "arrayref", 0, 20, JCO_NONE},
 	{ JCO_CLSS_MemRef,     jcBinOpPrint, jcNodeSExpr, "memref", ".", 20, JCO_NONE},
-	{ JCO_CLSS_Cast,       jcCastPrint, jcNodeSExpr, "cast",   " ", 20, JCO_NONE },
+	{ JCO_CLSS_Cast,       jcCastPrint, jcNodeSExpr, "cast",   " ", 16, JCO_NONE },
 
 	{ JCO_CLSS_Apply,      jcApplyPrint,     jcNodeSExpr, "apply", 0, 20, JCO_NONE},
 	{ JCO_CLSS_Construct,  jcConstructPrint, jcNodeSExpr, "new", 0, 20, JCO_NONE},
@@ -768,7 +768,9 @@ jcArrayRef(JavaCode arr, JavaCode idx)
 
 void jcARefPrint(JavaCodePContext ctxt, JavaCode code)
 {
-	jcoWrite(ctxt, jcoArgv(code)[0]);
+	JavaCodeClass thisClss = jcoClass(code);
+
+	jc0PrintWithParens(ctxt, thisClss, jcoArgv(code)[0]);
 	jcoPContextWrite(ctxt, "[");
 	jcoWrite(ctxt, jcoArgv(code)[1]);
 	jcoPContextWrite(ctxt, "]");
