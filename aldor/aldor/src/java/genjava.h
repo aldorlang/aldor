@@ -2,5 +2,5 @@
 #define _GENJAVA_H
 
 JavaCode gjGenJavaUnit(Foam foam, String name);
-
+extern Bool genJavaDebug;
 #endif

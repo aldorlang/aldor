@@ -10,6 +10,10 @@ int main(int argc, char *argv[])
 	comsgInit();
 	dbInit();
 
+	if (getenv("GJ_DEBUG")) {
+		genJavaDebug=1;
+	}
+
 	FILE *file  = fopen(argv[1], "r");
 	Foam f      = foamRdSExpr(file, NULL, NULL);
 	PathList pl = pathListFrString(argv[1]);
