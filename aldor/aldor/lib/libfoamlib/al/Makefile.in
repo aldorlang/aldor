@@ -59,13 +59,15 @@ aldorexedir=$(abs_top_builddir)/aldor/src
 $(patsubst %, %.c, $(library)): %.c: %.ao %.dep
 	 $(aldorexedir)/aldor -Nfile=$(aldorexedir)/aldor.conf -Fc=$(builddir)/$@ $<	
 
+aldoropt := -Q8 -Qinline-all
 define aldor_args
-	-I$(srcdir)/.. -Q8 -Qinline-all	\
+	-I$(srcdir)/.. $(aldoropt) $(aldordebug_$*) \
 	-Nfile=$(aldorexedir)/aldor.conf 	\
 	-lAxlLib=foamlib_$* 		\
 	-Fao=$*.ao $(srcdir)/../$*.as
 endef
 
+$(patsubst %,%.ao,$(library)): $(aldorexedir)/aldor
 $(patsubst %, %.ao, $(library)): %.ao: $(srcdir)/../foamlib.as
 $(patsubst %, %.ao, $(library)): %.ao: $(srcdir)/../%.as
 $(patsubst %, %.ao, $(library)): %.ao: 
