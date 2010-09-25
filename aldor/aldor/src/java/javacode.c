@@ -558,9 +558,14 @@ jcLiteralChar(String s)
 	if (s[0] == '\'')
 		s = strCopy("\\'");
 	if (s[0] == '"')
-		s = strCopy("\"");
-	
-	return jcoNewLiteral(jc0ClassObj(JCO_CLSS_Character), jc0EscapeString(s));
+		s = strCopy("\\\"");
+	if (s[0] == '\n')
+		s = strCopy("\\n");
+	if (s[0] == '\t')
+		s = strCopy("\\t");
+	else
+		s = strCopy(s);
+	return jcoNewLiteral(jc0ClassObj(JCO_CLSS_Character), s);
 }
 
 local void
@@ -1366,13 +1371,33 @@ jc0CollectImports(Table tbl, JavaCode code)
 }
 
 /*
- * Returns a newly allocated string with some substitutions to make it clearer.
+ * Returns a newly allocated string with properly escaped characters.
  */
 local String 
 jc0EscapeString(String s)
 {
-	s = strReplace(s, "\n", "\\n");
-	s = strNReplace(s, "\"", "\\\"");
-	s = strNReplace(s, "\\", "\\\\");
-	return s;
+	Buffer buf;
+	buf = bufNew();
+	while (*s != 0) {
+		switch (*s) {
+		case '\\':
+			bufPuts(buf, "\\\\");
+			break;
+		case '\'':
+			bufPuts(buf, "\\\\");
+			break;
+		case '\n':
+			bufPuts(buf, "\\\n");
+			break;
+		case '\"':
+			bufPuts(buf, "\\\"");
+			break;
+		default:
+			bufPutc(buf, *s);
+			break;
+		}
+		s++;
+	}
+
+	return bufLiberate(buf);
 }

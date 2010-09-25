@@ -94,6 +94,7 @@ extern JavaCode jcIf(JavaCode test, JavaCode stmt);
 extern JavaCode jcWhile(JavaCode test, JavaCode stmt);
 extern JavaCode jcSwitch(JavaCode test, JavaCodeList body);
 extern JavaCode jcCaseLabel(JavaCode arg);
+extern JavaCode jcThrow(JavaCode arg);
 
 extern JavaCode jcOp(JcOperation op, JavaCodeList args);
 extern JavaCode jcBinOp(JcOperation op, JavaCode e1, JavaCode e2);
