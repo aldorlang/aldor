@@ -663,7 +663,7 @@ gen0BuildLazyFun0(FoamSig fun)
 	gen0AddParam(decl);
 	
 	gen0AddStmt(foamNewDef(foamNewLex(int0, int0),
-			       foamNewPar(int0)), NULL);
+			       foamNewCast(FOAM_Clos, foamNewPar(int0))), NULL);
 
 	gen0AddStmt(foamNewSet(foamNewLex(int0, 1),
 			       foamNewBool(false)), NULL);
@@ -1217,11 +1217,11 @@ gen0GVectIssueFn(String libName, AIntList globs)
 					      foamNewPar(int0),
 					      foamNewSInt(i)),
 				      nextLabel), NULL);
-		gen0AddStmt(foamNewReturn(glo), NULL);
+		gen0AddStmt(foamNewReturn(foamNewCast(FOAM_Word, glo)), NULL);
 		gen0AddStmt(foamNewLabel(nextLabel), NULL);
 	}
 
-	ret = foamNewGlo(car(globs));
+	ret = foamNewCast(FOAM_Word, foamNewGlo(car(globs)));
 
 	gen0AddStmt(foamNewReturn(ret), NULL);
 
