@@ -105,11 +105,12 @@ javaopts=-cp $(abs_top_builddir)/aldor/lib/java/build/foamj.jar
 $(patsubst %, %.class, $(library)): %.class: %.java
 	javac $(javaopts) $<
 
-all: Makefile libfoamlib.al 			\
-	$(patsubst %, %.c, $(library)) 		\
+all: Makefile \
+	$(patsubst %, %.class, $(filter-out $(noclass), $(library))) \
+	$(patsubst %, %.java, $(library))	\
+	$(patsubst %, %.c,  $(library)) 	\
 	$(patsubst %, %.fm, $(library))		\
-	$(patsubst %, %.java, $(library))
-
+	libfoamlib.al 			
 
 libfoamlib.dep: $(patsubst %,%.dep,$(library))
 libfoamlib.al: $(patsubst %,%.dep, $(library))
