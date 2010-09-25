@@ -1154,6 +1154,15 @@ jcCasePrint(JavaCodePContext ctxt, JavaCode code)
 	jcoPContextWrite(ctxt, ": ");
 }
 
+/*
+ * :: Throw, catch
+ */
+
+JavaCode 
+jcThrow(JavaCode arg)
+{
+	return jcSpaceSeqV(2, jcKeyword(symInternConst("throw")), arg);
+}
 
 /*
  * :: If, Switch, While
