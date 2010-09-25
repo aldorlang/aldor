@@ -23,10 +23,12 @@ aldorexedir = $(abs_top_builddir)/aldor/src
 aldortooldir = $(abs_top_builddir)/aldor/subcmd/unitools
 foamlibdir = $(abs_top_builddir)/aldor/lib/libfoamlib
 
-fmtests := rectest enumtest simple_j
+fmtests := rectest enumtest 
 ctests  := rectest enumtest
 otests  := enumtest
-jtests  :=
+jtests  := simple_j enumtest run_j
+
+simple_j_AXLFLAGS=-Q2
 
 _aotests := $(sort $(fmtests) $(ctests) $(jtests))
 _fmtests := $(sort $(fmtests) $(jtests))
@@ -86,6 +88,7 @@ all: $(patsubst %,out/fm/%.fm,$(fmtests)) \
 # :: Automake requires this little lot
 #
 mostlyclean: 
+	rm -rf $(builddir)/out
 
 clean: mostlyclean
 distclean: clean 
