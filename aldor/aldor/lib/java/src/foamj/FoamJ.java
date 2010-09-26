@@ -1,6 +1,6 @@
 package foamj;
 
-
+import java.math.BigInteger;
 
 public class FoamJ {
 
@@ -41,6 +41,65 @@ public class FoamJ {
 		}
 
 		public int  toSInt() { return value; }
+
+		@Override
+		public Value toValue() {
+			return this;
+		}
+	}
+	static public class BInt extends AbstractValue implements Value, Word {
+		private BigInteger value;
+
+		public BInt(BigInteger x) {
+			this.value = x;
+		}
+
+		public BigInteger toBInt() { return value; }
+
+		@Override
+		public Value toValue() {
+			return this;
+		}
+	}
+
+	static public class Bool extends AbstractValue implements Value, Word {
+		private boolean value;
+
+		public Bool(boolean b) {
+			this.value = b;
+		}
+
+		public boolean toBool() { return value; }
+
+		@Override
+		public Value toValue() {
+			return this;
+		}
+	}
+
+	static public class Char extends AbstractValue implements Value, Word {
+		private char value;
+
+		public Char(char b) {
+			this.value = b;
+		}
+
+		public char toChar() { return value; }
+
+		@Override
+		public Value toValue() {
+			return this;
+		}
+	}
+
+	static public class Ptr extends AbstractValue implements Value, Word {
+		private Object value;
+
+		public Ptr(Object b) {
+			this.value = b;
+		}
+
+		public Object toPtr() { return value; }
 
 		@Override
 		public Value toValue() {
