@@ -89,9 +89,6 @@ all: $(patsubst %,out/fm/%.fm,$(fmtests)) \
 # :: Automake requires this little lot
 #
 mostlyclean: 
-	rm $(patsubst %, %.c, $(library))/%.c
-	rm $(patsubst %, %.c, $(library))/%.ao
-	rm $(patsubst %, %.c, $(library))/%.fm
 
 clean: mostlyclean
 distclean: clean 
