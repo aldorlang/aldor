@@ -17,3 +17,5 @@ autoscan.log
 config.status
 /configure
 /install
+/m4
+
