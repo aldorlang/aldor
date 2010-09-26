@@ -12,5 +12,9 @@ extern void   intSetAdd(IntSet s, int i);
 extern void   intSetRemove(IntSet s, int i);
 extern Bool   intSetMember(IntSet s, int i);
 
+extern void   intSetPrint(FILE *file, IntSet s);
+extern void   intSetPrintDb(IntSet s);
+extern String intSetToString(IntSet s);
+
 #endif
 

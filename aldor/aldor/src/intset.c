@@ -51,5 +51,23 @@ intSetMember(IntSet s, int i)
 	return bitvTest(s->clss, s->bitv, i);
 }
 
+void   
+intSetPrint(FILE *file, IntSet s)
+{
+	bitvPrint(file, s->clss, s->bitv);
+}
+
+void   
+intSetPrintDb(IntSet s)
+{
+	intSetPrint(dbOut, s);
+}
+
+String
+intSetToString(IntSet s)
+{
+	return bitvToString(s->clss, s->bitv);
+}
+
 
 

@@ -401,3 +401,18 @@ strPrint(FILE *fout, String s, int oq, int cq, int esc, const char *fmt)
 
 	return cc;
 }
+
+char *
+strLastIndexOf(String s, char c)
+{
+	char *p;
+	char *lastP = 0;
+
+	p = s;
+	while (*p) {
+		if (*p == c)
+			lastP = p;
+		p++;
+	}
+	return lastP;
+}

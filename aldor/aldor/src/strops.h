@@ -85,4 +85,6 @@ extern int		strPrint	(FILE *, String,
 			 * The character count is returned.
 			 */
 
+extern char *strLastIndexOf(String s, char c);
+
 #endif /* !_STROPS_H_ */

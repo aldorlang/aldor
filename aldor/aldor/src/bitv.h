@@ -42,6 +42,7 @@ extern Bitv * 	bitvManyNew	(BitvClass, Length n);
 extern void	bitvManyFree	(Bitv *);
 
 extern int	bitvPrint	(FILE *, BitvClass, Bitv);
+extern String   bitvToString    (BitvClass, Bitv);
 extern int	bitvPrintDb	(BitvClass, Bitv);
 extern Bool	bitvEqual	(BitvClass, Bitv, Bitv);
 extern int      bitvMax         (BitvClass, Bitv);
