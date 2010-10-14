@@ -1546,5 +1546,8 @@ extern Bool		 foamIsData		(Foam);
 extern Bool		 foamHasSideEffect	(Foam);
 extern Bool		 foamIsControlFlow	(Foam);
 
+typedef Bool (*FoamTestFn)(Foam f);
+extern Foam foamFindFirst(FoamTestFn testFn, Foam foam);
+
 #endif /* !_FOAM_H_ */
 

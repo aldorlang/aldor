@@ -2893,6 +2893,21 @@ foamIsControlFlow(Foam foam)
 	}
 }
 
+Foam
+foamFindFirst(FoamTestFn testFn, Foam foam)
+{
+	if (testFn(foam))
+		return foam;
+	
+	foamIter(foam, arg, { 
+			Foam f = foamFindFirst(testFn, *arg);
+			if (f != 0)
+				return f;
+		});
+	return 0;
+}
+
+
 /*****************************************************************************
  *
  * :: Table of FOAM instruction codes
