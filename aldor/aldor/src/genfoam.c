@@ -4409,7 +4409,8 @@ gen0MakeExtendBase(Syme syme)
         gen0State->program->foamProg.infoBits = IB_SIDE;
 
 	gen0MakeExtendParents(syme, symeExtendee(syme));
-	gen0AddStmt(foamNewReturn(foamNewCast(FOAM_Clos, foamNewPar(int0))), NULL);
+	//gen0AddStmt(foamNewReturn(foamNewCast(FOAM_Clos, foamNewPar(int0))), NULL);
+	gen0AddStmt(foamNewReturn(foamNewCast(FOAM_Clos, foamNewNil())), NULL);
 
 	gen0ProgAddFormat(index);
 	gen0IssueDCache();
@@ -5413,7 +5414,14 @@ gen0Type(TForm tf, AInt *pfmt)
 		else if (sym == ssymDFlo)	tag = FOAM_DFlo;
 		else if (sym == ssymNil)	tag = FOAM_Nil;
 		else if (sym == ssymPtr)	tag = FOAM_Ptr;
-		else if (sym == ssymArr) 	tag = FOAM_Arr;
+		else if (sym == ssymArr) {
+			tag = FOAM_Arr;
+			/* Something of a bug here as we don't know
+			   the element type for the array. Use 0
+			   rather than emptyFormatSlot as that is
+			   FOAM_HInt */
+			fmt = 0;
+		}
 		else {
 			/* Try a second time using the normalised type */
 			done = false;
