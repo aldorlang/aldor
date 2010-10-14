@@ -3,14 +3,14 @@
 #include "javaobj.h"
 
 enum jcoModifier {
-  JCO_MOD_Public    = (1 << 0),
-  JCO_MOD_Private   = (1 << 1),
-  JCO_MOD_Protected = (1 << 2),
-  JCO_MOD_Static    = (1 << 3),
-  JCO_MOD_Final     = (1 << 4),
-  JCO_MOD_Transient = (1 << 5),
-  JCO_MOD_Volatile  = (1 << 6),
-  JCO_MOD_MAX  = (1 << 7),
+	JCO_MOD_Public    = (1 << 0),
+	JCO_MOD_Private   = (1 << 1),
+	JCO_MOD_Protected = (1 << 2),
+	JCO_MOD_Static    = (1 << 3),
+	JCO_MOD_Final     = (1 << 4),
+	JCO_MOD_Transient = (1 << 5),
+	JCO_MOD_Volatile  = (1 << 6),
+	JCO_MOD_MAX  = (1 << 7),
 };
 
 typedef Enum(jcoModifier) JcoModifier;
@@ -50,15 +50,26 @@ typedef Enum(jcOperation) JcOperation;
  * in JavaCode objects, strings and lists.
  */
 
+extern JavaCode jcId(String id);
+extern JavaCode jcNull();
+extern JavaCode jcThis();
+extern JavaCode jcTrue();
+extern JavaCode jcFalse();
+
 extern JavaCode jcClass(int modifiers, String comment, 
 		     JavaCode id, JavaCode superclass,
-		     JavaCodeList extendList, JavaCodeList body);
+		     JavaCodeList implList, JavaCodeList body);
 
 extern JavaCode jcMethod(int modifiers, String comment, 
 			 JavaCode retnType,
 			 JavaCode id, JavaCodeList genArgs,
 			 JavaCodeList args,
 			 JavaCodeList exns, JavaCode body);
+
+extern JavaCode jcConstructor(int modifiers, String comment, 
+			      JavaCode className, JavaCodeList genArgs,
+			      JavaCodeList args,
+			      JavaCodeList exns, JavaCode body);
 
 extern JavaCode jcDeclaration(int modifiers, 
 			      JavaCode retnType,
@@ -71,7 +82,6 @@ extern JavaCode jcInitialisation(int modifiers, JavaCode type,
 
 extern JavaCode jcFile(JavaCode pkg, JavaCode name, JavaCodeList imports, JavaCode body);
 extern JavaCodeList jcCollectImports(JavaCode code);
-extern JavaCode jcId(String id);
 extern JavaCode jcDocumented(String comment, JavaCode code);
 extern JavaCode jcComment(String comment);
 extern JavaCode jcImportedId(String pkg, String name);
@@ -112,7 +122,6 @@ extern JavaCode jcSpaceSeq(JavaCodeList lst);
 extern JavaCode jcSpaceSeqV(int n, ...);
 extern JavaCode jcNLSeq(JavaCodeList lst);
 extern JavaCode jcNLSeqV(int n, ...);
-extern JavaCode jcNull();
 
 extern JavaCode jcParens(JavaCode c);
 extern JavaCode jcBraces(JavaCode c);

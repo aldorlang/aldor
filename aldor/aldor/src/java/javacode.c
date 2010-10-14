@@ -242,6 +242,10 @@ jcClassPrint(JavaCodePContext ctxt, JavaCode clss)
 	jcoWrite(ctxt, id);
 	if (superclass != NULL) {
 		jcoPContextWrite(ctxt, " extends ");
+		jcoWrite(ctxt, superclass);
+	}
+	if (implList != NULL) {
+		jcoPContextWrite(ctxt, " implements ");
 		jcoWrite(ctxt, implList);
 	}
 	jcoPContextWrite(ctxt, " {");
@@ -266,6 +270,22 @@ jcMethod(int modifiers, String comment,
 	JavaCode meth = jcoNew(jc0ClassObj(JCO_CLSS_Method),
 			       2,
 			       jcDeclaration(modifiers, retnType, 
+					     id, listNil(JavaCode), 
+					     jcParens(jcCommaSeq(args)), exns),
+			       body);
+}
+
+JavaCode 
+jcConstructor(int modifiers, String comment, 
+	      JavaCode id, JavaCodeList genArgs,
+	      JavaCodeList args,
+	      JavaCodeList exns, JavaCode body)
+{
+	JavaCodeList jcmods = jc0CreateModifiers(modifiers);
+	
+	JavaCode meth = jcoNew(jc0ClassObj(JCO_CLSS_Method),
+			       2,
+			       jcDeclaration(modifiers, jcSpaceSeqV(0), 
 					     id, listNil(JavaCode), 
 					     jcParens(jcCommaSeq(args)), exns),
 			       body);
@@ -653,6 +673,22 @@ JavaCode
 jcNull(String name) 
 {
 	return jcKeyword(symIntern("null"));
+}
+JavaCode 
+jcTrue(String name) 
+{
+	return jcKeyword(symIntern("true"));
+}
+JavaCode 
+jcFalse(String name) 
+{
+	return jcKeyword(symIntern("false"));
+}
+
+JavaCode 
+jcThis(String name) 
+{
+	return jcKeyword(symIntern("this"));
 }
 
 local SExpr 
