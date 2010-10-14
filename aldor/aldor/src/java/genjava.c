@@ -227,7 +227,7 @@ Bool genJavaDebug = false;
 JavaCode 
 gjGenJavaUnit(Foam foam, String name)
 {
-	JavaCodeList imps, code, mainImpl, interfaces;
+	JavaCodeList imps, code, mainImpl, interfaces, fmts, body;
 	JavaCode clss, contextDecl;
 	String className, comment;
 	
@@ -240,11 +240,13 @@ gjGenJavaUnit(Foam foam, String name)
 	mainImpl = gj0ClassHeader(name);
 	comment = gj0ClassDocumentation(foam, name);
 
-	code = listNConcat(JavaCode)(mainImpl, code);
+	fmts = gj0FmtInits();
+	body = listNConcat(JavaCode)(fmts, mainImpl);
+	body = listNConcat(JavaCode)(body, code);
 	
 	interfaces = listSingleton(JavaCode)(gj0Id(GJ_FoamClass));
 	clss = jcClass(JCO_MOD_Public, comment, 
-		       jcId(className), NULL, interfaces, code);
+		       jcId(className), NULL, interfaces, body);
 
 	imps = gj0CollectImports(clss);
 	return jcFile(NULL, jcId(className), imps, clss);
@@ -313,7 +315,6 @@ gj0DDef(Foam foam)
 {
 	JavaCodeList lst = listNil(JavaCode);
 	JavaCodeList stubs;
-	JavaCodeList fmts;
 	int i;
 
 	for (i=0; i<foamArgc(foam); i++) {
@@ -325,11 +326,10 @@ gj0DDef(Foam foam)
 	
 	lst  = listNReverse(JavaCode)(lst);
 
-	fmts = gj0FmtInits();
 	stubs = gj0CCallStubGen(gjContext->ccallStubSigList);
 	lst = listNConcat(JavaCode)(lst, stubs);
 
-	return listNConcat(JavaCode)(fmts, lst);
+	return lst;
 }
 
 local JavaCode
@@ -1763,6 +1763,8 @@ gj0SeqBucketNew(AInt label)
 	
 	bucket->label = label;
 	bucket->list = listNil(JavaCode);
+
+	return bucket;
 }
 
 local void
