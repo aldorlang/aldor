@@ -27,6 +27,7 @@ fmtests :=
 ctests  := 
 otests  := 
 jtests  :=
+jruntests :=
 
 _aotests := $(sort $(fmtests) $(ctests) $(jtests))
 _fmtests := $(sort $(fmtests) $(jtests))
