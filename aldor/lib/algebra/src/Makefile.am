@@ -12,7 +12,6 @@ SUBDIRS = util numbers extree extree/operators extree/parser categories	\
 
 #lang_ALDOR = lang/sal_lang.c
 
-noinst_LIBRARIES=libalgebra.a
 aldorsrcdir = $(abs_top_builddir)/aldor/src
 
 AM_CFLAGS = -I$(aldorsrcdir)
@@ -31,3 +30,11 @@ libalgebra.al: $(foreach i,$(SUBDIRS),$(i)/algebra$(i).al)
 	   done;			\
 	done
 
+libalgebra.a: libalgebra.al
+	rm -f libalgebra.a
+	for i in $(ar t libalgebra.a); 	\
+	do				\
+		ar x libalgebra.al $$i	\
+		$(aldorsrcdir)/aldor -Fo  $$i
+		ar r libalgebra.a $$(basename $$i).o
+	done
