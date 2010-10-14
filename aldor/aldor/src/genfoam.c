@@ -4409,7 +4409,8 @@ gen0MakeExtendBase(Syme syme)
         gen0State->program->foamProg.infoBits = IB_SIDE;
 
 	gen0MakeExtendParents(syme, symeExtendee(syme));
-	gen0AddStmt(foamNewReturn(foamNewCast(FOAM_Clos, foamNewPar(int0))), NULL);
+	//gen0AddStmt(foamNewReturn(foamNewCast(FOAM_Clos, foamNewPar(int0))), NULL);
+	gen0AddStmt(foamNewReturn(foamNewCast(FOAM_Clos, foamNewNil())), NULL);
 
 	gen0ProgAddFormat(index);
 	gen0IssueDCache();
