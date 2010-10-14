@@ -2808,9 +2808,38 @@ foamExprType(Foam expr, Foam prog, Foam formats, FoamBox locals,
 	return tag;
 }	
 
+Bool 
+foamTypeIsVoid(Foam fmts, FoamTag type, AInt fmt)
+{
+	Foam decl;
+	if (type != FOAM_NOp)
+		return false;
+	if (fmt == 0)
+		return true;
+	decl = fmts->foamDFmt.argv[fmt];
+	return foamDDeclArgc(decl) == 0;
+}
+
+Bool 
+foamTypeIsMulti(Foam fmts, FoamTag type, AInt fmt)
+{
+	Foam decl;
+	if (type != FOAM_NOp)
+		return false;
+	if (fmt == 0)
+		return false;
+	decl = fmts->foamDDecl.argv[fmt];
+	return foamDDeclArgc(decl) > 0;
+}
+
+Bool 
+foamTypeIsValue(Foam fmts, FoamTag type, AInt fmt)
+{
+	return type != FOAM_NOp;
+}
+
 Bool
 foamHasSideEffect(Foam foam)
-
 {
 	Bool	t;
 

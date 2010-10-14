@@ -1506,6 +1506,10 @@ extern FoamTag		 foamExprType	(Foam, Foam, Foam, FoamBox, FoamBox,
 					 AInt *);
 extern int 		 foamCountSubtreesOfKind(Foam foam, FoamTag kind);
 
+extern Bool foamTypeIsVoid(Foam fmts, FoamTag type, AInt fmt);
+extern Bool foamTypeIsMulti(Foam fmts, FoamTag type, AInt fmt);
+extern Bool foamTypeIsValue(Foam fmts, FoamTag type, AInt fmt);
+
 #define foamIsBCallOf(fm,bv)	\
 	((fm) && foamTag(fm) == FOAM_BCall && (fm)->foamBCall.op == (bv))
 #define foamLocNo(fm,n) \
