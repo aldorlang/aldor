@@ -24,9 +24,11 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 # Build starts here
 aldorexedir = $(abs_top_builddir)/aldor/src
 
-library= lang machine basic foamcat tuple gener bool segment		\
-	 sinteger sfloat pointer character parray array lv list langx string	\
+library= lang machine basic foamcat tuple gener bool segment sinteger	\
+	 sfloat pointer character parray array lv list langx string	\
 	 oslow fname file format textwrit opsys partial
+
+noclass = sfloat oslow file format
 
 lang_deps    :=
 machine_deps := lang
