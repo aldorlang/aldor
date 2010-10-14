@@ -115,6 +115,7 @@ $(patsubst %, %.class, $(library)): %.class: %.java
 all: Makefile \
 	$(patsubst %,%.fm,$(library)) 	\
 	$(patsubst %,%.java,$(library)) \
+	$(patsubst %,%.class,$(library)) \
 	libfoam.al 			
 
 libfoam.al: $($(patsubst %,%.ao,$(library))
