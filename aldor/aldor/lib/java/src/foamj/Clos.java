@@ -1,7 +1,9 @@
 package foamj;
 
+import java.util.Arrays;
 
-public class Clos extends AbstractValue {
+
+public class Clos extends AbstractValue implements Word {
     private Env env;
     private Fn fn;
     private Word info;
@@ -12,7 +14,17 @@ public class Clos extends AbstractValue {
     }
 
     public Value call(Value ... vals) {
-		return fn.ocall(env, vals);
+    	System.out.println("(Calling: " + fn.getName() + " " + Arrays.asList(vals));
+		Value v = fn.ocall(env, vals);
+    	System.out.println(" Return: " + v + ")");
+		
+		return v;
+    }
+    
+    public static Clos fromValue(Value v) { return (Clos) v; }
+    
+    public String toString() {
+    	return "{Clos: " + fn + ", " + env.getId() + "}";
     }
     
     public Fn getProg() {
@@ -37,5 +49,14 @@ public class Clos extends AbstractValue {
 
 	public Word getInfo() {
 		return info;
+	}
+	
+	public Clos   toClos() { return this; }
+
+	public Word asWord() { return this; }
+
+	@Override
+	public Value toValue() {
+		return this;
 	}
 }

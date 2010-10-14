@@ -3,7 +3,12 @@ package foamj;
 import java.math.BigInteger;
 
 public class Math {
-	private static final Format divideFormat = new Format(2);
+    private static final Format divideFormat = new Format(2);
+    public static final int ROUND_ZERO = 0;
+    public static final int ROUND_NEAREST = 1;
+    public static final int ROUND_UP = 2;
+    public static final int ROUND_DOWN = 3;
+    public static final int ROUND_DONTCARE = 4;
 
 	public static boolean bit(int n, int idx) {
 		return (n & (1<<idx)) != 0; 
@@ -102,27 +107,149 @@ public class Math {
 	}
 	            
 	
-	public static int formatSInt(int v, char[] s, int c) {
+	public static int formatSInt(int v, Object s, int c) {
 		throw new RuntimeException();
 	}
 	
-	public static BigInteger sIPower(BigInteger b1, BigInteger b2) {
+	public static BigInteger sIPower(BigInteger b1, int b2) {
 		throw new RuntimeException();
 	}
 	public static BigInteger bIPower(BigInteger b1, BigInteger b2) {
 		throw new RuntimeException();
 	}
-	public static BigInteger powerMod(BigInteger b1, BigInteger b2) {
+    public static BigInteger powerMod(BigInteger b1, BigInteger b2, BigInteger b3) {
 		throw new RuntimeException();
 	}
 
-	public static BigInteger shiftUp(BigInteger b1, BigInteger b2)  {
+	public static BigInteger shiftUp(BigInteger b1, int b2)  {
 		throw new RuntimeException();
 	}
-	public static BigInteger shiftDn(BigInteger b1, BigInteger b2)  {
+	public static BigInteger shiftDn(BigInteger b1, int b2)  {
 		throw new RuntimeException();
 	}
 	public static BigInteger shiftRem(BigInteger b1, BigInteger b2) {
 		throw new RuntimeException();
 	}
+
+    public static int timesModInv(int a, int b, int c, double d) {
+		throw new RuntimeException();
+    }
+
+
+    public static float sfloAssemble(boolean sign, int i, Word w) {
+	throw new RuntimeException();
+    }
+
+    public static MultiRecord sfloDissemble(float f) {
+	throw new RuntimeException();
+    }
+
+    public static float sfloNext(float f) {
+	throw new RuntimeException();
+    }
+
+    public static float sfloPrev(float f) {
+	throw new RuntimeException();
+    }
+
+    public static float sfloRTimes(float a, float b, int r) {
+	throw new RuntimeException();
+    }
+
+    public static float sfloRMinus(float a, float b, int r) {
+	throw new RuntimeException();
+    }
+
+    public static float sfloRPlus(float a, float b, int r) {
+	throw new RuntimeException();
+    }
+
+    public static float sfloRDivide(float a, float b, int r) {
+	throw new RuntimeException();
+    }
+
+    public static float sfloRTimesPlus(float a, float b, float c, int r) {
+	throw new RuntimeException();
+    }
+
+    public static BigInteger sfloTruncate(float a) {
+	throw new RuntimeException();
+    }
+    public static float sfloFraction(float a) {
+	throw new RuntimeException();
+    }
+    public static BigInteger sfloRound(float a, int b) {
+	throw new RuntimeException();
+    }
+
+
+
+    public static double dfloAssemble(boolean sign, int i, Word w1, Word w2) {
+	throw new RuntimeException();
+    }
+
+    public static MultiRecord dfloDissemble(double f) {
+	throw new RuntimeException();
+    }
+    public static float dfloNext(double f) {
+	throw new RuntimeException();
+    }
+
+    public static float dfloPrev(double f) {
+	throw new RuntimeException();
+    }
+
+    public static double dfloRTimes(double a, double b, int r) {
+	throw new RuntimeException();
+    }
+
+    public static double dfloRMinus(double a, double b, int r) {
+	throw new RuntimeException();
+    }
+
+    public static double dfloRPlus(double a, double b, int r) {
+	throw new RuntimeException();
+    }
+
+    public static double dfloRDivide(double a, double b, int r) {
+	throw new RuntimeException();
+    }
+
+    public static double dfloRTimesPlus(double a, double b, double c, int r) {
+	throw new RuntimeException();
+    }
+
+    public static BigInteger dfloTruncate(double a) {
+	throw new RuntimeException();
+    }
+    public static double dfloFraction(double a) {
+	throw new RuntimeException();
+    }
+    public static BigInteger dfloRound(double a, int b) {
+	throw new RuntimeException();
+    }
+
+
+    public static int formatBInt(BigInteger i, Object o, int n) {
+	throw new RuntimeException();
+    }
+    public static int formatSFlo(float i, Object o, int n) {
+	throw new RuntimeException();
+    }
+    public static int formatDFlo(double i, Object o, int n) {
+	throw new RuntimeException();
+    }
+
+    public static MultiRecord scanSFlo(Object o, int n) {
+	throw new RuntimeException();
+    }
+    public static MultiRecord scanDFlo(Object o, int n) {
+	throw new RuntimeException();
+    }
+    public static MultiRecord scanSInt(Object o, int n) {
+	throw new RuntimeException();
+    }
+    public static MultiRecord scanBInt(Object o, int n) {
+	throw new RuntimeException();
+    }
 }
