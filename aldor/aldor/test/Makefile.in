@@ -31,8 +31,13 @@ jtests  :=
 _aotests := $(sort $(fmtests) $(ctests) $(jtests))
 _fmtests := $(sort $(fmtests) $(jtests))
 _ctests  := $(sort $(ctests)  $(otests))
+
+_jruntests := $(sort $(jruntests))
+_jtests  := $(sort $(jtests) $(_jruntests))
+_fmtests := $(sort $(fmtests) $(_jtests))
 _otests  := $(sort $(otests))
-_jtests  := $(sort $(jtests))
+_ctests  := $(sort $(ctests)  $(_otests))
+_aotests := $(sort $(_fmtests) $(_ctests))
 
 $(patsubst %, out/fm/%.fm, $(_fmtests)): out/fm/%.fm: out/ao/%.ao
 	mkdir -p $$(dirname $@)
@@ -45,11 +50,13 @@ $(patsubst %, out/c/%.c, $(_ctests)): out/c/%.c: out/ao/%.ao
 $(patsubst %, out/java/%.java, $(_jtests)): $(aldorexedir)/javagen
 $(patsubst %, out/java/%.java, $(_jtests)): out/java/%.java: out/fm/%.fm
 	mkdir -p $$(dirname $@)
-	(cd $(builddir)/out/fm; $(aldorexedir)/javagen $*.fm > ../java/$*.java)
+	(cd $(builddir)/out/fm; $(aldorexedir)/javagen \
+		$(if $(filter $(_jruntests), $*), -Jmain,) \
+		$*.fm > ../java/$*.java)
 
 javaopts=-cp $(abs_top_builddir)/aldor/lib/java/build/foamj.jar
 
-$(patsubst %, out/java/%.class, $(jtests)): out/java/%.class: out/java/%.java
+$(patsubst %, out/java/%.class, $(_jtests)): out/java/%.class: out/java/%.java
 	(cd $(builddir)/out/java; javac $(javaopts) $*.java)
 
 # Create .o files locally as unicl creates files in the
@@ -70,6 +77,7 @@ define aldor_args
 	-Fao=out/ao/$*.ao $(srcdir)/$*.as
 endef
 
+$(patsubst %, out/ao/%.ao, $(_aotests)): out/ao/%.ao: $(aldorexedir)/aldor
 $(patsubst %, out/ao/%.ao, $(_aotests)): out/ao/%.ao: %.as
 	mkdir -p $$(dirname $@)
 	$(aldorexedir)/aldor $(aldor_args)
@@ -78,6 +86,7 @@ all: $(patsubst %,out/fm/%.fm,$(fmtests)) \
      $(patsubst %,out/c/%.c,$(ctests)) \
      $(patsubst %,out/java/%.java,$(jtests)) \
      $(patsubst %,out/java/%.class,$(jtests)) \
+     $(patsubst %,out/java/%.class,$(jruntests)) \
      $(patsubst %,%.o,$(otests)) 
 
 .PHONY: all
