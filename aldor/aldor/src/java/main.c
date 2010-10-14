@@ -13,10 +13,20 @@ int main(int argc, char *argv[])
 	if (getenv("GJ_DEBUG")) {
 		genJavaDebug=1;
 	}
+	argv++;
+	while (true) {
+		if (strcmp(argv[0], "-Jmain") == 0) {
+			gjGenSetMain(true);
+			argv++;
+		}
+		else
+			break;
 
-	FILE *file  = fopen(argv[1], "r");
+	}
+
+	FILE *file  = fopen(argv[0], "r");
 	Foam f      = foamRdSExpr(file, NULL, NULL);
-	PathList pl = pathListFrString(argv[1]);
+	PathList pl = pathListFrString(argv[0]);
 	String lastElt = car(listLastCons(String)(pl));
 	lastElt[strlen(lastElt)-3] = '\0';
 	JavaCode jc = gjGenJavaUnit(f, lastElt);
