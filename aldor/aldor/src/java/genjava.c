@@ -59,6 +59,11 @@ local JavaCode gj0Free(Foam foam);
 local JavaCode gj0RecSet(JavaCode lhs, JavaCode rhs, Foam ddecl, int idx);
 
 local JavaCode gj0SInt(Foam foam);
+local JavaCode gj0HInt(Foam foam);
+local JavaCode gj0SFlo(Foam foam);
+local JavaCode gj0DFlo(Foam foam);
+local JavaCode gj0Byte(Foam foam);
+
 local JavaCode gj0Bool(Foam foam);
 local JavaCode gj0Char(Foam foam);
 
@@ -106,7 +111,7 @@ local String       gj0ProgFnName(int idx);
 local void         gj0ProgAddStubs(FoamSigList sigList);
 local JavaCodeList gj0ProgDeclarations(Foam ddecl, Foam body);
 
-local String       gj0Name(String prefix, Foam fmt, int idx);
+local String       gj0Name(char *prefix, Foam fmt, int idx);
 local JavaCode     gj0ProgRetnType(Foam rhs);
 local JavaCode     gj0TopConst(Foam lhs, Foam rhs);
 
@@ -138,12 +143,17 @@ local JavaCodeList gj0FmtInits();
 local void gj0NameInit();
 local String gj0NameFrString(String fmName);
 
+local JavaCodeList gj0ClassHeader(String className);
+local String       gj0InitVar(AInt idx);
+
 enum gjId {
 	GJ_Foam,
 	GJ_FoamWord,
 	GJ_FoamClos,
 	GJ_FoamRecord,
 	GJ_FoamEnv,
+	GJ_FoamClass,
+	GJ_FoamContext,
 
 	GJ_FoamFn,
 	GJ_FoamValue,
@@ -151,19 +161,36 @@ enum gjId {
 	GJ_FoamGlobals,
 	GJ_Format,
 	GJ_EnvRecord,
-	
+
 	GJ_Object,
+	GJ_String,
+	
+	GJ_ContextVar,
+	GJ_Main,
 };
 
 typedef Enum(gjId) GjId;
 
 local JavaCode     gj0Id(GjId id);
+#if 0
+		   }
+#endif
 
+/* Run arguments */
+struct gjArgs {
+	String name;
+	Bool   createMain;
+	int    lineWidth;
+};
+
+typedef struct gjArgs GjArgs;
 
 /* State variables */
 struct gjContext {
+	/* whole program */
 	Foam formats;
 	Foam constants;
+	Foam defs;
 	// Mutable state (caches, etc)
 	int  lvl;
 	FoamSigList  ccallStubSigList;
@@ -187,6 +214,9 @@ struct gjContext {
 static struct gjContext gjCtxt0;
 static struct gjContext *gjContext = &gjCtxt0;
 
+static struct gjArgs gjArgs0;
+static struct gjArgs *gjArgs = &gjArgs0;
+
 /* DEBUG */
 
 Bool genJavaDebug = false;
@@ -197,22 +227,39 @@ Bool genJavaDebug = false;
 JavaCode 
 gjGenJavaUnit(Foam foam, String name)
 {
-	JavaCodeList imps, code;
-	JavaCode clss;
+	JavaCodeList imps, code, mainImpl, interfaces;
+	JavaCode clss, contextDecl;
 	String className, comment;
-
+	
+	gjArgs->name = name;
 	gjInit(foam, name);
 
 	className = gj0ClassName(foam, name);
+
 	code = gj0DDef(foam->foamUnit.defs);
+	mainImpl = gj0ClassHeader(name);
 	comment = gj0ClassDocumentation(foam, name);
 
+	code = listNConcat(JavaCode)(mainImpl, code);
+	
+	interfaces = listSingleton(JavaCode)(gj0Id(GJ_FoamClass));
 	clss = jcClass(JCO_MOD_Public, comment, 
-				jcId(className), NULL, NULL, code);
+		       jcId(className), NULL, interfaces, code);
 
 	imps = gj0CollectImports(clss);
 	return jcFile(NULL, jcId(className), imps, clss);
 }
+
+/*
+ * :: Options
+ */
+
+void
+gjGenSetMain(Bool flg)
+{
+	gjArgs->createMain = flg;
+}
+
 
 local JavaCodeList
 gj0CollectImports(JavaCode clss)
@@ -241,6 +288,7 @@ gjInit(Foam foam, String name)
 	gjContext->lvl = 0;
 	gjContext->formats = foam->foamUnit.formats;
 	gjContext->constants = foamUnitConstants(foam);
+	gjContext->defs      = foam->foamUnit.defs;
 	gjContext->ccallStubSigList = listNil(FoamSig);
 	gjContext->gloRegList = listNil(JavaCode);
 	gjContext->fmtSet = intSetNew(foamArgc(gjContext->formats));
@@ -304,6 +352,14 @@ gj0Gen(Foam foam)
 		return gj0Seq(foam);
 	case FOAM_SInt:
 		return gj0SInt(foam);
+	case FOAM_HInt:
+		return gj0HInt(foam);
+	case FOAM_SFlo:
+		return gj0SFlo(foam);
+	case FOAM_DFlo:
+		return gj0DFlo(foam);
+	case FOAM_Byte:
+		return gj0Byte(foam);
 	case FOAM_Char:
 		return gj0Char(foam);
 	case FOAM_Bool:
@@ -464,6 +520,8 @@ local JavaCode     gj0ProgFnMethodBody(Foam lhs, Foam prog);
 local void         gj0ProgInitVars(IntSet set, Foam body);
 local JavaCode     gj0ProgDecl(Foam ddecl, int idx, Bool isSet);
 local JavaCode     gj0ProgDeclDefaultValue(Foam decl);
+local void         gj0SeqHaltFlush(Foam foam);
+
 
 local JavaCode
 gj0Prog(Foam lhs, Foam rhs)
@@ -524,6 +582,9 @@ gj0ProgMain(Foam f)
 	gjDEBUG(printf("(Entering prog: %s\n", methodName););
 
 	args = gj0ProgCollectArgs(f);
+
+	gj0SeqHaltFlush(f->foamProg.body);
+
 	declarations = gj0ProgDeclarations(gjContext->progLocals,
 					   f->foamProg.body);
 	exns = gj0ProgExceptions();
@@ -617,7 +678,7 @@ local JavaCode
 gj0ProgEnvArg(Foam foam)
 {
 	JavaCode type = gj0TypeFrFmt(FOAM_Env, 0);
-	return jcParamDecl(0, type, gj0EnvId(0));
+	return jcParamDecl(0, type, gj0EnvId(1));
 }
 
 /** Extract the declarations from the given foam.
@@ -633,6 +694,7 @@ gj0ProgDeclarations(Foam ddecl, Foam body)
 	IntSet initted;
 	int i=0;
 	initted = intSetNew(foamDDeclArgc(ddecl));
+	
 
 	gj0ProgInitVars(initted, body);
 	gjDEBUG(printf("InitVars: %s\n", intSetToString(initted)););
@@ -682,6 +744,8 @@ gj0ProgDeclDefaultValue(Foam decl)
 		return jcLiteralChar("\\0");
 	case FOAM_SInt:
 	case FOAM_HInt:
+	case FOAM_SFlo:
+	case FOAM_DFlo:
 		return jcLiteralInteger(0);
 	default:
 		return jcKeyword(symInternConst("null"));
@@ -738,7 +802,7 @@ gj0ProgExceptions()
 local int 
 gj0ProgModifiers()
 {
-	return JCO_MOD_Private | JCO_MOD_Static;
+	return JCO_MOD_Private;
 }
 
 local void
@@ -776,12 +840,33 @@ gj0ProgEnvInitCreate(Foam f)
 	max = maxLvl>maxEnv ? maxLvl : maxEnv;
 
 	lines = listNil(JavaCode);
-	for (i=1; i<=max; i++) {
+
+	for (i=2; i<=max; i++) {
 		JavaCode line;
 		line = jcStatement(gj0ProgEnvDecl(i, denv));
 		lines = listCons(JavaCode)(line, lines);
 	}
-
+	
+	if (bitvTest(clss, refEnvs, 0)) {
+		JavaCode line;
+		JavaCode envRec;
+		AInt fmt = denv->foamDEnv.argv[0];
+		
+		if (fmt == 0) 
+			envRec = jcNull();
+		else {
+			gj0FmtUse(fmt);
+			envRec = jcConstructV(gj0Id(GJ_EnvRecord), 1,
+					      gj0FmtId(fmt));
+		}
+		line = jcInitialisation(JCO_MOD_Final,gj0TypeFrFmt(FOAM_Env, 0),
+					gj0EnvId(0), jcConstructV(gj0TypeFrFmt(FOAM_Env, fmt), 2,
+								  envRec,
+								  gj0EnvId(1)));
+		line = jcStatement(line);
+		lines = listCons(JavaCode)(line, lines);
+			     
+	}
 	for (i=0; i<lvlCount; i++) {
 		if (bitvTest(clss, refLvls, i)) {
 			JavaCode line;
@@ -850,12 +935,13 @@ gj0ProgEnvInitCollect(Foam f, BitvClass clss, Bitv refMask, Bitv envMask)
 local JavaCode
 gj0ProgFnCreate(Foam lhs, Foam prog)
 {
+	JavaCodeList args;
 	JavaCode method;
 	JavaCode methodBody;
 	JavaCode fnDef;
 	JavaCode anonClass;
-	JavaCodeList args;
-	
+	String name;
+
 	args = listList(JavaCode)(2,
 				  jcParamDecl(0, gj0TypeFrFmt(FOAM_Env, 0),
 					      jcId(strCopy("env"))),
@@ -872,14 +958,15 @@ gj0ProgFnCreate(Foam lhs, Foam prog)
 			  listNil(JavaCode),
 			  methodBody);
 
+	name = gj0ProgFnName(lhs->foamConst.index);
 	anonClass = jcConstructSubclass(gj0Id(GJ_FoamFn),
-					listNil(JavaCode),
+					listSingleton(JavaCode)(jcLiteralString(strCopy(name))),
 					jcNLSeqV(1, method));
-	fnDef = jcInitialisation(JCO_MOD_Static, 
+	fnDef = jcInitialisation(JCO_MOD_Private, 
 				 gj0Id(GJ_FoamFn),
-				 jcId(gj0ProgFnName(lhs->foamConst.index)),
+				 jcId(strCopy(name)),
 				 anonClass);
-
+	strFree(name);
 	return jcStatement(fnDef);
 }
 
@@ -910,12 +997,29 @@ gj0ProgFnMethodBody(Foam lhs, Foam prog)
 	call = jcApply(jcId(gj0ProgMethodName(lhs)), l);
 	JavaCodeList ret;
 
-	if (prog->foamProg.retType == FOAM_NOp) {
+
+	if (foamTypeIsVoid(gjContext->formats,
+			   prog->foamProg.retType, 
+			   prog->foamProg.format)) {
 		JavaCode l1 = call;
 		JavaCode l2 = jcReturn(jcNull());
 		ret = listList(JavaCode)(2, 
 					 jcStatement(l1), 
 					 jcStatement(l2));
+	}
+	else if (foamTypeIsMulti(gjContext->formats,
+				 prog->foamProg.retType, 
+				 prog->foamProg.format)) {
+		JavaCode l1, l2;
+		l1 = jcInitialisation(0, gj0TypeFrFmt(prog->foamProg.retType, 
+						      prog->foamProg.format),
+				      jcId(strCopy("ret")),
+				      call);
+		l2 = gj0TypeObjToValue(jcId(strCopy("ret")),
+				       prog->foamProg.retType, 
+				       prog->foamProg.format);
+		l2 = jcReturn(l2);
+		ret = listList(JavaCode)(2, jcStatement(l1), jcStatement(l2));
 	}
 	else {
 		JavaCode l1, l2;
@@ -967,6 +1071,10 @@ gj0TypeFrFmt(AInt id, AInt fmt)
 		return jcKeyword(symInternConst("char"));
 	case FOAM_SInt:
 		return jcKeyword(symInternConst("int"));
+	case FOAM_SFlo:
+		return jcKeyword(symInternConst("float"));
+	case FOAM_DFlo:
+		return jcKeyword(symInternConst("double"));
 	case FOAM_HInt:
 		return jcKeyword(symInternConst("short"));
 	case FOAM_Bool:
@@ -1017,13 +1125,26 @@ gj0TypeValueToObj(JavaCode val, FoamTag type, AInt fmt)
 		return jcApplyMethodV(val, jcId(strCopy("toSInt")), 0);
 	case FOAM_Byte:
 		return jcApplyMethodV(val, jcId(strCopy("toByte")), 0);
+	case FOAM_HInt:
+		return jcApplyMethodV(val, jcId(strCopy("toHInt")), 0);
+	case FOAM_BInt:
+		return jcApplyMethodV(val, jcId(strCopy("toBInt")), 0);
+	case FOAM_SFlo:
+		return jcApplyMethodV(val, jcId(strCopy("toSFlo")), 0);
+	case FOAM_DFlo:
+		return jcApplyMethodV(val, jcId(strCopy("toDFlo")), 0);
 	case FOAM_NOp:
 		assert(false);
 		return 0;
 	case FOAM_Clos:
-		return jcApplyMethodV(val, jcId(strCopy("toClos")), 0);
+		return jcApplyMethod(gj0Id(GJ_FoamClos),
+				     jcId(strCopy("fromValue")),
+				     listSingleton(JavaCode)(val));
 	case FOAM_Word:
-		return jcApplyMethodV(val, jcId(strCopy("asWord")), 0);
+		return jcApplyMethod(jcMemRef(gj0Id(GJ_FoamWord),
+					      jcId(strCopy("U"))),
+				     jcId(strCopy("fromValue")),
+				     listSingleton(JavaCode)(val));
 	case FOAM_Bool:
 		return jcApplyMethodV(val, jcId(strCopy("toBool")), 0);
 	case FOAM_Rec:
@@ -1061,6 +1182,11 @@ gj0TypeObjToValue(JavaCode val, FoamTag type, AInt fmt)
 					       jcId(strCopy("U"))),
 				      jcId(strCopy("fromSInt")), 1,
 				      val);
+	case FOAM_BInt:
+		return jcApplyMethodV(jcMemRef(gj0Id(GJ_FoamValue),
+					       jcId(strCopy("U"))),
+				      jcId(strCopy("fromBInt")), 1,
+				      val);
 	case FOAM_Bool:
 		return jcApplyMethodV(jcMemRef(gj0Id(GJ_FoamValue),
 					       jcId(strCopy("U"))),
@@ -1076,8 +1202,38 @@ gj0TypeObjToValue(JavaCode val, FoamTag type, AInt fmt)
 					       jcId(strCopy("U"))),
 				      jcId(strCopy("fromPtr")), 1,
 				      val);
-	default:
+	case FOAM_Char:
+		return jcApplyMethodV(jcMemRef(gj0Id(GJ_FoamValue),
+					       jcId(strCopy("U"))),
+				      jcId(strCopy("fromChar")), 1,
+				      val);
+	case FOAM_HInt:
+		return jcApplyMethodV(jcMemRef(gj0Id(GJ_FoamValue),
+					       jcId(strCopy("U"))),
+				      jcId(strCopy("fromHInt")), 1,
+				      val);
+	case FOAM_DFlo:
+		return jcApplyMethodV(jcMemRef(gj0Id(GJ_FoamValue),
+					       jcId(strCopy("U"))),
+				      jcId(strCopy("fromDFlo")), 1,
+				      val);
+	case FOAM_SFlo:
+		return jcApplyMethodV(jcMemRef(gj0Id(GJ_FoamValue),
+					       jcId(strCopy("U"))),
+				      jcId(strCopy("fromSFlo")), 1,
+				      val);
+	case FOAM_Byte:
+		return jcApplyMethodV(jcMemRef(gj0Id(GJ_FoamValue),
+					       jcId(strCopy("U"))),
+				      jcId(strCopy("fromByte")), 1,
+				      val);
+	case FOAM_Env:
+	case FOAM_Clos:
+	case FOAM_Rec:
+	case FOAM_NOp:
 		return val;
+	default:
+		assert(false);
 	}
 
 }
@@ -1168,6 +1324,9 @@ gj0Glo(Foam ref)
 	String id;
 	
 	decl = gjContextGlobal(ref->foamGlo.index);
+	if (decl->foamGDecl.protocol == FOAM_Proto_Init) {
+		return jcId(gj0InitVar(ref->foamGlo.index));
+	}
 	id = decl->foamDecl.id;
 	jc = jcApplyMethod(gj0Id(GJ_FoamGlobals),
 			     jcId(strCopy("getGlobal")),
@@ -1218,6 +1377,7 @@ gj0GloSet(Foam lhs, Foam rhs)
  */
 struct gjSeqBucket {
 	AInt label; /* -1 ==> prefix */
+	Bool unreachable;
 	JavaCodeList list;
 };
 
@@ -1233,15 +1393,18 @@ typedef struct gjSeqStore *GjSeqStore;
 
 #define GJ_SEQ_Prefix (-2)
 #define GJ_SEQ_Init (-1)
+#define GJ_SEQ_Halt (-3)
 
 local void gj0SeqGen(GjSeqStore seqs, Foam stmt);
 local void gj0SeqGoto(GjSeqStore store, Foam foam);
-local void gj0SeqLabel(GjSeqStore bucketList, Foam foam);
-local void gj0SeqSelect(GjSeqStore bucketList, Foam foam);
+local void gj0SeqLabel(GjSeqStore store, Foam foam);
+local void gj0SeqSelect(GjSeqStore store, Foam foam);
 local void gj0SeqSelect2(GjSeqStore store, Foam foam);
-local void gj0SeqIf(GjSeqStore store, Foam foam);
+local void gj0SeqGenDefault(GjSeqStore store, Foam foam);
 local void gj0SeqSelectMulti(GjSeqStore store, Foam foam);
-local void gj0SeqGenDefault(GjSeqStore bucketList, Foam foam);
+local void gj0SeqIf(GjSeqStore store, Foam foam);
+local void gj0SeqBCall(GjSeqStore store, Foam foam);
+
 local JavaCode gj0SeqSwitchId();
 
 local GjSeqStore   gj0SeqStoreNew(void);
@@ -1250,12 +1413,16 @@ local JavaCode     gj0SeqStoreToJava(GjSeqStore store);
 local void         gj0SeqStoreAddStmt(GjSeqStore store, JavaCode stmt);
 local void         gj0SeqStoreAddLabel(GjSeqStore store, AInt label);
 local void         gj0SeqStoreEnsureBody(GjSeqStore store);
+local void         gj0SeqStoreAddHalt(GjSeqStore store, JavaCode stmt);
 
 local GjSeqBucket  gj0SeqBucketNew(AInt label);
 local void         gj0SeqBucketFree(GjSeqBucket store);
 local JavaCodeList gj0SeqBucketToJava(GjSeqBucket bucket);
 local GjSeqBucket  gj0SeqBucketGetPrefix(GjSeqBucketList buckets);
 local Bool         gj0SeqBucketIsPrefix(GjSeqBucket bucket);
+local Bool         gj0SeqBucketIsHalt(GjSeqBucket bucket);
+
+local JavaCode     gj0ReturnArray(Foam foam);
 
 local JavaCode 
 gj0Seq(Foam seq)
@@ -1276,10 +1443,33 @@ gj0Seq(Foam seq)
 local JavaCode
 gj0Return(Foam r)
 {
+	FoamTag tag;
+	AInt fmt;
+
 	if (foamTag(r->foamReturn.value) == FOAM_Values)
 		return gj0ValuesReturn(r->foamReturn.value);
+
+	if (gjContext->prog->foamProg.retType == FOAM_Arr)
+		return gj0ReturnArray(r->foamReturn.value);
+
 	return jcReturn(gj0Gen(r->foamReturn.value));
 }
+
+local JavaCode
+gj0ReturnArray(Foam foam)
+{
+	JavaCode v;
+	FoamTag tag;
+	AInt fmt;
+
+	tag = gj0FoamExprTypeWFmt(foam, &fmt);
+	if (tag == FOAM_Arr || fmt == gjContext->prog->foamProg.format)
+		return jcReturn(gj0Gen(foam));
+
+	v = jcCast(gj0TypeFrFmt(tag, fmt), gj0Gen(foam));
+	return jcReturn(v);
+}
+
 
 local void 
 gj0SeqGen(GjSeqStore seqs, Foam foam)
@@ -1296,6 +1486,9 @@ gj0SeqGen(GjSeqStore seqs, Foam foam)
 		break;
 	case FOAM_Label:
 		gj0SeqLabel(seqs, foam);
+		break;
+	case FOAM_BCall:
+		gj0SeqBCall(seqs, foam);
 		break;
 	default:
 		gj0SeqGenDefault(seqs, foam);
@@ -1317,6 +1510,7 @@ gj0SeqGoto(GjSeqStore store, Foam foam)
 local void
 gj0SeqLabel(GjSeqStore store, Foam foam)
 {
+	gj0SeqStoreEnsureBody(store);
 	gj0SeqStoreAddLabel(store, foam->foamLabel.label);
 }
 
@@ -1399,6 +1593,16 @@ gj0SeqSelectMulti(GjSeqStore store, Foam foam)
 }
 
 
+local void
+gj0SeqBCall(GjSeqStore seqs, Foam foam)
+{
+	JavaCode jc;
+	if (foam->foamBCall.op != FOAM_BVal_Halt)
+		return gj0SeqGenDefault(seqs, foam);
+	jc = jcStatement(gj0Gen(foam));
+	
+	return gj0SeqStoreAddHalt(seqs, jc);
+}
 
 local void
 gj0SeqGenDefault(GjSeqStore store, Foam foam)
@@ -1428,7 +1632,6 @@ gj0SeqStoreNew(void)
 {
 	GjSeqStore store = (GjSeqStore) stoAlloc(OB_Other, sizeof(*store));
 	store->buckets = listNil(GjSeqBucket);
-	
 	return store;
 }
 
@@ -1477,6 +1680,19 @@ gj0SeqStoreAddLabel(GjSeqStore store, AInt label)
 					       store->buckets);
 }
 
+local void 
+gj0SeqStoreAddHalt(GjSeqStore store, JavaCode stmt)
+{
+	GjSeqBucket bucket;
+
+	bucket = gj0SeqBucketNew(GJ_SEQ_Halt);
+	bucket->list = listSingleton(JavaCode)(stmt);
+	store->buckets = listCons(GjSeqBucket)(bucket,
+					       store->buckets);
+}
+
+
+
 local JavaCode
 gj0SeqStoreToJava(GjSeqStore store)
 {
@@ -1484,7 +1700,9 @@ gj0SeqStoreToJava(GjSeqStore store)
 	JavaCode stmt, decl;
 	GjSeqBucketList buckets, lst;
 	GjSeqBucket prefix;
+	int labelCount;
 	assert(listLength(GjSeqBucket)(store->buckets) > 0);
+
 	if (listLength(GjSeqBucket)(store->buckets) == 1) {
 		JavaCodeList code = gj0SeqBucketToJava(car(store->buckets));
 		store->buckets = listNil(GjSeqBucket);
@@ -1496,6 +1714,8 @@ gj0SeqStoreToJava(GjSeqStore store)
 
 	jlst = listNil(JavaCode);
 	lst = buckets;
+
+	labelCount = 0;
 	while (lst) {
 		JavaCodeList block;
 		GjSeqBucket bucket;
@@ -1504,27 +1724,36 @@ gj0SeqStoreToJava(GjSeqStore store)
 			lst = cdr(lst);
 			continue;
 		}
-		jlst = listCons(JavaCode)(jcCaseLabel(jcLiteralInteger(bucket->label)),
-					  jlst);
+		if (!gj0SeqBucketIsHalt(bucket)) {
+			labelCount++;
+			jlst = listCons(JavaCode)(jcCaseLabel(jcLiteralInteger(bucket->label)),
+						  jlst);
+		}
 		block = gj0SeqBucketToJava(bucket);
 		jlst  = listNConcat(JavaCode)(listNReverse(JavaCode)(block),
 					      jlst);
 		lst = cdr(lst);
 	}
+
 	listFree(GjSeqBucket)(buckets);
 	store->buckets = listNil(GjSeqBucket);
 	jlst = listNReverse(JavaCode)(jlst);
 
 	l1 = prefix == 0 ? listNil(JavaCode) : gj0SeqBucketToJava(prefix);
-	decl = jcStatement(jcInitialisation(0, 
+	if (labelCount == 0) {
+		return jcNLSeq(listNConcat(JavaCode)(l1, jlst));
+	}
+	else {
+		decl = jcStatement(jcInitialisation(0, 
 					    jcKeyword(symInternConst("int")), 
 					    gj0SeqSwitchId(),
 					    jcLiteralInteger(GJ_SEQ_Init)));
-	stmt = jcWhile(jcKeyword(symInternConst("true")),
-		       jcBlock(jcSwitch(gj0SeqSwitchId(), jlst)));
-	l2 = listList(JavaCode)(2, decl, stmt);
 
-	return jcNLSeq(listNConcat(JavaCode)(l1, l2));
+		stmt = jcWhile(jcKeyword(symInternConst("true")),
+			       jcBlock(jcSwitch(gj0SeqSwitchId(), jlst)));
+		l2 = listList(JavaCode)(2, decl, stmt);
+		return jcNLSeq(listNConcat(JavaCode)(l1, l2));
+	}
 }
 
 local GjSeqBucket 
@@ -1548,6 +1777,12 @@ gj0SeqBucketToJava(GjSeqBucket bucket)
 {
 	JavaCodeList l = listNReverse(JavaCode)(bucket->list);
 	bucket->list = listNil(JavaCode);
+
+	if (bucket->label == GJ_SEQ_Halt) {
+		if (listLength(JavaCode)(l) > 1) 
+			car(l) = jcIf(jcFalse(), car(l));
+	}
+
 	return l;
 }
 
@@ -1571,6 +1806,12 @@ gj0SeqBucketIsPrefix(GjSeqBucket bucket)
 	return bucket->label == GJ_SEQ_Prefix;
 }
 
+local Bool
+gj0SeqBucketIsHalt(GjSeqBucket bucket)
+{
+	return bucket->label == GJ_SEQ_Halt;
+}
+
 /*
  * :: Custom java classes
  */
@@ -1589,6 +1830,41 @@ local Bool
 gj0IsSeqNode(JavaCode jc)
 {
 	return jcoClass(jc) == &gjClss[0];
+}
+
+/*
+ * Destructively replaces any statements containing a 'halt'
+ * with the halt itself (safe as all foam statements evaluate
+ * all their arguments.
+ */
+local Bool gj0SeqIsBCallHalt(Foam f);
+
+local void
+gj0SeqHaltFlush(Foam foam) 
+{
+	int i;
+	
+	assert(foamTag(foam) == FOAM_Seq);
+
+	for (i=0; i<foamArgc(foam); i++) {
+		Foam stmt = foam->foamSeq.argv[i];
+		Foam f = foamFindFirst(gj0SeqIsBCallHalt, stmt);
+		if (f == 0)
+			continue;
+		foam->foamSeq.argv[i] = foamCopy(f);
+		foamFree(stmt);
+	}
+	
+}
+
+local Bool
+gj0SeqIsBCallHalt(Foam f)
+{
+	if (foamTag(f) != FOAM_BCall)
+		return false;
+	if (f->foamBCall.op != FOAM_BVal_Halt)
+		return false;
+	return true;
 }
 
 /*
@@ -1787,7 +2063,6 @@ gj0MFmt(Foam f)
 }
 
 
-
 /*
  * :: Integer Literals
  */
@@ -1799,6 +2074,40 @@ gj0SInt(Foam foam)
 	return jcLiteralInteger(foam->foamSInt.SIntData);
 }
 
+local JavaCode
+gj0Byte(Foam foam)
+{
+	return jcCast(gj0TypeFrFmt(FOAM_Byte, 0),
+		      jcLiteralInteger(foam->foamByte.ByteData));
+}
+
+local JavaCode
+gj0HInt(Foam foam)
+{
+	return jcCast(gj0TypeFrFmt(FOAM_HInt, 0),
+		      jcLiteralInteger(foam->foamHInt.HIntData));
+}
+
+
+/*
+ * :: Float Literals
+ */
+
+local JavaCode
+gj0SFlo(Foam foam)
+{
+	char buf[MAX_FLOAT_SIZE];
+	DFloatSprint(buf, foam->foamSFlo.SFloData);
+	return jcCast(gj0TypeFrFmt(FOAM_SFlo, 0),
+		      jcLiteralFloatFrString(strCopy(buf)));
+}
+local JavaCode
+gj0DFlo(Foam foam)
+{
+	char buf[MAX_FLOAT_SIZE];
+	DFloatSprint(buf, foam->foamSFlo.SFloData);
+	return jcLiteralFloatFrString(strCopy(buf));
+}
 
 /*
  * :: Boolean Literals
@@ -1896,7 +2205,7 @@ gj0Arr(Foam foam)
 		return gj0ArrChar(foam);
 	default:
 		return gj0Default(foam, 
-				  strPrintf("Arr(%s", 
+				  strPrintf("Arr(%s)", 
 					    foamStr(foam->foamArr.baseType)));
 	}
 }
@@ -2516,6 +2825,7 @@ gj0CCallStubName(FoamSig call)
 
 local JavaCode gj0CastWordToObj(JavaCode jc, FoamTag type, AInt fmt);
 local JavaCode gj0CastObjToWord(JavaCode jc, FoamTag type, AInt fmt);
+local JavaCode gj0CastObjToPtr(JavaCode jc, FoamTag type, AInt fmt);
 
 local JavaCode
 gj0Cast(Foam foam)
@@ -2536,6 +2846,9 @@ gj0CastFmt(Foam foam, AInt cfmt)
 		fmt = cfmt;
 	if (type == FOAM_Word) {
 		return gj0CastObjToWord(jc, iType, fmt);
+	}
+	else if (type == FOAM_Ptr) {
+		return gj0CastObjToPtr(jc, iType, fmt);
 	}
 	else if (iType == FOAM_Word) {
 		return gj0CastWordToObj(jc, type, fmt);
@@ -2560,6 +2873,8 @@ gj0CastWordToObj(JavaCode jc, FoamTag type, AInt fmt)
 	switch (type) {
 	case FOAM_Bool:
 		return jcApplyMethodV(jc, jcId(strCopy("toBool")), 0);
+	case FOAM_Byte:
+		return jcApplyMethodV(jc, jcId(strCopy("toByte")), 0);
 	case FOAM_SInt:
 		return jcApplyMethodV(jc, jcId(strCopy("toSInt")), 0);
 	case FOAM_HInt:
@@ -2580,9 +2895,10 @@ gj0CastObjToWord(JavaCode val, FoamTag type, AInt fmt)
 {
 	switch (type) {
 	case FOAM_Clos:
-		return jcApplyMethod(val, 
-			     jcId(strCopy("asWord")), 
-			     listNil(JavaCode));
+		return jcApplyMethod(jcMemRef(gj0Id(GJ_FoamWord),
+					      jcId(strCopy("U"))),
+				     jcId(strCopy("fromClos")),
+				     listSingleton(JavaCode)(val));
 	case FOAM_SInt:
 		return jcApplyMethod(jcMemRef(gj0Id(GJ_FoamWord),
 					      jcId(strCopy("U"))),
@@ -2599,10 +2915,40 @@ gj0CastObjToWord(JavaCode val, FoamTag type, AInt fmt)
 					      jcId(strCopy("U"))),
 				     jcId(strCopy("fromArray")),
 				     listSingleton(JavaCode)(val));
+	case FOAM_Rec:
+		return jcApplyMethod(jcMemRef(gj0Id(GJ_FoamWord),
+					      jcId(strCopy("U"))),
+				     jcId(strCopy("fromRec")),
+				     listSingleton(JavaCode)(val));
 	case FOAM_Char:
 		return jcApplyMethod(jcMemRef(gj0Id(GJ_FoamWord),
 					      jcId(strCopy("U"))),
 				     jcId(strCopy("fromChar")),
+				     listSingleton(JavaCode)(val));
+	case FOAM_Byte:
+		return jcApplyMethod(jcMemRef(gj0Id(GJ_FoamWord),
+					      jcId(strCopy("U"))),
+				     jcId(strCopy("fromByte")),
+				     listSingleton(JavaCode)(val));
+	case FOAM_HInt:
+		return jcApplyMethod(jcMemRef(gj0Id(GJ_FoamWord),
+					      jcId(strCopy("U"))),
+				     jcId(strCopy("fromHInt")),
+				     listSingleton(JavaCode)(val));
+	case FOAM_BInt:
+		return jcApplyMethod(jcMemRef(gj0Id(GJ_FoamWord),
+					      jcId(strCopy("U"))),
+				     jcId(strCopy("fromBInt")),
+				     listSingleton(JavaCode)(val));
+	case FOAM_SFlo:
+		return jcApplyMethod(jcMemRef(gj0Id(GJ_FoamWord),
+					      jcId(strCopy("U"))),
+				     jcId(strCopy("fromSFlo")),
+				     listSingleton(JavaCode)(val));
+	case FOAM_DFlo:
+		return jcApplyMethod(jcMemRef(gj0Id(GJ_FoamWord),
+					      jcId(strCopy("U"))),
+				     jcId(strCopy("fromDFlo")),
 				     listSingleton(JavaCode)(val));
 	case FOAM_Nil:
 		return val;
@@ -2611,6 +2957,235 @@ gj0CastObjToWord(JavaCode val, FoamTag type, AInt fmt)
 					  jcComment(strCopy(foamStr(type)))),
 			      val);
 	}
+}
+
+local JavaCode
+gj0CastObjToPtr(JavaCode val, FoamTag type, AInt fmt)
+{
+	return val;
+}
+
+/*
+ * :: Class level boilerplate
+ */
+
+local JavaCodeList gj0ClassFields();
+local JavaCode     gj0ClassMainMethod(String className);
+local JavaCode     gj0ClassConstructor(String className);
+local JavaCode     gj0ClassRunMethod(String className);
+local int          gj0ClassFindInitDeclIdx();
+local Foam         gj0ClassFindInitDef();
+local JavaCode     gj0UtilCCall(JavaCode c, JavaCodeList args);
+
+local JavaCodeList
+gj0ClassHeader(String className)
+{
+	JavaCodeList list, fields;
+	JavaCode decl;
+	JavaCode constructor;
+	JavaCode runMethod;
+
+	list = listNil(JavaCode);
+	fields      = gj0ClassFields();
+	constructor = gj0ClassConstructor(className);
+	runMethod   = gj0ClassRunMethod(className);
+
+	list = listNConcat(JavaCode)(fields, list);
+	list = listCons(JavaCode)(constructor, list);
+	list = listCons(JavaCode)(runMethod, list);
+
+	if (gjArgs->createMain)
+		list = listCons(JavaCode)(gj0ClassMainMethod(className), list);
+	
+	return listNReverse(JavaCode)(list);
+}
+
+local JavaCodeList
+gj0ClassFields()
+{
+	JavaCodeList vars;
+	JavaCode ctxtDecl, rhs, declJ;
+	Foam prog;
+	int i;
+
+	/* private FoamContext ctxt;*/
+	ctxtDecl = jcParamDecl(JCO_MOD_Private,
+			       gj0Id(GJ_FoamContext), gj0Id(GJ_ContextVar));
+	
+	vars = listNil(JavaCode);
+	for (i=0; i< foamDDeclArgc(gjContextGlobals); i++) {
+		Foam decl = gjContextGlobal(i);
+		
+		if (decl->foamGDecl.protocol != FOAM_Proto_Init)
+			continue;
+		declJ = jcParamDecl(JCO_MOD_Private,
+				    gj0TypeFrFmt(FOAM_Clos, 0),
+				    jcId(gj0InitVar(i)));
+		vars = listCons(JavaCode)(jcStatement(declJ), vars);
+	}
+
+
+	return listCons(JavaCode)(jcStatement(ctxtDecl), vars);
+				  
+}
+
+local JavaCode
+gj0ClassConstructor(String className)
+{
+	// public foo(FoamContext ctxt) {
+	//     this.ctxt = ctxt;
+	//     <init_foo> = new Clos(null, CFX);
+	//     <init_*>   = ctxt.createLoadFn(ctxt)
+	// }
+	JavaCodeList args;
+	JavaCodeList body, inits;
+	JavaCode s1, declJ, rhs;
+	Foam decl;
+	int i;
+
+	args = listSingleton(JavaCode)(jcParamDecl(0, gj0Id(GJ_FoamContext), gj0Id(GJ_ContextVar)));
+	s1 = jcAssign(jcMemRef(jcThis(), gj0Id(GJ_ContextVar)), gj0Id(GJ_ContextVar));
+	
+	s1 = jcStatement(s1);
+	
+	inits = listNil(JavaCode);
+	for (i=0; i<foamDDeclArgc(gjContextGlobals); i++) {
+		decl = gjContextGlobal(i);
+		
+		if (decl->foamGDecl.protocol != FOAM_Proto_Init)
+			continue;
+		if (decl->foamGDecl.dir == FOAM_GDecl_Import) 
+			rhs = jcApplyMethodV(gj0Id(GJ_ContextVar), 
+					     jcId(strCopy("createLoadFn")),
+					     1, jcLiteralString(strCopy(decl->foamGDecl.id)));
+		else 
+			rhs = jcConstructV(gj0TypeFrFmt(FOAM_Clos, 0),
+					   2, jcNull(), 
+					   jcId(gj0ProgFnName(0)));
+		declJ = jcAssign(jcId(gj0InitVar(i)), rhs);
+		inits = listCons(JavaCode)(jcStatement(declJ), inits);
+	}
+
+	body = listCons(JavaCode)(s1, listNReverse(JavaCode)(inits));
+	return jcConstructor(JCO_MOD_Public, NULL,
+			     jcId(strCopy(className)),
+			     listNil(JavaCode), args,
+			     listNil(JavaCode), 
+			     jcNLSeq(body));
+}
+
+local JavaCode
+gj0ClassRunMethod(String className)
+{
+	// public void run() {
+	//    c0_langx(null)
+	//    Clos c = ctxt.getGlobal(basic)
+	//    c.getProg().ocall(c.getEnv());
+	// }
+	
+	JavaCode s1, s2;
+	Foam initDecl;
+	int idx;
+
+	idx = gj0ClassFindInitDeclIdx();
+	s1 = gj0UtilCCall(jcId(gj0InitVar(idx)), listNil(JavaCode));
+
+	return jcMethod(JCO_MOD_Public, NULL, 
+			jcKeyword(symInternConst("void")),
+			jcId(strCopy("run")), 
+			listNil(JavaCode), listNil(JavaCode),listNil(JavaCode),
+			jcStatement(s1));
+}
+
+
+local int
+gj0ClassFindInitDeclIdx()
+{
+	int i;
+	for (i=0; i<foamArgc(gjContextGlobals); i++) {
+		Foam decl = gjContextGlobal(i);
+		if (decl->foamGDecl.dir == FOAM_GDecl_Export
+		    && decl->foamGDecl.protocol == FOAM_Proto_Init) {
+			return i;
+		}
+	}
+	return -1;
+}
+
+local Foam
+gj0ClassFindInitDef()
+{
+	int idx = gj0ClassFindInitDeclIdx();
+	int i;
+	for (i=0; i<foamArgc(gjContext->defs); i++) {
+		Foam def = gjContext->defs->foamDDef.argv[i];
+		if (foamTag(def) != FOAM_Def)
+			continue;
+		if (foamTag(def->foamDef.lhs) != FOAM_Glo)
+			continue;
+		return def;
+	}
+	return NULL;
+}
+
+
+local JavaCode 
+gj0UtilCCall(JavaCode c, JavaCodeList args)
+{
+	JavaCode prog, env, call;
+	prog = jcApplyMethodV(jcoCopy(c), jcId(strCopy("getProg")), 0);
+	env  = jcApplyMethodV(jcoCopy(c), jcId(strCopy("getEnv")), 0);
+	args = listCons(JavaCode)(env, args);
+	call = jcApplyMethod(prog, jcId(strCopy("ocall")), args);
+
+	jcoFree(c);
+	return call;
+}
+
+
+
+local JavaCode
+gj0ClassMainMethod(String className)
+{
+	JavaCodeList args;
+	JavaCode body, s1, s2, s3;
+	JavaCode instance, ctxt, method;
+	int modifiers;
+
+	instance = jcId(strCopy("instance"));
+	ctxt = gj0Id(GJ_ContextVar);
+	s1 = jcInitialisation(0, gj0Id(GJ_FoamContext), jcoCopy(ctxt),
+			      jcConstructV(gj0Id(GJ_FoamContext), 0));
+	s2 = jcInitialisation(0, gj0Id(GJ_FoamClass), jcoCopy(instance), 
+			      jcConstructV(jcId(strCopy(className)), 
+					   1, jcoCopy(ctxt)));
+	s3 = jcApplyMethodV(jcoCopy(instance), jcId(strCopy("run")), 0);
+
+	body = jcNLSeqV(3, jcStatement(s1), jcStatement(s2), jcStatement(s3));
+	modifiers = JCO_MOD_Public | JCO_MOD_Static;
+	args = listList(JavaCode)(1, 
+				  jcParamDecl(0, jcArrayOf(gj0Id(GJ_String)), 
+					      jcId(strCopy("args"))));
+
+	jcoFree(ctxt);
+	jcoFree(instance);
+	method =  jcMethod(modifiers, strCopy("main method"),
+			   jcKeyword(symInternConst("void")),
+			   gj0Id(GJ_Main), listNil(JavaCode), args, listNil(JavaCode),
+			   body);
+	return method;
+}
+
+
+/*
+ * :: Initialisation vars
+ */
+
+local String
+gj0InitVar(AInt idx)
+{
+	Foam gdecl = gjContextGlobal(idx);
+	return strPrintf("%s_init", gdecl->foamGDecl.id);
 }
 
 
@@ -2631,6 +3206,8 @@ struct gjIdInfo gjIdInfo[] = {
 	{GJ_FoamClos,   "foamj", "Clos"},
 	{GJ_FoamRecord, "foamj", "Record"},
 	{GJ_FoamEnv,    "foamj", "Env"},
+	{GJ_FoamClass,  "foamj", "FoamClass"},
+	{GJ_FoamContext,"foamj", "FoamContext"},
 
 	{GJ_FoamFn,     "foamj", "Fn"},
 
@@ -2639,7 +3216,12 @@ struct gjIdInfo gjIdInfo[] = {
 	{GJ_FoamGlobals,"foamj", "Globals"},
 	{GJ_Format,     "foamj", "Format"},
 	{GJ_EnvRecord,  "foamj", "EnvRecord"},
+
 	{GJ_Object,     0, "Object"},
+	{GJ_String,     0, "String"},
+
+	{GJ_ContextVar, 0, "ctxt"},
+	{GJ_Main,       0, "main"},
 };
 
 
@@ -2869,8 +3451,8 @@ gj0BCallOpMod(Foam foam)
 	extraArg = listElt(JavaCode)(args, 2);
 	args = listList(JavaCode)(2, car(args), car(cdr(args)));
 	r = jcOp(inf->gjTag, args);
-	return jcBinOp(JCO_OP_Modulo, r, extraArg);
 
+	return jcBinOp(JCO_OP_Modulo, r, extraArg);
 }
 
 local JavaCode
@@ -2954,7 +3536,6 @@ gj0BCallException(Foam foam)
 	JavaCode jc = jcThrow(jcConstruct(jcImportedId(strCopy(inf->c1),
 						       strCopy(inf->c2)), 
 					  args));
-
 	return jc;
 }
 
@@ -3009,20 +3590,20 @@ struct gjBVal_info gjBValInfoTable[] = {
 	{FOAM_BVal_SFloLT,       GJ_Op, JCO_OP_LT},
 	{FOAM_BVal_SFloLE,       GJ_Op, JCO_OP_LE},
 	{FOAM_BVal_SFloNegate,   GJ_Op, JCO_OP_Negate},
-	{FOAM_BVal_SFloPrev,     GJ_NotImpl},
-	{FOAM_BVal_SFloNext,     GJ_NotImpl},
+	{FOAM_BVal_SFloPrev,      GJ_Apply, 0, "foamj.Math", "sfloPrev"},
+	{FOAM_BVal_SFloNext,      GJ_Apply, 0, "foamj.Math", "sfloNext"},
 	{FOAM_BVal_SFloPlus,      GJ_Op, JCO_OP_Plus},
 	{FOAM_BVal_SFloMinus,     GJ_Op, JCO_OP_Minus},
 	{FOAM_BVal_SFloTimes,     GJ_Op, JCO_OP_Times},
 	{FOAM_BVal_SFloTimesPlus, GJ_Op, JCO_OP_TimesPlus},
 	{FOAM_BVal_SFloDivide,    GJ_Op, JCO_OP_Divide},
-	{FOAM_BVal_SFloRPlus,     GJ_NotImpl},
-	{FOAM_BVal_SFloRMinus,    GJ_NotImpl},
-	{FOAM_BVal_SFloRTimes,    GJ_NotImpl},
-	{FOAM_BVal_SFloRTimesPlus,GJ_NotImpl},
-	{FOAM_BVal_SFloRDivide,   GJ_NotImpl},
-	{FOAM_BVal_SFloDissemble, GJ_NotImpl},
-	{FOAM_BVal_SFloAssemble,  GJ_NotImpl},
+	{FOAM_BVal_SFloRPlus,     GJ_Apply, 0, "foamj.Math", "sfloRPlus"},
+	{FOAM_BVal_SFloRMinus,    GJ_Apply, 0, "foamj.Math", "sfloRMinus"},
+	{FOAM_BVal_SFloRTimes,    GJ_Apply, 0, "foamj.Math", "sfloRTimes"},
+	{FOAM_BVal_SFloRTimesPlus,GJ_Apply, 0, "foamj.Math", "sfloRTimesPlus"},
+	{FOAM_BVal_SFloRDivide,   GJ_Apply, 0, "foamj.Math", "sfloRDivide"},   
+	{FOAM_BVal_SFloDissemble, GJ_Apply, 0, "foamj.Math", "sfloDissemble"},
+	{FOAM_BVal_SFloAssemble,  GJ_Apply, 0, "foamj.Math", "sfloAssemble"},
 
 	{FOAM_BVal_DFlo0,   GJ_LitFloat, 0,"0.0f"},
 	{FOAM_BVal_DFlo1,   GJ_LitFloat, 0,"0.0f"},
@@ -3037,30 +3618,30 @@ struct gjBVal_info gjBValInfoTable[] = {
 	{FOAM_BVal_DFloLT, GJ_Op, JCO_OP_LT},
 	{FOAM_BVal_DFloLE, GJ_Op, JCO_OP_LE},
 	{FOAM_BVal_DFloNegate, GJ_Op, JCO_OP_Negate},
-	{FOAM_BVal_DFloPrev,     GJ_NotImpl},
-	{FOAM_BVal_DFloNext,     GJ_NotImpl},
+	{FOAM_BVal_DFloPrev,     GJ_Apply, 0, "foamj.Math", "dfloPrev"},
+	{FOAM_BVal_DFloNext,     GJ_Apply, 0, "foamj.Math", "dfloNext"},
 	{FOAM_BVal_DFloPlus,      GJ_Op, JCO_OP_Plus},
 	{FOAM_BVal_DFloMinus,     GJ_Op, JCO_OP_Minus},
 	{FOAM_BVal_DFloTimes,     GJ_Op, JCO_OP_Times},
 	{FOAM_BVal_DFloTimesPlus, GJ_Op, JCO_OP_TimesPlus},
 	{FOAM_BVal_DFloDivide,    GJ_Op, JCO_OP_Divide},
-	{FOAM_BVal_DFloRPlus,     GJ_NotImpl},
-	{FOAM_BVal_DFloRMinus,    GJ_NotImpl},
-	{FOAM_BVal_DFloRTimes,    GJ_NotImpl},
-	{FOAM_BVal_DFloRTimesPlus,GJ_NotImpl},
-	{FOAM_BVal_DFloRDivide,   GJ_NotImpl},
-	{FOAM_BVal_DFloDissemble, GJ_NotImpl},
-	{FOAM_BVal_DFloAssemble,  GJ_NotImpl},
+	{FOAM_BVal_DFloRPlus,     GJ_Apply, 0, "foamj.Math", "dfloRPlus"},     
+	{FOAM_BVal_DFloRMinus,    GJ_Apply, 0, "foamj.Math", "dfloRMinus"},    
+	{FOAM_BVal_DFloRTimes,    GJ_Apply, 0, "foamj.Math", "dfloRTimes"},    
+	{FOAM_BVal_DFloRTimesPlus,GJ_Apply, 0, "foamj.Math", "dfloRTimesPlus"},
+	{FOAM_BVal_DFloRDivide,   GJ_Apply, 0, "foamj.Math", "dfloRDivide"},   
+	{FOAM_BVal_DFloDissemble, GJ_Apply, 0, "foamj.Math", "dfloDissemble"},
+	{FOAM_BVal_DFloAssemble,  GJ_Apply, 0, "foamj.Math", "dfloAssemble"},
 
-	{FOAM_BVal_Byte0,        GJ_LitInt,  0, "0" },
-	{FOAM_BVal_Byte1,        GJ_LitInt,  0, "1" },
-	{FOAM_BVal_ByteMin,      GJ_LitInt,  0, "0"},
-	{FOAM_BVal_ByteMax,      GJ_Const,       0, "Byte", "MAX_VALUE"},
+	{FOAM_BVal_Byte0,        GJ_LitInt,  0, "(byte) 0" },
+	{FOAM_BVal_Byte1,        GJ_LitInt,  0, "(byte) 1" },
+	{FOAM_BVal_ByteMin,      GJ_LitInt,  0, "(byte) 0"},
+	{FOAM_BVal_ByteMax,      GJ_Const,   0, "Byte", "MAX_VALUE"},
 
-	{FOAM_BVal_HInt0,        GJ_LitInt,  0,"0" },		      
-	{FOAM_BVal_HInt1,        GJ_LitInt,  0,"1" },		      
-	{FOAM_BVal_HIntMin,      GJ_LitInt,  0,"0"},		      
-	{FOAM_BVal_HIntMax,      GJ_Const,       0,"Byte", "MAX_VALUE"},
+	{FOAM_BVal_HInt0,        GJ_LitInt,  0,"(short) 0" },		      
+	{FOAM_BVal_HInt1,        GJ_LitInt,  0,"(short) 1" },		      
+	{FOAM_BVal_HIntMin,      GJ_Const ,  0,"Short", "MIN_VALUE"},
+	{FOAM_BVal_HIntMax,      GJ_Const,   0,"Short", "MAX_VALUE"},
 
 	{FOAM_BVal_SInt0,        GJ_LitInt,  0,"0" },		      
 	{FOAM_BVal_SInt1,        GJ_LitInt,  0,"1" },		      
@@ -3156,9 +3737,9 @@ struct gjBVal_info gjBValInfoTable[] = {
 	{FOAM_BVal_FormatBInt,   GJ_Apply, 0, "foamj.Math", "formatBInt"},
 
 	{FOAM_BVal_ScanSFlo,     GJ_Apply, 0, "foamj.Math", "scanSFlo"},
-	{FOAM_BVal_ScanDFlo,     GJ_Apply, 0, "foamj.Math", "scanSFlo"},
-	{FOAM_BVal_ScanSInt,     GJ_Apply, 0, "foamj.Math", "scanSFlo"},
-	{FOAM_BVal_ScanBInt,     GJ_Apply, 0, "foamj.Math", "scanSFlo"},
+	{FOAM_BVal_ScanDFlo,     GJ_Apply, 0, "foamj.Math", "scanDFlo"},
+	{FOAM_BVal_ScanSInt,     GJ_Apply, 0, "foamj.Math", "scanSInt"},
+	{FOAM_BVal_ScanBInt,     GJ_Apply, 0, "foamj.Math", "scanBInt"},
 
 	{FOAM_BVal_SFloToDFlo,   GJ_Cast, 0, "double"},
 	{FOAM_BVal_DFloToSFlo,   GJ_Cast, 0, "float"},
@@ -3170,8 +3751,8 @@ struct gjBVal_info gjBValInfoTable[] = {
 	{FOAM_BVal_BIntToSInt,   GJ_Meth, 0,"intValue"},
 	{FOAM_BVal_SIntToSFlo,   GJ_Cast, 0, "float"},
 	{FOAM_BVal_SIntToDFlo,   GJ_Cast, 0, "double"},
-	{FOAM_BVal_BIntToSFlo,   GJ_Cast, 0, "float"},
-	{FOAM_BVal_BIntToDFlo,   GJ_Cast, 0, "double"},
+	{FOAM_BVal_BIntToSFlo,   GJ_Meth,  0,"floatValue"},
+	{FOAM_BVal_BIntToDFlo,   GJ_Meth,  0, "doubleValue"},
 	{FOAM_BVal_PtrToSInt,    GJ_Apply, 0, "foamj.Foam", "ptrToSInt"},
 	{FOAM_BVal_SIntToPtr,    GJ_Apply, 0, "foamj.Foam", "sintToPtr"},
 	
@@ -3180,27 +3761,27 @@ struct gjBVal_info gjBValInfoTable[] = {
 	{FOAM_BVal_ArrToSInt,    GJ_Apply, 0, "foamj.Foam", "arrToSInt"},
 	{FOAM_BVal_ArrToBInt,    GJ_Apply, 0, "foamj.Foam", "arrToBInt"},
 	
-	{FOAM_BVal_PlatformRTE,  GJ_NotImpl},
-	{FOAM_BVal_PlatformOS,   GJ_NotImpl},
+	{FOAM_BVal_PlatformRTE,  GJ_Const, 0, "foamj.Foam", "RTE"},
+	{FOAM_BVal_PlatformOS,   GJ_Const, 0, "foamj.Foam", "PlatformOS"},
 
 	{FOAM_BVal_Halt,         GJ_Exception, 0, "foamj", "FoamException"},
+
+ {FOAM_BVal_RoundZero,    GJ_Const, 0,"foamj.Math", "ROUND_ZERO"},
+ {FOAM_BVal_RoundNearest, GJ_Const, 0,"foamj.Math", "ROUND_NEAREST"},
+ {FOAM_BVal_RoundUp,      GJ_Const, 0,"foamj.Math", "ROUND_UP"},
+ {FOAM_BVal_RoundDown,    GJ_Const, 0,"foamj.Math", "ROUND_DOWN"},
+ {FOAM_BVal_RoundDontCare,GJ_Const, 0,"foamj.Math", "ROUND_DONTCARE"},
+
+ {FOAM_BVal_SFloTruncate,  GJ_Apply,  0, "foamj.Math", "sfloTruncate"},
+ {FOAM_BVal_SFloFraction,  GJ_Apply,  0,"foamj.Math", "sfloFraction"},
+ {FOAM_BVal_SFloRound,     GJ_Apply,  0,"foamj.Math", "sfloRound"},
+
+ {FOAM_BVal_DFloTruncate,  GJ_Apply,  0,"foamj.Math", "dfloTruncate"},
+ {FOAM_BVal_DFloFraction,  GJ_Apply,  0,"foamj.Math", "dfloFraction"},
+ {FOAM_BVal_DFloRound,     GJ_Apply,  0,"foamj.Math", "dfloRound"},
+
 };
-
 #if 0
- {FOAM_BVal_RoundZero,    GJB_FCall,   0,"fiRoundZero",    "FI_ROUND_ZERO"},
- {FOAM_BVal_RoundNearest, GJB_FCall,   0,"fiRoundNearest", "FI_ROUND_NEAREST"},
- {FOAM_BVal_RoundUp,      GJB_FCall,   0,"fiRoundUp",      "FI_ROUND_UP"},
- {FOAM_BVal_RoundDown,    GJB_FCall,   0,"fiRoundDown",    "FI_ROUND_DOWN"},
- {FOAM_BVal_RoundDontCare,GJB_FCall,   0,"fiRoundDontCare","FI_ROUND_DONT_CARE"},
-
- {FOAM_BVal_SFloTruncate,  GJB_FCall,  0,"fiSFloTruncate",  0},
- {FOAM_BVal_SFloFraction,  GJB_FCall,  0,"fiSFloFraction",  0},
- {FOAM_BVal_SFloRound,     GJB_FCall,  0,"fiSFloRound",     0},
-
- {FOAM_BVal_DFloTruncate,  GJB_FCall,  0,"fiDFloTruncate",  0},
- {FOAM_BVal_DFloFraction,  GJB_FCall,  0,"fiDFloFraction",  0},
- {FOAM_BVal_DFloRound,     GJB_FCall,  0,"fiDFloRound",     0},
-
  {FOAM_BVal_StoForceGC,    GJB_FCall,  0,"fiStoForceGC",    0},	
  {FOAM_BVal_StoInHeap,     GJB_FCall,  0,"fiStoInHeap",     0},
  {FOAM_BVal_StoIsWritable, GJB_FCall,  0,"fiStoIsWritable", 0},
@@ -3267,7 +3848,7 @@ struct gjBVal_info gjBValInfoTable[] = {
  {FOAM_BVal_FreeExportTable, GJB_FCall, 0, "fiFreeExportTable", 0},
 #endif
 #if EDIT_1_0_n1_AB
- /* This BVal must NEVER be seen by genc ... */
+ /* This BVal must NEVER be seen by genc (or genjava) ... */
  {FOAM_BVal_ssaPhi, GJB_FCall, 0, "fiNonExistentFunction", 0},
 #endif
 };
@@ -3308,7 +3889,7 @@ gj0NameInit()
 }
 
 local String
-gj0Name(String prefix, Foam fmt, int idx)
+gj0Name(char *prefix, Foam fmt, int idx)
 {
 	Foam decl;
 	Buffer b = bufNew();
