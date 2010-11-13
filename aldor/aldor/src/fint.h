@@ -19,7 +19,6 @@ extern void     fintPrintType           (FILE *, AbSyn);
 
 extern AbSyn	fintWrap		(AbSyn, int);
 extern void	fintPrintType		(FILE *, AbSyn);
-extern void	fintParseOptions	(String);
 extern Bool	fintYesOrNo		(String);
 extern Bool	fintIsCompilerSyntax	(void);
 
@@ -44,8 +43,13 @@ extern int	fintMode;
 
 extern Bool	fintVerbose;
 extern Bool	fintHistory;
-extern void     fintDebugProg(FileName fname);
 extern UShort	intStepNo;
+extern Bool 	fintConfirm;
+extern Bool	fintTimings;
+extern long 	fintMsgLimit;
+extern long     fintExntraceMode;
+extern void     fintDebugProg(FileName fname);
+extern void     fintFreeJunk(void);
 
 #endif    /* _FINT_H */
 
