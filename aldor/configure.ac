@@ -8,6 +8,7 @@ AC_CONFIG_SRCDIR([aldor/src/main.c])
 AC_CONFIG_AUX_DIR([amaux])
 
 # Automake
+AM_MAINTAINER_MODE([enable])
 AM_INIT_AUTOMAKE
 AM_PROG_CC_C_O
 AM_PROG_LEX
