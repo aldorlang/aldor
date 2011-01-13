@@ -60,6 +60,7 @@ AC_CONFIG_FILES([Makefile
 		 aldor/Makefile
 		 aldor/subcmd/Makefile
 		 aldor/subcmd/unitools/Makefile
+		 aldor/subcmd/testaldor/Makefile
 		 aldor/src/Makefile
 		 aldor/lib/Makefile
 		 aldor/lib/libfoamlib/Makefile
