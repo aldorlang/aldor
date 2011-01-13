@@ -1005,9 +1005,9 @@ emitTheC(EmitInfo finfo, CCodeList cco)
 		hout = fileWrOpen(hfn);
 
 		fnstring = fnameUnparseStaticWithout(srcfn);
-		fprintf(hout, "%s", emitCHdFmt1);
+		fprintf(hout, emitCHdFmt1, 0);
 		fprintf(hout, emitCHdFmt2, fnstring);
-		fprintf(hout, "%s", emitCHdFmt3);
+		fprintf(hout, emitCHdFmt3, 0);
 		fprintf(hout, "\n");
 	}
 	
@@ -1047,10 +1047,10 @@ emitTheC(EmitInfo finfo, CCodeList cco)
 					fout  = fileWrOpen(fname);
 				}
 				fnstring = fnameUnparseStaticWithout(srcfn);
-				fprintf(fout, "%s", emitCHdFmt1);
+				fprintf(fout, emitCHdFmt1, 0);
 				if (!emitInfoIsAXLmain(finfo))
 					fprintf(fout, emitCHdFmt2, fnstring);
-				fprintf(fout, "%s", emitCHdFmt3);
+				fprintf(fout, emitCHdFmt3, 0);
 				fprintf(fout, "\n");
 				if (emitDoLineNos && ccLineNos())
 					fprintf(fout, "#line 1 \"%s.as\"\n\n",
