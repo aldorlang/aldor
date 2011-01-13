@@ -316,10 +316,12 @@ String
 osFileBase(fn)
 	String	fn;
 {
-	String	res, s;
+	String	res, s, t;
 	Length	cc;
-
-	s = strchr(fn, '.');
+	t = strrchr(fn, '/');
+	if (t)
+		fn = t+1;
+	s = strrchr(fn, '.');
 	if (!s) return fn;
 
 	cc = s - fn;

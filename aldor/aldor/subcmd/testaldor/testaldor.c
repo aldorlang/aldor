@@ -191,6 +191,8 @@ String	HelpMsg[] = {
 	"        -show       Run the tests and display the output",
 	"        -install    Run the tests and install the output as correct",
 	"        -oldaldor xx  Run the tests, using xx to display old .ao files",
+	"        -aldor xx  Run the tests, using xx as aldor executable",
+	"        -cc xx     Run the tests, using xx as unicl executable",
 	"        -only kk    Run only tests of kind kk, where kk may be",
 	"		         one of test{script,comp,run,errs,phase,gen,int}.",
 	"        -but kk     Run all the tests, except those of kind kk.",
@@ -429,7 +431,7 @@ testAldorRun(args, fn)
 	/* Requires 1.1.13(12) */
 	cmd = strPrintf("%s -M base=%s%s -Ccc=\"%s\" -grun %s %s",
 			Aldor, OldCurDir, OS_PATH_SEP, CC, args, Pfname);
-
+	/*fprintf(stdout, "cmd: (%s) %s\n", getcwd(0), cmd);*/
 	if (osRunOutput(cmd, Tname) != 0) {
 		fprintf(stdout, "ERROR\n");
 		failv[failc++] = fname;
@@ -742,6 +744,10 @@ testAldorArgs(argc, argv)
 			Action = "show";
 		else if (strEqual(argv[i], "-oldaldor"))
 			OAldor = strCopy(argv[++i]);
+		else if (strEqual(argv[i], "-aldor"))
+			Aldor = strCopy(argv[++i]);
+		else if (strEqual(argv[i], "-cc"))
+			CC = strCopy(argv[++i]);
 		else if (strEqual(argv[i], "-only")) {
 			Kind = strCopy(argv[++i]);
 			KindAct = 1;
