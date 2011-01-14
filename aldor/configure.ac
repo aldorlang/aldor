@@ -70,7 +70,12 @@ AC_CONFIG_FILES([Makefile
 		 aldor/lib/libfoam/al/Makefile
 		 aldor/test/Makefile
 		 aldor/tools/Makefile
-		 aldor/tools/unix/Makefile])
+		 aldor/tools/unix/Makefile
+		 lib/Makefile
+		 lib/axllib/Makefile
+		 lib/axllib/src/Makefile
+		 lib/axllib/src/al/Makefile
+		 lib/axllib/test/Makefile])
 AC_OUTPUT
 
 # Shared libraries

@@ -1,1 +1,1 @@
-SUBDIRS=aldor algebra
+SUBDIRS=axllib aldor algebra
