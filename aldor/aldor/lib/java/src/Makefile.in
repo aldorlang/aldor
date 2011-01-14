@@ -1,0 +1,55 @@
+# ..From autoconf
+@SET_MAKE@
+
+VPATH = @srcdir@
+abs_top_builddir = @abs_top_builddir@
+srcdir = @srcdir@
+top_builddir = @top_builddir@
+builddir = @builddir@
+abs_top_srcdir = @abs_top_srcdir@
+subdir = aldor/lib/java/src
+
+.PRECIOUS: Makefile
+Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
+	@c ase '$?' in \
+	  *config.status*) \
+	    cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh;; \
+	  *) \
+	    echo ' cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ '; \
+	    cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ ;; \
+	esac;
+
+outdir=$(top_builddir)/aldor/lib/java/build
+jar=$(outdir)/foamj.jar
+
+buildfiles := $(shell find . -name \*.java)
+
+# Build directly to a .jar file (easier than tracking .class files)
+$(jar): $(buildfiles)
+	mkdir -p $(outdir)/classes
+	javac -d $(outdir)/classes $(buildfiles)
+	(wd=$$(pwd); cd $(outdir)/classes; jar cf $$wd/$(jar) .)
+
+all: $(jar)
+
+# 
+# :: Automake requires this little lot
+#
+mostlyclean: 
+	rm -rf $(outdir)
+
+clean: mostlyclean
+distclean: clean 
+	rm Makefile
+maintainer-clean: distclean
+
+
+EMPTY_AUTOMAKE_TARGETS  = dvi pdf ps info html tags ctags
+EMPTY_AUTOMAKE_TARGETS += install install-data install-exec uninstall
+EMPTY_AUTOMAKE_TARGETS += install-dvi install-html install-info install-ps install-pdf
+EMPTY_AUTOMAKE_TARGETS += installdirs
+EMPTY_AUTOMAKE_TARGETS += check installcheck
+
+.PHONY: $(EMPTY_AUTOMAKE_TARGETS)
+$(EMPTY_AUTOMAKE_TARGETS):
+
