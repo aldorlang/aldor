@@ -17,12 +17,12 @@ libfoam_SRC=\
 	$(aldorsrcdir)/stdc.c  \
 	$(aldorsrcdir)/util.c	\
 	$(aldorsrcdir)/timer.c	\
-	$(aldorsrcdir)/compopt.c	\
-	$(aldorsrcdir)/xfloat.c  
+	$(aldorsrcdir)/compopt.c \
+	$(aldorsrcdir)/xfloat.c  	
 
 aldorsrcdir = $(abs_top_builddir)/aldor/src
 
-AM_CFLAGS = -I$(aldorsrcdir)
+AM_CFLAGS = -I$(aldorsrcdir) -DFOAM_RTS
 libfoam_a_SOURCES=$(libfoam_SRC) $(libfoam_ALDOR)
 
 noinst_LIBRARIES=libfoam.a
