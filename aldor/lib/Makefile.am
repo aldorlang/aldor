@@ -1,1 +1,4 @@
-SUBDIRS=axllib aldor algebra
+SUBDIRS=
+# axllib 
+# aldor 
+# algebra
