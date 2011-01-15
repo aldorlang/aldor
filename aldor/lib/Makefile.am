@@ -1,4 +1,4 @@
-SUBDIRS=
+SUBDIRS=axllib
 # axllib 
 # aldor 
 # algebra
