@@ -3331,7 +3331,7 @@ gen0StringsFini()
 	int1 = gen0TempLocal0(FOAM_Arr, FOAM_SInt);
 	str1 = gen0TempLocal0(FOAM_Arr, FOAM_Word);
 
-	gen0AddStmt(gen0ANew(int1, FOAM_SInt, size), NULL);
+	gen0AddStmt(gen0ANew(int1, FOAM_Word, size), NULL);
 	gen0AddStmt(gen0ANew(str1, FOAM_Word, size), NULL);
 
 	for (tblITER(iter, gen0StringTable); tblMORE(iter); tblSTEP(iter)) {
