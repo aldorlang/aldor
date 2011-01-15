@@ -88,6 +88,7 @@ TextReader: with {
 
 	-- Generators
 	generator(rdr: %): Generator Character == generate {
+		import from Character;
 		(fc, fl) := rep(rdr)();
 		repeat {
 			c := fc char 0;
@@ -98,7 +99,7 @@ TextReader: with {
 
 	lines(rdr: %): Generator String == generate {
 		buf: Array Character := empty();
-
+		import from String;
 		for c in rdr repeat {
 			extend!(buf, c);
 			if c = newline then {
