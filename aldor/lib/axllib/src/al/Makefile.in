@@ -26,7 +26,7 @@ aldorexedir = $(abs_top_builddir)/aldor/src
 libname = axllib
 
 library= lang machine basic axlcat tuple gener boolean segment sinteger	\
-	 integer bpower sfloat float dfloat pointer character parray	\
+	 integer bpower sfloat float dfloat pointer char parray	\
 	 array list langx string oslow fname file format textwrit	\
 	 textread opsys partial complex imod ratio rtexns table except  \
 	 fprint fmtout
@@ -44,8 +44,8 @@ segment_deps := axlcat boolean
 sinteger_deps := axlcat segment
 integer_deps := axlcat segment sinteger
 bpower_deps   := sinteger
-character_deps := axlcat
-string_deps   := axlcat character array
+char_deps := axlcat
+string_deps   := axlcat char array
 sfloat_deps   := integer string bpower
 dfloat_deps   := integer string bpower sfloat
 format_deps   := axlcat sinteger sfloat dfloat
@@ -61,7 +61,7 @@ fname_deps    := axlcat parray string oslow
 file_deps     := axlcat fname
 opsys_deps    := axlcat oslow file
 textwrit_deps := axlcat fname file array opsys
-textread_deps := axlcat fname file array opsys character
+textread_deps := axlcat fname file array opsys char
 partial_deps  := axlcat pointer
 rtexns_deps   := langx textwrit
 ratio_deps    := integer bpower
@@ -69,7 +69,7 @@ complex_deps  := integer bpower
 imod_deps     := integer bpower
 table_deps    := sinteger array list sfloat
 except_deps   := axlcat
-fmtout_deps   :=
+fmtout_deps   := textwrit
 
 aldorexedir=$(abs_top_builddir)/aldor/src
 
