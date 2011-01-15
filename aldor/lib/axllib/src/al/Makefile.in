@@ -107,7 +107,8 @@ $(patsubst %, %.dep,$(library) lib$(libname)): Makefile.in
 	do d=$$(basename $$i .dep); \
 	   cat $$i >> $@.tmp; echo $(basename $$d .dep)>> $@.tmp;  \
 	done
-	if diff $@ $@.tmp > /dev/null; then echo $@ unchanged; else mv $@.tmp $@; fi
+	if diff $@ $@.tmp > /dev/null; then echo $@ unchanged; rm $@.tmp; else mv $@.tmp $@; fi
+
 
 $(foreach l,$(library), $(eval $(call dep_template,$(l))))
 
