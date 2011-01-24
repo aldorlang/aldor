@@ -25,11 +25,11 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 aldorexedir = $(abs_top_builddir)/aldor/src
 libname = axllib
 
-library= lang machine basic axlcat tuple gener boolean segment sinteger	\
-	 integer bpower sfloat float dfloat pointer char parray	\
-	 array list langx string oslow fname file format textwrit	\
-	 textread opsys partial complex imod ratio rtexns table except  \
-	 fprint fmtout
+library= lang machine basic axlcat tuple gener boolean segment		\
+	 sinteger integer bpower sfloat float dfloat pointer char	\
+	 parray array list langx string oslow fname file format		\
+	 textwrit textread opsys partial complex imod ratio rtexns	\
+	 table except fprint fmtout pfloat object efuns ieeectl
 
 noclass = sfloat oslow file format dfloat rtexns textread float table fprint fmtout
 
@@ -51,6 +51,7 @@ dfloat_deps   := integer string bpower sfloat
 format_deps   := axlcat sinteger sfloat dfloat
 fprint_deps  := axlcat integer string
 float_deps   := integer string bpower format except fprint
+pfloat_deps   := integer string bpower format except fprint sfloat
 pointer_deps  := axlcat
 parray_deps   := axlcat sinteger
 array_deps    := axlcat tuple sinteger parray 
@@ -70,11 +71,17 @@ imod_deps     := integer bpower
 table_deps    := sinteger array list sfloat
 except_deps   := axlcat
 fmtout_deps   := textwrit
+object_deps   := axlcat
+complex_deps  := axlcat integer bpower
+efuns_deps    := dfloat complex except
+ieeectl_deps  := efuns
+except_deps   := axlcat
 
 aldorexedir=$(abs_top_builddir)/aldor/src
 
 $(patsubst %, %.c, $(library)): %.c: %.ao %.dep
-	 $(aldorexedir)/aldor -Nfile=$(aldorexedir)/aldor.conf -Fc=$(builddir)/$@ $<	
+	@echo AO_TO_C $*
+	@$(aldorexedir)/aldor -Nfile=$(aldorexedir)/aldor.conf -Fc=$(builddir)/$@ $<	
 
 aldoropt := -Q8 -Qinline-all
 define aldor_args
@@ -88,10 +95,11 @@ $(patsubst %,%.ao,$(library)): $(aldorexedir)/aldor
 $(patsubst %, %.ao, $(library)): %.ao: $(srcdir)/../../include/axllib.as
 $(patsubst %, %.ao, $(library)): %.ao: $(srcdir)/../%.as
 $(patsubst %, %.ao, $(library)): %.ao: 
-	rm -f lib$(libname)_$*.al;	rm -f $*.c; rm -f $*.ao;		\
-	ar r lib$(libname)_$*.al Makefile;					\
-	for i in $$(cat $*.dep); do ar r lib$(libname)_$*.al $$i.ao; done; \
-	$(aldorexedir)/aldor $(aldor_args)
+	@echo AO $*
+	@rm -f lib$(libname)_$*.al;	rm -f $*.c; rm -f $*.ao;		\
+	 ar r lib$(libname)_$*.al Makefile;					\
+	 for i in $$(cat $*.dep); do ar r lib$(libname)_$*.al $$i.ao; done; 	\
+	 $(aldorexedir)/aldor $(aldor_args)
 
 $(patsubst %, %.cmd, $(library)): %.cmd: Makefile
 	echo "run $(aldor_args)" > $@
@@ -101,19 +109,21 @@ $(1).ao: $(1).dep $$(patsubst %,%.ao,$$($(1)_deps))
 $(1).dep: $$(patsubst %,%.dep,$$($(1)_deps))
 endef
 
-$(patsubst %, %.dep,$(library) lib$(libname)): Makefile.in
-	echo > $@.tmp
-	for i in $(filter %.dep, $^); \
+$(patsubst %,%.dep,$(library) lib$(libname)): Makefile.in
+	@echo DEP $(patsubst %.dep,%,$@)
+	@echo > $@.tmp
+	@for i in $(filter %.dep, $^); \
 	do d=$$(basename $$i .dep); \
 	   cat $$i >> $@.tmp; echo $(basename $$d .dep)>> $@.tmp;  \
 	done
-	if diff $@ $@.tmp > /dev/null; then echo $@ unchanged; rm $@.tmp; else mv $@.tmp $@; fi
+	@if diff $@ $@.tmp > /dev/null; then rm $@.tmp; else mv $@.tmp $@; fi
 
 
 $(foreach l,$(library), $(eval $(call dep_template,$(l))))
 
 $(patsubst %,%.fm,$(library)): %.fm: %.ao 
-	$(aldorexedir)/aldor \
+	@echo AO_TO_FM $*
+	@$(aldorexedir)/aldor \
 		     -Nfile=$(aldorexedir)/aldor.conf 	\
 		     -Ffm=$@ $*.ao
 
@@ -126,8 +136,9 @@ lib$(libname).dep: $(patsubst %,%.dep,$(library))
 lib$(libname).al: $(patsubst %,%.dep, $(library))
 lib$(libname).al: $(patsubst %,%.ao, $(library))
 lib$(libname).al: lib$(libname).dep
-	rm -f lib$(libname).al
-	for i in $$(cat lib$(libname).dep); do ar r lib$(libname).al $$i.ao; done
+	@echo LIB $(patsubst %.al, %, $@)
+	@rm -f lib$(libname).al
+	@for i in $$(cat lib$(libname).dep); do ar r lib$(libname).al $$i.ao; done
 
 # 
 # :: Automake requires this little lot
