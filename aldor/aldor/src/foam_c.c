@@ -2587,3 +2587,10 @@ fiFreeExportTable(ExpTable *t)
 	fiFree((FiPtr)t);
 }
 #endif
+
+
+FiSInt fiCounter()
+{
+	static int counter = 0;
+	return counter++;
+}

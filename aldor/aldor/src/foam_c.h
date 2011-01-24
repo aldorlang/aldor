@@ -863,4 +863,6 @@ extern FiWord	fiSFloToWord    _of_((FiSFlo));
 extern FiSInt	fiRawRepSize		_of_((FiSInt));
 extern FiPtr	fiRawRecordValues	_of_((FiSInt, ...));
 
+extern FiSInt fiCounter();
+
 #endif
