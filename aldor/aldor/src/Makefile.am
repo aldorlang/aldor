@@ -1,5 +1,10 @@
 
 bin_PROGRAMS = aldor aldortest
+
+dataincludedir = $(datadir)/include
+datainclude_DATA=aldor.conf
+include_HEADERS=foam_c.h cconfig.h platform.h optcfg.h foamopt.h
+
 noinst_LIBRARIES = libtest.a libphase.a libstruct.a libgen.a libport.a 
 
 aldor_SOURCES = main.c axlcomp.c cmdline.c
