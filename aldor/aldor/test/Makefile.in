@@ -9,6 +9,8 @@ builddir = @builddir@
 abs_top_srcdir = @abs_top_srcdir@
 subdir = aldor/test
 
+all: really-all
+
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -22,10 +24,18 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 aldorexedir = $(abs_top_builddir)/aldor/src
 aldortooldir = $(abs_top_builddir)/aldor/subcmd/unitools
 foamlibdir = $(abs_top_builddir)/aldor/lib/libfoamlib
+foamdir = $(abs_top_builddir)/aldor/lib/libfoam
 
-fmtests := 
+fmtests := clos strtable1 
 ctests  := 
 otests  := 
+
+badtests := opt1
+# opt1 fails because the optimise decides to inline the recursive call
+# (it shouldn't, but spotting the call is a bit tricky).
+
+opt1_AXLFLAGS=-Y$(foamdir)/al -I $(foamdir) -lRuntimeLib=foam -Q9 -Qinline-all
+clos_AXLFLAGS := -Q2
 
 _aotests := $(sort $(fmtests) $(ctests))
 _fmtests := $(sort $(fmtests))
