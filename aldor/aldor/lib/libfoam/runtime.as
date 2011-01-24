@@ -5,27 +5,49 @@ InitFn ==> SingleInteger -> Value;
 DV ==> DispatchVector;
 CDV ==> CatDispatchVector;
 
+WRAPP(txt, x) ==> { 
+	  x
+--	  PRINT() << "(" << txt << NL(); 
+--	  wtmp := x; 
+--	  PRINT() << " " << txt << " = " << wtmp << ")" << NL(); 
+--	  wtmp
+}
+
+WRAP(txt, x) ==> { 
+          x
+--	  PRINT() << "(" << txt << NL(); 
+--	  wtmp := x; 
+--	  PRINT() << " " << txt << ")" << NL(); 
+--	  wtmp
+}
 
 -- another hack: The recursive call implies that
 -- it cannot be inlined from langx 
-local printDomain(out: TextWriter,nm: DomainName): TextWriter == {
+local printDomain(f: (TextWriter, DomainName) -> TextWriter,
+      		     out: TextWriter,nm: DomainName): TextWriter == {
 	import from List DomainName;
 	type nm = ID    => out << name nm;
 	type nm = OTHER => out << "??";
 	isTuple := type nm = TUPLE;
 	lst := args nm;
 	if not isTuple then {
-		printDomain(out, first lst);
+		f(out, first lst);
 		lst := rest lst;
 	}
 	out << "(";
 	for tail in tails lst repeat {
 		arg := first tail;
-		printDomain(out, arg);
+		f(out, arg);
 		not empty? rest tail => out << ", ";
 	}
 	out << ")";
 }
+
+local printDomain(out: TextWriter, nm: DomainName): TextWriter == {
+	fn(f: TextWriter, dom: DomainName): TextWriter == printDomain(fn, f, dom);
+	printDomain(fn, out, nm);
+}
+
 
 import {
 	stdoutFile: () -> OutFile;
@@ -177,13 +199,30 @@ domainAddExports!(d: AldorDomainRep, names: Array Hash, types: Array Hash,
 }
 
 local box: Box := new Nil Value;
+
 domainGetExport!(td: Domain, name: Hash, type: Hash): Value == {
 --	PROFILE(import from StringTable);
-	v := getExport!(td, name, type, box);
+	mybox := getExport0!(td, name, type, box);
+	mybox => value mybox;
+	failmsg(td, name, type);
+	ERROR "Export not found";
 --	PROFILE(PRINT()<< domainName td << " " << find nameCode
 --			     <<" "  <<type<<NL());
-	v
+	never;
 }
+
+local ERROR(s: String): Exit == {
+	fiRaiseException s;	
+	never;
+}
+
+local failmsg(td: Domain, name: Hash, type: Hash): () == {
+	import from StringTable;
+	PRINT() << "Looking in ";
+	printDomain(PRINT(), getName td)
+               	<< " for "       << find(theStringTable, name)
+                << " with code " << type << NL();
+}		
 
 domainTestExport!(td: Domain, name: Hash, type: Hash): Bit == 
 	testExport!(td, name, type);
@@ -381,13 +420,21 @@ aldorDispatchVector() :  DV == {
 	-- free adv;
 	--not adv => adv := 
 	n(x: AldorDomainRep): DomainName == name x;
-	g(d: AldorDomainRep, pc: DomainPtr, 
-	  n: Hash, t: Hash, b: Box, flg: Bit): Box == get(d, pc pretend Domain, 
-	     	      	       	    	       	          n, t, b, flg);
-	h(x: AldorDomainRep): Hash == hash x;
-	i(x: AldorDomainRep, d: DomainPtr): Domain == inheritTo(x,d pretend Domain);
+	ag(d: AldorDomainRep, pc: DomainPtr, n: Hash, t: Hash, 
+	   b: Box, flg: Bit): Box == {
+		   newbox: Box := get(d, pc pretend Domain, n, t, b, flg);
+		   newbox;
+        }
+	h(x: AldorDomainRep): Hash == WRAPP("Hash", hash x);
+	i(dom: AldorDomainRep, child: DomainPtr): Domain == {
+	     fn(d: AldorDomainRep): ((AldorDomainRep, Hash) -> ()) == {
+	     	   expandInherited(d, dom, child pretend Domain);
+	     }
+	     dr := new(fn)$AldorDomainRep;
+	     domainMakeDispatch dr;
+	}
 	new(n pretend DomNamer,
-	    g pretend DomGetter, -- get pretend DomGetter,
+	    ag pretend DomGetter, -- get pretend DomGetter,
 	    h pretend DomHasher, -- hash@(AldorDomainRep->Hash) pretend DomHasher,
 	    i pretend DomInheritTo --inheritTo@((AldorDomainRep, Domain)->Domain) pretend DomInheritTo
 				);
@@ -397,13 +444,20 @@ aldorDispatchVector() :  DV == {
 extendDispatchVector () : DV == {
 	--free edv: DV;
 	--not edv => 
-	n(x: AldorDomainRep): DomainName == name x;
-	g(d: AldorDomainRep, pc: DomainPtr, n: Hash, t: Hash, b: Box, flg: Bit): Box ==
-	     getExtend(d, pc pretend Domain, n, t, b, flg);
-	h(x: AldorDomainRep): Hash == hashExtend x;
-	i(x: AldorDomainRep, d: DomainPtr): Domain == inheritToExtend(x,d pretend Domain);
+	n(e: AldorDomainRep): DomainName == nameExtend(e);
+	extendg(d: AldorDomainRep, pc: DomainPtr, n: Hash, t: Hash, b: Box, flg: Bit): Box ==
+	     WRAPP("Getextend", getExtend(d, pc pretend Domain, n, t, b, flg));
+	h(x: AldorDomainRep): Hash == WRAPP("hash extend", hashExtend x);
+	--i(x: AldorDomainRep, d: DomainPtr): Domain == inheritToExtend(x,d pretend Domain);
+	i(dom: AldorDomainRep, child: DomainPtr): Domain == {
+	     efn(d: AldorDomainRep): ((AldorDomainRep, Hash) -> ()) == {
+	     	   expandExtend(d, dom, child pretend Domain);
+	     }
+	     dr := new(efn)$AldorDomainRep;
+	     extendMakeDispatch dr;
+	}
 	local edv: DV := new(n pretend DomNamer, 
-		       g pretend DomGetter, -- getExtend pretend DomGetter,
+		       extendg pretend DomGetter, -- getExtend pretend DomGetter,
 		       h pretend DomHasher, -- hashExtend pretend DomHasher,
 		       i pretend DomInheritTo --inheritToExtend pretend DomInheritTo
 			 );
@@ -412,12 +466,12 @@ extendDispatchVector () : DV == {
 
 dummyDispatchVector () : DV == {
         n(x: AldorDomainRep): DomainName == nameDummy x;
-	g(d: AldorDomainRep, pc: DomainPtr, n: Hash, t: Hash, b: Box, flg: Bit): Box ==
+	dummyg(d: AldorDomainRep, pc: DomainPtr, n: Hash, t: Hash, b: Box, flg: Bit): Box ==
 	     getDummy(d, pc pretend Domain, n, t, b, flg);
 	h(x: AldorDomainRep): Hash == hashDummy x;
 	i(x: AldorDomainRep, d: DomainPtr): Domain == inheritToDummy(x,d pretend Domain);
 	local edv: DV := new(n pretend DomNamer, 
-		       g pretend DomGetter, -- getDummy pretend DomGetter,
+		       dummyg pretend DomGetter, -- getDummy pretend DomGetter,
 		       h pretend DomHasher, -- hashDummy pretend DomHasher,
 		       i pretend DomInheritTo --inheritToExtendDummy pretend DomInheritTo
 			 );
@@ -436,13 +490,20 @@ pointerDV() : DV == {
 	--pdv;
 	import from Pointer;
 	n(x: PointerDomain): DomainName == name x;
-	g(d: PointerDomain, pc: DomainPtr, n: Hash, t: Hash, b: Box, flg: Bit): Box ==
+	ptrg(d: PointerDomain, pc: DomainPtr, n: Hash, t: Hash, b: Box, flg: Bit): Box ==
             get(d, pc pretend Domain, n, t, b, flg);
-        h(x: PointerDomain): Hash == hash x;
+        h(x: PointerDomain): Hash == WRAPP("Hash pointer", hash x);
 	bf(x: DomainRep): Domain == new(pointerDV(), x);
-        i(x: PointerDomain, d: DomainPtr): Domain == inheritTo(x,d pretend Domain, bf);
+	tmpfn(d1: Domain, d2: Domain): Domain == {
+		  fn(): Domain == {
+		  	inheritTo(d1, d2);
+	          }
+		  x: Domain := new(pointerDV(), new(fn)$PointerDomain);
+		  x
+        }
+        i(x: PointerDomain, d: DomainPtr): Domain == inheritTo(tmpfn, x,d pretend Domain);
 	local edv: DV := new(n pretend DomNamer, 
-		       g pretend DomGetter, -- getExtend pretend DomGetter,
+		       ptrg pretend DomGetter, -- getExtend pretend DomGetter,
 		       h pretend DomHasher, -- hashExtend pretend DomHasher,
 		       i pretend DomInheritTo --inheritToExtend pretend DomInheritTo
 			 );
@@ -497,3 +558,38 @@ dummyCatDispatchVector (): CDV == {
 	dv;
 		
 }
+
+--
+-- :: Names
+--
+
+
+export {
+	namePartConcat:   (Boolean, Tuple DomainName) -> DomainName;
+	namePartFrOther:  Pointer	   -> DomainName;
+	namePartFrString: String	   -> DomainName;
+} to Foreign Builtin;
+
+namePartConcat(x: Boolean, T: Tuple DomainName): DomainName == {
+	import from List DomainName;
+	combine(x, [T]);
+}
+
+namePartFrString(s: String): DomainName == new s;
+
+namePartFrOther(p: Pointer): DomainName == other p;
+
+
+--
+-- :: String hash functions
+--
+
+export {
+	stringHash: String -> SingleInteger;
+} from Foreign Builtin;
+
+import {
+	fiStrHash: String -> SingleInteger
+} from Foreign;
+
+stringHash(s: String): SingleInteger == fiStrHash s;

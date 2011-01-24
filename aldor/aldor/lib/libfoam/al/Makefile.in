@@ -34,15 +34,15 @@ box_deps 	     :=
 dispatchvector_deps  := basictuple box 
 stringtable_deps     := 
 ptrcache_deps        := basictuple
-domain_deps          := basictuple dispatchvector stringtable
+domain_deps          := basictuple dispatchvector 
 pointerdomain_deps   := basictuple dispatchvector domain
 catobj_deps	     := basictuple domain catdispatchvector ptrcache
-aldordomainrep_deps  := basictuple domain catobj
+aldordomainrep_deps  := basictuple domain catobj stringtable
 runtime_deps         := basictuple aldordomainrep
 catdispatchvector_deps := box domain
 dv_deps		     := basictuple box
 dd_deps              := basictuple dv stringtable
-aldorcatrep_deps     := basictuple catdispatchvector catobj
+aldorcatrep_deps     := basictuple catdispatchvector catobj stringtable
 ptrcatobj_deps 	     := catdispatchvector catobj 
 lazyimport_deps	     := box domain
 runtime_deps         := domain aldordomainrep aldorcatrep ptrcatobj	\
@@ -55,10 +55,11 @@ dv.ao: AXLFLAGS += #-WD+tfImport -WD+tipBup -WD+tipTdn -WD+syme -WD+tf -WD+lib -
 runtime_AXLFLAGS := -Wruntime
 
 $(patsubst %, %.c, $(library)): %.c: %.ao %.dep
-	 $(aldorexedir)/aldor -Nfile=$(aldorexedir)/aldor.conf -Fc=$(builddir)/$@ $<	
+	@echo AO_TO_C $*
+	@$(aldorexedir)/aldor -Nfile=$(aldorexedir)/aldor.conf -Fc=$(builddir)/$@ $<	
 
 #AXLCDB	  = -W check -Csmax=0 -Fc -Zdb -Qno-cc
-AXLFLAGS  := -Z db -Fc -Q9 -Qinline-all $(AXLCDB) 
+AXLFLAGS  := -Z db -Q9 -Qinline-all $(AXLCDB) 
 
 define aldor_args
 	-Nfile=$(aldorexedir)/aldor.conf 	\
@@ -75,17 +76,20 @@ $(patsubst %, %.dep,$(library)): %.dep: Makefile $(srcdir)/../%.as
 $(patsubst %, %.ao, $(library)): %.ao: $(srcdir)/../%.as
 $(patsubst %, %.ao, $(library)): %.ao: $(foamlibdir)/al/libfoamlib.al
 $(patsubst %, %.ao, $(library)): %.ao: 
-	rm -f libruntime_$*.al;	rm -f $*.c; rm -f $*.ao
-	ar r libruntime_$*.al Makefile
-	for i in $$(cat $*.dep); do ar r libruntime_$*.al $$i.ao; done
-	$(aldorexedir)/aldor $(aldor_args)
+	@echo AO $*
+	@rm -f libruntime_$*.al;	rm -f $*.c; rm -f $*.ao
+	@ar r libruntime_$*.al Makefile
+	@for i in $$(cat $*.dep); do ar r libruntime_$*.al $$i.ao; done
+	@$(aldorexedir)/aldor $(aldor_args)
 
 $(patsubst %, %.cmd, $(library)): %.cmd: Makefile
-	echo "run $(aldor_args)" > $@
+	@echo CMD $*
+	@echo "run $(aldor_args)" > $@
 
 
 $(patsubst %,%.fm,$(library)): %.fm: %.ao
-	$(aldorexedir)/aldor \
+	@echo AO_TO_FM $*
+	@$(aldorexedir)/aldor \
 		     -Nfile=$(aldorexedir)/aldor.conf 	\
 		     -Ffm=$@ $*.ao
 
@@ -94,17 +98,24 @@ $(1).ao: $(1).dep $$(patsubst %,%.ao,$$($(1)_deps))
 $(1).dep: $$(patsubst %,%.dep,$$($(1)_deps))
 endef
 $(patsubst %, %.dep,$(library)): 
-	echo > $@
-	for i in $(filter %.dep, $^); \
-	do d=$$(basename $$i .dep); \
+	@echo DEP $*
+	@echo > $@
+	@for i in $(filter %.dep, $^); \
+	 do d=$$(basename $$i .dep); \
 	   cat $$i >> $@; echo $(basename $$d .dep)>> $@;  \
 	done
 
 $(foreach l,$(library), $(eval $(call dep_template,$(l))))
+$(patsubst %,%.ao,$(library)): ../runtimelib.as
 
+all: Makefile \
+     $(patsubst %,%.fm,$(library)) \
+     $(patsubst %,%.c,$(library)) \
+     libfoam.al
 
-all: Makefile $(patsubst %,%.fm,$(library)) libfoam.al
 libfoam.al: $($(patsubst %,%.ao,$(library))
+	rm -f $@
+	ar r $@ stringtable.ao
 	ar r $@ runtime.ao
 
 all:

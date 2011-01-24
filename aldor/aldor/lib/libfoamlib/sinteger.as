@@ -27,6 +27,8 @@ extend SingleInteger: Join(
 	mod_/:  (%,%,%)-> %;
 	mod_^:	(%,%,%)-> %;
 
+
+	coerce: % -> String;
 	export from Segment %;
 }
 == add {
@@ -176,6 +178,7 @@ extend SingleInteger: Join(
 
 	hash(x: %): SingleInteger == x;
 
+	coerce(x: %): String == formatSInt rep x;
 
 	-- Originally these were defaults from BasicType etc
 	(<<)(x: %)(p: TextWriter): TextWriter == p << x;

@@ -7,6 +7,7 @@ inline from RuntimeLib;
 DEBUG(x) ==> x;
 #else
 DEBUG(x) ==> ();
+
 #endif
 
 macro {

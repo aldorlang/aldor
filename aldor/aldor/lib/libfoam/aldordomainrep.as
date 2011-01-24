@@ -7,6 +7,14 @@ import {
 	stdoutFile: () -> OutFile;
 } from Foreign;
 
+import {
+	puts:     	(String) -> ();
+} from Foreign;
+
+import {
+	fiCounter:     	() -> Int;
+} from Foreign C "foam__c.h";
+
 local filePutc(ofile: OutFile)(c: Character):() ==
 	write!(ofile, c);
 
@@ -28,6 +36,9 @@ local ERROR(s: String): Exit == {
 	fiRaiseException s;	
 	never;
 }
+
+output(d, txt) ==> { puts(concat(txt, " ", coerce(rep(d).id))$String); }
+output3(d, txt, suffix) ==> puts(concat(txt, " ", coerce(rep(d).id), " ", suffix)$String);
 
 local addGetCache(cache: PtrCache, key: BasicTuple, box: Box): () == {
 	-- must copy the box...
@@ -96,7 +107,7 @@ AldorDomainRep: Conditional with {
 		++ hash(dom) returns the hash code for a domain.
 
 
-	inheritTo: (dom: %, child: Domain) -> Domain;
+	inheritTo: (dom: %, child: Domain) -> %;
 	
 	nameExtend: % -> DomainName;
 	getExtend:	(%, Domain, Hash, Hash, Box, Bit) -> Box;
@@ -113,6 +124,9 @@ AldorDomainRep: Conditional with {
 	hashDummy:	% -> Hash;
 	getDummy:	(%, Domain, Hash, Hash, Box, Bit) -> Box;
 	inheritToDummy: (dom: %, child: Domain) -> Domain;
+
+	expandInherited: (%, %, Domain) -> ((%, Hash) -> ());
+	expandExtend: (%, %, Domain) -> ((%, Hash) -> ());
 }
 == add {
 	Rep1 ==> Ptr;
@@ -137,7 +151,8 @@ AldorDomainRep: Conditional with {
 			ngets:		Int,
 			serial: 	SingleInteger,
 			cache:		PtrCache,
-			nameFn: ()->DomainName);
+			nameFn: ()->DomainName,
+			id: Int);
 
 	import from Rep;
 
@@ -153,7 +168,7 @@ AldorDomainRep: Conditional with {
 		     Nil Array Hash, Nil Array Value, 0,
 		     --serialThis, 
 		     0,
-		     newCache(), (): DomainName +->  new "Dunno"]
+		     newCache(), (): DomainName +->  new "Dunno", fiCounter()]
 	}
 	prepare!(dom: %): () == {
 #if ExtendReplace
@@ -328,7 +343,7 @@ AldorDomainRep: Conditional with {
 		(rep(dom).nameFn)();
 	}
 
-	inheritTo(dom: %, child: Domain): Domain == {
+	inheritTo(dom: %, child: Domain): % == {
 		fn1(self: %): ((%, Hash) -> ()) == {
 			prepareHash!(dom);
 			addHash!(self, getHash!(child));
@@ -346,7 +361,22 @@ AldorDomainRep: Conditional with {
 		dr := new(fn1);
 		--domainMakeDispatch(dr pretend AldorDomainRep)
 		--makeDomain(aldorDispatchVector(), dr pretend DomainRep);
-		nil() pretend Domain
+		--nil() pretend Domain
+		dr
+	}
+
+	expandInherited(self: %, dom: %, child: Domain): ((%, Hash) -> ()) == {
+		prepareHash!(dom);
+		addHash!(self, getHash!(child));
+		addNameFn!(self, rep(dom).nameFn);
+		if not Nil?(Array Domain)(rep(dom).extendees) then {
+			arr := new(#(rep(dom).extendees), Nil(Domain));
+			for i in 1..#arr repeat
+			       arr.i := inheritTo(rep(dom).extendees.i, child);
+			rep(self).extendees    := arr;
+		}
+		rep(self).cache := newCache();
+		per2(rep(dom).f2);
 	}
 
 	-- Operations for extension domains.
@@ -379,6 +409,24 @@ AldorDomainRep: Conditional with {
 		else
 			noName();
 	}
+
+	expandExtend(self: %, dom: %, child: Domain): ((%, Hash) -> ()) == {
+		local arr: Array Domain;
+		prepareHash!(dom);
+		arr := new(#(rep(dom).parents), Nil(Domain));
+		for i in 1..#arr repeat arr.i := rep(dom).parents.i;
+		addParents!(self, arr, child);
+		if not Nil?(Array Domain)(rep(dom).extendees) then {
+			arr := new(#(rep(dom).extendees), Nil(Domain));
+			for i in 1..#arr repeat
+				arr.i := inheritTo(rep(dom).extendees.i, 
+					           child);
+			rep(self).extendees := arr;
+		}
+		rep(self).cache     := newCache();
+		(x: %, h: Hash): () +-> {} 
+	}
+
 	inheritToExtend(dom: %, child: Domain): Domain == {
 		fn1(self: %): ((%, Hash) -> ()) == {
 			local arr: Array Domain;
@@ -400,6 +448,7 @@ AldorDomainRep: Conditional with {
 		--newExtend(dr);
 		never;
 	}
+
 	extendFillObj!(dom: %, pars: Array Domain): () == {
 		rep(dom).parents := pars;
 #if ExtendReplace
