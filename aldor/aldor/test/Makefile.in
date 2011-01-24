@@ -62,9 +62,15 @@ $(patsubst %, out/ao/%.ao, $(_aotests)): out/ao/%.ao: %.as
 	mkdir -p $$(dirname $@)
 	$(aldorexedir)/aldor $(aldor_args)
 
-all: $(patsubst %,out/fm/%.fm,$(fmtests)) \
+$(patsubst %, out/ao/%.cmd, $(_aotests)): out/ao/%.cmd: %.as
+	mkdir -p $$(dirname $@)
+	echo run '$(aldor_args)' > $@
+
+really-all: \
+     $(patsubst %,out/ao/%.cmd,$(_aotests)) \
+     $(patsubst %,out/fm/%.fm,$(fmtests)) \
      $(patsubst %,out/c/%.c,$(ctests)) \
-     $(patsubst %,%.o,$(otests)) 
+     $(patsubst %,%.o,$(otests))      
 
 .PHONY: all
 
