@@ -3509,8 +3509,20 @@ fintEvalBCall(DataObj retDataObj)
  * the return value is the type of the evaluated expression,
  * retDataObj is a pointer to the value 
  */
+
+local dataType fintEval_(DataObj retDataObj);
 local dataType
 fintEval(DataObj retDataObj)
+{
+	fintDEBUG(fprintf(dbOut, "(fintEval:\n"));
+	dataType d = fintEval_(retDataObj);
+	fintDEBUG(fprintf(dbOut, " fintEval)"));
+
+	return d;
+}
+
+local dataType
+fintEval_(DataObj retDataObj)
 {
         extern int isatty(int);
 	int 		fmt, tag, argc;
@@ -3520,7 +3532,7 @@ fintEval(DataObj retDataObj)
 	
 	fintGetTagFmtArgc(tag, fmt, argc);
 
-	/* fintDEBUG(fprintf(dbOut, "fintEval: %s\n", foamInfo(tag).str);); */
+	fintDEBUG(fprintf(dbOut, "fintEval: %s\n", foamInfo(tag).str);); 
 
 	switch (tag) {
 
