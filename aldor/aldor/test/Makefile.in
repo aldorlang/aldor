@@ -35,6 +35,8 @@ badtests := opt1
 # (it shouldn't, but spotting the call is a bit tricky).
 
 opt1_AXLFLAGS=-Y$(foamdir)/al -I $(foamdir) -lRuntimeLib=foam -Q9 -Qinline-all
+strtable1_AXLFLAGS=-Y$(foamdir)/al -I $(foamdir) -lRuntimeLib=foam -Q9 -Qinline-all
+
 clos_AXLFLAGS := -Q2
 
 _aotests := $(sort $(fmtests) $(ctests))
