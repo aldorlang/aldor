@@ -1,0 +1,158 @@
+###############################################################################
+#
+# Makefile
+#
+# Make program to test the AXIOM-XL compiler.
+#
+# Copyright (c) 1990-2007 Aldor Software Organization Ltd (Aldor.org).
+#
+###############################################################################
+
+# ..From autoconf
+@SET_MAKE@
+
+VPATH = @srcdir@
+abs_top_builddir = @abs_top_builddir@
+srcdir = @srcdir@
+top_builddir = @top_builddir@
+builddir = @builddir@
+abs_top_srcdir = @abs_top_srcdir@
+subdir = lib/libax0/test
+prefix = @prefix@
+
+# Check the makefile
+.PRECIOUS: Makefile
+Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
+	@case '$?' in \
+	  *config.status*) \
+	    cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh;; \
+	  *) \
+	    echo ' cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ '; \
+	    cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ ;; \
+	esac;
+
+
+###############################################################################
+#
+#  2006/Dec/22
+#
+#  On Solaris, the value of PWD does not change when make is invoked
+#  recursively.  Consequently, it is necessary to explicitly set it
+#  at the start of the makefile.
+#
+
+ALDOR=aldor
+TESTALDOR=testaldor
+
+ALDORROOT=$(prefix)
+IncDir	= $(ALDORROOT)/include
+LibDir	= $(ALDORROOT)/lib
+BinDir	= $(ALDORROOT)/bin
+SamDir	= $(ALDORROOT)/share/samples/test
+
+CP	= cp -p
+RM	= rm -f
+
+TESTAX0 = hilbert0.as t619.as axlist0.as coerce1.as coerce2.as		\
+	  coerce3.as coerce4.as coerce5.as convert0.as matops.as	\
+	  intcat.sh supcat2.as supcat3.as segext5.as segext6.as		\
+	  segext7.as vector0.as vector1.as vector2.as
+
+TESTS = $(TESTAX0)
+
+HELPS = 
+#
+# This list is sorted alphabetically
+#
+
+Samples	= \
+	bigmand.as binadd.as builtin0.as builtin1.as cascade0.as cascade1.as \
+	cascade2.as cascade3.as cascade4.as catdef0.as defarg0.as defarg1.as \
+	defarg2.as defarg3.as defarg4.as defarg5.as defarg6.as defarg7.as \
+	defarg8.as default0.as default1.as default2.as default3.as default4.as\
+	default5.as depend2.as depend3.as enum0.as exit0.as exptoc.as \
+	float0.as float1.as float2.as float3.as format1.as forn0.as forn1.as \
+	forn2.as forn3.as forn4.as funlist1.as funvar.as intbug1.as gbtest1.as \
+	goto0.as grok.as halt0.as halt1.as hide0.as hilbert.as hilbert0.as \
+	if4.as include1.as intfact.as iroots.as ladder0.as loop0.as loop1.as \
+	loop2.as loop3.as macex0.as macex1.as macex2.as macex3.as macex4.as \
+	macex5.as none0.as object0.as qimport.as qual0.as qual1.as \
+	qual2.as record.as record0.as swap.as tree.as union0.as union1.as
+
+DIAGS	= 
+FUTURE	= 
+# float2.as:   of_emerg.c aliasing problem
+# default8.as: function used as value in unexpected way.
+# gbtest1.as:  only fails under Win32
+# where2.as:   confused by default within a where block
+
+BUGS=
+
+TIMINGS = 
+
+OKFILES = Makefile $(TESTS) $(BUGS)
+
+OLDALDOR = aldor
+
+installcheck:	tests diags1
+
+junk::
+	@ ls -d $(OKFILES) * | sort | grep -v CVS | uniq -u
+
+mostlyclean::
+	@ $(RM) *~
+
+mostlyclean:: ; -(cd incl ; $(MAKE) clean)
+junk::	; -(cd incl ; $(MAKE) junk)
+
+tests:
+	@env PATH=$$PATH:$(ALDORROOT)/bin ALDORROOT=$(ALDORROOT) \
+	     ALDORARGS="$(TESTAXLARGS) " $(TESTALDOR) -oldaxl $(OLDALDOR) $(TESTS)
+	@echo "BUGS = $(BUGS)"
+
+testexecs:
+	@- $(TESTALDOR) -only testrun -oldaxl $(OLDALDOR) $(TESTS)
+	@ echo "BUGS = $(BUGS)"
+
+testcomp:
+	@-$(TESTALDOR) -only testcomp $(TESTS)
+
+testgen:
+	@-$(TESTALDOR) -only testgen $(TESTS)
+
+errors:
+	@-$(TESTALDOR) -only testerr $(TESTS)
+
+testsh:
+	@-$(TESTALDOR) `for i in $(TESTS) ; do echo $$i | grep '\.sh$$' ; done` 
+
+
+opttests:
+	@- ALDORARGS=-O $(TESTALDOR) -only testrun -oldaxl $(OLDALDOR) $(TESTS)
+
+install-tests:; @-$(TESTALDOR) -install -oldc $(OLDALDOR) $(TESTS)
+install-tests-comp:; @-$(TESTALDOR) -install -only testcomp $(TESTS)
+install-tests-gen:; @-$(TESTALDOR) -install -only testgen $(TESTS)
+
+.PHONY: install-tests install-tests-comp install-tests-gen
+
+all:
+.PHONY: all
+
+installcheck: test
+.PHONY: installcheck
+
+clean: mostlyclean
+distclean: clean 
+	rm Makefile
+
+maintainer-clean: distclean
+
+EMPTY_AUTOMAKE_TARGETS  = dvi pdf ps info html tags ctags
+EMPTY_AUTOMAKE_TARGETS += install install-data install-exec uninstall
+EMPTY_AUTOMAKE_TARGETS += install-dvi install-html install-info install-ps install-pdf
+EMPTY_AUTOMAKE_TARGETS += installdirs
+EMPTY_AUTOMAKE_TARGETS += check 
+
+.PHONY: $(EMPTY_AUTOMAKE_TARGETS)
+$(EMPTY_AUTOMAKE_TARGETS):
