@@ -87,34 +87,37 @@ junk::
 mostlyclean::
 	@ $(RM) *~
 
+testaldor_call=env PATH=$$PATH:$(ALDORROOT)/bin ALDORROOT=$(ALDORROOT) \
+	       ALDORARGS="$(TESTAXLARGS) " $(TESTALDOR) 
+
 tests:
-	@env PATH=$$PATH:$(ALDORROOT)/bin ALDORROOT=$(ALDORROOT) \
-	     ALDORARGS="$(TESTAXLARGS) " $(TESTALDOR) -oldaxl $(OLDALDOR) $(TESTS)
+	@$(testaldor_call) -oldaxl $(OLDALDOR) $(TESTS)
 	@echo "BUGS = $(BUGS)"
 
 testexecs:
-	@- $(TESTALDOR) -only testrun -oldaxl $(OLDALDOR) $(TESTS)
+	@$(testaldor_call) -only testrun -oldaxl $(OLDALDOR) $(TESTS)
 	@ echo "BUGS = $(BUGS)"
 
 testcomp:
-	@-$(TESTALDOR) -only testcomp $(TESTS)
+	@-$(testaldor_call) -only testcomp $(TESTS)
 
 testgen:
-	@-$(TESTALDOR) -only testgen $(TESTS)
+	@-$(testaldor_call) -only testgen $(TESTS)
 
 errors:
-	@-$(TESTALDOR) -only testerr $(TESTS)
+	@-$(testaldor_call) -only testerr $(TESTS)
 
 testsh:
-	@-$(TESTALDOR) `for i in $(TESTS) ; do echo $$i | grep '\.sh$$' ; done` 
+	@-$(testaldor_call) `for i in $(TESTS) ; do echo $$i | grep '\.sh$$' ; done` 
 
 
+opttests: TESTAXLARGS="ALDORARGS=-O"
 opttests:
-	@- ALDORARGS=-O $(TESTALDOR) -only testrun -oldaxl $(OLDALDOR) $(TESTS)
+	$(testaldor_call) -only testrun -oldaxl $(OLDALDOR) $(TESTS)
 
-install-tests:; @-$(TESTALDOR) -install -oldc $(OLDALDOR) $(TESTS)
-install-tests-comp:; @-$(TESTALDOR) -install -only testcomp $(TESTS)
-install-tests-gen:; @-$(TESTALDOR) -install -only testgen $(TESTS)
+install-tests:;      @-$(testaldor_call) -install -oldc $(OLDALDOR) $(TESTS)
+install-tests-comp:; @-$(testaldor_call) -install -only testcomp $(TESTS)
+install-tests-gen:;  @-$(testaldor_call) -install -only testgen $(TESTS)
 
 .PHONY: install-tests install-tests-comp install-tests-gen
 
