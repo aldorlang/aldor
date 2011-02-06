@@ -148,6 +148,9 @@ mostlyclean:
 	rm -f $(patsubst %, %.c, $(library))
 	rm -f $(patsubst %, %.ao, $(library))
 	rm -f $(patsubst %, %.fm, $(library))
+	rm -f $(patsubst %, %.dep, $(library))
+	rm -f $(patsubst %, %.dep.tmp, $(library))
+	rm -f $(patsubst %, lib$(libname)_%.al, $(library))
 
 clean: mostlyclean
 distclean: clean 
