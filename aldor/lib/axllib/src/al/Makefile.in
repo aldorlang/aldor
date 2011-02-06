@@ -29,7 +29,7 @@ library= lang machine basic axlcat tuple gener boolean segment		\
 	 sinteger integer bpower sfloat float dfloat pointer char	\
 	 parray array list langx string oslow fname file format		\
 	 textwrit textread opsys partial complex imod ratio rtexns	\
-	 table except fprint fmtout pfloat object efuns ieeectl
+	 table except fprint fmtout pfloat object efuns ieeectl sort
 
 noclass = sfloat oslow file format dfloat rtexns textread float table fprint fmtout
 
@@ -76,6 +76,7 @@ complex_deps  := axlcat integer bpower
 efuns_deps    := dfloat complex except
 ieeectl_deps  := efuns
 except_deps   := axlcat
+sort_deps     := 
 
 aldorexedir=$(abs_top_builddir)/aldor/src
 

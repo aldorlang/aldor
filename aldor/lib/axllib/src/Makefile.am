@@ -13,7 +13,7 @@ libaxllib_a_SOURCES= al/array.c al/axlcat.c al/basic.c al/boolean.c	\
 	             al/string.c al/textwrit.c al/tuple.c al/rtexns.c	\
 	             al/float.c al/table.c al/except.c al/fprint.c	\
 	             al/fmtout.c al/object.c al/complex.as al/efuns.c	\
-	             al/ieeectl.c al/except.c al/pfloat.c
+	             al/ieeectl.c al/except.c al/pfloat.c al/sort.c
 
 
 lib_LIBRARIES=libaxllib.a
