@@ -7,7 +7,7 @@ srcdir = @srcdir@
 top_builddir = @top_builddir@
 builddir = @builddir@
 abs_top_srcdir = @abs_top_srcdir@
-subdir = lib/libax0/al
+subdir = lib/libax0/src/al
 axllibdir = $(abs_top_srcdir)/lib/axllib/src
 
 # Check the makefile
@@ -149,8 +149,11 @@ lib$(libname).al: lib$(libname).dep
 # :: Automake requires this little lot
 #
 mostlyclean: 
-	rm -f $(patsubst %, %.ao, $(library))
-	rm -f $(patsubst %, %.fm, $(library))
+	rm -f $(patsubst %, %.ao, $(all_library))
+	rm -f $(patsubst %, %.dep, $(all_library))
+	rm -f $(patsubst %, %.dep.tmp, $(all_library))
+	rm -f $(patsubst %, lib$(libname)_%.al, $(all_library))
+	rm -f $(patsubst %, %.fm, $(all_library))
 
 clean: mostlyclean
 distclean: clean 
