@@ -1,8 +1,8 @@
 -- testare usa testmat1.as
 #pile
 #include "axllib.as"
-#library axldem "axldem"
-import from axldem
+#library DemoLib "axldem"
+import from DemoLib
 
 Vector ==> Array
 SI     ==> SingleInteger
