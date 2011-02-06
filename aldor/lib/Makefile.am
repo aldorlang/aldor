@@ -1,5 +1,6 @@
 SUBDIRS=axllib \
-	libax0 
+	libax0 \
+	libaxldem
 # axllib 
 # aldor 
 # algebra
