@@ -3,5 +3,6 @@ msgcat
 zaccgram.c
 zaccgram.h
 zaccscan.c
+atinlay
 /Makefile.in
 /Makefile
