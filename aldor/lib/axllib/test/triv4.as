@@ -18,7 +18,7 @@ export
 import
 	printf:     	(String, Int) -> Int
 	puts:		(String) -> Int
-from Foreign
+from Foreign C "<stdlib.h>"
 
 import
 	ArrToSInt:    	String -> Int
