@@ -51,6 +51,7 @@ Domain: Conditional with {
 --	prepare!:		% -> ();
 --		++ prepare(dom) forces a domain to fully instantiate.
 
+	getExport0!:		(%, Hash, Hash, Box) -> Box;
 	getExport!:		(%, Hash, Hash, Box) -> Value;
 		++ getExport!(dom, name, type) gets an export from a domain, 
 		++ given the hash codes for its name and type.  Takes a hard 
@@ -131,7 +132,6 @@ Domain: Conditional with {
 	}
 
 	getExport! (td: %, name: Hash, type: Hash, outbox: Box) : Value == {
-		import from StringTable;
 		val := getExport0!(td, name, type, outbox);
 		val => value val;
 		failmsg(td, name, type);
@@ -141,7 +141,7 @@ Domain: Conditional with {
 	failmsg(td: %, name: Hash, type: Hash): () == {
 --		import from StringTable;
 --		PRINT() << "Looking in ";
---		printDomain(PRINT(), getName td)
+--		printDomain(p, getName td)
 --                 	<< " for "       << find name
 --                      << " with code " << type << NL();
 	}		
@@ -173,7 +173,7 @@ Domain: Conditional with {
 
 	(d1: %) = (d2: %): Bit == ptr d1 = ptr d2;
 	sample : % == Nil %;
-	(p: TextWriter) << (d: %) : TextWriter == p;
+	(p: TextWriter) << (d: %) : TextWriter == p << (d pretend Pointer);
 	test (d: %) : Bit == not nil? ptr d;
 
 

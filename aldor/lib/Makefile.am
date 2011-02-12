@@ -1,1 +1,6 @@
-SUBDIRS=aldor algebra
+SUBDIRS=axllib \
+	libax0 \
+	libaxldem
+# axllib 
+# aldor 
+# algebra

@@ -9,6 +9,8 @@ builddir = @builddir@
 abs_top_srcdir = @abs_top_srcdir@
 subdir = aldor/test
 
+all: really-all
+
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -22,16 +24,24 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 aldorexedir = $(abs_top_builddir)/aldor/src
 aldortooldir = $(abs_top_builddir)/aldor/subcmd/unitools
 foamlibdir = $(abs_top_builddir)/aldor/lib/libfoamlib
+foamdir = $(abs_top_builddir)/aldor/lib/libfoam
 
-fmtests := rectest enumtest 
+fmtests := rectest enumtest clos strtable1 
 ctests  := rectest enumtest
 otests  := enumtest
 jtests  := simple_j enumtest run_j
 
 simple_j_AXLFLAGS=-Q2
 
-_aotests := $(sort $(fmtests) $(ctests) $(jtests))
-_fmtests := $(sort $(fmtests) $(jtests))
+badtests := opt1
+# opt1 fails because the optimise decides to inline the recursive call
+# (it shouldn't, but spotting the call is a bit tricky).
+
+opt1_AXLFLAGS=-Y$(foamdir)/al -I $(foamdir) -lRuntimeLib=foam -Q9 -Qinline-all
+strtable1_AXLFLAGS=-Y$(foamdir)/al -I $(foamdir) -lRuntimeLib=foam -Q9 -Qinline-all
+
+clos_AXLFLAGS := -Q2
+
 _ctests  := $(sort $(ctests)  $(otests))
 
 _jruntests := $(sort $(jruntests))
@@ -84,12 +94,18 @@ $(patsubst %, out/ao/%.ao, $(_aotests)): out/ao/%.ao: %.as
 	mkdir -p $$(dirname $@)
 	$(aldorexedir)/aldor $(aldor_args)
 
-all: $(patsubst %,out/fm/%.fm,$(fmtests)) \
+$(patsubst %, out/ao/%.cmd, $(_aotests)): out/ao/%.cmd: %.as
+	mkdir -p $$(dirname $@)
+	echo run '$(aldor_args)' > $@
+
+really-all: \
+     $(patsubst %,out/ao/%.cmd,$(_aotests)) \
+     $(patsubst %,out/fm/%.fm,$(fmtests)) \
      $(patsubst %,out/c/%.c,$(ctests)) \
      $(patsubst %,out/java/%.java,$(jtests)) \
      $(patsubst %,out/java/%.class,$(jtests)) \
      $(patsubst %,out/java/%.class,$(jruntests)) \
-     $(patsubst %,%.o,$(otests)) 
+     $(patsubst %,%.o,$(otests))      
 
 .PHONY: all
 

@@ -3,9 +3,9 @@
 
 
 #include "axllib"
-#library IMOD "imod.ao"
+--#library IMOD "imod.ao"
 
-import from IMOD;
+--import from IMOD;
 import from SingleInteger, Integer, Segment SingleInteger, Segment Integer;
 
 #if Big

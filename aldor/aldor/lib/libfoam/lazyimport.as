@@ -18,9 +18,8 @@ LazyImport: with {
 	force(lv: %): Value == {
 		if not rep(lv).got then {
 		        box: Box := new Nil Value;
-			rep(lv).value := getExport!(rep(lv).dom, 
-							  rep(lv).name, 
-							  rep(lv).type, box);
+			val := getExport!(rep(lv).dom, rep(lv).name, rep(lv).type, box);
+			rep(lv).value := val;
 			rep(lv).got := true;
 			rep(lv).dom := Nil Domain;
 		}

@@ -8,6 +8,7 @@ AC_CONFIG_SRCDIR([aldor/src/main.c])
 AC_CONFIG_AUX_DIR([amaux])
 
 # Automake
+AM_MAINTAINER_MODE([enable])
 AM_INIT_AUTOMAKE
 AM_PROG_CC_C_O
 AM_PROG_LEX
@@ -26,27 +27,27 @@ AC_SUBST([LIBTOOL_DEPS])
 AC_CHECK_HEADERS([fcntl.h fenv.h float.h mach/mach.h stdlib.h string.h sys/param.h unistd.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
-AC_HEADER_STDBOOL
-AC_TYPE_UID_T
+#AC_HEADER_STDBOOL
+#AC_TYPE_UID_T
 AC_TYPE_INT32_T
-AC_TYPE_MODE_T
-AC_TYPE_OFF_T
-AC_TYPE_PID_T
+#AC_TYPE_MODE_T
+#AC_TYPE_OFF_T
+#AC_TYPE_PID_T
 AC_TYPE_SIZE_T
 AC_TYPE_SSIZE_T
 AC_CHECK_DECLS([sys_siglist])
-AC_STRUCT_TIMEZONE
-AC_CHECK_TYPES([ptrdiff_t])
+#AC_STRUCT_TIMEZONE
+#AC_CHECK_TYPES([ptrdiff_t])
 
 # Checks for library functions.
 AC_FUNC_ALLOCA
-AC_FUNC_FORK
-AC_FUNC_MALLOC
-AC_FUNC_MKTIME
-AC_FUNC_REALLOC
-AC_FUNC_STRCOLL
-AC_FUNC_STRERROR_R
-AC_FUNC_STRTOD
+#AC_FUNC_FORK
+#AC_FUNC_MALLOC
+#AC_FUNC_MKTIME
+#AC_FUNC_REALLOC
+#AC_FUNC_STRCOLL
+#AC_FUNC_STRERROR_R
+#AC_FUNC_STRTOD
 
 # Should only check what we need
 #AC_CHECK_FUNCS([atexit bzero clock_gettime fesetround floor ftime getcwd isascii localeconv localtime_r mblen memchr memmove memset modf pow putenv realpath rint rpmatch select setenv setlocale sqrt stime strcasecmp strchr strcspn strdup strerror strncasecmp strpbrk strrchr strspn strstr strtol strtoul strtoull tzset])
@@ -60,6 +61,7 @@ AC_CONFIG_FILES([Makefile
 		 aldor/Makefile
 		 aldor/subcmd/Makefile
 		 aldor/subcmd/unitools/Makefile
+		 aldor/subcmd/testaldor/Makefile
 		 aldor/src/Makefile
 		 aldor/lib/Makefile
 		 aldor/lib/libfoamlib/Makefile
@@ -70,7 +72,20 @@ AC_CONFIG_FILES([Makefile
 		 aldor/lib/java/Makefile
 		 aldor/lib/java/src/Makefile
 		 aldor/tools/Makefile
-		 aldor/tools/unix/Makefile])
+		 aldor/tools/unix/Makefile
+		 lib/Makefile
+		 lib/axllib/Makefile
+		 lib/axllib/src/Makefile
+		 lib/axllib/src/al/Makefile
+		 lib/axllib/test/Makefile
+		 lib/libaxldem/Makefile
+		 lib/libaxldem/src/Makefile
+		 lib/libaxldem/src/al/Makefile
+		 lib/libaxldem/test/Makefile
+		 lib/libax0/Makefile
+		 lib/libax0/src/Makefile
+		 lib/libax0/src/al/Makefile
+		 lib/libax0/test/Makefile])
 AC_OUTPUT
 
 # Shared libraries

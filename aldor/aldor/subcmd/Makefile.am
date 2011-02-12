@@ -1,1 +1,1 @@
-SUBDIRS=unitools
+SUBDIRS=unitools testaldor

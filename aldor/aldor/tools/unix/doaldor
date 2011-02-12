@@ -38,7 +38,11 @@ fi
 AXLFLAGS="$*"
 
 # Environment
-
+if [ "$MACHINE" = "" ];
+then
+    echo "Machine must be set"
+    exit 1
+fi
 
 LAXL="${LibDir}/lib${LIB}.al"
 LOB="${LibDir}/lib${LIB}.a"

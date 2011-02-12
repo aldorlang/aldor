@@ -8,6 +8,8 @@ javagen_SOURCES = java/main.c java/genjava.c java/javacode.c		\
 javagen_LDADD = libphase.a libstruct.a libgen.a libport.a 
 javagen_LDFLAGS = -lm
 javagen_CFLAGS = -g
+include_HEADERS=foam_c.h cconfig.h platform.h optcfg.h foamopt.h basic.typ
+
 
 aldor_SOURCES = main.c axlcomp.c cmdline.c
 aldor_LDADD = libphase.a libstruct.a libgen.a libport.a 
@@ -102,3 +104,7 @@ comsgdb.h comsgdb.c: comsgdb.msg $(tmpdir)
 		mv $(tmpdir)/comsgdb.c . ; \
 	fi
 
+comsgpig.cat: comsgdb.msg	
+	($(builddir)/../tools/unix/atinlay < $(srcdir)/comsgdb.msg > comsgpig.msg ; \
+	 $(builddir)/../tools/unix/msgcat -cat -detab comsgpig ; \
+	 rm comsgpig.msg )

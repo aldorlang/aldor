@@ -6,7 +6,7 @@ PointerDomain: Conditional with {
 	name: % -> DomainName;
 	hash: % -> Hash;
 	get: (d: %, pc: Domain, n1: Hash, n2: Hash, box: Box, skip: Bit) -> Box;
-	inheritTo: (%, Domain, DomainRep -> Domain) -> Domain;
+	inheritTo: (fn: (Domain, Domain) -> Domain, %, Domain) -> Domain;
 } == add {
 	Rep ==> Union(init: ()->Domain, dom: Domain);
 	DV  ==> DispatchVector;
@@ -28,14 +28,15 @@ PointerDomain: Conditional with {
 	get(d: %, pc: Domain, n1: Hash, n2: Hash, box: Box, skip: Bit): Box == 
 		getExportInner!(deref d, pc, n1, n2, box, skip);
 
-	inheritTo(d: %, d2: Domain, bf: DomainRep -> Domain): Domain == {
+	inheritTo(fn: (Domain, Domain) -> Domain, d: %, d2: Domain): Domain == {
 		import from Domain;
 		if rep(d) case dom then
 			inheritTo(rep(d).dom, d2)
 		else {
-			fn(): Domain == inheritTo(deref d, d2);
-			--new(pointerDV(), new fn);
-			never;
+		     fn(deref d, d2);
+--			fn(): Domain == inheritTo(deref d, d2);
+--			--new(pointerDV(), new fn);
+--			never;
 		}
 	}
 
