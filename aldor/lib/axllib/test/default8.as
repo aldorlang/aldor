@@ -6,6 +6,11 @@
 #include "axllib.as"
 macro Z == SingleInteger;
 
+-- additional notes: The problem is that the creation of the
+-- BinaryPowering(%, *, Z) domain occurs before the import of '*'.
+-- Fix is to do a topological sort of imports in gf_add (or
+-- someplace).
+
 SmallPrimeField(p:Z):FiniteField == SingleIntegerMod p add {
 	macro Rep == SingleIntegerMod p;
 
