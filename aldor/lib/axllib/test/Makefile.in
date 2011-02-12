@@ -56,7 +56,7 @@ RM	= rm -f
 TEST1 = test0.as test1.as 1test.as srcpos.as \
 	triv0.as triv1.as triv3.as triv4.as triv5.as triv6.as \
 	hilbert.as intbug1.as \
-	opt0.as opt1.as opt2.as opt3.as\
+	opt0.as opt2.as opt3.as\
 	genc0.sh genc1.as genc2.as \
 	imod0.as table1.as format1.as format2.as \
 	junk0.as \
@@ -128,7 +128,7 @@ TEST3 = qimport.as \
 	lit0.as lit1.as \
 	forn0.as forn1.as forn2.as forn3.as forn4.as \
 	forn5.as forn5o.as forn6.as forn6o.as forn7.as \
-	forn7a.as forn8.sh forn9.sh forn10.sh\
+	forn7a.as \
 	inline0.as inline1.as inline2.as inline3.as inline4.as inline5.as \
 	basic.as complex.as fix0.as fix1.as \
 	float0.as float1.as float3.as float4.as df1.as \
@@ -215,8 +215,8 @@ FUTURE	= pack3.as
 # gbtest1.as:  only fails under Win32
 # where2.as:   confused by default within a where block
 
-BUGS=float2.as default8.as where2.as extend2.as opt1.as pack0.sh recov1.sh \
-     bug1272.as
+BUGS=float2.as default8.as where2.as extend2.as opt1.as pack0.sh	\
+     recov1.sh bug1272.as forn8.sh forn9.sh forn10.sh
 
 # Diagnostics with fixed output
 DIAGS1= show-t.sh btree-t.sh float-t.sh xfloat-t.sh \

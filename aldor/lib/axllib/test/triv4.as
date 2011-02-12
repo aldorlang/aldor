@@ -18,7 +18,7 @@ export
 import
 	printf:     	(String, Int) -> Int
 	puts:		(String) -> Int
-from Foreign C "<stdlib.h>"
+from Foreign
 
 import
 	ArrToSInt:    	String -> Int
@@ -28,6 +28,9 @@ from Builtin
 integer(s: Literal): Int    == ArrToSInt (s pretend String)
 string (s: Literal): String == s pretend String
 
+-- FIXME: This generates a couple of warnings from the C compiler,
+-- but it's probably better to just let them pass than introduce 
+-- additional code.
 printTriv(): () ==
 	printf("%d ", 42)
 	puts "Skidoo"
