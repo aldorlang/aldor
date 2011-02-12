@@ -31,8 +31,6 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	    cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ ;; \
 	esac;
 
-tooldir=$(top_builddir)/build/scripts
-
 ###############################################################################
 #
 #  2006/Dec/22
@@ -44,6 +42,7 @@ tooldir=$(top_builddir)/build/scripts
 
 ALDOR=aldor
 TESTALDOR=testaldor
+MACHINE=linux
 
 ALDORROOT=$(prefix)
 IncDir	= $(ALDORROOT)/include
@@ -240,8 +239,10 @@ OKFILES = Makefile NMakefile incl \
 
 OLDALDOR = aldor
 
-testaldor_call=env PATH=$$PATH:$(ALDORROOT)/bin ALDORROOT=$(ALDORROOT) \
-	       ALDORARGS="$(TESTAXLARGS) " $(TESTALDOR) 
+testaldor_call=env PATH=$$PATH:$(ALDORROOT)/bin:$(abs_top_builddir)/build/tools \
+		   ALDORROOT=$(ALDORROOT) \
+		   MACHINE=$(MACHINE)	  \
+	       	   ALDORARGS="$(TESTAXLARGS) " $(TESTALDOR) 
 
 installcheck:	tests diags
 
