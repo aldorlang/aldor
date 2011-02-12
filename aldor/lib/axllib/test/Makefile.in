@@ -177,7 +177,7 @@ TEST4 = defarg0.as defarg1.as defarg2.as defarg3.as defarg4.as \
 	supcat.sh segment0.as \
 	segext0.sh segext1.sh \
 	gc0.as \
-	rawrec1.as rawrec2.as rawrec3.as rawrec4.as rawrec5.sh \
+	rawrec1.as rawrec2.as rawrec3.as rawrec4.as  \
 
 TESTS = $(TEST1) $(TEST2) $(TEST3) $(TEST4) 
 
@@ -216,7 +216,7 @@ FUTURE	= pack3.as
 # where2.as:   confused by default within a where block
 
 BUGS=float2.as default8.as where2.as extend2.as opt1.as pack0.sh	\
-     recov1.sh bug1272.as forn8.sh forn9.sh forn10.sh
+     recov1.sh bug1272.as forn8.sh forn9.sh forn10.sh rawrec5.as
 
 # Diagnostics with fixed output
 DIAGS1= show-t.sh btree-t.sh float-t.sh xfloat-t.sh \
