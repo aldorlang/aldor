@@ -69,6 +69,19 @@ libphase_a_SOURCES = phase.c bloop.c \
 
 #libphase_a_LIBADD = libstruct.a libgen.a libport.a
 
+#
+# TESTS
+#
+check_PROGRAMS=testall
+TESTS=testall
+testsuite = test/test_fname.c
+testall_SOURCES = test/testall.c $(testsuite) test/testlib.c 
+testall_LDADD = libphase.a libstruct.a libgen.a libport.a 
+
+#
+# Special rules
+#
+
 
 grammar axl_y.c axl_y.yt: axl.z token.h axl_y.sed
 	$(abs_top_builddir)/aldor/tools/unix/zacc -p -y axl_y.yt -c axl_y.c axl.z
