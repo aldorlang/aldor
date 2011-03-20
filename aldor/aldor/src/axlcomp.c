@@ -20,6 +20,7 @@ static EmitInfo *compFinfov	= 0;	/* Tells exit handler about files. */
 static JmpBuf	compFintJmpBuf;
 static void 	compFintBreakHandler0	(int);
 
+static String compRootFromCmdLine(String cwd, String file);
 
 extern int      compGLoop       (int, char **, FILE *, FILE *);
 extern void     compGLoopEval   (FILE *, FILE *, EmitInfo);
@@ -92,6 +93,9 @@ compCmd(int argc, char **argv)
 		compRootDir = strCopyIf(osGetEnv("ALDORROOT"));
 	if (!compRootDir)
 		compRootDir = strCopyIf(osGetEnv("AXIOMXLROOT"));
+	if (!compRootDir)
+		compRootDir = compRootFromCmdLine(osCurDirName(), argv[0]);
+
 	if (cmdHasCfgFileOption(argc, argv))
 		compCfgSetConfigFile(cmdOptionArg);
 	if (cmdHasCfgNameOption(argc, argv))
@@ -132,7 +136,19 @@ compCmd(int argc, char **argv)
 
 	return compFilesLoop(argc, argv);
 }
- 
+
+String
+compRootFromCmdLine(String cwd, String file)
+{
+	FileName fname = fnameParseStaticWithin(file, cwd);
+	String binDir = fnameDir(fname);
+	FileName rootDir = fnameNew(binDir, "..", "");
+
+	String root = fnameUnparse(rootDir);
+
+	return root;
+}
+
 /*
  * Read expressions from the file "in" and write them to the file "out".
  */
