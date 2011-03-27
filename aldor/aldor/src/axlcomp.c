@@ -606,6 +606,7 @@ compInit(void)
 	tfInit();
 	foamInit();
 	optSetInit();
+	tinferInit();
 }
  
  

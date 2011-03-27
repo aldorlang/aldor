@@ -1601,8 +1601,6 @@ stabGetExportedSymes(Stab stab)
 	return exports;
 }
 
-extern Bool		tqShouldImport		(TQual);
-
 void
 stabImportFrom(Stab stab, TQual tq)
 {
@@ -1692,7 +1690,7 @@ stabImportFrom(Stab stab, TQual tq)
 
 	if (!tqIsQualified(tq))
 		for (ql = tfGetDomCascades(origin); ql; ql = cdr(ql))
-			if (tqShouldImport(car(ql)))
+			if (tiTopFns()->tqShouldImport(car(ql)))
 				stabImportFrom(stab, car(ql));
 }
 
