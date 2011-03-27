@@ -17,7 +17,6 @@ extern void	fintInitFile		(void);
 extern void     fintPrintType           (FILE *, AbSyn);
 
 
-extern AbSyn	fintWrap		(AbSyn, int);
 extern void	fintPrintType		(FILE *, AbSyn);
 extern Bool	fintYesOrNo		(String);
 extern Bool	fintIsCompilerSyntax	(void);

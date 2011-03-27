@@ -4,5 +4,6 @@
 #include "axlobs.h"
 
 extern void	fintParseOptions	(String);
+extern AbSyn	fintWrap		(AbSyn, int);
 
 #endif
