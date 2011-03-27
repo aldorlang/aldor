@@ -126,6 +126,8 @@ DECLARE_LIST(DepDag);
 # include "dflow.h"
 # include "fint.h"
 # include "depdag.h"
+# include "fbox.h"
+
 /*
  * Tags for labelled storage.  These continue where "axlgen.h" ends.
  */
