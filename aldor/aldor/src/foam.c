@@ -695,14 +695,9 @@ foamAuditExpr(Foam foam)
 		if (foam->foamPushEnv.format >= faNumFormats)
 			foamAuditBadRef(foam);
 		break;
-	  case FOAM_CCall:
-		if (genIsRuntime() && inlAfterInline() &&
-		    foamTag(foam->foamCCall.op) == FOAM_Glo) {
-			int	j = foam->foamCCall.op->foamGlo.index;
-			String	id = faGlobalsv[j]->foamDecl.id;
-			if (strEqual(id, "domainGetExport!"))
-				foamAuditBadRuntime(foam);
-		}
+	  case FOAM_CCall: 
+		  /* There was a check for runtime constraint breakage
+		   * here - removed as a layering violation... */
 		break;
 	  default:
 		break;
