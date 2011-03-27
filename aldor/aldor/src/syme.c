@@ -438,6 +438,18 @@ symeTypeCode(Syme syme)
 	return symeSetHash(syme, h);
 }
 
+Hash
+gen0SymeTypeCode(Syme syme)
+{
+	if (symeExtension(syme))
+		return gen0SymeTypeCode(symeExtension(syme));
+	else if (symeIsLazy(syme) && symeIsImport(syme))
+		return symeHash(syme);
+	else
+		return tfHash(symeType(symeOriginal(syme)));
+}
+
+
 void
 symeAddHash(Syme syme, Hash code)
 {

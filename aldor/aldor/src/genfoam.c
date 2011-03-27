@@ -7404,16 +7404,6 @@ genIsVar(Foam foam)
 	}
 }
 
-Hash
-gen0SymeTypeCode(Syme syme)
-{
-	if (symeExtension(syme))
-		return gen0SymeTypeCode(symeExtension(syme));
-	else if (symeIsLazy(syme) && symeIsImport(syme))
-		return symeHash(syme);
-	else
-		return tfHash(symeType(symeOriginal(syme)));
-}
 
 String 
 gen0GlobalName(String libname, Syme syme)
