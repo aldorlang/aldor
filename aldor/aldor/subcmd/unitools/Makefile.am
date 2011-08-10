@@ -7,7 +7,7 @@ unicl_CFLAGS = -I $(s) $(AM_CFLAGS)
 platform_CFLAGS = -I $(s) $(AM_CFLAGS)
 
 noinst_LIBRARIES = libport.a
-s = ../../src
+s = $(srcdir)/../../src
 
 libport_a_SOURCES=$(s)/file.c $(s)/fname.c $(s)/opsys.c $(s)/store.c $(s)/memclim.c \
 	$(s)/fluid.c $(s)/btree.c $(s)/stdc.c $(s)/strops.c \
