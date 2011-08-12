@@ -8,9 +8,9 @@ libfoamlib_ALDOR=al/array.c al/basic.c al/boolean.c al/char.c		\
 	         al/sinteger.c al/string.c al/textwrit.c al/tuple.c
 
 other_files=al/libfoamlib.al
-aldorexedir = $(abs_top_builddir)/aldor/src
+aldorsrcdir = $(abs_top_srcdir)/aldor/src
 
-AM_CFLAGS = -I$(aldorexedir)
+AM_CFLAGS = -I$(aldorsrcdir)
 libfoamlib_a_SOURCES=$(libfoamlib_ALDOR)
 
 noinst_LIBRARIES=libfoamlib.a
