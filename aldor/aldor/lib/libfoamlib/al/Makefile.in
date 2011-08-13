@@ -54,20 +54,22 @@ format_deps   := foamcat sinteger
 textwrit_deps := foamcat fname file array opsys
 partial_deps  := foamcat pointer
 
+aldorsrcdir=$(abs_top_srcdir)/aldor/src
 aldorexedir=$(abs_top_builddir)/aldor/src
 
 $(patsubst %, %.c, $(library)): %.c: %.ao %.dep
-	 $(aldorexedir)/aldor -Nfile=$(aldorexedir)/aldor.conf -Fc=$(builddir)/$@ $<	
+	 $(aldorexedir)/aldor -Nfile=$(aldorsrcdir)/aldor.conf -Fc=$(builddir)/$@ $<	
 
 define aldor_args
 	-I$(srcdir)/.. -Q8 -Qinline-all	\
-	-Nfile=$(aldorexedir)/aldor.conf 	\
+	-Nfile=$(aldorsrcdir)/aldor.conf 	\
 	-lAxlLib=foamlib_$* 		\
 	-Fao=$*.ao $(srcdir)/../$*.as
 endef
 
 $(patsubst %, %.ao, $(library)): %.ao: $(srcdir)/../foamlib.as
 $(patsubst %, %.ao, $(library)): %.ao: $(srcdir)/../%.as
+$(patsubst %, %.ao, $(library)): %.ao: 
 $(patsubst %, %.ao, $(library)): %.ao: 
 	rm -f libfoamlib_$*.al;	rm -f $*.c; rm -f $*.ao;		\
 	ar r libfoamlib_$*.al Makefile;					\
@@ -93,7 +95,7 @@ $(foreach l,$(library), $(eval $(call dep_template,$(l))))
 
 $(patsubst %,%.fm,$(library)): %.fm: %.ao
 	$(aldorexedir)/aldor \
-		     -Nfile=$(aldorexedir)/aldor.conf 	\
+		     -Nfile=$(aldorsrcdir)/aldor.conf 	\
 		     -Ffm=$@ $*.ao
 
 all: Makefile libfoamlib.al $(patsubst %, %.c, $(library)) $(patsubst %, %.fm, $(library))
@@ -109,9 +111,9 @@ libfoamlib.al: libfoamlib.dep
 # :: Automake requires this little lot
 #
 mostlyclean: 
-	rm $(patsubst %, %.c, $(library))/%.c
-	rm $(patsubst %, %.c, $(library))/%.ao
-	rm $(patsubst %, %.c, $(library))/%.fm
+	rm -f $(patsubst %, %.c, $(library))
+	rm -f $(patsubst %, %.ao, $(library))
+	rm -f $(patsubst %, %.fm, $(library))
 
 clean: mostlyclean
 distclean: clean 

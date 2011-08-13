@@ -7,7 +7,7 @@ srcdir = @srcdir@
 top_builddir = @top_builddir@
 builddir = @builddir@
 abs_top_srcdir = @abs_top_srcdir@
-subdir = aldor/lib/libfoam/al
+subdir = lib/aldor/src/lang/al
 
 # Check the makefile
 .PRECIOUS: Makefile
@@ -22,54 +22,25 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 
 
 # Build starts here
-aldorsrcdir = $(abs_top_srcdir)/aldor/src
 aldorexedir = $(abs_top_builddir)/aldor/src
-foamlibsrcdir = $(abs_top_srcdir)/aldor/lib/libfoamlib
 foamlibdir = $(abs_top_builddir)/aldor/lib/libfoamlib
 
-library = basictuple box stringtable dispatchvector dv dd domain	\
-	  aldordomainrep catdispatchvector catobj aldorcatrep ptrcache	\
-	  ptrcatobj runtime pointerdomain lazyimport
+libraryname=ald_lang
+library = sal_lang
 
-basictuple_deps      :=
-box_deps 	     :=
-dispatchvector_deps  := basictuple box 
-stringtable_deps     := 
-ptrcache_deps        := basictuple
-domain_deps          := basictuple dispatchvector stringtable
-pointerdomain_deps   := basictuple dispatchvector domain
-catobj_deps	     := basictuple domain catdispatchvector ptrcache
-aldordomainrep_deps  := basictuple domain catobj
-runtime_deps         := basictuple aldordomainrep
-catdispatchvector_deps := box domain
-dv_deps		     := basictuple box
-dd_deps              := basictuple dv stringtable
-aldorcatrep_deps     := basictuple catdispatchvector catobj
-ptrcatobj_deps 	     := catdispatchvector catobj 
-lazyimport_deps	     := box domain
-runtime_deps         := domain aldordomainrep aldorcatrep ptrcatobj	\
-			pointerdomain lazyimport ptrcache
-
-#domain.ao: AXLFLAGS += -WD+tfImport -WD+tipBup -WD+syme -WD+tf
-dd.ao: AXLFLAGS += #-WD+tfImport -WD+tipBup -WD+tipTdn -WD+syme -WD+tf -WD+lib -WD+libVerbose -WD+sefoEqual -WD+sefoPrint
-dv.ao: AXLFLAGS += #-WD+tfImport -WD+tipBup -WD+tipTdn -WD+syme -WD+tf -WD+lib -WD+libVerbose -WD+sefoPrint
-
-runtime_AXLFLAGS := -Wruntime
 
 $(patsubst %, %.c, $(library)): %.c: %.ao %.dep
-	 $(aldorexedir)/aldor -Nfile=$(aldorsrcdir)/aldor.conf -Fc=$(builddir)/$@ $<	
+	 $(aldorexedir)/aldor -Nfile=$(aldorexedir)/aldor.conf -Fc=$(builddir)/$@ $<	
 
 #AXLCDB	  = -W check -Csmax=0 -Fc -Zdb -Qno-cc
-AXLFLAGS  := -Z db -Fc -Q9 -Qinline-all $(AXLCDB) 
+AXLFLAGS  := -Z db -Fc -Q9 -Qinline-all $(AXLCDB) -WD+inline -WD+inlCall -WD+inlCallInfo
 
 define aldor_args
-	-Nfile=$(aldorsrcdir)/aldor.conf 	\
-	-Y$(foamlibdir)/al			\
-	-Y.				\
-	-I$(foamlibsrcdir)			\
-	-lAxlLib=foamlib 		\
-	-lRuntimeLib=runtime_$* 	\
-	$(AXLFLAGS) $($*_AXLFLAGS)	\
+	-Nfile=$(aldorexedir)/aldor.conf 	\
+	-Y.					\
+	-I$(top_builddir)/lib/aldor/include	\
+	-laldorlib=$(libraryname)		\
+	$(AXLFLAGS)			\
 	-Fao=$*.ao $(srcdir)/../$*.as
 endef
 
@@ -88,7 +59,7 @@ $(patsubst %, %.cmd, $(library)): %.cmd: Makefile
 
 $(patsubst %,%.fm,$(library)): %.fm: %.ao
 	$(aldorexedir)/aldor \
-		     -Nfile=$(aldorsrcdir)/aldor.conf 	\
+		     -Nfile=$(aldorexedir)/aldor.conf 	\
 		     -Ffm=$@ $*.ao
 
 define dep_template
@@ -105,22 +76,15 @@ $(patsubst %, %.dep,$(library)):
 $(foreach l,$(library), $(eval $(call dep_template,$(l))))
 
 
-all: Makefile $(patsubst %,%.fm,$(library)) libfoam.al
-libfoam.al: $($(patsubst %,%.ao,$(library))
-	ar r $@ runtime.ao
-
-all:
-	-@grep 'fiFileInitializer(' runtime.c | grep -v rtexns > runtime-gets.txt
-	@cat runtime-gets.txt | sed -e 's/^[^"]*"\([^"]*\).*$$/*** Error from Makefile: gets from \1 are not allowed./' 
-	[ ! -s runtime-gets.txt ]
+all: Makefile $(patsubst %,%.fm,$(library))
 
 # 
 # :: Automake requires this little lot
 #
 mostlyclean: 
-	rm -f $(patsubst %, %.c, $(library))
-	rm -f $(patsubst %, %.ao, $(library))
-	rm -f $(patsubst %, %.fm, $(library))
+	rm $(patsubst %, %.c, $(library))/%.c
+	rm $(patsubst %, %.c, $(library))/%.ao
+	rm $(patsubst %, %.c, $(library))/%.fm
 
 clean: mostlyclean
 distclean: clean 
