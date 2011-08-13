@@ -11,7 +11,7 @@ subdir = lib/algebra/src/mat/linalg2
 
 # Check the makefile
 .PRECIOUS: Makefile
-Makefile: ./$(srcdir)/Makefile.in $(top_builddir)/config.status 
+Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status 
 	@case '$?' in \
 	  *config.status*) \
 	    cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh;; \
@@ -22,27 +22,28 @@ Makefile: ./$(srcdir)/Makefile.in $(top_builddir)/config.status
 
 # Build starts here
 aldorexedir = $(abs_top_builddir)/aldor/src
+aldorsrcdir=$(abs_top_srcdir)/aldor/src
 aldorlibdir = $(abs_top_builddir)/lib/aldor/src
-algebraincdir = $(abs_top_builddir)/lib/algebra/include
+algebraincdir = $(abs_top_srcdir)/lib/algebra/include
 algebrabuilddir = $(abs_top_builddir)/lib/algebra/src
 
 libraryname := algebra
 library = alg_ffupla sit_popov sit_upcrtla 
 alg_version_deps :=
-include Makefile.deps
+include $(srcdir)/Makefile.deps
 
 
 $(patsubst %, %.c, $(library)): %.c: %.ao %.dep
-	 $(aldorexedir)/aldor -Nfile=$(aldorexedir)/aldor.conf -Fc=$(builddir)/$@ $<	
+	 $(aldorexedir)/aldor -Nfile=$(aldorsrcdir)/aldor.conf -Fc=$(builddir)/$@ $<	
 
 #AXLCDB	  = -W check -Csmax=0 -Fc -Zdb -Qno-cc
 AXLFLAGS  := -Z db -Fc -Q2 $(AXLCDB)
 AXLFLAGS  += -Y $(aldorlibdir) -laldor -I $(algebraincdir)
 
 define aldor_args
-	-Nfile=$(aldorexedir)/aldor.conf 	\
+	-Nfile=$(aldorsrcdir)/aldor.conf 	\
 	-Y.					\
-	-I$(top_builddir)/lib/aldor/include	\
+	-I$(abs_top_srcdir)/lib/aldor/include	\
 	-l$(libraryname)lib=$(libraryname)_$*	\
 	$(AXLFLAGS)				\
 	-Fao=$*.ao $(srcdir)/$*.as
@@ -72,7 +73,7 @@ $(patsubst %, %.cmd, $(library)): %.cmd: Makefile
 
 $(patsubst %,%.fm,$(library)): %.fm: %.ao
 	$(aldorexedir)/aldor \
-		     -Nfile=$(aldorexedir)/aldor.conf 	\
+		     -Nfile=$(aldorsrcdir)/aldor.conf 	\
 		     -Ffm=$@ $*.ao
 
 define dep_template

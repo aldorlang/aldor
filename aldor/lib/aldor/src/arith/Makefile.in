@@ -22,6 +22,7 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 
 
 # Build starts here
+aldorsrcdir = $(abs_top_srcdir)/aldor/src
 aldorexedir = $(abs_top_builddir)/aldor/src
 
 libraryname=aldorarith
@@ -55,15 +56,15 @@ sal_dfloat_deps := sal_fltcat sal_sfloat
 sal_pointer_deps := sal_mint sal_itools
 
 $(patsubst %, %.c, $(library)): %.c: %.ao %.dep
-	 $(aldorexedir)/aldor -Nfile=$(aldorexedir)/aldor.conf -Fc=$(builddir)/$@ $<	
+	 $(aldorexedir)/aldor -Nfile=$(aldorsrcdir)/aldor.conf -Fc=$(builddir)/$@ $<	
 
 #AXLCDB	  = -W check -Csmax=0 -Fc -Zdb -Qno-cc
 AXLFLAGS  := -Z db -Fc -Q2 $(AXLCDB)
 
 define aldor_args
-	-Nfile=$(aldorexedir)/aldor.conf 	\
+	-Nfile=$(aldorsrcdir)/aldor.conf 	\
 	-Y.					\
-	-I$(top_builddir)/lib/aldor/include	\
+	-I$(abs_top_srcdir)/lib/aldor/include	\
 	-laldorlib=$(libraryname)_$*		\
 	$(AXLFLAGS)				\
 	-Fao=$*.ao $(srcdir)/$*.as
@@ -75,7 +76,7 @@ $(patsubst %, %.ao, $(library)): %.ao:
 	rm -f lib$(libraryname)_$*.al; rm -f $*.c; rm -f $*.ao
 	ar r lib$(libraryname)_$*.al Makefile
 	(set -x; for i in $(library_deps); do 			\
-	   l=../$$i/aldor$${i}lib.al;				\
+	   l=../$$i/aldor$${i}.al;				\
 	   if [ ! -f $$l ] ; then echo "missing $$l"; exit 1; fi;	\
 	   for mbr in $$(ar t $$l); do			\
 	      ar x $$l $$mbr;				\
@@ -92,7 +93,7 @@ $(patsubst %, %.cmd, $(library)): %.cmd: Makefile
 
 $(patsubst %,%.fm,$(library)): %.fm: %.ao
 	$(aldorexedir)/aldor \
-		     -Nfile=$(aldorexedir)/aldor.conf 	\
+		     -Nfile=$(aldorsrcdir)/aldor.conf 	\
 		     -Ffm=$@ $*.ao
 
 define dep_template

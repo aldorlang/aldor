@@ -7,7 +7,7 @@ srcdir = @srcdir@
 top_builddir = @top_builddir@
 builddir = @builddir@
 abs_top_srcdir = @abs_top_srcdir@
-subdir = lib/aldor/src/lang
+subdir = lib/aldor/src/lang/al
 
 # Check the makefile
 .PRECIOUS: Makefile
@@ -22,37 +22,35 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 
 
 # Build starts here
-aldorsrcdir = $(abs_top_srcdir)/aldor/src
 aldorexedir = $(abs_top_builddir)/aldor/src
 foamlibdir = $(abs_top_builddir)/aldor/lib/libfoamlib
 
-libraryname=aldorlang
+libraryname=ald_lang
 library = sal_lang
 
-sal_lang_deps :=
 
 $(patsubst %, %.c, $(library)): %.c: %.ao %.dep
-	 $(aldorexedir)/aldor -Nfile=$(aldorsrcdir)/aldor.conf -Fc=$(builddir)/$@ $<	
+	 $(aldorexedir)/aldor -Nfile=$(aldorexedir)/aldor.conf -Fc=$(builddir)/$@ $<	
 
 #AXLCDB	  = -W check -Csmax=0 -Fc -Zdb -Qno-cc
 AXLFLAGS  := -Z db -Fc -Q9 -Qinline-all $(AXLCDB) -WD+inline -WD+inlCall -WD+inlCallInfo
 
 define aldor_args
-	-Nfile=$(aldorsrcdir)/aldor.conf 	\
+	-Nfile=$(aldorexedir)/aldor.conf 	\
 	-Y.					\
 	-I$(top_builddir)/lib/aldor/include	\
 	-laldorlib=$(libraryname)		\
 	$(AXLFLAGS)			\
-	-Fao=$*.ao $(srcdir)/$*.as
+	-Fao=$*.ao $(srcdir)/../$*.as
 endef
 
-$(patsubst %, %.dep,$(library)): %.dep: Makefile $(srcdir)/%.as
-$(patsubst %, %.ao, $(library)): %.ao: $(srcdir)/%.as
+$(patsubst %, %.dep,$(library)): %.dep: Makefile $(srcdir)/../%.as
+$(patsubst %, %.ao, $(library)): %.ao: $(srcdir)/../%.as
 $(patsubst %, %.ao, $(library)): %.ao: $(foamlibdir)/al/libfoamlib.al
 $(patsubst %, %.ao, $(library)): %.ao: 
-	rm -f $(libraryname)_$*.al;	rm -f $*.c; rm -f $*.ao
-	ar r $(libraryname)_$*.al Makefile
-	for i in $$(cat $*.dep); do ar r $(libraryname)_$*.al $$i.ao; done
+	rm -f libruntime_$*.al;	rm -f $*.c; rm -f $*.ao
+	ar r libruntime_$*.al Makefile
+	for i in $$(cat $*.dep); do ar r libruntime_$*.al $$i.ao; done
 	$(aldorexedir)/aldor $(aldor_args)
 
 $(patsubst %, %.cmd, $(library)): %.cmd: Makefile
@@ -61,15 +59,15 @@ $(patsubst %, %.cmd, $(library)): %.cmd: Makefile
 
 $(patsubst %,%.fm,$(library)): %.fm: %.ao
 	$(aldorexedir)/aldor \
-		     -Nfile=$(aldorsrcdir)/aldor.conf 	\
+		     -Nfile=$(aldorexedir)/aldor.conf 	\
 		     -Ffm=$@ $*.ao
 
 define dep_template
 $(1).ao: $(1).dep $$(patsubst %,%.ao,$$($(1)_deps))
 $(1).dep: $$(patsubst %,%.dep,$$($(1)_deps))
 endef
-$(patsubst %, %.dep,$(library) $(libraryname)): 
-	truncate --size=0 $@
+$(patsubst %, %.dep,$(library)): 
+	echo > $@
 	for i in $(filter %.dep, $^); \
 	do d=$$(basename $$i .dep); \
 	   cat $$i >> $@; echo $(basename $$d .dep)>> $@;  \
@@ -77,22 +75,16 @@ $(patsubst %, %.dep,$(library) $(libraryname)):
 
 $(foreach l,$(library), $(eval $(call dep_template,$(l))))
 
-$(libraryname).dep: $(patsubst %,%.dep,$(library))
 
-$(libraryname).al: $(libraryname).dep
-$(libraryname).al: $(patsubst %,%.ao,$(library))
-$(libraryname).al:
-	for i in $$(cat $(libraryname).dep); do ar r $@ $$i.ao; done
-
-all: Makefile $(patsubst %,%.fm,$(library)) $(libraryname).al
+all: Makefile $(patsubst %,%.fm,$(library))
 
 # 
 # :: Automake requires this little lot
 #
 mostlyclean: 
-	rm -f $(patsubst %, %.c, $(library))
-	rm -f $(patsubst %, %.ao, $(library))
-	rm -f $(patsubst %, %.fm, $(library))
+	rm $(patsubst %, %.c, $(library))/%.c
+	rm $(patsubst %, %.c, $(library))/%.ao
+	rm $(patsubst %, %.c, $(library))/%.fm
 
 clean: mostlyclean
 distclean: clean 
