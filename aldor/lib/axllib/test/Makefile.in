@@ -249,8 +249,8 @@ junk::
 mostlyclean::
 	@ $(RM) *~
 
-mostlyclean:: ; -(cd incl ; $(MAKE) clean)
-junk::	; -(cd incl ; $(MAKE) junk)
+mostlyclean:: ; -(cd incl && $(MAKE) clean)
+junk::	; -(cd incl && $(MAKE) junk)
 
 tests:
 	@env PATH=$$PATH:$(ALDORROOT)/bin ALDORROOT=$(ALDORROOT) \
