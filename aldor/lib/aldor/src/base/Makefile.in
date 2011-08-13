@@ -1,0 +1,140 @@
+# ..From autoconf
+@SET_MAKE@
+
+VPATH = @srcdir@
+abs_top_builddir = @abs_top_builddir@
+srcdir = @srcdir@
+top_builddir = @top_builddir@
+builddir = @builddir@
+abs_top_srcdir = @abs_top_srcdir@
+subdir = lib/aldor/src/base
+
+# Check the makefile
+.PRECIOUS: Makefile
+Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
+	@case '$?' in \
+	  *config.status*) \
+	    cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh;; \
+	  *) \
+	    echo ' cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ '; \
+	    cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ ;; \
+	esac;
+
+
+# Build starts here
+aldorexedir = $(abs_top_builddir)/aldor/src
+
+libraryname=aldorbase
+library = ald_pfunc sal_base sal_bstream sal_byte sal_char sal_copy	\
+	  sal_gener sal_htype sal_itype sal_manip sal_order sal_otype	\
+	  sal_partial sal_serial sal_syntax sal_torder sal_tstream
+
+sal_base_deps :=
+sal_tstream_deps := sal_base
+sal_bstream_deps := sal_base
+sal_serial_deps := sal_base sal_bstream
+sal_otype_deps := sal_base sal_tstream
+sal_itype_deps := sal_base sal_tstream
+sal_gener_deps := sal_base
+sal_htype_deps := sal_base
+sal_syntax_deps := sal_base
+sal_order_deps := sal_base 
+sal_torder_deps := sal_base sal_order
+sal_byte_deps  := sal_itype sal_otype sal_htype sal_bstream sal_serial
+sal_char_deps := sal_itype sal_otype sal_htype sal_bstream	\
+		 sal_serial sal_byte sal_torder
+
+sal_partial_deps := sal_base sal_tstream sal_bstream sal_otype		\
+		    sal_itype sal_serial sal_gener sal_htype sal_char sal_syntax
+
+sal_copy_deps := sal_base
+sal_manip_deps := sal_base sal_tstream sal_bstream sal_otype sal_itype
+
+ald_pfunc_deps := sal_partial
+
+library_deps := lang
+
+$(patsubst %, %.c, $(library)): %.c: %.ao %.dep
+	 $(aldorexedir)/aldor -Nfile=$(aldorexedir)/aldor.conf -Fc=$(builddir)/$@ $<	
+
+#AXLCDB	  = -W check -Csmax=0 -Fc -Zdb -Qno-cc
+AXLFLAGS  := -Z db -Fc -Q9 -Qinline-all $(AXLCDB) -WD+inline -WD+inlCall -WD+inlCallInfo
+
+define aldor_args
+	-Nfile=$(aldorexedir)/aldor.conf 	\
+	-Y.					\
+	-I$(top_builddir)/lib/aldor/include	\
+	-laldorlib=$(libraryname)_$*		\
+	$(AXLFLAGS)				\
+	-Fao=$*.ao $(srcdir)/$*.as
+endef
+
+$(patsubst %, %.dep,$(library)): %.dep: Makefile $(srcdir)/%.as
+$(patsubst %, %.ao, $(library)): %.ao: $(srcdir)/%.as
+$(patsubst %, %.ao, $(library)): %.ao: 
+	rm -f lib$(libraryname)_$*.al; rm -f $*.c; rm -f $*.ao
+	ar r lib$(libraryname)_$*.al Makefile
+	(set -x; for i in $(library_deps); do 			\
+	   l=../$$i/aldor$${i}lib.al;				\
+	   if [ ! -f $$l ] ; then echo "missing $$l"; exit 1; fi;	\
+	   for mbr in $$(ar t $$l); do			\
+	      ar x $$l $$mbr;				\
+	      ar r lib$(libraryname)_$*.al $$mbr;		\
+	   done;					\
+        done						\
+	)
+	for i in $$(cat $*.dep); do ar r lib$(libraryname)_$*.al $$i.ao; done
+	$(aldorexedir)/aldor $(aldor_args)
+
+$(patsubst %, %.cmd, $(library)): %.cmd: Makefile
+	echo "run $(aldor_args)" > $@
+
+$(patsubst %,%.fm,$(library)): %.fm: %.ao
+	$(aldorexedir)/aldor \
+		     -Nfile=$(aldorexedir)/aldor.conf 	\
+		     -Ffm=$@ $*.ao
+
+define dep_template
+$(1).ao: $(1).dep $$(patsubst %,%.ao,$$($(1)_deps))
+$(1).dep: $$(patsubst %,%.dep,$$($(1)_deps))
+endef
+$(patsubst %, %.dep,$(library) $(libraryname)): 
+	truncate --size=0 $@
+	for i in $(filter %.dep, $^); \
+	do d=$$(basename $$i .dep); \
+	   cat $$i >> $@; echo $(basename $$d .dep)>> $@;  \
+	done
+
+$(foreach l,$(library), $(eval $(call dep_template,$(l))))
+
+$(libraryname).dep: $(patsubst %,%.dep,$(library))
+
+$(libraryname)lib.al: $(libraryname).dep
+$(libraryname)lib.al: $(patsubst %,%.ao,$(library))
+$(libraryname)lib.al:
+	for i in $$(cat $(libraryname).dep); do ar r $@ $$i.ao; done
+
+all: Makefile $(patsubst %,%.fm,$(library)) $(libraryname)lib.al
+
+# 
+# :: Automake requires this little lot
+#
+mostlyclean: 
+	rm -f $(patsubst %, %.c, $(library))
+	rm -f $(patsubst %, %.ao, $(library))
+	rm -f $(patsubst %, %.fm, $(library))
+
+clean: mostlyclean
+distclean: clean 
+	rm Makefile
+maintainer-clean: distclean
+
+
+EMPTY_AUTOMAKE_TARGETS  = dvi pdf ps info html tags ctags
+EMPTY_AUTOMAKE_TARGETS += install install-data install-exec uninstall
+EMPTY_AUTOMAKE_TARGETS += install-dvi install-html install-info install-ps install-pdf
+EMPTY_AUTOMAKE_TARGETS += installdirs
+EMPTY_AUTOMAKE_TARGETS += check installcheck
+
+.PHONY: $(EMPTY_AUTOMAKE_TARGETS)
+$(EMPTY_AUTOMAKE_TARGETS):

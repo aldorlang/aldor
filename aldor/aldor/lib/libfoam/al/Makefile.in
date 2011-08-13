@@ -22,7 +22,9 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 
 
 # Build starts here
+aldorsrcdir = $(abs_top_srcdir)/aldor/src
 aldorexedir = $(abs_top_builddir)/aldor/src
+foamlibsrcdir = $(abs_top_srcdir)/aldor/lib/libfoamlib
 foamlibdir = $(abs_top_builddir)/aldor/lib/libfoamlib
 
 library = basictuple box stringtable dispatchvector dv dd domain	\
@@ -55,16 +57,16 @@ dv.ao: AXLFLAGS += #-WD+tfImport -WD+tipBup -WD+tipTdn -WD+syme -WD+tf -WD+lib -
 runtime_AXLFLAGS := -Wruntime
 
 $(patsubst %, %.c, $(library)): %.c: %.ao %.dep
-	 $(aldorexedir)/aldor -Nfile=$(aldorexedir)/aldor.conf -Fc=$(builddir)/$@ $<	
+	 $(aldorexedir)/aldor -Nfile=$(aldorsrcdir)/aldor.conf -Fc=$(builddir)/$@ $<	
 
 #AXLCDB	  = -W check -Csmax=0 -Fc -Zdb -Qno-cc
 AXLFLAGS  := -Z db -Fc -Q9 -Qinline-all $(AXLCDB) 
 
 define aldor_args
-	-Nfile=$(aldorexedir)/aldor.conf 	\
+	-Nfile=$(aldorsrcdir)/aldor.conf 	\
 	-Y$(foamlibdir)/al			\
 	-Y.				\
-	-I$(foamlibdir)			\
+	-I$(foamlibsrcdir)			\
 	-lAxlLib=foamlib 		\
 	-lRuntimeLib=runtime_$* 	\
 	$(AXLFLAGS) $($*_AXLFLAGS)	\
@@ -86,7 +88,7 @@ $(patsubst %, %.cmd, $(library)): %.cmd: Makefile
 
 $(patsubst %,%.fm,$(library)): %.fm: %.ao
 	$(aldorexedir)/aldor \
-		     -Nfile=$(aldorexedir)/aldor.conf 	\
+		     -Nfile=$(aldorsrcdir)/aldor.conf 	\
 		     -Ffm=$@ $*.ao
 
 define dep_template
@@ -116,9 +118,9 @@ all:
 # :: Automake requires this little lot
 #
 mostlyclean: 
-	rm $(patsubst %, %.c, $(library))/%.c
-	rm $(patsubst %, %.c, $(library))/%.ao
-	rm $(patsubst %, %.c, $(library))/%.fm
+	rm -f $(patsubst %, %.c, $(library))
+	rm -f $(patsubst %, %.ao, $(library))
+	rm -f $(patsubst %, %.fm, $(library))
 
 clean: mostlyclean
 distclean: clean 

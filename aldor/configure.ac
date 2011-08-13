@@ -61,13 +61,56 @@ AC_CONFIG_FILES([Makefile
 		 aldor/subcmd/Makefile
 		 aldor/subcmd/unitools/Makefile
 		 aldor/src/Makefile
+		 aldor/src/java/Makefile
 		 aldor/lib/Makefile
 		 aldor/lib/libfoamlib/Makefile
 		 aldor/lib/libfoamlib/al/Makefile
 		 aldor/lib/libfoam/Makefile
 		 aldor/lib/libfoam/al/Makefile
 		 aldor/tools/Makefile
-		 aldor/tools/unix/Makefile])
+		 aldor/tools/unix/Makefile
+		 lib/Makefile
+		 lib/aldor/Makefile
+		 lib/aldor/src/Makefile
+		 lib/aldor/src/lang/Makefile
+		 lib/aldor/src/base/Makefile
+		 lib/aldor/src/arith/Makefile
+		 lib/aldor/src/datastruc/Makefile
+		 lib/aldor/src/util/Makefile
+		 lib/aldor/src/gmp/Makefile
+		 lib/algebra/Makefile
+		 lib/algebra/src/Makefile
+		 lib/algebra/src/util/Makefile
+		 lib/algebra/src/numbers/Makefile
+		 lib/algebra/src/extree/Makefile
+		 lib/algebra/src/extree/operators/Makefile
+		 lib/algebra/src/extree/parser/Makefile
+		 lib/algebra/src/categories/Makefile
+		 lib/algebra/src/basic/Makefile
+		 lib/algebra/src/basic/compbug/Makefile
+		 lib/algebra/src/mat/Makefile
+		 lib/algebra/src/mat/gauss/Makefile
+		 lib/algebra/src/mat/modular/Makefile
+		 lib/algebra/src/mat/modular/compbug/Makefile
+		 lib/algebra/src/mat/linalg/Makefile
+		 lib/algebra/src/multpoly/multpolydata/Makefile
+		 lib/algebra/src/multpoly/exponent/Makefile
+		 lib/algebra/src/univpoly/categories/Makefile
+		 lib/algebra/src/mat/linalg2/Makefile
+		 lib/algebra/src/univpoly/Makefile
+		 lib/algebra/src/univpoly/gcd/Makefile
+		 lib/algebra/src/fraction/Makefile
+		 lib/algebra/src/series/Makefile
+		 lib/algebra/src/series/compbug/Makefile
+		 lib/algebra/src/mat/linalg3/Makefile
+		 lib/algebra/src/algext/Makefile
+		 lib/algebra/src/polyfactorp/Makefile
+		 lib/algebra/src/ffield/Makefile
+		 lib/algebra/src/polyfactor0/Makefile
+		 lib/algebra/src/multpoly/multpolycat/Makefile
+		 lib/algebra/src/multpoly/multpolydom/Makefile
+		 lib/algebra/src/multpoly/multpolypkg/Makefile
+		 lib/algebra/src/multpoly/multpolytest/Makefile])
 AC_OUTPUT
 
 # Shared libraries

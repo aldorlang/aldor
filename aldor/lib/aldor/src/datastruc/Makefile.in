@@ -1,0 +1,152 @@
+# ..From autoconf
+@SET_MAKE@
+
+VPATH = @srcdir@
+abs_top_builddir = @abs_top_builddir@
+srcdir = @srcdir@
+top_builddir = @top_builddir@
+builddir = @builddir@
+abs_top_srcdir = @abs_top_srcdir@
+subdir = lib/aldor/src/datastruc
+
+# Check the makefile
+.PRECIOUS: Makefile
+Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
+	@case '$?' in \
+	  *config.status*) \
+	    cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh;; \
+	  *) \
+	    echo ' cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ '; \
+	    cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ ;; \
+	esac;
+
+
+# Build starts here
+aldorexedir = $(abs_top_builddir)/aldor/src
+
+libraryname=aldordatastruc
+library = ald_symbol ald_symtab sal_array sal_barray sal_bdata		\
+	  sal_bstruc sal_data sal_ddata sal_fstruc sal_hash sal_kntry	\
+	  sal_list sal_lstruc sal_memblk sal_parray sal_pkarray		\
+	  sal_set sal_slist sal_sortas sal_sset sal_stream sal_string	\
+	  sal_table
+
+library_deps := lang base arith
+sal_bdata_deps := sal_data
+sal_ddata_deps := sal_bdata sal_data
+
+sal_lstruc_deps := sal_data
+sal_fstruc_deps := sal_lstruc
+
+sal_bstruc_deps := sal_bdata sal_fstruc
+sal_list_deps := sal_ddata sal_bdata sal_bstruc
+
+sal_parray_deps := sal_fstruc sal_list 
+
+sal_array_deps   :=sal_bstruc sal_parray
+sal_pkarray_deps := sal_parray
+sal_string_deps := sal_data sal_list sal_parray sal_pkarray sal_array
+sal_table_deps  := sal_bdata sal_string
+sal_hash_deps   := sal_table sal_list sal_kntry 
+
+sal_barray_deps := sal_pkarray
+sal_memblk_deps := sal_array sal_barray
+
+sal_set_deps := sal_bstruc sal_list
+
+sal_slist_deps := sal_ddata sal_bstruc sal_list
+
+sal_sset_deps := sal_bstruc sal_ddata sal_list
+sal_sortas_deps := sal_table sal_kntry sal_sset
+
+sal_stream_deps := sal_list sal_parray sal_lstruc sal_string
+
+ald_symbol_deps := sal_hash
+ald_symtab_deps := ald_symbol sal_hash
+
+$(patsubst %, %.c, $(library)): %.c: %.ao %.dep
+	 $(aldorexedir)/aldor -Nfile=$(aldorexedir)/aldor.conf -Fc=$(builddir)/$@ $<	
+
+#AXLCDB	  = -W check -Csmax=0 -Fc -Zdb -Qno-cc
+AXLFLAGS  := -Z db -Fc -Q2 $(AXLCDB) -WD+inline -WD+inlCall -WD+inlCallInfo
+
+define aldor_args
+	-Nfile=$(aldorexedir)/aldor.conf 	\
+	-Y.					\
+	-I$(top_builddir)/lib/aldor/include	\
+	-laldorlib=$(libraryname)_$*		\
+	$(AXLFLAGS)				\
+	-Fao=$*.ao $(srcdir)/$*.as
+endef
+
+$(patsubst %, %.dep,$(library)): %.dep: Makefile $(srcdir)/%.as
+$(patsubst %, %.ao, $(library)): %.ao: $(srcdir)/%.as
+$(patsubst %, %.ao, $(library)): %.ao: 
+	rm -f lib$(libraryname)_$*.al; rm -f $*.c; rm -f $*.ao
+	ar r lib$(libraryname)_$*.al Makefile
+	(set -x; for i in $(library_deps); do 			\
+	   l=../$$i/aldor$${i}lib.al;				\
+	   if [ ! -f $$l ] ; then echo "missing $$l"; exit 1; fi;	\
+	   for mbr in $$(ar t $$l); do			\
+	      ar x $$l $$mbr;				\
+	      ar r lib$(libraryname)_$*.al $$mbr;	\
+	      rm $$mbr;					\
+	   done;					\
+        done						\
+	)
+	for i in $$(cat $*.dep); do ar r lib$(libraryname)_$*.al $$i.ao; done
+	$(aldorexedir)/aldor $(aldor_args)
+	rm lib$(libraryname)_$*.al
+
+$(patsubst %, %.cmd, $(library)): %.cmd: Makefile
+	echo "run $(aldor_args)" > $@
+
+$(patsubst %,%.fm,$(library)): %.fm: %.ao
+	$(aldorexedir)/aldor \
+		     -Nfile=$(aldorexedir)/aldor.conf 	\
+		     -Ffm=$@ $*.ao
+
+define dep_template
+$(1).ao: $(1).dep $$(patsubst %,%.ao,$$($(1)_deps))
+$(1).dep: $$(patsubst %,%.dep,$$($(1)_deps))
+endef
+$(patsubst %, %.dep,$(library) $(libraryname)): 
+	truncate --size=0 $@
+	for i in $(filter %.dep, $^); \
+	do d=$$(basename $$i .dep); \
+	   cat $$i >> $@; echo $(basename $$d .dep)>> $@;  \
+	done
+
+$(foreach l,$(library), $(eval $(call dep_template,$(l))))
+
+$(libraryname).dep: $(patsubst %,%.dep,$(library))
+
+$(libraryname).al: $(libraryname).dep
+$(libraryname).al: $(patsubst %,%.ao,$(library))
+$(libraryname).al:
+	for i in $$(cat $(libraryname).dep); do ar r $@ $$i.ao; done
+
+all: Makefile $(patsubst %,%.fm,$(library)) $(libraryname).al
+
+# 
+# :: Automake requires this little lot
+#
+mostlyclean: 
+	rm -f $(patsubst %, %.c, $(library))
+	rm -f $(patsubst %, %.ao, $(library))
+	rm -f $(patsubst %, %.fm, $(library))
+
+clean: mostlyclean
+distclean: clean 
+	rm Makefile
+maintainer-clean: distclean
+
+
+EMPTY_AUTOMAKE_TARGETS  = dvi pdf ps info html tags ctags
+EMPTY_AUTOMAKE_TARGETS += install install-data install-exec uninstall
+EMPTY_AUTOMAKE_TARGETS += install-dvi install-html install-info install-ps install-pdf
+EMPTY_AUTOMAKE_TARGETS += installdirs
+EMPTY_AUTOMAKE_TARGETS += check installcheck
+
+.PHONY: $(EMPTY_AUTOMAKE_TARGETS)
+$(EMPTY_AUTOMAKE_TARGETS):
