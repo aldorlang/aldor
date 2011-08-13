@@ -20,7 +20,7 @@ libfoam_SRC=\
 	$(aldorsrcdir)/compopt.c \
 	$(aldorsrcdir)/xfloat.c  	
 
-aldorsrcdir = $(abs_top_builddir)/aldor/src
+aldorsrcdir = $(abs_top_srcdir)/aldor/src
 
 AM_CFLAGS = -I$(aldorsrcdir) -DFOAM_RTS 
 libfoam_a_SOURCES=$(libfoam_SRC) $(libfoam_ALDOR)

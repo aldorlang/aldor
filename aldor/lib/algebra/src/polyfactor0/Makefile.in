@@ -1,0 +1,128 @@
+# ..From autoconf
+@SET_MAKE@
+
+VPATH = @srcdir@
+abs_top_builddir = @abs_top_builddir@
+srcdir = @srcdir@
+top_builddir = @top_builddir@
+builddir = @builddir@
+abs_top_srcdir = @abs_top_srcdir@
+subdir = lib/algebra/src/polyfactor0
+
+# Check the makefile
+.PRECIOUS: Makefile
+Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status 
+	@case '$?' in \
+	  *config.status*) \
+	    cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh;; \
+	  *) \
+	    echo ' cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ '; \
+	    cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ ;; \
+	esac;
+
+# Build starts here
+aldorexedir = $(abs_top_builddir)/aldor/src
+aldorsrcdir=$(abs_top_srcdir)/aldor/src
+aldorlibdir = $(abs_top_builddir)/lib/aldor/src
+algebraincdir = $(abs_top_srcdir)/lib/algebra/include
+algebrabuilddir = $(abs_top_builddir)/lib/algebra/src
+
+libraryname := algebra
+library = sit_fhensel sit_zfactor sit_zfring0 sit_zfring sit_zfringg 
+alg_version_deps :=
+include $(srcdir)/Makefile.deps
+
+
+$(patsubst %, %.c, $(library)): %.c: %.ao %.dep
+	 $(aldorexedir)/aldor -Nfile=$(aldorsrcdir)/aldor.conf -Fc=$(builddir)/$@ $<	
+
+#AXLCDB	  = -W check -Csmax=0 -Fc -Zdb -Qno-cc
+AXLFLAGS  := -Z db -Fc -Q2 $(AXLCDB)
+AXLFLAGS  += -Y $(aldorlibdir) -laldor -I $(algebraincdir)
+
+define aldor_args
+	-Nfile=$(aldorsrcdir)/aldor.conf 	\
+	-Y.					\
+	-I$(abs_top_srcdir)/lib/aldor/include	\
+	-l$(libraryname)lib=$(libraryname)_$*	\
+	$(AXLFLAGS)				\
+	-Fao=$*.ao $(srcdir)/$*.as
+endef
+
+$(patsubst %, %.dep,$(library)): %.dep: Makefile $(srcdir)/%.as Makefile.deps
+$(patsubst %, %.ao, $(library)): %.ao: $(srcdir)/%.as
+$(patsubst %, %.ao, $(library)): %.ao: 
+	rm -f lib$(libraryname)_$*.al; rm -f $*.c; rm -f $*.ao
+	ar r lib$(libraryname)_$*.al Makefile
+	(for i in $(library_deps); do 			\
+	   l=$(algebrabuilddir)/$$i/algebra.al;				\
+	   if [ ! -f $$l ] ; then echo "missing $$l"; exit 1; fi;	\
+	   for mbr in $$(ar t $$l); do			\
+	      ar x $$l $$mbr;				\
+	      ar r lib$(libraryname)_$*.al $$mbr;	\
+	      rm $$mbr;					\
+	   done;					\
+        done						\
+	)
+	for i in $$(cat $*.dep); do ar r lib$(libraryname)_$*.al $$i.ao; done
+	$(aldorexedir)/aldor $(aldor_args)
+	rm lib$(libraryname)_$*.al
+
+$(patsubst %, %.cmd, $(library)): %.cmd: Makefile
+	echo "run $(aldor_args)" > $@
+
+$(patsubst %,%.fm,$(library)): %.fm: %.ao
+	$(aldorexedir)/aldor \
+		     -Nfile=$(aldorsrcdir)/aldor.conf 	\
+		     -Ffm=$@ $*.ao
+
+define dep_template
+$(1).ao: $(1).dep $$(patsubst %,%.ao,$$($(1)_deps))
+$(1).dep: $$(patsubst %,%.dep,$$($(1)_deps))
+endef
+
+$(patsubst %, %.dep,$(library) $(libraryname)): 
+	truncate --size 0 $@_tmp
+	for i in $(filter %.dep, $^); \
+	do d=$$(basename $$i .dep); \
+	   cat $$i >> $@_tmp; echo $(basename $$d )>> $@_tmp;  \
+	done
+	@(if [ ! -f $@ ] ; then echo 'new $@'; mv $@_tmp $@; \
+	elif diff $@ $@_tmp; then echo 'no change $@';     \
+	else mv $@_tmp $@; \
+	fi)
+
+$(foreach l,$(library), $(eval $(call dep_template,$(l))))
+
+$(libraryname).dep: $(patsubst %,%.dep,$(library))
+$(libraryname).dep: Makefile.deps
+
+$(libraryname).al: $(libraryname).dep
+$(libraryname).al: $(patsubst %,%.ao,$(library))
+$(libraryname).al:
+	for i in $$(cat $(libraryname).dep); do ar r $@ $$i.ao; done
+
+all: Makefile $(patsubst %,%.fm,$(library)) $(libraryname).al
+
+# 
+# :: Automake requires this little lot
+#
+mostlyclean: 
+	rm $(patsubst %, %.c, $(library))
+	rm $(patsubst %, %.ao, $(library))
+	rm $(patsubst %, %.fm, $(library))
+
+clean: mostlyclean
+distclean: clean 
+	rm Makefile
+maintainer-clean: distclean
+
+
+EMPTY_AUTOMAKE_TARGETS  = dvi pdf ps info html tags ctags
+EMPTY_AUTOMAKE_TARGETS += install install-data install-exec uninstall
+EMPTY_AUTOMAKE_TARGETS += install-dvi install-html install-info install-ps install-pdf
+EMPTY_AUTOMAKE_TARGETS += installdirs
+EMPTY_AUTOMAKE_TARGETS += check installcheck
+
+.PHONY: $(EMPTY_AUTOMAKE_TARGETS)
+$(EMPTY_AUTOMAKE_TARGETS):

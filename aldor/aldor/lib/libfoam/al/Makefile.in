@@ -22,7 +22,9 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 
 
 # Build starts here
+aldorsrcdir = $(abs_top_srcdir)/aldor/src
 aldorexedir = $(abs_top_builddir)/aldor/src
+foamlibsrcdir = $(abs_top_srcdir)/aldor/lib/libfoamlib
 foamlibdir = $(abs_top_builddir)/aldor/lib/libfoamlib
 
 library = basictuple box stringtable dispatchvector dv dd domain	\
@@ -62,10 +64,10 @@ $(patsubst %, %.c, $(library)): %.c: %.ao %.dep
 AXLFLAGS  := -Z db -Q9 -Qinline-all $(AXLCDB) 
 
 define aldor_args
-	-Nfile=$(aldorexedir)/aldor.conf 	\
+	-Nfile=$(aldorsrcdir)/aldor.conf 	\
 	-Y$(foamlibdir)/al			\
 	-Y.				\
-	-I$(foamlibdir)			\
+	-I$(foamlibsrcdir)			\
 	-lAxlLib=foamlib 		\
 	-lRuntimeLib=runtime_$* 	\
 	$(AXLFLAGS) $($*_AXLFLAGS)	\

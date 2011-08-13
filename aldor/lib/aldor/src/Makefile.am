@@ -38,7 +38,7 @@ libaldor_a_SOURCES=$(lang_ALDOR) $(base_ALDOR) $(arith_ALDOR)	\
 		   $(datastruc_ALDOR) $(util_ALDOR)
 
 noinst_LIBRARIES=libaldor.a
-aldorsrcdir = $(abs_top_builddir)/aldor/src
+aldorsrcdir = $(abs_top_srcdir)/aldor/src
 
 AM_CFLAGS = -I$(aldorsrcdir)
 
