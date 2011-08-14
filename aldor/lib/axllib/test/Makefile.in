@@ -41,7 +41,7 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 #
 
 ALDOR=aldor
-TESTALDOR=testaldor
+TESTALDOR=$(abs_top_builddir)/aldor/subcmd/testaldor/testaldor
 MACHINE=linux
 
 ALDORROOT=$(prefix)
@@ -256,7 +256,7 @@ mostlyclean:: ; -(cd incl && $(MAKE) clean)
 junk::	; -(cd incl && $(MAKE) junk)
 
 tests:
-	@$(testaldor_call) -oldaxl $(OLDALDOR) $(TESTS)
+	set -x ; cd $(srcdir); $(testaldor_call) -debug -all -oldaxl $(OLDALDOR) $(TESTS)
 	@echo "BUGS = $(BUGS)"
 
 testexecs:

@@ -115,7 +115,7 @@ all: Makefile \
      $(patsubst %,%.c,$(library)) \
      libfoam.al
 
-libfoam.al: $(patsubst %,%.ao,$(library))
+libfoam.al: $($(patsubst %,%.ao,$(library))
 	rm -f $@
 	ar r $@ stringtable.ao
 	ar r $@ runtime.ao
