@@ -106,7 +106,7 @@ $(foreach l,$(library), $(eval $(call dep_template,$(l))))
 
 
 all: Makefile $(patsubst %,%.fm,$(library)) libfoam.al
-libfoam.al: $($(patsubst %,%.ao,$(library))
+libfoam.al: $(patsubst %,%.ao,$(library))
 	ar r $@ runtime.ao
 
 all:
