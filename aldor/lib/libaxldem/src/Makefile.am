@@ -1,6 +1,6 @@
 SUBDIRS=al
 
-aldorsrcdir = $(abs_top_builddir)/aldor/src
+aldorsrcdir = $(abs_top_srcdir)/aldor/src
 
 AM_CFLAGS = -I$(aldorsrcdir)
 

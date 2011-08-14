@@ -8,7 +8,8 @@ top_builddir = @top_builddir@
 builddir = @builddir@
 abs_top_srcdir = @abs_top_srcdir@
 subdir = lib/libaxldem/src/al
-axllibdir = $(srcdir)/../../../axllib
+axllibsrcdir = $(srcdir)/../../../axllib
+axllibdir = $(builddir)/../../../axllib
 
 # Check the makefile
 .PRECIOUS: Makefile
@@ -23,6 +24,7 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 
 
 # Build starts here
+aldorsrcdir = $(abs_top_srcdir)/aldor/src
 aldorexedir = $(abs_top_builddir)/aldor/src
 libname = axldem
 
@@ -53,20 +55,20 @@ aldorexedir=$(abs_top_builddir)/aldor/src
 
 $(patsubst %, %.c, $(library)): %.c: %.ao %.dep
 	@echo AO_TO_C $*
-	@$(aldorexedir)/aldor -Nfile=$(aldorexedir)/aldor.conf -Fc=$(builddir)/$@ $<	
+	@$(aldorexedir)/aldor -Nfile=$(aldorsrcdir)/aldor.conf -Fc=$(builddir)/$@ $<	
 
 aldoropt := -Q8 -Qinline-all
 define aldor_args
 	-I$(srcdir)/.. $(aldoropt) $(aldordebug_$*) \
-	-I$(axllibdir)/include			\
-	-Nfile=$(aldorexedir)/aldor.conf 	\
+	-I$(axllibsrcdir)/include			\
+	-Nfile=$(aldorsrcdir)/aldor.conf 	\
 	-lDemoLib=$(libname)_$* 		\
 	-Y$(axllibdir)/src/al			\
 	-Fao=$*.ao $(srcdir)/../$*.as
 endef
 
 $(patsubst %,%.ao,$(library)): $(aldorexedir)/aldor
-$(patsubst %, %.ao, $(library)): %.ao: $(axllibdir)/include/axllib.as
+$(patsubst %, %.ao, $(library)): %.ao: $(axllibsrcdir)/include/axllib.as
 $(patsubst %, %.ao, $(library)): %.ao: $(srcdir)/../%.as
 $(patsubst %, %.ao, $(library)): %.ao: 
 	@echo AO $*
@@ -99,7 +101,7 @@ $(foreach l,$(library), $(eval $(call dep_template,$(l))))
 $(patsubst %,%.fm,$(library)): %.fm: %.ao 
 	@echo AO_TO_FM $*
 	@$(aldorexedir)/aldor \
-		     -Nfile=$(aldorexedir)/aldor.conf 	\
+		     -Nfile=$(aldorsrcdir)/aldor.conf 	\
 		     -Ffm=$@ $*.ao
 
 all: Makefile \
