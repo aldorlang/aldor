@@ -11,9 +11,11 @@ import {
 	puts:     	(String) -> ();
 } from Foreign;
 
-import {
-	fiCounter:     	() -> Int;
-} from Foreign C "foam__c.h";
+--import {
+--	fiCounter:     	() -> Int;
+--} from Foreign C "foam__c.h";
+
+local fiCounter(): Int == 0;
 
 local filePutc(ofile: OutFile)(c: Character):() ==
 	write!(ofile, c);
