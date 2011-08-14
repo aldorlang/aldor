@@ -23,6 +23,7 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 
 
 # Build starts here
+aldorsrcdir = $(abs_top_srcdir)/aldor/src
 aldorexedir = $(abs_top_builddir)/aldor/src
 libname = ax0
 
@@ -84,7 +85,7 @@ aldorexedir=$(abs_top_builddir)/aldor/src
 aldoropt := -Q8 -Qinline-all
 define aldor_args
 	-I$(srcdir)/.. $(aldoropt) $(aldordebug_$*) \
-	-Nfile=$(aldorexedir)/aldor.conf 	\
+	-Nfile=$(aldorsrcdir)/aldor.conf 	\
 	-lAxiomLib=$(libname)_$* 		\
 	-Fao=$*.ao $(filter $(aldorsrc),$^)
 endef
@@ -100,8 +101,7 @@ $(patsubst %, %.ao, $(library)): %.ao: $(srcdir)/../%.as
 $(patsubst %, %.ao, $(all_library)): $(aldorexedir)/aldor
 $(patsubst %, %.ao, $(all_library)): %.ao: 
 	@echo AO $*
-	@echo $^
-	@rm -f lib$(libname)_$*.al; rm -f $*.ao;		\
+	@set -x; rm -f lib$(libname)_$*.al; rm -f $*.ao;		\
 	 ar r lib$(libname)_$*.al Makefile;					\
 	 for i in $$(cat $*.dep); do ar r lib$(libname)_$*.al $$i.ao; done; 	\
 	 $(aldorexedir)/aldor $(aldor_args)
@@ -130,7 +130,7 @@ $(foreach l,$(all_library), $(eval $(call dep_template,$(l))))
 $(patsubst %,%.fm,$(library)): %.fm: %.ao 
 	@echo AO_TO_FM $*
 	@$(aldorexedir)/aldor \
-		     -Nfile=$(aldorexedir)/aldor.conf 	\
+		     -Nfile=$(aldorsrcdir)/aldor.conf 	\
 		     -Ffm=$@ $*.ao
 
 all: Makefile \
