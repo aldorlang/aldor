@@ -1,5 +1,5 @@
 #include "axllib.as"
-#library DemoLib "axldem"
+--#library DemoLib "axldem"
 import from DemoLib;
 
 NonNegativeInteger: Join(Monoid, OrderedAbelianMonoidSup) with {

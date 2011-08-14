@@ -17,7 +17,7 @@ srcdir = @srcdir@
 top_builddir = @top_builddir@
 builddir = @builddir@
 abs_top_srcdir = @abs_top_srcdir@
-subdir = lib/libax0/test
+subdir = lib/libaxldem/test
 prefix = @prefix@
 
 # Check the makefile
@@ -32,15 +32,6 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	esac;
 
 
-###############################################################################
-#
-#  2006/Dec/22
-#
-#  On Solaris, the value of PWD does not change when make is invoked
-#  recursively.  Consequently, it is necessary to explicitly set it
-#  at the start of the makefile.
-#
-
 ALDOR=aldor
 TESTALDOR=testaldor
 
@@ -53,16 +44,13 @@ SamDir	= $(ALDORROOT)/share/samples/test
 CP	= cp -p
 RM	= rm -f
 
-TESTAX0 = hilbert0.as t619.as axlist0.as coerce1.as coerce2.as		\
-	  coerce3.as coerce4.as coerce5.as convert0.as matops.as	\
-	  intcat.sh supcat2.as supcat3.as segext5.as segext6.as		\
-	  segext7.as vector0.as vector1.as vector2.as
-
-TESTS = $(TESTAX0)
+TESTDEMOLIB = hilbert1.as gbtest1.as catdef2.as type6.as f21.as intfact.as iroots.as
+TESTS = $(TESTDEMOLIB)
 
 HELPS = 
-
-Samples	= 
+#
+# This list is sorted alphabetically
+#
 
 DIAGS	= 
 FUTURE	= 
@@ -79,7 +67,7 @@ OKFILES = Makefile $(TESTS) $(BUGS)
 
 OLDALDOR = aldor
 
-installcheck: tests 
+installcheck: tests
 
 junk::
 	@ ls -d $(OKFILES) * | sort | grep -v CVS | uniq -u
@@ -112,7 +100,6 @@ testsh:
 
 
 opttests: TESTAXLARGS="ALDORARGS=-O"
-opttests:
 	$(testaldor_call) -only testrun -oldaxl $(OLDALDOR) $(TESTS)
 
 install-tests:;      @-$(testaldor_call) -install -oldc $(OLDALDOR) $(TESTS)
