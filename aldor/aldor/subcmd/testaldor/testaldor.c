@@ -42,6 +42,7 @@ String		Action;			/* What to do with each test. */
 Int		failc = 0;		/* Number of failed tests. */
 String		failv[BUFLEN];		/* Vector of failed tests. */
 
+int             debug;
 /******************************************************************************
  *
  * Aldor test functions
@@ -59,6 +60,7 @@ void		testAldorErrors		_OF((String args, String fn));
 void		testAldorPhase		_OF((String args, String fn));
 void		testAldorGenerate		_OF((String args, String fn));
 
+String testAldorOutDirForTest _OF((String fname));
 /******************************************************************************
  *
  * Aldor test top level
@@ -738,6 +740,8 @@ testAldorArgs(argc, argv)
 		}
 		else if (strEqual(argv[i], "-compare"))
 			Action = "compare";
+		else if (strEqual(argv[i], "-debug"))
+			debug = 1;
 		else if (strEqual(argv[i], "-install"))
 			Action = "install";
 		else if (strEqual(argv[i], "-show"))
@@ -773,7 +777,8 @@ testAldorGlean(argc, argv)
 
 	for (i = 0; i < argc; i += 1) {
 		if (!osFileIsThere(argv[i])) continue;
-
+		OutDir = testAldorOutDirForTest(argv[i]);
+		fprintf(stderr, "Outdir: %s\n", OutDir);
 		if (strIsSuffix(".as", argv[i])) {
 			FILE *	argi;
 			String	key = "\n--> ";
@@ -794,8 +799,9 @@ testAldorGlean(argc, argv)
 				}
 				else if (c == '\n') {
 					buf[j] = '\0';
-					if (testAldorFilter(buf))
+					if (testAldorFilter(buf)) {
 						testAldorDispatch(buf, argv[i]);
+					}
 					state = 1;
 					j = 0;
 				}
@@ -804,11 +810,32 @@ testAldorGlean(argc, argv)
 			}
 			fclose(argi);
 		}
-		else if (strIsSuffix(".sh", argv[i]))
+		else if (strIsSuffix(".sh", argv[i])) {
 			if (testAldorFilter("testscript"))
 				testAldorScript(argv[i]);
+		}
+		free(OutDir);
+		OutDir = NULL;
 	}
 }
+
+String
+testAldorOutDirForTest(fname)
+	String fname;
+{
+	String dir = osFileDirName(fname);
+	String base = osFileBase(fname);
+	if (dir == NULL) {
+		return osFileCombine("..", "testout");
+	}
+	else {
+		String backOne = osFileCombine(dir, "..");
+		String outDir = osFileCombine(backOne, "testout");
+		free(backOne);
+		return outDir;
+	}
+}
+
 
 Int
 testAldorFilter(buf)
@@ -832,7 +859,6 @@ main(argc, argv)
 	i = testAldorArgs(argc, argv);
 	argc -= i;
 	argv += i;
-
 	testAldorGlean(argc, argv);
 
 	if (failc == 0) {
