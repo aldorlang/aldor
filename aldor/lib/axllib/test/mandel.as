@@ -4,6 +4,7 @@
 --> testgen l -Q3 -Qinline-limit=10
 --> testgen c -Q3 -Qinline-limit=10
 --> testrun -Q3 -Qinline-limit=10 -l axllib
+--> testrun -l axllib
 #pile
 
 #include "axllib.as"

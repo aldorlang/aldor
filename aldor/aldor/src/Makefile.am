@@ -2,8 +2,12 @@
 bin_PROGRAMS = aldor aldortest
 
 dataincludedir = $(datadir)/include
-datainclude_DATA=aldor.conf
-include_HEADERS=foam_c.h cconfig.h platform.h optcfg.h foamopt.h
+datainclude_DATA=aldor.conf 
+
+datalib_DATA = comsgpig.cat
+datalibdir = $(datadir)/lib
+
+include_HEADERS=foam_c.h cconfig.h platform.h optcfg.h foamopt.h basic.typ
 
 noinst_LIBRARIES = libtest.a libphase.a libstruct.a libgen.a libport.a 
 
@@ -97,3 +101,7 @@ comsgdb.h comsgdb.c: $(srcdir)/comsgdb.msg $(tmpdir)
 		mv $(tmpdir)/comsgdb.c . ; \
 	fi
 
+comsgpig.cat: comsgdb.msg	
+	($(builddir)/../tools/unix/atinlay < $(srcdir)/comsgdb.msg > comsgpig.msg ; \
+	 $(builddir)/../tools/unix/msgcat -cat -detab comsgpig ; \
+	 rm comsgpig.msg )
