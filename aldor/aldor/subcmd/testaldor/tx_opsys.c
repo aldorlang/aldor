@@ -332,6 +332,26 @@ osFileBase(fn)
 
 #endif	/* ! OS_Has_FileBase */
 
+#if !defined(OS_Has_FileDirName)
+
+String
+osFileDirName(fn)
+	String fn;
+{
+	String res;
+	int c;
+	char *t = strrchr(fn, '/');
+	if (t == NULL) {
+		return NULL;
+	}
+	c = t - fn;
+	res = strAlloc(c);
+	strncpy(res, fn, c);
+	return res;
+}
+
+#endif
+
 /******************************************************************************
  *
  * :: osFileCombine
