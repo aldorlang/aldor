@@ -76,6 +76,14 @@ AC_CONFIG_FILES([Makefile
 		 lib/axllib/src/Makefile
 		 lib/axllib/src/al/Makefile
 		 lib/axllib/test/Makefile
+		 lib/libaxldem/Makefile
+		 lib/libaxldem/src/Makefile
+		 lib/libaxldem/src/al/Makefile
+		 lib/libaxldem/test/Makefile
+		 lib/libax0/Makefile
+		 lib/libax0/src/Makefile
+		 lib/libax0/src/al/Makefile
+		 lib/libax0/test/Makefile
 		 lib/aldor/Makefile
 		 lib/aldor/src/Makefile
 		 lib/aldor/src/lang/Makefile
