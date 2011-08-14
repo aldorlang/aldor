@@ -87,7 +87,7 @@ define aldor_args
 	-I$(srcdir)/.. $(aldoropt) $(aldordebug_$*) \
 	-Nfile=$(aldorsrcdir)/aldor.conf 	\
 	-lAxiomLib=$(libname)_$* 		\
-	-Fao=$*.ao $(filter $(aldorsrc),$^)
+	-Fao=$*.ao 
 endef
 
 $(patsubst %, %.ao, $(axllib_library)):aldorsrc=$(axllibdir)/%.as
@@ -104,7 +104,7 @@ $(patsubst %, %.ao, $(all_library)): %.ao:
 	@set -x; rm -f lib$(libname)_$*.al; rm -f $*.ao;		\
 	 ar r lib$(libname)_$*.al Makefile;					\
 	 for i in $$(cat $*.dep); do ar r lib$(libname)_$*.al $$i.ao; done; 	\
-	 $(aldorexedir)/aldor $(aldor_args)
+	 $(aldorexedir)/aldor $(aldor_args) $(filter %.ax %.as %.ap,$^)
 	test -f $@
 
 $(patsubst %, %.cmd, $(all_library)): %.cmd: Makefile
