@@ -1,5 +1,5 @@
 
-bin_PROGRAMS = aldor gentest structtest
+bin_PROGRAMS = aldor
 
 aldor_SOURCES = main.c axlcomp.c cmdline.c
 aldor_LDADD = libphase.a libstruct.a libgen.a libport.a 
@@ -20,10 +20,11 @@ libgen_a_SOURCES = debug.c format.c fluid.c util.c store.c memclim.c test.c \
 gentest_SOURCES=gentest.c
 gentest_LDADD=libgen.a libport.a
 
-libstruct_a_SOURCES = axlobs.c srcline.c token.c doc.c absyn.c absub.c ablogic.c \
-		fint.c output.c simpl.c compcfg.c depdag.c gf_syme.c \
-		sefo.c syme.c freevar.c ti_top.c tform.c tfsat.c tposs.c tconst.c \
-		tqual.c stab.c lib.c archive.c foam.c flog.c fbox.c dflow.c spesym.c \
+libstruct_a_SOURCES = gf_syme.c ti_top.c fbox.c \
+		axlobs.c srcline.c token.c doc.c absyn.c absub.c ablogic.c \
+		fint.c output.c simpl.c compcfg.c depdag.c \
+		sefo.c syme.c freevar.c tform.c tfsat.c tposs.c tconst.c \
+		tqual.c stab.c lib.c archive.c foam.c flog.c dflow.c spesym.c \
 		abpretty.c version.c comsg.c loops.c comsgdb.c
 #libstruct_a_LIBADD = libgen.a libport.a
 structtest_SOURCES=structtest.c
