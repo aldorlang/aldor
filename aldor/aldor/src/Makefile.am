@@ -1,6 +1,5 @@
 
 bin_PROGRAMS = aldor aldortest
-
 dataincludedir = $(datadir)/include
 datainclude_DATA=aldor.conf 
 
@@ -41,14 +40,21 @@ libgen_a_SOURCES = debug.c format.c fluid.c util.c store.c memclim.c	\
 
 #libgen_a_LIBADD = libport.a
 
-libstruct_a_SOURCES = axlobs.c srcline.c token.c doc.c absyn.c absub.c ablogic.c \
+gentest_SOURCES=gentest.c
+gentest_LDADD=libgen.a libport.a
+
+libstruct_a_SOURCES = gf_syme.c ti_top.c fbox.c \
+		axlobs.c srcline.c token.c doc.c absyn.c absub.c ablogic.c \
 		fint.c output.c simpl.c compcfg.c depdag.c \
 		sefo.c syme.c freevar.c tform.c tfsat.c tposs.c tconst.c \
 		tqual.c stab.c lib.c archive.c foam.c foamsig.c flog.c dflow.c spesym.c \
 		abpretty.c version.c comsg.c loops.c comsgdb.c
 #libstruct_a_LIBADD = libgen.a libport.a
+structtest_SOURCES=structtest.c
+structtest_LDADD=libstruct.a libgen.a libport.a
+structtest_LDFLAGS = -lm
 
-libphase_a_SOURCES = phase.c bloop.c \
+libphase_a_SOURCES = phase.c bloop.c fintphase.c \
 		include.c scan.c syscmd.c linear.c parseby.c macex.c \
 		abnorm.c abcheck.c abuse.c scobind.c \
 		ti_decl.c \

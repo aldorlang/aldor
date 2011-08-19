@@ -177,8 +177,37 @@ local Bool		tiTopEqual		(TFormUses, TFormUses);
  *
  ****************************************************************************/
 
+local Bool		tqShouldImport	  (TQual);
+local TForm             tiGetTopLevelTForm(AbSyn type);
+
+void
+tinferInit()
+{
+	TiTopLevel topLevel = (TiTopLevel) stoAlloc(OB_Other, sizeof(*topLevel));
+
+	topLevel->terrorTypeConstFailed = terrorTypeConstFailed;
+	topLevel->tiBottomUp = tiBottomUp;
+	topLevel->tiTopDown = tiTopDown;
+	topLevel->tiCanSefo = tiCanSefo;
+	topLevel->tiGetTopLevelTForm = tiGetTopLevelTForm;
+
+	topLevel->tiUnaryToRaw = tiUnaryToRaw;
+	topLevel->tiRawToUnary = tiRawToUnary;
+	topLevel->tiSefo = tiSefo;	
+	topLevel->tiTfSefo = tiTfSefo;
+	topLevel->typeInferTForms = typeInferTForms;
+
+	topLevel->tqShouldImport = tqShouldImport;
+	topLevel->typeInferTForm = typeInferTForm;
+	
+	tiTopLevelInit(topLevel);
+
+}
+
 /*
  * Type inference consists of two passes:
+
+
  * 1) a bottom up pass which constructs a set of possible types for each node
  * 2) a top down pass which restricts each node to a unique type.
  */
@@ -492,6 +521,12 @@ tiAddSymes(Stab astab, AbSyn capsule, TForm base, TForm context, SymeList *p)
 
 	dsymes = listNReverse(Syme)(dsymes);
 	return dsymes;
+}
+
+local TForm 
+tiGetTopLevelTForm(AbSyn type)
+{
+	return tiGetTForm(stabFile(), type);
 }
 
 /*
@@ -1208,7 +1243,7 @@ tiTfIsBoundary(TFormUses tfu)
 	return tfu->isExplicitImport || tfu->isParamImport;
 }
 
-Bool
+local Bool
 tqShouldImport(TQual tq)
 {
 	TForm	tf;

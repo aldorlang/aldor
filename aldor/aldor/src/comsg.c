@@ -83,6 +83,8 @@ static AbSyn		abMaxPos	= NULL;
 static CoMsg 		lastCoMsgSeeNote = NULL;
 static FileName		fnameRef	 = NULL;
 
+void (*defBreakLoop)(Bool forHuman, int msgc, CoMsg* msgv) = 0;
+
 /* Forward declarations: */
 local  String		comsgOpt	(String prefix, String whole);
 extern int		comsgSetOption	(String opt);
@@ -573,7 +575,7 @@ comsgFini(void)
 
 		/* Do the job and clean up. */
 		comsgReportFile(comsgStream, msgc, msgv);
-		if (comsgDoInspect) breakLoop(comsgDoHuman, msgc, msgv);
+		if (comsgDoInspect) (*defBreakLoop)(comsgDoHuman, msgc, msgv);
 		stoFree((Pointer) msgv);
 		listFreeDeeply(CoMsg)(msgl, comsgFree);
 
@@ -878,7 +880,7 @@ comsgVDo(CoMsgTag tag, AbSyn ab, Msg msg, va_list argp)
 			fprintf(comsgStream, "%s\n", preview);
 			comsgReportOne(comsgStream, comsg);
 			if (comsgDoInspect)
-				breakLoop(comsgDoHuman, 1, &comsg);
+				(*defBreakLoop)(comsgDoHuman, 1, &comsg);
 		}
 	}
 

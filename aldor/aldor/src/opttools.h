@@ -56,10 +56,6 @@ DECLARE_LIST(AssociationType);
  *
  ****************************************************************************/
 
-#define otSymeConstSetEnvIndep(s)  symeSetConstFlag(s, 0)
-#define otSymeConstClrEnvIndep(s)  symeClrConstFlag(s, 0)
-#define otSymeConstEnvIndep(s)     symeConstFlag(s, 0)
-
 extern VarInfoList	otGetVarInfoList	(Foam);
 
 /* NOTE: you may use the otSetVarInfo macro*/

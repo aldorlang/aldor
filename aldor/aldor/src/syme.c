@@ -438,6 +438,18 @@ symeTypeCode(Syme syme)
 	return symeSetHash(syme, h);
 }
 
+Hash
+gen0SymeTypeCode(Syme syme)
+{
+	if (symeExtension(syme))
+		return gen0SymeTypeCode(symeExtension(syme));
+	else if (symeIsLazy(syme) && symeIsImport(syme))
+		return symeHash(syme);
+	else
+		return tfHash(symeType(symeOriginal(syme)));
+}
+
+
 void
 symeAddHash(Syme syme, Hash code)
 {
@@ -926,7 +938,7 @@ symeFillFrExporter(Syme isyme, TForm exporter)
 	assert(symeLib(isyme));
 	stab = symeLib(isyme)->stab;
 
-	tiTfSefo(stab, exporter);
+	tiTopFns()->tiTfSefo(stab, exporter);
 
 	for (symes = tfGetDomImports(exporter); symes; symes = cdr(symes)) {
 		Syme	syme = car(symes);
@@ -1222,7 +1234,7 @@ symeCheckHas(Sefo dom, Sefo cat)
 		return flg;
 	
 	tfdom = abGetCategory(dom);
-	tfcat = abTForm(cat) ? abTForm(cat) : tiGetTForm(stabFile(), cat);
+	tfcat = abTForm(cat) ? abTForm(cat) : tiTopFns()->tiGetTopLevelTForm(cat);
 
 	/* D has C iff typeof(D) satisfies C. */
 	result = tfSat(tfSatBupMask(), tfdom, tfcat);
@@ -1389,7 +1401,7 @@ symeCheckIdentifier(AbSyn ab, Syme syme)
 		cat = cond->abHas.property;
 
 		tfdom = abGetCategory(dom);
-		tfcat = abTForm(cat) ? abTForm(cat) : tiGetTForm(stabFile(), cat);
+		tfcat = abTForm(cat) ? abTForm(cat) : tiTopFns()->tiGetTopLevelTForm(cat);
 
 		/* D has C iff typeof(D) satisfies C. */
 		result = tfSat(tfSatTdnInfoMask(), tfdom, tfcat);

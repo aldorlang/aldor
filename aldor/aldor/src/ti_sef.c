@@ -131,28 +131,6 @@ tiCanSefo(Sefo sefo)
 	return result;
 }
 
-/* If an inner stab level can be found which binds syme, return it. */
-Stab
-stabFindLevel(Stab stab, Syme syme)
-{
-	StabList	sl;
-
-	if (stabLevelNo(stab) >= symeDefLevelNo(syme))
-		return stab;
-
-	for (sl = car(stab)->children; sl; sl = cdr(sl)) {
-		Stab	istab = car(sl), nstab;
-
-		if (car(istab) == symeDefLevel(syme))
-			return istab;
-
-		nstab = stabFindLevel(istab, syme);
-		if (nstab != istab)
-			return nstab;
-	}
-
-	return stab;
-}
 
 /* Adjust the stab as needed to localize parameter symes in sefo. */
 local Stab

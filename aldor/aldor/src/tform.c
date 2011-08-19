@@ -692,7 +692,7 @@ tfp0Float(Stab stab, AbSyn ab)
 	if (nstab == NULL)
 		return tfPendingFrSyntax(stab, ab, tf);
 	
-	ntf = typeInferTForm(nstab, tf);
+	ntf = tiTopFns()->typeInferTForm(nstab, tf);
 	tfTransferSemantics(ntf, tf);
 
 	return tf;
@@ -2299,8 +2299,8 @@ abGetCategory(AbSyn ab)
 	else if (abTForm(ab))
 		cat = tfGetCategory(abTForm(ab));
 
-	else if (tiCanSefo(ab)) {
-		tiSefo(stabFile(), ab);
+	else if (tiTopFns()->tiCanSefo(ab)) {
+		tiTopFns()->tiSefo(stabFile(), ab);
 		if (abState(ab) == AB_State_HasUnique)
 			cat = abTUnique(ab);
 	}
@@ -2400,7 +2400,7 @@ tfGetCategory(TForm tf)
 		cat = symeType(tfIdSyme(tf));
 
 	else if (tfNeedsSefo(tf)) {
-		tiTfSefo(stabFile(), tf);
+		tiTopFns()->tiTfSefo(stabFile(), tf);
 		cat = tfGetCategory(tf);
 	}
 
@@ -2409,8 +2409,8 @@ tfGetCategory(TForm tf)
 		cat = symeType(tfIdSyme(tf));
 
 #endif
-	else if (tfp0IsSpecialTag(tfTag(tf)) && tiCanSefo(tfExpr(tf))) {
-		tiSefo(stabFile(), tfExpr(tf));
+	else if (tfp0IsSpecialTag(tfTag(tf)) && tiTopFns()->tiCanSefo(tfExpr(tf))) {
+		tiTopFns()->tiSefo(stabFile(), tfExpr(tf));
 		if (tfHasUnique(tf))
 			cat = tfTUnique(tf);
 	}
@@ -2767,8 +2767,8 @@ tfGetCatSelfSelf(TForm cat)
 	if (tfIsId(cat) || tfIsApply(cat)) {
 		if (tfHasUnique(cat) && !tfIsUnknown(tfTUnique(cat)))
 			symes = abGetCatSelfSelf(tfGetExpr(cat));
-		else if (tfIsGeneral(cat) && tiCanSefo(tfGetExpr(cat))) {
-			tiSefo(stabFile(), tfGetExpr(cat));
+		else if (tfIsGeneral(cat) && tiTopFns()->tiCanSefo(tfGetExpr(cat))) {
+			tiTopFns()->tiSefo(stabFile(), tfGetExpr(cat));
 			symes = abGetCatSelfSelf(tfGetExpr(cat));
 		}
 		else
@@ -2995,7 +2995,7 @@ tfGetCatParentsFrIf(TForm cat)
 		/* This is seriously not nice, as calling
 		 * tiSefo will be expensive here
 		 */
-		tiSefo(stabFile(), cond);
+		tiTopFns()->tiSefo(stabFile(), cond);
 	}
 
 	tsymes = tfGetCatParentsFrInner(tfIfThen(cat));
@@ -3887,7 +3887,7 @@ tfGetCatExportsFrIf(TForm cat)
 	tfFollow(cat->argv[0]);
 	
 	if (tfNeedsSefo(cat->argv[0])) 
-		tiTfSefo(stabFile(), cat->argv[0]);
+		tiTopFns()->tiTfSefo(stabFile(), cat->argv[0]);
 
 	cond = tfIfCond(cat);
 	tsymes = tfGetCatExports(tfIfThen(cat));
@@ -7591,7 +7591,7 @@ tfFrSymbol(Symbol sym)
 
 	/* There can only be one ... */
 	if (symes && !cdr(symes))
-		return tiGetTForm(stabFile(), abFrSyme(car(symes)));
+		return tiTopFns()->tiGetTopLevelTForm(abFrSyme(car(symes)));
 	else
 		return (TForm)NULL;
 }
@@ -7625,7 +7625,7 @@ tfFrSymbolPair(Symbol functor, Symbol argument)
 	if (!fsymes || !asymes)
 		return tfUnknown; /* Please don't return (TForm)NULL */
 	else
-		return tiGetTForm(stabFile(), ab);
+		return tiTopFns()->tiGetTopLevelTForm(ab);
 }
 
 /*****************************************************************************

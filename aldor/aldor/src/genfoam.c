@@ -140,7 +140,6 @@ local Bool	   gen0GetImportedSyme	  (Syme, AInt, Bool);
 local void	   gen0SetImportedSyme	  (Syme, AInt);
 local Foam	   gen0GetRealFormat      (AInt);
 local Foam	   gen0ImplicitSet	  (AbSyn);
-local void	   gen0InitConstTable	  (void);
 local void	   gen0InitState	  (Stab, int);
 local Foam	   gen0InnerSyme	  (Syme, AInt);
 local Bool	   gen0IsDomainInit	  (Foam foam);
@@ -217,8 +216,6 @@ local AInt	   gen0FindConst	  (AInt);
 local AInt	   gen0FindGlobalFluid    (Syme);
 local void 	   gen0AddLocalFluid	  (AbSyn);
 
-local void 	   gen0KillSymeConstNums  (void);
-
 local void	   gen0DbgAssignment	  (AbSyn);
 local void	   gen0DbgFnEntry	  (AbSyn);
 local Foam	   gen0DbgFnExit	  (AbSyn, Foam);
@@ -263,13 +260,6 @@ int	 gen0NumProgs;
 int 	 gen0FwdProgNum;
 int	 gen0FormatNum;
 int	 gloInitIdx;
-
-static Length	gen0SymeTableC;
-static Syme	*gen0SymeTableV;
-
-static Length	gen0DefSymeTableC;
-static Syme 	*gen0DefSymeTableV;
-
 
 static AIntList		formatPlaceList, formatRealList;
 static int		gen0IterateLabel;
@@ -555,7 +545,7 @@ gen0GenFoamInit()
 	gen0ForeignFnValues	= listNil(FoamSig);
 	gen0ForeignFnGlobals	= listNil(Syme);
 	
-	gen0InitConstTable();
+	gen0InitConstTable(scobindMaxDef());
 	formatPlaceList		= listNil(AInt);
 	formatRealList		= listNil(AInt);
 	gen0RealFormatNum	= FOAM_FORMAT_START;
@@ -7221,157 +7211,6 @@ gen0SetImportedSyme(Syme syme, AInt level)
 	symeSetImportInit(osyme);
 }
 
-local void
-gen0InitConstTable()
-{
-	Length	i;
-/* Old way */	
-	gen0SymeTableC = stabMaxDefnNum() + 1;
-	gen0SymeTableV = (Syme *) stoAlloc((unsigned)OB_Other,
-					   gen0SymeTableC * sizeof(Syme));
-
-	for (i = 0; i < gen0SymeTableC; i += 1)
-		gen0SymeTableV[i] = NULL;
-/* New way */
-	gen0DefSymeTableC = scobindMaxDef();
-	gen0DefSymeTableV = (Syme *) stoAlloc((unsigned)OB_Other,
-					       gen0SymeTableC * sizeof(Syme));
-
-	for (i = 0; i < gen0DefSymeTableC; i += 1)
-		gen0DefSymeTableV[i] = NULL;
-}
-
-/*
- * This function may be invoked during genfoam as well as during
- * the optimisation phases. During genfoam we never want to change
- * the const number associated with a given syme: if we try to do
- * so, it means that the syme is conditional with more than one
- * implementation and isn't "const". During optimisation however,
- * we must allow the const num to be modified.
- *
- *  unique => changing const num means clobber it
- * ~unique => changing const num works
- */
-void
-genSetConstNum(Syme syme, int defineIdx, UShort index, Bool unique)
-{
-	Length	dindex = symeDefnNum(syme);
-	ULong	cnum = symeConstNum(syme); /* 0 <= cnum <= 0xffff */
-
-
-	/* Old way */
-	assert(dindex < gen0SymeTableC);
-
-	/*
-	 * Conditional symes with multiple implementations are not
-	 * const. We detect this here if we see a syme whose const
-	 * num is already set and isn't `index', and `unique' is
-	 * true. Conditional symes with one possible implementation
-	 * are okay: if the type checker allowed the call then we
-	 * can inline it.
-	 */
-	if (unique && (cnum >= 0) && (cnum <= 0x3fff) && (cnum != index)) {
-		/*
-		 * Conditional syme with multiple implementations.
-		 * We have to record the fact that we have stomped
-		 * on the stored const num otherwise the next time
-		 * we got here we would think the syme was okay.
-		 */
-		symeClrConstNum(syme);
-		symeSetMultiCond(syme);
-		gen0SymeTableV[dindex] = (Syme)NULL;
-	}
-	else if (!symeIsMultiCond(syme)) {
-		symeSetConstNum(syme, (int) index);
-		gen0SymeTableV[dindex] = syme;
-	}
-
-
-	/* New way */
-#if 0	
-	SImpl   nimpl;
-	if (defineIdx != -1) {
-		gen0DefSymeTableV[defineIdx] = syme;
-	}
-	if (symeImpl(syme)) {
-		implSetConstNum(symeImpl(syme), defineIdx, index);
-	}
-#endif
-}
-
-Bool
-genHasConstNum(Syme syme)
-{
-	Length	dindex;
-	
-	if (symeExtension(syme))
-		syme = symeExtension(syme);
-
-	if (symeHasConstNum(syme) && 
-	    symeConstLib(syme) != NULL)
-		return true;
-
-	dindex = symeDefnNum(syme);
-	
-	if (0 < dindex && dindex < gen0SymeTableC && gen0SymeTableV[dindex]) {
-		symeSetConstNum(syme, symeConstNum(gen0SymeTableV[dindex]));
-		symeSetHashNum(syme,  symeHashNum(gen0SymeTableV[dindex]));
-		symeSetDVMark(syme,   symeDVMark(gen0SymeTableV[dindex]));
-	}
-
-	return symeHasConstNum(syme);
-}
-
-UShort
-genGetConstNum(Syme syme)
-{
-	return symeConstNum(syme);
-}
-
-void
-genGetConstNums(SymeList symes)
-{
-	for (; symes; symes = cdr(symes))
-		genHasConstNum(car(symes));
-}
-
-local void
-gen0KillSymeConstNums()
-{
-	Length	i;
-
-	for (i = 0; i < gen0SymeTableC; i += 1)
-		if (gen0SymeTableV[i])
-			symeClrConstNum(gen0SymeTableV[i]);
-}
-
-SymeList
-genGetSymeInlined(Syme syme)
-{
-	Length	dindex;
-
-	if (symeExtension(syme)) syme = symeExtension(syme);
-
-	dindex = symeDefnNum(syme);
-
-	if (dindex < gen0SymeTableC && gen0SymeTableV[dindex])
-		return symeInlined(gen0SymeTableV[dindex]);
-	else
-		return listNil(Syme);
-}
-
-void
-genKillOldSymeConstNums(int generation)
-{
-	Length	i;
-	
-	for (i = 0; i < gen0SymeTableC; i += 1) {
-		Syme syme = gen0SymeTableV[i];
-		if (!syme) continue;
-		if (symeDVMark(syme) < generation)
-			symeClrConstNum(syme);
-	}
-}
 
 Bool
 genIsConst(Syme syme)
@@ -7404,16 +7243,6 @@ genIsVar(Foam foam)
 	}
 }
 
-Hash
-gen0SymeTypeCode(Syme syme)
-{
-	if (symeExtension(syme))
-		return gen0SymeTypeCode(symeExtension(syme));
-	else if (symeIsLazy(syme) && symeIsImport(syme))
-		return symeHash(syme);
-	else
-		return tfHash(symeType(symeOriginal(syme)));
-}
 
 String 
 gen0GlobalName(String libname, Syme syme)
@@ -8666,38 +8495,3 @@ gen1DbgFnStep(AbSyn stmt)
 	gen0AddStmt(gen0DbgStep(file, line, decl), stmt);
 }
 
-/*****************************************************************************
- *
- * :: Compile-time debugging facilities for GDB.
- *
- ****************************************************************************/
-
-/*
- * This is a debugging function which allows the contents
- * of gen0SymeTable to be seen. This table provides a mapping
- * between constant numbers and definition numbers.
- */
-void
-symeTablePrintDb(void)
-{
-	int	i;
-	Syme	syme;
-
-	for (i = 0;i < gen0SymeTableC;i++)
-        {
-		syme = gen0SymeTableV[i];
-		if (syme)
-		{
-			AInt c = (AInt)-1;
-			AInt d = symeDefnNum(syme);
-
-			if (symeHasConstNum(syme))
-				c = symeConstNum(syme);
-
-			(void)fprintf(dbOut, "[%2d]: ", i);
-			(void)fprintf(dbOut, " (Const %2d, ", (int)c);
-			(void)fprintf(dbOut, " Defn %2d) ", (int)d);
-			symePrintDb(syme);
-		}
-        }
-}

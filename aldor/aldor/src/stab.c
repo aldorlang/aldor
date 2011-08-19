@@ -1601,8 +1601,6 @@ stabGetExportedSymes(Stab stab)
 	return exports;
 }
 
-extern Bool		tqShouldImport		(TQual);
-
 void
 stabImportFrom(Stab stab, TQual tq)
 {
@@ -1692,7 +1690,7 @@ stabImportFrom(Stab stab, TQual tq)
 
 	if (!tqIsQualified(tq))
 		for (ql = tfGetDomCascades(origin); ql; ql = cdr(ql))
-			if (tqShouldImport(car(ql)))
+			if (tiTopFns()->tqShouldImport(car(ql)))
 				stabImportFrom(stab, car(ql));
 }
 
@@ -2473,4 +2471,27 @@ stabGetLabelInThisStab(Stab stab, Symbol label)
 		asl = cdr(asl);
 	}
 	return 0;
+}
+
+/* If an inner stab level can be found which binds syme, return it. */
+Stab
+stabFindLevel(Stab stab, Syme syme)
+{
+	StabList	sl;
+
+	if (stabLevelNo(stab) >= symeDefLevelNo(syme))
+		return stab;
+
+	for (sl = car(stab)->children; sl; sl = cdr(sl)) {
+		Stab	istab = car(sl), nstab;
+
+		if (car(istab) == symeDefLevel(syme))
+			return istab;
+
+		nstab = stabFindLevel(istab, syme);
+		if (nstab != istab)
+			return nstab;
+	}
+
+	return stab;
 }

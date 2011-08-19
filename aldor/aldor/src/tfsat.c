@@ -639,7 +639,7 @@ tfSatAsMulti(SatMask mask, AbSub sigma, TForm S, TForm TScope,
 			 * will return immediately but it doesn't hurt
 			 * to make sure.
 			 */
-			tiBottomUp(absStab(sigma), abi, tfUnknown);
+			tiTopFns()->tiBottomUp(absStab(sigma), abi, tfUnknown);
 
 
 			/*
@@ -647,7 +647,7 @@ tfSatAsMulti(SatMask mask, AbSub sigma, TForm S, TForm TScope,
 			 * the past this meant that we had to TFS_Fail
 			 * or something similar. Seems fine now.
 			 */
-			tiTopDown(absStab(sigma), abi, tfi);
+			tiTopFns()->tiTopDown(absStab(sigma), abi, tfi);
 
 #if AXL_EDIT_1_1_13_32
 			/* Gross hack */
@@ -659,7 +659,7 @@ tfSatAsMulti(SatMask mask, AbSub sigma, TForm S, TForm TScope,
 		}
 		/* Install the packed embedding on abi, if needed. */
 		if (tfSatCommit(mask) && packed)
-			if (!tiUnaryToRaw(absStab(sigma), abi, tfi)) {
+			if (!tiTopFns()->tiUnaryToRaw(absStab(sigma), abi, tfi)) {
 				result = tfSatResult(mask, TFS_BadArgType);
 				result = tfSatParNFail(result, pi);
 				break;
@@ -673,8 +673,8 @@ tfSatAsMulti(SatMask mask, AbSub sigma, TForm S, TForm TScope,
 		if (syme && (tfSymeInducesDependency(syme, TScope) ||
 			     listMemq(Syme)(tfSymes(TScope), syme))) {
 			abi = sefoCopy(abi);
-			tiBottomUp(absStab(sigma), abi, tfUnknown);
-			tiTopDown (absStab(sigma), abi, tfi);
+			tiTopFns()->tiBottomUp(absStab(sigma), abi, tfUnknown);
+			tiTopFns()->tiTopDown (absStab(sigma), abi, tfi);
 			if (abState(abi) == AB_State_HasUnique) {
 				if (absFVars(sigma)) absSetFVars(sigma, NULL);
 				sigma = absExtend(syme, abi, sigma);
@@ -696,8 +696,8 @@ tfSatAsMulti(SatMask mask, AbSub sigma, TForm S, TForm TScope,
 		TForm	tfi = tfDefineeType(S);
 		if (syme && (tfSymeInducesDependency(syme, TScope) ||
 			     listMemq(Syme)(tfSymes(TScope), syme))) {
-			tiBottomUp(absStab(sigma), abc, tfUnknown);
-			tiTopDown (absStab(sigma), abc, tfi);
+			tiTopFns()->tiBottomUp(absStab(sigma), abc, tfUnknown);
+			tiTopFns()->tiTopDown (absStab(sigma), abc, tfi);
 			if (abState(abc) == AB_State_HasUnique) {
 				if (absFVars(sigma)) absSetFVars(sigma, NULL);
 				sigma = absExtend(syme, abc, sigma);
@@ -711,7 +711,7 @@ tfSatAsMulti(SatMask mask, AbSub sigma, TForm S, TForm TScope,
 
 	/* Install the packed embedding on the return value, if needed. */
 	if (tfSatSucceed(result) && tfSatCommit(mask) && packed)
-		if (!tiRawToUnary(absStab(sigma), ab, tfMapRet(TScope)))
+		if (!tiTopFns()->tiRawToUnary(absStab(sigma), ab, tfMapRet(TScope)))
 			result = tfSatResult(mask, TFS_EmbedFail);
 
 	if (tfSatSucceed(result) && usedc < argc)
@@ -1175,8 +1175,8 @@ tfSatEach(SatMask mask, TForm S, TForm T)
 
 		/* Extend the sublist for dependent symes. */
 		if (stab && ab && Tsyme) {
-			tiBottomUp(stab, ab, tfUnknown);
-			tiTopDown (stab, ab, Targ);
+			tiTopFns()->tiBottomUp(stab, ab, tfUnknown);
+			tiTopFns()->tiTopDown (stab, ab, Targ);
 			if (abState(ab) == AB_State_HasUnique) {
 				if (absFVars(sigma))
 					absSetFVars(sigma, NULL);
@@ -1234,8 +1234,8 @@ tfSatMap0(SatMask mask, TForm S, TForm T)
                                 }
 				/*****************************/
 
-				tiBottomUp(absStab(sigma), ab, tfUnknown);
-				tiTopDown (absStab(sigma), ab, Sarg);
+				tiTopFns()->tiBottomUp(absStab(sigma), ab, tfUnknown);
+				tiTopFns()->tiTopDown (absStab(sigma), ab, Sarg);
 				if (abState(ab) == AB_State_HasUnique) {
 					if (absFVars(sigma))
 						absSetFVars(sigma, NULL);
@@ -1686,7 +1686,7 @@ tfSatConditions(SymeList mods, Syme s, Syme t)
 			AbSyn cat;
 			tfdom = abGetCategory(cond->abHas.expr);
 			cat   = cond->abHas.property;
-			tfcat = abTForm(cat) ? abTForm(cat) : tiGetTForm(stabFile(), cat);
+			tfcat = abTForm(cat) ? abTForm(cat) : tiTopFns()->tiGetTopLevelTForm(cat);
 			
 			if (tfSatisfies(tfdom, tfcat))
 				continue;

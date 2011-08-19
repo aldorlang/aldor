@@ -285,6 +285,6 @@ tcCheck(TConst tc)
 			tcPrint(dbOut, tc);
 			fnewline(dbOut);
 		});
-		terrorTypeConstFailed(tc);
+		tiTopFns()->terrorTypeConstFailed(tc);
 	}
 }
