@@ -2,8 +2,8 @@
 #include "runtimelib"
 #library STBL "stringtable.ao" 
 
---import from STBL;
---inline from STBL;
+import from STBL;
+inline from STBL;
 
 local printDomain(f: (TextWriter, DomainName) -> TextWriter,
       		     out: TextWriter,nm: DomainName): TextWriter == {
