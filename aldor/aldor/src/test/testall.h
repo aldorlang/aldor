@@ -2,6 +2,7 @@
 #define _TESTALL_H_
 
 void fnameTest(void);
+void foamTest(void);
 
 #endif
 

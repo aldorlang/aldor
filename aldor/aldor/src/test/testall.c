@@ -12,6 +12,7 @@ main(int argc, char *argv[])
 	theArgv = argv;
 
 	if (testShouldRun("fname")) fnameTest();
+	if (testShouldRun("foam")) foamTest();
 
 	testShowSummary();
 	

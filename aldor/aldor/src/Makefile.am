@@ -78,9 +78,10 @@ libphase_a_SOURCES = phase.c bloop.c fintphase.c \
 #
 check_PROGRAMS=testall
 TESTS=testall
-testsuite = test/test_fname.c
+testsuite = test/test_fname.c test/test_foam.c
 testall_SOURCES = test/testall.c $(testsuite) test/testlib.c 
 testall_LDADD = libphase.a libstruct.a libgen.a libport.a 
+testall_LDFLAGS = -lm
 
 #
 # Special rules
