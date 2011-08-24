@@ -1008,6 +1008,9 @@ struct foamPCall {
 	Foam			argv[NARY];
 };
 
+#define foamPCallSlotc (3)
+#define foamPCallArgc(foam) (foamArgc(foam) - foamPCallSlotc);
+
 struct foamBCall {
 	struct foamHdr          hdr;
 	AInt                    op;
@@ -1020,6 +1023,9 @@ struct foamCCall {
 	Foam                    op;
 	Foam                    argv[NARY];
 };
+
+#define foamCCallSlotc (2)
+#define foamCCallArgc(foam) (foamArgc(foam) - foamCCallSlotc )
 
 struct foamOCall {
 	struct foamHdr          hdr;
