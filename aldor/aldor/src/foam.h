@@ -1017,6 +1017,9 @@ struct foamBCall {
 	Foam                    argv[NARY];
 };
 
+#define foamBCallSlotc (1)
+#define foamBCallArgc(foam) (foamArgc(foam) - foamBCallSlotc);
+
 struct foamCCall {
 	struct foamHdr          hdr;
 	AInt                    type;
@@ -1035,6 +1038,9 @@ struct foamOCall {
 	Foam                    argv[NARY];
 };
 
+#define foamOCallSlotc (3)
+#define foamOCallArgc(foam) (foamArgc(foam) - foamOCallSlotc)
+
 struct foamCFCall {
 	struct foamHdr          hdr;
 	Foam                    clos;
@@ -1042,6 +1048,9 @@ struct foamCFCall {
 	AInt                    retFmt;
 	Foam                    argsPtr;
 };
+
+#define foamCFCallSlotc (3)
+#define foamCFCallArgc(foam) (foamArgc(foam) - foamCFCallSlotc);
 
 struct foamOFCall {
 	struct foamHdr          hdr;
@@ -1051,6 +1060,9 @@ struct foamOFCall {
 	AInt                    retFmt;
 	Foam                    argsPtr;
 };
+
+#define foamOFCallSlotc (3)
+#define foamOFCallArgc(foam) (foamArgc(foam) - foamOFCallSlotc);
 
 struct foamSelect {
 	struct foamHdr          hdr;
@@ -1533,7 +1545,6 @@ extern Bool foamTypeIsValue(Foam fmts, FoamTag type, AInt fmt);
 				    [1+ foamTRDDeclIDeclN(ddecl) + (n)])
 
 #define foamDDeclArgc(foam)	(foamArgc(foam) - 1)
-#define foamBCallArgc(foam)	(foamArgc(foam) - 1)
 #define foamSelectArgc(foam)    (foamArgc(foam) - 1)
 
 /*
