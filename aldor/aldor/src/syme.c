@@ -235,6 +235,16 @@ symeEq(Syme syme1, Syme syme2)
 	return syme1 == syme2;
 }
 
+/*
+ * symeHash is a macro and we sometimes need a function.
+ */
+Hash
+symeHashFn(Syme syme)
+{
+	return symeHash(syme);
+}
+
+
 /******************************************************************************
  *
  * :: Field accessors.

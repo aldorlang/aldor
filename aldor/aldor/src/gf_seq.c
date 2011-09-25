@@ -802,15 +802,6 @@ dgFreeGroup(DefGroup dg)
  *
  *****************************************************************************/
 
-/*
- * symeHash is a macro and we need a function.
- */
-local Hash
-symeHashFn(Syme syme)
-{
-	return symeHash(syme);
-}
-
 
 /*
  * Analyse the dependencies between a set of DG_Const and DG_Cond

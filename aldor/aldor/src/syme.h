@@ -285,6 +285,7 @@ extern Syme		symeNewLib		(SymeTag, Symbol, TForm, Lib);
 extern Syme		symeCopy		(Syme);
 extern void		symeFree		(Syme);
 extern Bool		symeEq			(Syme, Syme);
+extern Hash		symeHashFn		(Syme);
 
 /*
  * Field accessors.
