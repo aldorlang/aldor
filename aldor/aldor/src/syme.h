@@ -10,6 +10,7 @@
 #define _SYME_H_
 
 # include "axlobs.h"
+# include "forg.h"
 
 /******************************************************************************
  *
@@ -190,22 +191,6 @@ extern struct symeFieldInfo symeFieldInfo[];
 #define			symeClrTrigger(s)	symeClrBit(s, SYME_BIT_TRIG)
 
 #define			symePutInlinable(s,x)	symePutBit(s, x, SYME_BIT_INL)
-
-/******************************************************************************
- *
- * :: Foreign origin
- *
- *****************************************************************************/
-
-struct foreign_origin {
-	FoamProtoTag	protocol;
-	String		file;
-};
-
-typedef struct foreign_origin * ForeignOrigin;
-
-extern ForeignOrigin    forgFrAbSyn	(AbSyn);
-extern Bool   		forgEqual	(ForeignOrigin, ForeignOrigin);
 
 /******************************************************************************
  *
