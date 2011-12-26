@@ -12,13 +12,13 @@ include_HEADERS=foam_c.h cconfig.h platform.h optcfg.h foamopt.h basic.typ
 noinst_LIBRARIES = libtest.a libphase.a libstruct.a libgen.a libport.a 
 
 aldor_SOURCES = main.c axlcomp.c cmdline.c
-aldor_LDADD = libphase.a libstruct.a libgen.a libport.a 
-aldor_LDFLAGS = -lm
+aldor_LDADD = libphase.a libstruct.a libgen.a libport.a -lm
+aldor_LDFLAGS = 
 
 aldortest_CFLAGS=-DTEST_STAND_ALONE -DTEST_ALL
 aldortest_SOURCES = test.c
-aldortest_LDADD = libtest.a libstruct.a libgen.a libport.a 
-aldortest_LDFLAGS = -lm
+aldortest_LDADD = libtest.a libstruct.a libgen.a libport.a -lm
+aldortest_LDFLAGS = 
 
 libport_a_SOURCES = stdc.c cport.c opsys.c
 
@@ -52,8 +52,8 @@ libstruct_a_SOURCES = gf_syme.c ti_top.c fbox.c \
 		abpretty.c version.c comsg.c loops.c comsgdb.c
 #libstruct_a_LIBADD = libgen.a libport.a
 structtest_SOURCES=structtest.c
-structtest_LDADD=libstruct.a libgen.a libport.a
-structtest_LDFLAGS = -lm
+structtest_LDADD=libstruct.a libgen.a libport.a -lm
+structtest_LDFLAGS =
 
 libphase_a_SOURCES = phase.c bloop.c fintphase.c \
 		include.c scan.c syscmd.c linear.c parseby.c macex.c \
@@ -80,8 +80,8 @@ check_PROGRAMS=testall
 TESTS=testall
 testsuite = test/test_fname.c test/test_foam.c
 testall_SOURCES = test/testall.c $(testsuite) test/testlib.c 
-testall_LDADD = libphase.a libstruct.a libgen.a libport.a 
-testall_LDFLAGS = -lm
+testall_LDADD = libphase.a libstruct.a libgen.a libport.a -lm
+testall_LDFLAGS = 
 
 #
 # Special rules
@@ -89,8 +89,8 @@ testall_LDFLAGS = -lm
 
 
 grammar axl_y.c axl_y.yt: axl.z token.h axl_y.sed
-	$(abs_top_builddir)/aldor/tools/unix/zacc -p -y axl_y.yt -c axl_y.c axl.z
-	@sed -f axl_y.sed axl_y.c > axl_y.c.tmp
+	$(abs_top_builddir)/aldor/tools/unix/zacc -p -y axl_y.yt -c axl_y.c $(srcdir)/axl.z
+	@sed -f $(srcdir)/axl_y.sed axl_y.c > axl_y.c.tmp
 	@if diff axl_y.c axl_y.c.tmp > /dev/null ; then \
 		rm $axl_y.c.tmp ; \
 	else \
