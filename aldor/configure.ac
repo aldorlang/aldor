@@ -1,8 +1,8 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-AC_PREREQ([2.64])
-AC_INIT([aldor], [1.1], [nowhere@nowhere])
+AC_PREREQ([2.68])
+AC_INIT([aldor],[1.1],[nowhere@nowhere])
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_SRCDIR([aldor/src/main.c])
 AC_CONFIG_AUX_DIR([amaux])
