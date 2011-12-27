@@ -149,7 +149,7 @@ bitvToString(BitvClass class, Bitv a)
 	if (!class) {
 		bufPrintf(buf,
 			      "[** Unprintable bitv: bitvClass required **]");
-		return buf;
+		return bufLiberate(buf);
 	}
 
 	bufPrintf(buf, "[");
