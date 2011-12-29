@@ -27,6 +27,16 @@ testIntEqual(String testName, int i1, int i2)
 	testFail(testName, "failed; expected %d, got %d", i1, i2);
 }
 
+void
+testTrue(String testName, Bool flg)
+{
+	count++;
+	if (flg) {
+		return;
+	}
+	testFail(testName, "failed; expected true, got %d", flg);
+}
+
 local void 
 testFail(String testName, String fmt, ...)
 {
