@@ -55,6 +55,8 @@
  *
  *	String
  *		Null-terminated string.
+ *	CString
+ *		Null-terminated const string.
  *
  *	IOMode
  *		Strings for specific uses.
@@ -355,6 +357,7 @@ typedef ULong		Millisec;
 #endif
 
 typedef char		*String;
+typedef const char	*CString;
 
 typedef char		*IOMode;
 

@@ -55,7 +55,7 @@ strUntabLength(String s, Length tabstop)
 }
 
 String
-strCopy(String s)
+strCopy(CString s)
 {
 	Length  n;
 	String  t;
@@ -67,13 +67,13 @@ strCopy(String s)
 }
 
 String
-strCopyIf(String s)
+strCopyIf(CString s)
 {
-	return s ? strCopy(s) : s;
+	return s ? strCopy(s) : (String) s;
 }
 
 String
-strnCopy(String s, Length n)
+strnCopy(CString s, Length n)
 {
 	String  t;
 
@@ -151,19 +151,14 @@ String
 strPrintf(const char *fmt, ...)
 {
 	va_list argp;
-	String  s;
 	int     cc;
+	Buffer  buf = bufNew();
 
 	va_start(argp, fmt);
-	cc = vxprintf((XPutFun) 0, fmt, argp);
+	bufVPrintf(buf, fmt, argp);
 	va_end(argp);
 
-	s = strAlloc(cc);
-	va_start(argp, fmt);
-	vsprintf(s, fmt, argp);
-	va_end(argp);
-
-	return s;
+	return bufLiberate(buf);
 }
 
 /*
@@ -192,20 +187,20 @@ strAMatch(String s1, String s2)
  * If pre is a prefix of s then return the rest of s. Otherwise 0.
  */
 String 
-strIsPrefix(String pre, String s)
+strIsPrefix(CString pre, CString s)
 {
 	for (; *pre && *s; pre++, s++)
 		if (*pre != *s) break;
-	if (*pre == '\0') return s;
+	if (*pre == '\0') return (String) s;
 	return 0;
 }
 	
 String 
-strAIsPrefix(String pre, String s)
+strAIsPrefix(CString pre, CString s)
 {
 	for (; *pre && *s; pre++, s++)
 		if (tolower(*pre) != tolower(*s)) break;
-	if (*pre == '\0') return s;
+	if (*pre == '\0') return (String) s;
 	return 0;
 }
 	

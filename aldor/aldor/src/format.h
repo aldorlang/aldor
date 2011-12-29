@@ -10,6 +10,7 @@
 #define _FORMAT_H_
 
 # include "axlport.h"
+#include "ostream.h"
 
 extern int  findent;
 extern int  fnewline    (FILE *f);
@@ -25,4 +26,20 @@ typedef int (*XPutFun)  (const char *s, int n);
 
 extern  int  xprintf	(XPutFun f, const char *fmt, ...);
 extern  int  vxprintf	(XPutFun f, const char *fmt, va_list argp);
+
+extern int ostreamPrintf(OStream ostream, const char *fmt, ...);
+
+typedef int (*FormatFn)(OStream stream, Pointer p);
+
+typedef struct format {
+	const char *name;
+	FormatFn fn;
+} *Format;
+
+
+extern void   fmtRegister(const char *name, FormatFn fn);
+extern Format fmtMatch(const char *fmtTxt);
+extern int    fmtPrint(Format format, OStream stream, Pointer ptr);
+extern void   fmtUnregister(Format format);
+extern void   fmtUnregisterAll();
 #endif

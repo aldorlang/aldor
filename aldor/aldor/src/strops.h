@@ -22,9 +22,9 @@ extern String           strOfChars      (char *);
 extern Length           strLength       (String);
 extern Length		strUntabLength	(String, Length tabstop);
 	
-extern String           strCopy         (String);
-extern String           strnCopy        (String s, Length n);
-extern String		strCopyIf	(String);
+extern String           strCopy         (CString);
+extern String           strnCopy        (CString s, Length n);
+extern String		strCopyIf	(CString);
  			/*
 			 * strCopy   allocates store and copies its argument.
 			 * strnCopy  same but copies at most n characters.
@@ -62,8 +62,8 @@ extern Hash             strAHash        (String);	  /* case-insensitive*/
 extern Length           strMatch        (String, String);
 extern Length           strAMatch       (String, String);
 
-extern String           strIsPrefix     (String pre, String);
-extern String		strAIsPrefix	(String pre, String);
+extern String           strIsPrefix     (CString pre, CString);
+extern String		strAIsPrefix	(CString pre, CString);
 
 extern String           strIsSuffix     (String suf, String);
 extern String           strAIsSuffix    (String suf, String);

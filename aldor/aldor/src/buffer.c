@@ -109,7 +109,7 @@ bufGets(Buffer b)
 }
 
 int
-bufPuts(Buffer b, String s)
+bufPuts(Buffer b, const char *s)
 {
 	int	cc = strlen(s);
 	bufAddn(b, s, cc);

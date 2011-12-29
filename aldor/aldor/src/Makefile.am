@@ -37,7 +37,7 @@ libgen_a_SOURCES = debug.c format.c fluid.c util.c store.c memclim.c	\
 		dnf.c file.c fname.c intset.c list.c msg.c path.c	\
 		srcpos.c strops.c symbol.c table.c ccode.c sexpr.c	\
 		xfloat.c priq.c timer.c cfgfile.c termtype.c		\
-		textansi.c texthp.c textcolour.c
+		textansi.c texthp.c textcolour.c ostream.c
 
 #libgen_a_LIBADD = libport.a
 
@@ -78,7 +78,12 @@ libphase_a_SOURCES = phase.c bloop.c fintphase.c \
 #
 check_PROGRAMS=testall
 TESTS=testall
-testsuite = test/test_fname.c test/test_foam.c
+testsuite = \
+	test/test_fname.c 	\
+	test/test_foam.c 	\
+	test/test_ostream.c	\
+	test/test_format.c
+
 testall_SOURCES = test/testall.c $(testsuite) test/testlib.c 
 testall_LDADD = libphase.a libstruct.a libgen.a libport.a -lm
 testall_LDFLAGS = 

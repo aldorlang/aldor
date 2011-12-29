@@ -57,7 +57,7 @@ extern int	bufPutc		(Buffer, int c);
 extern int	bufPutcTimes(Buffer b, int c, int n);
 	/* Add n character to the buffer, pushing ahead a NULL terminator. */
 
-extern int	bufPuts		(Buffer, String s);
+extern int	bufPuts		(Buffer, const char *s);
 	/* Add the characters of s to the buffer, pushing ahead a NULL terminator. */
 
 extern int	bufPuti		(Buffer, int i);

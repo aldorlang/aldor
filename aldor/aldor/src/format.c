@@ -10,8 +10,10 @@
  * This uses sprintf to do the actual formatting into stack allocated buffer.
  */
 
-# include "axlgen0.h"
-
+# include "axlgen.h"
+#include "ostream.h"
+#include "list.h"
+#include "store.h"
 /*
  * fnewline(fout) prints a newline and indents next line by amount findent.
  */
@@ -54,8 +56,54 @@ struct fbuf {
 	int     len;                    /* Current length of buf. */
 };
 
+
+local void 
+xputFunWriteChar(OStream o,char c)
+{
+	if (o->data)
+		((XPutFun) o->data)(&c, 1);
+}
+
+local int
+xputFunWriteString(OStream o, const char *str, int n)
+{
+	if (o->data)
+		return ((XPutFun) o->data)(str, n);
+	else
+		return n == -1 ? strlen(str): n;
+}
+
+local void 
+xputFunClose(OStream o)
+{
+}
+
+_OStreamOps ostreamXPutFunOps = { xputFunWriteChar, xputFunWriteString, xputFunClose };
+
 int
 vxprintf(XPutFun putfun, const char *fmt, va_list argp)
+{
+	struct ostream os;
+	os.ops  = &ostreamXPutFunOps;
+	os.data = (void *) putfun;
+	ostreamVPrintf(&os, fmt, argp);
+}
+
+int 
+ostreamPrintf(OStream ostream, const char *fmt, ...)
+{
+	va_list argp;
+	int	cc;
+
+	va_start(argp, fmt);
+	cc = ostreamVPrintf(ostream, fmt, argp);
+	va_end(argp);
+
+	return cc;
+}
+
+int
+ostreamVPrintf(OStream ostream, const char *fmt, va_list argp)
 {
 	int             c, r, w, cc;
 	struct fbuf     fb;
@@ -66,7 +114,7 @@ vxprintf(XPutFun putfun, const char *fmt, va_list argp)
 		if (*fmt != '%') {
 			int	i;
 			for (i = 0; fmt[i] && fmt[i] != '%'; i++) ;
-			if (putfun) i = putfun(fmt, i);
+			if (ostream) i = ostreamWrite(ostream, fmt, i);
 			cc  += i;
 			fmt += i;
 			continue;
@@ -142,11 +190,26 @@ vxprintf(XPutFun putfun, const char *fmt, va_list argp)
 		/* s format could point to arbitrarily long string */
 		if (fb.conv == 's') {
 			char *s = va_arg(argp, char *);
-			if (putfun)
-				cc += putfun(s, fb.width);
+			if (ostream)
+				cc += ostreamWrite(ostream, s, fb.width);
 			else {
 				int l = strlen(s), w = fb.width;
 				cc += (w != -1 && w < l) ? w  : l;
+			}
+			continue;
+		}
+
+		if (fb.conv == 'p') {
+			Format format = fmtMatch(fmt);
+			if (format == NULL) {
+				w  = fb.width + fb.prec + 30;       /* over estimate */
+				f = (w < sizeof(arg_buf)) ? fb.fmt : "<too wide to format>";
+				sprintf(arg_buf, f, va_arg(argp, Pointer));
+				cc += ostreamWrite(ostream, arg_buf, -1);
+			}
+			else {
+				cc += fmtPrint(format, ostream, va_arg(argp, Pointer));
+				fmt += strlen(format->name);
 			}
 			continue;
 		}
@@ -158,9 +221,6 @@ vxprintf(XPutFun putfun, const char *fmt, va_list argp)
 		switch (fb.conv) {
 		case '%':
 			sprintf(arg_buf, "%s", f);
-			break;
-		case 'p': 
-			sprintf(arg_buf, f, va_arg(argp, Pointer));
 			break;
 		case 'c':
 		case 'd': case 'i': case 'u':
@@ -177,10 +237,60 @@ vxprintf(XPutFun putfun, const char *fmt, va_list argp)
 				sprintf(arg_buf,f,va_arg(argp, double));
 			break;
 		}
-		if (putfun)
-			cc += putfun(arg_buf, -1);
+		if (ostream)
+			cc += ostreamWrite(ostream, arg_buf, -1);
 		else
 			cc += strlen(arg_buf);
 	}
 	return cc;
+}
+
+/*
+ * :: User defined formats
+ */
+
+DECLARE_LIST(Format);
+CREATE_LIST(Format);
+
+static FormatList fmtRegisteredFormats = listNil(Format);
+
+void 
+fmtRegister(const char *name, FormatFn fn)
+{
+	Format format = (Format) stoAlloc(OB_Other, sizeof(*format));
+	assert(name[0] != '\0');
+	format->name = strCopy(name);
+	format->fn = fn;
+
+	fmtRegisteredFormats = listCons(Format)(format, fmtRegisteredFormats);
+}
+
+Format
+fmtMatch(const char *fmtTxt)
+{
+	size_t longestMatch = 0;
+	Format match = NULL;
+
+	if (fmtTxt[0] == '\0')
+		return NULL;
+	
+	FormatList list = fmtRegisteredFormats;
+	while (list != listNil(Format)) {
+		Format format = car(list);
+		list = cdr(list);
+		printf(" %p %d %d %s\n", strIsPrefix(format->name, fmtTxt),strlen(format->name), strlen(format->name) > longestMatch, format->name);
+		if (strIsPrefix(format->name, fmtTxt) != NULL && strlen(format->name) > longestMatch) {
+			match = format;
+			longestMatch = strlen(match->name);
+		}
+	}
+	return match;
+	
+}
+
+int 
+fmtPrint(Format format, OStream stream, Pointer ptr)
+{
+	assert(format != NULL);
+	return format->fn(stream, ptr);
 }
