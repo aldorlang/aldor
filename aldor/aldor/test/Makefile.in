@@ -29,7 +29,8 @@ foamlibdir = $(abs_top_builddir)/aldor/lib/libfoamlib
 foamsrcdir = $(abs_top_srcdir)/aldor/lib/libfoam
 foamdir = $(abs_top_builddir)/aldor/lib/libfoam
 
-fmtests := clos strtable1 
+aptests :=
+fmtests := l1 clos strtable1
 ctests  := 
 otests  := 
 
@@ -42,36 +43,43 @@ strtable1_AXLFLAGS=-Y$(foamdir)/al -I $(foamsrcdir) -lRuntimeLib=foam -Q9 -Qinli
 
 clos_AXLFLAGS := -Q2
 
+_aptests := $(sort $(aptests))
 _aotests := $(sort $(fmtests) $(ctests))
 _fmtests := $(sort $(fmtests))
 _ctests  := $(sort $(ctests) $(otests))
 _otests  := $(sort $(otests))
 
+nfile := -Nfile=$(aldorsrcdir)/aldor.conf
+
 $(patsubst %, out/fm/%.fm, $(_fmtests)): out/fm/%.fm: out/ao/%.ao
 	mkdir -p $$(dirname $@)
-	$(aldorexedir)/aldor -Nfile=$(aldorsrcdir)/aldor.conf -Ffm=$(builddir)/$@ $<	
+	$(aldorexedir)/aldor $(nfile) -Ffm=$(builddir)/$@ $<
 
 $(patsubst %, out/c/%.c, $(_ctests)): out/c/%.c: out/ao/%.ao
 	mkdir -p $$(dirname $@)
-	$(aldorexedir)/aldor -Nfile=$(aldorsrcdir)/aldor.conf -Fc=$(builddir)/$@ $<	
+	$(aldorexedir)/aldor $(nfile) -Fc=$(builddir)/$@ $<
 
 # Create .o files locally as unicl creates files in the
 # current directory...
 $(patsubst %, %.o, $(_otests)): %.o: out/ao/%.ao
 	mkdir -p $$(dirname $@)
-	$(aldorexedir)/aldor -Nfile=$(aldorsrcdir)/aldor.conf 	\
+	$(aldorexedir)/aldor $(nfile) 	\
 			      -Ccc=$(aldortooldir)/unicl	\
 			      -Cargs="-Wconfig=$(aldorsrcdir)/aldor.conf -I$(aldorsrcdir)" \
 			      -Fo=$(builddir)/$@ $<		\
 
 define aldor_args
-	-Nfile=$(aldorsrcdir)/aldor.conf 	\
-	-Y$(foamlibdir)/al			\
-	-I$(foamsrclibdir)			\
+	$(nfile) 		\
+	-Y$(foamlibdir)/al	\
+	-I$(foamsrclibdir)	\
 	-lAxlLib=foamlib 		\
 	$(AXLFLAGS) $($*_AXLFLAGS)	\
 	-Fao=out/ao/$*.ao $(srcdir)/$*.as
 endef
+
+$(patsubst %, out/ap/%.ap, $(_aotests)): out/ap/%.ap: %.as
+	mkdir -p $$(dirname $@)
+	$(aldorexedir)/aldor $(nfile) -Fap=$@ $(srcdir)/$*.as
 
 $(patsubst %, out/ao/%.ao, $(_aotests)): out/ao/%.ao: %.as
 	mkdir -p $$(dirname $@)
@@ -82,6 +90,7 @@ $(patsubst %, out/ao/%.cmd, $(_aotests)): out/ao/%.cmd: %.as
 	echo run '$(aldor_args)' > $@
 
 really-all: \
+     $(patsubst %,out/ap/%.ap,$(_aptests)) \
      $(patsubst %,out/ao/%.cmd,$(_aotests)) \
      $(patsubst %,out/fm/%.fm,$(fmtests)) \
      $(patsubst %,out/c/%.c,$(ctests)) \
