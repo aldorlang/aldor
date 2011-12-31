@@ -16,8 +16,8 @@ void finiFile();
 void tinferTest()
 {
 	init();
-	testSimpleTInfer();
-	testConditionalTInfer();
+	TEST(testSimpleTInfer);
+	TEST(testConditionalTInfer);
 	fini();
 }
 
@@ -67,8 +67,8 @@ testConditionalTInfer()
 	AbSyn absyn = abNewSequenceL(sposNone, listList(AbSyn)(6, stdtypes(), impBoolean, c1, foo, d1, a));
 
 	initFile();
-	ablogDebug = 1;
-	tipBupDebug = 1;
+	ablogDebug = 0;
+	tipBupDebug = 0;
 	Stab stab = stabFile();
 	
 	abPutUse(absyn, AB_Use_NoValue);

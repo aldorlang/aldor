@@ -1,5 +1,6 @@
 #include "axlobs.h"
 #include "ostream.h"
+#include "testlib.h"
 
 local void testFormat1();
 local void testFormat2();
@@ -8,10 +9,10 @@ local void testFormat4();
 
 void formatTest()
 {
-	testFormat1();
-	testFormat2();
-	testFormat3();
-	testFormat4();
+	TEST(testFormat1);
+	TEST(testFormat2);
+	TEST(testFormat3);
+	TEST(testFormat4);
 }
 
 int displayPtr(OStream ostream, Pointer p)
