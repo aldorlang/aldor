@@ -278,7 +278,6 @@ fmtMatch(const char *fmtTxt)
 	while (list != listNil(Format)) {
 		Format format = car(list);
 		list = cdr(list);
-		printf(" %p %d %d %s\n", strIsPrefix(format->name, fmtTxt),strlen(format->name), strlen(format->name) > longestMatch, format->name);
 		if (strIsPrefix(format->name, fmtTxt) != NULL && strlen(format->name) > longestMatch) {
 			match = format;
 			longestMatch = strlen(match->name);
