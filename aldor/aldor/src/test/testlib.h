@@ -10,4 +10,8 @@ void testTrue(String testName, Bool flg);
 void testShowSummary();
 int testAllPassed();
 
+void showTest(char *name, void (*fn)(void));
+
+#define TEST(x) showTest(Enstring(x), x)
+
 #endif
