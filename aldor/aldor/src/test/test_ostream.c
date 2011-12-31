@@ -9,8 +9,8 @@ void testNull(void);
 void 
 ostreamTest()
 {
-	testBuffer();
-	testNull();
+	TEST(testBuffer);
+	TEST(testNull);
 }
 
 void 
