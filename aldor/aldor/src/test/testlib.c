@@ -11,8 +11,7 @@ void showTest(char *name, void (*fn)(void))
 {
 	printf("(Starting test %s\n", name);
 	fn();
-	printf("Test %s complete)\n", name);
-
+	printf(" Test %s complete)\n", name);
 }
 
 void
