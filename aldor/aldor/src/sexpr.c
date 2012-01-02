@@ -3060,6 +3060,8 @@ sxiToBufferFormatted(Buffer buf, SExpr s, ULong iomode)
 		sxiIoOutPackages = 1;
 
 	sxiToBuffer(buf, s);
+
+	Return(Nothing);
 }
 
 void 

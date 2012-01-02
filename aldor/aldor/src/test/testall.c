@@ -5,6 +5,8 @@
 static int theArgc;
 static char **theArgv;
 
+extern int fluidLevel;
+
 int 
 main(int argc, char *argv[])
 {
@@ -19,6 +21,8 @@ main(int argc, char *argv[])
 	if (testShouldRun("stab")) stabTest();
 	if (testShouldRun("srcpos")) srcposTest();
 	if (testShouldRun("absyn")) absynTest();
+
+	testIntEqual("fluidlevel", 0, fluidLevel);
 
 	testShowSummary();
 	

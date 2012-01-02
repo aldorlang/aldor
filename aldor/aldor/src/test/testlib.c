@@ -7,10 +7,16 @@ static int count = 0;
 
 local void testFail(String testname, String fmt, ...);
 
-void showTest(char *name, void (*fn)(void))
+extern int fluidLevel;
+
+void 
+showTest(char *name, void (*fn)(void))
 {
+	int localFluidLevel = fluidLevel;
 	printf("(Starting test %s\n", name);
 	fn();
+	testIntEqual("fluidlevel", localFluidLevel, fluidLevel);
+
 	printf(" Test %s complete)\n", name);
 }
 
