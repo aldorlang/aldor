@@ -28,6 +28,7 @@ extern  int  xprintf	(XPutFun f, const char *fmt, ...);
 extern  int  vxprintf	(XPutFun f, const char *fmt, va_list argp);
 
 extern int ostreamPrintf(OStream ostream, const char *fmt, ...);
+extern int ostreamVPrintf(OStream ostream, const char *fmt, va_list argp);
 
 typedef int (*FormatFn)(OStream stream, Pointer p);
 
