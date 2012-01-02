@@ -121,8 +121,9 @@ local int
 ostreamBufferWriteString(OStream os, const char *s, int n)
 {
 	Buffer b = (Buffer) os->data;
-	if (n == -1) 
-		bufPuts(b, s);
+	if (n == -1) {
+		return bufPuts(b, s);
+	}
 	else {
 		bufAddn(b, s, n);
 		BUF_ADD1(b,char0);
