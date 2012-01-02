@@ -68,6 +68,7 @@
 #  define listFillVector(Type)          (*(ListOps(Type)->FillVector))
 #  define listPrint(Type)               (*(ListOps(Type)->Print))
 #  define listGPrint(Type)              (*(ListOps(Type)->GPrint))
+#  define listFormat(Type)              (*(ListOps(Type)->Format))
 
 #  define listNil(Type)                 ((Abut(Type,List)) 0)
 
@@ -148,6 +149,7 @@ Statement({							\
 		int             (*GPrint)       (FILE *, List(Type), \
 						 int (*pr)(FILE *, Type), \
 						 char *l,char *m,char *r);  \
+		int             (*Format)       (OStream, CString, List(Type)); \
 	} 
 
 DECLARE_LIST(Pointer);

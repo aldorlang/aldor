@@ -493,6 +493,25 @@ ptrlistPrint(FILE *fout, PointerList l, PointerListEltPrFun prf)
 	return ptrlistGPrint(fout, l, prf, "[", ", ", "]");
 }
 
+local int
+ptrListFormat(OStream stream, CString formatName, PointerList l)
+{
+	int cc = 0;
+	String format = strConcat("%p", formatName);
+	String sep = "";
+	cc += ostreamWrite(stream, "[", -1);
+	while (l) {
+		Pointer p = l->first;
+		cc += ostreamWrite(stream, sep, -1);
+		cc += ostreamPrintf(stream, format, p);
+		sep = ", ";
+		l = l->rest;
+	}
+	cc += ostreamWrite(stream, "]", -1);
+	strFree(format);
+
+	return cc;
+}
 
 /*
  * Create the shared table of operations.
@@ -533,7 +552,8 @@ const struct ListOpsStructName(Pointer) ptrlistOps = {
 	ptrlistNRemove,
 	ptrlistFillVector,                              
 	ptrlistPrint,
-	ptrlistGPrint
+	ptrlistGPrint,
+	ptrListFormat,
 };
 
 CREATE_LIST(Pointer);
