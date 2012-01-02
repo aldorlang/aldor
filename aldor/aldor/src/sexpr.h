@@ -273,6 +273,7 @@ extern SExpr	sxiRead			(FILE *,FileName *,int *,SExpr,ULong);
 extern int 	sxiWrite		(FILE *, SExpr, ULong);
 extern String   sxiFormat		(SExpr sx);
 extern void     sxiToBuffer             (Buffer buf, SExpr sx);
+extern void sxiToBufferFormatted(Buffer buf, SExpr s, ULong flags);
 
 extern void	sxiFree			(SExpr);
 extern void	sxiFreeList		(SExpr);

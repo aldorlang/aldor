@@ -3042,6 +3042,27 @@ sxiFormat(SExpr sx)
 }
 
 void 
+sxiToBufferFormatted(Buffer buf, SExpr s, ULong iomode)
+{
+	Scope("sxiToBufferFormatted");
+	int fluid(sxiIoMixedCase), fluid(sxiIoKeepSrcPos);
+	int fluid(sxiIoOutPackages);
+
+	if (iomode & SXRW_MixedCase)
+		sxiIoMixedCase = 1;
+	if (iomode & SXRW_FoldCase)
+		sxiIoMixedCase = 0;
+	if (iomode & SXRW_SrcPos)
+		sxiIoKeepSrcPos = 1;
+	if (iomode & SXRW_NoSrcPos)
+		sxiIoKeepSrcPos = 0;
+	if (iomode & SXRW_Packages)
+		sxiIoOutPackages = 1;
+
+	sxiToBuffer(buf, s);
+}
+
+void 
 sxiToBuffer(Buffer buf, SExpr s)
 {
 	sxiWrWidth(s);
