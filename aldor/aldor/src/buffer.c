@@ -162,25 +162,14 @@ bufPuti(Buffer buf, int i)
 	return bufPosition(buf) - pos0;
 }
 
-static Buffer	pbuf;
-
-static int
-bufXPut(const char *s, int n)
-{
-	if (n == -1) n = strlen(s);
-	bufAddn(pbuf, s, n);
-	return n;
-}
-
 int
 bufVPrintf(Buffer b, const char *fmt, va_list argp)
 {
 	int	cc;
-	pbuf   = b;
-	if (b->pos > 0 && b->argv[b->pos-1] == 0) BUF_BACK1(b);
-	cc = vxprintf(bufXPut, fmt, argp);
-	BUF_ADD1(b, char0);
-	BUF_BACK1(b);
+
+	OStream ostream = ostreamNewFrBuffer(b);
+	cc = ostreamVPrintf(ostream, fmt, argp);
+	ostreamFree(ostream);
 	return cc;
 }
 
