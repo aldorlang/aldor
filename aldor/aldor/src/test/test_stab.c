@@ -13,7 +13,7 @@ void stabTest()
 void testStabIsChild()
 {
 	Stab global = stabNewGlobal();
-	Stab root = stabNewFile(root);
+	Stab root = stabNewFile(global);
 
 	Stab c1 = stabPushLevel(root, sposNone, 0);
 	Stab c2 = stabPushLevel(root, sposNone, 0);

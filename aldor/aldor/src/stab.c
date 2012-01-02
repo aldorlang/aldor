@@ -175,6 +175,8 @@ stabNewFile(Stab globalStab)
 	StabLevel slev = stabNewLevel(1, 1, sposNone, true); /* large level */
 
 	Stab fileStab = listCons(StabLevel) (slev, globalStab);
+	assert(listLength(StabLevel)(globalStab) == 1);
+
 	stabClrSubstable(fileStab);
 
 	return fileStab;
