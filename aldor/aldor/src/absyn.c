@@ -12,6 +12,7 @@ Bool	abDebug		= false;
 #define abDEBUG(s)	DEBUG_IF(abDebug, s)
 
 local int       abFormatter     (OStream stream, Pointer p);
+local int       abFormatterList(OStream ostream, Pointer p);
 local void	abPosNodeSpan0	(AbSyn X, AbSyn *pA, AbSyn *pB);
 local SrcPos	abLeafEnd	(AbSyn ab);
 
@@ -55,6 +56,7 @@ abInit(void)
 	abIsInit = true;
 
 	fmtRegister("AbSyn", abFormatter);
+	fmtRegister("AbSynList", abFormatterList);
 }
 
 AbSyn
@@ -1889,4 +1891,11 @@ abFormatter(OStream stream, Pointer p)
 	int c = ostreamWrite(stream, bufLiberate(b), -1);
 
 	return c;
+}
+
+local int
+abFormatterList(OStream ostream, Pointer p)
+{
+	AbSynList list = (AbSynList) p;
+	return listFormat(AbSyn)(ostream, "AbSyn", list);
 }
