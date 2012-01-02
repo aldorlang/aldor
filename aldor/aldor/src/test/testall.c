@@ -17,6 +17,7 @@ main(int argc, char *argv[])
 	if (testShouldRun("format")) formatTest();
 	if (testShouldRun("tinfer")) tinferTest();
 	if (testShouldRun("stab")) stabTest();
+	if (testShouldRun("srcpos")) srcposTest();
 
 	testShowSummary();
 	

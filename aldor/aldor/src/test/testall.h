@@ -7,6 +7,7 @@ void ostreamTest(void);
 void formatTest(void);
 void tinferTest(void);
 void stabTest(void);
+void srcpos(void);
 
 #endif
 
