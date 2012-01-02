@@ -7,6 +7,14 @@ static int count = 0;
 
 local void testFail(String testname, String fmt, ...);
 
+void showTest(char *name, void (*fn)(void))
+{
+	printf("(Starting test %s\n", name);
+	fn();
+	printf("Test %s complete)\n", name);
+
+}
+
 void
 testStringEqual(String testName, String s1, String s2)
 {
