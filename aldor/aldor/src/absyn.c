@@ -1887,6 +1887,7 @@ abFormatter(OStream stream, Pointer p)
 	Buffer b = bufNew();
 	sxiToBufferFormatted(b, sx, SXRW_MixedCase);
 	int c = ostreamWrite(stream, bufLiberate(b), -1);
+	sxiFree(sx);
 
 	return c;
 }
