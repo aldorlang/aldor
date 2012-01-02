@@ -4,12 +4,14 @@
 #include "ostream.h"
 
 void testBuffer(void);
+void testBuffer2(void);
 void testNull(void);
 
 void 
 ostreamTest()
 {
 	TEST(testBuffer);
+	TEST(testBuffer2);
 	TEST(testNull);
 }
 
@@ -30,6 +32,23 @@ testBuffer()
 		testStringEqual("ostreamWrite-Substring", expect, txt2);
 		ostreamClose(s);
 		ostreamFree(s);
+	}
+}
+
+void 
+testBuffer2()
+{
+	StringList l = listList(String)(3, "", "hello", "a");
+	while (l != listNil(String)) {
+		Buffer buffer = bufNew();
+		String txt = car(l);
+		OStream s = ostreamNewFrBuffer(buffer);
+		int n = ostreamWrite(s, txt, -1);
+		String txt2 = bufLiberate(buffer);
+		testIntEqual("ostreamWriteReturn", strlen(txt), n);
+		testStringEqual("ostreamWriteVal", txt, txt2);
+
+		l = listFreeCons(String)(l);
 	}
 }
 
