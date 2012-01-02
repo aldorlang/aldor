@@ -18,6 +18,7 @@ main(int argc, char *argv[])
 	if (testShouldRun("tinfer")) tinferTest();
 	if (testShouldRun("stab")) stabTest();
 	if (testShouldRun("srcpos")) srcposTest();
+	if (testShouldRun("absyn")) absynTest();
 
 	testShowSummary();
 	
