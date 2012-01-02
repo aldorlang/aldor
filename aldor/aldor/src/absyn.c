@@ -11,6 +11,7 @@
 Bool	abDebug		= false;
 #define abDEBUG(s)	DEBUG_IF(abDebug, s)
 
+local int       abFormatter     (OStream stream, Pointer p);
 local void	abPosNodeSpan0	(AbSyn X, AbSyn *pA, AbSyn *pB);
 local SrcPos	abLeafEnd	(AbSyn ab);
 
@@ -52,6 +53,8 @@ abInit(void)
 		abInfo(i).hash		  = strHash(abInfo(i).str);
 	}
 	abIsInit = true;
+
+	fmtRegister("AbSyn", abFormatter);
 }
 
 AbSyn
@@ -1873,3 +1876,17 @@ abDumpPosition(AbSyn ab)
 	}
 }
 
+local int
+abFormatter(OStream stream, Pointer p)
+{
+	/* Ideally, we'd avoid going through the buffer, but sxiWrite is
+	 * written vs a buffer, and there's no point changing it for debug functionality
+	 */
+	AbSyn absyn = (AbSyn) p;
+	SExpr sx = abToSExpr(absyn);
+	Buffer b = bufNew();
+	sxiToBufferFormatted(b, sx, SXRW_MixedCase);
+	int c = ostreamWrite(stream, bufLiberate(b), -1);
+
+	return c;
+}
