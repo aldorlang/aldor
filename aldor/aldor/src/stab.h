@@ -127,6 +127,9 @@ extern void		stabFiniFile		(void);
 extern Stab		stabGlobal		(void);
 extern Stab		stabFile		(void);
 
+extern Stab             stabNewGlobal           (void);
+extern Stab             stabNewFile             (Stab);
+
 extern ULong		stabMaxSerialNo		(void);
 extern UShort		stabMaxDefnNum		(void);
 
@@ -180,6 +183,8 @@ extern void		stabSetSyme		(Stab, AbSyn, Syme, AbLogic);
 
 extern Bool		stabIsUndeclaredId	(Stab, Symbol);
 extern void		stabDeclareId		(Stab, Symbol, TForm);
+
+extern Bool             stabIsChild             (Stab parent, Stab child);
 
 extern int		stabPrint		(FILE *, Stab);
 extern int		stabPrintTo		(FILE *, Stab, int minlev);

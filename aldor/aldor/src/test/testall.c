@@ -16,6 +16,7 @@ main(int argc, char *argv[])
 	if (testShouldRun("foam")) foamTest();
 	if (testShouldRun("format")) formatTest();
 	if (testShouldRun("tinfer")) tinferTest();
+	if (testShouldRun("stab")) stabTest();
 
 	testShowSummary();
 	

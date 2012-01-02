@@ -6,6 +6,7 @@ void foamTest(void);
 void ostreamTest(void);
 void formatTest(void);
 void tinferTest(void);
+void stabTest(void);
 
 #endif
 

@@ -146,24 +146,38 @@ static Stab StabFile = 0;	/* Persists across one file. */
 void
 stabInitGlobal(void)
 {
-	StabLevel slev = stabNewLevel(int0, int0, sposNone, false); /* small */
-
-	StabGlobal = listCons(StabLevel) (slev, listNil(StabLevel));
-	stabClrSubstable(StabGlobal);
-
+	StabGlobal = stabNewGlobal();
 	return;
 }
 
 void
 stabInitFile(void)
 {
+	StabFile = stabNewFile(StabGlobal);
+	stabDefinitionCounter = 0;
+	return;
+}
+
+Stab
+stabNewGlobal(void)
+{
+	StabLevel slev = stabNewLevel(int0, int0, sposNone, false); /* small */
+
+	Stab stab = listCons(StabLevel) (slev, listNil(StabLevel));
+	stabClrSubstable(stab);
+
+	return stab;
+}
+
+Stab
+stabNewFile(Stab globalStab)
+{
 	StabLevel slev = stabNewLevel(1, 1, sposNone, true); /* large level */
 
-	StabFile = listCons(StabLevel) (slev, StabGlobal);
-	stabDefinitionCounter = 0;
-	stabClrSubstable(StabFile);
+	Stab fileStab = listCons(StabLevel) (slev, globalStab);
+	stabClrSubstable(fileStab);
 
-	return;
+	return fileStab;
 }
 
 void
@@ -2494,4 +2508,18 @@ stabFindLevel(Stab stab, Syme syme)
 	}
 
 	return stab;
+}
+
+
+Bool stabIsChild(Stab parent, Stab child)
+{
+	Bool isChild = false;
+
+	while (child != listNil(StabLevel)) {
+		if (child == parent)
+			return true;
+		child = cdr(child);
+	}
+
+	return isChild;
 }
