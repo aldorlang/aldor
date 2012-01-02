@@ -44,6 +44,16 @@ testTrue(String testName, Bool flg)
 	testFail(testName, "failed; expected true, got %d", flg);
 }
 
+void
+testFalse(String testName, Bool flg)
+{
+	count++;
+	if (!flg) {
+		return;
+	}
+	testFail(testName, "failed; expected false, got %d", flg);
+}
+
 local void 
 testFail(String testName, String fmt, ...)
 {
