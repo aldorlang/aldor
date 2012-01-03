@@ -52,14 +52,13 @@ testConditionalTInfer()
 	*/
 	AbSyn impBoolean = import(nothing(), id("Boolean"));
 	AbSyn c1 = define(declare(id("C1"), id("Category")), emptyWith());
-	AbSyn condition = _if(has(id("X"), id("C1")), declare(id("f"), apply2(id("->"), id("%"), id("X"))),
+	AbSyn condition = _if(has(id("X"), id("C1")), 
+			      declare(id("f"), apply2(id("->"), id("%"), id("X"))),
 			      nothing());
-	AbSyn fooLambda = lambda(comma1(declare(id("X"), emptyWith())),
-				 id("Category"),
-				 label(id("Foo"),
-				       with(nothing(), condition)));
-	AbSyn foo = define(declare(id("Foo"), apply2(id("->"), declare(id("X"), emptyWith()), id("Category"))),
-			   fooLambda);
+
+	AbSyn foo = defineUnary("Foo", declare(id("X"), emptyWith()), id("Category"), 
+				with(nothing(), condition));
+
 	AbSyn d1 = define(declare(id("D1"), with(id("C1"), nothing())), emptyAdd());
 	AbSyn theAdd = emptyAdd();
 	AbSyn fooD1 = apply1(id("Foo"), id("D1"));

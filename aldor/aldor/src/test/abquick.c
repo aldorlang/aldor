@@ -35,3 +35,19 @@ AbSyn typeDecl(String name)
 	return declare(id(name), id("Type"));
 }
 
+AbSyn
+defineUnary(String name, AbSyn param, AbSyn retType, AbSyn rhs)
+{
+	AbSyn theLambda = lambda(comma1(abCopy(param)),
+				 abCopy(retType),
+				 label(id(name), rhs));
+	AbSyn theDefine = define(declare(id(name),
+					 apply2(id("->"), abCopy(param),
+						abCopy(retType))),
+			   theLambda);
+	
+	abFree(retType);
+	abFree(param);
+
+	return theDefine;
+}

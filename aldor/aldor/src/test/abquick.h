@@ -52,6 +52,7 @@ ABQK_DECLARE1_Symbol(id, abNewId);
 
 AbSyn emptyWith();
 AbSyn emptyAdd();
+AbSyn defineUnary(String name, AbSyn param, AbSyn retType, AbSyn rhs);
 
 
 #endif
