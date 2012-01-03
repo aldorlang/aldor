@@ -15,10 +15,18 @@ ABQK_DEFINE2(has, abNewHas);
 ABQK_DEFINE2(apply1, abNewApply1);
 ABQK_DEFINE3(apply2, abNewApply2);
 ABQK_DEFINE3(lambda, abNewLambda);
-ABQK_DEFINE3(_if, abNewIf);
+ABQK_DEFINE3(_if0, abNewIf);
 ABQK_DEFINE2(import, abNewImport);
+ABQK_DEFINE1(test, abNewTest);
 
 ABQK_DEFINE1_Symbol(id, abNewId);
+
+AbSyn
+_if(AbSyn testPart, AbSyn thenPart, AbSyn elsePart)
+{
+	return _if0(test(testPart), thenPart, elsePart);
+}
+
 
 AbSyn emptyAdd() 
 {

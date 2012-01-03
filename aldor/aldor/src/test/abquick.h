@@ -44,7 +44,7 @@ ABQK_DECLARE2(has, abNewHas);
 ABQK_DECLARE2(apply1, abNewApply1);
 ABQK_DECLARE3(apply2, abNewApply2);
 ABQK_DECLARE3(lambda, abNewLambda);
-ABQK_DECLARE3(_if, abNewIf);
+ABQK_DECLARE3(_if0, abNewIf);
 ABQK_DECLARE2(import, abNewImport);
 
 ABQK_DECLARE1_Symbol(id, abNewId);
@@ -53,6 +53,7 @@ ABQK_DECLARE1_Symbol(id, abNewId);
 AbSyn emptyWith();
 AbSyn emptyAdd();
 AbSyn defineUnary(String name, AbSyn param, AbSyn retType, AbSyn rhs);
+AbSyn _if(AbSyn testPart, AbSyn thenPart, AbSyn elsePart);
 
 
 #endif
