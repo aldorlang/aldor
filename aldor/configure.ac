@@ -91,6 +91,7 @@ AC_CONFIG_FILES([Makefile
 		 lib/aldor/src/arith/Makefile
 		 lib/aldor/src/datastruc/Makefile
 		 lib/aldor/src/util/Makefile
+		 lib/aldor/src/test/Makefile
 		 lib/aldor/src/gmp/Makefile
 		 lib/algebra/Makefile
 		 lib/algebra/src/Makefile
