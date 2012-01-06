@@ -146,6 +146,17 @@ typedef struct id_info {
 DECLARE_LIST(IdInfo);
 CREATE_LIST(IdInfo);
 
+typedef struct lambda_info {
+	AbSyn lhs;
+	AbSyn rhs;
+} *LambdaInfo;
+
+DECLARE_LIST(LambdaInfo);
+CREATE_LIST(LambdaInfo);
+
+local LambdaInfo lambdaInfoAlloc(AbSyn lhs, AbSyn rhs);
+local void       lambdaInfoFree(LambdaInfo info);
+
 /******************************************************************************
  *
  * :: Conditional Definitions
@@ -171,7 +182,7 @@ static Bool		scoIsInExport;
 static Bool		scoIsInExtend;
 static Bool		scoIsInImport;
 static AbSynList	scoDefineList;
-static AbSynList	scoLambdaList;
+static LambdaInfoList	scoLambdaList;
 static IdInfoList	scoIdInfoList;
 static Bool		scoUndoState;
 static SymeList		scoUndoSymes;
@@ -493,7 +504,7 @@ scopeBind(Stab stab, AbSyn absyn)
 	scoIsInExport	= false;
 	scoIsInImport	= false;
 	scoDefineList	= listNil(AbSyn);
-	scoLambdaList	= listNil(AbSyn);
+	scoLambdaList	= listNil(LambdaInfo);
 
 	scoDEBUG({
 		fprintf(dbOut, "Top-level Scope Begin");
@@ -765,7 +776,7 @@ scobindType(AbSyn type)
 local void
 scobindLevel(AbSyn absyn, ScoBindFun fun, ULong flags)
 {
-	AbSynList	savedLambdaList;
+	LambdaInfoList	savedLambdaList;
 	AIntList	savedCondList;
 	Bool		saveInType = scoIsInType;
 
@@ -778,7 +789,7 @@ scobindLevel(AbSyn absyn, ScoBindFun fun, ULong flags)
 	savedLambdaList = scoLambdaList;
 	savedCondList   = scoCondList;
 
-	scoLambdaList = listNil(AbSyn);
+	scoLambdaList = listNil(LambdaInfo);
 	scoCondList   = listNil(AInt);
 
 	/*
@@ -833,17 +844,18 @@ scobindLevel(AbSyn absyn, ScoBindFun fun, ULong flags)
 local void
 scobindLambdaList(void)
 {
-	scoLambdaList = listNReverse(AbSyn)(scoLambdaList);
+	scoLambdaList = listNReverse(LambdaInfo)(scoLambdaList);
 	while (scoLambdaList) {
-		AbSyn	lhs = car(scoLambdaList);
-		AbSyn	rhs = car(cdr(scoLambdaList));
+		LambdaInfo info = car(scoLambdaList);
+		AbSyn	lhs = info->lhs;
+		AbSyn	rhs = info->rhs;
 
 		scobindPushDefine(lhs);
 		scobindLevel(rhs, scobindLambda, scobindLambdaFlags);
 		scobindPopDefine(lhs);
-
-		scoLambdaList = listFreeCons(AbSyn)(scoLambdaList);
-		scoLambdaList = listFreeCons(AbSyn)(scoLambdaList);
+		
+		lambdaInfoFree(info);
+		scoLambdaList = listFreeCons(LambdaInfo)(scoLambdaList);
 	}
 }
 
@@ -2023,8 +2035,8 @@ local void
 scobindDefineRhs(AbSyn lhs, AbSyn rhs, DeclContext context)
 {
 	if (abIsAnyLambda(rhs)) {
-		listPush(AbSyn, lhs, scoLambdaList);
-		listPush(AbSyn, rhs, scoLambdaList);
+		LambdaInfo info = lambdaInfoAlloc(lhs, rhs);
+		listPush(LambdaInfo, info, scoLambdaList);
 		if (abHasTag(lhs, AB_Declare))
 			scobindMatchWiths(lhs->abDeclare.type, rhs, context);
 	}
@@ -3965,4 +3977,27 @@ local Bool
 isNewTFormUses(TFormUses tfu)
 {
 	return tfu->tf->intStepNo == intStepNo - 1;
+}
+
+
+/******************************************************************************
+ *
+ * :: scobindUndo
+ *
+ *****************************************************************************/
+
+local LambdaInfo
+lambdaInfoAlloc(AbSyn lhs, AbSyn rhs)
+{
+	LambdaInfo info = (LambdaInfo) stoAlloc(OB_Other, sizeof(*info));
+	info->lhs = lhs;
+	info->rhs = rhs;
+
+	return info;
+}
+
+local void
+lambdaInfoFree(LambdaInfo info)
+{
+	stoFree(info);
 }
