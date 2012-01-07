@@ -118,6 +118,7 @@ fintParseOptions(String str)
 		return;
 	}
 
+	/*
 	if (!strncmp(str, optionsOpt, optionsOptLen)) {
 	        int     argc, iargc;
 	        String  *argv;
@@ -132,7 +133,7 @@ fintParseOptions(String str)
 				     argv[iargc]);
 		return;
 	}
-
+	*/
 	if (!strncmp(str, helpOpt, helpOptLen)) {
 		(void)comsgFPrintf(osStdout, ALDOR_M_FintOptions,
 		       verboseOpt, historyOpt, confirmOpt, timingsOpt,
