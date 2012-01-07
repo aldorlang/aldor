@@ -5,6 +5,7 @@ void absynTest(void);
 void fnameTest(void);
 void foamTest(void);
 void ostreamTest(void);
+void printfTest(void);
 void formatTest(void);
 void tinferTest(void);
 void stabTest(void);
