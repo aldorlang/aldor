@@ -242,8 +242,16 @@ ostreamVPrintf(OStream ostream, const char *fmt, va_list argp)
 		/* s format could point to arbitrarily long string */
 		if (fb.conv == 's') {
 			char *s = va_arg(argp, char *);
-			if (ostream)
-				cc += ostreamWrite(ostream, s, fb.width);
+			if (ostream) {
+				int l = strlen(s), w = fb.width;
+				int pad = w-l > 0 ? w-l : 0;
+				while (pad > 0) {
+					ostreamWriteChar(ostream, ' ');
+					cc++;
+					pad--;
+				}
+				cc += ostreamWrite(ostream, s, -1);
+			}
 			else {
 				int l = strlen(s), w = fb.width;
 				cc += (w != -1 && w < l) ? w  : l;
