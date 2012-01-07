@@ -9,6 +9,7 @@
 # include "axlobs.h"
 # include "genfoam.h"
 # include "srcpos.h"
+# include "ostream.h"
 
 Bool	sstDebug            	= false;
 Bool	sstMarkDebug		= false;
@@ -78,12 +79,12 @@ local int		sstPrTFormList		(FILE *, int, TFormList);
 local int		sstPrBool		(FILE *, int, Bool);
 local int		sstPrLib		(FILE *, int, Lib);
 
-local int		sefoPrint0		(FILE *, Bool, Sefo);
-local int		symePrint0		(FILE *, Bool, Syme);
-local int		tformPrint0		(FILE *, Bool, TForm);
-local int		sefoListPrint0		(FILE *, Bool, SefoList);
-local int		symeListPrint0		(FILE *, Bool, SymeList);
-local int		tformListPrint0		(FILE *, Bool, TFormList);
+local int		sefoOStreamPrint0	(OStream, Bool, Sefo);
+local int		symeOStreamPrint0	(OStream, Bool, Syme);
+local int		tformOStreamPrint0	(OStream, Bool, TForm);
+local int		sefoListOStreamPrint0	(OStream, Bool, SefoList);
+local int		symeListOStreamPrint0	(OStream, Bool, SymeList);
+local int		tformListOStreamPrint0	(OStream, Bool, TFormList);
 
 local Bool		sefoEqual0		(SymeList, Sefo, Sefo);
 local Bool		symeEqual0		(SymeList, Syme, Syme);
@@ -347,9 +348,11 @@ local int
 sstPrSefo(FILE *fout, int n, Sefo sefo)
 {
 	int	cc = 0;
+
 	cc += fprintf(fout, "\tArg%d: ", n);
 	cc += sefoPrint(fout, sefo);
 	cc += fprintf(fout, "\n");
+
 	return cc;
 }
 
@@ -357,9 +360,12 @@ local int
 sstPrSyme(FILE *fout, int n, Syme syme)
 {
 	int	cc = 0;
+	OStream ostream = ostreamNewFrFile(fout);
 	cc += fprintf(fout, "\tArg%d: ", n);
 	cc += symePrint(fout, syme);
 	cc += fprintf(fout, "\n");
+	ostreamClose(ostream);
+	ostreamFree(ostream);
 	return cc;
 }
 
@@ -1020,37 +1026,61 @@ sstDoneDB(void)
 int
 sefoPrint(FILE *fout, Sefo sefo)
 {
-	return sefoPrint0(fout, true, sefo);
+	struct _OStream ostream;
+	ostreamInitFrFile(&ostream, fout);
+	int n = sefoOStreamPrint0(&ostream, true, sefo);
+	ostreamClose(&ostream);
+	return n;
 }
 
 int
 symePrint(FILE *fout, Syme syme)
 {
-	return symePrint0(fout, true, syme);
+	struct _OStream ostream;
+	ostreamInitFrFile(&ostream, fout);
+	int n = symeOStreamPrint0(&ostream, true, syme);
+	ostreamClose(&ostream);
+	return n;
 }
 
 int
 tformPrint(FILE *fout, TForm tf)
 {
-	return tformPrint0(fout, true, tf);
+	struct _OStream ostream;
+	ostreamInitFrFile(&ostream, fout);
+	int n = tformOStreamPrint0(&ostream, true, tf);
+	ostreamClose(&ostream);
+	return n;
 }
 
 int
 sefoListPrint(FILE *fout, SefoList sefos)
 {
-	return sefoListPrint0(fout, true, sefos);
+	struct _OStream ostream;
+	ostreamInitFrFile(&ostream, fout);
+	int n = sefoListOStreamPrint0(&ostream, true, sefos);
+	ostreamClose(&ostream);
+	return n;
 }
 
 int
 symeListPrint(FILE *fout, SymeList symes)
 {
-	return symeListPrint0(fout, true, symes);
+	struct _OStream ostream;
+	ostreamInitFrFile(&ostream, fout);
+	int n = symeListOStreamPrint0(&ostream, true, symes);
+	ostreamClose(&ostream);
+	return n;
 }
 
 int
 tformListPrint(FILE *fout, TFormList tforms)
 {
-	return tformListPrint0(fout, true, tforms);
+	struct _OStream ostream;
+	ostreamInitFrFile(&ostream, fout);
+	int n = tformListOStreamPrint0(&ostream, true, tforms);
+	ostreamClose(&ostream);
+	return n;
 }
 
 /*
@@ -1060,55 +1090,78 @@ tformListPrint(FILE *fout, TFormList tforms)
 int
 sefoPrintDb(Sefo sefo)
 {
-	int	cc = sefoPrint0(dbOut, false, sefo);
+	struct _OStream ostream;
+	ostreamInitFrFile(&ostream, dbOut);
+	int n = sefoOStreamPrint0(&ostream, false, sefo);
+
+	ostreamClose(&ostream);
 	fnewline(dbOut);
-	return cc;
+	return n;
 }
 
 int
 symePrintDb(Syme syme)
 {
-	int	cc = symePrint0(dbOut, false, syme);
+	struct _OStream ostream;
+	ostreamInitFrFile(&ostream, dbOut);
+	int n = symeOStreamPrint0(&ostream, false, syme);
+	ostreamClose(&ostream);
 	fnewline(dbOut);
-	return cc;
+	return n;
 }
+
 int
 symePrintDb2(Syme syme)
 {
-	int	cc = symePrint0(dbOut, false, syme);
-	return cc;
+	struct _OStream ostream;
+	ostreamInitFrFile(&ostream, dbOut);
+	int n = symeOStreamPrint0(&ostream, false, syme);
+	ostreamClose(&ostream);
+	return n;
 }
 
 int
 tformPrintDb(TForm tf)
 {
-	int	cc = tformPrint0(dbOut, false, tf);
+	struct _OStream ostream;
+	ostreamInitFrFile(&ostream, dbOut);
+	int n = tformOStreamPrint0(&ostream, false, tf);
+	ostreamClose(&ostream);
 	fnewline(dbOut);
-	return cc;
+	return n;
 }
 
 int
 sefoListPrintDb(SefoList sefos)
 {
-	int	cc = sefoListPrint0(dbOut, false, sefos);
+	struct _OStream ostream;
+	ostreamInitFrFile(&ostream, dbOut);
+	int n = sefoListOStreamPrint0(&ostream, false, sefos);
+	ostreamClose(&ostream);
 	fnewline(dbOut);
-	return cc;
+	return n;
 }
 
 int
 symeListPrintDb(SymeList symes)
 {
-	int	cc = symeListPrint0(dbOut, false, symes);
+	struct _OStream ostream;
+	ostreamInitFrFile(&ostream, dbOut);
+	int n = symeListOStreamPrint0(&ostream, false, symes);
+	ostreamClose(&ostream);
 	fnewline(dbOut);
-	return cc;
+	return n;
 }
 
 int
 tformListPrintDb(TFormList tforms)
 {
-	int	cc = tformListPrint0(dbOut, false, tforms);
+	struct _OStream ostream;
+	ostreamInitFrFile(&ostream, dbOut);
+	int n = tformListOStreamPrint0(&ostream, false, tforms);
+	ostreamClose(&ostream);
 	fnewline(dbOut);
-	return cc;
+	return n;
 }
 
 /*
@@ -1117,22 +1170,22 @@ tformListPrintDb(TFormList tforms)
 
 /* The deep argument is currently unused. */
 local int
-sefoPrint0(FILE *fout, Bool deep, Sefo sefo)
+sefoOStreamPrint0(OStream ostream, Bool deep, Sefo sefo)
 {
 	int		cc = 0;
 
 	if (!sefo)
-		return fprintf(fout, "(* NULL *)");
+		return ostreamPrintf(ostream, "(* NULL *)");
 
-	cc += fprintf(fout, "(*");
+	cc += ostreamPrintf(ostream, "(*");
 
 	if (abIsLeaf(sefo)) {
-		cc += fprintf(fout, " ");
-		cc += abPrint(fout, sefo);
+		cc += ostreamPrintf(ostream, " ");
+		cc += abOStreamPrint(ostream, sefo);
 		sefoPrintDEBUG({
 			if (abSyme(sefo)) {
-				cc += fprintf(fout, " ");
-				cc += symePrint0(fout, false, abSyme(sefo));
+				cc += ostreamPrintf(ostream, " ");
+				cc += symeOStreamPrint0(ostream, false, abSyme(sefo));
 			}
 		});
 	}
@@ -1140,132 +1193,132 @@ sefoPrint0(FILE *fout, Bool deep, Sefo sefo)
 	else {
 		Length i;
 		for (i = 0; i < abArgc(sefo); i += 1) {
-			cc += fprintf(fout, " ");
-			cc += sefoPrint0(fout, deep, abArgv(sefo)[i]);
+			cc += ostreamPrintf(ostream, " ");
+			cc += sefoOStreamPrint0(ostream, deep, abArgv(sefo)[i]);
 		}
 	}
 
-	cc += fprintf(fout, " *)");
+	cc += ostreamPrintf(ostream, " *)");
 
 	return cc;
 }
 
 local int
-symePrint0(FILE *fout, Bool deep, Syme syme)
+symeOStreamPrint0(OStream ostream, Bool deep, Syme syme)
 {
 	int		cc = 0;
 
 	if (!syme)
-		return fprintf(fout, "{* NULL *}");
+		return ostreamPrintf(ostream, "{* NULL *}");
 
-	cc += fprintf(fout, "{* (%s) ",
+	cc += ostreamPrintf(ostream, "{* (%s) ",
 		      symeInfo[symeKind(syme)].str + sizeof("SYME_") - 1);
 
-	cc += fprintf(fout, "%s", symeString(syme));
+	cc += ostreamPrintf(ostream, "%s", symeString(syme));
 
 	sefoPrintDEBUG({
-		cc += fprintf(fout, " [cn:%ld,", symeConstNum(syme));
-		cc += fprintf(fout, " dn:%d,", symeDefnNum(syme));
-		cc += fprintf(fout, " ad:%p,", syme);
-		cc += fprintf(fout, " mk:%ld]", symeMark(syme));
+		cc += ostreamPrintf(ostream, " [cn:%ld,", symeConstNum(syme));
+		cc += ostreamPrintf(ostream, " dn:%d,", symeDefnNum(syme));
+		cc += ostreamPrintf(ostream, " ad:%p,", syme);
+		cc += ostreamPrintf(ostream, " mk:%ld]", symeMark(syme));
 	});
 
 	if (deep) {
-		cc += fprintf(fout, " : ");
+		cc += ostreamPrintf(ostream, " : ");
 		if (symeIsLazy(syme))
-			cc += fprintf(fout, "[lazy] %ld", symeHash(syme));
+			cc += ostreamPrintf(ostream, "[lazy] %ld", symeHash(syme));
 		else
-			cc += tformPrint0(fout, deep, symeType(syme));
+			cc += tformOStreamPrint0(ostream, deep, symeType(syme));
 
 		if (symeIsImport(syme)) {
-			cc += fprintf(fout, " from ");
-			cc += tformPrint0(fout, deep, symeExporter(syme));
+			cc += ostreamPrintf(ostream, " from ");
+			cc += tformOStreamPrint0(ostream, deep, symeExporter(syme));
 		}
 	}
 
-	cc += fprintf(fout, " *}");
+	cc += ostreamPrintf(ostream, " *}");
 
 	return cc;
 }
 
 local int
-tformPrint0(FILE *fout, Bool deep, TForm tf)
+tformOStreamPrint0(OStream ostream, Bool deep, TForm tf)
 {
 	int		cc = 0;
 
 	if (!tf)
-		return fprintf(fout, "<* NULL *>");
+		return ostreamPrintf(ostream, "<* NULL *>");
 
-	cc += fprintf(fout, "<* %s", tformStr(tfTag(tf)));
+	cc += ostreamPrintf(ostream, "<* %s", tformStr(tfTag(tf)));
 
 	if (tfIsSym(tf))
 		;
 	else if (tfIsAbSyn(tf)) {
-		cc += fprintf(fout, " ");
-		cc += sefoPrint0(fout, deep, tfGetExpr(tf));
+		cc += ostreamPrintf(ostream, " ");
+		cc += sefoOStreamPrint0(ostream, deep, tfGetExpr(tf));
 	}
 	else if (tfIsNode(tf)) {
 		Length	i;
 		for (i = 0; i < tfArgc(tf); i += 1) {
-			cc += fprintf(fout, " ");
-			cc += tformPrint0(fout, deep, tfArgv(tf)[i]);
+			cc += ostreamPrintf(ostream, " ");
+			cc += tformOStreamPrint0(ostream, deep, tfArgv(tf)[i]);
 		}
 	}
 	else
 		bugBadCase(tfTag(tf));
 
 	if (tfSymes(tf))
-		cc += symeListPrint0(fout, deep, tfSymes(tf));
+		cc += symeListOStreamPrint0(ostream, deep, tfSymes(tf));
 
-	cc += fprintf(fout, " *>");
+	cc += ostreamPrintf(ostream, " *>");
 
 	return cc;
 }
 
 /* The deep argument is currently unused. */
 local int
-sefoListPrint0(FILE *fout, Bool deep, SefoList sefos)
+sefoListOStreamPrint0(OStream ostream, Bool deep, SefoList sefos)
 {
 	int		cc = 0;
 
-	cc += fprintf(fout, " (");
+	cc += ostreamPrintf(ostream, " (");
 	for (; sefos; sefos = cdr(sefos)) {
-		cc += fprintf(fout, " ");
-		cc += sefoPrint0(fout, false, car(sefos));
+		cc += ostreamPrintf(ostream, " ");
+		cc += sefoOStreamPrint0(ostream, false, car(sefos));
 	}
-	cc += fprintf(fout, " )");
+	cc += ostreamPrintf(ostream, " )");
 
 	return cc;
 }
 
 /* The deep argument is currently unused. */
 local int
-symeListPrint0(FILE *fout, Bool deep, SymeList symes)
+symeListOStreamPrint0(OStream ostream, Bool deep, SymeList symes)
 {
 	int		cc = 0;
 
-	cc += fprintf(fout, " (");
+	cc += ostreamPrintf(ostream, " (");
 	for (; symes; symes = cdr(symes)) {
-		cc += fprintf(fout, " ");
-		cc += symePrint0(fout, false, car(symes));
+		cc += ostreamPrintf(ostream, " ");
+		cc += symeOStreamPrint0(ostream, false, car(symes));
 	}
-	cc += fprintf(fout, " )");
+	cc += ostreamPrintf(ostream, " )");
 
 	return cc;
 }
 
 /* The deep argument is currently unused. */
 local int
-tformListPrint0(FILE *fout, Bool deep, TFormList tforms)
+tformListOStreamPrint0(OStream ostream, Bool deep, TFormList tforms)
 {
 	int		cc = 0;
 
-	cc += fprintf(fout, " (");
+	cc += ostreamPrintf(ostream, " (");
 	for (; tforms; tforms = cdr(tforms)) {
-		cc += fprintf(fout, " ");
-		cc += tformPrint0(fout, false, car(tforms));
+		cc += ostreamPrintf(ostream, " ");
+		cc += tformOStreamPrint0(ostream, false, car(tforms));
 	}
-	cc += fprintf(fout, " )");
+	cc += ostreamPrintf(ostream, " )");
 
 	return cc;
 }
