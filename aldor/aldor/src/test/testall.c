@@ -13,6 +13,7 @@ main(int argc, char *argv[])
 	theArgc = argc;
 	theArgv = argv;
 
+	if (testShouldRun("printf")) printfTest();
 	if (testShouldRun("ostream")) ostreamTest();
 	if (testShouldRun("fname")) fnameTest();
 	if (testShouldRun("foam")) foamTest();
