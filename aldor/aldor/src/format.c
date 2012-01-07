@@ -28,6 +28,54 @@ fnewline(FILE *fout)
 	return findent + 1; 
 }
 
+String
+asprintf(const char *fmt, ...)
+{
+	String str;
+	va_list argp;
+	va_start(argp, fmt);
+	str = asvprintf(fmt, argp);
+	va_end(argp);
+	return str;
+}
+
+String
+asvprintf(const char *fmt, va_list argp)
+{
+	int cc;
+	Buffer buf = bufNew();
+	OStream ostream = ostreamNewFrBuffer(buf);
+
+	cc = ostreamVPrintf(ostream, fmt, argp);
+	ostreamClose(ostream);
+	ostreamFree(ostream);
+
+	return bufLiberate(buf);
+}
+
+int
+afprintf(FILE *fout, const char *fmt, ...)
+{
+	int cc;
+	va_list argp;
+	va_start(argp, fmt);
+	cc = afvprintf(fout, fmt, argp);
+	va_end(argp);
+	return cc;
+}
+
+int
+afvprintf(FILE *fout, const char *fmt, va_list argp)
+{
+	struct _OStream os;
+	int cc;
+
+	ostreamInitFrFile(&os, fout);
+	cc = ostreamVPrintf(&os, fmt, argp);
+	ostreamClose(&os);
+	return cc;
+}
+
 
 /*
  * xprintf is like printf but takes a function to actually put the characters.

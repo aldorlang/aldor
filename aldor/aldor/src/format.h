@@ -27,6 +27,17 @@ typedef int (*XPutFun)  (const char *s, int n);
 extern  int  xprintf	(XPutFun f, const char *fmt, ...);
 extern  int  vxprintf	(XPutFun f, const char *fmt, va_list argp);
 
+/*
+ * a-prefixed printf functions are the same as printf and so on, but
+ * go via ostreamVPrintf. This allows fun stuff like '%p' formatting
+ * methods.
+ */
+extern String asvprintf(const char *fmt, va_list argp);
+extern String asprintf(const char *fmt, ...);
+
+extern int afprintf(FILE *fout, const char *fmt, ...);
+extern int afvprintf(FILE *fout, const char *fmt, va_list argp);
+
 extern int ostreamPrintf(OStream ostream, const char *fmt, ...);
 extern int ostreamVPrintf(OStream ostream, const char *fmt, va_list argp);
 
