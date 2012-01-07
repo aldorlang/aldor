@@ -2,11 +2,12 @@
 #include "abquick.h"
 #include "testlib.h"
 
-void init(void);
-void fini(void);
-void testAbSynFormat();
-void testAbSynFormatList();
-void testAbSynFormatOne(String name, String expect, AbSyn absyn);
+local void init(void);
+local void fini(void);
+local void testAbSynFormat();
+local void testAbSynFormatList();
+local void testAbParse();
+local void testAbSynFormatOne(String name, String expect, AbSyn absyn);
 
 void
 absynTest()
@@ -14,17 +15,31 @@ absynTest()
 	init();
 	TEST(testAbSynFormat);
 	TEST(testAbSynFormatList);
+	TEST(testAbParse);
 	fini();
 }
 
-void
+local void
+init()
+{
+
+}
+
+local void
+fini()
+{
+
+}
+
+local void
 testAbSynFormat()
 {
 	testAbSynFormatOne("id", "x", id("x"));
 	testAbSynFormatOne("id", "(Declare x T)", declare(id("x"), id("T")));
 }
 
-void
+
+local void
 testAbSynFormatList()
 {
 	{
@@ -50,7 +65,7 @@ testAbSynFormatList()
 	}
 }
 
-void
+local void
 testAbSynFormatOne(String name, String expect, AbSyn absyn)
 {
 	Buffer b = bufNew();
@@ -62,4 +77,14 @@ testAbSynFormatOne(String name, String expect, AbSyn absyn)
 	testIntEqual("retlen", strlen(fullExpect), cc);
 	strFree(fullExpect);
 	strFree(s);
+}
+
+local void
+testAbParse()
+{
+	AbSyn ab = abqParse("x := y");
+
+	String s = asprintf("%pAbSyn", ab);
+
+	testStringEqual("compare strings:", s, "(Assign x y)");
 }

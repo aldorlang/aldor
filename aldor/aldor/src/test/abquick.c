@@ -1,4 +1,8 @@
 #include "abquick.h"
+#include "scan.h"
+#include "parseby.h"
+#include "abnorm.h"
+#include "macex.h"
 
 ABQK_DEFINE0(sequence0, abNewSequence0);
 ABQK_DEFINE1(sequence1, abNewSequence1);
@@ -58,4 +62,23 @@ defineUnary(String name, AbSyn param, AbSyn retType, AbSyn rhs)
 	abFree(param);
 
 	return theDefine;
+}
+
+
+AbSyn
+abqParse(String txt)
+{
+	AbSyn ab;
+	TokenList tl;
+	SrcLineList sll;
+	SrcLine srcLine = slineNew(sposNone, 0, txt);
+
+	sll = listList(SrcLine)(1, srcLine);
+	tl = scan(sll);
+	ab = parse(&tl);
+	ab = abNormal(ab, false);
+	ab = macroExpand(ab);
+	ab = abNormal(ab, true);
+
+	return ab;
 }
