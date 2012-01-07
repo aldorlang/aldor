@@ -83,10 +83,14 @@ _OStreamOps ostreamXPutFunOps = { xputFunWriteChar, xputFunWriteString, xputFunC
 int
 vxprintf(XPutFun putfun, const char *fmt, va_list argp)
 {
-	struct ostream os;
+	struct _OStream os;
+	int cc;
+
 	os.ops  = &ostreamXPutFunOps;
 	os.data = (void *) putfun;
-	ostreamVPrintf(&os, fmt, argp);
+	cc = ostreamVPrintf(&os, fmt, argp);
+
+	return cc;
 }
 
 int 

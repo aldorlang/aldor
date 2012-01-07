@@ -2,47 +2,51 @@
 #include "ostream.h"
 #include "axlgen.h"
 
-local void ostreamStdoutWriteChar(OStream os, char c);
-local int ostreamStdoutWriteString(OStream os, const char *s, int n);
-local void ostreamStdoutClose(OStream os);
+local void ostreamFileWriteChar(OStream os, char c);
+local int ostreamFileWriteString(OStream os, const char *s, int n);
+local void ostreamFileClose(OStream os);
 
-_OStreamOps ostreamStdoutOps = { ostreamStdoutWriteChar, ostreamStdoutWriteString, ostreamStdoutClose };
+_OStreamOps ostreamFileOps = { ostreamFileWriteChar, ostreamFileWriteString, ostreamFileClose };
 
 OStream 
-ostreamNewFrStdout()
+ostreamNewFrFile(FILE *file)
 {
 	OStream s = (OStream) stoAlloc(OB_Other, sizeof(*s));
-	s->ops = &ostreamStdoutOps;
+	s->ops = &ostreamFileOps;
+	s->data = file;
 }
 
-void
-ostreamFree(OStream s)
+void 
+ostreamInitFrFile(OStream os, FILE *file)
 {
-	stoFree(s);
+	os->ops = &ostreamFileOps;
+	os->data = file;
 }
-
 
 local void 
-ostreamStdoutWriteChar(OStream os, char c)
+ostreamFileWriteChar(OStream os, char c)
 {
-	fputc(c, stdout);
+	FILE *file = (FILE*) os->data;
+	fputc(c, file);
 }
 
 local int
-ostreamStdoutWriteString(OStream os, const char *s, int n)
+ostreamFileWriteString(OStream os, const char *s, int n)
 {
-	if (n == -1)
-		fputs(s, stdout);
+	FILE *file = (FILE*) os->data;
+	if (n == -1) {
+		fputs(s, file);
+		n = strlen(s);
+	}
 	else
-		fwrite(s, 1, n, stdout);
+		fwrite(s, 1, n, file);
 
 	return n;
 }
 
 local void 
-ostreamStdoutClose(OStream os)
+ostreamFileClose(OStream os)
 {
-	fflush(stdout);
 }
 
 int
@@ -136,3 +140,11 @@ local void
 ostreamBufferClose(OStream os)
 {
 }
+
+void
+ostreamFree(OStream s)
+{
+	stoFree(s);
+}
+
+

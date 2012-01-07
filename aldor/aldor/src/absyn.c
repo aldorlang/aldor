@@ -1303,6 +1303,23 @@ abRdSExpr(FILE *file, FileName *pfn, int *plno)
 	return ab;
 }
 
+int 
+abOStreamPrint(OStream ostream, AbSyn absyn)
+{
+	/* Ideally, we'd avoid going through the buffer, but sxiWrite is
+	 * written vs a buffer, and there's no point changing it for debug functionality
+	 */
+	SExpr sx = abToSExpr(absyn);
+	Buffer b = bufNew();
+	sxiToBufferFormatted(b, sx, SXRW_MixedCase);
+	int c = ostreamWrite(ostream, bufLiberate(b), -1);
+	sxiFree(sx);
+
+	return c;
+
+}
+
+
 /*****************************************************************************
  *
  * :: Writing uninterpreted forms
@@ -1879,19 +1896,10 @@ abDumpPosition(AbSyn ab)
 }
 
 local int
-abFormatter(OStream stream, Pointer p)
+abFormatter(OStream ostream, Pointer p)
 {
-	/* Ideally, we'd avoid going through the buffer, but sxiWrite is
-	 * written vs a buffer, and there's no point changing it for debug functionality
-	 */
 	AbSyn absyn = (AbSyn) p;
-	SExpr sx = abToSExpr(absyn);
-	Buffer b = bufNew();
-	sxiToBufferFormatted(b, sx, SXRW_MixedCase);
-	int c = ostreamWrite(stream, bufLiberate(b), -1);
-	sxiFree(sx);
-
-	return c;
+	return abOStreamPrint(ostream, absyn);
 }
 
 local int
