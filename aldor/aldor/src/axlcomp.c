@@ -256,7 +256,7 @@ compInteractiveLoop(int argc, char **argv, FILE *fin, FILE *fout)
 
 		if (compIsMoreAfterFront(finfo) &&
 		    !abIsEmptySequence(ab)) {
-			ab = fintWrap(ab, intStepNo);
+			ab = (AbSyn) fintWrap(ab, intStepNo);
  
 			foam = compFileMiddle(finfo, stab, ab);
 			if (foam) {
@@ -347,7 +347,7 @@ compGLoopEval(FILE * fin, FILE * fout, EmitInfo finfo)
                    abIsEmptySequence(ab))
                       continue;
                 
-               ab = fintWrap(ab, intStepNo);
+               ab = (AbSyn) fintWrap(ab, intStepNo);
                foam = compFileMiddle(finfo, stab, ab);
 
                if (!foam)   continue;
