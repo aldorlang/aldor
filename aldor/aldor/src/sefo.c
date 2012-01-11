@@ -1120,6 +1120,14 @@ symePrintDb2(Syme syme)
 	return n;
 }
 
+int 
+tformOStreamWrite(OStream ostream, TForm tf)
+{
+	int n = tformOStreamPrint0(ostream, false, tf);
+
+	return n;
+}
+
 int
 tformPrintDb(TForm tf)
 {
