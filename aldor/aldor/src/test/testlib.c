@@ -60,6 +60,28 @@ testFalse(String testName, Bool flg)
 	testFail(testName, "failed; expected false, got %d", flg);
 }
 
+void
+testIsNull(String testName, void *p)
+{
+	count++;
+	if (p == NULL) {
+		return;
+	}
+	testFail(testName, "failed; expected null, got %d", p);
+}
+
+
+void
+testIsNotNull(String testName, void *p)
+{
+	count++;
+	if (p != NULL) {
+		return;
+	}
+	testFail(testName, "failed; expected non-null, got %d", p);
+}
+
+
 local void 
 testFail(String testName, String fmt, ...)
 {
