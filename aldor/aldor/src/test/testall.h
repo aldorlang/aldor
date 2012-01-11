@@ -10,6 +10,7 @@ void formatTest(void);
 void tinferTest(void);
 void stabTest(void);
 void srcpos(void);
+void tformTest(void);
 
 #endif
 
