@@ -87,6 +87,7 @@ testsuite = \
 	test/test_printf.c	\
 	test/test_srcpos.c	\
 	test/test_stab.c	\
+	test/test_tform.c	\
 	test/test_tinfer.c
 
 testall_SOURCES = test/testall.c $(testsuite) test/testlib.c test/abquick.c

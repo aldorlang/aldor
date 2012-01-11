@@ -223,6 +223,8 @@ tformDump(TForm tf)
  * Type form constructors.
  */
 
+local int tfFormatter(OStream stream, Pointer p);
+
 TForm
 tfNewEmpty(TFormTag tag, Length argc)
 {
@@ -372,8 +374,22 @@ tfInit(void)
 	for (i = TF_START; i < TF_LIMIT; i++)
 		tformInfo(i).hash = strHash(tformInfo(i).str);
 
+	fmtRegister("TForm", tfFormatter);
+
 	isInit = true;
 }
+
+local int
+tfFormatter(OStream ostream, Pointer p)
+{
+	TForm tf = (TForm) p;
+	int c;
+
+	c = tformOStreamWrite(ostream, p);
+
+	return c;
+}
+
 
 void
 tfFree(TForm tf)
