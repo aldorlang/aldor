@@ -473,7 +473,7 @@ RecursiveMultivariatePolynomial0(_
             v2: V := var(p2);
             assert(v1 >= v2);
             v1 > v2 => {
-               up: U := exquo(univariatePretend(p1),p2);
+               up: U := (exquo)(univariatePretend(p1),p2);
                multivariateCanonical(v1,up);
             }
             local up1, up2: U;
