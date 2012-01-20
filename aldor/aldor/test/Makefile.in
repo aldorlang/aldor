@@ -29,7 +29,7 @@ foamlibdir = $(abs_top_builddir)/aldor/lib/libfoamlib
 foamsrcdir = $(abs_top_srcdir)/aldor/lib/libfoam
 foamdir = $(abs_top_builddir)/aldor/lib/libfoam
 
-aptests :=
+aptests := exquo
 fmtests := l1 clos strtable1
 ctests  := 
 otests  := 
@@ -66,7 +66,12 @@ $(patsubst %, %.o, $(_otests)): %.o: out/ao/%.ao
 	$(aldorexedir)/aldor $(nfile) 	\
 			      -Ccc=$(aldortooldir)/unicl	\
 			      -Cargs="-Wconfig=$(aldorsrcdir)/aldor.conf -I$(aldorsrcdir)" \
-			      -Fo=$(builddir)/$@ $<		\
+			      -Fo=$(builddir)/$@ $<
+
+$(patsubst %, out/ap/%.ap, $(_aptests)): out/ap/%.ap: $(srcdir)/%.as
+	mkdir -p $$(dirname $@)
+	$(aldorexedir)/aldor $(nfile) -I$(foamsrclibdir) \
+			      -Fap=$(builddir)/$@ $<
 
 define aldor_args
 	$(nfile) 		\

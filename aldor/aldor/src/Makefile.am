@@ -107,7 +107,8 @@ grammar axl_y.c axl_y.yt: axl.z token.h axl_y.sed
 	else \
 		echo "Applied fixups to axl_y.c" ; \
 		mv axl_y.c.tmp axl_y.c  ; \
-	f
+	fi
+
 tmpdir=$(abs_top_builddir)/build/tmp
 toolexedir=$(abs_top_builddir)/aldor/tools/unix
 

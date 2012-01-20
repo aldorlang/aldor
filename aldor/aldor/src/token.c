@@ -397,6 +397,7 @@ struct tok_info tokInfoTable[] = {
         {KW_Except,     0,"except",      0, 0,  0,  0,  1,  1,  1,  0,   0, 0},
 #endif
         {KW_Export,     0,"export",      0, 0,  0,  0,  0,  1,  1,  0,   0, 0},
+        {KW_Exquo,      0,"exquo",       0, 0,  0,  0,  0,  0,  1,  1, 125, 0},
         {KW_Extend,     0,"extend",      0, 0,  0,  0,  0,  1,  1,  0,   0, 0},
         {KW_Finally,    0,"finally",     0, 0,  0,  0,  1,  1,  1,  1,   0, 0},
         {KW_Fix,        0,"fix",         0, 0,  0,  0,  0,  1,  1,  0,   0, 0},
