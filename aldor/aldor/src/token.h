@@ -49,6 +49,7 @@ enum tokenTag {
 	KW_Else,
 	KW_Except,
 	KW_Export,
+	KW_Exquo,
 	KW_Extend,
 	KW_Finally,
 	KW_Fix,

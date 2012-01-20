@@ -481,7 +481,7 @@ RelationTok<tok>:KW_EQ     | KW_TildeE | KW_HatE |
 		 KW_Is     | KW_Isnt   | KW_Case ;
 SegTok<tok>:	 KW_2Dot   | KW_By ;
 PlusTok<tok>:	 KW_Plus   | KW_Minus  | KW_PlusMinus ;
-QuotientTok<tok>:KW_Mod    | KW_Quo    | KW_Rem ;
+QuotientTok<tok>:KW_Mod    | KW_Quo    | KW_Rem | KW_Exquo ;
 TimesTok<tok>:	 KW_Star   | KW_Slash  | KW_Backslash ;
 PowerTok<tok>:	 KW_2Star  | KW_Hat ;
 

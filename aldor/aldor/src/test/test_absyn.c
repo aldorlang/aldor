@@ -7,6 +7,7 @@ local void fini(void);
 local void testAbSynFormat();
 local void testAbSynFormatList();
 local void testAbParse();
+local void testExquo();
 local void testAbSynFormatOne(String name, String expect, AbSyn absyn);
 
 void
@@ -16,6 +17,7 @@ absynTest()
 	TEST(testAbSynFormat);
 	TEST(testAbSynFormatList);
 	TEST(testAbParse);
+	TEST(testExquo);
 	fini();
 }
 
@@ -36,6 +38,15 @@ testAbSynFormat()
 {
 	testAbSynFormatOne("id", "x", id("x"));
 	testAbSynFormatOne("id", "(Declare x T)", declare(id("x"), id("T")));
+}
+
+local void
+testExquo()
+{
+	AbSyn ab1 = abqParse("5 quo 7");
+	testIntEqual("isApply", AB_Apply, abTag(ab1));
+	AbSyn ab2 = abqParse("5 exquo 7");
+	testIntEqual("isApply", AB_Apply, abTag(ab2));
 }
 
 
