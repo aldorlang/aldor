@@ -56,5 +56,6 @@ AbSyn defineUnary(String name, AbSyn param, AbSyn retType, AbSyn rhs);
 AbSyn _if(AbSyn testPart, AbSyn thenPart, AbSyn elsePart);
 
 AbSyn abqParse(String txt);
+AbSynList abqParseLines(StringList lines);
 
 #endif
