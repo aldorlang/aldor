@@ -10,6 +10,7 @@
 # include "axlphase.h"
 
 # define yyerror(s)	yyerrorfn(s)
+#define UNUSED_LABELS
 
 #ifdef NDEBUG
 #  undef  YYDEBUG
