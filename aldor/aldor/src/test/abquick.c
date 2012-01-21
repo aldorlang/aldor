@@ -82,3 +82,15 @@ abqParse(String txt)
 
 	return ab;
 }
+
+AbSynList 
+abqParseLines(StringList lines) 
+{
+	AbSynList result = listNil(AbSyn);
+	while (lines != listNil(String)) {
+		result = listCons(AbSyn)(abqParse(car(lines)), result);
+		lines = listFreeCons(String)(lines);
+	}
+	return listNReverse(AbSyn)(result);
+}
+
