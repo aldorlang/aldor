@@ -30,7 +30,7 @@ foamsrcdir = $(abs_top_srcdir)/aldor/lib/libfoam
 foamdir = $(abs_top_builddir)/aldor/lib/libfoam
 
 aptests := exquo
-fmtests := l1 clos strtable1
+fmtests := L1 clos strtable1
 ctests  := 
 otests  := 
 
@@ -88,7 +88,7 @@ $(patsubst %, out/ap/%.ap, $(_aotests)): out/ap/%.ap: %.as
 
 $(patsubst %, out/ao/%.ao, $(_aotests)): out/ao/%.ao: %.as
 	mkdir -p $$(dirname $@)
-	$(aldorexedir)/aldor $(aldor_args)
+	$(aldorexedir)/aldor $($*_opts) $(aldor_args)
 
 $(patsubst %, out/ao/%.cmd, $(_aotests)): out/ao/%.cmd: %.as
 	mkdir -p $$(dirname $@)
