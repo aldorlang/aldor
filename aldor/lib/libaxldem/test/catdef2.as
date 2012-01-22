@@ -221,7 +221,7 @@ IntegralDomain: Category == Join(CommutativeRing, Algebra %, EntireRing) with {
 		import from UCA, Partial %;
 		unitCanonical (x: %) : % == unitNormal(x).canonical;
 		recip (x: %) : Partial % ==
-			if zero? x then failed else exquo(1, x);
+			if zero? x then failed else ((exquo)(1, x));
 		unit? (x: %) : Bit == not (recip x case "failed");
 	}
 }

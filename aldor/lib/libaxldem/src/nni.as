@@ -5,8 +5,8 @@ import from DemoLib;
 NonNegativeInteger: Join(Monoid, OrderedAbelianMonoidSup) with {
 	subtractIfCan: (%, %) -> Partial %;
 		++ subtractIfCan(a,b) returns the difference when a >= b.
-	exquo: (%,%) -> Partial %;
-		++ exquo(a,b) returns the quotient of `a' and b, or failed
+	(exquo): (%,%) -> Partial %;
+		++ (exquo)(a,b) returns the quotient of `a' and b, or failed
 		++ if b is zero or `a' rem b is zero.
         coerce: % -> Integer;
                 ++ coerce(n) converts a NonNegativeInteger to an Integer.
@@ -34,7 +34,7 @@ NonNegativeInteger: Join(Monoid, OrderedAbelianMonoidSup) with {
 	sum(x: %): SingleInteger ==
 		error "sum$NonNegativeInteger not implemented";
 	nonNegative?(x: %): Boolean  == true;
-	exquo(x: %, y: %): Partial(%) == {
+	(exquo)(x: %, y: %): Partial(%) == {
 		(q, r) := divide(rep(x), rep(y));
 		r = 0 => per(q)::Partial(%);
 		failed

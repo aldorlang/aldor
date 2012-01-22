@@ -71,14 +71,14 @@ if the gcd has coefficients with more than around 3000 digits.}
 		file << newline;
 	}
 
-	local exquo(a:P, b:P):Partial P == {
+	local (exquo)(a:P, b:P):Partial P == {
 		start! clockquo;
 		u := exactQuotient(a, b);
 		stop! clockquo;
 		u;
 	}
 #else
-	local exquo(a:P, b:P):Partial P == exactQuotient(a, b);
+	local (exquo)(a:P, b:P):Partial P == exactQuotient(a, b);
 #endif
 
 	-- returns a new prime that does not divide a or b
@@ -134,8 +134,8 @@ if the gcd has coefficients with more than around 3000 digits.}
 		import from Partial Z;
 		(c, d) := trailingTerm g;
 		(~failed? exactQuotient(tc, c)) and
-		(~failed?(uqa := exquo(a, g))) and
-			(~failed?(uqb := exquo(b, g))) => (true, uqa, uqb);
+		(~failed?(uqa := (exquo)(a, g))) and
+			(~failed?(uqb := (exquo)(b, g))) => (true, uqa, uqb);
 		(false, failed, failed);
 	}
 
@@ -167,7 +167,7 @@ if the gcd has coefficients with more than around 3000 digits.}
 		one? b => ([gc::P], coca * a, cocb * b);
 		a=b => ([gc * a], coca::P, cocb::P);
 #endif
-		~failed?(uq := exquo(a,b)) => {		-- b divides a
+		~failed?(uq := (exquo)(a,b)) => {		-- b divides a
 #if PROFILEMODGCD
 			prof(profile, stop! clock, read clockcrt);
 #endif
