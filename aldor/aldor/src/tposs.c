@@ -28,7 +28,13 @@
  *   write the code so that this idea could be used.	-- SMW
  */
 
-#define tpossAlloc()	((TPoss) stoAlloc(OB_TPoss, sizeof(struct tposs)))
+local TPoss
+tpossAlloc(void)
+{
+	TPoss tp = (TPoss) stoAlloc(OB_TPoss, sizeof(struct tposs));
+
+	return tp;
+}
 
 TPoss
 tpossEmpty(void)

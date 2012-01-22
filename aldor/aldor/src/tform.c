@@ -224,6 +224,13 @@ tformDump(TForm tf)
  */
 
 local int tfFormatter(OStream stream, Pointer p);
+local int tfListFormatter(OStream stream, Pointer p);
+
+local int symeFormatter(OStream stream, Pointer p);
+local int symeListFormatter(OStream stream, Pointer p);
+
+local int ptrFormatter(OStream stream, Pointer p);
+local int ptrListFormatter(OStream stream, Pointer p);
 
 TForm
 tfNewEmpty(TFormTag tag, Length argc)
@@ -375,8 +382,45 @@ tfInit(void)
 		tformInfo(i).hash = strHash(tformInfo(i).str);
 
 	fmtRegister("TForm", tfFormatter);
+	fmtRegister("TFormList", tfListFormatter);
+
+	fmtRegister("Syme", symeFormatter);
+	fmtRegister("SymeList", symeListFormatter);
+
+	fmtRegister("Ptr", ptrFormatter);
+	fmtRegister("PtrList", ptrListFormatter);
 
 	isInit = true;
+}
+
+/*
+ * :: Formatted output
+ */
+/* we do a couple of different types here 
+ * (they should be moved to somewhere better really)
+ */
+
+local int
+symeFormatter(OStream ostream, Pointer p)
+{
+	TForm tf = (TForm) p;
+	int c;
+
+	c = symeOStreamWrite(ostream, p);
+
+	return c;
+}
+
+local int
+ptrFormatter(OStream ostream, Pointer p)
+{
+	char buf[20];
+	int c;
+	
+	sprintf(buf, "%p", p);
+	c = ostreamWrite(ostream, buf, -1);
+
+	return c;
 }
 
 local int
@@ -388,6 +432,27 @@ tfFormatter(OStream ostream, Pointer p)
 	c = tformOStreamWrite(ostream, p);
 
 	return c;
+}
+
+local int
+tfListFormatter(OStream ostream, Pointer p)
+{
+	AbSynList list = (AbSynList) p;
+	return listFormat(AbSyn)(ostream, "TForm", list);
+}
+
+local int
+symeListFormatter(OStream ostream, Pointer p)
+{
+	AbSynList list = (AbSynList) p;
+	return listFormat(AbSyn)(ostream, "Syme", list);
+}
+
+local int
+ptrListFormatter(OStream ostream, Pointer p)
+{
+	AbSynList list = (AbSynList) p;
+	return listFormat(AbSyn)(ostream, "Ptr", list);
 }
 
 
