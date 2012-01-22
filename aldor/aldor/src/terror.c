@@ -594,20 +594,31 @@ terrorApply (Stab stab, AbSyn absyn, TForm type)
 		argf = abApplyArgf;	
 	}
 	
-	abState(op) = AB_State_HasPoss; 
-	opTypes = abTPoss(op);
 
-	if (abIsTheId(op, ssymJoin) && tpossIsUnique(opTypes) &&
-	    tfSatisfies(tfMapRet(tpossUnique(opTypes)), tfCategory)) {
-		terrorNotUniqueType(ALDOR_E_TinOpMeans, absyn, type, abTPoss(op));
+	if (abState(op) == AB_State_HasUnique) {
+		TForm opType = abTUnique(op);
+
+		if (abIsTheId(op, ssymJoin) &&
+		    tfSatisfies(tfMapRet(opType), tfCategory)) {
+			terrorNotUniqueType(ALDOR_E_TinOpMeans, absyn, type, abTPoss(op));
+		}
+		else
+			terrorApplyFType(absyn, type, NULL, op, stab, argc, argf);
 	}
+	else {
+		abState(op) = AB_State_HasPoss;
+		opTypes = abTPoss(op);
 
-	else if (tpossCount(opTypes) == 0)
-		terrorMeaningsOutOfScope(stab, absyn, op, type,
-					 abApplyArgc(absyn), abApplyArgf);
-	else
-		terrorApplyFType(absyn, type, NULL, op, stab, argc, argf);
-	
+		if (abIsTheId(op, ssymJoin) && tpossIsUnique(opTypes) &&
+		    tfSatisfies(tfMapRet(tpossUnique(opTypes)), tfCategory)) {
+			terrorNotUniqueType(ALDOR_E_TinOpMeans, absyn, type, abTPoss(op));
+		}
+		else if (tpossCount(opTypes) == 0)
+			terrorMeaningsOutOfScope(stab, absyn, op, type,
+						 abApplyArgc(absyn), abApplyArgf);
+		else
+			terrorApplyFType(absyn, type, NULL, op, stab, argc, argf);
+	}
 }
 
 void
