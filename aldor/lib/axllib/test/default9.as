@@ -55,7 +55,7 @@ DynamicFieldCategory: Category == Join(DynamicRingCategory, Field) with
     (x1 / x2):% == reduce(x1 * inv(x2))
     (x1 \ x2):% == reduce(inv(x1) * x2)
 
-    exquo(x1,x2):Union(element:%,failed:Enumeration(failed)) ==
+    (exquo)(x1,x2):Union(element:%,failed:Enumeration(failed)) ==
       zero? x2 => [failed]
       zero?(x1 rem x2) => [reduce(x1 quo x2)]
       [failed]

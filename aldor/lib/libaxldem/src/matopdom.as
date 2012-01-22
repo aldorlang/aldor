@@ -9,7 +9,7 @@ SI     ==> SingleInteger
 
 IntegralDomain : Category == Ring with
    unit? : % -> Boolean
-   exquo : (%,%) -> Partial %
+   (exquo) : (%,%) -> Partial %
 
 MatrixOpDom(R:IntegralDomain) : MOD  == Definition where
    Mat ==> Matrix R
@@ -57,7 +57,7 @@ MatrixOpDom(R:IntegralDomain) : MOD  == Definition where
         for i in (nr-1)..1 by -1 repeat
           for j in (nr+1)..dnr repeat          
             ss:=reduce(+,[x(i,iCol+k)*x(i+k,j) for k in 1..(nr-i)],0)
-            x(i,j) := retract exquo(det * x(i,j) - ss,x(i,nr-iCol))
+            x(i,j) := retract ((exquo)((det * x(i,j) - ss,x(i,nr-iCol))))
           iCol:=iCol-1
         subMatrix(x,1,nr,nr+1,dnr)
 
@@ -102,13 +102,13 @@ MatrixOpDom(R:IntegralDomain) : MOD  == Definition where
           for k in (i+1)..nr repeat
             if zero? x(k,j)  then
               for l in (j+1)..nc repeat
-                x(k,l) := retract exquo(c * x(k,l),b)
+                x(k,l) := retract ((exquo)((c * x(k,l),b)))
             else
               pv := x(k,j)
               x(k,j) := 0
               for l in (j+1)..nc repeat
                 val := c * x(k,l) - pv * x(i,l)
-                x(k,l) := retract exquo(val,b)
+                x(k,l) := retract ((exquo)(val,b))
           b := c
           (i := i+1) > nr => break
         if ans=-1 then
