@@ -1044,6 +1044,14 @@ symePrint(FILE *fout, Syme syme)
 }
 
 int
+symeOStreamWrite(OStream ostream, Syme syme)
+{
+	int n = symeOStreamPrint0(ostream, false, syme);
+
+	return n;
+}
+
+int
 tformPrint(FILE *fout, TForm tf)
 {
 	struct _OStream ostream;
