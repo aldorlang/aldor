@@ -114,12 +114,15 @@ ablogFrAtom(DNF_Atom lit)
 
 local Bool	ablogIsInit = false;
 
+local int ablogFormatter(OStream stream, Pointer p);
+
 void
 ablogInit(void)
 {
 	if (ablogIsInit) return;
 
 	ablogInitTables();
+	fmtRegister("AbLogic", ablogFormatter);
 
 	ablogIsInit = true;
 }
@@ -134,6 +137,54 @@ ablogFini(void)
 	ablogIsInit = false;
 }
 
+
+/*****************************************************************************
+ *
+ * :: General operations.
+ *
+ ****************************************************************************/
+local int
+ablogFormatter(OStream ostream, Pointer p)
+{
+	TForm tf = (TForm) p;
+	int c;
+
+	c = ablogWrite(ostream, p);
+
+	return c;
+}
+
+
+int
+ablogWrite(OStream ostream, AbLogic xx0)
+{
+	DNF	xx = ablogIn(xx0);
+	DNF_And xxi;
+	int	i, j, cc = 0;
+	Sefo	xxij;
+
+	if (dnfIsFalse(xx))
+		cc += ostreamWrite(ostream, ".FALSE.", -1);
+
+	for (i = 0; i < xx->argc; i += 1) {
+		xxi = xx->argv[i];
+
+		if (i > 0) cc += ostreamWrite(ostream," .OR. ", -1);
+
+		if (xxi->argc == 0)
+			cc += ostreamWrite(ostream, ".TRUE.", -1);
+
+		for (j = 0; j < xxi->argc; j += 1) {
+			if (j > 0) cc += ostreamWrite(ostream, ".AND.", -1);
+			if (xxi->argv[j] < 0)
+				cc += ostreamWrite(ostream, ".NOT.", -1);
+			xxij = ablogFrAtom(xxi->argv[j]);
+			cc  += sefoOStreamWrite(ostream, xxij);
+		}
+	}
+
+	return cc;
+}
 
 /*****************************************************************************
  *
