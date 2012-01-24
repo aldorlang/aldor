@@ -1,5 +1,6 @@
-.metadata
+/.metadata
 *~
-opt
+/opt
+/build
 /run_j
-build
+/build-2

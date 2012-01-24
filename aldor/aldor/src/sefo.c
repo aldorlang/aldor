@@ -1136,6 +1136,14 @@ tformOStreamWrite(OStream ostream, TForm tf)
 	return n;
 }
 
+int 
+sefoOStreamWrite(OStream ostream, Sefo sefo)
+{
+	int n = sefoOStreamPrint0(ostream, false, sefo);
+
+	return n;
+}
+
 int
 tformPrintDb(TForm tf)
 {

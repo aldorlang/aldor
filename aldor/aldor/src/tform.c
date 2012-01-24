@@ -223,6 +223,7 @@ tformDump(TForm tf)
  * Type form constructors.
  */
 
+
 local int tfFormatter(OStream stream, Pointer p);
 local int tfListFormatter(OStream stream, Pointer p);
 
@@ -231,6 +232,10 @@ local int symeListFormatter(OStream stream, Pointer p);
 
 local int ptrFormatter(OStream stream, Pointer p);
 local int ptrListFormatter(OStream stream, Pointer p);
+
+/* For breakpoints */
+local void tfBreak(TForm tf);
+static TForm tfBreakVal;
 
 TForm
 tfNewEmpty(TFormTag tag, Length argc)
@@ -281,7 +286,18 @@ tfNewEmpty(TFormTag tag, Length argc)
 
 	tfSetTForm(tf);
 	tfp0FoamType(tf);
+
+	tfBreak(tf);
+
 	return tf;
+}
+
+local void
+tfBreak(TForm tf)
+{
+	if (tf == tfBreakVal) {
+		printf("breakpoint");
+	}
 }
 
 local TForm
