@@ -962,14 +962,9 @@ symeFillFrExporter(Syme isyme, TForm exporter)
 		}
 	}
 
-#if EDIT_1_0_n2_3
         comsgFatal(NULL, ALDOR_F_LibExportNotFound,
                    symeString(isyme), symeTypeCode(isyme),
                    libToStringStatic(symeLib(isyme)), tfPretty(exporter));
-#else
-	comsgFatal(NULL, ALDOR_F_LibExportNotFound,
-		   symeString(isyme), symeTypeCode(isyme));
-#endif
 }
 
 /******************************************************************************
