@@ -51,6 +51,8 @@ Bool	foamSposDebug		= false;
 SrcPos		foamDefaultPosition;
 static Bool	foamIsInit = false;
 
+local int foamListFormatter(OStream ostream, Pointer p);
+local int foamFormatter(OStream ostream, Pointer p);
 /*
  * Note: This implementation shares the foamTagVal field of symCoInfo so foam
  * instructions, builtins and protocols must not have overlapping names.
@@ -107,9 +109,33 @@ foamInit(void)
 		foamDDeclInfo(i).sxsym	= sxiFrSymbol(sym);
 		symCoInfo(sym)->foamTagVal = i;
 	}
+
+	fmtRegister("Foam", foamFormatter);
+	fmtRegister("FoamList", foamListFormatter);
+
 	foamIsInit = true;
 }
 
+local int
+foamFormatter(OStream ostream, Pointer p)
+{
+	Foam foam = (Foam) p;
+
+	SExpr sx = foamToSExpr(foam);
+	Buffer b = bufNew();
+	sxiToBufferFormatted(b, sx, SXRW_MixedCase);
+	int c = ostreamWrite(ostream, bufLiberate(b), -1);
+	sxiFree(sx);
+
+	return c;
+}
+
+local int
+foamListFormatter(OStream ostream, Pointer p)
+{
+	AbSynList list = (AbSynList) p;
+	return listFormat(AbSyn)(ostream, "Foam", list);
+}
 Foam
 foamNewAlloc(FoamTag tag, Length argsize)
 {
