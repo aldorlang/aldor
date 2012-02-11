@@ -1419,9 +1419,14 @@ foamToSExpr0(Foam foam)
 			});
 #endif
 			break;
-		case 't':
-			sxi = foamSExpr(foamArgv(foam)[si].data);
+		case 't': {
+			AInt tag = foamArgv(foam)[si].data;
+			if (tag < FOAM_LIMIT)
+				sxi = foamSExpr(foamArgv(foam)[si].data);
+			else
+				sxi = sxiFrInteger(tag);
 			break;
+		}
 		case 'o':
 			sxi = foamBValSExpr(foamArgv(foam)[si].data);
 			break;
