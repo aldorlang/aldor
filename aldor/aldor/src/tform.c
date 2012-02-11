@@ -565,9 +565,9 @@ tfFrSelf(Stab stab, TForm tf)
  *
  ****************************************************************************/
 
-local Syme	tfp0SpecialSyme (Stab, Symbol, Bool);
-local Syme	tfp0IdSyme	(Stab, Symbol);
-local Syme	tfp0OpSyme	(Stab, Symbol, Length);
+local Syme	tfp0SpecialSyme (Stab, Syme syme, Symbol, Bool);
+local Syme	tfp0IdSyme	(Stab, Syme, Symbol);
+local Syme	tfp0OpSyme	(Stab, Syme, Symbol, Length);
 local TForm	tfp0IdTForm	(Symbol);
 local TForm	tfp0OpTForm	(Symbol, Length);
 
@@ -646,7 +646,7 @@ tfPending(Stab stab, AbSyn ab)
 Syme
 tfpOpSyme(Stab stab, Symbol sym, Length argc)
 {
-	return tfp0OpSyme(stab, sym, argc);
+	return tfp0OpSyme(stab, NULL, sym, argc);
 }
 
 /*****************************************************************************
@@ -655,14 +655,25 @@ tfpOpSyme(Stab stab, Symbol sym, Length argc)
  *
  ****************************************************************************/
 
+local TForm tf0MapRetFrPending(Stab stab, TForm tf);
+
 local Syme
-tfp0SpecialSyme(Stab stab, Symbol sym, Bool op)
+tfp0SpecialSyme(Stab stab, Syme syme, Symbol sym, Bool op)
 {
+	TForm tf;
 	SymeList	sl;
+
+	if (syme != NULL) {
+		tf = symeType(syme);
+		if (op) {
+			tf = tf0MapRetFrPending(stab, tf);
+		}
+		if (tf && tfSatType(tf))
+			return syme;
+	}
 
 	for (sl = stabGetMeanings(stab, NULL, sym); sl; sl = cdr(sl)) {
 		Syme	syme = car(sl);
-		TForm	tf;
 
 		/*!! Need to check some condition to ensure this syme
 		 *!! is really special.	 This one doesn't do it.
@@ -672,44 +683,53 @@ tfp0SpecialSyme(Stab stab, Symbol sym, Bool op)
 
 		tf = symeType(syme);
 		if (op) {
-			tf = tfFollowOnly(tf);
-			if (tfIsAnyMap(tf))
-				tf = tfMapRet(tf);
-			else if (tfIsMapSyntax(tf)) {
-				AbSyn	ab = tfGetExpr(tf);
-				tf = tfSyntaxFrAbSyn(stab, abApplyArg(ab, 1));
-				tfFollow(tf);
-			}
-			else
-				continue;
+			tf = tf0MapRetFrPending(stab, tf);
 		}
 
-		if (tfSatType(tf))
+		if (tf && tfSatType(tf))
 			return syme;
 	}
 
 	return NULL;
 }
 
-local Syme
-tfp0IdSyme(Stab stab, Symbol sym)
+local TForm
+tf0MapRetFrPending(Stab stab, TForm tf)
 {
-	Syme	syme = 0;
+	tf = tfFollowOnly(tf);
+
+	if (tfIsAnyMap(tf))
+		tf = tfMapRet(tf);
+	else if (tfIsMapSyntax(tf)) {
+		AbSyn	ab = tfGetExpr(tf);
+		tf = tfSyntaxFrAbSyn(stab, abApplyArg(ab, 1));
+		tfFollow(tf);
+	}
+	else
+		return NULL;
+
+	return tf;
+}
+
+local Syme
+tfp0IdSyme(Stab stab, Syme syme, Symbol sym)
+{
+	Syme	rsyme = 0;
 
 	if ((sym == ssymExit)		||
 	    (sym == ssymType)		||
 	    (sym == ssymCategory)	||
 	    (sym == ssymTest)		||
 	    (sym == ssymLiteral))
-		syme = tfp0SpecialSyme(stab, sym, false);
+		rsyme = tfp0SpecialSyme(stab, syme, sym, false);
 
-	return syme;
+	return rsyme;
 }
 
 local Syme
-tfp0OpSyme(Stab stab, Symbol sym, Length argc)
+tfp0OpSyme(Stab stab, Syme syme, Symbol sym, Length argc)
 {
-	Syme	syme = 0;
+	Syme	rsyme = 0;
 
 	if ((argc == 2 && sym == ssymArrow)		||
 	    (argc == 2 && sym == ssymPackedArrow)	||
@@ -726,9 +746,9 @@ tfp0OpSyme(Stab stab, Symbol sym, Length argc)
 	    (sym == ssymUnion)		||
 	    (sym == ssymMeet)		||
 	    (sym == ssymJoin))
-		syme = tfp0SpecialSyme(stab, sym, true);
+		rsyme = tfp0SpecialSyme(stab, syme, sym, true);
 
-	return syme;
+	return rsyme;
 }
 
 local TForm
@@ -888,7 +908,7 @@ tfpId(Stab stab, AbSyn ab)
 		return tfc;
 	}
 
-	syme = tfp0IdSyme(stab, sym);
+	syme = tfp0IdSyme(stab, NULL, sym);
 	absyme = abSyme(ab);
 
 	if (! syme)
@@ -1033,6 +1053,7 @@ tfpApply(Stab stab, AbSyn ab)
 	Symbol	sym;
 	Length	i, argc;
 	Syme	syme;
+	Syme    opSyme;
 	TForm	tf;
 
 	op = abApplyOp(ab);
@@ -1041,7 +1062,9 @@ tfpApply(Stab stab, AbSyn ab)
 
 	sym  = op->abId.sym;
 	argc = abApplyArgc(ab);
-	syme = tfp0OpSyme(stab, sym, argc);
+	opSyme = abSyme(op);
+
+	syme = tfp0OpSyme(stab, opSyme, sym, argc);
 
 	if (syme == NULL)
 		/* This op is not one of the known special tform ops. */
