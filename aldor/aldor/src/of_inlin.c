@@ -3307,7 +3307,15 @@ inlSet(Foam set)
 
 	if (foamArgc(lhs) == 0)
 		return foamNewNOp();
-
+	if (foamArgc(rhs) == 0)	{
+		/* In the case where there are no RHS values, we
+		   probably had a function inlined which ended with a 'never'..
+		   in this case, just gob out a halt, and give up */
+		inlAddStmt(foamNew(FOAM_BCall, 2,
+				   FOAM_BVal_Halt,
+				   foamNewSInt(FOAM_Halt_NeverReached)));
+		return foamNewNOp();
+	}
 	tag = foamTag(set);
 	
 	for(i=0; i<foamArgc(lhs)-1; i++) {
