@@ -1926,14 +1926,14 @@ terrorPutConditionalExports(Buffer buf, SymeList csymes)
 		csymes = listNReverse(Syme)(nsymes);
 		gsymes = listNReverse(Syme)(gsymes);
 		scond = fmtAbSyn(car(conds));
-		bufPrintf(buf, "\n\tif %s ", scond);
+		bufPrintf(buf, "\n\tif %s", scond);
 		conds = cdr(conds);
 		while (conds != listNil(Sefo)) {
 			scond = fmtAbSyn(car(conds));
 			bufPrintf(buf, " and %s", scond);
 			conds = cdr(conds);
 		}
-		bufPrintf(buf, "then", scond);
+		bufPrintf(buf, " then", scond);
 		while (gsymes != listNil(Syme)) {
 			String s;
 			s = fmtTForm(symeType(car(gsymes)));
