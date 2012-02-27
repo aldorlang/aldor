@@ -2598,9 +2598,11 @@ foamGetDDecl(int index, Foam fmts, FoamBox fbox)
  *      Record 		->	format number
  *	Array		->	type of elements
  */
+
+typedef Foam (*FoamExprTypeCallback)(void *, Foam);
+
 FoamTag
-foamExprType0(Foam expr, Foam prog, Foam formats, FoamBox locals,
-	     FoamBox formatBox, AInt * extra)
+foamExprTypeCB(Foam expr, AInt *extra, FoamExprTypeCallback callback, void *arg)
 {
 	FoamTag		type;
 	Foam		decl;
@@ -2646,23 +2648,13 @@ foamExprType0(Foam expr, Foam prog, Foam formats, FoamBox locals,
 		return FOAM_Arr;
 
 	  case FOAM_Set:
-		return foamExprType(expr->foamSet.rhs, prog, formats, locals,
-				    formatBox, extra);
+		  return foamExprTypeCB(expr->foamSet.rhs, extra, callback, arg);
 	  case FOAM_Def:
-		return foamExprType(expr->foamDef.rhs, prog, formats, locals,
-				    formatBox, extra);
+		  return foamExprTypeCB(expr->foamDef.rhs, extra, callback, arg);
 	  case FOAM_AElt:
 		return expr->foamAElt.baseType;
 	  case FOAM_Par:
-		assert (prog != 0);
-		assert (foamTag(prog) == FOAM_Prog);
-#ifdef NEW_FORMATS
-		decl = formats->foamDFmt.argv[paramsSlot]->foamDDecl.argv[prog->foamProg.params-1];
-#else
-
-		decl = prog->foamProg.params->
-			foamDDecl.argv[expr->foamPar.index];
-#endif
+		decl = callback(arg, expr);
 		type = decl->foamDecl.type;
 
 		if (extra && 
@@ -2670,12 +2662,7 @@ foamExprType0(Foam expr, Foam prog, Foam formats, FoamBox locals,
 			*extra = decl->foamDecl.format;
 		return type;
 	  case FOAM_Loc: {
-		int	index = expr->foamLoc.index;
-
-		assert (prog != 0);
-		assert (foamTag(prog) == FOAM_Prog);
-
-		decl = foamGetDecl(index, prog->foamProg.locals, locals);
+		decl = callback(arg, expr);
 		type = (decl->foamDecl.type) & 0xFF;
 
 		if (extra &&
@@ -2685,8 +2672,7 @@ foamExprType0(Foam expr, Foam prog, Foam formats, FoamBox locals,
 		return type;
 		}
 	  case FOAM_Glo:
-		decl = formats->foamDFmt.argv[globalsSlot]->
-			foamDDecl.argv[expr->foamGlo.index];
+		decl = callback(arg, expr);
 		type = decl->foamGDecl.type;
 
 		if (extra &&
@@ -2696,8 +2682,7 @@ foamExprType0(Foam expr, Foam prog, Foam formats, FoamBox locals,
 		return type;
 
 	  case FOAM_Fluid:
-		decl = formats->foamDFmt.argv[fluidsSlot]->
-			foamDDecl.argv[expr->foamFluid.index];
+		decl = callback(arg, expr);
 		type = decl->foamDecl.type;
 
 		if (extra &&
@@ -2706,9 +2691,10 @@ foamExprType0(Foam expr, Foam prog, Foam formats, FoamBox locals,
 
 		return type;
 
-	  case FOAM_Const:
-		return formats->foamDFmt.argv[constsSlot]->
-			foamDDecl.argv[expr->foamGlo.index]->foamDecl.type;
+	case FOAM_Const: 
+		decl = callback(arg, expr);
+		return decl->foamDecl.type;
+
 	  case FOAM_RNew:
 		if (extra) *extra = expr->foamRNew.format;
 		return FOAM_Rec;
@@ -2729,12 +2715,8 @@ foamExprType0(Foam expr, Foam prog, Foam formats, FoamBox locals,
 	  case FOAM_Lex: {
 		Foam 	ddecl;
 		int 	index;
-		assert (prog != 0);
-		assert (foamTag(prog) == FOAM_Prog);
-		
-		index = prog->foamProg.levels->foamDEnv.argv[expr->foamLex.level];
-		ddecl = foamGetDDecl(index, formats, formatBox);
-		decl = ddecl->foamDDecl.argv[expr->foamLex.index];
+
+		decl = callback(arg, expr);
 		type = decl->foamDecl.type;
 
 		if (extra &&
@@ -2744,9 +2726,7 @@ foamExprType0(Foam expr, Foam prog, Foam formats, FoamBox locals,
 		return type;
 		}
 	  case FOAM_RElt: {
-		int	index = expr->foamRElt.format;
-		Foam	ddecl = foamGetDDecl(index, formats, formatBox);
-		decl = ddecl->foamDDecl.argv[expr->foamRElt.field];
+		decl = callback(arg, expr);
 		type = decl->foamDecl.type;
 
 		if (extra &&
@@ -2756,9 +2736,7 @@ foamExprType0(Foam expr, Foam prog, Foam formats, FoamBox locals,
 		return type;
 	  }
 	  case FOAM_IRElt: {
-		int	index = expr->foamIRElt.format;
-		Foam	ddecl = foamGetDDecl(index, formats, formatBox);
-		decl = foamTRDDeclIDecl(ddecl, expr->foamIRElt.field); /* use foamIRDeclIdx() */
+		decl = callback(arg, expr);
 		type = decl->foamDecl.type;
 
 		if (extra &&
@@ -2769,9 +2747,7 @@ foamExprType0(Foam expr, Foam prog, Foam formats, FoamBox locals,
 	  }
 
 	  case FOAM_TRElt: {
-		int	index = expr->foamIRElt.format;
-		Foam	ddecl = foamGetDDecl(index, formats, formatBox);
-		decl = foamTRDDeclTDecl(ddecl, expr->foamTRElt.field); /* use foamTRDeclIdx() */
+		decl = callback(arg, expr);
 		type = decl->foamDecl.type;
 
 		if (extra &&
@@ -2781,9 +2757,7 @@ foamExprType0(Foam expr, Foam prog, Foam formats, FoamBox locals,
 		return type;
 	  }
 	  case FOAM_EElt: {
-		int	index = expr->foamEElt.env;
-		Foam	ddecl = foamGetDDecl(index, formats, formatBox);
-		decl = ddecl->foamDDecl.argv[expr->foamEElt.lex];
+		decl = callback(arg, expr);
 		type = decl->foamDecl.type;
 		
 		if (extra &&
@@ -2816,7 +2790,115 @@ foamExprType0(Foam expr, Foam prog, Foam formats, FoamBox locals,
 	bug("foamExprType0: reached end of code.");
 
 	return 0;   /* quit warnings */
+}
 
+
+
+struct foamExprTypeStd {
+	Foam prog;
+	Foam formats;
+	FoamBox locals;
+	FoamBox formatBox;
+	FoamBox globals;
+};
+
+local Foam foamExprTypeCallbackStd(void *ptr, Foam expr);
+
+FoamTag
+foamExprTypeG0(Foam expr, Foam prog, Foam formats, FoamBox locals,
+	      FoamBox formatBox, FoamBox globals, AInt * extra)
+{
+	struct foamExprTypeStd stdArgs;
+
+	stdArgs.prog = prog;
+	stdArgs.formats = formats;
+	stdArgs.locals = locals;
+	stdArgs.formatBox = formatBox;
+	stdArgs.globals = globals;
+	return foamExprTypeCB(expr, extra, foamExprTypeCallbackStd, &stdArgs);
+}
+
+FoamTag
+foamExprType0(Foam expr, Foam prog, Foam formats, FoamBox locals,
+	     FoamBox formatBox, AInt * extra)
+{
+	struct foamExprTypeStd stdArgs;
+
+	stdArgs.prog = prog;
+	stdArgs.formats = formats;
+	stdArgs.locals = locals;
+	stdArgs.formatBox = formatBox;
+	stdArgs.globals = 0;
+
+	return foamExprTypeCB(expr, extra, foamExprTypeCallbackStd, &stdArgs);
+}
+
+local Foam 
+foamExprTypeCallbackStd(void *ptr, Foam expr)
+{
+	struct foamExprTypeStd *stdArgs = ptr;
+	Foam prog = stdArgs->prog;
+	Foam formats = stdArgs->formats;
+	FoamBox locals = stdArgs->locals;
+	FoamBox formatBox = stdArgs->formatBox;
+	FoamBox globals = stdArgs->globals;
+	Foam decl;
+	switch (foamTag(expr)) {
+	case FOAM_Loc: {
+		AInt index = expr->foamLoc.index;
+		decl = foamGetDecl(index, prog->foamProg.locals, locals);
+		break;
+	}
+	case FOAM_Par:
+		decl = prog->foamProg.params->foamDDecl.argv[expr->foamPar.index];
+		break;
+	case FOAM_Glo:
+		decl = foamGetDecl(expr->foamGlo.index, formats->foamDFmt.argv[globalsSlot], globals);
+		break;
+	case FOAM_Fluid:
+		  decl = formats->foamDFmt.argv[fluidsSlot]->
+			  foamDDecl.argv[expr->foamFluid.index];
+		  break;
+	case FOAM_Const:
+		decl = formats->foamDFmt.argv[constsSlot]->
+			foamDDecl.argv[expr->foamConst.index];
+		break;
+	case FOAM_Lex: {
+ 		Foam 	ddecl;
+ 		int 	index;
+		
+		index = prog->foamProg.levels->foamDEnv.argv[expr->foamLex.level];
+		ddecl = foamGetDDecl(index, formats, formatBox);
+		decl = ddecl->foamDDecl.argv[expr->foamLex.index];
+		break;
+	  }
+ 	  case FOAM_RElt: {
+		  int	index = expr->foamRElt.format;
+		  Foam	ddecl = foamGetDDecl(index, formats, formatBox);
+		  decl = ddecl->foamDDecl.argv[expr->foamRElt.field];
+		  break;
+	  }
+ 	  case FOAM_IRElt: {
+		  int	index = expr->foamIRElt.format;
+		  Foam	ddecl = foamGetDDecl(index, formats, formatBox);
+		  decl = foamTRDDeclIDecl(ddecl, expr->foamIRElt.field); /* use foamIRDeclIdx() */
+		  break;
+	  }
+ 	  case FOAM_TRElt: {
+		  int	index = expr->foamIRElt.format;
+		  Foam	ddecl = foamGetDDecl(index, formats, formatBox);
+		  decl = foamTRDDeclTDecl(ddecl, expr->foamTRElt.field); /* use foamTRDeclIdx() */
+		  break;
+	  }
+ 	  case FOAM_EElt: {
+		  int	index = expr->foamEElt.env;
+		  Foam	ddecl = foamGetDDecl(index, formats, formatBox);
+		  decl = ddecl->foamDDecl.argv[expr->foamEElt.lex];
+		  break;
+	  }
+	}
+
+	return decl;
 }
 
 FoamTag

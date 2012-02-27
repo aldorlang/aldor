@@ -1522,6 +1522,11 @@ extern Foam		 foamGetProgHdrFrBuffer	(Buffer, int);
 
 extern FoamTag		 foamExprType	(Foam, Foam, Foam, FoamBox, FoamBox,
 					 AInt *);
+extern FoamTag		 foamExprTypeG0	(Foam, Foam, Foam, FoamBox, FoamBox,
+					 FoamBox, AInt *);
+typedef Foam (*FoamExprTypeCallback)(void *, Foam);
+extern FoamTag foamExprTypeCB(Foam expr, AInt *extra, FoamExprTypeCallback callback, void *arg);
+
 extern int 		 foamCountSubtreesOfKind(Foam foam, FoamTag kind);
 
 extern Bool foamTypeIsVoid(Foam fmts, FoamTag type, AInt fmt);
