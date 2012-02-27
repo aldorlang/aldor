@@ -48,7 +48,7 @@ oeUnit(Foam unit)
 	defs = unit->foamUnit.defs;
 	oeProgInfo = (OeProgInfo*) stoAlloc(OB_Other, foamArgc(defs) * sizeof(OeProgInfo));
 	oeWholeUnit = unit;
-	
+	oeDEBUG(foamPrintDb(unit));
 	for (i=0; i<foamArgc(defs); i++) {
 		oeProgInfo[i].done    = false;
 		oeProgInfo[i].origin  = ProgUnknown;
@@ -61,6 +61,7 @@ oeUnit(Foam unit)
 	oeRenewEnvs(unit);
 
 	stoFree(oeProgInfo);
+	oeDEBUG(printf("hello\n");foamPrintDb(unit));
 	oeProgInfo = NULL;
 }
 
