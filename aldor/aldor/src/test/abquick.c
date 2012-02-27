@@ -6,6 +6,7 @@
 
 ABQK_DEFINE0(sequence0, abNewSequence0);
 ABQK_DEFINE1(sequence1, abNewSequence1);
+ABQK_DEFINE2(sequence2, abNewSequence2);
 ABQK_DEFINE0(comma0, abNewComma0);
 ABQK_DEFINE1(comma1, abNewComma1);
 ABQK_DEFINE2(comma2, abNewComma2);
