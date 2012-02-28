@@ -18,3 +18,4 @@ autoscan.log
 config.status
 /configure
 /install
+/.metadata
