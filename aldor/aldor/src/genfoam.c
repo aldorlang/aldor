@@ -6281,6 +6281,8 @@ gen0ForIter(AbSyn absyn, FoamList *forl, FoamList *itl)
 /* 
  * !!should replace lhs with exporter
  */
+local void gen0FindDefsSyme(Stab stab, Syme syme, Bool inHighLev);
+
 local void
 gen0FindDefs(AbSyn absyn, AbSyn lhs, Stab stab, Bool inHighLev, Bool topLev)
 {
@@ -6355,18 +6357,7 @@ gen0FindDefs(AbSyn absyn, AbSyn lhs, Stab stab, Bool inHighLev, Bool topLev)
 	}
 	case AB_Id: {
 		Syme	syme = abSyme(absyn);
-
-		if (!syme) break;
-		if (!symeUsed(syme)) {
-			stabUseMeaning(stab, syme);
-			symeSetUsed(syme);
-		}
-		if (inHighLev ||
-		    stabLambdaLevelNo(stab) != symeDefLambdaLevelNo(syme)) {
-			stabUseMeaning(stab, syme);
-			symeSetUsed(syme);
-			symeSetUsedDeeply(syme);
-		}
+		gen0FindDefsSyme(stab, syme, inHighLev);
 		break;
 	}
 	case AB_Where: {
@@ -6496,6 +6487,10 @@ gen0FindDefs(AbSyn absyn, AbSyn lhs, Stab stab, Bool inHighLev, Bool topLev)
 		break;
 	}
 	default:
+		if (abImplicitSyme(absyn) != NULL) {
+			gen0FindDefs(abImplicit(absyn), NULL, stab, inHighLev, false);
+
+		}
 		if (!abIsLeaf(absyn))
 			for (i = 0; i < argc; i += 1)
 				gen0FindDefs(abArgv(absyn)[i], NULL,
@@ -6504,6 +6499,21 @@ gen0FindDefs(AbSyn absyn, AbSyn lhs, Stab stab, Bool inHighLev, Bool topLev)
 	}
 }
 
+local void
+gen0FindDefsSyme(Stab stab, Syme syme, Bool inHighLev)
+{
+	if (!syme) return;
+	if (!symeUsed(syme)) {
+		stabUseMeaning(stab, syme);
+		symeSetUsed(syme);
+	}
+	if (inHighLev ||
+	    stabLambdaLevelNo(stab) != symeDefLambdaLevelNo(syme)) {
+		stabUseMeaning(stab, syme);
+		symeSetUsed(syme);
+		symeSetUsedDeeply(syme);
+	}
+}
 local void
 gen0MarkParamsDeep(Stab stab, AbSyn param)
 {
