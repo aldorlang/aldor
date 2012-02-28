@@ -178,6 +178,7 @@ local void		sefoFrBuffer0		(Buffer);
 local void		symeFrBuffer0		(Buffer);
 local void		tformFrBuffer0		(Buffer);
 local void		tqualFrBuffer0		(Buffer);
+local void              sefoListFrBuffer0       (Buffer);
 local void		tformListFrBuffer0	(Buffer);
 local void		tqualListFrBuffer0	(Buffer);
 
@@ -3830,8 +3831,13 @@ tformClosure0(Lib lib, TForm tf)
 	}
 
 	if (tfIsWith(tf) && tfUseCatExports(tf)) {
-		symeListClosure0(lib, tfGetCatExports(tf));
+		SymeList catExports = tfGetCatExports(tf);
+		symeListClosure0(lib, catExports);
 		tqualListClosure0(lib, tfCascades(tf));
+		while (catExports != listNil(Syme)) {
+			sefoListClosure0(lib, symeCondition(car(catExports)));
+			catExports = cdr(catExports);
+		}
 		cascade = true;
 	}
 	if (tfIsThird(tf) && tfUseThdExports(tf)) {
@@ -4108,10 +4114,23 @@ tformToBuffer(Lib lib, Buffer buf, TForm tf)
 		symeListToBuffer(lib, buf, tfSymes(tf));
 
 	if (tfIsWith(tf)) {
-		if (tfUseCatExports(tf))
+		if (tfUseCatExports(tf)) {
 			symeListToBuffer(lib, buf, tfGetCatExports(tf));
-		else
+			SymeList l = tfGetCatExports(tf);
+			BUF_PUT_HINT(buf, listLength(Syme)(l));
+			while (l != listNil(Syme)) {
+				if (symeIsSelfSelf(car(l)))
+					sefoListToBuffer(lib, buf, listNil(Sefo));
+				else
+					sefoListToBuffer(lib, buf, symeCondition(car(l)));
+				l = cdr(l);
+			}
+			
+		}
+		else {
+			BUF_PUT_HINT(buf, 0);
 			symeListToBuffer(lib, buf, listNil(Syme));
+		}
 	}
 
 	if (tfIsThird(tf)) {
@@ -4389,8 +4408,20 @@ tformFrBuffer(Lib lib, Buffer buf)
 	if (tfTagHasSymes(tfTag(tf)))
 		tfSetSymes(tf, symeListFrBuffer(lib, buf));
 
-	if (tfIsWith(tf))
+	if (tfIsWith(tf)) {
+		int n;
 		tfCatExports(tf) = symeListFrBuffer(lib, buf);
+		BUF_GET_HINT(buf, n);
+		SymeList symes = tfCatExports(tf);
+		if (n != listLength(Syme)(symes)) {
+			bug("incorrect number of exports");
+		}
+		while (symes != listNil(Syme)) {
+			SefoList condition = sefoListFrBuffer(lib, buf);
+			symeSetCondition(car(symes), condition);
+			symes = cdr(symes);
+		}
+	}
 	if (tfIsThird(tf))
 		tfThdExports(tf) = symeListFrBuffer(lib, buf);
 
@@ -4416,9 +4447,10 @@ sefoListFrBuffer(Lib lib, Buffer buf)
 
 	BUF_GET_HINT(buf, sefoc);
 
-	for (i = 0; i < sefoc; i += 1)
-		sefos = listCons(Sefo)(sefoFrBuffer(lib, buf), sefos);
-
+	for (i = 0; i < sefoc; i += 1) {
+		Sefo sefo = sefoFrBuffer(lib, buf);
+		sefos = listCons(Sefo)(sefo, sefos);
+	}
 	return listNReverse(Sefo)(sefos);
 }
 
@@ -4577,8 +4609,14 @@ tformFrBuffer0(Buffer buf)
 	if (tfTagHasSymes(tag))
 		symeListFrBuffer0(buf); /* tfSymes(tf) */
 
-	if (tag == TF_With)
+	if (tag == TF_With) {
+		UShort n, i;
 		symeListFrBuffer0(buf);	/* tfCatExports(tf) */
+		BUF_GET_HINT(buf, n);
+		for (i=0; i<n; i++) {
+			sefoListFrBuffer0(buf);
+		}
+	}
 	if (tag == TF_Third)
 		symeListFrBuffer0(buf); /* tfThdExports(tf) */
 
@@ -4591,6 +4629,20 @@ tqualFrBuffer0(Buffer buf)
 	bufSkip(buf, SINT_BYTES);
 	tformListFrBuffer0(buf);
 }
+
+local void
+sefoListFrBuffer0(Buffer buf)
+{
+	SefoList	sefos = listNil(Sefo);
+	UShort		i, sefoc;
+
+	BUF_GET_HINT(buf, sefoc);
+
+	for (i = 0; i < sefoc; i += 1) {
+		sefoFrBuffer0(buf);
+	}
+}
+
 
 void
 symeListFrBuffer0(Buffer buf)
