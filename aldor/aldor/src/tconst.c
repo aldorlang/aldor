@@ -123,9 +123,12 @@ tcAlloc(TConstTag tag, TForm owner, Length argc, va_list argp)
 void
 tcFree(TConst tc)
 {
-	tcDEBUG(listPop(TConst, tc, tcList, tcEq));
-	tcCount -= 1;
+	int l0 = 0;
+	tcDEBUG(l0 = listLength(TConst)(tcList);
+		listPop(TConst, tc, tcList, tcEq);
+		assert(l0 - 1 == listLength(TConst)(tcList)););
 
+	tcCount -= 1;
 	stoFree((Pointer) tc);
 }
 
