@@ -6188,6 +6188,9 @@ fintExecMainUnit(void)
 		(void)osSetBreakHandler(oldCompFintBreakHandler);
 		(void)osSetBreakHandler(oldCompFintFaultHandler);
 	}
+	fflush(dbOut);
+	fflush(osStderr);
+	fflush(osStdout);
 	return (Bool) ok;
 }
 
@@ -6239,11 +6242,11 @@ fintRaiseException(char *reason, void *stuff)
 	(void)loadOtherUnits();
 	/*	 * hack 03450 */
 	exceptionThrower = shDataObjFindBis(FOAM_Clos,
-				"aldorRuntimeException", 
+				"aldorRuntimeException",
 				FOAM_Proto_Foam);
 	/* Could munge into better format */
 	if (!exceptionThrower) {
-		(void)fprintf(stdout, 
+		(void)fprintf(stdout,
 "Aldor runtime (interpreter): An Aldor runtime error occurred : %s\n\
 Note: there seems to be no aldorRuntimeException function defined\n\
 so it is not possible to throw an exception.\n",
@@ -6253,13 +6256,13 @@ so it is not possible to throw an exception.\n",
 
 		if (fintExntraceMode == 1 ) {
 		  FILE *oldDbOut = dbOut;
-		  dbOut = osStderr; 
+		  dbOut = osStderr;
 		  fprintf(dbOut, "Aldor runtime (interpreter): backtrace:\n");
 		  fintWhere(FINT_BACKTRACE_CUTOFF);
 		  fprintf(dbOut, "\n");
 		  dbOut = oldDbOut;
 		};
-		exit(int0);
+		exit(1);
 	}
 	else {
 	  arg1.fiWord = (FiWord) reason;

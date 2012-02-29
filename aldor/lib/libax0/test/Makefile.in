@@ -91,29 +91,13 @@ testaldor_call=env PATH=$$PATH:$(ALDORROOT)/bin ALDORROOT=$(ALDORROOT) \
 	       ALDORARGS="$(TESTAXLARGS) " $(TESTALDOR) 
 
 tests:
-	@$(testaldor_call) -oldaxl $(OLDALDOR) $(TESTS)
+	@cd $(srcdir); $(testaldor_call) -all -oldaxl $(OLDALDOR) $(TESTS)
 	@echo "BUGS = $(BUGS)"
-
-testexecs:
-	@$(testaldor_call) -only testrun -oldaxl $(OLDALDOR) $(TESTS)
-	@ echo "BUGS = $(BUGS)"
-
-testcomp:
-	@-$(testaldor_call) -only testcomp $(TESTS)
-
-testgen:
-	@-$(testaldor_call) -only testgen $(TESTS)
-
-errors:
-	@-$(testaldor_call) -only testerr $(TESTS)
-
-testsh:
-	@-$(testaldor_call) `for i in $(TESTS) ; do echo $$i | grep '\.sh$$' ; done` 
 
 
 opttests: TESTAXLARGS="ALDORARGS=-O"
 opttests:
-	$(testaldor_call) -only testrun -oldaxl $(OLDALDOR) $(TESTS)
+	@cd $(srcdir); $(testaldor_call) -all -oldaxl $(OLDALDOR) $(TESTS)
 
 install-tests:;      @-$(testaldor_call) -install -oldc $(OLDALDOR) $(TESTS)
 install-tests-comp:; @-$(testaldor_call) -install -only testcomp $(TESTS)

@@ -31,6 +31,7 @@
 
 ABQK_DECLARE0(sequence0, abNewSequence0);
 ABQK_DECLARE1(sequence1, abNewSequence1);
+ABQK_DECLARE2(sequence2, abNewSequence2);
 ABQK_DECLARE0(comma0, abNewComma0);
 ABQK_DECLARE1(comma1, abNewComma1);
 ABQK_DECLARE2(comma2, abNewComma2);

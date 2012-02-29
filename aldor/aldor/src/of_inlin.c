@@ -3659,10 +3659,11 @@ inlInfoNew(Stab stab, Foam prog, Syme lhs, Bool isGener)
 local FoamTag
 inlExprType(Foam expr, AInt *fmt)
 {
-	return foamExprType(expr , inlProg->prog,
-			    inlUnit->unit->foamUnit.formats,
-			    inlProg->locals->fbox,
-			    inlUnit->formats, fmt);
+	return foamExprTypeG0(expr, inlProg->prog,
+			     inlUnit->unit->foamUnit.formats,
+			     inlProg->locals->fbox,
+			     inlUnit->formats, inlUnit->globals, 
+			     fmt);
 }
 
 local Foam

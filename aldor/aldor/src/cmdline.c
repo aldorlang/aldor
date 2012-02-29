@@ -1028,8 +1028,9 @@ extern Bool
 	tfsDebug, tfsExportDebug, tfsMultiDebug, tfsParentDebug,
 	tipAddDebug, tipApplyDebug, tipAssignDebug, tipBupDebug,
 	tipDeclDebug,
-	tipDeclareDebug, tipDefineDebug, tipFarDebug, tipIdDebug,
-	tipLitDebug, tipEmbedDebug, tipSefDebug, tipTdnDebug,
+	tipDeclareDebug, tipDefineDebug, tipExtendDebug,
+	tipFarDebug, tipIdDebug,
+	tipLitDebug, tipEmbedDebug, tipSefDebug, tipTdnDebug, 
 	titfDebug, titfOneDebug, titfStabDebug,
 	udDfDebug, udDfiDebug;
  
@@ -1147,6 +1148,7 @@ struct dbVarInfo dbVarInfo[] = {
 	{ & tipDeclDebug,	"tipDecl" },
 	{ & tipDeclareDebug,	"tipDeclare" },
 	{ & tipDefineDebug,	"tipDefine" },
+	{ & tipExtendDebug,	"tipExtend" },
 	{ & tipFarDebug,	"tipFar" },
 	{ & tipIdDebug,		"tipId" },
 	{ & tipLitDebug,	"tipLit" },
