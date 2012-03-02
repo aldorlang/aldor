@@ -216,9 +216,10 @@ FUTURE	= pack3.as
 # default8.as: function used as value in unexpected way.
 # gbtest1.as:  only fails under Win32
 # where2.as:   confused by default within a where block
-
+# segext1.sh:  Test uses two differently typed Integers.. surprised it
+#              works at all
 BUGS=float2.as default8.as where2.as extend2.as opt1.as pack0.sh	\
-     recov1.sh forn8.sh forn9.sh forn10.sh rawrec5.as	\
+     recov1.sh forn8.sh forn9.sh forn10.sh rawrec5.as segext1.sh	\
 
 # Diagnostics with fixed output
 DIAGS1= show-t.sh btree-t.sh float-t.sh xfloat-t.sh \
