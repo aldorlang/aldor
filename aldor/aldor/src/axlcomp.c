@@ -1340,6 +1340,7 @@ compSignalHandler(int signo)
 
         osDisplayMessage(comsgString(sigerr));
         comsgError(NULL, sigerr, signo);
+	fflush(dbOut);
 	exitFailure();
 }
 
