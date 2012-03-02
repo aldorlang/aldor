@@ -48,6 +48,7 @@ local printDomain(out: TextWriter, nm: DomainName): TextWriter == {
 	printDomain(fn, out, nm);
 }
 
+local (<<)(out: TextWriter, nm: DomainName): TextWriter == printDomain(out, nm);
 
 import {
 	stdoutFile: () -> OutFile;
@@ -201,6 +202,12 @@ domainAddExports!(d: AldorDomainRep, names: Array Hash, types: Array Hash,
 local box: Box := new Nil Value;
 
 domainGetExport!(td: Domain, name: Hash, type: Hash): Value == {
+--	PRINT() << "(GET: " << domainName(td) << " " << find(theStringTable, name) << " " << type;
+	v := domainGetExport1!(td, name, type);
+--	PRINT() << ")"<<NL();
+	v
+}
+domainGetExport1!(td: Domain, name: Hash, type: Hash): Value == {
 --	PROFILE(import from StringTable);
 	mybox := getExport0!(td, name, type, box);
 	mybox => value mybox;
@@ -404,9 +411,12 @@ rtCacheExplicitMake(x:BSInt): PtrCache == {
     newCache(x::SingleInteger);
 }
 
-rtCacheCheck(cache: PtrCache, key: Tuple Ptr): (Ptr, Boolean) == 	
-		getEntry(cache, key pretend BasicTuple);
-
+rtCacheCheck(cache: PtrCache, key: Tuple Ptr): (Ptr, Boolean) == {	
+--		PRINT() << "(Cache check";
+		(pp, flg) := getEntry(cache, key pretend BasicTuple);
+--		PRINT() << flg << " " << pp << ")" << NL();
+		(pp, flg)
+}
 rtCacheAdd(cache: PtrCache, key: Tuple Ptr, value: Ptr): Ptr == 
 		addEntry(cache, key pretend BasicTuple, value);
 
