@@ -4934,12 +4934,14 @@ fintEval_(DataObj retDataObj)
 		        retDataObj->fiArr = (FiArr)osMemMap((int)expr1.fiSInt);
 			break;
 		        }
-		default:
-			/* Pity we can't get the PCall name ... */
-			bug("fintEval: %s PCall (called from <%s> in [%s])\n",
-				(expr.fiSInt) == -1 ?
-					"undeclared" : "unimplemented",
-				prog->name, prog->unit->name);
+		default: {
+			AInt pcallId = expr.fiSInt;
+			bug("fintEval: %s PCall %d %s, (called from <%s> in [%s])\n",
+			    pcallId == -1 ?
+			    "undeclared" : "unimplemented", pcallId,
+			    (pcallId > 0 && pcallId < FINT_FOREIGN_END) ? fintForeignTable[pcallId].string : "??",
+			    prog->name, prog->unit->name);
+			    }
 		}
 
 		myType = type;
