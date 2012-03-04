@@ -3349,9 +3349,7 @@ local Bool
 scobindCheckDefnPos(DeclInfo declInfo, DefnPos posn)
 {
 	DefnPosList lpos = declInfo->defpos;
-#if NoDupDefs	
-	return false;
-#endif
+
 	while (lpos) {
 		if (defposEqual(car(lpos), posn))
 			return false;
