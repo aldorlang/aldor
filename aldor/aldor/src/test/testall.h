@@ -9,6 +9,7 @@ void printfTest(void);
 void formatTest(void);
 void tinferTest(void);
 void stabTest(void);
+void scobindTest(void);
 void srcpos(void);
 void tformTest(void);
 

@@ -81,7 +81,7 @@ TEST1 = test0.as test1.as 1test.as srcpos.as \
 	abcheck0.as abcheck1.as abcheck2.as abcheck3.as \
 	abnorm0.as abnorm1.as abnorm2.as \
 	scobind0.as scobind1.as scobind2.as scobind3.as scobind4.as \
-	scobind5.as scobind6.as \
+	scobind5.as scobind6.as scobind7.as \
 	scope0.as scope1.as scope2.as scope3.as scope5.as \
 	scope7.as scope8.as scope9.as scope10.as scope11.as scope12.as \
 	tinfer0.as tinfer1.as tinfer2.as \
@@ -306,9 +306,9 @@ t3:
 t4:
 	@echo $(TEST4)
 
-install-tests:; @-$(testaldor_call) -install -oldc $(OLDALDOR) $(TESTS)
-install-tests-comp:; @-$(testaldor_call) -install -only testcomp $(TESTS)
-install-tests-gen:; @-$(testaldor_call) -install -only testgen $(TESTS)
+install-tests:; -(cd $(srcdir); $(testaldor_call) -install -oldc $(OLDALDOR) $(TESTS))
+install-tests-comp:; @-(cd $(srcdir); $(testaldor_call) -install -only testcomp $(TESTS))
+install-tests-gen:; @-(cd $(srcdir); $(testaldor_call) -install -only testgen $(TESTS))
 
 #
 # Samples

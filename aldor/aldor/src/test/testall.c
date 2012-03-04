@@ -22,6 +22,7 @@ main(int argc, char *argv[])
 	if (testShouldRun("stab")) stabTest();
 	if (testShouldRun("srcpos")) srcposTest();
 	if (testShouldRun("absyn")) absynTest();
+	if (testShouldRun("scobind")) scobindTest();
 	if (testShouldRun("tform")) tformTest();
 
 	testIntEqual("fluidlevel", 0, fluidLevel);

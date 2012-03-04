@@ -41,6 +41,16 @@ testIntEqual(String testName, int i1, int i2)
 }
 
 void
+testPointerEqual(String testName, void *i1, void *i2)
+{
+	count++;
+	if (i1 == i2) {
+		return;
+	}
+	testFail(testName, "failed; expected %p, got %p", i1, i2);
+}
+
+void
 testTrue(String testName, Bool flg)
 {
 	count++;
