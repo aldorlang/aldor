@@ -123,6 +123,14 @@ typedef struct decl_info {
 DECLARE_LIST(DeclInfo);
 CREATE_LIST(DeclInfo);
 
+typedef struct condition {
+	AbSyn absyn;
+	Bool  negate;
+} *ScoCondition;
+
+DECLARE_LIST(ScoCondition);
+CREATE_LIST(ScoCondition);
+
 /******************************************************************************
  *
  * :: Identifier information
@@ -151,12 +159,12 @@ CREATE_LIST(IdInfo);
  * :: Conditional Definitions
  *
  *****************************************************************************/
+
 local DefnPos 	defposTail	(DefnPos pos);
 local Bool    	defposEqual	(DefnPos a, DefnPos b);
 local Bool      defposIsRoot	(DefnPos pos);
-
-#define defposTop(posn) ((AbSyn)  (car(posn) & ~1))
-#define defposTopIsThenPart(posn) (car(posn) & 1)
+local void      defposFree      (DefnPos pos);
+/* (ToDo: Rename above functions to defnposXXX) */
 
 /******************************************************************************
  *
@@ -176,7 +184,7 @@ static IdInfoList	scoIdInfoList;
 static Bool		scoUndoState;
 static SymeList		scoUndoSymes;
 static TFormList	scoUndoTForms;
-static DefnPos 		scoCondList;
+static ScoConditionList	scoCondList;
 static int 		scoDefCounter;
 
 /******************************************************************************
@@ -296,9 +304,10 @@ local void		scobindLOFDeclInfo	(AbSyn, IdInfo, DeclInfo,
  * scobindIf (and conditions)
  */
 local void 	scobindIf	(AbSyn);
-local void 	scoCondPush  	(AInt);
+local void 	scoCondPush  	(AbSyn, Bool);
 local void 	scoCondPop	(void);
-local AIntList  scoConditions	(void);
+local ScoConditionList  scoConditions	(void);
+local DefnPos scoConditionToDefnPos(ScoConditionList);
 
 /*
  * IdInfo
@@ -330,8 +339,9 @@ local Bool		declInfoUseIsNew	(AbSyn);
 local Bool		declInfoIsImplicitLocal	(DeclInfo);
 local void		scobindRestoreDeclInfo	(IdInfo);
 local DeclInfo		idInfoHasType		(IdInfo, AbSyn);
-local DeclInfo		idInfoAddType		(IdInfo, AbSyn, AbSyn, AbSyn, AIntList);
+local DeclInfo		idInfoAddType		(IdInfo, AbSyn, AbSyn, AbSyn, ScoConditionList);
 local void		scobindSetSigUse	(DeclInfo, DeclContext, AbSyn);
+local Bool              scobindCheckCondition   (DeclInfo, ScoConditionList);
 local Bool		scobindCheckDefnPos	(DeclInfo, DefnPos);
 
 /*
@@ -766,7 +776,7 @@ local void
 scobindLevel(AbSyn absyn, ScoBindFun fun, ULong flags)
 {
 	AbSynList	savedLambdaList;
-	AIntList	savedCondList;
+	ScoConditionList savedCondList;
 	Bool		saveInType = scoIsInType;
 
 
@@ -779,7 +789,7 @@ scobindLevel(AbSyn absyn, ScoBindFun fun, ULong flags)
 	savedCondList   = scoCondList;
 
 	scoLambdaList = listNil(AbSyn);
-	scoCondList   = listNil(AInt);
+	scoCondList   = listNil(ScoCondition);
 
 	/*
 	 * If we start a new scope level then we are no longer in a
@@ -2967,20 +2977,29 @@ scobindIf(AbSyn ab)
 {
 	AbSyn test = ab->abIf.test;
 	scobindValue(test);
-	scoCondPush((AInt) test);
+	scoCondPush(test, false);
 	scobindValue(ab->abIf.thenAlt);
 	scoCondPop();
-	scoCondPush(((AInt) test) | 1); /* ooo, you bad boy */
+	scoCondPush(test, true);
 	scobindValue(ab->abIf.elseAlt);
 	scoCondPop();
 }
 
 
+local ScoCondition
+scoConditionNew(AbSyn absyn, Bool isNegated)
+{
+	ScoCondition cond = (ScoCondition) stoAlloc(OB_Other, sizeof(*cond));
+	cond->absyn = absyn;
+	cond->negate = isNegated;
+
+	return cond;
+}
 
 local void
-scoCondPush(AInt ab)
+scoCondPush(AbSyn ab, Bool isNegated)
 {
-	scoCondList = listCons(AInt)(ab, scoCondList);
+	scoCondList = listCons(ScoCondition)(scoConditionNew(ab, isNegated), scoCondList);
 }
 
 local void
@@ -2989,10 +3008,16 @@ scoCondPop()
 	scoCondList = cdr(scoCondList);
 }
 
-local AIntList 
+local ScoConditionList
 scoConditions()
 {
 	return scoCondList;
+}
+
+local AInt
+defPosEltFromAbSyn(AbSyn ab, Bool isNegated)
+{
+	return isNegated ? (((AInt) ab) | 1) : (AInt) ab;
 }
 
 local DefnPos 
@@ -3007,16 +3032,38 @@ defposEqInner(AInt a, AInt b)
 	return a == b;
 }
 
+local AbSynList
+defposToAbSyn(AIntList defnPos)
+{
+	AbSynList list = listNil(AbSyn);
+	while (defnPos != listNil(AInt)) {
+		AInt c = car(defnPos);
+		AbSyn elt = c & 1 ? abNewNot(sposNone, (AbSyn)(c & ~1)): (AbSyn) c;
+		list = listCons(AbSyn)(elt, list);
+		defnPos = cdr(defnPos);
+	}
+
+	return listNReverse(AbSyn)(list);
+}
+
 local Bool
 defposEqual(DefnPos a, DefnPos b)
 {
-	return listEqual(AInt)(a, b, defposEqInner);
+	Bool flg = listEqual(AInt)(a, b, defposEqInner);
+	//afprintf(dbOut, "DefPosEqual: %pAbSynList %pAbSynList = %d\n", defposToAbSyn(a), defposToAbSyn(b), flg);
+	return flg;
 }
 
 local Bool
 defposIsRoot(DefnPos pos)
 {
 	return pos == listNil(AInt);
+}
+
+local void
+defposFree(DefnPos pos)
+{
+	listFree(AInt)(pos);
 }
 
 /******************************************************************************
@@ -3287,7 +3334,7 @@ idInfoHasType(IdInfo ido, AbSyn type)
  * Augment list of types and symbol documentation.
  */
 local DeclInfo
-idInfoAddType(IdInfo ido, AbSyn id, AbSyn type, AbSyn val, AIntList cond)
+idInfoAddType(IdInfo ido, AbSyn id, AbSyn type, AbSyn val, ScoConditionList cond)
 {
 	DeclInfo	di;
 
@@ -3306,7 +3353,7 @@ idInfoAddType(IdInfo ido, AbSyn id, AbSyn type, AbSyn val, AIntList cond)
 
 	/* Otherwise create a new decl info structure. */
 	else {
-		di = declInfoNew(id, type, cond);
+		di = declInfoNew(id, type, scoConditionToDefnPos(cond));
 
 		if (ido->allFree)
 			scobindSetSigUse(di, SCO_Sig_Free, id);
@@ -3331,14 +3378,60 @@ scobindSetSigUse(DeclInfo declInfo, DeclContext context, AbSyn use)
 			comsgFPrintf(stdout, ALDOR_M_FintRedefined,
 				     use->abId.sym->str);
 		}
-		else if (!scobindCheckDefnPos(declInfo, scoCondList)) {
+		else if (!scobindCheckCondition(declInfo, scoCondList)) {
 			comsgNError(use, ALDOR_E_ScoDupDefine,
 				     symString(use->abId.sym));
 			comsgNote(declInfo->uses[context], ALDOR_N_Here);
 		}
+		declInfo->defpos = listCons(DefnPos)(scoConditionToDefnPos(scoCondList),
+						     declInfo->defpos);
 	}
 
 	declInfo->uses[context] = use;
+}
+
+local AbSynList scoConditionToAbSyn(ScoConditionList condition);
+
+local Bool
+scobindCheckCondition(DeclInfo declInfo, ScoConditionList conditionList)
+{
+	DefnPos defnPos = scoConditionToDefnPos(conditionList);
+	Bool check = scobindCheckDefnPos(declInfo, defnPos);
+	scoDEBUG(afprintf(dbOut, "scobindCheckCondition: %pAbSynList %d\n", 
+			  scoConditionToAbSyn(conditionList), check));
+	defposFree(defnPos);
+
+	return check;
+}
+
+local DefnPos
+scoConditionToDefnPos(ScoConditionList condition)
+{
+	AIntList list = listNil(AInt);
+	while (condition != listNil(ScoCondition)) {
+		ScoCondition conditionElt = car(condition);
+		AInt elt = defPosEltFromAbSyn(conditionElt->absyn, conditionElt->negate);
+		list = listCons(AInt)(elt, list);
+		condition = cdr(condition);
+	}
+
+	return listNReverse(AInt)(list);
+}
+
+local AbSynList
+scoConditionToAbSyn(ScoConditionList condition)
+{
+	AbSynList list = listNil(AbSyn);
+	while (condition != listNil(ScoCondition)) {
+		ScoCondition conditionElt = car(condition);
+		AbSyn elt = conditionElt->negate 
+			? abNewNot(sposNone, conditionElt->absyn) 
+			: conditionElt->absyn;
+		list = listCons(AbSyn)(elt, list);
+		condition = cdr(condition);
+	}
+
+	return listNReverse(AbSyn)(list);
 }
 
 /*
