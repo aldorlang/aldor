@@ -4,9 +4,12 @@
 #include "axlgen.h"
 
 void testStringEqual(String testName, String s1, String s2);
+void testPointerEqual(String testName, void *, void *);
 void testIntEqual(String testName, int s1, int s2);
+
 void testTrue(String testName, Bool flg);
 void testFalse(String testName, Bool flg);
+
 void testIsNull(String testName, void *p);
 void testIsNotNull(String testName, void *p);
 
