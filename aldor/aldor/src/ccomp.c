@@ -134,8 +134,14 @@ Bool		ccVerboseFlag= false;
 Bool		ccLineNosFlag= false;
 int		ccDoStandardCFlag = -1;
 StringList      ccLibraries;
+String          ccRoot;
 
 local void ccSetStandardC(Bool flg);
+
+void ccSetRoot(String root)
+{
+	ccRoot = root;
+}
 
 int
 ccOption(String opt)
@@ -306,13 +312,14 @@ local  void   ccAppendToHiddenArgs(String str);
 String
 ccCompileCommand(String compiler, String options, int numFiles, FileName *fns,
 		 struct ccOption *opts,
-		 String newwd, String oldwd)
+		 String newwd, String oldwd, FileName outfile)
 {
 	struct ccOption *o;
 	int		 i;
 
 	ccBuf = bufNew();
 
+	if (!compiler && ccRoot) compiler = strPrintf("%s/bin/%s", ccRoot, CC_DEFAULT);
 	if (!compiler) compiler = CC_DEFAULT;
 
 	ccPutq(compiler);
@@ -321,8 +328,13 @@ ccCompileCommand(String compiler, String options, int numFiles, FileName *fns,
 	for (o = opts; o; o = o->next)
 		if (ccIsCompilerOption(o->tag)) ccPutOpt(o, newwd, oldwd);
 
-	ccPutc(' '); ccPutq(ccOptionTable[CCOPT_CompileOnly].text);
+	if (outfile) {
+		ccPutc(' ');
+		ccPuts(ccOptionTable[CCOPT_OutputFile].text);
+		ccPutFname(outfile, newwd, oldwd);
+	}
 
+	ccPutc(' '); ccPutq(ccOptionTable[CCOPT_CompileOnly].text);
 	for(i = 0; i < numFiles; i++) ccPutFname(fns[i], newwd, oldwd);
 
 	return bufLiberate(ccBuf);
@@ -338,6 +350,7 @@ ccLinkCommand(String linker, String options, int numFiles, FileName *fns,
 
 	ccBuf = bufNew();
 
+	if (!linker && ccRoot) linker = strPrintf("%s/bin/%s",ccRoot, LD_DEFAULT);
 	if (!linker) linker = LD_DEFAULT;
 
 	ccPutq(linker);
@@ -501,7 +514,7 @@ ccAppendToHiddenArgs(String str)
  * Have to assume output will go in the current directory of the compile.
  */
 void
-ccCompileFile(String newwd, FileName fn)
+ccCompileFile(String newwd, FileName outfile, FileName fn)
 {
 	String	command;
 	char	oldwd[1024];
@@ -511,7 +524,7 @@ ccCompileFile(String newwd, FileName fn)
 	ccSwapDir(newwd, oldwd, sizeof(oldwd));
 
 	command = ccCompileCommand(ccCompiler, ccOptions, 1, &fn,
-				   ccOptionList, newwd, oldwd);
+				   ccOptionList, newwd, oldwd, outfile);
 
 	ccEchoIf("Exec: %s\n", command);
 	rc = osRun(command);

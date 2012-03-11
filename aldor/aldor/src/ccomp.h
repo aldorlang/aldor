@@ -24,12 +24,12 @@ extern void	ccSetOutputFile		(String);
 extern void	ccSetLineNos		(Bool);
 extern Bool	ccLineNos		(void);
 extern Bool	ccDoStandardC		(void);
-
+extern void     ccSetRoot               (String);
 /*
  * Actually do stuff
  */
 extern void	ccGetReady		(void);
-extern void	ccCompileFile		(String newwd, FileName);
+extern void	ccCompileFile		(String newwd, FileName, FileName);
 extern void	ccLinkProgram		(String newwd, FileName *, int);
 extern void	ccGoProgram		(FileName, int argc1, String *argv1);
 

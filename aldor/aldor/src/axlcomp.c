@@ -609,6 +609,7 @@ compInit(void)
 		fileAddLibraryDirectory(fileSubdir(fileSubdir(compRootDir, "share"),
 						   "lib"));
 		fileAddIncludeDirectory(fileSubdir(compRootDir, "include"));
+		ccSetRoot(compRootDir);
 	}
 	fileAddLibraryDirectory(osCurDirName());
 

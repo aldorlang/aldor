@@ -1084,14 +1084,15 @@ emitTheObject(EmitInfo finfo)
 {
 	FileNameList	fl;
 	FileName cfile = emitFileName(finfo, FTYPENO_C);
+	FileName ofile = emitFileName(finfo, FTYPENO_OBJECT);
 
 	emitFileRemove(finfo, FTYPENO_OBJECT);
 
 	emitInfoInUse(finfo, FTYPENO_OBJECT) = true;
-	ccCompileFile(emitOutputDir, cfile);
+	ccCompileFile(emitOutputDir, ofile, cfile);
 	/* Need to emit an object file for each C file in filename list */
 	for (fl = finfo->flist; fl; fl = cdr(fl))
-		ccCompileFile(emitOutputDir, car(fl));
+		ccCompileFile(emitOutputDir, NULL, car(fl));
 	emitInfoInUse(finfo, FTYPENO_OBJECT) = false;
 	emitSetDone(FTYPENO_OBJECT);
 
