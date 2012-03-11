@@ -106,7 +106,7 @@ static void  handleOptions	(int argc, char **argv);
 static void  handleOption(int i, int *pNewI, char **argv);
 static void  handleSysArgument	(int i, int *pNewI, char **argv);
 static String getParameterisedArg(int i, int *pNewi, char **argv);
-static void  initState		(void);
+static void  initState		(String);
 static Bool  setupState	(void);
 static void generateCommands();
 static Bool  executeCommands	(void);
@@ -208,7 +208,7 @@ main(int argc, char *argv[])
 	char **largv;
 	osInit();
 	subsumeImplicitArgs(argc, argv, &largc, &largv);
-	initState();
+	initState(argv[0]);
 	uclSysName = getCfgName(largc, largv);
 	uclOptFile = getCfgFile(largc, largv);
 
@@ -537,7 +537,7 @@ generateCommands()
 	ccPushArguments(uclStartOptions);
 
 	if (uclIsCompileOnly) {
-		/* -D, -I, -U, -g, -O, -p, -Wfnonstd */
+		/* -D, -I, -U, -g, -O, -p, -o, -Wfnonstd */
 		ccPushArguments(uclGetGeneralCompileOptions());
 		ccPushArguments(uclCompileOnlyArguments());
 		ccPushArgument(car(uclFileList));
@@ -607,6 +607,12 @@ uclGetGeneralCompileOptions()
 			res = listNConcat(String)(res, cfgLookupStringList(uclGetKeyName("non-std-float"),
 									   uclOptions));
 	}
+
+	if (uclOutputFile) 
+		res = listNConcat(String)(res, 
+					  uclConstructOptList("output-name",
+							      listSingleton(String)(uclOutputFile)));
+
 	return res;
 }
 
@@ -746,10 +752,11 @@ uclConstructOptList(String name, StringList given)
  *
  *************************************************************************************/
 
-static void initPath();
+static void initPath(String argv0);
+String rootFromCmdLine(String cwd, String file);
 
 static void
-initState()
+initState(String argv0)
 {
 	uclIsCompileOnly = false;
 	uclIsLink   = false;
@@ -765,18 +772,19 @@ initState()
 	uclOptFile = NULL;
 	
 	cfgSetCondFunc(uclCheckCondition);
-	initPath();
+	initPath(argv0);
 }
 
 static char *uclDefaultPath = ".%c%s/include%c%s/share/include";
 
 static void 
-initPath()
+initPath(String argv0)
 {
 	char *root, *path;
 	/* $ALDORROOT overrides $AXIOMXLROOT */
 	root = getenv("ALDORROOT");
 	if (!root) root = getenv("AXIOMXLROOT");
+	if (!root) root = rootFromCmdLine(osCurDirName(), argv0);
 	if (!root) path = strCopy(".");
 	else {
 		path = (String) stoAlloc(OB_Other, strlen(uclDefaultPath) + 2 * strlen(root) + 1);
@@ -785,6 +793,18 @@ initPath()
 
 	cfgSetConfPath(path);
 	strFree(path);
+}
+
+String
+rootFromCmdLine(String cwd, String file)
+{
+	FileName fname = fnameParseStaticWithin(file, cwd);
+	String binDir = fnameDir(fname);
+	FileName rootDir = fnameNew(binDir, "..", "");
+
+	String root = fnameUnparse(rootDir);
+
+	return root;
 }
 
 /* 
