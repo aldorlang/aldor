@@ -599,10 +599,7 @@ dnfExpandAndImplies(Bool (*testFn)(void *, DNF_Atom, DNF_Atom),
 		DNF_Atom xxa = xx->argv[xxi];
 		DNF_Atom yya = yy->argv[yyi];
 
-		if (dnfAtomLT(xxa, yya))
-			xxi += 1;	/* Keep looking for yyi. */
-
-		else if (xxa == yya) {
+		if (xxa == yya) {
 			xxi += 1;	/* Found yyi. */
 			yyi += 1;
 		}
