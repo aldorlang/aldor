@@ -133,6 +133,8 @@ local SExpr sxiNewInteger(long n);
 local SExpr sxiNewNil(void);
 local void sxiIoTableInit(void);
 
+local int       sxFormatter     (OStream stream, Pointer p);
+
 void sxiInit(void)
 {
 	int i;
@@ -204,7 +206,20 @@ void sxiInit(void)
 
 	sxSTAR_Package_STAR = sx0UserPackage;
 
+	fmtRegister("SExpr", sxFormatter);
+
 	isInit = true;
+}
+
+local int
+sxFormatter(OStream ostream, Pointer p)
+{
+	SExpr sx = (SExpr) p;
+	Buffer b = bufNew();
+	sxiToBufferFormatted(b, sx, SXRW_MixedCase);
+	int c = ostreamWrite(ostream, bufLiberate(b), -1);
+	
+	return c;
 }
 
 /*****************************************************************************
