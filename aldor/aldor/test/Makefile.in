@@ -30,7 +30,7 @@ foamsrcdir = $(abs_top_srcdir)/aldor/lib/libfoam
 foamdir = $(abs_top_builddir)/aldor/lib/libfoam
 
 aptests := exquo
-fmtests := l1 clos strtable1
+fmtests := clos strtable1
 ctests  := 
 otests  := 
 
