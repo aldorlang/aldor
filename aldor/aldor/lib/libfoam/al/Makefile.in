@@ -125,6 +125,8 @@ all:
 	@cat runtime-gets.txt | sed -e 's/^[^"]*"\([^"]*\).*$$/*** Error from Makefile: gets from \1 are not allowed./' 
 	[ ! -s runtime-gets.txt ]
 
+install: all
+
 # 
 # :: Automake requires this little lot
 #

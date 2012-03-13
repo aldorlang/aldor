@@ -85,6 +85,7 @@ AC_CONFIG_FILES([Makefile
 		 lib/libax0/src/al/Makefile
 		 lib/libax0/test/Makefile
 		 lib/aldor/Makefile
+		 lib/aldor/include/Makefile
 		 lib/aldor/src/Makefile
 		 lib/aldor/src/lang/Makefile
 		 lib/aldor/src/base/Makefile

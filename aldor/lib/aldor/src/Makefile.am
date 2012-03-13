@@ -1,4 +1,4 @@
-SUBDIRS=lang base arith datastruc util gmp
+SUBDIRS=lang base arith datastruc util gmp 
 
 lang_ALDOR = lang/sal_lang.c
 base_ALDOR = base/ald_pfunc.c base/sal_base.c base/sal_bstream.c	\
@@ -26,7 +26,8 @@ datastruc_ALDOR = datastruc/sal_array.c datastruc/sal_barray.c		\
 		  datastruc/sal_set.c datastruc/sal_slist.c		\
 		  datastruc/sal_sortas.c datastruc/sal_sset.c		\
 		  datastruc/sal_stream.c datastruc/sal_string.c		\
-		  datastruc/sal_table.c
+		  datastruc/sal_table.c datastruc/ald_symbol.c		\
+		  datastruc/ald_symtab.c
 
 util_ALDOR =util/ald_trace.c util/eio_rsto.c util/rtexns.c	\
 	    util/sal_agat.c util/sal_cmdline.c util/sal_file.c	\
@@ -36,9 +37,12 @@ gmp_ALDOR =
 
 libaldor_a_SOURCES=$(lang_ALDOR) $(base_ALDOR) $(arith_ALDOR)	\
 		   $(datastruc_ALDOR) $(util_ALDOR)
+lib_LIBRARIES=libaldor.a
 
-noinst_LIBRARIES=libaldor.a
 aldorsrcdir = $(abs_top_srcdir)/aldor/src
+
+datalibdir=$(datadir)/lib
+datalib_DATA=libaldor.al
 
 AM_CFLAGS = -I$(aldorsrcdir)
 
