@@ -48,6 +48,7 @@ define aldor_args
 	-Fao=$*.ao $(srcdir)/$*.as
 endef
 
+$(patsubst %, %.ao, $(library)): %.ao: $(aldorexedir)/aldor
 $(patsubst %, %.dep,$(library)): %.dep: Makefile $(srcdir)/%.as
 $(patsubst %, %.ao, $(library)): %.ao: $(srcdir)/%.as
 $(patsubst %, %.ao, $(library)): %.ao: 
