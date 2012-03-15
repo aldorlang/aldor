@@ -2437,7 +2437,11 @@ tibupCollect(Stab stab, AbSyn absyn, TForm type)
 		t = tfFollow(t);
 #endif
 		if (tfIsMulti(t)) t = tfCrossFrMulti(t);
-		cposs = tpossAdd1(cposs, tfGenerator(t));
+		TForm retType = tfGenerator(t);
+		SatMask result = tfSat(tfSatBupMask(), retType, type);
+		if (tfSatSucceed(result)) {
+			cposs = tpossAdd1(cposs, retType);
+		}
 	}
 	abTPoss(absyn) = cposs;
 

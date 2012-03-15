@@ -91,6 +91,7 @@ testsuite = \
 	test/test_stab.c	\
 	test/test_syme.c	\
 	test/test_tform.c	\
+	test/test_tibup.c	\
 	test/test_tinfer.c
 
 testall_SOURCES = test/testall.c $(testsuite) test/testlib.c test/abquick.c cmdline.c axlcomp.c

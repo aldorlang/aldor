@@ -26,6 +26,7 @@ main(int argc, char *argv[])
 	if (testShouldRun("tform")) tformTest();
 	if (testShouldRun("scobind")) scobindTest();
 	if (testShouldRun("syme")) symeTest();
+	if (testShouldRun("tibup")) tibupTest();
 
 	testIntEqual("fluidlevel", 0, fluidLevel);
 
