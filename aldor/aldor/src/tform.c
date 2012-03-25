@@ -3966,13 +3966,19 @@ tfGetCatExportsCond(SymeList symes0, SefoList conds0, Bool pos)
 {
 	SymeList	symes, nsymes = listNil(Syme);
 	SefoList	conds;
+	SefoList reversedConds0 = listReverse(Sefo)(conds0);
 
+	/* Reverse conditions so that any dependency in evaluation is preserved.
+	 * For example S has Ring and X has Algebra S
+	 */
 	for (symes = symes0; symes; symes = cdr(symes)) {
 		Syme nsyme = symeCopy(car(symes));
-		for (conds = conds0; conds; conds = cdr(conds))
+		for (conds = reversedConds0; reversedConds0; reversedConds0 = cdr(reversedConds0)) {
 			symeAddCondition(nsyme, car(conds), pos);
+		}
 		nsymes = listCons(Syme)(nsyme, nsymes);
 	}
+	listFree(Sefo)(reversedConds0);
 
 	return listNReverse(Syme)(nsymes);
 }
