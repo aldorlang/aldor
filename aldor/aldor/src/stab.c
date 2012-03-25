@@ -1134,6 +1134,8 @@ stabAddMeaning(Stab stab, Syme syme)
 	}
 
 	car(stab)->boundSymes = listCons(Syme)(syme, car(stab)->boundSymes);
+	stabDEBUG(afprintf(dbOut, "Adding stab entry %d %pSyme %pAbSynList\n", car(stab)->lexicalLevel, 
+			   syme, symeCondition(syme)));
 	stabEntryAddSyme(stent, syme);
 
 	return syme;
