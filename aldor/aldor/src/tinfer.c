@@ -520,10 +520,16 @@ tiAddSymes(Stab astab, AbSyn capsule, TForm base, TForm context, SymeList *p)
 	return dsymes;
 }
 
+TForm tiGetTFormContext(Stab stab, SymeCContext context, AbSyn type);
+
 local TForm 
 tiGetTopLevelTForm(SymeCContext context, AbSyn type)
 {
-	return tiGetTForm(stabFile(), type);
+	TForm tf;
+
+	tf = tiGetTFormContext(stabFile(), context, type);
+
+	return tf;
 }
 
 /*
@@ -533,14 +539,24 @@ tiGetTopLevelTForm(SymeCContext context, AbSyn type)
 TForm
 tiGetTForm(Stab stab, AbSyn type)
 {
+	return tiGetTFormContext(stab, NULL, type);
+}
+
+TForm
+tiGetTFormContext(Stab stab, SymeCContext context, AbSyn type)
+{
 	TForm	tf, ntf;
 
 	tf  = abTForm(type) ? abTForm(type) : tfSyntaxFrAbSyn(stab, type);
 
 	/* Transfer semantics from type to tf. */
-	if (abIsSefo(type) && !abIsSefo(tfGetExpr(tf)))
+	if (abIsSefo(type) && !abIsSefo(tfGetExpr(tf))) {
 		abTransferSemantics(type, tfGetExpr(tf));
+	}
 
+	if (!tfIsMeaning(tf)) 
+		tfMergeConditions(tf, stab, tfCondEltNew(stab, context));
+	
 	ntf = typeInferTForm(stab, tf);
 	tfTransferSemantics(ntf, tf);
 

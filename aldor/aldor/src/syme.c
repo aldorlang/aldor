@@ -39,7 +39,7 @@ local void		symeFillFrExporter	(Syme, TForm);
 local Bool		symeListCheckFindSyme	(SymeList, Syme);
 local void		symeListCheckJoinSymes	(Syme, Syme);
 local Bool		abIsFullyInstantiated	(Sefo);
-local int		symeCheckHas		(Sefo, Sefo);
+local int		symeCheckHas		(SymeCContext, Sefo, Sefo);
 local void		symeCheckHasMemo	(Sefo, Sefo, SatMask);
 local int		symeCheckHasResult	(Sefo, Sefo, Bool *);
 local Bool		 symeCheckIdentifier	(AbSyn, Syme);
@@ -1098,7 +1098,9 @@ symeCheckCondition(Syme syme)
 
 		dom = cond->abHas.expr;
 		cat = cond->abHas.property;
-		result = symeCheckHas(dom, cat);
+		symeHasDEBUG(afprintf(dbOut, "(symeCheckCondition: %pSymeC...", syme));
+		result = symeCheckHas(symeConditionContext(syme), dom, cat);
+		symeHasDEBUG(afprintf(dbOut, " ... %d)\n", result));
 
 		if (result == 1) {
 			symeSetCheckCondIncomplete(syme);
@@ -1146,7 +1148,7 @@ abIsFullyInstantiated(Sefo ab)
 }
 
 local int
-symeCheckHas(Sefo dom, Sefo cat)
+symeCheckHas(SymeCContext conditionContext, Sefo dom, Sefo cat)
 {
 	TForm	tfdom, tfcat;
 	SatMask	result;

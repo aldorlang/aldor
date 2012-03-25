@@ -98,6 +98,7 @@ enum symeField {
 	SYFI_DefnNum,			/* Sequence number when defined */
 	SYFI_HashNum,			/* Runtime hash code */
 	SYFI_ExtraBits,			/* More syme bits */
+	SYFI_ConditionContext,		/* Context in which to infer condition */
     SYME_FIELD_LIMIT
 };
 
@@ -333,6 +334,7 @@ extern Lib		symeConstLib		(Syme);
 #define	symeHashNum(s)		((int)      symeGetField(s, SYFI_HashNum))
 #define symeImpl(s)		((SImpl)    symeGetField(s, SYFI_SImpl))
 #define symeExtraBits(s)	((AInt)     symeGetField(s, SYFI_ExtraBits))
+#define symeConditionContext(s)	((SymeCContext)     symeGetField(s, SYFI_ConditionContext))
 
 #define			symeIsLabel(s)		(symeKind(s) == SYME_Label)
 #define			symeIsParam(s)		(symeKind(s) == SYME_Param)
@@ -426,6 +428,7 @@ extern void		symeSetConstNumX	(Syme, AInt);
 #define	symeSetHashNum(s,v)		symeSetField(s, SYFI_HashNum, v)
 #define	symeSetImpl(s,v)		symeSetField(s, SYFI_SImpl, v)
 #define symeSetExtraBits(s,v)		symeSetField(s, SYFI_ExtraBits, v)
+#define symeSetConditionContext(s,v)	symeSetField(s, SYFI_ConditionContext, v)
 
 #define			symeSetBit(s,b)		(symeBits(s) |= (b))
 #define			symeClrBit(s,b)		(symeBits(s) &= ~(b))

@@ -4232,6 +4232,7 @@ tfStabGetDomImports(Stab stab, TForm tf)
 			tfDEBUG(afprintf(dbOut, "Setting imported condition %s %pTForm\n", 
 					 symeString(syme), symeTf));
 			tfSetConditions(symeTf, tfConditions(tf));
+			symeSetConditionContext(syme, tfConditionalAbSyn(tf));
 			sl = cdr(sl);
 		}
 	
