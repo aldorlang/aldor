@@ -1297,7 +1297,8 @@ libPutSymes(Lib lib, SymeList symes, Foam foam)
 		fnewline(dbOut);
 		while (l != listNil(Syme)) {
 			Syme syme = car(l);
-			afprintf(dbOut, "PutSyme: %s: %d %pTForm\n", symeString(syme), symeTypeCode(syme), symeType(syme));
+			afprintf(dbOut, "PutSyme: %s: %pAbSynList\n", 
+				 symeString(syme), symeCondition(syme));
 			l = cdr(l);
 		}
 		listPrint(Syme)(dbOut, symes, symePrint);
