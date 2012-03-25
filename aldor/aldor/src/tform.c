@@ -230,6 +230,9 @@ local int tfListFormatter(OStream stream, Pointer p);
 local int symeFormatter(OStream stream, Pointer p);
 local int symeListFormatter(OStream stream, Pointer p);
 
+local int symeConditionFormatter(OStream stream, Pointer p);
+local int symeConditionListFormatter(OStream stream, Pointer p);
+
 local int ptrFormatter(OStream stream, Pointer p);
 local int ptrListFormatter(OStream stream, Pointer p);
 
@@ -403,6 +406,9 @@ tfInit(void)
 	fmtRegister("Syme", symeFormatter);
 	fmtRegister("SymeList", symeListFormatter);
 
+	fmtRegister("SymeC", symeConditionFormatter);
+	fmtRegister("SymeCList", symeConditionListFormatter);
+
 	fmtRegister("Ptr", ptrFormatter);
 	fmtRegister("PtrList", ptrListFormatter);
 
@@ -423,6 +429,18 @@ symeFormatter(OStream ostream, Pointer p)
 	int c;
 
 	c = symeOStreamWrite(ostream, p);
+
+	return c;
+}
+
+local int
+symeConditionFormatter(OStream ostream, Pointer p)
+{
+	Syme syme = (Syme) p;
+	int c;
+
+	c = symeOStreamWrite(ostream, syme);
+	c += listFormat(AbSyn)(ostream, "AbSyn", (AbSynList) symeCondition(syme));
 
 	return c;
 }
@@ -453,8 +471,8 @@ tfFormatter(OStream ostream, Pointer p)
 local int
 tfListFormatter(OStream ostream, Pointer p)
 {
-	AbSynList list = (AbSynList) p;
-	return listFormat(AbSyn)(ostream, "TForm", list);
+	TFormList list = (TFormList) p;
+	return listFormat(TForm)(ostream, "TForm", list);
 }
 
 local int
@@ -462,6 +480,13 @@ symeListFormatter(OStream ostream, Pointer p)
 {
 	AbSynList list = (AbSynList) p;
 	return listFormat(AbSyn)(ostream, "Syme", list);
+}
+
+local int
+symeConditionListFormatter(OStream ostream, Pointer p)
+{
+	AbSynList list = (AbSynList) p;
+	return listFormat(AbSyn)(ostream, "SymeC", list);
 }
 
 local int
