@@ -1750,13 +1750,12 @@ tfSatConditions(SymeList mods, Syme s, Syme t)
 			AbSyn cat;
 			tfdom = abGetCategory(cond->abHas.expr);
 			cat   = cond->abHas.property;
-			tfcat = abTForm(cat) ? abTForm(cat) : tiTopFns()->tiGetTopLevelTForm(cat);
+			tfcat = abTForm(cat) ? abTForm(cat) : tiTopFns()->tiGetTopLevelTForm(NULL, cat);
 
 			if (tfSatisfies(tfdom, tfcat))
 				continue;
 		}
 		return false;
-
 	}
 	return true;
 }

@@ -628,9 +628,9 @@ ablogTestProperties(Sefo test, Sefo know)
 	know = know->abHas.property;
 
 	tftest  = abTForm(test) ?
-		abTForm(test) : (tiTopFns()->tiGetTopLevelTForm)(test);
+		abTForm(test) : (tiTopFns()->tiGetTopLevelTForm)(NULL, test);
 	tfknown = abTForm(know) ?
-		abTForm(know) : (tiTopFns()->tiGetTopLevelTForm)(know);
+		abTForm(know) : (tiTopFns()->tiGetTopLevelTForm)(NULL, know);
 
 	ablogDEBUG({
 		fprintf(dbOut, "Checking: \n");

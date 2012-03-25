@@ -2,12 +2,14 @@
 #define _TI_TOP_H_
 #include "axlobs.h"
 
+typedef AbSynList SymeCContext;
+
 typedef struct _tiTopLevel {
 	void    (*terrorTypeConstFailed)(TConst);
 	void    (*tiBottomUp)		(Stab, AbSyn, TForm);
 	void    (*tiTopDown)		(Stab, AbSyn, TForm);
 	Bool    (*tiCanSefo)		(Sefo);
-	TForm   (*tiGetTopLevelTForm)	(AbSyn);
+	TForm   (*tiGetTopLevelTForm)	(SymeCContext, AbSyn);
 
 	Bool	(*tiUnaryToRaw)		(Stab, AbSyn, TForm);
 	Bool	(*tiRawToUnary)		(Stab, AbSyn, TForm);

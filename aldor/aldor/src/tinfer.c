@@ -179,7 +179,7 @@ local Bool		tiTopEqual		(TFormUses, TFormUses);
  ****************************************************************************/
 
 local Bool		tqShouldImport	  (TQual);
-local TForm             tiGetTopLevelTForm(AbSyn type);
+local TForm             tiGetTopLevelTForm(SymeCContext context, AbSyn type);
 
 void
 tinferInit()
@@ -521,7 +521,7 @@ tiAddSymes(Stab astab, AbSyn capsule, TForm base, TForm context, SymeList *p)
 }
 
 local TForm 
-tiGetTopLevelTForm(AbSyn type)
+tiGetTopLevelTForm(SymeCContext context, AbSyn type)
 {
 	return tiGetTForm(stabFile(), type);
 }

@@ -1158,7 +1158,7 @@ symeCheckHas(Sefo dom, Sefo cat)
 		return flg;
 	
 	tfdom = abGetCategory(dom);
-	tfcat = abTForm(cat) ? abTForm(cat) : tiTopFns()->tiGetTopLevelTForm(cat);
+	tfcat = abTForm(cat) ? abTForm(cat) : tiTopFns()->tiGetTopLevelTForm(NULL, cat);
 
 	/* D has C iff typeof(D) satisfies C. */
 	result = tfSat(tfSatBupMask(), tfdom, tfcat);
@@ -1337,7 +1337,7 @@ symeCheckIdentifier(AbSyn ab, Syme syme)
 		cat = cond->abHas.property;
 
 		tfdom = abGetCategory(dom);
-		tfcat = abTForm(cat) ? abTForm(cat) : tiTopFns()->tiGetTopLevelTForm(cat);
+		tfcat = abTForm(cat) ? abTForm(cat) : tiTopFns()->tiGetTopLevelTForm(NULL, cat);
 
 		/* D has C iff typeof(D) satisfies C. */
 		result = tfSat(tfSatTdnInfoMask(), tfdom, tfcat);
