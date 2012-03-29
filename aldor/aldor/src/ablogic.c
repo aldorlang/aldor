@@ -31,12 +31,12 @@ Bool	ablogDebug		= false;
  * free operations.
  */
 
-local DNF	ablogIn (AbLogic xx) { 
+local DNF	ablogIn (AbLogic xx) {
 	return dnfFollow((DNF)xx);
 }
 
-local AbLogic	ablogOut(DNF     xx) { 
-	return (AbLogic) xx; 
+local AbLogic	ablogOut(DNF     xx) {
+	return (AbLogic) xx;
 }
 
 #if 0
@@ -101,7 +101,7 @@ ablogFrAtom(DNF_Atom lit)
 #else
 	sefo = (Sefo) tblElt(ablogFrTable, (TblKey) lit, (TblElt) NULL);
 #endif
-	
+
 	return sefo;
 }
 
@@ -408,7 +408,7 @@ ablogEqual(AbLogic xx, AbLogic yy)
  *
  *****************************************************************************/
 
-/* 
+/*
  * ToDo: ablogIsListImplied should use ablogImplies.
  * ablogImplies should do some form of result caching.
  */
@@ -447,7 +447,7 @@ ablogImplies(AbLogic known, AbLogic query)
 
 	result = dnfExpandImplies(ablogTestImplies, &clos,
 				  ablogIn(known), ablogIn(query));
-	
+
 	return result;
 }
 
@@ -465,7 +465,7 @@ ablogTestImplies(void *clos, DNF_Atom a, DNF_Atom b)
 	}
 	/* Can't do negatives yet */
 	if (a < 0 || b < 0) return false;
-	
+
 	know = ablogFrAtom(a);
 	test = ablogFrAtom(b);
 
@@ -475,7 +475,7 @@ ablogTestImplies(void *clos, DNF_Atom a, DNF_Atom b)
 		   );
 	if (abTag(test) != AB_Has || abTag(know) != AB_Has)
 		return false;
-	
+
 	if (sefoEqual(test->abHas.expr, know->abHas.expr))
 		result = ablogTestProperties(test, know);
 
@@ -501,17 +501,17 @@ ablogIsListImplied(AbLogic xx, SefoList sl)
 	return result;
 }
 
-local Bool 
+local Bool
 ablogIsListImpliedInner(AbLogic xx, SefoList sefolist, AbLogic *final)
 {
 	SefoList sl;
 
 	if (ablogIsListImplied0(xx, sefolist))
 		return true;
-	
+
 	sl = sefolist;
 	while (sl != listNil(Sefo)) {
-		if (ablogExpandKnown(xx, car(sl), final) 
+		if (ablogExpandKnown(xx, car(sl), final)
 		    && ablogIsListImplied0(*final, sefolist))
 			return true;
 		sl = cdr(sl);
@@ -564,7 +564,7 @@ ablogExpandKnown(AbLogic known, Sefo sefo, AbLogic *final)
 		clos.atom = clos.atomv[i];
 		dnfMap(ablogTestAtoms, (void*) &clos, ablogIn(known));
 	}
-	
+
 	*final = ablogAnd(known, clos.new);
 	res = !ablogEqual(clos.new, ablogTrue());
 	ablogFree(clos.new);
@@ -585,8 +585,8 @@ ablogAtomize(void *ptr, DNF_Atom atom)
 
 	/* Grow slowly */
 	if (clos->atomc == clos->lim) {
-		clos->atomv = (DNF_Atom*) 
-			stoResize(clos->atomv, 
+		clos->atomv = (DNF_Atom*)
+			stoResize(clos->atomv,
 				  (clos->lim + 5)*sizeof(DNF_Atom));
 		clos->lim += 5;
 	}
@@ -605,8 +605,8 @@ ablogTestAtoms(void *ptr, DNF_Atom known)
 
 	if (abTag(test) != AB_Has || abTag(know) != AB_Has)
 		return false;
-	
-	/* 
+
+	/*
 	 * This test is a bit strong,
 	 * eg. if A then Foo(A)
 	 */
@@ -627,11 +627,11 @@ ablogTestProperties(Sefo test, Sefo know)
 	test = test->abHas.property,
 	know = know->abHas.property;
 
-	tftest  = abTForm(test) ? 
+	tftest  = abTForm(test) ?
 		abTForm(test) : (tiTopFns()->tiGetTopLevelTForm)(test);
 	tfknown = abTForm(know) ?
 		abTForm(know) : (tiTopFns()->tiGetTopLevelTForm)(know);
-	
+
 	ablogDEBUG({
 		fprintf(dbOut, "Checking: \n");
 		tfPrintDb(tftest);

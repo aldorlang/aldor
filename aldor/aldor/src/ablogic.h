@@ -43,7 +43,7 @@ extern Bool	ablogIsTrue	  (AbLogic);
 extern Bool	ablogIsFalse	  (AbLogic);
 
 extern Bool	ablogEqual	  (AbLogic, AbLogic);
-extern Bool	ablogIsImplied	  (AbLogic, Sefo cond);
+extern Bool	ablogIsImplied	  (AbLogic, Sefo);
 extern Bool	ablogImplies	  (AbLogic, AbLogic);
 extern Bool	ablogIsListImplied(AbLogic, SefoList);
 extern Bool	ablogIsListKnown  (SefoList sefolist);
