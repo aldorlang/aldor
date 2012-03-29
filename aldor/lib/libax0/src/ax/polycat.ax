@@ -1,6 +1,7 @@
 
 (|Sequence|
    (|Import| NIL |AxiomLib|)
+   (|Import| NIL |Boolean|)
    (|Foreign| (|Declare| |dummyDefault| |Exit|) |Lisp|)
    (|Export|
       (|Declare|

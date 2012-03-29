@@ -1540,8 +1540,7 @@
                   (|If|
                      (|Test|
                         (|Has|
-                           |%|
-                           (|RestrictTo| |shallowlyMutable| |Category|)))
+                           |%| |shallowlyMutable|))
                      (|Sequence|
                         (|Declare|
                            |copyInto!|
