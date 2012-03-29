@@ -89,6 +89,7 @@ testsuite = \
 	test/test_scobind.c	\
 	test/test_srcpos.c	\
 	test/test_stab.c	\
+	test/test_syme.c	\
 	test/test_tform.c	\
 	test/test_tinfer.c
 
