@@ -51,5 +51,7 @@ extern Bool	ablogIsListKnown  (SefoList sefolist);
 extern void	ablogAndPush	  (AbLogic* glo,AbLogic* save,Sefo,Bool sense);
 extern void	ablogAndPop	  (AbLogic* glo,AbLogic* save);
 
+extern TForm    ablogImpliedType  (AbLogic known, AbSyn sefo, TForm tf);
+
 extern int	bputAblog         (Buffer, AbLogic);
 #endif /* !_ABLOGIC_H_ */

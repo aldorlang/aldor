@@ -673,3 +673,52 @@ bputAblog(Buffer buf, AbLogic abl)
 
 	return cc;
 }
+
+/*
+ * :: Categorical implications
+ */
+
+typedef struct ablogImpliedClos {
+	Sefo lhs;
+	TFormList list;
+} *AblogImpliedClos;
+
+local Bool ablogAtomImpliedType(void *ptr, DNF_Atom atom);
+
+TForm
+ablogImpliedType(AbLogic known, AbSyn lhs, TForm type)
+{
+	TForm tf;
+	struct ablogImpliedClos clos;
+	clos.lhs = lhs;
+	clos.list = listNil(TForm);
+
+	dnfMap(ablogAtomImpliedType, &clos, ablogIn(known));
+
+	if (clos.list == listNil(TForm))
+		return NULL;
+
+	tf = tfJoinFrList(listCons(TForm)(type, clos.list));
+
+	return tf;
+}
+
+
+local Bool
+ablogAtomImpliedType(void *ptr, DNF_Atom atom)
+{
+	AblogImpliedClos clos = (AblogImpliedClos) ptr;
+	Sefo known = ablogFrAtom(atom);
+
+	if (abTag(known) != AB_Has)
+		return false;
+
+	AbSyn lhs = known->abHas.expr;
+	AbSyn rhs = known->abHas.property;
+
+	if (abEqual(lhs, clos->lhs)) {
+		clos->list = listCons(TForm)(abTForm(rhs), clos->list);
+	}
+
+	return false;
+}
