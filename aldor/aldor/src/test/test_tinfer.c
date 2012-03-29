@@ -193,38 +193,8 @@ void init()
 	comsgInit();
 }
 
-void fini()
+void 
+fini()
 {
-	comsgFini();
+	saveAndEmptyAllPhaseSymbolData();
 }
-
-AbSyn tupleOfType()
-{
-	return apply1(id("Tuple"), id("Type"));
-}
-
-AbSyn stdtypes()
-{
-	/* Type: with == add; */
-	AbSyn type = define(declare(id("Type"), emptyWith()), emptyAdd());
-	/* Tuple(T: Type): with == add */
-	AbSyn tuple = define(declare(id("Tuple"), apply2(id("->"), declare(id("T"), id("Type")), emptyWith())),
-			     lambda(comma1(declare(id("T"), id("Type"))),
-				    emptyWith(),
-				    label(id("Tuple"), emptyAdd())));
-	/* Map(A: Tuple Type, R: Tuple Type): with == add; */
-	AbSyn map = define(declare(id("->"),
-				   apply2(id("->"),
-					  comma2(declare(id("A"), tupleOfType()),
-						 declare(id("R"), tupleOfType())),
-					  emptyWith())),
-			   lambda(comma2(declare(id("A"), tupleOfType()),
-					 declare(id("R"), tupleOfType())),
-				  emptyWith(),
-				  label(id("->"), emptyAdd())));
-	/* Boolean: with == add; */
-	AbSyn boolean = define(declare(id("Boolean"), emptyWith()), emptyAdd());
-
-	return abNewSequenceL(sposNone, listList(AbSyn)(4, type, tuple, map, boolean));
-}
-
