@@ -59,4 +59,6 @@ AbSyn _if(AbSyn testPart, AbSyn thenPart, AbSyn elsePart);
 AbSyn abqParse(String txt);
 AbSynList abqParseLines(StringList lines);
 
+AbSyn stdtypes();
+
 #endif
