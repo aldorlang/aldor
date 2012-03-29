@@ -76,6 +76,7 @@ abqParse(String txt)
 
 	sll = listList(SrcLine)(1, srcLine);
 	tl = scan(sll);
+	tl = linearize(tl);
 	ab = parse(&tl);
 	ab = abNormal(ab, false);
 	ab = macroExpand(ab);
