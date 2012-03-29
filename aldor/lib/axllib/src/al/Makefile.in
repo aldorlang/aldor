@@ -9,6 +9,8 @@ builddir = @builddir@
 abs_top_srcdir = @abs_top_srcdir@
 subdir = lib/axllib/src/al
 
+default: all
+
 # Check the makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
