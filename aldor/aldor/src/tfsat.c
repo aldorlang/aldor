@@ -46,6 +46,7 @@ extern Stab		stabFindLevel		(Stab, Syme);
  *	TFS_Commit			Perform side-fx operations.
  *	TFS_Missing			Collect missing exports.
  *	TFS_Sigma			Just collect the substitution.
+ *      TFS_Conditions                  Allow use of abCondKnown
  *
  *	(type form embeddings)
  *	TFS_Pending			Pending T -> T
@@ -72,6 +73,7 @@ extern Stab		stabFindLevel		(Stab, Syme);
  */
 
 /*!! Remember to update tfSatAbEmbed when these change. */
+
 #define	TFS_Succeed		((SatMask) 0)
 
 #define	TFS_Probe		(((SatMask) 1) << 0)
@@ -79,31 +81,32 @@ extern Stab		stabFindLevel		(Stab, Syme);
 #define	TFS_Missing		(((SatMask) 1) << 2)
 #define	TFS_Sigma		(((SatMask) 1) << 3)
 #define TFS_Info		(((SatMask) 1) << 4)
+#define TFS_Conditions		(((SatMask) 1) << 5)
 
-#define	TFS_Pending		(((SatMask) 1) << 5)
-#define	TFS_AnyToNone		(((SatMask) 1) << 6)
-#define	TFS_Sefo		(((SatMask) 1) << 7)
+#define	TFS_Pending		(((SatMask) 1) << 6)
+#define	TFS_AnyToNone		(((SatMask) 1) << 7)
+#define	TFS_Sefo		(((SatMask) 1) << 8)
 
-#define	TFS_EmbedShift		8
-#define	TFS_CrossToTuple	(((SatMask) 1) << 8)
-#define	TFS_CrossToMulti	(((SatMask) 1) << 9)
-#define	TFS_CrossToUnary	(((SatMask) 1) << 10)
-#define	TFS_MultiToTuple	(((SatMask) 1) << 11)
-#define	TFS_MultiToCross	(((SatMask) 1) << 12)
-#define	TFS_MultiToUnary	(((SatMask) 1) << 13)
-#define	TFS_UnaryToTuple	(((SatMask) 1) << 14)
-#define	TFS_UnaryToCross	(((SatMask) 1) << 15)
-#define	TFS_UnaryToMulti	(((SatMask) 1) << 16)
+#define	TFS_EmbedShift		9
+#define	TFS_CrossToTuple	(((SatMask) 1) << 9)
+#define	TFS_CrossToMulti	(((SatMask) 1) << 10)
+#define	TFS_CrossToUnary	(((SatMask) 1) << 11)
+#define	TFS_MultiToTuple	(((SatMask) 1) << 12)
+#define	TFS_MultiToCross	(((SatMask) 1) << 13)
+#define	TFS_MultiToUnary	(((SatMask) 1) << 14)
+#define	TFS_UnaryToTuple	(((SatMask) 1) << 15)
+#define	TFS_UnaryToCross	(((SatMask) 1) << 16)
+#define	TFS_UnaryToMulti	(((SatMask) 1) << 17)
 
-#define	TFS_Fail		(((SatMask) 1) << 17)
-#define	TFS_ExportsMissing	(((SatMask) 1) << 18)
-#define	TFS_EmbedFail		(((SatMask) 1) << 19)
-#define	TFS_ArgMissing		(((SatMask) 1) << 20)
-#define	TFS_BadArgType		(((SatMask) 1) << 21)
-#define	TFS_DifferentArity	(((SatMask) 1) << 22)
+#define	TFS_Fail		(((SatMask) 1) << 18)
+#define	TFS_ExportsMissing	(((SatMask) 1) << 19)
+#define	TFS_EmbedFail		(((SatMask) 1) << 20)
+#define	TFS_ArgMissing		(((SatMask) 1) << 21)
+#define	TFS_BadArgType		(((SatMask) 1) << 22)
+#define	TFS_DifferentArity	(((SatMask) 1) << 23)
 
 
-#define	TFS_BitsWidth		23
+#define	TFS_BitsWidth		24
 #define	TFS_BitsMask		((((SatMask) 1) << TFS_BitsWidth) - 1)
 
 #define	TFS_ModeMask		(\
@@ -153,6 +156,7 @@ extern Stab		stabFindLevel		(Stab, Syme);
 #define			tfSatMissing(m)		((m) & TFS_Missing)
 #define			tfSatSigma(m)		((m) & TFS_Sigma)
 #define			tfSatInfo(m)		((m) & TFS_Info)
+#define			tfSatUseConditions(m)	((m) & TFS_Conditions)
 
 #define			tfSatAllow(m,c)		((m) & (c))
 
@@ -222,13 +226,13 @@ tfSatHasMask(void)
 SatMask
 tfSatBupMask(void)
 {
-	return TFS_Probe | TFS_UsualMask;
+	return TFS_Probe | TFS_UsualMask | TFS_Conditions;
 }
 
 SatMask
 tfSatTdnMask(void)
 {
-	return TFS_Commit | TFS_UsualMask;
+	return TFS_Commit | TFS_UsualMask | TFS_Conditions;
 }
 
 SatMask
@@ -973,8 +977,17 @@ tfSat1(SatMask mask, AbSyn Sab, TForm S, TForm T)
 	 * Category forms
 	 */
 	else if (tfSatSucceed(tfSatDOM(mask, T)))  {
-		if (tfSatSucceed(tfSatDOM(mask, S)))
+		if (tfSatSucceed(tfSatDOM(mask, S))) {
+ 			if (tfSatUseConditions(mask) && abCondKnown != NULL
+			    && Sab != NULL) {
+				TForm tf = ablogImpliedType(abCondKnown, Sab, S);
+				if (tf != NULL) {
+					tfsDEBUG(afprintf(dbOut, "Swapping type: %pTForm to %pTForm\n", S, tf));
+					S = tf;
+				}
+			}
 			result = tfSatCatExports(mask, Sab, S, T);
+		}
 	}
 
 	/*
