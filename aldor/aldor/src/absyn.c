@@ -324,6 +324,24 @@ abTreeHeight(AbSyn ab)
 	return hn + 1;
 }
 
+Bool
+abContains(AbSyn ab, AbSyn target)
+{
+	if (abEqual(ab, target))
+		return true;
+	else if (abIsLeaf(ab)) {
+		return false;
+	}
+	else {
+		int i;
+		for (i=0; i<abArgc(ab); i++) {
+			if (abContains(abArgv(ab)[i], target))
+				return true;
+		}
+		return false;
+	}
+}
+
 /*
  * To find a node in a given tree:  path = abPathToNode(r,n, eql, &len, 0);
  * If the equality tester "eql" is 0, then "==" is used.

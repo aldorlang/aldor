@@ -949,6 +949,7 @@ extern AbSyn	abNewOfToken		(AbSynTag t, Token);
 extern AbSyn	abCopy			(AbSyn);
 extern AbSyn	abReposition		(AbSyn, SrcPos pos, SrcPos end);
 extern AbSyn	abMarkAsMacroExpanded	(AbSyn);
+extern Bool	abContains		(AbSyn, AbSyn);
 extern Bool	abEqual			(AbSyn, AbSyn);
 extern Bool	abEqualModDeclares	(AbSyn, AbSyn);
 extern Hash	abHash			(AbSyn);
