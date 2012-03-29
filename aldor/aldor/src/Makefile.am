@@ -94,7 +94,7 @@ testsuite = \
 testall_SOURCES = test/testall.c $(testsuite) test/testlib.c test/abquick.c
 testall_LDADD = libphase.a libstruct.a libgen.a libport.a -lm
 testall_LDFLAGS = 
-testall_CFLAGS =
+testall_CFLAGS = -save-temps
 #
 # Special rules
 #
