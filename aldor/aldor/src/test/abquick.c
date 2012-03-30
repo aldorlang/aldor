@@ -106,12 +106,14 @@ stdtypes()
 	String Category_txt = "Category: with == add";
 	String Tuple_txt = "Tuple(T: Type): with == add";
 	String Cross_txt = "Cross(T: Tuple Type): with == add";
+	String Generator_txt = "Generator(T: Type): with == add";
 	String Map_txt = "(->)(A: Tuple Type, R: Tuple Type): with == add";
 	String Boolean_txt = "Boolean: with == add";
 	String Join_txt = "Join(T: Tuple Category): Category == with";
 	
-	StringList lines = listList(String)(7, Type_txt, Category_txt, Cross_txt,
-					    Tuple_txt, Map_txt, Boolean_txt, Join_txt);
+	StringList lines = listList(String)(8, Type_txt, Category_txt, Cross_txt,
+					    Tuple_txt, Map_txt, Boolean_txt, Join_txt, 
+					    Generator_txt);
 	AbSynList code = abqParseLines(lines);
 	AbSyn absyn = abNewSequenceL(sposNone, code);
 
