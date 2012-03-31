@@ -91,7 +91,7 @@ testsuite = \
 	test/test_tform.c	\
 	test/test_tinfer.c
 
-testall_SOURCES = test/testall.c $(testsuite) test/testlib.c test/abquick.c
+testall_SOURCES = test/testall.c $(testsuite) test/testlib.c test/abquick.c cmdline.c axlcomp.c
 testall_LDADD = libphase.a libstruct.a libgen.a libport.a -lm
 testall_LDFLAGS = 
 testall_CFLAGS = -save-temps
