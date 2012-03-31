@@ -1816,13 +1816,18 @@ tiTfPending1(Stab stab, TForm tf)
 	titfOneDEBUG(tiTfExit(dbOut, "tiTfPending1", NULL, tf));
 }
 
+local AbLogic tiTfCondition(Stab stab, TForm tf);
 /* Perform bottom-up analysis to generate tposs sets. */
 local void
 tiTfBottomUp1(Stab stab, TFormUses tfu, TForm tf)
 {
+	Scope("tiTfBottomUp1");
 	SymbolList	ol = listNil(Symbol);
 	AbSyn		absyn = tfGetExpr(tf);
 	TForm		type = tfTypeTuple;
+	AbLogic    fluid(abCondKnown);
+
+	abCondKnown = tiTfCondition(stab, tf);
 
 	if (abUse(absyn) == AB_Use_Define || abUse(absyn) == AB_Use_Assign)
 		type = tfUnknown;
@@ -1834,6 +1839,33 @@ tiTfBottomUp1(Stab stab, TFormUses tfu, TForm tf)
 	tiBottomUp(stab, absyn, type);
 	tiTfPopDeclarees(ol);
 	titfOneDEBUG(tiTfExit(dbOut, "tiTfBottomUp1", tfu, tf));
+
+	Return(Nothing);
+}
+
+local AbLogic
+tiTfCondition(Stab stab, TForm tf)
+{
+	AbSynList condition = tfConditionalAbSyn(tf);
+	AbSyn	absyn = tfGetExpr(tf);
+	AbLogic rule = ablogTrue();
+
+	while (condition != listNil(AbSyn)) {
+		Stab cstab = stab;/*tfConditionalStab(tf);*/
+		AbSyn ab = car(condition);
+
+		assert(cstab != NULL);
+		titfDEBUG(printf("Condition: "); abPrintDb(car(condition)));
+		if (abContains(ab, absyn)) {
+			condition = cdr(condition);
+			continue;
+		}
+		tiBottomUp(cstab, ab, tfUnknown);
+		tiTopDown (cstab, ab, tfUnknown);
+		rule = ablogAnd(rule, ablogFrSefo(ab));
+		condition = cdr(condition);
+	}
+	return rule;
 }
 
 /* Audit the bottom-up type analysis phase. */
@@ -1849,8 +1881,12 @@ tiTfAudit1(Stab stab, TForm tf)
 local void
 tiTfTopDown1(Stab stab, TForm tf)
 {
+	Scope("tiTfTopDown1");
 	AbSyn		absyn = tfGetExpr(tf);
 	TForm		type = tfTypeTuple;
+	AbLogic         fluid(abCondKnown);
+
+	abCondKnown = tiTfCondition(stab, tf);
 
 	if (abUse(absyn) == AB_Use_Define || abUse(absyn) == AB_Use_Assign)
 		type = tfUnknown;
@@ -1860,6 +1896,8 @@ tiTfTopDown1(Stab stab, TForm tf)
 	titfOneDEBUG(tiTfEnter(dbOut, "tiTfTopDown1", NULL, tf));
 	tiTopDown(stab, absyn, type);
 	titfOneDEBUG(tiTfExit(dbOut, "tiTfTopDown1", NULL, tf));
+
+	Return(Nothing);
 }
 
 /* Convert the pending type forms to full type forms. */
@@ -1958,12 +1996,16 @@ typeInferTFormList(Stab stab, TFormList tfl)
 local void
 tiTfImport1(Stab stab, TFormUses tfu)
 {
+	Scope("tiTfImport1");
+	AbLogic    fluid(abCondKnown);
+
 	TForm	tf = tfFollow(tfu->tf);
+	abCondKnown = tiTfCondition(stab, tf);
 
 	titfOneDEBUG(tiTfEnter(dbOut, "tiTfImport1", tfu, tf));
 
 	if (tiTfDoingDefault == DEF_State_NotYet )
-		return;
+		Return(Nothing);
 
 	if (tfu->exports)
 		typeInferTFormList(stab, tqQual(tfu->exports));
@@ -2000,6 +2042,7 @@ tiTfImport1(Stab stab, TFormUses tfu)
 	}
 
 	titfOneDEBUG(tiTfExit(dbOut, "tiTfImport1", tfu, tf));
+	Return(Nothing);
 }
 
 /* Type infer the default clauses for each type form. */
