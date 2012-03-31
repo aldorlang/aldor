@@ -394,7 +394,7 @@ tiAddSymes(Stab astab, AbSyn capsule, TForm base, TForm context, SymeList *p)
 	SymeList	aself  = tfGetSelfFrStab(astab);
 	Syme		asyme  = (aself ? car(aself) : NULL);
 
-	tipAddDEBUG(fprintf(dbOut, ">>tiAddSymes:\n"));
+	tipAddDEBUG(fprintf(dbOut, "(tiAddSymes:\n"));
 
 
 	/*
@@ -423,11 +423,7 @@ tiAddSymes(Stab astab, AbSyn capsule, TForm base, TForm context, SymeList *p)
 		Symbol		sym  = symeId(syme);
 		TForm		tf   = symeType(syme);
 
-		tipAddDEBUG({
-			fprintf(dbOut, "  looking for: ");
-			symePrint(dbOut, syme);
-			fnewline(dbOut);
-		});
+		tipAddDEBUG(afprintf(dbOut, "  (looking for: %pSyme %pAbSynList ", syme, symeCondition(syme)));
 		
 		/* Look for syme in the capsule. */
 		if ((xsyme = stabGetExportMod(astab, mods, sym, tf)) != NULL) {
@@ -517,7 +513,7 @@ tiAddSymes(Stab astab, AbSyn capsule, TForm base, TForm context, SymeList *p)
 	listFree(Syme)(asymes);
 	/*!! listFree(Syme)(isymes); */
 
-	tipAddDEBUG(fprintf(dbOut, "<<tiAddSymes:\n"));
+	tipAddDEBUG(fprintf(dbOut, "tiAddSymes)\n"));
 
 	dsymes = listNReverse(Syme)(dsymes);
 	return dsymes;
@@ -831,7 +827,13 @@ typeInferTForms(Stab stab)
 	for (tful = tful0; tful; tful = tful1) {
 		DefaultState	wasDoingDefaults = tiTfDoingDefault;
 
-		if (cdr(tful) == NULL || tiTfIsBoundary(car(tful))) {
+		if (false) {
+			tiTfDoingDefault = DEF_State_NotYet;
+			tiTfOne(stab, car(tful), car(tful)->tf);
+			tiTfDoingDefault = DEF_State_Yes;
+			tiTfDefault(stab, tful);
+		}
+		else if (cdr(tful) == NULL || tiTfIsBoundary(car(tful))) {
 			tiTfDoingDefault = DEF_State_Yes;
 			tful1 = cdr(tful);
 			tiTfOne(stab, car(tful), car(tful)->tf);
@@ -1267,12 +1269,14 @@ tqShouldImport(TQual tq)
 		sym = tfApplyOp(tf)->abId.sym;
 	else
 		return true;
-
-	if (sym == ssymSelf ||
-	    listMemq(Symbol)(tiTfDeclarees, sym) ||
+	
+	if (sym == ssymSelf)
+		return false;
+	
+	if (listMemq(Symbol)(tiTfDeclarees, sym) ||
 	    listMemq(Symbol)(tiTfDefinees,  sym))
 		return false;
-
+	
 	return true;
 }
 
@@ -1775,7 +1779,7 @@ tiTfUnknown1(Stab stab, TFormUses tfu, TForm tf, AbSynList params)
 	if (tfIsSyntax(tfr))
 		tfMeaningFrSyntax(stab, tfGetExpr(tfr), tfr);
 	tfFollow(tfr);
-
+	
 	typeInferTForm(stab, tfl);
 
 	tfSetMeaning(tf);
