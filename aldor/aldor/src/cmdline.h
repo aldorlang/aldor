@@ -88,6 +88,7 @@ Bool cmdHasOptionPrefix(int opt0, String arg0, int argc, String *argv);
 			 * 'cmdOptionArg'.
 			 */
 
+extern void cmdDebugReset();
 
 /*****************************************************************************
  *

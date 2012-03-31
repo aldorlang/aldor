@@ -1186,3 +1186,12 @@ cmdDDebug(String dbName, Bool sense)
 
 	return -1;
 }
+
+void 
+cmdDebugReset()
+{
+	int i;
+	for (i = 0; dbVarInfo[i].name; i++) {
+		*dbVarInfo[i].pvar = 0;
+	}
+}
