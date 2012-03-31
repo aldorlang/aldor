@@ -1749,10 +1749,6 @@ stabImportFrom(Stab stab, TQual tq)
 			afprintf(dbOut, "... imported: %pSymeCList\n", dsymes);
 	});
 
-	if (!tqIsQualified(tq))
-		for (ql = tfGetDomCascades(origin); ql; ql = cdr(ql))
-			if (tiTopFns()->tqShouldImport(car(ql)))
-				stabImportFrom(stab, car(ql));
 }
 
 local void

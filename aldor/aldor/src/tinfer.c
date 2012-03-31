@@ -806,7 +806,6 @@ TForm
 typeInferTForm(Stab stab, TForm tf)
 {
 	DefaultState	wasDoingDefaults = tiTfDoingDefault;
-
 	tfFollow(tf);
 
 	tiTfDoingDefault = DEF_State_Yes;
@@ -2008,6 +2007,7 @@ typeInferTFormList(Stab stab, TFormList tfl)
 	}
 }
 
+void tiTfImportCascades(Stab stab, TQualList list);
 /* Import the exports from each type form. */
 local void
 tiTfImport1(Stab stab, TFormUses tfu)
@@ -2033,6 +2033,9 @@ tiTfImport1(Stab stab, TFormUses tfu)
 			typeInferTFormList(stab, tfQueries(tf));
 
 		stabImportFrom(stab, tfu->imports);
+
+		if (!tqIsQualified(tfu->imports))
+			tiTfImportCascades(stab, tfCascades(tf));
 	}
 
 	else if (tfu->isCategoryImport)
@@ -2060,6 +2063,42 @@ tiTfImport1(Stab stab, TFormUses tfu)
 	titfOneDEBUG(tiTfExit(dbOut, "tiTfImport1", tfu, tf));
 	Return(Nothing);
 }
+
+void
+tiTfImportCascades(Stab stab, TQualList list)
+{
+	TQualList ql;
+
+	for (ql = list; ql; ql = cdr(ql)) {
+		TQual innerTq = car(ql);
+		if (!tqShouldImport(innerTq))
+			continue;
+		if (tqIsQualified(innerTq)) {
+			stabImportFrom(stab, innerTq);
+		}
+		else {
+			TForm innerTf = tqBase(innerTq);
+			TFormUses tfu = stabFindTFormUses(stab, tfExpr(innerTf));
+			// The "!isExplicitImport" test is so that
+			// if we're going to import a type, we might as well
+			// wait until the correct point in proceedings
+			if (tfu == NULL || !tfu->isExplicitImport) {
+				TForm tf = stabFindOuterTForm(stab, tfExpr(innerTf));
+				if (tf != NULL) {
+					tf = typeInferTForm(stab, tf);
+					if (tfQueries(tf))
+						typeInferTFormList(stab, tfQueries(tf));
+
+					innerTf = tf;
+				}
+				innerTq = tqNewUnqualified(innerTf);
+				stabImportFrom(stab, innerTq);
+				tqFree(innerTq);
+			}
+		}
+	}
+}
+
 
 /* Type infer the default clauses for each type form. */
 local void
