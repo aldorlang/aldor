@@ -640,9 +640,7 @@ tfPending(Stab stab, AbSyn ab)
 	depthNo	 += 1;
 	serialThis = serialNo;
 	tfExprDEBUG({
-		fprintf(dbOut, "->tfp: %*s%d= ", depthNo, "", serialThis);
-		abPrettyPrint(dbOut, ab);
-		fnewline(dbOut);
+			afprintf(dbOut, "%*s(tfPending %d= %pAbSyn\n", depthNo, "", serialThis, ab);
 	});
 
 
@@ -668,9 +666,7 @@ tfPending(Stab stab, AbSyn ab)
 	}
 
 	tfExprDEBUG({
-		fprintf(dbOut, "<-tfp: %*s%d= ", depthNo, "", serialThis);
-		tfPrint(dbOut, tf);
-		fnewline(dbOut);
+			afprintf(dbOut, "%*s %d %pTForm)\n", depthNo, "", serialThis, tf);
 	});
 	depthNo -= 1;
 
