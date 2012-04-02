@@ -112,6 +112,7 @@ struct stabEntry {
 	AbLogic *	condv;
 	SymeList *	symev;
 	TPoss *		possv;
+	SymeList        pending;
 };
 
 /******************************************************************************

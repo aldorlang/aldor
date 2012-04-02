@@ -235,6 +235,7 @@ stabFile(void)
  */
 
 #define	StabEntryCacheSize 4
+local void stabEntryCheckConditions(StabEntry stent);
 
 local StabEntry
 stabEntryNew(void)
@@ -252,6 +253,7 @@ stabEntryNew(void)
 	stent->condv	= (AbLogic *)  (stent + 1);
 	stent->symev	= (SymeList *) (stent->condv + argc);
 	stent->possv	= (TPoss *)    (stent->symev + argc);
+	stent->pending  = listNil(Syme);
 
 	for (i = 0; i < argc; i += 1) {
 		stent->condv[i] = NULL;
@@ -278,6 +280,7 @@ stabEntryCopy(StabEntry stent)
 		nstent->symev[i] = listCopy(Syme)(stent->symev[i]);
 		nstent->possv[i] = tpossCopy(stent->possv[i]);
 	}
+	nstent->pending = listCopy(Syme)(stent->pending);
 
 	return nstent;
 }
@@ -329,6 +332,16 @@ stabEntryAddSyme(StabEntry stent, Syme syme)
 {
 	stabEntryClearCache(stent);
 
+	if (symeIsCheckCondIncomplete(syme)) {
+		stent->pending = listCons(Syme)(syme, stent->pending);
+		stabDEBUG(afprintf(dbOut, "Pending condition: %pSyme %pAbSynList\n",
+				   syme, symeCondition(syme)));
+	}
+	if (!symeIsCondChecked(syme) && symeCondition(syme)) {
+		stent->pending = listCons(Syme)(syme, stent->pending);
+		stabDEBUG(afprintf(dbOut, "Pending condition [unchecked]: %pSyme %pAbSynList\n",
+				   syme, symeCondition(syme)));
+	}
 	if (symeCondIsLazy(syme)) {
 		stabEntryPutSyme(stent, int0, syme);
 		if (!stabEntryIsGeneric(stent))
@@ -366,6 +379,9 @@ stabEntryGetSymes(StabEntry stent, AbLogic abl)
 {
 	Length		i;
 	SymeList	symes;
+	SymeList        psymes, npsymes;
+
+	stabEntryCheckConditions(stent);
 
 	/* Generic entry:  no conditional symes, return them all. */
 	if (stent->argc == 1)
@@ -389,6 +405,34 @@ stabEntryGetSymes(StabEntry stent, AbLogic abl)
 
 	return symes;
 }
+
+local void
+stabEntryCheckConditions(StabEntry stent)
+{
+	SymeList psymes, npsymes;
+
+	psymes = stent->pending;
+	npsymes = listNil(Syme);
+	while (psymes != listNil(Syme)) {
+		Syme psyme = car(psymes);
+		symeCheckCondition(psyme);
+
+		/*afprintf(dbOut, "Checked: %pSyme - complete: %d condition: %pAbSynList\n",
+			 psyme, symeIsCheckCondIncomplete(psyme),
+			 symeCondition(psyme));*/
+
+		if (symeCondition(psyme) == listNil(Sefo)) {
+			stabEntryPutSyme(stent, int0, psyme);
+		}
+		if (symeIsCheckCondIncomplete(psyme)) {
+			npsymes = listCons(Syme)(psyme, npsymes);
+		}
+		psymes = cdr(psymes);
+	}
+	listFree(Syme)(stent->pending);
+	stent->pending = npsymes;
+}
+
 
 local SymeList
 stabEntryCacheSymes(StabEntry stent, AbLogic abl)
@@ -422,6 +466,7 @@ stabEntryGetTypes(StabEntry stent, AbLogic abl)
 	SymeList	symes;
 	TPoss		tposs;
 
+	stabEntryCheckConditions(stent);
 /*LDR*/
 #if EDIT_1_0_n2_06 != 1
 	/* Generic entry:  no conditional symes, return all types. */

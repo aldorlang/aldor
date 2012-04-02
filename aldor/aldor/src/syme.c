@@ -39,7 +39,7 @@ local void		symeFillFrExporter	(Syme, TForm);
 local Bool		symeListCheckFindSyme	(SymeList, Syme);
 local void		symeListCheckJoinSymes	(Syme, Syme);
 local Bool		abIsFullyInstantiated	(Sefo);
-local Bool		symeCheckHas		(Sefo, Sefo);
+local int		symeCheckHas		(Sefo, Sefo);
 local void		symeCheckHasMemo	(Sefo, Sefo, SatMask);
 local int		symeCheckHasResult	(Sefo, Sefo, Bool *);
 local Bool		 symeCheckIdentifier	(AbSyn, Syme);
@@ -1084,9 +1084,11 @@ symeListCheckJoinSymes(Syme syme1, Syme syme2)
 Bool
 symeCheckCondition(Syme syme)
 {
+	symeSetCondChecked(syme);
 	while (symeCondition(syme)) {
 		Sefo	cond = car(symeCondition(syme));
 		Sefo	dom, cat;
+		int     result;
 
 		/* If the condition can be checked now, check it.
 		 * Otherwise just leave it alone and accept the syme.
@@ -1096,22 +1098,29 @@ symeCheckCondition(Syme syme)
 
 		dom = cond->abHas.expr;
 		cat = cond->abHas.property;
+		result = symeCheckHas(dom, cat);
 
-		if (symeCheckHas(dom, cat)) {
+		if (result == 1) {
+			symeSetCheckCondIncomplete(syme);
+		}
+		else if (result == 2) {
 			symeSetCondition(syme,
-				listFreeCons(Sefo)(symeCondition(syme)));
+					 listFreeCons(Sefo)(symeCondition(syme)));
+
 			continue;
 		}
 
-		if (!abIsFullyInstantiated(dom))
+		if (!abIsFullyInstantiated(dom)) {
 			return true;
-
+		}
 		if (abTForm(dom) && tfEqual(abTForm(dom), symeExporter(syme)))
 			return true;
 
+		symeClrCheckCondIncomplete(syme);
 		return false;
 	}
 
+	symeClrCheckCondIncomplete(syme);
 	return true;
 }
 
@@ -1136,12 +1145,12 @@ abIsFullyInstantiated(Sefo ab)
 	return result;
 }
 
-local Bool
+local int
 symeCheckHas(Sefo dom, Sefo cat)
 {
 	TForm	tfdom, tfcat;
 	SatMask	result;
-	Bool	flg;
+	int	flg = 0;
 	int     cache;
 
 	cache = symeCheckHasResult(dom, cat, &flg);
@@ -1154,10 +1163,11 @@ symeCheckHas(Sefo dom, Sefo cat)
 	/* D has C iff typeof(D) satisfies C. */
 	result = tfSat(tfSatBupMask(), tfdom, tfcat);
 
-	symeCheckHasMemo(dom, cat, result);
+	//symeCheckHasMemo(dom, cat, result);
 
-	return tfSatSucceed(result) && !tfSatPending(result);
+	return tfSatPending(result) ? 1 : (tfSatSucceed(result) ? 2 : 0);
 }
+
 
 /* We use the following encoding for the hashtable:
  * symeHasCache is a table consisting of (S, SymeSatTblVal)
@@ -1231,6 +1241,17 @@ symeCheckHasMemo(Sefo dom, Sefo cat, SatMask result)
 	}
 }
 
+
+// Result:
+// <undef> => no result
+// 0 => fail
+// 1 => Pending
+// 2 => Success
+// Return value:
+// 2 => pending value changed
+// 1 => found
+// 0 => not found
+
 local int
 symeCheckHasResult(Sefo dom, Sefo cat, Bool *result)
 {
@@ -1250,7 +1271,7 @@ symeCheckHasResult(Sefo dom, Sefo cat, Bool *result)
 	}
 	if (idx == ent->sz) return 0;
 
-	*result = ent->argv[idx].success && (ent->argv[idx].pend == NULL);
+	*result = (ent->argv[idx].pend != NULL) ? 1 : (ent->argv[idx].success ? 2 : 0);
 
 	if (ent->argv[idx].pend) {
 		if (!tfIsPending(ent->argv[idx].pend)) {	

@@ -506,6 +506,8 @@ extern int		symeListWrSExpr		(FILE *, String, SymeList, ULong);
 
 #define		SYME_XBIT_IMPLICIT	0x0001	/* Implicit */
 #define		SYME_XBIT_MULTICOND	0x0002	/* Multi-value cond */
+#define		SYME_XBIT_CONDINCOMPLETE 0x0004	/* we gave up in symeCheckCondition */
+#define		SYME_XBIT_CONDCHECKED	0x0004	/* symeCheckCondition has been called */
 
 #define	symeGetXBit(s,b)	(symeExtraBits(s) & (b))
 #define	symeSetXBit(s,b) 	symeSetExtraBits(s, symeExtraBits(s) | (b));
@@ -527,5 +529,16 @@ extern int		symeListWrSExpr		(FILE *, String, SymeList, ULong);
 #define symeIsMultiCond(s)	symeGetXBit(s, SYME_XBIT_MULTICOND)
 #define symeSetMultiCond(s)	symeSetXBit(s, SYME_XBIT_MULTICOND)
 #define symeClrMultiCond(s)	symeClrXBit(s, SYME_XBIT_MULTICOND)
+
+/*
+ * pending stuff
+ */
+#define symeIsCheckCondIncomplete(s)	symeGetXBit(s, SYME_XBIT_CONDINCOMPLETE)
+#define symeSetCheckCondIncomplete(s)	symeSetXBit(s, SYME_XBIT_CONDINCOMPLETE)
+#define symeClrCheckCondIncomplete(s)	symeClrXBit(s, SYME_XBIT_CONDINCOMPLETE)
+
+#define symeIsCondChecked(s)	symeGetXBit(s, SYME_XBIT_CONDCHECKED)
+#define symeSetCondChecked(s)	symeSetXBit(s, SYME_XBIT_CONDCHECKED)
+#define symeClrCondChecked(s)	symeClrXBit(s, SYME_XBIT_CONDCHECKED)
 
 #endif	/* !_SYME_H_ */
