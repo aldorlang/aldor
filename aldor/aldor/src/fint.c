@@ -3600,11 +3600,11 @@ fintEval_(DataObj retDataObj)
 
 		fintDEBUG({int k;
 			  if (tag == FOAM_CCall)
-			  	(void)fprintf(dbOut, "(CCall ");
+			  	(void)fprintf(dbOut, "((CCall ");
 			  else
-			  	(void)fprintf(dbOut, "(OCall ");
-			   (void)fprintf(dbOut, "to %s in %s with par: ", 
-				   prog0->name, 
+			  	(void)fprintf(dbOut, "((OCall ");
+			   (void)fprintf(dbOut, "to %s in %s with par: ",
+				   prog0->name,
 				   prog0->unit->name);
 			   for (k = 0; k < argc; k++)
 			   	(void)fprintf(dbOut, "%p ", parValue(k).fiPtr);
@@ -3651,6 +3651,7 @@ fintEval_(DataObj retDataObj)
 
 		stackFrameFree();
 		fintDEBUG(fintCheckCallStack());
+		fintDEBUG(printf(" call returns %p)", (char*) retDataObj->fiSInt));
 
 		return retType;
 	}
@@ -3696,7 +3697,7 @@ fintEval_(DataObj retDataObj)
 
 		fintGetInt(fmt, lev);
 		fintGetInt(fmt, n);
-
+		fintDEBUG(printf("(Lex %d %d)", (int) lev, (int) n));
 		switch (lev) {
 			case 0: type = lexType(lev, n);
 				fintSet(type, retDataObj, lev0[n]);
