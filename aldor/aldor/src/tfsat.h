@@ -99,10 +99,10 @@ extern Bool		tfSatType	(TForm S);
 
 extern SatMask		tfSatMap	(SatMask, Stab, TForm, TForm,
 					 AbSyn, Length, AbSynGetter);
-extern SatMask		tfSatArg	(SatMask, AbSyn, TForm);
-
 extern Bool		tfSatBit	(SatMask, TForm S, TForm T);
 extern SatMask		tfSat		(SatMask, TForm S, TForm T);
+extern SatMask          tfSat1          (SatMask mask, AbSyn Sab, TForm S, TForm T);
+
 
 extern AbSub		tfSatSubList	(AbSyn);
 

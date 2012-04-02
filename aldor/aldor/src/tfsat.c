@@ -178,6 +178,8 @@ extern Stab		stabFindLevel		(Stab, Syme);
  *****************************************************************************/
 
 local SatMask		tfSatArgPoss		(SatMask, AbSyn S, TForm T);
+local SatMask		tfSatArg		(SatMask, AbSyn, TForm);
+
 
 local SatMask		tfSatDOM		(SatMask, TForm S);
 local SatMask		tfSatCAT		(SatMask, TForm S);
@@ -536,8 +538,6 @@ void tfCheckBug1318(AbSyn abi)
 }
 #endif
 
-local SatMask tfSat1(SatMask mask, AbSyn Sab, TForm S, TForm T);
-
 SatMask
 tfSatMap(SatMask mask, Stab stab, TForm S, TForm T,
 	 AbSyn ab, Length argc, AbSynGetter argf)
@@ -681,6 +681,7 @@ tfSatAsMulti(SatMask mask, AbSub sigma, TForm S, TForm TScope,
 			abi = sefoCopy(abi);
 			tiTopFns()->tiBottomUp(absStab(sigma), abi, tfUnknown);
 			tiTopFns()->tiTopDown (absStab(sigma), abi, tfi);
+
 			if (abState(abi) == AB_State_HasUnique) {
 				if (absFVars(sigma)) absSetFVars(sigma, NULL);
 				sigma = absExtend(syme, abi, sigma);
@@ -806,7 +807,7 @@ tfSat(SatMask mask, TForm S, TForm T)
 	return tfSat1(mask, 0, S, T);
 }
 
-local SatMask
+SatMask
 tfSat1(SatMask mask, AbSyn Sab, TForm S, TForm T)
 {
 	SatMask		result = tfSatFalse(mask);

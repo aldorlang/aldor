@@ -592,7 +592,7 @@ tiGetMeaning(Stab stab, AbSyn absyn, TForm type)
 		TForm	mtype = symeType(syme);
 		SatMask	result;
 
-		result = tfSat(mask, mtype, type);
+		result = tfSat1(mask, absyn, mtype, type);
 		if (tfSatSucceed(result)) {
 			if (!tfSatPending(result)
 			    && symeUseIdentifier(absyn, syme)
