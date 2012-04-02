@@ -306,11 +306,6 @@ struct abHdr {
 
 	AbSeman			seman;
 
-	union {			/** UNUSED ??? **/
-		SymeList poss;		 /* during tiBottomUp */
-		Syme	 unique;	 /* after  tiTopDown  */
-	}			meaning; /* ... for Ids and Literals */
-
 	union {
 		TPoss	poss;		 /* during tiBottomUp */
 		TForm	unique;		 /* after  tiTopDown  */
