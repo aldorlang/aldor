@@ -2,9 +2,6 @@
 #include "testlib.h"
 #include "abquick.h"
 
-local void init(void);
-local void fini(void);
-
 local void testScobind();
 local void testScobindCondition();
 local void testScobindConditionMulti();
@@ -25,6 +22,7 @@ local void scobindTestCheckUnique(Stab stab, Symbol sym);
 local void
 testScobind()
 {
+	initFile();
 	Stab stabGlobal = stabNewGlobal();
 	Stab stabFile = stabNewFile(stabGlobal);
 	Stab stab = stabPushLevel(stabFile, sposNone, STAB_LEVEL_LARGE);
@@ -33,13 +31,14 @@ testScobind()
 	
 	scopeBind(stab, ab);
 	scobindTestCheckUnique(stab, symInternConst("X"));
-
+	finiFile();
 }
 
 
 local void
 testScobindCondition()
 {
+	initFile();
 	Stab stabGlobal = stabNewGlobal();
 	Stab stabFile = stabNewFile(stabGlobal);
 	Stab stab = stabPushLevel(stabFile, sposNone, STAB_LEVEL_LARGE);
@@ -49,16 +48,19 @@ testScobindCondition()
 	scopeBind(stab, ab);
 	Symbol sym_f = symInternConst("f");
 	scobindTestCheckUnique(stab, sym_f);
-
+	
+	finiFile();
 }
 
 local void
 testScobindConditionMulti()
 {
+	initFile();
 	Stab stabGlobal = stabNewGlobal();
 	Stab stabFile = stabNewFile(stabGlobal);
 	Stab stab = stabPushLevel(stabFile, sposNone, STAB_LEVEL_LARGE);
 	
+	finiFile();
 	return;
 	/*
 	  ideally, I'd like to test this here, but
@@ -80,17 +82,4 @@ scobindTestCheckUnique(Stab stab, Symbol sym)
 	testPointerEqual("name", sym, symeId(car(sl)));
 }
 	
-
-local void
-init()
-{
-	sposInit();
-	tfInit();
-}
-
-local void
-fini()
-{
-	sposFini();
-}
 

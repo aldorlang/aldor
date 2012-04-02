@@ -8,6 +8,7 @@ local void testAbSynFormat();
 local void testAbSynFormatList();
 local void testAbParse();
 local void testExquo();
+local void testAbContains();
 local void testAbSynFormatOne(String name, String expect, AbSyn absyn);
 
 void
@@ -18,6 +19,7 @@ absynTest()
 	TEST(testAbSynFormatList);
 	TEST(testAbParse);
 	TEST(testExquo);
+	TEST(testAbContains);
 	fini();
 }
 
@@ -98,4 +100,18 @@ testAbParse()
 	String s = asprintf("%pAbSyn", ab);
 
 	testStringEqual("compare strings:", s, "(Assign x y)");
+}
+
+local void
+testAbContains()
+{
+	AbSyn ab = abqParse("x := y");
+	testTrue("1", abContains(ab, id("x")));
+	testTrue("2", abContains(ab, id("y")));
+	testTrue("3", abContains(ab, ab));
+	testFalse("4", abContains(ab, id("z")));
+
+	AbSyn ab2 = abqParse("A has B");
+	testTrue("1", abContains(ab2, id("A")));
+
 }

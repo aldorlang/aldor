@@ -79,6 +79,7 @@ libphase_a_SOURCES = phase.c bloop.c fintphase.c \
 check_PROGRAMS=testall
 TESTS=testall
 testsuite = \
+	test/test_ablogic.c 	\
 	test/test_absyn.c 	\
 	test/test_fname.c 	\
 	test/test_foam.c 	\
