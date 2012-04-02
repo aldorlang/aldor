@@ -7,6 +7,7 @@
  *****************************************************************************/
 
 #include "axlphase.h"
+#include "tfcond.h"
 
 Bool	scoDebug		= false;
 Bool	scoStabDebug		= false;
@@ -123,7 +124,11 @@ typedef struct decl_info {
 DECLARE_LIST(DeclInfo);
 CREATE_LIST(DeclInfo);
 
-typedef struct condition {
+// A condition.  We keep the stab information so its depth can be compared
+// to the tform depth in tfFloat
+
+typedef struct ScoCondition {
+	Stab  stab;
 	AbSyn absyn;
 	Bool  negate;
 } *ScoCondition;
@@ -157,12 +162,13 @@ CREATE_LIST(IdInfo);
 typedef struct lambda_info {
 	AbSyn lhs;
 	AbSyn rhs;
+	ScoConditionList scoCondList;
 } *LambdaInfo;
 
 DECLARE_LIST(LambdaInfo);
 CREATE_LIST(LambdaInfo);
 
-local LambdaInfo lambdaInfoAlloc(AbSyn lhs, AbSyn rhs);
+local LambdaInfo lambdaInfoAlloc(AbSyn lhs, AbSyn rhs, ScoConditionList condition);
 local void       lambdaInfoFree(LambdaInfo info);
 
 /******************************************************************************
@@ -278,6 +284,8 @@ local void		scobindParamDefine	(AbSyn, AbSyn);
 local void		scobindParamDeclare	(AbSyn, AbSyn);
 local void		scobindParamId		(AbSyn, AbSyn, AbSyn);
 
+local TForm scobindTfSyntaxFrAbSyn(Stab stab, AbSyn ab);
+
 /*
  * scobindDeclare
  */
@@ -313,12 +321,15 @@ local void		scobindLOFDeclInfo	(AbSyn, IdInfo, DeclInfo,
 
 /*
  * scobindIf (and conditions)
+ *
+ * FIXME: This really needs some cleanup
  */
 local void 	scobindIf	(AbSyn);
-local void 	scoCondPush  	(AbSyn, Bool);
+local void 	scoCondPush  	(Stab, AbSyn, Bool);
 local void 	scoCondPop	(void);
 local ScoConditionList  scoConditions	(void);
 local DefnPos scoConditionToDefnPos(ScoConditionList);
+local TfCondElt scoCondListCondElt();
 
 /*
  * IdInfo
@@ -787,7 +798,6 @@ local void
 scobindLevel(AbSyn absyn, ScoBindFun fun, ULong flags)
 {
 	LambdaInfoList	savedLambdaList;
-	ScoConditionList savedCondList;
 	Bool		saveInType = scoIsInType;
 
 
@@ -797,10 +807,8 @@ scobindLevel(AbSyn absyn, ScoBindFun fun, ULong flags)
 		return;
 
 	savedLambdaList = scoLambdaList;
-	savedCondList   = scoCondList;
 
 	scoLambdaList = listNil(LambdaInfo);
-	scoCondList   = listNil(ScoCondition);
 
 	/*
 	 * If we start a new scope level then we are no longer in a
@@ -846,7 +854,6 @@ scobindLevel(AbSyn absyn, ScoBindFun fun, ULong flags)
 	scobindFreeIdInfo(scoStab);
 
 	scoStab       = stabPopLevel(scoStab);
-	scoCondList   = savedCondList;
 	scoLambdaList = savedLambdaList;
 	scoIsInType   = saveInType;
 }
@@ -854,12 +861,15 @@ scobindLevel(AbSyn absyn, ScoBindFun fun, ULong flags)
 local void
 scobindLambdaList(void)
 {
+	ScoConditionList savedScoCondList = scoCondList;
+
 	scoLambdaList = listNReverse(LambdaInfo)(scoLambdaList);
 	while (scoLambdaList) {
 		LambdaInfo info = car(scoLambdaList);
 		AbSyn	lhs = info->lhs;
 		AbSyn	rhs = info->rhs;
 
+		scoCondList = info->scoCondList;
 		scobindPushDefine(lhs);
 		scobindLevel(rhs, scobindLambda, scobindLambdaFlags);
 		scobindPopDefine(lhs);
@@ -867,6 +877,8 @@ scobindLambdaList(void)
 		lambdaInfoFree(info);
 		scoLambdaList = listFreeCons(LambdaInfo)(scoLambdaList);
 	}
+
+	scoCondList = savedScoCondList;
 }
 
 local void
@@ -958,7 +970,7 @@ scobindLambda(AbSyn absyn)
 
 			tf = abTForm(ret);
 			if (tf == NULL) {
-				tf = tfSyntaxFrAbSyn(scoStab, reti);
+				tf = scobindTfSyntaxFrAbSyn(scoStab, reti);
 				abSetTForm(reti, tf);
 			}
 			if (!abHasTag(reti, AB_Hide))
@@ -967,7 +979,7 @@ scobindLambda(AbSyn absyn)
 
 		/* Make sure product types have a type form. */
 		if (abTForm(ret) == NULL)
-			abSetTForm(ret, tfSyntaxFrAbSyn(scoStab, ret));
+			abSetTForm(ret, scobindTfSyntaxFrAbSyn(scoStab, ret));
 	}
 	else
                 comsgError(absyn, ALDOR_E_ChkMissingRetType);
@@ -1019,10 +1031,10 @@ scobindWith(AbSyn absyn)
 	Syme	syme;
 
 	if (abIsNotNothing(base)) {
-		tfbase = tfSyntaxFrAbSyn(scoStab, base);
+		tfbase = scobindTfSyntaxFrAbSyn(scoStab, base);
 		stabCategoricallyImportTForm(scoStab, tfbase);
 	}
-	tf = stabMakeUsedTForm(cdr(scoStab), absyn);
+	tf = stabMakeUsedTForm(cdr(scoStab), absyn, scoCondListCondElt());
 	syme = stabDefLexVar(scoStab, ssymSelf, tf);
 
 	scobindValue(base);
@@ -1039,8 +1051,8 @@ scobindHas(AbSyn absyn)
 	scobindValue(cat);
 	scobindValue(dom);
 
-	tfcat = stabMakeUsedTForm(scoStab, cat);
-	tfdom = stabMakeUsedTForm(scoStab, dom);
+	tfcat = stabMakeUsedTForm(scoStab, cat, scoCondListCondElt());
+	tfdom = stabMakeUsedTForm(scoStab, dom, scoCondListCondElt());
 
 	stabAddTFormQuery(scoStab, tfdom, tfcat);
 }
@@ -1315,7 +1327,7 @@ scobindImportType(Stab stab, AbSyn type)
 	else {
 		scobindType(type);
 		abSetTFormCond(type,
-			stabImportTForm(stab, tfSyntaxFrAbSyn(stab, type)));
+			stabImportTForm(stab, scobindTfSyntaxFrAbSyn(stab, type)));
 	}
 }
 
@@ -1323,7 +1335,7 @@ local void
 scobindUsedType(Stab stab, AbSyn type)
 {
 	scobindType(type);
-	stabMakeUsedTForm(stab, type);
+	stabMakeUsedTForm(stab, type, scoCondListCondElt());
 }
 
 local void
@@ -1453,7 +1465,7 @@ scobindApplySelf(AbSyn ab)
 	Syme		syme;
 	SymeList	self;
 
-	tf = stabMakeUsedTForm(scoStab, ab);
+	tf = stabMakeUsedTForm(scoStab, ab, scoCondListCondElt());
 
 	/* We don't want this self visible. */
 	tf0 = abIsApplyOf(ab, ssymJoin) ? tf : tfType;
@@ -1581,7 +1593,7 @@ scobindApplyArg(AbSyn arg)
 	}
 	else if (abHasTag(arg, AB_With)) {
 		scobindValue(arg);
-		abSetTFormCond(arg, tfSyntaxFrAbSyn(scoStab, arg));
+		abSetTFormCond(arg, scobindTfSyntaxFrAbSyn(scoStab, arg));
 	}
 	else
 		scobindValue(arg);
@@ -1787,7 +1799,7 @@ scobindDeclareTForm(Stab stab, AbSyn id, AbSyn type, AbSyn val, DeclContext cont
 		if (abTForm(type))
 			return abTForm(type);
 		else
-			return tfSyntaxFrAbSyn(stab, type);
+			return scobindTfSyntaxFrAbSyn(stab, type);
 	}
 	else if (abIsAnyLambda(val) &&
 		 (context == SCO_Sig_Extend ||
@@ -1801,7 +1813,7 @@ scobindDeclareTForm(Stab stab, AbSyn id, AbSyn type, AbSyn val, DeclContext cont
 		 scobindRetNeedsDefn(type))
 		tf = tfSyntaxDefine(scoStab, type, val);
 	else 
-		tf = tfSyntaxFrAbSyn(stab, type);
+		tf = scobindTfSyntaxFrAbSyn(stab, type);
 
 	if (scobindTFormMustBeUnique(type)) {
 		scobindUniqifyDecl(tfExpr(tf), id);
@@ -2045,8 +2057,10 @@ local void
 scobindDefineRhs(AbSyn lhs, AbSyn rhs, DeclContext context)
 {
 	if (abIsAnyLambda(rhs)) {
-		LambdaInfo info = lambdaInfoAlloc(lhs, rhs);
-		listPush(LambdaInfo, info, scoLambdaList);
+		LambdaInfo info = lambdaInfoAlloc(lhs, rhs, 
+						  scoCondList);
+		scoLambdaList = listCons(LambdaInfo)(info, scoLambdaList);
+
 		if (abHasTag(lhs, AB_Declare))
 			scobindMatchWiths(lhs->abDeclare.type, rhs, context);
 	}
@@ -2270,7 +2284,7 @@ local void
 scobindExportTo(AbSyn what, AbSyn dest)
 {
 	scobindType(dest);
-	abSetTFormCond(dest, tfSyntaxFrAbSyn(scoStab, dest));
+	abSetTFormCond(dest, scobindTfSyntaxFrAbSyn(scoStab, dest));
 	scobindLOF(what, SCO_Sig_Local);
 }
 
@@ -2282,7 +2296,7 @@ scobindExportFrom(AbSyn what, AbSyn origin)
 	scobindType(origin);
 	scobindValue(what);
 
-	tf = tfSyntaxFrAbSyn(scoStab, origin);
+	tf = scobindTfSyntaxFrAbSyn(scoStab, origin);
 	if (abIsNothing(what))
 		tf = stabExportTForm(scoStab, tf);
 	else
@@ -2329,8 +2343,12 @@ scobindExportWhat(AbSyn what)
 		/* 'if' statement within 'with' body */
 
 		scobindValue(what->abIf.test);
+		scoCondPush(scoStab, what->abIf.test, false);
 		scobindExportWhat(what->abIf.thenAlt);
+		scoCondPop();
+		scoCondPush(scoStab, what->abIf.test, true);
 		scobindExportWhat(what->abIf.elseAlt);
+		scoCondPop();
 		break;
 
 	case AB_Import:
@@ -2574,7 +2592,7 @@ scobindForeign(AbSyn ab)
 		/* Treat as a traditional import */
 		scobindType(origin);
 		scobindValue(what);
-		tf = tfSyntaxFrAbSyn(scoStab, origin);
+		tf = scobindTfSyntaxFrAbSyn(scoStab, origin);
 		tf = stabQualifiedImportTForm(scoStab, what, tf);
 		abSetTFormCond(origin, tf);
 
@@ -2654,7 +2672,7 @@ scobindImport(AbSyn ab)
 	scobindValue(what);
 	scoIsInImport = save;
 
-	tf = tfSyntaxFrAbSyn(scoStab, from);
+	tf = scobindTfSyntaxFrAbSyn(scoStab, from);
 	if (abIsNothing(what))
 		tf = stabExplicitlyImportTForm(scoStab, tf);
 	else
@@ -2679,7 +2697,7 @@ scobindInline(AbSyn ab)
 	scobindType(from);
 	scobindValue(what);
 
-	tf = tfSyntaxFrAbSyn(scoStab, from);
+	tf = scobindTfSyntaxFrAbSyn(scoStab, from);
 	if (abIsNothing(what))
 		tf = stabInlineTForm(scoStab, tf);
 	else
@@ -2989,34 +3007,36 @@ scobindIf(AbSyn ab)
 {
 	AbSyn test = ab->abIf.test;
 	scobindValue(test);
-	scoCondPush(test, false);
+	scoCondPush(scoStab, test, false);
 	scobindValue(ab->abIf.thenAlt);
 	scoCondPop();
-	scoCondPush(test, true);
+	scoCondPush(scoStab, test, true);
 	scobindValue(ab->abIf.elseAlt);
 	scoCondPop();
 }
 
 
 local ScoCondition
-scoConditionNew(AbSyn absyn, Bool isNegated)
+scoConditionNew(Stab stab, AbSyn absyn, Bool isNegated)
 {
 	ScoCondition cond = (ScoCondition) stoAlloc(OB_Other, sizeof(*cond));
-	cond->absyn = absyn;
+	cond->stab   = stab;
+	cond->absyn  = absyn;
 	cond->negate = isNegated;
 
 	return cond;
 }
 
 local void
-scoCondPush(AbSyn ab, Bool isNegated)
+scoCondPush(Stab stab, AbSyn ab, Bool isNegated)
 {
-	scoCondList = listCons(ScoCondition)(scoConditionNew(ab, isNegated), scoCondList);
+	scoCondList = listCons(ScoCondition)(scoConditionNew(stab, ab, isNegated), scoCondList);
 }
 
 local void
 scoCondPop()
 {
+	/* FIXME: Blatant memleak */
 	scoCondList = cdr(scoCondList);
 }
 
@@ -3402,7 +3422,8 @@ scobindSetSigUse(DeclInfo declInfo, DeclContext context, AbSyn use)
 	declInfo->uses[context] = use;
 }
 
-local AbSynList scoConditionToAbSyn(ScoConditionList condition);
+local TfCondElt scoConditionListToCondElt(ScoConditionList);
+local AbSynList scoConditionToAbSyn(ScoConditionList);
 
 local Bool
 scobindCheckCondition(DeclInfo declInfo, ScoConditionList conditionList)
@@ -3445,6 +3466,34 @@ scoConditionToAbSyn(ScoConditionList condition)
 
 	return listNReverse(AbSyn)(list);
 }
+
+local TfCondElt 
+scoCondListCondElt()
+{
+	scoConditionListToCondElt(scoCondList);
+}
+
+local TfCondElt
+scoConditionListToCondElt(ScoConditionList conditionList)
+{
+	AbSynList list = listNil(AbSyn);
+	ScoConditionList condition = conditionList;
+	if (condition == listNil(ScoCondition))
+		return NULL;
+
+	while (condition != listNil(ScoCondition)) {
+		ScoCondition conditionElt = car(condition);
+		AbSyn elt = conditionElt->negate 
+			? abNewNot(sposNone, conditionElt->absyn) 
+			: conditionElt->absyn;
+		list = listCons(AbSyn)(elt, list);
+		condition = cdr(condition);
+	}
+
+	list = listNReverse(AbSyn)(list);
+	return tfCondEltNew(conditionList->first->stab, list);
+}
+
 
 /*
  * Returns true iff a definition is found with the same 
@@ -3758,7 +3807,7 @@ scobindReconcileDecl(Stab stab, AbSynTag context, Symbol sym, IdInfo idInfo,
 	/* Process explicit locals */
 
 	if (declInfo->uses[SCO_Sig_Local]) {
-		TForm	tf = tfSyntaxFrAbSyn(stab, declInfo->type);
+		TForm	tf = scobindTfSyntaxFrAbSyn(stab, declInfo->type);
 
 		if (declInfo->uses[SCO_Sig_Define]) {
 			checkOuterUseOfLexicalConstant(stab, declInfo->id);
@@ -3796,7 +3845,7 @@ scobindReconcileDecl(Stab stab, AbSynTag context, Symbol sym, IdInfo idInfo,
 		if (abIsNothing(declInfo->type))
 			tf = tfUnknown;
 		else
-			tf = tfSyntaxFrAbSyn(stab,declInfo->type);
+			tf = scobindTfSyntaxFrAbSyn(stab,declInfo->type);
 
 		scoFluidDEBUG(printf("Adding fluid: %s", symString(sym)));
 		scoFluidDEBUG(tfPrintDb(tf));
@@ -3821,7 +3870,7 @@ scobindReconcileDecl(Stab stab, AbSynTag context, Symbol sym, IdInfo idInfo,
 				assigned,
 				declInfo->type);
 
-		tf = tfSyntaxFrAbSyn(stab, declInfo->type);
+		tf = scobindTfSyntaxFrAbSyn(stab, declInfo->type);
 
 		if (fintMode == FINT_LOOP) {
 			if (abSyme(declInfo->id))
@@ -3836,7 +3885,7 @@ scobindReconcileDecl(Stab stab, AbSynTag context, Symbol sym, IdInfo idInfo,
 	}
 
 	if (declInfo->uses[SCO_Sig_Define]) {
-		TForm	tf = tfSyntaxFrAbSyn(stab, declInfo->type);
+		TForm	tf = scobindTfSyntaxFrAbSyn(stab, declInfo->type);
 		if (context == AB_Add || context == AB_With) {
 			if (!abSyme(declInfo->id))
 				scobindAddMeaning(declInfo->id,
@@ -3865,7 +3914,7 @@ scobindReconcileDecl(Stab stab, AbSynTag context, Symbol sym, IdInfo idInfo,
 	/* make anything else into a lexical constant */
 
 	scobindAddMeaning(declInfo->id, sym, stab, SYME_LexConst,
-			  tfSyntaxFrAbSyn(stab, declInfo->type), (AInt) NULL);
+			  scobindTfSyntaxFrAbSyn(stab, declInfo->type), (AInt) NULL);
 }
 
 /******************************************************************************
@@ -4073,16 +4122,45 @@ isNewTFormUses(TFormUses tfu)
 
 /******************************************************************************
  *
- * :: scobindUndo
+ * :: Setting conditions
+ *
+ *****************************************************************************/
+
+local void scobindTfConditions(Stab stab, TForm tf, TfCondElt conditions);
+
+local TForm
+scobindTfSyntaxFrAbSyn(Stab stab, AbSyn ab)
+{
+	TForm tf = tfSyntaxFrAbSyn(stab, ab);
+	scobindTfConditions(stab, tf, scoCondListCondElt());
+	return tf;
+}
+
+local void
+scobindTfConditions(Stab stab, TForm tf, TfCondElt conditions)
+{
+	if (!tfIsPending(tf))
+		return;
+
+	if (conditions == NULL)
+		return;
+
+	tfSyntaxConditions(stab, tf, conditions);
+}
+
+/******************************************************************************
+ *
+ * :: LambdaInfo
  *
  *****************************************************************************/
 
 local LambdaInfo
-lambdaInfoAlloc(AbSyn lhs, AbSyn rhs)
+lambdaInfoAlloc(AbSyn lhs, AbSyn rhs, ScoConditionList condition)
 {
 	LambdaInfo info = (LambdaInfo) stoAlloc(OB_Other, sizeof(*info));
 	info->lhs = lhs;
 	info->rhs = rhs;
+	info->scoCondList = condition;
 
 	return info;
 }

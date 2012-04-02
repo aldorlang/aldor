@@ -12,6 +12,9 @@
 #include "axlobs.h"
 #include "foam.h"
 
+typedef struct TfCond *TfCond;
+typedef struct TfCondElt *TfCondElt;
+
 extern SymeList tfSetSymesFn(TForm, SymeList);
 
 /******************************************************************************
@@ -145,6 +148,8 @@ struct tform {
 	TFormList		queries;	/* Questions asked: D has C. */
 	TQualList		cascades;	/* Cascaded imports. */
 
+	TfCond           conditions;     /* Conditional context */
+
 	AbSub			sigma;		/* Subst. for TF_Subst. */
 	FreeVar			fv;		/* Free vars for subst. */
 	Length			*rho;		/* Dep. multi. permutation. */
@@ -203,6 +208,16 @@ typedef Bool	(*TFormPredicate)	(TForm);
 
 #define			tfQueries(tf)		((tf)->queries)
 #define			tfSetQueries(tf,tl)	(tfQueries(tf) = (tl))
+
+extern void   tfMergeConditions(TForm tf, Stab stab, TfCondElt conditions);
+extern TfCond tfFloatConditions(Stab stab, TForm tf);
+extern ULong abOuterDepth(Stab stab, AbSyn ab);
+extern AbSynList tfConditionalAbSyn(TForm tf);
+extern Stab tfConditionalStab(TForm tf);
+
+extern TfCond tfConditions(TForm);
+#define			tfSetConditions(tf,tl)	(tf->conditions = (tl))
+
 
 #define			tfCascades(tf)		((tf)->cascades)
 #define			tfHasCascades(tf)	((tf)->hasCascades)

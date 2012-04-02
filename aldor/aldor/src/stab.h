@@ -203,7 +203,7 @@ extern TForm	 	stabGetTForm		(Stab, AbSyn, TForm failed);
 extern TForm	 	stabDefTForm		(Stab, TForm);
 
 extern Bool	 	stabIsImportedTForm	(Stab, TForm);
-extern TForm	 	stabMakeUsedTForm	(Stab, AbSyn);
+extern TForm	 	stabMakeUsedTForm	(Stab, AbSyn, TfCondElt);
 extern TForm	 	stabMakeImportedTForm	(Stab, TForm);
 extern TForm	 	stabExportTForm	    	(Stab, TForm);
 extern TForm	 	stabImportTForm	    	(Stab, TForm);

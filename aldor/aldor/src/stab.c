@@ -1975,7 +1975,7 @@ removeTFormUnused(Stab stab, TForm tf)
 }
 
 TForm
-stabMakeUsedTForm(Stab stab, AbSyn ab)
+stabMakeUsedTForm(Stab stab, AbSyn ab, TfCondElt conditions)
 {
 	TFormUses	tfu;
 	TForm		tf;
@@ -1985,8 +1985,11 @@ stabMakeUsedTForm(Stab stab, AbSyn ab)
 		tf = tfSyntaxFrAbSyn(stab, ab);
 		tfu = tfuSetFlag(stab, tf, tformDoNothing);
 	}
+	else {
+		tf = tfu->tf;
+	}
 
-	tf = tfu->tf;
+	tfSyntaxConditions(stab, tf, conditions);
 	abSetTForm(ab, tf);
 	return tf;
 }

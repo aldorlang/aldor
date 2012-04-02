@@ -9,6 +9,7 @@
 # include "axlobs.h"
 # include "tinfer.h"
 # include "ti_sef.h"
+# include "tfcond.h"
 
 Bool	tfDebug		= false;
 Bool	tfExprDebug	= false;
@@ -93,8 +94,8 @@ local Bool		tfMeaningEqual		(Sefo, Sefo);
 /*
  * Type form floating.
  */
-local ULong		tfOuterDepth		(Stab, TForm);
-local ULong		abOuterDepth		(Stab, AbSyn);
+/*local ULong		tfOuterDepth		(Stab, TForm);*/
+/*local ULong		abOuterDepth		(Stab, AbSyn);*/
 
 /*
  * Type form representational symes.
@@ -276,6 +277,8 @@ tfNewEmpty(TFormTag tag, Length argc)
 	tf->consts	= listNil(TConst);
 	tf->queries	= listNil(TForm);
 	tf->cascades	= listNil(TQual);
+
+	tf->conditions = NULL;;
 
 	tf->sigma	= NULL;
 	tf->fv		= NULL;
@@ -543,28 +546,35 @@ tfHash(TForm tf)
 	Hash		h = 0;
 	Length		i;
 	SymeList	symes;
+	static int serial = 0;
+	int this = serial++;
+
+	tfFollow(tf);
 
 	if (!tfIsDefine(tf))
 		tf = tfDefineeType(tf);
 
 	if (tfIsSym(tf))
 		h = 0;
-	else if (tfIsAbSyn(tf))
+	else if (tfIsAbSyn(tf)) {
 		h = abHashModDeclares(tfGetExpr(tf));
+	}
 	else if (tfIsDefine(tf)) {
 		tfHashArg(h, tfHash(tfDefineeType(tf)));
 		tfHashArg(h, tfHash(tfDefineVal(tf)));
 	}
 	else if (tfIsNode(tf)) {
-		for (h = 0, i = 0; i < tfArgc(tf); i += 1)
+		for (h = 0, i = 0; i < tfArgc(tf); i += 1) {
 			tfHashArg(h, tfHash(tfArgv(tf)[i]));
+		}
 	}
 	else
 		bugBadCase(tfTag(tf));
 
-	if (tfTagHasSymes(tfTag(tf)))
+	if (tfTagHasSymes(tfTag(tf))) {
 		for (symes = tfSymes(tf); symes; symes = cdr(symes))
 			tfHashArg(h, strHash(symeString(car(symes))));
+	}
 
 	h += tformInfo(tfTag(tf)).hash + 200063;
 	h &= 0x3FFFFFFF;
@@ -617,6 +627,7 @@ local TForm	tfpApply	(Stab, AbSyn);
  * :: tfPending
  *
  ****************************************************************************/
+local AbSynList tfpConditions;
 
 TForm
 tfPending(Stab stab, AbSyn ab)
@@ -829,6 +840,11 @@ tfp0Float(Stab stab, AbSyn ab)
 	Stab	nstab;
 
 	tf    = tfSyntaxFrAbSyn(stab, ab);
+	if (tfIsSyntax(tf))
+		tfMergeConditions(tf, stab, 
+				  tfpConditions == listNil(AbSyn) 
+				  ? NULL : tfCondEltNew(stab, tfpConditions));
+
 	nstab = tfFloat(stab, tf);
 
 	if (nstab == NULL)
@@ -836,6 +852,7 @@ tfp0Float(Stab stab, AbSyn ab)
 	
 	ntf = tiTopFns()->typeInferTForm(nstab, tf);
 	tfTransferSemantics(ntf, tf);
+
 
 	return tf;
 }
@@ -1057,14 +1074,19 @@ tfpExcept(Stab stab, AbSyn ab)
 	return tf;
 }
 
-
 local TForm
 tfpIf(Stab stab, AbSyn ab)
 {
-	TForm	test	= tfp0Float(stab, ab->abIf.test);
-	TForm	thenAlt = tfp0Float(stab, ab->abIf.thenAlt);
-	TForm	elseAlt = tfp0Float(stab, ab->abIf.elseAlt);
+	TForm	test, thenAlt, elseAlt;
 	TForm	tf;
+
+	test = tfp0Float(stab, ab->abIf.test);
+
+	tfpConditions = listCons(AbSyn)(ab->abIf.test, tfpConditions);
+	thenAlt = tfp0Float(stab, ab->abIf.thenAlt);
+	tfpConditions = cdr(tfpConditions);
+
+	elseAlt = tfp0Float(stab, ab->abIf.elseAlt);
 
 	tf = tfNewNode(TF_If, 3, test, thenAlt, elseAlt);
 
@@ -1935,6 +1957,24 @@ tfSyntaxMap(Stab stab, AbSyn map, TForm tfret)
 	return tf;
 }
 
+void
+tfSyntaxConditions(Stab stab, TForm tf, TfCondElt conditions)
+{
+	int i;
+	tfDEBUG(if (conditions != NULL)
+			afprintf(dbOut, "Adding Condition: %pTForm - %pAbSynList %d\n", 
+				 tf, conditions->list,
+				 tfIsSyntax(tf) || tfIsMap(tf) || tfIsEmptyMulti(tf) || tfIsWith(tf)));
+	assert(tfIsSyntax(tf) || tfIsMap(tf) || tfIsEmptyMulti(tf) || tfIsWith(tf));
+	if (!tfIsMeaning(tf))
+		tfMergeConditions(tf, stab, conditions);
+
+	for (i=0; i<tfArgc(tf); i++) {
+		tfSyntaxConditions(stab, tfArgv(tf)[i], conditions);
+	}
+}
+
+
 /*
  * Create a define type form with syntactic parts.
  */
@@ -2075,9 +2115,13 @@ tfPendingFrSyntax(Stab stab, AbSyn ab, TForm tf)
 {
 	tfFollow(tf);
 
-	if (tfIsSyntax(tf))
-		tfForwardFrSyntax(tf, tfFollowOnly(tfPending(stab, ab)));
-
+	if (tfIsSyntax(tf)) {
+		TForm tfp = tfPending(stab, ab);
+		/* This test is probably too weak */
+		if (!tfIsId(tfp))
+			tfSetConditions(tfp, tfConditions(tf));
+		tfForwardFrSyntax(tf, tfFollowOnly(tfp));
+	}
 	else if (tfIsAnyMap(tf)) {
 		assert(abIsAnyMap(ab));
 		tfPendingFrSyntaxMap(stab, ab, tf);
@@ -2205,15 +2249,18 @@ tfFloat(Stab stab, TForm tf)
 {
 	ULong	odepth, ndepth;
 	TForm	outerTf = NULL;
+	Stab    ostab = stab;
 
 	if (! tfIsSyntax(tf))
 		return NULL;
 
 	odepth = stabLevelNo(stab);
 	ndepth = tfOuterDepth(stab, tf);
-	if (ndepth >= odepth)
+	if (ndepth >= odepth) {
+		/* No floating needed - clean up conditions */
+		tfFloatConditions(stab, tf);
 		return NULL;
-
+	}
 	while (stabLevelNo(stab) > ndepth) {
 		stab = cdr(stab);
 		outerTf = stabGetTForm(stab, tfGetExpr(tf), NULL);
@@ -2222,6 +2269,7 @@ tfFloat(Stab stab, TForm tf)
 
 	if (! outerTf) {
 		outerTf = tfNewSyntax(tfGetExpr(tf));
+		tfSetConditions(outerTf, tfFloatConditions(stab, tf)); 
 		stabDefTForm(stab, outerTf);
 	}
 
@@ -2243,6 +2291,7 @@ tfFloat(Stab stab, TForm tf)
 	});
 	outerTf = tfFollowOnly(outerTf);
 	tf = tfForwardFrSyntax(tf, outerTf);
+	tf->conditions = NULL;
 
 	return stab;
 }
@@ -2251,7 +2300,7 @@ tfFloat(Stab stab, TForm tf)
  * Compute the outermost symbol table depth for which the interpretation
  * of tf is known to be the same as it is in stab.
  */
-local ULong
+ULong
 tfOuterDepth(Stab stab, TForm tf)
 {
 	ULong		depth;
@@ -2272,7 +2321,7 @@ tfOuterDepth(Stab stab, TForm tf)
  */
 local ULong abOuterDepth0	(Stab stab, Stab istab, AbSyn ab);
 
-local ULong
+ULong
 abOuterDepth(Stab stab, AbSyn ab)
 {
 	return abOuterDepth0(stab, stab, ab);
@@ -2351,6 +2400,9 @@ handle_id:
 					depth = d;
 			}
 		}
+		tfFloatDEBUG(Buffer buf = bufNew();
+			     bufPrintf(buf, "AbSyn: %s [%pAbSyn] %d\n", symString(sym), ab, depth);
+			     printf("%s", bufLiberate(buf)));
 		break;
 	}
 	case AB_PretendTo:
@@ -2358,6 +2410,12 @@ handle_id:
 	case AB_Apply: 
 	case AB_Comma:
 	case AB_With:
+	case AB_Has:
+	case AB_RestrictTo:
+	case AB_And:
+	case AB_Or:
+	case AB_If:
+	case AB_Test:
 		depth = 1;
 		for (i = 0; i < abArgc(ab); i += 1) {
 			ULong	d = abOuterDepth0(stab, istab, abArgv(ab)[i]);
@@ -4165,6 +4223,20 @@ tfStabGetDomImports(Stab stab, TForm tf)
 
 	symes = symeListSubstSelf(stab, tf, xsymes);
 
+	if (tfConditions(tf) != NULL) {
+		Syme syme;
+		SymeList sl = symes;
+		while (sl != listNil(Syme)) {
+			Syme syme = car(sl);
+			TForm symeTf = symeType(syme);
+			tfDEBUG(afprintf(dbOut, "Setting imported condition %s %pTForm\n", 
+					 symeString(syme), symeTf));
+			tfSetConditions(symeTf, tfConditions(tf));
+			sl = cdr(sl);
+		}
+	
+	}
+
 	symes = symeListCheckCondition(symes);
 
 	tfSetDomImports(tf, symes);
@@ -4728,12 +4800,13 @@ tfSymeInducesDependency(Syme syme, TForm tf)
 	if (stab && symeDefLevel(syme) == car(stab))
 		result = !symeUnused(syme) || tfIsCategoryMap(tf);
 
-	tfMapDEBUG({
-		fprintf(dbOut, "tformSymeInducesDependency:  %s\n",
-			boolToString(result));
-		symePrint(dbOut, syme);
-		fnewline(dbOut);
-	});
+	tfMapDEBUG(afprintf(dbOut, "tformSymeInducesDependency: %s %pSyme %pTForm\n", boolToString(result),
+			    syme, tf));
+	tfMapDEBUG(afprintf(dbOut, "tformSymeInducesDependency: %pSyme Lvl %s unused: %s catMap %s\n", 
+			    syme,
+			    boolToString(stab && symeDefLevel(syme) == car(stab)),
+			    boolToString(symeUnused(syme)),
+			    boolToString(tfIsCategoryMap(tf))));
 
 	return result;
 }
@@ -7046,6 +7119,11 @@ tfSubstPush(TForm tf)
 		tf->tag		= TF_Forward;
 		absFree(sigma);
 	}
+	if (tfConditions(tf) != NULL) {
+		tfDEBUG(afprintf(dbOut, "SubstPushCond: %pTForm %pAbSynList\n",
+				 tf->argv[0], tfConditionalAbSyn(tf)));
+		tfSetConditions(tf->argv[0], tfConditions(tf));
+	}
 
 	assert(tf->argv[0] != tf);
 	return tf->argv[0];
@@ -8031,6 +8109,67 @@ tfImplicitExport(Stab stab, SymeList mods, Syme syme)
 
 	/* Not one of the implicit packed array operations */
 	return nsyme;
+}
+
+/*********************************
+ * 
+ * :: Conditions
+ *
+ *********************************/
+extern void   
+tfMergeConditions(TForm tf, Stab stab, TfCondElt conditions)
+{
+	tfDEBUG(if (conditions != NULL)
+			afprintf(dbOut, "Merge condition %pAbSynList to %pTForm\n", 
+				 conditions->list, tf));
+	tfSetConditions(tf, tfCondMerge(tfConditions(tf), stab, conditions));
+}
+
+extern TfCond tfFloatConditions(Stab stab, TForm tf)
+{
+	if (tfConditions(tf) != NULL) {
+		TfCond cond = tfCondFloat(stab, tfConditions(tf));
+		tfSetConditions(tf, cond);
+	}
+
+	return tfConditions(tf);
+}
+
+extern 
+TfCond tfConditions(TForm tf)
+{
+	tf = tfFollow(tf);
+	return tf->conditions;
+}
+
+
+AbSynList
+tfConditionalAbSyn(TForm tf)
+{
+	if (tfConditions(tf) == NULL)
+		return listNil(AbSyn);
+	if (tfConditions(tf)->containsEmpty) 
+		return listNil(AbSyn);
+
+	tfDEBUG(
+		TfCondEltList list;
+		list = tfConditions(tf)->conditions;
+		while (list != listNil(TfCondElt)) {
+			afprintf(dbOut, "Condition: %pTForm %pAbSynList\n", tf, car(list)->list);
+			list = cdr(list);
+		});
+	return tfConditions(tf)->conditions->first->list;
+}
+
+Stab
+tfConditionalStab(TForm tf)
+{
+	if (tfConditions(tf) == NULL)
+		return NULL;
+	if (tfConditions(tf)->containsEmpty) 
+		return NULL;
+
+	return tfConditions(tf)->conditions->first->stab;
 }
 
 /******************************************************************************

@@ -12,6 +12,7 @@
 #include "ti_tdn.h"
 #include "ti_sef.h"
 #include "terror.h"
+#include "tfcond.h"
 
 /*****************************************************************************
  *
@@ -1884,6 +1885,8 @@ tiTfExtend1(Stab stab, TFormUses tfu)
 		Syme	extension = symeExtension(syme);
 		TForm	tf = symeType(extension);
 		TFormUses tu0;
+		
+		titfOneDEBUG(afprintf(dbOut, "Syme: %pSyme TForm: %pTForm\n", syme, tf));
 
 		assert(ab && abHasTag(ab, AB_Id));
 		assert(syme && symeIsExport(syme));
@@ -2082,6 +2085,11 @@ tiTfCollectDependees(Table tbl, TFormUses S, TForm tf)
 	for (al = S->extendees; al; al = cdr(al))
 		tiTfCollectSefoDependees(tbl, S, car(al));
 	tiTfCollectSefoDependees(tbl, S, tfGetExpr(tf));
+	AbSynList l = tfConditionalAbSyn(tf);
+	while (l != listNil(AbSyn)) {
+		tiTfCollectSefoDependees(tbl, S, car(l));
+		l = cdr(l);
+	}
 }
 
 local void
