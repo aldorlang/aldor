@@ -160,6 +160,8 @@ void finiFile()
 {
 	scobindFiniFile();
 	stabFiniFile();
+
+	cmdDebugReset();
 }
 
 void init()
