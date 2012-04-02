@@ -3,6 +3,7 @@
 #include "parseby.h"
 #include "abnorm.h"
 #include "macex.h"
+#include "linear.h"
 
 ABQK_DEFINE0(sequence0, abNewSequence0);
 ABQK_DEFINE1(sequence1, abNewSequence1);
@@ -117,3 +118,13 @@ stdtypes()
 	return absyn;
 }
 
+
+Syme
+uniqueMeaning(Stab stab, String s)
+{
+	SymeList symesForString = stabGetMeanings(stab, ablogTrue(), symIntern(s));
+	testNull("", cdr(symesForString));
+	Syme d = car(symesForString);
+
+	return d;
+}

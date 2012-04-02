@@ -91,8 +91,6 @@ testConditionalTInfer()
 	finiFile();
 }
 
-local Syme uniqueMeaning(Stab stab, String s);
-
 void
 testSelfTInfer()
 {
@@ -151,17 +149,6 @@ testSelfTInfer()
 
 	finiFile();
 }
-
-local Syme
-uniqueMeaning(Stab stab, String s)
-{
-	SymeList symesForString = stabGetMeanings(stab, ablogTrue(), symIntern(s));
-	testNull("", cdr(symesForString));
-	Syme d = car(symesForString);
-
-	return d;
-}
-
 
 void initFile()
 {

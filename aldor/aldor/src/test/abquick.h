@@ -61,4 +61,7 @@ AbSynList abqParseLines(StringList lines);
 
 AbSyn stdtypes();
 
+Syme uniqueMeaning(Stab stab, String s);
+Syme uniqueType(Stab stab, String s);
+
 #endif
