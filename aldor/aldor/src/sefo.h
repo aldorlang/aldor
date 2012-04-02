@@ -86,6 +86,7 @@ extern void		tformListFreeVars	(TFormList);
 /*
  * symeListSubst
  */
+extern AbSub 		absFrSymes(Stab stab, SymeList symes, Sefo sefo);
 extern SymeList		symeListSubstSelf	(Stab, TForm, SymeList);
 extern SymeList		symeListSubstCat	(Stab, SymeList, TForm,
 						 SymeList);
