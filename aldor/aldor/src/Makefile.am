@@ -85,6 +85,7 @@ testsuite = \
 	test/test_fname.c 	\
 	test/test_foam.c 	\
 	test/test_format.c	\
+	test/test_list.c	\
 	test/test_ostream.c	\
 	test/test_printf.c	\
 	test/test_scobind.c	\

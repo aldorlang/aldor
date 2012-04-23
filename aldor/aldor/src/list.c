@@ -33,21 +33,53 @@ ptrlistList(int n, ...)
 	va_list  argp;
 	int i;
 	PointerList head = listNil(Pointer);
+	PointerList *nextptr = &head;
 	PointerList tail;
 
 	va_start(argp, n);
 	for (i=0; i<n; i++) {
 		PointerList cell = listCons(Pointer)((Pointer) va_arg(argp, Pointer), 
 						     listNil(Pointer));
-		if (head == listNil(Pointer))
-			head = cell;
-		else {
-			cdr(tail) = cell;
-		}
-		tail = cell;
-				
+		*nextptr = cell;
+		nextptr = &cell->rest;
 	}
 	va_end(argp);
+
+	return head;
+}
+
+local PointerList
+ptrlistListNull(Pointer arg0, ...)
+{
+	PointerList l = listNil(Pointer);
+	va_list argp;
+
+	va_start(argp, arg0);
+	if (arg0 != NULL) {
+		l = listListv(Pointer)(argp);
+		l = listCons(Pointer)(arg0, l);
+	}
+	va_end(argp);
+
+	return l;
+}
+
+local PointerList
+ptrlistListv(va_list argp)
+{
+	int i;
+	PointerList head = listNil(Pointer);
+	PointerList *nextptr = &head;
+
+	while (true) {
+		Pointer nextElt = (Pointer) va_arg(argp, Pointer);
+		if (nextElt == NULL)
+			break;
+		PointerList cell = listCons(Pointer)(nextElt,
+						     listNil(Pointer));
+		*nextptr = cell;
+		nextptr = &cell->rest;
+	}
 
 	return head;
 }
@@ -520,6 +552,8 @@ const struct ListOpsStructName(Pointer) ptrlistOps = {
 	ptrlistCons,
 	ptrlistSingleton,
 	ptrlistList,
+	ptrlistListv,
+	ptrlistListNull,
 	ptrlistEqual,
 	ptrlistFind,
 	ptrlistFreeCons,                                

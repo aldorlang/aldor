@@ -32,8 +32,17 @@
 		(struct ListOpsStructName(Type) *) &ptrlistOps
 
 
+/*
+ * Various list operations.
+ * listList(XXX)(n, ...): create a list containing the following n elements
+ * listListv(XXX)(argp): Create a list containing all following arguments, up to a 'NULL'.
+ * listPrint, GPrint: print & more generic printing
+ * listFormat: Format via ostream.
+ */
 #  define listSingleton(Type)           (*(ListOps(Type)->Singleton))
 #  define listList(Type)                (*(ListOps(Type)->List))
+#  define listListv(Type)               (*(ListOps(Type)->Listv))
+#  define listListNull(Type)            (*(ListOps(Type)->ListNull))
 #  define listCons(Type)                (*(ListOps(Type)->Cons))
 #  define listEqual(Type)               (*(ListOps(Type)->Equal))
 #  define listFind(Type)                (*(ListOps(Type)->Find))
@@ -105,6 +114,8 @@ Statement({							\
 		List(Type)      (*Cons)         (Type, List(Type)); \
 		List(Type)      (*Singleton)    (Type); \
 		List(Type)      (*List)         (int n, ...);		\
+		List(Type)      (*Listv)        (va_list argp);		\
+		List(Type)      (*ListNull)     (Type, ...);		\
 		Bool            (*Equal)        (List(Type), List(Type), \
 						 Bool (*f) (Type, Type)); \
 		Type            (*Find)         (List(Type), Type, \
