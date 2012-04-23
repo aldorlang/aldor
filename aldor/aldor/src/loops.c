@@ -723,13 +723,8 @@ lpEdgeListPrintDb(EdgeList edges)
 void
 lpLoopPrintDb(Loop loop)
 {
-#if EDIT_1_0_n1_07
-	fprintf(dbOut, "Loop (%p):  headerBlock = %d\n",
-		loop, loop->header->label);
-#else
 	fprintf(dbOut, "Loop (0x%x):  headerBlock = %d\n",
 		(unsigned int)loop, loop->header->label);
-#endif
 
 	assert(loop->bitvClass);
 	assert(bitvClassSize(loop->bitvClass) >= listLength(BBlock)(loop->blockList));
