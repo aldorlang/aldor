@@ -182,6 +182,106 @@ foamNewSFlo(SFloat s)
 }
 
 Foam
+foamNewSeq(Foam arg0, ...)
+{
+	FoamList l = listNil(Foam);
+	va_list argp;
+
+	va_start(argp, arg0);
+	if (arg0 != NULL) {
+		l = listListv(Foam)(argp);
+		l = listCons(Foam)(arg0, l);
+	}
+	va_end(argp);
+
+	return foamNewOfList(FOAM_Seq, l);
+}
+
+
+
+Foam
+foamNewProgEmpty()
+{
+	return foamNewProg(int0,int0,int0,int0,int0,emptyFormatSlot,NULL,NULL,NULL,NULL);
+}
+
+Foam
+foamNewPCall(AInt protocol, AInt type, Foam op, ...)
+{
+	FoamList args;
+	Foam foam;
+	va_list argp;
+	int i;
+
+	va_start(argp, op);
+	args = listListv(Foam)(argp);
+	va_end(argp);
+
+	foam = foamNewEmpty(FOAM_PCall, foamPCallSlotc + listLength(Foam)(args));
+	foam->foamPCall.protocol = protocol;
+	foam->foamPCall.type = type;
+	foam->foamPCall.op = op;
+
+	i = 0;
+	while (args != listNil(Foam)) {
+		foam->foamPCall.argv[i++] = car(args);
+		args = listFreeCons(Foam)(args);
+	}
+
+	return foam;
+}
+
+Foam
+foamNewBCall(AInt op, ...)
+{
+	FoamList args;
+	Foam foam;
+	va_list argp;
+	int i;
+
+	va_start(argp, op);
+	args = listListv(Foam)(argp);
+	va_end(argp);
+
+	foam = foamNewEmpty(FOAM_BCall, foamBCallSlotc + listLength(Foam)(args));
+	foam->foamBCall.op = op;
+
+	i = 0;
+	while (args != listNil(Foam)) {
+		foam->foamBCall.argv[i++] = car(args);
+		args = listFreeCons(Foam)(args);
+	}
+
+	return foam;
+}
+
+
+Foam
+foamNewDDecl(AInt usage, ...)
+{
+	FoamList foamList;
+	Foam foam;
+	va_list argp;
+	int i;
+
+	va_start(argp, usage);
+	foamList = listListv(Foam)(argp);
+	va_end(argp);
+	assert(foamDDeclSlotc == 1);
+
+	foam = foamNew(FOAM_DDecl, foamDDeclSlotc + listLength(Foam)(foamList));
+	foam->foamDDecl.usage = usage;
+	i=0;
+	while (foamList != listNil(Foam)) {
+		foam->foamDDecl.argv[i++] = car(foamList);
+		foamList = listFreeCons(Foam)(foamList);
+	}
+
+	return foam;
+}
+
+
+Foam
 foamNewEmpty(FoamTag tag, Length argc)
 {
 	Foam	foam;

@@ -639,6 +639,8 @@ struct foamRRec {
 		(AInt)(ib), (AInt)0, (AInt)0, (AInt)0 , p, l, fl, le, b)
 #endif
 
+extern Foam foamNewProgEmpty();
+
 struct foamProg {
 	struct foamHdr          hdr;
 	AInt                    endOffset;
@@ -697,6 +699,7 @@ struct foamDecl {
 };
 
 #define foamNewEmptyDDecl(u) foamNew(FOAM_DDecl, 1, (AInt) u)
+extern Foam foamNewDDecl(AInt usage, ...);
 
 struct foamDDecl {
 	struct foamHdr          hdr;
@@ -704,10 +707,16 @@ struct foamDDecl {
 	Foam                    argv[NARY];
 };
 
+#define foamDDeclSlotc (1)
+#define foamDDeclArgc(f) (foamArgc(f) - foamDDeclSlotc)
+
+
 struct foamDFluid {
 	struct foamHdr          hdr;
 	AInt                    argv[NARY];
 };
+
+#define foamNewEmptyDEnv() foamNew(FOAM_DEnv, 0)
 
 struct foamDEnv {
 	struct foamHdr          hdr;
@@ -964,6 +973,8 @@ struct foamIf {
 	AInt                    label;
 };
 
+extern Foam foamNewSeq(Foam arg0, ...);
+
 struct foamSeq {
 	struct foamHdr          hdr;
 	Foam                    argv[NARY];
@@ -1000,6 +1011,8 @@ struct foamCast {
 	Foam                    expr;
 };
 
+extern Foam foamNewPCall(AInt protocol, AInt type, Foam op, ...);
+
 struct foamPCall {
 	struct foamHdr		hdr;
 	AInt			protocol;
@@ -1009,7 +1022,12 @@ struct foamPCall {
 };
 
 #define foamPCallSlotc (3)
-#define foamPCallArgc(foam) (foamArgc(foam) - foamPCallSlotc);
+#define foamPCallArgc(foam) (foamArgc(foam) - foamPCallSlotc)
+
+extern Foam foamNewBCall(AInt op, ...);
+#define foamNewBCall0(op) foamNewBCall(op, NULL)
+#define foamNewBCall1(op, arg1) foamNewBCall(op, arg1, NULL)
+#define foamNewBCall2(op, arg1, arg2) foamNewBCall(op, arg1, arg2, NULL)
 
 struct foamBCall {
 	struct foamHdr          hdr;
@@ -1018,7 +1036,7 @@ struct foamBCall {
 };
 
 #define foamBCallSlotc (1)
-#define foamBCallArgc(foam) (foamArgc(foam) - foamBCallSlotc);
+#define foamBCallArgc(foam) (foamArgc(foam) - foamBCallSlotc)
 
 struct foamCCall {
 	struct foamHdr          hdr;
@@ -1102,6 +1120,7 @@ struct foamMFmt {
 	Foam			value;
 };
 
+#define foamNewEmptyValues()    foamNew(FOAM_Values, 0)
 struct foamValues {
 	struct foamHdr		hdr;
 	Foam			argv[NARY];
@@ -1549,7 +1568,6 @@ extern Bool foamTypeIsValue(Foam fmts, FoamTag type, AInt fmt);
 #define foamTRDDeclTDecl(ddecl, n) ((ddecl)->foamDDecl.argv	\
 				    [1+ foamTRDDeclIDeclN(ddecl) + (n)])
 
-#define foamDDeclArgc(foam)	(foamArgc(foam) - 1)
 #define foamSelectArgc(foam)    (foamArgc(foam) - 1)
 
 /*
