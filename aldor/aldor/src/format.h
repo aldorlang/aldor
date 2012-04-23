@@ -46,10 +46,12 @@ typedef int (*FormatFn)(OStream stream, Pointer p);
 typedef struct format {
 	const char *name;
 	FormatFn fn;
+	Bool nullOk;
 } *Format;
 
 
 extern void   fmtRegister(const char *name, FormatFn fn);
+extern void   fmtRegisterFull(const char *name, FormatFn fn, Bool nullOk);
 extern Format fmtMatch(const char *fmtTxt);
 extern int    fmtPrint(Format format, OStream stream, Pointer ptr);
 extern void   fmtUnregister(Format format);

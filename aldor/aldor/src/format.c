@@ -317,11 +317,17 @@ static FormatList fmtRegisteredFormats = listNil(Format);
 void 
 fmtRegister(const char *name, FormatFn fn)
 {
+	fmtRegisterFull(name, fn, true);
+}
+
+void 
+fmtRegisterFull(const char *name, FormatFn fn, Bool nullOk)
+{
 	Format format = (Format) stoAlloc(OB_Other, sizeof(*format));
 	assert(name[0] != '\0');
 	format->name = strCopy(name);
 	format->fn = fn;
-
+	format->nullOk = nullOk;
 	fmtRegisteredFormats = listCons(Format)(format, fmtRegisteredFormats);
 }
 
@@ -351,5 +357,8 @@ int
 fmtPrint(Format format, OStream stream, Pointer ptr)
 {
 	assert(format != NULL);
+	if (!format->nullOk && ptr == NULL) {
+		return ostreamPrintf(stream, "(nil)");
+	}
 	return format->fn(stream, ptr);
 }
