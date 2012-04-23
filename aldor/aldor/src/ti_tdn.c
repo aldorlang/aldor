@@ -1862,7 +1862,8 @@ titdnQualify(Stab stab, AbSyn absyn, TForm type)
 		fsymes = symes;
 	}
 	else if (tfIsSelf(tforg)) {
-		symes  = tfGetDomImports(tforg);
+		/*symes  = tfGetDomImports(tforg);*/
+		symes = listNil(Syme);
 		fsymes = listNil(Syme);
 
 		if (symes == listNil(Syme)) {
