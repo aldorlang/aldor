@@ -243,6 +243,28 @@ tpossPrint(FILE *fout, TPoss tp)
 }
 
 int
+tpossOStreamWrite(OStream ostream, TPoss tp)
+{
+	switch ((UAInt) tp)
+	{
+		case 0:
+			return ostreamPrintf(ostream, "[]");
+		case (UAInt) tuniInappropriateTPoss:
+			return ostreamPrintf(ostream, "(inappropriate)");
+		case (UAInt) tuniNoValueTPoss:
+			return ostreamPrintf(ostream, "(no value)");
+		case (UAInt) tuniUnknownTPoss:
+			return ostreamPrintf(ostream, "(unknown)");
+		case (UAInt) tuniErrorTPoss:
+			return ostreamPrintf(ostream, "(error)");
+		default:
+			return ostreamPrintf(ostream, "[TP: %d %pTFormList]", tp->possc, tp->possl);
+	}
+	return 0;
+}
+
+
+int
 tpossPrintDb(TPoss tp)
 {
 	int rc = tpossPrint(dbOut, tp);

@@ -32,6 +32,7 @@ extern int	tpossCount 		(TPoss);
 extern void	tpossFree		(TPoss);
 extern int	tpossPrint		(FILE *, TPoss);
 extern int	tpossPrintDb		(TPoss);
+extern int      tpossOStreamWrite       (OStream, TPoss);
 
 extern Bool	tpossIsUnique		(TPoss);
 extern TPoss	tpossIntersect   	(TPoss,  TPoss);
