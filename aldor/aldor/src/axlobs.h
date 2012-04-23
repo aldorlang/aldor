@@ -92,6 +92,8 @@ DECLARE_LIST(FileName);
 DECLARE_LIST(UdInfo);
 DECLARE_LIST(DepDag);
 
+DECLARE_LIST(SymeList);
+
 /*
  * Include files which give meaning to the above declarations.
  */

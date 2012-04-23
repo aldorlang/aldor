@@ -34,6 +34,9 @@ CREATE_LIST(FileName);
 CREATE_LIST(CCode);
 CREATE_LIST(DepDag);
 
+CREATE_LIST(SymeList);
+
+
 
 /*
  * These must be in the same order as the OB_ values..

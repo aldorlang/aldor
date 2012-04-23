@@ -2328,9 +2328,6 @@ tqualListFreeVars(TQualList tquals)
  * sstFreeVars table stack functions.
  */
 
-DECLARE_LIST(SymeList);
-CREATE_LIST(SymeList);
-
 static SymeListList	sfvTableList		= listNil(SymeList);
 static AIntList		sfvBase			= listNil(AInt);
 static AInt		sfvDepth		= 0;
