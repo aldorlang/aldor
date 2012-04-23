@@ -46,6 +46,8 @@ extern String   bitvToString    (BitvClass, Bitv);
 extern int	bitvPrintDb	(BitvClass, Bitv);
 extern Bool	bitvEqual	(BitvClass, Bitv, Bitv);
 extern int      bitvMax         (BitvClass, Bitv);
+extern int      bitvCount       (BitvClass, Bitv);
+extern int      bitvCountTo     (BitvClass, Bitv, int n);
 
 /*
  * Arithmetic: These update the result 'r'.
@@ -67,5 +69,6 @@ extern void	bitvMinus	(BitvClass, Bitv r, Bitv a, Bitv b);
  * Esoterica: for clients.
  */
 extern	int	bitvUnique1IndexInRange(BitvClass, Bitv, int org, int lim);
-
+extern  Bitv    bitvFromInt(BitvClass, int);
+extern  int     bitvToInt(BitvClass, Bitv);
 #endif /* !_BITV_H_ */

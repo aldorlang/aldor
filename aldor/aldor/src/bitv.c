@@ -270,7 +270,32 @@ bitvMax(BitvClass class, Bitv bv)
 	return i;
 }
 
+int
+bitvCount(BitvClass class, Bitv bv)
+{
+	int total = 0;
+	int i;
+	/* FIXME: Could be _much_ more efficient */
+	for (i=0; i<class->nbits; i++) {
+		if (bitvTest(class, bv, i))
+			total++;
+	}
+	return total;
+}
 
+int
+bitvCountTo(BitvClass class, Bitv bv, int n)
+{
+	int total = 0;
+	int i = 0;
+
+	/* FIXME: Could be _much_ more efficient */
+	for (i=0; i<n; i++) {
+		if (bitvTest(class, bv, i))
+			total++;
+	}
+	return total;
+}
 
 int
 bitvUnique1IndexInRange(BitvClass class, Bitv bv, int org, int lim)
@@ -288,4 +313,34 @@ bitvUnique1IndexInRange(BitvClass class, Bitv bv, int org, int lim)
 
 	if (n1s != 1) return -1;
 	return last1;
+}
+
+Bitv
+bitvFromInt(BitvClass class, int n)
+{
+	Bitv bitv = bitvNew(class);
+	int i;
+
+	assert(class->nbits < 8 * sizeof(int));
+
+	for (i=0; i<class->nbits; i++) {
+		if (n & (1<<i))
+			bitvSet(class, bitv, i);
+		else
+			bitvClear(class, bitv, i);
+	}
+	return bitv;
+}
+
+int
+bitvToInt(BitvClass class, Bitv bitv)
+{
+	int result = 0;
+	int i;
+	assert(class->nbits < 8 * sizeof(int));
+	for (i=0; i<class->nbits; i++) {
+		if (bitvTest(class, bitv, i))
+			result = result | (1<<i);
+	}
+	return result;
 }

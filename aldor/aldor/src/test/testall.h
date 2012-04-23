@@ -3,6 +3,7 @@
 
 void ablogTest(void);
 void absynTest(void);
+void bitvTestSuite(void);
 void fnameTest(void);
 void foamTest(void);
 void ostreamTest(void);

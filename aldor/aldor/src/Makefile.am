@@ -81,6 +81,7 @@ TESTS=testall
 testsuite = \
 	test/test_ablogic.c 	\
 	test/test_absyn.c 	\
+	test/test_bitv.c 	\
 	test/test_fname.c 	\
 	test/test_foam.c 	\
 	test/test_format.c	\

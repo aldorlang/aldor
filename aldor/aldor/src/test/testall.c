@@ -15,6 +15,7 @@ main(int argc, char *argv[])
 
 	if (testShouldRun("printf")) printfTest();
 	if (testShouldRun("ostream")) ostreamTest();
+	if (testShouldRun("bitv")) bitvTestSuite();
 	if (testShouldRun("fname")) fnameTest();
 	if (testShouldRun("foam")) foamTest();
 	if (testShouldRun("format")) formatTest();
