@@ -529,7 +529,7 @@ local int
 ptrListFormat(OStream stream, CString formatName, PointerList l)
 {
 	int cc = 0;
-	String format = strConcat("%p", formatName);
+	String format = strConcat("%p", (String) formatName);
 	String sep = "";
 	cc += ostreamWrite(stream, "[", -1);
 	while (l) {
