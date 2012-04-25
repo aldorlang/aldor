@@ -1004,27 +1004,20 @@ bbLastValues(BBlock bb, Foam parv, Foam locv, Foam same, Foam dunno)
 	}
 }
 
-/*
- * Make the specified exit of bb point to a new node, which is
- * a copy of the old one.
- */
 BBlock
-bbCloneExitFrom(BBlock bb, int exitno)
+bbCopy(BBlock odd)
 {
 	FlowGraph  flog;
 	Foam	   code;
 	BlockLabel nlab;
-	BBlock odd, ndd;
-	int	   i;
+	BBlock ndd;
+	int i;
 
-	flog = bb->graph;
-
-	/* Make the new node. */
-	odd  = bbExit(bb, exitno);
+	flog = odd->graph;
 	nlab = flogReserveLabel(flog);
 	code = foamCopy(odd->code);
 	ndd  = bbNew(code, nlab);
-	
+
 	/* Attatch it to the graph. */
 	flogSetBlock(flog, nlab, ndd);
 
@@ -1034,6 +1027,22 @@ bbCloneExitFrom(BBlock bb, int exitno)
 
 	for (i = 0; i < bbExitC(odd); i++)
 		bbSetExit(ndd, i, bbExit(odd, i));
+
+	return ndd;
+}
+
+/*
+ * Make the specified exit of bb point to a new node, which is
+ * a copy of the old one.
+ */
+BBlock
+bbCloneExitFrom(BBlock bb, int exitno)
+{
+	BBlock odd, ndd;
+
+	/* Make the new node. */
+	odd  = bbExit(bb, exitno);
+	ndd = bbCopy(odd);
 
 	/* Reset exit of bb to be ndd. */
 	bbSetExit(bb, exitno, ndd);

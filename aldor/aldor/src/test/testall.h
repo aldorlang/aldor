@@ -6,6 +6,7 @@ void absynTest(void);
 void bitvTestSuite(void);
 void listTestSuite(void);
 void fnameTest(void);
+void flogTest(void);
 void foamTest(void);
 void ostreamTest(void);
 void printfTest(void);
