@@ -2594,6 +2594,8 @@ tibupFor(Stab stab, AbSyn absyn, TForm type)
 #endif
 	tibup(stab, test, abIsNothing(test) ? tfUnknown : tfBoolean);
 
+	lhs = abTag(absyn->abFor.lhs) == AB_Comma ? lhs : abDefineeId(lhs);
+
 	tplhs = abReferTPoss(lhs);
 	tp = tpossSatisfies(tparg, tplhs);
 	abResetTPoss(lhs, tp);
