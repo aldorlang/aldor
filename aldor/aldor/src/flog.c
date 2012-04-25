@@ -595,9 +595,6 @@ flogConsStats(FlowGraph flog, BBlock bb, FoamList stats)
         if (bb->mark) return stats;
         bb->mark = true;
 
-        fc = foamArgc(bb->code);
-        fv = bb->code->foamSeq.argv;
- 
 	/* If the previous statement just comes here, free it. */
 	while (stats &&
 	       foamTag(car(stats)) == FOAM_Goto &&
@@ -608,6 +605,9 @@ flogConsStats(FlowGraph flog, BBlock bb, FoamList stats)
 	}
 	
 	flogPeepholeExits(bb);
+
+        fc = foamArgc(bb->code);
+        fv = bb->code->foamSeq.argv;
 
 	/* Label needed if: more than one entry OR any conditional entry.  */
         if (bb->refc > 1 || bb->lrefc > 0) {
