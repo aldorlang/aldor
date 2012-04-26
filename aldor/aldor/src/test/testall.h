@@ -8,6 +8,7 @@ void listTestSuite(void);
 void fnameTest(void);
 void flogTest(void);
 void foamTest(void);
+void jflowTest(void);
 void ostreamTest(void);
 void printfTest(void);
 void formatTest(void);

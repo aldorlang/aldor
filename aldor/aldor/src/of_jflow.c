@@ -119,9 +119,10 @@ jflowProg(Foam prog)
 	if (!optIsJFlowPending(prog)) return;
 	optResetJFlowPending(prog);
 
+	jflowDfDEBUG(afprintf(dbOut, "JFlow: %pFoam\n", prog));
 	flog = flogFrProg(prog, FLOG_MultipleExits);
 	jflowDfDEBUG({
-		fprintf  (dbOut, "--> Enter jflowProg: The flow graph is:\n");
+		fprintf  (dbOut, "--> flow graph is:\n");
 		flogPrint(dbOut, flog, true);
 		fprintf  (dbOut, "\n");
 	});
@@ -1017,7 +1018,7 @@ jflowDummyBlocksFind(JFInfo jfinfo, FlowGraph flog)
 			if (!bitvTest(class, dfFwdIn(bb), i)) break;
 
 		if (i < ixN) continue;
-
+		jflowDmDEBUG(afprintf(dbOut, "Found dummy: Var: %d Block: %d\n", cvn, bb->label));
 		listPush(BBlock, bb, bbDummyl);
 	});
 
@@ -1081,6 +1082,87 @@ jflowSpecializeBlock(int val, BBlock bb, int exit, BBlock dummy,
 	}
 }
 
+/*
+ * Replacement for the recursive function above.  Idea is to copy the
+ * blocks, then wire up the exit points.  That way any nasty loopiness
+ * when looking for blocks to specialize goes away
+ */
+
+local void
+jflowSpecializeBlock2(int val, BBlock bb, int exit,
+		      BBlock dummy,
+		      Bitv cloneSet, BitvClass class)
+{
+	FlowGraph flog = bb->graph;
+	BBlock	newb;
+	Bitv    cloned = bitvNew(class);
+	int	i, j;
+
+	jflowDmDEBUG(afprintf(dbOut, "Header: %pBBlock Exit: %d\n", bb, exit));
+
+	bitvClearAll(class, cloned);
+	BBlockList bbsToCheck = listList(BBlock)(1, bb);
+
+	while (bbsToCheck != listNil(BBlock)) {
+		BBlock bb = car(bbsToCheck);
+		bbsToCheck = listFreeCons(BBlock)(bbsToCheck);
+
+		for (i=0; i<bbExitC(bb); i++) {
+			BBlock dd = bbExit(bb, i);
+			if (bitvTest(class, cloneSet, dd->label)
+			    && !bitvTest(class, cloned, dd->label)) {
+				bitvSet(class, cloned, dd->label);
+				bbsToCheck = listCons(BBlock)(dd, bbsToCheck);
+			}
+		}
+	}
+
+	jflowDmDEBUG(afprintf(dbOut, "Cloning %d blocks\n", bitvCount(class, cloned)));
+	/* Copy the blocks that need copying */
+	BBlock *cloneArray = (BBlock *) stoAlloc(OB_Other, bitvCount(class, cloned) * sizeof(BBlock));
+	int pos = 0;
+	for (i=0; i <= bitvMax(class, cloned); i++) {
+		BBlock bb;
+		int j;
+		if (!bitvTest(class, cloned, i))
+			continue;
+		bb = flogBlock(flog, i);
+		BBlock clone = bbCopy(bb);
+		cloneArray[pos++] = clone;
+	}
+	assert(pos == bitvCount(class, cloned));
+
+	/* Now wire them up */
+	pos = 0;
+	for (i=0; i <= bitvMax(class, cloned); i++) {
+		if (!bitvTest(class, cloned, i))
+			continue;
+		BBlock origBB = flogBlock(flog, i);
+		BBlock clonedBB = cloneArray[pos++];
+		if (origBB == dummy) {
+			bbSpecializeExit(clonedBB, val);
+		}
+		for (j=0; j<bbExitC(clonedBB); j++) {
+			BBlock exitBlock = bbExit(clonedBB, j);
+			if (bitvTest(class, cloned, exitBlock->label)) {
+				int pos = bitvCountTo(class, cloned, exitBlock->label);
+				bbSetExit(clonedBB, j, cloneArray[pos]);
+			}
+		}
+		jflowDmDEBUG(afprintf(dbOut, "cloned: (%s) %pBBlock to %pBBlock\n",
+				      origBB==dummy ? "dummy" : "std", origBB, clonedBB));
+	}
+
+	int bbpos = bitvCountTo(class, cloned, bbExit(bb, exit)->label);
+	bbSetExit(bb, exit, cloneArray[bbpos]);
+
+	jflowDmDEBUG(afprintf(dbOut, "Header: %pBBlock\n", bb));
+
+	stoFree(cloneArray);
+}
+
+
+
 /* "header" is reached only by constant values of control var.
  *  NOTE: header my be reached by the some value from 2 different
  *    blocks, in example, and I don't want to copy it twice.
@@ -1122,7 +1204,7 @@ jflowBlocksClone(JFInfo jfinfo, BBlockList clones, BBlock header, BBlock dummy)
 
 		eix = jflowHowIsBitvDominating(jfinfo,dfFwdOut(dd, j),dummy);
 
-		jflowSpecializeBlock(eix, dd, j, dummy, cloneSet, class);
+		jflowSpecializeBlock2(eix, dd, j, dummy, cloneSet, class);
 	}
 
 #if 0 /* Paranoid */
@@ -1256,6 +1338,8 @@ jflowDummyRemovalTryWithLoops(JFInfo jfinfo, LoopList loops, BBlock bb,
 
 		assert(selLoop);
 
+		jflowDmDEBUG(afprintf(dbOut, "Looking at: %pBBlock, Candidate loop: %pLoop\n", bb, selLoop));
+
 		if (jflowDummyRemovalTryWithLoop(jfinfo, selLoop, bb, doms))
 			return true;
 
@@ -1273,6 +1357,7 @@ jflowDummyTestRemove(JFInfo jfinfo, FlowGraph flog, BBlockList bbl)
 	Dominators	doms;
 
 	loops = lpNaturalLoopsFrFlog(flog, &doms);
+	jflowDmDEBUG(afprintf(dbOut, "DummyTestRemove-Loops: %pLoopList\n", loops));
 
 	if (!loops) return false;
 
@@ -1296,7 +1381,7 @@ jflowDummyTestsRemove(JFInfo jfinfo, FlowGraph flog)
 	int		n, k;
 
 	n = dflowFwdIterate(flog, DFLOW_Union, jflowDF_CUTOFF, &k, NULL);
-
+	jflowDmDEBUG(afprintf(dbOut, "DummyTestsRemove: %pFlowGraph\n", flog));
 	jflowDfDEBUG({
 		fprintf(dbOut, n == 0 ? "Converged" : "Did not converge");
 		fprintf(dbOut, " after %d iterations\n", k);
