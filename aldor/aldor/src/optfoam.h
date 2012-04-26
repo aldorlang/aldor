@@ -12,7 +12,8 @@
 # include "axlobs.h"
 
 
-extern void	optSetInit		(void);
+extern void	optInit		        (void);
+extern void	optSetInit	        (void);
 extern int	optSetOptimization	(String);
 extern int	optSetStdOptimization	(void);
 extern void	optSetLoopOption	(void);

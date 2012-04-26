@@ -26,6 +26,7 @@
 # include "of_rrfmt.h"
 # include "inlutil.h"
 # include "flatten.h"
+# include "loops.h"
 
 Bool	optfDebug = false;
 
@@ -83,6 +84,8 @@ struct optControl {
  * :: Local operations
  *
  *****************************************************************************/
+
+local void      optInitFormatters();
 
 local  void	optSetAllTo		(Bool);
 local  void	optSetLevel		(int);
@@ -177,9 +180,10 @@ optPrintOpts(void)
 }
 
 void
-optSetInit(void)
+optInit(void)
 {
 	optSetLevel(OPT_DefaultLevel);
+	optInitFormatters();
 }
 
 int
@@ -494,4 +498,102 @@ optOptimizationsInit()
 {
 	dvInit();
 	optSetJFlowLimit();
+}
+
+/*
+ * :: Formatters
+ */
+local int flogFormatter(OStream stream, Pointer p);
+local int loopFormatter(OStream stream, Pointer p);
+local int bbFormatter(OStream stream, Pointer p);
+local int bbufFormatter(OStream stream, Pointer p);
+local int bbListFormatter(OStream stream, Pointer p);
+local int loopListFormatter(OStream stream, Pointer p);
+
+local void
+optInitFormatters()
+{
+	fmtRegisterFull("FlowGraph", flogFormatter, false);
+
+	fmtRegisterFull("Loop", loopFormatter, false);
+	fmtRegisterFull("LoopList", loopListFormatter, true);
+
+	fmtRegisterFull("BBlock", bbFormatter, false);
+	fmtRegisterFull("BBlockList", bbListFormatter, true);
+
+	fmtRegisterFull("BlockBuf", bbufFormatter, false);
+	
+}
+
+local int
+flogFormatter(OStream stream, Pointer p)
+{
+	FlowGraph flog = (FlowGraph) p;
+	char *sep;
+	int c=0;
+	int i;
+	
+	c += ostreamPrintf(stream, "(Flog:");
+	for (i=0; i < flogBlockC(flog); i++) {
+		c += ostreamPrintf(stream, " %pBBlock", flogBlock(flog, i));
+	}
+	c += ostreamPrintf(stream, ")");
+
+	return c;
+}
+
+local int
+loopFormatter(OStream stream, Pointer p)
+{
+	Loop loop = (Loop) p;
+	int c;
+
+	c = ostreamPrintf(stream, "[L: %d %pBBlockList]", loop->header->label, loop->blockList);
+	
+	return c;
+}
+
+local int
+bbFormatter(OStream stream, Pointer p)
+{
+	BBlock bb = (BBlock) p;
+	int c;
+	c = ostreamPrintf(stream, "[B %s %d In: %pBlockBuf Out: %pBlockBuf]", 
+			  bb->kind < FOAM_LIMIT ? foamStr(bb->kind) : "???",
+			  bb->label, bb->entries, bb->exits);
+	return c;
+}
+
+local int
+bbufFormatter(OStream stream, Pointer p)
+{
+	BlockBuf bf = (BlockBuf) p;
+	int c = 0;
+	int i;
+	char *sep = "";
+
+	ostreamWriteChar(stream, '(');
+	c++;
+	for (i=0; i < bbufCount(bf); i++) {
+		BBlock bb = bbufBlock(bf, i);
+		c += ostreamPrintf(stream, "%s%d", sep, bb->label);
+		sep = " ";
+	}
+	ostreamWriteChar(stream, ')');
+	c++;
+
+	return c;
+}
+
+local int
+loopListFormatter(OStream ostream, Pointer p)
+{
+	LoopList list = (LoopList) p;
+	return listFormat(Loop)(ostream, "Loop", list);
+}
+local int
+bbListFormatter(OStream ostream, Pointer p)
+{
+	BBlockList list = (BBlockList) p;
+	return listFormat(BBlock)(ostream, "BBlock", list);
 }

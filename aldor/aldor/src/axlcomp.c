@@ -622,7 +622,7 @@ compInit(void)
 	stabInitGlobal();
 	tfInit();
 	foamInit();
-	optSetInit();
+	optInit();
 	tinferInit();
 }
  
