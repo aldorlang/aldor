@@ -1010,8 +1010,8 @@ tfpId(Stab stab, AbSyn ab)
 		return tfc;
 	}
 
-	syme = tfp0IdSyme(stab, NULL, sym);
 	absyme = abSyme(ab);
+	syme = tfp0IdSyme(stab, absyme, sym);
 
 	if (! syme)
 		/* This sym is not one of the known special type syms. */
