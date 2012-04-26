@@ -16,6 +16,7 @@ Bool	tfExprDebug	= false;
 Bool	tfCrossDebug	= false;
 Bool	tfFloatDebug	= false;
 Bool	tfHasDebug	= false;
+Bool	tfHashDebug	= false;
 Bool	tfImportDebug	= false;
 Bool	tfMapDebug	= false;
 Bool	tfMultiDebug	= false;
@@ -30,6 +31,7 @@ Bool	symeRefreshDebug = false;
 #define	tfCrossDEBUG(s)		DEBUG_IF(tfCrossDebug, s)
 #define	tfFloatDEBUG(s)		DEBUG_IF(tfFloatDebug, s)
 #define	tfHasDEBUG(s)		DEBUG_IF(tfHasDebug, s)
+#define	tfHashDEBUG(s)		DEBUG_IF(tfHashDebug, s)
 #define	tfImportDEBUG(s)	DEBUG_IF(tfImportDebug, s)
 #define	tfMapDEBUG(s)		DEBUG_IF(tfMapDebug, s)
 #define	tfMultiDEBUG(s)		DEBUG_IF(tfMultiDebug, s)
@@ -612,7 +614,7 @@ tfHash(TForm tf)
 	int this = serial++;
 
 	tfFollow(tf);
-
+	tfHashDEBUG(afprintf(dbOut, "(hash %d %pTForm\n", this, tf));
 	if (!tfIsDefine(tf))
 		tf = tfDefineeType(tf);
 
@@ -640,7 +642,7 @@ tfHash(TForm tf)
 
 	h += tformInfo(tfTag(tf)).hash + 200063;
 	h &= 0x3FFFFFFF;
-
+	tfHashDEBUG(afprintf(dbOut, " hash %d = %d)\n", this, h));
 	return h;
 }
 

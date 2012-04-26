@@ -14,11 +14,13 @@ Bool	symeDebug		= false;
 Bool	symeFillDebug		= false;
 Bool	symeHasDebug		= false;
 Bool	symeLibDebug		= false;
+extern Bool tfHashDebug;
 
 #define symeDEBUG(s)		DEBUG_IF(symeDebug, s)
 #define symeFillDEBUG(s)	DEBUG_IF(symeFillDebug, s)
 #define symeHasDEBUG(s)		DEBUG_IF(symeHasDebug, s)
 #define symeLibDEBUG(s)		DEBUG_IF(symeLibDebug, s)
+#define tfHashDEBUG(s)		DEBUG_IF(tfHashDebug, s)
 
 /******************************************************************************
  *
@@ -428,7 +430,7 @@ symeTypeCode(Syme syme)
 
 	h = symeHash(syme);
 	if (h) return h;
-
+	tfHashDEBUG(afprintf(dbOut, "Hash: %s %pSyme %pTForm\n", symeString(syme), syme, symeType(syme)));
 	if (symeIsExport(syme) || symeIsParam(syme) || symeIsSelf(syme)) {
 		h = tfHash(symeType(syme));
 		symeHashArg(h, (Hash) symeKind(syme));
@@ -445,6 +447,7 @@ symeTypeCode(Syme syme)
 		symeHashArg(h, symeDefLevel(syme)->hash);
 	}
 
+	tfHashDEBUG(afprintf(dbOut, "Hash: %s %pSyme = %d\n", symeString(syme), syme, h));
 	return symeSetHash(syme, h);
 }
 
