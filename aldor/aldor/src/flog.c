@@ -1057,11 +1057,32 @@ void
 bbSpecializeExit(BBlock bb, int exitno)
 {
 	Foam	   code, olast, nlast;
-
+	int        i;
 	assert(bb->kind == FOAM_If || bb->kind == FOAM_Select);
 
 	/* Replacing the last statement of the code. */
 	code  = bb->code;
+	olast = code->foamSeq.argv[foamArgc(code)-1];
+	if (foamTag(olast) == FOAM_If && foamHasSideEffect(olast->foamIf.test)) {
+		Foam newCode = foamNew(FOAM_Seq, foamArgc(code) + 1);
+		for (i=0; i<foamArgc(code); i++) {
+			newCode->foamSeq.argv[i] = code->foamSeq.argv[i];
+		}
+		newCode->foamSeq.argv[i-1] = foamCopy(code->foamSeq.argv[i-1]->foamIf.test);
+		newCode->foamSeq.argv[i] = code->foamSeq.argv[i-1];
+		foamFreeNode(code);
+		bb->code = code = newCode;
+	}
+	if (foamTag(olast) == FOAM_Select && foamHasSideEffect(olast->foamSelect.op)) {
+		Foam newCode = foamNew(FOAM_Seq, foamArgc(code) + 1);
+		for (i=0; i<foamArgc(code); i++) {
+			newCode->foamSeq.argv[i] = code->foamSeq.argv[i];
+		}
+		newCode->foamSeq.argv[i-1] = foamCopy(code->foamSeq.argv[i-1]->foamSelect.op);
+		newCode->foamSeq.argv[i] = code->foamSeq.argv[i-1];
+		foamFreeNode(code);
+		bb->code = code = newCode;
+	}
 	olast = code->foamSeq.argv[foamArgc(code)-1];
 	nlast = foamNewGoto(bbExit(bb,exitno)->label);
 	foamPos(nlast) = foamPos(olast);
