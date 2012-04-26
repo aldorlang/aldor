@@ -1211,8 +1211,8 @@ abToSExpr(AbSyn ab)
 		sx  = sxCons(abInfo(abTag(ab)).sxsym, sxNil);
 		for (ai = 0; ai < abArgc(ab); ai++)
 			sx = sxCons(abToSExpr(abArgv(ab)[ai]), sx);
-		/*if (syme)
-		  sx = sxCons(symeSExprAList(syme), sx);*/
+		if (syme)
+		  sx = sxCons(symeSExprAList(syme), sx);
 
 		sx = sxNReverse(sx);
 		break;
