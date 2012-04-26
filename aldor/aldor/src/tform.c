@@ -228,14 +228,21 @@ tformDump(TForm tf)
 local int tfFormatter(OStream stream, Pointer p);
 local int tfListFormatter(OStream stream, Pointer p);
 
+local int tpossFormatter(OStream stream, Pointer p);
+local int fvFormatter(OStream stream, Pointer p);
+
 local int symeFormatter(OStream stream, Pointer p);
 local int symeListFormatter(OStream stream, Pointer p);
+local int symeListListFormatter(OStream stream, Pointer p);
 
 local int symeConditionFormatter(OStream stream, Pointer p);
 local int symeConditionListFormatter(OStream stream, Pointer p);
 
 local int ptrFormatter(OStream stream, Pointer p);
 local int ptrListFormatter(OStream stream, Pointer p);
+
+local int aintFormatter(OStream stream, Pointer p);
+local int aintListFormatter(OStream stream, Pointer p);
 
 /* For breakpoints */
 local void tfBreak(TForm tf);
@@ -406,14 +413,21 @@ tfInit(void)
 	fmtRegister("TForm", tfFormatter);
 	fmtRegister("TFormList", tfListFormatter);
 
+	fmtRegister("FreeVar", fvFormatter);
+	fmtRegister("TPoss", tpossFormatter);
+
 	fmtRegister("Syme", symeFormatter);
 	fmtRegister("SymeList", symeListFormatter);
+	fmtRegister("SymeListList", symeListListFormatter);
 
 	fmtRegister("SymeC", symeConditionFormatter);
 	fmtRegister("SymeCList", symeConditionListFormatter);
 
 	fmtRegister("Ptr", ptrFormatter);
 	fmtRegister("PtrList", ptrListFormatter);
+
+	fmtRegister("Int", aintFormatter);
+	fmtRegister("IntList", aintListFormatter);
 
 	isInit = true;
 }
@@ -461,12 +475,46 @@ ptrFormatter(OStream ostream, Pointer p)
 }
 
 local int
+aintFormatter(OStream ostream, Pointer p)
+{
+	char buf[20];
+	int c;
+
+	sprintf(buf, "%d", (int) p);
+	c = ostreamWrite(ostream, buf, -1);
+
+	return c;
+}
+
+local int
 tfFormatter(OStream ostream, Pointer p)
 {
 	TForm tf = (TForm) p;
 	int c;
 
 	c = tformOStreamWrite(ostream, p);
+
+	return c;
+}
+
+local int
+fvFormatter(OStream ostream, Pointer p)
+{
+	FreeVar fv = (FreeVar) p;
+	int c;
+
+	c = ostreamPrintf(ostream, "[FV: %pSymeList]", fvSymes(fv));
+
+	return c;
+}
+
+local int
+tpossFormatter(OStream ostream, Pointer p)
+{
+	TPoss tp = (TPoss) p;
+	int c;
+
+	c = tpossOStreamWrite(ostream, tp);
 
 	return c;
 }
@@ -481,15 +529,22 @@ tfListFormatter(OStream ostream, Pointer p)
 local int
 symeListFormatter(OStream ostream, Pointer p)
 {
-	AbSynList list = (AbSynList) p;
-	return listFormat(AbSyn)(ostream, "Syme", list);
+	SymeList list = (SymeList) p;
+	return listFormat(Syme)(ostream, "Syme", list);
+}
+
+local int
+symeListListFormatter(OStream ostream, Pointer p)
+{
+	SymeListList list = (SymeListList) p;
+	return listFormat(SymeList)(ostream, "SymeList", list);
 }
 
 local int
 symeConditionListFormatter(OStream ostream, Pointer p)
 {
-	AbSynList list = (AbSynList) p;
-	return listFormat(AbSyn)(ostream, "SymeC", list);
+	SymeList list = (SymeList) p;
+	return listFormat(Syme)(ostream, "SymeC", list);
 }
 
 local int
@@ -497,6 +552,13 @@ ptrListFormatter(OStream ostream, Pointer p)
 {
 	AbSynList list = (AbSynList) p;
 	return listFormat(AbSyn)(ostream, "Ptr", list);
+}
+
+local int
+aintListFormatter(OStream ostream, Pointer p)
+{
+	AbSynList list = (AbSynList) p;
+	return listFormat(AbSyn)(ostream, "Int", list);
 }
 
 
