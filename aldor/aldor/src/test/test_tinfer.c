@@ -446,7 +446,7 @@ init()
 	stabInitGlobal();
 	tfInit();
 	foamInit();
-	optSetInit();
+	optInit();
 	tinferInit();
 
 	sposInit();
