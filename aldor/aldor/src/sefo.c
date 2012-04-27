@@ -2240,6 +2240,8 @@ symeFreeVars(Syme syme)
 		sefoListFreeVars(symeCondition(syme));
 }
 
+local int sfvPrint(FILE *out);
+
 void
 tformFreeVars(TForm tf)
 {
@@ -2265,6 +2267,8 @@ tformFreeVars(TForm tf)
 	sfvFiniTable();
 
 	tfSetFVars(tf, fv);
+	sefoFreeDEBUG(afprintf(dbOut, "FV(final) %pTForm = %pFreeVar\n", tf, tf->fv));
+	sefoFreeDEBUG(sfvPrint(dbOut));
 }
 
 void
@@ -2349,6 +2353,14 @@ sfvFiniTable(void)
 	sfvBase = listFreeCons(AInt)(sfvBase);
 }
 
+local int
+sfvPrint(FILE *out)
+{
+	return afprintf(out,
+		       "(SFV: %d  %pIntList, %pSymeListList)\n",
+		       sfvDepth, sfvBase, sfvTableList);
+}
+
 local void
 sfvPushTable(void)
 {
@@ -2379,6 +2391,8 @@ sfvPopTable(Bool save)
 	for (symes = tbl; symes; symes = cdr(symes)) {
 		Syme		syme = car(symes);
 		List(AInt)	elt = sfvGetDepths(syme);
+
+		sefoFreeDEBUG(afprintf(dbOut, " popTable: %pSyme %d %d %pIntList\n", syme, sfvHasDepth(elt, odepth), odepth, elt));
 
 		if (!sfvHasDepth(elt, odepth)) continue;
 
@@ -2412,6 +2426,7 @@ sfvAddSyme(Syme syme)
 		sfvSetDepths(syme, elt);
 		sfvConsTable(syme);
 	}
+	sefoFreeDEBUG(afprintf(dbOut, " Adding syme: %pSyme %pIntList\n", syme, sfvGetDepths(syme)));
 }
 
 local void
@@ -2430,6 +2445,7 @@ sfvDelSyme(Syme syme)
 		elt = listFreeCons(AInt)(elt);
 		sfvSetDepths(syme, elt);
 	}
+	sefoFreeDEBUG(afprintf(dbOut, " Del syme: %pSyme %pIntList\n", syme, sfvGetDepths(syme)));
 }
 
 local void
@@ -2480,8 +2496,8 @@ sefoFreeVars0(TForm *pa, TForm parent, Sefo sefo)
 	serial = sstSerialDebug;
 
 	sefoFreeDEBUG({
-		fprintf(dbOut, "-> sefoFree[%d]:\n", (int) serial);
-		sefoPrintDb(sefo);
+			afprintf(dbOut, "(sefoFree[%d]: %pAbSyn\n", (int) serial, sefo);
+			sfvPrint(dbOut);
 	});
 
 	if (abIsLeaf(sefo)) {
@@ -2504,7 +2520,8 @@ sefoFreeVars0(TForm *pa, TForm parent, Sefo sefo)
 	}
 
 	sefoFreeDEBUG({
-		fprintf(dbOut, "<- sefoFree[%d]: %p\n", (int) serial, *pa);
+			sfvPrint(dbOut);
+			fprintf(dbOut, " sefoFree[%d]: %p)\n", (int) serial, *pa);
 	});
 }
 
@@ -2517,10 +2534,14 @@ symeFreeVars0(TForm *pa, TForm parent, Syme syme)
 	serial = sstSerialDebug;
 
 	sefoFreeDEBUG({
-		fprintf(dbOut, "-> symeFree[%d]:\n", (int) serial);
-		symePrintDb(syme);
+			afprintf(dbOut, "(symeFree[%d]: %pSyme\n", (int) serial, syme);
+			sfvPrint(dbOut);
 	});
 
+	sefoFreeDEBUG({
+			afprintf(dbOut, " symeFree[%d]: Self: %d Substable: %d\n",
+				 (int) serial, symeIsSelf(syme), (int) symeDefLevelIsSubstable(syme));
+	});
 	if (symeIsImport(syme))
 		tformUnboundVars0(pa, parent, symeExporter(syme));
 	else if (!symeIsSelf(syme) &&
@@ -2531,7 +2552,8 @@ symeFreeVars0(TForm *pa, TForm parent, Syme syme)
 		sefoListUnboundVars0(pa, parent, symeCondition(syme));
 
 	sefoFreeDEBUG({
-		fprintf(dbOut, "<- symeFree[%d]: %p\n", (int) serial, *pa);
+			sfvPrint(dbOut);
+			afprintf(dbOut, " symeFree[%d]: %pTForm)\n", (int) serial, *pa);
 	});
 }
 
@@ -2556,6 +2578,7 @@ tformFreeVars0(TForm *pa, TForm parent, TForm tf)
 		}
 		tformFreeVars(arg);
 		tfSetFVars(tf, freeVarSubst0(tfSubstSigma(tf), tfFVars(arg)));
+		sefoFreeDEBUG(afprintf(dbOut, "FV(subst) %pTForm = %pFreeVar\n", tf, tf->fv));
 	}
 
 	if (tfFVars(tf)) {
@@ -2573,8 +2596,7 @@ tformFreeVars0(TForm *pa, TForm parent, TForm tf)
 	serial = sstSerialDebug;
 
 	sefoFreeDEBUG({
-		fprintf(dbOut, "-> tformFree[%d]:\n", (int) serial);
-		tformPrintDb(tf);
+			afprintf(dbOut, "(tformFree[%d]: %pTForm\n", (int) serial, tf);
 	});
 
 	sfvPushTable();
@@ -2628,15 +2650,17 @@ tformFreeVars0(TForm *pa, TForm parent, TForm tf)
 	if (tfSelfSelf(tf))
 		sfvDelSymes(tfSelfSelf(tf));
 
-	if (ancestor == tf && tfIsMeaning(tf))
+	if (ancestor == tf && tfIsMeaning(tf)) {
 		tfSetFVars(tf, sfvPopTable(true));
+		sefoFreeDEBUG(afprintf(dbOut, "FV %pTForm = %pFreeVar\n", tf, tf->fv));
+	}
 	else {
 		sfvPopTable(false);
 		*pa = ancestor;
 	}
 
 	sefoFreeDEBUG({
-		fprintf(dbOut, "<- tformFree[%d]: %p\n", (int) serial, *pa);
+			afprintf(dbOut, " tformFree[%d]: %d %pTForm)\n", (int) serial, tfIsMeaning(tf), *pa);
 	});
 }
 
@@ -3344,8 +3368,10 @@ tformSubst0(AbSub sigma, TForm tf)
 		tfSetSelf(final, ssymes);
 		tfHasSelf(final) = tfHasSelf(tf);
 	}
-	if (tfFVars(tf))
+	if (tfFVars(tf)) {
 		tfSetFVars(final, freeVarSubst0(sigma, tfFVars(tf)));
+		sefoFreeDEBUG(afprintf(dbOut, "FV(subst) %pTForm = %pFreeVar\n", final, final->fv));
+	}
 	if (tfHasExpr(final)) tfSetNeedsSefo(final);
 
 	sefoSubstDEBUG({
@@ -4139,6 +4165,9 @@ tformToBuffer(Lib lib, Buffer buf, TForm tf)
 
 	if (tfFVars(tf) == NULL)
 		tformFreeVars(tf);
+
+	assert(tfFVars(tf) != NULL);
+	/*afprintf(dbOut, "TF: %pPtr %pTForm FreeVars: %pSymeList\n", tf, tf, tf->fv->symes);*/
 
 	freeVarToBuffer(lib, buf, tfFVars(tf));
 
