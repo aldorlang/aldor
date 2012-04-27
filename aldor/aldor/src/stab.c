@@ -417,9 +417,9 @@ stabEntryCheckConditions(StabEntry stent)
 		Syme psyme = car(psymes);
 		symeCheckCondition(psyme);
 
-		/*afprintf(dbOut, "Checked: %pSyme - complete: %d condition: %pAbSynList\n",
-			 psyme, symeIsCheckCondIncomplete(psyme),
-			 symeCondition(psyme));*/
+		stabDEBUG(afprintf(dbOut, "Checked: %pSyme - complete: %d condition: %pAbSynList\n",
+				   psyme, symeIsCheckCondIncomplete(psyme),
+				   symeCondition(psyme)));
 
 		if (symeCondition(psyme) == listNil(Sefo)) {
 			stabEntryPutSyme(stent, int0, psyme);
@@ -1746,9 +1746,7 @@ stabImportFrom(Stab stab, TQual tq)
 	stabPutMeanings(stab, dsymes);
 
 	stabImportDEBUG({
-		fprintf(dbOut, "... imported: ");
-		listPrint(Syme)(dbOut, dsymes, symePrint);
-		fnewline(dbOut);
+			afprintf(dbOut, "... imported: %pSymeCList\n", dsymes);
 	});
 
 	if (!tqIsQualified(tq))
