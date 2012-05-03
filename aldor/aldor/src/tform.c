@@ -2535,6 +2535,7 @@ tfCopyQueries(TForm to, TForm from)
 TForm
 tfAddQuery(TForm tf, TForm cat)
 {
+	tfDEBUG(afprintf(dbOut, "Adding query %pTForm %pTForm\n", tf, cat));
 	tfSetQueries(tf, listCons(TForm)(cat, tfQueries(tf)));
 	return cat;
 }
