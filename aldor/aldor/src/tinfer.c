@@ -1663,7 +1663,7 @@ tiTfCategory1(Stab stab, TFormUses tfu, TForm tf, AbSynList params)
 
 	if (nstab != stab) {
 		/*!! Try to fill the types for parameterized add symes. */
-		if (params) typeInferTForms(nstab);
+		//if (params) typeInferTForms(nstab);
 		tfSetSymes(tfa, stabGetExportedSymes(nstab));
 		tfGetSelf(nstab, tfa);
 	}
