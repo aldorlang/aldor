@@ -31,6 +31,7 @@ struct tformUses {
 	TQual		exports;
 	TQual		imports;
 	TQual		inlines;
+	TQualList       cascades;
 	AbSynList	extension;
 	AbSynList	extendees;
 	SymbolList	declarees;
@@ -193,7 +194,7 @@ extern int		tfuPrint		(FILE *, TFormUses);
 extern int		tfulPrint		(FILE *, TFormUsesList);
 
 extern SymeList		stabGetExportedSymes	(Stab);
-extern void		stabImportFrom		(Stab, TQual);
+extern TQualList	stabImportFrom		(Stab, TQual);
 
 /*
  * TForms

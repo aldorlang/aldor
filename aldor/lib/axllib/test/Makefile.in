@@ -96,7 +96,7 @@ TEST2 = type0.as type1.as type2.as type3.as type4.as type5.as \
 	default4.as default5.as default6.as default7.as \
 	default9.as \
 	cascade0.as cascade1.as cascade2.as cascade3.as cascade4.as \
-	cascade5.as \
+	cascade5.as cascade6.as cascade7.as \
 	swap.as swap1.as ladder0.as cycle0.as \
 	loop0.as loop1.as loop2.as loop3.as collect0.as collect1.as \
 	genops.as \

@@ -1664,7 +1664,7 @@ stabGetExportedSymes(Stab stab)
 	return exports;
 }
 
-void
+TQualList
 stabImportFrom(Stab stab, TQual tq)
 {
 	TQualList	ql;
@@ -1693,7 +1693,7 @@ stabImportFrom(Stab stab, TQual tq)
 
 	/* Don't import a tform if has already been imported */
 	if (stabIsImportedTForm(stab, origin))
-		return;
+		return listNil(TQual);
 
 	stabImportDEBUG({
 		fprintf(dbOut, "Importing %s from ",
@@ -1749,6 +1749,10 @@ stabImportFrom(Stab stab, TQual tq)
 			afprintf(dbOut, "... imported: %pSymeCList\n", dsymes);
 	});
 
+	if (!tqIsQualified(tq))
+		return tfGetDomCascades(origin);
+	else
+		return listNil(TQual);
 }
 
 local void
@@ -1874,6 +1878,7 @@ tfuNew(TForm tf)
 	tu->exports		= NULL;
 	tu->imports		= NULL;
 	tu->inlines		= NULL;
+	tu->cascades		= listNil(TQual);
 	tu->extension		= listNil(AbSyn);
 	tu->extendees		= listNil(AbSyn);
 	tu->declarees		= listNil(Symbol);

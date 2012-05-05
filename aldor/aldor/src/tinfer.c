@@ -139,7 +139,7 @@ local void		tiTfMeaning1		(Stab, TForm);
 local void		tiTfExtend1		(Stab, TFormUses);
 local void		tiTfImport1		(Stab, TFormUses);
 local void		tiTfDefault1		(Stab, Sefo);
-
+local void 		tiTfCascades1           (Stab stab, TFormUses tfu);
 /* typeInferTForms topological sorting. */
 
 local Table		tiTfGetDeclareeTable	(TFormUsesList);
@@ -989,6 +989,7 @@ tiTfOne(Stab stab, TFormUses tfu, TForm tf)
 	if (tfu) {
 		tiTfExtend1(stab, tfu);
 		tiTfImport1(stab, tfu);
+		tiTfCascades1(stab, tfu);
 	}
 
 	titfDEBUG(tiTfExit(dbOut, "tiTfOne", tfu, tf));
@@ -1035,6 +1036,9 @@ tiTfCycle(Stab stab, TFormUsesList tful)
 	for (tfl=tful;  tfl; tfl=cdr(tfl))
 		tiTfImport1(stab, car(tfl));
 
+	for (tfl=tful;  tfl; tfl=cdr(tfl))
+		tiTfCascades1(stab, car(tfl));
+
 	titfDEBUG(tiTfPrint(dbOut, stab, "<<titfCycle:", tful));
 
 	listFree(TFormUses)(tful0);
@@ -1054,6 +1058,8 @@ tiTfDefault(Stab stab, TFormUsesList tful0)
 
 	for (tful = tful0; tful; tful = cdr(tful))
 		tiTfImport1(stab, car(tful));
+	for (tful = tful0; tful; tful = cdr(tful))
+		tiTfCascades1(stab, car(tful));
 }
 
 local Bool
@@ -2007,7 +2013,7 @@ typeInferTFormList(Stab stab, TFormList tfl)
 	}
 }
 
-void tiTfImportCascades(Stab stab, TQualList list);
+void tiTfImportCascades(Stab stab, TQualList tq);
 /* Import the exports from each type form. */
 local void
 tiTfImport1(Stab stab, TFormUses tfu)
@@ -2032,12 +2038,13 @@ tiTfImport1(Stab stab, TFormUses tfu)
 		if (tfQueries(tf))
 			typeInferTFormList(stab, tfQueries(tf));
 
-		stabImportFrom(stab, tfu->imports);
+		TQualList cascades = stabImportFrom(stab, tfu->imports);
 
-		if (!tqIsQualified(tfu->imports))
-			tiTfImportCascades(stab, tfCascades(tf));
+		if (tfu != NULL)
+			tfu->cascades = cascades;
+		else
+			tiTfImportCascades(stab, cascades);
 	}
-
 	else if (tfu->isCategoryImport)
 		tiWithSymes(stab, tf);
 	else if (tfu->isCatConditionImport) {
@@ -2065,6 +2072,12 @@ tiTfImport1(Stab stab, TFormUses tfu)
 }
 
 void
+tiTfCascades1(Stab stab, TFormUses tfu)
+{
+	tiTfImportCascades(stab, tfu->cascades);
+}
+
+void
 tiTfImportCascades(Stab stab, TQualList list)
 {
 	TQualList ql;
@@ -2078,23 +2091,18 @@ tiTfImportCascades(Stab stab, TQualList list)
 		}
 		else {
 			TForm innerTf = tqBase(innerTq);
-			TFormUses tfu = stabFindTFormUses(stab, tfExpr(innerTf));
-			// The "!isExplicitImport" test is so that
-			// if we're going to import a type, we might as well
-			// wait until the correct point in proceedings
-			if (tfu == NULL || !tfu->isExplicitImport) {
-				TForm tf = stabFindOuterTForm(stab, tfExpr(innerTf));
-				if (tf != NULL) {
-					tf = typeInferTForm(stab, tf);
-					if (tfQueries(tf))
-						typeInferTFormList(stab, tfQueries(tf));
+			TForm tf = stabFindOuterTForm(stab, tfExpr(innerTf));
+			if (tf != NULL) {
+				tf = typeInferTForm(stab, tf);
+				if (tfQueries(tf))
+					typeInferTFormList(stab, tfQueries(tf));
 
-					innerTf = tf;
-				}
-				innerTq = tqNewUnqualified(innerTf);
-				stabImportFrom(stab, innerTq);
-				tqFree(innerTq);
+				innerTf = tf;
 			}
+			innerTq = tqNewUnqualified(innerTf);
+			TQualList moreImports = stabImportFrom(stab, innerTq);
+			ql = listNConcat(TQual)(ql, listCopy(TQual)(moreImports));
+			tqFree(innerTq);
 		}
 	}
 }
