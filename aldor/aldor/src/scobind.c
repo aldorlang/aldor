@@ -3470,7 +3470,7 @@ scoConditionToAbSyn(ScoConditionList condition)
 local TfCondElt 
 scoCondListCondElt()
 {
-	scoConditionListToCondElt(scoCondList);
+	return scoConditionListToCondElt(scoCondList);
 }
 
 local TfCondElt
