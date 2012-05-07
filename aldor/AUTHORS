@@ -1,0 +1,33 @@
+
+Many people have contributed to the development of the Aldor compiler
+and libraries. The names and initials of some of them are given below
+(initials appear in the source and in the Version file amongst other
+places and might otherwise be forgotten). -- MND
+
+The Creator:
+   SMW: Stephen Watt
+
+Other compiler developers:
+   ADK: Tony Kennedy
+   BMT: Barry Trager
+   CKC: Chee Kai Chin
+   GB:  Gerald Baumgartner
+   JMS: Jonathon Steinbach
+   KWW: Knut Wolf
+   MCD: Mike Dewar
+   MND: Martin Dunstan
+   PAB: Peter Broadbery
+   PI:  Pietro Iglio
+   RGG: Robbie Gasperoni
+   RSS: Robert Sutor
+   SCM: Scott Morrison
+   SSD: Sam Dooley
+   TTT: Themos Tsikas
+
+Other contributors to the Aldor project:
+   MGR: Mike Richardson 
+   MB:  Manuel Bronstein
+   JHD: James Davenport
+   MMM: Marc Moreno Maza
+   TGD: Teresa Gomez-Diaz
+
