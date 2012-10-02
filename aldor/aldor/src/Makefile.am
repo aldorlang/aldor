@@ -145,6 +145,10 @@ comsgdb.h comsgdb.c: $(srcdir)/comsgdb.msg $(tmpdir)
 		mv $(tmpdir)/comsgdb.c . ; \
 	fi
 
+clean:
+	rm -f *.i
+	rm -f *.s
+
 comsgpig.cat: comsgdb.msg	
 	($(builddir)/../tools/unix/atinlay < $(srcdir)/comsgdb.msg > comsgpig.msg ; \
 	 $(builddir)/../tools/unix/msgcat -cat -detab comsgpig ; \
