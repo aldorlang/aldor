@@ -14,6 +14,7 @@ void testConditionalTInfer4();
 void testConditionalAdd();
 void testTinfer3();
 void testTinfer5();
+void testTinfer9();
 
 local AbSynList parseLines(StringList lines);
 
@@ -38,6 +39,7 @@ void tinferTest()
 
 	TEST(testConditionalAdd);
 	TEST(testTinfer5);
+	TEST(testTinfer9);
 	fini();
 }
 
@@ -401,6 +403,29 @@ testTinfer5()
 	
 	testTrue("Declare is sefo", abIsSefo(absyn));
 	testIntEqual("Error Count", 0, comsgErrorCount());
+	
+	finiFile();
+}
+
+void
+testTinfer9()
+{
+	String Bar_def = "Bar: with { f: () -> %; a: % } == add { f():  % == a$% }";
+
+	initFile();
+	StringList lines = listList(String)(1, Bar_def);
+
+	AbSynList code = listCons(AbSyn)(stdtypes(), parseLines(lines));
+	AbSyn absyn = abNewSequenceL(sposNone, code);
+	Stab stab = stabFile();
+	tipLitDebug = 1;
+
+	abPutUse(absyn, AB_Use_NoValue);
+	scopeBind(stab, absyn);
+	typeInfer(stab, absyn);
+	
+	testTrue("Declare is sefo", abIsSefo(absyn));
+	testIntEqual("Error Count", 1, comsgErrorCount());
 	
 	finiFile();
 }
