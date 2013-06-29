@@ -113,5 +113,9 @@ extend GMPInteger: IntegerCategory == add {
 		sign(x) < 0 => (-x,-z);
 		(x, z)
 	}
+
+        getPrimeOfSize(d: MachineInteger): Partial % == failed;
+
+
 }
 

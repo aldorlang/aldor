@@ -322,6 +322,8 @@ extend AldorInteger: IntegerCategory == add {
 	-- AS LONG AS THE COMPILER DOES EARLY-BINDING IN OTHER DEFAULTS
 	divide!(a:%, b:%, q:%):(%, %)	== divide(a, b);
 	remainder!(a:%, b:%):%		== a rem b;
+
+        getPrimeOfSize(d: MachineInteger): Partial % == failed;
 }
 
 extend SingleFloat:Join(Parsable, ExpressionType) == add {
