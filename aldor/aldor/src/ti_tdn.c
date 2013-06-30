@@ -1992,6 +1992,10 @@ titdnPretendTo(Stab stab, AbSyn absyn, TForm type)
 		return false;
 	}
 	titdn(stab, absyn->abPretendTo.expr, tfUnknown);
+	if (!tfIsMulti(type) && tfIsMulti(abTUnique(absyn->abPretendTo.expr))) {
+	  abSetTContext(absyn->abPretendTo.expr, AB_Embed_MultiToCross);
+	}
+
 	abTUnique(absyn) = tf;
 	return true;
 }

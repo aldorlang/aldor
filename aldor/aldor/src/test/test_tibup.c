@@ -5,6 +5,7 @@
 
 local void testTiBupCollect1();
 local void testTiBupCollect2();
+local void testTiTdnPretend();
 
 void
 tibupTest()
@@ -12,6 +13,7 @@ tibupTest()
 	init();
 	TEST(testTiBupCollect1);
 	TEST(testTiBupCollect2);
+	TEST(testTiTdnPretend);
 	fini();
 }
 
@@ -110,3 +112,52 @@ testTiBupCollect2()
 	finiFile();
 }
 
+local void
+testTiTdnPretend()
+{
+	String Boolean_imp = "import from Boolean";
+	String D_def = "D: with == add";
+	String E_def = "E: with == add";
+	String x_def = "x: E == never";
+
+	StringList lines = listList(String)(4, Boolean_imp, D_def, E_def, x_def);
+	AbSynList absynList = listCons(AbSyn)(stdtypes(), abqParseLines(lines));
+	AbSyn absyn = abNewSequenceL(sposNone, absynList);
+
+	initFile();
+	Stab stab = stabFile();
+
+	abPutUse(absyn, AB_Use_NoValue);
+	abPrintDb(absyn);
+	scopeBind(stab, absyn);
+	typeInfer(stab, absyn);
+
+	AbSyn pretend = abqParse("(x, x) pretend D");
+	scopeBind(stab, pretend);
+	tiBottomUp(stab, pretend, tfUnknown);
+	tiTopDown(stab, pretend, tfUnknown);
+
+	testTrue("is multi", tfIsMulti(abTUnique(pretend->abPretendTo.expr)));
+	testIsNotNull("Has a context", abTContext(pretend->abPretendTo.expr));
+	testTrue("multi to cross", abTContext(pretend->abPretendTo.expr) & AB_Embed_MultiToCross);
+
+	finiFile();
+}
+
+/*
+This should really work, but at the moment a4 and a8 give incorrect results.
+D: with == add
+E: with == add
+
+x: E := never
+
+f(): () ==
+  a1 := (x, x) pretend D
+  a3 := (x, x) pretend Cross(D, D)
+  a4 := (x, x) pretend Tuple(D)
+
+  a5 := (x, x)@Cross(E, E)
+  a7 := (x, x)@Cross(E, E)
+  a8 := (x, x)@Tuple(E)
+
+*/

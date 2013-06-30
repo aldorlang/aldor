@@ -613,6 +613,7 @@ local Bool	foamAuditExpr		(Foam foam);
 local void	foamAuditBadRef		(Foam foam);
 local void	foamAuditBadSharing	(Foam foam);
 local void	foamAuditBadRuntime	(Foam foam);
+local void	foamAuditBadCast  	(Foam foam);
 
 Foam	faUnit;
 Foam	faProg;
@@ -821,6 +822,10 @@ foamAuditExpr(Foam foam)
 		if (foam->foamPushEnv.format >= faNumFormats)
 			foamAuditBadRef(foam);
 		break;
+	  case FOAM_Cast:
+	       if (foamTag(foam->foamCast.expr) == FOAM_Values)
+		    foamAuditBadCast(foam);
+
 	  case FOAM_CCall: 
 		  /* There was a check for runtime constraint breakage
 		   * here - removed as a layering violation... */
@@ -1156,6 +1161,14 @@ foamAuditBadSharing(Foam foam)
 	foamPrint(stderr, foam);
 	foamDEBUG(foamPrint(dbOut, faUnit));
 	bug("\nBad foam sharing in const %d:\n", faConstNum);
+}
+
+local void
+foamAuditBadCast(Foam foam)
+{
+	foamPrint(stderr, foam);
+	foamDEBUG(foamPrint(dbOut, faUnit));
+	bug("\nBad foam cast %d:\n", faConstNum);
 }
 
 local void
