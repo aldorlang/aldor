@@ -289,6 +289,8 @@ ALDOR_W_TinNoValReturn          "The `return' gives a value but none is expected
 ALDOR_E_TinReturnNoVal          "The `return' gives no value where one is expected."
 ALDOR_F_TinRestrictOops		"Use of restrict (@) in the presence of embeddings is not handled yet."
 
+ALDOR_W_TinEarlyImport          "import from %s before its exports could be determined"
+
 ALDOR_R_TinInferring            "Inferring %s: %s."
 
 ALDOR_W_TqNotBuiltin		"`%s: %s' is not exported by Builtin."

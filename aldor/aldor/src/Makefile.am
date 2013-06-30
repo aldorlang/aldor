@@ -149,7 +149,7 @@ clean:
 	rm -f *.i
 	rm -f *.s
 
-comsgpig.cat: comsgdb.msg	
+comsgpig.cat: $(srcdir)/comsgdb.msg
 	($(builddir)/../tools/unix/atinlay < $(srcdir)/comsgdb.msg > comsgpig.msg ; \
 	 $(builddir)/../tools/unix/msgcat -cat -detab comsgpig ; \
 	 rm comsgpig.msg )
