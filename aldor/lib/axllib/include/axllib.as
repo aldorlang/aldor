@@ -134,7 +134,10 @@ macro {
 #endif
 
 #if LibraryAxlLib
+#if BuildAxlLib
+#else
 #	library AxlLib "axllib"
+#endif
 {
 	import from AxlLib;
 	inline from AxlLib;
