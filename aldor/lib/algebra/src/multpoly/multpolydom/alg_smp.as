@@ -427,7 +427,7 @@ SparseMultivariatePolynomial(_
       }
 
       if R has IntegralDomain then {
-         local exquo(up:U, r:%):U == {
+         local (exquo)(up:U, r:%):U == {
             one? r => up;
             map((f:%):% +-> quotient(f, r)) up;
          }
