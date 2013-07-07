@@ -37,23 +37,26 @@ extern String asprintf(const char *fmt, ...);
 
 extern int afprintf(FILE *fout, const char *fmt, ...);
 extern int afvprintf(FILE *fout, const char *fmt, va_list argp);
+extern int avprintf(const char *fmt, va_list argp);
 
 extern int ostreamPrintf(OStream ostream, const char *fmt, ...);
 extern int ostreamVPrintf(OStream ostream, const char *fmt, va_list argp);
 
-typedef int (*FormatFn)(OStream stream, Pointer p);
+typedef int (*PFormatFn)(OStream stream, Pointer p);
+typedef int (*IFormatFn)(OStream stream, int np);
 
 typedef struct format {
 	const char *name;
-	FormatFn fn;
+	PFormatFn pfn;
+	IFormatFn ifn;
 	Bool nullOk;
 } *Format;
 
 
-extern void   fmtRegister(const char *name, FormatFn fn);
-extern void   fmtRegisterFull(const char *name, FormatFn fn, Bool nullOk);
+extern void   fmtRegister(const char *name, PFormatFn fn);
+extern void   fmtRegisterI(const char *name, IFormatFn fn);
+extern void   fmtRegisterFull(const char *name, PFormatFn fn, Bool nullOk);
 extern Format fmtMatch(const char *fmtTxt);
-extern int    fmtPrint(Format format, OStream stream, Pointer ptr);
 extern void   fmtUnregister(Format format);
 extern void   fmtUnregisterAll();
 #endif

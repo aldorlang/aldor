@@ -18,6 +18,8 @@
  * fnewline(fout) prints a newline and indents next line by amount findent.
  */
 int findent = 0;
+local int    fmtPPrint(Format format, OStream stream, Pointer ptr);
+local int    fmtIPrint(Format format, OStream stream, int n);
 
 int
 fnewline(FILE *fout)
@@ -62,6 +64,12 @@ afprintf(FILE *fout, const char *fmt, ...)
 	cc = afvprintf(fout, fmt, argp);
 	va_end(argp);
 	return cc;
+}
+
+int
+avprintf(const char *fmt, va_list argp)
+{
+	afvprintf(stdout, fmt, argp);
 }
 
 int
@@ -258,7 +266,20 @@ ostreamVPrintf(OStream ostream, const char *fmt, va_list argp)
 			}
 			continue;
 		}
-
+		if (fb.conv == 'o'){
+			Format format = fmtMatch(fmt);
+			if (format == NULL) {
+				w  = fb.width + fb.prec + 30;       /* over estimate */
+				f = (w < sizeof(arg_buf)) ? fb.fmt : "<too wide to format>";
+				sprintf(arg_buf, f, va_arg(argp, int));
+				cc += ostreamWrite(ostream, arg_buf, -1);
+			}
+			else {
+				cc += fmtIPrint(format, ostream, va_arg(argp, int));
+				fmt += strlen(format->name);
+			}
+			continue;
+		}
 		if (fb.conv == 'p') {
 			Format format = fmtMatch(fmt);
 			if (format == NULL) {
@@ -268,7 +289,7 @@ ostreamVPrintf(OStream ostream, const char *fmt, va_list argp)
 				cc += ostreamWrite(ostream, arg_buf, -1);
 			}
 			else {
-				cc += fmtPrint(format, ostream, va_arg(argp, Pointer));
+				cc += fmtPPrint(format, ostream, va_arg(argp, Pointer));
 				fmt += strlen(format->name);
 			}
 			continue;
@@ -315,21 +336,32 @@ CREATE_LIST(Format);
 static FormatList fmtRegisteredFormats = listNil(Format);
 
 void 
-fmtRegister(const char *name, FormatFn fn)
+fmtRegister(const char *name, PFormatFn fn)
 {
 	fmtRegisterFull(name, fn, true);
 }
 
 void 
-fmtRegisterFull(const char *name, FormatFn fn, Bool nullOk)
+fmtRegisterFull(const char *name, PFormatFn fn, Bool nullOk)
 {
 	Format format = (Format) stoAlloc(OB_Other, sizeof(*format));
 	assert(name[0] != '\0');
 	format->name = strCopy(name);
-	format->fn = fn;
+	format->pfn = fn;
 	format->nullOk = nullOk;
 	fmtRegisteredFormats = listCons(Format)(format, fmtRegisteredFormats);
 }
+
+void fmtRegisterI(const char *name, IFormatFn ifn)
+{
+	Format format = (Format) stoAlloc(OB_Other, sizeof(*format));
+	assert(name[0] != '\0');
+	format->name = strCopy(name);
+	format->ifn = ifn;
+	format->nullOk = false;
+	fmtRegisteredFormats = listCons(Format)(format, fmtRegisteredFormats);
+}
+
 
 Format
 fmtMatch(const char *fmtTxt)
@@ -353,12 +385,19 @@ fmtMatch(const char *fmtTxt)
 	
 }
 
-int 
-fmtPrint(Format format, OStream stream, Pointer ptr)
+static int 
+fmtPPrint(Format format, OStream stream, Pointer ptr)
 {
 	assert(format != NULL);
 	if (!format->nullOk && ptr == NULL) {
 		return ostreamPrintf(stream, "(nil)");
 	}
-	return format->fn(stream, ptr);
+	return format->pfn(stream, ptr);
+}
+
+static int 
+fmtIPrint(Format format, OStream stream, int n)
+{
+	assert(format != NULL);
+	return format->ifn(stream, n);
 }

@@ -328,9 +328,11 @@ typedef unsigned long	ULong;
 #ifdef CC_short_pointer
   typedef short		 AInt;
   typedef unsigned short UAInt;
+# define AINT_FMT "%d"
 #else
   typedef long		 AInt;
   typedef unsigned long	 UAInt;
+# define AINT_FMT "%ld"
 #endif
 
 #ifdef CC_second_largest_is_int

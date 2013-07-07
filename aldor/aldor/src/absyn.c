@@ -12,7 +12,8 @@ Bool	abDebug		= false;
 #define abDEBUG(s)	DEBUG_IF(abDebug, s)
 
 local int       abFormatter     (OStream stream, Pointer p);
-local int       abFormatterList(OStream ostream, Pointer p);
+local int       abFormatterList (OStream ostream, Pointer p);
+local int       abTagFormatter  (OStream ostream, int p);
 local void	abPosNodeSpan0	(AbSyn X, AbSyn *pA, AbSyn *pB);
 local SrcPos	abLeafEnd	(AbSyn ab);
 
@@ -57,6 +58,7 @@ abInit(void)
 
 	fmtRegister("AbSyn", abFormatter);
 	fmtRegister("AbSynList", abFormatterList);
+	fmtRegisterI("AbTag", abTagFormatter);
 }
 
 AbSyn
@@ -1501,6 +1503,19 @@ struct ab_info abInfoTable[] = {
 
 	{AB_LIMIT,	 0, 0,	"LIMIT",        TK_LIMIT    }
 };
+
+local int
+abTagFormatter(OStream ostream, int p)
+{
+	int tag = (int) p;
+	if (tag < 0 || tag >= AB_LIMIT)	{
+		return ostreamPrintf(ostream, "AbTag[%d]", tag);
+	}
+	else {
+		return ostreamPrintf(ostream, "AbTag[%s]", abInfo(tag).str);
+	}
+}
+
 
 /*
  * Equality preserving functions for abTransferSemantics.

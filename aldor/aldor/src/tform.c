@@ -482,7 +482,7 @@ aintFormatter(OStream ostream, Pointer p)
 	char buf[20];
 	int c;
 
-	sprintf(buf, "%d", (int) p);
+	sprintf(buf, AINT_FMT, (AInt) p);
 	c = ostreamWrite(ostream, buf, -1);
 
 	return c;

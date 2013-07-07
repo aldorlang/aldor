@@ -7,6 +7,7 @@ local void testFormat2();
 local void testFormat3();
 local void testFormat4();
 local void testFormat5();
+local void testFormat6();
 
 void formatTest()
 {
@@ -15,6 +16,12 @@ void formatTest()
 	TEST(testFormat3);
 	TEST(testFormat4);
 	TEST(testFormat5);
+	TEST(testFormat6);
+}
+
+int displayInt(OStream ostream, int n)
+{
+  ostreamPrintf(ostream, "[%d]", n);
 }
 
 int displayPtr(OStream ostream, Pointer p)
@@ -67,3 +74,20 @@ testFormat5()
 	s = strPrintf("Hello: %pz", 1);
 	testStringEqual("test2", "Hello: [1]", s);
 }
+
+local void
+testFormat6()
+{
+	char *s;
+	fmtRegisterI("i", displayInt);
+
+	s = strPrintf("Hello: %oi %d", 0, 999);
+	testStringEqual("test2", "Hello: [0] 999", s);
+
+	s = strPrintf("Hello: %oi", 1);
+	testStringEqual("test2", "Hello: [1]", s);
+
+	s = strPrintf("Hello: %oi", -1);
+	testStringEqual("test2", "Hello: [-1]", s);
+}
+
