@@ -28,14 +28,14 @@ aldorsrcdir = $(abs_top_srcdir)/aldor/src
 aldorexedir = $(abs_top_builddir)/aldor/src
 libname = axllib
 
-library= lang machine basic axlcat tuple gener boolean segment		\
-	 sinteger integer bpower sfloat float dfloat pointer char	\
+library= lang machine basic axlcat tuple gener axl_boolean segment		\
+	 sinteger integer bpower sfloat axl_float dfloat pointer axl_char	\
 	 parray array list langx string oslow fname file format		\
 	 textwrit textread opsys partial complex imod ratio rtexns	\
 	 table except fprint fmtout pfloat object efuns ieeectl sort	\
-	 byte
+	 axl_byte
 
-noclass = sfloat oslow file format dfloat rtexns textread float table fprint fmtout
+noclass = sfloat oslow file format dfloat rtexns textread axl_float table fprint fmtout
 
 lang_deps    :=
 machine_deps := lang
@@ -43,18 +43,18 @@ basic_deps   := lang machine
 axlcat_deps := basic
 tuple_deps   := axlcat
 gener_deps   := axlcat
-boolean_deps    := axlcat
-segment_deps := axlcat boolean
+axl_boolean_deps    := axlcat
+segment_deps := axlcat axl_boolean
 sinteger_deps := axlcat segment
 integer_deps := axlcat segment sinteger
 bpower_deps   := sinteger
-char_deps := axlcat
-string_deps   := axlcat char array
+axl_char_deps := axlcat
+string_deps   := axlcat axl_char array
 sfloat_deps   := integer string bpower
 dfloat_deps   := integer string bpower sfloat
 format_deps   := axlcat sinteger sfloat dfloat
 fprint_deps  := axlcat integer string
-float_deps   := integer string bpower format except fprint
+axl_float_deps   := integer string bpower format except fprint
 pfloat_deps   := integer string bpower format except fprint sfloat
 pointer_deps  := axlcat
 parray_deps   := axlcat sinteger
@@ -66,7 +66,7 @@ fname_deps    := axlcat parray string oslow
 file_deps     := axlcat fname
 opsys_deps    := axlcat oslow file
 textwrit_deps := axlcat fname file array opsys
-textread_deps := axlcat fname file array opsys char
+textread_deps := axlcat fname file array opsys axl_char
 partial_deps  := axlcat pointer
 rtexns_deps   := langx textwrit
 ratio_deps    := integer bpower
@@ -81,7 +81,7 @@ efuns_deps    := dfloat complex except
 ieeectl_deps  := efuns
 except_deps   := axlcat
 sort_deps     := axlcat list
-byte_deps     := axlcat
+axl_byte_deps     := axlcat
 
 aldorexedir=$(abs_top_builddir)/aldor/src
 
