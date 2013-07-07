@@ -32,7 +32,10 @@ public class Env extends AbstractValue implements Value {
     }
 
     public void ensure() {
-	throw new RuntimeException();
+		if (info != null) {
+			System.out.println(info);
+			throw new RuntimeException();
+		}
     }
 	public void setInfo(Word info) {
 		this.info = info;

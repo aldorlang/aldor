@@ -10,6 +10,14 @@ public class Foam {
 		System.out.println("FPuts: " + cw + " " + w);
 	}
 
+	public static Word fgetss(Word w1, Word w2, Word w3, Word w4) {
+		throw new RuntimeException();
+	}
+
+	public static Word fgetc(Word cw) {
+		throw new RuntimeException();
+	}
+
 	public static void fputs(Word s, Word w) {
 		System.out.println("FPuts: " + s + " " + w);
 		//w.append(new String((char[]) s.toArray()));
@@ -49,7 +57,19 @@ public class Foam {
 		throw new RuntimeException();
 	}
 
+	public static Word fclose(Word w1) {
+		throw new RuntimeException();
+	}
+
+	public static Word formatBInt(BigInteger a) {
+		return Word.U.fromArray(("" + a+'\0').toCharArray());
+	}
+
 	public static Word formatSInt(int a) {
+		return Word.U.fromArray(("" + a+'\0').toCharArray());
+	}
+
+	public static Word formatSFlo(float a) {
 		return Word.U.fromArray(("" + a+'\0').toCharArray());
 	}
 
@@ -65,6 +85,14 @@ public class Foam {
 		throw new RuntimeException("wheee");
 	}
 
+
+	public static BigInteger fiSFloMantissa(float f) {
+		throw new RuntimeException();
+	}
+
+	public static BigInteger fiSFloExponent(float f) {
+		throw new RuntimeException();
+	}
 
 	public static Word fiStrHash(Word w) {
 		return Word.U.fromSInt(w.hashCode());
@@ -83,6 +111,154 @@ public class Foam {
 	}
 
 	public static Word osFnameParse(Word w1, Word w2, Word w3, Word w4) {
+		throw new RuntimeException();
+	}
+
+	public static Word osFnameDirEqual(Word w1, Word w2) {
+		throw new RuntimeException();
+	}
+
+	public static Word osRun(Word w1) {
+		throw new RuntimeException();
+	}
+
+	public static Word osRunQuoteArg(Word w1, Word w2) {
+		throw new RuntimeException();
+	}
+
+	public static Word osRunConcurrent(Word w1, Record r1, Record r2, Record r3) {
+		throw new RuntimeException();
+	}
+
+	public static Word osCpuTime() {
+		throw new RuntimeException();
+	}
+
+	public static Word osDate() {
+		throw new RuntimeException();
+	}
+
+	public static Word osGetEnv(Word w1) {
+		throw new RuntimeException();
+	}
+
+	public static Word osPutEnv(Word w1) {
+		throw new RuntimeException();
+	}
+
+	public static Word osPutEnvIsKept() {
+		throw new RuntimeException();
+	}
+
+	public static Word osCurDirName() {
+		throw new RuntimeException();
+	}
+
+	public static Word osTmpDirName() {
+		throw new RuntimeException();
+	}
+
+	public static Word osSubdir(Word w1, Word w2, Word w3) {
+		throw new RuntimeException();
+	}
+
+	public static Word osSubdirLength(Word w1, Word w2) {
+		throw new RuntimeException();
+	}
+
+	public static Word osFnameTempSeed() {
+		throw new RuntimeException();
+	}
+
+	public static Word osFnameTempDir(Word w1) {
+		throw new RuntimeException();
+	}
+
+	public static Word osIsInteractive(Word w1) {
+		throw new RuntimeException();
+	}
+
+	public static Word osFileRemove(Word w1) {
+		throw new RuntimeException();
+	}
+
+	public static Word osFileRename(Word w1, Word w2) {
+		throw new RuntimeException();
+	}
+
+	public static Word osFileIsThere(Word w1) {
+		throw new RuntimeException();
+	}
+
+	public static Word osFileHash(Word w1) {
+		throw new RuntimeException();
+	}
+
+	public static Word osFileSize(Word w1) {
+		throw new RuntimeException();
+	}
+
+	public static Word osDirIsThere(Word w1) {
+		throw new RuntimeException();
+	}
+
+	public static Word osDirSwap(Word w1, Word w2, Word w3) {
+		throw new RuntimeException();
+	}
+
+	public static Word osIncludePath() {
+		throw new RuntimeException();
+	}
+
+	public static Word osLibraryPath() {
+		throw new RuntimeException();
+	}
+
+	public static Word osExecutePath() {
+		throw new RuntimeException();
+	}
+
+	public static Word osPathLength(Word w1) {
+		throw new RuntimeException();
+	}
+
+	public static Word osPathParse(Word w1, Word w2, Word w3) {
+		throw new RuntimeException();
+	}
+
+	public static Word osSetFaultHandler(Word w1) {
+		throw new RuntimeException();
+	}
+
+	public static Word osSetLimitHandler(Word w1) {
+		throw new RuntimeException();
+	}
+
+	public static Word osSetBreakHandler(Word w1) {
+		throw new RuntimeException();
+	}
+
+	public static Word osSetDangerHandler(Word w1) {
+		throw new RuntimeException();
+	}
+
+	public static Word osAlloc(Word w1) {
+		throw new RuntimeException();
+	}
+
+	public static Word osFree(Word w1) {
+		throw new RuntimeException();
+	}
+
+	public static Word osAllocAlignHint(Word w1) {
+		throw new RuntimeException();
+	}
+
+	public static Word osAllocShow() {
+		throw new RuntimeException();
+	}
+
+	public static Word osMemMap(Word w1) {
 		throw new RuntimeException();
 	}
 
