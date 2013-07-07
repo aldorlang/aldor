@@ -294,7 +294,7 @@ fpMarkFormat(Foam * pRef, AInt *pFormat, FoamTag tag)
 	/* Kill redundant casts (ex: (RElt 4 (Cast Rec (Par 0)) 0)) */
 
 	/* Unsafe if typeof(ref) == FOAM_Word */
-	if (ref != *pRef) {
+	if (ref != *pRef && decl->foamDecl.type != FOAM_Word) {
 		ref = foamCopy(ref);
 		foamFree(*pRef);
 		*pRef = ref;

@@ -1,0 +1,30 @@
+
+Calls
+Records
+Envs
+Closures
+Arrays
+Builtins
+Gotos
+
+--------------
+Need to decide how to implement foam units
+
+
+class XX {
+      // struct per format
+      
+      // Each function mappped to a static method
+
+      // Formats implemented as Object[] 
+      
+}
+
+=================
+
+
+Gotos:
+
+1: extract flow graph
+2: Find blocks though which control must pass (ignoring returns)
+

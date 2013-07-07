@@ -55,6 +55,7 @@ struct ob_info	obInfo[] = {
 	{OB_Table,	"OB_Table",	1},
 	{OB_DNF,	"OB_DNF",	1},
 	{OB_CCode,	"OB_CCode",	1},
+	{OB_JCode,	"OB_JCode",	1},
 	{OB_SExpr,	"OB_SExpr",	1},
 
 	{OB_CoMsg,	"OB_CoMsg",	1},
@@ -97,6 +98,7 @@ obPrint(FILE *fout, Pointer ob)
 	case OB_Symbol:	 return symPrint(fout, (Symbol) ob);
 	case OB_SExpr:	 return sxiWrite(fout, (SExpr) ob, SXRW_Default);
 	case OB_CCode:	 return ccoPrint(fout, (CCode) ob, CCOM_StandardC);
+	case OB_JCode:	 return fprintf(fout, "java");
 
 	case OB_SrcLine: return slinePrint(fout, (SrcLine) ob);
 	case OB_Token:	 return tokPrint(fout, (Token) ob);

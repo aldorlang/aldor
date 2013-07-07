@@ -20,3 +20,5 @@ config.status
 /install
 /.metadata
 /workspace
+/m4
+

@@ -411,7 +411,7 @@ gen0MakeDefaultPackage(AbSyn base, Stab stab, Bool inCatForm, Syme syme)
 	gen0ProgPopState();
 	
 	
-	foam = gen0BuiltinCCall(FOAM_Clos,
+	foam = gen0BuiltinCCall(FOAM_Word,
 				"categoryMake", "runtime", 3, clos,
 				hasher,
 				gen0BuildExporterName(gen0ProgGetExporter()));
@@ -426,7 +426,7 @@ gen0MakeDefaultHash()
 	
 	if (exp == NULL || abTag(exp) == AB_Id) {
 		hashCode = gen0SefoHashExporter(exp);
-		return gen0BuiltinCCall(FOAM_SInt, "rtConstSIntFn", 
+		return gen0BuiltinCCall(FOAM_Clos, "rtConstSIntFn", 
 					"runtime", 1, hashCode);
 	} else {
 		GenFoamState saved;
@@ -516,12 +516,12 @@ gen0TypeInit()
 
 	/* Create the foam arrays for the domain vectors. */
 	names = gen0TempLocal0(FOAM_Arr, FOAM_Word);
-	types = gen0TempLocal0(FOAM_Arr, FOAM_SInt);
+	types = gen0TempLocal0(FOAM_Arr, FOAM_Word);
 	vals  = gen0TempLocal0(FOAM_Arr, FOAM_SInt);
 
-	gen0AddInit(foamNewSet(names, foamNewANew(FOAM_SInt, 
+	gen0AddInit(foamNewSet(names, foamNewANew(FOAM_Word, 
 						  foamCopy(szVar))));
-	gen0AddInit(foamNewSet(types, foamNewANew(FOAM_SInt, 
+	gen0AddInit(foamNewSet(types, foamNewANew(FOAM_Word, 
 						  foamCopy(szVar))));
 	gen0AddInit(foamNewSet(vals,  foamNewANew(FOAM_Word, 
 						  foamCopy(szVar))));
@@ -664,9 +664,11 @@ gen0TypeAddExportSlot(Syme syme)
                 val = foamNewCast(FOAM_Word, val);
 
         gen0AddStmt(gen0ASet(gen0ExportState->names, 
-			     posn, FOAM_SInt, name), NULL);
+			     posn, FOAM_Word, foamNewCast(FOAM_Word, name)),
+		    NULL);
         gen0AddStmt(gen0ASet(gen0ExportState->types, 
-			     posn, FOAM_SInt, type), NULL);
+			     posn, FOAM_Word, foamNewCast(FOAM_Word, type)),
+		    NULL);
         gen0AddStmt(gen0ASet(gen0ExportState->vals,  
 			     posn, FOAM_Word, val),  NULL);
 
@@ -764,7 +766,8 @@ gen0MakeDomainSelf()
 
 	gen0ExportState->selfSyme = sl ? car(sl) : NULL;
 	gen0ExportState->selfHash = gen0TempLex(FOAM_SInt);
-	gen0AddInit(foamNewDef(gen0ExportState->selfHash, foamNewPar(1)));
+	gen0AddInit(foamNewDef(gen0ExportState->selfHash, foamNewCast(FOAM_SInt,
+								      foamNewPar(1))));
 }
 
 Bool
@@ -797,11 +800,12 @@ gen0TypeAddDefaultSelfSlot()
 	rtHash = gen0SefoHashExporter(abType);
 
 	i = gen0ExportState->size++;
-	gen0AddStmt(gen0ASet(gen0ExportState->names, i, FOAM_SInt, 
-			    foamNewSInt(gen0StrHash("%%"))), 
+	gen0AddStmt(gen0ASet(gen0ExportState->names, i, FOAM_Word, 
+			     foamNewCast(FOAM_Word, 
+					 foamNewSInt(gen0StrHash("%%")))), 
 		    NULL);
-	gen0AddStmt(gen0ASet(gen0ExportState->types, i, FOAM_SInt,
-			     rtHash),
+	gen0AddStmt(gen0ASet(gen0ExportState->types, i, FOAM_Word,
+			     foamNewCast(FOAM_Word, rtHash)),
 		    NULL);
 	gen0AddStmt(gen0ASet(gen0ExportState->vals, i, FOAM_Word, 
 			     foamCopy(gen0ExportState->self)), 
@@ -841,7 +845,7 @@ gen0MakeCategoryParents(AbSyn base)
 	assert(base);
 	if (abIsNothing(base)) return;
 	
-	pars = gen0TempLocal(FOAM_Word);
+	pars = gen0TempLocal0(FOAM_Arr, FOAM_Word);
 	gen0AddInit(foamNewNOp());
 	place = gen0State->inits;
 	sz = gen0MakeCatParents0(base, pars, int0);
@@ -996,7 +1000,7 @@ gen0MakeTypeParents(Length argc, AbSyn *argv, String adderName, AbSyn base)
 	Length	i;
 
 	/* Create the foam array for the parent vector. */
-	pars = gen0TempLocal(FOAM_Word);
+	pars = gen0TempLocal0(FOAM_Arr, FOAM_Word);
 	gen0AddStmt(gen0ANew(pars, FOAM_Word, argc), base);
 
 	/* Fill the slots in the foam array. */
@@ -1033,7 +1037,7 @@ gen0MakeTypeExportMap(SymeList symes)
 {
 	Foam mapVar;
 
-	mapVar = gen0Temp(FOAM_Word);
+	mapVar = gen0Temp0(FOAM_Arr, FOAM_Bool);
 	gen0AddInit(gen0ANew(mapVar, FOAM_Bool, listLength(Syme)(symes)));
 	return mapVar;
 }
@@ -1982,7 +1986,7 @@ gen0RtSymSpecialTag(Symbol sym)
 local Foam
 gen0RtSefoHashSpecialExporter(Sefo sf, Sefo osf)
 {
-	Foam	Tt = gen0TempLocal(FOAM_Word);
+	Foam	Tt = gen0TempLocal0(FOAM_Rec, gen0MakeTupleFormat());
 	Foam 	Tn = gen0TempLocal(FOAM_SInt);
 	Foam 	Ti = gen0TempLocal(FOAM_SInt);
 	Foam 	Th = gen0TempLocal(FOAM_SInt);
@@ -2025,7 +2029,7 @@ gen0RtSefoHashSpecialExporter(Sefo sf, Sefo osf)
 		assert(abTag(arg) == AB_Declare);
 		arg = arg->abDeclare.id;
 
-		GSTAT(GSET(Tt, genFoamVal(arg)));
+		GSTAT(GSET(Tt, foamNewCast(FOAM_Rec, genFoamVal(arg))));
 		GSTAT(GSET(Tn, gen0NewTupleSizeRef(foamCopy(Tt))));
 		GSTAT(GSET(Ti, foamNewSInt(int0)));
 		GSTAT(foamNewLabel(TS));
@@ -2986,7 +2990,7 @@ gen0HasCat(Foam dom, AbSyn cat)
 				foamCopy(dom),
 				 foamNewSInt(gen0StrHash("%%")), 
 				 gen0SefoHash(cat, cat));
-	return foam;
+	return foamNewCast(FOAM_Word, foam);
 }
 
 local Foam
@@ -3034,7 +3038,7 @@ gen0HasImport(Foam dom, Syme syme)
 				foamNewSInt(gen0StrHash(str)),
 				gen0TypeHash(tf, tf, str));
 
-	return foam;
+	return foamNewCast(FOAM_Word, foam);
 }	
 
 /*****************************************************************************
@@ -3209,7 +3213,7 @@ gen0NameTuple(Syme id, TForm tf, Bool isEnum)
 	int l1 = gen0State->labelNo++;
 	int l2 = gen0State->labelNo++;
 
-	tuple = gen0Syme(id);
+	tuple = foamNewCast(FOAM_Rec, gen0Syme(id));
 	n     = gen0TempLocal(FOAM_SInt);
 
 	/*
@@ -3224,7 +3228,8 @@ gen0NameTuple(Syme id, TForm tf, Bool isEnum)
 	 * l2:
 	 *   buildName(t2);
 	 */
-	gen0AddStmt(foamNewSet(foamCopy(n), gen0NewTupleSizeRef(tuple)), NULL);
+	gen0AddStmt(foamNewSet(foamCopy(n), 
+			       gen0NewTupleSizeRef(tuple)), NULL);
 	gen0MakeEmptyTuple(foamCopy(n), t2, NULL);
 	newarr = t2[1];
 	gen0AddStmt(foamNewLabel(l1), NULL);
@@ -3328,17 +3333,19 @@ gen0StringsFini()
 	body = gen0State->lines;
 	gen0State->lines = listNil(Foam);
 
-	int1 = gen0TempLocal0(FOAM_Arr, FOAM_SInt);
+	int1 = gen0TempLocal0(FOAM_Arr, FOAM_Word);
 	str1 = gen0TempLocal0(FOAM_Arr, FOAM_Word);
 
 	gen0AddStmt(gen0ANew(int1, FOAM_Word, size), NULL);
 	gen0AddStmt(gen0ANew(str1, FOAM_Word, size), NULL);
 
 	for (tblITER(iter, gen0StringTable); tblMORE(iter); tblSTEP(iter)) {
-		gen0AddStmt(gen0ASet(int1, i, FOAM_SInt,
-				     foamNewSInt((AInt) tblKEY(iter))), NULL);
+		gen0AddStmt(gen0ASet(int1, i, FOAM_Word,
+				     foamNewCast(FOAM_Word,
+						 foamNewSInt((AInt) tblKEY(iter)))), NULL);
 		gen0AddStmt(gen0ASet(str1, i, FOAM_Word, 
-				     gen0CharArray((String) tblELT(iter))), 
+				     foamNewCast(FOAM_Word,
+						 gen0CharArray((String) tblELT(iter)))), 
 			    NULL);
 		i++;
 	}

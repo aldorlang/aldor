@@ -30,9 +30,12 @@ foamsrcdir = $(abs_top_srcdir)/aldor/lib/libfoam
 foamdir = $(abs_top_builddir)/aldor/lib/libfoam
 
 aptests := exquo
-fmtests := clos strtable1
-ctests  := 
-otests  := 
+fmtests := rectest enumtest clos strtable1 
+ctests  := rectest enumtest
+otests  := enumtest
+jtests  := simple_j enumtest run_j
+
+simple_j_AXLFLAGS=-Q2
 
 badtests := opt1
 # opt1 fails because the optimise decides to inline the recursive call
@@ -44,10 +47,14 @@ strtable1_AXLFLAGS=-Y$(foamdir)/al -I $(foamsrcdir) -lRuntimeLib=foam -Q9 -Qinli
 clos_AXLFLAGS := -Q2
 
 _aptests := $(sort $(aptests))
-_aotests := $(sort $(fmtests) $(ctests))
-_fmtests := $(sort $(fmtests))
-_ctests  := $(sort $(ctests) $(otests))
+_ctests  := $(sort $(ctests)  $(otests))
+
+_jruntests := $(sort $(jruntests))
+_jtests  := $(sort $(jtests) $(_jruntests))
+_fmtests := $(sort $(fmtests) $(_jtests))
 _otests  := $(sort $(otests))
+_ctests  := $(sort $(ctests)  $(_otests))
+_aotests := $(sort $(_fmtests) $(_ctests))
 
 nfile := -Nfile=$(aldorsrcdir)/aldor.conf
 
@@ -58,6 +65,18 @@ $(patsubst %, out/fm/%.fm, $(_fmtests)): out/fm/%.fm: out/ao/%.ao
 $(patsubst %, out/c/%.c, $(_ctests)): out/c/%.c: out/ao/%.ao
 	mkdir -p $$(dirname $@)
 	$(aldorexedir)/aldor $(nfile) -Fc=$(builddir)/$@ $<
+
+$(patsubst %, out/java/%.java, $(_jtests)): $(aldorexedir)/javagen
+$(patsubst %, out/java/%.java, $(_jtests)): out/java/%.java: out/fm/%.fm
+	mkdir -p $$(dirname $@)
+	(cd $(builddir)/out/fm; $(aldorexedir)/javagen \
+		$(if $(filter $(_jruntests), $*), -Jmain,) \
+		$*.fm > ../java/$*.java)
+
+javaopts=-cp $(abs_top_builddir)/aldor/lib/java/build/foamj.jar
+
+$(patsubst %, out/java/%.class, $(_jtests)): out/java/%.class: out/java/%.java
+	(cd $(builddir)/out/java; javac $(javaopts) $*.java)
 
 # Create .o files locally as unicl creates files in the
 # current directory...
@@ -99,6 +118,9 @@ really-all: \
      $(patsubst %,out/ao/%.cmd,$(_aotests)) \
      $(patsubst %,out/fm/%.fm,$(fmtests)) \
      $(patsubst %,out/c/%.c,$(ctests)) \
+     $(patsubst %,out/java/%.java,$(jtests)) \
+     $(patsubst %,out/java/%.class,$(jtests)) \
+     $(patsubst %,out/java/%.class,$(jruntests)) \
      $(patsubst %,%.o,$(otests))      
 
 .PHONY: all
@@ -107,6 +129,7 @@ really-all: \
 # :: Automake requires this little lot
 #
 mostlyclean: 
+	rm -rf $(builddir)/out
 
 clean: mostlyclean
 distclean: clean 

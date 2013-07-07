@@ -75,6 +75,7 @@ extend SingleInteger: Join(
 	(x: %) ^ (n: Integer): %     == x^per(convert(n::BBInt));
 
 	coerce(i: Integer): %        == per convert(i::BBInt);
+	coerce(i: BSInt): %        == per i;
 
 	(i: %) quo (j: %): %	  == per (rep i quo rep j);
 	(i: %) rem (j: %): %	  == per (rep i rem rep j);

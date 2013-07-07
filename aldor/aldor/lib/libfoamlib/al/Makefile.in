@@ -24,9 +24,11 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 # Build starts here
 aldorexedir = $(abs_top_builddir)/aldor/src
 
-library= lang machine basic foamcat tuple gener boolean segment		\
-	 sinteger sfloat pointer char parray array lv list langx string	\
+library= lang machine basic foamcat tuple gener bool segment sinteger	\
+	 sfloat pointer character parray array lv list langx string	\
 	 oslow fname file format textwrit opsys partial
+
+noclass = sfloat oslow file format
 
 lang_deps    :=
 machine_deps := lang
@@ -34,18 +36,18 @@ basic_deps   := lang machine
 foamcat_deps := basic
 tuple_deps   := foamcat
 gener_deps   := foamcat
-boolean_deps := foamcat
-segment_deps := foamcat boolean
+bool_deps    := foamcat
+segment_deps := foamcat bool
 sinteger_deps := foamcat segment
 sfloat_deps   := foamcat sinteger
 pointer_deps  := foamcat
-char_deps     := foamcat
+character_deps := foamcat
 parray_deps   := foamcat sinteger
 array_deps    := foamcat tuple sinteger parray 
 list_deps     := foamcat tuple segment sinteger pointer 
 lv_deps       := basic
 langx_deps    := lv foamcat tuple sinteger list 
-string_deps   := foamcat char array
+string_deps   := foamcat character array
 oslow_deps    := foamcat parray pointer string
 fname_deps    := foamcat parray string oslow
 file_deps     := foamcat fname
@@ -60,13 +62,15 @@ aldorexedir=$(abs_top_builddir)/aldor/src
 $(patsubst %, %.c, $(library)): %.c: %.ao %.dep
 	 $(aldorexedir)/aldor -Nfile=$(aldorsrcdir)/aldor.conf -Fc=$(builddir)/$@ $<	
 
+aldoropt := -Q8 -Qinline-all
 define aldor_args
-	-I$(srcdir)/.. -Q8 -Qinline-all	\
+	-I$(srcdir)/.. $(aldoropt) $(aldordebug_$*) \
 	-Nfile=$(aldorsrcdir)/aldor.conf 	\
 	-lAxlLib=foamlib_$* 		\
 	-Fao=$*.ao $(srcdir)/../$*.as
 endef
 
+$(patsubst %,%.ao,$(library)): $(aldorexedir)/aldor
 $(patsubst %, %.ao, $(library)): %.ao: $(srcdir)/../foamlib.as
 $(patsubst %, %.ao, $(library)): %.ao: $(srcdir)/../%.as
 $(patsubst %, %.ao, $(library)): %.ao: 
@@ -78,6 +82,9 @@ $(patsubst %, %.ao, $(library)): %.ao:
 
 $(patsubst %, %.cmd, $(library)): %.cmd: Makefile
 	echo "run $(aldor_args)" > $@
+
+$(patsubst %, %.java, $(library)): %.java: %.fm $(aldorexedir)/javagen
+	 $(aldorexedir)/javagen $< > $@
 
 define dep_template
 $(1).ao: $(1).dep $$(patsubst %,%.ao,$$($(1)_deps))
@@ -93,12 +100,23 @@ $(patsubst %, %.dep,$(library) libfoamlib):
 
 $(foreach l,$(library), $(eval $(call dep_template,$(l))))
 
-$(patsubst %,%.fm,$(library)): %.fm: %.ao
+$(patsubst %,%.fm,$(library)): %.fm: %.ao 
 	$(aldorexedir)/aldor \
 		     -Nfile=$(aldorsrcdir)/aldor.conf 	\
 		     -Ffm=$@ $*.ao
 
-all: Makefile libfoamlib.al $(patsubst %, %.c, $(library)) $(patsubst %, %.fm, $(library))
+# Java->class
+javaopts=-cp $(abs_top_builddir)/aldor/lib/java/build/foamj.jar
+
+$(patsubst %, %.class, $(library)): %.class: %.java
+	javac $(javaopts) $<
+
+all: Makefile \
+	$(patsubst %, %.class, $(filter-out $(noclass), $(library))) \
+	$(patsubst %, %.java, $(library))	\
+	$(patsubst %, %.c,  $(library)) 	\
+	$(patsubst %, %.fm, $(library))		\
+	libfoamlib.al 			
 
 libfoamlib.dep: $(patsubst %,%.dep,$(library))
 libfoamlib.al: $(patsubst %,%.dep, $(library))

@@ -31,9 +31,9 @@
 # define  OB_DNF		10
 
 # define  OB_CCode		11
-# define  OB_SExpr		12
-
-# define  OB_AXLGEN_LIMIT	13
+# define  OB_JCode              12
+# define  OB_SExpr		13
+# define  OB_AXLGEN_LIMIT	14
 
 # include "bigint.h"
 # include "btree.h"

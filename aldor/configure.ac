@@ -69,6 +69,8 @@ AC_CONFIG_FILES([Makefile
 		 aldor/lib/libfoam/Makefile
 		 aldor/lib/libfoam/al/Makefile
 		 aldor/test/Makefile
+		 aldor/lib/java/Makefile
+		 aldor/lib/java/src/Makefile
 		 aldor/tools/Makefile
 		 aldor/tools/unix/Makefile
 		 lib/Makefile

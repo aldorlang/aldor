@@ -527,7 +527,7 @@ struct foamGen {
 		AInt    data;
 		String  str;
 		BInt	bint;
-	}                       argv[NARY];
+	} argv[NARY];
 };
 
 

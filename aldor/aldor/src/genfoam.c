@@ -1901,6 +1901,7 @@ local Foam	gen0BIntDispose		(Length, AbSyn *, Foam *);
 
 local Foam	gen0UnionNew		(Syme, TForm, Length, AbSyn *, Foam *);
 local Foam	gen0UnionCase		(TForm,       Length, AbSyn *, Foam *);
+local Foam      gen0UnionCaseBool       (TForm, Length, AbSyn *, Foam *);
 local Foam	gen0UnionElt		(FoamTag,TForm,Length,AbSyn *, Foam *);
 local Foam	gen0UnionSet		(FoamTag,TForm,Length,AbSyn *, Foam *);
 local Foam	gen0UnionDispose	(Length, AbSyn *, Foam *);
@@ -2817,7 +2818,7 @@ gen0UnionNew(Syme syme, TForm key, Length argc, AbSyn *argv, Foam *vals)
 	gen0AddStmt(gen0RSet(whole, format, (AInt) 0, index), NULL);
 	gen0AddStmt(gen0RSet(whole, format, (AInt) 1, value), NULL);
 
-	return foamCopy(whole);
+	return foamNewCast(FOAM_Word, foamCopy(whole));
 }
 
 local Foam
@@ -2829,11 +2830,11 @@ gen0UnionElt(FoamTag type, TForm key, Length argc, AbSyn *argv, Foam *vals)
 	Foam	stmt, foam;
 	Foam 	myVals[2];
 	
-	whole = gen0MakeMultiEvaluable(FOAM_Rec, format, whole);
+	whole = gen0MakeMultiEvaluable(FOAM_Rec, format, foamNewCast(FOAM_Rec, whole));
 	myVals[0] = foamCopy(whole);
 	myVals[1] = NULL;
 
-	stmt = foamNewIf(gen0UnionCase(key, argc, argv, myVals), l);
+	stmt = foamNewIf(gen0UnionCaseBool(key, argc, argv, myVals), l);
 	gen0AddStmt(stmt, NULL);
 	stmt = foamNew(FOAM_BCall, 2, FOAM_BVal_Halt,
 		       foamNewSInt(FOAM_Halt_BadUnionCase));
@@ -2851,13 +2852,21 @@ gen0UnionElt(FoamTag type, TForm key, Length argc, AbSyn *argv, Foam *vals)
 local Foam
 gen0UnionCase(TForm key, Length argc, AbSyn *argv, Foam *vals)
 {
+	Foam foam = gen0UnionCaseBool(key, argc, argv, vals);
+	return foamNewCast(FOAM_Word, foam);
+}
+
+local Foam
+gen0UnionCaseBool(TForm key, Length argc, AbSyn *argv, Foam *vals)
+{
 	AInt	format = gen0MakeUnionFormat();
 	AInt	index  = gen0UnionCaseIndex(key, argv[1]);
 	Foam	whole  = genFoamArg(argv, vals, int0);
 	Foam	foam   = foamNewEmpty(FOAM_BCall, 3);
 
 	foam->foamBCall.op = FOAM_BVal_SIntEQ;
-	foam->foamBCall.argv[0] = foamNewRElt(format, whole, (AInt) 0);
+	foam->foamBCall.argv[0] = foamNewRElt(format, 
+					      foamNewCast(FOAM_Rec, whole), (AInt) 0);
 	foam->foamBCall.argv[1] = foamNewSInt(index);
 
 	return foam;
@@ -2871,7 +2880,7 @@ gen0UnionSet(FoamTag type, TForm key, Length argc, AbSyn *argv, Foam *vals)
 	Foam	index  = foamNewSInt(gen0UnionCaseIndex(key, argv[1]));
 	Foam	value  = genFoamArg(argv, vals, 2);
 
-	whole = gen0MakeMultiEvaluable(FOAM_Rec, format, whole);
+	whole = gen0MakeMultiEvaluable(FOAM_Rec, format, foamNewCast(FOAM_Rec, whole));
 
 	gen0AddStmt(gen0RSet(whole, format, (AInt) 0, index), NULL);
 	gen0AddStmt(gen0RSet(whole, format, (AInt) 1, value), NULL);
@@ -2900,7 +2909,7 @@ gen0EnumEqual(AbSyn *argv, Foam *vals)
 	foam->foamBCall.argv[0] = arg0;
 	foam->foamBCall.argv[1] = arg1;
 
-	return foam;
+	return foamNewCast(FOAM_Word, foam);
 }
 
 local Foam
@@ -2914,7 +2923,7 @@ gen0EnumNotEqual(AbSyn *argv, Foam *vals)
 	foam->foamBCall.argv[0] = arg0;
 	foam->foamBCall.argv[1] = arg1;
 
-	return foam;
+	return foamNewCast(FOAM_Word, foam);
 }
 
 /* TrailingArrays. */
@@ -4390,7 +4399,8 @@ gen0MakeExtendBase(Syme syme)
         gen0State->program->foamProg.infoBits = IB_SIDE;
 
 	gen0MakeExtendParents(syme, symeExtendee(syme));
-	gen0AddStmt(foamNewReturn(foamNewPar(int0)), NULL);
+	//gen0AddStmt(foamNewReturn(foamNewCast(FOAM_Clos, foamNewPar(int0))), NULL);
+	gen0AddStmt(foamNewReturn(foamNewCast(FOAM_Clos, foamNewNil())), NULL);
 
 	gen0ProgAddFormat(index);
 	gen0IssueDCache();
@@ -4415,7 +4425,7 @@ gen0MakeExtendParents(Syme syme, SymeList symes)
 	Length	i, argc = listLength(Syme)(symes);
 
 	/* Create the foam array for the parent vector. */
-	pars = gen0TempLocal(FOAM_Word);
+	pars = gen0TempLocal0(FOAM_Arr, FOAM_Word);
 	gen0AddStmt(gen0ANew(pars, FOAM_Word, argc), NULL);
 
 	/* Fill the slots in the foam array. */
@@ -5377,6 +5387,9 @@ gen0Type(TForm tf, AInt *pfmt)
 		else if (tfIsCross(tf)) {
 			tag = FOAM_Word;
 		}
+		else if (tfIsEnum(tf)) {
+			tag = FOAM_SInt;
+ 		}
 		else if (tfIsUnknown(tf))	tag = FOAM_Word;
  		else if ((sym = gen0MachineType(tf)) == NULL)
 			tag = FOAM_Word;
@@ -5391,7 +5404,14 @@ gen0Type(TForm tf, AInt *pfmt)
 		else if (sym == ssymDFlo)	tag = FOAM_DFlo;
 		else if (sym == ssymNil)	tag = FOAM_Nil;
 		else if (sym == ssymPtr)	tag = FOAM_Ptr;
-		else if (sym == ssymArr) 	tag = FOAM_Arr;
+		else if (sym == ssymArr) {
+			tag = FOAM_Arr;
+			/* Something of a bug here as we don't know
+			   the element type for the array. Use 0
+			   rather than emptyFormatSlot as that is
+			   FOAM_HInt */
+			fmt = 0;
+		}
 		else {
 			/* Try a second time using the normalised type */
 			done = false;
@@ -6080,7 +6100,7 @@ genOr(AbSyn absyn)
 	gen0AddStmt(foamNewLabel(l1), absyn);
 	gen0AddStmt(foamNewSet(foamCopy(t), foamNewBool(true)), absyn);
 	gen0AddStmt(foamNewLabel(l2), absyn);
-	return t;
+	return foamNewCast(FOAM_Word, t);
 }
 
 local Foam
@@ -6099,7 +6119,7 @@ genAnd(AbSyn absyn)
 	gen0AddStmt(foamNewLabel(l1), absyn);
 	gen0AddStmt(foamNewSet(foamCopy(t), foamNewBool(false)), absyn);
 	gen0AddStmt(foamNewLabel(l2), absyn);
-	return t;
+	return foamNewCast(FOAM_Word, t);
 }
 
 /*
@@ -7341,6 +7361,8 @@ gen0ComputeSideEffects(Foam prog)
 local Bool
 gen0IsMultiEvaluable(Foam foam)
 {
+	if (foamTag(foam) == FOAM_Cast)
+		return gen0IsMultiEvaluable(foam->foamCast.expr);
 	return foamIsRef(foam) || foamTag(foam) < FOAM_DATA_LIMIT;
 }
 

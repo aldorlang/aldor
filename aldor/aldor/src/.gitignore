@@ -2,6 +2,7 @@
 /Makefile
 aldor
 aldortest
+javagen
 comsgpig.cat
 gentest
 structtest

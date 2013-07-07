@@ -60,6 +60,9 @@ $(patsubst %, %.c, $(library)): %.c: %.ao %.dep
 	@echo AO_TO_C $*
 	@$(aldorexedir)/aldor -Nfile=$(aldorexedir)/aldor.conf -Fc=$(builddir)/$@ $<	
 
+$(patsubst %, %.java, $(library)): %.java: %.fm $(aldorexedir)/javagen
+	 $(aldorexedir)/javagen $< > $@
+
 #AXLCDB	  = -W check -Csmax=0 -Fc -Zdb -Qno-cc
 AXLFLAGS  := -Z db -Q9 -Qinline-all $(AXLCDB) 
 
@@ -110,10 +113,18 @@ $(patsubst %, %.dep,$(library)):
 $(foreach l,$(library), $(eval $(call dep_template,$(l))))
 $(patsubst %,%.ao,$(library)): ../runtimelib.as
 
+# Java->class
+javaopts=-cp $(abs_top_builddir)/aldor/lib/java/build/foamj.jar
+
+$(patsubst %, %.class, $(library)): %.class: %.java
+	javac $(javaopts) $<
+
+# All..
 all: Makefile \
-     $(patsubst %,%.fm,$(library)) \
-     $(patsubst %,%.c,$(library)) \
-     libfoam.al
+	$(patsubst %,%.fm,$(library)) 	\
+	$(patsubst %,%.java,$(library)) \
+	$(patsubst %,%.class,$(library)) \
+	libfoam.al 			
 
 all: Makefile $(patsubst %,%.fm,$(library)) libfoam.al
 libfoam.al: $(patsubst %,%.ao,$(library))

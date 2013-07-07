@@ -1,19 +1,22 @@
-SUBDIRS = 
+#SUBDIRS = . java
 
-bin_PROGRAMS = aldor aldortest
-dataincludedir = $(datadir)/include
-datainclude_DATA=aldor.conf 
+bin_PROGRAMS =  javagen aldor
 
-datalib_DATA = comsgpig.cat
-datalibdir = $(datadir)/lib
+javagen_SOURCES = java/main.c java/genjava.c java/javacode.c		\
+		java/javaobj.c java/ostream.c axlcomp.c cmdline.c
 
+javagen_LDADD = libphase.a libstruct.a libgen.a libport.a 
+javagen_LDFLAGS = -lm
+javagen_CFLAGS = -g
 include_HEADERS=foam_c.h cconfig.h platform.h optcfg.h foamopt.h basic.typ
 
-noinst_LIBRARIES = libtest.a libphase.a libstruct.a libgen.a libport.a 
 
 aldor_SOURCES = main.c axlcomp.c cmdline.c
 aldor_LDADD = libphase.a libstruct.a libgen.a libport.a -lm
 aldor_LDFLAGS = 
+aldor_CFLAGS  = -g
+
+noinst_LIBRARIES = libphase.a libstruct.a libgen.a libport.a 
 
 aldortest_CFLAGS=-DTEST_STAND_ALONE -DTEST_ALL --save-temps
 aldortest_SOURCES = test.c
