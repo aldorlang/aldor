@@ -3,7 +3,7 @@
 bin_PROGRAMS =  javagen aldor
 
 javagen_SOURCES = java/main.c java/genjava.c java/javacode.c		\
-		java/javaobj.c java/ostream.c axlcomp.c cmdline.c
+		java/javaobj.c axlcomp.c cmdline.c
 
 javagen_LDADD = libphase.a libstruct.a libgen.a libport.a 
 javagen_LDFLAGS = -lm

@@ -35,7 +35,7 @@ int main(int argc, char *argv[])
 	printf("/*...\n");
 	jcoPrint(stdout, jc);
 	printf("...*/\n");
-	OStream o = ostreamNewFrStdout();
+	OStream o = ostreamNewFrFile(stdout);
 	JavaCodePContext ctxt = jcoPContextNew(o, true);
 	jcoWrite(ctxt, jc);
 	jcoPContextFree(ctxt);
