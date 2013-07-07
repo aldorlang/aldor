@@ -142,7 +142,10 @@ macro {
 
 
 #if LibraryAxlLib
---#	library AxlLib "foamlib"
+#if BuildAxlLib
+#else
+#	library AxlLib "foamlib"
+#endif
 {
 	import from AxlLib;
 	inline from AxlLib;

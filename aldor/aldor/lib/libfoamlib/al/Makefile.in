@@ -67,6 +67,7 @@ define aldor_args
 	-I$(srcdir)/.. $(aldoropt) $(aldordebug_$*) \
 	-Nfile=$(aldorsrcdir)/aldor.conf 	\
 	-lAxlLib=foamlib_$* 		\
+	-DBuildAxlLib 		\
 	-Fao=$*.ao $(srcdir)/../$*.as
 endef
 
