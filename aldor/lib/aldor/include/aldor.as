@@ -24,14 +24,17 @@ macro {
 }
 
 -- Selection of the appropriate portable object library
-#if DEBUG
-#library aldorlib "libaldord.al"
+#if BuildAldorLib
 #else
-#library aldorlib "libaldor.al"
+#if DEBUG
+#library AldorLib "libaldord.al"
+#else
+#library AldorLib "libaldor.al"
+#endif
 #endif
 
-import from aldorlib;
-inline from aldorlib;
+import from AldorLib;
+inline from AldorLib;
 
 -- Selection of the GNU bignum and bigfloat packages via the -dGMP option
 #if GMP

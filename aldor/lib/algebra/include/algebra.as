@@ -14,17 +14,20 @@
 #include "aldor"
 
 -- Selection of the appropriate portable object library
+#if BuildAlgebraLib
+#else
 #if GMP
-#library algebralib "libalgebra-gmp.al"
+#library AlgebraLib "libalgebra-gmp.al"
 #elseif DEBUG
-#library algebralib "libalgebrad.al"
+#library AlgebraLib "libalgebrad.al"
 #elseif DEBUGGER
 #include "debuglib"
-#library algebralib "libalgebradbg.al"
+#library AlgebraLib "libalgebradbg.al"
 #else
-#library algebralib "libalgebra.al"
+#library AlgebraLib "libalgebra.al"
+#endif
 #endif
 
-import from algebralib;
-inline from algebralib;
+import from AlgebraLib;
+inline from AlgebraLib;
 
