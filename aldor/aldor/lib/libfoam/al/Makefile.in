@@ -114,7 +114,7 @@ $(foreach l,$(library), $(eval $(call dep_template,$(l))))
 $(patsubst %,%.ao,$(library)): ../runtimelib.as
 
 # Java->class
-javaopts=-cp $(abs_top_builddir)/aldor/lib/java/build/foamj.jar
+javaopts=-cp $(abs_top_builddir)/aldor/lib/java/src/foamj.jar
 
 $(patsubst %, %.class, $(library)): %.class: %.java
 	javac $(javaopts) $<

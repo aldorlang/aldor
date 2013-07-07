@@ -106,7 +106,7 @@ $(patsubst %,%.fm,$(library)): %.fm: %.ao
 		     -Ffm=$@ $*.ao
 
 # Java->class
-javaopts=-cp $(abs_top_builddir)/aldor/lib/java/build/foamj.jar
+javaopts=-cp $(abs_top_builddir)/aldor/lib/java/src/foamj.jar
 
 $(patsubst %, %.class, $(library)): %.class: %.java
 	javac $(javaopts) $<

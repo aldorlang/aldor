@@ -73,7 +73,7 @@ $(patsubst %, out/java/%.java, $(_jtests)): out/java/%.java: out/fm/%.fm
 		$(if $(filter $(_jruntests), $*), -Jmain,) \
 		$*.fm > ../java/$*.java)
 
-javaopts=-cp $(abs_top_builddir)/aldor/lib/java/build/foamj.jar
+javaopts=-cp $(abs_top_builddir)/aldor/lib/java/src/foamj.jar
 
 $(patsubst %, out/java/%.class, $(_jtests)): out/java/%.class: out/java/%.java
 	(cd $(builddir)/out/java; javac $(javaopts) $*.java)
