@@ -41,11 +41,12 @@ $(patsubst %, %.c, $(library)): %.c: %.ao %.dep
 AXLFLAGS  := -Z db -Fc -Q2 $(AXLCDB)
 AXLFLAGS  += -Y $(aldorlibdir) -laldor -I $(algebraincdir)
 
+Libraryname := $(shell echo '$(libraryname)' | sed -e 's/^[a-z]/\u&/')
 define aldor_args
 	-Nfile=$(aldorsrcdir)/aldor.conf 	\
 	-Y.					\
 	-I$(abs_top_srcdir)/lib/aldor/include	\
-	-l$(libraryname)lib=$(libraryname)_$*	\
+	-l$(Libraryname)Lib=$(libraryname)_$*	\
 	$(AXLFLAGS)				\
 	-Fao=$*.ao $(srcdir)/$*.as
 endef

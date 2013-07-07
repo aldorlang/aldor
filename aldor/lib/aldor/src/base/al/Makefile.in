@@ -43,7 +43,7 @@ define aldor_args
 	-Nfile=$(aldorexedir)/aldor.conf 	\
 	-Y.					\
 	-I$(top_builddir)/lib/aldor/include	\
-	-laldorlib=$(libraryname)		\
+	-lAldorLib=$(libraryname)		\
 	$(AXLFLAGS)			\
 	-Fao=$*.ao $(srcdir)/../$*.as
 endef
