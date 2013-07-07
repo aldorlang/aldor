@@ -20,7 +20,7 @@
  * care for portability.
  *
  *
- * 1. Constant declarations:
+ * * Constant declarations:
  *	ANSI C permits names to be declared as constants.  Sometimes
  *	it is not just permitted, but *necessary*.  I.e. when redefining
  *	a system function (printf) the argument declarations must match
@@ -28,7 +28,7 @@
  *	In older C compilers in which "const" is not legal, we provide a
  *	macro "const" which expands to nothing.
  *
- * 2. Types:
+ * * Types:
  *
  *	Bool
  *	Hash
@@ -78,7 +78,7 @@
  *		Number of U16 in each UNotAsLong
  *
  *
- * 3. Bit sizes of types:
+ * * Bit sizes of types:
  *
  *	bitsizeof(t) returns the number of bits in type t.  E.g.
  *		struct {
@@ -86,11 +86,11 @@
  *			int	n : bitsizeof(int) - K;
  *		}
  *
- * 4. Using variable number of function arguments:
+ * * Using variable number of function arguments:
  *	We follow the ANSI <stdarg.h> conventions.
  *	If we have to, we implement it ourselves.
  *
- * 5. Token formation:
+ * * Token formation:
  *	The "Abut" macro is used to concatenate tokens.
  *
  *	Abut(a,b)
@@ -108,7 +108,7 @@
  *	the fact that cpp substitutes into strings is used.
  *
  *
- * 6. Trailing arrays:
+ * * Trailing arrays:
  *	The "NARY" macro is used for trailing variable sized arrays.
  *
  *	The "fullsizeof" macro is used for the size of a structure with
@@ -124,7 +124,7 @@
  *		p = (struct mything *) malloc(fullsizeof(*p, argc, double));
  *		int printf(char const *, fmt) { ...
  *
- * 7. Structure field offset manipulations.
+ * * Structure field offset manipulations.
  *	These are useful when one wants to iterate over various fields
  *	in a fixed array of structs.
  *	E.g.
@@ -141,7 +141,7 @@
  *		...
  *		}
  *
- * 8. Type alignment.
+ * * Type alignment.
  *	"alignof" gives alignment of a type in the same units as "sizeof".
  *	E.g.	alignof(double) is sometimes 8 and sometimes 4.
  *
@@ -150,14 +150,14 @@
  *	isDataMaxAligned(p) determines whether p is aligned enough
  *			    to point to anything.
  *
- * 9. Integer compaction
+ * * Integer compaction
  *	"Pack" and "BPack" allow code to compactly store values in structures
  *	while keeping the logical type explicit.
  *
  *	Pack(enum ee, short) expands to "short".
  *	BPack(xyzzy)	     is equivalent to Pack(xyzzy, UByte).
  *
- * 10. Function scope
+ * * Function scope
  *	The "local" declaration is used to declare a function local to a file.
  *	This allows more accurate profiling information, or to check for name
  *	collision if files are to be joined.
@@ -172,7 +172,7 @@
  *	(Of course one still uses "static" declarations for data,
  *	 where appropriate.)
  *
- * 11. Forward references to enumerations
+ * * Forward references to enumerations
  *	Not all compilers allow forward references to enumerations
  *	(e.g. Metaware High C on AIX370).  Use "Enum".
  *
@@ -183,14 +183,14 @@
  *		enum foo		-- normally
  *		int			-- for a finicky compiler
  *
- * 12. Empty files
+ * * Empty files
  *	Not all compilers can compile files without definitions
  *	(e.g. Waterloo C on CMS).
  *	Include the following line at the end of such C files:
  *
  *		ThatsAll
  *
- * 13. Special values:
+ * * Special values:
  *		true
  *		false
  *		long0		-- long integer 0
@@ -198,7 +198,7 @@
  *		char0		-- character 0
  *		TAB_STOP
  *
- * 14. Macro tools
+ * * Macro tools
  *	Nothing
  *	   Different compilers complain about different sorts of empty
  *	   expressions so the macro Nothing is provided to use as a
@@ -223,7 +223,7 @@
  *	   then the "else baz" would pair with the "if (foo)" for DEBUG_GOOD
  *	   but with the "if (_debug_)" for DEBUG_BAD.
  *
- *  15. NotReached
+ *  * NotReached
  *	This macro has two uses:
  *	(1) to trap bugs where supposedly  impossible situations arise, and
  *	(2) to gag compilers which incorrectly deduce that a value is missing.
@@ -243,7 +243,7 @@
  *		}
  *		f(r)
  *
- *  16. Pointer conversion
+ *  * Pointer conversion
  *	C does not allow subtraction of pointers into different objects, nor
  *	are the results of conversion to integers standard.
  *	These macros allow low-level manipulation of pointers in a portable way:
@@ -279,15 +279,15 @@
  *		These macros compare pointers according to their
  *		canonical values.
  *
- *  17. Integer byte-ordering
+ *  * Integer byte-ordering
  *	BYTEn and UNBYTEn provide a portable way to access the bytes of
  *	integers of different sizes.
  *
- *  18. Character set conversion
+ *  * Character set conversion
  *	charToAscii and charFrAscii provide a portable translation to and from
  *	the Ascii character set for use in Aldor Library files.
  *
- *  19. Floating-point characteristics
+ *  * Floating-point characteristics
  *
  *	{SF,DF}_HasNANs      --	Does it have NANs + INFs?
  * 	{SF,DF}_HasNorm1     -- Does it normally have an implicit 1 bit?
@@ -299,7 +299,7 @@
  *      {SF,DF}_UByte(px,i)  -- The i-th byte in big-endian order.
  *      {SF,DF}_UShort(px,i) -- The i-th short byte in big-endian order.
  *
- *  20. Special declaration modifiers
+ *  * Special declaration modifiers
  *
  *	SignalModifier  modifies pointers to signal handler functions.
  *
@@ -307,7 +307,7 @@
 
 /*****************************************************************************
  *
- * :: 1. Constant Declarations
+ * :: Constant Declarations
  *
  ****************************************************************************/
 
@@ -317,7 +317,7 @@
 
 /*****************************************************************************
  *
- * :: 2. Types
+ * :: Types
  *
  ****************************************************************************/
 
@@ -386,7 +386,7 @@ typedef double	MostAlignedType;
 
 /*****************************************************************************
  *
- * :: 3. Bit sizes
+ * :: Bit sizes
  *
  ****************************************************************************/
 
@@ -394,7 +394,7 @@ typedef double	MostAlignedType;
 
 /*****************************************************************************
  *
- * :: 4. Using variable number of function arguments
+ * :: Using variable number of function arguments
  *
  ****************************************************************************/
 
@@ -404,7 +404,7 @@ typedef double	MostAlignedType;
 
 /*****************************************************************************
  *
- * :: 5. Token Formation
+ * :: Token Formation
  *
  ****************************************************************************/
 
@@ -418,7 +418,7 @@ typedef double	MostAlignedType;
 
 /*****************************************************************************
  *
- * :: 6. Trailing arrays
+ * :: Trailing arrays
  *
  ****************************************************************************/
 
@@ -427,7 +427,7 @@ typedef double	MostAlignedType;
 
 /*****************************************************************************
  *
- * :: 7. Structure field offset manipulations
+ * :: Structure field offset manipulations
  *
  ****************************************************************************/
 
@@ -436,7 +436,7 @@ typedef double	MostAlignedType;
 
 /*****************************************************************************
  *
- * :: 8. Type alignment
+ * :: Type alignment
  *
  ****************************************************************************/
 
@@ -446,7 +446,7 @@ typedef double	MostAlignedType;
 
 /*****************************************************************************
  *
- * :: 9. Integer compaction
+ * :: Integer compaction
  *
  ****************************************************************************/
 
@@ -461,7 +461,7 @@ typedef double	MostAlignedType;
 
 /*****************************************************************************
  *
- * :: 10. Function scope
+ * :: Function scope
  *
  ****************************************************************************/
 
@@ -473,7 +473,7 @@ typedef double	MostAlignedType;
 
 /*****************************************************************************
  *
- * :: 11. Forward references to enumerations
+ * :: Forward references to enumerations
  *
  ****************************************************************************/
 
@@ -485,7 +485,7 @@ typedef double	MostAlignedType;
 
 /*****************************************************************************
  *
- * :: 12. Empty files
+ * :: Empty files
  *
  ****************************************************************************/
 
@@ -497,7 +497,7 @@ typedef double	MostAlignedType;
 
 /*****************************************************************************
  *
- * :: 13. Special values
+ * :: Special values
  *
  ****************************************************************************/
 
@@ -512,7 +512,7 @@ typedef double	MostAlignedType;
 
 /*****************************************************************************
  *
- * :: 14. Macro tools
+ * :: Macro tools
  *
  ****************************************************************************/
 
@@ -521,7 +521,7 @@ typedef double	MostAlignedType;
 
 /*****************************************************************************
  *
- * :: 15. Not reached
+ * :: Not reached
  *
  ****************************************************************************/
 
@@ -531,7 +531,7 @@ typedef double	MostAlignedType;
 
 /*****************************************************************************
  *
- * :: 16. Pointer conversion
+ * :: Pointer conversion
  *
  ****************************************************************************/
 
@@ -578,7 +578,7 @@ extern Pointer	ptrFrLong(long);
 
 /*****************************************************************************
  *
- * :: 17. Integer byte-ordering
+ * :: Integer byte-ordering
  *
  * The following macros are used to ensure portable data formats for Aldor
  * library files across different platforms.
@@ -616,7 +616,7 @@ extern Pointer	ptrFrLong(long);
 
 /*****************************************************************************
  *
- * :: 18. Character set conversion
+ * :: Character set conversion
  *
  * The following macros are used to ensure portable data formats for Aldor
  * library files across different platforms.
@@ -652,7 +652,7 @@ extern String strFrAscii(String, String, int);
 
 /*****************************************************************************
  *
- * :: 19. Floating-point characteristics
+ * :: Floating-point characteristics
  *
  ****************************************************************************/
 
@@ -758,7 +758,7 @@ extern String strFrAscii(String, String, int);
 #endif
 /*****************************************************************************
  *
- * :: 20. Special declaration modifiers
+ * :: Special declaration modifiers
  *
  * The following modifiers control calling or linkage conventions
  * for particular platforms.
