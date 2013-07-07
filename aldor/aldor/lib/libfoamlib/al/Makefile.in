@@ -28,8 +28,6 @@ library= lang machine basic foamcat tuple gener bool segment sinteger	\
 	 sfloat pointer character parray array lv list langx string	\
 	 oslow fname file format textwrit opsys partial
 
-noclass = sfloat oslow file format
-
 lang_deps    :=
 machine_deps := lang
 basic_deps   := lang machine
@@ -113,7 +111,7 @@ $(patsubst %, %.class, $(library)): %.class: %.java
 	javac $(javaopts) $<
 
 all: Makefile \
-	$(patsubst %, %.class, $(filter-out $(noclass), $(library))) \
+	$(patsubst %, %.class, $(library)) \
 	$(patsubst %, %.java, $(library))	\
 	$(patsubst %, %.c,  $(library)) 	\
 	$(patsubst %, %.fm, $(library))		\
