@@ -2881,8 +2881,14 @@ gj0CastWordToObj(JavaCode jc, FoamTag type, AInt fmt)
 		return jcApplyMethodV(jc, jcId(strCopy("toSInt")), 0);
 	case FOAM_HInt:
 		return jcApplyMethodV(jc, jcId(strCopy("toHInt")), 0);
+	case FOAM_BInt:
+		return jcApplyMethodV(jc, jcId(strCopy("toBInt")), 0);
 	case FOAM_Char:
 		return jcApplyMethodV(jc, jcId(strCopy("toChar")), 0);
+	case FOAM_SFlo:
+		return jcApplyMethodV(jc, jcId(strCopy("toSFlo")), 0);
+	case FOAM_DFlo:
+		return jcApplyMethodV(jc, jcId(strCopy("toDFlo")), 0);
 	case FOAM_Ptr:
 		return jc;
 	case FOAM_Arr:
