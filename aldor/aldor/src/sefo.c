@@ -1660,7 +1660,7 @@ sefoEqual0(SymeList mods, Sefo sefo1, Sefo sefo2)
 
 	sefoEqualDEBUG({
 		fprintf(dbOut, "<- sefoEqual[%d] = %s",
-			serial, boolToString(result));
+			(int) serial, boolToString(result));
 		fnewline(dbOut);
 	});
 
@@ -1683,7 +1683,7 @@ symeEqual0(SymeList mods, Syme syme1, Syme syme2)
 		return false;
 
 	sefoEqualDEBUG({
-		fprintf(dbOut, "-> symeEqual[%d]:", serial);
+	    fprintf(dbOut, "-> symeEqual[%d]:", (int) serial);
 		fnewline(dbOut);
 		symePrintDb(syme1);
 		symePrintDb(syme2);
