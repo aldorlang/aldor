@@ -216,8 +216,9 @@ sxFormatter(OStream ostream, Pointer p)
 {
 	SExpr sx = (SExpr) p;
 	Buffer b = bufNew();
+	int c;
 	sxiToBufferFormatted(b, sx, SXRW_MixedCase);
-	int c = ostreamWrite(ostream, bufLiberate(b), -1);
+	c = ostreamWrite(ostream, bufLiberate(b), -1);
 	
 	return c;
 }

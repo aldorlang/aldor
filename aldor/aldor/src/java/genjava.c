@@ -527,11 +527,12 @@ local JavaCode
 gj0Prog(Foam lhs, Foam rhs)
 {
 	GjProgResult r;
+	JavaCode code;
 	assert(foamTag(rhs) == FOAM_Prog);
 	
 	gj0ProgInit(lhs, rhs);
 	r = gj0ProgMain(rhs);
-	JavaCode code = gj0ProgResultToJava(r);
+	code = gj0ProgResultToJava(r);
 	gj0ProgResultFree(r);
 
 	gj0ProgFini(lhs, rhs);
@@ -977,6 +978,7 @@ gj0ProgFnMethodBody(Foam lhs, Foam prog)
 	JavaCodeList l, tmp;
 	JavaCode call;
 	int i;
+	JavaCodeList ret;
 
 	l = listNil(JavaCode);
 	l = listCons(JavaCode)(jcId(strCopy("env")), l);
@@ -995,7 +997,6 @@ gj0ProgFnMethodBody(Foam lhs, Foam prog)
 	l = listNReverse(JavaCode)(l);
 
 	call = jcApply(jcId(gj0ProgMethodName(lhs)), l);
-	JavaCodeList ret;
 
 
 	if (foamTypeIsVoid(gjContext->formats,
@@ -2625,6 +2626,7 @@ gj0FoamSigFrCCall(Foam ccall)
 {
 	FoamTag *retVals;
 	AIntList inArgList;
+	FoamSig sig;
 	int nRets;
 
 	inArgList = listNil(AInt);
@@ -2644,7 +2646,7 @@ gj0FoamSigFrCCall(Foam ccall)
 		nRets = 0;
 	}
 
-	FoamSig sig = foamSigNew(cdr(inArgList), ccall->foamCCall.type, nRets, retVals);
+	sig = foamSigNew(cdr(inArgList), ccall->foamCCall.type, nRets, retVals);
 	listFreeCons(AInt)(inArgList);
 	return sig;
 }
@@ -3539,9 +3541,11 @@ gj0BCallException(Foam foam)
 {
 	JavaCodeList args;
 	GJBValInfo inf;
+	JavaCode jc;
+
 	inf = gj0BCallBValInfo(foam->foamBCall.op);
 	args = gj0GenList(foam->foamBCall.argv, foamArgc(foam)-1);
-	JavaCode jc = jcThrow(jcConstruct(jcImportedId(strCopy(inf->c1),
+	jc = jcThrow(jcConstruct(jcImportedId(strCopy(inf->c1),
 						       strCopy(inf->c2)), 
 					  args));
 	return jc;

@@ -709,12 +709,13 @@ ablogAtomImpliedType(void *ptr, DNF_Atom atom)
 {
 	AblogImpliedClos clos = (AblogImpliedClos) ptr;
 	Sefo known = ablogFrAtom(atom);
+	AbSyn lhs, rhs;
 
 	if (abTag(known) != AB_Has)
 		return false;
 
-	AbSyn lhs = known->abHas.expr;
-	AbSyn rhs = known->abHas.property;
+	lhs = known->abHas.expr;
+	rhs = known->abHas.property;
 
 	if (abEqual(lhs, clos->lhs)) {
 		clos->list = listCons(TForm)(abTForm(rhs), clos->list);

@@ -1028,8 +1028,10 @@ int
 sefoPrint(FILE *fout, Sefo sefo)
 {
 	struct _OStream ostream;
+	int n;
+
 	ostreamInitFrFile(&ostream, fout);
-	int n = sefoOStreamPrint0(&ostream, true, sefo);
+	n = sefoOStreamPrint0(&ostream, true, sefo);
 	ostreamClose(&ostream);
 	return n;
 }
@@ -1038,8 +1040,9 @@ int
 symePrint(FILE *fout, Syme syme)
 {
 	struct _OStream ostream;
+	int n;
 	ostreamInitFrFile(&ostream, fout);
-	int n = symeOStreamPrint0(&ostream, true, syme);
+	n = symeOStreamPrint0(&ostream, true, syme);
 	ostreamClose(&ostream);
 	return n;
 }
@@ -1056,8 +1059,9 @@ int
 tformPrint(FILE *fout, TForm tf)
 {
 	struct _OStream ostream;
+	int n;
 	ostreamInitFrFile(&ostream, fout);
-	int n = tformOStreamPrint0(&ostream, true, tf);
+	n = tformOStreamPrint0(&ostream, true, tf);
 	ostreamClose(&ostream);
 	return n;
 }
@@ -1066,8 +1070,10 @@ int
 sefoListPrint(FILE *fout, SefoList sefos)
 {
 	struct _OStream ostream;
+	int n;
+
 	ostreamInitFrFile(&ostream, fout);
-	int n = sefoListOStreamPrint0(&ostream, true, sefos);
+	n = sefoListOStreamPrint0(&ostream, true, sefos);
 	ostreamClose(&ostream);
 	return n;
 }
@@ -1076,8 +1082,10 @@ int
 symeListPrint(FILE *fout, SymeList symes)
 {
 	struct _OStream ostream;
+	int n;
+
 	ostreamInitFrFile(&ostream, fout);
-	int n = symeListOStreamPrint0(&ostream, true, symes);
+	n = symeListOStreamPrint0(&ostream, true, symes);
 	ostreamClose(&ostream);
 	return n;
 }
@@ -1086,8 +1094,10 @@ int
 tformListPrint(FILE *fout, TFormList tforms)
 {
 	struct _OStream ostream;
+	int n;
+
 	ostreamInitFrFile(&ostream, fout);
-	int n = tformListOStreamPrint0(&ostream, true, tforms);
+	n = tformListOStreamPrint0(&ostream, true, tforms);
 	ostreamClose(&ostream);
 	return n;
 }
@@ -1100,8 +1110,9 @@ int
 sefoPrintDb(Sefo sefo)
 {
 	struct _OStream ostream;
+	int n;
 	ostreamInitFrFile(&ostream, dbOut);
-	int n = sefoOStreamPrint0(&ostream, false, sefo);
+	n = sefoOStreamPrint0(&ostream, false, sefo);
 
 	ostreamClose(&ostream);
 	fnewline(dbOut);
@@ -1112,8 +1123,9 @@ int
 symePrintDb(Syme syme)
 {
 	struct _OStream ostream;
+	int n;
 	ostreamInitFrFile(&ostream, dbOut);
-	int n = symeOStreamPrint0(&ostream, false, syme);
+	n = symeOStreamPrint0(&ostream, false, syme);
 	ostreamClose(&ostream);
 	fnewline(dbOut);
 	return n;
@@ -1123,8 +1135,9 @@ int
 symePrintDb2(Syme syme)
 {
 	struct _OStream ostream;
+	int n;
 	ostreamInitFrFile(&ostream, dbOut);
-	int n = symeOStreamPrint0(&ostream, false, syme);
+	n = symeOStreamPrint0(&ostream, false, syme);
 	ostreamClose(&ostream);
 	return n;
 }
@@ -1149,8 +1162,9 @@ int
 tformPrintDb(TForm tf)
 {
 	struct _OStream ostream;
+	int n;
 	ostreamInitFrFile(&ostream, dbOut);
-	int n = tformOStreamPrint0(&ostream, false, tf);
+	n = tformOStreamPrint0(&ostream, false, tf);
 	ostreamClose(&ostream);
 	fnewline(dbOut);
 	return n;
@@ -1160,8 +1174,9 @@ int
 sefoListPrintDb(SefoList sefos)
 {
 	struct _OStream ostream;
+	int n;
 	ostreamInitFrFile(&ostream, dbOut);
-	int n = sefoListOStreamPrint0(&ostream, false, sefos);
+	n = sefoListOStreamPrint0(&ostream, false, sefos);
 	ostreamClose(&ostream);
 	fnewline(dbOut);
 	return n;
@@ -1171,8 +1186,9 @@ int
 symeListPrintDb(SymeList symes)
 {
 	struct _OStream ostream;
+	int n;
 	ostreamInitFrFile(&ostream, dbOut);
-	int n = symeListOStreamPrint0(&ostream, false, symes);
+	n = symeListOStreamPrint0(&ostream, false, symes);
 	ostreamClose(&ostream);
 	fnewline(dbOut);
 	return n;
@@ -1182,8 +1198,9 @@ int
 tformListPrintDb(TFormList tforms)
 {
 	struct _OStream ostream;
+	int n;
 	ostreamInitFrFile(&ostream, dbOut);
-	int n = tformListOStreamPrint0(&ostream, false, tforms);
+	n = tformListOStreamPrint0(&ostream, false, tforms);
 	ostreamClose(&ostream);
 	fnewline(dbOut);
 	return n;
@@ -4138,8 +4155,9 @@ tformToBuffer(Lib lib, Buffer buf, TForm tf)
 
 	if (tfIsWith(tf)) {
 		if (tfUseCatExports(tf)) {
+			SymeList l;
 			symeListToBuffer(lib, buf, tfGetCatExports(tf));
-			SymeList l = tfGetCatExports(tf);
+			l = tfGetCatExports(tf);
 			BUF_PUT_HINT(buf, listLength(Syme)(l));
 			while (l != listNil(Syme)) {
 				if (symeIsSelfSelf(car(l)))
@@ -4435,10 +4453,11 @@ tformFrBuffer(Lib lib, Buffer buf)
 		tfSetSymes(tf, symeListFrBuffer(lib, buf));
 
 	if (tfIsWith(tf)) {
+		SymeList symes;
 		int n;
 		tfCatExports(tf) = symeListFrBuffer(lib, buf);
 		BUF_GET_HINT(buf, n);
-		SymeList symes = tfCatExports(tf);
+		symes = tfCatExports(tf);
 		if (n != listLength(Syme)(symes)) {
 			bug("incorrect number of exports");
 		}

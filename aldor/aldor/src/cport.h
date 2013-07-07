@@ -223,6 +223,11 @@
  *	   then the "else baz" would pair with the "if (foo)" for DEBUG_GOOD
  *	   but with the "if (_debug_)" for DEBUG_BAD.
  *
+ *      IgnoreResult(E)
+ *         Ignore the return value of E; eg. IgnoreResult(scanf(...)).
+ *         Should be avoided in new code, but use to clean up compiler warnings
+ *         from older code.
+ *
  *  * NotReached
  *	This macro has two uses:
  *	(1) to trap bugs where supposedly  impossible situations arise, and
@@ -518,6 +523,7 @@ typedef double	MostAlignedType;
 
 # define Nothing
 # define Statement(stat){ stat; }	/* do { stat; } while(0) */
+# define IgnoreResult(E) if (E);
 
 /*****************************************************************************
  *

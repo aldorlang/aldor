@@ -368,11 +368,12 @@ fmtMatch(const char *fmtTxt)
 {
 	size_t longestMatch = 0;
 	Format match = NULL;
+	FormatList list;
 
 	if (fmtTxt[0] == '\0')
 		return NULL;
 	
-	FormatList list = fmtRegisteredFormats;
+	list = fmtRegisteredFormats;
 	while (list != listNil(Format)) {
 		Format format = car(list);
 		list = cdr(list);

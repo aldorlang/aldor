@@ -9,6 +9,7 @@
 # include "axltop.h"
 # include "compcfg.h"
 # include "emit.h"
+# include "fintphase.h"
 
 String 		compRootDir     = 0;
 Bool   		compIsDebug     = false;

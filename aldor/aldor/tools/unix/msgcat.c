@@ -208,10 +208,13 @@ prepMsg(infile)
 		if (s == 0) return -1;
 
 		if (!strncmp(line, "set",   3)) {
+			char *readLine;
 			/* $set {<name>|<no>} [comment] */
 			fseek(infile, fpos+3, 0);	/* backup */
 			fscanId(infile, setName, &setNo);
-			fgets(line, LINE_BUF, infile);	/* reswallow line */
+			readLine = fgets(line, LINE_BUF, infile);	/* reswallow line */
+			if (readLine == NULL)
+				return -1;
 			msgNo = 0;
 		}
 		else if (!strncmp(line, "quote", 5)) {

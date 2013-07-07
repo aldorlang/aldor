@@ -1,1 +1,3 @@
 SUBDIRS=aldor lib
+
+ACLOCAL_AMFLAGS=-I m4

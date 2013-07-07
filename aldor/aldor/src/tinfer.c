@@ -2033,12 +2033,13 @@ tiTfImport1(Stab stab, TFormUses tfu)
 		typeInferTFormList(stab, tqQual(tfu->exports));
 
 	if (tqShouldImport(tfu->imports)) {
+		TQualList cascades;
 		typeInferTFormList(stab, tqQual(tfu->imports));
 
 		if (tfQueries(tf))
 			typeInferTFormList(stab, tfQueries(tf));
 
-		TQualList cascades = stabImportFrom(stab, tfu->imports);
+		cascades = stabImportFrom(stab, tfu->imports);
 
 		if (tfu != NULL)
 			tfu->cascades = cascades;
@@ -2090,6 +2091,7 @@ tiTfImportCascades(Stab stab, TQualList list)
 			stabImportFrom(stab, innerTq);
 		}
 		else {
+			TQualList moreImports;
 			TForm innerTf = tqBase(innerTq);
 			TForm tf = stabFindOuterTForm(stab, tfExpr(innerTf));
 			if (tf != NULL) {
@@ -2100,7 +2102,7 @@ tiTfImportCascades(Stab stab, TQualList list)
 				innerTf = tf;
 			}
 			innerTq = tqNewUnqualified(innerTf);
-			TQualList moreImports = stabImportFrom(stab, innerTq);
+			moreImports = stabImportFrom(stab, innerTq);
 			ql = listNConcat(TQual)(ql, listCopy(TQual)(moreImports));
 			tqFree(innerTq);
 		}
@@ -2184,14 +2186,14 @@ local void
 tiTfCollectDependees(Table tbl, TFormUses S, TForm tf)
 {
 	Symbol		sym = tiTfUsesSymbol(S);
-	AbSynList	al;
+	AbSynList	al, l;
 
 	if (sym && tfIsCategoryMap(tf))
 		tiTfCollectSymDependees(tbl, S, sym);
 	for (al = S->extendees; al; al = cdr(al))
 		tiTfCollectSefoDependees(tbl, S, car(al));
 	tiTfCollectSefoDependees(tbl, S, tfGetExpr(tf));
-	AbSynList l = tfConditionalAbSyn(tf);
+	l = tfConditionalAbSyn(tf);
 	while (l != listNil(AbSyn)) {
 		tiTfCollectSefoDependees(tbl, S, car(l));
 		l = cdr(l);
