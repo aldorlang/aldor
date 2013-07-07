@@ -34,7 +34,7 @@ SingleFloat: Join(
 	import {
 		fiSFloExponent: BSFlo -> BInt;
 		fiSFloMantissa: BSFlo -> BInt;
-	} from Foreign C "";
+	} from Foreign C;
 
 	0: %       == per 0;
 	1: %       == per 1;
