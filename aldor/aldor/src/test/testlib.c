@@ -41,6 +41,16 @@ testIntEqual(String testName, int i1, int i2)
 }
 
 void
+testIntIsNotZero(String testName, int i1)
+{
+	count++;
+	if (i1 != 0) {
+		return;
+	}
+	testFail(testName, "failed; expected non-zero value");
+}
+
+void
 testPointerEqual(String testName, void *i1, void *i2)
 {
 	count++;

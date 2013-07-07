@@ -138,7 +138,7 @@ testTiTdnPretend()
 	tiTopDown(stab, pretend, tfUnknown);
 
 	testTrue("is multi", tfIsMulti(abTUnique(pretend->abPretendTo.expr)));
-	testIsNotNull("Has a context", abTContext(pretend->abPretendTo.expr));
+	testIntIsNotZero("Has a context", abTContext(pretend->abPretendTo.expr));
 	testTrue("multi to cross", abTContext(pretend->abPretendTo.expr) & AB_Embed_MultiToCross);
 
 	finiFile();
