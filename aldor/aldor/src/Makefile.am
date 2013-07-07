@@ -5,8 +5,8 @@ bin_PROGRAMS =  javagen aldor
 javagen_SOURCES = java/main.c java/genjava.c java/javacode.c		\
 		java/javaobj.c axlcomp.c cmdline.c
 
-javagen_LDADD = libphase.a libstruct.a libgen.a libport.a 
-javagen_LDFLAGS = -lm
+javagen_LDADD = libphase.a libstruct.a libgen.a libport.a -lm
+javagen_LDFLAGS =
 javagen_CFLAGS = -g
 include_HEADERS=foam_c.h cconfig.h platform.h optcfg.h foamopt.h basic.typ
 
