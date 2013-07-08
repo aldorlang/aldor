@@ -1334,7 +1334,7 @@ abOStreamPrint(OStream ostream, AbSyn absyn)
 	int c;
 
 	sxiToBufferFormatted(b, sx, SXRW_MixedCase);
-	ostreamWrite(ostream, bufLiberate(b), -1);
+	c = ostreamWrite(ostream, bufLiberate(b), -1);
 	sxiFree(sx);
 
 	return c;
