@@ -3657,13 +3657,13 @@ struct foamBVal_info foamBValInfoTable[] = {
 			 0,2,{FOAM_Ptr, FOAM_Ptr},	     FOAM_Bool, 1, {0}},
 
  {FOAM_BVal_FormatSFlo,	 0,"FormatSFlo",
-			 1,3,{FOAM_SFlo,FOAM_Arr, FOAM_Rec}, FOAM_SInt, 1, {0}},
+			 1,3,{FOAM_SFlo,FOAM_Arr,FOAM_SInt}, FOAM_SInt, 1, {0}},
  {FOAM_BVal_FormatDFlo,	 0,"FormatDFlo",
-			 1,3,{FOAM_DFlo,FOAM_Arr, FOAM_Rec}, FOAM_SInt, 1, {0}},
+			 1,3,{FOAM_DFlo,FOAM_Arr,FOAM_SInt}, FOAM_SInt, 1, {0}},
  {FOAM_BVal_FormatSInt,	 0,"FormatSInt",
-			 1,3,{FOAM_SInt,FOAM_Arr, FOAM_Rec}, FOAM_SInt, 1, {0}},
+			 1,3,{FOAM_SInt,FOAM_Arr,FOAM_SInt}, FOAM_SInt, 1, {0}},
  {FOAM_BVal_FormatBInt,	 0,"FormatBInt",
-			 1,3,{FOAM_BInt, FOAM_Arr, FOAM_Rec},FOAM_SInt, 1, {0}},
+			 1,3,{FOAM_BInt, FOAM_Arr,FOAM_SInt},FOAM_SInt, 1, {0}},
 
  {FOAM_BVal_ScanSFlo,	 0,"ScanSFlo",
 			 0,2,{FOAM_Arr, FOAM_SInt},	      FOAM_NOp,
