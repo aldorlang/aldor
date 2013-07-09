@@ -1,4 +1,4 @@
-#include "test/testlib.h"
+#include "testlib.h"
 #include <stdlib.h>
 #include <stdarg.h>
 
