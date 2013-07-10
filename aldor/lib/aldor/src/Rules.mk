@@ -92,7 +92,7 @@ build/libaldor.a: $(libaldor_COBJECTS)
 	$(AR) cr $@ $^
 
 # Local aldor build rule
-$(THIS)%.o: $(THIS)%.as build/aldor build/include/aldor.conf build/include/aldor.as build/include/aldorio.as
+$(THIS)%.o: $(THIS)%.as build/aldor build/unicl build/include/aldor.conf build/include/aldor.as build/include/aldorio.as
 	build/aldor $(AFLAGS) $<
 	$(AR) cr build/libaldor.al $(@:.o=.ao)
 	mv $(notdir $@) $@

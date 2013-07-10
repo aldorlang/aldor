@@ -1,4 +1,5 @@
 export ALDORROOT := $(CURDIR)/build
+export PATH := $(ALDORROOT):$(PATH)
 
 AFLAGS =			\
 	-I build/include	\

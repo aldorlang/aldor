@@ -38,7 +38,7 @@ build/libfoamlib.a: $(libfoamlib_COBJECTS)
 	$(AR) cr $@ $^
 
 # Local aldor build rule
-$(THIS)%.o: $(THIS)%.as build/aldor build/include/aldor.conf build/include/foamlib.as
+$(THIS)%.o: $(THIS)%.as build/aldor build/unicl build/include/aldor.conf build/include/foamlib.as
 	build/aldor $(AFLAGS) $<
 	$(AR) cr build/libfoamlib.al $(@:.o=.ao)
 	mv $(notdir $@) $@

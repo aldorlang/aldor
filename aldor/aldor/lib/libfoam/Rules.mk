@@ -14,7 +14,7 @@ build/libfoam.a: $(libfoam_COBJECTS)
 	$(AR) cr $@ $^
 
 # Local aldor build rule
-$(THIS)%.o: $(THIS)%.as build/aldor build/include/aldor.conf
+$(THIS)%.o: $(THIS)%.as build/aldor build/unicl build/include/aldor.conf
 	build/aldor $(AFLAGS) -Q3 -Wruntime $<
 	$(AR) cr build/libfoam.al $(@:.o=.ao)
 	mv $(notdir $@) $@
