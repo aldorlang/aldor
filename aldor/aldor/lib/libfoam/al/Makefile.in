@@ -147,6 +147,8 @@ mostlyclean:
 	rm -f $(patsubst %, %.fm, $(library))
 	rm -f $(patsubst %, %.java, $(library))
 	rm -f $(patsubst %, %.dep, $(library))
+	rm -f $(patsubst %, %.java, $(library))
+	rm -f $(patsubst %, %*.class, $(library))
 	rm -f $(patsubst %, libruntime_%.al, $(library))
 
 clean: mostlyclean
