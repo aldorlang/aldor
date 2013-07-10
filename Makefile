@@ -40,7 +40,8 @@ TARGETS =		\
 	$(LIBDIR)/libaxllib.a	\
 	$(LIBDIR)/libaxldem.a	\
 	$(LIBDIR)/libfoam.a	\
-	$(LIBDIR)/libfoamlib.a
+	$(LIBDIR)/libfoamlib.a	\
+	$(LIBDIR)/aldor_gloop.ao
 
 all: $(TARGETS)
 
