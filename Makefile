@@ -4,6 +4,21 @@
 export ALDORROOT := $(CURDIR)/build
 export PATH := $(ALDORROOT):$(PATH)
 
+# Find lex/flex
+LEX = $(shell which flex)
+ifeq ($(LEX),)
+LEX = $(shell which lex)
+endif
+
+# Find bison/yacc
+YACC = $(shell which bison)
+ifeq ($(YACC),)
+YACC = $(shell which byacc)
+endif
+ifeq ($(YACC),)
+YACC = $(shell which yacc)
+endif
+
 AFLAGS =			\
 	-I build/include	\
 	-Y build		\

@@ -10,10 +10,17 @@ zacc_OBJECTS := $(addprefix $(THIS), $(zacc_SOURCES:.c=.o))
 zacc_BUILT_SOURCES := $(addprefix $(THIS), zaccgram.c zaccgram.h zaccscan.c)
 
 build/zacc: $(zacc_OBJECTS)
+	mkdir -p $(dir $@)
 	$(LINK.c) $+ -o $@
 
 %.y: %.z build/zacc
 	build/zacc -y $@ -p $<
+
+%.c: %.y
+	$(YACC) $< -o $@
+
+%.c: %.l
+	$(LEX) -o$@ $<
 
 
 clean: clean-$(THIS)

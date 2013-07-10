@@ -21,6 +21,7 @@ unicl_SOURCES =	\
 unicl_OBJECTS := $(addprefix $(THIS), $(unicl_SOURCES:.c=.o))
 
 build/unicl: $(unicl_OBJECTS)
+	mkdir -p $(dir $@)
 	$(LINK.c) $+ -o $@
 
 
