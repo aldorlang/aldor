@@ -162,7 +162,8 @@ aldor_SOURCES =		\
 aldor_OBJECTS := $(addprefix $(THIS), $(aldor_SOURCES:.c=.o))
 
 build/aldor: $(aldor_OBJECTS)
-	$(LINK.c) -lm $^ -o $@
+	mkdir -p $(dir $@)
+	$(LINK.c) $^ -lm -o $@
 
 build/include/aldor.conf: $(THIS)aldor.conf
 	mkdir -p $(dir $@)

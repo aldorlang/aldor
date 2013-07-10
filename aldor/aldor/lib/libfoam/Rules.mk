@@ -15,7 +15,7 @@ build/libfoam.a: $(libfoam_COBJECTS)
 
 # Local aldor build rule
 $(THIS)%.c: $(THIS)%.as build/aldor build/include/aldor.conf
-	build/aldor $(AFLAGS) -Wruntime $<
+	build/aldor $(AFLAGS) -Q3 -Wruntime $<
 	$(AR) cr build/libfoam.al $(@:.c=.ao)
 
 # Clean
