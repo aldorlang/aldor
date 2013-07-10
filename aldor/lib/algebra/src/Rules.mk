@@ -223,7 +223,7 @@ build/libalgebra.a: $(libalgebra_COBJECTS)
 	$(AR) cr $@ $^
 
 # Local aldor build rule
-$(THIS)%.o: $(THIS)%.as build/aldor build/unicl build/include/aldor.conf build/include/algebra.as build/include/algebrauid.as
+$(THIS)%.o: $(THIS)%.as build/aldor build/unicl $(aldor_HEADERS) build/include/algebra.as build/include/algebrauid.as
 	build/aldor $(AFLAGS) -q1 $<
 	$(AR) cr build/libalgebra.al $(@:.o=.ao)
 	mv $(notdir $@) $@

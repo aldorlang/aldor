@@ -63,7 +63,7 @@ build/libaxllib.a: $(libaxllib_COBJECTS)
 	$(AR) cr $@ $^
 
 # Local aldor build rule
-$(THIS)%.o: $(THIS)%.as build/aldor build/unicl build/include/aldor.conf build/include/axllib.as
+$(THIS)%.o: $(THIS)%.as build/aldor build/unicl $(aldor_HEADERS) build/include/axllib.as
 	build/aldor $(AFLAGS) $<
 	$(AR) cr build/libaxllib.al $(@:.o=.ao)
 	mv $(notdir $@) $@

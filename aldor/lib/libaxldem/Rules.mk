@@ -28,7 +28,7 @@ build/libaxldem.a: $(libaxldem_COBJECTS)
 	$(AR) cr $@ $^
 
 # Local aldor build rule
-$(THIS)%.o: $(THIS)%.as build/aldor build/unicl build/include/aldor.conf build/include/axldem.as
+$(THIS)%.o: $(THIS)%.as build/aldor build/unicl $(aldor_HEADERS) build/include/axldem.as
 	build/aldor $(AFLAGS) $<
 	$(AR) cr build/libaxldem.al $(@:.o=.ao)
 	mv $(notdir $@) $@

@@ -161,11 +161,20 @@ aldor_SOURCES =		\
 
 aldor_OBJECTS := $(addprefix $(THIS), $(aldor_SOURCES:.c=.o))
 
+aldor_HEADERS =	\
+	cconfig.h	\
+	foam_c.h	\
+	foamopt.h	\
+	optcfg.h	\
+	aldor.conf
+
+aldor_HEADERS := $(addprefix build/include/, $(aldor_HEADERS))
+
 build/aldor: $(aldor_OBJECTS)
 	mkdir -p $(dir $@)
 	$(LINK.c) $^ -lm -o $@
 
-build/include/aldor.conf: $(THIS)aldor.conf
+build/include/%: $(THIS)%
 	mkdir -p $(dir $@)
 	cp $< $@
 
