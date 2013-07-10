@@ -20,6 +20,7 @@ clean: clean-$(THIS)
 clean-$(THIS):
 	$(RM) $(zacc_OBJECTS)
 	$(RM) $(zacc_BUILT_SOURCES)
+	$(RM) build/zacc
 
 # Depend
 $(THIS)zaccgram.h: $(THIS)zaccgram.c

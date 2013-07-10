@@ -5,8 +5,8 @@ AFLAGS =			\
 	-Y build		\
 	-Y $(dir $@)		\
 	-Q8 -Qinline-all	\
-	-fao=$(@:.c=.ao)	\
-	-fc=$@
+	-fao=$(@:.o=.ao)	\
+	-fo
 
 TARGETS =		\
 	build/aldor	\

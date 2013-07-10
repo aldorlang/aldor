@@ -28,9 +28,10 @@ build/libaxldem.a: $(libaxldem_COBJECTS)
 	$(AR) cr $@ $^
 
 # Local aldor build rule
-$(THIS)%.c: $(THIS)%.as build/aldor build/include/aldor.conf build/include/axldem.as
+$(THIS)%.o: $(THIS)%.as build/aldor build/include/aldor.conf build/include/axldem.as
 	build/aldor $(AFLAGS) $<
-	$(AR) cr build/libaxldem.al $(@:.c=.ao)
+	$(AR) cr build/libaxldem.al $(@:.o=.ao)
+	mv $(notdir $@) $@
 
 # Copy includes
 build/include/axldem.as: $(THIS)axldem.as
@@ -45,22 +46,22 @@ clean-$(THIS):
 	$(RM) build/libaxldem.a build/libaxldem.al
 
 # Depend
-$(THIS)dirprod.c:	\
-	$(THIS)polycat.c
-$(THIS)gb.c:	\
-	$(THIS)polycat.c
-$(THIS)matopdom.c:	\
-	$(THIS)matrix.c
-$(THIS)matrix.c:	\
-	$(THIS)vector.c
-$(THIS)nni.c:	\
-	$(THIS)polycat.c
-$(THIS)poly.c:	\
-	$(THIS)polycat.c
-$(THIS)poly3.c:	\
-	$(THIS)poly.c
-$(THIS)prime.c:	\
-	$(THIS)nni.c	\
-	$(THIS)vector.c
-$(THIS)polycat.c:	\
+$(THIS)dirprod.o:	\
+	$(THIS)polycat.o
+$(THIS)gb.o:	\
+	$(THIS)polycat.o
+$(THIS)matopdom.o:	\
+	$(THIS)matrix.o
+$(THIS)matrix.o:	\
+	$(THIS)vector.o
+$(THIS)nni.o:	\
+	$(THIS)polycat.o
+$(THIS)poly.o:	\
+	$(THIS)polycat.o
+$(THIS)poly3.o:	\
+	$(THIS)poly.o
+$(THIS)prime.o:	\
+	$(THIS)nni.o	\
+	$(THIS)vector.o
+$(THIS)polycat.o:	\
 	build/libaxllib.a

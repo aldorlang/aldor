@@ -38,9 +38,10 @@ build/libfoamlib.a: $(libfoamlib_COBJECTS)
 	$(AR) cr $@ $^
 
 # Local aldor build rule
-$(THIS)%.c: $(THIS)%.as build/aldor build/include/aldor.conf build/include/foamlib.as
+$(THIS)%.o: $(THIS)%.as build/aldor build/include/aldor.conf build/include/foamlib.as
 	build/aldor $(AFLAGS) $<
-	$(AR) cr build/libfoamlib.al $(@:.c=.ao)
+	$(AR) cr build/libfoamlib.al $(@:.o=.ao)
+	mv $(notdir $@) $@
 
 # Copy includes
 build/include/foamlib.as: $(THIS)foamlib.as
@@ -55,27 +56,27 @@ clean-$(THIS):
 	$(RM) build/libfoamlib.a build/libfoamlib.al
 
 # Depend
-$(THIS)array.c:		$(THIS)foamcat.c $(THIS)tuple.c $(THIS)sinteger.c $(THIS)parray.c $(THIS)
-$(THIS)basic.c:		$(THIS)lang.c $(THIS)machine.c
-$(THIS)boolean.c:	$(THIS)foamcat.c
-$(THIS)char.c:		$(THIS)foamcat.c
-$(THIS)file.c:		$(THIS)foamcat.c $(THIS)fname.c
-$(THIS)fname.c:		$(THIS)foamcat.c $(THIS)parray.c $(THIS)string.c $(THIS)oslow.c
-$(THIS)foamcat.c:	$(THIS)basic.c
-$(THIS)format.c:	$(THIS)foamcat.c $(THIS)sinteger.c
-$(THIS)gener.c:		$(THIS)foamcat.c
-$(THIS)langx.c:		$(THIS)lv.c $(THIS)foamcat.c $(THIS)tuple.c $(THIS)sinteger.c $(THIS)list.c
-$(THIS)list.c:		$(THIS)foamcat.c $(THIS)tuple.c $(THIS)segment.c $(THIS)sinteger.c $(THIS)pointer.c
-$(THIS)lv.c:		$(THIS)basic.c
-$(THIS)machine.c:	$(THIS)lang.c
-$(THIS)opsys.c:		$(THIS)foamcat.c $(THIS)oslow.c $(THIS)file.c
-$(THIS)oslow.c:		$(THIS)foamcat.c $(THIS)parray.c $(THIS)pointer.c $(THIS)string.c
-$(THIS)parray.c:	$(THIS)foamcat.c $(THIS)sinteger.c
-$(THIS)partial.c:	$(THIS)foamcat.c $(THIS)pointer.c
-$(THIS)pointer.c:	$(THIS)foamcat.c
-$(THIS)segment.c:	$(THIS)foamcat.c $(THIS)boolean.c
-$(THIS)sfloat.c:	$(THIS)foamcat.c $(THIS)sinteger.c
-$(THIS)sinteger.c:	$(THIS)foamcat.c $(THIS)segment.c
-$(THIS)string.c:	$(THIS)foamcat.c $(THIS)char.c $(THIS)array.c
-$(THIS)textwrit.c:	$(THIS)foamcat.c $(THIS)fname.c $(THIS)file.c $(THIS)array.c $(THIS)opsys.c
-$(THIS)tuple.c:		$(THIS)foamcat.c
+$(THIS)array.o:		$(THIS)foamcat.o $(THIS)tuple.o $(THIS)sinteger.o $(THIS)parray.o $(THIS)
+$(THIS)basic.o:		$(THIS)lang.o $(THIS)machine.o
+$(THIS)boolean.o:	$(THIS)foamcat.o
+$(THIS)char.o:		$(THIS)foamcat.o
+$(THIS)file.o:		$(THIS)foamcat.o $(THIS)fname.o
+$(THIS)fname.o:		$(THIS)foamcat.o $(THIS)parray.o $(THIS)string.o $(THIS)oslow.o
+$(THIS)foamcat.o:	$(THIS)basic.o
+$(THIS)format.o:	$(THIS)foamcat.o $(THIS)sinteger.o
+$(THIS)gener.o:		$(THIS)foamcat.o
+$(THIS)langx.o:		$(THIS)lv.o $(THIS)foamcat.o $(THIS)tuple.o $(THIS)sinteger.o $(THIS)list.o
+$(THIS)list.o:		$(THIS)foamcat.o $(THIS)tuple.o $(THIS)segment.o $(THIS)sinteger.o $(THIS)pointer.o
+$(THIS)lv.o:		$(THIS)basic.o
+$(THIS)machine.o:	$(THIS)lang.o
+$(THIS)opsys.o:		$(THIS)foamcat.o $(THIS)oslow.o $(THIS)file.o
+$(THIS)oslow.o:		$(THIS)foamcat.o $(THIS)parray.o $(THIS)pointer.o $(THIS)string.o
+$(THIS)parray.o:	$(THIS)foamcat.o $(THIS)sinteger.o
+$(THIS)partial.o:	$(THIS)foamcat.o $(THIS)pointer.o
+$(THIS)pointer.o:	$(THIS)foamcat.o
+$(THIS)segment.o:	$(THIS)foamcat.o $(THIS)boolean.o
+$(THIS)sfloat.o:	$(THIS)foamcat.o $(THIS)sinteger.o
+$(THIS)sinteger.o:	$(THIS)foamcat.o $(THIS)segment.o
+$(THIS)string.o:	$(THIS)foamcat.o $(THIS)char.o $(THIS)array.o
+$(THIS)textwrit.o:	$(THIS)foamcat.o $(THIS)fname.o $(THIS)file.o $(THIS)array.o $(THIS)opsys.o
+$(THIS)tuple.o:		$(THIS)foamcat.o

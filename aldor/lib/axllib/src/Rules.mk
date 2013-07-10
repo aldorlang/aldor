@@ -63,9 +63,10 @@ build/libaxllib.a: $(libaxllib_COBJECTS)
 	$(AR) cr $@ $^
 
 # Local aldor build rule
-$(THIS)%.c: $(THIS)%.as build/aldor build/include/aldor.conf build/include/axllib.as
+$(THIS)%.o: $(THIS)%.as build/aldor build/include/aldor.conf build/include/axllib.as
 	build/aldor $(AFLAGS) $<
-	$(AR) cr build/libaxllib.al $(@:.c=.ao)
+	$(AR) cr build/libaxllib.al $(@:.o=.ao)
+	mv $(notdir $@) $@
 
 # Copy includes
 build/include/axllib.as: $(THIS)axllib.as
@@ -80,151 +81,151 @@ clean-$(THIS):
 	$(RM) build/libaxllib.a build/libaxllib.al
 
 # Depend
-$(THIS)array.c:	\
-	$(THIS)langx.c	\
-	$(THIS)parray.c
-$(THIS)axlcat.c:	\
-	$(THIS)basic.c
-$(THIS)list2.c:	\
-	$(THIS)list.c
-$(THIS)ieeectl.c:	\
-	$(THIS)axlcat.c\
-	$(THIS)dfloat.c
-$(THIS)basic.c:	\
-	$(THIS)machine.c
-$(THIS)boolean.c:	\
-	$(THIS)lang.c	\
-	$(THIS)axlcat.c
-$(THIS)bpower.c:	\
-	$(THIS)sinteger.c
-$(THIS)byte.c:	\
-	$(THIS)sinteger.c
-$(THIS)char.c:	\
-	$(THIS)integer.c	\
-	$(THIS)segment.c
-$(THIS)complex.c:	\
-	$(THIS)langx.c	\
-	$(THIS)bpower.c	\
-	$(THIS)integer.c	\
-	$(THIS)string.c
-$(THIS)debug.c:	\
-	$(THIS)langx.c	\
-	$(THIS)textwrit.c
-$(THIS)dfloat.c:	\
-	$(THIS)langx.c	\
-	$(THIS)sfloat.c
-$(THIS)efuns.c:	\
-	$(THIS)complex.c	\
-	$(THIS)except.c	\
-	$(THIS)dfloat.c	\
-	$(THIS)textwrit.c
-$(THIS)except.c:	\
-	$(THIS)axlcat.c
-$(THIS)file.c:	\
-	$(THIS)pointer.c	\
-	$(THIS)array.c	\
-	$(THIS)fname.c	\
-	$(THIS)char.c
-$(THIS)float.c:	\
-	$(THIS)format.c	\
-	$(THIS)except.c	\
-	$(THIS)integer.c	\
-	$(THIS)fprint.c	\
-	$(THIS)segment.c
-$(THIS)fmtout.c:	\
-	$(THIS)textwrit.c
-$(THIS)fname.c:	\
-	$(THIS)oslow.c
-$(THIS)format.c:	\
-	$(THIS)char.c	\
-	$(THIS)dfloat.c	\
-	$(THIS)textwrit.c
-$(THIS)fprint.c:	\
-	$(THIS)langx.c	\
-	$(THIS)string.c
-$(THIS)fstring.c:	\
-	$(THIS)textwrit.c
-$(THIS)gener.c:	\
-	$(THIS)basic.c
-$(THIS)hinteger.c:	\
-	$(THIS)sinteger.c
-$(THIS)imod.c:	\
-	$(THIS)bpower.c	\
-	$(THIS)integer.c	\
-	$(THIS)axlcat.c	\
-	$(THIS)segment.c
-$(THIS)integer.c:	\
-	$(THIS)sinteger.c
-$(THIS)langx.c:	\
-	$(THIS)axlcat.c	\
-	$(THIS)segment.c	\
-	$(THIS)list.c
-$(THIS)list.c:	\
-	$(THIS)pointer.c	\
-	$(THIS)sinteger.c	\
-	$(THIS)tuple.c
-$(THIS)machine.c:	\
-	$(THIS)lang.c
-$(THIS)object.c:	\
-	$(THIS)langx.c
-$(THIS)opsys.c:	\
-	$(THIS)file.c
-$(THIS)oslow.c:	\
-	$(THIS)langx.c	\
-	$(THIS)string.c
-$(THIS)parray.c:	\
-	$(THIS)integer.c
-$(THIS)partial.c:	\
-	$(THIS)pointer.c	\
-	$(THIS)machine.c	\
-	$(THIS)string.c
-$(THIS)pfloat.c:	\
-	$(THIS)format.c	\
-	$(THIS)except.c	\
-	$(THIS)fprint.c
-$(THIS)pkarray.c:	\
-	$(THIS)sinteger.c	\
-	$(THIS)axlcat.c
-$(THIS)pointer.c:	\
-	$(THIS)boolean.c
-$(THIS)ratio.c:	\
-	$(THIS)langx.c	\
-	$(THIS)string.c	\
-	$(THIS)bpower.c	\
-	$(THIS)integer.c
-$(THIS)ref.c:	\
-	$(THIS)basic.c
-$(THIS)segment.c:	\
-	$(THIS)boolean.c	\
-	$(THIS)gener.c
-$(THIS)sfloat.c:	\
-	$(THIS)bpower.c	\
-	$(THIS)integer.c	\
-	$(THIS)string.c
-$(THIS)sinteger.c:	\
-	$(THIS)segment.c
-$(THIS)sort.c:	\
-	$(THIS)string.c	\
-	$(THIS)list.c
-$(THIS)string.c:	\
-	$(THIS)array.c	\
-	$(THIS)char.c	\
-	$(THIS)tuple.c	\
-	$(THIS)axlcat.c
-$(THIS)table.c:	\
-	$(THIS)sfloat.c	\
-	$(THIS)list.c	\
-	$(THIS)textwrit.c
-$(THIS)textread.c:	\
-	$(THIS)string.c	\
-	$(THIS)file.c
-$(THIS)textwrit.c:	\
-	$(THIS)opsys.c	\
-	$(THIS)string.c
-$(THIS)tuple.c:	\
-	$(THIS)basic.c
-$(THIS)uarray.c:	\
-	$(THIS)sinteger.c
-$(THIS)rtexns.c:	\
-	$(THIS)langx.c	\
-	$(THIS)textwrit.c
+$(THIS)array.o:	\
+	$(THIS)langx.o	\
+	$(THIS)parray.o
+$(THIS)axlcat.o:	\
+	$(THIS)basic.o
+$(THIS)list2.o:	\
+	$(THIS)list.o
+$(THIS)ieeectl.o:	\
+	$(THIS)axlcat.o\
+	$(THIS)dfloat.o
+$(THIS)basic.o:	\
+	$(THIS)machine.o
+$(THIS)boolean.o:	\
+	$(THIS)lang.o	\
+	$(THIS)axlcat.o
+$(THIS)bpower.o:	\
+	$(THIS)sinteger.o
+$(THIS)byte.o:	\
+	$(THIS)sinteger.o
+$(THIS)char.o:	\
+	$(THIS)integer.o	\
+	$(THIS)segment.o
+$(THIS)complex.o:	\
+	$(THIS)langx.o	\
+	$(THIS)bpower.o	\
+	$(THIS)integer.o	\
+	$(THIS)string.o
+$(THIS)debug.o:	\
+	$(THIS)langx.o	\
+	$(THIS)textwrit.o
+$(THIS)dfloat.o:	\
+	$(THIS)langx.o	\
+	$(THIS)sfloat.o
+$(THIS)efuns.o:	\
+	$(THIS)complex.o	\
+	$(THIS)except.o	\
+	$(THIS)dfloat.o	\
+	$(THIS)textwrit.o
+$(THIS)except.o:	\
+	$(THIS)axlcat.o
+$(THIS)file.o:	\
+	$(THIS)pointer.o	\
+	$(THIS)array.o	\
+	$(THIS)fname.o	\
+	$(THIS)char.o
+$(THIS)float.o:	\
+	$(THIS)format.o	\
+	$(THIS)except.o	\
+	$(THIS)integer.o	\
+	$(THIS)fprint.o	\
+	$(THIS)segment.o
+$(THIS)fmtout.o:	\
+	$(THIS)textwrit.o
+$(THIS)fname.o:	\
+	$(THIS)oslow.o
+$(THIS)format.o:	\
+	$(THIS)char.o	\
+	$(THIS)dfloat.o	\
+	$(THIS)textwrit.o
+$(THIS)fprint.o:	\
+	$(THIS)langx.o	\
+	$(THIS)string.o
+$(THIS)fstring.o:	\
+	$(THIS)textwrit.o
+$(THIS)gener.o:	\
+	$(THIS)basic.o
+$(THIS)hinteger.o:	\
+	$(THIS)sinteger.o
+$(THIS)imod.o:	\
+	$(THIS)bpower.o	\
+	$(THIS)integer.o	\
+	$(THIS)axlcat.o	\
+	$(THIS)segment.o
+$(THIS)integer.o:	\
+	$(THIS)sinteger.o
+$(THIS)langx.o:	\
+	$(THIS)axlcat.o	\
+	$(THIS)segment.o	\
+	$(THIS)list.o
+$(THIS)list.o:	\
+	$(THIS)pointer.o	\
+	$(THIS)sinteger.o	\
+	$(THIS)tuple.o
+$(THIS)machine.o:	\
+	$(THIS)lang.o
+$(THIS)object.o:	\
+	$(THIS)langx.o
+$(THIS)opsys.o:	\
+	$(THIS)file.o
+$(THIS)oslow.o:	\
+	$(THIS)langx.o	\
+	$(THIS)string.o
+$(THIS)parray.o:	\
+	$(THIS)integer.o
+$(THIS)partial.o:	\
+	$(THIS)pointer.o	\
+	$(THIS)machine.o	\
+	$(THIS)string.o
+$(THIS)pfloat.o:	\
+	$(THIS)format.o	\
+	$(THIS)except.o	\
+	$(THIS)fprint.o
+$(THIS)pkarray.o:	\
+	$(THIS)sinteger.o	\
+	$(THIS)axlcat.o
+$(THIS)pointer.o:	\
+	$(THIS)boolean.o
+$(THIS)ratio.o:	\
+	$(THIS)langx.o	\
+	$(THIS)string.o	\
+	$(THIS)bpower.o	\
+	$(THIS)integer.o
+$(THIS)ref.o:	\
+	$(THIS)basic.o
+$(THIS)segment.o:	\
+	$(THIS)boolean.o	\
+	$(THIS)gener.o
+$(THIS)sfloat.o:	\
+	$(THIS)bpower.o	\
+	$(THIS)integer.o	\
+	$(THIS)string.o
+$(THIS)sinteger.o:	\
+	$(THIS)segment.o
+$(THIS)sort.o:	\
+	$(THIS)string.o	\
+	$(THIS)list.o
+$(THIS)string.o:	\
+	$(THIS)array.o	\
+	$(THIS)char.o	\
+	$(THIS)tuple.o	\
+	$(THIS)axlcat.o
+$(THIS)table.o:	\
+	$(THIS)sfloat.o	\
+	$(THIS)list.o	\
+	$(THIS)textwrit.o
+$(THIS)textread.o:	\
+	$(THIS)string.o	\
+	$(THIS)file.o
+$(THIS)textwrit.o:	\
+	$(THIS)opsys.o	\
+	$(THIS)string.o
+$(THIS)tuple.o:	\
+	$(THIS)basic.o
+$(THIS)uarray.o:	\
+	$(THIS)sinteger.o
+$(THIS)rtexns.o:	\
+	$(THIS)langx.o	\
+	$(THIS)textwrit.o

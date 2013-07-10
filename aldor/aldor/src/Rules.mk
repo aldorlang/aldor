@@ -200,3 +200,4 @@ clean: clean-$(THIS)
 clean-$(THIS):
 	$(RM) $(libruntime_OBJECTS)
 	$(RM) $(aldor_OBJECTS)
+	$(RM) build/aldor build/libruntime.a
