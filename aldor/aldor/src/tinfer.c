@@ -424,7 +424,7 @@ tiAddSymes(Stab astab, AbSyn capsule, TForm base, TForm context, SymeList *p)
 		Symbol		sym  = symeId(syme);
 		TForm		tf   = symeType(syme);
 
-		tipAddDEBUG(afprintf(dbOut, "  (looking for: %pSyme %pAbSynList ", syme, symeCondition(syme)));
+		tipAddDEBUG(afprintf(dbOut, "  looking for: %pSyme %pAbSynList ", syme, symeCondition(syme)));
 		
 		/* Look for syme in the capsule. */
 		if ((xsyme = stabGetExportMod(astab, mods, sym, tf)) != NULL) {
@@ -514,7 +514,7 @@ tiAddSymes(Stab astab, AbSyn capsule, TForm base, TForm context, SymeList *p)
 	listFree(Syme)(asymes);
 	/*!! listFree(Syme)(isymes); */
 
-	tipAddDEBUG(fprintf(dbOut, "tiAddSymes)\n"));
+	tipAddDEBUG(afprintf(dbOut, "tiAddSymes %pSymeList)\n", dsymes));
 
 	dsymes = listNReverse(Syme)(dsymes);
 	return dsymes;
