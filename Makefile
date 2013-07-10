@@ -20,4 +20,9 @@ TARGETS =		\
 
 all: $(TARGETS)
 
+RLWRAP = $(shell which rlwrap)
+
+loop:
+	$(RLWRAP) build/aldor -Y build -I build/include -Gloop
+
 include aldor/Rules.mk
