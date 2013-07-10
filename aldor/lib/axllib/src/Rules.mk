@@ -70,6 +70,7 @@ $(THIS)%.o: $(THIS)%.as build/aldor build/unicl $(aldor_HEADERS) build/include/a
 
 # Copy includes
 build/include/axllib.as: $(THIS)axllib.as
+	mkdir -p $(dir $@)
 	cp $< $@
 
 # Clean

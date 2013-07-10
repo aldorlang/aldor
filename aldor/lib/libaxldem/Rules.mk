@@ -35,6 +35,7 @@ $(THIS)%.o: $(THIS)%.as build/aldor build/unicl $(aldor_HEADERS) build/include/a
 
 # Copy includes
 build/include/axldem.as: $(THIS)axldem.as
+	mkdir -p $(dir $@)
 	cp $< $@
 
 # Clean

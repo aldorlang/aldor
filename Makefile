@@ -1,3 +1,6 @@
+# Parallel build doesn't work, yet.
+.NOTPARALLEL:
+
 export ALDORROOT := $(CURDIR)/build
 export PATH := $(ALDORROOT):$(PATH)
 

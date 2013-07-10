@@ -45,6 +45,7 @@ $(THIS)%.o: $(THIS)%.as build/aldor build/unicl $(aldor_HEADERS) build/include/f
 
 # Copy includes
 build/include/foamlib.as: $(THIS)foamlib.as
+	mkdir -p $(dir $@)
 	cp $< $@
 
 # Clean
