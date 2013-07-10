@@ -34,17 +34,18 @@ libfoamlib_COBJECTS := $(libfoamlib_ASOURCES:.as=.o)
 
 
 # C library
-build/libfoamlib.a: $(libfoamlib_COBJECTS)
+$(LIBDIR)/libfoamlib.a: $(libfoamlib_COBJECTS)
+	mkdir -p $(dir $@)
 	$(AR) cr $@ $^
 
 # Local aldor build rule
-$(THIS)%.o: $(THIS)%.as build/aldor build/unicl $(aldor_HEADERS) build/include/foamlib.as
-	build/aldor $(AFLAGS) $<
-	$(AR) cr build/libfoamlib.al $(@:.o=.ao)
+$(THIS)%.o: $(THIS)%.as $(BINDIR)/aldor $(BINDIR)/unicl $(aldor_HEADERS) $(INCDIR)/foamlib.as
+	$(BINDIR)/aldor $(AFLAGS) $<
+	$(AR) cr $(LIBDIR)/libfoamlib.al $(@:.o=.ao)
 	mv $(notdir $@) $@
 
 # Copy includes
-build/include/foamlib.as: $(THIS)foamlib.as
+$(INCDIR)/foamlib.as: $(THIS)foamlib.as
 	mkdir -p $(dir $@)
 	cp $< $@
 
@@ -54,7 +55,7 @@ clean-$(THIS):
 	$(RM) $(libfoamlib_AOBJECTS)
 	$(RM) $(libfoamlib_COBJECTS)
 	$(RM) $(libfoamlib_ASOURCES:.as=.c)
-	$(RM) build/libfoamlib.a build/libfoamlib.al
+	$(RM) $(LIBDIR)/libfoamlib.a $(LIBDIR)/libfoamlib.al
 
 # Depend
 $(THIS)array.o:		$(THIS)foamcat.o $(THIS)tuple.o $(THIS)sinteger.o $(THIS)parray.o $(THIS)

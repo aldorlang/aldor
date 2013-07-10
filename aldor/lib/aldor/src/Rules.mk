@@ -88,13 +88,16 @@ libaldor_COBJECTS := $(libaldor_ASOURCES:.as=.o) $(libaldor_CSOURCES:.c=.o)
 
 
 # C library
-build/libaldor.a: $(libaldor_COBJECTS)
+$(LIBDIR)/libaldor.a: $(libaldor_COBJECTS)
 	$(AR) cr $@ $^
 
+$(LIBDIR)/aldor_%.ao: $(THIS)/aldor_%.as $(BINDIR)/aldor $(LIBDIR)/libaldor.a
+	$(BINDIR)/aldor -Y $(LIBDIR) -I $(INCDIR) -Fao=$@ $<
+
 # Local aldor build rule
-$(THIS)%.o: $(THIS)%.as build/aldor build/unicl $(aldor_HEADERS) $(libaldor_HEADERS)
-	build/aldor $(AFLAGS) $<
-	$(AR) cr build/libaldor.al $(@:.o=.ao)
+$(THIS)%.o: $(THIS)%.as $(BINDIR)/aldor $(BINDIR)/unicl $(aldor_HEADERS) $(libaldor_HEADERS)
+	$(BINDIR)/aldor $(AFLAGS) $<
+	$(AR) cr $(LIBDIR)/libaldor.al $(@:.o=.ao)
 	mv $(notdir $@) $@
 
 # Clean
@@ -103,7 +106,7 @@ clean-$(THIS):
 	$(RM) $(libaldor_AOBJECTS)
 	$(RM) $(libaldor_COBJECTS)
 	$(RM) $(libaldor_ASOURCES:.as=.c)
-	$(RM) build/libaldor.a build/libaldor.al
+	$(RM) $(LIBDIR)/libaldor.a $(LIBDIR)/libaldor.al
 
 # Depend
 $(THIS)arith/sal_arith.o:	\

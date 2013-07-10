@@ -9,12 +9,12 @@ zacc_SOURCES =	\
 zacc_OBJECTS := $(addprefix $(THIS), $(zacc_SOURCES:.c=.o))
 zacc_BUILT_SOURCES := $(addprefix $(THIS), zaccgram.c zaccgram.h zaccscan.c)
 
-build/zacc: $(zacc_OBJECTS)
+$(BINDIR)/zacc: $(zacc_OBJECTS)
 	mkdir -p $(dir $@)
 	$(LINK.c) $+ -o $@
 
-%.y: %.z build/zacc
-	build/zacc -y $@ -p $<
+%.y: %.z $(BINDIR)/zacc
+	$(BINDIR)/zacc -y $@ -p $<
 
 %.c: %.y
 	$(YACC) $< -o $@
@@ -27,7 +27,7 @@ clean: clean-$(THIS)
 clean-$(THIS):
 	$(RM) $(zacc_OBJECTS)
 	$(RM) $(zacc_BUILT_SOURCES)
-	$(RM) build/zacc
+	$(RM) $(BINDIR)/zacc
 
 # Depend
 $(THIS)zaccgram.h: $(THIS)zaccgram.c

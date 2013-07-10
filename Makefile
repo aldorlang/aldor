@@ -1,9 +1,6 @@
 # Parallel build doesn't work, yet.
 .NOTPARALLEL:
 
-export ALDORROOT := $(CURDIR)/build
-export PATH := $(ALDORROOT):$(PATH)
-
 # Find lex/flex
 LEX = $(shell which flex)
 ifeq ($(LEX),)
@@ -19,29 +16,37 @@ ifeq ($(YACC),)
 YACC = $(shell which yacc)
 endif
 
+export ALDORROOT := build
+
+BINDIR = $(ALDORROOT)/bin
+INCDIR = $(ALDORROOT)/include
+LIBDIR = $(ALDORROOT)/lib
+
+export PATH := $(BINDIR):$(PATH)
+
 AFLAGS =			\
-	-I build/include	\
-	-Y build		\
+	-I $(INCDIR)		\
+	-Y $(LIBDIR)		\
 	-Y $(dir $@)		\
 	-Q8 -Qinline-all	\
 	-fao=$(@:.o=.ao)	\
 	-fo
 
 TARGETS =		\
-	build/aldor	\
-	build/libruntime.a	\
-	build/libaldor.a	\
-	build/libalgebra.a	\
-	build/libaxllib.a	\
-	build/libaxldem.a	\
-	build/libfoam.a	\
-	build/libfoamlib.a
+	$(BINDIR)/aldor	\
+	$(LIBDIR)/libruntime.a	\
+	$(LIBDIR)/libaldor.a	\
+	$(LIBDIR)/libalgebra.a	\
+	$(LIBDIR)/libaxllib.a	\
+	$(LIBDIR)/libaxldem.a	\
+	$(LIBDIR)/libfoam.a	\
+	$(LIBDIR)/libfoamlib.a
 
 all: $(TARGETS)
 
 RLWRAP = $(shell which rlwrap)
 
 loop:
-	$(RLWRAP) build/aldor -Y build -I build/include -Gloop
+	$(RLWRAP) $(BINDIR)/aldor -Y $(LIBDIR) -I $(INCDIR) -Gloop
 
 include aldor/Rules.mk

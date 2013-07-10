@@ -20,7 +20,7 @@ unicl_SOURCES =	\
 
 unicl_OBJECTS := $(addprefix $(THIS), $(unicl_SOURCES:.c=.o))
 
-build/unicl: $(unicl_OBJECTS)
+$(BINDIR)/unicl: $(unicl_OBJECTS)
 	mkdir -p $(dir $@)
 	$(LINK.c) $+ -o $@
 
@@ -33,4 +33,4 @@ clean: clean-$(THIS)
 clean-$(THIS):
 	$(RM) $(unicl_OBJECTS)
 	$(RM) $(unicl_BUILT_SOURCES)
-	$(RM) build/unicl
+	$(RM) $(BINDIR)/unicl

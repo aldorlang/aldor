@@ -10,13 +10,13 @@ libfoam_COBJECTS := $(libfoam_ASOURCES:.as=.o)
 
 
 # C library
-build/libfoam.a: $(libfoam_COBJECTS)
+$(LIBDIR)/libfoam.a: $(libfoam_COBJECTS)
 	$(AR) cr $@ $^
 
 # Local aldor build rule
-$(THIS)%.o: $(THIS)%.as build/aldor build/unicl $(aldor_HEADERS)
-	build/aldor $(AFLAGS) -Q3 -Wruntime $<
-	$(AR) cr build/libfoam.al $(@:.o=.ao)
+$(THIS)%.o: $(THIS)%.as $(BINDIR)/aldor $(BINDIR)/unicl $(aldor_HEADERS)
+	$(BINDIR)/aldor $(AFLAGS) -Q3 -Wruntime $<
+	$(AR) cr $(LIBDIR)/libfoam.al $(@:.o=.ao)
 	mv $(notdir $@) $@
 
 # Clean
@@ -25,7 +25,7 @@ clean-$(THIS):
 	$(RM) $(libfoam_AOBJECTS)
 	$(RM) $(libfoam_COBJECTS)
 	$(RM) $(libfoam_ASOURCES:.as=.c)
-	$(RM) build/libfoam.a build/libfoam.al
+	$(RM) $(LIBDIR)/libfoam.a $(LIBDIR)/libfoam.al
 
 # Depend
-$(THIS)runtime.o:	build/libfoamlib.a
+$(THIS)runtime.o:	$(LIBDIR)/libfoamlib.a

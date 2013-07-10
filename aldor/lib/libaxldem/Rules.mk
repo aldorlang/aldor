@@ -24,17 +24,17 @@ libaxldem_COBJECTS := $(libaxldem_ASOURCES:.as=.o)
 
 
 # C library
-build/libaxldem.a: $(libaxldem_COBJECTS)
+$(LIBDIR)/libaxldem.a: $(libaxldem_COBJECTS)
 	$(AR) cr $@ $^
 
 # Local aldor build rule
-$(THIS)%.o: $(THIS)%.as build/aldor build/unicl $(aldor_HEADERS) build/include/axldem.as
-	build/aldor $(AFLAGS) $<
-	$(AR) cr build/libaxldem.al $(@:.o=.ao)
+$(THIS)%.o: $(THIS)%.as $(BINDIR)/aldor $(BINDIR)/unicl $(aldor_HEADERS) $(INCDIR)/axldem.as
+	$(BINDIR)/aldor $(AFLAGS) $<
+	$(AR) cr $(LIBDIR)/libaxldem.al $(@:.o=.ao)
 	mv $(notdir $@) $@
 
 # Copy includes
-build/include/axldem.as: $(THIS)axldem.as
+$(INCDIR)/axldem.as: $(THIS)axldem.as
 	mkdir -p $(dir $@)
 	cp $< $@
 
@@ -44,7 +44,7 @@ clean-$(THIS):
 	$(RM) $(libaxldem_AOBJECTS)
 	$(RM) $(libaxldem_COBJECTS)
 	$(RM) $(libaxldem_ASOURCES:.as=.c)
-	$(RM) build/libaxldem.a build/libaxldem.al
+	$(RM) $(LIBDIR)/libaxldem.a $(LIBDIR)/libaxldem.al
 
 # Depend
 $(THIS)dirprod.o:	\
@@ -65,4 +65,4 @@ $(THIS)prime.o:	\
 	$(THIS)nni.o	\
 	$(THIS)vector.o
 $(THIS)polycat.o:	\
-	build/libaxllib.a
+	$(LIBDIR)/libaxllib.a

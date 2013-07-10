@@ -219,13 +219,13 @@ libalgebra_COBJECTS := $(libalgebra_ASOURCES:.as=.o)
 
 
 # C library
-build/libalgebra.a: $(libalgebra_COBJECTS)
+$(LIBDIR)/libalgebra.a: $(libalgebra_COBJECTS)
 	$(AR) cr $@ $^
 
 # Local aldor build rule
-$(THIS)%.o: $(THIS)%.as build/aldor build/unicl $(aldor_HEADERS) build/include/algebra.as build/include/algebrauid.as
-	build/aldor $(AFLAGS) -q1 $<
-	$(AR) cr build/libalgebra.al $(@:.o=.ao)
+$(THIS)%.o: $(THIS)%.as $(BINDIR)/aldor $(BINDIR)/unicl $(aldor_HEADERS) $(INCDIR)/algebra.as $(INCDIR)/algebrauid.as
+	$(BINDIR)/aldor $(AFLAGS) -q1 $<
+	$(AR) cr $(LIBDIR)/libalgebra.al $(@:.o=.ao)
 	mv $(notdir $@) $@
 
 # Clean
@@ -234,7 +234,7 @@ clean-$(THIS):
 	$(RM) $(libalgebra_AOBJECTS)
 	$(RM) $(libalgebra_COBJECTS)
 	$(RM) $(libalgebra_ASOURCES:.as=.c)
-	$(RM) build/libalgebra.a build/libalgebra.al
+	$(RM) $(LIBDIR)/libalgebra.a $(LIBDIR)/libalgebra.al
 
 # Depend
 $(THIS)algext/sit_algext.o:	\
@@ -1021,4 +1021,4 @@ $(THIS)polyfactor0/sit_zfringg.o:	\
 	$(THIS)categories/sit_intgmp.o	\
 	$(THIS)polyfactor0/sit_zfactor.o
 $(THIS)util/alg_version.o:	\
-	build/libaldor.a
+	$(LIBDIR)/libaldor.a

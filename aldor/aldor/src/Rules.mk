@@ -168,14 +168,14 @@ aldor_HEADERS =	\
 	optcfg.h	\
 	aldor.conf
 
-aldor_HEADERS := $(addprefix build/include/, $(aldor_HEADERS))
+aldor_HEADERS := $(addprefix $(INCDIR)/, $(aldor_HEADERS))
 .PRECIOUS: $(aldor_HEADERS)
 
-build/aldor: $(aldor_OBJECTS)
+$(BINDIR)/aldor: $(aldor_OBJECTS)
 	mkdir -p $(dir $@)
 	$(LINK.c) $^ -lm -o $@
 
-build/include/%: $(THIS)%
+$(INCDIR)/%: $(THIS)%
 	mkdir -p $(dir $@)
 	cp $< $@
 
@@ -202,7 +202,8 @@ libruntime_SOURCES =	\
 
 libruntime_OBJECTS := $(addprefix $(THIS), $(libruntime_SOURCES:.c=.o))
 
-build/libruntime.a: $(libruntime_OBJECTS)
+$(LIBDIR)/libruntime.a: $(libruntime_OBJECTS)
+	mkdir -p $(dir $@)
 	$(AR) cr $@ $^
 
 
@@ -210,4 +211,4 @@ clean: clean-$(THIS)
 clean-$(THIS):
 	$(RM) $(libruntime_OBJECTS)
 	$(RM) $(aldor_OBJECTS)
-	$(RM) build/aldor build/libruntime.a
+	$(RM) $(BINDIR)/aldor $(LIBDIR)/libruntime.a

@@ -59,17 +59,17 @@ libaxllib_COBJECTS := $(libaxllib_ASOURCES:.as=.o)
 
 
 # C library
-build/libaxllib.a: $(libaxllib_COBJECTS)
+$(LIBDIR)/libaxllib.a: $(libaxllib_COBJECTS)
 	$(AR) cr $@ $^
 
 # Local aldor build rule
-$(THIS)%.o: $(THIS)%.as build/aldor build/unicl $(aldor_HEADERS) build/include/axllib.as
-	build/aldor $(AFLAGS) $<
-	$(AR) cr build/libaxllib.al $(@:.o=.ao)
+$(THIS)%.o: $(THIS)%.as $(BINDIR)/aldor $(BINDIR)/unicl $(aldor_HEADERS) $(INCDIR)/axllib.as
+	$(BINDIR)/aldor $(AFLAGS) $<
+	$(AR) cr $(LIBDIR)/libaxllib.al $(@:.o=.ao)
 	mv $(notdir $@) $@
 
 # Copy includes
-build/include/axllib.as: $(THIS)axllib.as
+$(INCDIR)/axllib.as: $(THIS)axllib.as
 	mkdir -p $(dir $@)
 	cp $< $@
 
@@ -79,7 +79,7 @@ clean-$(THIS):
 	$(RM) $(libaxllib_AOBJECTS)
 	$(RM) $(libaxllib_COBJECTS)
 	$(RM) $(libaxllib_ASOURCES:.as=.c)
-	$(RM) build/libaxllib.a build/libaxllib.al
+	$(RM) $(LIBDIR)/libaxllib.a $(LIBDIR)/libaxllib.al
 
 # Depend
 $(THIS)array.o:	\

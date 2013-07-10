@@ -6,21 +6,21 @@ libaldor_HEADERS =	\
 	aldorio.as	\
 	aldortest.as
 
-libaldor_HEADERS := $(addprefix build/include/, $(libaldor_HEADERS))
+libaldor_HEADERS := $(addprefix $(INCDIR)/, $(libaldor_HEADERS))
 
 # Copy includes
-build/include/aldor.as: $(THIS)aldor.as
+$(INCDIR)/aldor.as: $(THIS)aldor.as
 	mkdir -p $(dir $@)
 	cp $< $@
 
-build/include/aldorinterp.as: $(THIS)aldorinterp.as
+$(INCDIR)/aldorinterp.as: $(THIS)aldorinterp.as
 	mkdir -p $(dir $@)
 	cp $< $@
 
-build/include/aldorio.as: $(THIS)aldorio.as
+$(INCDIR)/aldorio.as: $(THIS)aldorio.as
 	mkdir -p $(dir $@)
 	cp $< $@
 
-build/include/aldortest.as: $(THIS)aldortest.as
+$(INCDIR)/aldortest.as: $(THIS)aldortest.as
 	mkdir -p $(dir $@)
 	cp $< $@
