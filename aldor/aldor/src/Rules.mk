@@ -169,6 +169,7 @@ aldor_HEADERS =	\
 	aldor.conf
 
 aldor_HEADERS := $(addprefix build/include/, $(aldor_HEADERS))
+.PRECIOUS: $(aldor_HEADERS)
 
 build/aldor: $(aldor_OBJECTS)
 	mkdir -p $(dir $@)
