@@ -1,0 +1,2756 @@
+
+(|Sequence|
+   (|Import| NIL |AxiomLib|)
+   (|Foreign| (|Declare| |dummyDefault| |Exit|) |Lisp|)
+   (|Export|
+      (|Declare|
+         |CommuteUnivariatePolynomialCategory|
+         (|Apply|
+            |->|
+            (|Comma|
+               (|Declare| |#1| |Ring|)
+               (|Declare|
+                  |#2|
+                  (|Apply| |UnivariatePolynomialCategory| |#1|))
+               (|Declare|
+                  |#3|
+                  (|Apply| |UnivariatePolynomialCategory| |#2|)))
+            (|With|
+               NIL
+               (|Sequence|
+                  (|Declare|
+                     |swap|
+                     (|Apply| |->| (|Comma| |#3|) |#3|)))) ))
+      NIL
+      NIL)
+   (|Export|
+      (|Declare|
+         |UnivariatePolynomialCategoryFunctions2|
+         (|Apply|
+            |->|
+            (|Comma|
+               (|Declare| |#1| |Ring|)
+               (|Declare|
+                  |#2|
+                  (|Apply| |UnivariatePolynomialCategory| |#1|))
+               (|Declare| |#3| |Ring|)
+               (|Declare|
+                  |#4|
+                  (|Apply| |UnivariatePolynomialCategory| |#3|)))
+            (|With|
+               NIL
+               (|Sequence|
+                  (|Declare|
+                     |map|
+                     (|Apply|
+                        |->|
+                        (|Comma| (|Apply| |->| (|Comma| |#1|) |#3|) |#2|)
+                        |#4|)))) ))
+      NIL
+      NIL)
+   (|Define|
+      (|Declare|
+         |UnivariatePolynomialCategory|
+         (|Apply| |->| (|Declare| |#1| |Ring|) |Category|))
+      (|Lambda|
+         (|Comma| (|Declare| |#1| |Ring|))
+         |Category|
+         (|Label|
+            |UnivariatePolynomialCategory|
+            (|With|
+               NIL
+               (|Sequence|
+                  (|Apply|
+                     |PolynomialCategory|
+                     |#1|
+                     |NonNegativeInteger|
+                     |SingletonAsOrderedSet|)
+                  (|Apply| |Eltable| |#1| |#1|)
+                  (|Apply| |Eltable| |%| |%|)
+                  |DifferentialRing|
+                  (|Apply| |DifferentialExtension| |#1|)
+                  (|Declare|
+                     |vectorise|
+                     (|Apply|
+                        |->|
+                        (|Comma| |%| |NonNegativeInteger|)
+                        (|Apply| |Vector| |#1|)))
+                  (|Declare|
+                     |makeSUP|
+                     (|Apply|
+                        |->|
+                        (|Comma| |%|)
+                        (|Apply| |SparseUnivariatePolynomial| |#1|)))
+                  (|Declare|
+                     |unmakeSUP|
+                     (|Apply|
+                        |->|
+                        (|Comma|
+                           (|Apply| |SparseUnivariatePolynomial| |#1|))
+                        |%|))
+                  (|Declare|
+                     |multiplyExponents|
+                     (|Apply| |->| (|Comma| |%| |NonNegativeInteger|) |%|))
+                  (|Declare|
+                     |divideExponents|
+                     (|Apply|
+                        |->|
+                        (|Comma| |%| |NonNegativeInteger|)
+                        (|Apply|
+                           |Union|
+                           (|Declare| |value1| |%|)
+                           (|Declare|
+                              |failed|
+                              (|Apply| |Enumeration| |failed|)))) )
+                  (|Declare|
+                     |monicDivide|
+                     (|Apply|
+                        |->|
+                        (|Comma| |%| |%|)
+                        (|Apply|
+                           |Record|
+                           (|Declare| |quotient| |%|)
+                           (|Declare| |remainder| |%|))))
+                  (|Declare|
+                     |pseudoRemainder|
+                     (|Apply| |->| (|Comma| |%| |%|) |%|))
+                  (|Declare|
+                     |differentiate|
+                     (|Apply|
+                        |->|
+                        (|Comma|
+                           |%|
+                           (|Apply| |->| (|Comma| |#1|) |#1|)
+                           |%|)
+                        |%|))
+                  (|If|
+                     (|Test| (|Has| |#1| |StepThrough|))
+                     |StepThrough|
+                     NIL)
+                  (|If|
+                     (|Test| (|Has| |#1| |CommutativeRing|))
+                     (|Sequence|
+                        (|Declare|
+                           |discriminant|
+                           (|Apply| |->| (|Comma| |%|) |#1|))
+                        (|Declare|
+                           |resultant|
+                           (|Apply| |->| (|Comma| |%| |%|) |#1|)))
+                     NIL)
+                  (|If|
+                     (|Test| (|Has| |#1| |IntegralDomain|))
+                     (|Sequence|
+                        (|Apply|
+                           |Eltable|
+                           (|PretendTo|
+                              (|Apply|
+                                 |Fraction|
+                                 (|PretendTo| |%| |IntegralDomain|))
+                              |SetCategory|)
+                           (|PretendTo|
+                              (|Apply|
+                                 |Fraction|
+                                 (|PretendTo| |%| |IntegralDomain|))
+                              |Type|))
+                        (|Declare|
+                           |apply|
+                           (|Apply|
+                              |->|
+                              (|Comma|
+                                 (|Apply|
+                                    |Fraction|
+                                    (|PretendTo| |%| |IntegralDomain|))
+                                 (|Apply|
+                                    |Fraction|
+                                    (|PretendTo| |%| |IntegralDomain|)))
+                              (|Apply|
+                                 |Fraction|
+                                 (|PretendTo| |%| |IntegralDomain|))))
+                        (|Declare|
+                           |order|
+                           (|Apply|
+                              |->|
+                              (|Comma| |%| |%|)
+                              |NonNegativeInteger|))
+                        (|Declare|
+                           |subResultantGcd|
+                           (|Apply| |->| (|Comma| |%| |%|) |%|))
+                        (|Declare|
+                           |composite|
+                           (|Apply|
+                              |->|
+                              (|Comma| |%| |%|)
+                              (|Apply|
+                                 |Union|
+                                 (|Declare| |value1| |%|)
+                                 (|Declare|
+                                    |failed|
+                                    (|Apply| |Enumeration| |failed|)))) )
+                        (|Declare|
+                           |composite|
+                           (|Apply|
+                              |->|
+                              (|Comma|
+                                 (|Apply|
+                                    |Fraction|
+                                    (|PretendTo| |%| |IntegralDomain|))
+                                 |%|)
+                              (|Apply|
+                                 |Union|
+                                 (|Declare|
+                                    |value1|
+                                    (|Apply|
+                                       |Fraction|
+                                       (|PretendTo| |%| |IntegralDomain|)))
+                                 (|Declare|
+                                    |failed|
+                                    (|Apply| |Enumeration| |failed|)))) )
+                        (|Declare|
+                           |pseudoQuotient|
+                           (|Apply| |->| (|Comma| |%| |%|) |%|))
+                        (|Declare|
+                           |pseudoDivide|
+                           (|Apply|
+                              |->|
+                              (|Comma| |%| |%|)
+                              (|Apply|
+                                 |Record|
+                                 (|Declare| |coef| |#1|)
+                                 (|Declare| |quotient| |%|)
+                                 (|Declare| |remainder| |%|)))) )
+                     NIL)
+                  (|If|
+                     (|Test| (|Has| |#1| |GcdDomain|))
+                     (|Declare|
+                        |separate|
+                        (|Apply|
+                           |->|
+                           (|Comma| |%| |%|)
+                           (|Apply|
+                              |Record|
+                              (|Declare| |primePart| |%|)
+                              (|Declare| |commonPart| |%|))))
+                     NIL)
+                  (|If|
+                     (|Test| (|Has| |#1| |Field|))
+                     (|Sequence|
+                        |EuclideanDomain|
+                        (|RestrictTo| |additiveValuation| |Category|)
+                        (|Declare|
+                           |apply|
+                           (|Apply|
+                              |->|
+                              (|Comma|
+                                 (|Apply|
+                                    |Fraction|
+                                    (|PretendTo| |%| |IntegralDomain|))
+                                 |#1|)
+                              |#1|)))
+                     NIL)
+                  (|If|
+                     (|Test|
+                        (|Has|
+                           |#1|
+                           (|Apply|
+                              |Algebra|
+                              (|Apply| |Fraction| |Integer|))))
+                     (|Declare|
+                        |integrate|
+                        (|Apply| |->| (|Comma| |%|) |%|))
+                     NIL)
+                  (|Default|
+                     (|Sequence|
+                        (|Define|
+                           (|Declare|
+                              |coerce|
+                              (|Apply|
+                                 |->|
+                                 (|Comma| |SingletonAsOrderedSet|)
+                                 |%|))
+                           (|Lambda|
+                              (|Comma|
+                                 (|Declare| |t#1| |SingletonAsOrderedSet|))
+                              |%|
+                              (|Label| |coerce| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |composite|
+                              (|Apply|
+                                 |->|
+                                 (|Comma| |%| |%|)
+                                 (|Apply|
+                                    |Union|
+                                    (|Declare| |value1| |%|)
+                                    (|Declare|
+                                       |failed|
+                                       (|Apply|
+                                          |Enumeration|
+                                          |failed|)))) )
+                           (|Lambda|
+                              (|Comma|
+                                 (|Declare| |t#1| |%|)
+                                 (|Declare| |t#2| |%|))
+                              (|Apply|
+                                 |Union|
+                                 (|Declare| |value1| |%|)
+                                 (|Declare|
+                                    |failed|
+                                    (|Apply| |Enumeration| |failed|)))
+                              (|Label| |composite| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |composite|
+                              (|Apply|
+                                 |->|
+                                 (|Comma|
+                                    (|Apply|
+                                       |Fraction|
+                                       (|PretendTo| |%| |IntegralDomain|))
+                                    |%|)
+                                 (|Apply|
+                                    |Union|
+                                    (|Declare|
+                                       |value1|
+                                       (|Apply|
+                                          |Fraction|
+                                          (|PretendTo|
+                                             |%|
+                                             |IntegralDomain|)))
+                                    (|Declare|
+                                       |failed|
+                                       (|Apply|
+                                          |Enumeration|
+                                          |failed|)))) )
+                           (|Lambda|
+                              (|Comma|
+                                 (|Declare|
+                                    |t#1|
+                                    (|Apply|
+                                       |Fraction|
+                                       (|PretendTo| |%| |IntegralDomain|)))
+                                 (|Declare| |t#2| |%|))
+                              (|Apply|
+                                 |Union|
+                                 (|Declare|
+                                    |value1|
+                                    (|Apply|
+                                       |Fraction|
+                                       (|PretendTo| |%| |IntegralDomain|)))
+                                 (|Declare|
+                                    |failed|
+                                    (|Apply| |Enumeration| |failed|)))
+                              (|Label| |composite| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |content|
+                              (|Apply|
+                                 |->|
+                                 (|Comma| |%| |SingletonAsOrderedSet|)
+                                 |%|))
+                           (|Lambda|
+                              (|Comma|
+                                 (|Declare| |t#1| |%|)
+                                 (|Declare| |t#2| |SingletonAsOrderedSet|))
+                              |%|
+                              (|Label| |content| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |degree|
+                              (|Apply|
+                                 |->|
+                                 (|Comma|
+                                    |%|
+                                    (|Apply|
+                                       |List|
+                                       (|PretendTo|
+                                          |SingletonAsOrderedSet|
+                                          |Type|)))
+                                 (|Apply|
+                                    |List|
+                                    (|PretendTo|
+                                       |NonNegativeInteger|
+                                       |Type|))))
+                           (|Lambda|
+                              (|Comma|
+                                 (|Declare| |t#1| |%|)
+                                 (|Declare|
+                                    |t#2|
+                                    (|Apply|
+                                       |List|
+                                       (|PretendTo|
+                                          |SingletonAsOrderedSet|
+                                          |Type|))))
+                              (|Apply|
+                                 |List|
+                                 (|PretendTo| |NonNegativeInteger| |Type|))
+                              (|Label| |degree| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |degree|
+                              (|Apply|
+                                 |->|
+                                 (|Comma| |%| |SingletonAsOrderedSet|)
+                                 |NonNegativeInteger|))
+                           (|Lambda|
+                              (|Comma|
+                                 (|Declare| |t#1| |%|)
+                                 (|Declare| |t#2| |SingletonAsOrderedSet|))
+                              |NonNegativeInteger|
+                              (|Label| |degree| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |differentiate|
+                              (|Apply|
+                                 |->|
+                                 (|Comma| |%| |SingletonAsOrderedSet|)
+                                 |%|))
+                           (|Lambda|
+                              (|Comma|
+                                 (|Declare| |t#1| |%|)
+                                 (|Declare| |t#2| |SingletonAsOrderedSet|))
+                              |%|
+                              (|Label| |differentiate| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |differentiate|
+                              (|Apply| |->| (|Comma| |%|) |%|))
+                           (|Lambda|
+                              (|Comma| (|Declare| |t#1| |%|))
+                              |%|
+                              (|Label| |differentiate| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |differentiate|
+                              (|Apply|
+                                 |->|
+                                 (|Comma|
+                                    |%|
+                                    (|Apply| |->| (|Comma| |#1|) |#1|))
+                                 |%|))
+                           (|Lambda|
+                              (|Comma|
+                                 (|Declare| |t#1| |%|)
+                                 (|Declare|
+                                    |t#2|
+                                    (|Apply| |->| (|Comma| |#1|) |#1|)))
+                              |%|
+                              (|Label| |differentiate| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |differentiate|
+                              (|Apply|
+                                 |->|
+                                 (|Comma|
+                                    |%|
+                                    (|Apply| |->| (|Comma| |#1|) |#1|)
+                                    |%|)
+                                 |%|))
+                           (|Lambda|
+                              (|Comma|
+                                 (|Declare| |t#1| |%|)
+                                 (|Declare|
+                                    |t#2|
+                                    (|Apply| |->| (|Comma| |#1|) |#1|))
+                                 (|Declare| |t#3| |%|))
+                              |%|
+                              (|Label| |differentiate| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |divide|
+                              (|Apply|
+                                 |->|
+                                 (|Comma| |%| |%|)
+                                 (|Apply|
+                                    |Record|
+                                    (|Declare| |quotient| |%|)
+                                    (|Declare| |remainder| |%|))))
+                           (|Lambda|
+                              (|Comma|
+                                 (|Declare| |t#1| |%|)
+                                 (|Declare| |t#2| |%|))
+                              (|Apply|
+                                 |Record|
+                                 (|Declare| |quotient| |%|)
+                                 (|Declare| |remainder| |%|))
+                              (|Label| |divide| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |apply|
+                              (|Apply|
+                                 |->|
+                                 (|Comma|
+                                    (|Apply|
+                                       |Fraction|
+                                       (|PretendTo| |%| |IntegralDomain|))
+                                    (|Apply|
+                                       |Fraction|
+                                       (|PretendTo| |%| |IntegralDomain|)))
+                                 (|Apply|
+                                    |Fraction|
+                                    (|PretendTo| |%| |IntegralDomain|))))
+                           (|Lambda|
+                              (|Comma|
+                                 (|Declare|
+                                    |t#1|
+                                    (|Apply|
+                                       |Fraction|
+                                       (|PretendTo| |%| |IntegralDomain|)))
+                                 (|Declare|
+                                    |t#2|
+                                    (|Apply|
+                                       |Fraction|
+                                       (|PretendTo|
+                                          |%|
+                                          |IntegralDomain|))))
+                              (|Apply|
+                                 |Fraction|
+                                 (|PretendTo| |%| |IntegralDomain|))
+                              (|Label| |apply| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |apply|
+                              (|Apply|
+                                 |->|
+                                 (|Comma|
+                                    (|Apply|
+                                       |Fraction|
+                                       (|PretendTo| |%| |IntegralDomain|))
+                                    |#1|)
+                                 |#1|))
+                           (|Lambda|
+                              (|Comma|
+                                 (|Declare|
+                                    |t#1|
+                                    (|Apply|
+                                       |Fraction|
+                                       (|PretendTo| |%| |IntegralDomain|)))
+                                 (|Declare| |t#2| |#1|))
+                              |#1|
+                              (|Label| |apply| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |apply|
+                              (|Apply|
+                                 |->|
+                                 (|Comma|
+                                    |%|
+                                    (|Apply|
+                                       |Fraction|
+                                       (|PretendTo| |%| |IntegralDomain|)))
+                                 (|Apply|
+                                    |Fraction|
+                                    (|PretendTo| |%| |IntegralDomain|))))
+                           (|Lambda|
+                              (|Comma|
+                                 (|Declare| |t#1| |%|)
+                                 (|Declare|
+                                    |t#2|
+                                    (|Apply|
+                                       |Fraction|
+                                       (|PretendTo|
+                                          |%|
+                                          |IntegralDomain|))))
+                              (|Apply|
+                                 |Fraction|
+                                 (|PretendTo| |%| |IntegralDomain|))
+                              (|Label| |apply| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |euclideanSize|
+                              (|Apply|
+                                 |->|
+                                 (|Comma| |%|)
+                                 |NonNegativeInteger|))
+                           (|Lambda|
+                              (|Comma| (|Declare| |t#1| |%|))
+                              |NonNegativeInteger|
+                              (|Label| |euclideanSize| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |eval|
+                              (|Apply|
+                                 |->|
+                                 (|Comma|
+                                    |%|
+                                    (|Apply|
+                                       |List|
+                                       (|PretendTo|
+                                          (|Apply|
+                                             |Equation|
+                                             (|PretendTo| |%| |Type|))
+                                          |Type|)))
+                                 |%|))
+                           (|Lambda|
+                              (|Comma|
+                                 (|Declare| |t#1| |%|)
+                                 (|Declare|
+                                    |t#2|
+                                    (|Apply|
+                                       |List|
+                                       (|PretendTo|
+                                          (|Apply|
+                                             |Equation|
+                                             (|PretendTo| |%| |Type|))
+                                          |Type|))))
+                              |%|
+                              (|Label| |eval| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |eval|
+                              (|Apply|
+                                 |->|
+                                 (|Comma| |%| |SingletonAsOrderedSet| |#1|)
+                                 |%|))
+                           (|Lambda|
+                              (|Comma|
+                                 (|Declare| |t#1| |%|)
+                                 (|Declare| |t#2| |SingletonAsOrderedSet|)
+                                 (|Declare| |t#3| |#1|))
+                              |%|
+                              (|Label| |eval| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |eval|
+                              (|Apply|
+                                 |->|
+                                 (|Comma|
+                                    |%|
+                                    (|Apply|
+                                       |List|
+                                       (|PretendTo|
+                                          |SingletonAsOrderedSet|
+                                          |Type|))
+                                    (|Apply|
+                                       |List|
+                                       (|PretendTo| |#1| |Type|)))
+                                 |%|))
+                           (|Lambda|
+                              (|Comma|
+                                 (|Declare| |t#1| |%|)
+                                 (|Declare|
+                                    |t#2|
+                                    (|Apply|
+                                       |List|
+                                       (|PretendTo|
+                                          |SingletonAsOrderedSet|
+                                          |Type|)))
+                                 (|Declare|
+                                    |t#3|
+                                    (|Apply|
+                                       |List|
+                                       (|PretendTo| |#1| |Type|))))
+                              |%|
+                              (|Label| |eval| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |eval|
+                              (|Apply|
+                                 |->|
+                                 (|Comma|
+                                    |%|
+                                    (|Apply|
+                                       |List|
+                                       (|PretendTo|
+                                          |SingletonAsOrderedSet|
+                                          |Type|))
+                                    (|Apply|
+                                       |List|
+                                       (|PretendTo| |%| |Type|)))
+                                 |%|))
+                           (|Lambda|
+                              (|Comma|
+                                 (|Declare| |t#1| |%|)
+                                 (|Declare|
+                                    |t#2|
+                                    (|Apply|
+                                       |List|
+                                       (|PretendTo|
+                                          |SingletonAsOrderedSet|
+                                          |Type|)))
+                                 (|Declare|
+                                    |t#3|
+                                    (|Apply|
+                                       |List|
+                                       (|PretendTo| |%| |Type|))))
+                              |%|
+                              (|Label| |eval| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |eval|
+                              (|Apply|
+                                 |->|
+                                 (|Comma| |%| |SingletonAsOrderedSet| |%|)
+                                 |%|))
+                           (|Lambda|
+                              (|Comma|
+                                 (|Declare| |t#1| |%|)
+                                 (|Declare| |t#2| |SingletonAsOrderedSet|)
+                                 (|Declare| |t#3| |%|))
+                              |%|
+                              (|Label| |eval| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |factor|
+                              (|Apply|
+                                 |->|
+                                 (|Comma| |%|)
+                                 (|Apply|
+                                    |Factored|
+                                    (|PretendTo| |%| |IntegralDomain|))))
+                           (|Lambda|
+                              (|Comma| (|Declare| |t#1| |%|))
+                              (|Apply|
+                                 |Factored|
+                                 (|PretendTo| |%| |IntegralDomain|))
+                              (|Label| |factor| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |factorPolynomial|
+                              (|Apply|
+                                 |->|
+                                 (|Comma|
+                                    (|Apply|
+                                       |SparseUnivariatePolynomial|
+                                       (|PretendTo| |%| |Ring|)))
+                                 (|Apply|
+                                    |Factored|
+                                    (|PretendTo|
+                                       (|Apply|
+                                          |SparseUnivariatePolynomial|
+                                          (|PretendTo| |%| |Ring|))
+                                       |IntegralDomain|))))
+                           (|Lambda|
+                              (|Comma|
+                                 (|Declare|
+                                    |t#1|
+                                    (|Apply|
+                                       |SparseUnivariatePolynomial|
+                                       (|PretendTo| |%| |Ring|))))
+                              (|Apply|
+                                 |Factored|
+                                 (|PretendTo|
+                                    (|Apply|
+                                       |SparseUnivariatePolynomial|
+                                       (|PretendTo| |%| |Ring|))
+                                    |IntegralDomain|))
+                              (|Label| |factorPolynomial| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |factorSquareFreePolynomial|
+                              (|Apply|
+                                 |->|
+                                 (|Comma|
+                                    (|Apply|
+                                       |SparseUnivariatePolynomial|
+                                       (|PretendTo| |%| |Ring|)))
+                                 (|Apply|
+                                    |Factored|
+                                    (|PretendTo|
+                                       (|Apply|
+                                          |SparseUnivariatePolynomial|
+                                          (|PretendTo| |%| |Ring|))
+                                       |IntegralDomain|))))
+                           (|Lambda|
+                              (|Comma|
+                                 (|Declare|
+                                    |t#1|
+                                    (|Apply|
+                                       |SparseUnivariatePolynomial|
+                                       (|PretendTo| |%| |Ring|))))
+                              (|Apply|
+                                 |Factored|
+                                 (|PretendTo|
+                                    (|Apply|
+                                       |SparseUnivariatePolynomial|
+                                       (|PretendTo| |%| |Ring|))
+                                    |IntegralDomain|))
+                              (|Label|
+                                 |factorSquareFreePolynomial|
+                                 |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |gcdPolynomial|
+                              (|Apply|
+                                 |->|
+                                 (|Comma|
+                                    (|Apply|
+                                       |SparseUnivariatePolynomial|
+                                       (|PretendTo| |%| |Ring|))
+                                    (|Apply|
+                                       |SparseUnivariatePolynomial|
+                                       (|PretendTo| |%| |Ring|)))
+                                 (|Apply|
+                                    |SparseUnivariatePolynomial|
+                                    (|PretendTo| |%| |Ring|))))
+                           (|Lambda|
+                              (|Comma|
+                                 (|Declare|
+                                    |t#1|
+                                    (|Apply|
+                                       |SparseUnivariatePolynomial|
+                                       (|PretendTo| |%| |Ring|)))
+                                 (|Declare|
+                                    |t#2|
+                                    (|Apply|
+                                       |SparseUnivariatePolynomial|
+                                       (|PretendTo| |%| |Ring|))))
+                              (|Apply|
+                                 |SparseUnivariatePolynomial|
+                                 (|PretendTo| |%| |Ring|))
+                              (|Label| |gcdPolynomial| |dummyDefault|)))
+                        (|Define| (|Declare| |init| |%|) |dummyDefault|)
+                        (|Define|
+                           (|Declare|
+                              |integrate|
+                              (|Apply| |->| (|Comma| |%|) |%|))
+                           (|Lambda|
+                              (|Comma| (|Declare| |t#1| |%|))
+                              |%|
+                              (|Label| |integrate| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |mainVariable|
+                              (|Apply|
+                                 |->|
+                                 (|Comma| |%|)
+                                 (|Apply|
+                                    |Union|
+                                    (|Declare|
+                                       |value1|
+                                       |SingletonAsOrderedSet|)
+                                    (|Declare|
+                                       |failed|
+                                       (|Apply|
+                                          |Enumeration|
+                                          |failed|)))) )
+                           (|Lambda|
+                              (|Comma| (|Declare| |t#1| |%|))
+                              (|Apply|
+                                 |Union|
+                                 (|Declare|
+                                    |value1|
+                                    |SingletonAsOrderedSet|)
+                                 (|Declare|
+                                    |failed|
+                                    (|Apply| |Enumeration| |failed|)))
+                              (|Label| |mainVariable| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |makeSUP|
+                              (|Apply|
+                                 |->|
+                                 (|Comma| |%|)
+                                 (|Apply|
+                                    |SparseUnivariatePolynomial|
+                                    (|PretendTo| |#1| |Ring|))))
+                           (|Lambda|
+                              (|Comma| (|Declare| |t#1| |%|))
+                              (|Apply|
+                                 |SparseUnivariatePolynomial|
+                                 (|PretendTo| |#1| |Ring|))
+                              (|Label| |makeSUP| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |minimumDegree|
+                              (|Apply|
+                                 |->|
+                                 (|Comma| |%| |SingletonAsOrderedSet|)
+                                 |NonNegativeInteger|))
+                           (|Lambda|
+                              (|Comma|
+                                 (|Declare| |t#1| |%|)
+                                 (|Declare| |t#2| |SingletonAsOrderedSet|))
+                              |NonNegativeInteger|
+                              (|Label| |minimumDegree| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |minimumDegree|
+                              (|Apply|
+                                 |->|
+                                 (|Comma|
+                                    |%|
+                                    (|Apply|
+                                       |List|
+                                       (|PretendTo|
+                                          |SingletonAsOrderedSet|
+                                          |Type|)))
+                                 (|Apply|
+                                    |List|
+                                    (|PretendTo|
+                                       |NonNegativeInteger|
+                                       |Type|))))
+                           (|Lambda|
+                              (|Comma|
+                                 (|Declare| |t#1| |%|)
+                                 (|Declare|
+                                    |t#2|
+                                    (|Apply|
+                                       |List|
+                                       (|PretendTo|
+                                          |SingletonAsOrderedSet|
+                                          |Type|))))
+                              (|Apply|
+                                 |List|
+                                 (|PretendTo| |NonNegativeInteger| |Type|))
+                              (|Label| |minimumDegree| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |monomial|
+                              (|Apply|
+                                 |->|
+                                 (|Comma|
+                                    |%|
+                                    |SingletonAsOrderedSet|
+                                    |NonNegativeInteger|)
+                                 |%|))
+                           (|Lambda|
+                              (|Comma|
+                                 (|Declare| |t#1| |%|)
+                                 (|Declare| |t#2| |SingletonAsOrderedSet|)
+                                 (|Declare| |t#3| |NonNegativeInteger|))
+                              |%|
+                              (|Label| |monomial| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |nextItem|
+                              (|Apply|
+                                 |->|
+                                 (|Comma| |%|)
+                                 (|Apply|
+                                    |Union|
+                                    (|Declare| |value1| |%|)
+                                    (|Declare|
+                                       |failed|
+                                       (|Apply|
+                                          |Enumeration|
+                                          |failed|)))) )
+                           (|Lambda|
+                              (|Comma| (|Declare| |t#1| |%|))
+                              (|Apply|
+                                 |Union|
+                                 (|Declare| |value1| |%|)
+                                 (|Declare|
+                                    |failed|
+                                    (|Apply| |Enumeration| |failed|)))
+                              (|Label| |nextItem| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |order|
+                              (|Apply|
+                                 |->|
+                                 (|Comma| |%| |%|)
+                                 |NonNegativeInteger|))
+                           (|Lambda|
+                              (|Comma|
+                                 (|Declare| |t#1| |%|)
+                                 (|Declare| |t#2| |%|))
+                              |NonNegativeInteger|
+                              (|Label| |order| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |pseudoDivide|
+                              (|Apply|
+                                 |->|
+                                 (|Comma| |%| |%|)
+                                 (|Apply|
+                                    |Record|
+                                    (|Declare| |coef| |#1|)
+                                    (|Declare| |quotient| |%|)
+                                    (|Declare| |remainder| |%|))))
+                           (|Lambda|
+                              (|Comma|
+                                 (|Declare| |t#1| |%|)
+                                 (|Declare| |t#2| |%|))
+                              (|Apply|
+                                 |Record|
+                                 (|Declare| |coef| |#1|)
+                                 (|Declare| |quotient| |%|)
+                                 (|Declare| |remainder| |%|))
+                              (|Label| |pseudoDivide| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |pseudoQuotient|
+                              (|Apply| |->| (|Comma| |%| |%|) |%|))
+                           (|Lambda|
+                              (|Comma|
+                                 (|Declare| |t#1| |%|)
+                                 (|Declare| |t#2| |%|))
+                              |%|
+                              (|Label| |pseudoQuotient| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |retract|
+                              (|Apply| |->| (|Comma| |%|) |#1|))
+                           (|Lambda|
+                              (|Comma| (|Declare| |t#1| |%|))
+                              |#1|
+                              (|Label| |retract| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |retractIfCan|
+                              (|Apply|
+                                 |->|
+                                 (|Comma| |%|)
+                                 (|Apply|
+                                    |Union|
+                                    (|Declare| |value1| |#1|)
+                                    (|Declare|
+                                       |failed|
+                                       (|Apply|
+                                          |Enumeration|
+                                          |failed|)))) )
+                           (|Lambda|
+                              (|Comma| (|Declare| |t#1| |%|))
+                              (|Apply|
+                                 |Union|
+                                 (|Declare| |value1| |#1|)
+                                 (|Declare|
+                                    |failed|
+                                    (|Apply| |Enumeration| |failed|)))
+                              (|Label| |retractIfCan| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |separate|
+                              (|Apply|
+                                 |->|
+                                 (|Comma| |%| |%|)
+                                 (|Apply|
+                                    |Record|
+                                    (|Declare| |primePart| |%|)
+                                    (|Declare| |commonPart| |%|))))
+                           (|Lambda|
+                              (|Comma|
+                                 (|Declare| |t#1| |%|)
+                                 (|Declare| |t#2| |%|))
+                              (|Apply|
+                                 |Record|
+                                 (|Declare| |primePart| |%|)
+                                 (|Declare| |commonPart| |%|))
+                              (|Label| |separate| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |solveLinearPolynomialEquation|
+                              (|Apply|
+                                 |->|
+                                 (|Comma|
+                                    (|Apply|
+                                       |List|
+                                       (|PretendTo|
+                                          (|Apply|
+                                             |SparseUnivariatePolynomial|
+                                             (|PretendTo| |%| |Ring|))
+                                          |Type|))
+                                    (|Apply|
+                                       |SparseUnivariatePolynomial|
+                                       (|PretendTo| |%| |Ring|)))
+                                 (|Apply|
+                                    |Union|
+                                    (|Declare|
+                                       |value1|
+                                       (|Apply|
+                                          |List|
+                                          (|PretendTo|
+                                             (|Apply|
+                                             |SparseUnivariatePolynomial|
+                                                (|PretendTo| |%| |Ring|))
+                                             |Type|)))
+                                    (|Declare|
+                                       |failed|
+                                       (|Apply|
+                                          |Enumeration|
+                                          |failed|)))) )
+                           (|Lambda|
+                              (|Comma|
+                                 (|Declare|
+                                    |t#1|
+                                    (|Apply|
+                                       |List|
+                                       (|PretendTo|
+                                          (|Apply|
+                                             |SparseUnivariatePolynomial|
+                                             (|PretendTo| |%| |Ring|))
+                                          |Type|)))
+                                 (|Declare|
+                                    |t#2|
+                                    (|Apply|
+                                       |SparseUnivariatePolynomial|
+                                       (|PretendTo| |%| |Ring|))))
+                              (|Apply|
+                                 |Union|
+                                 (|Declare|
+                                    |value1|
+                                    (|Apply|
+                                       |List|
+                                       (|PretendTo|
+                                          (|Apply|
+                                             |SparseUnivariatePolynomial|
+                                             (|PretendTo| |%| |Ring|))
+                                          |Type|)))
+                                 (|Declare|
+                                    |failed|
+                                    (|Apply| |Enumeration| |failed|)))
+                              (|Label|
+                                 |solveLinearPolynomialEquation|
+                                 |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |squareFree|
+                              (|Apply|
+                                 |->|
+                                 (|Comma| |%|)
+                                 (|Apply|
+                                    |Factored|
+                                    (|PretendTo| |%| |IntegralDomain|))))
+                           (|Lambda|
+                              (|Comma| (|Declare| |t#1| |%|))
+                              (|Apply|
+                                 |Factored|
+                                 (|PretendTo| |%| |IntegralDomain|))
+                              (|Label| |squareFree| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |squareFreePart|
+                              (|Apply| |->| (|Comma| |%|) |%|))
+                           (|Lambda|
+                              (|Comma| (|Declare| |t#1| |%|))
+                              |%|
+                              (|Label| |squareFreePart| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |squareFreePolynomial|
+                              (|Apply|
+                                 |->|
+                                 (|Comma|
+                                    (|Apply|
+                                       |SparseUnivariatePolynomial|
+                                       (|PretendTo| |%| |Ring|)))
+                                 (|Apply|
+                                    |Factored|
+                                    (|PretendTo|
+                                       (|Apply|
+                                          |SparseUnivariatePolynomial|
+                                          (|PretendTo| |%| |Ring|))
+                                       |IntegralDomain|))))
+                           (|Lambda|
+                              (|Comma|
+                                 (|Declare|
+                                    |t#1|
+                                    (|Apply|
+                                       |SparseUnivariatePolynomial|
+                                       (|PretendTo| |%| |Ring|))))
+                              (|Apply|
+                                 |Factored|
+                                 (|PretendTo|
+                                    (|Apply|
+                                       |SparseUnivariatePolynomial|
+                                       (|PretendTo| |%| |Ring|))
+                                    |IntegralDomain|))
+                              (|Label|
+                                 |squareFreePolynomial|
+                                 |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |totalDegree|
+                              (|Apply|
+                                 |->|
+                                 (|Comma|
+                                    |%|
+                                    (|Apply|
+                                       |List|
+                                       (|PretendTo|
+                                          |SingletonAsOrderedSet|
+                                          |Type|)))
+                                 |NonNegativeInteger|))
+                           (|Lambda|
+                              (|Comma|
+                                 (|Declare| |t#1| |%|)
+                                 (|Declare|
+                                    |t#2|
+                                    (|Apply|
+                                       |List|
+                                       (|PretendTo|
+                                          |SingletonAsOrderedSet|
+                                          |Type|))))
+                              |NonNegativeInteger|
+                              (|Label| |totalDegree| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |unmakeSUP|
+                              (|Apply|
+                                 |->|
+                                 (|Comma|
+                                    (|Apply|
+                                       |SparseUnivariatePolynomial|
+                                       (|PretendTo| |#1| |Ring|)))
+                                 |%|))
+                           (|Lambda|
+                              (|Comma|
+                                 (|Declare|
+                                    |t#1|
+                                    (|Apply|
+                                       |SparseUnivariatePolynomial|
+                                       (|PretendTo| |#1| |Ring|))))
+                              |%|
+                              (|Label| |unmakeSUP| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |variables|
+                              (|Apply|
+                                 |->|
+                                 (|Comma| |%|)
+                                 (|Apply|
+                                    |List|
+                                    (|PretendTo|
+                                       |SingletonAsOrderedSet|
+                                       |Type|))))
+                           (|Lambda|
+                              (|Comma| (|Declare| |t#1| |%|))
+                              (|Apply|
+                                 |List|
+                                 (|PretendTo|
+                                    |SingletonAsOrderedSet|
+                                    |Type|))
+                              (|Label| |variables| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |vectorise|
+                              (|Apply|
+                                 |->|
+                                 (|Comma| |%| |NonNegativeInteger|)
+                                 (|Apply|
+                                    |Vector|
+                                    (|PretendTo| |#1| |Type|))))
+                           (|Lambda|
+                              (|Comma|
+                                 (|Declare| |t#1| |%|)
+                                 (|Declare| |t#2| |NonNegativeInteger|))
+                              (|Apply| |Vector| (|PretendTo| |#1| |Type|))
+                              (|Label|
+                                 |vectorise|
+                                 |dummyDefault|)))) ))) )))
+   (|Export|
+      (|Declare|
+         |PolynomialCategoryLifting|
+         (|Apply|
+            |->|
+            (|Comma|
+               (|Declare| |#1| |OrderedAbelianMonoidSup|)
+               (|Declare| |#2| |OrderedSet|)
+               (|Declare| |#3| |Ring|)
+               (|Declare|
+                  |#4|
+                  (|Apply| |PolynomialCategory| |#3| |#1| |#2|))
+               (|Declare|
+                  |#5|
+                  (|With|
+                     NIL
+                     (|Sequence|
+                        |SetCategory|
+                        (|Declare|
+                           |+|
+                           (|Apply| |->| (|Comma| |%| |%|) |%|))
+                        (|Declare|
+                           |*|
+                           (|Apply| |->| (|Comma| |%| |%|) |%|))
+                        (|Declare|
+                           |**|
+                           (|Apply|
+                              |->|
+                              (|Comma| |%| |NonNegativeInteger|)
+                              |%|)))) ))
+            (|With|
+               NIL
+               (|Sequence|
+                  (|Declare|
+                     |map|
+                     (|Apply|
+                        |->|
+                        (|Comma|
+                           (|Apply| |->| (|Comma| |#2|) |#5|)
+                           (|Apply| |->| (|Comma| |#3|) |#5|)
+                           |#4|)
+                        |#5|)))) ))
+      NIL
+      NIL)
+   (|Define|
+      (|Declare|
+         |PolynomialCategory|
+         (|Apply|
+            |->|
+            (|Comma|
+               (|Declare| |#1| |Ring|)
+               (|Declare| |#2| |OrderedAbelianMonoidSup|)
+               (|Declare| |#3| |OrderedSet|))
+            |Category|))
+      (|Lambda|
+         (|Comma|
+            (|Declare| |#1| |Ring|)
+            (|Declare| |#2| |OrderedAbelianMonoidSup|)
+            (|Declare| |#3| |OrderedSet|))
+         |Category|
+         (|Label|
+            |PolynomialCategory|
+            (|With|
+               NIL
+               (|Sequence|
+                  (|Apply| |PartialDifferentialRing| |#3|)
+                  (|Apply| |FiniteAbelianMonoidRing| |#1| |#2|)
+                  (|Apply| |Evalable| |%|)
+                  (|Apply| |InnerEvalable| |#3| |#1|)
+                  (|Apply| |InnerEvalable| |#3| |%|)
+                  (|Apply| |RetractableTo| |#3|)
+                  (|Apply| |FullyLinearlyExplicitRingOver| |#1|)
+                  (|Declare|
+                     |degree|
+                     (|Apply|
+                        |->|
+                        (|Comma| |%| |#3|)
+                        |NonNegativeInteger|))
+                  (|Declare|
+                     |degree|
+                     (|Apply|
+                        |->|
+                        (|Comma| |%| (|Apply| |List| |#3|))
+                        (|Apply| |List| |NonNegativeInteger|)))
+                  (|Declare|
+                     |coefficient|
+                     (|Apply|
+                        |->|
+                        (|Comma| |%| |#3| |NonNegativeInteger|)
+                        |%|))
+                  (|Declare|
+                     |coefficient|
+                     (|Apply|
+                        |->|
+                        (|Comma|
+                           |%|
+                           (|Apply| |List| |#3|)
+                           (|Apply| |List| |NonNegativeInteger|))
+                        |%|))
+                  (|Declare|
+                     |monomials|
+                     (|Apply| |->| (|Comma| |%|) (|Apply| |List| |%|)))
+                  (|Declare|
+                     |univariate|
+                     (|Apply|
+                        |->|
+                        (|Comma| |%| |#3|)
+                        (|Apply| |SparseUnivariatePolynomial| |%|)))
+                  (|Declare|
+                     |univariate|
+                     (|Apply|
+                        |->|
+                        (|Comma| |%|)
+                        (|Apply| |SparseUnivariatePolynomial| |#1|)))
+                  (|Declare|
+                     |mainVariable|
+                     (|Apply|
+                        |->|
+                        (|Comma| |%|)
+                        (|Apply|
+                           |Union|
+                           (|Declare| |value1| |#3|)
+                           (|Declare|
+                              |failed|
+                              (|Apply| |Enumeration| |failed|)))) )
+                  (|Declare|
+                     |minimumDegree|
+                     (|Apply|
+                        |->|
+                        (|Comma| |%| |#3|)
+                        |NonNegativeInteger|))
+                  (|Declare|
+                     |minimumDegree|
+                     (|Apply|
+                        |->|
+                        (|Comma| |%| (|Apply| |List| |#3|))
+                        (|Apply| |List| |NonNegativeInteger|)))
+                  (|Declare|
+                     |monicDivide|
+                     (|Apply|
+                        |->|
+                        (|Comma| |%| |%| |#3|)
+                        (|Apply|
+                           |Record|
+                           (|Declare| |quotient| |%|)
+                           (|Declare| |remainder| |%|))))
+                  (|Declare|
+                     |monomial|
+                     (|Apply|
+                        |->|
+                        (|Comma| |%| |#3| |NonNegativeInteger|)
+                        |%|))
+                  (|Declare|
+                     |monomial|
+                     (|Apply|
+                        |->|
+                        (|Comma|
+                           |%|
+                           (|Apply| |List| |#3|)
+                           (|Apply| |List| |NonNegativeInteger|))
+                        |%|))
+                  (|Declare|
+                     |multivariate|
+                     (|Apply|
+                        |->|
+                        (|Comma|
+                           (|Apply| |SparseUnivariatePolynomial| |#1|)
+                           |#3|)
+                        |%|))
+                  (|Declare|
+                     |multivariate|
+                     (|Apply|
+                        |->|
+                        (|Comma|
+                           (|Apply| |SparseUnivariatePolynomial| |%|)
+                           |#3|)
+                        |%|))
+                  (|Declare|
+                     |isPlus|
+                     (|Apply|
+                        |->|
+                        (|Comma| |%|)
+                        (|Apply|
+                           |Union|
+                           (|Declare| |value1| (|Apply| |List| |%|))
+                           (|Declare|
+                              |failed|
+                              (|Apply| |Enumeration| |failed|)))) )
+                  (|Declare|
+                     |isTimes|
+                     (|Apply|
+                        |->|
+                        (|Comma| |%|)
+                        (|Apply|
+                           |Union|
+                           (|Declare| |value1| (|Apply| |List| |%|))
+                           (|Declare|
+                              |failed|
+                              (|Apply| |Enumeration| |failed|)))) )
+                  (|Declare|
+                     |isExpt|
+                     (|Apply|
+                        |->|
+                        (|Comma| |%|)
+                        (|Apply|
+                           |Union|
+                           (|Declare|
+                              |value1|
+                              (|Apply|
+                                 |Record|
+                                 (|Declare| |var| |#3|)
+                                 (|Declare|
+                                    |exponent|
+                                    |NonNegativeInteger|)))
+                           (|Declare|
+                              |failed|
+                              (|Apply| |Enumeration| |failed|)))) )
+                  (|Declare|
+                     |totalDegree|
+                     (|Apply| |->| (|Comma| |%|) |NonNegativeInteger|))
+                  (|Declare|
+                     |totalDegree|
+                     (|Apply|
+                        |->|
+                        (|Comma| |%| (|Apply| |List| |#3|))
+                        |NonNegativeInteger|))
+                  (|Declare|
+                     |variables|
+                     (|Apply| |->| (|Comma| |%|) (|Apply| |List| |#3|)))
+                  (|Declare|
+                     |primitiveMonomials|
+                     (|Apply| |->| (|Comma| |%|) (|Apply| |List| |%|)))
+                  (|If|
+                     (|Test| (|Has| |#1| |OrderedSet|))
+                     |OrderedSet|
+                     NIL)
+                  (|If|
+                     (|Test|
+                        (|Has| |#1| (|Apply| |ConvertibleTo| |InputForm|)))
+                     (|If|
+                        (|Test|
+                           (|Has|
+                              |#3|
+                              (|Apply|
+                                 |ConvertibleTo|
+                                 (|PretendTo| |InputForm| |Type|))))
+                        (|Apply|
+                           |ConvertibleTo|
+                           (|PretendTo| |InputForm| |Type|))
+                        NIL)
+                     NIL)
+                  (|If|
+                     (|Test|
+                        (|Has|
+                           |#1|
+                           (|Apply|
+                              |ConvertibleTo|
+                              (|Apply| |Pattern| |Integer|))))
+                     (|If|
+                        (|Test|
+                           (|Has|
+                              |#3|
+                              (|Apply|
+                                 |ConvertibleTo|
+                                 (|PretendTo|
+                                    (|Apply|
+                                       |Pattern|
+                                       (|PretendTo|
+                                          |Integer|
+                                          |SetCategory|))
+                                    |Type|))))
+                        (|Apply|
+                           |ConvertibleTo|
+                           (|PretendTo|
+                              (|Apply|
+                                 |Pattern|
+                                 (|PretendTo| |Integer| |SetCategory|))
+                              |Type|))
+                        NIL)
+                     NIL)
+                  (|If|
+                     (|Test|
+                        (|Has|
+                           |#1|
+                           (|Apply|
+                              |ConvertibleTo|
+                              (|Apply| |Pattern| |Float|))))
+                     (|If|
+                        (|Test|
+                           (|Has|
+                              |#3|
+                              (|Apply|
+                                 |ConvertibleTo|
+                                 (|PretendTo|
+                                    (|Apply|
+                                       |Pattern|
+                                       (|PretendTo| |Float| |SetCategory|))
+                                    |Type|))))
+                        (|Apply|
+                           |ConvertibleTo|
+                           (|PretendTo|
+                              (|Apply|
+                                 |Pattern|
+                                 (|PretendTo| |Float| |SetCategory|))
+                              |Type|))
+                        NIL)
+                     NIL)
+                  (|If|
+                     (|Test|
+                        (|Has|
+                           |#1|
+                           (|Apply| |PatternMatchable| |Integer|)))
+                     (|If|
+                        (|Test|
+                           (|Has|
+                              |#3|
+                              (|Apply|
+                                 |PatternMatchable|
+                                 (|PretendTo| |Integer| |SetCategory|))))
+                        (|Apply|
+                           |PatternMatchable|
+                           (|PretendTo| |Integer| |SetCategory|))
+                        NIL)
+                     NIL)
+                  (|If|
+                     (|Test|
+                        (|Has| |#1| (|Apply| |PatternMatchable| |Float|)))
+                     (|If|
+                        (|Test|
+                           (|Has|
+                              |#3|
+                              (|Apply|
+                                 |PatternMatchable|
+                                 (|PretendTo| |Float| |SetCategory|))))
+                        (|Apply|
+                           |PatternMatchable|
+                           (|PretendTo| |Float| |SetCategory|))
+                        NIL)
+                     NIL)
+                  (|If|
+                     (|Test| (|Has| |#1| |CommutativeRing|))
+                     (|Sequence|
+                        (|Declare|
+                           |resultant|
+                           (|Apply| |->| (|Comma| |%| |%| |#3|) |%|))
+                        (|Declare|
+                           |discriminant|
+                           (|Apply| |->| (|Comma| |%| |#3|) |%|)))
+                     NIL)
+                  (|If|
+                     (|Test| (|Has| |#1| |GcdDomain|))
+                     (|Sequence|
+                        |GcdDomain|
+                        (|Declare|
+                           |content|
+                           (|Apply| |->| (|Comma| |%| |#3|) |%|))
+                        (|Declare|
+                           |primitivePart|
+                           (|Apply| |->| (|Comma| |%|) |%|))
+                        (|Declare|
+                           |primitivePart|
+                           (|Apply| |->| (|Comma| |%| |#3|) |%|))
+                        (|Declare|
+                           |squareFree|
+                           (|Apply|
+                              |->|
+                              (|Comma| |%|)
+                              (|Apply|
+                                 |Factored|
+                                 (|PretendTo| |%| |IntegralDomain|))))
+                        (|Declare|
+                           |squareFreePart|
+                           (|Apply| |->| (|Comma| |%|) |%|)))
+                     NIL)
+                  (|If|
+                     (|Test|
+                        (|Has|
+                           |#1|
+                           (|RestrictTo|
+                              |canonicalUnitNormal|
+                              |Category|)))
+                     (|RestrictTo| |canonicalUnitNormal| |Category|)
+                     NIL)
+                  (|If|
+                     (|Test|
+                        (|Has| |#1| |PolynomialFactorizationExplicit|))
+                     |PolynomialFactorizationExplicit|
+                     NIL)
+                  (|Default|
+                     (|Sequence|
+                        (|Define|
+                           (|Declare|
+                              |<|
+                              (|Apply| |->| (|Comma| |%| |%|) |Boolean|))
+                           (|Lambda|
+                              (|Comma|
+                                 (|Declare| |t#1| |%|)
+                                 (|Declare| |t#2| |%|))
+                              |Boolean|
+                              (|Label| |<| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |charthRoot|
+                              (|Apply|
+                                 |->|
+                                 (|Comma| |%|)
+                                 (|Apply|
+                                    |Union|
+                                    (|Declare| |value1| |%|)
+                                    (|Declare|
+                                       |failed|
+                                       (|Apply|
+                                          |Enumeration|
+                                          |failed|)))) )
+                           (|Lambda|
+                              (|Comma| (|Declare| |t#1| |%|))
+                              (|Apply|
+                                 |Union|
+                                 (|Declare| |value1| |%|)
+                                 (|Declare|
+                                    |failed|
+                                    (|Apply| |Enumeration| |failed|)))
+                              (|Label| |charthRoot| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |coefficient|
+                              (|Apply|
+                                 |->|
+                                 (|Comma| |%| |#3| |NonNegativeInteger|)
+                                 |%|))
+                           (|Lambda|
+                              (|Comma|
+                                 (|Declare| |t#1| |%|)
+                                 (|Declare| |t#2| |#3|)
+                                 (|Declare| |t#3| |NonNegativeInteger|))
+                              |%|
+                              (|Label| |coefficient| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |coefficient|
+                              (|Apply|
+                                 |->|
+                                 (|Comma|
+                                    |%|
+                                    (|Apply|
+                                       |List|
+                                       (|PretendTo| |#3| |Type|))
+                                    (|Apply|
+                                       |List|
+                                       (|PretendTo|
+                                          |NonNegativeInteger|
+                                          |Type|)))
+                                 |%|))
+                           (|Lambda|
+                              (|Comma|
+                                 (|Declare| |t#1| |%|)
+                                 (|Declare|
+                                    |t#2|
+                                    (|Apply|
+                                       |List|
+                                       (|PretendTo| |#3| |Type|)))
+                                 (|Declare|
+                                    |t#3|
+                                    (|Apply|
+                                       |List|
+                                       (|PretendTo|
+                                          |NonNegativeInteger|
+                                          |Type|))))
+                              |%|
+                              (|Label| |coefficient| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |conditionP|
+                              (|Apply|
+                                 |->|
+                                 (|Comma|
+                                    (|Apply|
+                                       |Matrix|
+                                       (|PretendTo| |%| |Ring|)))
+                                 (|Apply|
+                                    |Union|
+                                    (|Declare|
+                                       |value1|
+                                       (|Apply|
+                                          |Vector|
+                                          (|PretendTo| |%| |Type|)))
+                                    (|Declare|
+                                       |failed|
+                                       (|Apply|
+                                          |Enumeration|
+                                          |failed|)))) )
+                           (|Lambda|
+                              (|Comma|
+                                 (|Declare|
+                                    |t#1|
+                                    (|Apply|
+                                       |Matrix|
+                                       (|PretendTo| |%| |Ring|))))
+                              (|Apply|
+                                 |Union|
+                                 (|Declare|
+                                    |value1|
+                                    (|Apply|
+                                       |Vector|
+                                       (|PretendTo| |%| |Type|)))
+                                 (|Declare|
+                                    |failed|
+                                    (|Apply| |Enumeration| |failed|)))
+                              (|Label| |conditionP| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |content|
+                              (|Apply| |->| (|Comma| |%| |#3|) |%|))
+                           (|Lambda|
+                              (|Comma|
+                                 (|Declare| |t#1| |%|)
+                                 (|Declare| |t#2| |#3|))
+                              |%|
+                              (|Label| |content| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |convert|
+                              (|Apply|
+                                 |->|
+                                 (|Comma| |%|)
+                                 (|Apply|
+                                    |Pattern|
+                                    (|PretendTo| |Float| |SetCategory|))))
+                           (|Lambda|
+                              (|Comma| (|Declare| |t#1| |%|))
+                              (|Apply|
+                                 |Pattern|
+                                 (|PretendTo| |Float| |SetCategory|))
+                              (|Label| |convert| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |convert|
+                              (|Apply|
+                                 |->|
+                                 (|Comma| |%|)
+                                 (|Apply|
+                                    |Pattern|
+                                    (|PretendTo|
+                                       |Integer|
+                                       |SetCategory|))))
+                           (|Lambda|
+                              (|Comma| (|Declare| |t#1| |%|))
+                              (|Apply|
+                                 |Pattern|
+                                 (|PretendTo| |Integer| |SetCategory|))
+                              (|Label| |convert| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |convert|
+                              (|Apply| |->| (|Comma| |%|) |InputForm|))
+                           (|Lambda|
+                              (|Comma| (|Declare| |t#1| |%|))
+                              |InputForm|
+                              (|Label| |convert| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |discriminant|
+                              (|Apply| |->| (|Comma| |%| |#3|) |%|))
+                           (|Lambda|
+                              (|Comma|
+                                 (|Declare| |t#1| |%|)
+                                 (|Declare| |t#2| |#3|))
+                              |%|
+                              (|Label| |discriminant| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |eval|
+                              (|Apply|
+                                 |->|
+                                 (|Comma|
+                                    |%|
+                                    (|Apply|
+                                       |List|
+                                       (|PretendTo|
+                                          (|Apply|
+                                             |Equation|
+                                             (|PretendTo| |%| |Type|))
+                                          |Type|)))
+                                 |%|))
+                           (|Lambda|
+                              (|Comma|
+                                 (|Declare| |t#1| |%|)
+                                 (|Declare|
+                                    |t#2|
+                                    (|Apply|
+                                       |List|
+                                       (|PretendTo|
+                                          (|Apply|
+                                             |Equation|
+                                             (|PretendTo| |%| |Type|))
+                                          |Type|))))
+                              |%|
+                              (|Label| |eval| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |factor|
+                              (|Apply|
+                                 |->|
+                                 (|Comma| |%|)
+                                 (|Apply|
+                                    |Factored|
+                                    (|PretendTo| |%| |IntegralDomain|))))
+                           (|Lambda|
+                              (|Comma| (|Declare| |t#1| |%|))
+                              (|Apply|
+                                 |Factored|
+                                 (|PretendTo| |%| |IntegralDomain|))
+                              (|Label| |factor| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |factorPolynomial|
+                              (|Apply|
+                                 |->|
+                                 (|Comma|
+                                    (|Apply|
+                                       |SparseUnivariatePolynomial|
+                                       (|PretendTo| |%| |Ring|)))
+                                 (|Apply|
+                                    |Factored|
+                                    (|PretendTo|
+                                       (|Apply|
+                                          |SparseUnivariatePolynomial|
+                                          (|PretendTo| |%| |Ring|))
+                                       |IntegralDomain|))))
+                           (|Lambda|
+                              (|Comma|
+                                 (|Declare|
+                                    |t#1|
+                                    (|Apply|
+                                       |SparseUnivariatePolynomial|
+                                       (|PretendTo| |%| |Ring|))))
+                              (|Apply|
+                                 |Factored|
+                                 (|PretendTo|
+                                    (|Apply|
+                                       |SparseUnivariatePolynomial|
+                                       (|PretendTo| |%| |Ring|))
+                                    |IntegralDomain|))
+                              (|Label| |factorPolynomial| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |factorSquareFreePolynomial|
+                              (|Apply|
+                                 |->|
+                                 (|Comma|
+                                    (|Apply|
+                                       |SparseUnivariatePolynomial|
+                                       (|PretendTo| |%| |Ring|)))
+                                 (|Apply|
+                                    |Factored|
+                                    (|PretendTo|
+                                       (|Apply|
+                                          |SparseUnivariatePolynomial|
+                                          (|PretendTo| |%| |Ring|))
+                                       |IntegralDomain|))))
+                           (|Lambda|
+                              (|Comma|
+                                 (|Declare|
+                                    |t#1|
+                                    (|Apply|
+                                       |SparseUnivariatePolynomial|
+                                       (|PretendTo| |%| |Ring|))))
+                              (|Apply|
+                                 |Factored|
+                                 (|PretendTo|
+                                    (|Apply|
+                                       |SparseUnivariatePolynomial|
+                                       (|PretendTo| |%| |Ring|))
+                                    |IntegralDomain|))
+                              (|Label|
+                                 |factorSquareFreePolynomial|
+                                 |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |gcdPolynomial|
+                              (|Apply|
+                                 |->|
+                                 (|Comma|
+                                    (|Apply|
+                                       |SparseUnivariatePolynomial|
+                                       (|PretendTo| |%| |Ring|))
+                                    (|Apply|
+                                       |SparseUnivariatePolynomial|
+                                       (|PretendTo| |%| |Ring|)))
+                                 (|Apply|
+                                    |SparseUnivariatePolynomial|
+                                    (|PretendTo| |%| |Ring|))))
+                           (|Lambda|
+                              (|Comma|
+                                 (|Declare|
+                                    |t#1|
+                                    (|Apply|
+                                       |SparseUnivariatePolynomial|
+                                       (|PretendTo| |%| |Ring|)))
+                                 (|Declare|
+                                    |t#2|
+                                    (|Apply|
+                                       |SparseUnivariatePolynomial|
+                                       (|PretendTo| |%| |Ring|))))
+                              (|Apply|
+                                 |SparseUnivariatePolynomial|
+                                 (|PretendTo| |%| |Ring|))
+                              (|Label| |gcdPolynomial| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |isExpt|
+                              (|Apply|
+                                 |->|
+                                 (|Comma| |%|)
+                                 (|Apply|
+                                    |Union|
+                                    (|Declare|
+                                       |value1|
+                                       (|Apply|
+                                          |Record|
+                                          (|Declare| |var| |#3|)
+                                          (|Declare|
+                                             |exponent|
+                                             |NonNegativeInteger|)))
+                                    (|Declare|
+                                       |failed|
+                                       (|Apply|
+                                          |Enumeration|
+                                          |failed|)))) )
+                           (|Lambda|
+                              (|Comma| (|Declare| |t#1| |%|))
+                              (|Apply|
+                                 |Union|
+                                 (|Declare|
+                                    |value1|
+                                    (|Apply|
+                                       |Record|
+                                       (|Declare| |var| |#3|)
+                                       (|Declare|
+                                          |exponent|
+                                          |NonNegativeInteger|)))
+                                 (|Declare|
+                                    |failed|
+                                    (|Apply| |Enumeration| |failed|)))
+                              (|Label| |isExpt| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |isPlus|
+                              (|Apply|
+                                 |->|
+                                 (|Comma| |%|)
+                                 (|Apply|
+                                    |Union|
+                                    (|Declare|
+                                       |value1|
+                                       (|Apply|
+                                          |List|
+                                          (|PretendTo| |%| |Type|)))
+                                    (|Declare|
+                                       |failed|
+                                       (|Apply|
+                                          |Enumeration|
+                                          |failed|)))) )
+                           (|Lambda|
+                              (|Comma| (|Declare| |t#1| |%|))
+                              (|Apply|
+                                 |Union|
+                                 (|Declare|
+                                    |value1|
+                                    (|Apply|
+                                       |List|
+                                       (|PretendTo| |%| |Type|)))
+                                 (|Declare|
+                                    |failed|
+                                    (|Apply| |Enumeration| |failed|)))
+                              (|Label| |isPlus| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |isTimes|
+                              (|Apply|
+                                 |->|
+                                 (|Comma| |%|)
+                                 (|Apply|
+                                    |Union|
+                                    (|Declare|
+                                       |value1|
+                                       (|Apply|
+                                          |List|
+                                          (|PretendTo| |%| |Type|)))
+                                    (|Declare|
+                                       |failed|
+                                       (|Apply|
+                                          |Enumeration|
+                                          |failed|)))) )
+                           (|Lambda|
+                              (|Comma| (|Declare| |t#1| |%|))
+                              (|Apply|
+                                 |Union|
+                                 (|Declare|
+                                    |value1|
+                                    (|Apply|
+                                       |List|
+                                       (|PretendTo| |%| |Type|)))
+                                 (|Declare|
+                                    |failed|
+                                    (|Apply| |Enumeration| |failed|)))
+                              (|Label| |isTimes| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |monicDivide|
+                              (|Apply|
+                                 |->|
+                                 (|Comma| |%| |%| |#3|)
+                                 (|Apply|
+                                    |Record|
+                                    (|Declare| |quotient| |%|)
+                                    (|Declare| |remainder| |%|))))
+                           (|Lambda|
+                              (|Comma|
+                                 (|Declare| |t#1| |%|)
+                                 (|Declare| |t#2| |%|)
+                                 (|Declare| |t#3| |#3|))
+                              (|Apply|
+                                 |Record|
+                                 (|Declare| |quotient| |%|)
+                                 (|Declare| |remainder| |%|))
+                              (|Label| |monicDivide| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |monomial|
+                              (|Apply|
+                                 |->|
+                                 (|Comma|
+                                    |%|
+                                    (|Apply|
+                                       |List|
+                                       (|PretendTo| |#3| |Type|))
+                                    (|Apply|
+                                       |List|
+                                       (|PretendTo|
+                                          |NonNegativeInteger|
+                                          |Type|)))
+                                 |%|))
+                           (|Lambda|
+                              (|Comma|
+                                 (|Declare| |t#1| |%|)
+                                 (|Declare|
+                                    |t#2|
+                                    (|Apply|
+                                       |List|
+                                       (|PretendTo| |#3| |Type|)))
+                                 (|Declare|
+                                    |t#3|
+                                    (|Apply|
+                                       |List|
+                                       (|PretendTo|
+                                          |NonNegativeInteger|
+                                          |Type|))))
+                              |%|
+                              (|Label| |monomial| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |monomials|
+                              (|Apply|
+                                 |->|
+                                 (|Comma| |%|)
+                                 (|Apply|
+                                    |List|
+                                    (|PretendTo| |%| |Type|))))
+                           (|Lambda|
+                              (|Comma| (|Declare| |t#1| |%|))
+                              (|Apply| |List| (|PretendTo| |%| |Type|))
+                              (|Label| |monomials| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |patternMatch|
+                              (|Apply|
+                                 |->|
+                                 (|Comma|
+                                    |%|
+                                    (|Apply|
+                                       |Pattern|
+                                       (|PretendTo| |Float| |SetCategory|))
+                                    (|Apply|
+                                       |PatternMatchResult|
+                                       (|PretendTo| |Float| |SetCategory|)
+                                       (|PretendTo| |%| |SetCategory|)))
+                                 (|Apply|
+                                    |PatternMatchResult|
+                                    (|PretendTo| |Float| |SetCategory|)
+                                    (|PretendTo| |%| |SetCategory|))))
+                           (|Lambda|
+                              (|Comma|
+                                 (|Declare| |t#1| |%|)
+                                 (|Declare|
+                                    |t#2|
+                                    (|Apply|
+                                       |Pattern|
+                                       (|PretendTo|
+                                          |Float|
+                                          |SetCategory|)))
+                                 (|Declare|
+                                    |t#3|
+                                    (|Apply|
+                                       |PatternMatchResult|
+                                       (|PretendTo| |Float| |SetCategory|)
+                                       (|PretendTo| |%| |SetCategory|))))
+                              (|Apply|
+                                 |PatternMatchResult|
+                                 (|PretendTo| |Float| |SetCategory|)
+                                 (|PretendTo| |%| |SetCategory|))
+                              (|Label| |patternMatch| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |patternMatch|
+                              (|Apply|
+                                 |->|
+                                 (|Comma|
+                                    |%|
+                                    (|Apply|
+                                       |Pattern|
+                                       (|PretendTo|
+                                          |Integer|
+                                          |SetCategory|))
+                                    (|Apply|
+                                       |PatternMatchResult|
+                                       (|PretendTo|
+                                          |Integer|
+                                          |SetCategory|)
+                                       (|PretendTo| |%| |SetCategory|)))
+                                 (|Apply|
+                                    |PatternMatchResult|
+                                    (|PretendTo| |Integer| |SetCategory|)
+                                    (|PretendTo| |%| |SetCategory|))))
+                           (|Lambda|
+                              (|Comma|
+                                 (|Declare| |t#1| |%|)
+                                 (|Declare|
+                                    |t#2|
+                                    (|Apply|
+                                       |Pattern|
+                                       (|PretendTo|
+                                          |Integer|
+                                          |SetCategory|)))
+                                 (|Declare|
+                                    |t#3|
+                                    (|Apply|
+                                       |PatternMatchResult|
+                                       (|PretendTo|
+                                          |Integer|
+                                          |SetCategory|)
+                                       (|PretendTo| |%| |SetCategory|))))
+                              (|Apply|
+                                 |PatternMatchResult|
+                                 (|PretendTo| |Integer| |SetCategory|)
+                                 (|PretendTo| |%| |SetCategory|))
+                              (|Label| |patternMatch| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |primitiveMonomials|
+                              (|Apply|
+                                 |->|
+                                 (|Comma| |%|)
+                                 (|Apply|
+                                    |List|
+                                    (|PretendTo| |%| |Type|))))
+                           (|Lambda|
+                              (|Comma| (|Declare| |t#1| |%|))
+                              (|Apply| |List| (|PretendTo| |%| |Type|))
+                              (|Label|
+                                 |primitiveMonomials|
+                                 |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |primitivePart|
+                              (|Apply| |->| (|Comma| |%|) |%|))
+                           (|Lambda|
+                              (|Comma| (|Declare| |t#1| |%|))
+                              |%|
+                              (|Label| |primitivePart| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |primitivePart|
+                              (|Apply| |->| (|Comma| |%| |#3|) |%|))
+                           (|Lambda|
+                              (|Comma|
+                                 (|Declare| |t#1| |%|)
+                                 (|Declare| |t#2| |#3|))
+                              |%|
+                              (|Label| |primitivePart| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |reducedSystem|
+                              (|Apply|
+                                 |->|
+                                 (|Comma|
+                                    (|Apply|
+                                       |Matrix|
+                                       (|PretendTo| |%| |Ring|))
+                                    (|Apply|
+                                       |Vector|
+                                       (|PretendTo| |%| |Type|)))
+                                 (|Apply|
+                                    |Record|
+                                    (|Declare|
+                                       |mat|
+                                       (|Apply|
+                                          |Matrix|
+                                          (|PretendTo| |#1| |Ring|)))
+                                    (|Declare|
+                                       |vec|
+                                       (|Apply|
+                                          |Vector|
+                                          (|PretendTo| |#1| |Type|)))) ))
+                           (|Lambda|
+                              (|Comma|
+                                 (|Declare|
+                                    |t#1|
+                                    (|Apply|
+                                       |Matrix|
+                                       (|PretendTo| |%| |Ring|)))
+                                 (|Declare|
+                                    |t#2|
+                                    (|Apply|
+                                       |Vector|
+                                       (|PretendTo| |%| |Type|))))
+                              (|Apply|
+                                 |Record|
+                                 (|Declare|
+                                    |mat|
+                                    (|Apply|
+                                       |Matrix|
+                                       (|PretendTo| |#1| |Ring|)))
+                                 (|Declare|
+                                    |vec|
+                                    (|Apply|
+                                       |Vector|
+                                       (|PretendTo| |#1| |Type|))))
+                              (|Label| |reducedSystem| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |reducedSystem|
+                              (|Apply|
+                                 |->|
+                                 (|Comma|
+                                    (|Apply|
+                                       |Matrix|
+                                       (|PretendTo| |%| |Ring|)))
+                                 (|Apply|
+                                    |Matrix|
+                                    (|PretendTo| |#1| |Ring|))))
+                           (|Lambda|
+                              (|Comma|
+                                 (|Declare|
+                                    |t#1|
+                                    (|Apply|
+                                       |Matrix|
+                                       (|PretendTo| |%| |Ring|))))
+                              (|Apply| |Matrix| (|PretendTo| |#1| |Ring|))
+                              (|Label| |reducedSystem| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |resultant|
+                              (|Apply| |->| (|Comma| |%| |%| |#3|) |%|))
+                           (|Lambda|
+                              (|Comma|
+                                 (|Declare| |t#1| |%|)
+                                 (|Declare| |t#2| |%|)
+                                 (|Declare| |t#3| |#3|))
+                              |%|
+                              (|Label| |resultant| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |retract|
+                              (|Apply| |->| (|Comma| |%|) |#3|))
+                           (|Lambda|
+                              (|Comma| (|Declare| |t#1| |%|))
+                              |#3|
+                              (|Label| |retract| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |retractIfCan|
+                              (|Apply|
+                                 |->|
+                                 (|Comma| |%|)
+                                 (|Apply|
+                                    |Union|
+                                    (|Declare| |value1| |#3|)
+                                    (|Declare|
+                                       |failed|
+                                       (|Apply|
+                                          |Enumeration|
+                                          |failed|)))) )
+                           (|Lambda|
+                              (|Comma| (|Declare| |t#1| |%|))
+                              (|Apply|
+                                 |Union|
+                                 (|Declare| |value1| |#3|)
+                                 (|Declare|
+                                    |failed|
+                                    (|Apply| |Enumeration| |failed|)))
+                              (|Label| |retractIfCan| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |solveLinearPolynomialEquation|
+                              (|Apply|
+                                 |->|
+                                 (|Comma|
+                                    (|Apply|
+                                       |List|
+                                       (|PretendTo|
+                                          (|Apply|
+                                             |SparseUnivariatePolynomial|
+                                             (|PretendTo| |%| |Ring|))
+                                          |Type|))
+                                    (|Apply|
+                                       |SparseUnivariatePolynomial|
+                                       (|PretendTo| |%| |Ring|)))
+                                 (|Apply|
+                                    |Union|
+                                    (|Declare|
+                                       |value1|
+                                       (|Apply|
+                                          |List|
+                                          (|PretendTo|
+                                             (|Apply|
+                                             |SparseUnivariatePolynomial|
+                                                (|PretendTo| |%| |Ring|))
+                                             |Type|)))
+                                    (|Declare|
+                                       |failed|
+                                       (|Apply|
+                                          |Enumeration|
+                                          |failed|)))) )
+                           (|Lambda|
+                              (|Comma|
+                                 (|Declare|
+                                    |t#1|
+                                    (|Apply|
+                                       |List|
+                                       (|PretendTo|
+                                          (|Apply|
+                                             |SparseUnivariatePolynomial|
+                                             (|PretendTo| |%| |Ring|))
+                                          |Type|)))
+                                 (|Declare|
+                                    |t#2|
+                                    (|Apply|
+                                       |SparseUnivariatePolynomial|
+                                       (|PretendTo| |%| |Ring|))))
+                              (|Apply|
+                                 |Union|
+                                 (|Declare|
+                                    |value1|
+                                    (|Apply|
+                                       |List|
+                                       (|PretendTo|
+                                          (|Apply|
+                                             |SparseUnivariatePolynomial|
+                                             (|PretendTo| |%| |Ring|))
+                                          |Type|)))
+                                 (|Declare|
+                                    |failed|
+                                    (|Apply| |Enumeration| |failed|)))
+                              (|Label|
+                                 |solveLinearPolynomialEquation|
+                                 |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |squareFree|
+                              (|Apply|
+                                 |->|
+                                 (|Comma| |%|)
+                                 (|Apply|
+                                    |Factored|
+                                    (|PretendTo| |%| |IntegralDomain|))))
+                           (|Lambda|
+                              (|Comma| (|Declare| |t#1| |%|))
+                              (|Apply|
+                                 |Factored|
+                                 (|PretendTo| |%| |IntegralDomain|))
+                              (|Label| |squareFree| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |squareFreePart|
+                              (|Apply| |->| (|Comma| |%|) |%|))
+                           (|Lambda|
+                              (|Comma| (|Declare| |t#1| |%|))
+                              |%|
+                              (|Label| |squareFreePart| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |totalDegree|
+                              (|Apply|
+                                 |->|
+                                 (|Comma| |%|)
+                                 |NonNegativeInteger|))
+                           (|Lambda|
+                              (|Comma| (|Declare| |t#1| |%|))
+                              |NonNegativeInteger|
+                              (|Label| |totalDegree| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |totalDegree|
+                              (|Apply|
+                                 |->|
+                                 (|Comma|
+                                    |%|
+                                    (|Apply|
+                                       |List|
+                                       (|PretendTo| |#3| |Type|)))
+                                 |NonNegativeInteger|))
+                           (|Lambda|
+                              (|Comma|
+                                 (|Declare| |t#1| |%|)
+                                 (|Declare|
+                                    |t#2|
+                                    (|Apply|
+                                       |List|
+                                       (|PretendTo| |#3| |Type|))))
+                              |NonNegativeInteger|
+                              (|Label|
+                                 |totalDegree|
+                                 |dummyDefault|)))) ))) )))
+   (|Define|
+      (|Declare|
+         |FiniteAbelianMonoidRing|
+         (|Apply|
+            |->|
+            (|Comma|
+               (|Declare| |#1| |Ring|)
+               (|Declare| |#2| |OrderedAbelianMonoid|))
+            |Category|))
+      (|Lambda|
+         (|Comma|
+            (|Declare| |#1| |Ring|)
+            (|Declare| |#2| |OrderedAbelianMonoid|))
+         |Category|
+         (|Label|
+            |FiniteAbelianMonoidRing|
+            (|With|
+               NIL
+               (|Sequence|
+                  (|Apply| |AbelianMonoidRing| |#1| |#2|)
+                  (|Apply| |FullyRetractableTo| |#1|)
+                  (|Declare|
+                     |ground?|
+                     (|Apply| |->| (|Comma| |%|) |Boolean|))
+                  (|Declare| |ground| (|Apply| |->| (|Comma| |%|) |#1|))
+                  (|Declare|
+                     |coefficients|
+                     (|Apply| |->| (|Comma| |%|) (|Apply| |List| |#1|)))
+                  (|Declare|
+                     |numberOfMonomials|
+                     (|Apply| |->| (|Comma| |%|) |NonNegativeInteger|))
+                  (|Declare|
+                     |minimumDegree|
+                     (|Apply| |->| (|Comma| |%|) |#2|))
+                  (|Declare|
+                     |mapExponents|
+                     (|Apply|
+                        |->|
+                        (|Comma| (|Apply| |->| (|Comma| |#2|) |#2|) |%|)
+                        |%|))
+                  (|If|
+                     (|Test| (|Has| |#1| |IntegralDomain|))
+                     (|Declare|
+                        |exquo|
+                        (|Apply|
+                           |->|
+                           (|Comma| |%| |#1|)
+                           (|Apply|
+                              |Union|
+                              (|Declare| |value1| |%|)
+                              (|Declare|
+                                 |failed|
+                                 (|Apply| |Enumeration| |failed|)))) )
+                     NIL)
+                  (|If|
+                     (|Test| (|Has| |#1| |GcdDomain|))
+                     (|Sequence|
+                        (|Declare|
+                           |content|
+                           (|Apply| |->| (|Comma| |%|) |#1|))
+                        (|Declare|
+                           |primitivePart|
+                           (|Apply| |->| (|Comma| |%|) |%|)))
+                     NIL)
+                  (|Default|
+                     (|Sequence|
+                        (|Define|
+                           (|Declare|
+                              |/|
+                              (|Apply| |->| (|Comma| |%| |#1|) |%|))
+                           (|Lambda|
+                              (|Comma|
+                                 (|Declare| |t#1| |%|)
+                                 (|Declare| |t#2| |#1|))
+                              |%|
+                              (|Label| |/| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |coefficients|
+                              (|Apply|
+                                 |->|
+                                 (|Comma| |%|)
+                                 (|Apply|
+                                    |List|
+                                    (|PretendTo| |#1| |Type|))))
+                           (|Lambda|
+                              (|Comma| (|Declare| |t#1| |%|))
+                              (|Apply| |List| (|PretendTo| |#1| |Type|))
+                              (|Label| |coefficients| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |content|
+                              (|Apply| |->| (|Comma| |%|) |#1|))
+                           (|Lambda|
+                              (|Comma| (|Declare| |t#1| |%|))
+                              |#1|
+                              (|Label| |content| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |exquo|
+                              (|Apply|
+                                 |->|
+                                 (|Comma| |%| |#1|)
+                                 (|Apply|
+                                    |Union|
+                                    (|Declare| |value1| |%|)
+                                    (|Declare|
+                                       |failed|
+                                       (|Apply|
+                                          |Enumeration|
+                                          |failed|)))) )
+                           (|Lambda|
+                              (|Comma|
+                                 (|Declare| |t#1| |%|)
+                                 (|Declare| |t#2| |#1|))
+                              (|Apply|
+                                 |Union|
+                                 (|Declare| |value1| |%|)
+                                 (|Declare|
+                                    |failed|
+                                    (|Apply| |Enumeration| |failed|)))
+                              (|Label| |exquo| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |ground|
+                              (|Apply| |->| (|Comma| |%|) |#1|))
+                           (|Lambda|
+                              (|Comma| (|Declare| |t#1| |%|))
+                              |#1|
+                              (|Label| |ground| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |ground?|
+                              (|Apply| |->| (|Comma| |%|) |Boolean|))
+                           (|Lambda|
+                              (|Comma| (|Declare| |t#1| |%|))
+                              |Boolean|
+                              (|Label| |ground?| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |mapExponents|
+                              (|Apply|
+                                 |->|
+                                 (|Comma|
+                                    (|Apply| |->| (|Comma| |#2|) |#2|)
+                                    |%|)
+                                 |%|))
+                           (|Lambda|
+                              (|Comma|
+                                 (|Declare|
+                                    |t#1|
+                                    (|Apply| |->| (|Comma| |#2|) |#2|))
+                                 (|Declare| |t#2| |%|))
+                              |%|
+                              (|Label| |mapExponents| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |primitivePart|
+                              (|Apply| |->| (|Comma| |%|) |%|))
+                           (|Lambda|
+                              (|Comma| (|Declare| |t#1| |%|))
+                              |%|
+                              (|Label|
+                                 |primitivePart|
+                                 |dummyDefault|)))) ))) )))
+   (|Define|
+      (|Declare|
+         |AbelianMonoidRing|
+         (|Apply|
+            |->|
+            (|Comma|
+               (|Declare| |#1| |Ring|)
+               (|Declare| |#2| |OrderedAbelianMonoid|))
+            |Category|))
+      (|Lambda|
+         (|Comma|
+            (|Declare| |#1| |Ring|)
+            (|Declare| |#2| |OrderedAbelianMonoid|))
+         |Category|
+         (|Label|
+            |AbelianMonoidRing|
+            (|With|
+               NIL
+               (|Sequence|
+                  |Ring|
+                  (|Apply| |BiModule| |#1| |#1|)
+                  (|Declare|
+                     |leadingCoefficient|
+                     (|Apply| |->| (|Comma| |%|) |#1|))
+                  (|Declare|
+                     |leadingMonomial|
+                     (|Apply| |->| (|Comma| |%|) |%|))
+                  (|Declare| |degree| (|Apply| |->| (|Comma| |%|) |#2|))
+                  (|Declare|
+                     |map|
+                     (|Apply|
+                        |->|
+                        (|Comma| (|Apply| |->| (|Comma| |#1|) |#1|) |%|)
+                        |%|))
+                  (|Declare|
+                     |monomial?|
+                     (|Apply| |->| (|Comma| |%|) |Boolean|))
+                  (|Declare|
+                     |monomial|
+                     (|Apply| |->| (|Comma| |#1| |#2|) |%|))
+                  (|Declare| |reductum| (|Apply| |->| (|Comma| |%|) |%|))
+                  (|Declare|
+                     |coefficient|
+                     (|Apply| |->| (|Comma| |%| |#2|) |#1|))
+                  (|If|
+                     (|Test| (|Has| |#1| |Field|))
+                     (|Declare| |/| (|Apply| |->| (|Comma| |%| |#1|) |%|))
+                     NIL)
+                  (|If|
+                     (|Test| (|Has| |#1| |CommutativeRing|))
+                     (|Sequence|
+                        |CommutativeRing|
+                        (|Apply|
+                           |Algebra|
+                           (|PretendTo| |#1| |CommutativeRing|)))
+                     NIL)
+                  (|If|
+                     (|Test| (|Has| |#1| |CharacteristicZero|))
+                     |CharacteristicZero|
+                     NIL)
+                  (|If|
+                     (|Test| (|Has| |#1| |CharacteristicNonZero|))
+                     |CharacteristicNonZero|
+                     NIL)
+                  (|If|
+                     (|Test| (|Has| |#1| |IntegralDomain|))
+                     |IntegralDomain|
+                     NIL)
+                  (|If|
+                     (|Test|
+                        (|Has|
+                           |#1|
+                           (|Apply|
+                              |Algebra|
+                              (|Apply| |Fraction| |Integer|))))
+                     (|Apply|
+                        |Algebra|
+                        (|PretendTo|
+                           (|Apply|
+                              |Fraction|
+                              (|PretendTo| |Integer| |IntegralDomain|))
+                           |CommutativeRing|))
+                     NIL)
+                  (|Default|
+                     (|Sequence|
+                        (|Define|
+                           (|Declare|
+                              |*|
+                              (|Apply|
+                                 |->|
+                                 (|Comma|
+                                    (|Apply|
+                                       |Fraction|
+                                       (|PretendTo|
+                                          |Integer|
+                                          |IntegralDomain|))
+                                    |%|)
+                                 |%|))
+                           (|Lambda|
+                              (|Comma|
+                                 (|Declare|
+                                    |t#1|
+                                    (|Apply|
+                                       |Fraction|
+                                       (|PretendTo|
+                                          |Integer|
+                                          |IntegralDomain|)))
+                                 (|Declare| |t#2| |%|))
+                              |%|
+                              (|Label| |*| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |map|
+                              (|Apply|
+                                 |->|
+                                 (|Comma|
+                                    (|Apply| |->| (|Comma| |#1|) |#1|)
+                                    |%|)
+                                 |%|))
+                           (|Lambda|
+                              (|Comma|
+                                 (|Declare|
+                                    |t#1|
+                                    (|Apply| |->| (|Comma| |#1|) |#1|))
+                                 (|Declare| |t#2| |%|))
+                              |%|
+                              (|Label| |map| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |monomial?|
+                              (|Apply| |->| (|Comma| |%|) |Boolean|))
+                           (|Lambda|
+                              (|Comma| (|Declare| |t#1| |%|))
+                              |Boolean|
+                              (|Label|
+                                 |monomial?|
+                                 |dummyDefault|)))) ))) ))) )

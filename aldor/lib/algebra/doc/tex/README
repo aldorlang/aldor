@@ -1,0 +1,6 @@
+The aldorlib/ directory contains the *.tex files
+needed to generate the part of the documentation 
+related to the types defined in aldorlib/
+
+These files are needed if `make links' create
+valid links. See the `Makefile'.

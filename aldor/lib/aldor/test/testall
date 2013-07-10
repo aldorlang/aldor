@@ -1,0 +1,4 @@
+./sal_cmdline.test -v -b -Lfoo -abar
+./sal_random.test
+./sal_stream.test
+./sal_intgmp.test

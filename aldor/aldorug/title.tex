@@ -1,0 +1,36 @@
+\thispagestyle{empty}
+%\chapterHead%
+%{Version \asharpver{} \\ \today}%
+%{\asharpName{} User Guide}
+{\def\bookHead#1#2{{%
+ \hbadness=10001\leftskip=\baseLeftSkip%
+ %\noindent \vrule height 1.7mm width \xmpWidth\hfill\break%
+ \par \vskip -\parskip \vskip -\baselineskip\vskip 5pt%
+ {#1}\hfill\hbox{}%
+ \par \vskip -\parskip \vskip -\baselineskip%
+ \vskip 35mm \leftskip=0pt%
+% \hrule width \textwidth height .5pt depth0pt%
+ \vskip 6pt \par\noindent%
+ \begin{minipage}[t]{23pc}\raggedright\CTsize #2\end{minipage}
+ \vskip 12mm
+ }}
+ \bookHead{}{Aldor User Guide}
+}
+\ \\
+\begin{Large}
+\begin{flushleft}
+\leftskip=\baseLeftSkip%
+%%%% Stephen M. Watt  \\
+% Pietro, Pete, and Martin have also contributed sections of this document.
+\hfill{\it by Aldor.org}
+\end{flushleft}
+\end{Large}
+\vfill
+%\begin{Large}
+%\begin{flushright}
+%\leftskip=\baseLeftSkip%
+%\hfill{\bf The Numerical Algorithms Group Limited}
+%\end{flushright}
+%\end{Large}
+\hrule height .5pt
+\clearpage

@@ -1,0 +1,9 @@
+#!/bin/sh
+
+#
+#  Path changed to ${ALDORROOT}/toolbin/params
+#  Addition of touch ensures that the params file will exist
+#
+touch ${ALDORROOT}/bin/params
+
+grep "^$1" < ${ALDORROOT}/bin/params | awk -F: '{print $2}'

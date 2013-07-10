@@ -1,0 +1,351 @@
+\typeout{>>}
+\typeout{>> Aldor User Guide extension to axiom.sty}
+\typeout{>> Stephen Watt {\em et al.} <Jan-Nov 1994>}
+\typeout{>>}
+\def\etc{{\em etc.}}
+\def\ie{{\em i.e.}}
+\def\eg{{\em e.g.}}
+\def\Eg{{\em E.g.}}
+\def\asharpName{Aldor}
+\def\asharpname{Aldor}
+\def\asharpfull{Aldor}
+\def\asharp{Aldor}
+\def\aldor{Aldor}
+\def\axiom{AXIOM}
+\def\foam{{\sc Foam}}
+\def\xasharp{XAXIOM-XL}
+\def\x11{X Window System R11}
+%
+\def\libaldor{{\tt libaldor}}
+\def\basicmath{{\tt BasicMath}}
+%
+\newcommand{\nth}[1]{$#1\/$th}
+\newcommand{\mysect}[1]{\vskip 5mm {\large \bf #1}}
+\newcommand{\mysubsect}[1]{\vskip 1mm {$\bullet$ \bf #1}}
+%
+\def\asharpref{\asharp{} Language Reference}
+
+% Redefining axiom.sty macros:
+
+\renewcommand{\spadref}[1]{Section \ref{#1} on page \pageref{#1}}
+\renewcommand{\chapref}[1]{chapter~\ref{#1}}
+\renewcommand{\appxref}[1]{appendix~\ref{#1}}
+
+% Analogous new macros:
+
+\def\Spadref#1{Section \ref{#1} on page \pageref{#1}}
+\def\Chapref#1{Chapter~\ref{#1}}
+\def\Figref#1{Figure~\ref{#1}}
+\def\figref#1{Figure~\ref{#1}}
+\def\Tabref#1{Table~\ref{#1}}
+\def\tabref#1{Table~\ref{#1}}
+\def\Secref#1{Section~\ref{#1}}
+\def\secref#1{Section~\ref{#1}}
+
+\def\incomplete{\par\fbox{\sc This Section Is Not Yet Complete}\vspace*{.5in}}
+\def\unwritten{\par\fbox{\sc This Section Is Not Yet Written}\vspace*{.5in}}
+\def\xpt{\normalsize}
+\def\quotedTilde{``\texht{$\sim$}{{\tt \~}}''}
+\def\quotedEquals{``\texht{$=$}{{\tt =}}''}
+\def\quotedTildeEquals{``\texht{$\sim=$}{{\tt \~=}}''}
+\def\quotedCaret{``\texht{${}^\wedge$}{{\tt \^{}}}''}
+\def\quotedCaretEquals{``\texht{${{}^\wedge}$=}{{\tt \^{}=}}''}
+%MCD This looks like xmpWidth - the width of the rules round the box
+%\newcommand{\xmpBoxWidth}{28pc}
+\newcommand{\xmpBoxWidth}{115mm}
+\newcommand{\<}{$<$}
+\newcommand{\todo}[1]{\footnote{{\bf To do:\/} #1}}
+\newcommand{\minititle}[1]{{\bf #1}\\}
+\newcommand{\asharpcmd}[1]{{\tt aldor#1}}
+\newcommand{\uniclcmd}[1]{{\tt unicl#1}}
+%\newcommand{\xasharpcmd}[1]{{\tt xaxiomxl#1}}
+\newcommand{\cccmd}[1]{{\tt cc#1}}
+\newcommand{\fname}[1]{``{\tt #1}''}
+\newcommand{\ftext}[1]{{\small\verbatiminput{#1}}}
+\newcommand{\option}[1]{``{\tt #1}''}
+\newcommand{\io}[1]{{\tt #1}}
+\newcommand{\osprompt}{{\tt \%\ }}
+\newcommand{\ttin}[1]{``{\tt #1}''}
+\newcommand{\meta}[1]{{\it #1\/}}
+\newcommand{\egindent}{{\tt \ \ \ \ }}
+%\newenvironment{optdesc}[1]{\begin{tabular}{@{}p{20mm}p{80mm}@{}}{\tt #1} & }{\end{tabular}\newline}
+\newenvironment{optdesc}{\begin{description}}{\end{description}}
+\newenvironment{towrite}{\unwritten{}\\\begin{it}}{\end{it}}
+\newcommand{\shin}[1]{{\small \verbatiminput{commands/#1.in}}}
+\newcommand{\shio}[1]{{\small \verbatiminput{commands/#1.in}\verbatiminput{commands/#1.out}}}
+\newcommand{\shrec}[1]{{\small \verbatiminput{commands/#1.rec}}}
+\newcommand{\optitem}[1]{\item[{\tt #1}]\ \\}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% Indexing
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\baseCatIndex}[1]{\index{#1@{\tt #1}!---base library category}}
+\newcommand{\baseDomIndex}[1]{\index{#1@{\tt #1}!---base library domain}}
+\newcommand{\keywordIndex}[1]{\index{#1@{\tt #1} keyword}}
+\newcommand{\operatorIndex}[1]{\index{#1@{\tt #1} operator}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% Things for the grammar.
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\Term}[1]{{\em #1}}
+\newcommand{\Alt}[1]{$|$}
+\newcommand{\Kw}[1]{``{\tt #1}''}
+\newcommand{\Opt}[1]{[#1]}
+\newcommand{\Sn}[1]{{\it #1\/}}
+\newcommand{\SnRule}[1]{{\sf #1\/}}
+%
+%%%%%%%%%%%%%%%%%%%%%%
+%%% aldor.tex macros
+%
+\newcommand{\marker}{\bullet}
+%
+\newcommand{\AxllibParamHead}{{\bf Parameter:}}
+\newcommand{\AxllibParamsHead}{{\bf Parameters:}}
+\newcommand{\AxllibParameter}[2]{\\$\bullet$ {\tt #1: #2}\hfill{$\mbox{}$}}
+\newcommand{\AxllibReturnHead}{{\bf Returns:}}
+\newcommand{\AxllibReturn}[1]{\\$\bullet$ {\tt #1}\hfill{$\mbox{}$}\\}
+\newcommand{\AxllibDescriptHead}{{\bf Description:}\\}
+\newcommand{\AxllibSatisfyHead}{{\bf Categories satisfied:}\\}
+\newcommand{\AxllibSatisfies}[1]{{\sf #1}, }
+\newcommand{\AxllibSatisfiesLast}[1]{{\sf #1}}
+\newenvironment{AxllibDefinedAs}{{\bf Definition:}\begin{small}}{\end{small}}
+%
+
+\newcommand{\AxllibCascaded}[1]{{\bf Cascaded exports:} {\sf #1}}
+
+\newcommand{\AxllibExportsHead}{{\bf Exports:}\\}
+%%\newcommand{\Export}[3]{\vspace{2mm}\noindent{\tt $\marker$ #1: {\small \tt #2}}\hfill {\it#3}\hfill\newline}
+
+\newcommand{\Export}[3]{\noindent{\tt $\marker$ #1:
+{\small \tt #2}}\hfill  {\small \it#3}\\}
+
+\newcommand{\ExportToo}[4]{{\tt $\marker$ #1: {\small \tt #2}}\hfill 
+{\small \it#3}\ifx\par#4\par\else\\\expandafter#4\fi}
+
+%%\newcommand{\ExportLast}[3]{{\tt $\marker$ #1: {\small \tt
+%%#2}}\hfill{\small \it#3}\\\noindent}
+\newcommand{\ExportLast}[3]{{\tt $\marker$ #1: {\small \tt
+#2}}\hfill{\small \it#3}\\\noindent}
+
+
+\newcommand{\ExportNl}[3]{\vspace{2mm}\noindent{\tt $\marker$ #1:
+{\small \tt #2}}\hfill\\
+{\mbox{}}\hfill{\small \it#3}\\\noindent}
+\newcommand{\ExportTooNl}[3]{{\tt $\marker$ #1: {\small \tt
+#2}}\hfill\\ {\mbox{}}\hfill{\small \it#3}\\\noindent}
+\newcommand{\ExportLastNl}[3]{{\tt $\marker$ #1: {\small \tt
+#2}}\hfill\\ {\mbox{}}\hfill{\small \it#3}\\\noindent}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%% Local Macros
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% HELP! This macro should be local to aldor.tex, but for some reason
+%% works only in this file.
+
+\newcommand{\MainOrderExports}{%
+\Export{<, >, >=, <=}{(\%, \%) -> Boolean}{from Order}%
+\ExportToo{<, >, >=, <=}{(\%, \%) -> Cross(Boolean, \%)}{from Order}%
+\ExportToo{<, >, >=, <=}{(Cross(Boolean,\%), \%) -> Cross(Boolean,\%)}{from Order}%
+\ExportLast{<, >, >=, <=}{(Cross(Boolean, \%), \%) -> Boolean}{from Order}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\opname}[1]{{\tt #1}}
+\newcommand{\Joinees}[1]{\vspace{2mm}{\bf Directly inherits: }\\{\sf #1}}
+\newcommand{\back}{{${\tt \backslash}$}}
+\newcommand{\slope}{{${\tt /}$}}
+\newcommand{\andop}{{/\back}}
+\newcommand{\orop}{{\back{}/}}
+\newcommand{\CommentCoerce}{{Coerce from and to the internal builtin representation.}}
+\newcommand{\CategorySection}[1]{\section{#1}}
+\newcommand{\DomainSection}[1]{\section{#1}}
+\newcommand{\CategorySectionWide}[1]{\widesection{#1}}
+\newcommand{\DomainSectionWide}[1]{\widesection{#1}}
+
+\newcommand{\SeeFile}[1]{}
+
+%%%%%%%%%%%%%%%%%%%%%%
+%%% interact.tex macros
+
+% terminology conventions
+\newcommand{\intdef}[1]{{\em `#1'\/}}
+
+%%%%%%%%%%%%%%%%%%%%%%
+%%% Samples macros
+
+\newcommand{\program}[1]{\begin{flushleft}\small\leftskip=\baseLeftSkip\input{samples/#1.tnb}\end{flushleft}}
+\newcommand{\codeline}[1]{\inleftmar{#1}}
+\newcommand{\lineNote}[1]{\item[line #1]}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% \begin{TextBox}
+% ...
+% \end{TextBox}
+%
+% This creates a boxed section of text.
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newenvironment{TextBox}{%
+\\
+\begin{tabular}{|c|}%
+\hline
+\begin{small}%
+\begin{minipage}[t]{\xmpBoxWidth}%
+}{%
+\end{minipage}%
+\end{small}%
+\\
+\\ \hline 
+\end{tabular}%
+\\
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% \begin{Display}{p}{Label}{This is the Caption} 
+% ...
+% \end{Display}
+%
+% This creates a boxed figure in a uniform style.
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newenvironment{Display}[3]{%
+\begin{figure}[#1]%
+\leftskip=\baseLeftSkip%
+\label{#2}
+\vspace{1mm}%
+%\caption{#3}
+\def\tmpdisplayname{#3}
+\begin{tabular}{|c|}%
+\hline \hline
+\begin{small}%
+\begin{minipage}[t]{\xmpBoxWidth}%
+}{%
+\end{minipage}%
+\end{small}%
+\\
+\\ \hline\hline
+\end{tabular}%
+\caption{\tmpdisplayname}
+\end{figure}
+}
+\newenvironment{UnboxedWideDisplay}[3]{%
+\begin{figure}[#1]%
+\leftskip=0pt
+\def\tmpdisplayname{#3}
+\label{#2}
+\vspace{1mm}%
+\begin{tabular*}{\textwidth}{c}%
+\hline \hline
+\begin{small}%
+\begin{minipage}[t]{\textwidth}%
+}{%
+\end{minipage}%
+\end{small}%
+\\
+\end{tabular*}%
+\caption{\tmpdisplayname}
+\end{figure}
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% \thefile{label}{caption}{fname}
+% \thegeneralfile{position}{label}{caption}{fname}
+% \thegeneraltwofile{position}{label}{caption}{fname}{fname}
+%
+% These read files into boxed figures.
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+\newcommand{\thefile}[3]{\thegeneralfile{p}{#1}{#2}{#3}}
+%
+\newcommand{\thegeneralfile}[4]{\begin{Display}{#1}{#2}{#3}%
+\verbatiminput{#4}\end{Display}}
+%
+\newcommand{\thegeneraltwofile}[5]{\begin{Display}{#1}{#2}{#3}%
+{\verbatiminput{#4}}%
+%\hrule width \xmpWidth height .5pt depth0pt%
+\hrule width 27pc height .5pt depth0pt%
+{\verbatiminput{#5}}%
+\end{Display}%
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% \thescreen{position}{label}{caption}{fname}
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\thescreen}[4]{%
+\epsfverbosetrue%
+\begin{Display}{#1}{#2}{#3}\epsfxsize=4.73in\epsfbox{screens/#4}\end{Display}%
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% \xcontrol{option}
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Used for xaxiomxl controls. (see xaxiomxl.tex)
+
+\newcommand{\xcontrol}[1]{{\sf #1}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% \begin{More}
+% ...
+% \end{More}
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newenvironment{More}%
+{{\bf More to come:}\begin{em}\begin{itemize}}%
+{\end{itemize}\end{em}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% \begin{Example}{Eg1}{A neat example}
+% ...
+% \end{Example}
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newenvironment{Example}[2]%
+{(Figure \ref{#1}.)\begin{Display}{p}{#1}{#2}}{\end{Display}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% \begin{SyntaxDef}{Syn1}{Robotniks}
+% ...
+% \end{SyntaxDef}
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newenvironment{SyntaxDef}[1]%
+{\ \\\noindent{Syntax: \bf #1}\begin{tt}\begin{flushleft}\leftskip=\baseLeftSkip}%
+{\end{flushleft}\end{tt}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% Redefine various things from axiom.sty
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% Chapter heading
+
+\def\chapterHead#1#2{{%
+\hbadness=10001\leftskip=\baseLeftSkip%
+\noindent \vrule height 1.7mm width \xmpWidth\hfill\break%
+\par \vskip -\parskip \vskip -\baselineskip\vskip 5pt%
+{#1}%\hfill\hbox{}%
+\par \vskip -\parskip \vskip -\baselineskip%
+\vskip 35mm \leftskip=0pt%
+% \hrule width \textwidth height .5pt depth0pt%
+\vskip 6pt \par\noindent%
+\begin{minipage}[t]{\textwidth}\raggedright\CTsize #2\end{minipage}
+\vskip 12mm
+}}
+%
+% Section Number and Title
+\def\SNTsize{\Large\bf\baselineskip 15pt}
+% SubSection Number and Title
+\def\SSNTsize{\large\bf\baselineskip 13pt}
+% Over-zealous indexing
+\def\axiomFunFrom#1#2{{\bf #1}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

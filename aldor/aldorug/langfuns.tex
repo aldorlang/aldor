@@ -1,0 +1,821 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%                                                                       %%%
+%%% :: Functions
+%%%                                                                       %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\head{chapter}{Functions}{asugLangFuncs}
+
+Functions lie at the heart of \asharp{}:
+typical expressions consist mostly of function calls.
+
+Much of what is done by {\em ad hoc} means in other languages
+is done in \asharp{} through normal functions.
+It is the job of the compiler to ensure that relying on functions
+in this way does not adversely affect performance.
+
+This chapter describes how to define and use functions, beginning with
+typical examples of function definition and application, then describing
+more specialized features, including keyword arguments, default
+arguments, function expressions (also called ``anonymous functions''),
+and curried functions.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\head{section}{Function definition}{asugLangFunDefine}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+A typical function definition has the following form:
+\index{function definition}
+
+\begin{small}
+\begin{verbatim}
+    f (s1: S1, ..., sn: Sn) : T == E
+\end{verbatim}
+\end{small}
+
+This definition has a number of parts:
+\begin{itemize}
+\item the {\em function name\/}, {\tt f}
+\item the {\em formal parameter names\/}, {\tt s1,...,sn}
+\item the {\em formal parameter types\/}, {\tt S1,...,Sn}
+\item the {\em return type\/}, {\tt T}, and
+\item the {\em function body\/}, {\tt E}.
+\end{itemize}
+
+The {\em function name\/} is an identifier which will be used
+to denote the function.
+In a given scope there may be more than one functions with the same
+name; in this case the function name is said to be {\em overloaded\/}.
+\index{function name}
+\index{overloading}
+
+%\pagebreak
+The {\em formal parameter names\/} are identifiers which are used to
+refer to the values passed to the function as arguments.  The formal
+parameter names are visible in the body of the function, in the types
+of the formal parameters, and in the return type (See
+\secref{asugLangNamesApplication}).
+\index{parameter}
+\index{formal parameter}
+\index{dependent function}
+\index{dependent type}
+
+The {\em formal parameter types\/} are type-valued expressions
+(\eg{} \ttin{Integer} or \ttin{SquareMatrix(n+m, Complex Float)})
+which specify what type of value is expected as the corresponding
+actual argument to the function.
+
+The {\em return type\/} is a type-valued expression which specifies
+the type of the value computed by the function.
+\index{return type}
+
+The {\em function body\/} is an expression which, when evaluated,
+produces the return value of the function.  The type of the
+value returned by the function body must be compatible
+with the given return type.
+\index{function body}
+
+More elaborate forms of function definitions are described in sections~%
+\ref{asugLangFunDefault} and \ref{asugLangFunCurry}.
+
+%\newpage
+\subsubsection{Multiple return values}
+
+Just as functions can take any number of parameters, they may also
+return any number of results.  The typical function definition given above
+is a special case of the more general form:
+
+\begin{small}
+\begin{verbatim}
+    f (s1: S1, ..., sn: Sn) : (t1: T1, ..., tm: Tm) == E
+\end{verbatim}
+\end{small}
+
+Now in place of a single return type we have:
+
+\begin{itemize}
+\item the {\em return names\/}, {\tt t1,...,tm}, and 
+\item the {\em return types\/}, {\tt T1,...,Tm}.
+\end{itemize}
+
+This function definition takes $n$ arguments and returns $m$ results.
+
+The {\em return names\/} are identifiers which can be used 
+to refer to the values returned from the function.
+The return names are visible in the types of the return values.
+\index{dependent function}
+\index{dependent type}
+
+The {\em return types} are type-valued expressions which specify
+the type of the corresponding value returned from the function.
+
+Any or all of the return names may be omitted,
+in which case the $i\/$th return declaration would read \ttin{Ti},
+rather than \ttin{ti:~Ti}.
+
+When a function has no formal parameter or no return value
+an empty pair of parentheses is used as the formal parameter list
+or return value list.
+For example, the following function takes no parameter and
+returns no result:
+
+\begin{small}
+\begin{verbatim}
+    f () : () == E
+\end{verbatim}
+\end{small}
+
+\subsubsection{Return expressions}
+
+Inside the body of a function definition, a {\em return expression\/} is
+used to explicitly pass control back to the calling environment and to
+return values from the function.
+The general form of the return expression is:
+\keywordIndex{return}
+
+\begin{small}
+\begin{verbatim}
+    return E
+\end{verbatim}
+\end{small}
+
+The value of the expression \ttin{E} is returned as the value
+of the function.  The type of \ttin{E} must be compatible with
+the declared return type of the function.  The return expression
+itself has type \ttin{Exit}.
+\index{return value}
+
+Inside a function which returns more than one value the return expression
+may explicitly supply more than one value:
+
+\begin{small}
+\begin{verbatim}
+    return (v1, ..., vn)
+\end{verbatim}
+\end{small}
+
+\vbox{
+Inside a function which returns no value, an empty return expression
+may be used:
+
+\begin{small}
+\begin{verbatim}
+    return
+\end{verbatim}
+\end{small}
+}
+
+Since the value of the function body is used as the value of the function,
+in many cases an explicit return expression is unnecessary:
+
+\begin{small}
+\begin{verbatim}
+    f (n: Integer) : Integer == if n < 1 then 1 else n * f(n-1)
+\end{verbatim}
+\end{small}
+
+The value returned by the function \ttin{f} is the value returned by
+the \ttin{if} expression.  An explicit \ttin{return} is not needed.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\head{section}{Function application}{asugLangFunCall}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+A typical (prefix) function application has the following form:
+\index{prefix operators}
+\index{function application}
+
+\begin{small}
+\begin{verbatim}
+    f (a1, ..., an)
+\end{verbatim}
+\end{small}
+
+This form of function application has the following parts:
+\begin{itemize}
+\item the {\em function\/}, {\tt f}, and
+\item the {\em actual parameters\/}, {\tt a1,...,an}.
+\end{itemize}
+
+The {\em function\/} is an expression which denotes the function to be called.
+In general, \ttin{f} can be any expression whose value is a function.
+\index{function}
+
+The {\em actual parameters} are expressions which specify the values
+to be passed as arguments to the function.  The types of the actual
+parameters must be compatible with the type of the function \ttin{f}.
+\index{actual parameter}
+
+As discussed in \secref{asugLangExprMultis}, the order of evaluation
+of the actual arguments in an application is not defined.  More elaborate
+%% "to" replaced by "in" - it seems to me that "application" is a meta-
+%% function, the arguments to which, in this context, are (i) the
+%% function being applied and (ii) its set of arguments (viewed as a
+%% single object).  "In" seems clearer to me as referring to the
+%% function's arguments, rather than the application's.  Similar
+%% changes made later in this section.    MGR
+forms of function application are developed in sections~\ref{asugLangFunKey},
+\ref{asugLangFunExpr} and \ref{asugLangFunCurry}.
+
+When a function takes no parameter, an application of that
+function must have as its actual parameters an expression which produces
+no value.  Often, such an application takes the following form:
+
+\begin{small}
+\begin{verbatim}
+    f ()
+\end{verbatim}
+\end{small}
+
+\subsubsection{Other application notations}
+
+In addition to the normal prefix application notation there are a
+small number of special syntactic forms in \asharp{} denoting function
+application.  The general reason behind these rules is to make
+programs more readable.  For example there is a set of infix operators
+(see \secref{asugLangElementsNames}), so that you can write \ttin{a +
+b} instead of \ttin{+(a,b)}.  Furthermore, some language forms cause
+implicit application of functions:
+\begin{itemize}
+\item the treatment of literal values,
+\item the application of one object to another,
+\item the updating of objects,
+\item the interpretation of tests in conditional statements 
+\item the mechanism for generating a set of values for iteration.
+\end{itemize}
+Refer to \chapref{asugLangTies} for a more detailed description of these forms.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\head{section}{Keyword arguments}{asugLangFunKey}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Consider the following function definition:
+
+\begin{small}
+\begin{verbatim}
+    -- Compute a point on the line with slope `m' and intercept `b'.
+    line(x: DoubleFloat, m: DoubleFloat, b: DoubleFloat): DoubleFloat ==
+        m*x + b;
+\end{verbatim}
+\end{small}
+
+Because all the parameters have the same type, it may be difficult
+to remember which one is which.  As a result, the meaning of a call such as
+
+\begin{small}
+\begin{verbatim}
+    line(3.2, 8.2, 1.0);
+\end{verbatim}
+\end{small}
+
+might not be readily apparent.
+
+One way to increase the readability of such a program is to place
+the arguments in named variables before calling the function:
+
+\begin{small}
+\begin{verbatim}
+    slope     := 8.2;
+    intercept := 1.0;
+
+    line(3.2, slope, intercept);
+\end{verbatim}
+\end{small}
+
+But this approach needlessly increases the number of variables
+used by the program.  In addition, now the values for the slope
+and intercept are not explicitly visible at the call point.
+So one sort of unreadability has been exchanged for another 
+(and {\em remembering} the order of the parameters is no easier
+than before).
+
+\subsubsection{Keyword arguments}
+
+An alternative in \asharp{} is to allow the actual arguments
+in an application to be supplied by name using {\em keyword arguments\/}.
+For example:
+\index{keyword argument}
+
+\begin{small}
+\begin{verbatim}
+    line(3.2, b == 1.0, m == 8.2);
+\end{verbatim}
+\end{small}
+
+An actual argument in this form of application has the following parts:
+\begin{itemize}
+\item the {\em formal parameter name}, (\eg{} {\tt b}),
+\item the double-equal symbol \ttin{==} and
+\item the {\em actual parameter value}, (\eg{} {\tt 1.0}).
+\end{itemize}
+
+The {\em formal parameter name} is an identifier which must match
+one of the formal parameter names given in the definition of the function.
+
+The {\em actual parameter value} is then used as the value of the formal
+parameter with the same name, regardless of its position in the actual
+argument list in the function application.  The type of the actual parameter
+value must match the type of the formal parameter with the same name.
+\index{formal parameter}
+\index{actual parameter}
+
+Any parameters supplied as keyword arguments must appear after any arguments
+supplied by position alone.  It is an error if any of the formal parameters
+is not supplied with a value, either as a positional argument or by using
+a keyword argument.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\head{section}{Default arguments}{asugLangFunDefault}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+In a programming language where function names may not be overloaded,
+such as Lisp or C, some functions are written to take a variable number
+of arguments.  When these functions are called, they decide which arguments
+they have been passed and what to do about the missing ones.
+\index{overloading}
+
+In a language such as \asharp{}, where function names may be overloaded,
+there are often several functions visible with the same name.
+Which function to use is decided on the basis of the number of actual arguments
+supplied and their types, and possibly on the type of the return value
+required by the context of the function application.
+
+So, instead of writing functions which take a variable number of
+arguments, in \asharp{} we are allowed to write several functions with
+the same name, each with a fixed number of arguments.  One advantage
+of doing this is that the decision on which function to call can be made
+once, at compile time, whereas code in the body of the function, to
+supply missing arguments, would be exercised in each time the function
+was run.
+
+%\pagebreak
+So, continuing the example from \secref{asugLangFunKey}, we can write:
+
+\begin{small}
+\begin{verbatim}
+    -- Compute a point on the line with slope `m' and intercept `b'.
+    line(x:DoubleFloat, m:DoubleFloat, b:DoubleFloat):DoubleFloat ==
+        m*x + b;
+
+    -- Assume a default intercept of `0'.
+    line(x:DoubleFloat, m:DoubleFloat):DoubleFloat == line(x, m, 0); 
+\end{verbatim}
+\end{small}
+
+Soon afterward, however, we want to give other arguments default values.
+Then the number of functions needed increases exponentially in the number
+of arguments which are to have default values.  
+
+Another problem arises when arguments have the same type:
+it is not always possible to overload the function name enough to
+provide each argument with a default value.
+
+For these reasons, languages with name overloading sometimes provide
+an explicit way to supply default values to named parameters.
+
+\subsubsection{Default arguments}
+
+In \asharp{}, default values for named parameters can be supplied in
+the definition of a function using the following form:
+\index{default argument}
+
+\begin{small}
+\begin{verbatim}
+    f (s1: S1 == v1, ..., sn: Sn == vn) : T == E
+\end{verbatim}
+\end{small}
+
+This form of function definition has the following additional part:
+\begin{itemize}
+\item the {\em default argument value specifications\/}, in which
+\ttin{==} (the \linebreak double-equal symbol) introduces each of the
+{\em default argument values\/}, {\tt v1,...,vn}.
+\end{itemize}
+
+The default argument values are expressions which, when evaluated,
+produce values, each of which can be used as the corresponding argument
+to the function.  The type of the default value for a parameter must be
+compatible with the corresponding parameter type.
+
+Any or all of the default argument values may be omitted, in which case the
+form of the $i\/$th formal parameter would read \ttin{si:~Si} instead of
+\ttin{si:~Si == vi}.  A function definition which supplies a default argument
+value for one of its parameters must also supply a default argument
+value for each of the following parameters. 
+
+Once again continuing the example given above, we can now define a single
+function which allows any combination of its final two arguments to be omitted:
+
+\begin{small}
+\begin{verbatim}
+    -- Compute a point on the line with slope `m' and intercept `b'.
+    -- The default slope is 1, and the default intercept is 0.
+
+    DF ==> DoubleFloat;
+
+    line(x: DF, m: DF == 1, b: DF == 0) : DF == m*x + b;
+\end{verbatim}
+\end{small}
+
+This definition supplies a default value of \ttin{1} for \ttin{m},
+and a default value of \ttin{0} for \ttin{b}.  Some example
+applications of the function \ttin{line} are as follows:
+
+\begin{small}
+\begin{verbatim}
+    x: DoubleFloat := 3.2;
+
+    stdout << line(x, 8.0) << newline;       -- 8.0 * x + 0
+    stdout << line(x) << newline;            -- 1   * x + 0
+    stdout << line(x, b == 5.0) << newline;  -- 1   * x + 5.0
+\end{verbatim}
+\end{small}
+
+In an application of a function whose definition supplies default
+argument values, it is an error if any of the formal parameters is not
+supplied with a value, either as a positional argument, or by using a
+keyword argument, or by using the default argument value supplied (if
+any) for that formal parameter.  The default argument values are
+evaluated, if and when they are used in a function application, as the
+other actual parameters are evaluated.  As discussed in
+\secref{asugLangExprMultis} the order of evaluation of the actual
+arguments to an application is not defined.
+\index{formal parameter}
+\index{actual parameter}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\head{section}{Function expressions}{asugLangFunExpr}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Function expressions are the primitive form for building functions
+in \asharp{}.  The general form for a function expression is:
+\index{function expression}
+
+\begin{small}
+\begin{verbatim}
+    (s1: S1 == v1, ..., sn: Sn == vn) : (t1: T1, ..., tm: Tm) +-> E
+\end{verbatim}
+\end{small}
+
+The syntax \ttin{(s:~S)~:~T +-> E(s)} for a function expression
+is intended to resemble the mathematical notation $s \mapsto E(s)$
+for a function specification.  The infix keyword \ttin{+->}
+denotes the $\lambda$ operator from a typed lambda calculus.
+A function expression has many of the same parts as a function definition,
+including the formal parameter names/types, the return names/types,
+the function body (see \secref{asugLangFunDefine}), and
+default arguments (see \secref{asugLangFunDefault}).
+
+\index{closure}
+When a function expression is evaluated, it captures the lexical environment
+in which it appears, creating a lexical closure.  The values of the variables
+which are visible in the scope of the function expression are then available
+when it is eventually applied to a set of arguments.
+
+More typical cases of function expressions are formed in much the same
+way as the corresponding cases of function definitions.  For example,
+the expression:
+
+\begin{small}
+\begin{verbatim}
+    (f: Integer -> Integer, n: Integer) : Integer +->
+        if n < 1 then 1 else n * f(n-1)
+\end{verbatim}
+\end{small}
+
+represents an integer function of two arguments which bears some superficial
+resemblance to a factorial function.
+
+Since a function expression has the same parts as a function
+definition except for the name, function expressions are sometimes
+known as {\em anonymous functions\/}.
+\index{anonymous function}
+Function expressions are also known as {\em lambda expressions\/}
+in many programming languages.
+\index{lambda expression}
+
+\subsubsection{Function types}
+
+Like any other expression, a function expression can be assigned a type.
+The type assigned to a function expression is called a {\em function type\/}.
+A function type is formed with the infix keyword \ttin{->}:
+\index{function type}
+
+\begin{small}
+\begin{verbatim}
+    (s1: S1 == v1, ..., sn: Sn == vn) -> (t1: T1, ..., tm: Tm)
+\end{verbatim}
+\end{small}
+
+The syntax \ttin{S -> T} for a function type is intended to be reminiscent
+of the mathematical notation $S \rightarrow T$ for a set of functions.
+A function type has many of the same parts as a function definition,
+including the formal parameter names/types, the return names/types
+(see \secref{asugLangFunDefine}), and default arguments 
+(see \secref{asugLangFunDefault}).
+
+For function types, any or all of the formal parameter names may be omitted,
+in which case the $i\/$th parameter declaration would read \ttin{Si}
+rather than (in the most general case) \ttin{si:~Si == vi}.
+
+The type of \ttin{f}, (\ttin{Integer -> Integer}), in the function
+expression shown previously, is a typical example of a function type.
+Any function expression which takes one integer argument and returns
+one integer result is a member of this type.
+
+The ability to include the formal parameter names and default arguments
+in the specification of the type is useful when using
+keyword arguments (see \secref{asugLangFunKey}),
+default arguments (see \secref{asugLangFunDefault}), and
+dependent types (see \secref{asugLangTypesFunction}).
+
+\subsubsection{Function definition revisited}
+
+The typical form for a function definition given in
+\secref{asugLangFunDefine} is really just a shorthand
+for the following equivalent definition:
+\index{function definition}
+
+\begin{small}
+\begin{verbatim}
+    f : (s1: S1, ..., sn: Sn) -> T == (s1: S1, ..., sn: Sn) : T +-> E
+\end{verbatim}
+\end{small}
+
+This form makes it easier to see that function definitions are the same
+as definitions of any other values.  Specifically, the expression:
+
+\begin{small}
+\begin{verbatim}
+    n : Integer == 8
+\end{verbatim}
+\end{small}
+
+defines a type (\ttin{Integer}) and a value (\ttin{8}) for the identifier
+\ttin{n}.  In the same way the function definition:
+
+\begin{small}
+\begin{verbatim}
+    f (n: Integer) : Integer == if n < 1 then 1 else n * f(n-1)
+\end{verbatim}
+\end{small}
+
+%\pagebreak
+which can also be written as:
+
+\begin{small}
+\begin{verbatim}
+    f : (n: Integer) -> Integer ==
+        (n: Integer) : Integer +-> if n < 1 then 1 else n * f(n-1)
+\end{verbatim}
+\end{small}
+
+defines a function type (\ttin{(n:~Integer) -> Integer}) and
+a function expression for the identifier \ttin{f}.
+
+\subsubsection{Function application revisited}
+
+Since function expressions evaluate to functions, they can be used
+% "evaluate to functions" rather than "to a function value" -
+% "squared" is a function (over the integers, say) - "4" is a function
+% value (squared 2).  MGR
+in the place of the function name in a function application:
+
+\begin{small}
+\begin{verbatim}
+    ((n: Integer) : Integer +-> if n < 1 then 1 else n * (n-1))(5);
+\end{verbatim}
+\end{small}
+
+This way of calling function expressions may be rather verbose. However,
+function expressions can also be assigned to local variables:
+
+\begin{small}
+\begin{verbatim}
+    g := (n: Integer) : Integer +-> if n < 1 then 1 else n * (n-1);
+    g(5);
+\end{verbatim}
+\end{small}
+
+So once again we see that a typical function definition is merely
+a special case of a more general framework, based on the fact that
+function expressions can be used just like any other expression.
+
+\vbox{
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\head{section}{Curried functions}{asugLangFunCurry}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Since function expressions can be used just like any other expression,
+we can write a function which returns a function as its result:%
+\index{function-valued function}\index{function - function-valued}
+
+\begin{small}
+\begin{verbatim}
+    DF ==> DoubleFloat;
+    line (m: DF, b: DF) : (x: DF) -> DF ==
+            (x: DF) : DF +-> m*x + b
+\end{verbatim}
+\end{small}
+}
+
+The function \ttin{line} is a function which has two formal parameters,
+and which returns a function of one formal parameter.  The type of the
+function returned by \ttin{line} is \ttin{(x:~DoubleFloat) -> DoubleFloat}.
+
+A function which returns a function as its result is called
+a {\em curried function\/},
+after Haskell Curry, a significant contributor to the theory behind
+functional programming\footnote{See, for instance, {\em Combinatory
+Logic,\/} Curry and Feys, North Holland, Amsterdam 1958.}.
+\index{curried function}\index{function - curried}
+\index{functional programming}
+
+To simplify the definition of curried functions in \asharp{},
+two shorthand notations are provided.
+
+%\pagebreak
+\subsubsection{Function expressions revisited}
+
+First, we generalise the syntax of function expressions
+(see \secref{asugLangFunExpr}) by inductively defining
+the {\em curried function expression\/}
+\index{function expression}
+
+\begin{small}
+\begin{verbatim}
+    (s1: S1) ... (sn: Sn)(s0: S0) : T +-> E
+\end{verbatim}
+\end{small}
+
+to be equivalent to the expression
+
+\begin{small}
+\begin{verbatim}
+    (s1: S1) ... (sn: Sn) : (s0: S0) -> T +-> (s0: S0) : T +-> E
+\end{verbatim}
+\end{small}
+
+In the definition above, we have assumed a single formal parameter within
+each set of parentheses and a single return type, to simplify the exposition.
+Note that \ttin{->} and \ttin{+->} associate from right to left
+and that \ttin{->} groups more tightly than \ttin{+->}.
+
+Using the equivalent method of writing function definitions, given in
+\secref{asugLangFunExpr}, and applying this shorthand to the
+right-hand side, the definition of the function \ttin{line} given above
+can be written as:
+
+\begin{small}
+\begin{verbatim}
+    DF ==> DoubleFloat;
+    line : (m: DF, b: DF) -> (x: DF) -> DF ==
+            (m: DF, b: DF)(x: DF) : DF +-> m*x + b;
+\end{verbatim}
+\end{small}
+
+Note that the function \ttin{line} is still a function which has
+two formal parameters, and which returns a function of one formal parameter.
+The only additional notation used here is the curried function expression
+used to define the value of \ttin{line}.  An expression for \ttin{line} can
+be written without using a curried function expression, but the shorter form
+is more convenient.
+
+\subsubsection{Function definition revisited}
+
+As a second shorthand for defining curried functions, we define
+the {\em curried function definition\/}
+\index{function definition}
+
+\begin{small}
+\begin{verbatim}
+    f (s1: S1) ... (sn: Sn) : T == E
+\end{verbatim}
+\end{small}
+
+to be equivalent to the expression
+
+\begin{small}
+\begin{verbatim}
+    f : (s1: S1) -> ... -> (sn: Sn) -> T ==
+        (s1: S1) ... (sn: Sn) : T +-> E
+\end{verbatim}
+\end{small}
+
+Continuing the example from the previous paragraphs, we can now express
+the definition of the function \ttin{line} in its most convenient form:
+
+\begin{small}
+\begin{verbatim}
+    DF ==> DoubleFloat;
+    line (m: DF, b: DF)(x: DF) : DF == m*x + b;
+\end{verbatim}
+\end{small}
+
+As a further example, if we define exponentiation%
+\index{exponentiation of functions} for {\tt MachineInteger} functions 
+of a {\tt MachineInteger} as follows:
+
+\begin{small}
+\begin{verbatim}
+    MI ==> MachineInteger;
+    (f:(MI->MI))^(n:MI) : (MI->MI) == {
+       n = 0 => (x:MI):MI +-> x;
+       n = 1 => f;
+       (x:MI):MI +-> f((f^(n-1))x);
+    }
+\end{verbatim}
+\end{small}
+
+an alternative notation could be defined, using the curried function
+conventions, as:
+
+\begin{small}
+\begin{verbatim}
+    multApply(n:MI,f:(MI->MI)):MI->MI == f^n
+\end{verbatim}
+\end{small}
+
+\subsubsection{Function application revisited}
+
+The application of curried functions to their arguments needs no additional
+machinery:  a curried function is just a function which returns a function,
+and any expression (including the result of a function application) can be
+used as a function as long as the actual parameters to the application are
+compatible with the type of the function.  For example:
+
+\begin{small}
+\begin{verbatim}
+    #include "aldor"
+    #include "aldorio"
+    DF ==> DoubleFloat;
+    import from DF;
+    
+    line(m: DF, b: DF)(x: DF): DF == m*x + b;
+
+    stdout << "f(x) is  x - 1" << newline;
+
+    stdout << "f(1.0) = " << line(1,-1)(1.0) << newline;
+    stdout << "f(2.0) = " << line(1,-1)(2.0) << newline;
+    stdout << "f(3.0) = " << line(1,-1)(3.0) << newline;
+\end{verbatim}
+\end{small}
+
+So in the application \ttin{line(1,-1)(1.0)}, the curried function \ttin{line}
+is applied to the arguments \ttin{1} and \ttin{-1}, which returns a function
+of one argument, which is applied to the argument \ttin{1.0}.
+
+As a result, we can use the \ttin{line} function in this example
+to create other functions:
+
+\begin{small}
+\begin{verbatim}
+    #include "aldor"
+    #include "aldorio"
+    DF ==> DoubleFloat;
+    import from DF;
+    
+    line(m: DF, b: DF)(x: DF): DF == m*x + b;
+
+    f := line(1, -1);
+    stdout << "f(x) is  x - 1" << newline;
+
+    stdout << "f(1.0) = " << f(1.0) << newline;
+    stdout << "f(2.0) = " << f(2.0) << newline;
+    stdout << "f(3.0) = " << f(3.0) << newline;
+\end{verbatim}
+\end{small}
+
+When we supply in this way only some of the arguments to a function,
+the result is a new function related to the original.
+This technique is a basic feature of functional programming,
+and is known as {\em currying\/} a function.
+
+Some languages provide an automatic conversion of functions of
+type \verb"(A, B) -> C" to functions of type \verb"A -> B -> C".
+This automatic conversion is {\em not} done in \asharp{}.
+When desired, this conversion can be made explicitly with a 
+function expression:
+
+\begin{small}
+\begin{verbatim}
+    #include "aldor"
+    #include "aldorio"
+    import from Integer;
+
+    I ==> Integer;
+
+    -- Curry the function `*'
+    ctimes == (a: I)(b: I) : I +-> a * b;
+    times3 == ctimes 3;
+    
+    stdout << "3 * 2 = " << times3 2 << newline;
+
+    -- Convert general functions:
+    curry(f: (I, I) -> I)(a: I)(b: I) : I == f(a,b);
+
+    stdout << "3 + 2 = " << curry(+)(3)(2) << newline;
+\end{verbatim}
+\end{small}

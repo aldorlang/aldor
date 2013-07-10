@@ -1,0 +1,72 @@
+ALGEBRA/src/multpoly/multpolydom/TODO
+-------------------------------------
+
+
+o RecursiveMultivariatePolynomial0(_
+     UP: (R: Ring) -> UnivariatePolynomialCategory(R), _
+     R:Ring, _
+     V: Join(SumitType, OrderedSetCategory)):  Join(CopyableType, PolynomialRing(R,V)) with {
+
+..............................................................................................
+
+#unassert LATER
+#if LATER
+
+
+         charthRoot(p:%): Partial(%) == {
+           import from Partial(%);
+           ground?(p) => {
+             pr: Partial(R) := charthRoot(base(p))$R;
+             failed? pr => return failed();
+             [(retract(pr))@R :: %];
+           }
+           pu: Partial(U) := charthRoot(univariate(p));
+           failed? pu => return failed();
+           [multivariateCanonical(var(p), retract(pu))];
+         }
+      }
+#endif
+
+#if LATER
+         quotient! (p:%,r:R) : % == {
+            zero? r => 
+               errorWith("exquo!$SMP:(%,R)->%",%,p,R,r,"#2 is null");
+            ground?(p) => reset!(p,exquo!(base(p), r)@R);
+            reset!(p,var(p),exquo!(univariate(p),r::%)$U);
+         }
+#endif
+
+
+o sm_dmp0.as
+
+  !! Check whether serialasation is correct !!
+
+o sm_dmp0.as
+
+  !! Improve times, times! and pthPower !!
+
+  !!!! Implement (fast) exponentiation !!!!
+
+o ../../test/dmp1-test-1.as
+
+-- distribute(a: Q): P == {
+--    import from P pretend FAMR(R, V pretend VariableType, E);
+--   expand(E)$Q(P)(a);
+-- }
+-- distribute(q^2);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,287 @@
+
+(|Sequence|
+   (|Import| NIL |AxiomLib|)
+   (|Import| NIL |Boolean|)
+   (|Export|
+      (|Declare|
+         |CommonOperators|
+         (|With|
+            NIL
+            (|Sequence|
+               (|Declare|
+                  |operator|
+                  (|Apply| |->| (|Comma| |Symbol|) |BasicOperator|)))) )
+      NIL
+      NIL)
+   (|Export|
+      (|Declare|
+         |BasicOperatorFunctions1|
+         (|Apply|
+            |->|
+            (|Declare| |#1| |SetCategory|)
+            (|With|
+               NIL
+               (|Sequence|
+                  (|Declare|
+                     |evaluate|
+                     (|Apply|
+                        |->|
+                        (|Comma| |BasicOperator| (|Apply| |List| |#1|))
+                        (|Apply|
+                           |Union|
+                           (|Declare| |value1| |#1|)
+                           (|Declare|
+                              |failed|
+                              (|Apply| |Enumeration| |failed|)))) )
+                  (|Declare|
+                     |evaluate|
+                     (|Apply|
+                        |->|
+                        (|Comma|
+                           |BasicOperator|
+                           (|Apply|
+                              |->|
+                              (|Comma| (|Apply| |List| |#1|))
+                              |#1|))
+                        |BasicOperator|))
+                  (|Declare|
+                     |evaluate|
+                     (|Apply|
+                        |->|
+                        (|Comma|
+                           |BasicOperator|
+                           (|Apply| |->| (|Comma| |#1|) |#1|))
+                        |BasicOperator|))
+                  (|Declare|
+                     |evaluate|
+                     (|Apply|
+                        |->|
+                        (|Comma| |BasicOperator|)
+                        (|Apply|
+                           |Union|
+                           (|Declare|
+                              |value1|
+                              (|Apply|
+                                 |->|
+                                 (|Comma| (|Apply| |List| |#1|))
+                                 |#1|))
+                           (|Declare|
+                              |failed|
+                              (|Apply| |Enumeration| |failed|)))) )
+                  (|Declare|
+                     |derivative|
+                     (|Apply|
+                        |->|
+                        (|Comma|
+                           |BasicOperator|
+                           (|Apply|
+                              |List|
+                              (|Apply|
+                                 |->|
+                                 (|Comma| (|Apply| |List| |#1|))
+                                 |#1|)))
+                        |BasicOperator|))
+                  (|Declare|
+                     |derivative|
+                     (|Apply|
+                        |->|
+                        (|Comma|
+                           |BasicOperator|
+                           (|Apply| |->| (|Comma| |#1|) |#1|))
+                        |BasicOperator|))
+                  (|Declare|
+                     |derivative|
+                     (|Apply|
+                        |->|
+                        (|Comma| |BasicOperator|)
+                        (|Apply|
+                           |Union|
+                           (|Declare|
+                              |value1|
+                              (|Apply|
+                                 |List|
+                                 (|Apply|
+                                    |->|
+                                    (|Comma| (|Apply| |List| |#1|))
+                                    |#1|)))
+                           (|Declare|
+                              |failed|
+                              (|Apply| |Enumeration| |failed|)))) )
+                  (|If|
+                     (|Test| (|Has| |#1| |OrderedSet|))
+                     (|Sequence|
+                        (|Declare|
+                           |constantOperator|
+                           (|Apply| |->| (|Comma| |#1|) |BasicOperator|))
+                        (|Declare|
+                           |constantOpIfCan|
+                           (|Apply|
+                              |->|
+                              (|Comma| |BasicOperator|)
+                              (|Apply|
+                                 |Union|
+                                 (|Declare| |value1| |#1|)
+                                 (|Declare|
+                                    |failed|
+                                    (|Apply| |Enumeration| |failed|)))) ))
+                     NIL)))) )
+      NIL
+      NIL)
+   (|Export|
+      (|Declare|
+         |BasicOperator|
+         (|With|
+            NIL
+            (|Sequence|
+               |OrderedSet|
+               (|Declare| |name| (|Apply| |->| (|Comma| |%|) |Symbol|))
+               (|Declare|
+                  |properties|
+                  (|Apply|
+                     |->|
+                     (|Comma| |%|)
+                     (|Apply| |AssociationList| |String| |None|)))
+               (|Declare| |copy| (|Apply| |->| (|Comma| |%|) |%|))
+               (|Declare| |operator| (|Apply| |->| (|Comma| |Symbol|) |%|))
+               (|Declare|
+                  |operator|
+                  (|Apply|
+                     |->|
+                     (|Comma| |Symbol| |NonNegativeInteger|)
+                     |%|))
+               (|Declare|
+                  |arity|
+                  (|Apply|
+                     |->|
+                     (|Comma| |%|)
+                     (|Apply|
+                        |Union|
+                        (|Declare| |value1| |NonNegativeInteger|)
+                        (|Declare|
+                           |failed|
+                           (|Apply| |Enumeration| |failed|)))) )
+               (|Declare|
+                  |nullary?|
+                  (|Apply| |->| (|Comma| |%|) |Boolean|))
+               (|Declare| |unary?| (|Apply| |->| (|Comma| |%|) |Boolean|))
+               (|Declare| |nary?| (|Apply| |->| (|Comma| |%|) |Boolean|))
+               (|Declare|
+                  |weight|
+                  (|Apply| |->| (|Comma| |%|) |NonNegativeInteger|))
+               (|Declare|
+                  |weight|
+                  (|Apply| |->| (|Comma| |%| |NonNegativeInteger|) |%|))
+               (|Declare|
+                  |equality|
+                  (|Apply|
+                     |->|
+                     (|Comma|
+                        |%|
+                        (|Apply| |->| (|Comma| |%| |%|) |Boolean|))
+                     |%|))
+               (|Declare|
+                  |comparison|
+                  (|Apply|
+                     |->|
+                     (|Comma|
+                        |%|
+                        (|Apply| |->| (|Comma| |%| |%|) |Boolean|))
+                     |%|))
+               (|Declare|
+                  |display|
+                  (|Apply|
+                     |->|
+                     (|Comma| |%|)
+                     (|Apply|
+                        |Union|
+                        (|Declare|
+                           |value1|
+                           (|Apply|
+                              |->|
+                              (|Comma| (|Apply| |List| |OutputForm|))
+                              |OutputForm|))
+                        (|Declare|
+                           |failed|
+                           (|Apply| |Enumeration| |failed|)))) )
+               (|Declare|
+                  |display|
+                  (|Apply|
+                     |->|
+                     (|Comma|
+                        |%|
+                        (|Apply|
+                           |->|
+                           (|Comma| (|Apply| |List| |OutputForm|))
+                           |OutputForm|))
+                     |%|))
+               (|Declare|
+                  |display|
+                  (|Apply|
+                     |->|
+                     (|Comma|
+                        |%|
+                        (|Apply| |->| (|Comma| |OutputForm|) |OutputForm|))
+                     |%|))
+               (|Declare|
+                  |input|
+                  (|Apply|
+                     |->|
+                     (|Comma|
+                        |%|
+                        (|Apply|
+                           |->|
+                           (|Comma| (|Apply| |List| |InputForm|))
+                           |InputForm|))
+                     |%|))
+               (|Declare|
+                  |input|
+                  (|Apply|
+                     |->|
+                     (|Comma| |%|)
+                     (|Apply|
+                        |Union|
+                        (|Declare|
+                           |value1|
+                           (|Apply|
+                              |->|
+                              (|Comma| (|Apply| |List| |InputForm|))
+                              |InputForm|))
+                        (|Declare|
+                           |failed|
+                           (|Apply| |Enumeration| |failed|)))) )
+               (|Declare|
+                  |is?|
+                  (|Apply| |->| (|Comma| |%| |Symbol|) |Boolean|))
+               (|Declare|
+                  |has?|
+                  (|Apply| |->| (|Comma| |%| |String|) |Boolean|))
+               (|Declare|
+                  |assert|
+                  (|Apply| |->| (|Comma| |%| |String|) |%|))
+               (|Declare|
+                  |deleteProperty!|
+                  (|Apply| |->| (|Comma| |%| |String|) |%|))
+               (|Declare|
+                  |property|
+                  (|Apply|
+                     |->|
+                     (|Comma| |%| |String|)
+                     (|Apply|
+                        |Union|
+                        (|Declare| |value1| |None|)
+                        (|Declare|
+                           |failed|
+                           (|Apply| |Enumeration| |failed|)))) )
+               (|Declare|
+                  |setProperty|
+                  (|Apply| |->| (|Comma| |%| |String| |None|) |%|))
+               (|Declare|
+                  |setProperties|
+                  (|Apply|
+                     |->|
+                     (|Comma|
+                        |%|
+                        (|Apply| |AssociationList| |String| |None|))
+                     |%|)))) )
+      NIL
+      NIL))

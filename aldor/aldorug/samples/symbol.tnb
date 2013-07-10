@@ -1,0 +1,42 @@
+{\codeline{1}\verb& #include "aldor"&}\\
+{\codeline{2}\verb& #include "aldorio"&}\\
+{\codeline{3}\verb&&}\\
+{\codeline{4}\verb& define BasicType: Category == Join(OutputType, PrimitiveType);&}\\
+{\codeline{5}\verb&&}\\
+{\codeline{6}\verb& Symbol: BasicType with {&}\\
+{\codeline{7}\verb&         name:   % -> String;    ++ the name of the symbol&}\\
+{\codeline{8}\verb&         coerce: String -> %;    ++ conversion operations&}\\
+{\codeline{9}\verb&         coerce: % -> String;&}\\
+{\codeline{10}\verb& } == add {&}\\
+{\codeline{11}\verb&         Rep    == String;&}\\
+{\codeline{12}\verb&&}\\
+{\codeline{13}\verb&         import from Rep, Pointer;&}\\
+{\codeline{14}\verb&&}\\
+{\codeline{15}\verb&         local symTab: HashTable(String, %) := table();&}\\
+{\codeline{16}\verb&&}\\
+{\codeline{17}\verb&         name(sym: %): String == sym::String;&}\\
+{\codeline{18}\verb&&}\\
+{\codeline{19}\verb&         coerce(sym: %): String == rep(sym);&}\\
+{\codeline{20}\verb&&}\\
+{\codeline{21}\verb&         coerce(s: String): % == {&}\\
+{\codeline{22}\verb&                 symb?: Partial(%) := find(s, symTab);&}\\
+{\codeline{23}\verb&                 import from Boolean;&}\\
+{\codeline{24}\verb&                 not failed? symb? => retract symb?;&}\\
+{\codeline{25}\verb&                 str := copy s;&}\\
+{\codeline{26}\verb&                 set!(symTab,str,per str);&}\\
+{\codeline{27}\verb&                 per str;&}\\
+{\codeline{28}\verb&         }&}\\
+{\codeline{29}\verb&&}\\
+{\codeline{30}\verb&         (s1: %) = (s2: %): Boolean == rep s1 = rep s2;&}\\
+{\codeline{31}\verb&         (p: TextWriter) << (sym: %): TextWriter == {&}\\
+{\codeline{32}\verb&                         p << "'" << sym::String << "'";&}\\
+{\codeline{33}\verb&         }&}\\
+{\codeline{34}\verb& }&}\\
+{\codeline{35}\verb&&}\\
+{\codeline{36}\verb& Test(): () == {&}\\
+{\codeline{37}\verb&         import from Symbol;&}\\
+{\codeline{38}\verb&&}\\
+{\codeline{39}\verb&         stdout << "hello"::Symbol << newline;&}\\
+{\codeline{40}\verb& }&}\\
+{\codeline{41}\verb& Test()&}\\
+{\codeline{42}\verb&&}\\

@@ -1,0 +1,672 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%                                                                        %%%
+%%% :: Basic Syntax
+%%%                                                                        %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\head{chapter}{Basic syntax}{asugLangSyntax}
+
+% \head{section}{Syntax Components}			% Done
+% \head{section}{Escape Character}			% Done
+% \head{section}{Keywords}				% Done
+% \head{section}{Names:  Identifiers and Operators}	% Done
+% \head{section}{Comments and Descriptions}		% Done
+% \head{section}{Application syntax}			% Done
+% \head{section}{Grouping}				% Done
+% \head{section}{Piles}				% Done
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\head{section}{Syntax components}{asugLangElementsSyntax}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+An \asharp{} program consists of a series of lines of text.
+These lines of text may be stored in a single file, or gathered
+from several files, or typed in as interactive input. 
+
+Some lines are not part of the \asharp{} program proper, but instead
+control its composition and the environment in which it is handled.  
+These lines are called {\em system commands}.  A system command%
+\index{system command} is a line which has a hash character
+\ttin{\#}\index{\verb+#+ (system command)} as its {\em first}
+character.  (Note that no white space may precede the \ttin{\#} on the
+line.)
+
+The example programs in this chapter use the following system commands:
+
+\begin{small}
+\begin{verbatim}
+    #include "filename.as"
+    #pile
+    #endpile
+\end{verbatim}
+\end{small}
+
+The system command {\tt \#include "filename.as"} causes the lines of text
+from \fname{filename.as} to be inserted into the \asharp{} program in place
+of the {\tt \#include} command.
+
+The system commands {\tt \#pile} and {\tt \#endpile} are used to enclose
+lines of text in which indentation is used to determine the nesting of
+sequences of \asharp{} expressions.  (See \secref{asugFLangPiles}.)
+
+A complete list of system commands is given in \secref{asugFLangSource}.
+System commands used in the interactive interpreter are described in
+\secref{asugInteractSyscmds}.
+
+\index{token}
+%\pagebreak
+When the series of lines comprising an \asharp{} program has been
+collected together, these lines are interpreted as a series of words,
+or {\em tokens}.
+There are several classes of tokens, each of which has a different meaning:
+\begin{description}
+\item[Identifiers] such as \ttin{Fred} and \ttin{rgf32}
+are used as names for variables and constants.
+\item[Literals] such as \verb"42", \verb"1.414" and \verb+"Urania riphaeus"+,
+represent explicit values.  Literals are described in
+\spadref{asugLangExprLiterals}.
+\item[Keywords] such as \ttin{if} and \ttin{==} each have a special meaning
+in the language, and impose a special structure on neighbouring expressions.
+\item[Operators] such as \ttin{by} and \ttin{+} have special
+syntactic properties, but are otherwise the same as identifiers 
+(\ie{}~they are used as names for variables and constants).
+\item[Comments] are used to insert free-form text into a program.
+A comment begins with the two characters \ttin{--} and continues until
+the end of the current line of text.
+\item[Descriptions] are used to provide user-level documentation for
+functions, domains and categories defined in the program.
+A description begins with the two characters \ttin{++} and continues
+until the end of the current line of text.
+\item[White space] consists of spaces, tabs, and newlines.  White space is
+used to determine source position (line and column) information for message
+reporting, and for piling (See \secref{asugFLangPiles}).
+\end{description}
+
+The exact rules for the syntax of each of these token classes is given
+in \secref{asugFLangLexTokens}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\head{section}{Escape character}{asugLangElementsEscape}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\index{escape character}
+The underscore character \ttin{\_} is used as an {\em escape character\/}
+in \asharp{} to modify the interpretation of the characters which follow.
+For example, an escape character followed by any amount of white space
+(spaces, tabs, and newlines) causes the white space to be ignored, allowing
+the characters on either side of the white space to form a single token,
+such as a name or a literal.
+
+\Secref{asugLangExprNames} describes how the escape character can be used
+inside an identifier, and \secref{asugLangExprLiterals} describes
+how the escape character can be used inside a literal.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\head{section}{Keywords}{asugLangElementsKeywords}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+The basic components of any \asharp{} program can be separated into
+two broad categories:  those which are defined by the language, and
+those which may be defined or redefined by the program.
+For example, the meaning of the word \ttin{if} is defined by the
+language, and all \ttin{if} statements behave according to
+the same rules.
+On the other hand, the meaning of a name such as \ttin{a} or \ttin{9}
+or \ttin{+} is determined by the program in which it is used.
+
+\index{keywords}
+A {\em keyword\/} in \asharp{} is a word whose meaning is fixed by the
+definition of the language.  The following words are keywords which
+may not be redefined:
+
+\begin{verbatim}
+add      and       always    assert    break
+but      catch     default   define    delay
+do       else      except    export    extend 
+fix      for       fluid     free      from     
+generate goto      has       if        import
+in       inline    is        isnt      iterate
+let      local     macro     never     not 
+of       or        pretend   ref       repeat
+return   rule      select    then      throw
+to       try       where     while     with
+yield
+
+.   ,    ;    :    ::   :*   $    @
+|   =>   +->  :=   ==   ==>  '
+[   ]    {    }    (    )    
+\end{verbatim}
+
+Generally, language-defined aspects of keywords offer protocols
+which allow them
+to work with new types as well as with language-defined types.  
+So, for example, the language-defined \ttin{if}, provides a way for
+the condition to be an expression which evaluates to any type, provided
+that type has certain properties.
+
+The following keywords are meaningless in the current language
+definition, but are reserved for future language extensions.
+
+\begin{verbatim}
+delay    fix       is        isnt       let       rule      
+
+(|  |)   [|  |]    {|  |}    `    &    ||
+\end{verbatim}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\head{section}{Names: identifiers and operators}{asugLangElementsNames}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\index{name}
+\index{identifier}
+A {\em name\/} is an identifier used to denote a variable or a constant.
+Most names begin with a letter or the character \ttin{\%} and are made up of
+letters, digits and the characters \ttin{\%}, \ttin{?} and \ttin{!}.
+The words \ttin{0} and \ttin{1} are also treated as names in \asharp{}
+so that mathematical structures can export identity elements without
+having to support integer literals.  (See \secref{asugLangExprLiterals}.)
+
+Examples:
+
+\begin{small}
+\begin{verbatim}
+    mylist       Integer       empty?      set!      %5
+\end{verbatim}
+\end{small}
+
+\index{escape character}
+Any character may be included in a name by preceding it with the
+escape character (\ttin{\_}):
+
+\begin{small}
+\begin{verbatim}
+    _*PACKAGE_*   _42skidoo    mod_+       _*_+
+\end{verbatim}
+\end{small}
+
+When used in an identifier, the escape character is not included in the name
+of the identifier.  To include a single underscore character in the name
+of an identifier, the sequence \ttin{\_\_} must be used.  So the name of the
+identifier denoted by \ttin{mod\_+} is \ttin{mod+}, and the name of the
+identifier denoted by \ttin{My\_\_Integer} is \ttin{My\_Integer}.
+
+A sequence of letters which would otherwise be considered a keyword
+(such as \ttin{if}) can be treated as a name by escaping one of its
+constituent letters (as in \ttin{\_if}).
+
+\index{infix operator}
+Certain names are treated as having special syntax properties by the language.
+The following identifiers can be used as infix operators, prefix operators,
+or both:
+
+%\begin{small}
+\begin{verbatim}
+    by      case     mod      quo      rem
+    #        +       -        +-       ~        ^
+    *        **      ..       =        ~=       ^=
+    /        /\      <        <=       <<       <-
+    \        \/      >        >=       >>       ->
+\end{verbatim}
+%\end{small}
+
+Aside from their syntactic properties,
+these names behave just as other identifiers.
+See \secref{asugLangTiesAppSyntax} for examples of using infix operators
+in different contexts.
+
+A few naming conventions are used in the standard libraries:
+
+\begin{itemize}
+\item 
+  Names beginning with capital letters are used for types or
+  type-producing functions.
+\item
+  Names ending with a question mark are used for Boolean values,
+  or functions which return Boolean values.
+\item
+  Names ending with an exclamation mark are used for functions whose
+  primary purpose is to perform a side-effecting (in particular, a
+  so-called ``destructive'') operation.
+%\item
+%  Infixed names are used for functions.
+% I don't understand that sentence.  MGR
+\end{itemize}
+
+Note that these are only notational conventions and are not considered
+as part of the language.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\head{section}{Comments and descriptions}{asugLangElementsComments}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Comments and description strings
+annotate a program to help other people and other programs understand it.  
+
+\index{comment}
+A {\em comment\/} begins with the two characters
+\ttin{--}\index{\verb"--"} and continues until the end of the current
+line of text. 
+Comments can be used to describe how a program operates, including
+an explanation of special assumptions made by the program, or a
+step-by-step description of the implementation of the algorithms
+used by the program.
+Comments are not examined by the compiler, and do not affect the meaning
+of a program.
+
+A {\em description\/} begins with two or three plus characters
+(\ttin{++}\index{\verb"++"} or \ttin{+++}\index{\verb"+++"})
+and continues until the end of the current line of text.
+A description should be used to describe the external characteristics
+of a program, such as the parameters it will accept or the method used
+to compute the result.
+
+\index{description}
+Description strings are saved in the compiler output in a form
+accessible by other programs.
+If a description begins with three plus characters (\ttin{+++}),
+then the name it describes should appear immediately after the description.
+If a description begins with only two plus characters (\ttin{++}),
+then the name it describes should appear immediately before the description:
+
+\begin{small}
+\begin{verbatim}
+    +++ An approximation to Euler's constant,
+    +++ which is defined as the value of the limit
+    +++
+    +++   lim(n->infinity) (1 + 1/2 + 1/3 + ... + 1/n - ln n)
+    +++
+    gamma: DoubleFloat == 0.57721_56649_01532_86060_65121;
+
+    +++ `pi' is the ratio of a circle's circumference to its diameter.
+    pi: DoubleFloat == 3.14159_26535_89793_23846_26434;
+        ++ This is not 22/7.
+
+    Avogadro: DoubleFloat == 6.022e23;
+        ++ The ratio between grams and molecular weights.
+\end{verbatim}
+\end{small}
+
+Both \ttin{+++} and \ttin{++} are used so that after a semicolon we can
+still associate a description with the previous declaration.
+% I don't understand what this is meant to say.
+% (Surely, only "++" associates a description with
+% a PREVIOUS declaration; "+++" associates it with a forthcoming
+% declaration.)  MGR
+
+It is easy to remember the difference between comments and descriptions:
+the \asharp{} compiler keeps positive remarks, and throws away negative ones.
+
+Example:
+\begin{small}
+\begin{verbatim}
+    -- This is a quick-and-dirty move generator, with two of
+    -- the utility functions also made visible.
+
+    ChessPiece: with {
+            bestMoves: (Board, %) -> MoveTemplate;
+                    ++ `bestMoves p' suggests the best moves in the
+                    ++ given position.
+
+            legalMoves: (Board, %) -> MoveTemplate;
+                    ++ `legalMoves p' generates quasi-legal moves.
+                    ++ It does not handle en passant or castling.
+
+            value: (Board, %) -> DoubleFloat;
+                    ++ This is a score which estimates the current
+                    ++ value in the given position.
+    }
+    == add {
+            ...
+    }
+\end{verbatim}
+\end{small}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\head{section}{Application syntax}{asugLangTiesAppSyntax}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\index{function application}
+Applications are typically used to denote function calls, array indexing,
+or element accessors for compound data types.
+
+A prefix application typically has the following form:
+
+\begin{small}
+\begin{verbatim}
+    f(a1, ..., an)
+\end{verbatim}
+\end{small}
+
+There are two additional forms for specifying a prefix 
+application to one argument: juxtaposition\index{juxtaposition}
+and an infix dot.
+
+\begin{small}
+\begin{verbatim}
+    f a
+    f.a
+\end{verbatim}
+\end{small}
+
+The second of these forms is completely equivalent to {\tt f(a)}; the
+first is equivalent in a free-standing occurrence but associates
+differently --- to the right, rather than the left:
+
+\begin{small}
+\begin{verbatim}
+    f a b c             -- is equivalent to (f (a (b c)))
+    f.a.b.c             -- is equivalent to (((f.a).b).c)
+    f(a)(b)(c)          -- is equivalent to ((f(a))(b))(c)
+\end{verbatim}
+\end{small}
+
+Any application in which the argument is enclosed in parentheses
+(\ttin{( )}) or square brackets (\ttin{[ ]}) is treated as being of
+the ``typical'' form, and so associates to the left --- even if a
+space follows the applied object.  Thus \ttin{first [1,2,3]} is treated
+as identical with \ttin{first([1,2,3])}.
+
+The interpretation of mixed forms is determined by precedence rules:
+the precedence of juxtaposition is lower than that of the other forms,
+which are all equivalent, so an expression such as
+\ttin{f(a).2(b)(c).x y} is associated as
+\ttin{((((((f(a)).2)(b))(c)).x) y)}.  (A complete table of \asharp{}
+operator precedence appears in \secref{asugLangOpPrecTab}.)
+
+\index{infix operator}
+Infix operators are applied to a pair of arguments using infix notation
+for function application:
+
+\begin{small}
+\begin{verbatim}
+    a + b               -- infix notation for a call to `(+)(a, b)'
+\end{verbatim}
+\end{small}
+
+Infix operators are {\em generic\/} in that they can be given definitions
+in \asharp{} programs just as other identifiers.  The typical form for an
+{\em infix function definition} is as follows:
+
+\begin{small}
+\begin{verbatim}
+    (s1: S1) op (s2: S2) : T == E
+\end{verbatim}
+\end{small}
+
+where \ttin{op} is one of the infix operators listed in \secref{asugLangElementsNames}.
+
+An infix operator can be used in any context where other names can be used.
+However, in some contexts the infix operator must be enclosed in parentheses
+to suppress its normal syntactic properties:
+
+\begin{small}
+\begin{verbatim}
+    -- Here is a declaration for `*'.
+    *: (%, %) -> %
+
+    -- Here `*' is used as a variable.
+    * := myMultiplicationMethod
+
+    -- Here is a typical use of `*' as an infix operator.
+    a * b
+
+    -- Here `*' is used as a prefix operator
+    -- by enclosing it in parentheses.
+    (*)(a, b)
+
+    -- Here `*' is passed as an argument to a function.
+    reduce(*, l)
+
+    -- Here `*' is being used as an argument of another infix operator.
+    f := (*) + g(*, 1)
+\end{verbatim}
+\end{small}
+
+An infix operator must be enclosed in parentheses to be used as a prefix
+operator.  Also, an infix operator cannot appear as an argument of another
+infix operator unless it it enclosed in parentheses.
+
+Alternatively, the same name may be given as an {\em identifier\/},
+rather than an infixed operator, using the escape character
+to include special characters, for example: \verb^_*(a, b)^.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\head{section}{Grouping}{asugLangElementaryGrouping}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Complex expressions in \asharp{} are formed according to the precedence
+of the operators appearing in the expression.  When an expression is
+formed, the operators with higher precedence form the subexpressions for
+the operators with lower precedence.
+
+Parentheses (\ttin{( )}) and braces (\ttin{\{ \}}) can be used to override
+the natural precedence order defined by the language.
+\index{parentheses}
+\index{braces}
+\index{grouping}
+
+Because comma has a lower precedence than most other
+syntactic forms, it is often necessary to enclose comma-separated
+expressions in parentheses.  We write \ttin{f(1, 2)}, since
+\ttin{f 1, 2} would be associated the same way as \ttin{(f 1), 2}.
+
+Likewise, we write \ttin{(a, b) := (1, 2)}
+(see \secref{asugLangExprMultis} for an
+explanation of this notation),
+since \ttin{a, b := 1, 2} would be associated as \ttin{a, (b := 1), 2}. 
+
+Similarly, the expression \ttin{(1 + 2) * 3} evaluates to {\tt 9},
+while the expression \ttin{1 + 2 * 3} evaluates to {\tt 7}, since
+the \ttin{*} operator has a higher precedence than the \ttin{+} operator.
+
+Braces are normally used to enclose sequences of expressions
+(see \secref{asugLangExprSequences}):
+
+\begin{small}
+\begin{verbatim}
+    foo(x: Integer, y: Integer): Integer == {
+            a := x * y;
+            b := a * a;
+            b
+    }
+\end{verbatim}
+\end{small}
+
+The meaning of an expression is the same whether braces or parentheses
+are used.  Braces are normally used to enclose a longer expression
+(especially sequences) split over several lines.
+Parentheses are normally used to enclose shorter expressions
+(especially multiple values--see \secref{asugLangExprMultis})
+as part of other expressions.
+
+
+An implicit semicolon is assumed, if possible, after a closing brace.
+This is determined by whether the following token may start a new
+expression. For instance, in the construct
+
+\begin{small}
+\begin{verbatim}
+f: with {...} == add ...
+\end{verbatim}
+\end{small}
+
+introduced in \secref{asugLangNTypeCats}, the \ttin{==} may not start an
+expression, so no semicolon is assumed.
+
+%\pagebreak
+To make the use of braces as natural as possible, an expression
+in braces may not be used as an argument to an infixed operator,
+\eg{}~\ttin{+}, \ttin{-}, \ttin{..}.
+This is because many infixed operators may also be used in prefixed
+position.  (Some, incidentally, may also be postfixed.)  With
+infixed operators, parentheses may be used to achieve the
+desired effect --- for example:
+
+\begin{small}
+\begin{verbatim}
+ {a; b; c}   + d     -- not ok
+({a; b; c})  + d     -- ok
+( a; b; c )  + d     -- ok
+\end{verbatim}
+\end{small}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\head{subsection}{Precedence}{asugLangOpPrecTab}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\Figref{asugLangPrecTable} provides a table of keywords and
+operators, % More of former.
+given in order of syntactic precedence.
+Expressions are represented
+by ``$e\/$'' and keywords or operators by ``$\circ$''.%
+
+Each of the numbered entries in the table lists syntactic elements
+with the same precedence.
+The entries at the top of the table
+group most loosely, and those at the bottom most strongly.
+So, for example, since \ttin{+} is above \ttin{*}, the expression
+
+\begin{small}
+\begin{verbatim}
+a * b + c * d
+\end{verbatim}
+\end{small}
+
+groups as \ttin{(a*b) + (c*d)}.
+Entries with the same level number have the same precedence.
+For instance, ``\verb"and"'' and ``\verb"/\"'' have the same grouping strength.
+
+Some operators have both unary and binary forms.
+Some of these operators have meanings defined in the standard base
+libraries (\eg{}~infixed \ttin{+} and \ttin{*}), while others do not
+(\eg{}~prefixed \ttin{=} and \ttin{+-}).
+A programmer may provide new meanings for operators, but not for keywords.
+%Operators are indicated in the table with a ``\AssDef'' symbol.
+Entries for operators are flagged with ``\dag''; keyword entries are unflagged.
+
+This table can serve as a convenient reference for determining relative
+% changed partly to get rid of an overfull box.
+strengths of keywords and operators. 
+The full details of the language syntax are given in \chapref{asugFLang}.
+
+\index{associativity}\index{unary operators}
+
+\input{precedence.tbl}
+
+\clearpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\head{section}{Piles}{asugFLangPiles}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\index{piling}
+Programmers often use indentation to make the visual structure of a program
+conform to its syntactic structure, so that programs are easier to read.
+In \asharp{}, white space is usually ignored except to delimit tokens
+and to compute source position information.  However, the compiler can
+be instructed to use indentation as part of the syntax of the language
+using a scheme known as {\em piling}.
+
+Two system commands are used to instruct the compiler to enable and
+disable piling syntax, as desired, at various points in an \asharp{}
+program.  The system command \ttin{\#pile} instructs
+the compiler to use piling syntax for the source lines which follow, and
+the system command \ttin{\#endpile} instructs the compiler to ignore
+initial white space on the source lines which follow.
+% If it ignored white space, "f x" would be read as the name "fx".  MGR
+
+Although the system commands \ttin{\#pile} and \ttin{\#endpile} are
+usually found in pairs, the \ttin{\#endpile} system command can be
+omitted at the end of a file.
+
+When piling syntax is being used, indentation is treated roughly as
+follows (see \secref{asugFLangLayout} for full details);
+a further example of an \asharp{} program which uses piling syntax can be found
+at page \pageref{factorialSample}.
+
+Expressions which are indented by the same amount are grouped together
+as a sequence (see \secref{asugLangExprSequences}) as though
+%\secref{asugLangExprSequences} does not use the term "sequence
+% expression", only "sequence".  MGR
+they were enclosed in braces and separated by semicolons.  A sequence
+of expressions indented by the same amount is called a {\em pile}.
+
+\goodbreak
+An expression which is too large to fit on one line at the current
+indentation level can be continued on another line by indenting the
+continuation line more than the initial line.
+
+The indentation rules are applied first to the most indented lines,
+working outward to the lines which are indented the least.
+
+The following example shows the piling rules being applied to a program
+which uses piling syntax, to convert it to an equivalent program
+which does not use piling syntax:
+
+\begin{small}
+\begin{verbatim}
+    #pile
+    GetUp()
+    if Saturday then
+        CookBreakfast()
+        Eat << Toast << Tomato << Bacon
+            << Eggs
+    HaveShower()
+    DrinkCoffee()
+\end{verbatim}
+\end{small}
+
+Because the line \ttin{<< Eggs} is indented with respect to the
+previous line, the two are joined.
+
+\begin{small}
+\begin{verbatim}
+    #pile
+    GetUp()
+    if Saturday then
+        CookBreakfast()
+        Eat << Toast << Tomato << Bacon << Eggs
+    HaveShower()
+    DrinkCoffee()
+\end{verbatim}
+\end{small}
+
+The \ttin{CookBreakfast} and \ttin{Eat...} lines form a pile,
+which can be rewritten as a semicolon separated sequence:
+
+\begin{small}
+\begin{verbatim}
+    #pile
+    GetUp()
+    if Saturday then {
+        CookBreakfast();
+        Eat << Toast << Tomato << Bacon << Eggs
+    }
+    HaveShower()
+    DrinkCoffee()
+\end{verbatim}
+\end{small}
+
+And finally the entire program is treated as a pile:
+
+\begin{small}
+\begin{verbatim}
+{
+    GetUp();
+    if Saturday then {
+        CookBreakfast();
+        Eat << Toast << Tomato << Bacon << Eggs
+    }
+    HaveShower();
+    DrinkCoffee()
+}
+\end{verbatim}
+\end{small}
+
+Readers wishing to experiment interactively with our examples
+(by using ``\asharpcmd{ -gloop}'') should note that piling is
+the default in interactive use.  The examples generally should
+still run correctly if the illustrated layouts are used --- a
+few may require the addition of braces (\ttin{\{ \}}).  See
+\chapref{asugUsingInteractive} for further details.

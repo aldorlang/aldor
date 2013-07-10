@@ -1,0 +1,12 @@
+{\codeline{1}\verb& #include "aldor"&}\\
+{\codeline{2}\verb& #include "aldorio"&}\\
+{\codeline{3}\verb& #pile&}\\
+{\codeline{4}\verb&&}\\
+{\codeline{5}\verb& rfact(n: Integer): Integer == if n = 0 then 1 else n*rfact(n-1)&}\\
+{\codeline{6}\verb&&}\\
+{\codeline{7}\verb& ifact(n: Integer): Integer ==&}\\
+{\codeline{8}\verb&         i := 1&}\\
+{\codeline{9}\verb&         while n > 1 repeat&}\\
+{\codeline{10}\verb&                 i := i * n&}\\
+{\codeline{11}\verb&                 n := n - 1&}\\
+{\codeline{12}\verb&         i&}\\

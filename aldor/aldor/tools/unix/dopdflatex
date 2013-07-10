@@ -1,0 +1,31 @@
+#!/bin/sh
+#
+# This script calls the appropriate C compiler, with whatever flags are needed.
+
+x1=/usr/local/lib/tex/texinput/std-sty
+x2=/usr/local/lib/tex/inputs
+x3=/usr/lpp/tex/inputs
+
+tm1=../TexMacs
+tm2=../../TexMacs
+
+if [ -n "$TEXINPUTS" ] ; then
+	oinputs="$TEXINPUTS"
+else
+	oinputs=""
+fi
+
+if [ -d "$x1" ] ; then oinputs="$oinputs":"$x1" ; fi
+if [ -d "$x2" ] ; then oinputs="$oinputs":"$x2" ; fi
+if [ -d "$x3" ] ; then oinputs="$oinputs":"$x3" ; fi
+
+if [ -d "$tm1" ] ; then oinputs="$tm1":"$oinputs" ; fi
+if [ -d "$tm2" ] ; then oinputs="$tm2":"$oinputs" ; fi
+
+TEXINPUTS=".":"$oinputs"
+
+export TEXINPUTS
+
+echo "TEXINPUTS = $TEXINPUTS"
+
+pdflatex $*

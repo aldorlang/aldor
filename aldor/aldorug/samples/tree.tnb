@@ -1,0 +1,88 @@
+{\codeline{1}\verb& #include "aldor"&}\\
+{\codeline{2}\verb& #include "aldorio"&}\\
+{\codeline{3}\verb&&}\\
+{\codeline{4}\verb& Tree(S: OutputType): OutputType with {&}\\
+{\codeline{5}\verb&     export from S;&}\\
+{\codeline{6}\verb&&}\\
+{\codeline{7}\verb&     empty: %;&}\\
+{\codeline{8}\verb&     tree:  S  -> %;&}\\
+{\codeline{9}\verb&     tree:  (S, %, %) -> %;&}\\
+{\codeline{10}\verb&&}\\
+{\codeline{11}\verb&     empty?: % -> Boolean;&}\\
+{\codeline{12}\verb&&}\\
+{\codeline{13}\verb&     left:   % -> %;&}\\
+{\codeline{14}\verb&     right:  % -> %;&}\\
+{\codeline{15}\verb&     node:   % -> S;&}\\
+{\codeline{16}\verb&&}\\
+{\codeline{17}\verb&     preorder:  % -> Generator S;&}\\
+{\codeline{18}\verb&     inorder:   % -> Generator S;&}\\
+{\codeline{19}\verb&     postorder: % -> Generator S;&}\\
+{\codeline{20}\verb& }&}\\
+{\codeline{21}\verb& == add {&}\\
+{\codeline{22}\verb&     Rep == Record(node: S, left: %, right: %);&}\\
+{\codeline{23}\verb&     import from Rep;&}\\
+{\codeline{24}\verb&&}\\
+{\codeline{25}\verb&     empty: % == nil$Pointer pretend %;&}\\
+{\codeline{26}\verb&     empty?(t: %): Boolean == nil?(t pretend Pointer)$Pointer;&}\\
+{\codeline{27}\verb&&}\\
+{\codeline{28}\verb&     tree(s: S): % == per [s, empty, empty];&}\\
+{\codeline{29}\verb&     tree(s: S, l: %, r: %): % == per [s, l, r];&}\\
+{\codeline{30}\verb&&}\\
+{\codeline{31}\verb&     local nonempty(t: %): Rep == {&}\\
+{\codeline{32}\verb&         import from String;&}\\
+{\codeline{33}\verb&         empty? t => error "Taking a part of a non-empty tree";&}\\
+{\codeline{34}\verb&         rep t&}\\
+{\codeline{35}\verb&     }&}\\
+{\codeline{36}\verb&&}\\
+{\codeline{37}\verb&     left (t: %): % == nonempty(t).left;&}\\
+{\codeline{38}\verb&     right(t: %): % == nonempty(t).right;&}\\
+{\codeline{39}\verb&     node (t: %): S == nonempty(t).node;&}\\
+{\codeline{40}\verb&&}\\
+{\codeline{41}\verb&     preorder(t: %): Generator S == generate {&}\\
+{\codeline{42}\verb&         if not empty? t then {&}\\
+{\codeline{43}\verb&             yield node t;&}\\
+{\codeline{44}\verb&             for n in preorder left  t repeat yield n;&}\\
+{\codeline{45}\verb&             for n in preorder right t repeat yield n;&}\\
+{\codeline{46}\verb&         }&}\\
+{\codeline{47}\verb&     }&}\\
+{\codeline{48}\verb&     inorder(t: %): Generator S == generate {&}\\
+{\codeline{49}\verb&         if not empty? t then {&}\\
+{\codeline{50}\verb&             for n in inorder left  t repeat yield n;&}\\
+{\codeline{51}\verb&             yield node t;&}\\
+{\codeline{52}\verb&             for n in inorder right t repeat yield n;&}\\
+{\codeline{53}\verb&         }&}\\
+{\codeline{54}\verb&     }&}\\
+{\codeline{55}\verb&     postorder(t: %): Generator S == generate {&}\\
+{\codeline{56}\verb&         if not empty? t then {&}\\
+{\codeline{57}\verb&             for n in postorder left  t repeat yield n;&}\\
+{\codeline{58}\verb&             for n in postorder right t repeat yield n;&}\\
+{\codeline{59}\verb&             yield node t;&}\\
+{\codeline{60}\verb&         }&}\\
+{\codeline{61}\verb&     }&}\\
+{\codeline{62}\verb&     (tw: TextWriter) << (t: %): TextWriter == {&}\\
+{\codeline{63}\verb&         import from String;&}\\
+{\codeline{64}\verb&         import from S;&}\\
+{\codeline{65}\verb&&}\\
+{\codeline{66}\verb&         empty? t => tw << "empty";&}\\
+{\codeline{67}\verb&         empty? left t and empty? right t => tw << "tree " << node t;&}\\
+{\codeline{68}\verb&&}\\
+{\codeline{69}\verb&         tw << "tree(" << node t << ", "&}\\
+{\codeline{70}\verb&            << left t  << ", " << right t << ")"&}\\
+{\codeline{71}\verb&     }&}\\
+{\codeline{72}\verb& }&}\\
+{\codeline{73}\verb&&}\\
+{\codeline{74}\verb&&}\\
+{\codeline{75}\verb& main():() == {&}\\
+{\codeline{76}\verb&     import from Tree String;&}\\
+{\codeline{77}\verb&     import from List String;&}\\
+{\codeline{78}\verb&&}\\
+{\codeline{79}\verb&     t := tree("*", tree("1", tree "a", tree "b"),&}\\
+{\codeline{80}\verb&            tree("2", tree "c", tree "d"));&}\\
+{\codeline{81}\verb&&}\\
+{\codeline{82}\verb&     stdout << "The tree is " << t << newline;&}\\
+{\codeline{83}\verb&     stdout << "Preorder:   " << [preorder  t] << newline;&}\\
+{\codeline{84}\verb&     stdout << "Inorder:    " << [inorder   t] << newline;&}\\
+{\codeline{85}\verb&     stdout << "Postorder:  " << [postorder t] << newline;&}\\
+{\codeline{86}\verb& }&}\\
+{\codeline{87}\verb&&}\\
+{\codeline{88}\verb& main();&}\\

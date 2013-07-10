@@ -1,0 +1,78 @@
+{\codeline{1}\verb& #include "aldor"&}\\
+{\codeline{2}\verb&&}\\
+{\codeline{3}\verb& SI   ==> MachineInteger;&}\\
+{\codeline{4}\verb& Char ==> Character;&}\\
+{\codeline{5}\verb&&}\\
+{\codeline{6}\verb& -- Asserts that the charecter is a vowel&}\\
+{\codeline{7}\verb& vowel?(c: Char): Boolean ==  {&}\\
+{\codeline{8}\verb&     import from String;&}\\
+{\codeline{9}\verb&     c = char "a" or c = char "e" or c = char "i"&}\\
+{\codeline{10}\verb&     or c = char "o" or c = char "u";&}\\
+{\codeline{11}\verb& }&}\\
+{\codeline{12}\verb&&}\\
+{\codeline{13}\verb& -- Remove all the vowels from the input and&}\\
+{\codeline{14}\verb& -- write the result on the output&}\\
+{\codeline{15}\verb& removeVowels(tr: TextReader, tw: TextWriter): () == {&}\\
+{\codeline{16}\verb&     import from Char, TextWriter, String;&}\\
+{\codeline{17}\verb&     c: Char := read! tr;&}\\
+{\codeline{18}\verb&     while (c ~= eof) repeat {&}\\
+{\codeline{19}\verb&       if not vowel? c then write!(c, tw);&}\\
+{\codeline{20}\verb&       c := read! tr;&}\\
+{\codeline{21}\verb&     }&}\\
+{\codeline{22}\verb& }&}\\
+{\codeline{23}\verb&&}\\
+{\codeline{24}\verb& -- Prints a string and a newline on the standard output&}\\
+{\codeline{25}\verb& printMessage(s:String):() == {&}\\
+{\codeline{26}\verb&      import from String, TextWriter, Char;&}\\
+{\codeline{27}\verb&      stdout << s << newline;&}\\
+{\codeline{28}\verb& }&}\\
+{\codeline{29}\verb&&}\\
+{\codeline{30}\verb& -- Constructs a string from the characters in the list&}\\
+{\codeline{31}\verb& -- given its length and assuming that this list needs&}\\
+{\codeline{32}\verb& -- to be reversed&}\\
+{\codeline{33}\verb& convert(l: List Char, n: SI): String == {&}\\
+{\codeline{34}\verb&       import from SI, Char;&}\\
+{\codeline{35}\verb&       s: String := new(n, space);&}\\
+{\codeline{36}\verb&       while (not empty? l) for i in 1..n repeat {&}\\
+{\codeline{37}\verb&           c := first l; l := rest l;&}\\
+{\codeline{38}\verb&           s.(n-i) := c;&}\\
+{\codeline{39}\verb&       }&}\\
+{\codeline{40}\verb&       s;&}\\
+{\codeline{41}\verb& }&}\\
+{\codeline{42}\verb&&}\\
+{\codeline{43}\verb& -- Generates the lines (as strings) from the input&}\\
+{\codeline{44}\verb& lines(tr:TextReader): Generator String == generate {&}\\
+{\codeline{45}\verb&      import from String;&}\\
+{\codeline{46}\verb&      printMessage("entering lines");&}\\
+{\codeline{47}\verb&      c: Char := read! tr; l: List Char := []; n: SI := 0;&}\\
+{\codeline{48}\verb&      while (c ~= eof) repeat {&}\\
+{\codeline{49}\verb&          l := []; n:=0;&}\\
+{\codeline{50}\verb&          while (c ~= newline) repeat {&}\\
+{\codeline{51}\verb&              l := cons(c,l); n := n + 1; c := read! tr;&}\\
+{\codeline{52}\verb&          }&}\\
+{\codeline{53}\verb&          yield convert(l,n); c := read! tr;&}\\
+{\codeline{54}\verb&      }&}\\
+{\codeline{55}\verb&      printMessage("leaving lines");&}\\
+{\codeline{56}\verb& }&}\\
+{\codeline{57}\verb&&}\\
+{\codeline{58}\verb& main(): () == {&}\\
+{\codeline{59}\verb&     import from String;&}\\
+{\codeline{60}\verb&     printMessage("entering test");&}\\
+{\codeline{61}\verb&     f1: File := open("/etc/passwd",fileRead);&}\\
+{\codeline{62}\verb&     f2: File := open("/tmp/passwd",fileWrite);&}\\
+{\codeline{63}\verb&     tr: TextReader := f1::TextReader;&}\\
+{\codeline{64}\verb&     tw: TextWriter := f2::TextWriter;&}\\
+{\codeline{65}\verb&     removeVowels(tr,tw);&}\\
+{\codeline{66}\verb&     close! f1;&}\\
+{\codeline{67}\verb&     close! f2;&}\\
+{\codeline{68}\verb&     f1: File := open("/tmp/passwd",fileRead);&}\\
+{\codeline{69}\verb&     tr := f1::TextReader;&}\\
+{\codeline{70}\verb&     for l in lines(tr) repeat {&}\\
+{\codeline{71}\verb&         printMessage(l);&}\\
+{\codeline{72}\verb&     }&}\\
+{\codeline{73}\verb&     close! f1;&}\\
+{\codeline{74}\verb&     printMessage("leaving test");&}\\
+{\codeline{75}\verb& }&}\\
+{\codeline{76}\verb&&}\\
+{\codeline{77}\verb& main();&}\\
+{\codeline{78}\verb&&}\\

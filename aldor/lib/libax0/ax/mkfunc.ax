@@ -1,0 +1,266 @@
+
+(|Sequence|
+   (|Import| NIL |AxiomLib|)
+   (|Export|
+      (|Declare|
+         |MakeFloatCompiledFunction|
+         (|Apply|
+            |->|
+            (|Declare| |#1| (|Apply| |ConvertibleTo| |InputForm|))
+            (|With|
+               NIL
+               (|Sequence|
+                  (|Declare|
+                     |makeFloatFunction|
+                     (|Apply|
+                        |->|
+                        (|Comma| |#1| |Symbol|)
+                        (|Apply|
+                           |->|
+                           (|Comma| |DoubleFloat|)
+                           |DoubleFloat|)))
+                  (|Declare|
+                     |makeFloatFunction|
+                     (|Apply|
+                        |->|
+                        (|Comma| |#1| |Symbol| |Symbol|)
+                        (|Apply|
+                           |->|
+                           (|Comma| |DoubleFloat| |DoubleFloat|)
+                           |DoubleFloat|)))) )))
+      NIL
+      NIL)
+   (|Export|
+      (|Declare|
+         |MakeBinaryCompiledFunction|
+         (|Apply|
+            |->|
+            (|Comma|
+               (|Declare| |#1| (|Apply| |ConvertibleTo| |InputForm|))
+               (|Declare| |#2| |Type|)
+               (|Declare| |#3| |Type|)
+               (|Declare| |#4| |Type|))
+            (|With|
+               NIL
+               (|Sequence|
+                  (|Declare|
+                     |binaryFunction|
+                     (|Apply|
+                        |->|
+                        (|Comma| |Symbol|)
+                        (|Apply| |->| (|Comma| |#2| |#3|) |#4|)))
+                  (|Declare|
+                     |compiledFunction|
+                     (|Apply|
+                        |->|
+                        (|Comma| |#1| |Symbol| |Symbol|)
+                        (|Apply| |->| (|Comma| |#2| |#3|) |#4|)))) )))
+      NIL
+      NIL)
+   (|Export|
+      (|Declare|
+         |MakeUnaryCompiledFunction|
+         (|Apply|
+            |->|
+            (|Comma|
+               (|Declare| |#1| (|Apply| |ConvertibleTo| |InputForm|))
+               (|Declare| |#2| |Type|)
+               (|Declare| |#3| |Type|))
+            (|With|
+               NIL
+               (|Sequence|
+                  (|Declare|
+                     |unaryFunction|
+                     (|Apply|
+                        |->|
+                        (|Comma| |Symbol|)
+                        (|Apply| |->| (|Comma| |#2|) |#3|)))
+                  (|Declare|
+                     |compiledFunction|
+                     (|Apply|
+                        |->|
+                        (|Comma| |#1| |Symbol|)
+                        (|Apply| |->| (|Comma| |#2|) |#3|)))) )))
+      NIL
+      NIL)
+   (|Export|
+      (|Declare|
+         |MakeFunction|
+         (|Apply|
+            |->|
+            (|Declare| |#1| (|Apply| |ConvertibleTo| |InputForm|))
+            (|With|
+               NIL
+               (|Sequence|
+                  (|Declare|
+                     |function|
+                     (|Apply| |->| (|Comma| |#1| |Symbol|) |Symbol|))
+                  (|Declare|
+                     |function|
+                     (|Apply|
+                        |->|
+                        (|Comma| |#1| |Symbol| |Symbol|)
+                        |Symbol|))
+                  (|Declare|
+                     |function|
+                     (|Apply|
+                        |->|
+                        (|Comma| |#1| |Symbol| |Symbol| |Symbol|)
+                        |Symbol|))
+                  (|Declare|
+                     |function|
+                     (|Apply|
+                        |->|
+                        (|Comma| |#1| |Symbol| (|Apply| |List| |Symbol|))
+                        |Symbol|)))) ))
+      NIL
+      NIL)
+   (|Export|
+      (|Declare|
+         |InputFormFunctions1|
+         (|Apply|
+            |->|
+            (|Declare| |#1| |Type|)
+            (|With|
+               NIL
+               (|Sequence|
+                  (|Declare|
+                     |packageCall|
+                     (|Apply| |->| (|Comma| |Symbol|) |InputForm|))
+                  (|Declare|
+                     |interpret|
+                     (|Apply| |->| (|Comma| |InputForm|) |#1|)))) ))
+      NIL
+      NIL)
+   (|Extend|
+      (|Define|
+         (|Declare|
+            |InputForm|
+            (|With|
+               NIL
+               (|Sequence|
+                  (|Apply|
+                     |SExpressionCategory|
+                     |String|
+                     |Symbol|
+                     |Integer|
+                     |DoubleFloat|
+                     |OutputForm|)
+                  (|Apply| |ConvertibleTo| |SExpression|)
+                  (|Declare|
+                     |interpret|
+                     (|Apply| |->| (|Comma| |%|) |Any|))
+                  (|Declare|
+                     |convert|
+                     (|Apply| |->| (|Comma| |SExpression|) |%|))
+                  (|Declare|
+                     |binary|
+                     (|Apply| |->| (|Comma| |%| (|Apply| |List| |%|)) |%|))
+                  (|Declare|
+                     |function|
+                     (|Apply|
+                        |->|
+                        (|Comma| |%| (|Apply| |List| |Symbol|) |Symbol|)
+                        |%|))
+                  (|Declare|
+                     |lambda|
+                     (|Apply|
+                        |->|
+                        (|Comma| |%| (|Apply| |List| |Symbol|))
+                        |%|))
+                  (|Declare| |+| (|Apply| |->| (|Comma| |%| |%|) |%|))
+                  (|Declare| |*| (|Apply| |->| (|Comma| |%| |%|) |%|))
+                  (|Declare| |/| (|Apply| |->| (|Comma| |%| |%|) |%|))
+                  (|Declare|
+                     |**|
+                     (|Apply| |->| (|Comma| |%| |NonNegativeInteger|) |%|))
+                  (|Declare|
+                     |**|
+                     (|Apply| |->| (|Comma| |%| |Integer|) |%|))
+                  (|Declare| |0| |%|)
+                  (|Declare| |1| |%|)
+                  (|Declare| |flatten| (|Apply| |->| (|Comma| |%|) |%|))
+                  (|Declare|
+                     |unparse|
+                     (|Apply| |->| (|Comma| |%|) |String|))
+                  (|Declare|
+                     |declare|
+                     (|Apply|
+                        |->|
+                        (|Comma| (|Apply| |List| |%|))
+                        |Symbol|))
+                  (|Declare|
+                     |compile|
+                     (|Apply|
+                        |->|
+                        (|Comma| |Symbol| (|Apply| |List| |%|))
+                        |Symbol|)))) )
+         (|Add|
+            (|PretendTo|
+               (|Add| NIL NIL)
+               (|With|
+                  NIL
+                  (|Sequence|
+                     (|Apply|
+                        |SExpressionCategory|
+                        |String|
+                        |Symbol|
+                        |Integer|
+                        |DoubleFloat|
+                        |OutputForm|)
+                     (|Apply| |ConvertibleTo| |SExpression|)
+                     (|Declare|
+                        |interpret|
+                        (|Apply| |->| (|Comma| |%|) |Any|))
+                     (|Declare|
+                        |convert|
+                        (|Apply| |->| (|Comma| |SExpression|) |%|))
+                     (|Declare|
+                        |binary|
+                        (|Apply|
+                           |->|
+                           (|Comma| |%| (|Apply| |List| |%|))
+                           |%|))
+                     (|Declare|
+                        |function|
+                        (|Apply|
+                           |->|
+                           (|Comma| |%| (|Apply| |List| |Symbol|) |Symbol|)
+                           |%|))
+                     (|Declare|
+                        |lambda|
+                        (|Apply|
+                           |->|
+                           (|Comma| |%| (|Apply| |List| |Symbol|))
+                           |%|))
+                     (|Declare| |+| (|Apply| |->| (|Comma| |%| |%|) |%|))
+                     (|Declare| |*| (|Apply| |->| (|Comma| |%| |%|) |%|))
+                     (|Declare| |/| (|Apply| |->| (|Comma| |%| |%|) |%|))
+                     (|Declare|
+                        |**|
+                        (|Apply|
+                           |->|
+                           (|Comma| |%| |NonNegativeInteger|)
+                           |%|))
+                     (|Declare|
+                        |**|
+                        (|Apply| |->| (|Comma| |%| |Integer|) |%|))
+                     (|Declare| |0| |%|)
+                     (|Declare| |1| |%|)
+                     (|Declare| |flatten| (|Apply| |->| (|Comma| |%|) |%|))
+                     (|Declare|
+                        |unparse|
+                        (|Apply| |->| (|Comma| |%|) |String|))
+                     (|Declare|
+                        |declare|
+                        (|Apply|
+                           |->|
+                           (|Comma| (|Apply| |List| |%|))
+                           |Symbol|))
+                     (|Declare|
+                        |compile|
+                        (|Apply|
+                           |->|
+                           (|Comma| |Symbol| (|Apply| |List| |%|))
+                           |Symbol|)))) )
+            NIL))))

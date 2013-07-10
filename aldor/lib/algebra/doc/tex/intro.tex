@@ -1,0 +1,92 @@
+\section{Introduction}
+
+\subsection*{What is \stdmath?}
+\stdmath{} is a general-purpose computer algebra library designed to
+provide reusable and efficient algorithms for manipulating the standard
+objects of algebra, namely polynomials, series and matrices.
+Built as an extension of the \salli library, it provides \aldor
+programmers with an extensible computer algebra layer with a rich
+data type hierarchy.
+
+\subsection*{How do I get and install \stdmath?}
+You can download \stdmath by anonymous ftp from the \cafe server at
+{\tt ftp-sop.inria.fr} in {\tt cafe/software/algebra},
+or from the URL:\\
+\vspace{-5mm}
+\begin{center}
+\url{http://www.inria.fr/cafe/Manuel.Bronstein/algebra/}
+\end{center}
+After downloading the file {\tt algebra.tar.gz}, issue
+``{\tt tar -xzvf algebra.tar.gz}'' in order to unpack it.
+This will create the following directories:
+\begin{itemize}
+\item{\tt algebra/doc}: this user guide,
+\item{\tt algebra/lib}: the library,
+\item{\tt algebra/include}: the required include files,
+\item{\tt algebra/test}: some test files,
+\item{\tt algebra/samples}: \stdmath programming samples,
+\end{itemize}
+Once the above file is unpacked, do the following:
+\begin{itemize}
+\item add the option {\tt -csys=XXX} to your ALDORARGS environment variable,
+where {\tt XXX}
+depends on your hardware and operating system. Common values for {\tt XXX}
+are {\tt axposf1v4} for OSF1 V4.0 on a DEC Alpha, {\tt linux-486} for linux on
+a 486 or above PC, and {\tt sun4os55g-v8} for SunOS 5.5 on a SPARC v8 machine.
+See the file {\tt \$ALDORROOT/include/aldor.conf} for other values;
+\item go to {\tt algebra/lib} and execute {\tt sh makealgebra};
+shell;
+\item if you want to build the GMP version of the library,
+execute {\tt sh makealgebra-gmp}.
+See the subsection on~\alalias{\this}{sec:gmp}{using GMP}
+for more information about using the GMP version of \libalgebra;
+\item if you want to build the debug version of the library,
+execute {\tt sh makealgebrad}.
+See the subsection on~\alalias{\this}{sec:debug}{debugging}
+for more information on using the debug library.
+\end{itemize}
+
+\subsection*{How do I use \stdmath in my programs?}
+Once \stdmath is properly built, you need to set the following environment
+variables before using it:
+\begin{itemize}
+\item the environment variable ALGEBRAROOT should be set to
+the main {\tt algebra} directory;
+\item {\tt \$ALGEBRAROOT/include}
+should be appended to your INCPATH environment variable;
+\item {\tt \$ALGEBRAROOT/lib}
+should be appended to your LIBPATH environment variable;
+\end{itemize}
+In your \aldor programs, use {\tt \#include "algebra"} instead of
+{\tt \#include "aldor"}.
+When building your final executable, add the options
+\begin{center}
+{\tt -lalgebra -laldor -y\$ALGEBRAROOT/lib}
+\end{center}
+to your compiler command line, or
+\begin{center}
+{\tt -lalgebrad -laldord -dDEBUG -y\$ALGEBRAROOT/lib}
+\end{center}
+to link to the debug version of \libalgebra.
+Check the subsection on~\alalias{\this}{sec:gmp}{using GMP}
+for the options required if you want to use the GMP library and the GMP
+version of \libalgebra.
+
+If you are running \stdmath inside the compiler interactive loop, then
+type the line
+\begin{center}
+{\tt \#include "aldorinterp"}
+\end{center}
+immediately after {\tt \#include "algebra"},
+which will import various things for interactive use and make the interpreter
+loop print values automatically.
+As with any \aldor program, do not forget
+the {\tt -q} option in order to optimize your programs, specially
+if performance is an issue.
+
+Before using \stdmath for the first time, please check your installation
+by running {\tt make} in the {\tt algebra/test} directory, followed by
+running {\tt testall}.
+
+Please report any installation problem or bugs you encounter
+to {\tt sumit@sophia.inria.fr}.

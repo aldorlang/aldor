@@ -1,0 +1,48 @@
+\section{Introduction}
+
+\subsection*{What is \salli?}
+\salli (the standard aldor library) is a compact, general-purpose
+library for \aldor programs.
+It provides a low-level interface between \aldor programmers and the
+abstract machine, allowing its users to start programming with a minimal
+set of basic types and data structures already built into the language.
+
+\subsection*{How do I get and install \salli?}
+\libaldor{} is now bundled with the
+\htmladdnormallinkfoot{Aldor compiler}{http://www.aldor.org}
+and is automatically installed with it. Older
+versions of \salli{} for previous versions of the compiler can be obtained
+from {\tt salli@sophia.inria.fr} or by
+\htmladdnormallinkfoot{ftp}{ftp://ftp-sop/cafe/software/libaldor}.
+
+\subsection*{How do I use \salli in my programs?}
+To use \salli, just add the line {\tt \#include "aldor"}
+in your \aldor sources (if you were previously an axllib user,
+do {\em not} include {\tt "axllib"} anymore).
+When building an executable, add the option
+\begin{center}
+{\tt -laldor}
+\end{center}
+to your compiler command line.
+Check the subsection on~\alalias{\this}{sec:gmp}{using GMP}
+for the options required if you want to use the GMP package,
+and the subsection on~\alalias{\this}{sec:debug}{debugging}
+for the options required if you want to use the debug version
+of \libaldor.
+
+If you are running \salli inside the compiler interactive loop, then
+type the line
+\begin{center}
+{\tt \#include "aldorinterp"}
+\end{center}
+immediately after {\tt \#include "aldor"},
+which will import various things for interactive use and make the interpreter
+loop print values automatically.
+Note that \altype{GMPInteger} and
+\altype{GMPFloat} are not available in the interactive loop.
+As with any \aldor program, do not forget
+the {\tt -q} option in order to optimize your programs, specially
+if performance is an issue.
+
+Please report any installation problem or bugs you encounter
+to {\tt salli@sophia.inria.fr}.

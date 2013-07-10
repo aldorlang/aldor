@@ -1,0 +1,125 @@
+
+(|Sequence|
+   (|Import| NIL |AxiomLib|)
+   (|Foreign| (|Declare| |dummyDefault| |Exit|) |Lisp|)
+   (|Define|
+      (|Declare|
+         |Evalable|
+         (|Apply| |->| (|Declare| |#1| |SetCategory|) |Category|))
+      (|Lambda|
+         (|Comma| (|Declare| |#1| |SetCategory|))
+         |Category|
+         (|Label|
+            |Evalable|
+            (|With|
+               NIL
+               (|Sequence|
+                  (|Apply| |InnerEvalable| |#1| |#1|)
+                  (|Declare|
+                     |eval|
+                     (|Apply|
+                        |->|
+                        (|Comma| |%| (|Apply| |Equation| |#1|))
+                        |%|))
+                  (|Declare|
+                     |eval|
+                     (|Apply|
+                        |->|
+                        (|Comma|
+                           |%|
+                           (|Apply| |List| (|Apply| |Equation| |#1|)))
+                        |%|))
+                  (|Default|
+                     (|Sequence|
+                        (|Define|
+                           (|Declare|
+                              |eval|
+                              (|Apply|
+                                 |->|
+                                 (|Comma|
+                                    |%|
+                                    (|Apply|
+                                       |List|
+                                       (|PretendTo| |#1| |Type|))
+                                    (|Apply|
+                                       |List|
+                                       (|PretendTo| |#1| |Type|)))
+                                 |%|))
+                           (|Lambda|
+                              (|Comma|
+                                 (|Declare| |t#1| |%|)
+                                 (|Declare|
+                                    |t#2|
+                                    (|Apply|
+                                       |List|
+                                       (|PretendTo| |#1| |Type|)))
+                                 (|Declare|
+                                    |t#3|
+                                    (|Apply|
+                                       |List|
+                                       (|PretendTo| |#1| |Type|))))
+                              |%|
+                              (|Label| |eval| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |eval|
+                              (|Apply|
+                                 |->|
+                                 (|Comma|
+                                    |%|
+                                    (|Apply|
+                                       |Equation|
+                                       (|PretendTo| |#1| |Type|)))
+                                 |%|))
+                           (|Lambda|
+                              (|Comma|
+                                 (|Declare| |t#1| |%|)
+                                 (|Declare|
+                                    |t#2|
+                                    (|Apply|
+                                       |Equation|
+                                       (|PretendTo| |#1| |Type|))))
+                              |%|
+                              (|Label| |eval| |dummyDefault|)))) ))) )))
+   (|Define|
+      (|Declare|
+         |InnerEvalable|
+         (|Apply|
+            |->|
+            (|Comma|
+               (|Declare| |#1| |SetCategory|)
+               (|Declare| |#2| |Type|))
+            |Category|))
+      (|Lambda|
+         (|Comma| (|Declare| |#1| |SetCategory|) (|Declare| |#2| |Type|))
+         |Category|
+         (|Label|
+            |InnerEvalable|
+            (|With|
+               NIL
+               (|Sequence|
+                  (|Declare|
+                     |eval|
+                     (|Apply| |->| (|Comma| |%| |#1| |#2|) |%|))
+                  (|Declare|
+                     |eval|
+                     (|Apply|
+                        |->|
+                        (|Comma|
+                           |%|
+                           (|Apply| |List| |#1|)
+                           (|Apply| |List| |#2|))
+                        |%|))
+                  (|Default|
+                     (|Sequence|
+                        (|Define|
+                           (|Declare|
+                              |eval|
+                              (|Apply| |->| (|Comma| |%| |#1| |#2|) |%|))
+                           (|Lambda|
+                              (|Comma|
+                                 (|Declare| |t#1| |%|)
+                                 (|Declare| |t#2| |#1|)
+                                 (|Declare| |t#3| |#2|))
+                              |%|
+                              (|Label| |eval| |dummyDefault|)))) ))) ))) )

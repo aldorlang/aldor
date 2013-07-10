@@ -1,0 +1,327 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%                                                                        %%%
+%%% :: Post Facto Extensions
+%%%                                                                        %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\keywordIndex{extend}
+\head{chapter}{Post facto extensions}{asugLangExtension}
+
+One of the real problems in reusing code is
+how to use programs from independently developed libraries at the same time.
+
+Every library has assumptions about the basic behaviour of the values it uses.
+To use values created by functions of one library as input to 
+functions of a second library, it is usually necessary
+to convert the values to types derived from the second library.
+
+As the number of libraries used by an application increases, the conversion
+problem becomes more significant.  
+%
+For example, say a library defines a concept of
+\ttin{FancyOutput}, of which the basic {\tt Integer} type could be an instance,
+if only it supported a few extra operations.
+The way this would be handled in other languages would be to derive a
+new type from {\tt Integer}, say \ttin{FancyOutputInteger}, and to use
+fancy integers in the program.
+
+Now suppose we wish to use a library for differential operators,
+which defines a concept of \ttin{DifferentialRing}.
+Now the integers would be a suitable instance, if only they provided
+a differentiation operator.  It is a trivial matter to supply a
+differentiation operator for the set of integers:  it would just return 0.
+At this point we end up with the new type
+\ttin{DifferentiableFancyOutputInteger} which may now be used in place of 
+\ttin{Integer} when using the differential operator library at the
+same time as fancy output. 
+
+Aside from being ugly,  this leads to a second problem:
+Each library may refer to the original type Integer, or its own
+derived version of it, in particular situations, and the 
+{\tt DifferentiableFancyInteger}s will need to be converted to {\tt
+FancyInteger}s or {\tt Integer}s and {\em vice versa}.
+
+This problem gets worse when both libraries use the same base type,
+{\tt String} or {\tt Window} for instance, with different sets of operations.
+
+This problem is particularly acute in certain applications. 
+In mathematics, for example, certain basic sets are simple instances
+of very many abstract concepts.  It is impossible for the \asharp{}
+library to anticipate all the mathematical contexts in which the
+type {\tt Integer} may be expected to perform.
+
+The way \asharp{} solves the problem just described is to 
+allow programs to supply enhancements to already existing types via
+{\em post facto extensions}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\head{section}{Extending types}{asugLangExtensionTypes}
+
+If $T$ is a type-valued constant, then its meaning may be extended with 
+a definition of the form:
+
+\verb"    "{\tt extend {\em T\/}:~{\em C} == {\em D} }
+
+Here $C$ is a new category to which $T$ will now belong and $D$ is
+a package providing implementations for the newly required exports.
+The new operations cannot see the internal representation of $T$.
+
+Taking the earlier example, the type {\tt Integer} can be made to satisfy
+the new categories {\tt FancyOutput} and {\tt DifferentialRing}
+by providing appropriate extensions:
+
+\begin{small}
+\begin{verbatim}
+extend Integer: FancyOutput == add {
+        box(n: Integer): BoundingBox == [1, ndigits n, 0, 0]
+}
+\end{verbatim}
+\end{small}
+
+\begin{small}
+\begin{verbatim}
+extend Integer: DifferentialRing == add {
+        differentiate(n: Integer): Integer == 0
+}
+\end{verbatim}
+\end{small}
+
+then these extensions may be used, independently or together,
+
+Extensions are made visible in the same manner as other definitions:
+by importing the package which provides them.  
+This allows programs using extensions to be statically checked
+and more heavily optimised.
+
+Extensions may be private to a particular application, or 
+be exported by a library.  
+In the case where a library provides an
+extension, the clients of the library see the extension applied to the type.
+
+Within a given context,
+a type-valued constant has as its type the \verb"Join" of the
+categories of the original value all the extensions.  
+Its value is obtained by \verb"add"-ing the extensions to the original value.
+
+If two extensions have intersecting categories, then they may not be
+imported in the same scope.
+%%MCD: What does this mean?
+%The extensions might, however, be combined explicitly.  
+%The current implementation does not check for this error.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\newpage
+\section{Extending functions}
+
+In typical \asharp{} applications many of the types are provided
+by functions, so an effective extension mechanism must provide some way
+to extend these types as well.
+
+One might imagine a solution which took a particular function result, say 
+\ttin{List(Integer)} and modified it.  
+The problem with this is that while that one list type would be extended,
+the other list types would not be.  
+It is really the meaning of \verb"List" which should be extended.
+
+To extend the meaning of a function-valued constant in \asharp{}
+one writes:
+
+\verb"    "{\tt extend {\em fdef}}
+
+where ``{\em fdef\/}'' has the form of a definition of the function 
+being extended.  For example:
+
+\begin{small}
+\begin{verbatim}
+   #include "aldor"
+   #include "aldorio"
+
+   -- Partial(S) is a type which includes values in `S' as well
+   -- as a special `failed' value.
+   --
+   -- This extension does two things:
+   -- 1. It allows `failed' to be treated as `false' in `if' statements.
+   -- 2. It causes an import from Partial(S) to also import from S.
+
+   extend Partial(S: Type): with {
+           test: % -> Boolean;
+
+           export from S;
+   }
+   == add {
+           test(x: %): Boolean == not failed? x
+   }
+
+   PI ==> Partial Integer;
+   import from PI;
+
+   i := failed; j := [7];
+
+   stdout << (if i then "oops" else "ok") << newline;
+   stdout << (if j then "ok" else "oops") << newline;
+\end{verbatim}
+\end{small}
+
+Any form of function definition is allowed, \eg{}:
+\begin{small}
+\begin{verbatim}
+
+    extend F(S: Type): C(S) == ...;
+
+    extend G: (S: Type) -> C(S)  ==  (S: Type): C(S) +-> ...;
+
+    extend H(n: Integer, S: PrimitiveType) (R: ArithmeticType) == ....;
+\end{verbatim}
+\end{small}
+
+%\newpage
+Function extensions are meaningful when the argument and result types of
+the extension are compatible with the argument and result types
+of the original meaning.  
+
+In the current implementation of the language, the extension
+argument types are compatible if they are the same as
+the argument types of the orginal function.
+
+Corresponding result types are compatible if they are the same
+or both are subtypes of the same type.
+\index{subtype}
+Additionally, the (base) type must have an appropriate method to combine values.
+At present only functions and types provide a combination method.
+%although a later version of the language may provide a generic interface.
+
+In practice this means that types, or functions producing types, 
+or functions producing functions producing types, \etc{} may be extended.
+
+Type values are combined by \verb"add" and their types are combined
+with \verb"Join".
+Function values are combined by producing a new function which
+runs all of them and combines the result (recursively, if necessary).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Corresponding arguments are compatible if their types are the same
+%or both subtypes of the same type. For example,
+%\begin{small}
+%\begin{tt}
+%    (Integer, Ring) -> ...
+%    (Integer, Ordered) -> ...
+%\end{tt}
+%\end{small}
+%Here the first arguments have the same type and the second arguments
+%are both subtypes of {\tt Type}.
+%
+%If the original and extension types of a function are
+%
+%\def\nnS{s}
+%\def\nnT{t}
+%\def\nnX{x}
+%\hspace{0in}
+%\begin{displaymath}
+%\begin{array}{c}
+%(S_{0 1}, ... , S_{0 \nnS}) \rightarrow (T_{0 1}, ... , T_{0 {\nnT}}) \\
+%(S_{1 1}, ... , S_{1 \nnS}) \rightarrow (T_{1 1}, ... , T_{1 {\nnT}}) \\
+%\vdots \\
+%(S_{{\nnX} 1}, ... , S_{{\nnX} \nnS}) \rightarrow (T_{{\nnX} 1}, ... , T_{{\nnX} {\nnT}})
+%\end{array}
+%\end{displaymath}
+%
+%then the type of the resulting extended function is
+%
+%\hspace{0in}
+%\begin{displaymath}
+%\begin{array}{c}
+%(a_1 : SX_{1}, ... , a_n : SX_{\nnS}) \rightarrow
+% (TX_{1} (a_1,...,a_{\nnS}), ... , TX_{{\nnT}} (a_1,...,a_{\nnS}))
+%\end{array}
+%\end{displaymath}
+%
+%where
+%
+%\hspace{0in}
+%\begin{displaymath}
+%\begin{array}{l}
+%SX_j = 
+%  {\tt Meet}_{i = 0}^{\nnX} \; S_{i j} \\
+%\ \\
+%TX_j (a_1,...,a_{\nnS}) = 
+%  {\tt Join}_{i = 0}^{\nnX} \; \left\{
+%    {\tt if} \; (\, {\tt and}_{k=1}^{\nnS} \, a_k \, {\tt has} \, S_{i k} \,) \;
+%    {\tt then} \; T_{i j}
+%  \right\}
+%\end{array}
+%
+%Here, {\tt Meet} is the subtype consisting of all of the members of
+%its arguments, which must have a common base type.  If there
+%is no suitable {\tt Meet} operation for that type, then the 
+%argument types in that position must be the same.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Extending the base \asharp{} library}
+
+The base \asharp{} library builds many of its types in layers, 
+{\hyphenation{using using} using} \ttin{extend}.
+For instance, it extends
+\verb"Boolean", \verb"Generator(S)" and \verb"Tuple(S)",
+which are language-defined,
+and creates \verb"Integer" and \verb"TextWriter" in stages.
+%These examples may be found in the \fname{libaldor} subdirectory of the
+%\asharp{} \fname{samples} directory.  (Please consult your systems
+%administrator to determine the location of this directory.)
+%% Previous text was Unix specific.
+
+An application which introduces a new concept can provide a file
+to extend an existing library to support the new concept.
+
+Suppose, for instance, that an application needed to determine how much
+dynamically allocated memory was used by data structures.
+Then it could extend the \asharp{} library with a file which began
+with code resembling that in Figure~\ref{FigureExtend}.
+
+With this, it would now be possible to ask about the sizes of 
+values belonging to the types \ttin{Integer}, \ttin{List(Integer)}, and
+so on.
+
+%%AXIOM \section{Extending the \axiom{} library}
+%%AXIOM 
+%%AXIOM The \axiom{} library bindings provided with \asharp{} also make
+%%AXIOM \index{AXIOM}
+%%AXIOM significant use of extensions.  
+%%AXIOM The types, as provided by the \axiom{} library,
+%%AXIOM do not provide the operations necessary
+%%AXIOM to participate gracefully in \asharp{} programs.
+%%AXIOM 
+%%AXIOM \pagebreak
+%%AXIOM For example, the \verb"Integer" type does not have an operation
+%%AXIOM \ttin{integer} so it could not use integer-style literals; the
+%%AXIOM \verb"List" constructor does not provide a \verb"generator" function,
+%%AXIOM %so it would not be possible to iterate over lists.
+%%AXIOM so iteration over lists would be impossible.
+%%AXIOM % changed to avoid bad pagebreak.
+%%AXIOM 
+%%AXIOM So, in order to allow \asharp{} to be a suitable vehicle to extend the 
+%%AXIOM \axiom{} library, we have provided a set of post facto extensions
+%%AXIOM as part of the \axiom{} library interface.  
+%%AXIOM When a program uses \verb+#include "axiom"+
+%%AXIOM it sees the extended \axiom{} types, dressed for use with \asharp{}.
+%%AXIOM 
+%%AXIOM These extensions also serve a second purpose:  
+%%AXIOM to allow the \asharp{} compiler to do better optimisation for 
+%%AXIOM programs based on the \axiom{} library.
+%%AXIOM By providing redundant \asharp{} implementations for efficiency-critical
+%%AXIOM functions, we make these operations available for inter-file optimisation.
+%%AXIOM 
+%%AXIOM The part of the \fname{axextend.as} file which provides
+%%AXIOM the extension for the \verb"Vector" constructor is shown on
+%%AXIOM page~\pageref{asugLangExtendAxiomVector}.
+%%AXIOM We present this, not as the most beautiful  program in the world,
+%%AXIOM but rather as a real-life example of using extensions to solve a problem.
+%%AXIOM 
+\thegeneralfile{h}{FigureExtend}{Post facto extension of the Base \asharp{} library.}{examples/sizextd.as}
+
+%%AXIOM \clearpage
+%%AXIOM \newpage
+%%AXIOM {\bf Excerpt of {\tt "axextend.as"} for Vector}
+%%AXIOM \label{asugLangExtendAxiomVector}
+%%AXIOM 
+%%AXIOM \program{axexvect}

@@ -1,0 +1,202 @@
+(|Sequence| (|Import| NIL |AxiomLib|)
+    (|Foreign| (|Declare| |dummyDefault| |Exit|) |Lisp|)
+    (|Export|
+        (|Declare| |EquationFunctions2|
+            (|Apply| ->
+                     (|Comma| (|Declare| |#1| |Type|)
+                              (|Declare| |#2| |Type|))
+                     (|With| NIL
+                             (|Sequence|
+                                 (|Declare| |map|
+                                     (|Apply| ->
+                                      (|Comma|
+                                       (|Apply| -> (|Comma| |#1|) |#2|)
+                                       (|Apply| |Equation| |#1|))
+                                      (|Apply| |Equation| |#2|)))))))
+        NIL NIL)
+    (|Sequence|
+        (|Define|
+            (|Declare| |EquationExtendCategory|
+                (|Apply| -> (|Declare| |#1| |Type|) |Category|))
+            (|Lambda| (|Comma| (|Declare| |#1| |Type|)) |Category|
+                (|Label| |EquationExtendCategory|
+                         (|With| NIL
+                                 (|Sequence|
+                                     (|Declare| =
+                                      (|Apply| -> (|Comma| |#1| |#1|)
+                                       %))
+                                     (|Declare| |equation|
+                                      (|Apply| -> (|Comma| |#1| |#1|)
+                                       %))
+                                     (|Declare| |swap|
+                                      (|Apply| -> (|Comma| %) %))
+                                     (|Declare| |lhs|
+                                      (|Apply| -> (|Comma| %) |#1|))
+                                     (|Declare| |rhs|
+                                      (|Apply| -> (|Comma| %) |#1|))
+                                     (|Declare| |map|
+                                      (|Apply| ->
+                                       (|Comma|
+                                        (|Apply| -> (|Comma| |#1|)
+                                         |#1|)
+                                        %)
+                                       %))
+                                     (|If|
+                                      (|Test|
+                                       (|Has| |#1|
+                                        (|Apply| |InnerEvalable|
+                                         |Symbol| |#1|)))
+                                      (|Apply| |InnerEvalable|
+                                       (|PretendTo| |Symbol|
+                                        |SetCategory|)
+                                       (|PretendTo| |#1| |Type|))
+                                      NIL)
+                                     (|If|
+                                      (|Test|
+                                       (|Has| |#1| |SetCategory|))
+                                      (|Sequence| |SetCategory|
+                                       (|Apply| |CoercibleTo|
+                                        (|PretendTo| |Boolean| |Type|))
+                                       (|If|
+                                        (|Test|
+                                         (|Has| |#1|
+                                          (|Apply| |Evalable|
+                                           (|PretendTo| |#1|
+                                            |SetCategory|))))
+                                        (|Sequence|
+                                         (|Declare| |eval|
+                                          (|Apply| -> (|Comma| % %) %))
+                                         (|Declare| |eval|
+                                          (|Apply| ->
+                                           (|Comma| %
+                                            (|Apply| |List|
+                                             (|PretendTo| % |Type|)))
+                                           %)))
+                                        NIL))
+                                      NIL)
+                                     (|If|
+                                      (|Test|
+                                       (|Has| |#1| |AbelianSemiGroup|))
+                                      (|Sequence| |AbelianSemiGroup|
+                                       (|Declare| +
+                                        (|Apply| -> (|Comma| |#1| %) %))
+                                       (|Declare| +
+                                        (|Apply| -> (|Comma| % |#1|) %)))
+                                      NIL)
+                                     (|If|
+                                      (|Test|
+                                       (|Has| |#1| |AbelianGroup|))
+                                      (|Sequence| |AbelianGroup|
+                                       (|Declare| |leftZero|
+                                        (|Apply| -> (|Comma| %) %))
+                                       (|Declare| |rightZero|
+                                        (|Apply| -> (|Comma| %) %))
+                                       (|Declare| -
+                                        (|Apply| -> (|Comma| |#1| %) %))
+                                       (|Declare| -
+                                        (|Apply| -> (|Comma| % |#1|) %)))
+                                      NIL)
+                                     (|If|
+                                      (|Test| (|Has| |#1| |SemiGroup|))
+                                      (|Sequence| |SemiGroup|
+                                       (|Declare| *
+                                        (|Apply| -> (|Comma| |#1| %) %))
+                                       (|Declare| *
+                                        (|Apply| -> (|Comma| % |#1|) %)))
+                                      NIL)
+                                     (|If|
+                                      (|Test| (|Has| |#1| |Monoid|))
+                                      (|Sequence| |Monoid|
+                                       (|Declare| |leftOne|
+                                        (|Apply| -> (|Comma| %)
+                                         (|Apply| |Union|
+                                          (|Declare| |value1| %)
+                                          (|Declare| |failed|
+                                           (|Apply| |Enumeration|
+                                            |failed|)))))
+                                       (|Declare| |rightOne|
+                                        (|Apply| -> (|Comma| %)
+                                         (|Apply| |Union|
+                                          (|Declare| |value1| %)
+                                          (|Declare| |failed|
+                                           (|Apply| |Enumeration|
+                                            |failed|))))))
+                                      NIL)
+                                     (|If|
+                                      (|Test| (|Has| |#1| |Group|))
+                                      (|Sequence| |Group|
+                                       (|Declare| |leftOne|
+                                        (|Apply| -> (|Comma| %)
+                                         (|Apply| |Union|
+                                          (|Declare| |value1| %)
+                                          (|Declare| |failed|
+                                           (|Apply| |Enumeration|
+                                            |failed|)))))
+                                       (|Declare| |rightOne|
+                                        (|Apply| -> (|Comma| %)
+                                         (|Apply| |Union|
+                                          (|Declare| |value1| %)
+                                          (|Declare| |failed|
+                                           (|Apply| |Enumeration|
+                                            |failed|))))))
+                                      NIL)
+                                     (|If| (|Test| (|Has| |#1| |Ring|))
+                                      (|Sequence| |Ring|
+                                       (|Apply| |BiModule|
+                                        (|PretendTo| |#1| |Ring|)
+                                        (|PretendTo| |#1| |Ring|)))
+                                      NIL)
+                                     (|If|
+                                      (|Test|
+                                       (|Has| |#1| |CommutativeRing|))
+                                      (|Apply| |Module|
+                                       (|PretendTo| |#1|
+                                        |CommutativeRing|))
+                                      NIL)
+                                     (|If|
+                                      (|Test|
+                                       (|Has| |#1| |IntegralDomain|))
+                                      (|Declare| |factorAndSplit|
+                                       (|Apply| -> (|Comma| %)
+                                        (|Apply| |List|
+                                         (|PretendTo| % |Type|))))
+                                      NIL)
+                                     (|If|
+                                      (|Test|
+                                       (|Has| |#1|
+                                        (|Apply|
+                                         |PartialDifferentialRing|
+                                         |Symbol|)))
+                                      (|Apply|
+                                       |PartialDifferentialRing|
+                                       (|PretendTo| |Symbol|
+                                        |SetCategory|))
+                                      NIL)
+                                     (|If|
+                                      (|Test| (|Has| |#1| |Field|))
+                                      (|Sequence|
+                                       (|Apply| |VectorSpace|
+                                        (|PretendTo| |#1| |Field|))
+                                       (|Declare| /
+                                        (|Apply| -> (|Comma| % %) %))
+                                       (|Declare| |inv|
+                                        (|Apply| -> (|Comma| %) %)))
+                                      NIL)
+                                     (|If|
+                                      (|Test|
+                                       (|Has| |#1| |ExpressionSpace|))
+                                      (|Declare| |subst|
+                                       (|Apply| -> (|Comma| % %) %))
+                                      NIL))))))
+        (|Extend|
+            (|Define|
+                (|Declare| |Equation|
+                    (|Apply| -> (|Declare| |#1| |Type|)
+                             (|Apply| |EquationExtendCategory| |#1|)))
+                (|Lambda| (|Comma| (|Declare| |#1| |Type|))
+                    (|Apply| |EquationExtendCategory| |#1|)
+                    (|Label| |Equation|
+                             (|Add| (|PretendTo| (|Add| NIL NIL)
+                                     (|Apply| |EquationExtendCategory|
+                                      |#1|))
+                                    NIL)))))))

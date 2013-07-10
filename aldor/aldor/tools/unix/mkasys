@@ -1,0 +1,25 @@
+#!/bin/sh
+# This file extracts the .ao files in the libaxllib.al file and
+# creates .asy files from them.
+
+lib=${ALDORROOT}/lib/libaxllib.al
+
+if [ ! -f $lib ]
+then
+	echo "Cannot locate library file $lib."
+	exit 1
+fi
+
+echo "Dumping .ao files from $lib \n\tinto current directory."
+
+aos=`ar -t $lib`
+ar -x $lib
+
+for i in $aos
+do
+	echo "Creating .asy file from $i ..."
+	aldor -L. -F asy $i
+done
+
+echo "Removing $aos"
+rm -f $aos

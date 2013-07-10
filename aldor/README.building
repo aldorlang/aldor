@@ -1,0 +1,182 @@
+================================
+Building Aldor and its libraries
+================================
+(Yannis Chicha for the Aldor Development Group)
+(Modified 2004/05/14 to include information about generating doc and test)
+(Updated by Aldor Workshop attendees 2007/08/22 )
+
+
+Dependencies
+------------
+
+Building the Aldor grammar from the original Zacc (extended Yacc) files
+requires an ATT-compatible Yacc parser generator such as Berkeley Yacc
+(byacc) compiler instead of running Bison in -y (yacc) mode, otherwise
+the build fails with an error message concerning undefined types.
+
+Install byacc from your linux distribution or build and install Berkeley
+Yacc from here:
+
+http://sourceforge.net/projects/byacc
+
+
+Building the Aldor world
+------------------------
+
+1. Edit the Makefile.globals file to choose a few values: directories, 
+   libs to include in the distribution, etc.
+
+   In particular, the ALDOR_PROJECT variable must be changed, 
+   and for now must be an ABSOLUTE path.  
+
+   If you check out the sources in the directory  $HOME/svn/trunk/aldor ,
+   then set in Makefile.globasl the variable
+
+   ALDOR_PROJECT=$(HOME)/svn/trunk/aldor
+
+
+2. Type 'make aldorcompiler' to make the compiler.
+
+
+3. Type 'make generic' to make a generic directory containing the 
+   portable (.al) versions of the libraries.  
+
+   This will be build in the directory given by $GENERIC_DIR, which by 
+   default is $ALDOR_PROJECT/install/aldor_generic.
+
+4. Change to the the $GENERIC_DIR and type 'make install.  E.g.
+
+   cd install/aldor_generic
+   make install
+
+
+
+
+
+   Alternatively, instead of steps {2,3,4}, type 'make distrib' to do all of
+
+     make aldorcompiler && make generic && cd $GENERIC_DIR && make install
+
+
+
+
+
+5.  The Aldor executables are now in 
+
+    $ALDOR_PROJECT/install/<platform>/<version>
+
+    This directory may be moved elseewhere or left where it is.
+
+    To use Aldor, you need to set the environment variable ALDORROOT to 
+    point to this directory, e.g.
+
+    setenv ALDORROOT $HOME/svn-playground/trunk/aldor/install/aldor/linux/1.1.0
+
+    and add $ALDORROOT/bin to your PATH.
+
+6.  Test that the compiler is working by typing 'aldor -gloop' to the shell.
+
+    This will put you in an interactive compiler loop, at which you can type:
+
+    #include "aldor"
+    #include "aldorio"
+    stdout << 2+2 << newline
+    #quit
+
+    You can run a more extensive series of tests by typing 'make testaxl'
+    from the $ALDOR_PROJECT directory.   
+
+    Do not be alarmed by the "deprecated" messages that come before the 
+    tests start to run -- the test suite builds and uses an older library.
+
+
+
+
+
+
+
+
+
+
+
+Compiler making
+---------------
+
+There are two possibilities to do that:
+  1) Edit Makefile.globals and type 'make aldorcompiler'
+or
+  2) cd into the 'compiler' subdirectory
+     and follow the instructions of the INSTALL file
+
+Library making
+--------------
+
+It is possible to compile the libraries 'in place', which
+means that the .al and .a files will stay in the 'lib'
+directory of the library sources and NOT be installed
+in $ALDORROOT/lib
+
+To build the libraries, you need to have the aldor 
+compiler available (i.e. set your ALDORROOT variable)
+
+Again there two possibilities for the compilation:
+ 1) at the root of the forest (!), type:
+    'make libaxllib' or 'make libaldor' or 'make algebra'
+    Be careful: you need to have corresponding variables
+    set in your environment.
+       libaxllib => LIBAXLLIBROOT
+       libaldor  => ALDORLIBROOT
+       algebra   => ALDORLIBROOT and ALGEBRAROOT
+    Currently, the building of algebra will not automatically
+    build libaldor beforehand, so be careful of that as well.
+
+ 2) Go directly to the directories of the libraries.
+    If you type 'make' (with no target), a 'usage' message
+    will appear.
+    The main targets are similar for the three libraries.
+    There are 'hidden' targets (i.e. not shown in the usage
+    message) that can be used for even finer compilation.
+
+Cleaning up
+-----------
+
+1) To clean the source tree use:
+   make clean
+2) To clean the generic libraries tree use:
+   make cleangeneric
+3) To clean everything use:
+   make cleanall
+
+GC bug workaround
+-----------------
+
+There are three flavours of aldor builds: (There is no point in messing with -O
+since it does not affect the libraries used by aldor.)
+
+Ver | -DNDEBUG | undef DNDEBUG (store.c) | Comments                           |
+====+==========+=========================+====================================+
+1   | y        | n                       | usual code (bug in GC)             |
+----+----------+-------------------------+------------------------------------+
+2   | n        | n                       | comp all debug, runtime all optim  |
+----+----------+-------------------------+------------------------------------+
+3   | y        | y                       | comp gc debug, runtime gc debug    |
+----+----------+-------------------------+------------------------------------+
+
+These versions do not modify the Makefile in the lib/libfoam/links that builds 
+the aldor runtime.
+
+Tests
+-----
+
+In order to use the old tests (axllib) you have to first make sure that the
+compiler is built.  It should also produce the file testaldor in
+$ALDORROOT/bin.  
+
+Then make sure that axllib is built. 
+
+Finally, go to top-level of ALDOR_PROJECT and use make testaxl.
+
+Making a distribution:
+ type 'make distrib'
+ The result is a tgz file.
+----------------------------------------------------------------

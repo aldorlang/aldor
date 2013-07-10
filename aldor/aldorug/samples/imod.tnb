@@ -1,0 +1,101 @@
+{\codeline{1}\verb& -----------------------------------------------------------------&}\\
+{\codeline{2}\verb& ----&}\\
+{\codeline{3}\verb& ---- imod.as: Modular integer arithmetic.&}\\
+{\codeline{4}\verb& ----&}\\
+{\codeline{5}\verb& -----------------------------------------------------------------&}\\
+{\codeline{6}\verb&&}\\
+{\codeline{7}\verb& #include "aldor"&}\\
+{\codeline{8}\verb&&}\\
+{\codeline{9}\verb& define ModularIntegerType(I: IntegerType):Category ==&}\\
+{\codeline{10}\verb&   ArithmeticType  with {&}\\
+{\codeline{11}\verb&     integer:Literal -> %;&}\\
+{\codeline{12}\verb&     coerce: I -> %;&}\\
+{\codeline{13}\verb&     lift:   % -> I;&}\\
+{\codeline{14}\verb&     inv:    % -> %;&}\\
+{\codeline{15}\verb&     /:      (%, %) -> %;&}\\
+{\codeline{16}\verb& }&}\\
+{\codeline{17}\verb&&}\\
+{\codeline{18}\verb&&}\\
+{\codeline{19}\verb& ModularIntegerNumberRep(I: IntegerType)(n: I):&}\\
+{\codeline{20}\verb&     ModularIntegerType(I) with&}\\
+{\codeline{21}\verb& == add {&}\\
+{\codeline{22}\verb&     Rep  == I;&}\\
+{\codeline{23}\verb&     import from Rep;&}\\
+{\codeline{24}\verb&&}\\
+{\codeline{25}\verb&     0: % == per 0;&}\\
+{\codeline{26}\verb&     1: % == per 1;&}\\
+{\codeline{27}\verb&&}\\
+{\codeline{28}\verb&     (^)(x:%,n:MachineInteger):% ==&}\\
+{\codeline{29}\verb&         binaryExponentiation!(x, n)$BinaryPowering(%,MachineInteger);&}\\
+{\codeline{30}\verb&&}\\
+{\codeline{31}\verb&     (x: %) * (y: %): % == per((rep x * rep y) mod n);&}\\
+{\codeline{32}\verb&     commutative?: Boolean == true;&}\\
+{\codeline{33}\verb&&}\\
+{\codeline{34}\verb&     (port: TextWriter) << (x: %): TextWriter == port << rep x;&}\\
+{\codeline{35}\verb&&}\\
+{\codeline{36}\verb&     coerce (i: I): %          == per(i mod n);&}\\
+{\codeline{37}\verb&     integer(l: Literal): %    == per(integer l mod n);&}\\
+{\codeline{38}\verb&     lift   (x: %): I          == rep x;&}\\
+{\codeline{39}\verb&&}\\
+{\codeline{40}\verb&     zero?(x: %): Boolean      == x = 0;&}\\
+{\codeline{41}\verb&     (x: %) = (y: %): Boolean  == rep(x) = rep(y);&}\\
+{\codeline{42}\verb&     (x: %)~= (y: %): Boolean  == rep(x) ~= rep(y);&}\\
+{\codeline{43}\verb&&}\\
+{\codeline{44}\verb&     - (x: %): %        == if x = 0 then 0 else per(n - rep x);&}\\
+{\codeline{45}\verb&     (x: %) + (y: %): % ==&}\\
+{\codeline{46}\verb&         per(if (z := rep x-n+rep y) < 0 then z+n else z);&}\\
+{\codeline{47}\verb&     (x: %) - (y: %): % ==&}\\
+{\codeline{48}\verb&         per(if (z := rep x  -rep y) < 0 then z+n else z);&}\\
+{\codeline{49}\verb&&}\\
+{\codeline{50}\verb&     (x: %) / (y: %): % == x * inv y;&}\\
+{\codeline{51}\verb&&}\\
+{\codeline{52}\verb&     inv(j: %): % == {&}\\
+{\codeline{53}\verb&         local c0, d0, c1, d1: Rep;&}\\
+{\codeline{54}\verb&         (c0, d0) := (rep j, n);&}\\
+{\codeline{55}\verb&         (c1, d1) := (rep 1, 0);&}\\
+{\codeline{56}\verb&         while not zero? d0 repeat {&}\\
+{\codeline{57}\verb&             q := c0 quo d0;&}\\
+{\codeline{58}\verb&             (c0, d0) := (d0, c0 - q*d0);&}\\
+{\codeline{59}\verb&             (c1, d1) := (d1, c1 - q*d1)&}\\
+{\codeline{60}\verb&         }&}\\
+{\codeline{61}\verb&         assert(c0 = 1);&}\\
+{\codeline{62}\verb&         if c1 < 0  then c1 := c1 + n;&}\\
+{\codeline{63}\verb&         per c1&}\\
+{\codeline{64}\verb&     }&}\\
+{\codeline{65}\verb& }&}\\
+{\codeline{66}\verb&&}\\
+{\codeline{67}\verb&&}\\
+{\codeline{68}\verb& SI ==> MachineInteger;&}\\
+{\codeline{69}\verb& Z ==> Integer;&}\\
+{\codeline{70}\verb&&}\\
+{\codeline{71}\verb& MachineIntegerMod(n: SI): ModularIntegerType(SI) with {&}\\
+{\codeline{72}\verb&     lift: % -> Z;&}\\
+{\codeline{73}\verb& } == ModularIntegerNumberRep(SI)(n) add {&}\\
+{\codeline{74}\verb&     Rep == SI;&}\\
+{\codeline{75}\verb&&}\\
+{\codeline{76}\verb&     lift(x: %): Z == (rep x)::Z;&}\\
+{\codeline{77}\verb&&}\\
+{\codeline{78}\verb&     (x: %) * (y: %): % == {&}\\
+{\codeline{79}\verb&         import from Machine;&}\\
+{\codeline{80}\verb&         (xx, yy) := (rep x, rep y);&}\\
+{\codeline{81}\verb&         xx = 1 => y;&}\\
+{\codeline{82}\verb&         yy = 1 => x;&}\\
+{\codeline{83}\verb&         -- Small case&}\\
+{\codeline{84}\verb&         HalfWord ==> 32767; --!! Should be based on max$Rep&}\\
+{\codeline{85}\verb&         (n < HalfWord) or (xx<HalfWord and yy<HalfWord) => (xx*yy)::%;&}\\
+{\codeline{86}\verb&&}\\
+{\codeline{87}\verb&         -- Large case&}\\
+{\codeline{88}\verb&         (nh, nl) := double_*(xx pretend Word, yy pretend Word);&}\\
+{\codeline{89}\verb&         (qh, ql, rm) := doubleDivide(nh, nl, n pretend Word);&}\\
+{\codeline{90}\verb&         rm pretend %;&}\\
+{\codeline{91}\verb&     }&}\\
+{\codeline{92}\verb& }&}\\
+{\codeline{93}\verb&&}\\
+{\codeline{94}\verb&&}\\
+{\codeline{95}\verb& IntegerMod(n: Z): ModularIntegerType(Z) with {&}\\
+{\codeline{96}\verb&     coerce: SI -> %;&}\\
+{\codeline{97}\verb& } == ModularIntegerNumberRep(Z)(n) add {&}\\
+{\codeline{98}\verb&&}\\
+{\codeline{99}\verb&     coerce(i:SI):% == (i::Z)::%;&}\\
+{\codeline{100}\verb& }&}\\
+{\codeline{101}\verb&&}\\

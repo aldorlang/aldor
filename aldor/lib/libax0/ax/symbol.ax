@@ -1,0 +1,224 @@
+
+(|Sequence|
+   (|Import| NIL |AxiomLib|)
+   (|Import| NIL |Boolean|)
+   (|Extend|
+      (|Define|
+         (|Declare|
+            |Symbol|
+            (|With|
+               NIL
+               (|Sequence|
+                  |OrderedSet|
+                  (|Apply| |ConvertibleTo| |InputForm|)
+                  (|Apply| |ConvertibleTo| |Symbol|)
+                  (|Apply| |ConvertibleTo| (|Apply| |Pattern| |Integer|))
+                  (|Apply| |ConvertibleTo| (|Apply| |Pattern| |Float|))
+                  (|Apply| |PatternMatchable| |Integer|)
+                  (|Apply| |PatternMatchable| |Float|)
+                  (|Declare| |new| (|Apply| |->| (|Comma|) |%|))
+                  (|Declare| |new| (|Apply| |->| (|Comma| |%|) |%|))
+                  (|Declare| |resetNew| (|Apply| |->| (|Comma|) (|Comma|)))
+                  (|Declare|
+                     |coerce|
+                     (|Apply| |->| (|Comma| |String|) |%|))
+                  (|Declare| |name| (|Apply| |->| (|Comma| |%|) |%|))
+                  (|Declare|
+                     |scripted?|
+                     (|Apply| |->| (|Comma| |%|) |Boolean|))
+                  (|Declare|
+                     |scripts|
+                     (|Apply|
+                        |->|
+                        (|Comma| |%|)
+                        (|Apply|
+                           |Record|
+                           (|Declare| |sub| (|Apply| |List| |OutputForm|))
+                           (|Declare| |sup| (|Apply| |List| |OutputForm|))
+                           (|Declare|
+                              |presup|
+                              (|Apply| |List| |OutputForm|))
+                           (|Declare|
+                              |presub|
+                              (|Apply| |List| |OutputForm|))
+                           (|Declare|
+                              |args|
+                              (|Apply| |List| |OutputForm|)))) )
+                  (|Declare|
+                     |script|
+                     (|Apply|
+                        |->|
+                        (|Comma|
+                           |%|
+                           (|Apply| |List| (|Apply| |List| |OutputForm|)))
+                        |%|))
+                  (|Declare|
+                     |script|
+                     (|Apply|
+                        |->|
+                        (|Comma|
+                           |%|
+                           (|Apply|
+                              |Record|
+                              (|Declare|
+                                 |sub|
+                                 (|Apply| |List| |OutputForm|))
+                              (|Declare|
+                                 |sup|
+                                 (|Apply| |List| |OutputForm|))
+                              (|Declare|
+                                 |presup|
+                                 (|Apply| |List| |OutputForm|))
+                              (|Declare|
+                                 |presub|
+                                 (|Apply| |List| |OutputForm|))
+                              (|Declare|
+                                 |args|
+                                 (|Apply| |List| |OutputForm|))))
+                        |%|))
+                  (|Declare|
+                     |subscript|
+                     (|Apply|
+                        |->|
+                        (|Comma| |%| (|Apply| |List| |OutputForm|))
+                        |%|))
+                  (|Declare|
+                     |superscript|
+                     (|Apply|
+                        |->|
+                        (|Comma| |%| (|Apply| |List| |OutputForm|))
+                        |%|))
+                  (|Declare|
+                     |argscript|
+                     (|Apply|
+                        |->|
+                        (|Comma| |%| (|Apply| |List| |OutputForm|))
+                        |%|))
+                  (|Declare|
+                     |apply|
+                     (|Apply|
+                        |->|
+                        (|Comma| |%| (|Apply| |List| |OutputForm|))
+                        |%|))
+                  (|Declare|
+                     |string|
+                     (|Apply| |->| (|Comma| |%|) |String|))
+                  (|Declare|
+                     |list|
+                     (|Apply| |->| (|Comma| |%|) (|Apply| |List| |%|)))
+                  (|Declare| |sample| |%|))))
+         (|Add|
+            (|PretendTo|
+               (|Add| NIL NIL)
+               (|With|
+                  NIL
+                  (|Sequence|
+                     |OrderedSet|
+                     (|Apply| |ConvertibleTo| |InputForm|)
+                     (|Apply| |ConvertibleTo| |Symbol|)
+                     (|Apply|
+                        |ConvertibleTo|
+                        (|Apply| |Pattern| |Integer|))
+                     (|Apply| |ConvertibleTo| (|Apply| |Pattern| |Float|))
+                     (|Apply| |PatternMatchable| |Integer|)
+                     (|Apply| |PatternMatchable| |Float|)
+                     (|Declare| |new| (|Apply| |->| (|Comma|) |%|))
+                     (|Declare| |new| (|Apply| |->| (|Comma| |%|) |%|))
+                     (|Declare|
+                        |resetNew|
+                        (|Apply| |->| (|Comma|) (|Comma|)))
+                     (|Declare|
+                        |coerce|
+                        (|Apply| |->| (|Comma| |String|) |%|))
+                     (|Declare| |name| (|Apply| |->| (|Comma| |%|) |%|))
+                     (|Declare|
+                        |scripted?|
+                        (|Apply| |->| (|Comma| |%|) |Boolean|))
+                     (|Declare|
+                        |scripts|
+                        (|Apply|
+                           |->|
+                           (|Comma| |%|)
+                           (|Apply|
+                              |Record|
+                              (|Declare|
+                                 |sub|
+                                 (|Apply| |List| |OutputForm|))
+                              (|Declare|
+                                 |sup|
+                                 (|Apply| |List| |OutputForm|))
+                              (|Declare|
+                                 |presup|
+                                 (|Apply| |List| |OutputForm|))
+                              (|Declare|
+                                 |presub|
+                                 (|Apply| |List| |OutputForm|))
+                              (|Declare|
+                                 |args|
+                                 (|Apply| |List| |OutputForm|)))) )
+                     (|Declare|
+                        |script|
+                        (|Apply|
+                           |->|
+                           (|Comma|
+                              |%|
+                              (|Apply|
+                                 |List|
+                                 (|Apply| |List| |OutputForm|)))
+                           |%|))
+                     (|Declare|
+                        |script|
+                        (|Apply|
+                           |->|
+                           (|Comma|
+                              |%|
+                              (|Apply|
+                                 |Record|
+                                 (|Declare|
+                                    |sub|
+                                    (|Apply| |List| |OutputForm|))
+                                 (|Declare|
+                                    |sup|
+                                    (|Apply| |List| |OutputForm|))
+                                 (|Declare|
+                                    |presup|
+                                    (|Apply| |List| |OutputForm|))
+                                 (|Declare|
+                                    |presub|
+                                    (|Apply| |List| |OutputForm|))
+                                 (|Declare|
+                                    |args|
+                                    (|Apply| |List| |OutputForm|))))
+                           |%|))
+                     (|Declare|
+                        |subscript|
+                        (|Apply|
+                           |->|
+                           (|Comma| |%| (|Apply| |List| |OutputForm|))
+                           |%|))
+                     (|Declare|
+                        |superscript|
+                        (|Apply|
+                           |->|
+                           (|Comma| |%| (|Apply| |List| |OutputForm|))
+                           |%|))
+                     (|Declare|
+                        |argscript|
+                        (|Apply|
+                           |->|
+                           (|Comma| |%| (|Apply| |List| |OutputForm|))
+                           |%|))
+                     (|Declare|
+                        |apply|
+                        (|Apply|
+                           |->|
+                           (|Comma| |%| (|Apply| |List| |OutputForm|))
+                           |%|))
+                     (|Declare|
+                        |string|
+                        (|Apply| |->| (|Comma| |%|) |String|))
+                     (|Declare|
+                        |list|
+                        (|Apply| |->| (|Comma| |%|) (|Apply| |List| |%|)))
+                     (|Declare| |sample| |%|))))
+            NIL))))

@@ -1,0 +1,145 @@
+#!/bin/sh
+#
+# axlbug
+#
+bugserver="ax-bugs@nag.co.uk"
+tmpfile="/tmp/x0123xx"
+
+if   [ -f /usr/ucb/mail ] ; then
+	mailer=/usr/ucb/mail
+elif [ -f /bin/mail ] ; then
+	mailer=/bin/mail
+else
+	mailer=mail
+fi
+
+if [ "$1" = "" ]
+then
+	echo Please use the -expert option if you are an Aldor developer.
+fi
+
+# -------------- Priority
+
+prior=""
+while [ "$prior" = "" ]
+do
+	echon "Priority (1=urgent,..,9=detail): "
+	read prior
+	case "$prior" in
+	[1-9])	;;
+	*)	echon "\tPlease give a priority number in 1..9 : " ;prior="" ;;
+	esac
+done
+
+# -------------- Description
+
+
+subj=""
+while [ "$subj" = "" ]
+do
+	echon "Subject (brief description): "
+	read subj
+	if [ "$subj" = "" ]
+	then
+		echon "\tGive a one-line description of the problem."
+		echo
+	fi
+done
+
+# -------------- Description file
+
+docfn=""
+while [ "$docfn" = "" ]
+do
+	echon "Full pathname of file with detailed description (default none): "
+	read docfn
+	if [ "$docfn" = "" ]
+	then
+		docfn=/dev/null
+	elif [ ! -r "$docfn" ]
+	then
+		echon "\t$docfn is not a readable file."
+		echo
+		docfn=""
+	fi
+done
+
+# ------------- Bug file
+
+bugfn=""
+while [ "$bugfn" = "" ]
+do
+	echon "Full pathname of source file demonstrating the bug: "
+	read bugfn
+	if [ ! -r "$bugfn" ]
+	then
+		echon "\t$bugfn is not a readable file: "
+		echo
+		bugfn=""
+	fi
+done
+
+# ------------ Command line used
+
+cmdline=""
+while [ "$cmdline" = "" ]
+do
+	echo "Please insert the exact command line"
+	echo "(example: 'aldor -Q3 file.as', say 'none' if is irrelevant): "
+	read cmdline
+	if [ "$cmdline" = "" ]
+	then
+		echon "\tPlease insert the command line, otherwise the bug may"
+		echo
+		echon "\tnot be correctly reproduced."
+		echo
+	fi
+done
+
+# ----------- Version
+
+ver=""
+while [ "$ver" = "" ]
+do
+	echon "Compiler version (example: 1.0.0(23)): "
+	read ver
+	if [ "$ver" = "" ]
+	then
+		echon "\tYou can determine the compiler version by using the"
+		echo
+		echon "\tcompiler -v option.  Use  ?  if you really don't know."
+		echo
+	fi
+done
+
+# ----------- Bug category (only experts)
+
+categ=""
+
+if [ "$1" = "-expert" ]
+then
+	echo "****** Category (experts only) *******"
+	echo "Choose one from: tinfer, genfoam, porting, abnorm, scobind, genfoam,"
+	echon "\tgenc, genlisp, optimiz, documentation, interactive, interp,"
+	echo
+	echon "\terrmsg runtime compfault exefault."
+	echo
+	echo "If your category is not listed, say: other=<mycategory>"
+	echon "If you don't know, simply press Enter: "
+	read categ
+
+	if [ "$categ" != "" ]
+	then
+		categ="["$categ"]"
+	fi
+fi
+
+
+cmdline="-- Command line: "$cmdline;
+ver="-- Version: "$ver;
+bugfile="-- Original bug file name: "$bugfn;
+
+(echo $cmdline; echo $ver; echo $bugfile; echo;\
+ sed -e 's/^/--+ /' < $docfn ; cat $bugfn) | \
+$mailer -s "[$prior]$categ $subj" $bugserver
+

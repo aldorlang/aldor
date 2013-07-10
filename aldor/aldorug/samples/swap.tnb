@@ -1,0 +1,28 @@
+{\codeline{1}\verb& #include "aldor"&}\\
+{\codeline{2}\verb& #include "aldorio"&}\\
+{\codeline{3}\verb& #pile&}\\
+{\codeline{4}\verb&&}\\
+{\codeline{5}\verb& I  ==> MachineInteger;&}\\
+{\codeline{6}\verb& Ag ==> (S: Type) -> BoundedFiniteLinearStructureType S;&}\\
+{\codeline{7}\verb&&}\\
+{\codeline{8}\verb& -- This function takes two type constructors as arguments and&}\\
+{\codeline{9}\verb& -- produces a new function to swap aggregate data structure layers.&}\\
+{\codeline{10}\verb&&}\\
+{\codeline{11}\verb& swap(X:Ag,Y:Ag)(S:Type)(x:X Y S):Y X S ==&}\\
+{\codeline{12}\verb&     import from Y S, X S&}\\
+{\codeline{13}\verb&     [[s for s in y]for y in x]&}\\
+{\codeline{14}\verb&&}\\
+{\codeline{15}\verb& import from I, List(I);&}\\
+{\codeline{16}\verb&&}\\
+{\codeline{17}\verb& -- Form an array of lists:&}\\
+{\codeline{18}\verb& al: Array List I := [[i+j-1 for i in 1..3] for j in 1..3]&}\\
+{\codeline{19}\verb&&}\\
+{\codeline{20}\verb& stdout << "This is an array of lists: " << newline&}\\
+{\codeline{21}\verb& stdout << al << newline << newline&}\\
+{\codeline{22}\verb&&}\\
+{\codeline{23}\verb& -- Swap the structure layers:&}\\
+{\codeline{24}\verb&&}\\
+{\codeline{25}\verb& la: List Array I := swap(Array,List)(I)(al)&}\\
+{\codeline{26}\verb&&}\\
+{\codeline{27}\verb& stdout << "This is a list of arrays:  " << newline&}\\
+{\codeline{28}\verb& stdout << la << newline&}\\

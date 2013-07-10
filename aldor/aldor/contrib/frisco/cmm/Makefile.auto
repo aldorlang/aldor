@@ -1,0 +1,204 @@
+TARGET_ALIAS = i586-unknown-linux
+TOP = ../../..
+G++_LIBS = -lg++
+BASIC_DIR = $(TOP)/lib/Basic
+XDR_DIR  = $(TOP)/lib/XDR
+XDR_LIBS =
+BASIC_LIBS = -lError -lm
+MM_DIR = $(TOP)/lib/MM
+BOEHM_DIR = $(MM_DIR)/boehm
+BAR_DIR = $(MM_DIR)/bartlett
+CMM_DIR = $(MM_DIR)/cmm
+GC_DIR = $(CMM_DIR)
+GC_LIBS = -lCmm
+GMP_DIR  = $(TOP)/lib/Arith/BigInt
+LIBG_DIR = $(TOP)/lib/Arith/BigNum
+BIG_DIR = $(GMP_DIR)
+BIG_LIBS = -lBigInt
+HILB_DIR = $(TOP)/lib/Arith/Hilbert
+HILB_LIBS = -lHilb
+ALGEBRA_DIR = $(TOP)/lib/Algebra
+COEFF_DIR  = $(TOP)/lib/Algebra/Coeff
+GCOEFF_DIR = $(TOP)/lib/Algebra/Coeff/GCoeff
+ZCOEFF_DIR = $(TOP)/lib/Algebra/Coeff/ZpCoeff
+BCOEFF_DIR = $(TOP)/lib/Algebra/Coeff/BCoeff
+SCOEFF_DIR = $(TOP)/lib/Algebra/Coeff/SCoeff
+COEFF_DIRS = $(COEFF_DIR) $(BCOEFF_DIR) $(ZCOEFF_DIR) $(SCOEFF_DIR)
+COEFF_LIBS = -lCoeff -lBCoeff -lZpCoeff -lSCoeff
+PP_DIR = $(TOP)/lib/Algebra/PP
+DENSEPP_DIR = $(TOP)/lib/Algebra/PP/DensePP
+TDENSEPP_DIR = $(TOP)/lib/Algebra/PP/TDensePP
+PDENSEPP_DIR = $(TOP)/lib/Algebra/PP/PDensePP
+PP_DIRS = $(PP_DIR) $(DENSEPP_DIR) $(TDENSEPP_DIR) $(PDENSEPP_DIR)
+PP_LIBS = -lPP -lDensePP -lTDensePP -lPDensePP
+POLY_DIR = $(TOP)/lib/Algebra/Poly
+POLY_DIRS = $(POLY_DIR)
+POLY_LIBS = -lPoly
+SOCKET_DIR = $(TOP)/lib/Comm/sstream
+SOCKET_LIBS = -lsstream
+XCL_DIR = $(TOP)/programs/XCL
+GROEB_DIR = $(TOP)/lib/Groebner
+GROEB_LIBS = -lGroebner
+RST_DIR = $(TOP)/lib/RealSolving/tools
+RSM_DIR = $(TOP)/lib/RealSolving/Multi
+RSU_DIR = $(TOP)/lib/RealSolving/Uni
+DOCS_DIR = $(TOP)/doc
+GRBDIRS = $(BASIC_DIR) $(XDR_DIR) $(GC_DIR) $(BIG_DIR) $(HILB_DIR) 	                $(COEFF_DIRS) $(PP_DIRS) $(POLY_DIRS)                                         $(GROEB_DIR)
+SUBDIRS = $(BASIC_DIR) $(XDR_DIR) $(GC_DIR) $(BIG_DIR) $(HILB_DIR) 	                $(COEFF_DIRS) $(PP_DIRS) $(POLY_DIRS)                                         $(GROEB_DIR)                                                        	  $(SOCKET_DIR) $(XCL_DIR) 					      	  $(DOCS_DIR)
+ALLDIRS = $(BASIC_DIR) $(XDR_DIR)                                                       $(BOEHM_DIR) $(BAR_DIR) $(CMM_DIR)                                            $(GMP_DIR) $(LIBG_DIR) $(HILB_DIR)                                            $(COEFF_DIR) $(GCOEFF_DIR) $(ZCOEFF_DIR) $(BCOEFF_DIR) $(SCOEFF_DIR)          $(PP_DIR) $(DENSEPP_DIR) $(TDENSEPP_DIR) $(PDENSEPP_DIR)                      $(POLY_DIR)                                                                   $(GROEB_DIR) $(RST_DIR) $(RSM_DIR) $(RSU_DIR) 		      	  $(SOCKET_DIR) $(XCL_DIR) 					      	  $(DOCS_DIR)
+INCDIR = $(TOP)/installed/include
+BINDIR = $(TOP)/installed/bin
+LIBDIR = $(TOP)/installed/lib
+EXPORTED_INCS = noOne
+EXPORTED_LIBS = noOne
+EXPORTED_BINS = noOne
+CPP = cc -E
+RM = rm -f
+INSTALL = /usr/bin/install -c
+INSTALL_PROGRAM = ${INSTALL}
+INSTALL_DATA = ${INSTALL} -m 644
+RANLIB = ranlib
+DEFS =  -Dlinux=1 -DPL_CMM=1 -DPL_CMM_USE_MSW=1 -DPL_GENERIC_POLY=1 -DPL_GENERIC_COEFF=1 -DPL_GMP_BIGNUM=1 -DPL_GROEBNER=1
+AR = ar ru
+CC = gcc
+CXX = g++
+TEX = tex
+OPTS = -w -DNDEBUG -DMSW_NO_TEMPHEAP -DMSW_ALLOC_ZERO_OK #-DMSW_SHOW_TIMINGS 
+
+DBGFLAGS =
+
+#OPTS = -g -w -DMSW_ALLOC_ZERO_OK -DMSW_DONT_CLEAN_MEM -DMSW_CHECK_HEAP -DMSW_NO_TEMPHEAP
+
+INCFLAGS =  -I/usr/local/lib/g++-include -I. -I$(TOP) -I$(INCDIR) $(LOCAL_INCFLAGS)
+CCFLAGS  = $(OPTS) $(DBGFLAGS) $(DEFS) 
+CXXFLAGS = $(OPTS) $(DBGFLAGS) $(DEFS)
+LDFLAGS = -L$(LIBDIR)
+G++_LIBS = -lg++
+SUFF = C c cc
+.SUFFIXES: .o .C .c .dvi .texi
+LMFLAGS = "OPTS=${OPTS}" ${MFLAGS}
+.C.o:
+	$(CXX)  $(CXXFLAGS) $(LCFLAGS) $(INCFLAGS) -c $<
+.cc.o:
+	$(CXX)  $(CXXFLAGS) $(LCFLAGS) $(INCFLAGS) -c $<
+.c.o:	
+	$(CC)  $(CCFLAGS) $(LCFLAGS) $(INCFLAGS) -c $<
+.texi.dvi:
+	$(TEX) $<
+EXPORTED_INCS = cmm.h tempheap.h msw.h machine.h
+EXPORTED_LIBS = libCmm.a
+HFILES = machine.h cmm.h
+OBJS = 	cmm.o tempheap.o msw.o memory.o
+TESTS = test2 test3 test4 test5 test6 testp2 testp3 testp5
+all: libCmm.a
+library:
+	@echo Making nothing.....
+	@echo "Sorry, your Posso library is not in the expected place ;}."
+test : ${TESTS}
+	 @for i in ${TESTS}; do  	   ( echo "Running " $$i "..."; 	     $$i >tests.out 2>&1 ;  	   )                    	done
+demo: demo1 demo2
+libCmm.a: $(OBJS)
+	ar ru libCmm.a $(OBJS)
+	$(RANLIB) libCmm.a
+cmm.o: cmm.cc $(HFILES)
+memory.o: memory.c $(HFILES)
+tempheap.o: tempheap.cc tempheap.h $(HFILES)
+msw.o: msw.cc msw.h $(HFILES)
+stamp:
+	sed -e s:'"CMM .*"':\\\"CMM `date +%D`\\\": cmm.cc > tmp.cc
+	mv tmp.cc cmm.cc
+test2:	test2.cc libCmm.a
+	${CXX} -o test2 ${CFLAGS} test2.cc libCmm.a
+test3:	test3.cc libCmm.a
+	${CXX} -o test3 ${CFLAGS} test3.cc libCmm.a
+test4:	test4.cc libCmm.a
+	${CXX} -o test4 ${CFLAGS} test4.cc libCmm.a 
+test5:	test5.cc libCmm.a
+	${CXX} -o test5 ${CFLAGS} test5.cc libCmm.a 
+test6:	test6.cc libCmm.a
+	${CXX} -o test6 ${CFLAGS} test6.cc libCmm.a 
+test7:	test7.cc libCmm.a
+	${CXX} -o test7 ${CFLAGS} test7.cc libCmm.a 
+testp2: testp2.c libCmm.a
+	${CXX} -g -o testp2 ${CFLAGS} testp2.c libCmm.a
+testp3: testp3.c libCmm.a
+	${CXX} -g -o testp3 ${CFLAGS} testp3.c libCmm.a
+testp5: testp5.cc libCmm.a
+	${CXX} ${OPTS} -o testp5 ${CFLAGS} testp5.cc libCmm.a
+demo1:	demo1.cc libCmm.a 
+	${CXX} -o demo1 ${CFLAGS} demo1.cc libCmm.a 
+demo2:	demo2.cc libCmm.a 
+	${CXX} -o demo2 ${CFLAGS} demo2.cc libCmm.a 
+tar:
+	mv Makefile.dist makefile
+	(cd ..; 	tar cf cmm.tar cmm/{Copy*,README,*.h,*.c,*.cc,makefile,doc})
+	mv makefile Makefile.dist
+.Makefile:
+	set DIR=`pwd`; cd $(TOP); make SUBDIRS=$$DIR Makefiles
+prebuild:
+	$(MAKE) $(LMFLAGS)
+install: prebuild install-includes install-libs install-bins
+install-includes:
+	@EXPORTED_INCS="$(EXPORTED_INCS)" ;			\
+	       if [ "$$EXPORTED_INCS" = "noOne" ] ;			\
+	       then 							\
+	            echo No includes to install. ;			\
+	       else 							\
+	     echo Installing $(EXPORTED_INCS) in $(INCDIR);	\
+	     for file in ${EXPORTED_INCS} ;                     \
+	                do $(RM) $(INCDIR)/$${file}; cp -p $${file} $(INCDIR) ;           \
+	            done ;                                             \
+	       fi
+install-libs:
+	@EXPORTED_LIBS="$(EXPORTED_LIBS)" ;			\
+	       if [ "$$EXPORTED_LIBS" = "noOne" ] ;			\
+	       then							\
+	            echo No libraries to install. ;			\
+	       else							\
+	     echo Installing $(EXPORTED_LIBS) in $(LIBDIR); 	\
+	     for file in ${EXPORTED_LIBS} ;                     \
+	                do ( $(INSTALL_DATA) $${file} $(LIBDIR);       \
+	                     $(RANLIB) $${file});                      \
+	            done ;                                             \
+	       fi
+install-bins:
+	@EXPORTED_BINS="$(EXPORTED_BINS)" ;			\
+	       if [ "$$EXPORTED_BINS" = "noOne" ] ;			\
+	       then							\
+	            echo No programs to install. ;			\
+	       else							\
+	     echo Installing $(EXPORTED_BINS) in $(BINDIR);	\
+	     for file in ${EXPORTED_BINS} ;                     \
+	                do $(INSTALL_PROGRAM) $${file} $(BINDIR);      \
+	            done;                                              \
+	       fi
+depend:
+	@DEPS="$(SRCS)" ;					\
+	       if [ "$$DEPS" = "" ] ;					\
+	       then							\
+	         echo "  No dependencies to check.";			\
+	       else							\
+	  $(RM) Makefile.d ;					\
+	  gcc -MM $(INCFLAGS) $(SRCS) > Makefile.d ;		\
+	       fi
+clean:		$(ORGCLEAN)
+	$(RM) $(TESTS) $(DEMOS) $(LIBS) $(BINS)			\
+	      *.o *.a *.log					\
+	      *.aux *.cp *.fn *.ky *.pg *.toc *.tp *.vr *.dvi	\
+	      *~ #*#
+distclean:	clean $(REALCLEAN)
+	$(RM) junk.c Makefile 
+deepclean:	distclean
+tidy:
+	$(RM) *.log *.aux
+junk:
+	@$(TOP)/tools/list-others .
+junk.local:
+	@$(TOP)/tools/list-others -norecurse .
+release:
+	rm -rf ${RELDIR}
+	$(INSTALL) -d -m 775 ${RELDIR}
+	cp ${SRCS} ${FILES} ${RELDIR}
+	chmod 664 ${SRCS} ${FILES}
+linecount:
+	wc -l *.C *.H

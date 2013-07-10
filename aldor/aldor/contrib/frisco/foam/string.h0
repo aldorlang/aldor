@@ -1,0 +1,36 @@
+/*****************************************************************************
+ *
+ * string.h0: Fixups for <string.h>.
+ *
+ * Copyright (c) 1990-2007 Aldor Software Organization Ltd (Aldor.org).
+ *
+ ****************************************************************************/
+
+/*
+ * Include ANSI header <string.h> and make fixups.
+ */
+
+#ifndef _STRING_H0_
+#define _STRING_H0_
+
+#ifdef CC_nlchar_unused_static
+#  define static extern
+#endif
+
+#include <string.h>
+
+#ifdef CC_nlchar_unused_static
+#  undef static
+#endif
+
+#ifdef CC_missing_memmove
+   /*
+    * Strictly speaking, this is non-conforming.
+    */
+#  include "stddef.h0"
+
+   extern _void	*memmove _of((_void *, _const _void *, size_t));
+
+#endif 
+
+#endif /* !_STRING_H0_ */

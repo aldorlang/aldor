@@ -1,0 +1,9 @@
+#!/bin/sh
+case "$MACHINE" in
+rt) 	;;
+hpux*) 	;;
+irix*)  ;;
+sun4os5*) ;;
+axposf*) 	ar tls $* > /dev/null ;;
+*) 	ranlib $*;;
+esac

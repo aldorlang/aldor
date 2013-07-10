@@ -1,0 +1,22 @@
+--------------------------------
+README for debuglib documentation
+Author: Jinlong Cai
+Date: 2004-06-27
+---------------------------------
+
+1. The debuglib reference manual debugger.pdf can be viewed at this directory
+with acrobat reader or xpdf.
+In particular, if you need a hardcopy, we recommend that you print
+it using a 2-sided printer. 
+
+2. For users: 
+a). Aldor debugger v0.61 can only step inside single Aldor source file. 
+    It can not step into library functions you called in your main file so far.
+
+b). Please submit your bugs to moreno@scl.csd.uwo.ca or jcai@scl.csd.uwo.ca.
+
+c). Aldor debugger has been intergrated into Emacs. It provides you a friendly GUI 
+    of Aldor. Please download aldor.el to install for your emacs.
+
+3. For developer: Please refer to ToDo which describes the unimplemented functionalities.
+

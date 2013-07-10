@@ -1,0 +1,4 @@
+{\codeline{1}\verb& #include "aldor"&}\\
+{\codeline{2}\verb& #include "aldorio"&}\\
+{\codeline{3}\verb&&}\\
+{\codeline{4}\verb& stdout << "Hello, world!" << newline;&}\\

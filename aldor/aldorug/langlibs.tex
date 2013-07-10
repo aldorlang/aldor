@@ -1,0 +1,74 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%                                                                        %%%
+%%% :: Standard Libraries
+%%%                                                                        %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\head{section}{Standard libraries}{asugLangStdlibs}
+
+Programs will normally use more than just the language-defined types.  
+The example programs in this guide make use of 
+the standard \asharp{} library, also called \libaldor{}.
+\index{libraries}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+{\bf The standard \asharp{} library}
+\index{libaldor}
+provides a set of basic types for numbers, data structures, objects, 
+input, output and so on.
+%and is described in \chapref{asugBaselibCats} and \chapref{asugBaselibDoms}.
+This library should be used when developing
+stand-alone programs, or programs to link with C- or Fortran-based applications.
+
+The simplest way to make the base \asharp{} library available within
+an \asharp{} is to use a line of the form
+\begin{verbatim}
+#include "aldor"
+\end{verbatim}
+This incorporates the text of the standard header file \fname{aldor.as}
+into the program being compiled.
+
+The standard \fname{aldorio.as} can also be included:
+\begin{verbatim}
+#include "aldor"
+#include "aldorio"
+\end{verbatim}
+
+While \fname{aldor.as} makes the library visible, this extra include file also
+defines a few standard macros and imports a few basic operations from types in
+the library.  So, for example, after including these files, \ttin{stdout} and
+\ttin{<<} have meanings.
+
+This header file uses a \verb"#library" command to 
+make the library archive \fname{libaldor.al} available
+as a package called \ttin{aldorlib} within the program.
+Normally it is not necessary to use the name \ttin{aldorlib} at all, but
+if you are using other libraries which introduce colliding exports,
+you can disambiguate the collisions by referring to the
+base library entities with a \verb"$"-qualification,
+such as ``\verb"Integer$aldorlib"'' or ``\verb"+$Integer$aldorlib"''.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%AXIOM {\bf The \axiom{} library} is most useful when writing programs for use with
+%AXIOM the \axiom{} system.  This library is described in the book
+%AXIOM {\em \axiom{}: the scientific computation system} by Jenks and Sutor,
+%AXIOM published by Springer Verlag.
+%AXIOM Examples of using the \axiom{} library with \asharp{} are given in
+%AXIOM \chapref{asugUsingAxiom} and \secref{AxiomSample}.
+%AXIOM \index{AXIOM}
+%AXIOM 
+%AXIOM The simplest way to make the \axiom{} library available within an \asharp{}
+%AXIOM program is to use the following line
+%AXIOM \begin{verbatim}
+%AXIOM #include "axiom"
+%AXIOM \end{verbatim}
+%AXIOM This associates the \axiom{} library archive with the name \ttin{AxiomLib}
+%AXIOM in the program.  Similar comments apply to disambiguating using
+%AXIOM \linebreak \verb+$+-qualification as applied for \ttin{AxlLib}.
+%AXIOM 
+%AXIOM The \axiom{} library is quite large, and the types it provides are very
+%AXIOM interdependent (the base clique has 125 mutually recursive interfaces)
+%AXIOM so compiling files against this library is quite a bit slower and takes
+%AXIOM much more space than compiling files against the base \asharp{} library.
+%AXIOM 

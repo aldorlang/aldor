@@ -1,0 +1,89 @@
+%%
+%% This is the User Guide for the Aldor Language
+%%
+%\documentstyle[url,twoside,verbatim]{axiom}
+\documentclass[twoside]{axiom}
+
+\usepackage{url,verbatim}
+\usepackage[colorlinks,linkcolor=blue]{hyperref}
+\usepackage{amsmath}
+
+\input{version}
+\input{aldorugmacs}
+\makeindex
+%\nofiles
+%% DON'T USE \nofiles - it wrecks the pagination of this!
+%% Instead, save a cleaned-up aldorug.toc in aldorug.toc.keep
+%% and copy this back to aldorug.toc before final LaTeX run.
+
+\begin{document}
+
+\pagenumbering{roman}
+\input{title}
+\input{notices}
+\cleardoublepage
+
+\pagenumbering{roman}
+\input{ack}
+\input{preface}
+\cleardoublepage
+%\input{brieftoc}
+\summarycontents
+\cleardoublepage
+\tableofcontents
+\listoffigures
+\cleardoublepage
+
+\pagenumbering{arabic}
+\part{A brief overview of \asharp{}}
+
+\input{intro}
+\input{progsimp}
+
+\part{The \asharp{} programming language}
+\input{langsumm} % Language Orientation
+\input{langsyn}  % Basic Syntax
+\input{langexpr} % Expressions
+\input{langfuns} % Functions
+%\addtocontents{toc}{\vspace{1in}}
+\input{langtype} % Types
+\input{langenvs} % Name Spaces
+\input{langgenr} % Generators
+\input{langextd} % Post Facto Extensions
+\input{langtry}  % Exceptions
+\input{langties} % Generic Tie-Ins
+\input{langmacs} % Source Macro Expansion
+\input{langtdef} % Language-Defined Types
+\input{langmach} % Machine Package (section)
+\input{langlibs} % Standard Libraries
+
+
+%\addtocontents{toc}{\vspace{1in}}
+\part{The \asharp{} compiler}
+\input{errors}
+\input{separate}
+\input{interact}
+%\input{axiom}
+\input{c}
+\input{fortran}
+%\input{xaxiomxl}
+
+\part{Sample Programs}
+%\input{fnotes}
+%\input{novice}
+\input{samples}
+
+\part{Reference}
+\input{formal}
+%\input{libcat}
+%\input{libdom}
+\input{options}
+\input{unicl}
+\input{messages}
+%\input{manifest}
+
+%\part{Version 1.1.12 additions}
+
+\NoHyper
+\input{aldorug.ind}
+\end{document}

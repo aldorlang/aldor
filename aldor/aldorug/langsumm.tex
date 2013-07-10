@@ -1,0 +1,213 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%                                                                        %%%
+%%% :: Language Orientation
+%%%                                                                        %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\head{chapter}{Language orientation}{asugLangSummary}
+
+\head{section}{Traditional and non-traditional aspects}{asugSummTrad}
+
+In many regards, \asharp{} is a very conventional programming language:
+\begin{itemize}
+\item
+  The language uses {\em explicit evaluation}, with the usual control flow.
+  Functions play an important role,
+  and most of a program's text consists of function definitions.  
+\item
+  Computed values may be saved in named {\em variables}
+  or named {\em constants}. 
+\item
+  The language is {\em statically typed} so the nature of each variable
+  is understood before evaluation begins.
+  It is possible to write programs with all names explicitly
+  declared, but the types and scopes of names are inferred if desired.
+\item
+  {\em Overloading} of names is possible: there
+  may be several different meanings for a given name visible simultaneously.  
+  The meaning of each occurrence is determined by the type required in context.
+  Ambiguities may be explicitly resolved by stating the type or origin of
+  the given name.
+\item
+  Functions may be called with {\em named parameters}, which may have
+  {\em default values}.
+\end{itemize}
+It is possible to transliterate most programs written
+in languages such as C, C++, Fortran or Lisp almost
+directly into \asharp{}.
+
+In other regards, \asharp{} is somewhat unconventional:
+\begin{itemize}
+\item 
+  {\em Functions are first class values}
+  and the language provides
+  useful ways to create and manipulate them dynamically. 
+  (Many languages allow functions to be used as values,
+  but have no way to create or combine them during execution.)
+\item
+  {\em Types are first class values} and the language 
+  provides useful ways to create and manipulate them dynamically.
+\item
+  {\em Dependent types} provide the freedom to defer decisions until
+  program execution, but provide enough discipline to allow
+  safe, efficient programs.
+\item
+  Programs may make independent, {\em post facto extensions} to libraries.
+  This allows existing types to belong to newly defined families
+  without modifying the original code.
+\item
+  Generators and type-specific tests provide {\em control abstraction}, 
+  \ie{}~a way for looping and branching expressions to use new types.
+  While the language is statically typed,
+  types themselves are dynamic values.
+\item
+  The efficiency of {\em symbolic} and of {\em numeric} computation
+  received equal consideration in the design of the language.
+\end{itemize}
+
+Some of these language aspects, when taken together and handled uniformly,
+have particularly powerful interactions.  
+
+We give one example:
+Since types are first class values, functions may 
+take types as parameters and return types.  
+Let us call such a type-to-type function a ``functor.''
+Since functions are first class,  so are these functors.
+Therefore it is possible to write programs which manipulate functors.
+A functor-manipulating program is discussed in \secref{swapSample}.
+
+Programs such as these may be used to reorganise levels in type towers ---
+for instance, to make the dynamic choice to convert values in the type
+\begin{verbatim}
+   Array List Integer
+\end{verbatim}
+to values in the type
+\begin{verbatim}
+   List Array Integer.
+\end{verbatim}
+
+\head{section}{Expressions and evaluation}{asugSummExprEval}
+
+An \asharp{} program consists of a set of expressions
+representing a computation to be performed.
+Performing the computation is called {\em evaluation} or {\em execution}
+and produces a set of {\em values}.
+
+Each value has an associated {\em type}, which dictates how the value
+is to be represented in computer memory.
+%% PI: in computer memory -> in variables
+Expression evaluation may cause other actions beyond producing values.
+These additional actions are called {\em side-effects} and include
+things such as output and modifying the values stored in computer memory.
+\index{type}
+
+The syntax of the language allows larger expressions to be built up from
+smaller ones.  The evaluation of an expression
+may involve the evaluation of some or all of its subexpressions,
+and its value can be formed using the values of the subexpressions.
+
+Elements such as {\em if\/}s, loops, and function forms
+%% PI: {\em if\/}s -> {\em if\/} statements
+are all expressions in \asharp{}.
+This contrasts with some other languages, such as C or Fortran,
+where they are special ``statements'' 
+which can only appear in limited contexts.
+
+The rules of the \asharp{} programming language ensure that, in a
+well-formed program, all the values potentially produced by any given
+expression have the same type.
+%% PI, the previous sentence may generate confusion. How doesn't know
+%% anything about A# could interpreter that all the values produced
+%% have the same type. I would say:
+%% ..., in a well-formed program, any expression produces always
+%% values of the same type.
+This has two consequences:
+it allows programs to be transformed to faster, equivalent code,
+by avoiding type tests during execution, and, more importantly,
+it allows a common class of programming errors to be detected immediately.
+
+We say the \asharp{} programming language is {\em expression based}
+and {\em statically typed}.
+
+\head{section}{Functions}{asugSummFunctions}
+
+Functions  are treated as values in the same way as integers,
+lists or floating point numbers.  
+The language provides mechanisms for composing and 
+manipulating functions in useful ways, 
+incorporating them in other data structures, or returning them as results.  
+
+Functions may depend on values defined externally to them so the act 
+of dynamically creating a new function value captures the creation environment,
+forming what is normally called a {\em closure}.
+\index{environment}
+\index{closure}
+
+\head{section}{Domains}{asugSummDomains}
+
+Often, several functions operate within a common environment.  
+For this reason, in \asharp{}, an environment is called a
+{\em domain of computation}, or {\em domain} for short.  
+Environments are essentially dictionaries which tie names to values.
+The language allows environments to be created and manipulated dynamically,
+and these form the basis for abstract types,
+packages, and objects as first-class values.
+\index{domain}
+\index{package}
+\index{object}
+\index{environment}
+
+The language provides general mechanisms to allow new types to 
+be used in all the same ways as built-in types:
+they may provide the same sort of literal constants, 
+participate in the same control structures,
+admit the same optimisations, \etc{}
+To ensure this equal status, the built-in types make use of the
+same general mechanisms to provide their function.
+
+This has had two consequences:
+first, the extension mechanisms are pervasive and powerful;
+second, the language itself has very little built in.
+The language provides a minimal set of primitive types
+and operations.  
+These are combined and extended in standard libraries to provide
+a rich set of facilities.
+
+\head{widesection}{Compilation}{asugSummCompiltn}
+
+Normally, evaluation does not directly use the source form of the
+expressions in a program.  Rather, the evaluation is usually effected by
+first translating the source expressions to an equivalent set of 
+lower-level instructions more suitable for the target environment.
+This is the job of the \asharp{} compiler.  The result of the translation
+is a program which produces the same values and side-effects as the
+original program, but which might otherwise be represented very differently.
+\index{side-effects}
+%% PI, previous paragraph: The result of the translation is a program
+%% in a language closer to the machine representation but with exactly the
+%% same behaviour of the \asharp{} program. It's said that the two
+%% programs are {\em semantically equivalent}. The motivation behind this
+%% transformation is that the user will write code in a high-level
+%% language, with a formalism not too different from the mathematical
+%% one, but the transformed program has closer to the way in which the
+%% machine works, so can be executed much more efficiently.
+
+\head{section}{Libraries}{asugSummLibraries}
+
+\asharp{} is geared to developing and using combinations of libraries.
+Certain properties of the language have therefore been oriented
+to controlling the dependencies and interactions among libraries of programs.
+
+A {\em source program} can see only the declared public behaviour
+of the files it uses.
+
+A {\em compiled program} can depend on the private behaviour of the
+files it uses, but only when given explicit permission to do so.
+It is up to the client to decide
+whether it is willing to become dependent on
+the private behaviour of the provider.
+
+In practice, this permission amounts to increased scope
+for optimisation.
+In no case does it allow a source-level dependency.

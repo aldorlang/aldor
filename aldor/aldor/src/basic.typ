@@ -1,0 +1,17 @@
+SingleInteger   int
+String          char*
+Character       char
+SingleFloat     float
+DoubleFloat     double*
+Pointer         void*
+()              void
+Word            FiWord
+Ptr             FiPtr
+Bool            FiBool
+Byte            FiByte
+SInt            FiSInt
+Char            FiChar
+Arr             FiArr
+Rec             FiRec
+BInt            FiBInt
+DFlo            FiDFlo

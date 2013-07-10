@@ -1,0 +1,54 @@
+% PostScript fonts for the user guide
+\def\@mrm{pgml}%   garamond light - roman
+\def\@mit{pgmli}%  garamond light italic - italic
+\def\@msl{pgmbi}%  garamond bold italic - oblique
+\def\@mbf{pgmb}%   garamond bold - bold
+\def\@mcsc{pgml}%  garamond - roman - should be small caps
+\def\@mtt{ppeb}%   prestige elite bold
+\def\@mss{pfl}%    frutiger - roman
+
+\def\ugUsingPS{true}  % checked in ug-new.sty
+\typeout{>>}
+\typeout{>> Using PostScript fonts.}
+\typeout{>>}
+
+% CN   (Chapter Number font): 18pt Frutiger Bold
+\font\CNfont=pfrb at 18pt
+
+% CT   (Chapter Title font):  42pt Frutiger Bold
+\font\CTfont=pfrb at 42pt
+
+% SNT  (Section Number and Title font):  14pt Frutiger Black
+\font\SNTfont=pfrc at 14pt
+
+% SSNT  (SubSection Number and Title font):  12pt Frutiger Black
+\font\SSNTfont=pfrc at 12pt
+
+% I    (Input font):  10pt PrestigeElite bold
+\font\Ifont=ppeb at 10pt
+
+% SI    (Small Input font):  9pt PrestigeElite bold
+\font\SIfont=ppeb at 9pt
+
+% VER  (VERbatim font):  11pt PrestigeElite bold
+\font\VERfont=ppeb at 11pt
+
+% COM  (Comment font):  9pt Garamond (Book?)
+\font\COMfont=pgml at 9pt
+
+% FC   (Figure Caption):  10pt Frutiger Light
+\font\FCfont=pfl at 10pt
+
+% RF   (Running Foot):  9pt Garamond Bold
+\font\RFfont=pgmb at 9pt
+
+% TY   (TYpe element):  10pt Frutiger Light
+\font\TYfont=pfl at 10pt
+
+% SMTY   (SMall TYpe element):  9pt Frutiger Light
+\font\SMTYfont=pfl at 9pt
+
+% TYT  (TYpe element for "Type:"):  10pt Garamond
+\font\TYTfont=pgml at 10pt
+
+\input psfonts.sty

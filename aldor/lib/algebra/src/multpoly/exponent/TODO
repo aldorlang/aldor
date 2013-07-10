@@ -1,0 +1,13 @@
+ALGEBRA/src/multpoly/exponent/TODO
+----------------------------------
+
+o Efficient operations to subtract exponents like
+
+  cancel: (%, V, Z) -> %
+  cancel!: (%, V, Z) -> %
+
+o Convenient operations to create exponents like
+
+  exponent: Tuple Z -> % 
+
+o CHECK printing for OrderedVariableType !!!!

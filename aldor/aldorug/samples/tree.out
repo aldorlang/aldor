@@ -1,0 +1,4 @@
+The tree is tree(*, tree(1, tree a, tree b), tree(2, tree c, tree d))
+Preorder:   [*,1,a,b,2,c,d]
+Inorder:    [a,1,b,*,c,2,d]
+Postorder:  [a,b,1,c,d,2,*]

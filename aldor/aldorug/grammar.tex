@@ -1,0 +1,454 @@
+
+\newcommand{\altline}{\\ \hspace*{4mm}}
+
+\vskip 2cm
+\subsubsection{Declarative expressions}
+
+\Sn{Goal}
+: \SnRule{CurlyContents}(\Sn{Labeled})
+
+\Sn{Expression}
+: \SnRule{enlist1a}(\Sn{Labeled}, ``\verb";"'')
+
+\Sn{Labeled}
+: \Sn{Comma}
+\Alt{} \Sn{Declaration}
+\Alt{} ``\verb"@"'' \Sn{Atom} \Opt{\Sn{Labeled}}
+
+\Sn{Declaration}: \altline
+\Kw{macro}   \Sn{Sig} \altline
+\Alt{} \Kw{extend}  \Sn{Sig} \altline
+\Alt{} \Kw{local}   \Sn{Sig} \altline
+\Alt{} \Kw{free}    \Sn{Sig} \altline
+\Alt{} \Kw{fluid}   \Sn{Sig} \altline
+\Alt{} \Kw{default} \Sn{Sig} \altline
+\Alt{} \Kw{define}  \Sn{Sig} \altline
+\Alt{} \Kw{fix}     \Sn{Sig} \altline
+\Alt{} \Kw{inline} \Opt{\Sn{Sig}} \Opt{\Sn{FromPart}} \altline
+\Alt{} \Kw{import} \Opt{\Sn{Sig}} \Opt{\Sn{FromPart}} \altline
+\Alt{} \Kw{export} \Opt{\Sn{Sig}} 
+\Alt{} \Kw{export} \Opt{\Sn{Sig}} \Sn{ToPart}
+\Alt{} \Kw{export} \Opt{\Sn{Sig}} \Sn{FromPart}
+
+\Sn{ToPart}
+: \Kw{to} \Sn{Infixed}
+
+\Sn{FromPart}
+: \Kw{from} \SnRule{enlist1}(\Sn{Infixed}, ``\verb","'')
+
+\Sn{Sig}
+: \Sn{DeclBinding}
+\Alt{} \Sn{Block}
+
+\Sn{DeclPart}
+: ``\verb":"'' \Sn{Type}
+\Alt{} ``\verb":*"'' \Sn{Type}
+
+\Sn{Comma}
+: \SnRule{enlist1}(\Sn{CommaItem}, ``\verb","'')
+
+\Sn{CommaItem} : \altline
+\SnRule{Binding}(\Sn{AnyStatement}) \altline
+\Alt{} \SnRule{Binding}(\Sn{AnyStatement}) \Kw{where} \Sn{CommaItem}
+
+\Sn{DeclBinding}
+: \SnRule{BindingR}(\Sn{InfixedExprsDecl}, \Sn{AnyStatement})
+
+\Sn{InfixedExprsDecl}
+: \Sn{InfixedExprs}
+\Alt{} \Sn{InfixedExprs} \Sn{DeclPart}
+
+\Sn{InfixedExprs}
+: \SnRule{enlist1}(\Sn{InfixedExpr}, ``\verb","'')
+
+
+\SnRule{Binding}(E)
+: \SnRule{BindingL}(\Sn{Infixed}, E)
+
+\SnRule{BindingL}(R, L): \altline
+L \altline
+\Alt{} R ``\verb":="''  \SnRule{BindingL}(R, L)
+\Alt{} R ``\verb"=="''  \SnRule{BindingL}(R, L) \altline
+\Alt{} R ``\verb"==>"'' \SnRule{BindingL}(R, L)
+\Alt{} R ``\verb"+->"'' \SnRule{BindingL}(R, L)
+
+\SnRule{BindingR}(R, L): \altline
+R \altline
+\Alt{} R ``\verb":="''  \SnRule{Binding}(L)
+\Alt{} R ``\verb"=="''  \SnRule{Binding}(L) \altline
+\Alt{} R ``\verb"==>"'' \SnRule{Binding}(L)
+\Alt{} R ``\verb"+->"'' \SnRule{Binding}(L)
+
+\subsubsection{Control flow}
+
+\Sn{AnyStatement}: \altline
+\Kw{if} \Sn{CommaItem} \Kw{then} \SnRule{Binding}(\Sn{AnyStatement}) \altline
+\Alt{} \SnRule{Flow}(\Sn{AnyStatement})
+
+\Sn{BalStatement}
+: \SnRule{Flow}(\Sn{BalStatement})
+
+\SnRule{Flow}(X): \altline
+\Sn{Collection}  \altline
+\Alt{} \Kw{if} \Sn{CommaItem} \Kw{then} \SnRule{Binding}(\Sn{BalStatement}) \Kw{else} \SnRule{Binding}(X) \altline
+\Alt{} \Sn{Collection} ``\verb"=>"'' \SnRule{Binding}(X) \altline
+\Alt{} \Sn{Iterators} \Kw{repeat} \SnRule{Binding}(X) \altline
+\Alt{} \Kw{repeat} \SnRule{Binding}(X) \altline
+\Alt{} \Kw{try} \SnRule{Binding}(\Sn{AnyStatement}) \Kw{but} \Opt{\Sn{Cases}} \SnRule{AlwaysPart}(X)  \altline
+\Alt{} \Kw{select} \SnRule{Binding}(\Sn{AnyStatement}) \Kw{in} \Sn{Cases} \altline
+\Alt{} \Kw{do} \SnRule{Binding}(X) \altline
+\Alt{} \Kw{delay} \SnRule{Binding}(X) \altline
+\Alt{} \Kw{generate} \Sn{GenBound} \SnRule{Binding}(X) \altline
+\Alt{} \Kw{assert} \SnRule{Binding}(X) \altline
+\Alt{} \Kw{iterate} \Opt{\Sn{Name}} \altline
+\Alt{} \Kw{break} \Opt{\Sn{Name}} \altline
+\Alt{} \Kw{return} \Opt{\Sn{Collection}} \altline
+\Alt{} \Kw{yield} \SnRule{Binding}(X) \altline
+\Alt{} \Kw{except} \SnRule{Binding}(X) \altline
+\Alt{} \Kw{goto} \Sn{Id} \altline
+\Alt{} \Kw{never}
+
+\Sn{GenBound}
+: \Sn{Nothing}
+\Alt{} \Kw{to} \Sn{CommaItem} \Kw{of}
+
+\Sn{Cases}
+: \SnRule{Binding}(\Sn{Collection})
+
+\SnRule{AlwaysPart}(X)
+: \Kw{always} \SnRule{Binding}(X)
+\Alt{} \Sn{Nothing}
+
+\Sn{Collection}
+: \Sn{Infixed}
+\Alt{} \Sn{Infixed} \Sn{Iterators}
+
+\Sn{Iterators}
+: \Sn{Iterators1}
+
+\Sn{Iterators1}
+: \Sn{Iterator}
+\Alt{} \Sn{Iterators1} Iterator
+
+\Sn{Iterator}
+: \Kw{for} \Sn{ForLhs} \Kw{in} \Sn{Infixed} \Opt{\Sn{SuchthatPart}}
+\Alt{} \Kw{while} \Sn{Infixed}
+
+\Sn{ForLhs}
+: \Sn{Infixed} 
+\Alt{} \Kw{free} \Sn{Infixed}
+\Alt{} \Kw{local} \Sn{Infixed}
+\Alt{} \Kw{fluid} \Sn{Infixed}
+
+\Sn{SuchthatPart}
+: ``\verb"|"'' \Sn{Infixed}
+
+\subsubsection{Infixed expressions}
+
+\Sn{Infixed}
+: \Sn{InfixedExpr}
+\Alt{} \Sn{InfixedExpr} \Sn{DeclPart}
+\Alt{} \Sn{Block}
+
+\Sn{InfixedExpr}
+: \SnRule{E11}(\Sn{Op})
+\Alt{} \Sn{E3}
+
+
+\Sn{E3}
+: \Sn{E4}
+\Alt{} \Sn{E3} \Kw{and} \Sn{E4}
+\Alt{} \Sn{E3} \Kw{or} \Sn{E4}
+\Alt{} \Sn{E3} \Sn{LatticeOp} \Sn{E4}
+
+\Sn{E4}
+: \Sn{E5}
+\Alt{} \Sn{E4} \Kw{has} \Sn{E5}
+\Alt{} \Sn{E4} \Sn{RelationOp} \Sn{E5}
+\Alt{} \Sn{RelationOp} \Sn{E5}
+
+\Sn{E5}
+: \Sn{E6}
+\Alt{} \Sn{E5} \Sn{SegOp}
+\Alt{} \Sn{E5} \Sn{SegOp} \Sn{E6}
+
+\Sn{E6}
+: \Sn{E7}
+\Alt{} \Sn{E6} \Sn{PlusOp} \Sn{E7}
+\Alt{} \Sn{PlusOp} \Sn{E7}
+
+\Sn{E7}
+: \Sn{E8}
+\Alt{} \Sn{E7} \Sn{QuotientOp} \Sn{E8}
+
+\Sn{E8}
+: \Sn{E9}
+\Alt{} \Sn{E8} \Sn{TimesOp} \Sn{E9}
+
+\Sn{E9}
+: \SnRule{E11}(\Sn{E12})
+\Alt{} \SnRule{E11}(\Sn{E12}) \Sn{PowerOp} \Sn{E9}
+
+\SnRule{E11}(X): \altline
+X 
+\Alt{} \SnRule{E11}(X) ``\verb"::"'' \Sn{E12}
+\Alt{} \SnRule{E11}(X) ``\verb"@"'' \Sn{E12}
+\Alt{} \SnRule{E11}(X) \Kw{pretend} \Sn{E12}
+
+\Sn{Type}
+: \SnRule{E11}(\Sn{E12})
+
+\Sn{E12}
+: \Sn{E13}
+\Alt{} \Sn{E13} \Sn{ArrowOp} \Sn{E12}
+
+\Sn{E13}
+: \Sn{E14}
+\Alt{} \Sn{E14} ``\verb"$"'' \Sn{QualTail}
+
+\Sn{QualTail}
+: \Sn{LeftJuxtaposed}
+\Alt{} \Sn{LeftJuxtaposed} ``\verb"$"'' \Sn{QualTail}
+
+\Sn{OpQualTail}
+: \Sn{Molecule}
+\Alt{} \Sn{Molecule} ``\verb"$"'' \Sn{OpQualTail}
+
+\Sn{E14}: \altline
+\Sn{E15} 
+\Alt{} \Sn{E14} \Kw{except} \Sn{E15} \altline
+\Alt{} \Opt{\Sn{E14}} \Kw{with} \Sn{DeclMolecule}
+\Alt{} \Opt{\Sn{E14}} \Kw{add} \Sn{DeclMolecule}
+
+\Sn{E15}
+: \Sn{Application}
+
+\subsubsection{Infixed operators}
+
+\Sn{Op}: \altline
+\Sn{ArrowOp}
+\Alt{} \Sn{LatticeOp}
+\Alt{} \Sn{RelationOp}
+\Alt{} \Sn{SegOp} \altline
+\Alt{} \Sn{PlusOp}
+\Alt{} \Sn{QuotientOp}
+\Alt{} \Sn{TimesOp}
+\Alt{} \Sn{PowerOp}
+
+\Sn{NakedOp}: \altline
+\Sn{ArrowTok}
+\Alt{} \Sn{LatticeTok}
+\Alt{} \Sn{RelationTok}
+\Alt{} \Sn{SegTok} \altline
+\Alt{} \Sn{PlusTok}
+\Alt{} \Sn{QuotientTok}
+\Alt{} \Sn{TimesTok}
+\Alt{} \Sn{PowerTok}
+
+\Sn{ArrowOp}:	 \SnRule{QualOp}(\Sn{ArrowTok}) \\
+\Sn{LatticeOp}:	 \SnRule{QualOp}(\Sn{LatticeTok}) \\
+\Sn{RelationOp}: \SnRule{QualOp}(\Sn{RelationTok}) \\
+\Sn{SegOp}: 	 \SnRule{QualOp}(\Sn{SegTok}) \\
+\Sn{PlusOp}: 	 \SnRule{QualOp}(\Sn{PlusTok}) \\
+\Sn{QuotientOp}: \SnRule{QualOp}(\Sn{QuotientTok}) \\
+\Sn{TimesOp}: 	 \SnRule{QualOp}(\Sn{TimesTok}) \\
+\Sn{PowerOp}: 	 \SnRule{QualOp}(\Sn{PowerTok})
+
+\Sn{ArrowTok}:	  ``\verb"->"''  \Alt{} ``\verb"<-"'' 
+
+\Sn{LatticeTok}:  ``\verb"\/"''  \Alt{} ``\verb"/\"'' 
+
+\Sn{RelationTok}: \altline
+``\verb"="''   \Alt{} ``\verb"~="''\Alt{} ``\verb"^="'' \Alt{} %\altline
+``\verb">="''  \Alt{} ``\verb">"'' \Alt{} ``\verb">>"'' \Alt{} %\altline
+``\verb"<="''  \Alt{} ``\verb"<"'' \Alt{} ``\verb"<<"'' \Alt{} \altline
+\Kw{is}  \Alt{} \Kw{isnt} \Alt{} \Kw{case} 
+
+\Sn{SegTok}:	 ``\verb".."''  \Alt{} \Kw{by} 
+
+\Sn{PlusTok}:	 ``\verb"+"''   \Alt{} ``\verb"-"''    \Alt{} ``\verb"+-"'' 
+
+\Sn{QuotientTok}: \Kw{mod} \Alt{} \Kw{quo}  \Alt{} \Kw{rem} 
+
+\Sn{TimesTok}:	 ``\verb"*"''   \Alt{} ``\verb"/"''    \Alt{} ``\verb"\"'' 
+
+\Sn{PowerTok}:	 ``\verb"**"''  \Alt{} ``\verb"^"'' 
+
+\subsubsection{Juxtaposed expressions}
+
+The expressions \ttin{a b}, \ttin{a.b}, and \ttin{a(b)} have the
+same semantics, but different grouping.  The following rules provide
+desired precedence.  Juxtaposition \ttin{a b} is looser than
+\ttin{.}  and \ttin{a(b)}, and associates the opposite way:
+\begin{verbatim}
+ A B C D                   as (.(.(.)))
+ f(a).2(b)(c).x.y.(d).(e)  as (((.).).)
+\end{verbatim}
+This allows both the nested function application \ttin{sin cos x} and
+the data access \ttin{T.x.first.tag} to be written naturally.
+
+\Sn{Application}
+: \Sn{RightJuxtaposed}
+
+\Sn{RightJuxtaposed}
+: \SnRule{Jright}(\Sn{Molecule})
+
+\Sn{LeftJuxtaposed}
+: \SnRule{Jleft}(\Sn{Molecule})
+
+\SnRule{Jright}(H)
+: \SnRule{Jleft}(H)
+\Alt{} \SnRule{Jleft}(H) \SnRule{Jright}(\Sn{Atom})
+\Alt{} \Kw{not} \SnRule{Jright}(\Sn{Atom})
+
+\SnRule{Jleft}(H)
+: \altline
+H
+\Alt{} \Kw{not} \Sn{BlockEnclosure}
+\Alt{} \SnRule{Jleft}(H) \Sn{BlockEnclosure} \altline
+\Alt{} \SnRule{Jleft}(H) ``\verb"."'' \Sn{BlockMolecule}
+
+\subsubsection{Primary expressions}
+
+\Sn{Molecule}
+: \Sn{Atom}
+\Alt{} \Sn{Enclosure}
+
+\Sn{Enclosure}
+: \Sn{Parened}
+\Alt{} \Sn{Bracketed}
+\Alt{} \Sn{QuotedIds}
+
+\Sn{DeclMolecule}
+: \Opt{\Sn{Application}}
+\Alt{} \Sn{Block}
+
+\Sn{BlockMolecule}
+: \Sn{Atom}
+\Alt{} \Sn{Enclosure}
+\Alt{} \Sn{Block}
+
+\Sn{BlockEnclosure}
+: \Sn{Enclosure}
+\Alt{} \Sn{Block}
+
+\Sn{Block}
+: \SnRule{Piled}(\Sn{Expression})
+\Alt{} \SnRule{Curly}(\Sn{Labeled})
+
+\Sn{Parened}
+: ``\verb"{"'' ``\verb"}"'' 
+\Alt{} ``\verb"{"'' \Sn{Expression} ``\verb"}"''
+
+\Sn{Bracketed}
+: ``\verb"["'' ``\verb"]"'' 
+\Alt{} ``\verb"["'' \Sn{Expression} ``\verb"]"'' 
+
+\Sn{QuotedIds}
+: ``\verb"'"'' ``\verb"'"''
+\Alt{} ``\verb"'"'' \Sn{Names} ``\verb"'"''
+
+\Sn{Names}
+: \SnRule{enlist1}(\Sn{Name}, ``\verb","'')
+
+\subsubsection{Terminals}
+
+\Sn{Atom}
+: \Sn{Id}
+\Alt{} \Sn{Literal}
+
+\Sn{Name}
+: \Sn{Id}
+\Alt{} \Sn{NakedOp}
+
+\Sn{Id}
+: TK\_Id
+\Alt{} TK\_Blank
+\Alt{} ``\verb"#"''
+\Alt{} ``\verb"~"''
+
+\Sn{Literal}
+: TK\_Int
+\Alt{} TK\_Float
+\Alt{} TK\_String
+
+\subsubsection{Meta-rules}
+
+\Sn{Nothing}
+:
+
+\SnRule{QualOp}(op)
+: op
+\Alt{} op ``\verb"$"'' \Sn{OpQualTail}
+
+\Opt{E}
+: \Sn{Nothing} 
+\Alt{} E
+
+\subsubsection{Documentation}
+
+\SnRule{Doc}(E)
+: \Sn{PreDocument} E \Sn{PostDocument}
+
+\Sn{PreDocument}
+: \Sn{PreDocumentList}
+
+\Sn{PostDocument}
+: \Sn{PostDocumentList}
+
+\Sn{PreDocumentList}
+: \Sn{Nothing}
+\Alt{} TK\_PreDoc \Sn{PreDocumentList}
+
+\Sn{PostDocumentList}
+: \Sn{Nothing}
+\Alt{} TK\_PostDoc \Sn{PostDocumentList}
+
+\subsubsection{Separated lists}
+
+The rule \SnRule{enlist1} provides lists with separators between elements,
+\eg{}  ``\verb"x , y, z"''.
+
+\SnRule{enlist1}(E, Sep)
+: E
+\Alt{} \SnRule{enlist1}(E, Sep) Sep E
+
+The rule \SnRule{enlist1a} provides lists within which separators may
+be repeated, \eg{}  ``\verb"x ; ; y ; z"''.
+Any number of separators may follow the last element.
+
+\SnRule{enlist1a}(E, Sep)
+: E
+\Alt{} \SnRule{enlist1a}(E, Sep) Sep E
+\Alt{} \SnRule{enlist1a}(E, Sep) Sep
+
+\subsubsection{Blocks}
+
+\SnRule{Piled}(E)
+: KW\_SetTab \SnRule{PileContents}(E) KW\_BackTab
+
+\SnRule{Curly}(E)
+: ``\verb"{"'' \SnRule{CurlyContents}(E) ``\verb"}"''
+
+\SnRule{PileContents}(E): \altline
+\SnRule{Doc}(E) \altline
+\Alt{} \SnRule{PileContents}(E) KW\_BackSet \SnRule{Doc}(E) \altline
+\Alt{} error KW\_BackSet \SnRule{Doc}(E)
+
+\SnRule{CurlyContents}(E)
+: \SnRule{CurlyContentsList}(E)
+
+\SnRule{CurlyContentsList}(E)
+: \SnRule{CurlyContent1}(E)
+\altline\Alt{} \SnRule{CurlyContent1}(E) \SnRule{CurlyContentB}(E)
+
+\SnRule{CurlyContent1}(E)
+: \Sn{Nothing}
+\Alt{} \SnRule{CurlyContent1}(E) \SnRule{CurlyContentA}(E)
+
+\SnRule{CurlyContentA}(E): \altline
+\SnRule{CurlyContentB}(E) ``\verb";"'' \Sn{PostDocument} \altline
+\Alt{} error ``\verb";"'' \Sn{PostDocument}
+
+\SnRule{CurlyContentB}(E)
+: \Sn{PreDocument} E \Sn{PostDocument}

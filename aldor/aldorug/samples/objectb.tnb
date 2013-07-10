@@ -1,0 +1,39 @@
+{\codeline{1}\verb& #include "aldor"&}\\
+{\codeline{2}\verb& #include "aldorio"&}\\
+{\codeline{3}\verb&&}\\
+{\codeline{4}\verb& -- OutputType objects -------------------------------------------------&}\\
+{\codeline{5}\verb& --&}\\
+{\codeline{6}\verb& -- These objects can be printed because each belongs to some OutputType.&}\\
+{\codeline{7}\verb& --&}\\
+{\codeline{8}\verb&&}\\
+{\codeline{9}\verb& Object(C: Category): with {&}\\
+{\codeline{10}\verb&         object:         (T: C, T) -> %;&}\\
+{\codeline{11}\verb&         avail:          % -> (T: C, T);&}\\
+{\codeline{12}\verb& }&}\\
+{\codeline{13}\verb& == add {&}\\
+{\codeline{14}\verb&         Rep == Record(T: C, val: T);&}\\
+{\codeline{15}\verb&         import from Rep;&}\\
+{\codeline{16}\verb&&}\\
+{\codeline{17}\verb&         object  (T: C, t: T) : %        == per [T, t];&}\\
+{\codeline{18}\verb&         avail   (ob: %) : (T: C, T)     == explode rep ob;&}\\
+{\codeline{19}\verb& }&}\\
+{\codeline{20}\verb&&}\\
+{\codeline{21}\verb& main():() == {&}\\
+{\codeline{22}\verb&     import from Integer, List Integer;&}\\
+{\codeline{23}\verb&     bobfun(bob: Object OutputType): () == {&}\\
+{\codeline{24}\verb&         f avail bob where&}\\
+{\codeline{25}\verb&         f(T: OutputType, t: T) : () == {&}\\
+{\codeline{26}\verb&                 stdout << "This prints itself as: " << t << newline;&}\\
+{\codeline{27}\verb&         }&}\\
+{\codeline{28}\verb&     }&}\\
+{\codeline{29}\verb&     import from Object OutputType;&}\\
+{\codeline{30}\verb&     boblist: List Object OutputType := [&}\\
+{\codeline{31}\verb&         object (String,       "Ahem!"),&}\\
+{\codeline{32}\verb&         object (Integer,      42),&}\\
+{\codeline{33}\verb&         object (List Integer, [1,2,3,4])&}\\
+{\codeline{34}\verb&     ];&}\\
+{\codeline{35}\verb&     for bob in boblist repeat bobfun bob;&}\\
+{\codeline{36}\verb& }&}\\
+{\codeline{37}\verb&&}\\
+{\codeline{38}\verb& main();&}\\
+{\codeline{39}\verb&&}\\

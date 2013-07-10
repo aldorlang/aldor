@@ -1,0 +1,156 @@
+%
+% *********************************************************************
+\head{chapter}{For Internal Compiler Developers}{asugDeveloper}
+% *********************************************************************
+
+This chapter provides information for those who wish to maintain
+or develop the \asharp{} compiler.
+
+% *********************************************************************
+\head{section}{The Internal Developer Environment}{asugDeveloperEnv}
+% *********************************************************************
+
+In addition to the environment described in \spadref{asugInstallDir},
+internal developers need to set the {\tt MACHINE} environment variable.
+See the table in \spadref{asugInstallPlatform} for allowable values for this
+variable.
+Any other value for {\tt MACHINE} will cause a compiler called
+{\tt cc} to be used for compiling the compiler source code.
+Normally, {\tt MACHINE} and the last component of the
+{\tt \$ALDORROOT} directory name should be the same for a developer.
+A developer should have a local copy of the entire main directory and
+\index{MACHINE@\protect{\tt MACHINE} environment variable}
+set the {\tt \$ALDORROOT} variable appropriately.
+\index{environment variables!MACHINE@\protect{\tt MACHINE}}
+
+The main directory of the compiler has a subdirectory called
+{\tt version.}
+\index{directories!version@\protect{\tt version}}
+In most cases, this will have only one subdirectory.
+If there is more than one, use the newest one in what follows.
+For example, the subdirectory {\tt \asharpver{}} corresponds to an
+early $\beta$-test version of the compiler.
+The subdirectories of that directory have names like {\tt src,
+tools, test, doc} and so on.
+We will often refer to those directories simply by their
+relative names.
+Thus, unless otherwise specified, the directory {\tt src/} will
+\index{directories!src@\protect{\tt src}}
+mean, for example, {\tt \$ALDORROOT/../version/\asharpver{}/src} and {\tt
+tools/} will mean {\tt \$ALDORROOT/../version/\asharpver{}/tools.}
+
+% *********************************************************************
+\head{section}{Making a New Compiler}{asugDeveloperMake}
+% *********************************************************************
+
+The following general instructions for making the compiler are
+for Unix systems.
+\index{compiler!making the}
+Some specific tools for making the compiler in other environments
+can be found in subdirectories of the {\tt tools/} (see below) directory.
+See, for example, the {\tt cms} and {\tt os2} subdirectories.
+\index{directories!tests@\protect{\tt tools/cms}}
+\index{directories!tests@\protect{\tt tools/os2}}
+
+To make the compiler for version {\tt \asharpver{}} on an IBM RS/6000
+running AIX 3.2, issue the following:
+\begin{enumerate}
+\item Issue {\tt echo \$ALDORROOT} and {\tt echo \$PATH} to ensure
+that they are set correctly.
+\item Make sure you have the proper file permissions to update
+the subdirectories of {\tt \$ALDORROOT}: use {\tt su} if
+necessary.
+\item Issue {\tt cd \$ALDORROOT/../version/\asharpver{}}
+\item Issue {\tt sh makeon rs3.2 all}
+\end{enumerate}
+
+The {\tt rs3.2} is the value of the {\tt MACHINE} environment variable.
+
+The above process compiles the source for the tools, compiles the
+source for the compiler, makes the \asharp{} libraries and runs
+the regression tests. Inspect the console output or the log {\tt
+\$ALDORROOT/makeon.log} to make sure the build and tests ran
+successfully.
+\index{files!makeon.log@\protect{\tt makeon.log}}
+
+% *********************************************************************
+\head{section}{Adding Tests}{asugDeveloperTests}
+% *********************************************************************
+
+The regression tests are contained the {\tt tests/} subdirectory.
+\index{compiler!tests}
+We do not recommend you modify this directory from the
+distribution.
+\index{tests}
+You can, however, create a local test directory and place tests
+and their output there.
+\index{directories!tests@\protect{\tt tests}}
+We now assume you have created a directory called {\tt test/}
+(relative, perhaps, to your home directory).
+Within {\tt test/} you must place a subdirectory called {\tt
+test.out/.}
+That is, do the following:
+\begin{enumerate}
+\item Use {\tt cd} to move to what will be the parent directory of
+{\tt test/}.
+\item Issue {\tt mkdir test}
+\item Issue {\tt mkdir test/test.out}
+\end{enumerate}
+
+To add a new test (we will call it {\tt newtest.as}), do the
+following:
+\begin{enumerate}
+\item Change to the {\tt tests/} subdirectory and
+place a copy of {\tt newtest.as} there.
+\item Issue {\tt testas -install newtest.as}
+\item Issue {\tt cd test.out}
+\item Issue {\tt ls newtest.*} and inspect the files
+{\tt newtest.E,} {\tt newtest.R,}
+and {\tt newtest.out,} if they exist, to ensure that
+the test is doing what you want.
+\end{enumerate}
+
+Depending on what test options you have given via ``{\tt -->}''
+in {\tt newtest.as} other test output files may exist.
+Some may not be readable (for example, a binary {\tt .ao} file).
+See \chapref{asugOptions} for a listing of the type of files the
+compiler can produce.
+
+A test file has special ``{\tt -->}'' comments at its top.
+These comments cause {\tt testas -install} to create various new standard
+result files.
+They also cause {\tt testas} to compare the newly generated files
+with the existing standard ones.
+
+\def\testopt#1#2{\par\hangafter=1\hangindent=.25in{\tt --$>$
+#1}\index{compiler!tests!#1@\protect{\tt\  #1} option}\newline{#2}}
+
+\testopt{testerrs}{This adds the option {\tt -DTestErrorsToo} to
+\index{compiler options!D@\protect{\tt -D} (add global assertion)}
+the compilation and captures error output in a file with
+extension {\tt .E}.}
+
+\testopt{testrun}{This adds the option {\tt -DTestRun} to
+the compilation and captures output in a file with
+extension {\tt .out}.}
+
+\testopt{testcomp}{This compiles and creates a {\tt .ao} file
+containing byte-codes.}
+
+\testopt{testphase PHASE}{This compiles and uses the {\tt -W T}
+option to create a {\tt .R} file
+containing the compiler information for phase PHASE.
+See the output for {\tt \asharpcmd{} -W h} for a list of the phases.
+%% WE SHOULD FIX THE FOLLOWING
+The output of only one phase can be collected.}
+
+\testopt{testgen KIND}{This compiles and produces a file of the
+given KIND.  For example, use {\tt c} for KIND to produce a C
+file and use {\tt l} to produce a Lisp file.}
+
+Issue {\tt testas -help} for additional information.
+Once you have created test files and their output, we suggest you
+create a {\tt Makefile} in each of {\tt test/} and {\tt
+test/test.out/} to automate your testing.
+See the distribution subdirectories by those names for models.
+

@@ -1,0 +1,425 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%                                                                        %%%
+%%% :: Fortran Interoperability                                            
+%%%                                                                        %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\head{chapter}{Using \asharp{} with Fortran-77}{asugUsingWithFortran}
+\newcommand{\Cpp}{C{\tt ++}}
+\index{Fortran!{\em see \chapref{asugUsingWithFortran}}}
+
+\head{section}{Basics}{asugFortBasic}
+
+This section describes how to call subprograms written in Fortran-77
+from \asharp, and how to call routines written in \asharp{} from
+Fortran-77.   Since there is no standard foreign-language interface to
+Fortran-77 it may be necessary to customise your implementation of
+\asharp{} to work with your local Fortran compiler.  As is the case
+with \asharp{} programs which import other foreign code, programs
+which use Fortran cannot be run in the interpreter environment.
+
+The current interface supports all of the data types in Fortran-77,
+and allows Fortran and \asharp{} functions to be used interchangeably in
+many contexts.  For example a Fortran function can be treated as an
+\asharp{} function transparently, and an \asharp{} routine may behave
+like a Fortran Function or Subroutine.  The only major restriction is
+that an \asharp{} program cannot see a Fortran Common block, and a
+Fortran program has no way of accessing \asharp{} global variables.
+
+Note that this mechanism uses the C generation facilities described 
+in \chapref{asugUsingWithC} and does not provide a mechanism for
+generating native Fortran code.  It is principally intended as a means
+by which an \asharp{} programmer can make use of the vast body of Fortran
+code available, and by which a Fortran programmer may embed \asharp{}
+code in his or her application.
+
+\head{section}{Simple Example}{asugFortSimpleEx}
+
+This simple example demonstrates the main concepts you need to know to
+call Fortran from \asharp{}.  It shows the use of a Fortran routine
+for sorting all or part of a vector of floating-point numbers.  
+
+\program{f77sort}
+
+\begin{description}
+\lineNote{6--8} Here we import the function from
+\verb"Foreign(Fortran)".  We will describe the exact correspondence
+between Aldor and Fortran types later, but for the moment remark that
+objects whose value will be changed on exit are passed using the
+\verb`Ref` constructor.
+\lineNote{20} The Fortran routine is called as if it were an Aldor
+one.  The operator \verb`ref` is used to pass a reference to the error
+flag (this is described in more detail below).  Notice that it is
+possible to pass numerical data directly (the second argument, which
+in this case represents the start point of the segment of the vector
+to be sorted) as well as via a variable.
+\lineNote{24} Note that the contents of the array have been changed by
+the Fortran routine.
+\end{description}
+
+The program could be compiled as follows, assuming that the
+\verb`fsort` routine is contained in a library called \verb`sort`.  
+
+\begin{small}
+\osprompt\ \asharpcmd{ -Cfortran -Fx -laldor -Clib=sort f77sort.as}
+\end{small}
+
+Note the use of the \option{-Cfortran} flag.  This has the effect of
+causing the linker to link to the appropriate Fortran runtime
+routines, and may also cause compiler-specific initialisation code to
+be generated.  It is not necessary to use this flag except at the link
+stage. 
+
+\head{section}{Data Correspondence}{asugFortData}
+
+Fortran-77 has a fixed and relatively small set of data types, and
+passes all subprogram parameters by reference (i.e.~it passes a
+pointer to the data rather than a copy of the data).  \asharp, on the
+other hand, has a rich and extensible type system, and in general will
+pass copies of subprogram data (at least in simple cases).   The aim
+of the interface is to ensure that Foreign functions behave naturally
+in their host environment.
+
+In practice it would be very restrictive only to be allowed to pass this
+fixed list of types to Fortran, so \asharp{} uses a set of categories
+to indicate that a domain can be used to pass particular types of
+values.  This usually means that the domain's representation is the
+appropriate basic machine type or a pointer to it.  For example the
+{\tt DoubleFloat} type belongs to the {\tt FortranDouble} category since
+its representation is a boxed double precision floating point number.
+Note that none of these categories have any exports, the complete list,
+and an example of an \asharp{} type which belongs to each one, is:
+
+\begin{center}
+{\small
+\begin{tabular}{|l|l|l|}\hline
+& & \\
+{\bf Aldor Category}      & {\bf Fortran Type} & {\bf Example Domain}\\
+& & \\
+\hline
+& & \\
+\verb`FortranInteger`       & INTEGER          & \verb`MachineInteger`  \\ 
+\verb`FortranReal`          & REAL             & \verb`SingleFloat`\\
+\verb`FortranDouble`        & DOUBLE PRECISION & \verb`DoubleFloat`\\
+\verb`FortranLogical`       & LOGICAL          & \verb`Boolean`\\
+\verb`FortranCharacter`     & CHARACTER        & \verb`Character`\\
+\verb`FortranString`        & CHARACTER(*)     & \verb`String`\\
+\verb`FortranFString`       & CHARACTER(*)     & \verb`FixedString`\\
+\verb`FortranComplexReal`   & COMPLEX REAL     & \verb`Complex(SingleFloat)`\\
+\verb`FortranComplexDouble` & COMPLEX DOUBLE   & \verb`Complex(DoubleFloat)`\\
+& & \\
+\hline
+\end{tabular}
+}
+\end{center}
+
+Fortran strings (or rather Character arrays) are not null-terminated,
+so to manipulate them it is necessary to know their length.  Data from
+the \asharp{} domain \verb'String' is automatically converted to the
+equivalent Fortran object, which is in principle a (length, data)
+pair.  An alternative is to use the {\tt FixedString} type which is
+parameterised by its length. 
+
+By default \asharp{} passes a copy of a scalar parameter to Fortran,
+in line with its usual semantics.  Since many Fortran routines return
+results by modifying their arguments there is also a \verb'Ref'
+constructor which will in effect copy the value of the parameter at
+the end of the call to the Fortran routine back to the \asharp{}
+object (this is often referred to as ``copy-in/copy-out'' semantics).
+The choice of whether to declare an argument to a Fortran routine to
+be e.g.~a \verb'DoubleFloat' or a \verb'Ref(DoubleFloat)' is left up
+to the user, and will depend on whether he or she wishes to inspect
+its value after the call to Fortran has been completed.  Note that it
+is perfectly safe to declare an argument as e.g.~\verb'DoubleFloat'
+even if it will be modified by Fortran, although of course the
+modified value will not be visible in \asharp.  The \verb'Ref' domain
+exports two operations to dereference and update instances of itself.
+
+\head{subsection}{Array Arguments}{asugFortDataArr}
+
+The normal layout of data in an \asharp{} array is not suitable for
+direct use by a Fortran routine because it may contain pointers to 
+its elements, or indeed be a vector of pointers to its rows etc.  There
+is also the important fact that Fortran lays out its arrays in column
+order whereas languages like \asharp{} and C tend to use row order.
+
+Supposing that we want to pass an array of objects of domain {\tt T}
+to Fortran.  It simplifies matters greatly if {\tt T} satisfies
+\verb'DenseStorageCategory'.  This means that each element of the
+array can be stored in a fixed amount of memory and so the array can
+be constructed as a sequence of objects rather than a sequence of
+pointers to objects.  By default the compiler will try and determine 
+this automatically, but it can be done by hand to improve efficiency.
+
+For an array-like object to be passed to Fortran, it must satisfy either
+{\tt FortranArray} or {\tt FortranMultiArray} category, depending on
+whether it is a single-dimensional or multi-dimensional object.  These
+provide exports for converting between the \asharp{} and Fortran 
+representations, and are {\em automatically\/} applied by the compiler.
+Domains in the standard library which can be used in this way include
+{\tt PrimitiveArray}, {\tt Array} and {\tt TwoDimensionalArray}.
+
+There are two special cases to these rules.  The first concerns arrays
+of strings, in \asharp{} we need to ensure that we use a fixed sized
+string representation, and that the array type satisfies the category
+{\tt Fortran\-F\-String\-Array}.  An example of a domain which can be used
+in this way is {\tt Array Fixed\-String(10)}.
+
+The second special case arises when we are defining an Aldor function
+to be passed to (and called from) Fortran.  Here we are forced to use
+{\tt PrimitiveArray} for all array types since it is the Fortran runtime
+environment rather than \asharp{}'s which will set-up the call.  In
+practice this is not too inconvenient.
+
+
+\head{subsection}{Passing Subprograms as Arguments}{}
+
+The use of Fortran {\tt Function} and {\tt Subroutine} arguments is
+supported.  For example:
+
+\begin{verbatim}
+DF ==> DoubleFloat;
+import {
+        integrate: (DF -> DF, hi: DF, lo: DF) -> DF;
+} from Foreign Fortran;
+
+-- integrate the sin function between 0 and 1
+integrate(sin, 0.0, 1.0);
+
+-- integrate the cos(fn) function between 0 and 1
+foo(fn: DF -> DF): DF == {
+        integrand(x: DF): DF == cos fn x;
+        integrate(integrand, 0.0, 1.0);
+}
+\end{verbatim}
+
+In the examples, `{\tt integrate}' is being used with functions which
+are either exported from a domain or package, or locally defined.
+
+There is one restriction on the way dummy procedures can be used.  An
+\asharp{} function which calls a Fortran routine cannot be invoked
+recursively by the call to the Fortran routine.
+
+\head{section}{Calling \asharp{} Routines from Fortran}{asugFortCallAldor}
+
+This is very similar to the way \asharp{} routines can be passed to C
+functions.  There is one restriction --- exported functions must be
+defined in the top level of a file, not within an add-body.  Of course
+the exported function itself may use other functions defined in add
+bodies so this is not really a problem.
+
+For example, consider the \asharp{} program:
+\begin{small}
+\begin{verbatim}
+#include "aldor"
+
+import from IntegerPrimesPackage, Integer;
+
+export {ISPRIM:MachineInteger -> Boolean} to Foreign Fortran;
+
+ISPRIM(n:MachineInteger):Boolean == prime?(n::Integer)
+\end{verbatim}
+\end{small}
+This creates a function \verb`isprim` which can be called from
+Fortran.  Note that the name of the function must be legal in the
+Fortran world (strictly speaking this means no more than six
+characters and uppercase, although most modern compilers take a more
+relaxed view!).  A Fortran routine to call this function might look
+like:
+\begin{verbatim}
+       INTEGER I
+       LOGICAL ISPRIM, B
+       EXTERNAL ISPRIM
+C
+       DO 100 I=1,100
+         B=ISPRIM(I)
+         IF (B) THEN
+            PRINT*,I," is prime"
+         ENDIF
+ 100  CONTINUE
+C
+      END
+\end{verbatim}
+Notice that in Fortran only the return type is given, and that the
+data type correspondence is the same as that provided earlier.
+
+To compile and link the routines together we might do the following:
+
+\begin{small}
+\osprompt \asharpcmd{ -Fo isprime.as}\\
+\osprompt f77 testprime.f isprime.o -L\$ALDORROOT/lib -laldor
+-lfoam
+\end{small}
+
+Note that as well as linking to the appropriate \asharp{} libraries it
+is important to link to the \verb`foam` library.
+
+\head{section}{Platform-dependent details}{asugFortPlatform}
+
+The foreign language interface of Fortran is not standardised, and so
+there are some details which vary from platform to platform.  It is
+possible to tailor an installation of \asharp{} to a particular
+Fortran compiler by editing the file
+\verb`$ALDORROOT/include/aldor.conf` and setting the values of the
+following keys:  
+\begin{itemize}
+\item {\tt fortran-name-scheme} (indicates how Fortran identifiers are
+decorated in C: common cases are {\tt underscore} which means an
+underscore character is added to the end of the name and {\tt
+no-underscore} which actually means that the identifiers are undecorated);
+\item {\tt fortran-cmplx-fns} (indicates the protocol for returning
+Complex values via the name of a function);
+\item {\tt fortran-libraries} (list of linker options needed to link Fortran
+programs to \asharp{});
+\item {\tt fortran-io-init-fun} (a function which should be called
+before any Fortran routines are invoked, typically to initialise streams
+for standard input and output).
+\end{itemize}
+
+The configuration file is discussed in more detail in \chapref{asugUnicl}.
+
+\head{section}{Larger Examples}{asugFortExample}
+
+This first example shows the use of a Fortran routine to find a root
+of a function (in this case $e^{-x}-x$) in an interval.  Note the use
+of {\tt Ref} types to return results.
+
+\begin{small}
+\begin{verbatim}
+#include "aldor"
+#include "aldorio"
+
+DF ==> DoubleFloat;
+SI ==> MachineInteger;
+import
+  { root:(DF, DF, DF, DF -> DF, Ref DF, Ref SI} -> () ; }
+from Foreign Fortran;
+
+-- Interval containing root
+lo : DF := 0.0;
+hi : DF := 1.0;
+
+-- Tolerance
+eps : DF := 0.00001;
+
+-- Result
+x : DF := 0;
+
+errorFlag : SI := -1;
+
+f(x:DF):DF == exp(-x) -x;
+
+root(lo, hi, eps, f, ref x, ref errorFlag);
+
+if not zero? ifail then stdout << x << newline;
+\end{verbatim}
+\end{small}
+
+
+The following code calls the NAG library function {\tt e04jyf}
+to minimise the expression 
+$(x_1+10\,x_2)^2+5\,(x_3-x_4)^2+(x_2-2\,x_3)^4+10\,(x_1-x_4)^4$
+subject to the constraints:
+$$
+\begin{array}{rcccr}
+1       &<& x_1 &<& 3 \\
+-2      &<& x_2 &<& 0 \\
+-\infty &<& x_3 &<& \infty \\
+1       &<& x_4 &<& 3 \\
+\end{array}
+$$
+It uses the {\em BasicMath} library to provide the mathematical
+domains.
+For more details of what
+the various arguments do please see the NAG Fortran Library Manual,
+which is available in both printed and electronic versions. 
+
+There are several points to note about this example:
+\begin{enumerate}
+\item When importing the Fortran routine we have named each parameter.
+This is not strictly necessary but makes the program easier to read.
+\item Note that in the import statement we have chosen a particular
+\asharp{} type for each parameter.  In some cases we are using {\tt Vector}
+and in others {\tt Array} since this is natural for our application, even
+although the traget Fortran type is identical in both cases.
+\item Note the cunning definition of {\tt objfun}, which makes use of
+{\tt p} which is defined in an outer scope.  Also note the use of
+{\tt Primitive\-Array}s as parameters (see the note earlier) and the
+modifiable argument {\tt fc}.
+\item The workspace arrays have been constructed using {\tt new}.  The
+category {\tt Linear\-Aggregate} defines an export {\tt empty} which
+creates an aggregate with no values, but its semantics do not require
+that any memory be allocated.  Thus the use of {\tt empty} should be
+avoided in cases like this.
+
+\newpage
+\begin{small}
+\begin{verbatim}
+#include "basicmath"
+DF  ==> DoubleFloat;
+SI  ==> MachineInteger;
+VDF ==> Vector DF;
+VSI ==> Vector SI;
+ASI ==> Array SI;
+ADF ==> Array DF;
+POL ==> Polynomial DF;
+S   ==> OrderedSymbol;
+PDF ==> PrimitiveArray DF;
+PSI ==> PrimitiveArray SI;
+
+import {e04jyf : ( n : SI, ibound : SI,
+                   funct1 : (SI, PDF, Ref DF, PSI, PDF) -> (),
+                   bl : VDF, bu : VDF, x : VDF, f : Ref DF,
+                   iw : VSI, liw : SI, w :  VDF, lw : SI,
+                   iuser : ASI, user : ADF, ifail : Ref SI) -> () ;
+} from Foreign Fortran;
+
+import from DF, SI, VDF, ADF, POL, S, List S, NonNegativeInteger;
+
+minimise(lower:VDF, upper:VDF, start:VDF, p:POL, vars:List S):()=={
+
+  n  : SI  := #lower;
+
+  objfun(nn:SI, xc:PDF, fc:Ref DF, iusr:PSI , usr:PDF):() == {
+    vals : List DF := [ xc.i for i in 1..nn ];
+    update!(fc, ground eval(p,vars,vals));
+  }
+
+  -- Workspace:
+  user  : ADF := new(0,0);
+  iuser : ASI := new(0,0);
+  liw   : SI  := n+2;
+  iw    : VSI := new(liw,0);
+  lw    : SI  := n*(n-1) quo 2+12@SI*n;
+  w     : VDF := new(lw,0);
+
+  -- Output Parameters
+  f : DF := 1.0; 
+  ifail : SI := -1;
+
+  e04jyf(n, 0, objfun, lower, upper, start, ref f, iw, liw, w, lw, 
+         iuser, user, ref ifail);
+
+  print << "fail = " << ifail << " minimum = " << f << newline; 
+  print << "minimum point = ";
+  for i in 1..n repeat 
+    outputAsFixed(print, start.i, 8, 4)$FormattedNumericalOutput;
+
+}
+
+lower : VDF := [1.0, -2.0, -1.0e6, 1.0];
+upper : VDF := [3.0, 0.0, 1.0e6, 3.0];
+start : VDF := [3.0, -1.0, 0.0, 1.0];
+
+-- Set up symbols and build polynomial
+vlist : List S := [ +"x1",  +"x2",  +"x3",  +"x4"];
+x1 : POL := coerce(+"x1"); x2 : POL := coerce(+"x2");
+x3 : POL := coerce(+"x3"); x4 : POL := coerce(+"x4");
+p  : POL := (x1+10.0*x2)^(+2)+5.0*(x3-x4)^(+2)+(x2-2.0*x3)^(+4)+
+            10.0*(x1-x4)^(+4); 
+minimise(lower,upper,start,p,vlist);
+\end{verbatim}
+\end{small}
+
+  
+\end{enumerate}

@@ -1,0 +1,637 @@
+##############################################################################
+#
+# Makefile
+#
+# Make program to build the basic library.
+#
+# Copyright (c) 1990-2007 Aldor Software Organization Ltd (Aldor.org).
+#
+##############################################################################
+#
+# Targets: all, junk, clean, quick
+#
+#    make all	-- make the basic library for the Aldor compiler
+#    make junk	-- list files which are not part of the Aldor compiler
+#    make clean -- remove generated files  (e.g. foo.c~)
+#
+# Parameters:  ALDORROOT
+#
+#    To override defaults do, e.g.,
+#	 make -e ALDORROOT=\spad\local\aldor\rs all
+#    or
+#	 setenv ALDORROOT \spad\local\aldor\rs; setenv MAKEFLAGS e; make all
+#
+##############################################################################
+
+PWD=$(MAKEDIR)
+
+#
+# Environment
+#
+# $(ALDORROOT) is retrieved from the environment
+IncDir	= $(ALDORROOT)\include
+LibDir	= $(ALDORROOT)\lib
+BinDir	= $(ALDORROOT)\bin
+SamDir	= $(ALDORROOT)\share\samples\libaxllib
+IntDir  = $(PWD)\lib
+SrcDir  = $(PWD)\src
+
+LAXLLIB	= $(LibDir)\libaxllib.al
+LOBLIB	= $(LibDir)\libaxllib.lib
+
+AXLCDB	= -Wcheck -qno-del-assert # -Wdumb-import # -Wgc # -Qkillp # -Cargs=-g -Cargs='$$OPTS' -Fc -ffm #-Cargs=-g -Qno-cc -Ffm
+AXLCDB	= -Wcheck -qno-del-assert # -Wdebugger -Mno-mactext
+AXLFLAGS	= $(AXLCDB) -q3 -qinline-all # -Fc # -Wrtcache=-1 # -Qno-cc -Zprof
+
+CP	= copy
+RM	= del
+
+#
+# Source lists
+#
+# AXL<i>... depends on AXL<i-1>...
+
+IncSrcs	= axllib.as
+AXL0Srcs= lang.as		\
+	  machine.as		\
+	  basic.as		\
+	  axlcat.as		\
+	  tuple.as		\
+	  gener.as		\
+	  ref.as		\
+	  except.as		\
+	  boolean.as		\
+	  segment.as		\
+	  sinteger.as		\
+	  byte.as		\
+	  hinteger.as		\
+	  bpower.as		\
+	  integer.as		\
+	  pointer.as		\
+	  char.as		\
+	  list.as		\
+	  langx.as		\
+	  uarray.as		\
+	  pkarray.as		\
+	  parray.as		\
+	  array.as		\
+	  string.as		\
+	  sfloat.as		\
+	  dfloat.as		\
+	  imod.as		
+
+AXL1Srcs	= format.as		\
+	  complex.as		\
+	  ratio.as		\
+	  efuns.as		\
+	  partial.as		\
+	  sort.as		\
+	  oslow.as		\
+	  fname.as		\
+	  file.as		\
+	  opsys.as		\
+	  textwrit.as		\
+	  textread.as		\
+	  rtexns.as		\
+	  fmtout.as		\
+	  table.as		\
+	  fprint.as		\
+	  float.as		\
+	  pfloat.as		\
+	  ieeectl.as		\
+	  object.as		\
+	  fstring.as		\
+	  debug.as		\
+
+
+AXLSrcs	= $(AXL0Srcs) $(AXL1Srcs)
+
+Sources	= $(IncSrcs) $(AXLSrcs)
+Lists	= axlinc.lst axllib.lst
+
+#
+# Object lists
+#
+
+AXL0Aos	= $(IntDir)\lang.ao		\
+	  $(IntDir)\machine.ao	\
+	  $(IntDir)\basic.ao		\
+	  $(IntDir)\axlcat.ao		\
+	  $(IntDir)\tuple.ao		\
+	  $(IntDir)\gener.ao		\
+	  $(IntDir)\ref.ao		\
+	  $(IntDir)\except.ao		\
+	  $(IntDir)\boolean.ao	\
+	  $(IntDir)\segment.ao	\
+	  $(IntDir)\sinteger.ao	\
+	  $(IntDir)\byte.ao		\
+	  $(IntDir)\hinteger.ao	\
+	  $(IntDir)\bpower.ao		\
+	  $(IntDir)\integer.ao	\
+	  $(IntDir)\pointer.ao	\
+	  $(IntDir)\char.ao		\
+	  $(IntDir)\list.ao		\
+	  $(IntDir)\langx.ao		\
+	  $(IntDir)\uarray.ao		\
+	  $(IntDir)\pkarray.ao		\
+	  $(IntDir)\parray.ao		\
+	  $(IntDir)\array.ao		\
+	  $(IntDir)\string.ao		\
+	  $(IntDir)\sfloat.ao		\
+	  $(IntDir)\dfloat.ao		\
+	  $(IntDir)\imod.ao		
+
+AXL0Objs	= $(IntDir)\lang.obj		\
+	  $(IntDir)\machine.obj		\
+	  $(IntDir)\basic.obj		\
+	  $(IntDir)\axlcat.obj		\
+	  $(IntDir)\tuple.obj		\
+	  $(IntDir)\gener.obj		\
+	  $(IntDir)\ref.obj		\
+	  $(IntDir)\except.obj		\
+	  $(IntDir)\boolean.obj		\
+	  $(IntDir)\segment.obj		\
+	  $(IntDir)\sinteger.obj		\
+	  $(IntDir)\byte.obj		\
+	  $(IntDir)\hinteger.obj		\
+	  $(IntDir)\bpower.obj		\
+	  $(IntDir)\integer.obj		\
+	  $(IntDir)\pointer.obj		\
+	  $(IntDir)\char.obj		\
+	  $(IntDir)\list.obj		\
+	  $(IntDir)\langx.obj		\
+	  $(IntDir)\uarray.obj		\
+	  $(IntDir)\pkarray.obj		\
+	  $(IntDir)\parray.obj		\
+	  $(IntDir)\array.obj		\
+	  $(IntDir)\string.obj		\
+	  $(IntDir)\sfloat.obj		\
+	  $(IntDir)\dfloat.obj		\
+	  $(IntDir)\imod.obj		\
+	  $(IntDir)\mndWrite.obj		
+
+AXL1Aos	= $(IntDir)\format.ao		\
+	  $(IntDir)\complex.ao	\
+	  $(IntDir)\ratio.ao		\
+	  $(IntDir)\efuns.ao		\
+	  $(IntDir)\partial.ao	\
+	  $(IntDir)\sort.ao		\
+	  $(IntDir)\oslow.ao		\
+	  $(IntDir)\fname.ao		\
+	  $(IntDir)\file.ao		\
+	  $(IntDir)\opsys.ao		\
+	  $(IntDir)\textwrit.ao	\
+	  $(IntDir)\textread.ao	\
+	  $(IntDir)\rtexns.ao		\
+	  $(IntDir)\fmtout.ao		\
+	  $(IntDir)\table.ao		\
+	  $(IntDir)\fprint.ao		\
+	  $(IntDir)\pfloat.ao		\
+	  $(IntDir)\float.ao		\
+	  $(IntDir)\ieeectl.ao	\
+	  $(IntDir)\object.ao		\
+	  $(IntDir)\fstring.ao	\
+	  $(IntDir)\debug.ao		\
+
+AXL1Objs	= $(IntDir)\format.obj		\
+	  $(IntDir)\complex.obj		\
+	  $(IntDir)\ratio.obj		\
+	  $(IntDir)\efuns.obj		\
+	  $(IntDir)\partial.obj		\
+	  $(IntDir)\sort.obj		\
+	  $(IntDir)\oslow.obj		\
+	  $(IntDir)\fname.obj		\
+	  $(IntDir)\file.obj		\
+	  $(IntDir)\opsys.obj		\
+	  $(IntDir)\textwrit.obj		\
+	  $(IntDir)\textread.obj		\
+	  $(IntDir)\rtexns.obj		\
+	  $(IntDir)\fmtout.obj		\
+	  $(IntDir)\table.obj		\
+	  $(IntDir)\fprint.obj		\
+	  $(IntDir)\pfloat.obj		\
+	  $(IntDir)\float.obj		\
+	  $(IntDir)\ieeectl.obj		\
+	  $(IntDir)\object.obj		\
+	  $(IntDir)\fstring.obj		\
+	  $(IntDir)\debug.obj
+
+
+Objects	= $(AXL0Objs) $(AXL1Objs) 
+Aos	= $(AXL0Aos) $(AXL1Aos)
+
+#
+# Target lists
+#
+IncTargs = $(IncDir)\axllib.as
+LibTargs = $(IntDir) $(LAXLLIB) $(LOBLIB)
+
+# Don't delete the libraries if a compilation fails.
+.PRECIOUS: $(LibTargs)
+
+#
+# Generic targets
+#
+OKFILES	 = Makefile NMakefile descrip.mms $(Lists) $(Sources)
+
+all:	$(IncTargs) $(LibTargs) 
+
+clean:
+	@ $(RM) *~
+
+#
+# Samples
+#
+samples:	$(SamDir) $(Sources)
+	@echon "Copying samples..."
+	@for f in $(Sources) ; do \
+		$(CP) $$f $(SamDir) ; done
+	@echo "done"
+
+$(SamDir):
+	@echo "Making directory $(SamDir)."
+	@mkdir $(SamDir)
+
+#
+# General dependencies
+#
+$(Objects) $(Aos):	$(ALDOR) $(IncTargs)
+$(AXL1Objs) $(AXL1Aos):	$(AXL0Aos)
+$(IntDir): 
+	mkdir $(IntDir)
+
+#
+# Specific dependencies and rules
+#
+$(IncDir)\axllib.as: $(SrcDir)\axllib.as
+	copy $(SrcDir)\axllib.as $(IncDir)\axllib.as
+
+
+# The doranlib dependency ensures that doranlib gets called.
+$(LAXLLIB):  $(AXL0Aos) $(AXL1Aos)
+
+$(LOBLIB):  $(AXL0Objs) $(AXL1Objs)
+
+#
+# AXL0Srcs
+#
+$(IntDir)\lang.ao $(IntDir)\lang.obj: $(SrcDir)\lang.as
+	cd $(IntDir)
+	@aldor -fao -fo $(AXLFLAGS) -M no-ALDOR_W_WillObsolete $(SrcDir)\lang.as
+	@uniar r $(LAXLLIB) lang.ao
+	@lib -nologo -out:$(LOBLIB) lang.obj
+	@del lang.ao lang.obj
+
+$(IntDir)\machine.ao $(IntDir)\machine.obj: $(SrcDir)\machine.as
+	@cd $(IntDir)
+	aldor -fao -fo $(AXLFLAGS) -M no-ALDOR_W_WillObsolete -laxllib $(SrcDir)\machine.as
+	@uniar r $(LAXLLIB) machine.ao
+	@lib -nologo $(LOBLIB) machine.obj
+	@del machine.ao machine.obj
+
+$(IntDir)\basic.ao $(IntDir)\basic.obj: $(SrcDir)\basic.as
+	@cd $(IntDir)
+	aldor -fao -fo -Q inline-limit:18 $(AXLFLAGS) -M no-ALDOR_W_WillObsolete -laxllib $(SrcDir)\basic.as
+	@uniar r $(LAXLLIB) basic.ao
+	@lib -nologo $(LOBLIB) basic.obj
+	@del basic.ao basic.obj
+
+$(IntDir)\axlcat.ao $(IntDir)\axlcat.obj: $(SrcDir)\axlcat.as
+	@cd $(IntDir)
+	aldor -fao -fo $(AXLFLAGS) -M no-ALDOR_W_WillObsolete -laxllib $(SrcDir)\axlcat.as
+	@uniar r $(LAXLLIB) axlcat.ao
+	@lib -nologo $(LOBLIB) axlcat.obj
+	@del axlcat.ao axlcat.obj
+
+$(IntDir)\langx.ao $(IntDir)\langx.obj: $(SrcDir)\langx.as
+	@cd $(IntDir)
+	aldor -fao -fo $(AXLFLAGS) -M no-ALDOR_W_WillObsolete $(SrcDir)\langx.as
+	@uniar r $(LAXLLIB) langx.ao
+	@lib -nologo $(LOBLIB) langx.obj
+	@del langx.ao langx.obj
+
+$(IntDir)\rtexns.ao $(IntDir)\rtexns.obj: $(SrcDir)\rtexns.as
+	@cd $(IntDir)
+	aldor -fao -fo $(AXLFLAGS) -M no-ALDOR_W_WillObsolete $(SrcDir)\rtexns.as
+	@uniar r $(LAXLLIB) rtexns.ao
+	@lib -nologo $(LOBLIB) rtexns.obj
+	@del rtexns.ao rtexns.obj
+
+$(IntDir)\tuple.ao $(IntDir)\tuple.obj: $(SrcDir)\tuple.as
+	@cd $(IntDir)
+	aldor -fao -fo $(AXLFLAGS) -M no-ALDOR_W_WillObsolete $(SrcDir)\tuple.as
+	@uniar r $(LAXLLIB) tuple.ao
+	@lib -nologo $(LOBLIB) tuple.obj
+	@del tuple.ao tuple.obj
+
+$(IntDir)\gener.ao $(IntDir)\gener.obj: $(SrcDir)\gener.as
+	@cd $(IntDir)
+	aldor -fao -fo $(AXLFLAGS) -M no-ALDOR_W_WillObsolete $(SrcDir)\gener.as
+	@uniar r $(LAXLLIB) gener.ao
+	@lib -nologo $(LOBLIB) gener.obj
+	@del gener.ao gener.obj
+
+$(IntDir)\ref.ao $(IntDir)\ref.obj: $(SrcDir)\ref.as
+	@cd $(IntDir)
+	aldor -fao -fo $(AXLFLAGS) -M no-ALDOR_W_WillObsolete $(SrcDir)\ref.as
+	@uniar r $(LAXLLIB) ref.ao
+	@lib -nologo $(LOBLIB) ref.obj
+	@del ref.ao ref.obj
+
+$(IntDir)\except.ao $(IntDir)\except.obj: $(SrcDir)\except.as
+	@cd $(IntDir)
+	aldor -fao -fo $(AXLFLAGS) -M no-ALDOR_W_WillObsolete $(SrcDir)\except.as
+	@uniar r $(LAXLLIB) except.ao
+	@lib -nologo $(LOBLIB) except.obj
+	@del except.ao except.obj
+
+$(IntDir)\boolean.ao $(IntDir)\boolean.obj: $(SrcDir)\boolean.as
+	@cd $(IntDir)
+	aldor -fao -fo $(AXLFLAGS) -M no-ALDOR_W_WillObsolete $(SrcDir)\boolean.as
+	@uniar r $(LAXLLIB) boolean.ao
+	@lib -nologo $(LOBLIB) boolean.obj
+	@del boolean.ao boolean.obj
+
+$(IntDir)\segment.ao $(IntDir)\segment.obj: $(SrcDir)\segment.as
+	@cd $(IntDir)
+	aldor -fao -fo $(AXLFLAGS) -M no-ALDOR_W_WillObsolete $(SrcDir)\segment.as
+	@uniar r $(LAXLLIB) segment.ao
+	@lib -nologo $(LOBLIB) segment.obj
+	@del segment.ao segment.obj
+
+$(IntDir)\byte.ao $(IntDir)\byte.obj: $(SrcDir)\byte.as
+	@cd $(IntDir)
+	aldor -fao -fo $(AXLFLAGS) -M no-ALDOR_W_WillObsolete $(SrcDir)\byte.as
+	@uniar r $(LAXLLIB) byte.ao
+	@lib -nologo $(LOBLIB) byte.obj
+	@del byte.ao byte.obj
+
+$(IntDir)\hinteger.ao $(IntDir)\hinteger.obj: $(SrcDir)\hinteger.as
+	@cd $(IntDir)
+	aldor -fao -fo $(AXLFLAGS) -M no-ALDOR_W_WillObsolete $(SrcDir)\hinteger.as
+	@uniar r $(LAXLLIB) hinteger.ao
+	@lib -nologo $(LOBLIB) hinteger.obj
+	@del hinteger.ao hinteger.obj
+
+$(IntDir)\sinteger.ao $(IntDir)\sinteger.obj: $(SrcDir)\sinteger.as
+	@cd $(IntDir)
+	aldor -fao -fo $(AXLFLAGS) -M no-ALDOR_W_WillObsolete $(SrcDir)\sinteger.as
+	@uniar r $(LAXLLIB) sinteger.ao
+	@lib -nologo $(LOBLIB) sinteger.obj
+	@del sinteger.ao sinteger.obj
+
+$(IntDir)\bpower.ao $(IntDir)\bpower.obj: $(SrcDir)\bpower.as
+	@cd $(IntDir)
+	aldor -fao -fo $(AXLFLAGS) -M no-ALDOR_W_WillObsolete $(SrcDir)\bpower.as
+	@uniar r $(LAXLLIB) bpower.ao
+	@lib -nologo $(LOBLIB) bpower.obj
+	@del bpower.ao bpower.obj
+
+$(IntDir)\integer.ao $(IntDir)\integer.obj: $(SrcDir)\integer.as
+	@cd $(IntDir)
+	aldor -fao -fo $(AXLFLAGS) -M no-ALDOR_W_WillObsolete $(SrcDir)\integer.as
+	@uniar r $(LAXLLIB) integer.ao
+	@lib -nologo $(LOBLIB) integer.obj
+	@del integer.ao integer.obj
+
+$(IntDir)\pointer.ao $(IntDir)\pointer.obj: $(SrcDir)\pointer.as
+	@cd $(IntDir)
+	aldor -fao -fo $(AXLFLAGS) -M no-ALDOR_W_WillObsolete $(SrcDir)\pointer.as
+	@uniar r $(LAXLLIB) pointer.ao
+	@lib -nologo $(LOBLIB) pointer.obj
+	@del pointer.ao pointer.obj
+
+$(IntDir)\char.ao $(IntDir)\char.obj: $(SrcDir)\char.as
+	@cd $(IntDir)
+	aldor -fao -fo $(AXLFLAGS) -M no-ALDOR_W_WillObsolete $(SrcDir)\char.as
+	@uniar r $(LAXLLIB) char.ao
+	@lib -nologo $(LOBLIB) char.obj
+	@del char.ao char.obj
+
+$(IntDir)\string.ao $(IntDir)\string.obj: $(SrcDir)\string.as
+	@cd $(IntDir)
+	aldor -fao -fo $(AXLFLAGS) -M no-ALDOR_W_WillObsolete $(SrcDir)\string.as
+	@uniar r $(LAXLLIB) string.ao
+	@lib -nologo $(LOBLIB) string.obj
+	@del string.ao string.obj
+
+$(IntDir)\fstring.ao $(IntDir)\fstring.obj: $(SrcDir)\fstring.as
+	@cd $(IntDir)
+	aldor -fao -fo $(AXLFLAGS) -M no-ALDOR_W_WillObsolete $(SrcDir)\fstring.as
+	@uniar r $(LAXLLIB) fstring.ao
+	@lib -nologo $(LOBLIB) fstring.obj
+	@del fstring.ao fstring.obj
+
+$(IntDir)\sfloat.ao $(IntDir)\sfloat.obj: $(SrcDir)\sfloat.as
+	@cd $(IntDir)
+	aldor -fao -fo $(AXLFLAGS) -M no-ALDOR_W_WillObsolete $(SrcDir)\sfloat.as
+	@uniar r $(LAXLLIB) sfloat.ao
+	@lib -nologo $(LOBLIB) sfloat.obj
+	@del sfloat.ao sfloat.obj
+
+$(IntDir)\dfloat.ao $(IntDir)\dfloat.obj: $(SrcDir)\dfloat.as
+	@cd $(IntDir)
+	aldor -fao -fo $(AXLFLAGS) -M no-ALDOR_W_WillObsolete $(SrcDir)\dfloat.as
+	@uniar r $(LAXLLIB) dfloat.ao
+	@lib -nologo $(LOBLIB) dfloat.obj
+	@del dfloat.ao dfloat.obj
+
+$(IntDir)\imod.ao $(IntDir)\imod.obj: $(SrcDir)\imod.as
+	@cd $(IntDir)
+	aldor -fao -fo $(AXLFLAGS) -M no-ALDOR_W_WillObsolete $(SrcDir)\imod.as
+	@uniar r $(LAXLLIB) imod.ao
+	@lib -nologo $(LOBLIB) imod.obj
+	@del imod.ao imod.obj
+
+$(IntDir)\fmdarray.ao $(IntDir)\fmdarray.obj: $(SrcDir)\fmdarray.as
+	@cd $(IntDir)
+	aldor -fao -fo $(AXLFLAGS) -M no-ALDOR_W_WillObsolete $(SrcDir)\fmdarray.as
+	@uniar r $(LAXLLIB) fmdarray.ao
+	@lib -nologo $(LOBLIB) fmdarray.obj
+	@del fmdarray.ao fmdarray.obj
+
+#
+# AXL1Srcs
+#
+$(IntDir)\format.ao $(IntDir)\format.obj: $(SrcDir)\format.as
+	@cd $(IntDir)
+	aldor -fao -fo $(AXLFLAGS) -M no-ALDOR_W_WillObsolete $(SrcDir)\format.as
+	@uniar r $(LAXLLIB) format.ao
+	@lib -nologo $(LOBLIB) format.obj
+	@del format.ao format.obj
+
+$(IntDir)\complex.ao $(IntDir)\complex.obj: $(SrcDir)\complex.as
+	@cd $(IntDir)
+	aldor -fao -fo $(AXLFLAGS) -M no-ALDOR_W_WillObsolete $(SrcDir)\complex.as
+	@uniar r $(LAXLLIB) complex.ao
+	@lib -nologo $(LOBLIB) complex.obj
+	@del complex.ao complex.obj
+
+$(IntDir)\ratio.ao $(IntDir)\ratio.obj: $(SrcDir)\ratio.as
+	@cd $(IntDir)
+	aldor -fao -fo $(AXLFLAGS) -M no-ALDOR_W_WillObsolete $(SrcDir)\ratio.as
+	@uniar r $(LAXLLIB) ratio.ao
+	@lib -nologo $(LOBLIB) ratio.obj
+	@del ratio.ao ratio.obj
+
+$(IntDir)\list.ao $(IntDir)\list.obj: $(SrcDir)\list.as
+	@cd $(IntDir)
+	aldor -fao -fo $(AXLFLAGS) -M no-ALDOR_W_WillObsolete $(SrcDir)\list.as
+	@uniar r $(LAXLLIB) list.ao
+	@lib -nologo $(LOBLIB) list.obj
+	@del list.ao list.obj
+
+$(IntDir)\list2.ao $(IntDir)\list2.obj: $(SrcDir)\list2.as
+	@cd $(IntDir)
+	aldor -fao -fo $(AXLFLAGS) -M no-ALDOR_W_WillObsolete $(SrcDir)\list2.as
+	@uniar r $(LAXLLIB) list2.ao
+	@lib -nologo $(LOBLIB) list2.obj
+	@del list2.ao list2.obj
+
+$(IntDir)\uarray.ao $(IntDir)\uarray.obj: $(SrcDir)\uarray.as
+	@cd $(IntDir)
+	aldor -fao -fo $(AXLFLAGS) -M no-ALDOR_W_WillObsolete $(SrcDir)\uarray.as
+	@uniar r $(LAXLLIB) uarray.ao
+	@lib -nologo $(LOBLIB) uarray.obj
+	@del uarray.ao uarray.obj
+
+$(IntDir)\pkarray.ao $(IntDir)\pkarray.obj: $(SrcDir)\pkarray.as
+	@cd $(IntDir)
+	aldor -fao -fo $(AXLFLAGS) -M no-ALDOR_W_WillObsolete $(SrcDir)\pkarray.as
+	@uniar r $(LAXLLIB) pkarray.ao
+	@lib -nologo $(LOBLIB) pkarray.obj
+	@del pkarray.ao pkarray.obj
+
+$(IntDir)\parray.ao $(IntDir)\parray.obj: $(SrcDir)\parray.as
+	@cd $(IntDir)
+	aldor -fao -fo $(AXLFLAGS) -M no-ALDOR_W_WillObsolete $(SrcDir)\parray.as
+	@uniar r $(LAXLLIB) parray.ao
+	@lib -nologo $(LOBLIB) parray.obj
+	@del parray.ao parray.obj
+
+$(IntDir)\array.ao $(IntDir)\array.obj: $(SrcDir)\array.as
+	@cd $(IntDir)
+	aldor -fao -fo $(AXLFLAGS) -M no-ALDOR_W_WillObsolete $(SrcDir)\array.as
+	@uniar r $(LAXLLIB) array.ao
+	@lib -nologo $(LOBLIB) array.obj
+	@del array.ao array.obj
+
+$(IntDir)\efuns.ao $(IntDir)\efuns.obj: $(SrcDir)\efuns.as
+	@cd $(IntDir)
+	aldor -fao -fo $(AXLFLAGS) -M no-ALDOR_W_WillObsolete $(SrcDir)\efuns.as
+	@uniar r $(LAXLLIB) efuns.ao
+	@lib -nologo $(LOBLIB) efuns.obj
+	@del efuns.ao efuns.obj
+
+$(IntDir)\partial.ao $(IntDir)\partial.obj: $(SrcDir)\partial.as
+	@cd $(IntDir)
+	aldor -fao -fo $(AXLFLAGS) -M no-ALDOR_W_WillObsolete $(SrcDir)\partial.as
+	@uniar r $(LAXLLIB) partial.ao
+	@lib -nologo $(LOBLIB) partial.obj
+	@del partial.ao partial.obj
+
+$(IntDir)\sort.ao $(IntDir)\sort.obj: $(SrcDir)\sort.as
+	@cd $(IntDir)
+	aldor -fao -fo $(AXLFLAGS) -M no-ALDOR_W_WillObsolete $(SrcDir)\sort.as
+	@uniar r $(LAXLLIB) sort.ao
+	@lib -nologo $(LOBLIB) sort.obj
+	@del sort.ao sort.obj
+
+$(IntDir)\fname.ao $(IntDir)\fname.obj: $(SrcDir)\fname.as
+	@cd $(IntDir)
+	aldor -fao -fo $(AXLFLAGS) -M no-ALDOR_W_WillObsolete $(SrcDir)\fname.as
+	@uniar r $(LAXLLIB) fname.ao
+	@lib -nologo $(LOBLIB) fname.obj
+	@del fname.ao fname.obj
+
+$(IntDir)\file.ao $(IntDir)\file.obj: $(SrcDir)\file.as
+	@cd $(IntDir)
+	aldor -fao -fo $(AXLFLAGS) -M no-ALDOR_W_WillObsolete $(SrcDir)\file.as
+	@uniar r $(LAXLLIB) file.ao
+	@lib -nologo $(LOBLIB) file.obj
+	@del file.ao file.obj
+
+$(IntDir)\opsys.ao $(IntDir)\opsys.obj: $(SrcDir)\opsys.as
+	@cd $(IntDir)
+	aldor -fao -fo $(AXLFLAGS) -M no-ALDOR_W_WillObsolete $(SrcDir)\opsys.as
+	@uniar r $(LAXLLIB) opsys.ao
+	@lib -nologo $(LOBLIB) opsys.obj
+	@del opsys.ao opsys.obj
+
+$(IntDir)\oslow.ao $(IntDir)\oslow.obj: $(SrcDir)\oslow.as
+	@cd $(IntDir)
+	aldor -fao -fo $(AXLFLAGS) -M no-ALDOR_W_WillObsolete $(SrcDir)\oslow.as
+	@uniar r $(LAXLLIB) oslow.ao
+	@lib -nologo $(LOBLIB) oslow.obj
+	@del oslow.ao oslow.obj
+
+$(IntDir)\textwrit.ao $(IntDir)\textwrit.obj: $(SrcDir)\textwrit.as 
+	@cd $(IntDir)
+	aldor -fao -fo $(AXLFLAGS) -M no-ALDOR_W_WillObsolete $(SrcDir)\textwrit.as
+	@uniar r $(LAXLLIB) textwrit.ao
+	@lib -nologo $(LOBLIB) textwrit.obj
+	@del textwrit.ao textwrit.obj
+
+$(IntDir)\textread.ao $(IntDir)\textread.obj: $(SrcDir)\textread.as 
+	@cd $(IntDir)
+	aldor -fao -fo $(AXLFLAGS) -M no-ALDOR_W_WillObsolete $(SrcDir)\textread.as
+	@uniar r $(LAXLLIB) textread.ao
+	@lib -nologo $(LOBLIB) textread.obj
+	@del textread.ao textread.obj
+
+$(IntDir)\fmtout.ao $(IntDir)\fmtout.obj: $(SrcDir)\fmtout.as
+	@cd $(IntDir)
+	aldor -fao -fo $(AXLFLAGS) -M no-ALDOR_W_WillObsolete $(SrcDir)\fmtout.as
+	@uniar r $(LAXLLIB) fmtout.ao
+	@lib -nologo $(LOBLIB) fmtout.obj
+	@del fmtout.ao fmtout.obj
+
+$(IntDir)\table.ao $(IntDir)\table.obj: $(SrcDir)\table.as
+	@cd $(IntDir)
+	aldor -fao -fo $(AXLFLAGS) -M no-ALDOR_W_WillObsolete $(SrcDir)\table.as
+	@uniar r $(LAXLLIB) table.ao
+	@lib -nologo $(LOBLIB) table.obj
+	@del table.ao table.obj
+
+$(IntDir)\fprint.ao $(IntDir)\fprint.obj: $(SrcDir)\fprint.as
+	@cd $(IntDir)
+	aldor -fao -fo $(AXLFLAGS) -Q inline-limit:2.4 -M no-ALDOR_W_WillObsolete $(SrcDir)\fprint.as
+	@uniar r $(LAXLLIB) fprint.ao
+	@lib -nologo $(LOBLIB) fprint.obj
+	@del fprint.ao fprint.obj
+
+$(IntDir)\float.ao $(IntDir)\float.obj: $(SrcDir)\float.as
+	@cd $(IntDir)
+	aldor -fao -fo $(AXLFLAGS) -Q inline-limit:2.4 -M no-ALDOR_W_WillObsolete $(SrcDir)\float.as
+	@uniar r $(LAXLLIB) float.ao
+	@lib -nologo $(LOBLIB) float.obj
+	@del float.ao float.obj
+
+$(IntDir)\pfloat.ao $(IntDir)\pfloat.obj: $(SrcDir)\pfloat.as
+	@cd $(IntDir)
+	aldor -fao -fo $(AXLFLAGS) -Q inline-limit:2.4 -M no-ALDOR_W_WillObsolete $(SrcDir)\pfloat.as
+	@uniar r $(LAXLLIB) pfloat.ao
+	@lib -nologo $(LOBLIB) pfloat.obj
+	@del pfloat.ao pfloat.obj
+
+$(IntDir)\ieeectl.ao $(IntDir)\ieeectl.obj: $(SrcDir)\ieeectl.as
+	@cd $(IntDir)
+	aldor -fao -fo $(AXLFLAGS) -M no-ALDOR_W_WillObsolete $(SrcDir)\ieeectl.as
+	@uniar r $(LAXLLIB) ieeectl.ao
+	@lib -nologo $(LOBLIB) ieeectl.obj
+	@del ieeectl.ao ieeectl.obj
+
+$(IntDir)\object.ao $(IntDir)\object.obj: $(SrcDir)\object.as
+	@cd $(IntDir)
+	aldor -fao -fo $(AXLFLAGS) -M no-ALDOR_W_WillObsolete $(SrcDir)\object.as
+	@uniar r $(LAXLLIB) object.ao
+	@lib -nologo $(LOBLIB) object.obj
+	@del object.ao object.obj
+
+$(IntDir)\debug.ao $(IntDir)\debug.obj: $(SrcDir)\debug.as
+	@cd $(IntDir)
+	aldor -fao -fo $(AXLFLAGS) -M no-ALDOR_W_WillObsolete $(SrcDir)\debug.as
+	@uniar r $(LAXLLIB) debug.ao
+	@lib -nologo $(LOBLIB) debug.obj
+	@del debug.ao debug.obj
+

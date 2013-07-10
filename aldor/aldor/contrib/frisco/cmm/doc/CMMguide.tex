@@ -1,0 +1,437 @@
+\documentstyle[11pt,fullpage]{article}
+\def\theenumi{\alph{enumi}}
+\def\labelenumi{(\alph{enumi})}
+\markright{Formal Spec for POSSO Memory Management}
+\pagestyle{myheadings}
+\begin{document}
+\begin{verbatim}
+POSSO FILE HEADER
+type:     FORMAL SPECIFICATION (C++ library)
+title:    POSSO Customisable Memory Management (CMM)
+date:     1 November 1995
+author:   Tito Flagella and Giuseppe Attardi
+email:    tito@di.unipi.it
+address:  Dipartimento di Informatica,
+          Universita' di Pisa,
+          Corso Italia 40, I-56125 Pisa
+          Italy
+\end{verbatim}
+
+\section{Summary of changes from previous version}
+\begin{itemize}
+\item significant rewrite to provide multiple heaps as described in the
+USENIX C++ paper;
+\item eliminated GC header for objects;
+\item the space for tables is recycled;
+\item the collector consists of just two files cmm.h, cmm.cc.
+\end{itemize}
+
+\subsection {Known Shortcomings}
+\begin{itemize}
+\item Heap programming still undocumented
+\item Multiple inheritance not yet supported
+\item Finalization Protocol missing
+\end{itemize}
+
+\section {Introduction}
+
+This is the POSSO specification for Customisable Memory Management (CMM).
+CMM is a {\tt C++} Memory Management facility, aiming to
+allow full integration between coexisting different memory
+management techniques.  Refer to [Attardi 93] for a detailed paper on CMM.
+
+This document is intended as a brief reference guide to the use
+of CMM.  CMM can be used at two levels: the user level, and the
+programmer level.  The user will usually look at CMM as a library of
+garbage collecting algorithms.  CMM provides the user with facilities to
+define a {\tt C++} class as ``garbage collected'' and to define the 
+particular garbage collector for that class.
+
+\section {The User Interface}
+
+Memory in the CMM consists of several heaps of various kinds, called {\em
+Heaps}.  Each kind of Heap is implemented as a {\tt C++} class and
+provides a specific allocation and reclamation policy.  For instance, one
+Heap may perform memory management through a two space stop-and-copy
+collector, another Heap may work with a LIFO discipline, and a third may
+implement a generational garbage collector.  Each Heap is a collection of
+not necessarily contiguous memory chunks.
+
+Classes whose objects are to be dynamically allocated and subject to garbage
+collection are called {\em dynamic\/} classes.  Their instances are called {\em
+dynamic\/} objects.  A dynamic object is allocated inside a single Heap.
+The CMM user interface provides constructs to specify in which Heap to
+allocate objects.
+
+
+A dynamic class must derived from the class {\tt CmmObject} provided by the CMM.
+The default collector calls the method {\tt traverse} on dynamic objects to
+identify their internal pointers to other dynamic objects.  Users have to
+provide {\tt traverse} methods for each class whose data members contain
+pointers to dynamic objects.  {\tt traverse} must be defined according to some
+well defined rules (given below), because it implements the interface between
+the CMM and user defined dynamic objects.  The following is the function
+prototype for {\tt traverse}:
+\begin{verbatim}
+void traverse()
+\end{verbatim}
+The {\tt Heap} argument is present because the same objects can be
+traversed from garbage collectors of different heaps.
+
+Final users of CMM need not care about this
+parameter since they can just follow a few simple rules to define the
+{\tt traverse} member function.  These rules ensure that superclasses or
+class objects contained in the class are correctly handled.  The
+following example illustrates these rules, then we explain what the rules are.
+Suppose the following dynamic classes were defined:
+\begin{verbatim}
+class BigNum : public CmmObject
+{
+  long data;
+  BigNum *next;                         // Rule (a) applies
+  void traverse();
+}
+
+class monomial : BigNum                 // Rule (c) applies
+{
+  PowerProduct pp;                      // Rule (b) applies
+  void traverse();
+}
+\end{verbatim}
+Since a {\tt BigNum} stores a pointer to GCable object in
+{\tt next} this has to be followed by {\tt traverse}, thus we obtain the
+traversal function:
+
+\begin{verbatim}
+void BigNum::traverse()
+{
+  CmmHeap::heap->scavenge(next);             // Applying rule (a)
+}
+\end{verbatim}
+Because {\tt monomial} inherits from {\tt BigNum}, the method {\tt
+traverse} for this base class must be invoked; finally, since a {\tt
+monomial} contains a {\tt BigNum} in {\tt pp}, this object must be
+traversed as well:
+
+\begin{verbatim}
+void monomial::traverse()
+{
+  BigNum::traverse();               // Appling rule (c)
+  pp.traverse();                    // Applying rule (b)
+}
+\end{verbatim}
+
+In summary the rules are:
+
+\begin{enumerate}
+\item for a class containing a pointer to a dynamic object, say \verb|class C {
+DynObj* x; }|, the method \verb|C::traverse| must contain \verb|Cmm::heap->scavenge(x)|
+\item for a class containing an instance of a dynamic object, say \verb|class C
+{ DynObj x; }|, the method \verb|C::traverse| must contain \verb|x.traverse()|
+\item for a class derived from another dynamic class, say \verb|class C:DynBase
+{...}|, the method \verb|C::traverse| must contain
+\verb|DynBase::traverse()|.
+\end{enumerate}
+
+Preprocessing [Edelson 92] or compiler support [Samples 92] could be
+adopted to reduce hand coding from the user and risks of subtle errors
+in programs. We do not address these issues here since within POSSO
+the burden of following the above rules has been considered affordable.
+
+
+\subsection{Dynamic Objects}
+
+When creating a dynamic object one must specify in which Heap to
+allocate it. The parameter {\tt heap} can be supplied in the standard
+{\tt C++} placement syntax for the {\tt new} operator:
+\begin{verbatim}
+p = new(heap) Person(name, age); 
+\end{verbatim}
+If the user does not specify any heap, the default heap {\tt heap} is used:
+\begin{verbatim}
+p = new Person(name, age);
+\end{verbatim}
+which is equivalent to:
+\begin{verbatim}
+p = new(heap) Person(name, age);
+\end{verbatim}
+where {\tt heap} is a global 
+variable initialised to the default heap, but can be set by the 
+user to any other heap.
+
+When creating a dynamic object, the 
+programmer can dynamically decide where to allocate the memory. 
+Consider the following example:
+
+\begin{verbatim}
+class Person : public CmmObject
+{
+...
+};
+
+Person *obj;
+Heap *other;
+....
+if ( /* I prefer the default heap */ )
+   obj = new Person(arg);
+else obj = new(other) Person(arg);
+\end{verbatim}
+
+
+\subsection{Dynamic Variable Sized Objects}
+
+To support variable sized objects, the class {\tt CmmVarObject} is
+available.  This is a derived class from {\tt CmmObject}, providing a
+different operator {\tt new} with an extra parameter for the size of
+the object.  Classes derived from {\tt CmmVarObject} are called {\it
+dynamic variable sized classes\/}.  The following example illustrates
+their use:
+
+\begin{verbatim}
+class container : public CmmVarObject
+{
+  int header;
+  int table[1];  // size of this array is determined upon object creation
+};
+
+container *obj;
+
+ExtraSize = 256 * sizeof(int);
+
+obj = new(ExtraSize) container; // this object is created in the default heap
+
+Heap *other;
+obj = new(ExtraSize, other) container; // this object is created in heap other
+\end{verbatim}
+The object created, {\tt obj}, now has room for a table of 256 integers.
+
+\subsubsection*{Warning}
+
+Note that variable sized dynamic classes must be used more carefully than
+normal classes.  In particular, the variable sized field must be the last data
+field in the class (and all data members must have the same accessibility),
+local variables must never be of variable size, and other classes must not be
+derived from a variable sized class.  In fact, the compiler does not know about
+the extra memory allocated so that extra memory may be lost or overwritten
+if any of the above rules is broken.
+
+Despite these restrictions there are some cases in which the use of such
+classes cannot be avoided. The usual way to achieve this effect in {\tt C++}
+is to allocate dynamically the extra size in the object's constructor, but in
+this way the extra memory allocated would be neither a {\tt C++} object nor
+a {\tt CmmObject}.
+
+\subsection {Array of CmmObjects}
+
+The following class can be used to create arrays of CmmObjects
+like follows:
+
+\begin{verbatim}
+       GcArray<MyClass> myVector = * new (100) GcArray<MyClass> ;
+\end{verbatim}
+       
+The operator [] can be used to get CmmObjects.
+
+\begin{verbatim}
+       myVector[i]->print();
+\end{verbatim}
+or:
+\begin{verbatim}
+       MyClass mc = myVector[3];
+\end{verbatim}
+
+\subsection{A sample program}
+
+\begin{verbatim}
+#include "tempheap.h"
+
+class cell : CmmObject          // This class is a GC class
+{
+  int x;
+
+public: 
+  cell *next;                  // This field is a pointer to a GC class,
+                               // and must be traversed.
+
+  void traverse();             // Because "cell" has internal pointers
+                               // traverse must be defined.
+};
+
+void cell::traverse()
+ { 
+   Cmm::heap->scavenge((CmmObject **)&next); 
+                               // traverse scavenge the internal pointer
+                               // next to reach other cells.
+ }
+
+main()
+{
+  Heap *myHeap = new TempHeap(100);
+                               // Create the new heap myHeap.
+                               // Here you can use any of the predefined
+                               // heaps.
+
+  cell *t = new cell;
+                               // Create a new cell. 
+                               // Because you have not specified an heap
+                               // with new, the global variable heap is used.
+                               // heap is initialized to the Default heap.
+
+  t->next = new (myHeap) cell;
+                               // Create another cell, but in myHeap
+
+  heap = myHeap;
+  t->next->next = new cell;
+                               // Setting heap to myHeap, you can allocate cells
+                               // from myHeap, without specifing it as a parameter
+                               // of new.
+
+  heap->collect();
+                               // Collecting on myHeap
+  Cmm::theDefaultHeap->collect();
+                               // Collecting on the default heap.
+  heap = Cmm::theDefaultHeap;  // Reset heap before returning.
+}
+\end{verbatim}
+
+\section {heaps}
+
+The CMM programmer interface is for use of implementors of
+additional Heaps. A new heap must be derived from the abstract
+class {\tt CmmHeap} and must supply definitions for its pure virtual
+functions: so the creation of a Heap involves writing a garbage
+collector ({\tt collect}), the memory allocation strategy (allocator and
+reclaimer) and the strategy used by the collector to act on the
+internal pointers encountered during traversal ({\tt scavenge}).
+
+This feature of CMM is still under testing. Currently the user must
+use one of the predefined Heaps. The heaps currently available
+are:
+
+\begin{itemize}
+\item{{\tt DefaultHeap}}
+
+This heap embeds the Bartlett's mostly copying garbage collector [Bartlett 88].
+It is predefined in CMM as the default heap.
+Users are not allowed to create new instances of {\tt DefaultHeap}.
+This heap is accessible through variable {\tt Cmm::theDefaultHeap}.
+
+\item{{\tt TempHeap}}
+\begin{itemize}
+
+\item A {\tt TempHeap} is created using:
+\begin{verbatim}
+                new TempHeap(unsigned words);
+\end{verbatim}
+It is a variable size stack-like heap, implemented as a number of
+containers, some for the ``from space'', and others for the ``to space''.
+
+\item Allocation is done in a stack-like way.
+
+\item Deallocation is done by the garbage collector, compacting the stack.
+
+\item The root set is defined by the user.
+
+\item The garbage collector is a copying collector.
+\end{itemize}
+
+\item{{\tt TempHeap}}
+\begin{itemize}
+
+\item A TempHeap is created using:
+\begin{verbatim}
+                new TempHeap(unsigned words);
+\end{verbatim}
+It is a variable size stack-like heap, implemented as a list of
+containers. {\tt words} specifies the size of each container.
+
+\item Allocation is implemented in a stack-like way. Any object must be smaller
+than the size of each container ({\tt words}).
+
+\item Deallocation is done by the garbage collector, compacting the stack.
+
+\item The root set is defined by the user.
+
+\item The garbage collector is a copying collector.
+\end{itemize}
+
+\end{itemize}
+
+\subsection{The root set}
+
+Many heaps (like {\tt TempHeap}) require the user to explicitly
+register the possible roots.
+To support that, the class {\tt CmmHeap} contains an instance of the class
+{\tt RootSet} supporting the following operations:
+
+\begin{verbatim}
+
+void set(CmmObject *);
+void unset(CmmObject *);
+
+void setp(CmmObject **);
+void unsetp(CmmObject **);
+\end{verbatim}
+
+{\tt setp} and {\tt unsetp} are used to (un)register pointers
+to GC objects as roots.
+{\tt set} and {\tt unsetp} are used to (un)register GC objects
+as roots.
+Consider the following example:
+
+\begin{verbatim}
+cell GlobalRoot;                            
+                                        // Define a cell variable
+
+main()
+{
+  cell *LocalRoot = new cell;               
+                                        // Define a cell pointer
+  tempheap *myHeap = new TempHeap(10000); 
+                                        // Create a new heap
+
+  myHeap->roots.setp((CmmObject **)&LocalRoot);  
+                                        // Register the pointer as a root
+
+  myHeap->roots.set(&GlobalRoot);           
+                                        // Register the cell as a root
+
+  LocalRoot->next = new(myHeap) cell;   
+                                        // Allocates some new cells
+  GlobalRoot.next = new(myHeap) cell;
+
+  myHeap->collect();                        
+                                        // The collector will identify
+                                        // any allocated cell, starting
+                                        // traversing from cell LocalRoot
+                                        // and GlobalRoot
+
+  myHeap->roots.unsetp((CmmObject **)&LocalRoot);
+                                        // Deregister the local root.
+}
+\end{verbatim}
+
+\section{References}
+\begin{description}
+\item [{[Bartlett 88]}] Joel F. Bartlett  ``Compacting garbage collection with
+ambiguous roots''  Tech. Rep.  88/2, DEC Western Research Laboratory,
+Palo Alto, California, February 1988.
+\item [{[Bartlett 89]}] Joel F. Bartlett  ``Mostly-copying collection picks up generations and {\tt C++}'', 
+Tech.  Rep.  TN-12, DEC Western Research Laboratory, Palo Alto,
+California, October 1989.
+\item [{[Boehm 88]}]    H.-J. Boehm and M. Wiser  ``Garbage collection in an uncooperative
+environment'',  Software Practice and Experience, 18(9), 1988, 807-820.
+\item [{[Edelson 92]}]  D.R. Edelson  ``Precompiling {\tt C++} for garbage collection'', in {\em Memory Management}, Y. Bekkers and J. Cohen (Eds.), Lecture Notes in Computer
+Science, n. 637, Springer-Verlag, 1992, 299-314.
+\item [{[Edelson 92b]}] D.R. Edelson  ``A mark-and-sweep collector for {\tt C++}'',  Proc. of ACM
+Conference on Principle of Programming Languages, 1992.
+\item [{[Samples 92]}]  A.D. Samples  ``GC-cooperative {\tt C++}'',  Lecture Notes in Computer
+Science, n. 637, Springer-Verlag, 1992, 315-329.
+\item [{[Wentworth 90]}]        E. P. Wentworth  ``Pitfalls of conservative garbage collection'',  Software
+Practice and Experience, 20(7), 1990, 719-727.
+\item [{[Wilson 92]}]   P.R. Wilson  ``Uniprocessor garbage collection techniques'', in {\em Memory
+Management}, Y. Bekkers and J. Cohen (Eds.), Lecture Notes in Computer
+Science, n.  637, Springer-Verlag, 1992, 1-42.
+\end{description}
+
+\end{document}

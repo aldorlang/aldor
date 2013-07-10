@@ -1,0 +1,206 @@
+
+(|Sequence|
+   (|Import| NIL |AxiomLib|)
+   (|Export|
+      (|Declare|
+         |AssociationList|
+         (|Apply|
+            |->|
+            (|Comma|
+               (|Declare| |#1| |SetCategory|)
+               (|Declare| |#2| |SetCategory|))
+            (|Apply| |AssociationListAggregate| |#1| |#2|)))
+      NIL
+      NIL)
+   (|Export|
+      (|Declare|
+         |ListToMap|
+         (|Apply|
+            |->|
+            (|Comma|
+               (|Declare| |#1| |SetCategory|)
+               (|Declare| |#2| |Type|))
+            (|With|
+               NIL
+               (|Sequence|
+                  (|Declare|
+                     |match|
+                     (|Apply|
+                        |->|
+                        (|Comma|
+                           (|Apply| |List| |#1|)
+                           (|Apply| |List| |#2|))
+                        (|Apply| |->| (|Comma| |#1|) |#2|)))
+                  (|Declare|
+                     |match|
+                     (|Apply|
+                        |->|
+                        (|Comma|
+                           (|Apply| |List| |#1|)
+                           (|Apply| |List| |#2|)
+                           |#1|)
+                        |#2|))
+                  (|Declare|
+                     |match|
+                     (|Apply|
+                        |->|
+                        (|Comma|
+                           (|Apply| |List| |#1|)
+                           (|Apply| |List| |#2|)
+                           |#2|)
+                        (|Apply| |->| (|Comma| |#1|) |#2|)))
+                  (|Declare|
+                     |match|
+                     (|Apply|
+                        |->|
+                        (|Comma|
+                           (|Apply| |List| |#1|)
+                           (|Apply| |List| |#2|)
+                           |#1|
+                           |#2|)
+                        |#2|))
+                  (|Declare|
+                     |match|
+                     (|Apply|
+                        |->|
+                        (|Comma|
+                           (|Apply| |List| |#1|)
+                           (|Apply| |List| |#2|)
+                           (|Apply| |->| (|Comma| |#1|) |#2|))
+                        (|Apply| |->| (|Comma| |#1|) |#2|)))
+                  (|Declare|
+                     |match|
+                     (|Apply|
+                        |->|
+                        (|Comma|
+                           (|Apply| |List| |#1|)
+                           (|Apply| |List| |#2|)
+                           |#1|
+                           (|Apply| |->| (|Comma| |#1|) |#2|))
+                        |#2|)))) ))
+      NIL
+      NIL)
+   (|Export|
+      (|Declare|
+         |ListFunctions3|
+         (|Apply|
+            |->|
+            (|Comma|
+               (|Declare| |#1| |Type|)
+               (|Declare| |#2| |Type|)
+               (|Declare| |#3| |Type|))
+            (|With|
+               NIL
+               (|Sequence|
+                  (|Declare|
+                     |map|
+                     (|Apply|
+                        |->|
+                        (|Comma|
+                           (|Apply| |->| (|Comma| |#1| |#2|) |#3|)
+                           (|Apply| |List| |#1|)
+                           (|Apply| |List| |#2|))
+                        (|Apply| |List| |#3|)))) )))
+      NIL
+      NIL)
+   (|Export|
+      (|Declare|
+         |ListFunctions2|
+         (|Apply|
+            |->|
+            (|Comma| (|Declare| |#1| |Type|) (|Declare| |#2| |Type|))
+            (|With|
+               NIL
+               (|Sequence|
+                  (|Declare|
+                     |scan|
+                     (|Apply|
+                        |->|
+                        (|Comma|
+                           (|Apply| |->| (|Comma| |#1| |#2|) |#2|)
+                           (|Apply| |List| |#1|)
+                           |#2|)
+                        (|Apply| |List| |#2|)))
+                  (|Declare|
+                     |reduce|
+                     (|Apply|
+                        |->|
+                        (|Comma|
+                           (|Apply| |->| (|Comma| |#1| |#2|) |#2|)
+                           (|Apply| |List| |#1|)
+                           |#2|)
+                        |#2|))
+                  (|Declare|
+                     |map|
+                     (|Apply|
+                        |->|
+                        (|Comma|
+                           (|Apply| |->| (|Comma| |#1|) |#2|)
+                           (|Apply| |List| |#1|))
+                        (|Apply| |List| |#2|)))) )))
+      NIL
+      NIL)
+   (|Sequence|
+      (|Define|
+         (|Declare|
+            |ListExtendCategory|
+            (|Apply| |->| (|Declare| |#1| |Type|) |Category|))
+         (|Lambda|
+            (|Comma| (|Declare| |#1| |Type|))
+            |Category|
+            (|Label|
+               |ListExtendCategory|
+               (|With|
+                  NIL
+                  (|Sequence|
+                     (|Apply| |ListAggregate| |#1|)
+                     (|Declare| |nil| (|Apply| |->| (|Comma|) |%|))
+                     (|Declare|
+                        |null|
+                        (|Apply| |->| (|Comma| |%|) |Boolean|))
+                     (|Declare|
+                        |cons|
+                        (|Apply| |->| (|Comma| |#1| |%|) |%|))
+                     (|Declare|
+                        |append|
+                        (|Apply| |->| (|Comma| |%| |%|) |%|))
+                     (|If|
+                        (|Test| (|Has| |#1| |SetCategory|))
+                        (|Sequence|
+                           (|Declare|
+                              |setUnion|
+                              (|Apply| |->| (|Comma| |%| |%|) |%|))
+                           (|Declare|
+                              |setIntersection|
+                              (|Apply| |->| (|Comma| |%| |%|) |%|))
+                           (|Declare|
+                              |setDifference|
+                              (|Apply| |->| (|Comma| |%| |%|) |%|)))
+                        NIL)))) ))
+      (|Extend|
+         (|Define|
+            (|Declare|
+               |List|
+               (|Apply|
+                  |->|
+                  (|Declare| |#1| |Type|)
+                  (|Apply| |ListExtendCategory| |#1|)))
+            (|Lambda|
+               (|Comma| (|Declare| |#1| |Type|))
+               (|Apply| |ListExtendCategory| |#1|)
+               (|Label|
+                  |List|
+                  (|Add|
+                     (|PretendTo|
+                        (|Add| NIL NIL)
+                        (|Apply| |ListExtendCategory| |#1|))
+                     NIL)))) ))
+   (|Export|
+      (|Declare|
+         |IndexedList|
+         (|Apply|
+            |->|
+            (|Comma| (|Declare| |#1| |Type|) (|Declare| |#2| |Integer|))
+            (|Apply| |ListAggregate| |#1|)))
+      NIL
+      NIL))

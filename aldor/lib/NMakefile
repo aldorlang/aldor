@@ -1,0 +1,38 @@
+##########################################
+#
+# Makefile to build an Aldor distribution
+#
+# Copyright (c) 1990-2007 Aldor Software Organization Ltd (Aldor.org).
+#
+##########################################
+
+MAKEFILE=NMakefile
+
+
+all:
+	@echo "Usage:"
+	@echo "   make generic      => make the generic, platform-independent version of the libs"
+	@echo "   make axllib       => make the generic, platform-independent version of axllib"
+	@echo "   make aldor        => make the generic, platform-independent version of aldor"
+	@echo "   make algebra      => make the generic, platform-independent version of algebra"
+	@echo "   make cleansources => invoke make clean in each lib directory"
+
+# ----------------------------------------------------
+
+generic: axllibdir aldordir algebradir
+
+axllibdir: 
+	cd axllib
+	$(MAKE) -nologo -f$(MAKEFILE) all
+	cd ..
+aldordir:
+	cd aldor
+	$(MAKE) -nologo -f$(MAKEFILE) generic
+	cd ..
+algebradir:
+	cd algebra
+	$(MAKE) -nologo -f$(MAKEFILE) generic
+	cd ..
+	  
+cleansources:
+	@for i in $(LIBS_TO_BUILD); do echo "Cleaning sources for $$i"; cd $$i; $(MAKE) clean; cd ..; done

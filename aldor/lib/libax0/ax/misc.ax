@@ -1,0 +1,16 @@
+
+(|Sequence|
+   (|Import| NIL |AxiomLib|)
+   (|Export|
+      (|Declare|
+         |SingletonAsOrderedSet|
+         (|With|
+            NIL
+            (|Sequence|
+               |OrderedSet|
+               (|Declare| |create| (|Apply| |->| (|Comma|) |%|))
+               (|Declare|
+                  |convert|
+                  (|Apply| |->| (|Comma| |%|) |Symbol|)))) )
+      NIL
+      NIL))

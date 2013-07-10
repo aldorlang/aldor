@@ -1,0 +1,119 @@
+ALGEBRA/src/multipoly/TODO
+------------------------
+
+o `monicDivide' dans `UnivariatePolynomialCategory' doit etre exporte pour tout anneau.
+
+  ==> modifier en consequece l'implantation par defaut de `monicDivide' dans PolynomialRing'
+
+
+
+o define PolynomialRing(R:Join(ArithmeticType, SumitType),
+                      V: Join(TotallyOrderedType, SumitType)): Category == 
+ PolynomialRing0(R,V) with {
+
+.........................................................................................
+
+#unassert LATER
+#if LATER
+
+           if R has CharacteristicNonZero 
+              then {
+                 import from R pretend CharacteristicNonZero;
+                 characteristic():NonNegativeInteger == characteristic()$R;
+                 local charthRoot__lv(p: %,lv: List(V),ch:NonNegativeInteger): Partial(%) == {
+                   import from Partial(%), Partial(R);
+                   local ans: %; 
+                   local ansx: Partial(%);
+                    empty? lv => {
+                     ansr := charthRoot(leadingCoefficient(p));
+                     failed? ansr => return failed();
+                     [retract(ansr)@R ::%];
+                    }
+                    v := first(lv); lv := rest lv;
+                    d := degree(p,v); ans:% := 0;
+                    while (d>0) repeat {
+                      (a,b) := divide(d,ch);
+                      not zero? b => return failed();
+                      cp := coefficient(p,v,d);
+                      p := p - cp * term(1,v,d);
+                      ansx := charthRoot__lv(cp,lv,ch);
+                      failed? ansx => return failed();
+                      d := degree(p,v);
+                      ans := ans + retract(ansx) * term(1,v,a);
+                    }
+                    ansx := charthRoot__lv(p,lv,ch);
+                    failed? ansx => return failed();
+                    [ans + retract(ansx)];
+                 }
+                 charthRoot(p:%): Partial(%) == {
+                   import from Partial(%), Partial(R);
+                   ground? p => {
+                     ans := charthRoot(leadingCoefficient(p));
+                     failed? ans => return failed();
+                     [retract(ans)@R ::%];
+                   }
+                   lv: List(V) := variables(p);
+                   ch: NonNegativeInteger := characteristic()$%;
+                   charthRoot__lv(p,lv,ch);
+                 }                     
+           }
+           if R has IntegralDomain
+              then {
+                 import from R pretend IntegralDomain;
+                 import from Partial(%), Partial(R);
+                 canonicalUnitNormal?():Boolean == canonicalUnitNormal?()$R;
+
+                 unit?(p: %): Boolean == {
+                    ground? p => unit?(leadingCoefficient(p))$R;
+                    false; 
+                 }
+                 recip(p:%): Partial(%) == {
+                    not ground? p => failed();
+                    r: R  := leadingCoefficient(p);
+                    pr: Partial(R) := recip(r);
+                    failed? pr => failed();
+                    [(pr::R)::%];
+                 }
+                 associates?(x: %, y: %): Boolean == {
+                    unitCanonical(x) = unitCanonical(y);
+                 }
+                 unitCanonical(x: %): % == {
+                     canonicalPart(x);
+                 }
+                 unitCanonical!(x: %): % == {
+                    canonicalPart!(x);
+                 }
+                 unitNormal(x: %): (%, %, %) == {
+                      zero? x => (1@%, x, 1@%);
+                      lcx: R := leadingCoefficient x;
+                      one? lcx => (1@%, x, 1@%);
+                      local u,c,v : R;
+                      (u,c,v) := unitNormal lcx;
+                      (u::%, v@R * x@%, v::%);
+                 }
+           }
+#endif
+           if R has IntegralDomain then {
+              monicDivide(a: %, b: %, v: V): (%, %) == {
+                 import from SUP(%);
+                 supb := univariate(SUP(%))(b,v);
+                 assert(not ground? supb);
+                 assert(unit? leadingCoefficient(supb));
+                 supa := univariate(SUP(%))(a,v);
+                 (supq, supr) := monicDivide(supa,supb);
+                 q := multivariate(SUP(%))(supq,v);
+                 r := multivariate(SUP(%))(supr,v);
+                 (q, r);
+              }
+           }
+       }
+}
+
+
+o define FiniteAbelianMonoidRing0(R: Join(ArithmeticType, SumitType),
+  V: VariableType, E: ExponentCategory(V)): Category == 
+     Join(PolynomialRing0(R,V), IndexedFreeAlgebra(R,E)) with { 
+        -------------------------------------------------------------
+        --% SHOULD BE DECLARED in IndexedFreeLinearArithmeticType %--
+        -------------------------------------------------------------
+        add!: (R, %, R, E, %) -> %;

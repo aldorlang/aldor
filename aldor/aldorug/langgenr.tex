@@ -1,0 +1,356 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%                                                                        %%%
+%%% :: Generators
+%%%                                                                        %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\head{chapter}{Generators}{asugLangGener}
+Consider the problem of traversing a list
+to operate on each of its members.
+One might write code such as:
+
+\begin{small}
+\begin{verbatim}
+    -- Approach 1: tailing
+    t := L;
+    while not empty? t repeat {
+            a := first t;
+            t := rest t;
+            f a
+    }
+\end{verbatim}
+\end{small}
+
+This approach makes good sense for linked lists,
+but is too expensive for lists represented as arrays.
+Each iteration would have to allocate a new array in the call to
+\verb"rest", leading to $O(\#L^2)$ storage use where none is really necessary.
+
+
+Alternatively, one could write:
+
+\begin{small}
+\begin{verbatim}
+    -- Approach 2: indexing
+    for i in 0..(#L - 1) repeat {
+            a := L.i;
+            f a;
+    }
+\end{verbatim}
+\end{small}
+
+This approach makes good sense for lists represented as arrays,
+but is inappropriate for a linked list representation.
+Each iteration would need to traverse the list from the beginning
+to find the desired element,
+leading to $O(\#L^2)$ time where $O(\#L)$ should suffice.
+
+%\pagebreak
+Having seen this,
+consider the problem of writing a generic program to operate
+on some \verb"BoundedFiniteDataStructureType" structure which might be
+represented as an array, as a linked list, or in some other way.
+
+{\em How should loops be written to minimise cost in a generic program?}
+
+A related problem arises with more sophisticated data structures.
+Here, the steps to traverse an object can be rather intricate.  
+The code for a loop which traverses objects in parallel can
+be extremely difficult and error-prone.
+
+{\em How can loops be written which hide the complexity of data representation?}
+
+The answer to both these questions is the same in \asharp{}, and that is
+to use generators.
+\index{generators}
+
+\head{section}{Using generators in loops}{asugLangGenerUsingInLoops}
+
+Generators may be used in \asharp{} to obtain values serially,
+wherever required.  
+For example:
+to compute numbers in a sequence;
+to access the components of a composite structure,
+such as a list, array or hash table;
+or to read data from a file.
+
+The simplest way to use a generator in \asharp{} is with a \ttin{for}
+iterator on a repeat loop or a collect form:
+\keywordIndex{for}
+
+\begin{small}
+\begin{verbatim}
+    #include "aldor"
+    #include "aldorio"
+
+    import from MachineInteger;
+
+    -- Generators in a for-repeat loop.
+    import from Generator MachineInteger;
+    g := generator(1..10);
+
+    for i in g repeat { stdout << i << newline }
+
+    -- Generators in a for-collect loop.
+    import from List MachineInteger;
+    h := generator(1..10);
+
+    l := [ i*i for i in h ];
+
+    stdout << l << newline
+\end{verbatim}
+\end{small}
+
+
+In fact, this form of using generators is so common, that if the
+expression $E$ in
+%
+``{\tt for~$v$~in~$E$}.''
+%
+does not belong to a generator type,
+then an implicit call is made to an appropriate \ttin{generator} function.
+This is equivalent to writing
+%
+``{\tt for~$v$~in~generator~$E$}.''
+
+%\pagebreak
+With this, our example may be written as:
+
+\begin{small}
+\begin{verbatim}
+    #include "aldor"
+    #include "aldorio"
+
+    -- Implicit generators in a  for-repeat loop.
+    import from MachineInteger;
+
+    for i in 1..10 repeat { stdout << i << newline }
+
+    -- Implicit generators in a  for-collect loop.
+    import from List MachineInteger;
+
+    l := [ i*i for i in 1..10 ];
+
+    stdout << l << newline
+\end{verbatim}
+\end{small}
+
+% In \asharp{} {\em all} {\tt for/repeat} and {\tt for/collect} loops
+% They aren't "for or repeat" etc. loops.
+In \asharp{} {\em all} {\tt for-repeat} and {\tt for-collect} loops
+are based on generators.
+There is no built in method to traverse integer ranges, lists or other
+structures. 
+It is the compiler's responsibility to make the use
+of generators reasonably efficient. 
+%The compiler described in this guide,
+%when asked to optimise, can make the use of generators quite efficient
+%through a combination of procedural integration, data structure elimination
+%and other techniques.
+
+Generators are normal values in \asharp{} and, once created, may be
+passed as arguments to functions which consume them gradually, according
+to a cooperative scheme.
+
+\head{section}{Using generators via functions}{asugLangGenerUsingViaFuncs}
+
+Sometimes it is desired to use the values in a generator gradually,
+with some logic that is not naturally expressed as a \verb"for" loop.
+
+One might imagine writing a function, such as the following, to extract
+elements from a generator one at a time.
+
+\begin{small}
+\begin{verbatim}
+    first(g: Generator S): Union(value: S, nil: Pointer) == {
+            for s in g repeat return s;
+            nil
+    }
+\end{verbatim}
+\end{small}
+Here the loop body would be evaluated zero or one times, and the function
+would return \verb"nil" or the first value in the generator.
+Subsequent calls would extract the remaining values.
+
+The standard \asharp{} library provides a type with a single function
+called {\tt next!}. Each time this function is called, it returns the
+next available value in the generator. When no more value is available,
+a {\tt GeneratorException} is thrown.
+To use this function one must have an include command for \libaldor{}
+and import from the appropriate generator type, \eg{}:
+
+\begin{small}
+\begin{verbatim}
+    #include "aldor"
+    import from Generator T;
+    ...
+\end{verbatim}
+\end{small}
+With this, the following function becomes available:
+
+\Export{next!}{Generator T -> T}{}
+
+The function \ttin{step!} runs the generator code until
+the next value, or the end of the generator, is reached.
+After \verb"step!" has been called, the function \ttin{empty?} may 
+be used to test whether the generator has been exhausted.
+If \verb"empty?" returns \verb"false", then the \ttin{value}
+function may be called to extract the current value from the generator.
+
+The expression \ttin{for~x~in~g~repeat~E} is equivalent to
+
+\begin{small}
+\begin{verbatim}
+    try
+       repeat {
+            x := next! g;
+            E
+       } where { local x };
+    catch EXCEPTION in {
+       EXCEPTION has GeneratorExceptionType => {}
+    }
+\end{verbatim}
+\end{small}
+
+\head{section}{Creating generators}{asugLangGenerCreating}
+
+Generators are ultimately created with a \ttin{generate} expression
+in one of the following forms:
+
+\verb"    generate "{\em E}\\
+\verb"    generate to "{\em n}\verb" of "{\em E}
+
+\keywordIndex{generate}
+\keywordIndex{yield}
+\keywordIndex{to}
+\keywordIndex{of}
+The first form, without the \ttin{to} part, is the most commonly used.
+
+The body, $E$, of a \verb"generate" is an expression containing
+some number of \ttin{yield} forms, each with some argument.
+The evaluation of the \verb"generate" proceeds as follows:
+
+None of the expressions in the body is evaluated when the generator
+is first formed.  When the first value is requested from the generator,
+the body is evaluated until a \verb"yield" is encountered.
+The argument of the \verb"yield" is returned as the value of the
+generator, and evaluation of the generator is suspended.  
+When another value is requested from the generator, 
+evaluation resumes from the point where left off, and continues
+until the next \verb"yield" is encountered.
+Evaluation proceeds in this way, suspending at yield points and resuming
+when further values are requested, until the evaluation of the
+body expression is complete.  Note that some evaluation may occur
+after the last yield, before the body has finished evaluating.
+
+All the \verb"yield"s
+for a given \verb"generate" must have the same type of argument.
+If all the \verb"yield"s in a particular \verb"generate" have type $T$,
+then the \verb"generate" expression has type \ttin{Generator($T$)}.
+
+If given, the \ttin{to} part provides a bound on the number of values
+which the generator may provide.  If a bound is not given, 
+the compiler is permitted, but not required, to deduce a bound when it can.
+
+Examples:
+
+\verb"generate" expressions may have several \verb"yield"s:
+
+\begin{small}
+\begin{verbatim}
+    generate { yield 1; yield 2; yield 3 }
+\end{verbatim}
+\end{small}
+
+A \verb"yield" may appear in a loop:
+
+\begin{small}
+\begin{verbatim}
+    generate {
+            while not empty? l repeat {
+                    yield first l;
+                    l := rest l;
+            }
+    }
+\end{verbatim}
+\end{small}
+
+The generator body may have arbitrary control flow within it.
+This encapsulates the logic for traversing a structure.
+This is an example from the innards of the \verb"HashTable" type in 
+the base \asharp{} library:
+
+\begin{small}
+\begin{verbatim}
+    generate {
+            for b in buckv t repeat
+                    for e in b repeat {
+                            c: Cross(Key, Value) := (e.key, e.value);
+                            yield c
+                    }
+            }
+    }
+\end{verbatim}
+\end{small}
+
+In the Base \asharp{} library, the generator for general \verb"IntegerSegment"
+values (a..b by c) is given as:
+
+\begin{small}
+\begin{verbatim}
+    generator(s: %): Generator S == generate to size s of {
+            a := low  s;
+            b := high s;
+            d := step s;
+            open? s =>              repeat (yield a; a := a + d);
+            d >= 0  => while a <= b repeat (yield a; a := a + d);
+            d <  0  => while a >= b repeat (yield a; a := a + d);
+    }
+\end{verbatim}
+\end{small}
+
+Since it might not be obvious, we note
+that recursive functions may be used to implement generators.  
+This is extracted from the \ttin{Tree} example in \secref{recurseSample}:
+
+\begin{small}
+\begin{verbatim}
+    preorder(t: %): Generator S == generate {
+            if not empty? t then {
+                    yield node t;
+                    for n in preorder left  t repeat yield n;
+                    for n in preorder right t repeat yield n;
+            }
+    }
+\end{verbatim}
+\end{small}
+
+Finally, we observe that when using the base library it is possible to
+form generators by providing a set of \verb"empty?", \verb"step!",
+\verb"value" and \verb"bound" functions.  
+These would normally operate with a shared environment:
+
+\begin{small}
+\begin{verbatim}
+    #include "aldor"
+    #include "aldorio"
+    
+    GI ==> Generator Integer;
+    import from GI;
+    
+    everyOther(g: GI): GI == {
+            s!(): () == {step! g; step! g}
+            e?(): Boolean == empty? g;
+            v():  Integer == value g;
+            b():  MachineInteger == {n := bound g; n = -1 => n; n quo 2}
+    
+            generator(e?, s!, v, b)
+    }
+    
+    gg := everyOther generator(1..20);
+    for x in gg repeat stdout << x << newline
+\end{verbatim}
+\end{small}
+

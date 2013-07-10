@@ -1,0 +1,5 @@
+#!/bin/sh
+#
+# Indent files using standard spacing.  Must touch up by hand.
+#
+indent -nce -nbad -nlp -di8 -nfc1 -sob -Tlocal -TAbSyn $*

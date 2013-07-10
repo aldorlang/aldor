@@ -1,0 +1,156 @@
+
+(|Sequence|
+   (|Import| NIL |AxiomLib|)
+   (|Export|
+      (|Declare|
+         |KernelFunctions2|
+         (|Apply|
+            |->|
+            (|Comma|
+               (|Declare| |#1| |OrderedSet|)
+               (|Declare| |#2| |OrderedSet|))
+            (|With|
+               NIL
+               (|Sequence|
+                  (|Declare|
+                     |constantKernel|
+                     (|Apply| |->| (|Comma| |#1|) (|Apply| |Kernel| |#2|)))
+                  (|Declare|
+                     |constantIfCan|
+                     (|Apply|
+                        |->|
+                        (|Comma| (|Apply| |Kernel| |#2|))
+                        (|Apply|
+                           |Union|
+                           (|Declare| |value1| |#1|)
+                           (|Declare|
+                              |failed|
+                              (|Apply| |Enumeration| |failed|)))) ))) ))
+      NIL
+      NIL)
+   (|Export|
+      (|Declare|
+         |Kernel|
+         (|Apply|
+            |->|
+            (|Declare| |#1| |OrderedSet|)
+            (|With|
+               NIL
+               (|Sequence|
+                  |CachableSet|
+                  (|Apply| |Patternable| |#1|)
+                  (|Declare| |name| (|Apply| |->| (|Comma| |%|) |Symbol|))
+                  (|Declare|
+                     |operator|
+                     (|Apply| |->| (|Comma| |%|) |BasicOperator|))
+                  (|Declare|
+                     |argument|
+                     (|Apply| |->| (|Comma| |%|) (|Apply| |List| |#1|)))
+                  (|Declare|
+                     |height|
+                     (|Apply| |->| (|Comma| |%|) |NonNegativeInteger|))
+                  (|Declare|
+                     |kernel|
+                     (|Apply|
+                        |->|
+                        (|Comma|
+                           |BasicOperator|
+                           (|Apply| |List| |#1|)
+                           |NonNegativeInteger|)
+                        |%|))
+                  (|Declare|
+                     |kernel|
+                     (|Apply| |->| (|Comma| |Symbol|) |%|))
+                  (|Declare|
+                     |symbolIfCan|
+                     (|Apply|
+                        |->|
+                        (|Comma| |%|)
+                        (|Apply|
+                           |Union|
+                           (|Declare| |value1| |Symbol|)
+                           (|Declare|
+                              |failed|
+                              (|Apply| |Enumeration| |failed|)))) )
+                  (|Declare|
+                     |is?|
+                     (|Apply|
+                        |->|
+                        (|Comma| |%| |BasicOperator|)
+                        |Boolean|))
+                  (|Declare|
+                     |is?|
+                     (|Apply| |->| (|Comma| |%| |Symbol|) |Boolean|))
+                  (|If|
+                     (|Test|
+                        (|Has| |#1| (|Apply| |ConvertibleTo| |InputForm|)))
+                     (|Apply|
+                        |ConvertibleTo|
+                        (|PretendTo| |InputForm| |Type|))
+                     NIL)))) )
+      NIL
+      NIL)
+   (|Export|
+      (|Declare|
+         |MakeCachableSet|
+         (|Apply|
+            |->|
+            (|Declare| |#1| |SetCategory|)
+            (|With|
+               NIL
+               (|Sequence|
+                  |CachableSet|
+                  (|Apply| |CoercibleTo| |#1|)
+                  (|Declare|
+                     |coerce|
+                     (|Apply| |->| (|Comma| |#1|) |%|)))) ))
+      NIL
+      NIL)
+   (|Export|
+      (|Declare|
+         |SortedCache|
+         (|Apply|
+            |->|
+            (|Declare| |#1| |CachableSet|)
+            (|With|
+               NIL
+               (|Sequence|
+                  (|Declare|
+                     |clearCache|
+                     (|Apply| |->| (|Comma|) (|Comma|)))
+                  (|Declare|
+                     |cache|
+                     (|Apply| |->| (|Comma|) (|Apply| |List| |#1|)))
+                  (|Declare|
+                     |enterInCache|
+                     (|Apply|
+                        |->|
+                        (|Comma|
+                           |#1|
+                           (|Apply| |->| (|Comma| |#1|) |Boolean|))
+                        |#1|))
+                  (|Declare|
+                     |enterInCache|
+                     (|Apply|
+                        |->|
+                        (|Comma|
+                           |#1|
+                           (|Apply| |->| (|Comma| |#1| |#1|) |Integer|))
+                        |#1|)))) ))
+      NIL
+      NIL)
+   (|Define|
+      (|Declare| |CachableSet| |Category|)
+      (|With|
+         NIL
+         (|Sequence|
+            |OrderedSet|
+            (|Declare|
+               |position|
+               (|Apply| |->| (|Comma| |%|) |NonNegativeInteger|))
+            (|Declare|
+               |setPosition|
+               (|Apply|
+                  |->|
+                  (|Comma| |%| |NonNegativeInteger|)
+                  (|Comma|)))) )))

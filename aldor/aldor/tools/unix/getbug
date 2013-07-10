@@ -1,0 +1,30 @@
+#!/bin/sh
+#
+# getbug
+#
+
+AXBUGS="ax-bugs@nag.co.uk"
+
+# Collect list of files to request.
+ARGS="$*"
+BUGS="getbug"
+for ARG in ${ARGS}
+do
+	BUG="`echo ${ARG} | sed -e 's/^bug//' -e 's/\.as$//'`"
+	case "${BUG}" in
+	[0-9][0-9][0-9])	BUG=" bug${BUG}.as"	;;
+	[0-9][0-9][0-9][0-9])	BUG=" bug${BUG}.as"	;;
+	Log)			BUG=" ${BUG}"		;;
+	*)			BUG=""; echo "Ignoring '${ARG}'." ;;
+	esac
+
+	BUGS="${BUGS}${BUG}"
+done
+
+if [ "${BUGS}" = "getbug" ] ; then
+	echo "No files to request."
+	exit 0
+fi
+
+# Send getbug request to AXBUGS.
+echo ${BUGS} | mail -s getbug ${AXBUGS}

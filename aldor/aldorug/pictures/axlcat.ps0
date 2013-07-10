@@ -1,0 +1,725 @@
+%!PS-Adobe-2.0 EPSF-1.2
+%%Title: SMWATT.EPS
+%%Creator: Freelance Plus 3.01
+%%CreationDate: 7/13/1994
+%%Pages: 1
+%%DocumentFonts: (atend)
+%%BoundingBox: 0 0 648 468
+%%EndComments
+
+%%BeginProcSet: Freelance Plus
+/Freelance_Plus dup 100 dict def load begin
+[ ] {bind} stopped { (patching the bind operator...) = flush
+/*bind /bind load def /bind { dup xcheck { *bind } if } *bind def } if pop
+/bdf {bind def} bind def /ldf {load def} bdf
+/mt /moveto ldf /rt /rmoveto ldf /l2 /lineto ldf /c2 /curveto ldf
+/sg /setgray ldf /gs /gsave ldf /ef /eofill ldf /rl2 /rlineto ldf
+/st /stroke ldf /gr /grestore ldf /np /newpath ldf
+/sv /save ldf /su /statusdict ldf /rs /restore ldf
+/sw /setlinewidth ldf /sd /setdash ldf /cp /closepath ldf /ed {exch def } bdf
+/cfnt {findfont exch makefont setfont} bdf
+/itr {transform round exch round exch itransform} bdf
+/fres 72 0 matrix currentmatrix dtransform
+exch dup mul exch dup mul add sqrt def
+/res fres def /mcm matrix currentmatrix bdf
+%%EndProcSet
+end
+%%EndProlog
+
+%%BeginSetup
+Freelance_Plus begin
+save newpath
+.1 .1 scale
+/ecm matrix currentmatrix bdf
+/sem {ecm setmatrix} bdf
+-720 -720 translate
+0 setlinecap
+0 setlinejoin
+1.42 setmiterlimit
+%%EndSetup
+
+/Ich 256 array def StandardEncoding Ich copy pop /bullet/paragraph/section/dieresis/tilde/ring
+/circumflex/grave/acute/quotedblleft/quotesingle
+/ellipsis/endash/emdash/guilsinglleft/guilsinglright
+/quotedblbase/quotesinglbase/quotedblright/OE/oe
+/Ydieresis/fi/fl/dagger/daggerdbl/Ccedilla/udieresis
+/eacute/acircumflex/adieresis/agrave/aring/ccedilla
+/ecircumflex/edieresis/egrave/idieresis/icircumflex
+/igrave/Adieresis/Aring/Eacute/ae/AE/ocircumflex
+/odieresis/ograve/ucircumflex/ugrave/ydieresis
+/Odieresis/Udieresis/oslash/sterling/Oslash/florin
+/aacute/iacute/oacute/uacute/ntilde/Ntilde/ordfeminine
+/ordmasculine/questiondown/exclamdown/guillemotleft
+/guillemotright/Aacute/Acircumflex/Agrave/cent/yen
+/atilde/Atilde/currency/Ecircumflex/Edieresis/Egrave
+/dotlessi/Iacute/Icircumflex/Idieresis/Igrave/Oacute
+/germandbls/Ocircumflex/Ograve/otilde/Otilde/Uacute
+/Ucircumflex/Ugrave/macron/cedilla/periodcentered
+Ich 127 97 getinterval astore pop
+/Ienc { /ncs Ich def /nfn ed /bfn ed /bfd bfn findfont def
+/nf bfd maxlength dict def bfd{exch dup dup /FID ne exch /Encoding ne and
+{exch nf 3 1 roll put}{pop pop} ifelse }forall nf/FontName nfn put
+nf/Encoding ncs put nfn nf definefont pop}bdf
+
+/IencO { /ncs Ich def /nfn ed /bfn ed /lnw ed /bfd bfn findfont def
+/nf bfd maxlength 4 add dict def bfd{exch dup dup /FID ne exch /Encoding ne and
+{exch nf 3 1 roll put}{pop pop} ifelse }forall nf/FontName nfn put nf/Encoding ncs put
+nf/PaintType 2 put nf/StrokeWidth lnw put
+nfn nf definefont pop}bdf
+
+/IencSO { /nfn ed /bfn ed /lnw ed /bfd bfn findfont def
+/nf bfd maxlength 4 add dict def bfd{exch dup /FID ne { exch nf 3 1 roll put}{pop pop} ifelse }forall
+nf/FontName nfn put nf/PaintType 2 put
+nf/StrokeWidth lnw put nfn nf definefont pop}bdf
+
+/Helvetica /Flfon1 Ienc
+[96 0 0.00 96 -9 -71]  /Flfon1 cfnt
+0.000 sg
+
+3920 5293 itr mt
+(Basic Type) 
+show
+
+
+1403 4634 itr mt
+(Logic) 
+show
+
+
+2047 4634 itr mt
+(Conditional) 
+show
+
+
+2761 4646 itr mt
+(Aggregate\(T\)) 
+show
+
+
+3679 4646 itr mt
+(Monoid) 
+show
+
+
+4471 4646 itr mt
+(Arithmetic) 
+show
+
+
+4471 4534 itr mt
+(System) 
+show
+
+
+5279 4646 itr mt
+(Abelian) 
+show
+
+
+6157 4646 itr mt
+(Order) 
+show
+
+
+6848 4646 itr mt
+(Finite) 
+show
+
+6 sw
+sv np [] 0 sd 
+4148 5255 itr mt
+currentpoint translate
+np 1.000 0.387 scale
+0 0 321 0.000 360.000 arc sem
+st rs
+
+sv np 
+1531 4596 itr mt
+currentpoint translate
+np 1.000 0.665 scale
+0 0 187 0.000 360.000 arc sem
+st rs
+
+sv np 
+2269 4596 itr mt
+currentpoint translate
+np 1.000 0.483 scale
+0 0 257 0.000 360.000 arc sem
+st rs
+
+sv np 
+3012 4608 itr mt
+currentpoint translate
+np 1.000 0.417 scale
+0 0 298 0.000 360.000 arc sem
+st rs
+
+sv np 
+3826 4608 itr mt
+currentpoint translate
+np 1.000 0.665 scale
+0 0 187 0.000 360.000 arc sem
+st rs
+
+sv np 
+4646 4559 itr mt
+currentpoint translate
+np 1.000 0.601 scale
+0 0 269 0.000 360.000 arc sem
+st rs
+
+
+5279 4534 itr mt
+(Monoid) 
+show
+
+sv np 
+5419 4559 itr mt
+currentpoint translate
+np 1.000 0.691 scale
+0 0 233 0.000 360.000 arc sem
+st rs
+
+sv np 
+6250 4608 itr mt
+currentpoint translate
+np 1.000 0.665 scale
+0 0 187 0.000 360.000 arc sem
+st rs
+
+sv np 
+6941 4608 itr mt
+currentpoint translate
+np 1.000 0.665 scale
+0 0 187 0.000 360.000 arc sem
+st rs
+
+sv np 
+4815 44 itr mt
+currentpoint translate
+np 0.938 1.000 scale
+0 0 5224 64.142 94.043 arc sem
+st rs
+
+sv np 
+4235 -232 itr mt
+currentpoint translate
+np 0.938 1.000 scale
+0 0 5416 66.782 88.014 arc sem
+st rs
+
+sv np 
+4992 748 itr mt
+currentpoint translate
+np 0.938 1.000 scale
+0 0 4523 103.663 117.910 arc sem
+st rs
+
+sv np 
+3327 748 itr mt
+currentpoint translate
+np 0.938 1.000 scale
+0 0 4523 62.090 76.337 arc sem
+st rs
+
+sv np 
+4698 4373 itr mt
+currentpoint translate
+np 0.938 1.000 scale
+0 0 1001 130.871 158.211 arc sem
+st rs
+
+
+2307 3996 itr mt
+(Finite) 
+show
+
+
+2174 3871 itr mt
+(Aggregate\(T\)) 
+show
+
+
+3408 3996 itr mt
+(Linear) 
+show
+
+
+3275 3871 itr mt
+(Aggregate\(T\)) 
+show
+
+sv np 
+2433 3868 itr mt
+currentpoint translate
+np 1.000 0.571 scale
+0 0 315 0.000 360.000 arc sem
+st rs
+
+sv np 
+3533 3868 itr mt
+currentpoint translate
+np 1.000 0.571 scale
+0 0 315 0.000 360.000 arc sem
+st rs
+
+sv np 
+3735 2892 itr mt
+currentpoint translate
+np 0.938 1.000 scale
+0 0 1834 118.999 140.411 arc sem
+st rs
+
+sv np 
+2266 2892 itr mt
+currentpoint translate
+np 0.938 1.000 scale
+0 0 1834 39.589 61.001 arc sem
+st rs
+
+
+3940 3461 itr mt
+(Group) 
+show
+
+sv np 
+4072 3414 itr mt
+currentpoint translate
+np 1.000 0.665 scale
+0 0 187 0.000 360.000 arc sem
+st rs
+
+sv np 
+2739 3660 itr mt
+currentpoint translate
+np 0.938 1.000 scale
+0 0 1425 355.626 394.725 arc sem
+st rs
+
+
+4933 3908 itr mt
+(Abelian) 
+show
+
+
+4936 3784 itr mt
+(Group) 
+show
+
+
+5705 3908 itr mt
+(Abelian) 
+show
+
+
+5708 3784 itr mt
+(Monoid) 
+show
+
+
+5676 4033 itr mt
+(Ordered) 
+show
+
+sv np 
+5079 3812 itr mt
+currentpoint translate
+np 1.000 0.691 scale
+0 0 233 0.000 360.000 arc sem
+st rs
+
+sv np 
+5347 3832 itr mt
+currentpoint translate
+np 0.938 1.000 scale
+0 0 579 30.233 77.454 arc sem
+st rs
+
+sv np 
+6028 3584 itr mt
+currentpoint translate
+np 0.938 1.000 scale
+0 0 1088 131.723 158.334 arc sem
+st rs
+
+
+6589 3896 itr mt
+(Ordered) 
+show
+
+
+6652 3772 itr mt
+(Finite) 
+show
+
+sv np 
+6754 3812 itr mt
+currentpoint translate
+np 1.000 0.601 scale
+0 0 269 0.000 360.000 arc sem
+st rs
+
+sv np 
+6380 3726 itr mt
+currentpoint translate
+np 0.711 1.000 scale
+0 0 763 102.546 149.767 arc sem
+st rs
+
+sv np 
+6094 3819 itr mt
+currentpoint translate
+np 0.938 1.000 scale
+0 0 707 12.683 70.089 arc sem
+st rs
+
+
+4452 2913 itr mt
+(Ring) 
+show
+
+sv np 
+4552 2879 itr mt
+currentpoint translate
+np 1.000 0.665 scale
+0 0 187 0.000 360.000 arc sem
+st rs
+
+sv np 
+-2136 970 itr mt
+currentpoint translate
+np 0.938 1.000 scale
+0 0 7407 16.031 28.536 arc sem
+st rs
+
+sv np 
+2450 3827 itr mt
+currentpoint translate
+np 0.938 1.000 scale
+0 0 2418 340.406 373.327 arc sem
+st rs
+
+sv np 
+3376 4448 itr mt
+currentpoint translate
+np 0.938 1.000 scale
+0 0 1988 313.409 335.963 arc sem
+st rs
+
+
+5705 2901 itr mt
+(Abelian) 
+show
+
+
+5708 2776 itr mt
+(Group) 
+show
+
+
+5676 3025 itr mt
+(Ordered) 
+show
+
+sv np 
+6093 4150 itr mt
+currentpoint translate
+np 0.938 1.000 scale
+0 0 1118 205.842 251.368 arc sem
+st rs
+
+sv np 
+4965 3389 itr mt
+currentpoint translate
+np 0.938 1.000 scale
+0 0 996 344.099 373.027 arc sem
+st rs
+
+
+2834 2751 itr mt
+(Finite) 
+show
+
+
+2839 2627 itr mt
+(Linear) 
+show
+
+
+2713 2503 itr mt
+(Aggregate\(T\)) 
+show
+
+sv np 
+2971 2549 itr mt
+currentpoint translate
+np 1.000 0.788 scale
+0 0 339 0.000 360.000 arc sem
+st rs
+
+sv np 
+3535 3758 itr mt
+currentpoint translate
+np 0.938 1.000 scale
+0 0 1190 183.976 233.187 arc sem
+st rs
+
+sv np 
+2407 3758 itr mt
+currentpoint translate
+np 0.938 1.000 scale
+0 0 1190 306.813 356.024 arc sem
+st rs
+
+
+2347 1831 itr mt
+(Array) 
+show
+
+
+2235 1706 itr mt
+(Category\(T\)) 
+show
+
+
+3319 1831 itr mt
+(List) 
+show
+
+
+3207 1706 itr mt
+(Category\(T\)) 
+show
+
+sv np 
+3440 1716 itr mt
+currentpoint translate
+np 1.000 0.571 scale
+0 0 315 0.000 360.000 arc sem
+st rs
+
+sv np 
+2456 1716 itr mt
+currentpoint translate
+np 1.000 0.571 scale
+0 0 315 0.000 360.000 arc sem
+st rs
+
+sv np 
+3347 1256 itr mt
+currentpoint translate
+np 0.938 1.000 scale
+0 0 1153 115.752 145.510 arc sem
+st rs
+
+sv np 
+2607 1243 itr mt
+currentpoint translate
+np 0.938 1.000 scale
+0 0 1153 34.490 64.248 arc sem
+st rs
+
+
+4366 2465 itr mt
+(Euclidean) 
+show
+
+
+4408 2328 itr mt
+(Domain) 
+show
+
+sv np 
+4540 2369 itr mt
+currentpoint translate
+np 1.000 0.601 scale
+0 0 269 0.000 360.000 arc sem
+st rs
+
+
+4089 1706 itr mt
+(Field) 
+show
+
+
+4671 1806 itr mt
+(Integer) 
+show
+
+
+4667 1681 itr mt
+(Number) 
+show
+
+
+4663 1557 itr mt
+(System) 
+show
+
+sv np 
+4189 1672 itr mt
+currentpoint translate
+np 1.000 0.665 scale
+0 0 187 0.000 360.000 arc sem
+st rs
+
+sv np 
+4810 1660 itr mt
+currentpoint translate
+np 1.000 0.777 scale
+0 0 304 0.000 360.000 arc sem
+st rs
+
+sv np 
+5829 2854 itr mt
+currentpoint translate
+np 1.000 0.777 scale
+0 0 304 0.000 360.000 arc sem
+st rs
+
+sv np 
+5864 3874 itr mt
+currentpoint translate
+np 1.000 0.777 scale
+0 0 304 0.000 360.000 arc sem
+st rs
+
+
+5710 2391 itr mt
+(Ordered) 
+show
+
+
+5785 2266 itr mt
+(Ring) 
+show
+
+sv np 
+5875 2294 itr mt
+currentpoint translate
+np 1.000 0.601 scale
+0 0 269 0.000 360.000 arc sem
+st rs
+
+
+5456 1557 itr mt
+(Floating Point) 
+show
+
+
+5420 1433 itr mt
+(Number System) 
+show
+
+sv np 
+5758 1461 itr mt
+currentpoint translate
+np 1.000 0.531 scale
+0 0 397 0.000 360.000 arc sem
+st rs
+
+
+5191 923 itr mt
+(Finite Field) 
+show
+
+sv np 
+5407 901 itr mt
+currentpoint translate
+np 1.000 0.601 scale
+0 0 269 0.000 360.000 arc sem
+st rs
+
+sv np 
+3861 3858 itr mt
+currentpoint translate
+np 0.938 1.000 scale
+0 0 3541 303.377 371.404 arc sem
+st rs
+
+sv np 
+5287 2251 itr mt
+currentpoint translate
+np 0.938 1.000 scale
+0 0 1371 211.445 263.342 arc sem
+st rs
+
+sv np 
+4790 1307 itr mt
+currentpoint translate
+np 0.666 1.000 scale
+0 0 1018 119.337 150.459 arc sem
+st rs
+
+sv np 
+4552 1913 itr mt
+currentpoint translate
+np 0.938 1.000 scale
+0 0 274 359.192 439.587 arc sem
+st rs
+
+sv np 
+5153 2566 itr mt
+currentpoint translate
+np 0.938 1.000 scale
+0 0 1354 148.309 214.590 arc sem
+st rs
+
+sv np 
+5585 2016 itr mt
+currentpoint translate
+np 0.651 1.000 scale
+0 0 460 313.959 374.650 arc sem
+st rs
+
+sv np 
+6341 35 itr mt
+currentpoint translate
+np 0.938 1.000 scale
+0 0 2250 108.369 127.936 arc sem
+st rs
+
+sv np 
+6444 4404 itr mt
+currentpoint translate
+np 0.938 1.000 scale
+0 0 548 310.361 368.393 arc sem
+st rs
+
+sv np 
+4750 2649 itr mt
+currentpoint translate
+np 0.938 1.000 scale
+0 0 235 153.343 206.657 arc sem
+st rs
+
+sv np 
+5743 2519 itr mt
+currentpoint translate
+np 0.938 1.000 scale
+0 0 143 333.971 403.583 arc sem
+st rs
+
+sv np 
+5067 2499 itr mt
+currentpoint translate
+np 0.938 1.000 scale
+0 0 1240 229.143 288.769 arc sem
+st rs
+
+sv np 
+3485 1442 itr mt
+currentpoint translate
+np 0 0 3816 84.834 120.793 arc sem
+st rs
+
+sv np 
+3931 2118 itr mt
+currentpoint translate
+np 0 0 3088 91.440 122.587 arc sem
+st rs
+
+rs end
+
+%%Trailer
+%%DocumentFonts: Helvetica

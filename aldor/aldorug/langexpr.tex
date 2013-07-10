@@ -1,0 +1,1196 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%                                                                        %%%
+%%% :: Expressions
+%%%                                                                        %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\head{chapter}{Expressions}{asugLangExpr}
+
+\asharp{} is an {\em expression-based\/} language:  every construct
+in the language produces zero, one or more values.  This chapter describes
+the structure of expressions in \asharp{} and the rules for expression
+evaluation.
+
+\def\Headline#1#2{\Secref{#2} & #1 & page \pageref{#2} \\ }
+\def\headline#1#2{\secref{#2} & #1 & page \pageref{#2} \\ }
+
+\begin{tabular}{lp{2.85in}l}
+
+\Headline{Names}                {asugLangExprNames}             % Done
+\Headline{Literals}             {asugLangExprLiterals}          % Done
+\Headline{Definitions}          {asugLangExprDefine}            % Done
+\Headline{Assignments}          {asugLangExprAssign}            % Done
+\Headline{Functions}            {asugLangExprFunExpr}           % Done
+\Headline{Function Calls}       {asugLangExprFunCall}           % Done
+\Headline{Imperatives}          {asugLangExprDo}                % Done
+\Headline{Multiple Values}      {asugLangExprMultis}            % Done
+\Headline{Sequences}            {asugLangExprSequences}         % Done
+\Headline{Exits}                {asugLangExprExit}              % Done
+\Headline{If}                   {asugLangExprIf}                % Done
+\Headline{Select}               {asugLangExprSelect}            % Done
+\Headline{Logical Expressions}  {asugLangExprLogicals}          % Done
+\Headline{Loops}                {asugLangExprLoop}              % Done
+\Headline{Generate Expressions} {asugLangExprGenerators}        % Done
+\Headline{Collections}          {asugLangExprCollections}       % Done
+\Headline{General Branching}    {asugLangExprGotos}             % Done
+\Headline{Never}                {asugLangExprNever}             % Done
+
+\end{tabular}
+
+%\pagebreak
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\head{section}{Names}{asugLangExprNames}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\index{name}
+The evaluation of a name in \asharp{} causes the value of a
+variable or constant to be retrieved.  
+
+If a name refers to a variable or constant defined in the same scope or in
+an enclosing scope then retrieving its value is a very inexpensive operation.  
+If a name refers to an imported constant, then there may be a cost associated
+with the look up, depending on the degree of optimisation used to compile the
+program.
+
+Consider the following example:
+
+\begin{small}
+\begin{verbatim}
+    #include "aldor"
+
+    f(n: MachineInteger): MachineInteger ==
+            if n < 2 then
+                    1
+            else
+                    n * f(n-1);
+\end{verbatim}
+\end{small}
+
+In the last line, the name \ttin{n} is defined in the current scope
+and the name \ttin{f} is defined in an enclosing scope, so their use
+is very inexpensive.  The names \ttin{*}, \ttin{-} and \ttin{1} are
+imported from \verb"MachineInteger".  If this program is compiled with
+optimisation, then there is no cost in using the values from
+\verb"MachineInteger".  Without optimisation, these values
+would have to be dynamically retrieved from \verb"MachineInteger"
+at a modest cost.
+
+A name may represent a {\em variable\/}, which may take on different values
+at different points in a computation, or a {\em constant\/}, which
+always refers to the same value every time it is used.
+
+Names for constants may be {\em overloaded\/} in \asharp{}.  That is,
+it is possible to have more than one constant with a given name,
+visible at the same point in a program.  Names for variables cannot be
+overloaded.  A name cannot represent both a variable and a constant in
+the same scope. 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\head{section}{Literals}{asugLangExprLiterals}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\index{literal}
+Literal constants are expressions which represent the explicit data values
+which appear in a program.  There are three styles of literal constants
+in \asharp{}:  quoted strings, integers and floating-point numbers:
+
+\begin{small}
+\begin{verbatim}
+    "Aloha!"                    -- quoted string literal
+    10203040  16rFFFFC010       -- integer literals
+    1.234e56                    -- floating-point literal
+\end{verbatim}
+\end{small}
+The meaning of a constant in \asharp{} is determined by the environment
+in which it is used.  For example, the constant \ttin{1.234e56} might
+be a value of type \verb"SingleFloat" or \verb"DoubleFloat",
+depending on the context.
+
+When a literal expression is encountered in a program, it is treated
+as an application of a corresponding ``literal accepting''
+operation:
+
+\begin{small}
+\begin{verbatim}
+    string:  Literal -> T
+    integer: Literal -> T
+    float:   Literal -> T
+\end{verbatim}
+\end{small}
+(where \ttin{T} represents the type of the value being formed).
+Each of these operations takes a single argument of type \verb"Literal"
+and constructs a value of the appropriate type.  When programs are compiled
+against the base \asharp{} library, the constant-folding optimisation
+will immediately convert constants of the following types to their machine
+representations:  \verb"String", \verb"MachineInteger", \verb"Integer",
+\verb"SingleFloat", \verb"DoubleFloat".
+
+New types may provide their own interpretation of literal constants
+by exporting a literal forming operation with the corresponding signature.
+As a consequence, if operations for creating string literals, for example,
+are available from several types, it may be necessary to provide a declaration
+to indicate which kind of literal is intended.  When implementing
+literal-forming operations for new types, it is often useful to use the
+\verb"string" literal-forming operation from \verb"String".
+
+Some types may accept some literal values and not others.
+For example, a fixed-precision integer type might reject values
+which lie outside the range of values representable by the type.
+
+\subsubsection{String literals}
+
+\index{string literal}
+\index{escape character}
+String-style literals are enclosed in quotation marks.
+Inside a string-style literal, an underscore character \ttin{\_} is used
+as an escape character to modify the meaning of the characters which follow:
+
+\begin{itemize}
+\item A quotation mark after an underscore includes a quotation mark
+in the literal instead of ending the literal.
+\item An underscore after an underscore includes a single underscore
+in the literal.
+\item White space (any number of blanks, tabs or newlines) following
+an underscore is ignored, and not included in the literal.
+\end{itemize}
+
+Examples:
+
+\begin{small}
+\begin{verbatim}
+    "This literal is a _"string-style_" literal."
+    "This literal contains a single underscore: '__'."
+
+    s := "This literal is moderately long, and is broken _
+          over two lines, even though the result is a single line."
+\end{verbatim}
+\end{small}
+
+When using \libaldor{}
+the type \verb"String" provides string-style literals.
+
+\subsubsection{Integer literals}
+
+\index{integer literal}
+Integer-style literals provide a syntax for whole numbers.
+These are in base ten unless otherwise indicated.
+
+An integer-style literal is either
+\begin{itemize}
+\item a sequence of one or more digits, [{\tt 0}-{\tt 9}]+, with the
+% distinguishing symbols (0 9) from metasymbols ([ - ] =).
+      exception of a single \ttin{0} or single \ttin{1}, or
+\item a sequence of one or more digits giving a radix (base), followed
+      by the letter \ttin{r}, followed by a number of radix-digits using
+      digits and/or capital letters:
+            [{\tt 0}-{\tt 9}]+{\tt r}[{\tt 0}-{\tt 9A}-{\tt Z}]+.
+\end{itemize}
+
+%%% Base-n integers not working - aldorbug report sent 19940923.  MGR
+
+In \asharp{} the numerals \ttin{0} and \ttin{1} are {\em not\/}
+literal constants -- they are treated as names so that
+various mathematical structures which export 0 or 1 can do so,
+without being required to support general integer constants.
+
+\index{escape character}
+An underscore appearing in the middle of an integer-style literal
+is ignored together with any following white space.
+An underscore which appears at the very beginning of a word
+causes the whole word to be treated as an identifier, rather than
+as a literal constant.
+
+Examples:
+
+\begin{small}
+\begin{verbatim}
+    22_394_547
+
+    38319238471239487123948237_
+      192387491234712398478188_
+      139823712983712938712391
+
+    _33    -- This word is an identifier, not an integer-style literal.
+
+    2r01010101010101010101    -- Base 2
+    16rDEADBEEF               -- Base 16
+\end{verbatim}
+\end{small}
+
+When using \libaldor{}, the types \verb"MachineInteger"
+and \verb"Integer" provide integer-style literals.
+
+%%% What is the ``{\em NN\/{\tt r}...\/}'' radix notation?  If the radix not'n
+%%% just described, then what does support it?  (If it isn't supported at all,
+%%% why mention it?)   MGR
+
+%\pagebreak
+\subsubsection{Floating-point literals}
+
+\index{floating-point literal}
+Float-style literals are numbers with a decimal point, an exponent, or both.
+
+Examples:
+
+\begin{small}
+\begin{verbatim}
+    3.0        3.       3e1     6.022E+23 
+    0.2        .2       2e-1    4.8481E-6
+\end{verbatim}
+\end{small}
+
+\index{escape character}
+An underscore appearing in the middle of a float-style literal
+is ignored together with any following white space.
+
+\begin{small}
+\begin{verbatim}
+    3.14159_26535_89793_23846_26433_83279_50288_41971_
+      69399_37510_58209_74944_59230_78164_06286_20899_
+      86280_34825_34211_70679_82148_08651_32823_06647
+\end{verbatim}
+\end{small}
+
+When using \libaldor{}, the types \verb"SingleFloat" and 
+\verb"DoubleFloat" provide float-style literals.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\head{section}{Definitions}{asugLangExprDefine}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\index{constant}
+\index{defined constant}
+\index{definition expression}
+A {\em constant\/} in \asharp{} denotes a particular value which
+cannot be changed.  The general syntax for a constant definition is:
+
+\begin{small}
+\begin{verbatim}
+    x : T == E
+\end{verbatim}
+\end{small}
+
+\verb"x" is an identifier giving the name of the constant.
+
+\verb"T" is an expression giving the type of the constant.
+The type declaration is optional.  If the type is declared, then the
+type of \verb"E" must satisfy it.  Otherwise the type is inferred
+from the type of the expression \verb"E".
+
+\verb"E" is an expression which computes the value of the constant.
+
+Examples:
+
+\begin{small}
+\begin{verbatim}
+    a : Integer == 23;
+    b == "Hello world!";
+\end{verbatim}
+\end{small}
+
+A function definition is a special case of a constant definition.
+Function definitions are described in more detail in
+\secref{asugLangFunDefine}.
+
+%\pagebreak
+Once a value has been given to a named constant, it cannot be
+changed to refer to another value.
+
+\begin{small}
+\begin{verbatim}
+    -- A constant cannot be changed to refer to a different value.
+    num: Integer == 3;
+    num: Integer == 4;  -- invalid
+
+    -- In fact, it cannot be changed to refer to the same value!
+    hi:  String  == "'Ello!";
+    hi:  String  == "'Ello!"; -- invalid
+\end{verbatim}
+\end{small}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\head{widesection}{Assignments}{asugLangExprAssign}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\index{variable}
+\index{assignment expression}
+A {\em variable\/} in \asharp{} denotes a value which may change
+during the evaluation of a program.
+A variable is given a value by an {\em assignment\/} of the form:
+
+\begin{small}
+\begin{verbatim}
+    x : T := E
+\end{verbatim}
+\end{small}
+
+\verb"x" is an identifier giving the name of the variable.
+
+\verb"T" is an expression giving the type of the variable.
+The type declaration is optional.  If the type is declared, then the
+type of \verb"E" must satisfy it.  Otherwise the type is inferred
+from the type of the expression \verb"E".
+
+\verb"E" is an expression which computes the value of the variable.
+
+Several variables may be assigned a value at the same time:
+
+\begin{small}
+\begin{verbatim}
+    (x1 : T1, ..., xn: Tn) := E
+\end{verbatim}
+\end{small}
+
+Any or all of the type declarations may be omitted,
+in which case the $i$\/th variable would read \ttin{xi},
+rather than \ttin{xi:~Ti}, and the type of \verb"xi" is
+inferred from the type of the expression \verb"E".
+
+Examples:
+
+\begin{small}
+\begin{verbatim}
+    n: Integer := 3;
+    k := 3*n + 1;
+    n := k quo 2;
+
+    (a, b) := (1, 3);
+    (s: String, x) := ("Natascia", false);
+\end{verbatim}
+\end{small}
+
+The value of an assignment expression is the same as the value of \verb"E".
+
+A special form of assignment expression is used to provide a general kind of
+updating operation:
+
+\begin{small}
+\begin{verbatim}
+    x(a1, ..., an) := E
+\end{verbatim}
+\end{small}
+
+Typically, \verb"x" is an expression which evaluates to a structured data
+value, such as an array or a list, and the expressions \verb"ai" taken
+together specify some component of \verb"x".  An assignment expression of
+this form is treated as an application of the operation \ttin{set!} of the
+form: 
+
+\verb^    ^{\tt set!(x, a1, ..., an, E)} 
+
+For example, for lists, the \ttin{set!} function
+%(see \secref{asugAxllibListCategory})
+takes as its second (component specifying)
+parameter a \ttin{MachineInteger} specifying the position
+of the element in the list, so we could have:
+\begin{small}
+\begin{verbatim}
+    #include "aldor";
+    import from MachineInteger, List MachineInteger;
+    L := [1,2,3];
+    ...
+    L(1) := 4;
+\end{verbatim}
+\end{small}
+which would result in \verb"L" having the value \verb"list(4, 2, 3)".
+
+The value of this form is the return value of the function
+\ttin{set!}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\head{section}{Functions}{asugLangExprFunExpr}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\index{function expression}
+Function expressions are the primitive form for building functions
+in \asharp{}.  
+An example of a function expression is:
+
+\begin{small}
+\begin{verbatim}
+    (n: Integer, m: Integer): Integer +-> n * m + 1
+\end{verbatim}
+\end{small}
+
+See \secref{asugLangFunExpr} for a complete description.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\head{section}{Function calls}{asugLangExprFunCall}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\index{function call}
+Typical expressions consist mostly of function calls.
+For example, consider the expression
+
+\begin{small}
+\begin{verbatim}
+    l: List Integer := [2 + 3, 4 - 5, 6 * 7, 8 ^ 9]
+\end{verbatim}
+\end{small}
+
+This has six explicit function calls (\ie{}~to the arithmetic functions
+\ttin{+}, \ttin{-}, \ttin{*}, \quotedCaret, to the $n$-ary function \ttin{bracket}
+(called using the syntax \ttin{[...]}), and to the type constructor function \ttin{List}.
+This expression also has eight implicit function calls to the literal
+forming operation \ttin{integer}.
+
+See \secref{asugLangTiesAppSyntax} for a complete description
+of the syntax of function calls.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\head{section}{Imperatives}{asugLangExprDo}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\index{imperative expression}
+\keywordIndex{do}
+
+The \verb"do" expression evaluates \verb"E" and discards the computed value,
+so that the \verb"do" expression returns no value.
+
+\begin{small}
+\begin{verbatim}
+    do E
+\end{verbatim}
+\end{small}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\head{section}{Multiple values}{asugLangExprMultis}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\index{multiple values}
+\index{,@{\tt ,} (comma)}
+A series of comma-separated expressions is used in \asharp{} to produce
+{\em multiple values\/}.  The expressions are evaluated one by one, and the
+results are taken together as the (multiple) value of the whole expression:
+
+\begin{small}
+\begin{verbatim}
+    3, 4, 5
+\end{verbatim}
+\end{small}
+This expression produces three values, all of type Integer.
+In general, an expression in \asharp{} produces zero, one or more
+values, each having its own type.  For convenience,
+nevertheless, we often speak of {\em the\/} value and {\em the\/} type
+of an expression, even if it produces multiple values, when
+the intended meaning is clear from the context.
+
+See \secref{asugLangElementaryGrouping} for a discussion of the use
+of parentheses in comma expressions.
+
+Functions may be declared to accept or return multiple values.
+The example below shows how to declare, define and use a function which
+involves multiple values.
+
+\begin{small}
+\begin{verbatim}
+    #include "aldor"
+    #include "aldorio"
+
+    -- Declaring a function to accept and return multiple values.
+    local f: (Integer, Integer) -> (Integer, Integer);
+
+    -- Defining a function to accept and return multiple values.
+    f(i: Integer, j: Integer): (Integer, Integer) == (i+j, i-j);
+
+    -- Using a function which accepts and returns multiple values.
+    (q: Integer, r: Integer) := divide f(100, 93);
+
+    -- Printing the result
+    stdout << "The quotient is  " << q << newline;
+    stdout << "The remainder is " << r << newline;
+\end{verbatim}
+\end{small}
+
+The call to \verb"f" returns \verb"(193, 7)",
+which are passed as arguments to the function \ttin{divide}
+from \verb"Integer".  This returns
+
+\begin{small}
+\begin{verbatim}
+    (193 quo 7, 193 rem 7)
+\end{verbatim}
+\end{small}
+
+which are assigned to \verb"q" and \verb"r" respectively.
+
+Comma-separated expressions are not necessarily evaluated
+in any particular order; furthermore, the evaluation of their
+subexpression may be interleaved.  Thus, the program:
+
+\begin{small}
+\begin{verbatim}
+    #include "aldor"
+    #include "aldorio"
+
+    pr2(a: MachineInteger, b: MachineInteger): () ==
+        stdout << a << " " << b << newline;
+
+    n: MachineInteger := 1;
+
+    pr2({n := n + 1; n}, {n := n + 1; n})
+\end{verbatim}
+\end{small}
+
+could print any of \ttin{2 3}, \ttin{3 2}, \ttin{2 2} or \ttin{3 3},
+depending on the implementation and whether the code is running in a
+multiprocessor environment.
+Programs which depend on the order of evaluation of expressions to
+be used as arguments to a function should use a sequence to make
+the order explicit.  (See \secref{asugLangExprSequences}.)
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\head{section}{Sequences}{asugLangExprSequences}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\index{sequence}
+A series of expressions to be evaluated one after another is called a
+\linebreak {\em sequence\/}.  A sequence is written as a
+semicolon-separated series of subexpressions:
+
+\begin{small}
+\begin{verbatim}
+    a := 1; b := a + a; c := 3*b
+\end{verbatim}
+\end{small}
+
+The expressions (that is, the subexpressions of the sequence)
+are evaluated one by one, in the order of their
+occurrence, and the value of the last expression evaluated
+is used as the value of the sequence.  A sequence may also
+contain one or more exit expressions, as described in
+\secref{asugLangExprExit}, which prevent the evaluation of any
+expressions later in the sequence and so provide a way to return
+a value other than that of the last expression in the sequence.
+
+Because semicolon has a relatively low precedence,
+it is usually necessary to enclose a sequence in braces (\ttin{\{ \}})
+or parentheses (\ttin{( )}) to get the desired result.
+(See \secref{asugLangElementaryGrouping} for details.)
+
+Examples:
+
+\begin{small}
+\begin{verbatim}
+    #include "aldor"
+
+    import from MachineInteger;
+
+    n1 := (a := 1; b := a + a;  3 * b);
+    n2 := {a := 1; b := a + a;  3 * b}
+
+    f(i0: MachineInteger): MachineInteger == {
+            a := i0;
+            b := a + a;
+            3 * b
+    }
+\end{verbatim}
+\end{small}
+    
+The meaning of a sequence is the same whether braces or parentheses are
+used.  Braces are normally used, especially to enclose a longer
+expression split over several lines.  Parentheses are occasionally used
+to enclose shorter sequences as part of other expressions.  An implicit
+semicolon is assumed after a closing brace but {\em not} after a closing
+parenthesis.
+
+%\pagebreak
+It is also possible to use indentation to construct sequences
+by enclosing lines between the directives \ttin{\#pile} and \ttin{\#endpile}.
+In this context, a group of consecutive lines indented by the same amount
+is called a {\em pile\/} and is treated as a sequence.
+The precise rules for forming piles are described in \secref{asugFLangLayout}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\head{section}{Exits}{asugLangExprExit}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\index{exit expression}
+\index{=>@{\tt =>} (exit expression)}
+An {\em exit expression} has the form:
+
+\begin{small}
+\begin{verbatim}
+    condition => E
+\end{verbatim}
+\end{small}
+
+When an exit expression appears as one of the elements of a sequence,
+the condition is evaluated.  If the condition evaluates to \verb"true"
+then the value of the sequence is the value of the expression \verb"E",
+and no further components of the sequences are evaluated.
+If the condition evaluates to \verb"false" then evaluation continues with
+the next expression in the sequence.  So the expression:
+
+\begin{small}
+\begin{verbatim}
+    { a; b; c => d; e; f }
+\end{verbatim}
+\end{small}
+
+is equivalent to
+
+\begin{small}
+\begin{verbatim}
+    { a; b; if c then d else { e; f } }
+\end{verbatim}
+\end{small}
+
+In a sequence which contains an exit expression, the type of the expression
+\verb"E" must be compatible with the type of the sequence, that is, with
+the type of the final element of the sequence\footnote{In the current release of
+\asharp{}, this means that the types must be the same.}%
+\index{compatible}.  If a sequence contains several exit expressions,
+the types of the possible exit values must
+%be mutually compatible.
+all be compatible.
+%% "mutually" suggests pairwise, which may not be adequate.
+
+If the condition is not of type \verb"Boolean", then an implicit
+application of the function \ttin{test} is performed to convert the
+condition to the type \verb"Boolean".  (See \secref{asugLangTiesTests}.)
+%% \secref{asugLangFunCall} says nothing about "test".   MGR
+
+\index{Exit}
+%An exit expression either transfers control elsewhere, or produces zero
+%values.
+%
+%% I found the above sentence difficult to follow - do you mean the
+%% following?  (It seems as if the "either .. or" should be "and".) MGR
+An exit expression transfers control; it does not, itself, produce a
+value.
+As a result, the type of the exit expression is \verb"()", and so
+an exit expression can only be used in a context which does not require
+a value.
+Examples:
+
+\begin{small}
+\begin{verbatim}
+    #include "aldor"
+
+    import from Integer;
+
+    b: Integer := 1;
+
+    a := { n := b * b; n < 10 => 0; n > 100 => 100 ; n }
+
+    -- `a' will be assigned the value `0', corresponding to the
+    -- right hand side of the first `=>'
+\end{verbatim}
+\end{small}
+
+Note that all of the exit values (\ie{}~\ttin{0} and \ttin{100})
+have type \verb"Integer", and the final element of the sequence
+also has type \verb"Integer".
+
+A series of exit expressions is often a compact way to enumerate
+a list of alternative cases:
+
+\begin{small}
+\begin{verbatim}
+    #include "aldor"
+    #include "aldorio"
+
+    import from Integer;
+
+    power(base: Integer, exp: Integer): Integer == {
+        exp = 0 => 1;
+        exp = 1 => base;
+        exp = 2 => base * base;
+        exp = 3 => base * base * base;
+
+        val := 1;
+
+        for i in 1..exp repeat val := val * base;
+
+        val;
+    }
+
+    stdout << power(2, 0) << newline;  -- Print `1'
+    stdout << power(2, 1) << newline;  -- Print `2'
+    stdout << power(2, 2) << newline;  -- Print `4'
+    stdout << power(2, 3) << newline;  -- Print `8'
+    stdout << power(2, 9) << newline;  -- Print `512'
+\end{verbatim}
+\end{small}
+
+Since any expression can appear after the \ttin{=>}, another sequence,
+which may contain other exit expressions, can appear there:
+
+\begin{small}
+\begin{verbatim}
+    #include "aldor"
+
+    import from Integer;
+
+    +++ If `a' or `b' is zero, then return 0;
+    +++ Otherwise return 1 if (a * b > 0), -1 elsewhere.
+    productSign(a: Integer, b: Integer): Integer == {
+        a = 0 => 0;
+        b = 0 => 0;
+        a < 0 => { b < 0 => 1; -1 }
+        b > 0 => 1;
+        -1 
+    }
+\end{verbatim}
+\end{small}
+
+If an exit expression appears as a strict subexpression of an expression
+% (Design question: why not allow an exit expression itself to be treated
+%  as a sequence of length one?  MGR)
+other than a sequence, the exit expression is treated as a sequence
+of length one:
+
+\begin{small}
+\begin{verbatim}
+    if b < 0 then a > 0 => flag := false;
+\end{verbatim}
+\end{small}
+% Example modified, since difficult at this point 
+% to see how original could be used.
+
+This example is treated as equivalent to:
+
+\begin{small}
+\begin{verbatim}
+    if b < 0 then { a > 0 => flag := false }
+\end{verbatim}
+\end{small}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\head{section}{If}{asugLangExprIf}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\keywordIndex{if}
+\keywordIndex{then}
+\keywordIndex{else}
+Conditional branching in \asharp{} is provided by the {\em if expression\/}.
+
+\begin{small}
+\begin{verbatim}
+    if condition then T
+    if condition then T else E
+\end{verbatim}
+\end{small}
+
+When an \verb"if" expression is evaluated, the \verb"condition" is evaluated.
+If the condition evaluates to \verb"true" then the value of the \verb"if"
+expression is the value of the expression \verb"T".
+If the condition evaluates to \verb"false" and the \verb"else" clause
+is present, then the value of the \verb"if" expression is the value
+of the expression \verb"E".
+If the \verb"else" clause is not present, then the \verb"if" expression
+returns no value.
+
+An {\tt if} expression used in a context which requires a value must
+have both a {\tt then} and an {\tt else} branch.  The types of the two
+branches must be compatible, and the type of the expression is the
+type which is satisfied by both branches.
+
+In contexts which do not require a value,
+the types of the {\tt then} and {\tt else} branch
+are independent.   In this case, the type of the {\tt if} expression
+is taken to be the type of the empty expression, and it is possible
+to omit the {\tt else} branch altogether.
+
+% Type of the if expression in category context.
+
+If \verb"condition" is not of type \verb"Boolean", then an implicit
+application of the function \ttin{test} is performed to convert
+\verb"condition" to type \verb"Boolean".  (See \secref{asugLangTiesTests})
+
+Example:
+
+\begin{small}
+\begin{verbatim}
+    #include "aldor"
+    import from MachineInteger;
+
+    foo(a: MachineInteger): MachineInteger ==
+        if a > 0 then a * a else 0
+\end{verbatim}
+\end{small}
+
+Note that if the \verb"else" clause is not present, then the \verb"if"
+expression cannot be used in a context which requires a value:
+
+\begin{small}
+\begin{verbatim}
+    -- This assignment is not type correct.
+    a : MachineInteger := if true then 1;
+\end{verbatim}
+\end{small}
+
+\clearpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\head{section}{Select}{asugLangExprSelect}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\keywordIndex{select}
+\keywordIndex{in}
+\operatorIndex{case}
+
+A select statement takes the form:
+\begin{small}
+\begin{verbatim}
+select E in {
+        V1 => E1;
+        V2 => E2;
+        ...
+        En;
+}
+\end{verbatim}
+\end{small}
+
+where {\tt E}, {\tt E1}, {\tt E2} and {\tt En} are arbitrary expressions of
+the same type. {\tt V1}, {\tt V2} are also arbitrary expressions any do
+not have to be the same type.
+
+The statement is interpreted as follows: for each option ({\tt V1}, {\tt V2},
+...) in turn , the function {\tt case} is called with the value of {\tt E} as
+its first argument, and the value of the option as the second argument.
+If the call to {\tt case} is true, then the code on the right of the {\tt =>}
+is executed.  If no option is satisfied, then the default code {\tt En} is
+executed.
+
+A {\tt select} statement is type-correct if there exists {\tt case}
+functions with type
+\begin{small}
+{\tt ({\em typeof({\tt E})}, {\em typeof({\tt V})}) -> Boolean}
+\end{small}
+for each {\tt V} in {({\tt V1}, {\tt V2}, ...)}.
+
+Given an appropriate {\tt case} function, one can write:
+
+\begin{small}
+\begin{verbatim}
+select gcd(p, q) in {
+        0 => stdout << "gcd is zero";
+        1 => stdout << "gcd is one";
+        stdout << "gcd is complicated"
+}
+
+
+select getOption() in {
+           0 => option1();
+           1 => option2();
+        2..5 => optionX();
+        illegalOption();
+}
+\end{verbatim}
+\end{small}
+
+Unions also export a case function, so one can do:
+
+\begin{small}
+\begin{verbatim}
+U ==> Union(var: Symbol, poly: Poly);
+u: U := ...
+select u in {
+        var => ...
+        poly => ...
+        never
+}
+\end{verbatim}
+\end{small}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\head{section}{Logical expressions}{asugLangExprLogicals}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Logical expressions in \asharp{} are provided using the following forms:
+
+\keywordIndex{and}
+\keywordIndex{or}
+\keywordIndex{not}
+
+\begin{small}
+\begin{verbatim}
+    E1 and E2
+    E1 or  E2
+    not E
+\end{verbatim}
+\end{small}
+
+An \ttin{and} expression is \verb"true" if both \verb"E1" and \verb"E2" are
+\verb"true".  If the first expression evaluates to \verb"false", then
+the second expression is not evaluated.
+
+An \ttin{or} expression is \verb"true" if \verb"E1" or \verb"E2" or
+both are \verb"true".  If the first expression evaluates to \verb"true",
+then the second expression is not evaluated.
+
+A \ttin{not} expression is \verb"true" if \verb"E" is \verb"false".
+
+If any of \verb"E1", \verb"E2" or \verb"E" is not of type \verb"Boolean",
+then an implicit application of the function \ttin{test} is performed
+to convert the value to type \verb"Boolean".  (See \secref{asugLangTiesTests})
+The type of a logical expression is \verb"Boolean".
+
+Examples:
+
+\begin{small}
+\begin{verbatim}
+    #include "aldor"
+    #include "aldorio"
+
+    if true and false then stdout << "This string will not be printed.";
+
+    import from MachineInteger;
+
+    -- Define `test' for MachineInteger:  a null value returns false.
+    test(x: MachineInteger): Boolean == if x = 0 then false else true;
+
+    if 1 or 1 then stdout << "I can do this." << newline;
+
+    -- Define `test' for String:  an empty string returns false.
+    -- Note that `#s' (`the length of s') uses
+    -- the previous test for MachineInteger.
+    test(s: String): Boolean == if #s then true else false;
+
+    if true and 1 and "I can do this, too." then
+        stdout << "This string will be printed." << newline;
+\end{verbatim}
+\end{small}
+The logical connectives \ttin{and}, \ttin{or} and \ttin{not} are
+syntactic elements of the language that should not be confused with
+similar functions exported from the type \verb"Boolean"
+(\verb"/\", \verb"\/" and \verb"~").  The functional versions from
+\verb"Boolean" evaluate all of their arguments before computing their
+result, and denote function values.  The logical connectives cannot be
+used as functions:
+
+\begin{small}
+\begin{verbatim}
+    #include "aldor"
+    #include "aldorio"
+
+    import from List Boolean;
+
+    -- This expression will print:  `[T,T,F]'
+    stdout << ((map ~) [false, false, true]) << newline;
+\end{verbatim}
+\end{small}
+
+but you cannot say:  {\small \verb+((map not) [false, false, true])+},
+since \ttin{not} is {\em not\/} a function. The \asharp{} function
+\ttin{map}, defined for all {\em BoundedFiniteLinearStructureType} types.
+In the case of \verb+List+s, \ttin{map} is defined as a function taking
+a function (for example, \ttin{~}) as an argument and returning a function
+taking a \ttin{List} as an argument and returning a \ttin{List}.
+%(see \secref {asugAxllibAggregate}
+%applies its first argument to each component of its second argument.)
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\input{langloop}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\head{section}{Generate expressions}{asugLangExprGenerators}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Generate expressions are used to create generators.
+For a complete description of how to use {\tt generate} to create
+a generator, see \chapref{asugLangGener}.  The general syntax for a
+generate expression is:
+
+\begin{small}
+\begin{verbatim}
+    generate E
+    generate to n of E
+\end{verbatim}
+\end{small}
+
+\keywordIndex{of}
+\keywordIndex{yield}
+\keywordIndex{to}
+
+{\tt E} is an expression which represents code which will be evaluated
+each time a value is extracted from the generator.  Evaluation begins
+at the start of the expression {\tt E} and continues until an expression
+of the form
+
+\begin{small}
+\begin{verbatim}
+    yield v
+\end{verbatim}
+\end{small}
+
+is processed, where {\tt v} is the value to be passed back to the
+context which is collecting values from the generator.  Each time a
+value is requested after the first value is yielded, control resumes
+after the {\tt yield} expression which produced the previous value.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\head{section}{Collections}{asugLangExprCollections}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\index{collect expressions}
+
+A {\em collect} expression provides a convenient shorthand for
+creating generators and aggregate objects.  A collect expression
+has the form:
+
+\verb@   @{\tt $E$\ ${iter}_1\ \ldots\ {iter}_n$}
+
+where $n \ge 1$. The ${iter}_i$ are iterators, as described in
+\secref{asugLangExprLoop}.  Consider the following example:
+
+\begin{small}
+\begin{verbatim}
+    #include "aldor"
+    #include "aldorio"
+    ...
+    import from Integer, List Integer;
+    stdout << [x*x for x in 1..10] << newline;
+    stdout << [x*y for x in 1..10 for y in 10..1 by -1] << newline;
+\end{verbatim}
+\end{small}
+
+This program creates a list of the squares of the integers from 1 to 10,
+and then a list of products of integers.  Note that {\tt while} can form
+an iterator, and can therefore be used in a collect expression.
+
+\begin{sloppypar}
+Note that the square brackets are not part of the collect expression,
+but are simply a shorthand for a call to the function \ttin{bracket},
+with the value of the collection as an argument.  The domain
+\ttin{List Integer} from the \asharp{} base library exports a
+function with the signature
+\verb"bracket: Generator Integer -> %", which is called twice in the
+above example.
+\end{sloppypar}
+
+As collect expressions produce generators, one would expect that
+generate expressions and collect expressions are related.  The collect
+expression:
+
+\verb@   @{\tt $E$\ ${iter}_1\ \ldots\ {iter}_n$}
+
+is equivalent to the generate expression:
+
+\verb@   @{\tt generate ${iter}_1\ \ldots\ {iter}_n$\ repeat yield $E$}
+
+Thus, {\tt x*y for x in 1..9 for y in 9..1 by -1} is the same as:
+
+{\tt generate for x in 1..9 for y in 9..1 by -1 repeat yield x*y}
+
+Collect expressions provide a convenient notation for creating new aggregates,
+and require no additional functionality in the language.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\head{section}{General branching}{asugLangExprGotos}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\keywordIndex{label}
+\asharp{} provides unconditional branching using {\em label expressions\/}
+and {\em goto expressions\/}.  A label expression is of the following form:
+
+\begin{small}
+\begin{verbatim}
+    @L E
+\end{verbatim}
+\end{small}
+
+where \verb"L" is an identifier known as the {\em label name},
+and \verb"E" is any expression.  The type of the label expression
+is the same as the type of \verb"E".  Names which are used as labels
+have no relationship with variables or constants of the same name,
+and a label name may also be used as a variable or constant. A label
+name obeys the same scope rules as constants or variables, but may not
+appear in any expressions other than {\tt goto}s and other label
+expressions. Since labels are constants, it is an error to bind the
+same label twice in the same scope.
+
+\keywordIndex{goto}
+A goto expression has the following form:
+
+\begin{small}
+\begin{verbatim}
+    goto L
+\end{verbatim}
+\end{small}
+
+where \verb"L" is the name of a label.
+After the evaluation of a goto expression, execution resumes
+with the expression associated with the label \verb"L".
+The type of the goto expression itself is the type \verb"Exit".
+\index{Exit}
+
+%The label must be in the same scope as the \verb"goto"
+% (\ie{} in the same function or \verb"where" expression).
+%Also, a \verb"goto" must not branch into a loop with \ttin{for}
+%iterators. 
+
+The label must appear in the same function body as the \verb"goto". In
+addition, it is an error for a \verb"goto" to branch into an inner scope
+of the scope in which it appears (that is, % or did "ie." mean "e.g."?
+a local function or any repeat or
+collection including a {\tt for}, {\tt where}, {\tt add} or {\tt with}
+expression). A \verb"goto" may also not branch out of a function or a
+{\tt with} or {\tt add} expression.
+
+Example:
+
+\begin{small}
+\begin{verbatim}
+    foo(a: MachineInteger): MachineInteger == {
+        if a <= 0 then goto ERROR;
+
+        return a * a;
+
+        @ERROR
+        stdout << "The argument must be a positive value!" << newline;
+        0
+    }
+\end{verbatim}
+\end{small}
+
+If the first test is successful, then the \ttin{return} expression
+is skipped and the execution proceeds on the line following \ttin{\@ERROR}.
+
+Labels can also be defined at the top level of a file,
+since the top level of a file is treated as a sequence:
+
+\begin{small}
+\begin{verbatim}
+    #include "aldor"
+    #include "aldorio"
+
+    @LAB1
+    stdout << "You will see this forever..." << newline;
+    goto LAB1;
+\end{verbatim}
+\end{small}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\head{section}{Never}{asugLangExprNever}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\keywordIndex{never}
+\index{Exit}
+The expression \ttin{never} is a special value, of type \verb"Exit",
+which acts as a programmer-supplied assertion that execution will never
+reach that point.  An exit expression can be useful
+as it may allow a program to be translated into more efficient code.
+
+The following \asharp{} code is a possible use of {\tt never}
+
+\begin{small}\begin{verbatim}
+        s := {
+                x = 0 => "zero";
+                x > 0 => "positive";
+                x < 0 => "negative";
+                -- This expression is unreachable
+                never
+        }
+\end{verbatim}
+\end{small}
+
+With luck, the \ttin{never} at the end of the sequence will not be
+reached in any execution of the program.  (If it is reached, \asharp{}
+will complain \linebreak \ttin{Aldor error: Reached a "never"}).

@@ -1,0 +1,78 @@
+/*****************************************************************************
+ *
+ * ctype.h0: Fixups for <ctype.h>
+ *
+ * Copyright (c) 1990-2007 Aldor Software Organization Ltd (Aldor.org).
+ *
+ ****************************************************************************/
+
+/*
+ * Include and fix bugs in implementation of ANSI C header <ctype.h>.
+ */
+
+#ifndef _CTYPE_H0_
+#define _CTYPE_H0_
+
+#ifdef CC_nlchar_unused_static
+#  define static extern
+#endif
+
+#include <ctype.h>
+
+#ifdef CC_nlchar_unused_static
+#  undef static
+#endif
+
+/*
+ * Some implementations are wrong when input is nonalphabetic.
+ */
+#ifdef CC_broken_toupper
+
+#  ifdef toupper
+#    undef toupper
+#  endif
+#  ifdef tolower
+#    undef tolower
+#  endif
+
+   extern short	__uppercase[], __lowercase[];
+
+#  define toupper(c)	(__uppercase[(c)+1])
+#  define tolower(c)	(__lowercase[(c)+1])
+#endif  /* CC_broken_toupper */
+
+#if defined(CC_noisy_ctype) && defined(isalpha)
+
+/*
+ * If any platform with CC_noisy_ctype does not have __ctype, then we shall
+ * have to make one ourselves in stdc.c.
+ */
+#undef	isalpha
+#undef	isupper
+#undef	islower
+#undef	isdigit
+#undef	isxdigit
+#undef	isalnum
+#undef	isspace
+#undef	ispunct
+#undef	isprint
+#undef	isgraph
+#undef	iscntrl
+
+#define	isalpha(c)	((__ctype + 1)[(int) c] & (_ISUPPER|_ISLOWER))
+#define	isupper(c)	((__ctype + 1)[(int) c] & _ISUPPER)
+#define	islower(c)	((__ctype + 1)[(int) c] & _ISLOWER)
+#define	isdigit(c)	((__ctype + 1)[(int) c] & _ISDIGIT)
+#define	isxdigit(c)	((__ctype + 1)[(int) c] & _ISXDIGIT)
+#define	isalnum(c)	((__ctype + 1)[(int) c] & (_ISUPPER|_ISLOWER|_ISDIGIT))
+#define	isspace(c)	((__ctype + 1)[(int) c] & _ISSPACE)
+#define	ispunct(c)	((__ctype + 1)[(int) c] & _ISPUNCT)
+#define	isprint(c)	((__ctype + 1)[(int) c] & \
+			  (_ISPUNCT|_ISUPPER|_ISLOWER|_ISDIGIT|_ISBLANK))
+#define	isgraph(c)	((__ctype + 1)[(int) c] & \
+			  (_ISPUNCT|_ISUPPER|_ISLOWER|_ISDIGIT))
+#define	iscntrl(c)	((__ctype + 1)[(int) c] & _ISCNTRL)
+
+#endif /* CC_noisy_ctype */
+
+#endif /* !_CTYPE_H0_ */

@@ -1,0 +1,166 @@
+
+(|Sequence|
+   (|Import| NIL |AxiomLib|)
+   (|Export|
+      (|Declare|
+         |OneDimensionalArrayFunctions2|
+         (|Apply|
+            |->|
+            (|Comma| (|Declare| |#1| |Type|) (|Declare| |#2| |Type|))
+            (|With|
+               NIL
+               (|Sequence|
+                  (|Declare|
+                     |scan|
+                     (|Apply|
+                        |->|
+                        (|Comma|
+                           (|Apply| |->| (|Comma| |#1| |#2|) |#2|)
+                           (|Apply| |OneDimensionalArray| |#1|)
+                           |#2|)
+                        (|Apply| |OneDimensionalArray| |#2|)))
+                  (|Declare|
+                     |reduce|
+                     (|Apply|
+                        |->|
+                        (|Comma|
+                           (|Apply| |->| (|Comma| |#1| |#2|) |#2|)
+                           (|Apply| |OneDimensionalArray| |#1|)
+                           |#2|)
+                        |#2|))
+                  (|Declare|
+                     |map|
+                     (|Apply|
+                        |->|
+                        (|Comma|
+                           (|Apply| |->| (|Comma| |#1|) |#2|)
+                           (|Apply| |OneDimensionalArray| |#1|))
+                        (|Apply| |OneDimensionalArray| |#2|)))) )))
+      NIL
+      NIL)
+   (|Export|
+      (|Declare|
+         |OneDimensionalArray|
+         (|Apply|
+            |->|
+            (|Declare| |#1| |Type|)
+            (|With|
+               NIL
+               (|Sequence|
+                  (|Apply| |OneDimensionalArrayAggregate| |#1|)
+                  (|Declare|
+                     |oneDimensionalArray|
+                     (|Apply| |->| (|Comma| (|Apply| |List| |#1|)) |%|))
+                  (|Declare|
+                     |oneDimensionalArray|
+                     (|Apply|
+                        |->|
+                        (|Comma| |NonNegativeInteger| |#1|)
+                        |%|)))) ))
+      NIL
+      NIL)
+   (|Export|
+      (|Declare|
+         |IndexedOneDimensionalArray|
+         (|Apply|
+            |->|
+            (|Comma| (|Declare| |#1| |Type|) (|Declare| |#2| |Integer|))
+            (|Apply| |OneDimensionalArrayAggregate| |#1|)))
+      NIL
+      NIL)
+   (|Export|
+      (|Declare|
+         |FlexibleArray|
+         (|Apply|
+            |->|
+            (|Declare| |#1| |Type|)
+            (|With|
+               NIL
+               (|Sequence|
+                  (|Apply| |OneDimensionalArrayAggregate| |#1|)
+                  (|Apply| |ExtensibleLinearAggregate| |#1|)
+                  (|Declare|
+                     |flexibleArray|
+                     (|Apply| |->| (|Comma| (|Apply| |List| |#1|)) |%|))
+                  (|Declare|
+                     |physicalLength|
+                     (|Apply| |->| (|Comma| |%|) |NonNegativeInteger|))
+                  (|Declare|
+                     |physicalLength!|
+                     (|Apply| |->| (|Comma| |%| |Integer|) |%|))
+                  (|Declare|
+                     |shrinkable|
+                     (|Apply| |->| (|Comma| |Boolean|) |Boolean|)))) ))
+      NIL
+      NIL)
+   (|Export|
+      (|Declare|
+         |IndexedFlexibleArray|
+         (|Apply|
+            |->|
+            (|Comma| (|Declare| |#1| |Type|) (|Declare| |#2| |Integer|))
+            (|With|
+               NIL
+               (|Sequence|
+                  (|Apply| |OneDimensionalArrayAggregate| |#1|)
+                  (|Apply| |ExtensibleLinearAggregate| |#1|)
+                  (|Declare|
+                     |flexibleArray|
+                     (|Apply| |->| (|Comma| (|Apply| |List| |#1|)) |%|))
+                  (|Declare|
+                     |physicalLength|
+                     (|Apply| |->| (|Comma| |%|) |NonNegativeInteger|))
+                  (|Declare|
+                     |physicalLength!|
+                     (|Apply| |->| (|Comma| |%| |Integer|) |%|))
+                  (|Declare|
+                     |shrinkable|
+                     (|Apply| |->| (|Comma| |Boolean|) |Boolean|)))) ))
+      NIL
+      NIL)
+   (|Export|
+      (|Declare|
+         |PrimitiveArrayFunctions2|
+         (|Apply|
+            |->|
+            (|Comma| (|Declare| |#1| |Type|) (|Declare| |#2| |Type|))
+            (|With|
+               NIL
+               (|Sequence|
+                  (|Declare|
+                     |scan|
+                     (|Apply|
+                        |->|
+                        (|Comma|
+                           (|Apply| |->| (|Comma| |#1| |#2|) |#2|)
+                           (|Apply| |PrimitiveArray| |#1|)
+                           |#2|)
+                        (|Apply| |PrimitiveArray| |#2|)))
+                  (|Declare|
+                     |reduce|
+                     (|Apply|
+                        |->|
+                        (|Comma|
+                           (|Apply| |->| (|Comma| |#1| |#2|) |#2|)
+                           (|Apply| |PrimitiveArray| |#1|)
+                           |#2|)
+                        |#2|))
+                  (|Declare|
+                     |map|
+                     (|Apply|
+                        |->|
+                        (|Comma|
+                           (|Apply| |->| (|Comma| |#1|) |#2|)
+                           (|Apply| |PrimitiveArray| |#1|))
+                        (|Apply| |PrimitiveArray| |#2|)))) )))
+      NIL
+      NIL)
+   (|Export|
+      (|Declare|
+         |PrimitiveArray|
+         (|Apply|
+            |->|
+            (|Declare| |#1| |Type|)
+            (|Apply| |OneDimensionalArrayAggregate| |#1|)))
+      NIL
+      NIL))

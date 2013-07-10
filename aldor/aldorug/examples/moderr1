@@ -1,0 +1,17 @@
+"fact.as", line 25: print << fact 7    << newline;
+                    ..............^
+[L25 C15] #1 (Error) No meaning for integer-style literal `7'.
+
+"fact.as", line 26: print << fact 78   << newline;
+                    ..............^
+[L26 C15] #2 (Error) No meaning for integer-style literal `78'.
+
+"fact.as", line 27: print << fact(-3)  << newline;
+                    ..............^^
+[L27 C15] #3 (Error) There are no suitable meanings for the 
+operator `-'.
+[L27 C16] #4 (Error) No meaning for integer-style literal `3'.
+
+"fact.as", line 30: print << fact 0    << newline;
+                    ..............^
+[L30 C15] #5 (Error) No meaning for identifier `0'.

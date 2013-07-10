@@ -1,0 +1,73 @@
+##########################################
+#
+# Makefile to build an Aldor distribution
+#
+# Copyright (c) 1990-2007 Aldor Software Organization Ltd (Aldor.org).
+#
+##########################################
+
+ALDORLIBROOT=$(GENERIC_DIR)\lib\aldor
+
+all:
+	@echo "Usage:"
+	@echo "   make objects         => make the objects for libaldor"
+	@echo "   make installdistrib  => install libaldor in the aldor directory"
+	@echo "   make clean           => clean the directory"
+
+#replaced $(PWD) with $$here, because $(PWD) does nto work in cygwin
+objects: check $(ALDORLIBROOT)\lib\aldor_gloop.obj \
+		$(ALDORLIBROOT)\lib\aldor_gloopd.obj \
+		$(ALDORLIBROOT)\lib\libaldor.lib \
+		$(ALDORLIBROOT)\lib\libaldord.lib
+
+$(ALDORLIBROOT)\lib\aldor_gloop.obj: $(ALDORLIBROOT)\lib\aldor_gloop.ao
+	aldor -q5 -qinline-all -fo -Y $(ALDORLIBROOT)\lib -R $(ALDORLIBROOT)\lib $(ALDORLIBROOT)\lib\aldor_gloop.ao
+$(ALDORLIBROOT)\lib\aldor_gloopd.obj: $(ALDORLIBROOT)\lib\aldor_gloopd.ao
+	aldor -q5 -qinline-all -fo -Y $(ALDORLIBROOT)\lib -R $(ALDORLIBROOT)\lib $(ALDORLIBROOT)\lib\aldor_gloopd.ao
+
+$(ALDORLIBROOT)\lib\libaldor.lib: $(ALDORLIBROOT)\lib\libaldor.al
+	$(ALDORLIBROOT)\bin\makelibaldor.bat $(ALDORLIBROOT) libaldor
+$(ALDORLIBROOT)\lib\libaldord.lib: $(ALDORLIBROOT)\lib\libaldord.al
+	$(ALDORLIBROOT)\bin\makelibaldor.bat $(ALDORLIBROOT) libaldord
+
+installdistrib: objects \
+	$(ALDORROOT)\include\aldor.as $(ALDORROOT)\include\aldorinterp.as \
+	$(ALDORROOT)\include\aldorio.as $(ALDORROOT)\include\aldortest.as \
+	$(ALDORROOT)\lib\libaldor.al $(ALDORROOT)\lib\libaldord.al \
+	$(ALDORROOT)\lib\libaldor.lib $(ALDORROOT)\lib\libaldord.lib \
+	$(ALDORROOT)\lib\aldor_gloop.ao $(ALDORROOT)\lib\aldor_gloop.obj \
+	$(ALDORROOT)\lib\aldor_gloopd.ao $(ALDORROOT)\lib\aldor_gloopd.obj
+
+$(ALDORROOT)\include\aldor.as: $(ALDORLIBROOT)\include\aldor.as
+	  copy $(ALDORLIBROOT)\include\aldor.as $(ALDORROOT)\include
+$(ALDORROOT)\include\aldorinterp.as: $(ALDORLIBROOT)\include\aldorinterp.as
+	  copy $(ALDORLIBROOT)\include\aldorinterp.as $(ALDORROOT)\include
+$(ALDORROOT)\include\aldorio.as: $(ALDORLIBROOT)\include\aldorio.as
+	  copy $(ALDORLIBROOT)\include\aldorio.as $(ALDORROOT)\include
+$(ALDORROOT)\include\aldortest.as: $(ALDORLIBROOT)\include\aldortest.as
+	  copy $(ALDORLIBROOT)\include\aldortest.as $(ALDORROOT)\include
+$(ALDORROOT)\lib\libaldor.al: $(ALDORLIBROOT)\lib\libaldor.al
+	  copy $(ALDORLIBROOT)\lib\libaldor.al $(ALDORROOT)\lib
+$(ALDORROOT)\lib\libaldord.al: $(ALDORLIBROOT)\lib\libaldord.al
+	  copy $(ALDORLIBROOT)\lib\libaldord.al $(ALDORROOT)\lib
+$(ALDORROOT)\lib\libaldor.lib: $(ALDORLIBROOT)\lib\libaldor.lib
+	  copy $(ALDORLIBROOT)\lib\libaldor.lib $(ALDORROOT)\lib
+$(ALDORROOT)\lib\libaldord.lib: $(ALDORLIBROOT)\lib\libaldord.lib
+	  copy $(ALDORLIBROOT)\lib\libaldord.lib $(ALDORROOT)\lib
+$(ALDORROOT)\lib\aldor_gloop.ao: $(ALDORLIBROOT)\lib\aldor_gloop.ao
+	  copy $(ALDORLIBROOT)\lib\aldor_gloop.ao $(ALDORROOT)\lib
+$(ALDORROOT)\lib\aldor_gloopd.ao: $(ALDORLIBROOT)\lib\aldor_gloopd.ao
+	  copy $(ALDORLIBROOT)\lib\aldor_gloopd.ao $(ALDORROOT)\lib
+$(ALDORROOT)\lib\aldor_gloop.obj: $(ALDORLIBROOT)\lib\aldor_gloop.obj
+	  copy $(ALDORLIBROOT)\lib\aldor_gloop.obj $(ALDORROOT)\lib
+$(ALDORROOT)\lib\aldor_gloopd.obj: $(ALDORLIBROOT)\lib\aldor_gloopd.obj
+	  copy $(ALDORLIBROOT)\lib\aldor_gloopd.obj $(ALDORROOT)\lib
+
+check:
+	-@ if not defined ALDORROOT echo *** ALDORROOT unset
+	-@ if not defined GENERIC_DIR echo *** GENERIC_DIR unset
+
+clean:
+	-@del /q lib\*.a
+	-@del /q *~
+	-@del /q *\*~

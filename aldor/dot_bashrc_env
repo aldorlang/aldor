@@ -1,0 +1,7 @@
+if [ -z "$ALDORROOT" ] ;     then export ALDORROOT=`pwd`/.. ;  fi
+if [ -z "$MACHINE" ] ;       then export MACHINE=MacOSX ;  fi
+if [ -z "$ALDOR_VERSION" ] ; then export ALDOR_VERSION=1.2 ;  fi
+if [ -z "$ALDOR_INSTALL" ] ; then export ALDOR_INSTALL=$ALDORROOT/install ;  fi
+if [ -z "$GmpDir" ] ;        then export GmpDir=/usr/lib ; fi
+export PATH=$ALDORROOT/build/bin:$ALDORROOT/build/toolbin:$PATH
+

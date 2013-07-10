@@ -1,0 +1,156 @@
+(|Sequence| (|Import| NIL |AxiomLib|)
+
+    (|Export|
+        (|Declare| |PatternMatchFunctionSpace|
+            (|Apply| ->
+                     (|Comma| (|Declare| |#1| |SetCategory|)
+                              (|Declare| |#2|
+                                  (|With| NIL
+                                          (|Sequence| |IntegralDomain|
+                                           |OrderedSet|
+                                           (|Apply| |PatternMatchable|
+                                            |#1|))))
+                              (|Declare| |#3|
+                                  (|With| NIL
+                                          (|Sequence|
+                                           (|Apply| |FunctionSpace|
+                                            |#2|)
+                                           (|Apply| |ConvertibleTo|
+                                            (|Apply| |Pattern| |#1|))
+                                           (|Apply| |PatternMatchable|
+                                            |#1|)
+                                           (|Apply| |RetractableTo|
+                                            (|Apply| |Kernel| %))))))
+                     (|With| NIL
+                             (|Sequence|
+                                 (|Declare| |patternMatch|
+                                     (|Apply| ->
+                                      (|Comma| |#3|
+                                       (|Apply| |Pattern| |#1|)
+                                       (|Apply| |PatternMatchResult|
+                                        |#1| |#3|))
+                                      (|Apply| |PatternMatchResult|
+                                       |#1| |#3|)))))))
+        NIL NIL)
+
+    (|Export|
+        (|Declare| |PatternMatchPolynomialCategory|
+            (|Apply| ->
+                     (|Comma| (|Declare| |#1| |SetCategory|)
+                              (|Declare| |#2|
+                                  |OrderedAbelianMonoidSup|)
+                              (|Declare| |#3| |OrderedSet|)
+                              (|Declare| |#4|
+                                  (|With| NIL
+                                          (|Sequence| |Ring|
+                                           |OrderedSet|
+                                           (|Apply| |PatternMatchable|
+                                            |#1|))))
+                              (|Declare| |#5|
+                                  (|With| NIL
+                                          (|Sequence|
+                                           (|Apply|
+                                            |PolynomialCategory| |#4|
+                                            |#2| |#3|)
+                                           (|Apply| |ConvertibleTo|
+                                            (|Apply| |Pattern| |#1|))))))
+                     (|With| NIL
+                             (|Sequence|
+                                 (|Declare| |patternMatch|
+                                     (|Apply| ->
+                                      (|Comma| |#5|
+                                       (|Apply| |Pattern| |#1|)
+                                       (|Apply| |PatternMatchResult|
+                                        |#1| |#5|)
+                                       (|Apply| ->
+                                        (|Comma| |#3|
+                                         (|Apply| |Pattern| |#1|)
+                                         (|Apply| |PatternMatchResult|
+                                          |#1| |#5|))
+                                        (|Apply| |PatternMatchResult|
+                                         |#1| |#5|)))
+                                      (|Apply| |PatternMatchResult|
+                                       |#1| |#5|)))
+                                 (|If| (|Test|
+                                        (|Has| |#3|
+                                         (|Apply| |PatternMatchable|
+                                          |#1|)))
+                                       (|Declare| |patternMatch|
+                                        (|Apply| ->
+                                         (|Comma| |#5|
+                                          (|Apply| |Pattern|
+                                           (|PretendTo| |#1|
+                                            |SetCategory|))
+                                          (|Apply| |PatternMatchResult|
+                                           (|PretendTo| |#1|
+                                            |SetCategory|)
+                                           (|PretendTo| |#5|
+                                            |SetCategory|)))
+                                         (|Apply| |PatternMatchResult|
+                                          (|PretendTo| |#1|
+                                           |SetCategory|)
+                                          (|PretendTo| |#5|
+                                           |SetCategory|))))
+                                       NIL)))))
+        NIL NIL)
+
+    (|Export|
+        (|Declare| |PatternMatchQuotientFieldCategory|
+            (|Apply| ->
+                     (|Comma| (|Declare| |#1| |SetCategory|)
+                              (|Declare| |#2|
+                                  (|With| NIL
+                                          (|Sequence| |IntegralDomain|
+                                           (|Apply| |PatternMatchable|
+                                            |#1|)
+                                           (|Apply| |ConvertibleTo|
+                                            (|Apply| |Pattern| |#1|)))))
+                              (|Declare| |#3|
+                                  (|Apply| |QuotientFieldCategory|
+                                           |#2|)))
+                     (|With| NIL
+                             (|Sequence|
+                                         (|Declare| |patternMatch|
+                                          (|Apply| ->
+                                           (|Comma| |#3|
+                                            (|Apply| |Pattern| |#1|)
+                                            (|Apply|
+                                             |PatternMatchResult| |#1|
+                                             |#3|))
+                                           (|Apply|
+                                            |PatternMatchResult| |#1|
+                                            |#3|)))))))
+        NIL NIL)
+
+    (|Export|
+        (|Declare| |PatternMatchIntegerNumberSystem|
+            (|Apply| -> (|Declare| |#1| |IntegerNumberSystem|)
+                     (|With| NIL
+                             (|Sequence|
+                                 (|Declare| |patternMatch|
+                                     (|Apply| ->
+                                      (|Comma| |#1|
+                                       (|Apply| |Pattern| |Integer|)
+                                       (|Apply| |PatternMatchResult|
+                                        |Integer| |#1|))
+                                      (|Apply| |PatternMatchResult|
+                                       |Integer| |#1|)))))))
+        NIL NIL)
+
+    (|Export|
+        (|Declare| |PatternMatchSymbol|
+            (|Apply| -> (|Declare| |#1| |SetCategory|)
+                     (|With| NIL
+                             (|Sequence|
+                                 (|Declare| |patternMatch|
+                                     (|Apply| ->
+                                      (|Comma| |Symbol|
+                                       (|Apply| |Pattern| |#1|)
+                                       (|Apply| |PatternMatchResult|
+                                        |#1| |Symbol|))
+                                      (|Apply| |PatternMatchResult|
+                                       |#1| |Symbol|)))))))
+        NIL NIL)
+        
+    
+    )

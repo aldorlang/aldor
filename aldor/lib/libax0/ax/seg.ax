@@ -1,0 +1,302 @@
+
+(|Sequence|
+   (|Import| NIL |AxiomLib|)
+   (|Import| NIL |Boolean|)
+   (|Export|
+      (|Declare|
+         |IncrementingMaps|
+         (|Apply|
+            |->|
+            (|Declare|
+               |#1|
+               (|With| NIL (|Sequence| |Monoid| |AbelianSemiGroup|)))
+            (|With|
+               NIL
+               (|Sequence|
+                  (|Declare|
+                     |increment|
+                     (|Apply|
+                        |->|
+                        (|Comma|)
+                        (|Apply| |->| (|Comma| |#1|) |#1|)))
+                  (|Declare|
+                     |incrementBy|
+                     (|Apply|
+                        |->|
+                        (|Comma| |#1|)
+                        (|Apply| |->| (|Comma| |#1|) |#1|)))) )))
+      NIL
+      NIL)
+   (|Export|
+      (|Declare|
+         |UniversalSegmentFunctions2|
+         (|Apply|
+            |->|
+            (|Comma| (|Declare| |#1| |Type|) (|Declare| |#2| |Type|))
+            (|With|
+               NIL
+               (|Sequence|
+                  (|Declare|
+                     |map|
+                     (|Apply|
+                        |->|
+                        (|Comma|
+                           (|Apply| |->| (|Comma| |#1|) |#2|)
+                           (|Apply| |UniversalSegment| |#1|))
+                        (|Apply| |UniversalSegment| |#2|)))
+                  (|If|
+                     (|Test| (|Has| |#1| |OrderedRing|))
+                     (|Declare|
+                        |map|
+                        (|Apply|
+                           |->|
+                           (|Comma|
+                              (|Apply| |->| (|Comma| |#1|) |#2|)
+                              (|Apply|
+                                 |UniversalSegment|
+                                 (|PretendTo| |#1| |Type|)))
+                           (|Apply| |Stream| (|PretendTo| |#2| |Type|))))
+                     NIL)))) )
+      NIL
+      NIL)
+   (|Sequence|
+      (|Define|
+         (|Declare|
+            |UniversalSegmentExtendCategory|
+            (|Apply| |->| (|Declare| |#1| |Type|) |Category|))
+         (|Lambda|
+            (|Comma| (|Declare| |#1| |Type|))
+            |Category|
+            (|Label|
+               |UniversalSegmentExtendCategory|
+               (|With|
+                  NIL
+                  (|Sequence|
+                     (|Apply| |SegmentCategory| |#1|)
+                     (|Declare| |..| (|Apply| |->| (|Comma| |#1|) |%|))
+                     (|Declare|
+                        |segment|
+                        (|Apply| |->| (|Comma| |#1|) |%|))
+                     (|Declare|
+                        |coerce|
+                        (|Apply|
+                           |->|
+                           (|Comma| (|Apply| |Segment| |#1|))
+                           |%|))
+                     (|Declare|
+                        |hasHi|
+                        (|Apply| |->| (|Comma| |%|) |Boolean|))
+                     (|If|
+                        (|Test| (|Has| |#1| |SetCategory|))
+                        |SetCategory|
+                        NIL)
+                     (|If|
+                        (|Test| (|Has| |#1| |OrderedRing|))
+                        (|Apply|
+                           |SegmentExpansionCategory|
+                           (|PretendTo| |#1| |OrderedRing|)
+                           (|PretendTo|
+                              (|Apply| |Stream| (|PretendTo| |#1| |Type|))
+                              (|Apply|
+                                 |StreamAggregate|
+                                 (|PretendTo| |#1| |Type|))))
+                        NIL)))) ))
+      (|Extend|
+         (|Define|
+            (|Declare|
+               |UniversalSegment|
+               (|Apply|
+                  |->|
+                  (|Declare| |#1| |Type|)
+                  (|Apply| |UniversalSegmentExtendCategory| |#1|)))
+            (|Lambda|
+               (|Comma| (|Declare| |#1| |Type|))
+               (|Apply| |UniversalSegmentExtendCategory| |#1|)
+               (|Label|
+                  |UniversalSegment|
+                  (|Add|
+                     (|PretendTo|
+                        (|Add| NIL NIL)
+                        (|Apply| |UniversalSegmentExtendCategory| |#1|))
+                     NIL)))) ))
+   (|Export|
+      (|Declare|
+         |SegmentBindingFunctions2|
+         (|Apply|
+            |->|
+            (|Comma| (|Declare| |#1| |Type|) (|Declare| |#2| |Type|))
+            (|With|
+               NIL
+               (|Sequence|
+                  (|Declare|
+                     |map|
+                     (|Apply|
+                        |->|
+                        (|Comma|
+                           (|Apply| |->| (|Comma| |#1|) |#2|)
+                           (|Apply| |SegmentBinding| |#1|))
+                        (|Apply| |SegmentBinding| |#2|)))) )))
+      NIL
+      NIL)
+   (|Sequence|
+      (|Define|
+         (|Declare|
+            |SegmentBindingExtendCategory|
+            (|Apply| |->| (|Declare| |#1| |Type|) |Category|))
+         (|Lambda|
+            (|Comma| (|Declare| |#1| |Type|))
+            |Category|
+            (|Label|
+               |SegmentBindingExtendCategory|
+               (|With|
+                  NIL
+                  (|Sequence|
+                     (|Declare|
+                        |equation|
+                        (|Apply|
+                           |->|
+                           (|Comma| |Symbol| (|Apply| |Segment| |#1|))
+                           |%|))
+                     (|Declare|
+                        |variable|
+                        (|Apply| |->| (|Comma| |%|) |Symbol|))
+                     (|Declare|
+                        |segment|
+                        (|Apply|
+                           |->|
+                           (|Comma| |%|)
+                           (|Apply| |Segment| |#1|)))
+                     (|If|
+                        (|Test| (|Has| |#1| |SetCategory|))
+                        |SetCategory|
+                        NIL)))) ))
+      (|Extend|
+         (|Define|
+            (|Declare|
+               |SegmentBinding|
+               (|Apply|
+                  |->|
+                  (|Declare| |#1| |Type|)
+                  (|Apply| |SegmentBindingExtendCategory| |#1|)))
+            (|Lambda|
+               (|Comma| (|Declare| |#1| |Type|))
+               (|Apply| |SegmentBindingExtendCategory| |#1|)
+               (|Label|
+                  |SegmentBinding|
+                  (|Add|
+                     (|PretendTo|
+                        (|Add| NIL NIL)
+                        (|Apply| |SegmentBindingExtendCategory| |#1|))
+                     NIL)))) ))
+   (|Export|
+      (|Declare|
+         |SegmentFunctions2|
+         (|Apply|
+            |->|
+            (|Comma| (|Declare| |#1| |Type|) (|Declare| |#2| |Type|))
+            (|With|
+               NIL
+               (|Sequence|
+                  (|Declare|
+                     |map|
+                     (|Apply|
+                        |->|
+                        (|Comma|
+                           (|Apply| |->| (|Comma| |#1|) |#2|)
+                           (|Apply| |Segment| |#1|))
+                        (|Apply| |Segment| |#2|)))
+                  (|If|
+                     (|Test| (|Has| |#1| |OrderedRing|))
+                     (|Declare|
+                        |map|
+                        (|Apply|
+                           |->|
+                           (|Comma|
+                              (|Apply| |->| (|Comma| |#1|) |#2|)
+                              (|Apply|
+                                 |Segment|
+                                 (|PretendTo| |#1| |Type|)))
+                           (|Apply| |List| (|PretendTo| |#2| |Type|))))
+                     NIL)))) )
+      NIL
+      NIL)
+   (|Export|
+      (|Declare|
+         |Segment|
+         (|Apply|
+            |->|
+            (|Declare| |#1| |Type|)
+            (|With|
+               NIL
+               (|Sequence|
+                  (|Apply| |SegmentCategory| |#1|)
+                  (|If|
+                     (|Test| (|Has| |#1| |SetCategory|))
+                     |SetCategory|
+                     NIL)
+                  (|If|
+                     (|Test| (|Has| |#1| |OrderedRing|))
+                     (|Apply|
+                        |SegmentExpansionCategory|
+                        (|PretendTo| |#1| |OrderedRing|)
+                        (|PretendTo|
+                           (|Apply| |List| (|PretendTo| |#1| |Type|))
+                           (|Apply|
+                              |StreamAggregate|
+                              (|PretendTo| |#1| |Type|))))
+                     NIL)))) )
+      NIL
+      NIL)
+   (|Define|
+      (|Declare|
+         |SegmentExpansionCategory|
+         (|Apply|
+            |->|
+            (|Comma|
+               (|Declare| |#1| |OrderedRing|)
+               (|Declare| |#2| |Type|))
+            |Category|))
+      (|Lambda|
+         (|Comma| (|Declare| |#1| |OrderedRing|) (|Declare| |#2| |Type|))
+         |Category|
+         (|Label|
+            |SegmentExpansionCategory|
+            (|With|
+               NIL
+               (|Sequence|
+                  (|Apply| |SegmentCategory| |#1|)
+                  (|Declare|
+                     |expand|
+                     (|Apply| |->| (|Comma| (|Apply| |List| |%|)) |#2|))
+                  (|Declare| |expand| (|Apply| |->| (|Comma| |%|) |#2|))
+                  (|Declare|
+                     |map|
+                     (|Apply|
+                        |->|
+                        (|Comma| (|Apply| |->| (|Comma| |#1|) |#1|) |%|)
+                        |#2|)))) )))
+   (|Define|
+      (|Declare|
+         |SegmentCategory|
+         (|Apply| |->| (|Declare| |#1| |Type|) |Category|))
+      (|Lambda|
+         (|Comma| (|Declare| |#1| |Type|))
+         |Category|
+         (|Label|
+            |SegmentCategory|
+            (|With|
+               NIL
+               (|Sequence|
+                  (|Declare| |..| (|Apply| |->| (|Comma| |#1| |#1|) |%|))
+                  (|Declare| BY (|Apply| |->| (|Comma| |%| |Integer|) |%|))
+                  (|Declare| |lo| (|Apply| |->| (|Comma| |%|) |#1|))
+                  (|Declare| |hi| (|Apply| |->| (|Comma| |%|) |#1|))
+                  (|Declare| |low| (|Apply| |->| (|Comma| |%|) |#1|))
+                  (|Declare| |high| (|Apply| |->| (|Comma| |%|) |#1|))
+                  (|Declare| |incr| (|Apply| |->| (|Comma| |%|) |Integer|))
+                  (|Declare|
+                     |segment|
+                     (|Apply| |->| (|Comma| |#1| |#1|) |%|))
+                  (|Declare|
+                     |convert|
+                     (|Apply| |->| (|Comma| |#1|) |%|)))) ))) )

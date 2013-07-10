@@ -1,0 +1,306 @@
+\documentclass{article}
+
+\usepackage{fancyheadings, epsfig, makeidx, html}
+
+\newcommand{\astype}[1]{\altype{#1}}
+\newcommand{\astarget}[1]{\altarget{#1}}
+\newcommand{\aspage}[1]{\alpage{#1}}
+\newcommand{\asfunc}[2]{\alfunc{#1}{#2}}
+\newcommand{\asalias}[3]{\alalias{#1}{#2}{#3}}
+
+\newcommand{\alhtmltarget}[2]{\label{#1:#2}{} \index{#2!#1}}
+\newcommand{\altypes}[1]{\section*{#1}}
+\newcommand{\albuiltin}[1]{\texttt{#1}}%
+\newcommand{\alexttype}[2]{\htmlref{\texttt{#2}}{#1}}
+\newcommand{\altype}[1]{\htmlref{\texttt{#1}}{#1}}
+\newcommand{\alfunc}[2]{\alalias{#1}{#2}{#2}}
+\newcommand{\alalias}[3]{\htmlref{\texttt{#3}}{#1:#2}}
+\newcommand{\History}[3]{}
+\newcommand{\category}[1]{\multicolumn{3}{l}{#1}}
+
+\newenvironment{exports}{%
+    \pagebreak[2]
+    \par\bigskip\noindent
+    \textbf{Exports}\nopagebreak\par
+    \begin{list}{}{}
+    \item{} \begin{tabular}{lll}
+  }%
+  {\end{tabular}\end{list}\smallskip}
+
+\newenvironment{exports0}[1][]{%
+    \pagebreak[2]
+    \par\medskip\begin{list}{}{}
+    \item{} #1 \vspace{-1ex}\nopagebreak
+    \item{} \begin{tabular}{lll}
+  }%
+  {\end{tabular}\end{list}\smallskip}
+
+\newenvironment{aswhere}{%
+    \medskip
+    \begin{list}{}{}
+      \item{} where\nopagebreak
+      \item \begin{tabular}{lcl}%
+  }%
+  {\end{tabular}\end{list}\smallskip}
+
+\newcommand{\thistype}[1]{%
+  \newpage\clearpage
+  \subsection{#1}%
+  \index{#1}%
+  \label{#1}{}%
+}
+
+\newcommand{\thistypE}[2]{%
+  \newpage\clearpage
+  \subsection{#2}%
+  \index{#1|see{#2}}
+  \index{#2}%
+  \label{#2}{}%
+}
+
+\newcommand{\alpage}[1]{%
+    \newpage\clearpage
+    \subsubsection{#1}%
+  }
+
+\newenvironment{aldocpar}[1]{%
+    \pagebreak[2]\par\bigskip\noindent
+    \textbf{#1}\nopagebreak\par
+      \begin{list}{}{}%
+        \item{}
+  }%
+  {\end{list}\smallskip}
+
+\newcommand{\Aldocpar}[2]{%
+    \pagebreak[2]\par\bigskip\noindent
+    \textbf{#1}\nopagebreak\par
+      \begin{quotation}%
+  {#2}
+  \end{quotation}\smallskip
+}
+
+\newenvironment{usage}{\begin{aldocpar}{Usage}}{\end{aldocpar}}
+\newenvironment{descr}{\begin{aldocpar}{Description}}{\end{aldocpar}}
+\newenvironment{retval}{\begin{aldocpar}{Returns}}{\end{aldocpar}}
+\newenvironment{remarks}{\begin{aldocpar}{Remarks}}{\end{aldocpar}}
+\newenvironment{errors}{\begin{aldocpar}{Errors}}{\end{aldocpar}}
+\newenvironment{asex}{\begin{aldocpar}{Example}}{\end{aldocpar}}
+
+\newcommand{\Usage}[1]{\Aldocpar{Usage}{#1}}
+\newcommand{\Descr}[1]{\Aldocpar{Description}{#1}}
+\newcommand{\Retval}[1]{\Aldocpar{Returns}{#1}}
+\newcommand{\Remarks}[1]{\Aldocpar{Remarks}{#1}}
+\newcommand{\Errors}[1]{\Aldocpar{Errors}{#1}}
+\newcommand{\Asex}[1]{\Aldocpar{Example}{#1}}
+
+\newcommand{\nsignature}[3]{\alsignature{#1}{{#2} $\to$ {#3}}}
+
+\newcommand{\alsignature}[2]{%
+    \pagebreak[2]\par\bigskip\noindent
+    \textbf{Signature}\nopagebreak\par
+    \begin{list}{}{}
+      \item{}
+        \begin{tabular}{ll} 
+          {#1}: & {#2} \\
+        \end{tabular}
+    \end{list}%
+}%
+
+\newenvironment{signatures}{%
+    \pagebreak[2]\par\bigskip\noindent
+    \textbf{Signatures}\nopagebreak\par
+    \begin{list}{}{}
+      \item{}
+        \begin{tabular}{ll}%
+  }%
+  {\end{tabular}\end{list}\smallskip}
+\newcommand{\Signatures}[1]{%
+    \pagebreak[2]\par\bigskip\noindent
+    \textbf{Signatures}\nopagebreak\par
+    \begin{list}{}{}
+      \item{}
+        \begin{tabular}{ll}#1\end{tabular}\end{list}\smallskip
+}
+
+\newenvironment{params}{%
+    \par\bigskip\noindent
+    \pagebreak[2]
+    \begin{tabular}{lll}
+      \textbf{Parameter} & \textbf{Type} & \textbf{Description}\\ \hline
+  }%
+  {\end{tabular}\smallskip}
+\newcommand{\Params}[1]{%
+    \par\bigskip\noindent
+    \pagebreak[2]
+    \begin{tabular}{lll}
+      \textbf{Parameter} & \textbf{Type} & \textbf{Description}\\ \hline
+#1\end{tabular}\smallskip
+}
+
+\newenvironment{asoutput}{%
+    \pagebreak[2]
+    \begin{tabbing} \hspace{10ex}\= \kill%
+  }%
+  {\end{tabbing}
+}
+
+\newcommand{\seealso}[1]{%
+    \pagebreak[2]\par\bigskip\noindent
+    \textbf{See Also}\nopagebreak\par
+    \begin{list}{}{}
+      \item{} #1
+    \end{list}\smallskip%
+}%
+
+\pagestyle{fancyplain}
+
+\makeindex
+\usepackage{amssymb,xspace,graphics,url,html}
+
+
+\begin{document}
+
+\thispagestyle{empty}
+\begin{center}
+\vskip 5cm
+\hrule
+\vskip 0.5cm
+{\LARGE\bf Salli User's Guide and Reference}\\
+\vskip 1cm
+{\Large Manuel Bronstein}\\
+\vskip 1cm
+%{\Large Version 0.1.12f -- \today}\\
+{\Large Development $\beta$ Version -- \today}
+\vskip 0.5cm
+\hrule
+\end{center}
+\newpage
+
+\tableofcontents
+
+\newpage
+
+\section{Reference Manual}
+
+\altypes{Arithmetic}
+\thistype{AldorInteger}
+\History{Manuel Bronstein}{7/10/98}{created}
+\Usage{import from AldorInteger}
+\Descr{AldorInteger~provides an interface to the software (``infinite'' precision)
+integers provided by the aldor virtual machine.}
+\begin{exports}
+\category{\astype{IntegerType}}\\
+\end{exports}
+\thistype{AdditiveType}
+\History{Manuel Bronstein}{8/11/99}{created}
+\Usage{AdditiveType: Category}
+\Descr{AdditiveType~is the category of types with addition/substraction operations.}
+\begin{exports}
+\category{\astype{PrimitiveType}}\\
+\alfunc{AdditiveType}{$0$} : & \% & zero\\
+\alfunc{AdditiveType}{$+$} : & (\%, \%) $\to$ \% & addition\\
+\alfunc{AdditiveType}{$-$} : & \% $\to$ \% & opposite\\
+\alfunc{AdditiveType}{$-$} : & (\%, \%) $\to$ \% & substraction\\
+\alfunc{AdditiveType}{add!}: & (\%, \%) $\to$ \% & In--place addition\\
+\alfunc{AdditiveType}{minus!}: & \% $\to$ \% & In--place opposite\\
+\alfunc{AdditiveType}{minus!}: & (\%, \%) $\to$ \% & In--place substraction\\
+\alfunc{AdditiveType}{zero?}: & \% $\to$ \astype{Boolean} & test for $0$\\
+\end{exports}
+\aspage{$0$}
+\alhtmltarget{AdditiveType}{$0$}
+\Usage{$0$}
+\alsignature{$0$}{\%}
+\Retval{Return the $0$ constant of the type.}
+\aspage{$+,-$}
+\alhtmltarget{AdditiveType}{$+,-$}
+\alhtmltarget{AdditiveType}{$+$}
+\alhtmltarget{AdditiveType}{$-$}
+\Usage{$x + y$\\ $x - y$\\ $-x$}
+\Signatures{
+$-$: & \% $\to$ \%\\
+$+,-$: & (\%, \%) $\to$ \%\\
+}
+\Params{ {\em x,y} & \% & elements of the type\\ }
+\Retval{$x + y, x - y$ return respectively
+the sum and difference $x$ with $y$, while $-x$ returns
+the opposite of $x$.}
+\seealso{\alfunc{AdditiveType}{add!}, \alfunc{AdditiveType}{minus!}}
+\aspage{add!,minus!}
+\alhtmltarget{AdditiveType}{add!,minus!}
+\alhtmltarget{AdditiveType}{add!}
+\alhtmltarget{AdditiveType}{minus!}
+\Usage{add!(x, y)\\ minus!(x, y)\\ minus!~x}
+\Signatures{
+minus!: & \% $\to$ \%\\
+add!, minus!: & (\%, \%) $\to$ \%\\
+}
+\Params{ {\em x, y} & \% & Elements of the type\\ }
+\Retval{add!($x,y$) and minus!($x,y$) returns respectively $x + y$
+and $x-y$, while minus!~x returns the opposite of $x$.
+In all cases, the storage used by x is allowed
+to be destroyed or reused, so x is lost after this call.}
+\Remarks{Those functions may cause x to be destroyed, so do not use them
+unless x has been locally allocated, and is guaranteed not to share space
+with other elements. Some functions are not necessarily copying their
+arguments and can thus create memory aliases.}
+\seealso{\alfunc{AdditiveType}{$+$},\alfunc{AdditiveType}{$-$}}
+\aspage{zero?}
+\alhtmltarget{AdditiveType}{zero?}
+\Usage{zero?~x}
+\nsignature{zero?}{\%}{\astype{Boolean}}
+\Params{{\em x} & \% & an element of the type\\ }
+\Retval{Returns the result of $x = 0$ using the semantics of $=$ of the type.}
+\thistype{ArithmeticType}
+\History{Manuel Bronstein}{28/9/98}{created}
+\Usage{ArithmeticType: Category}
+\Descr{ArithmeticType~is the category of types with standard arithmetic operations.}
+\begin{exports}
+\category{\astype{AdditiveType}}\\
+\alfunc{ArithmeticType}{$1$}: & \% & one\\
+\alfunc{ArithmeticType}{$*$}: & (\%, \%) $\to$ \% & product\\
+\alalias{ArithmeticType}{$**$}{$\hat{}$}:
+& (\%, \astype{MachineInteger}) $\to$ \% & exponentiation\\
+\alfunc{ArithmeticType}{one?}: & \% $\to$ \astype{Boolean} & test for $1$\\
+\alfunc{ArithmeticType}{times!}: & (\%, \%) $\to$ \% & In--place product\\
+\end{exports}
+\aspage{$1$}
+\alhtmltarget{ArithmeticType}{$1$}
+\Usage{$1$}
+\alsignature{$1$}{\%}
+\Retval{Return the $1$ constant of the type.}
+\aspage{$*$,$**$}
+\alhtmltarget{ArithmeticType}{$*$,$**$}
+\alhtmltarget{ArithmeticType}{$*$}
+\alhtmltarget{ArithmeticType}{$**$}
+\Usage{$x \ast y$\\ $x$ \^{} $n$}
+\Signatures{
+$\ast$: & (\%, \%) $\to$ \%\\
+\^{}: & (\%, \astype{MachineInteger}) $\to$ \%\\
+}
+\Params{
+{\em x,y} & \% & elements of the type\\
+{\em n} & \astype{MachineInteger} & an exponent\\
+}
+\Retval{$x \ast y$ returns the product of $x$ with $y$, while
+$x$ \^{} $n$ returns $x$ to the power $n$.}
+\seealso{\alfunc{ArithmeticType}{times!}}
+\aspage{times!}
+\alhtmltarget{ArithmeticType}{times!}
+\Usage{times!(x, y)}
+\nsignature{times!}{(\%, \%)}{\%}
+\Params{ {\em x, y} & \% & Elements of the type\\ }
+\Retval{Return $xy$, where the storage used by x is allowed
+to be destroyed or reused, so x is lost after this call.}
+\Remarks{This function may cause x to be destroyed, so do not use it unless
+x has been locally allocated, and is guaranteed not to share space
+with other elements. Some functions are not necessarily copying their
+arguments and can thus create memory aliases.}
+\seealso{\alfunc{ArithmeticType}{$*$}}
+\aspage{one?}
+\alhtmltarget{ArithmeticType}{one?}
+\Usage{one?~x}
+\nsignature{one?}{\%}{\astype{Boolean}}
+\Params{{\em x} & \% & an element of the type\\ }
+\Retval{Returns the result of $x = 1$ using the semantics of $=$ of the type.}
+
+\end{document}

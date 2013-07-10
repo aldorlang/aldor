@@ -1,0 +1,120 @@
+%		treedef.tex
+%
+%	These definitions for tree macros are taken from "Trees in TeX",
+%	by David Eppstein, as published in TUGboat 6#1, March 1985.
+%	David Eppstein's address (as of 15 June 1988) is
+%		Computer Science Department
+%		Columbia University
+%		New York, NY 10027
+%		Eppstein@cs.Columbia.edu
+
+\newbox\treebox
+\def\tree{\global\setbox\treebox=\boxtree}
+\def\subtree{\ettext \boxtree}
+\def\leaf#1{\subtree#1\endsubtree}
+
+\def\endsubtree{\ettext \egroup}
+\def\endtree{\endsubtree \settreesizes \typesettree}
+
+\newif\iftreetext\treetextfalse         % Whether still aligning text
+\def\boxtree{\hbox\bgroup               % Start outer box of tree or subtree
+  \baselineskip 2.5ex                   % Narrow line spacing slightly
+  \tabskip 0pt                          % No spurious glue in alignment
+  \vbox\bgroup                          % Start inner text \vbox
+  \treetexttrue                         % Remember for \ettext
+  \let\par\crcr \obeylines              % New line breaks without explicit \cr
+  \halign\bgroup##\hfil\cr}             % Start alignment with simple template
+\def\ettext{\iftreetext                 % Are we still in inner text \vbox?
+  \crcr\egroup \egroup \fi}             % Yes, end alignment and box
+
+\def\cons#1#2{\edef#2{\xmark #1#2}}     % Add something to start of list.
+\def\car#1{\expandafter\docar#1\docar}  % Take first element of list
+\def\docar\xmark#1\xmark#2\docar{#1}    % ..by ignoring rest in expansion.
+\def\cdr#1{\expandafter\docdr#1\docdr#1} % Similarly, drop first element.
+\def\docdr\xmark#1\xmark#2\docdr#3{\def#3{\xmark #2}}
+\def\xmark{\noexpand\xmark}             % List separator expands to self.
+\def\nil{\xmark}                        % Empty list is just a separator.
+
+\def\settreesizes{\setbox0=\copy\treebox \global\let\treesizes\nil \setsizes}
+\newdimen\treewidth                     % Width of this part of the tree.
+\def\setsizes{\setbox0=\hbox\bgroup     % Get a horiz list as a workspace.
+  \unhbox0\unskip                       % Take tree, unpack it into horiz list.
+  \inittreewidth                        % Get old width at this level.
+  \sizesubtrees                         % Recurse through all subtrees.
+  \sizelevel                            % Now set width from remaining \vbox.
+  \egroup}                              % All done, finish our \hbox.
+
+\def\inittreewidth{\ifx\treesizes\nil   % If this is the first at this level
+    \treewidth=0pt                      % ..then we have no previous max width.
+  \else \treewidth=\car\treesizes       % Otherwise take old max level width
+    \global\cdr\treesizes               % ..and advance level width storage
+    \fi}                                % ..in preparation for next level.
+
+\def\sizesubtrees{\loop                 % For each box in horiz list (subtree)
+  \setbox0=\lastbox \unskip             % ..pull it off list and flush glue.
+  \ifhbox0 \setsizes                    % If hbox, it's a subtree - recurse
+  \repeat}                              % ..and loop; end loop on tree text.
+
+\def\sizelevel{\ifdim\treewidth<\wd0    % If greater than previous maximum
+   \treewidth=\wd0 \fi                  % Then set max to new high
+ \global\cons{\the\treewidth}\treesizes}% In either case, put back on list
+
+\newdimen\treeheight                    % Height of this part of the tree.
+\newif\ifleaf                           % Tree has no subtrees (is a leaf).
+\newif\ifbotsub                         % Bottom subtree of parent.
+\newif\iftopsub                         % Top subtree of parent.
+\def\typesettree{\medskip \maketree \medskip}   % Make whole tree with spacing.
+\def\maketree{\hbox{\treewidth=\car\treesizes   % Get width at this level.
+  \cdr\treesizes                        % Set up width list for recursion.
+  \makesubtreebox\unskip                % Set \treebox to text, make subtrees.
+  \ifleaf \makeleaf                     % No subtrees, add glue.
+  \else \makeparent \fi}}               % Have subtrees, stick them at right.
+
+{\catcode`@=11                          % Be able to use \voidb@x.
+\gdef\makesubtreebox{\unhbox\treebox    % Open up tree or subtree.
+  \unskip\global\setbox\treebox\lastbox % Pick up very last box.
+  \ifvbox\treebox                       % If we're already at the \vbox
+    \global\leaftrue \let\next\relax    % ..then this is a leaf.
+  \else \botsubtrue                     % Otherwise, we have subtrees.
+    \setbox0\box\voidb@x                % Init stack of processed subs
+    \botsubtrue \let\next\makesubtree   % ..and call \maketree on them.
+  \fi \next}}                           % Finish up for whichever it was.
+
+\def\makesubtree{\setbox1\maketree      % Call \maketree on this subtree.
+  \unskip\global\setbox\treebox\lastbox % Pick up box before it.
+  \treeheight=\ht1                      % Get height of subtree we made
+  \advance\treeheight 2ex               % Add some room around the edges
+  \ifhbox\treebox \topsubfalse          % If picked up box is a \vbox,
+    \else \topsubtrue \fi               % ..this is the top, otherwise not.
+  \addsubtreebox                        % Stack subtree with the rest.
+  \iftopsub \global\leaffalse           % If top, remember not a leaf
+    \let\next\relax \else               % ..(after recursion), set return.
+    \botsubfalse \let\next\makesubtree  % Otherwise, we have more subtrees.
+  \fi \next}                            % Do tail recursion or return.
+
+\def\addsubtreebox{\setbox0=\vbox{\subtreebox\unvbox0}}
+\def\subtreebox{\hbox\bgroup            % Start \hbox of tree and lines
+  \vbox to \treeheight\bgroup           % Start \vbox for vertical rules.
+    \ifbotsub \iftopsub \vfil           % If both bottom and top subtree
+        \hrule width 0.4pt              % ..vertical rule is just a dot.
+      \else \treehalfrule \fi \vfil     % Bottom gets half-height rule.
+    \else \iftopsub \vfil \treehalfrule % Top gets half-height the other way.
+      \else \hrule width 0.4pt height \treeheight \fi\fi % Middle, full height.
+    \egroup                             % Finish vertical rule \vbox.
+  \treectrbox{\hrule width 1em}\hskip 0.2em\treectrbox{\box1}\egroup}
+
+\def\treectrbox#1{\vbox to \treeheight{\vfil #1\vfil}}
+\def\treehalfrule{\dimen0=\treeheight   % Get total height.
+  \divide\dimen0 2\advance\dimen0 0.2pt % Divide by two, add half horiz height.
+  \hrule width 0.4pt height \dimen0}    % Make a vertical rule that high.
+
+\def\makeleaf{\box\treebox}             % Add leaf box to horiz list.
+\def\makeparent{\ifdim\ht\treebox>\ht0  % If text is higher than subtrees
+    \treeheight=\ht\treebox             % ..use that height.
+  \else \treeheight=\ht0 \fi            % Otherwise use height of subtrees.
+  \advance\treewidth-\wd\treebox        % Take remainder of level width
+  \advance\treewidth 1em                % ..after accounting for text and glue.
+  \treectrbox{\box\treebox}\hskip 0.2em % Add text, space before connection.
+  \treectrbox{\hrule width \treewidth}\treectrbox{\box0}} % Add \hrule, subs.
+
+\endinput

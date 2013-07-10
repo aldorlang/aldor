@@ -1,0 +1,18 @@
+/*****************************************************************************
+ *
+ * setjmp.h0:  Fixups for <setjmp.h>
+ *
+ * Copyright (c) 1990-2007 Aldor Software Organization Ltd (Aldor.org).
+ *
+ ****************************************************************************/
+
+/*
+ * No fixups needed so far.
+ */
+
+#ifndef _SETJMP_H0_
+#define _SETJMP_H0_
+
+#include <setjmp.h>
+
+#endif /* !_SETJMP_H0_ */

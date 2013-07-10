@@ -1,0 +1,1886 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%                                                                        %%%
+%%% :: Types
+%%%                                                                        %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%\head{section}{Why Types?}       {asugLangNTypeWhy}              Done
+%\head{section}{Type Expressions} {asugLangNTypeExprs}            Done
+%\head{section}{Type Context}     {asugLangNTypeContext}          Done
+%\head{section}{Dependent Types}  {asugLangNTypeDepType}          Done
+%\head{section}{Subtypes}         {asugLangNTypeSubtypes}         Done
+%\head{section}{Type Conversion}  {asugLangNTypeConversion}       Done
+%\head{section}{Type Satisfaction}{asugLangNTypeSatisfies}        Done
+%\head{section}{Domains}          {asugLangNTypeDomains}          Done
+%\head{section}{Categories}       {asugLangNTypeCats}             Done
+%
+\head{chapter}{Types}{asugLangNType}
+
+This chapter describes the world of types in \asharp{}.
+
+\index{declarations}
+To use \asharp{} effectively, it is important to understand how to 
+make type declarations.  Type declarations allow one to
+write the same sorts of programs that one can write in C or Fortran.
+The base libraries provide a rich
+set of types and constructors, sufficient for many purposes.
+The chapter begins by describing how to create simple type expressions
+for declarations.  
+
+To take fuller advantage of \asharp{}, it is useful to understand how
+to create new types and environments.  In this area, \asharp{} provides
+considerably more power than other programming languages.
+The remainder of the chapter explains the language primitives for
+forming new environments and shows how they may be used to provide 
+parameterised types and packages.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\head{section}{Why types?}{asugLangNTypeWhy}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Values are ultimately stored in a computer as sequences of bits. 
+A given sequence of bits, however, can have different interpretations
+when used by different programs.
+
+For example, on one computer the 32 bits
+
+\begin{verbatim}
+    01000101011010000011111100000000
+\end{verbatim}
+
+can represent
+
+\begin{itemize}
+\item the integer \verb"1164459776",
+\item the floating point number $3.7159375 \times 10^3$, and
+\item the character string \verb+"Eh?"+.
+\end{itemize}
+
+A type provides an interpretation of binary data as a value which
+a program can manipulate.
+Different programming languages have different ways to associate types
+with data.
+
+\begin{description}
+
+\item[Types on Data:]
+\index{Lisp}
+Some languages, such as Lisp, incorporate types in values,
+augmenting the representation of a value with extra bits encoding
+the type.  In such languages, each data value is self-identifying.
+\index{self-identifying values}
+The implementation of the bits which encode the type
+can be done either in hardware or software.
+One goal of optimising compilers for these languages is to determine cases
+when it is possible to avoid storing and checking these type codes.
+
+\item[Types on Variables:]
+\index{Fortran}
+Other languages, such as Fortran-77, associate types with variables,
+either via declarations or by implicit rules.
+Associating a type with each variable
+requires less optimisation to be efficient, but can be less flexible
+than the previous approach.  Also, this method can provide a greater degree
+of safety, since certain mistakes can be detected before program execution.
+
+\item[Types on Faith:]
+\index{B programming language}
+\index{C programming language}
+Finally, some languages, such as B, a predecessor of C, have different
+operations to interpret data in different ways.  
+Any data value can be used in any operation, and it is the
+responsibility of the programmer to get things right.
+For example, one operation will interpret a set of bits as  pointer
+and another will interpret it as an integer.
+\end{description}
+Most modern programming languages associate types with values,
+with variables or both.
+
+Object-oriented programming languages tend to
+adopt the ``{\bf Types on Data}'' approach.
+Variables might be declared to belong to certain classes, but objects
+generally carry type information in the form of object-specific methods.
+Some object languages, such as C++, achieve efficiency by treating
+primitive and non-primitive types differently.
+The programmer must constantly remember the difference ---
+for example, it is not possible to derive new classes from {\tt int} or
+{\tt char *}.
+Other object languages uniformly pair types with data values, giving
+what is sometimes called ``objects all the way down.''
+
+\asharp{}, on the other hand, adopts the ``{\bf Types on Variables}'' approach,
+and values are not normally self-identifying.  
+This approach allows uniform, efficient treatment of primitive and
+program-defined types.  
+The flexibility that we have come to expect from object systems
+is obtained by promoting types to be first-class values.
+
+Treating types as first-class values
+leads to a greater versatility than typical object systems.
+For example, programs may be parameterised by types provided at execution time.
+Many values may be declared as belonging to exactly the {\em same\/}
+execution-time type, or to types having some defined relationship.
+Combining operations can be made safe without requiring execution-time tests.
+The usual sort of object behaviour is easily recaptured. 
+For example, self-identifying data may obtained by incorporating
+types in the values.
+
+\vbox{
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\head{section}{Type expressions}{asugLangNTypeExprs}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Expressions in \asharp{} may compute values which are types.
+For example, all of the expressions in {\bf bold face} in the program
+below produce type values:
+
+\begin{small}
+\begin{tt}
+\verb"    "\#include "aldor"\\
+\verb"    "import from DoubleFloat;\\
+\verb"    "i := {\bf Integer};\\
+\verb"    "l := {\bf List Integer};\\
+\verb"    "af: {\bf Array DoubleFloat} := [1.0, 2,0, 3.0];\\
+\verb"    "myfun(T: {\bf PrimitiveType}): {\bf PrimitiveType} == {\bf Array T};\\
+\verb"    "mytype := {\bf myfun DoubleFloat};
+\end{tt}
+\end{small}%
+}
+
+In this example we see a number of expressions computing type values,
+some of which are assigned to variables, others passed as parameters,
+and still others used in declarations.
+Type values are typically formed by applying type-constructing functions
+to values of one sort or another.  
+
+Certain kinds of types in \asharp{} are used in specific ways.
+
+\index{domain}
+\index{abstract datatype}
+\index{package}
+A {\em domain\/} is a type which defines a collection of exported
+symbols.  The symbols may denote types, constants and functions.
+Many domains also define an interpretation for data values, called
+a {\em representation type}; these domains are also known as
+{\em abstract data types}.  Those domains which are not abstract datatypes
+are called {\em packages}.
+
+\index{category}
+A {\em category\/} is a type which specifies information about domains,
+including the specification of the public interface to a domain,
+which consists of a collection of declarations for those operations
+which may be used by clients of the domain.
+
+The next several sections describe properties of types, which are
+common to all types.  \Secref{asugLangNTypeDomains}
+describes those properties of types which are specific to domains,
+packages and abstract datatypes.
+\Secref{asugLangNTypeCats} describes properties of categories.
+
+The language defines a number of types and type-constructing functions.
+These are described in \chapref{asugLangTypes}.   
+Most programs also use types or type constructors from various libraries.
+\Secref{asugLangStdlibs} describes standard libraries used with \asharp{}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\head{section}{Type context}{asugLangNTypeContext}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Whereas any expression {\em may\/} be used to compute a type value,
+there are certain contexts in which a type is {\em required\/}.
+These contexts are indicated by $T$ in the following expressions
+(details of which may be found by consulting the index):
+\begin{itemize}
+\item ... \verb": "      {\em T} \hfill declaration
+\item ... \verb":*"      {\em T} \hfill declaration
+\item ... \verb"$"       {\em T} \hfill selection
+\item ... \verb"::"      {\em T} \hfill type conversion
+\item ... \verb"@"       {\em T} \hfill type constraint
+\item ... \verb"pretend" {\em T} \hfill type lie
+\item {\em T} \verb"with" ...    \hfill primitive type former
+\item {\em T} \verb"add" ...     \hfill primitive type former
+\item \verb"import" ... \verb"from" {\em T} \hfill bring names into scope
+\item \verb"inline" ... \verb"from" {\em T} \hfill allow program dependency
+\item \verb"export" ... \verb"from" {\em T} \hfill export names from scope
+\item \verb"export" ... \verb"to"   {\em T} \hfill export names to foreign environment
+\end{itemize}
+We say that the expression $T$ is in {\em type context\/}.
+\index{type context}
+
+Type context is special in two ways:
+\begin{itemize}
+\item 
+Expressions occurring in type context are not guaranteed to be evaluated
+in any particular order, or even evaluated at all.
+
+\item
+Identifiers occurring in an expression, $T$, appearing in type context
+must be constant in the scope in which $T$ occurs.
+\end{itemize}
+
+\subsubsection{Type evaluation}
+
+The reason expressions in type context are not guaranteed to be
+evaluated in order, or at all, is to give maximum flexibility to produce
+efficient programs. 
+A portable program will only use non-side-effecting
+expressions in type context.
+
+The expressions occurring in type context should be viewed
+as an annotation of a program rather than as part of the computation.
+For instance, the same program may be written
+with declarations, type restrictions and selections being
+inferred or explicit in varying degrees.
+So the program
+
+\vbox{%
+\begin{small}
+\begin{verbatim}
+    #include "aldor"
+    #include "aldorio"
+    import from Integer;
+
+    n := 2 + 2;
+
+    stdout << n << newline
+\end{verbatim}
+\end{small}
+}
+
+has the same meaning as
+
+\vbox{%
+\begin{small}
+\begin{verbatim}
+    #include "aldor"
+    #include "aldorio"
+    import from Integer;
+
+    n: Integer := 2 +$Integer 2;
+
+    stdout << n << newline
+\end{verbatim}
+\end{small}
+}
+
+which has the same meaning as
+
+\vbox{%
+\begin{small}
+\begin{verbatim}
+    #include "aldor"
+    #include "aldorio"
+    import from Integer;
+
+    I ==> Integer;
+
+    n: I := (+$I @ (I,I) -> I) (2@I, 2@I);
+
+    stdout << n << newline
+\end{verbatim}
+\end{small}
+}
+
+\subsubsection{Name constancy}
+
+As a related but more fundamental concern, an expression in type context
+must only contain names which are constant over the scope in which the
+type occurs, because, without this rule, it would not be possible to
+associate well-defined types to expressions.
+
+Consider the following {\em incorrect\/} function, which uses a
+domain called \verb+MachineIntegerMod+ (see \spad{imodnSample} for
+a definition) which is parameterised by an \verb+Integer+:
+
+\begin{small}
+\begin{verbatim}
+    f(n: Integer): () == {
+            local a, b: MachineIntegerMod(n);
+
+            a := coerce((3 * n + 1) quo 2);
+            b := coerce((5 * n + 1) quo 3);
+
+            if n > 4 then   n := n + 1;  -- This line is ILLEGAL!
+
+            c := a - b;
+
+            stdout << "The result is " << c << newline
+    }
+\end{verbatim}
+\end{small}
+
+The problem is that if \verb"n" is updated,
+the type of \verb"a" and \verb"b" is no longer valid
+and there is no reasonable interpretation for \ttin{-} or \ttin{c}.
+
+The names appearing in an expression in type context may be
+\begin{itemize}
+\item defined via \ttin{==},
+\item imported via \ttin{import}, or
+\item function parameters which are nowhere updated.
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\head{section}{Dependent types}{asugLangNTypeDepType}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+In many programming applications it is not possible to determine the
+specific type of a family of related types, that an expression will
+have, until it is evaluated.  There are a number of possible ways to
+treat this situation:
+
+{\bf Solution 1: Forget the type information.}
+
+If it is known that the result is some kind of stored structure, 
+then pretend it is a \verb"Pointer".
+
+This solution has obvious drawbacks: 
+\begin{itemize}
+\item
+    The private representation information known about the result is
+    compromised, creating a source-code dependency which can be difficult
+    to manage. 
+\item
+    The result might not really be a pointer --- it might be an integer,
+    a floating point number or something else which uses memory differently.
+\item
+    Mistakes are more difficult to detect.
+\end{itemize}
+
+{\bf Solution 2: Use a Union type.}
+
+If there is a fixed set of possible result types, then one could 
+return a Union type which includes the lot.
+
+This solution is only acceptable when the set of types is fixed and the logic
+associated with each case is relatively distinct.  If the different cases
+are treated in essentially the same way, then this solution encourages
+a programmer to treat the various union branches with the same code.
+
+{\bf Solution 3: Use an Object-Oriented approach.}
+
+One can associate the dynamic type of the value with the value itself.
+
+If the different possible types are to be handled in essentially
+the same way, then this solution can be a reasonable choice.
+The type information associated with the value can carry the functions
+which may be used to operate on it.
+
+One difficulty with this solution is that it is not possible to
+indicate when many values belong to the {\em same\/} dynamic type,
+leading either to unsafe code, or to testing tags during program execution.
+
+{\bf Solution 4: Use Dependent Types}
+
+\index{dependent type}
+A {\em dependent type} is a type $T$ in which the {\em type}
+of one subexpression of $T$ depends on the {\em value} of another.
+
+Dependent types allow compile-time type checking for values whose types
+depend on other values which will only be present during program 
+\linebreak
+execution.
+This powerful tool is not often provided in other programming languages.
+In \asharp{}, it is a basic feature of the language which allows a great
+deal of flexibility in supporting various programming paradigms.
+
+\subsubsection{Dependent types}
+
+Consider the following example:
+
+\begin{small}
+\begin{verbatim}
+    #include "aldor"
+    #include "aldorio"
+
+    sumlist(R: ArithmeticType, l: List R): R == {
+            s: R := 0;
+            for x in l repeat s := s + x;
+            s
+    }
+
+    import from List Integer, Integer, List SingleFloat, SingleFloat;
+
+    stdout << sumlist(Integer,     [2,3,4,5]) << newline;
+    stdout << sumlist(SingleFloat, [2.0, 2.1, 2.2, 2.4]) << newline;
+\end{verbatim}
+\end{small}
+
+The {\em type\/} of the parameter \ttin{l} and the type of the result
+of the function each depend on the {\em value\/} of the parameter \ttin{R}.
+
+Because of this dependency, we say that the type of \verb"sumlist" is a 
+dependent type, in this case the dependent mapping type
+
+\begin{small}
+\begin{verbatim}
+    (R: ArithmeticType, l: List R) -> R
+\end{verbatim}
+\end{small}
+
+Note that within \verb"sumlist" it was {\em known\/} that {\em all\/}
+the elements of the list \verb"l" had type \verb"R".  
+The \ttin{+} operation does not need to make any run-time checks
+to verify that both of its operands are of the same type.
+
+Dependency is a relationship among values which arises because of the
+occurrence of one value in the type of another.
+In \asharp{}, dependencies between values are allowed in the following
+contexts:
+\begin{itemize}
+\item function parameters
+\item function results
+\item cross product values
+\item signatures in a category {\tt with}-expression
+\end{itemize}
+In addition, the function result types are allowed to depend on the
+values of the function parameters.
+
+\subsubsection{Uses and examples}
+
+Dependent types allow parametric polymorphism, as in the
+\verb"sumlist" function shown above.  
+They also allow a program to compute a result, and return with the
+result a context for interpreting the result.
+
+%\pagebreak
+For example, a function could be declared of type:
+
+\begin{small}
+\begin{verbatim}
+    eigenValues: (R: Ring, Matrix R) ->
+                 (E: AlgebraicExtension R, Vector E)
+\end{verbatim}
+\end{small}
+
+A function satisfying the above declaration could be defined to create
+a new arithmetic domain in which the eigenvalues of a matrix may be defined,
+and a vector of eigenvalues could then be created in that domain.
+Both the new domain and the vector of eigenvalues could then be returned
+by the function.
+Operations for manipulating the eigenvalues can then be retrieved
+from \verb"E" to operate on values from the vector.
+
+A complete example of a dependent type constructing function has been seen
+already in \secref{asugLangSimpleIV}.  There the \verb"MiniList" function
+takes a parameter \verb$S: OutputType$ and returns result of type
+\verb"MiniListType S".
+
+An example manipulating dependent mapping values is given
+in \secref{swapSample}. An example treating dependent
+type-value pairs as objects is given in \secref{objectSample}.
+
+With types as values in \asharp{}, dependent types allow the
+specification of relationships among types, which can be an
+extremely powerful programming tool.
+
+\subsubsection{Mutually dependent types}
+
+Values may have {\em mutually\/} dependent types.
+For example, the type constructing functions defined by the language include:
+
+\begin{small}
+\begin{verbatim}
+    ->: (Tuple Type, Tuple Type) -> Type
+    Tuple: Type -> Type
+\end{verbatim}
+\end{small}
+
+As another example, functions may be declared with mutually dependent
+arguments:
+
+\begin{small}
+\begin{verbatim}
+    Ladder: (D: with {f: % -> E}, E: with {g: % -> D} ) -> Type
+\end{verbatim}
+\end{small}
+
+%These examples are quite simple.  For comparison, the \asharp{} interface
+%to the \axiom{} library 
+%\index{AXIOM}
+%includes one clique of 125 mutually dependent type constructors.
+
+Note that these mutual dependencies are in the {\em type\/} dimension;
+this type of dependency is analogous to the more usual dependency
+between expressions in the {\em value\/} dimension:
+
+\begin{small}
+\begin{verbatim}
+    RecA == Record(head: A, tail: Union(nil: Pointer, b: RecB));
+    RecB == Record(head: B, tail: Union(nil: Pointer, a: RecA));
+\end{verbatim}
+\end{small}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\head{section}{Subtypes}{asugLangNTypeSubtypes}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Type declarations in \asharp{} associate properties with
+constants and variables.
+These declared names may then be used in expressions and the rules
+for well-formed expressions determine the properties associated with
+the built-up expressions.
+
+The most important property of an expression is how to interpret
+the data representing the value of the expression.
+Every value in \asharp{} is a member of a {\em unique domain} which determines
+the interpretation of its data.
+\index{unique domain}
+
+Sometimes it is necessary to associate additional properties with
+values, and to provide rules to manipulate the values on the basis of the
+properties they satisfy.  Subtypes provide the mechanism for manipulating
+the additional properties associated with values\index{subtype}.
+
+A {\em subtype} is a type whose members lie in a particular domain and satisfy
+a particular property.  The domain to which the members belong is the
+{\em base domain} of the subtype.
+\index{base domain}
+The vocabulary of properties differs from one base domain to another.
+
+A value in \asharp{} may be a member of any number of subtypes.
+By definition, the base domain for each of these subtypes is the same
+as the unique domain of the value.
+
+We use $Subtype(D)$ to denote the set of all subtypes on the base domain $D$.
+Suppose $T_1$ and $T_2$ are two subtypes from $Subtype(D)$.
+If all the values belonging to $T_1$ also belong to $T_2$, then we say
+$T_1$ is a {\em subtype} of $T_2$ and write $T_1 \sqsubseteq T_2$.
+\index{subtype}
+We also say that
+$T_2$ is a {\em supertype} of $T_1$ and write $T_2 \sqsupseteq T_1$.
+\index{supertype}
+For any particular base domain $D$, the collection of subtypes
+$Subtype(D)$ forms a lattice under the relation $\sqsubseteq$.
+The empty subtype is the bottom element and the subtype consisting
+of {\em all} elements of $D$ is the top element.
+The subtypes based on one domain can have no relationship with
+subtypes based on another domain.
+
+Not all domains support a vocabulary of properties.
+For this first version of the language, only the domain of all domains
+and the domain of all maps provide properties which lead to non-trivial
+subtype lattices.  It would be a compatible extension to the language
+to allow arbitrary {\tt Boolean}-valued functions to be used as
+properties for subtyping purposes.
+
+The following rules define the relation $\sqsubseteq$:
+\begin{description}
+
+\item[Categories:]
+For any category-valued expression $C$, let $Ex(C)$ denote the set
+of exported symbols which must be provided by any domain $D \in C$.
+Then
+
+$$ C_1 \sqsubseteq C_2 \iff Ex(C_1) \supseteq Ex(C_2) $$
+
+As a corollary of the above definition:
+
+$$ D \in C_1 \wedge C_1 \sqsubseteq C_2 \Rightarrow D \in C_2 $$
+
+Inheritance for domains from categories is analogous to class membership
+and inheritance between categories is analogous to class containment.
+
+Note that \asharp{} is constructed so that a domain is only a member of
+a named category if it explicitly inherits from the category --- not if
+it merely exports the same collection of (explicit) declarations%
+\footnote{In the current implementation, each named category $C$
+implicitly exports a symbol named \ttin{\%\%} with type $C$ (see
+\secref{asugLangNamesApplication}), whose presence is tested for in
+checking category membership.}.  For named categories $C_1$ and $C_2$,
+it is only the case that $C_1 \sqsubseteq C_2$ if $C_1$ inherits from
+$C_2$, either directly or indirectly.
+
+\item[Mapping types:]
+
+The subtyping rule for mapping types is derived from the fact that a function
+which maps $S_1 \rightarrow T_1$ can be used in any context which provides
+a value of type $S_1$ as an argument, or a value of type $S_2$ where
+$S_2 \sqsubseteq S_1$:
+
+$$ S_1 \rightarrow T_1 \sqsubseteq S_2 \rightarrow T_2 \iff
+   S_2 \sqsubseteq S_1 \wedge T_1 \sqsubseteq T_2 $$
+
+Additionally, in determining the relation of mapping types,
+an argument or return with a keyword is a subtype of one without:
+
+$$ (A_1, ... , a_i: A_i, ..., A_n) \sqsubseteq (A_1, ... , A_i, ..., A_n) $$
+\end{description}
+
+If $T_1 \sqsubseteq T_2$ then any value of type $T_1$ can be used in any
+context which requires a value of type $T_2$.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\head{section}{Type conversion}{asugLangNTypeConversion}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\index{type conversion}
+A {\em type conversion\/} is an operation which changes a value from
+one type to a value of another type to which the original value would
+not otherwise belong.  As a general rule, \asharp{} does not
+automatically convert a value from one type to another.  For example, an
+integer is not automatically converted into a floating-point number.
+Such conversions must be made explicitly in the text of a program.
+
+As discussed in \secref{asugLangNTypeSubtypes}, a value in \asharp{}
+may be viewed as a member of more than one type by virtue of the subtype
+relation on types.  In this case no conversion is necessary.
+
+\subsubsection{Primitive conversions}
+
+\index{pretend}
+\index{primitive conversion}
+The language provides one primitive type conversion operation:  \verb"pretend".
+A \ttin{pretend} expression is used to lie about the type of a value.
+
+\verb"    "{\it Expr} {\tt pretend} {\it Type}
+
+causes the value computed by $Expr$ to be treated as though it were
+of type $Type$.  \verb"pretend" is the only operator in \asharp{} which
+is not type-safe:  using \verb"pretend" can lead to unchecked type errors
+which only reveal themselves when a program is executed.  For this reason
+\verb"pretend" should be used with caution.
+For example, one could use \ttin{pretend} to examine the bit-level
+representation of data when a type does not provide operations
+to do so.
+
+Two additional type-safe operations are defined in \asharp{} using pretend:
+{\tt rep} and {\tt per}.  These operators convert between the 
+public and private views of a type, and are discussed in
+\secref{asugLangNTypeDomains}.
+
+\subsubsection{Conversion functions}
+
+\index{coerce}
+\index{conversion function}
+Most type conversions are performed by functions.
+By convention, type conversion is most often performed by a
+\ttin{coerce} function, exported either by the source type or the
+destination type.
+%% There is no example below of a coerce exported by the source type.
+%% Further, the definition of `::' below in terms of coerce(.) @ Type
+%% seems to require an export from the destination type.  Clarification
+%% needed.   MGR
+Each library of \asharp{} programs may establish
+its own set of conventions regarding how conversion functions are named,
+and where they are implemented.
+
+Examples of conversion functions could include:
+
+\begin{itemize}
+\item {\tt coerce: MachineInteger -> \%}       \hfill from {\tt DoubleFloat}
+\item {\tt coerce: MachineInteger -> \%}       \hfill from {\tt Integer}
+\vskip 2mm
+
+\item {\tt coerce: SInt\$Machine -> \%} \hfill from {\tt MachineInteger}
+\item {\tt coerce: \% -> SInt\$Machine} \hfill from {\tt MachineInteger}
+\end{itemize}
+
+Such functions are so common that a special syntax is defined to allow
+\verb"coerce" functions to be called conveniently.  The syntax
+
+\verb"    "{\it Expr} {\tt ::}~{\it Type}
+
+is a shorthand for the application
+
+\verb"    "{\tt coerce(}{\it Expr\/}{\tt ) \verb"@"} {\it Type}
+
+(see \secref{asugLangNamesDisamb}).
+
+\subsubsection{Courtesy conversions}
+
+\index{courtesy conversion}
+While most type conversions must be made explicitly, a very conservative
+set of {\em courtesy conversions\/} are performed as needed.
+Courtesy conversions change between items represented as
+\begin{itemize}
+\item multiple values,
+\item a single \verb"Cross" product value (see \secref{asugLangTypesCross}) and
+\item a single \verb"Tuple" value (see \secref{asugLangTypesTuple}).
+\end{itemize}
+Certain \asharp{} programs would be extremely pedantic if courtesy conversions
+were not applied.
+
+The following courtesy conversions are applied automatically as required:
+\index{Cross}
+\index{Tuple}
+\index{multiple values}
+\begin{itemize}
+\item \verb"Cross(T,  ..., T)  -> Tuple T"
+\item \verb"Cross(T1, ..., TN) -> (T1, ..., TN)"
+\item \verb"Cross(T)           -> T"
+\vskip 2mm
+
+\item \verb"(T,  ..., T)  -> Tuple T"
+\item \verb"(T1, ..., TN) -> Cross(T1, ..., TN)"
+\vskip 2mm
+
+\item \verb"T -> Tuple T"
+\item \verb"T -> Cross T"
+\end{itemize}
+
+These conversions allow functions which take or return multiple values
+to be used to pass arguments to other functions which can accept them,
+without requiring notation for an explicit conversion.
+
+These conversions are applied only when the type of an expression exactly 
+matches one of the conversions.
+For example, a value of type \verb"List Cross(T, T, T)"
+would {\em not\/} automatically be
+converted to a value of type \verb"List Tuple T".
+Such a conversion could incur a significant hidden cost, even in
+more ordinary circumstances.
+
+There is not at present any mechanism for a program to specify additional
+courtesy conversions.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\head{section}{Type satisfaction}{asugLangNTypeSatisfies}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\index{type satisfaction}
+We say that a type $S$ {\em satisfies\/} the type $T$ if any value of
+type $S$ can be used in any context which requires a value of type $T$.
+
+The following rules define the satisfaction relation among types in
+\asharp{}:
+
+\begin{description}
+\item[Exit:]
+For any type $T$, the language-defined type \verb"Exit" satisfies $T$.
+This rule allows an expression of type \verb"Exit" to be used wherever
+any type is expected.
+
+\item[Category:]
+A type $S$ satisfies the language-defined type \verb"Category"
+if $S$ is the type of a category.
+
+\item[Type:]
+A type $S$ satisfies the language-defined type \verb"Type"
+if $S$ is the type of a domain or category.  In other words,
+all domains and categories are types.
+
+\item[No value:]
+For any type $S$, the type $S$ satisfies the type \verb"()".
+In other words, any value can be used in a context where no value
+is expected.  The values are simply thrown away, and the expression
+is treated as having returned no value.
+
+\item[Subtypes:]
+If $S$ is a subtype of $T$, then $S$ satisfies $T$.
+See \secref{asugLangNTypeSubtypes}.
+
+\item[Courtesy conversions:]
+A type $S$ satisfies a type $T$ if a courtesy conversion exists
+which converts $S$ to $T$.  The courtesy conversion rules
+are described in \secref{asugLangNTypeConversion}.
+
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\head{section}{Domains}{asugLangNTypeDomains}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\index{export}
+\index{domain}
+A {\em domain} is an environment providing a collection of exported constants.
+These may include exported types, functions or values of other sorts.
+
+\index{abstract datatype}
+\index{package}
+It is useful to think of domains as being of two kinds:
+abstract datatypes and packages.
+An {\em abstract datatype} is a domain which defines a distinguished type
+and a collection of related exports.
+A {\em package} is a domain which does not define a distinguished type
+but does provide a collection of related exports.  That is, a package
+is a domain which is not an abstract data type.
+This distinction is merely a convenience, though, as one is merely a special
+case of the other, as will be seen below.
+
+\subsubsection{Creating domains with \ttin{add}}
+
+\keywordIndex{add}
+The primitive for forming domains is the \verb"add" expression.
+The syntax for an \verb"add" expression is
+
+\verb"    "{\tt {\em [Expr]\/} add {\em AddBody}}
+
+The left-hand side {\em Expr} is an optional domain-valued expression,
+which specifies a domain from which any or all of the exports
+of the \verb"add" can be inherited.  {\em Expr} is called the
+{\em parent} (or parent domain) of the \verb"add".
+
+The expression {\em AddBody} is typically a sequence of
+definitions which implement the exports of the domain.
+
+Examples of the different kinds of domains, all of which can be created
+by \verb"add" expressions, are to be found throughout the remainder of
+this section.
+
+The value of the expression \verb"A add B" is a domain which exports those
+symbols exported by \verb"A" and those exports defined in \verb"B".
+The type of the expression \verb"A add B" is
+
+\begin{small}
+\begin{verbatim}
+    C with { x1: T1; ...; xn: Tn }
+\end{verbatim}
+\end{small}
+
+where \verb"C" is the type of \verb"A", and
+\verb"x1,...,xn" are the symbols defined (using \verb"==") in \verb"B",
+whose types are \verb"T1,...,Tn", respectively.
+Note that the types \verb"T1,...,Tn" are allowed to contain
+references to the values \verb"x1,...,xn".
+
+\subsubsection{Packages}
+
+\index{package}
+Packages are the simplest form of domains:  they group a number of
+values together in an unordered collection that can be imported as a
+unit.  A package formed with a single \ttin{add} expression can be used
+to provide functions operating in a common environment, and packages may
+be combined using binary \ttin{add} operations.
+%% Could you provide an example of such combination here?  MGR
+
+The following simple package provides functions for keeping
+score at a baseball game:
+
+\begin{small}
+\begin{verbatim}
+    add {
+            single(n: Integer): Integer == n;
+            double(n: Integer): Integer == n + n;
+            triple(n: Integer): Integer == n + n + n;
+            homer (n: Integer): Integer == n + n + n + n;
+    }
+\end{verbatim}
+\end{small}
+
+The exports from a package may include values belonging to different types,
+including various functions among different types.  Conditional exports
+(see below) can also appear in packages.
+
+\subsubsection{Units conversion example}
+
+\index{Units conversion}
+Here is an example of a package which exports both types and functions:
+
+\begin{small}
+\begin{verbatim}
+    #include "aldor"
+    #include "aldorio"
+
+    Lengths == add {
+        Centimetres == MachineInteger;
+        Inches == MachineInteger;
+
+        import from DoubleFloat;
+
+        local round(f: DoubleFloat): MachineInteger == {
+             import from Integer; -- for 'machine'
+             tmp: MachineInteger := machine truncate f;
+             if ((f - tmp::DoubleFloat) > 0.5) then tmp := tmp + 1;
+             tmp
+        }
+
+        inches(c:Centimetres):Inches == round(c::DoubleFloat/2.54);
+        centimetres(i:Inches):Centimetres == round(i::DoubleFloat*2.54);
+
+    }
+
+    import from Lengths;
+
+    i : Inches == 1 + 1 + 1;
+
+    stdout << i << newline;
+
+    c : Centimetres == centimetres i;
+
+    stdout << c << newline;
+
+\end{verbatim}
+\end{small}
+
+This package exports two types \verb"Inches" and \verb"Centimetres",
+with operations for converting between them.
+
+\subsubsection{Abstract datatypes}
+
+Often, a domain exports a distinguished type and a collection of
+operations on that type --- in general, enough operations to make the
+type a sufficiently interesting object.  This situation is so
+overwhelmingly common that additional features in the language are used
+to support it.
+
+\index{abstract datatype}
+An {\em abstract datatype} is a domain which defines a distinguished
+type and a collection of constants and functions related to the type.
+
+The definition of an abstract datatype
+includes a specification of the representation of values
+belonging to the type and the implementation of operations which
+manipulate those values.
+
+\index{"%@"\"% (percent sign)}
+Inside an \verb"add" expression which denotes an abstract datatype,
+the domain value created by the expression is used as the unique type
+exported by the expression.  Within the \verb"add" expression, this
+domain is denoted by the identifier \ttin{\%}.
+
+We will often use the term ``domain'' when speaking of a particular
+abstract datatype, if the meaning is clear from the context.  In 
+abstract datatype terminology, a package may be described as a
+degenerate abstract datatype which does not provide any exports on its
+type.  Such a structure is sometimes called an {\em empty carrier}.
+\index{empty carrier}
+
+The following example illustrates a simple abstract datatype:
+
+\begin{small}
+\begin{verbatim}
+    add {
+            I ==> Integer;
+            import from I;
+
+            0 : % == 0@I pretend %;
+            1 : % == 1@I pretend %;
+
+            (x: %) = (y: %) : Boolean == x@% pretend I = y@% pretend I;
+
+            ~ (x: %) : % == if x = 1 then 0 else 1;
+            (x: %) \/ (y: %) : % == if x = 1 \/ y = 1 then 1 else 0;
+            (x: %) /\ (y: %) : % == if x = 1 /\ y = 1 then 1 else 0;
+    }
+\end{verbatim}
+\end{small}
+
+This domain expression includes constant definitions for identifiers \ttin{0}
+and \ttin{1} which belong to the domain and a few useful function definitions.
+
+Since \verb"%" denotes a domain, it can be used in type context just like
+any other type.  In particular, operations defined in an \verb"add" expression
+can be disambiguated by using a package call of the form \ttin{x\$\%}, which
+denotes a value named \verb"x" defined in the \verb"add" expression.
+Furthermore, inside \verb"B" in a domain definition of the form:
+
+\begin{small}
+\begin{verbatim}
+    D : C == A add B
+\end{verbatim}
+\end{small}
+
+(described below, under ``Visibility of inherited operations'') the
+type expression \verb"D" is treated as equivalent to the type expression
+\verb"%", since the domain \verb"D" is defined as the value of the \verb"add"
+expression, which is denoted by \verb"%" inside \verb"B".  The fact that
+\verb"%" and \verb"D" are equivalent is not visible outside the add.
+The equivalence is a property of the definition.  The scope of \verb"%"
+is bound by the add.
+
+Outside the \verb"add" expression, the type expression \verb"D" has no
+relationship to any instances of \verb"%" which may be visible.
+
+\subsubsection{Representation}
+
+\index{representation type}
+The {\em representation type\/} of the elements of a domain is the domain
+which describes how data values belonging to the domain are encoded as
+sequences of bits.
+
+\index{Rep}
+Inside an \verb"add" expression which denotes an abstract datatype,
+the constant \ttin{Rep} is used to refer to the representation type
+of the elements of a domain.  Since \verb"Rep" is a domain, it can be
+used in type context just like any other type.
+
+\verb"%" and \verb"Rep" denote two different types in \asharp{}.
+While a value of type \verb"%" belongs to the public view of the domain,
+a value of type \verb"Rep" belongs to the private view of the domain.
+For example, suppose that the representation type for a polynomial
+domain is a list domain.  We would then say that a polynomial value is
+represented by a list: a list is not a polynomial, nor is a polynomial a
+list.
+
+\index{rep}
+\index{per}
+The operations \ttin{rep} and \ttin{per} provide a type-safe mechanism
+for converting data values between the public and private views of
+domain elements: \verb"rep" converts a value of type \verb"%" to the
+representation type \verb"Rep"; \verb"per" converts a value of type
+\verb"Rep" to the public type \verb"%".
+
+\begin{small}
+\begin{verbatim}
+    rep x ==> x @ % pretend Rep;
+    per r ==> r @ Rep pretend %;
+\end{verbatim}
+\end{small}
+
+An easy way to remember which conversion operation to use is to remember
+the assertions \verb"rep(x)@Rep" and \verb"per(r)@%":  the result from
+\verb"rep" has type \verb"Rep" and the result from \verb"per" has type
+\verb"%" ({\em per}cent).
+
+To illustrate the use of \verb"Rep" in a domain definition, consider
+the following version of the simple \verb"add" expression given above:
+
+\begin{small}
+\begin{verbatim}
+    add {
+            Rep == Integer;
+            import from Rep;
+
+            0 : % == per 0;
+            1 : % == per 1;
+
+            (x: %) = (y: %) : Boolean == rep x = rep y;
+
+            ~ (x: %) : % == if x = 1 then 0 else 1;
+            (x: %) \/ (y: %) : % == if x = 1 \/ y = 1 then 1 else 0;
+            (x: %) /\ (y: %) : % == if x = 1 /\ y = 1 then 1 else 0;
+    }
+\end{verbatim}
+\end{small}
+
+The representation type is defined as \verb"Integer", from which
+the domain imports the operations it needs to use.
+The constants \verb"0" and \verb"1" are defined by viewing corresponding
+values from the representation as values of the domain itself.
+Similarly, the equality operation is defined using the equality operation
+from the representation.
+
+\index{abstract datatype}
+Separating a domain and its representation provides a clear line
+of demarcation between the public and private views of domain values.
+In this way, \asharp{} is an example of an {\em abstract datatype language\/}:
+the representation of a domain provides the private view of its elements
+which is used to define functions which operate on values from the domain.
+In public, values from the domain are viewed as belonging to the domain itself.
+
+\index{encapsulation}\label{asugLangNTypeDomEncap}
+The operations provided by a domain can be arranged so that client programs
+which use a domain need not depend on the representation of the domain.
+When the representation of a domain is localised to the domain definition
+in this way, the representation is said to be {\em encapsulated\/} by the
+domain definition.
+
+\index{machine types}
+The representation of a domain is typically a more primitive domain which
+is chosen to achieve a certain level of efficiency in the operations provided
+by the domain.  At the lowest representational level lie the built-in machine
+types provided by the \asharp{} base library, described in
+\secref{asugLangTypesMachine} and in \secref{asugLangMachine}.
+
+Each of the machine types is a domain whose representation depends on the
+architecture of the machine being used.  While the actual representations
+of machine-level values are not specified by the language, typically most or
+all of them will have efficient runtime implementations.  The availability
+of these built-in types provides a great degree of flexibility in designing
+efficient representations for \asharp{} domains.
+
+\subsubsection{Domain inheritance}
+
+\index{implementation inheritance}
+\index{add inheritance}
+\index{domain inheritance}
+\index{domain parent}
+A domain may {\em inherit\/} the implementation
+of many of its operations from another domain, called its {\em parent\/},
+by placing the parent domain on the left-hand side of an \verb"add" expression.
+
+For example, when the \verb"add" expression:
+
+\begin{small}
+\begin{verbatim}
+    Integer add {
+            Rep == Integer;
+            import from Rep;
+
+            0 : % == per 0;             -- This definition is redundant.
+            1 : % == per 1;             -- This definition is redundant.
+
+            -- This definition is redundant.
+            (x: %) = (y: %) : Boolean == rep x = rep y;
+
+            ~ (x: %) : % == if x = 1 then 0 else 1;
+            (x: %) \/ (y: %) : % == if x = 1 \/ y = 1 then 1 else 0;
+            (x: %) /\ (y: %) : % == if x = 1 /\ y = 1 then 1 else 0;
+    }
+\end{verbatim}
+\end{small}
+
+is used to define a domain which exports the operations \verb"0", \verb"1",
+and \verb"=", these operations can be inherited from \verb"Integer", and
+so need not be implemented explicitly in the \verb"add" expression.
+
+A domain may inherit operations from another domain only if
+the representation type of the parent domain is compatible
+with the representation type of the domain.  In many cases the
+representation type of the domain will be taken to be the parent domain
+itself.  Packages and abstract data types may inherit from packages
+without reservation since there is no possibility of representation
+mismatch in this case.
+
+\subsubsection{Visibility of inherited operations}
+
+Operations provided by a domain are often defined using other operations
+provided by the domain.  When some operations are inherited from a parent
+domain, it is important that these operations be visible in the add
+expression.  In the domain definition\footnote{This example uses a
+{\tt with} to declare the type of the domain, which will be explained in
+section~\ref{asugLangNTypeCats}.}
+
+\begin{small}
+\begin{verbatim}
+    MyBit : BooleanArithmeticType with {
+            0 : %;
+            1 : %;
+    }
+    == Integer add {
+            ~ (x: %) : % == if x = 1 then 0 else 1;
+            (x: %) \/ (y: %) : % == if x = 1 \/ y = 1 then 1 else 0;
+            (x: %) /\ (y: %) : % == if x = 1 /\ y = 1 then 1 else 0;
+    }
+\end{verbatim}
+\end{small}
+
+the definitions for \verb"~", \verb"\/", and \verb"/\" each use the operations
+\verb"0", \verb"1", and \verb"=" from \verb"MyBit", which are inherited
+from \verb"Integer".  These inherited operations are made visible in the
+\verb"add" expression by the following rule:   whenever an
+expression \verb"A add B" appears in a context requiring a domain whose
+type is the category \verb"C", then any operations required by \verb"C"
+which are not defined in \verb"B" are taken from the domain
+\verb"A".
+
+So in the above example, the \verb"add" expression used to define \verb"MyBit"
+appears in a context which requires a domain which satisfies
+\verb"BooleanArithmeticType" and provides the exports \verb"0" and \verb"1".
+\verb"BooleanArithmeticType" is a category provided by the standard \asharp{} library, which
+includes, among other things, a declaration for \ttin{=}:
+
+\begin{small}
+\begin{verbatim}
+    = : (%, %) -> Boolean;
+\end{verbatim}
+\end{small}
+
+Since the domain \verb"Integer" (from the base \asharp{} library) also
+implements an operation \verb"=" with the same signature, this operation
+is made visible on the right-hand side of the \verb"add".
+
+Note that the statement \verb"import from Integer" would also make the
+\verb"=" operation from \verb"Integer" visible, but its signature would
+instead be:
+
+\begin{small}
+\begin{verbatim}
+    = : (Integer, Integer) -> Boolean;
+\end{verbatim}
+\end{small}
+
+and so it could only be used to compare \verb"Integer"s, not \verb"MyBit"s.
+
+\subsubsection{Conditional definitions}
+
+A {\em conditional definition\/} is a definition which is only provided
+by a domain under certain assumptions.  For example:
+
+\begin{small}
+\begin{verbatim}
+    Zmod (n: Integer) : ArithmeticType with {
+            if prime? n then inv : % -> %;
+    }
+    == Integer add {
+            if prime? n then {
+                    inv (x: %) : % == ...
+            }
+    }
+\end{verbatim}
+\end{small}
+
+$Z_n$, the domain of integers modulo $n$, is always a Ring.  However,
+if $n$ is prime, then $Z_n$ is also a Field, meaning that it should
+provide a multiplicative inverse for nonzero values.  In an \verb"add"
+expression, a definition which appears in the consequence of an \verb"if"
+expression is said to be a conditional definition:  the domain only provides
+the operation if the condition in the \verb"if" expression evaluates as true.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\head{section}{Categories}{asugLangNTypeCats}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\index{category}
+In \asharp{} a {\em category\/} is used to specify information about domains.
+Categories allow domain-manipulating programs to place restrictions on
+the sort of domains they are prepared to handle and to make promises
+about the domains which they may return.
+% These restrictions and promises are expressed in terms of collections of
+%% Avoiding bad linebreak
+The restrictions and promises are expressed in terms of collections of
+exports which the domains in question will be required to provide.
+
+All type values have \ttin{Type} as their unique base type.
+As with all other values, it is the unique base type which determines
+how values are to be represented.   
+
+On the other hand, a domain may belong to any number
+of categories so long as it has the necessary exports.
+That is, the world of categories provides a sub-typing
+structure on \verb"Type".
+
+This section describes how to create and use categories.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Creating categories with ``{\tt with}''}
+\keywordIndex{with}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+The primitive for forming categories is the \verb"with" expression. 
+The syntax for a \verb"with" expression is
+
+\verb"    "{\tt {\em [Expr]\/} with {\em WithBody}}
+
+The left-hand side is an optional \verb"Category"-valued expression.
+Allowing a nonempty expression on the left-hand side is merely
+a syntactic convenience, and is equivalent to placing the expression
+as a part of the right-hand side:
+
+\verb"    "{\tt {\em L} with \{ {\em R} \}}
+
+is equivalent to 
+
+\verb"    "{\tt with \{ {\em L\/} ; {\em R\/} \}}
+
+\index{signature}
+The right-hand side of a \verb"with" expression contains a specification
+of the set of exports which  must be provided for a domain to belong
+to this category. The specification is typically a sequence containing
+any of the following types of expression:
+
+\begin{itemize}
+\item declarations
+\item category-valued expressions
+\item conditional expressions
+\item default definitions
+\end{itemize}
+
+The following is an example of a simple category:
+
+\begin{small}
+\begin{verbatim}
+    with {
+            scale: (Integer, Integer) -> Integer;
+            n: Integer;
+    }
+\end{verbatim}
+\end{small}
+
+For a domain to satisfy this category, it must provide at least two exports:
+\ttin{scale}, a function of the given type, and \ttin{n}, an \verb"Integer".
+For example, the domain \ttin{D} as defined in the following program
+satisfies this category:
+
+\begin{small}
+\begin{verbatim}
+    D == add { import from Integer; n == 3; scale == *; extra == 0 }
+\end{verbatim}
+\end{small}
+
+Here, the type of \verb"D" is inferred to be
+
+\begin{small}
+\begin{verbatim}
+ with{n: Integer; scale: (Integer, Integer) -> Integer; extra: Integer}
+\end{verbatim}
+\end{small}
+
+It is quite usual to see \verb"with" expressions as the declared
+types in definitions.  The definition of \verb"D" could just as
+well have been written as
+
+\begin{small}
+\begin{verbatim}
+    D: with {
+            n:     Integer;
+            scale: (Integer, Integer) -> Integer;
+            extra: Integer
+    }
+    == add {
+            import from Integer;
+            n == 3;
+            scale == *;
+            extra == 0;
+    }
+\end{verbatim}
+\end{small}
+
+This form has the advantage that the interface to the domain is
+explicitly shown.
+
+The exports specified by a \verb"with" expression may have mutually
+dependent types.  That is, it is possible to export types
+and operations on them.  For example:
+
+\begin{small}
+\begin{verbatim}
+    with {
+            DecomposedMatrix: Type;
+
+            decompose: Matrix R -> DecomposedMatrix;
+
+            solve: (DecomposedMatrix, Vector R) -> Vector R
+    }
+\end{verbatim}
+\end{small}
+
+(where \verb"R" is a parameter).
+
+In general, any number of related types and operations may be given:
+
+\begin{small}
+\begin{verbatim}
+    #include "aldor"
+
+    with {
+            T: Type;
+            L: ListType T;
+
+            x: T
+            lx: L;
+    }
+\end{verbatim}
+\end{small}
+        
+Typically, a domain will export a type and enough operations on that
+type to make it a sufficiently interesting object. 
+%% Ringing the changes slightly on the phraseology used previously
+%% under "Abstract datatypes".  MGR
+It therefore makes sense to equate the exporting domain and
+the type for which the exports are being defined. The name used for
+this unified domain is \ttin{\%}, and is implicitly exported by all
+types formed using \ttin{with} and \ttin{add}.
+
+Thus, the \ttin{DecomposedMatrix} example above may be rewritten by
+replacing {\tt DecomposedMatrix} with {\tt \%}:
+
+\begin{small}
+\begin{verbatim}
+    with {
+            decompose: Matrix R -> %;
+            solve: (%, Vector R) -> Vector R
+    }
+\end{verbatim}
+\end{small}
+
+A domain satisfying this type would have the following form:
+
+\begin{small}
+\begin{verbatim}
+    DecomposedMatrix: with {
+            decompose: Matrix R -> %;
+            solve: (%, Vector R) -> Vector R
+    } == add {
+            Rep == ...
+
+            decompose(m: Matrix R): % == ...
+            solve(dm: %, v: Vector R): Vector R == ...
+   }
+\end{verbatim}
+\end{small}%
+\goodbreak
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Export from}
+\label{asugLangTypesExports}
+\index{export from}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+In addition to the exports specified in the declarations of a {\tt
+with} expression, a category may also {\em cascade\/} exports from other
+domains. That is, when a domain satisfying some category is imported,
+operations from other domains may be implicitly imported.
+The {\tt export from} form is used to specify the additional domains to
+be imported.
+
+For example, 
+
+\begin{small}
+\begin{verbatim}
+    with {
+            decompose(m: Matrix R): % == ...
+            solve(dm: %, v: Vector R): Vector R == ...
+
+            export from Matrix R;
+    }
+\end{verbatim}
+\end{small}
+
+When a domain satisfying this category is imported, {\tt Matrix R}
+will also be imported. As with the {\tt import from} statement (see
+\secref{asugLangNamesImport}), it is possible to restrict the imports
+which are cascaded:
+
+\begin{small}
+\begin{verbatim}
+    export {+: (%, %) -> %} from Matrix R;
+\end{verbatim}
+\end{small}
+
+This form will import only the \ttin{+} operation
+from {\tt Matrix~R}.
+
+The cascaded exports of a category do not affect type satisfaction
+questions in any way.
+
+\vbox{
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Defaults}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+It is a common situation that, if we are given a category satisfying a
+%number of operations, new operations can be defined on that type which
+%only use the information supplied in the rest of a category. For
+%% "that type" doesn't refer to anything.  I think what is meant is:
+number of operations, new operations can be defined on domains in that
+category, which only use the information supplied in the category. For
+example, a datatype with an equality operation may be declared as:
+}
+
+\begin{small}
+\begin{verbatim}
+    with {
+            =:  (%, %) -> Boolean; ++ equality
+    }
+\end{verbatim}
+\end{small}
+
+A domain which satisfies this category is free to decide its own
+implementation of equality. As it stands, this is fine but we may want
+further operations on the datatype, such as a not-equals operation,
+\verb+~=+. 
+
+\begin{small}
+\begin{verbatim}
+    with {
+            =:  (%, %) -> Boolean; ++ equality
+            ~=: (%, %) -> Boolean; ++ inequality
+    }
+\end{verbatim}
+\end{small}
+
+This would imply that in order to satisfy this type a domain needs to
+export the two operations above. However, it seems a waste not to use
+the fact that inequality may be implemented in terms of equality in
+order to save every domain satisfying this category having to define
+both operations. This is achieved through
+{\em default implementations\/} ({\em default constant bindings}). 
+
+\begin{small}
+\begin{verbatim}
+    with {
+            =:  (%, %) -> Boolean; ++ equality
+            ~=: (%, %) -> Boolean; ++ inequality
+            default {
+                    (a: %) ~= (b: %): Boolean == not (a = b);
+            }
+    }
+\end{verbatim}
+\end{small}
+
+The default implementation will call the \ttin{=} operation from the
+domain, then return the complement.
+
+A (rather trivial) domain satisfying this category is:
+
+\begin{small}
+\begin{verbatim}
+   Dom: with {
+            =:  (%, %) -> Boolean; ++ equality
+            ~=: (%, %) -> Boolean; ++ inequality
+            default {
+                    (a: %) ~= (b: %): Boolean == not (a = b);
+            }
+    } == add {
+            (a: %) = (b: %): Boolean == true;
+    }
+\end{verbatim}
+\end{small}
+
+This domain suffers from the deficiency that it is impossible to create
+new elements (due to the definition of equality), but importing
+from it will add the constants \ttin{=} and ``\verb+~=+'' to the current
+scope.
+
+A domain is also free to implement operations which have default
+implementations. In this case, the domain {\em over-rides} the
+operations in the default and importing the domain will activate the
+operations in the domain.
+
+In a default definition, the uses of other exports from the type
+are obtained by looking up the operations in \ttin{\%}.
+This will first yield values from definitions in the domain or more
+closely applicable default bodies. Thus, default implementations
+provide a mechanism for late-binding of names to values.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Defining category-valued constants}
+\index{category!defining}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+It is inconvenient to have to repeat category expressions in
+a program.  The language allows categories to be treated as normal values
+and allows names to refer to categories.
+A category (by definition) is a value of the \asharp{} built-in type
+{\tt Category}. 
+
+\index{define}%
+To decide whether a particular domain satisfies a category, it is necessary
+to know that category's value.   For this reason, it is most useful
+to use the \ttin{define} keyword in giving categories and category-returning
+functions their values.   This makes the value as well as the type
+publicly visible.
+
+For example, 
+
+\begin{small}
+\begin{verbatim}
+        define Finite: Category == PrimitiveType with {
+                #: Integer;
+                     ++ Number of values in the type.
+                ...
+        }
+\end{verbatim}
+\end{small}
+
+defines a category, {\tt Finite}, which exports a constant called
+\ttin{\#}\index{\verb+#+ (size of a finite domain)}, plus some
+other things. 
+The following definition makes use of the {\tt Finite} category:
+
+\begin{small}
+\begin{verbatim}
+        NotALot: Finite == add {
+                #: Integer == 0;
+                ...
+        }
+\end{verbatim}
+\end{small}
+
+which creates a new domain \ttin{NotALot} for which the {\tt \#}
+constant has value 0. The remainder of the definition is
+elided here.
+
+The new domain can then be used:
+
+\begin{small}
+\begin{verbatim}
+        import from NotALot;
+        stdout << #$NotALot << newline;
+\end{verbatim}
+\end{small}
+
+The above program will print 0.
+
+The new domain can also be used in contexts requiring something that
+satisfies {\tt Finite}:
+
+\begin{small}
+\begin{verbatim}
+        -- define a function giving the size of a domain
+        sizeof(FiniteDom: Finite): Integer == #$FiniteDom;
+        -- call it
+        sizeof(NotALot)       --- '0' 
+\end{verbatim}
+\end{small}
+
+A category can be used inside a \ttin{with} body. Including a
+category places all the declarations of that category into the new
+category. This mechanism allows categories to inherit from one another.
+
+Thus, we can define a new category, \ttin{FiniteGroup} as:
+\begin{small}
+\begin{verbatim}
+    define FiniteGroup: Category == with {
+            Finite;
+            1:   %;             ++ Identity for multiplication.
+            *:   (%, %) -> %;   ++ Multiplication.
+            inv: % -> %;        ++ Inverses.
+}
+\end{verbatim}
+\end{small}
+
+In order to satisfy this category, a domain must implement at least all
+the non-defaulted declarations from {\tt Finite}, as well as the three
+explicitly mentioned by {\tt FiniteGroup}.
+
+%!%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%!\subsubsection{Category defining functions}
+%!%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+A \ttin{with} expression is a valid right hand side of a category
+definition. This allows the creation of parameterised categories. For
+example, the decomposed matrix category example above could be written
+as:
+
+\begin{small}
+\begin{verbatim}
+    define DecomposedMatrixCategory(R: ArithmeticType): Category == with {
+            decompose: Matrix R  -> %;
+            solve: (%, Vector R) -> Vector R
+    }
+\end{verbatim}
+\end{small}
+
+A domain which satisfies this category may be defined as follows:
+
+\begin{small}
+\begin{verbatim}
+    DecomposedRationalMatrix: DecomposedMatrixCategory(Integer) ==
+    add {
+            Rep == ...
+
+            decompose(m: Matrix Integer): % == ...
+            solve(dm: %, v: Vector Integer): Vector Integer == ...
+   }
+\end{verbatim}
+\end{small}%
+
+A domain producing map can also satisfy this category. For example:
+
+\begin{small}
+\begin{verbatim}
+    Decomposed(R: ArithmeticType): DecomposedMatrixCategory(R) ==
+    add {
+            Rep == ...
+
+            decompose(m: Matrix R): % == ...
+            solve(dm: %, v: Vector R): Vector R == ...
+   }
+\end{verbatim}
+\end{small}%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Join}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+The \ttin{Join} function takes as argument a tuple of categories and
+creates a new category which has the union of all their exports.
+Any conditions on declarations are \verb"or"ed together.
+
+For example, 
+
+\begin{small}
+\begin{verbatim}
+    Join(OutputType, PrimitiveType);
+\end{verbatim}
+\end{small}%
+
+produces the category:
+
+\begin{small}
+\begin{verbatim}
+    with { OutputType; PrimitiveType }
+\end{verbatim}
+\end{small}%
+
+which includes all the exports from both OutputType and PrimitiveType.
+
+\goodbreak
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Has expressions}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+A \ttin{has} expression has the following form:
+
+\verb@    @{\tt {\em dom} has {\em cat}}
+
+where {\em dom} is a domain-valued expression, and {\em cat} is a
+category-valued
+expression. A \ttin{has} expression may be used in any part of a
+program, but is most often used to conditionalise domains and
+categories. The result of the expression is a {\tt Boolean} value
+which will be true if {\em dom} can be shown to satisfy the category,
+and false otherwise.
+
+Some examples:
+
+\begin{small}
+\begin{verbatim}
+    Integer has ArithmeticType                                       -- true
+    Integer has FloatType                                            -- false
+    Integer has with { +: % -> % }                                   -- true
+    Integer has with { +: Integer -> Integer }                       -- true
+
+    Integer has OrderedArithmeticType with { factorial: % -> % }     -- true
+    Integer has OrderedArithmeticType with { bozo: % -> % }          -- false
+
+    List Integer has ListType Integer                                -- true
+    List Integer has ListType DoubleFloat                            -- false
+\end{verbatim}
+\end{small}
+
+The evaluation of this expression is made at run-time, so one may
+conditionalise code on the parameters to a function:
+
+\begin{small}
+\begin{verbatim}
+    move(V: Vehicle): () == {
+            if V has PlaneType then
+                    takeOff V;
+            else if V has BoatType then
+                    sailAway V;
+            else
+                    roll V;
+
+    }
+\end{verbatim}
+\end{small}
+
+This function will call \ttin{takeOff}, \ttin{sailAway} or \ttin{roll},
+depending on the type-valued parameter V. 
+
+\begin{small}
+\begin{verbatim}
+    move(MountainBike)      --- calls roll
+    move(Concorde)          --- calls takeOff
+    move(Yacht)             --- calls sailAway
+\end{verbatim}
+\end{small}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Conditional expressions}
+\label{asugLangCondExpr}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Frequently, a domain will satisfy additional categories if particular
+conditions on parameters, or on the domain itself, are met. This
+information may be incorporated into a category expression as a
+{\em conditional} statement. A conditional statement has the same form
+as an {\tt if} statement, except that if the body contains declarations
+and definitions, they are associated with the condition for the purposes
+of type satisfaction.
+
+%\pagebreak
+For example,
+
+\begin{small}
+\begin{verbatim}
+    with {
+            BoundedFiniteLinearStructureType S;
+            if (T has TotallyOrderedType) then {
+                TotallyOrderedType
+                sort!: % -> %
+            }
+    }
+\end{verbatim}
+\end{small}
+
+is a category which is satisfied by any list type which exports an
+ordering on itself whenever its elements do.  Provided that 
+
+\begin{small}
+\begin{verbatim}
+    S == Integer;
+\end{verbatim}
+\end{small}
+
+the following domain would satisfy this condition:
+
+\begin{small}
+\begin{verbatim}
+    List Integer add {
+            Rep == List Integer;
+
+            local tails(l: %): Generator % == generate {
+                while l repeat { tmpl := rest l; yield l; l := tmpl; }
+            }
+
+            (l1: %) < (l2: %): Boolean == {
+                    local x, y: %;
+                    for free x in tails l1 
+                        for free y in tails l2 repeat {
+                            x.first > y.first => return false;
+                            x.first < y.first => return true;
+                    }
+                    if not empty? x then false;
+            }
+            sort(l: %): % == {
+                    ... 
+            }
+    }
+\end{verbatim}
+\end{small}
+
+Here, the condition is satisfied because \verb"S" is \verb"Integer", a
+member of the category 
+\verb"TotallyOrderedType", and the appropriate operations are defined by the add
+body.
+
+Conditional statements are most often used in parameterised categories: 
+
+\begin{small}
+\begin{verbatim}
+    define ListCat(T: Type): Category == with {
+            if T has PrimitiveType then PrimitiveType;
+            BoundedFiniteLinearStructureType T;
+            ...
+    }
+\end{verbatim}
+\end{small}
+
+\subsubsection{Evaluation rules}
+
+The bodies of \ttin{default} statements inside {\tt with} and {\tt add}
+expressions may include side-effecting statements. These will
+be evaluated in order to make the constants inside the body well
+defined, but the language makes no guarantees on when (or indeed, if)
+these side-effecting statements will be evaluated for a given category
+or domain.
+
+The bodies of {\tt with} and {\tt add} expressions are evaluated in such
+a way that they will be evaluated after the expressions they depend
+on.  If mutually recursive type-forming expressions are found within
+the body of either {\tt with} or {\tt add} expressions, the
+expressions are computed as a fixed point, rather than evaluated in
+strict sequence.  This fixed point computation uses a technique from
+functional programming to create self-referential data structures.
+
+%!%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%!\subsubsection{\%\%}
+%!%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% This is probably best left.
+
+%% Hide: A stated above, if a domain exports a suitable \ttin{\#} constant
+%% Hide: then it satisfies the category \verb+with { \#: Integer }+. Here, the
+%% Hide: {\tt \#} indicates the size of the domain. It is possible that the
+%% Hide: {\tt \#} operation could have other interpretations, for example it
+%% Hide: could be a serial number for the domain:
+%% Hide: 
+%% Hide: \begin{small}
+%% Hide: \begin{verbatim}
+%% Hide:     import from Integer;
+%% Hide:     count := 0;
+%% Hide: 
+%% Hide:     add {
+%% Hide:            free count;
+%% Hide:            #: Integer == {count := count + 1; count}
+%% Hide:     }
+%% Hide: \end{verbatim}
+%% Hide: \end{small}
+%% Hide: 
+%% Hide: The \ttin{add} body here exports a \ttin{\#} operation, but it
+%% Hide: probably has a different interpretation to the \ttin{\#} operation in
+%% Hide: \ttin{Finite}. 
+%% Hide: 
+%% Hide: In order to avoid this problem, the  category, as well as
+%% Hide: containing its declared and inherited declarations, also contains a
+%% Hide: symbol called \ttin{\%\%} which has the same value as {\tt \%} (a
+%% Hide: domain), and a type with the name of the defined category. This export
+%% Hide: is automatically added to a domain when the domain is explicitly
+%% Hide: asserted to satisfy the category.
+%% Hide: 

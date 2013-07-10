@@ -1,0 +1,36 @@
+(|Sequence| (|Import| NIL |AxiomLib|)
+    (|Foreign| (|Declare| |dummyDefault| |Exit|) |Lisp|)
+    (|Define|
+        (|Declare| |Evalable|
+            (|Apply| -> (|Declare| |#1| |SetCategory|) |Category|))
+        (|Lambda| (|Comma| (|Declare| |#1| |SetCategory|)) |Category|
+            (|Label| |Evalable|
+                     (|With| NIL
+                             (|Sequence|
+                                 (|Declare| |eval|
+                                     (|Apply| ->
+                                      (|Comma| %
+                                       (|Apply| |Equation| |#1|))
+                                      %))
+                                 (|Declare| |eval|
+                                     (|Apply| ->
+                                      (|Comma| %
+                                       (|Apply| |List|
+                                        (|Apply| |Equation| |#1|)))
+                                      %))
+                                 (|Default|
+                                     (|Sequence|
+                                      (|Define|
+                                       (|Declare| |eval|
+                                        (|Apply| ->
+                                         (|Comma| %
+                                          (|Apply| |Equation|
+                                           (|PretendTo| |#1| |Type|)))
+                                         %))
+                                       (|Lambda|
+                                        (|Comma| (|Declare| |t#1| %)
+                                         (|Declare| |t#2|
+                                          (|Apply| |Equation|
+                                           (|PretendTo| |#1| |Type|))))
+                                        %
+                                        (|Label| |eval| |dummyDefault|)))))))))))

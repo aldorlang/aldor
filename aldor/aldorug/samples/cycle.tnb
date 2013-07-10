@@ -1,0 +1,41 @@
+{\codeline{1}\verb& #include "aldor"&}\\
+{\codeline{2}\verb& #include "aldorio"&}\\
+{\codeline{3}\verb&&}\\
+{\codeline{4}\verb& import from Integer;&}\\
+{\codeline{5}\verb&&}\\
+{\codeline{6}\verb& -- Multiple value returns and functional composition.&}\\
+{\codeline{7}\verb& -- Only creating the closures by * should allocate storage.&}\\
+{\codeline{8}\verb&&}\\
+{\codeline{9}\verb& I      ==> Integer;&}\\
+{\codeline{10}\verb& III    ==> (I,I,I);&}\\
+{\codeline{11}\verb& MapIII ==> (I,I,I) -> (I,I,I);&}\\
+{\codeline{12}\verb&&}\\
+{\codeline{13}\verb& id: MapIII ==&}\\
+{\codeline{14}\verb&         (i:I, j:I, k: I): III +-> (i,j,k);&}\\
+{\codeline{15}\verb&&}\\
+{\codeline{16}\verb& (f: MapIII) * (g: MapIII): MapIII ==&}\\
+{\codeline{17}\verb&         (i:I, j:I, k: I): III +-> f g (i,j,k);&}\\
+{\codeline{18}\verb&&}\\
+{\codeline{19}\verb& (f: MapIII) ^ (p: Integer): MapIII == {&}\\
+{\codeline{20}\verb&         p < 1  => id;&}\\
+{\codeline{21}\verb&         p = 1  => f;&}\\
+{\codeline{22}\verb&         odd? p => f*(f*f)^(p quo 2);&}\\
+{\codeline{23}\verb&         (f*f)^(p quo 2);&}\\
+{\codeline{24}\verb& }&}\\
+{\codeline{25}\verb&&}\\
+{\codeline{26}\verb& -- test routine&}\\
+{\codeline{27}\verb& main(): () == {&}\\
+{\codeline{28}\verb&         cycle(a: I, b: I, c: I): III == (c, a, b);&}\\
+{\codeline{29}\verb&&}\\
+{\codeline{30}\verb&         printIII(a: I, b: I, c: I): () == {&}\\
+{\codeline{31}\verb&                 stdout << "a = " << a << " b = "&}\\
+{\codeline{32}\verb&                                         << b << " c = " << c << newline&}\\
+{\codeline{33}\verb&         }&}\\
+{\codeline{34}\verb&         printIII (cycle(1,2,3));&}\\
+{\codeline{35}\verb&         printIII (cycle cycle  (1,2,3));&}\\
+{\codeline{36}\verb&         printIII ((cycle*cycle)(1,2,3));&}\\
+{\codeline{37}\verb&         printIII ((cycle^10)  (1,2,3));&}\\
+{\codeline{38}\verb& }&}\\
+{\codeline{39}\verb&&}\\
+{\codeline{40}\verb& main()&}\\
+{\codeline{41}\verb&&}\\

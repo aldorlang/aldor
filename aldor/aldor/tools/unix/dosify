@@ -1,0 +1,30 @@
+#!/bin/sh
+
+# Recursively convert all files in the current directory and its
+# children into DOS format text files.
+
+me=$0
+echo "[`pwd`]" 1>&2
+sleep 2
+
+files=`ls`
+for file in $files
+do
+   if [ -d $file ]
+   then
+      (
+         cd $file
+         $me
+      )
+   else
+      echo "   $file" 1>&2
+      cp $file $file.OLD
+      txt2txt -to dos < $file.OLD > $file
+      if [ -f $file ]
+      then
+         /bin/rm -f $file.OLD
+      fi
+   fi
+done
+
+exit 0

@@ -1,0 +1,60 @@
+#
+# Copyright (c) 1990-2007 Aldor Software Organization Ltd (Aldor.org).
+#
+ThisDir = arith
+
+LibDir = $(ALDORLIBROOT)/lib
+IncDir = $(ALDORLIBROOT)/include
+DocDir = $(ALDORLIBROOT)/doc/tex
+TestDir = $(ALDORLIBROOT)/test
+StampDir  = $(LibDir)
+DocStampDir  = $(DocDir)
+TestStampDir  = $(TestDir)
+
+ALDOR=$(COMPILER) $(FLAGS)
+
+.SUFFIXES: .ao .as
+
+# Implicit rule for building .al file
+.as.ao: 
+	@echo Compiling $*.as ...
+	$(ALDOR) $(MAKEDIR)\$*.as
+	@uniar rv $(ALDORLIB) $*.ao
+	@del $*.ao
+
+
+SRCS = sal_arith sal_intcat sal_bool sal_bsearch sal_itools\
+	sal_mint sal_int sal_pointer sal_fltcat sal_ftools sal_sfloat\
+	sal_dfloat sal_segment sal_random sal_binpow sal_oarith\
+	sal_lincomb sal_complex
+
+# directories that we depend on
+
+aobj: sal_bool.ao sal_arith.ao sal_oarith.ao sal_intcat.ao sal_bsearch.ao \
+	sal_segment.ao sal_binpow.ao sal_itools.ao sal_mint.ao sal_random.ao \
+	sal_int.ao sal_pointer.ao sal_fltcat.ao sal_ftools.ao sal_sfloat.ao \
+	sal_dfloat.ao sal_lincomb.ao sal_complex.ao
+
+clean:
+	-@del /q *.c *.h *.fm *.ao *.o *~
+
+# Explicit dependencies
+
+sal_bool.ao:
+sal_arith.ao: sal_bool.ao
+sal_oarith.ao: sal_arith.ao
+sal_intcat.ao: sal_oarith.ao
+sal_bsearch.ao: sal_intcat.ao
+sal_segment.ao: sal_intcat.ao
+sal_binpow.ao: sal_intcat.ao
+sal_itools.ao: sal_bsearch.ao sal_segment.ao
+sal_mint.ao: sal_itools.ao sal_binpow.ao
+sal_random.ao: sal_mint.ao
+sal_int.ao: sal_random.ao
+sal_pointer.ao: sal_random.ao
+sal_fltcat.ao: sal_int.ao
+sal_ftools.ao: sal_fltcat.ao
+sal_sfloat.ao: sal_ftools.ao
+sal_dfloat.ao: sal_sfloat.ao
+sal_lincomb.ao: sal_arith.ao
+sal_complex.ao: sal_lincomb.ao sal_fltcat.ao

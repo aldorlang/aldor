@@ -1,0 +1,56 @@
+{\codeline{1}\verb& #include "aldor"&}\\
+{\codeline{2}\verb&&}\\
+{\codeline{3}\verb& F ==> DoubleFloat;&}\\
+{\codeline{4}\verb&&}\\
+{\codeline{5}\verb& exp(f: F): F == {&}\\
+{\codeline{6}\verb&   e: F := 1;&}\\
+{\codeline{7}\verb&   m: MachineInteger := 1;&}\\
+{\codeline{8}\verb&   x: F := e;&}\\
+{\codeline{9}\verb&   for i in 2..12 repeat {&}\\
+{\codeline{10}\verb&       x := x * f;&}\\
+{\codeline{11}\verb&       m := m * i;&}\\
+{\codeline{12}\verb&       e := e +  x/(m::F);&}\\
+{\codeline{13}\verb&   }&}\\
+{\codeline{14}\verb&   e;&}\\
+{\codeline{15}\verb& }&}\\
+{\codeline{16}\verb&&}\\
+{\codeline{17}\verb& floatSequence(): Generator F == generate {&}\\
+{\codeline{18}\verb&                 x: F := 0.0;&}\\
+{\codeline{19}\verb&                 repeat {&}\\
+{\codeline{20}\verb&                         yield exp(-x*x);&}\\
+{\codeline{21}\verb&                         x := x + 0.05;&}\\
+{\codeline{22}\verb&                 }&}\\
+{\codeline{23}\verb& }&}\\
+{\codeline{24}\verb&&}\\
+{\codeline{25}\verb& runningMean(g: Generator F): Generator F == {&}\\
+{\codeline{26}\verb&         n: MachineInteger := 0;&}\\
+{\codeline{27}\verb&         sum: F   := 0;&}\\
+{\codeline{28}\verb&         generate {&}\\
+{\codeline{29}\verb&                 for x in g repeat {&}\\
+{\codeline{30}\verb&                         sum := sum + x;&}\\
+{\codeline{31}\verb&                         n   := next(n);&}\\
+{\codeline{32}\verb&                         yield sum/(n::F);&}\\
+{\codeline{33}\verb&                 }&}\\
+{\codeline{34}\verb&         }&}\\
+{\codeline{35}\verb& }&}\\
+{\codeline{36}\verb&&}\\
+{\codeline{37}\verb& step(n: MachineInteger)(a: F, b: F): Generator F == generate {&}\\
+{\codeline{38}\verb&                 m: MachineInteger := prev(n);&}\\
+{\codeline{39}\verb&                 del: F := (b - a)/m::F;&}\\
+{\codeline{40}\verb&                 for i in 1..n repeat {&}\\
+{\codeline{41}\verb&                         yield a;&}\\
+{\codeline{42}\verb&                         a := a + del;&}\\
+{\codeline{43}\verb&                 }&}\\
+{\codeline{44}\verb& }&}\\
+{\codeline{45}\verb&&}\\
+{\codeline{46}\verb&&}\\
+{\codeline{47}\verb& main(): () == {&}\\
+{\codeline{48}\verb&         import from F, MachineInteger, TextWriter, Character, String;&}\\
+{\codeline{49}\verb&         for i in runningMean(x for x in step(11)(0.0, 1.0)) repeat&}\\
+{\codeline{50}\verb&                 stdout << i << newline;&}\\
+{\codeline{51}\verb&&}\\
+{\codeline{52}\verb&         for i in 1..10 for x in runningMean(floatSequence()) repeat&}\\
+{\codeline{53}\verb&                  stdout << "next: " << x << newline;&}\\
+{\codeline{54}\verb& }&}\\
+{\codeline{55}\verb&&}\\
+{\codeline{56}\verb& main();&}\\

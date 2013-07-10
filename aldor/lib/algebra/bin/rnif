@@ -1,0 +1,68 @@
+#!/bin/sh
+
+# Initial checks
+if [ $# != 1 ] 
+then 
+          echo "Usage: $0 \$DIR" 
+          exit 1    
+fi
+
+if [ "x$ALGEBRAROOT" == "x" ] 
+then 
+          echo "ALGEBRAROOT unset"; 
+          exit 1  
+fi
+
+DIR=$1
+export PATH=$ALGEBRAROOT/bin:$PATH
+
+if [ ! -d $DIR ]
+then
+	echo "Sorry: cannot find $DIR"
+	exit 1
+fi
+
+if [ ! -f $ALGEBRAROOT/bin/replaceNamesInFiles.l ]
+then
+        echo "Sorry: cannot find replaceNamesInFiles.l"
+	exit 1
+fi
+
+if [ ! -f $ALGEBRAROOT/bin/replaceNamesInFiles ]
+then
+        cd $ALGEBRAROOT/bin
+	echo "Building replaceNamesInFiles ... "
+        make replaceNamesInFiles
+	echo "... done"
+fi
+
+if [ ! -f $ALGEBRAROOT/bin/replaceNamesInFiles ]
+then
+        echo "Sorry: cannot find replaceNamesInFiles"
+	exit 1
+fi
+
+echo "Entering $DIR ..."
+
+cd $DIR
+for file in ./*.as 
+do
+	rm -f BeaujolaisNouveau.as 
+	echo " ... processing $file ... "
+	replaceNamesInFiles < $file
+	diff -bB $file BeaujolaisNouveau.as > BiereDeMars.txt
+	if [ -z "`cat BiereDeMars.txt`" ] 
+	then 
+	    echo " !!! overwritting $file" 
+	fi
+	mv -f BeaujolaisNouveau.as $file
+	rm -f BiereDeMars.txt
+done
+
+cd $ALGEBRAROOT/bin
+
+rm -f replaceNamesInFiles lex.yy.c
+
+echo "... done"
+
+exit 0

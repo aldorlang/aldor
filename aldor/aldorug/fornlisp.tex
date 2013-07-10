@@ -1,0 +1,127 @@
+% *********************************************************************
+\head{section}{Running generated Lisp code}{asugForeignLisp}
+% *********************************************************************
+
+This section describes how to load \asharp{} code into a Common Lisp
+system.  After the general treatment (which should work for any
+Common Lisp), there are some special instructions which apply only
+to loading the code into an {\sc Axiom} system.
+
+This section documents an area which is undergoing active development
+and we expect to provide a set of lisp utilities to make the interface
+smoother\footnote{We don't really now recommend it for the faint of
+heart!}.
+
+To use the compiler to generate Lisp for the file ``{\tt mandel.as}'',
+do the following:
+\index{compiler options!Fl@\protect{\tt -Fl} (generate Lisp code)}
+\begin{verbatim}
+    cd test
+    aldor -F l mandel.as
+\end{verbatim}
+This generates the file ``{\tt mandel.l}''.
+
+To load the Lisp code, first issue {\tt lisp} to start the
+Lisp system.  
+The generated code references various macros, defined in the file
+``{\tt \$ALDORROOT/include/foam\_l.l}''.
+So it is necessary to load this file before using the file ``{\tt mandel.l}''.
+
+These files may either be loaded for interpretation,
+\begin{verbatim}
+    (load "/usr/aldor/base/rs3.2/include/foam_l.l")
+    (load "mandel.l")
+\end{verbatim}
+or they may be compiled beforehand, \eg{}:
+\begin{verbatim}
+    (load "/usr/aldor/base/rs3.2/include/foam_l.l")
+    (compile-file "mandel.l")
+    (load "mandel.o")
+\end{verbatim}
+
+Once the ``{\tt foam\_l.l}'' file has been loaded, it is no longer necessary to
+leave lisp to compile \asharp{} files. 
+The above steps for compiling and loading ``{\tt mandel.as}'' could have all
+been accomplished with the one command
+\begin{verbatim}
+    (compile-asxln-file "mandel.as")
+\end{verbatim}
+
+Next you must compile and load the libraries used by your file
+(for {\tt mandel.as,} the libraries are {\tt basic.as} and
+{\tt complex.as}).
+\begin{verbatim}
+    (compile-asxln-file "../aldor/basic.as")
+    (compile-asxln-file "../aldor/complex.as")
+    (compile-asxln-file "mandel.as")
+\end{verbatim}
+
+The {\tt compile-asxln-file} function compiles {\tt .as} files to
+Lisp code, then compiles and loads the Lisp code.
+
+You next need to instantiate the file you want to run.
+The name of the instantiation program is obtained by concatenating
+\verb+G_+ to the name of the file.
+For example, the instantiation program for {\tt mandel.as}
+is called \verb+G_mandel+.
+\begin{verbatim}
+    (setq c (|CCall| |G_mandel|))
+\end{verbatim}
+This creates a Lisp variable {\tt c} holding the closure for the file
+getter program.
+
+To call a function from the package, you have two choices: directly call
+the function using its generated Lisp name, or call the getter
+function to get a closure and call the closure.
+To call {\tt drawMand} the first way:
+\begin{verbatim}
+    (|Cmandel-1_mandel_drawMand|
+        -2.0 2.0 25 -2.0 2.0 25 (|ClosEnv| c))
+\end{verbatim}
+
+The name of the progam can be determined by looking at the
+generated Lisp file.
+The last argument is the environment for the file.
+
+The other method is to get the closure by calling the file getter with the
+apropriate hash codes:
+\begin{verbatim}
+    (setq mand (|CCall| c 259747446 526180818))
+    (|CCall| mand -2.0 2.0 25 -2.0 2.0 25)
+\end{verbatim}
+
+The hash codes can be determined by looking at the code for the
+file getter (the last function in the Lisp file), and seeing what
+codes it tests to return the function you wish to call.
+
+These two methods only work for calling top-level functions in a file.
+
+If you are in an {\sc Axiom} workspace, then there are some additional 
+utilities to make using the file getter more palatable.
+
+First you must translate and load the file `{\tt hashax.boot}'' from the
+compiler source directory.  This file provides functions which generate the
+numbers which are arguments to the getter (such as 259747446 526180818 above).
+
+The fist number is a hash code for the name of the export. 
+In this example it can be obtained by
+\begin{verbatim}
+    (setq scode (|hashString| "drawMand"))
+\end{verbatim}
+
+The second number is a hash code for the type of the export.
+If there is only one export with the given name, then the number {\tt -1}
+may be used to match any code.  Otherwise the hash code can be obtained
+from an S-expression from of the type:
+\begin{verbatim}
+   (setq tcode (|hashType| '(|Mapping| |MachineInteger|
+                                  |DoubleFloat| |DoubleFloat| |MachineInteger|
+                                  |DoubleFloat| |DoubleFloat| |MachineInteger|)))
+\end{verbatim}
+
+In a forthcoming release of the \asharp{} compiler, we expect to
+provide a much better interface that will allow compiling, loading
+and running code directly from the AXIOM interpreter, and all the
+low level manipulations above will be unnecessary.
+
+

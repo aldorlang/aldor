@@ -1,0 +1,61 @@
+{\codeline{1}\verb& #include "aldor"&}\\
+{\codeline{2}\verb& #include "aldorio"&}\\
+{\codeline{3}\verb&&}\\
+{\codeline{4}\verb& -- Arithmetic objects ------------------------------------------------------&}\\
+{\codeline{5}\verb& --&}\\
+{\codeline{6}\verb& -- The objects have arithmetic because each belongs to ArithmeticType.&}\\
+{\codeline{7}\verb& --&}\\
+{\codeline{8}\verb&&}\\
+{\codeline{9}\verb& Object(C: Category): with {&}\\
+{\codeline{10}\verb&         object:         (T: C, T) -> %;&}\\
+{\codeline{11}\verb&         avail:          % -> (T: C, T);&}\\
+{\codeline{12}\verb& }&}\\
+{\codeline{13}\verb& == add {&}\\
+{\codeline{14}\verb&         Rep == Record(T: C, val: T);&}\\
+{\codeline{15}\verb&         import from Rep;&}\\
+{\codeline{16}\verb&&}\\
+{\codeline{17}\verb&         object  (T: C, t: T) : %        == per [T, t];&}\\
+{\codeline{18}\verb&         avail   (ob: %) : (T: C, T)     == explode rep ob;&}\\
+{\codeline{19}\verb& }&}\\
+{\codeline{20}\verb&&}\\
+{\codeline{21}\verb&&}\\
+{\codeline{22}\verb& main():() == {&}\\
+{\codeline{23}\verb&     import from MachineInteger, Integer;&}\\
+{\codeline{24}\verb&     robfun(rob: Object IntegerType): () == f avail rob  where {&}\\
+{\codeline{25}\verb&         f(T: IntegerType, r: T): () == {&}\\
+{\codeline{26}\verb&&}\\
+{\codeline{27}\verb&             -- Object-specific arithmetic:&}\\
+{\codeline{28}\verb&             s := (r + 1)^3;&}\\
+{\codeline{29}\verb&             t := (r - 1)^4;&}\\
+{\codeline{30}\verb&             u := s * t;&}\\
+{\codeline{31}\verb&&}\\
+{\codeline{32}\verb&             -- Object-specific output:&}\\
+{\codeline{33}\verb&             stdout << "r = " << r << newline;&}\\
+{\codeline{34}\verb&             stdout << "    s = (r + 1) ^ 3 = " << s << newline;&}\\
+{\codeline{35}\verb&             stdout << "    t = (r - 1) ^ 2 = " << t << newline;&}\\
+{\codeline{36}\verb&             stdout << "    s * t = "         << u << newline;&}\\
+{\codeline{37}\verb&&}\\
+{\codeline{38}\verb&             -- Can check for additional properties and use if there.&}\\
+{\codeline{39}\verb&             if T has TotallyOrderedType  then {&}\\
+{\codeline{40}\verb&                 stdout << "The result is ";&}\\
+{\codeline{41}\verb&                 if u < 0 then stdout << "negative";&}\\
+{\codeline{42}\verb&                 if u > 0 then stdout << "positive";&}\\
+{\codeline{43}\verb&                 if u = 0 then stdout << "zero";&}\\
+{\codeline{44}\verb&                 stdout << newline;&}\\
+{\codeline{45}\verb&             }&}\\
+{\codeline{46}\verb&             else&}\\
+{\codeline{47}\verb&                 stdout << "No order for this object." << newline;&}\\
+{\codeline{48}\verb&&}\\
+{\codeline{49}\verb&             stdout << newline;&}\\
+{\codeline{50}\verb&         }&}\\
+{\codeline{51}\verb&     }&}\\
+{\codeline{52}\verb&     import from DoubleFloat, Integer;&}\\
+{\codeline{53}\verb&     import from Object IntegerType;&}\\
+{\codeline{54}\verb&     roblist: List Object IntegerType := [&}\\
+{\codeline{55}\verb&         object (     Integer, -42),&}\\
+{\codeline{56}\verb&         object (      MachineInteger, -42)&}\\
+{\codeline{57}\verb&     ];&}\\
+{\codeline{58}\verb&     for rob in roblist repeat robfun rob&}\\
+{\codeline{59}\verb& }&}\\
+{\codeline{60}\verb&&}\\
+{\codeline{61}\verb& main();&}\\

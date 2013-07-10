@@ -1,0 +1,45 @@
+o 14/5/2004 YC
+
+- creation of installation program should be parameterized with version
+platform
+- installation program => problems with absolute vs relative path
+
+o 7/12/2003 MMM
+
+- I think that there are too many targets in the Makefiles.
+  For instance, at the root of the forest, there are 6
+  targets for cleaning. Nobody is going to remember them.
+  I think that "cleandistrib" (for all the builds outside
+  of the forest) "cleansource" or "cleansources" 
+  (for all the builds  inside) 
+  and "clean" (for doing both) would be enough
+
+
+- The documentation of some makefiles are not consistent
+  with the actual targets. For "lib/aldor/Makefile", I
+  just removed these comments.
+
+- The style of the different makefiles is not consistent.
+  Even worth: some makefiles that were writen by different
+  authors with different styles contain DEAD CODE. I think
+  this is dangerous. (That's a way to do "rm -fr *" without
+  meaning it.)
+
+- "lib/algebra/Makefile.generic" seems to be the Makefile
+  of the distributed "libalgebra". It does not include a
+  target for running the tests (see how the former "Makefile.algebra")
+
+- Concerning the targets of the Makefiles for "algebra"
+  and "libaldor". I think it is better to turn every target
+  into a script call. This way the Makefiles for the users
+  (which have generally less targets) and the Makefiles for
+  the developers can share the same code.
+
+- When doing "make generic" at the root of the forest.
+  some .al archives stay in the lib directory of their
+  source tree (aldor, algebra) other are moved automatically
+  to the distribution tree (axllib).
+
+       ==> This needs to be fixed
+
+

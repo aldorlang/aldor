@@ -1,0 +1,613 @@
+\section{User Guide}
+
+This guide introduces the common types and categories provided by \libaldor,
+and presupposes some familiarity with programming in \aldor.
+If you are unfamiliar with \aldor, then after installing \libaldor, go
+through the tutorial
+{\tt aldorlib/tutorial/tutorial.ps}, which will familiarize you both with
+\aldor and \libaldor.
+\libaldor{} provides basic categories and types in 3 areas:
+arithmetic, data structures and input/output. Figure~\ref{fig:cats} shows the
+general category hierarchy in those areas and a few of the types provided,
+while Figure~\ref{fig:data} shows the category hierarchy for
+data structures.
+Note that all the category names end with the word {\tt Type}.
+
+\begin{figure}[htb!]
+\begin{latexonly}
+\rotatebox{90}{
+\scalebox{.75}[.9]{
+\includegraphics{sallicat}
+}
+}
+\end{latexonly}
+\begin{htmlonly}
+\includegraphics{sallicat}
+\end{htmlonly}
+\caption{The \libaldor{}~general category hierarchy}
+\label{fig:cats}
+\end{figure}
+
+\subsection{Arithmetic}
+\libaldor{} contains several integer types:
+\altype{MachineInteger} provides full-word signed machine integers,
+while \Integer{}
+\footnote{{\tt Integer} is actually a macro that you should
+use if you do not care about the specific big integer package that
+will be used at runtime. If integer efficiency is an issue, then read
+the section on \alalias{\this}{sec:gmp}{using GMP} to learn about the actual
+integer types avalaible and how to select one.}
+provides ``infinite'' precision software integers.
+Both of them are of category \altype{IntegerType},
+so the same functions can be applied to them.
+In addition, \altype{MachineInteger} exports 3 useful
+constants: \alfunc{MachineInteger}{min}
+and \alfunc{MachineInteger}{max}, whose values are the smallest and
+greatest machine integers,
+and \alfunc{MachineInteger}{bytes}, whose values is the
+machine wordsize in bytes.
+The \alfunc{MachineInteger}{bytes} constant allows you to write
+wordsize--dependent code, for example when generating half--word--size prime
+numbers. A \altype{MachineInteger} value {\tt n}
+can be coerced to an \Integer{} via {\tt n::Integer}, and the reverse
+conversion is provided via the \alfunc{IntegerType}{machine} function,
+\ie~{\tt n := machine m}. This last conversion can
+of course lose precision if {\tt m} does not fit within a machine word.
+The general form for iterating over a range of integers is\\
+\centerline{ {\tt for} {\em variable} {\tt in} {\em from}{\tt..}{\em to}
+{\tt by} {\em step} | {\em condition} {\tt repeat \{ \dots~\}} }
+where the {\em to} parameter and the {\tt by} and ``| {\em condition}''
+parts are optional.
+
+Besides the integers, \libaldor{} also provides machine floating point numbers,
+both in single precision (\altype{SingleFloat}) and double precision
+(\altype{DoubleFloat}). Finally, if you are linking with the
+GMP library, \libaldor{} provides \altype{GMPFloat}, which is an interface
+to the ``infinite'' precision software floats of GMP.
+The above 3 type share the category \altype{FloatType}.
+
+\subsection{Data structures}
+\libaldor{} provides both linear data structures (e.g.~arrays and lists)
+and non-linear ones (e.g.~hash tables). The category hierarchy for
+data structures is shown in Figure~\ref{fig:data}.
+
+\begin{figure}[htb!]
+\begin{latexonly}
+\rotatebox{90}{
+\scalebox{.75}[.9]{
+\includegraphics{sallidata}
+}
+}
+\end{latexonly}
+\begin{htmlonly}
+\includegraphics{sallidata}
+\end{htmlonly}
+\caption{The \libaldor~category hierarchy for data structures}
+\label{fig:data}
+\end{figure}
+
+\libaldor{} provides some standard linear
+data structures having very similar functionalities:
+\altype{List}~{\tt T} and \altype{CheckingList}~{\tt T}
+both provide linked lists
+whose entries are of type {\tt T}, while
+\altype{Array}~{\tt T} and \altype{CheckingArray}~{\tt T} both provide
+arrays whose entries are of type {\tt T}.
+Lower-level linear data structures are \altype{PrimitiveArray}~{\tt T}
+and \altype{PackedPrimitiveArray}~{\tt T},
+which provide simpler arrays whose entries are of type {\tt T}.
+All of those data structures can be created by explicitly listing a
+finite number of elements, for example\\
+\centerline{{\tt l:\altype{List} \altype{String} := ["hello", "world"] }}
+or by bracketing a generator, for example\\
+\centerline{ {\tt a:\altype{PrimitiveArray} \altype{MachineInteger} :=
+[n for n in 1..100 | odd?~n]}.}
+In addition, the function \alfunc{FiniteLinearStructureType}{new}
+also allows structures to be created, and the constant
+\alfunc{FiniteLinearStructureType}{empty}
+returns an empty structure. The individual elements can
+be accessed via {\tt s.n} where {\tt s} is a data structure and
+{\tt n} an index. The indexing scheme and the bound--checking scheme
+both depend on the structure:
+\altype{List} and \altype{CheckingList} are 1-indexed, while
+\altype{Array}, \altype{CheckingArray}, \altype{PrimitiveArray}
+and \altype{PackedPrimitiveArray} are 0-indexed.
+If you need to know the indexing scheme at runtime,
+or want to write index-independent code, the {\tt firstIndex} constant
+returns the index of the first element of a structure.
+
+The general form for iterating efficiently over a
+\altype{BoundedFiniteLinearStructureType} is\\
+\centerline{ {\tt for} {\em variable} {\tt in} {\em structure}
+| {\em condition} {\tt repeat \{ \dots~\}} }
+where ``| {\em condition}'' is optional. This is available
+for all high-level linear data structures,
+but not for those of category \altype{PrimitiveArrayType}.
+
+There are classical tradeoffs between the various array types:
+the only difference between \altype{CheckingArray} and \altype{Array}
+is that \altype{CheckingArray} checks whether the index is within the range
+of the array, while \altype{Array} does not. Similarly,
+\altype{CheckingList} checks whether a list is empty before calling
+\alfunc{ListType}{first} and \alfunc{ListType}{rest}, while \altype{List}
+does not.
+Since both pairs of types offer the same exports,
+you can use one during the development
+and testing phase, and then switch to the other for releasing your code.
+An advantage of the lower-level arrays of category~\altype{PrimitiveArrayType}
+is that they are compatible with C pointers and
+generate more efficient code when accessing their elements.
+In order to benefit from the advantages of all those types,
+\libaldor{} provides the \alfunc{ArrayType}{data} function,
+which returns the data of an \altype{Array} or \altype{CheckingArray}
+as a \altype{PrimitiveArray} without copying or allocating memory.
+It is thus possible to use \altype{Array} or \altype{CheckingArray}
+in your code, making sure to
+apply \alfunc{ArrayType}{data} to it before accessing elements in a loop.
+For example, the following function efficiently computes the sum
+of all the elements with even indices of an array of machine integers:
+\begin{ttyout}
+evenSum(a:Array MachineInteger):MachineInteger == {
+    import from MachineInteger;               -- for the index i
+    import from PrimitiveArray MachineInteger;-- for accessing the elements of p
+    p := data a;                              -- for efficiency (optimized code)
+    sum:MachineInteger := 0;
+    for i in 0..#a by 2 repeat sum := sum + p.i;
+    sum;
+}
+\end{ttyout}
+\noindent
+Conversely, the function \alfunc{ArrayType}{array}
+creates an \altype{Array} or \altype{CheckingArray}
+from a \altype{PrimitiveArray} without copying.
+Note that the
+\alfunc{BoundedFiniteDataStructureType}{generator} functions
+in \altype{Array} and \altype{CheckingArray} use the \alfunc{ArrayType}{data}
+function, so iterating an \altype{Array} or \altype{CheckingArray} {\tt a} via\\
+\centerline{{\tt for x in a repeat \{ \dots~\}}}
+is as efficient as using a \altype{PrimitiveArray}.
+Note that the debug version\footnote{See the subsection
+on \alalias{\this}{sec:debug}{debugging} for more information on using the
+debug library.} of \libaldor{} performs bound checking on
+accesses into all types of arrays, including \altype{String} and
+all the low-level array types.
+
+Since \altype{String} has the category
+\altype{ArrayType}~\altype{Character},
+all the array functionalities
+are also applicable to strings. For example,\\
+\centerline{{\tt for c in "hello" repeat \{ \dots~\}}}
+assigns successively the characters 'h', 'e', 'l', 'l' and 'o' to {\tt c},
+and strings can be created from \altype{Generator}~\altype{Character}.
+Note that \altype{String} and \altype{PrimitiveArray} \altype{Character}
+are not interchangeable, since the former is packed and not the latter.
+\altype{String} is however interchangeable with
+\altype{PackedPrimitiveArray}~\altype{Character}.
+Similarly, chunks of memory viewed as byte arrays are provided by
+either one of \altype{PrimitiveMemoryBlock},
+\altype{MemoryBlock} or \altype{CheckingMemoryBlock}. Those types
+are to be used for buffers rather than \altype{PrimitiveArray}~\altype{Byte},
+which is not interchangeable with \altype{PrimitiveMemoryBlock}.
+
+For types whose elements are not word-size, such as \altype{Byte},
+\altype{Character}, \altype{SingleFloat} and \altype{DoubleFloat},
+you can use \altype{PackedPrimitiveArray} as a packed alternative
+to \altype{PrimitiveArray}, which is then compatible with the
+corresponding C--arrays (see Table~\ref{tab:compatc}).
+
+The type \altype{Stream}~{\tt T},
+of category~\altype{LinearStructureType}~{\tt T},
+provides infinite linear structures.
+There are several ways to create streams, the easier ones being via an
+unbounded iterator, or via a function that computes its $\sth{n}$ element.
+For example,
+\begin{ttyout}
+    import from MachineInteger, Stream MachineInteger;
+    sqr1 := [n^2 for n in 0..];
+    sqr2 := stream(0, (n:MachineInteger):MachineInteger +-> n^2);
+\end{ttyout}
+\noindent
+are two different ways to create the infinite stream $[0^2, 1^2, 2^2, \dots]$.
+Streams can be iterated, yielding loops whose duration cannot be predicted
+in advance, so using a parallel finite iterator or a termination condition
+inside the loop is advisable. Finally, streams are lazy in that $s.0,\dots,s.n$
+are computed only when $s.n$ has been specifically resquested, and elements
+are never recomputed a second time.
+
+\libaldor~also provides different table stuctures:
+hash tables are provided by the \altype{HashTable} type and are created
+via the \alfunc{TableType}{table} function, as in\\
+\centerline{{\tt t:HashTable(String, MachineInteger) := table();}}
+The hash function defaults to the one provided by the type of the keys
+if it has \altype{HashType}, but can be overridden by providing your
+own as last argument to the hash table type constructor, as in\\
+\centerline{{\tt t:HashTable(SingleFloat, MachineInteger, h) := table();}}
+where {\tt h} any function producing machine integers from machine
+floats. Providing the hash function is required when the type of
+the keys does not have \altype{HashType}. Sorted tables
+are provided by the \altype{SortedAssociationSet} type,
+those do not use hashing however.
+Hash tables can also be used to make a function
+\alfunc{HashTable}{remember} its previous
+computed values: if $f: A \to B$ is any function, then
+\centerline{{\tt g:HashTable(A, B) := remember~f;}}
+creates a table {\tt g} that can be used everywhere instead of {\tt g}.
+While {\tt f(a)} always recomputes $f(a)$, {\tt g(a)} computes $f(a)$
+only once and stores the pair $[a,f(a)]$ in the table.
+
+Finally, \libaldor{} also provides more specialized data structures
+documented in the reference section: \altype{Set}, \altype{SortedSet},
+\altype{SortedList} and \altype{Queue}.
+
+\subsection{Input/Output}
+\libaldor{} provides an I/O model inspired from the stream model of
+Java and C++.
+Data is written in text format on objects of type
+\altype{TextWriter}, in binary format on objects of type
+\altype{BinaryWriter}, read in text format from
+objects of type \altype{TextReader}
+and read in binary format from objects of type \altype{BinaryReader}.
+The standard streams \alfunc{TextReader}{stdin},
+\alfunc{TextWriter}{stdout} and \alfunc{TextWriter}{stderr}
+are constants exported
+by \altype{TextReader} and \altype{TextWriter} respectively,
+while \alfunc{BinaryReader}{bin}, \alfunc{BinaryWriter}{bout}
+and \alfunc{BinaryWriter}{berr} are their binary
+counterparts.
+In addition, any \altype{File} can be coerced into either
+text or binary readers or writers, any \altype{String} can
+be coerced into text readers or writers, any \altype{PrimitiveMemoryBlock}
+can be coerced into binary readers or writers, and you can create
+custom streams via the \alfunc{TextReader}{textReader},
+\alfunc{TextWriter}{textWriter},
+\alfunc{BinaryReader}{binaryReader} and \alfunc{BinaryWriter}{binaryWriter}
+functions.
+
+The function {\tt $<<$} is used for both input and output:
+its binary version ``{\em writer} \alfunc{OutputType}{$<<$} {\em data}''
+is for output,
+and its unary version ``\alfunc{InputType}{$<<$} {\em reader}'' is for input,
+in which
+case the return type must be specified, either via an assigment to a variable,
+\eg~{\tt n:MachineInteger := $<<$ stdin}, or via the {\tt @} construct, or via
+the context. Whether you are reading/writing text or serializing data depends
+on the reader/writer type (text or binary).
+For example, a \libaldor{} version of the ``Hello world'' program is
+\begin{ttyout}
+#include "aldor"
+
+import from TextWriter, String, Character;  -- Character needed for 'newline'
+stdout << "Hello world!" << newline;
+\end{ttyout}
+\noindent
+Text and binary writers can be flushed, either via the
+\alfunc{TextWriter}{flush!}
+function, or by sending the constant \alfunc{WriterManipulator}{flush},
+exported by \altype{WriterManipulator}. Thus, the two lines\\
+\centerline{\tt flush!(stdout $<<$ "Hello world" $<<$ newline);}
+and\\
+\centerline{\tt stdout $<<$ "Hello world" $<<$ newline $<<$ flush;}
+are equivalent. The manipulator \alfunc{WriterManipulator}{endnl}
+sends first a \alfunc{Character}{newline}
+and then flushes the stream, so another alternative for the above is\\
+\centerline{\tt stdout $<<$ "Hello world" $<<$ endnl;}
+
+When coercing strings and buffers to readers or writers, you should assign the
+resulting stream to a variable if you intend to read or write more than
+one value from the stream, since the coercion resets the stream
+to the beginning of the string. For example, if {\tt s} is the \altype{String}
+``   12   56'', then
+\begin{ttyout}
+import from MachineInteger;
+a:MachineInteger := << s::TextReader;             -- assigns 12 to a
+b:MachineInteger := << s::TextReader;             -- assigns again 12 to b
+\end{ttyout}
+\noindent
+while
+\begin{ttyout}
+import from MachineInteger;
+p := s::TextReader;
+a:MachineInteger := << p;                         -- assigns 12 to a
+b:MachineInteger := << p;                         -- assigns 56 to b
+\end{ttyout}
+\noindent
+A \altype{File} is however not reset when coerced, so if the file ``mydata''
+contains ``[1,2,3]  [4,5,6]'', then both structures can be read by
+\begin{ttyout}
+import from File, String;
+f := open("mydata", fileRead);
+l:List MachineInteger := << f::TextReader;        -- assigns [1,2,3] to l
+v:Array MachineInteger := << f::TextReader;       -- assigns [4,5,6] to v
+close! f;
+\end{ttyout}
+\noindent
+When coercing a \altype{String} to a text writer or a
+\altype{PrimitiveMemoryBlock} to a binary writer, you must ensure
+that the string or buffer is long enough to contain all the data
+that will be written to
+it, since \libaldor{} does not protect you against writing past the end of the
+string or buffer, which is not extended by the write operation. You can
+either use \alfunc{FiniteLinearStructureType}{new}
+to create a large enough buffer,
+or write into an existing string or buffer.
+The type \altype{StringBuffer} provides string that grow when you write
+into them, so use it when you do not know the amount of characters that
+will be written. For example:
+\begin{ttyout}
+import from Integer, String;
+strw:StringBuffer := new();
+strw::TextWriter << "20! = " << factorial 20 << null;
+str := string strw;
+\end{ttyout}
+produces the string ``20! = 2432902008176640000''.
+You can reuse the same \altype{StringBuffer} in several calls in order
+to reuse the corresponding buffer rather than allocating new ones.
+When writing to a \altype{String} or \altype{StringBuffer},
+you should in general
+write \alfunc{Character}{null} (a constant exported by \altype{Character})
+after your data in order to terminate the string properly.
+Note that the debug version of \libaldor{} performs bound checking on
+accesses into \altype{String} and \altype{PrimitiveMemoryBlock},
+so it can verify whether you are writing past
+the end of a string or buffer. See the subsection on debugging for more
+information on using the debug library.
+Coercing a \altype{File} to a reader or writer allocates memory, so it
+is advisable to assign the resulting stream to a variable. Unlike the ones
+for strings or buffers, those coercions do not reset the file to its beginning.
+
+\libaldor{} provides 2 categories for text input/output: \altype{InputType}
+is for types whose elements can be read from a \altype{TextReader},
+and \altype{OutputType} is for types whose elements can be written
+to a \altype{TextWriter}. In addition, the single category
+\altype{SerializableType} is for types whose elements can be serialized
+in binary format from a \altype{BinaryReader} and to a \altype{BinaryWriter}.
+All the arithmetic types provided by \libaldor, as well as \altype{Byte},
+\altype{Character}, \altype{String}, \altype{MemoryBlock} and
+\altype{CheckingMemoryBlock}
+are \altype{InputType}, \altype{OutputType} and \altype{SerializableType},
+allowing you to read, write and serialize their elements. The data structures
+\altype{List} {\tt T}, \altype{Array} {\tt T}, \altype{PrimitiveArray} {\tt T}
+and \altype{HashTable}{\tt(K,V)} inherit whatever input
+and output capabilities that their parameters have.
+
+Programs that perform input or output tend to repeatedly import 
+the various stream types and accessories (manipulators, characters and
+strings). As an alternative to those imports,
+you can use {\tt \#include "aldorio"} in
+addition to {\tt \#include "aldor"}, which does a global import of
+all the following: \altype{Character}, \altype{String}, \altype{File},
+\altype{TextReader}, \altype{TextWriter}, \altype{BinaryReader},
+\altype{BinaryWriter} and
+\altype{WriterManipulator}.
+So an alternative ``Hello world'' program would be:
+\begin{ttyout}
+#include "aldor"                              -- performs no import
+#include "aldorio"                            -- imports all the I/O types
+
+stdout << "Hello world!" << endnl;
+\end{ttyout}
+
+\subsection{Compatibility with C types}
+Several of \libaldor's types are compatible with their C counterparts and
+can be passed as arguments to C functions.
+Table~\ref{tab:compatc}
+lists those types that can safely be exchanged with C functions.
+\begin{table}[ht]
+\begin{center}
+\begin{tabular}{|ll|} \hline
+\libaldor & C \\ \hline
+\altype{Boolean} & \tt{long} \\
+\altype{MachineInteger} & \tt{long} \\
+\altype{SingleFloat} & \tt{float} \\
+\altype{Character} & \tt{char} \\
+\altype{String} & \tt{char*} \\
+\altype{PrimitiveMemoryBlock} & \tt{char*} \\
+\altype{PackedPrimitiveArray} \altype{Byte} & \tt{char*} \\
+\altype{PackedPrimitiveArray} \altype{Character} & \tt{char*} \\
+\altype{PackedPrimitiveArray} \altype{SingleFloat} & \tt{float*} \\
+\altype{PackedPrimitiveArray} \altype{DoubleFloat} & \tt{double*} \\
+\altype{Pointer} & \tt{void*} \\
+\altype{PrimitiveArray} & \tt{void**} \\
+\altype{PrimitiveArray} \altype{MachineInteger} & \tt{long*} \\
+\altype{File} & \tt{FILE*} \\
+\altype{GMPFloat} & \tt{mpf\_t}\\
+\altype{GMPInteger} & \tt{mpz\_t}\\ \hline
+\end{tabular}
+\caption{Compatibility between \libaldor{} and C types}
+\label{tab:compatc}
+\end{center}
+\end{table}
+Since \aldor does not provide a type that is guaranteed to be compatible 
+with the C {\tt int} type on all platforms, in order to use C functions
+having {\tt int} in their parameters, you must first write a C wrapper that
+communicates only through the type {\tt long}.
+Note that even though some type {\tt T} can be compatible
+with a C type {\tt TC}, it is not always the case that
+\altype{PrimitiveArray} {\tt T} is compatible with {\tt TC*}, for
+example \altype{PrimitiveArray} \altype{Character} is not compatible
+with {\tt char*} (nor is it compatible with \altype{String} in \libaldor).
+It is always the case however that \altype{PackedPrimitiveArray} {\tt T}
+is compatible with {\tt TC*}.
+Note that \altype{DoubleFloat} is not compatible with
+the C type {\tt double}, but with
+\builtin{DFlo\$Machine} instead (there are coercions between
+\builtin{DFlo\$Machine} and \altype{DoubleFloat}).
+On the other hand, \altype{PackedPrimitiveArray} \altype{DoubleFloat}
+is compatible with {\tt double*}.
+When exchanging objects of type \altype{PrimitiveArray},
+\altype{PrimitiveMemoryBlock} or \altype{String}
+with C functions, always use the \alfunc{PrimitiveArrayType}{array},
+\alfunc{PrimitiveArrayType}{pointer}, \alfunc{String}{string} and
+\alfunc{String}{pointer} functions. While those have no effect and
+no cost in the release version, they are necessary when linking with
+the debug version in order to use the bound--checking features.
+When doing this, you must use \altype{Pointer} in the prototypes for
+the C functions rather than \altype{PrimitiveArray},
+\altype{PrimitiveMemoryBlock} or \altype{String}.
+For example, a function that uses the C--function {\tt unlink} to
+remove a file could be written in the following way:
+\begin{ttyout}
+#include "aldor"
+remove(filename:String):() == {
+	import { unlink: Pointer -> MachineInteger } from Foreign C;
+	unlink pointer filename;
+}
+\end{ttyout}
+\noindent
+While a function that uses the C--function {\tt mktemp} to get a
+temporary file name could be written in the following way:
+\begin{ttyout}
+#include "aldor"
+
+temporaryName():() == {
+	import { mktemp: Pointer -> Pointer } from Foreign C;
+	string mktemp pointer("/tmp/XXXXXX");
+}
+\end{ttyout}
+\noindent
+Note the use of \alfunc{String}{string} even though the buffer was
+allocated within \libaldor{} and not within {\tt mktemp}.
+
+\subsection{Using GMP}
+\altarget{sec:gmp}
+The type {\tt Integer} described in this document is actually a macro,
+which defaults to \altype{AldorInteger}, the software integers provided
+by the \aldor{} runtime. For efficiency or other reasons, you may prefer
+to use the GMP\footnote{GMP (the GNU Multiple Precision library) is
+a free library for software integers, rationals and floats, available
+from \url{http://www.swox.com/gmp/}.}
+library, which is supported by \libaldor. The easiest way
+to use GMP is to compile all your source files with the options
+\begin{center}
+{\tt -dGMP -cruntime=foam-gmp,gmp}
+\end{center}
+The option {\tt -dGMP} makes {\tt Integer} point to the type
+\altype{GMPInteger}, while the other option, which is necessary
+only when linking an executable, ensure that GMP makes use
+of the \aldor{} garbage collector. All you need is GMP 3.0 or later
+installed in a file called {\tt libgmp.a} to produce executables.
+Using GMP generally produces more efficient programs,
+but programs calling GMP cannot be interpreted by the \aldor{}
+compiler, nor can they run inside its interactive loop.
+
+Using the {\tt -dGMP} option allows you to compile the same sources
+either with or without GMP, which can be appreciable, but you must
+ensure that you do mix files compiled with and without {\tt -dGMP} since
+the macro {\tt Integer} would then be expanded into two different types.
+
+An additional advantage of using GMP, is that \altype{GMPInteger}
+exports and uses internally several of the in--place or higher--level
+operations of GMP, which are not available with \altype{AldorInteger}.
+In addition, variables of type \altype{GMPInteger} are compatible
+with the C type {\tt mpz\_t} from GMP, so you can directly call
+C programs that use GMP from your \aldor{} code.
+
+\subsection{Profiling}
+\libaldor{} provides a couple of tools to help you determine how much time is
+spent in various sections of your programs. The simplest way is to use
+the TIMESTART and TIME(\dots) macros in your code. Those macros have
+absolutely no effect when compiling normally, but if you add the option
+{\tt -dTIME} in the compiler command line when making the {\tt .ao}
+file, then a CPU stopwatch is started when TIMESTART is encountered,
+and read at each TIME(\dots) statement. Those readings are then written
+to \alfunc{TextWriter}{stderr} together with whatever message appears inside
+the TIME macro. For example, if a computation has 3 major parts, then the
+following coding allows you to determine how much time is spent in each
+part:
+\begin{ttyout}
+myComputation(...):... == {
+    TIMESTART;                  -- has no effect on normal compilation
+    ... part 1 of the computation ...
+    TIME("myComputation: part one done at");
+    ... part 2 of the computation ...
+    TIME("myComputation: part two done at");
+    ... part 3 of the computation ...
+    TIME("myComputation: part three done at");
+    ...                         -- do not forget to return the result here
+}
+\end{ttyout}
+When profiling sections of a multi-file library, simply recompile the
+desired {\tt .as} files with the {\tt -dTIME -fo -q3} options, then link
+your executable with the local {\tt .o} files, which takes precedence over
+the ones in the library.
+
+Finer profiling, including obtaining information on the garbage collection
+time, is possible via the use of the type \altype{Timer}, whose
+elements are stopwatches that can be started and stopped at will. See the
+reference section for more information on the use of timers.
+
+\subsection{Exceptions}
+\libaldor{} can throw the following exceptions:
+\begin{itemize}
+\item
+\alfunc{File}{open}
+throws the exception \altype{FileException} if the file cannot
+be opened in the desired mode.
+\item
+\alfunc{InputType}{$<<$}
+from a \altype{TextReader}
+throws the exception \altype{SyntaxException} if the input does
+not correspond to an element of the expected type.
+\item
+Accessing a \altype{CheckingArray}
+or \altype{CheckingMemoryBlock}
+out of bounds throws the exception \altype{ArrayException}.
+\item
+Accessing a \altype{CheckingList}
+out of bounds throws the exception \altype{ListException}.
+\item
+Accessing a \altype{TableType} with \alfunc{TableType}{apply}
+throws the exception \altype{TableException} if the given key
+is not present in the table, unless the table was created with
+a default function via either \alfunc{HashTable}{forget} or
+\alfunc{HashTable}{remember}.
+\item
+Calling \alfunc{Generator}{next!} on an empty
+generator throws the exception \altype{GeneratorException}.
+\end{itemize}
+No function in \libaldor{} makes a call to \alfunc{String}{error}.
+
+\subsection{Debugging}
+\altarget{sec:debug}
+\libaldor{} comes with a debug version, which makes various assertions
+about the arguments of the functions called. Its most important debugging
+feature is probably the ability to bound check all accesses into
+\altype{PrimitiveArray},
+\altype{PackedPrimitiveArray},
+\altype{PrimitiveMemoryBlock},
+\altype{List}
+and \altype{String} at runtime.
+To use the debug version of the
+library, just compile all your files with the
+\begin{center}
+{\tt -dDEBUG}
+\end{center}
+option, and add the option
+\begin{center}
+{\tt -laldord}
+\end{center}
+rather than {\tt -laldor} when building an executable.
+It is also preferable when debugging to add the {\tt -q1} option
+in order to prevent inlining.
+
+\libaldor{} also provides a couple of macros to help you debug your
+applications:
+\begin{description}
+\item[{\tt TRACE(message,value)}:] has no effect on normal compilation,
+but sends {\em message} followed by {\em value} and a newline to
+\alfunc{TextWriter}{stderr} when compiled with the {\tt -dTRACE} option.
+\item[{\tt AGAT(stream,value)}:] has no effect on normal compilation,
+but sends {\em value} to the Agat stream {\em stream} when compiled with
+the {\tt -dAGAT} option. This option is only available if you have
+Agat installed (see
+\url{http://www-sop.inria.fr/cafe/Olivier.Arsac/agat/agat.html}).
+\end{description}
+
+Another useful tracing feature is the {\tt -Wdebug} option of the
+compiler, which is now supported by \libaldor: if you compile
+any source file, say {\tt foo.as}  with the {\tt -Wdebug} option,
+and then call \alfunc{Trace}{traceActivate} in your program,
+then any entry and exit of functions from {\tt foo.as} will be
+traced, until you call \alfunc{Trace}{traceStop} in your program.
+See \alfunc{Trace}{traceActivate} for an example.
+

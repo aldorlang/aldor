@@ -1,0 +1,39 @@
+# axiomxl version type:
+type development
+# axiomxl path for maintain tools
+path version
+# axiomxl sundry build specific differences
+
+frisco:extra-libdirs:-v8:
+frisco:build-car:yes:
+
+nags15:extra-libdirs:-v8:
+nags15:build-car:yes:
+
+e3000:extra-libdirs:-v8:
+e3000:build-car:yes:
+
+derwent:extra-libdirs:-v8:
+derwent:build-car:yes:
+
+nags8:extra-libdirs:-v8:
+nags8:build-car:yes:
+
+boston:extra-libdirs:-486
+boston:build-car:yes:
+zorba:extra-libdirs:-486
+zorba:build-car:yes:
+hereford:extra-libdirs:-486
+hereford:build-car:yes:
+andover:extra-libdirs:-486
+andover:build-car:yes:
+amorgos:extra-libdirs:-486
+amorgos:build-car:yes:
+
+boston:build-car:yes:
+
+kendal:extra-libdirs:-486
+
+knockdhu:extra-libdirs:-486
+
+#debug platforms...

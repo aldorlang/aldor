@@ -1,0 +1,76 @@
+##########################################
+#
+# Makefile to build an Aldor distribution
+#
+# Yannis Chicha, July 2003
+#
+##########################################
+
+include Makefile.globals
+
+all:
+	@echo "Usage:"
+	@echo "   make install      => build and install libraries in the aldor directory"
+	@echo "   make clean        => clean the 'generic' directory"
+	@echo "   make objects      => make the objects for each lib"
+	@echo "Modify Makefile.globals for setup."
+
+objects: check
+	@echo "Making objects"
+	@(PATH="$(ALDORROOT)/bin:$(PATH)"; \
+	  export PATH; \
+	  cd lib; \
+	  for i in $(LIBS_TO_BUILD); do cd $$i; $(MAKE) objects; cd ..; done)
+
+install: 
+	@echo "Installing libraries"
+	@(cd lib; \
+	  for i in $(LIBS_TO_BUILD); do cd $$i; $(MAKE) installdistrib; cd ..; done)
+#	@cp -r tests $(ALDORROOT)
+#	@cp -r doc $(ALDORROOT)
+	@cp README $(ALDOR_INSTALL)
+
+distrib:
+	@echo "Preparing distribution"
+	
+	@(echo "Copy doc tests src README" ; \
+	  cp -r tests $(ALDORROOT); \
+	  cp -r doc $(ALDORROOT); \
+	  cp -r src $(ALDORROOT); \
+	  cp README $(ALDOR_INSTALL))
+
+	@(echo "Removing unnecessary tools" ; \
+	  rm -f $(ALDORROOT)/lib/libgmp.a $(ALDORROOT)/include/gmp.h; \
+	  rm -f $(ALDORROOT)/bin/aldorbug $(ALDORROOT)/bin/extract; \
+	  rm -f $(ALDORROOT)/bin/aldoc2html $(ALDORROOT)/bin/uniar)
+
+	@(echo "Setting up access rights"; \
+	  chmod 755 $(ALDORROOT)/bin/*; \
+	  chmod 644 $(ALDORROOT)/include/*; \
+	  chmod 644 $(ALDORROOT)/lib/*; \
+	  chmod 644 $(ALDORROOT)/doc/libaldor/tutorial/*; \
+	  chmod -R a+r $(ALDORROOT); \
+	  chmod -R go+x $(ALDORROOT)/bin)
+
+	@(echo "Creating installation program"; \
+	  cd $(GENERIC_DIR)/utils/licensing_kit; \
+	  ./createinstall.sh)
+
+	@(echo "Creating distribution file"; \
+	  cd $(ALDOR_INSTALL)/..; \
+	  echo "-- Making tarball"; \
+	  tar cfz aldor-$(DISTRIB_PLATFORM)-v$(ALDOR_VERSION).tar.gz `basename $(ALDOR_INSTALL)`; \
+	  mv $(GENERIC_DIR)/utils/licensing_kit/install.sh aldor-$(DISTRIB_PLATFORM)-v$(ALDOR_VERSION).bin; \
+	  echo "-- Making bin file"; \
+	  $(GENERIC_DIR)/utils/licensing_kit/add \
+		aldor-$(DISTRIB_PLATFORM)-v$(ALDOR_VERSION).tar.gz \
+		aldor-$(DISTRIB_PLATFORM)-v$(ALDOR_VERSION).bin)
+
+	@echo "Distribution done and available in $(ALDOR_INSTALL)/.." 
+
+check:
+	-@ if [ "x$(ALDORROOT)" = "x" ] ; then echo "*** ALDORROOT unset"; fi
+	@ [ "x$(ALDORROOT)" != "x" ]
+
+clean:
+	@(/bin/rm -rf $(GENERIC_DIR))

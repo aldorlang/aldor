@@ -1,0 +1,197 @@
+
+(|Sequence|
+   (|Import| NIL |AxiomLib|)
+   (|Import| NIL |Boolean|)
+   (|Export|
+      (|Declare|
+         |SquareMatrix|
+         (|Apply|
+            |->|
+            (|Comma|
+               (|Declare| |#1| |NonNegativeInteger|)
+               (|Declare| |#2| |Ring|))
+            (|With|
+               NIL
+               (|Sequence|
+                  (|Apply|
+                     |SquareMatrixCategory|
+                     (|PretendTo| |#1| |NonNegativeInteger|)
+                     |#2|
+                     (|Apply|
+                        |DirectProduct|
+                        (|PretendTo| |#1| |NonNegativeInteger|)
+                        |#2|)
+                     (|Apply|
+                        |DirectProduct|
+                        (|PretendTo| |#1| |NonNegativeInteger|)
+                        |#2|))
+                  (|Apply| |CoercibleTo| (|Apply| |Matrix| |#2|))
+                  (|Declare| |transpose| (|Apply| |->| (|Comma| |%|) |%|))
+                  (|Declare|
+                     |squareMatrix|
+                     (|Apply| |->| (|Comma| (|Apply| |Matrix| |#2|)) |%|))
+                  (|Declare|
+                     |coerce|
+                     (|Apply| |->| (|Comma| |%|) (|Apply| |Matrix| |#2|)))
+                  (|If|
+                     (|Test|
+                        (|Has|
+                           |#2|
+                           (|RestrictTo|
+                              (|Apply|
+                                 |commutative|
+                                 (|Apply| |Enumeration| |*|))
+                              |Category|)))
+                     (|RestrictTo| |central| |Category|)
+                     NIL)
+                  (|If|
+                     (|Test|
+                        (|Has|
+                           |#2|
+                           (|RestrictTo|
+                              (|Apply|
+                                 |commutative|
+                                 (|Apply| |Enumeration| |*|))
+                              |Category|)))
+                     (|If|
+                        (|Test|
+                           (|Has|
+                              |#2|
+                              (|RestrictTo| |unitsKnown| |Category|)))
+                        (|RestrictTo| |unitsKnown| |Category|)
+                        NIL)
+                     NIL)
+                  (|If|
+                     (|Test|
+                        (|Has| |#2| (|Apply| |ConvertibleTo| |InputForm|)))
+                     (|Apply|
+                        |ConvertibleTo|
+                        (|PretendTo| |InputForm| |Type|))
+                     NIL)))) )
+      NIL
+      NIL)
+   (|Export|
+      (|Declare|
+         |RectangularMatrix|
+         (|Apply|
+            |->|
+            (|Comma|
+               (|Declare| |#1| |NonNegativeInteger|)
+               (|Declare| |#2| |NonNegativeInteger|)
+               (|Declare| |#3| |Ring|))
+            (|With|
+               NIL
+               (|Sequence|
+                  (|Apply| |RectangularMatrixCategory| |#1| |#2| |#3|
+                     (|Apply|
+                        |DirectProduct|
+                        (|PretendTo| |#2| |NonNegativeInteger|)
+                        |#3|)
+                     (|Apply|
+                        |DirectProduct|
+                        (|PretendTo| |#1| |NonNegativeInteger|)
+                        |#3|))
+                  (|Apply| |CoercibleTo| (|Apply| |Matrix| |#3|))
+                  (|If|
+                     (|Test| (|Has| |#3| |Field|))
+                     (|Apply| |VectorSpace| (|PretendTo| |#3| |Field|))
+                     NIL)
+                  (|If|
+                     (|Test|
+                        (|Has| |#3| (|Apply| |ConvertibleTo| |InputForm|)))
+                     (|Apply|
+                        |ConvertibleTo|
+                        (|PretendTo| |InputForm| |Type|))
+                     NIL)
+                  (|Declare|
+                     |rectangularMatrix|
+                     (|Apply| |->| (|Comma| (|Apply| |Matrix| |#3|)) |%|))
+                  (|Declare|
+                     |coerce|
+                     (|Apply|
+                        |->|
+                        (|Comma| |%|)
+                        (|Apply| |Matrix| |#3|)))) )))
+      NIL
+      NIL)
+   (|Sequence|
+      (|Define|
+         (|Declare|
+            |MatrixExtendCategory|
+            (|Apply| |->| (|Declare| |#1| |Ring|) |Category|))
+         (|Lambda|
+            (|Comma| (|Declare| |#1| |Ring|))
+            |Category|
+            (|Label|
+               |MatrixExtendCategory|
+               (|With|
+                  NIL
+                  (|Sequence|
+                     (|Apply|
+                        |MatrixCategory|
+                        |#1|
+                        (|Apply| |Vector| |#1|)
+                        (|Apply| |Vector| |#1|))
+                     (|Declare|
+                        |diagonalMatrix|
+                        (|Apply|
+                           |->|
+                           (|Comma| (|Apply| |Vector| |#1|))
+                           |%|))
+                     (|If|
+                        (|Test|
+                           (|Has|
+                              |#1|
+                              (|Apply| |ConvertibleTo| |InputForm|)))
+                        (|Apply|
+                           |ConvertibleTo|
+                           (|PretendTo| |InputForm| |Type|))
+                        NIL)
+                     (|If|
+                        (|Test| (|Has| |#1| |Field|))
+                        (|Declare|
+                           |inverse|
+                           (|Apply|
+                              |->|
+                              (|Comma| |%|)
+                              (|Apply|
+                                 |Union|
+                                 (|Declare| |value1| |%|)
+                                 (|Declare|
+                                    |failed|
+                                    (|Apply| |Enumeration| |failed|)))) )
+                        NIL)))) ))
+      (|Extend|
+         (|Define|
+            (|Declare|
+               |Matrix|
+               (|Apply|
+                  |->|
+                  (|Declare| |#1| |Ring|)
+                  (|Apply| |MatrixExtendCategory| |#1|)))
+            (|Lambda|
+               (|Comma| (|Declare| |#1| |Ring|))
+               (|Apply| |MatrixExtendCategory| |#1|)
+               (|Label|
+                  |Matrix|
+                  (|Add|
+                     (|PretendTo|
+                        (|Add| NIL NIL)
+                        (|Apply| |MatrixExtendCategory| |#1|))
+                     NIL)))) ))
+   (|Export|
+      (|Declare|
+         |IndexedMatrix|
+         (|Apply|
+            |->|
+            (|Comma|
+               (|Declare| |#1| |Ring|)
+               (|Declare| |#2| |Integer|)
+               (|Declare| |#3| |Integer|))
+            (|Apply|
+               |MatrixCategory|
+               |#1|
+               (|Apply| |IndexedVector| |#1| |#3|)
+               (|Apply| |IndexedVector| |#1| |#2|))))
+      NIL
+      NIL))

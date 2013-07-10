@@ -1,0 +1,94 @@
+The Aldor distribution: first steps
+===================================
+(Yannis Chicha for The Aldor Development Group) 
+
+This file quickly describes the Aldor distribution. For information
+about the Aldor language and programming help, please refer to the
+user guide (available within this distribution or on www.aldor.org).
+In the following explanations, we assume that the platform uses is
+Linux and the version of the compiler is 1.1.0 release candidate 1.
+
+1. Distribution directories
+   ========================
+
+The distribution is composed of the following files:
+
+aldor/1.1.0/linux (a symbolic link to ../linux/1.1.0)
+aldor/linux/1.1.0
+
+That means that the distribution is available in the directory
+[path_to_install_dir]/aldor/linux/1.1.0. For your convenience, we
+added a symbolic link called [path_to_install_dir]/aldor/1.1.0/linux
+that points to the main directory. This can be useful for system
+administrators who would like to manage the compiler by version first
+rather than by platform first.
+
+For simple use, there is no need to worry about that. Just consider that
+the directory where Aldor is installed is
+               [path_to_install_dir]/aldor/linux/1.1.0
+
+2. Setting up the environment
+   ==========================
+
+Set an environment variable called ALDORROOT to point to the directory where
+Aldor is installed. For example, with bash, do the following:
+
+   export ALDORROOT=[path_to_install_dir]/aldor/linux/1.1.0
+
+Now update your PATH to point to $ALDORROOT/bin:
+
+   export PATH=$ALDORROOT/bin:$PATH
+
+You are now ready to run Aldor.
+
+Type 'aldor -v'. If you obtain the following message:
+
+   #1 (Fatal Error) Could not find aldor.conf
+
+please check the permissions of the files in the distribution
+directory. 'aldor.conf' (and all other files) should be readable
+by all users of the compiler.
+
+A normal message should be something like:
+
+   Aldor version 1.1.0 for LINUX
+   #1 (Warning) No files!  Type `aldor -help' for help.
+
+   Totals:
+    Time    0.0 s
+    Store   592 K pool, 229K alloc - 39K free - 19K gc = 171K final
+
+3. An example
+   ==========
+
+Here is a small example that should help you test your installation.
+Copy the following code in a file called square.as (this file is
+available in the userguide/examples directory of the distribution
+or on the website in the User Guide section):
+
+-------------------------------------------------------
+#include "aldor"
+#include "aldorio"
+
+square(x: Integer): Integer == x * x;
+
+import from Integer;
+stdout << "The square of 4 is " << square 4 << newline;
+stdout << "The square of 8 is " << square 8 << newline;
+-------------------------------------------------------
+
+Compile this code using:
+
+    aldor -Fx -laldor square.as
+
+(the details of the options are not important at this time,
+ explanations are available in the user guide)
+
+This should create an executable called 'square'. 
+Running this executable should result in displaying the following
+message:
+
+    The square of 4 is 16
+    The square of 8 is 64
+
+=================================================================

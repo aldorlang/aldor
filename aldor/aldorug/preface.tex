@@ -1,0 +1,62 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter*{\textit{Preface}}
+%\addcontentsline{toc}{chapter}{Preface}
+
+\asharpfull{} is a programming language that attempts to achieve
+power through the uniform treatment of all values.
+Rather than build a language by adding features, we have tried instead
+to build a language by removing restrictions.
+While the design of \asharp{} emphasizes generality and composibility,
+it also emphasizes efficiency.
+Usually these objectives seem to pull in different directions.
+%A significant
+An achievement of \asharp{}'s implementation is its ability
+to attain both simultaneously.
+
+\asharp{} is not at its foundation an object-oriented language.
+Instead, object semantics are reconstructed from the primitive treatment
+of functions and types as first-class values.  Similarly, aspect-oriented
+programming arises as a natural use of general language primitives.
+While the initial ro\^le of \asharp{} was to replace the compiler component 
+of the computer algebra system \axiom{}, \asharp{} is not a reimplentation 
+of the \axiom{} programming language.  Rather, \asharp{} reconstructs 
+the essential aspects of the \axiom{} programming language from more 
+primitive notions.
+
+\aldor{} has been, over the period 1995-2001, available from the 
+Numerical Algorithms Group (NAG) as part of the commercial \axiom{} system.
+Over this period, \aldor{}'s users began using it more and more outside 
+of this original context, to the point where now most \aldor{} code
+is unrelated to \axiom{}.   
+
+It is now appropriate that \aldor{} have its own means of distribution 
+for those who wish to use it in a general context, and {\tt Aldor.org} 
+has been formed for this purpose.  The Numerical Algorithms Group has 
+graciously consented to allow free distribution of \aldor{} this way.
+
+Bringing \asharp{} from a gleam in the mind's eye to a concrete 
+compiler has been a substantial task.  Considerable program analysis 
+and optimization is required to reduce high-level source programs to 
+efficient machine code.  For the current release, the source of the 
+compiler is approximately 135,000 lines of code, not including the 
+run-time system, base library or other associated software.   
+
+Here we have described \aldor{} 1.0, the first release of \aldor{}
+independent of \axiom{}.   Those who have used \aldor{} earlier will
+note that the present document has been adapted to refer to a new library,
+{\tt libaldor}.   This library has been used as there is now a considerable
+body of \aldor{} code based upon it.  Manuel Bronstein and Marc Moreno Maza
+are to be thanked for having invested considerable efforts in its development.
+Marc Moreno Maza and Yannis Chicha have updated all the examples in this
+document to work with {\tt libaldor}.
+
+Numerous individuals have contributed to \aldor{} over its development
+at IBM Research, the Numerical Algorithms Group, and elsewhere.   
+These contributors should be listed in the acknowledgements section of 
+this document.  Particular thanks are due to Martin Dunstan
+who served as \aldor{}'s steward at the Numerical Algorithms Group.
+It has been a true pleasure to work with such a collegial and insightful
+group of people.  
+
+{\it London, Ontario}\hfill{\it SMW}\\
+{\it January, 2002}\hfill

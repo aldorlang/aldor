@@ -1,0 +1,70 @@
+
+(|Sequence|
+   (|Import| NIL |AxiomLib|)
+   (|Export|
+      (|Declare|
+         |AnyFunctions1|
+         (|Apply|
+            |->|
+            (|Declare| |#1| |Type|)
+            (|With|
+               NIL
+               (|Sequence|
+                  (|Declare| |coerce| (|Apply| |->| (|Comma| |#1|) |Any|))
+                  (|Declare|
+                     |retractIfCan|
+                     (|Apply|
+                        |->|
+                        (|Comma| |Any|)
+                        (|Apply|
+                           |Union|
+                           (|Declare| |value1| |#1|)
+                           (|Declare|
+                              |failed|
+                              (|Apply| |Enumeration| |failed|)))) )
+                  (|Declare|
+                     |retractable?|
+                     (|Apply| |->| (|Comma| |Any|) |Boolean|))
+                  (|Declare|
+                     |retract|
+                     (|Apply| |->| (|Comma| |Any|) |#1|)))) ))
+      NIL
+      NIL)
+   (|Export|
+      (|Declare|
+         |Any|
+         (|With|
+            NIL
+            (|Sequence|
+               |SetCategory|
+               (|Declare|
+                  |any|
+                  (|Apply| |->| (|Comma| |SExpression| |None|) |%|))
+               (|Declare|
+                  |domainOf|
+                  (|Apply| |->| (|Comma| |%|) |OutputForm|))
+               (|Declare|
+                  |objectOf|
+                  (|Apply| |->| (|Comma| |%|) |OutputForm|))
+               (|Declare| |dom| (|Apply| |->| (|Comma| |%|) |SExpression|))
+               (|Declare| |obj| (|Apply| |->| (|Comma| |%|) |None|))
+               (|Declare|
+                  |showTypeInOutput|
+                  (|Apply| |->| (|Comma| |Boolean|) |String|)))) )
+      NIL
+      NIL)
+   (|Export|
+      (|Declare|
+         |NoneFunctions1|
+         (|Apply|
+            |->|
+            (|Declare| |#1| |Type|)
+            (|With|
+               NIL
+               (|Sequence|
+                  (|Declare|
+                     |coerce|
+                     (|Apply| |->| (|Comma| |#1|) |None|)))) ))
+      NIL
+      NIL)
+   (|Export| (|Declare| |None| |SetCategory|) NIL NIL))

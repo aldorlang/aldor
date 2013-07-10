@@ -1,0 +1,799 @@
+/*
+ *
+ * axl.y: LALR(1) conflict-free grammar for Aldor.
+ * 
+ * Copyright (c) 1990-2007 Aldor Software Organization Ltd (Aldor.org).
+ *
+ */
+
+%{
+# include "axlphase.h"
+
+# define yyerror(s)	yyerrorfn(s)
+
+#ifdef NDEBUG
+#  undef  YYDEBUG
+#else
+#  define YYDEBUG 1
+#endif
+int yydebug;
+
+# define TPOS(t)((t)->pos)
+# define TEND(t)((t)->end-1)
+# define APOS(a) abPos(a)
+# define TEST(a) abNewTest(abPos(a),(a))
+# define abZip	 abNewNothing(sposNone)
+%}
+
+%include-enum       "token.h"  tokenTag
+%default-rule-type  <ab>
+%default-token-type <tok>
+
+%union {
+	Token           tok ;
+	TokenList	toklist ;
+	AbSyn           ab ;
+	AbSynList       ablist ;
+}
+
+%start Goal
+
+%%
+
+Goal
+: CurlyContents(Labeled)
+	{ yypval = $$ = $1; }
+;
+
+Expression
+: enlist1a(Labeled, KW_Semicolon, `AB_Sequence)
+;
+
+Labeled
+: Comma
+| Declaration
+| KW_At Atom opt(Labeled)
+	{ $$ = abNewLabel(TPOS($1),$2,$3); }
+;
+
+Declaration
+: KW_Macro MacroBody
+	{ $$ = abNewMacro(TPOS($1),$2); }
+| KW_Extend Sig
+	{ $$ = abNewExtend(TPOS($1),$2); }
+| KW_Local Sig
+	{ $$ = abNewLocal(TPOS($1),$2); }
+| KW_Free Sig
+	{ $$ = abNewFree(TPOS($1),$2); }
+| KW_Fluid Sig
+	{ $$ = abNewFluid(TPOS($1),$2); }
+| KW_Default Sig
+	{ $$ = abNewDefault(TPOS($1),$2); }
+| KW_Define Sig
+	{ $$ = abNewDDefine(TPOS($1),$2); }
+| KW_Fix Sig
+	{ $$ = abNewFix(TPOS($1),$2); }
+| KW_Inline opt(Sig) opt(FromPart)
+	{ $$ = abNewInline(TPOS($1),$2,$3); }
+| KW_Import opt(Sig) opt(FromPart)
+	{ $$ = abNewImport(TPOS($1),$2,$3); }
+| ExportDecl
+;
+
+ExportDecl
+: KW_Export opt(Sig)
+	{ $$ = abNewExport(TPOS($1),$2, abZip,abZip); }
+| KW_Export opt(Sig) ToPart
+	{ $$ = abNewExport(TPOS($1),$2,abZip,$3); }
+| KW_Export opt(Sig) FromPart
+	{ $$ = abNewExport(TPOS($1),$2,$3,abZip); }
+;
+
+ToPart
+: KW_To Infixed
+	{ $$ = $2; }
+;
+
+FromPart
+: KW_From enlist1(Infixed, KW_Comma, `AB_Comma)
+	{ $$ = $2; }
+;
+
+MacroBody
+: Sig
+| ExportDecl
+| KW_Import Sig opt(FromPart)
+	{ $$ = abNewImport(TPOS($1),$2,$3); }
+;
+
+Sig
+: DeclBinding
+| Block
+;
+
+DeclPart
+: KW_Colon Type
+	{ $$ = $2; }
+| KW_ColonStar Type
+	{ $$ = abNewHide(TPOS($1), $2); }
+;
+
+/*
+ * Commas
+ */
+Comma
+: enlist1(CommaItem, KW_Comma, `AB_Comma)
+;
+
+CommaItem
+: Binding(AnyStatement)
+| Binding(AnyStatement) KW_Where CommaItem
+	{ $$ = abNewWhere(TPOS($2),$3,$1); }
+;
+
+/*
+ * DeclBinding
+ */
+DeclBinding
+: BindingR(InfixedExprsDecl,AnyStatement)
+;
+
+InfixedExprsDecl
+: InfixedExprs
+| InfixedExprs DeclPart
+	{ $$ = abNewDeclare(APOS($1),$1,$2); }
+;
+
+InfixedExprs
+: enlist1(InfixedExpr, KW_Comma, `AB_Comma)
+;
+
+
+/*
+ * Bindings
+ */
+Binding(E)
+: BindingL(Infixed,E)
+;
+
+BindingL(R,L)
+: L
+| R KW_Assign BindingL(R,L)
+	{ $$ = abNewAssign(APOS($1),$1,$3); }
+| R KW_2EQ BindingL(R,L)
+	{ $$ = abNewDefine(APOS($1),$1,$3); }
+| R KW_MArrow BindingL(R,L)
+	{ $$ = abNewMDefine(APOS($1),$1,$3); }
+| R KW_MapsTo BindingL(R,L)
+	{ $$ = abNewLambda(APOS($1),$1,abZip,$3); }
+| R KW_MapsToStar BindingL(R,L)
+	{ $$ = abNewPLambda(APOS($1),$1,abZip,$3); }
+;
+
+BindingR(R,L)
+: R
+| R KW_Assign Binding(L)
+	{ $$ = abNewAssign(APOS($1),$1,$3); }
+| R KW_2EQ Binding(L)
+	{ $$ = abNewDefine(APOS($1),$1,$3); }
+| R KW_MArrow Binding(L)
+	{ $$ = abNewMDefine(APOS($1),$1,$3); }
+| R KW_MapsTo Binding(L)
+	{ $$ = abNewLambda(APOS($1),$1,abZip,$3); }
+| R KW_MapsToStar Binding(L)
+	{ $$ = abNewPLambda(APOS($1),$1,abZip,$3); }
+;
+
+/*
+ * Statements
+ *
+ * It is easier to spot conflicts when explicitly handling dangling else.
+ */
+AnyStatement
+: KW_If CommaItem KW_Then Binding(AnyStatement)
+	{ $$ = abNewIf(TPOS($1), TEST($2),$4,abZip); }
+| Flow(AnyStatement)
+;
+
+BalStatement
+: Flow(BalStatement)
+;
+
+Flow(XX)
+: Collection
+| KW_If CommaItem KW_Then Binding(BalStatement) KW_Else Binding(XX)
+	{ $$ = abNewIf(TPOS($1), TEST($2),$4,$6); }
+| Collection KW_Implies Binding(XX)
+	{ $$ = abNewExit(TPOS($2), TEST($1),$3); }
+| Iterators KW_Repeat Binding(XX)
+	{ $$ = abNewRepeatOL(TPOS($2),$3,$1); listFree(AbSyn)($1); }
+| KW_Repeat Binding(XX)
+	{ $$ = abNewRepeat0(TPOS($1),$2); }
+| KW_Try Binding(AnyStatement) KW_But ButExpr AlwaysPart(XX) 
+	{ (void)parseDeprecated(KW_But, abNewNothing(TPOS($3))); $$ = abNewTry(TPOS($1),$2,$4->abSequence.argv[0], $4->abSequence.argv[1],$5); }
+| KW_Try Binding(AnyStatement) KW_Catch ButExpr AlwaysPart(XX) 
+	{ $$ = abNewTry(TPOS($1),$2,$4->abSequence.argv[0], $4->abSequence.argv[1],$5); }
+| KW_Select Binding(AnyStatement) KW_In Cases
+	{ $$ = abNewSelect(TPOS($1),$2,$4); }
+| KW_Do Binding(XX)
+	{ $$ = abNewDo(TPOS($1),$2); }
+| KW_Delay Binding(XX)
+	{ $$ = abNewDelay(TPOS($1),$2); }
+| KW_Reference Binding(XX)
+	{ $$ = abNewReference(TPOS($1),$2); }
+| KW_Generate GenBound Binding(XX)
+	{ $$ = abNewGenerate(TPOS($1),$2,$3); }
+| KW_Assert Binding(XX)
+	{ $$ = abNewAssert(TPOS($1),TEST($2)); }
+| KW_Iterate opt(Name)
+	{ $$ = abNewIterate(TPOS($1),$2); }
+| KW_Break opt(Name)
+	{ $$ = abNewBreak(TPOS($1),$2); }
+| KW_Return opt(Collection)
+	{ $$ = abNewReturn(TPOS($1),$2); }
+| KW_Yield Binding(XX)
+	{ $$ = abNewYield(TPOS($1),$2); }
+| KW_Except Binding(XX)
+	{ $$ = parseDeprecated(KW_Except, abNewRaise(TPOS($1),$2)); }
+| KW_Throw Binding(XX)
+	{ $$ = abNewRaise(TPOS($1),$2); }
+| KW_Goto Id
+	{ $$ = abNewGoto(TPOS($1),$2); }
+| KW_Never
+	{ $$ = abNewNever(TPOS($1)); }
+;
+
+GenBound
+: Nothing
+| KW_To CommaItem KW_Of
+	{ $$ = $2; }
+;
+
+ButExpr
+: Nothing
+	{ $$ = abNew(AB_Sequence, APOS($1), 2, abZip, abZip); }
+| DeclBinding KW_In Cases
+	{ $$ = abNew(AB_Sequence, APOS($1), 2, $1, $3); }
+;     
+
+Cases
+: Binding(Collection) 
+;
+
+AlwaysPart(XX)
+: KW_Always Binding(XX)
+	{ (void)parseDeprecated(KW_Always, abNewNothing(TPOS($1))); $$ = $2; }
+| KW_Finally Binding(XX)
+	{ $$ = $2; }
+| Nothing
+;
+
+/*
+ * Iterators
+ */
+Collection
+: Infixed
+| Infixed Iterators
+	{ $$ = abNewCollectOL(APOS($1),$1,$2); listFree(AbSyn)($2); }
+;
+
+Iterators<ablist>
+: Iterators1
+	{ $$ = listNReverse(AbSyn)($1); }
+;
+
+Iterators1<ablist>
+: Iterator
+	{ $$ = listCons(AbSyn)($1, NULL); }
+| Iterators1 Iterator
+	{ $$ = listCons(AbSyn)($2, $1); }
+;
+
+Iterator
+: KW_For ForLhs KW_In Infixed opt(SuchthatPart)
+	{ $$ = abNewFor(TPOS($1),$2,$4,$5); }
+| KW_While Infixed
+	{ $$ = abNewWhile(TPOS($1),TEST($2)); }
+;
+
+ForLhs
+: Infixed
+| KW_Free Infixed
+	{ $$ = abNewFree(TPOS($1), $2); }
+| KW_Local Infixed
+	{ $$ = abNewLocal(TPOS($1), $2); }
+| KW_Fluid Infixed
+	{ $$ = abNewFluid(TPOS($1), $2); }
+;
+
+SuchthatPart
+: KW_Bar Infixed
+	{ $$ = TEST($2); }
+;
+
+/*
+ * Infixed Expressions
+ */
+
+Infixed
+: InfixedExpr
+| InfixedExpr DeclPart
+	{ $$ = abNewDeclare(APOS($1),$1,$2); }
+| Block
+;
+
+InfixedExpr
+: E11(Op)
+| E3
+;
+
+
+E3
+: E4
+| E3 KW_And E4
+	{ $$ = abNewAnd(TPOS($2), TEST($1),TEST($3)); }
+| E3 KW_Or E4
+	{ $$ = abNewOr(TPOS($2), TEST($1),TEST($3)); }
+| E3 LatticeOp E4
+	{ $$ = abNewInfix(APOS($2),$2,$1,$3); }
+;
+
+E4
+: E5
+| E4 KW_Has E5
+	{ $$ = abNewHas(TPOS($2),$1,$3); }
+| E4 RelationOp E5
+	{ $$ = abNewInfix(APOS($2),$2,$1,$3); }
+| RelationOp E5
+	{ $$ = abNewPrefix(APOS($1),$1,$2); }
+;
+
+E5
+: E6
+| E5 SegOp
+	{ $$ = abNewPostfix(APOS($2),$2,$1); }
+| E5 SegOp E6
+	{ $$ = abNewInfix(APOS($2),$2,$1,$3); }
+;
+
+E6
+: E7
+| E6 PlusOp E7
+	{ $$ = abNewInfix(APOS($2),$2,$1,$3); }
+| PlusOp E7
+	{ $$ = abNewPrefix(APOS($1),$1,$2); }
+;
+
+E7
+: E8
+| E7 QuotientOp E8
+	{ $$ = abNewInfix(APOS($2),$2,$1,$3); }
+;
+
+E8
+: E9
+| E8 TimesOp E9
+	{ $$ = abNewInfix(APOS($2),$2,$1,$3); }
+;
+
+E9
+: E11(E12)
+| E11(E12) PowerOp E9
+	{ $$ = abNewInfix(APOS($2),$2,$1,$3); }
+;
+
+E11(X)
+: X
+| E11(X) KW_2Colon E12
+	{ $$ = abNewCoerceTo(TPOS($2),$1,$3); }
+| E11(X) KW_At E12
+	{ $$ = abNewRestrictTo(TPOS($2),$1,$3); }
+| E11(X) KW_Pretend E12
+	{ $$ = abNewPretendTo(TPOS($2),$1,$3); }
+;
+
+Type
+: E11(E12)
+;
+
+E12
+: E13
+| E13 ArrowOp E12
+	{ $$ = abNewInfix(APOS($2),$2,$1,$3); }
+;
+
+E13
+: E14
+| E14 KW_Dollar QualTail
+	{ $$ = abNewQualify(TPOS($2),$1,$3); }
+;
+
+QualTail
+: LeftJuxtaposed
+| LeftJuxtaposed KW_Dollar QualTail
+	{ $$ = abNewQualify(TPOS($2),$1,$3); }
+;
+
+OpQualTail
+: Molecule
+| Molecule KW_Dollar OpQualTail
+	{ $$ = abNewQualify(TPOS($2),$1,$3); }
+; 
+
+E14
+: E15
+| opt(E14) KW_With DeclMolecule
+	{ $$ = abNewWith(TPOS($2),$1,$3); }
+| opt(E14) KW_Add DeclMolecule
+	{ $$ = abNewAdd(TPOS($2),$1,$3); }
+| E14 KW_Except E15
+	{ $$ = parseDeprecated(KW_Except, abNewExcept(TPOS($2),$1,$3)); }
+| E14 KW_Throw E15
+	{ $$ = abNewExcept(TPOS($2),$1,$3); }
+;
+
+E15
+: Application
+;
+
+
+/*
+ * Infixed Operations
+ */
+Op
+: ArrowOp
+| LatticeOp
+| RelationOp
+| SegOp
+| PlusOp
+| QuotientOp
+| TimesOp
+| PowerOp
+;
+
+NakedOp
+: UnqualOp(ArrowTok)
+| UnqualOp(LatticeTok)
+| UnqualOp(RelationTok)
+| UnqualOp(SegTok)
+| UnqualOp(PlusTok)
+| UnqualOp(QuotientTok)
+| UnqualOp(TimesTok)
+| UnqualOp(PowerTok)
+;
+
+
+ArrowOp:	 QualOp(ArrowTok);
+LatticeOp:	 QualOp(LatticeTok);
+RelationOp:	 QualOp(RelationTok);
+SegOp: 		 QualOp(SegTok);
+PlusOp: 	 QualOp(PlusTok);
+QuotientOp:	 QualOp(QuotientTok);
+TimesOp: 	 QualOp(TimesTok);
+PowerOp: 	 QualOp(PowerTok);
+
+ArrowTok<tok>:	 KW_RArrow | KW_LArrow | KW_MapStar ;
+LatticeTok<tok>: KW_Vee    | KW_Wedge ;
+RelationTok<tok>:KW_EQ     | KW_TildeE | KW_HatE |
+		 KW_GE     | KW_GT     | KW_2GT  |
+		 KW_LE     | KW_LT     | KW_2LT  |
+		 KW_Is     | KW_Isnt   | KW_Case ;
+SegTok<tok>:	 KW_2Dot   | KW_By ;
+PlusTok<tok>:	 KW_Plus   | KW_Minus  | KW_PlusMinus ;
+QuotientTok<tok>:KW_Mod    | KW_Quo    | KW_Rem ;
+TimesTok<tok>:	 KW_Star   | KW_Slash  | KW_Backslash ;
+PowerTok<tok>:	 KW_2Star  | KW_Hat ;
+
+/*
+ * Juxtaposed Expressions
+ *
+ * a b c d                   as(.(.(.)))
+ * f(a).2(b)(c).x.y.(d).(e)  as(((.).).)
+ *
+ */
+
+Application
+: RightJuxtaposed
+;
+
+RightJuxtaposed
+: Jright(Molecule)
+;
+
+LeftJuxtaposed
+: Jleft(Molecule)
+;
+
+Jright(H)
+: Jleft(H)
+| Jleft(H) Jright(Atom)
+	{ $$ = parseMakeJuxtapose($1,$2); }
+| KW_Not Jright(Atom)
+	{ $$ = abNewNot(TPOS($1),TEST($2)); }
+;
+
+Jleft(H)
+: H
+| KW_Not BlockEnclosure
+	{ $$ = abNewNot(TPOS($1),TEST($2)); }
+| Jleft(H) BlockEnclosure
+	{ $$ = parseMakeJuxtapose($1,$2); }
+| Jleft(H) KW_Dot BlockMolecule
+	{ $$ = abNewPrefix(TPOS($2),$1,$3); }
+;
+
+/*
+ * Indivisible Expressions
+ */
+Molecule
+: Atom
+| Enclosure
+;
+
+Enclosure
+: Parened
+| Bracketed
+| QuotedIds
+;
+
+DeclMolecule
+: opt(Application)
+| Block
+;
+
+BlockMolecule
+: Atom
+| Enclosure
+| Block
+;
+
+BlockEnclosure
+: Enclosure
+| Block
+;
+
+Block
+: Piled(Expression)
+| Curly(Labeled)
+;
+
+Parened
+: KW_OParen KW_CParen 
+	{
+	  $$ = abNewParen(TPOS($1), abNewComma0(TPOS($1)));
+	  abSetEnd($$, TEND($2));
+	}
+| KW_OParen Expression KW_CParen
+	{ $$ = abNewParen(TPOS($1), $2); abSetEnd($$, TEND($3)); }
+;
+
+Bracketed
+: KW_OBrack KW_CBrack 
+	{
+	  $$ = abNewMatchfix(TPOS($1),
+			     abNewId(TPOS($1),ssymBracket),
+			     abNewComma0(TPOS($1)));
+	  abSetEnd($$, TEND($2));
+	}
+| KW_OBrack Expression KW_CBrack 
+	{
+	  $$ = abNewMatchfix(TPOS($1),
+			     abNewId(TPOS($1),ssymBracket),
+			     $2);
+	  abSetEnd($$, TEND($3));
+	}
+;
+
+QuotedIds
+: KW_Quote KW_Quote
+	{
+	  $$ = abNewMatchfix(TPOS($1),
+			     abNewId(TPOS($1),ssymEnum),
+			     abNewComma0(TPOS($1)));
+	  abSetEnd($$, TEND($2));
+	}
+| KW_Quote Names KW_Quote
+	{
+	  $$ = abNewMatchfix(TPOS($1),
+			     abNewId(TPOS($1),ssymEnum),
+			     $2);
+	  abSetEnd($$, TEND($3));
+	}
+;
+Names
+: enlist1(Name, KW_Comma, `AB_Comma)
+;
+
+/*
+ * Terminals
+ */
+Atom
+: Id
+| Literal
+;
+
+Name
+: Id
+| NakedOp
+;
+
+Id
+: TK_Id
+	{ $$ = abNewOfToken(AB_Id,    $1); }
+| KW_Sharp
+	{ $$ = abNewOfToken(AB_Id,    $1); }
+| KW_Tilde
+	{ $$ = abNewOfToken(AB_Id,    $1); }
+;
+/*
+ * Bob's experimental stuff from Id above. However, until Bob tells
+ * us what the point of AB_Blank is we cannot accept ? identifiers.
+ *
+ * | TK_Blank
+ *	{ $$ = abNewOfToken(AB_Blank, $1); }
+ */
+
+Literal
+: TK_Int
+	{ $$ = abNewOfToken(AB_LitInteger, $1); }
+| TK_Float
+	{ $$ = abNewOfToken(AB_LitFloat,   $1); }
+| TK_String
+	{ $$ = abNewOfToken(AB_LitString,  $1); }
+;
+
+/*
+ * Meta-rules
+ */
+
+Nothing
+:
+	{ $$ = abZip; }
+;
+
+UnqualOp(op)
+: op
+	{ $$ = abNewOfToken(AB_Id, $1); }
+;
+
+QualOp(op)
+: op
+	{ $$ = abNewOfToken(AB_Id, $1); }
+| op KW_Dollar OpQualTail
+	{ $$ = abNewQualify(TPOS($1), abNewOfToken(AB_Id, $1), $3); }
+;
+
+opt(E)
+: Nothing 
+| E
+;
+
+/* ++ Doc. */
+
+Doc(E)
+: PreDocument E PostDocument
+	{
+	  $$ = $2;
+	  if($3) $$ = abNewDocumented(APOS($3),$$,$3);
+	  if($1) $$ = abNewDocumented(APOS($$),$$,$1);
+	}
+;
+
+PreDocument
+: PreDocumentList
+	{ $$ = abNewDocTextOfList($1); listFree(Token)($1); }
+;
+
+PostDocument
+: PostDocumentList
+	{ $$ = abNewDocTextOfList($1); listFree(Token)($1); }
+;
+
+PreDocumentList<toklist>
+: Nothing
+	{ $$ = listNil(Token); }
+| TK_PreDoc PreDocumentList
+	{ $$ = listCons(Token)($1, $2); }
+;
+
+PostDocumentList<toklist>
+: Nothing
+	{ $$ = listNil(Token); }
+| TK_PostDoc PostDocumentList
+	{ $$ = listCons(Token)($1, $2); }
+;
+
+/* E {sep E sep E} */
+enlist1(E,Sep,Tag)
+: enlister1(E, Sep)
+
+	{ $$ = abOneOrNewOfList(Tag, $1); listFree(AbSyn)($1); }
+;
+
+/* E sep E {sep E} */
+enlist2(E,Sep,Tag)
+: enlister1(E, Sep) Sep E
+	{
+	  $1 = listCons(AbSyn)($3, $1);
+	  $$ = abOneOrNewOfList(Tag, $1);
+	  listFree(AbSyn)($1);
+	}
+;
+
+enlister1(E, Sep)<ablist>
+: E
+	{ $$ = listCons(AbSyn)($1, listNil(AbSyn) ); }
+| enlister1(E, Sep) Sep E
+	{ $$ = listCons(AbSyn)($3, $1); }
+;
+
+
+/* E {sep+ E sep+ E sep*} */
+enlist1a(E,Sep,Tag)
+: enlister1a(E, Sep)
+	{ $$ = abOneOrNewOfList(Tag, $1); listFree(AbSyn)($1); }
+;
+
+enlister1a(E, Sep)<ablist>
+: E
+	{ $$ = listCons(AbSyn)($1, listNil(AbSyn) ); }
+| enlister1a(E, Sep) Sep E
+	{ $$ = listCons(AbSyn)($3, $1); }
+| enlister1a(E, Sep) Sep
+	{ $$ = $1; }
+;
+
+/* Piled */
+Piled(E)
+: KW_SetTab PileContents(E) KW_BackTab
+	{ $$ = abOneOrNewOfList(AB_Sequence,$2); listFree(AbSyn)($2); }
+;
+
+Curly(E)
+: KW_OCurly CurlyContents(E) KW_CCurly
+	{ $$ = $2; abSetPos($$, TPOS($1)); abSetEnd($$, TEND($3)); }
+;
+
+PileContents(E)<ablist>
+: Doc(E)
+	{ $$ = listCons(AbSyn)($1, listNil(AbSyn)); }
+| PileContents(E) KW_BackSet Doc(E)
+	{ $$ = listCons(AbSyn)($3, $1); }
+| error KW_BackSet Doc(E)
+	{ yyerrok; $$ = listCons(AbSyn)($3, listNil(AbSyn)); }
+;
+
+CurlyContents(E)
+: CurlyContentsList(E)
+	{ $$ = abOneOrNewOfList(AB_Sequence,$1); listFree(AbSyn)($1); }
+;
+
+CurlyContentsList(E)<ablist>
+: CurlyContent1(E)
+| CurlyContent1(E) CurlyContentB(E)
+	{ $$ = listCons(AbSyn)($2, $1); }
+;
+
+CurlyContent1(E)<ablist>
+: Nothing
+	{ $$ = listNil(AbSyn); }
+| CurlyContent1(E) CurlyContentA(E)
+	{ $$ = listCons(AbSyn)($2, $1); }
+;
+
+CurlyContentA(E)
+: CurlyContentB(E) KW_Semicolon PostDocument
+	{ $$ = $1; if($3) $$ = abNewDocumented(APOS($3),$$,$3); }
+| error KW_Semicolon PostDocument
+	{ yyerrok; $$ = abNewNothing(TPOS($2)); }
+;
+
+CurlyContentB(E)
+: PreDocument E PostDocument
+	{
+	  $$ = $2;
+	  if($1) $$ = abNewDocumented(APOS($1),$$,$1);
+	  if($3) $$ = abNewDocumented(APOS($$),$$,$3);
+	}
+;
+%%

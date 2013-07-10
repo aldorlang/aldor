@@ -1,0 +1,30 @@
+#!/bin/sh
+
+# Recursively convert all files in the current directory and its
+# children into UNIX format text files.
+
+me=$0
+echo "[`pwd`]" 1>&2
+sleep 2
+
+files=`ls`
+for file in $files
+do
+   if [ -d $file ]
+   then
+      (
+         cd $file
+         $me
+      )
+   else
+      echo "   $file" 1>&2
+      cp $file $file.OLD
+      $ALDORROOT/bin/txt2txt -to unix < $file.OLD > $file
+      if [ -f $file ]
+      then
+         /bin/rm -f $file.OLD
+      fi
+   fi
+done
+
+exit 0

@@ -1,0 +1,105 @@
+
+(|Sequence|
+   (|Import| NIL |AxiomLib|)
+   (|Export|
+      (|Declare|
+         |SExpression|
+         (|Apply| |SExpressionCategory| |String| |Symbol| |Integer|
+            |DoubleFloat| |OutputForm|))
+      NIL
+      NIL)
+   (|Export|
+      (|Declare|
+         |SExpressionOf|
+         (|Apply|
+            |->|
+            (|Comma|
+               (|Declare| |#1| |SetCategory|)
+               (|Declare| |#2| |SetCategory|)
+               (|Declare| |#3| |SetCategory|)
+               (|Declare| |#4| |SetCategory|)
+               (|Declare| |#5| |SetCategory|))
+            (|Apply| |SExpressionCategory| |#1| |#2| |#3| |#4| |#5|)))
+      NIL
+      NIL)
+   (|Define|
+      (|Declare|
+         |SExpressionCategory|
+         (|Apply|
+            |->|
+            (|Comma|
+               (|Declare| |#1| |SetCategory|)
+               (|Declare| |#2| |SetCategory|)
+               (|Declare| |#3| |SetCategory|)
+               (|Declare| |#4| |SetCategory|)
+               (|Declare| |#5| |SetCategory|))
+            |Category|))
+      (|Lambda|
+         (|Comma|
+            (|Declare| |#1| |SetCategory|)
+            (|Declare| |#2| |SetCategory|)
+            (|Declare| |#3| |SetCategory|)
+            (|Declare| |#4| |SetCategory|)
+            (|Declare| |#5| |SetCategory|))
+         |Category|
+         (|Label|
+            |SExpressionCategory|
+            (|With|
+               NIL
+               (|Sequence|
+                  |SetCategory|
+                  (|Declare|
+                     |eq|
+                     (|Apply| |->| (|Comma| |%| |%|) |Boolean|))
+                  (|Declare|
+                     |null?|
+                     (|Apply| |->| (|Comma| |%|) |Boolean|))
+                  (|Declare|
+                     |atom?|
+                     (|Apply| |->| (|Comma| |%|) |Boolean|))
+                  (|Declare|
+                     |pair?|
+                     (|Apply| |->| (|Comma| |%|) |Boolean|))
+                  (|Declare|
+                     |list?|
+                     (|Apply| |->| (|Comma| |%|) |Boolean|))
+                  (|Declare|
+                     |string?|
+                     (|Apply| |->| (|Comma| |%|) |Boolean|))
+                  (|Declare|
+                     |symbol?|
+                     (|Apply| |->| (|Comma| |%|) |Boolean|))
+                  (|Declare|
+                     |integer?|
+                     (|Apply| |->| (|Comma| |%|) |Boolean|))
+                  (|Declare|
+                     |float?|
+                     (|Apply| |->| (|Comma| |%|) |Boolean|))
+                  (|Declare|
+                     |destruct|
+                     (|Apply| |->| (|Comma| |%|) (|Apply| |List| |%|)))
+                  (|Declare| |string| (|Apply| |->| (|Comma| |%|) |#1|))
+                  (|Declare| |symbol| (|Apply| |->| (|Comma| |%|) |#2|))
+                  (|Declare| |integer| (|Apply| |->| (|Comma| |%|) |#3|))
+                  (|Declare| |float| (|Apply| |->| (|Comma| |%|) |#4|))
+                  (|Declare| |expr| (|Apply| |->| (|Comma| |%|) |#5|))
+                  (|Declare|
+                     |convert|
+                     (|Apply| |->| (|Comma| (|Apply| |List| |%|)) |%|))
+                  (|Declare| |convert| (|Apply| |->| (|Comma| |#1|) |%|))
+                  (|Declare| |convert| (|Apply| |->| (|Comma| |#2|) |%|))
+                  (|Declare| |convert| (|Apply| |->| (|Comma| |#3|) |%|))
+                  (|Declare| |convert| (|Apply| |->| (|Comma| |#4|) |%|))
+                  (|Declare| |convert| (|Apply| |->| (|Comma| |#5|) |%|))
+                  (|Declare| |car| (|Apply| |->| (|Comma| |%|) |%|))
+                  (|Declare| |cdr| (|Apply| |->| (|Comma| |%|) |%|))
+                  (|Declare| |#| (|Apply| |->| (|Comma| |%|) |Integer|))
+                  (|Declare|
+                     |apply|
+                     (|Apply| |->| (|Comma| |%| |Integer|) |%|))
+                  (|Declare|
+                     |apply|
+                     (|Apply|
+                        |->|
+                        (|Comma| |%| (|Apply| |List| |Integer|))
+                        |%|)))) ))) )

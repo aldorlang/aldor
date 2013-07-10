@@ -1,0 +1,561 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\head{widesection}{Loops}{asugLangExprLoop}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsubsection{Repeat}
+\keywordIndex{repeat}
+
+%% Loops allow expressions to be evaluated many times for the side-effects
+%% they produce.  
+%% These side-effects might include variable assignments, output and so on.  
+%% The values of the repeated expression are discarded, and the loop, itself,
+%% produces no value.
+
+The \asharp{} language provides a set of constructs to handle loops
+in a way which is both elegant and efficient. The concept lying at the
+base of \asharp{} loops is that of {\em generator}, discussed
+in depth in \chapref{asugLangGener}. Generators provide an abstract
+way to traverse values belonging to certain domains without violating
+the principle of {\em encapsulation} (see \secref{asugLangNTypeDomains},
+page \pageref{asugLangNTypeDomEncap}). Generators can be considered as
+autonomous entities producing values. This section shows how values
+they produce can be used to control loops.
+
+The general form of a loop expression is:
+
+\verb^    ^{\em Iterators\/} {\tt repeat }{\em Body}
+
+The iterators control how many times the body is evaluated.
+Any number of iterators may be used on a loop, and each is
+either a \ttin{while} or a \ttin{for} iterator.
+
+A loop with no iterator repeats forever, unless terminated by an
+error or some other event.
+For example:
+
+\begin{small}
+\begin{verbatim}
+    #include "aldor"
+    #include "aldorio"
+
+    -- This will repeat forever...
+    repeat {
+            stdout << "Row, row, row your boat," << newline;
+            stdout << "Gently down the stream."  << newline;
+            stdout << "Merrily, merrily, merrily, merrily," << newline;
+            stdout << "Life is but a dream."     << newline;
+            stdout << newline;
+    }
+\end{verbatim}
+\end{small}
+
+Two forms, \ttin{break} and \ttin{iterate,} may be used within the
+loop body to control the loop evaluation, as described later
+on pages \pageref{asugLangBreak} and \pageref{asugLangIterate}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\head{subsubsection}{While-iterators}{asugLangWhile}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\keywordIndex{while}
+
+A \ttin{while} iterator allows a loop to continue so long as a condition
+remains true.  The syntax of a \ttin{while} iterator is
+
+\egindent{\tt while }{\em condition}
+
+If a loop has a \ttin{while} iterator, then at the beginning of each
+iteration {\em condition} is evaluated.
+The result is then tested:
+\begin{itemize}
+\item If it is {\em true}, the evaluation of the loop {\em proceeds}.
+\item If it is {\em false}, then the loop is {\em terminated}.
+\end{itemize}
+
+%\pagebreak
+Just as with \ttin{if} and other expressions having tests for control
+flow, if the condition of a \ttin{while} is not a \verb"Boolean"
+value, then an appropriate \ttin{test} function is applied to
+determine the sense of the condition.
+\keywordIndex{test}
+\index{control abstraction}
+
+The following example shows a {\tt repeat} loop using a {\tt while} iterator:
+
+\label{asugLangWhileExample}
+
+\begin{small}
+\begin{verbatim}
+    #include "aldor"
+    #include "aldorio"
+
+    import from Integer;
+
+    n := 10000;
+    k := 0;         -- `k' counts the number of iterations.
+
+    while n ~= 1 repeat {
+            k := k + 1;
+
+            if odd? n then n := 3*n + 1 else n := n quo 2;
+    }
+
+    stdout << "Terminated after " << k << " iterations." << newline;
+\end{verbatim}
+\end{small}
+
+This loop counts the number of times the body has to be evaluated in
+order for \verb"n" to reach one.  When \verb"n" reaches 1, the
+evaluation of the loop is terminated, and the count is printed.
+(It is a well-known conjecture that this process will terminate for all
+integers $n > 0$.  This is sometimes called the ``$3 n + 1$
+problem''.)
+
+In a case such as this it is important to give \verb"k" an initial value,
+since the loop may be iterated zero times!
+In fact, if the {\tt while} condition is false the first time that it is
+evaluated, then the {\tt repeat} body will be not executed at all:
+
+\begin{small}%
+\begin{verbatim}
+    #include "aldor"
+    #include "aldorio"
+
+    import from Integer;
+
+    n := 0;
+
+    while n > 0 repeat {
+        -- This will never be executed.
+        stdout << "Hello world!" << newline;
+    }
+\end{verbatim}
+\end{small}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\head{subsubsection}{For-iterators}{asugLangFor}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\keywordIndex{for}
+\keywordIndex{in}
+\index{generators}
+
+%% Very often loops are used to operate on a sequence of values,
+%% say elements of an array or a list.  PI: `sequence' has a special
+%% meaning in this chapter. I rewrote:
+
+Very often, loops are used to traverse certain kind of data structures,
+such as lists, arrays or tables, or to execute some operations for all
+the numerical values in a defined range.
+
+%\pagebreak
+\ttin{for} iterators make this sort of loop convenient to write.
+Take, for instance, the following examples:
+
+\begin{small}
+\begin{verbatim}
+    #include "aldor"
+    #include "aldorio"
+
+    -- Add up the elements of a list, return the sum.
+    sum(ls: List Integer): Integer == {
+            n := 0;
+            for i in ls repeat n := n + i;
+            n
+    }
+
+    -- Add up the elements of an array, return the sum.
+    sum(arr: Array Integer): Integer == {
+            n := 0;
+            for i in arr repeat n := n + i;
+            n
+    }
+
+    -- Add up the odd numbers in a range, return the sum.
+    sum(lo: Integer, hi: Integer): Integer == {
+            n := 0;
+            if even? lo then lo := lo + 1;
+
+            for i in lo..hi by 2 repeat n := n + i;
+            n
+    }
+
+
+    import from List Integer, Integer;
+
+    -- Use `sum: List Integer -> Integer':
+    stdout << sum([1,2,3,4])     -- Prints `10'.
+
+\end{verbatim}
+\end{small}
+
+The \ttin{for} iterators in these examples all have the form
+
+\egindent{\tt for {\em lhs\/} in {\em Expr}}
+
+
+The {\em lhs\/} part specifies a variable which will take on the
+successive values over the course of the iteration.
+The {\em lhs\/} has the form
+
+\egindent{[ {\tt free} ] {\em name} [: {\em Type\/} ]}
+
+The type declaration is optional.  If it is missing, the type of the
+variable is inferred from the source of the values, {\em Expr}.
+
+The \ttin{free} part of the {\em lhs} determines the scope of the variable.
+\keywordIndex{free}
+Without it, a new variable of the given name is made local to the loop.
+If the word \ttin{free} is present, then the loop uses an existing
+variable from the context.  In this case, the value of the variable
+is available after the loop terminates.
+%% PAB: The ought to point to env. chapter
+
+%\pagebreak
+The example on page \pageref{asugLangWhileExample} can be rewritten using a
+free loop variable:
+
+\label{asugLangForExample} 
+
+\begin{small}
+\begin{verbatim}
+    #include "aldor"
+    #include "aldorio"
+
+    import from Integer;
+
+    n := 10000;
+    k := 0;                      -- Make a top-level variable `k'.
+
+    for free k in 1.. repeat {   -- Use above `k' freely in the loop.
+
+            if odd? n then n := 3*n + 1 else n := n quo 2;
+
+            if n = 1 then break;  -- exit the loop if n = 1
+    }
+
+    -- Here the last value of `k' is available.
+    stdout << "Terminated after " << k << " iterations." << newline;
+\end{verbatim}
+\end{small}
+
+The previous example uses the \ttin{break} construct explained later
+in this section, on page \pageref{asugLangBreak}.
+When a {\tt break} is evaluated it causes the
+termination of the loop. In this case, the {\tt break} is the only
+exit point of the loop, because we are iterating over an open segment,
+producing infinitely many values: 1, 2, 3, ....
+
+Now we turn our attention to the expression traversed by the
+\ttin{for} iterator.
+In the examples, we have seen
+\begin{itemize}
+\item a list, \ttin{ls},
+\item an array, \ttin{arr}, and
+\item integer segments, \ttin{lo..hi by 2} and \ttin{1..}.
+\end{itemize}
+
+In general, the \ttin{for} iterator expression must have type
+{\tt Generator {\em T\/}}, where {\em T\/} is the type of the 
+\ttin{for} variable.   If the expression is not of this type,
+then an implicit call to \ttin{generator} is inserted.
+Any visible \verb"generator" function of an appropriate type will be used.
+\index{control abstraction}
+\index{generator function}
+See \chapref{asugLangGener} for a description of generators and how
+to create new ones.
+
+The examples we have seen work because the list, array
+and segment types provided by \libaldor{} export \verb"generator"
+functions.
+
+%\subsubsection{For-suchthat}
+\index{"|@\verb="|= (such that)}
+
+There is a second form of \ttin{for} iterator which filters the
+values used.  This has the form:
+
+\egindent{\tt for {\em lhs\/} in {\em Expr\/} | {\em condition}}
+
+\vbox{
+This kind of \ttin{for} iterator skips those values which do not
+satisfy the condition.  For example, the \verb"sum" example we saw
+earlier could have been written as:
+
+\begin{small}
+\begin{verbatim}
+    #include "aldor"
+
+    -- Add up the odd numbers in a range
+    sum(lo: Integer, hi: Integer): Integer == {
+            n := 0;
+            for i in lo..hi | odd? i repeat n := n + i;
+            n
+    }
+\end{verbatim}
+\end{small}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Multiple iterators}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+A \ttin{repeat} loop may have any number of iterators, with the
+following syntax:
+
+\verb^    ^{\em $iterator _{1}$ ... $iterator _{n}$} \verb^ repeat ^ {\em
+Body}
+
+The loop is repeated until one of the iterators terminates it:
+the first \ttin{while} which has a false condition or the
+first \ttin{for} which consumes all its values ends the loop.
+
+This is convenient when the termination condition does not relate
+directly to a \ttin{for} variable, or when structures are to be
+traversed in parallel.
+
+Continuing the example on page \pageref{asugLangForExample}, we may use
+a \ttin{while} to decide if the end has been reached, and, at the same
+time, use a \ttin{for} to count the number of times we have evaluated
+the loop body:
+
+\begin{small}
+\begin{verbatim}
+    #include "aldor"
+    #include "aldorio"
+
+    import from Integer;
+
+    n := 10000;
+    k := 0;
+
+    while n ~= 1 for free k in 1.. repeat
+            if odd? n then n := 3*n + 1 else n := n quo 2;
+
+    stdout << "Terminated after " << k << " iterations." << newline;
+\end{verbatim}
+\end{small}
+
+Multiple \ttin{for} iterators can allow lists to be combined in an
+efficient way:
+
+\begin{small}
+\begin{verbatim}
+    #include "aldor"
+    #include "aldorio"
+
+    import from List Integer, Integer;
+
+    l1 := [1,2,3];
+    l2 := [8,7,6,5];
+
+    -- Add the pair-wise products in two lists.
+    x := 0;
+    for n1 in l1 for n2 in l2 repeat
+            x := x + n1 * n2;
+
+    stdout << "The result is " << x << newline
+\end{verbatim}
+\end{small}
+}
+%\pagebreak
+
+These two \ttin{for} iterators are used in parallel, like a zipper
+combining the two lists.  The loop stops at the end of the shortest
+list, in this case giving a sum of three products.  
+
+This is not a double loop -- to use {\em all} pairs with the number
+from \verb"l1" and the second number from \verb"l2",
+you would use two nested loops, each with its own \ttin{repeat}:
+
+\begin{small}
+\begin{verbatim}
+    #include "aldor"
+    #include "aldorio"
+
+    import from List Integer, Integer;
+
+    l1 := [1,2,3];
+    l2 := [8,7,6,5];
+
+    x := 0;
+    for n1 in l1 repeat
+            for n2 in l2 repeat
+                    x := x + n1 * n2;
+
+    stdout << "The result is " << x << newline
+\end{verbatim}
+\end{small}
+
+Using more than one iterator is often the most efficient natural way to write
+a loop.  A loop with two \ttin{for} iterators is more efficient than
+
+\begin{small}
+\begin{verbatim}
+    ...
+    m: MachineInteger := min(#l1, #l2);
+    for i in 1..m repeat
+            x := x + l1.i * l2.i
+\end{verbatim}
+\end{small}
+
+because it does not need to traverse the lists each time to pick off
+the desired elements.  And the code is more concise than
+
+\begin{small}
+\begin{verbatim}
+    ...
+    t1 := l1;
+    t2 := l2;
+    while (not empty? t1 and not empty? t2) repeat {
+            x := x + first t1 * first t2;
+            t1 := rest t1;
+            t2 := rest t2;
+    }
+\end{verbatim}
+\end{small}
+
+
+\head{subsubsection}{Break}{asugLangBreak}
+\keywordIndex{break}
+
+Evaluating a \ttin{break} causes a loop to terminate.  For
+example:
+
+\begin{small}
+\begin{verbatim}
+    #include "aldor"
+    #include "aldorio"
+
+    import from Integer;
+
+    n := 10000;
+    k := 0;         -- `k' counts the number of iterations.
+
+\end{verbatim}
+\end{small}
+\vbox{
+\begin{small}
+\begin{verbatim}
+    repeat {
+            if odd? n then n := 3*n + 1 else n := n quo 2;
+
+            k := k + 1;
+
+            if n = 1 then break;
+    }
+
+    stdout << "Terminated after " << k << " iterations." << newline;
+\end{verbatim}
+\end{small}
+
+\ttin{break} is most useful when the condition which quits the loop
+falls most naturally in the middle or at the end of the loop body.
+Sometimes it is possible to change a test which appears at the end
+to a test at the beginning.  This helps make programs more readable,
+since one sees immediately what will cause the loop to end.
+Also, it allows the exit to be controlled by a \ttin{while} iterator,
+rather than an \ttin{if} and a \ttin{break}.
+
+If a \ttin{break} occurs inside nested loops, it terminates the deepest
+one.
+
+
+\head{subsubsection}{Iterate}{asugLangIterate}
+\keywordIndex{iterate}
+
+Evaluating an \ttin{iterate} abandons the current evaluation of the loop
+body and starts the next iteration. For example:
+
+\begin{small}
+\begin{verbatim}
+    #include "aldor"
+    #include "aldorio"
+
+    import from Integer;
+
+    n := 10000;
+    k := 0;         -- `k' counts the number of iterations.
+
+    repeat {
+            k := k + 1;
+            if odd? n then { n := 3*n + 1; iterate }
+
+            n := n quo 2;
+            if n = 1 then break;
+    }
+
+    stdout << "Terminated after " << k << " iterations." << newline;
+\end{verbatim}
+\end{small}
+
+This example does the same thing as the previous one, but is organised
+slightly differently.  The \ttin{iterate} on the second line of the
+loop body causes the rest of the body to be skipped.
+
+\ttin{iterate} can be used instead of placing the remainder
+of a loop body inside an \ttin{if} expression. 
+This can make programs easier to read, by emphasising that certain
+conditions are not expected, and by avoiding extra levels
+of indentation.
+It is particularly useful when the decision to go on to the next iteration
+of a loop is buried deep inside some other logic, rather than appearing
+at the top level of the loop body.
+
+An \ttin{iterate} is equivalent to a \ttin{goto} branching to the end of
+the loop body.  Thus, the meaning of \ttin{iterate} is independent
+of whether there are any \ttin{while} or \ttin{for} iterators
+controlling the loop.
+
+If an \ttin{iterate} occurs inside nested loops,
+it steps the deepest one.
+}
+
+\subsubsection{Definition in low-level terms}
+
+It is possible to express the loop behaviour in terms of
+\verb"goto"s and labels (see section~\ref{asugLangExprGotos} for 
+details).  A loop of the form
+
+\egindent{\tt $it_1$  $it_2$ ... $it_n$ repeat $Body$}
+
+is equivalent to 
+
+\verb"    {" \\
+\verb"        "$init_1$; $init_2$; ... $init_n$; \\
+\verb"        @TOP" \\
+\verb"        "$step_1$; $step_2$; ... $step_n$; \\
+\verb"        "$Body$; \\
+\verb"        "\verb"goto TOP;" \\
+\verb"        @DONE" \\
+\verb"    }"
+
+Where,
+%\parbox[t]{100mm}{
+%\begin{description}\vspace{-6.9mm}
+%\item[]
+if $it_i$ is ``{\tt while $cond_i$}'', then $init_i$ is empty
+and $step_i$ is 
+
+\egindent{\tt if not $cond_i$ then goto DONE}
+
+%\item[]
+if $it_i$ is ``{\tt for $lhs_i$ in $expr_i \mid cond_i$}'',
+then $init_i$ is
+
+\egindent{\tt $g_i$ := generator $expr_i$;}
+
+\hspace{4mm}and $step_i$ is
+
+\hspace{8mm}\parbox{60mm}
+{
+{\tt step!} $\!g_i${\tt ;}\\
+{\tt if empty?} $g_i$ {\tt then goto DONE}\\
+{\tt $lhs_i$ := value $g_i$}\\
+{\tt if not $cond_i$ then goto TOP}
+}
+
+\hspace{4mm}(a \ttin{for} without a condition is treated as if it had 
+the condition \ttin{true}).
+%\end{description}}
+
+
+In this, \verb"TOP", \verb"DONE" and the $g_i$ are generated
+names, and are not accessible to the other parts of the program.

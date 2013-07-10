@@ -1,0 +1,44 @@
+README for libaldor source tree (libaldor/src)
+----------------------------------------------
+
+This is the full source tree of the libaldor library. You can use it to
+build libaldor from the sources (rather than from the distributed portable
+object libraries) as well as to extract the documentation and test files.
+Type '[g]make' for more infos on the various targets available.
+
+NOTE: Where you see '[g]make', use 'gmake' on DEC/OSF1, 'make' on linux
+
+1) To build the portable object libraries:
+- set your ALDORLIBROOT environment variable to the main libaldor directory,
+  your LIBPATH to $ALDORLIBROOT/lib and INCPATH to $ALDORLIBROOT/include
+
+- go to the src directory and issue:
+     [g]make release       to make libaldor.al
+     [g]make debug         to make libaldord.al
+     [g]make extract       to make the 'extract' executable
+     [g]make aldoc2html    to make the 'aldoc2html' executable
+
+- go to the lib directory and issue
+     ln -s ../src/aldor_gloop.as
+     ln -s ../src/aldor_gloop.as aldor_gloopd.as
+     aldor -q5 aldor_gloop.as
+     aldor -q1 -dDEBUG aldor_gloopd.as
+  to make aldor_gloop.ao and aldor_gloopd.ao
+  Note that aldor_gloop.ao and aldor_gloopd.ao are *NOT* part of libaldor and
+  should not be stored in the library archive.
+
+
+2) To build the object libraries, go to the lib directory and issue
+   source makealdor-csh   or  source makealdor-bash   to make libaldor.a
+   source makealdord-csh  or  source makealdord-bash  to make libaldord.a
+
+
+3) To build the test-suite:
+- make sure that the executable 'extract' is built and in your path
+- go to the src directory and issue:  [g]make test
+- go to the test directory and issue: make
+
+
+Report any problems to  salli@sophia.inria.fr
+
+-- Manuel Bronstein  August 13, 2001

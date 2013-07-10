@@ -1,0 +1,903 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%                                                                        %%%
+%%% :: Language-Defined Types
+%%%                                                                        %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\head{chapter}{Language-defined types}{asugLangTypes}
+
+%This section describes the types which are defined by the \asharp{} language.
+The \asharp{} language defines only those types which
+are required in specifying what the language does.  
+Most of the types which are usually found in high-level programming languages
+are delegated to libraries in \asharp{}.  This allows the library designer
+maximum flexibility in dressing the basic types with desired operations.
+
+The language defined types are listed below.
+Here, $n, m \geq 0$.
+\begin{itemize}
+\item Type
+\item ($S_1$,...,$S_n$) {\tt ->} ($T_1$,...,$T_m$)
+\item Tuple $T$
+\item Cross($T_1$,...,$T_n$)
+\item Enumeration($x_1$,...,$x_n$)
+\item Record($T_1$,...,$T_n$)
+\item TrailingArray(($U_1$,...,$U_n$),($V_1$,...,$V_m$))
+\item Union($T_1$,...,$T_n$)
+\item Category
+\item Join($C_1$,...,$C_n$)
+%\item Meet($C_1$,...,$C_n$)
+\item Boolean
+\item Literal
+\item Generator $T$
+\item Exit
+\item Foreign $I$
+\item Machine
+\item Ref $T$
+\item ``Magic Types''
+\end{itemize}
+These types are described in the sections which follow.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\head{section}{Type}{asugLangTypesType}%
+\Export{Type}{Type}{}%
+\index{Type}%
+\ttin{Type} is the type of all data type objects, including itself.
+Sometimes it it not possible to tell whether a value is a type.
+Unless a value has been explicitly asserted to be a type, then
+it is not treated as one.
+
+In the example below, the parameter \ttin{t} of the function
+\ttin{higher} is a type in some possible calls but not in others.
+
+\begin{small}
+\begin{verbatim}
+#include "aldor"
+
+higher(T: Type, f: T->T, t: T): T == f f t;
+
+-- next next 2
+n: Integer   == higher(Integer, next, 2);
+
+-- List List Integer
+L: PrimitiveType == higher(PrimitiveType, List, Integer);
+\end{verbatim}
+\end{small}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\head{widesection}{{\tt ($S_1$,..,$S_n$)->($T_1$,..,$T_m$)}}{asugLangTypesFunction}%
+\Export{->}{(Tuple Type, Tuple Type) -> Type}{}%
+\index{-@{\tt ->}}%
+\index{function types}%
+``{\tt ($S_1$,..,$S_n$)->($T_1$,..,$T_m$)}''
+is the type for functions which have $n$ arguments and produce $m$
+results of the given types.  
+The types $S_i$ may be mutually dependent and may have default values.
+The types $T_j$ may depend on $S_i$ as well as on each other.
+
+These are a few examples of function types:
+
+\begin{small}
+%\begin{tabular}{@{}p{1.5in}p{3.0in}@{}}
+\begin{tabular}{ll}
+{\tt I ==> Integer}
+   & A macro used in these examples. \\
+   &    \\
+{\tt (I, I) -> ()} 
+   & No result --- useful for side-effecting functions. \\
+{\tt (I, I) -> I} 
+   & One result --- most common case. \\
+{\tt (I, I) -> (I, I)}
+   & Two results. \\
+{\tt Tuple I -> Tuple I}
+   & Any number of arguments and any number of \\
+   & results.  \\
+{\tt (i:~I, n:~I) -> I}
+   & The arguments may be passed by keyword. \\
+{\tt (i:~I, n:~I == 0) -> I}
+   & The arguments may be passed by keyword, and \\
+   &  the second one has a default value. \\
+{\tt (I, n:~I)-> IntegerMod n}
+   & The return type\footnote{{\ttin IntegerMod} is defined on page \pageref{imodnSample}} depends on an argument value. \\
+{\tt (n:~I, IntegerMod n)-> I}
+   & One argument type depends on another argument\\
+   & value.
+\end{tabular}
+\end{small}
+
+%\pagebreak
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\head{section}{Tuple $T$}{asugLangTypesTuple}%
+\Export{Tuple}{Type -> Type}{}%
+\index{Tuple}%
+Tuples provide n-ary, homogeneous products.  
+The language allows explicit multiple values of the same type or
+a \ttin{Cross} of values of the same type to be converted to a Tuple.
+For example,
+\verb"()", \verb"(1)", \verb"(1, 2)", and \verb"(1,3,7,8)" may all be
+used where a \verb"Tuple(Integer)" is expected.
+The base \asharp{} library extends Tuple
+to provide operations to count the elements or extract particular ones:
+
+\Export{length}{Tuple S -> MachineInteger}{}%
+\ExportToo{element}{(Tuple S, MachineInteger) -> S}{}%
+These operations are named differently to the standard
+\ttin{\#} and \ttin{apply} to avoid ambiguity between 
+values and singleton tuples.
+The \ttin{element} operation uses 1-based indexing.
+Tuple values are not updatable.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\head{widesection}{Cross($T_1$,...,$T_n$)}{asugLangTypesCross}%
+\index{Cross}
+\Export{Cross}{Tuple Type -> Type}{}
+This is the constructor for cross-product types.
+The language allows explicit multiple values to be converted
+to a single cross product value and {\em vice versa}.
+Here is an example:
+
+\begin{small}%
+\begin{verbatim}
+
+-- Conversion of multiple values to a cross product:
+ij: Cross(Integer, Integer) := (1, 2);
+
+-- Conversion of a cross product to multiple values:
+(i, j) := ij;
+
+-- This gives the same result as  n := i + j.
+n := + ij;
+\end{verbatim}
+\end{small}
+
+There are no operations for counting or selecting product components,
+and product values are not updatable.
+The products may be cartesian or dependent:
+
+\begin{small}
+\begin{verbatim}
+
+Cross(Integer, Integer)          -- cartesian product
+Cross(n: Integer, IntegerMod(n)) -- dependent product
+\end{verbatim}
+\end{small}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\head{widesection}{Enumeration($x_1$,...,$x_n$)}{asugLangTypesEnumeration}%
+\index{Enumeration}
+\Export{Enumeration}{Tuple Type -> Type}{}%
+Enumerations are types consisting of a fixed set of symbolic values.
+
+A list of names enclosed in single quotes
+is a short-hand for a call to \verb+Enumeration+.
+For example,
+
+\begin{small}
+\begin{verbatim}
+Colour == 'red, green, blue';
+
+x: Colour := red
+\end{verbatim}
+\end{small}
+
+One of the common uses of enumerations is for selector functions.
+The \verb+List(S)+ domain from the standard \asharp{} library exports
+functions called \verb+first+, \verb+rest+, \verb+setFirst!+ and \verb+setRest!+.
+These operations could be replaced by the following ones:
+
+\begin{small}%
+\begin{verbatim}
+apply: (%, 'first') -> S
+set!:  (%, 'first', S) -> S
+apply: (%, 'rest') -> %
+set!:  (%, 'rest', %) -> %
+\end{verbatim}
+\end{small}%
+
+This allows expressions of the form:
+
+\begin{small}%
+\begin{verbatim}
+l.first; l.first := s
+l.rest;  l.rest  := l
+\end{verbatim}
+\end{small}%
+
+Separate types \verb"'first'" and \verb"'rest'" are used,
+rather than one \\ \verb"'first, rest'", to allow strong type checking.
+
+The precise way in which enumerations work may seem a bit strange at first:
+the form 
+
+\begin{small}
+\begin{verbatim}
+'red, green, blue'
+\end{verbatim}
+\end{small}%
+
+is actually a short-hand for the call 
+
+\begin{small}
+\begin{verbatim}
+Enumeration(red: Type, green: Type, blue: Type)
+\end{verbatim}
+\end{small}%
+
+Notice that this has the same form as a typical call to \verb+Record+
+or a call to \ttin{->} with keyword arguments.
+This provides enumerations without introducing 
+any extra fundamental ideas into the language.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\head{widesection}{Record($T_1$,...,$T_n$)}{asugLangTypesRecord}%
+\Export{Record}{Tuple Type -> Type}{}%
+\index{Record}%
+Records provide the basic updatable structure for aggregate data. Each type argument to \verb"Record" may be given in any of the following forms:
+
+$ T $ \, or \,
+$ id : T $ \, or \,
+$ id : T $ \verb"=="$\; v $.
+
+%\pagebreak
+A record type 
+{\tt Record($T_1$,...,$T_n$)}
+exports the following operations:
+
+\Export{bracket}{($T_1$,...,$T_n$) -> \%}{}
+\ExportToo{record}{($T_1$,...,$T_n$) -> \%}{}
+\ExportToo{explode}{\% -> ($T_1$,...,$T_n$)}{}
+\ExportToo{dispose!}{\% -> ()}{}
+
+and, for each argument of the form 
+$ id : T $ or
+$ id : T $ \verb"=="$\; v $,
+the record type also exports the operations:
+
+\Export{apply}{(\%, '$id_i$') -> $T_i$}{}
+\ExportToo{set!}{(\%, '$id_i$', $T_i$) -> $T_i$}{}
+
+The \ttin{bracket} and \ttin{record} operations have the same function
+and construct new record values.  
+
+The \ttin{bracket} operation allows
+records to be constructed with the syntax \verb"[1,1]", which is nice
+and concise.
+More importantly, it allows record types to be used generically --- that
+is, without disclosing that the heterogeneous aggregate
+is a record type, as opposed to a table or other structure.
+
+The  \ttin{record} operation allows documented construction
+of record values.  
+This is convenient if there are many aggregate types in scope
+(lists, lists of records, records of lists \etc)
+and the bracket operation becomes too heavily overloaded for clarity.
+
+The \ttin{explode} operation allows record values to be deconstructed
+into their constituent parts.  This is convenient for use with
+multiple assignment or passing all the components to a function of
+an equal number of arguments.
+
+The \ttin{dispose!} operation promises that its argument will
+no longer be referenced,
+and on certain platforms permits the memory to be reused immediately.
+It is not necessary to use this function:
+if you don't, storage will be garbage collected periodically.
+The choice often boils down to debugability {\em versus} speed.
+
+The \ttin{apply} and \ttin{set!} operations allow the record
+fields to be extracted and reset.  This may be done with either
+explicit calls to these functions or implicit calls arising
+from the forms \ttin{r.i} or \ttin{r.i := j}.
+
+The substitution of the type arguments into the exported operations
+uses the original form in which the argument is given.
+As a consequence, record constructors support keyword arguments
+and arguments with default values.
+
+%\pagebreak
+To be concrete, we give a few examples.
+
+\subsubsection{{\tt Record(I, DF)}}
+
+The simplest (and least useful) way to use \verb"Record"
+is to call it with simple type expressions, giving neither
+field names nor default values with the arguments.
+
+An example would be \verb"Record(Integer, DoubleFloat)".
+In this case no \ttin{apply} or \ttin{set!} operations are exported,
+and the behaviour of
+the record type is very similar to that of a corresponding call
+to \verb"Cross".
+
+\Export{bracket}{(Integer, DoubleFloat) -> \%}{}
+\ExportToo{record}{(Integer, DoubleFloat) -> \%}{}
+\ExportToo{explode}{\% -> (Integer, DoubleFloat)}{}
+\ExportToo{dispose!}{\% -> ()}{}
+
+
+\subsubsection{{\tt Record(i:I, x:DF)}}
+
+The call 
+\verb"Record(i: Integer, x: DoubleFloat)"
+provides a record type with the following operations:
+
+\Export{bracket}{(i: Integer, x: DoubleFloat) -> \%}{}
+\ExportToo{record}{(i: Integer, x: DoubleFloat) -> \%}{}
+\ExportToo{explode}{\% -> (Integer, DoubleFloat)}{}
+\ExportToo{dispose!}{\% -> ()}{}
+\ExportToo{apply}{(\%, 'i') -> Integer}{}
+\ExportToo{apply}{(\%, 'x') -> DoubleFloat}{}
+\ExportToo{set!}{(\%, 'i', Integer) -> Integer}{}
+\ExportToo{set!}{(\%, 'x', DoubleFloat) -> DoubleFloat}{}
+
+This allows expressions of the form
+
+\begin{small}%
+\begin{verbatim}
+r := [3, 4.0];
+r := [i == 3, x == 4.0]
+r := [x == 4.0, i == 3]
+
+(vi, vx) := explode r
+
+r.i := 7
+r.x := 32.0
+\end{verbatim}
+\end{small}
+
+To be painstakingly correct, the exports are not precisely as shown above.
+The actual exports are:
+
+\Export{bracket}{(i: Integer, x: DoubleFloat) -> \%}{}
+\ExportToo{record}{(i: Integer, x: DoubleFloat) -> \%}{}
+\ExportToo{explode}{\% -> (i: Integer, x: DoubleFloat)}{}
+\ExportToo{dispose!}{\% -> ()}{}
+\ExportToo{apply}{(\%, 'i') -> (i: Integer)}{}
+\ExportToo{apply}{(\%, 'x') -> (x: DoubleFloat)}{}
+\ExportToo{set!}{(\%, 'i', i: Integer)) -> (i: Integer)}{}
+\ExportToo{set!}{(\%, 'x', x: DoubleFloat) -> (x: DoubleFloat)}{}
+
+What is happening is that the exports from the record type
+all support keyword arguments as  a consequence of uniform substitution.
+This really only useful for the \ttin{bracket} and \ttin{record}
+operations, but it is cleaner to be completely uniform.
+
+\subsubsection{{\tt Record(i:I==7, x:DF==0)}}
+
+If argument types to \verb"Record" are given with default values,
+for example
+\verb"Record(i: Integer == 7, x: DoubleFloat == 0)",
+then the uniform substitution yields the following construction operations:
+
+\Export{bracket}{(i: Integer == 7, x: DoubleFloat == 0) -> \%}{}
+\ExportToo{record}{(i: Integer == 7, x: DoubleFloat == 0) -> \%}{}
+
+Now it is no longer necessary to supply all the fields when constructing
+new values:
+
+\begin{small}%
+\begin{verbatim}
+r := [5];      -- Same as  r := [5, 0]
+r := [.01];    -- Same as  r := [7, .01]
+r := [];       -- Same as  r := [7, 0]
+\end{verbatim}
+\end{small}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\head{widesection}{TrailingArray(($U_1$,...,$U_n$),($V_1$,...,$V_m$))}{asugLangTypesTrailingArray}%
+\Export{TrailingArray}{(Tuple Type,Tuple Type) -> Type}{}%
+\index{TrailingArray}%
+
+Trailing arrays are an aggregate data type consisting of two parts; a header,
+and an array of objects immediately following.  The representation for this is a
+single block of memory,  the array immediately following the header.  It
+is up to the user to ensure that accesses to the trailing part of the structure
+are correct.
+
+For example, a polynomial could be represented as:
+
+\verb+TrailingArray( sz: Integer , (coef: R, deg: NNI))+
+
+This would create a data structure looking like:
+
+\begin{tabular}{|c|c|c|c|c|c|c|c}\hline
+sz & coef & deg & coef & deg & coef & deg & \dots\\ \hline
+\end{tabular}
+
+The advantage of this representation is that the object is created by a single
+allocation, and that there is no overhead for data pointers (as there would be
+in a representation using a list of records.  For example, the domain
+
+\verb+Record(sz: Integer, tail: PrimArray Record(r: R, deg: NNI))+
+
+contains exactly the same information, but looks like:
+
+\begin{tabular}{cccccccccccccccccc}
+sz & tail \\ 
+   & $\downarrow$  & \\ 
+& 0 & & 1 & & 2 & & $\ldots$ \\ 
+& $\downarrow$ & & $\downarrow$ & & $\downarrow$  \\
+& coef & deg &coef &deg &coef &deg & $\ldots$ \\ 
+\end{tabular}
+
+%-------------
+%| sz | tail |
+%-------------
+%            |
+%     -------------------------------------------------------
+%     |      0      |        1       |       2      |  ...
+%     -------------------------------------------------------
+%            |               |               |
+%     --------------  --------------  --------------
+%     | coef | deg |  | coef | deg |  | coef | deg |   ...
+%     --------------  --------------  --------------
+
+
+\subsubsection{Usage}
+
+
+\verb+TrailingArray( U, V )+
+
+U and V are tuples of types, and so take the form `($T_1$, $T_2$, ...)', or simply
+`$T_1$' if there is only a single type in the tuple.  Assume that U is `($u_1$: $U_1$, $u_2$: $U_2$,
+$\ldots$)'
+
+The domain exports the following functions:
+
+The following are equivalent to the exports of \verb+Record(U)+ :
+
+\Export{apply}{(\%, '$u_n$') -> $U_n$}{}
+\ExportToo{set!}{(\%, '$u_n$', $U_n$) -> $U_n$}{}
+
+Trailing part access:
+
+\Export{apply}{(\%, MachineInteger, '$v_n$') -> $V_n$}{}
+\ExportToo{set!}{(\%, MachineInteger, '$v_n$', $V_n$) -> $V_n$}{}
+
+Allocation and disposal:
+
+\Export{bracket}{(MachineInteger, Cross U, Cross V) -> \%}{}
+\ExportToo{trailing}{(MachineInteger, Cross U, Cross V) -> \%}{}
+\ExportToo{dispose!}{\% -> ()}{}
+
+The allocation functions take 3 arguments: a size, and an initial value for both
+the header and trailing parts.  The trailing part argument is ignored at the
+moment.  These have to be filled in by the user, and the initial value of the
+trailing parts is undefined.
+
+Currently the datatype does not support dependent types at all.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\head{widesection}{Union($T_1$,...,$T_n$)}{asugLangTypesUnion}%
+\Export{Union}{Tuple Type -> Type}{}%
+\index{Union}%
+The \verb+Union+ constructor provides types which can be used
+to represent values belonging to any one of several alternative types.
+
+If a function were to return either an integer or a 
+floating point number, then a type such as
+\verb"Union(int: Integer, flo: DoubleFloat)"
+could be used.
+This type would then provide the following operations:
+
+\Export{bracket}{(int: Integer) -> \%}{}
+\ExportToo{bracket}{(flo: DoubleFloat)   -> \%}{}
+\ExportToo{union}{(int: Integer) -> \%}{}
+\ExportToo{union}{(flo: DoubleFloat)   -> \%}{}
+\ExportToo{case}{(\%, 'int') -> Boolean}{}
+\ExportToo{case}{(\%, 'flo') -> Boolean}{}
+\ExportToo{apply}{(\%, 'int') -> Integer}{}
+\ExportToo{apply}{(\%, 'flo') -> DoubleFloat}{}
+\ExportToo{set!}{(\%, 'int', Integer) -> Integer}{}
+\ExportToo{set!}{(\%, 'flo', DoubleFloat)   -> DoubleFloat}{}
+\ExportToo{dispose!}{\% -> ()}{}
+
+That is, for each argument, $ id : T $, the union type exports
+the following operations:
+
+\Export{bracket}{(id: T) -> \%}{}
+\ExportToo{union}{(id: T) -> \%}{}
+\ExportToo{case}{(\%, 'id') -> Boolean}{}
+\ExportToo{apply}{(\%, 'id') -> T}{}
+\ExportToo{set!}{(\%, 'id', T) -> \%}{}
+
+Just as with record types, constructors
+are available both with a generic name (\ttin{bracket}) 
+and a type-specific name (\ttin{union}).
+These form union values from values belonging to the branch types.
+
+The \ttin{case} operation tests whether the union value is in the given
+branch. The \ttin{apply} operation extracts the value and the \ttin{set!}
+operation modifies the value of an existing union.
+
+Example:
+
+\begin{small}
+\begin{verbatim}
+import from Union(num: Integer, rec: Record(c: Character, s: String));
+
+-- Generic constructors
+u := [3];
+u := [[char "c", "hello"]];
+
+-- Specially named constructors
+u := union 3;
+u := union record(char "c", "hello");
+\end{verbatim}
+\end{small}
+
+\begin{small}
+\begin{verbatim}
+-- Construction using field names
+u := [num == 3]
+u := union(rec == record(char "c", "bye"));
+
+-- Testing the case of a union.
+u case num;   -- This returns false now.
+u case rec;   -- This returns true now.
+
+-- Access the union value as a record.
+h := u.rec.s;
+\end{verbatim}
+\end{small}
+
+Using the constructors with keyword arguments is particularly
+useful when more than one branch of a union has the same type:
+
+\begin{small}
+\begin{verbatim}
+MyType(R: Type, E: Type): with {
+        fun: Union(coef: R, expon: E) -> %;
+} == ...
+
+-- This import causes both union branches to be `Integer'.
+import from MyType(Integer, Integer);
+
+fun [coef  == 7];
+fun [expon == 7];
+\end{verbatim}
+\end{small}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\index{Category}%
+\head{section}{Category}{asugLangTypesCategory}%
+\Export{Category}{Type}{}
+Often it is desired to work with some specialised collection of types.
+Each subtype of \verb"Type" in \asharp{} is a value which, itself,
+belongs to the type \ttin{Category}.
+%For example, \ttin{AbelianGroup} from the base library has as its members
+%a restricted set of types --- those which are declared to have
+%certain algebraic properties.
+Categories allow parameterised constructions to specify the
+requirements on type-valued parameters.  
+A type satisfies a category if it provides all the required exports.
+
+The keyword \ttin{with} is used to form basic \verb+Category+ values
+and it is possible to test whether a type satisfies a category at evaluation
+time, using \ttin{has}.
+For more discussion on categories, see \secref{asugLangNTypeCats}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\index{Join}%
+\head{widesection}{Join($C_1$,...,$C_n$)}{asugLangTypesJoin}
+\Export{Join}{Tuple Category -> Category}{}
+The type \ttin{Join($C_1$,...,$C_n$)} is a category which has
+the union of all the exports of the argument categories $C_1$, ... , $C_n$.
+Conditional exports have their conditions \verb"or"ed.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\index{Meet}%
+%\head{section}{Meet($C_1$,...,$C_n$)}{asugLangTypesMeet}
+%\Export{Meet}{Tuple Category -> Category}{}
+%The type \ttin{Meet($C_1$,...,$C_n$)} is a category which has
+%the intersection of all the exports of the argument
+%categories $C_1$, ... , $C_n$.
+%Conditional exports have their conditions \ttin{and}-ed.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\head{section}{Boolean}{asugLangTypesBoolean}
+\index{Boolean}
+\Export{Boolean}{Type}{}
+The type \ttin{Boolean} is used for the logical values \ttin{true} and
+\ttin{false}.  
+Values of this type are expected in the conditions of
+\ttin{if} and \ttin{while}, and in other forms.
+If a value in one of these contexts is not of type \ttin{Boolean}, then an
+implicit call is made to a \verb+Boolean+-producing function called \ttin{test}.
+See \chapref{asugLangTies}.
+The base \asharp{} library extends the basic \verb+Boolean+ type.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\head{section}{Literal}{asugLangTypesLiteral}
+\index{Literal}
+\Export{Literal}{Type}{}
+The type \ttin{Literal} is used to pass the textual form of
+literal constants as arguments to the constant forming operations
+\ttin{integer}, \ttin{float} and \ttin{string}.
+The result is in a form suitable for use with the exported conversion
+operations from the \ttin{Machine} package.  
+This allows constant forming functions to be evaluated at compile time.
+See \chapref{asugLangTies}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\index{Generator}%
+\head{section}{Generator~$T$}{asugLangTypesGenerator}%
+\Export{Generator}{Type -> Type}{}
+The type {\tt Generator $T$} is used to provide values of type $T$
+serially to a \ttin{for} iterator.
+The following program shows a function to consume the 
+values of a generator:
+
+\begin{small}%
+\begin{verbatim}
+consume(gg: Generator T, f: T -> ()): () ==
+        for t in gg repeat
+                f t;
+\end{verbatim}
+\end{small}
+
+Values of type {\tt Generator $T$} 
+are formed by \ttin{generate} expressions.
+$T$ is the unified type of the arguments of the {\tt yield}s within the
+{\tt generate}.
+For more discussion on generators, see \chapref{asugLangGener}.
+The base \asharp{} library provides an extension which
+allows generators to be formed and manipulated using functions.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\index{Exit}
+\head{section}{Exit}{asugLangTypesExit}
+\Export{Exit}{Type}{}
+An expression of type \verb+Exit+ does not return to the invoking
+context, and hence does not produce a local result.
+Expressions formed with 
+\ttin{break},    \keywordIndex{break}
+\ttin{goto},     \keywordIndex{goto}
+\ttin{iterate},  \keywordIndex{iterate}
+\ttin{never},    \keywordIndex{never}
+\ttin{return}    \keywordIndex{return}
+and \ttin{yield} \keywordIndex{yield}
+all have type \verb+Exit+ since they do not return directly to the 
+expression containing them.
+
+The unification of type \verb+Exit+ with any other type $T$ is $T$.
+This allows a function to end with a \verb+return+, \eg{}:
+
+\begin{small}%
+\begin{verbatim}
+#include "aldor"
+f(x: Integer): Integer == { if x < 0 then x := -x; return x }
+\end{verbatim}
+\end{small}
+
+Variables and defined constants may not
+have type \verb+Exit+, but functions may have \verb+Exit+ as their
+return type.  
+A function with return type \verb+Exit+ promises
+to never return to the caller.  
+
+% "\index" after "\Export" causes an indent on the next line, so:
+\index{error}\Export{error}{String -> Exit}{}
+Having \verb"Exit" as the return type allows this function
+to be used in writing programmer-defined error functions.  In the
+standard \asharp{} library it is provided by {\tt String}.  Note that a
+call to \ttin{error} will terminate the program.
+
+Example:
+
+\begin{small}
+\begin{verbatim}
+#include "aldor"
+
+import from String;
+
+errDenom(): Exit ==
+     error "Wrong denominator";
+
+f(n: Integer, d: Integer): Integer == {
+        d > 0 => n quo d;
+        d < 0 => (-n) quo (-d);
+        errDenom();
+}
+\end{verbatim}
+\end{small}
+%% FIXME: Explain formatted output
+%(See \secref{asugAxllibFormattedOutput} for the use of ``\verb"~a"'' in formatted
+%output.)
+
+Notice again that an expression of type \verb"Exit" 
+may appear in a value context.
+A consequence of this is that expressions such as the following are
+completely legitimate, but odd:
+
+\begin{small}%
+\begin{verbatim}
+#include "aldor"
+
+l: List Integer := [2, 3, 4, if n < 10 then 5 else error "Too big"];
+
+f(): Integer == return { return { return 7 } }
+\end{verbatim}
+\end{small}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\head{section}{Foreign $I$}{asugLangTypesForeign}%
+\index{Foreign}
+\Export{Foreign}{Type}{}
+\ExportToo{Foreign}{Type -> Type}{}
+The type \ttin{Foreign} allows programs to receive values from
+or provide values to programs which are not written in \asharp{}.
+The result of the function \ttin{Foreign} is similar, 
+but uses an interface for a particular language or environment.  
+
+To refer to values which are not produced by an \asharp{} program,
+a qualified \ttin{import} statement such as the following is used:
+
+\begin{small}
+\begin{verbatim}
+import { DSQRT: DoubleFloat -> DoubleFloat } from Foreign Fortran
+\end{verbatim}
+\end{small}
+
+To provide values to another environment, 
+a qualified \ttin{export} statement is used:
+
+\begin{small}
+\begin{verbatim}
+export { J0: DoubleFloat -> DoubleFloat } to Foreign C;
+\end{verbatim}
+\end{small}\index{export to}
+
+The environments which are understood, are:
+
+\Export{Builtin}{Type}{}%
+\index{Builtin}%
+The type \ttin{Builtin} can be used as an interface to abstract machine
+level operations.  
+
+The \asharp{} compiler, for instance, generates calls to functions for
+some of the run-time support.  These functions are, themselves,
+written in \asharp{} and made available to the abstract machine with
+export declarations such as these:
+
+\begin{small}
+\begin{verbatim}
+export {
+        rtCacheMake:  () -> PtrCache;
+        rtCacheCheck: (PtrCache, Tuple Ptr) -> (Ptr, Boolean);
+        rtCacheAdd:   (PtrCache, Tuple Ptr, Ptr) -> ();
+} to Foreign Builtin;
+\end{verbatim}
+\end{small}
+
+%\pagebreak
+\Export{C}{Type}{}
+\ExportToo{C}{Literal -> Type}{}%
+\index{C, interface with}%
+The type \ttin{C} is used as an interface to functions written in
+(or call-compatible with) the C programming language.
+The type \ttin{C {\em filename}}  is used as an interface to
+C functions or macros provided by a particular header file.
+For details, see \chapref{asugUsingWithC}.
+
+\Export{Lisp}{Type}{}%
+\index{Lisp}%
+The type \ttin{Lisp} is used as an interface to functions written in Lisp.  
+This is most useful when \asharp{} programs are compiled to Lisp code, and
+allows access to all the operations of the underlying Lisp system (see
+\ttin{import} example above).
+
+\Export{Fortran}{Type}{}%
+\index{Fortran, interface with}%
+The type \ttin{Fortran} is used as an interface to functions written in Fortran.
+For details, see \chapref{asugUsingWithFortran}.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\head{section}{Machine}{asugLangTypesMachine}%
+\index{Machine}
+\Export{Machine}{with ...}{}
+A number of types and operations upon them are provided by \ttin{Machine}.
+This is the basic vocabulary of hardware-oriented data types out of which
+all data values in \asharp{} are composed.  
+
+The types exported by \verb+Machine+ do not themselves export any operations.
+Instead, the operations are exported by \verb"Machine" at the same level
+as the types.  This is an example of what is known as a
+{\em multi-sorted algebra} in the literature on type systems%
+\index{multi-sorted algebra}.
+
+Most programs do not make any reference to \ttin{Machine} or its exports.
+In practice, these types and operations are used within low-level libraries
+to build a set of richer basic types,
+which themselves provide relevant operations.
+
+The types exported by \verb+Machine+ are described below.
+The exported operations are listed in \secref{asugLangMachine}.
+
+\Export{XByte, HInt, SInt, BInt}{Type}{}%
+\index{XByte}\index{HInt}\index{SInt}\index{BInt}%
+These are integer types of various sizes.  
+The types \verb"XByte", \verb"HInt", \verb"SInt" are
+unsigned byte, half-precision and single-precision integer types,
+capable of representing values in at least the ranges
+0 to 255, -32767 to 32767 and -2147483647 to 2147483647, respectively.
+The type \verb"BInt" provides a ``big'' integer type, which, in principle,
+may be of any size.  In practice, the size will be limited by considerations
+such as the amount of memory available to a program.
+
+\Export{SFlo, DFlo}{Type}{}\index{SFlo}\index{DFlo}%
+These are single-precision and double-precision floating point types.
+
+\Export{Bool}{Type}{}\index{Bool}%
+This type represents the logical values true and false.
+
+\Export{Char}{Type}{}\index{Char}%
+This type provides characters for natural language text.  
+These should not be used to store what are logically numbers,
+as the values may be translated from one character set to another
+in moving data across platform.
+
+
+\Export{Nil, Arr, Rec, Ptr}{Type}{}%
+\index{Nil}\index{Arr}\index{Rec}\index{Ptr}%
+These provide the basis for composite data structures.
+Values of type \verb"Nil", \verb"Arr", and \verb"Rec" may
+be converted to type \verb"Ptr" as desired.
+
+\Export{Word}{Type -> Type}{}\index{Word}%
+Values of types
+\verb"SInt", \verb"SFlo" and \verb"Ptr" may be converted to this type.
+
+\head{section}{Ref $T$}{asugLangTypesRef}%
+\index{Ref}
+\Export{Ref}{Type}{}
+
+This type is mainly used when interfacing Aldor with Fortran, as described
+in \chapref{asugUsingWithFortran}. 
+In effect, it allows a reference to an object
+to be passed as a parameter, rather than a copy of the object itself.  This
+is particularly useful when dealing with Fortran routines since they often
+update their arguments to return results.
+
+In reality, when calling a Fortran routine with a {\tt Ref(T)} argument, 
+the compiler passes a copy of the initial value to the Fortran code and
+on exit copies the final value back into the appropriate location
+(so-called {\em copy in, copy out} semantics).  Not declaring a parameter
+to a Fortran routine to be a {\tt Ref(T)} is legal even if that routine
+updates it, it simply means that the new value is not visible to Aldor.
+
+When passing an Aldor routine to a Fortran program, it is necessary to
+be a bit more careful and use the correct operations to update the values
+of those parameters declared to be of type {\tt Ref(T)}.
+
+This type has the following exports:
+
+\Export{ref}{T -> \%}{}
+\ExportToo{deref}{\% -> T}{}
+\ExportToo{update!}{(\%,T) -> T}{}
+
+\head{section}{Magic Types}{asugLangTypesMagic}%
+\index{FileName}
+\index{Pointer}
+\index{MachineInteger}
+\index{TextWriter}
+
+In addition to the types defined by the language, there are a small number
+of domains which need to be present for the interpreter and runtime to
+function properly.  Thus if a user wishes to replace all the standard
+libraries, they need to provide compatible versions.
+
+The domains are:
+\begin{itemize}
+\item FileName
+\item Pointer
+\item MachineInteger
+\item TextWriter
+\end{itemize}
+
+
+

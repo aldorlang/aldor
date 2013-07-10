@@ -1,0 +1,85 @@
+Fri Feb 20 14:45:19 1998  Peter Broadbery  <peterb@frisco.nag.co.uk>
+
+	* syme.h: Use SYFI_ access for symeImpl
+	
+	* syme.c: Use SYFI_ access for symeImpl
+
+	* stab.c (stabEntryCopy): Copy list of entries.
+
+	* genfoam.c: inlude scobind, don't look at constNums in gloop mode.
+
+	* foamopt.h: replaced inline with __inline__, asm -> __asm__
+
+	* foam.c:    foamToBuffer --- 64 bit hackery
+
+	* compopt.h: replaced inline with __inline__
+
+Mon Oct 27 10:00:46 1997  Peter Broadbery  <peterb@frisco.nag.co.uk>
+
+	* priq.c (priqMap): New function.
+
+	* fint.c (fintEvalBCall): Handle BIntShiftRem
+
+	* foam.h: Added BIntShiftRem
+
+	* foam.c: Added BIntShiftRem
+
+	* bigint.c (bintShiftRem): New function.  Implements remainder mod 2^n.
+
+	* fint.c (stackChain): Always set back pointer to TOS, even when 
+	using pre-allocated area.
+	(fintEval): Added `isatty' and `fileno'.
+
+Fri Oct 24 08:57:00 1997  Peter Broadbery  <peterb@frisco.nag.co.uk>
+
+	* comsgdb.msg: Added syme descriptions
+
+	* syme.c: Add msg field
+
+	* syme.h (symeTagToDescrMsgId): Define symeTagToMsgId
+
+	* scobind.c (scobindSetMeaning): use msg file for syme desriptions
+
+	* of_inlin.c (inlUpdateDDecl): Forward TR types as well as records
+	(inlGetTypeFrDecl): same
+	(inlUpdateConstBody): same
+
+Thu Oct 23 18:17:38 1997  Peter Broadbery  <peterb@frisco.nag.co.uk>
+
+	* foam_c.h (fiNARYNew): Allocate memory!!!
+
+	* fint.c (fintEval): Added fflush to functions we know about.
+
+Wed Oct 22 11:48:56 1997  Peter Broadbery  <peterb@frisco.nag.co.uk>
+
+	* foam_c.c (tblGlobalsInit): Initialise OB_BInt information.
+
+	* store.c (stoRegister): New function.  Used to setup QmIsPtrFree, called
+	by stoMark.
+
+	* store.h: Add StoInfo structure and stoRegister call
+
+	* axlcomp.c (compInit): Call obInit.
+
+	* axlobs.h: declare obInit, extend obInfo
+
+	* axlobs.c (obInit): New function for initialised ptr-free areas.
+
+	* foam.c (foamTagFormat): IRElt, TRElt support
+	(foamExprType0): New function (for debugging).  Support TR, always 
+	set format if given.
+	
+	(foamInfoTable) Add FOAM_TR, SIntXOr.
+	
+	* of_retyp.c (retTypeNeedsFmt): new --- types that require a fmt
+	(retPromoteTo): Use above (return if we don't know fmt), plus ensure
+	fmt is set, where possible.
+
+	* of_util.c (fpMarkFormat): Don't modify record types, ever.
+
+Mon Oct 20 15:46:23 1997  Peter Broadbery  <peterb@frisco.nag.co.uk>
+
+	* ccomp.c (ccGetReady): Pass -Wstdc (this is a temporary hack).
+
+	* emit.c: Standard C is the default
+

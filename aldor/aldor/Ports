@@ -1,0 +1,351 @@
+===============================================================================
+Aldor versions at UWO/St Andrews
+===============================================================================
+C   : Compiled
+L   : Compiles the Aldor libraries.
+R   : Passes "trivN" tests.
+t/T : t=Passes most tests.  T=Passes all tests that work on the main platforms.
+*   : required minor mods to version (incorporated in later versions)
+-   : pre-freeze version; final version may have slight changes
+
+Ver    Date  Stat  HW    C Compiler       Operating System    (Notes)
+----   ----- ----  ----- ---------------  ----------------    -------
+1.0.-1 09/01 CLRT  PC    gcc 2.96         Redhat Linux 7.0
+1.0.-1 09/01 CLRT  Alpha Dec CC           OSF1 V4   
+
+1.0.-1 01/01 CLRt  Alpha gcc 2.96         Redhat Linux 7.0    floating pt funky
+
+
+===============================================================================
+A# versions at IBM
+===============================================================================
+C   = Compiled
+L   = Linked
+R   = Runs some files
+T/t = Tested: T=passes all tests, t=passes all that were tried.
+      (Note, the test scripts are Unix dependent.  So we expect "t" for CMS.)
+*   = required minor mods to version (incorporated in later versions)
+-   = pre-freeze version; final version may have slight changes
+
+Ver   Date  Stat  HW    C Compiler                   Operating System    (Notes)
+----  ----- ----  ----- -------------------------    ----------------    -------
+36.0  06/94 CLRT  RS	IBM XLC 1.03.00.01           AIX 3.2.2
+36.0  06/94 CLRT  80486 Gnu C 2.4.1 + DJGPP 1.10     MsDos 5.0
+36.0- 06/94 CLRT  80486 Gnu C 2.5.7                  Debian Linux 0.90
+36.0- 06/94 CLRT  Sun4  Sun CC (Oct 23 1991)         SunOS 4.1.2
+36.0- 06/94 CLRT- AXP   Dec CC			     DEC OSF/1 V1.3(rev 111) (1)
+
+(1) Foam interpreter fails
+
+Ver   Date  Stat  HW    C Compiler                   Operating System    (Notes)
+----  ----- ----  ----- -------------------------    ----------------    -------
+35.0  05/94 CLRT  RS	IBM XLC 1.03.00.01           AIX 3.2.5
+35.0  05/94 CLRT  RS	Gnu C 2.5.8                  AIX 3.2.5
+35.0  05/94 CLRT  Sun4  Sun CC (Oct 23 1991)         SunOS 4.1.2
+35.0  05/94 CLRT  Sun4  Gnu C 2.5.8                  SunOS 4.1.2
+35.0  05/94 CLRT  80486 Gnu C 2.4.1 + DJGPP 1.10     MsDos 5.02
+35.0  05/94 CLRT- AXP   Dec CC			     DEC OSF/1 V1.3(rev 111) (1)
+35.0  05/94 CLRT  370	MetaWare High C R2.5o        AIX/ESA 2.2        
+
+(1) gbtest.as fails
+
+
+Ver   Date  Stat  HW    C Compiler                   Operating System    (Notes)
+----  ----- ----  ----- -------------------------    ----------------    -------
+34.0  02/94 CLRT  RS	Gnu C 2.4.5                  AIX 3.2.2
+34.0- 02/94 CLRT  RS	IBM XLC 1.02.0000.0000       AIX 3.2.2
+34.0- 02/94 CLRT  80486 Gnu C 2.4.1 + DJGPP 1.10     MsDos 5.02
+34.0- 02/94 CLRT  Sun4  gcc 2.4.5                    SunOS 4.1.2
+34.0- 02/94 CLRT  370	MetaWare High C R2.5o        AIX/ESA 2.2        
+
+Ver   Date  Stat  HW    C Compiler                   Operating System    (Notes)
+----  ----- ----  ----- -------------------------    ----------------    -------
+33.3+ 01/94 CLRT  MIPS  Mips accom                   Irix 4.0.5F             (1)
+33.5- 01/94 CLRT- 68040 Gnu C 2.5.5                  NeXT Mach 3.0 mk-127.15 (2)
+33.0  12/93 CLRT  AXP   Dec CC			     DEC OSF/1 V1.3 (rev 111)
+33.0  12/93 CLRT  370	MetaWare High C R2.5o        AIX/ESA 2.2        
+33.0+ 12/93 CLRt  80486 Gnu C 2.3.3                  Linux SLS 1.01
+33.0  12/93 CLRt  80486 Gnu C 2.4.1 + DJGPP 1.10     MsDos 5.02
+32.5  11/93 CLRT  RS	Gnu C 2.4.3                  AIX 3.2.3
+32.5  11/93 CLRT  RS	IBM XLC 1.02.0000.0000       AIX 3.2.2
+
+(1) test float2.as fails.
+(2) libaxldem dies compiling matopdom so consequently libaxldem tests fail.
+
+
+Ver   Date  Stat  HW    C Compiler                   Operating System    (Notes)
+----  ----- ----  ----- -------------------------    ----------------    -------
+32.0  10/93 CLRT  RS	IBM XLC 1.02.0000.0000       AIX 3.2.2
+32.0  10/93 CLRT  RS	Gnu C 2.4.5                  AIX 3.2.2
+32.0  10/93 CLRT  RS	Gnu C 2.4.0                  AIX 3.1
+32.0  10/93 CLRT  AXP   Dec CC			     DEC OSF/1 V1.3 (rev 111)
+32.0  10/93 CLRT  Sun4  Sun CC                       SunOS 4.1.2        
+32.0  10/93 CLRT  370   MetaWare High C R2.5o        AIX/ESA 2.2        
+
+
+Ver   Date  Stat  HW    C Compiler                   Operating System    (Notes)
+----  ----- ----  ----- -------------------------    ----------------    -------
+31.0  10/93 CLRT  RS    IBM XLC 1.02.0000.0000       Aix 3.2.2
+31.0  10/93 CLRT  RS    IBM XLC 1.01.0000.0000       Aix 3.1
+31.0  10/93 CLRT  RS    Gnu C 2.4.0	             Aix 3.1
+31.0  10/93 CLRT  370   MetaWare High C R2.5o        AIX/ESA 2.2
+31.0  10/93 CLRt  80486 Gnu C 2.4.1 + DJGPP 1.10     DOS 5.0/Windows 3.1
+31.0  10/93 CLRT  Sun4  Sun CC                       SunOS 4.1.2
+31.0  10/93 CLR   370   IBM C/370 2.0                VM/ESA 1.1  CMS 5.6  (1)
+
+(1)  Cannot yet use .al files, but started to get that working.
+
+
+Ver   Date  Stat  HW    C Compiler                   Operating System    (Notes)
+----  ----- ----  ----- -------------------------    ----------------    -------
+30.5  09/93 CLRT  AXP                                OSF1
+
+30.0  08/93 CLRT  RS    IBM XLC 1.02.0000.0000       Aix 3.2.2
+30.0  08/93 CLRT  370   MetaWare High C R2.5o        AIX/ESA 2.2        
+30.0  08/93 CLRT  Sun4  Sun CC                       SunOS 4.1.2
+30.0  08/93 CLRT  Sun4  gcc 2.4.5                    SunOS 4.1.2
+30.0  08/93 CLRt  80486 Gnu C 2.4.1 + DJGPP 1.10     DOS 5.0
+
+
+Ver   Date  Stat  HW    C Compiler                   Operating System    (Notes)
+----  ----- ----  ----- -------------------------    ----------------    -------
+29.0  07/93 CLRT  RS    IBM XLC 1.02.0000.0000       Aix 3.2.2
+29.0  07/93 CLRT  RS    gcc 2.4.0                    Aix 3.1
+29.0  07/93 CLRT  Sun4  gcc 2.4.2                    SunOS 4.1.2
+29.0- 07/93 CLRt  80486 Gnu C 2.2.2                  DOS 5.0
+29.0- 07/93 CLRT  370   MetaWare High C R2.5o        AIX/ESA 2.2
+
+
+Ver   Date  Stat  HW    C Compiler                   Operating System    (Notes)
+----  ----- ----  ----- -------------------------    ----------------    -------
+28.0  04/93 CLRT  RT    cc  7.3                      Aix 2.2.1
+28.0  04/93 CLRT  Sun4  Sun CC                       SunOS 4.1.2
+28.0  04/93 CLRT  Sun4  gcc 2.3.3                    SunOS 4.1.2
+28.0  04/93 CLR   80486 Borland C++ for OS/2         OS/2 2.0 GA          (1)
+28.0  04/93 CLRT  370   MetaWare High C R2.5o        AIX/ESA 2.2          (3)
+28.0  04/93 CLRt  370   IBM C/370 2.0                VM/ESA 1.1  CMS 5.6  (2)
+28.0  04/93 CLRt  80486 Gnu C 2.2.2 + DJGPP 1.09     DOS 5.0
+28.0  04/93 CLR   80286 Borland C++ 3.0 Large Model  DOS 5.0              (4)
+
+(1)  Source compiled with -DNDEBUG but no optimization (erratic on OS/2 GA).
+     Some execution tests failed. Some problems with "integers too large" in
+     generated C code.
+(2)  Tests run with -DUseAos.  No archive code tested.
+(3)  Used GNU make this month.  Some floating point differences from standard 
+     test output.
+(4)  Self-tests.  Not used to compile .as files.
+
+Ver   Date  Stat  HW    C Compiler                   Operating System    (Notes)
+----  ----- ----  ----- -------------------------    ----------------    -------
+27.0- 03/93 CLRT  RS    IBM XLC 1.01.0000.0000       Aix 3.1
+27.0- 03/93 CLRT  RS    IBM XLC 1.02.0000.0000       Aix 3.2.2
+27.0- 03/93 CLRT  RT    cc  7.3                      Aix 2.2.1
+27.0- 03/93 CLRT  Sun4  Sun CC                       SunOS 4.1.2
+27.0- 03/93 CLRT  Sun4  gcc 2.3.3                    SunOS 4.1.2
+27.0- 03/93 CLRT  370   MetaWare High C R2.5o        AIX/ESA 2.2          (1,2)
+27.0- 03/93 CLRt  370   IBM C/370 2.0                VM/ESA 1.1  CMS 5.6  (3)
+27.0- 03/93 CLR   80286 Borland C++ 3.0 Large Model  DOS 5.0              (4)
+27.0  03/93 CLRt  80486 Borland beta C++ with -O1    OS/2 2.0             (5)
+27.0- 03/93 CLRt  80486 Gnu C 2.2.2 + DJGPP 1.09     DOS 5.0              (6)
+
+(1) Had to use "make" from ver 2.1 of ESA.
+(2) Compiler warnings in generated C code.
+(3) Tests run with -DUseAos.  No archive code tested.
+(4) Passes all self-tests in 16-bit mode but does not compile files.
+(5) Uniar used for archives. poly.as dies with segmentation fault.
+(6) Uses CC=gcc instead of unicl.
+
+
+26.0  01/93 CLRT  RS    IBM XLC 1.01.0000.0000       Aix 3.1
+26.0  01/93 CLRT  RS    IBM XLC 1.02.0000.0000       Aix 3.2.1
+26.0  01/93 CLRT  RS    gcc 2.2.2                    Aix 3.2.1            (1,2)
+26.0  01/93 CLRt  370   IBM C/370 2.0                VM/ESA 1.1  CMS 5.6  (4)
+26.0  01/93 CLRT  370   MetaWare High C R2.4q        AIX/ESA 2.1          (2)
+26.0  01/93 CLRt  80486 Borland beta C++             OS/2 2.0             (3)
+26.0  01/93 CLRT  Sun4  Sun CC                       SunOS 4.1.2
+26.0  01/93 CLRT  Sun4  gcc 2.3.3                    SunOS 4.1.2
+26.1+ 02/93 CLR   80286 Borland C++ 3.0 Large Model  DOS 5.0
+26.1+ 02/93 CLRt  80486 Gnu C 2.2.2 + DJGPP 1.09     DOS 5.0
+
+(1) Tests iroots.as and float1.as failed in the optimized version.
+(2) Compiler warnings in generated C code.
+(3) Tests run with -DUseAos. All compiled with -O1 (size opt) except for
+    stab, scobind, tform, tinfer, tipasses, genfoam which where compiled
+    with -O2 (speed opt). Seg fault if all compiled with -O2.
+(4) Tests run with -DUseAos.  No archive code tested.
+
+
+Ver   Date  Stat  HW    C Compiler                   Operating System    (Notes)
+----  ----- ----  ----- -------------------------    ----------------    -------
+25.0  12/92 CLRT  Sun4  Sun CC                       SunOS 4.1.2
+25.0  12/92 CLRT  Sun4  gcc 2.2.2                    SunOS 4.1.2
+25.0  12/92 CLRT  RS    IBM XLC 1.01.0000.0000       Aix 3.1
+25.0  12/92 CLRT  RS    gcc 2.2.2                    Aix 3.2.1            (1)
+25.0  12/92 CLRT  RS    IBM XLC 1.02.0000.0000       Aix 3.2.1
+25.0- 12/92 CLRt  370   MetaWare High C R2.4q        AIX/ESA 2.1          (2)
+25.0  12/92 CLRt  80486 Borland beta C++ with -G     OS/2 2.0             (3)
+
+(1) Tests iroots.as and float1.as failed in the optimized version.
+    Compiler warnings in generated C code.
+(2) IEEE conversion code turned off because of C compiler bugs.
+    Compiler warnings in generated C code.
+(3) Using STO_USE_ONCE
+
+Ver   Date  Stat  HW    C Compiler                   Operating System    (Notes)
+----  ----- ----  ----- -------------------------    ----------------    -------
+24.0  11/92 CLRT  Sun4  Sun CC                       SunOS 4.1.2          (1)
+24.0  11/92 CLRT  Sun4  gcc 2.2.2                    SunOS 4.1.2 
+24.0  11/92 CLRT  RS    IBM XLC 1.01.0000.0000       Aix 3.1
+24.0  11/92 CLRT  RS    gcc 2.2.2                    Aix 3.2.1
+24.0  11/92 CLRT  RS    IBM XLC 1.02.0000.0000       Aix 3.2.1
+24.0- 11/92 CLRt  370   IBM C/370 2.0                VM/ESA 1.1  CMS 5.6
+24.0- 11/92 CLRt  370   MetaWare High C R2.4q        AIX/ESA 2.1          (2)
+24.0- 11/92 CLRt  80486 Borland beta C++ with -G     OS/2 2.0
+24.0- 11/92 CLRT  RT    cc  7.3                      Aix 2.2.1
+
+(1) @(#)compile.c 1.122 89/04/14
+(2) IEEE conversion code turned off because of C compiler bugs.
+    Compiler warnings in generated C code.
+
+Ver   Date  Stat  HW    C Compiler                   Operating System    (Notes)
+----  ----- ----  ----- -------------------------    ----------------    -------
+23.0* 09/92 CLRt  370   IBM C/370 2.0                VM/ESA 1.1  CMS 5.6
+23.0- 09/92 CLRT  370   MetaWare High C R2.4q        AIX/ESA 2.1          (1)
+23.0  09/92 CLRT  370   MetaWare High C R2.1t        Aix 1.2.1 PAIX Rel 4 (1)
+23.0- 09/92 CLRT  RT    cc  7.3                      Aix 2.2.1
+23.0  09/92 CLRT  RS    gcc 2.2.2                    Aix 3.1.5
+23.0  09/92 CLRT  RS    IBM XLC 1.01.0000.0000       Aix 3.1
+23.0  09/92 CLRT  RS    IBM XLC 1.02.0000.0000       Aix 3.2.1
+23.0- 09/92 CLRT  Sun4  Sun CC                       SunOS 4.1.2          (2)
+23.0- 09/92 CLRT  Sun4  gcc 2.2.2                    SunOS 4.1.2 
+23.0- 09/92 CLR   8086  Borland C++ 3.0 Huge Model   DOS 5.0              (3)
+23.0- 09/92 CLR   80486 IBM C Set 2                  OS/2 2.0
+
+(1) Compiler warnings in generated C code on AIX/ESA
+(2) @(#)compile.c 1.122 89/04/14
+(3) With STO_USE_MALLOC.  Bigints not implemented for 16 bit words.
+
+
+Ver   Date  Stat  HW    C Compiler                   Operating System    (Notes)
+----  ----- ----  ----- -------------------------    ----------------    -------
+22.0  08/92 CLRT  RS    IBM XLC 1.01.0000.0000       Aix 3.1
+22.0  08/92 CLRT  RS    IBM XLC 1.02.0000.0000       Aix 3.2.1
+22.0  08/92 CLRT  RS    gcc 2.2.2                    Aix 3.1.5
+22.0  08/92 CLRT  Sun4  gcc 1.37.1                   SunOS 4.0.3_CG9
+22.0  08/92 CLRT  Sun4  gcc 2.2.2                    SunOS 4.1.2 
+22.0  08/92 CLRT  Sun4  Sun CC                       SunOS 4.1.2          (1)
+22.0  08/92 CLRt  370   IBM C/370 2.0                VM/ESA 1.1  CMS 5.6
+22.0  08/92 CLRT  370   MetaWare High C R2.1t        Aix 1.2.1 PAIX Rel 4 (2)
+22.0  08/92 CLRT  RT    cc  7.3                      Aix 2.2.1
+
+(1) @(#)compile.c 1.122 89/04/14
+(2) Compiler warnings in generated C code on aix370
+
+
+Ver   Date  Stat  HW    C Compiler                   Operating System    (Notes)
+----  ----- ----  ----- -------------------------    ----------------    -------
+21.0  07/92 CLRT  RS    IBM XLC 1.01.0001.0001       Aix 3.1
+21.0  07/92 CLRT  370   MetaWare High C R2.1t        Aix 1.2.1 PAIX Rel 4 (1)
+21.0  07/92 CLRT  Sun4  gcc 1.37.1                   Sun OS 4.0.3CG9
+21.0  07/92 CLRT  370   IBM C/370 2.0                VM/ESA 1.1  CMS 5.6  (2)
+21.0  07/92 CLRT  RT    cc  7.3                      Aix 2.2.1            (3)
+
+(1) Compiler warnings in generated C code on aix370
+(2) basic{,2} complex{,2} generate compilable C code on CMS
+    all testcomp tests fully passing on CMS
+    generated mandel code compiling/linking but not running on CMS
+(3) genc.c was compiled with optimization off
+
+Ver   Date  Stat  HW    C Compiler                   Operating System    (Notes)
+----  ----- ----  ----- -------------------------    ----------------    -------
+20.0  06/92 CLRT  370   MetaWare High C R2.1t        Aix 1.2.1 PAIX Rel 4
+20.0  06/92 CLRT  RS    IBM XLC 1.02.0000.0000       Aix 3.2
+20.0  06/92 CLRT  RT    cc  7.3                      Aix 2.2.1    
+20.0  06/92 CLRT  Sun4  gcc 1.37.1                   Sun OS 4.0.3CG9
+20.0  06/92 CLR   370   IBM C/370 2.0                VM/XA  CMS 5.6        (1)
+(1) generated C code does not compile on CMS
+
+Ver   Date  Stat  HW    C Compiler                   Operating System    (Notes)
+----  ----- ----  ----- -------------------------    ----------------    -------
+19.0  05/92 CLRT  370   MetaWare High C R2.1t        Aix 1.2.1 PAIX Rel 4
+19.0  05/92 CLR   370   IBM C/370 2.0                CMS 5.6
+19.0  05/92 CLRT  RS    IBM XLC 1.01.0001.0001       Aix 3.1
+19.0  05/92 CLRT  RT    cc  7.3                      Aix 2.2.1
+19.0  05/92 CLRT  Sun4  gcc 1.37.1                   Sun OS 4.0.3CG9
+
+Ver   Date  Stat  HW    C Compiler                   Operating System    (Notes)
+----  ----- ----  ----- -------------------------    ----------------    -------
+18.0  04/92 CLRT  RS    IBM XLC 1.02.0000.0000       Aix 3.2
+18.0  04/92 CLRT  RS    IBM XLC 1.01.0001.0001       Aix 3.1
+18.0  04/92 CLRT  370   MetaWare High C R2.1t        Aix 1.2.1 PAIX Rel 4
+18.0  04/92 CLRT  Sun4  gcc 1.37.1                   Sun OS 4.0.3CG9
+
+Ver   Date  Stat  HW    C Compiler                   Operating System    (Notes)
+----  ----- ----  ----- -------------------------    ----------------    -------
+17.4  04/92 CLRT  RS    IBM XLC 1.02.0000.0000       Aix 3.2
+17.4* 04/92 CLR   370   IBM C/370 2.0                CMS 5.6
+17.4* 04/92 CLR   80386 IBM PS/2 C Language 1.1.0040 AIX 1.1.0021
+17.4* 04/92 CLR   80286 Borland C++ 3.0 Large Model  DOS 3.3
+
+Ver   Date  Stat  HW    C Compiler                   Operating System    (Notes)
+----  ----- ----  ----- -------------------------    ----------------    -------
+17.0  03/92 CLRT  RS    IBM XLC 1.02.0000.0000       Aix 3.2
+17.0  03/92 CLRT  RS    IBM XLC 1.01.0001.0001       Aix 3.1
+17.0  03/92 CLRT  RT    cc  7.3                      Aix 2.2.1
+17.0  03/92 CLRT  370   MetaWare High C R2.1t        Aix 1.2.1 PAIX Rel 4
+17.0  03/92 CLR   80286 Borland C++ 3.0 Large Model  DOS 3.20               (1)
+17.0  03/92 CLR   370   IBM C/370 2.0                CMS 5.6
+17.0  03/92 CLRT  Sun4  gcc 1.37.1                   Sun OS 4.0.3CG9
+(1) Using STO_USE_MALLOC
+
+Ver   Date  Stat  HW    C Compiler                   Operating System    (Notes)
+----  ----- ----  ----- -------------------------    ----------------    -------
+16.3  03/92 CLRT  RS    IBM XLC 1.01.0001.0001       Aix 3.1
+16.3  03/92 CLRT  370   MetaWare High C R2.1t        Aix 1.2.1 PAIX Rel 4
+16.3  03/92 CLRT  RT    cc  7.3                      Aix 2.2.1
+16.3  03/92 CLRT  Sun4  gcc 1.37.1                   Sun OS 4.0.3CG9
+16.3* 03/92 CLRT  80386 IBM PS/2 C Language 1.1.0170 Aix 1.2.0014
+16.3* 03/92 CLR   80286 Borland C++ 3.0 Large Model  DOS 3.20
+
+Ver   Date  Stat  HW    C Compiler                   Operating System    (Notes)
+----  ----- ----  ----- -------------------------    ----------------    -------
+16.0  03/92 CLRT  RS    IBM XLC 1.01.0001.0001       Aix 3.1
+16.0  03/92 CLRT  370   MetaWare High C R2.1t        Aix 1.2.1 PAIX Rel 4
+16.0  03/92 CLRT  RT    cc  7.3                      Aix 2.2.1
+16.0  03/92 CLRT  Sun4  gcc 1.37.1                   Sun OS 4.0.3CG9
+16.0* 03/92 CLR   80386 IBM PS/2 C Language 1.1.0170 Aix 1.2.0014
+16.0* 03/92 CLR   80286 Borland C++ 3.0 Large Model  DOS 3.20
+
+Ver   Date  Stat  HW    C Compiler                   Operating System    (Notes)
+----  ----- ----  ----- -------------------------    ----------------    -------
+15.0  01/92 CLRT  RS    IBM XLC 1.01.0001.0001       Aix 3.1
+15.0  01/92 CLRT  RT    cc  7.3                      Aix 2.2.1
+15.0  01/92 CLRT  370   MetaWare High C R2.1t        Aix 1.2.1 PAIX Rel 4
+15.0  01/92 CLRT  Sun4  gcc                          Sun OS
+15.0* 02/92 CLRT  80386 IBM PS/2 C Language 1.1.0170 Aix 1.2.0014
+15.0* 01/92 CL    80286 BOrland C++ 3.0 Large Model  DOS 3.20
+
+Ver   Date  Stat  HW    C Compiler                   Operating System    (Notes)
+----  ----- ----  ----- -------------------------    ----------------    -------
+13.6  12/91 CLRT  RS    IBM XLC 1.01.0001.0001       Aix 3.1
+13.6  12/91 CLRT  RT    cc  7.3                      Aix 2.2.1
+13.6  12/91 C     80286 Turbo C++ 1.0 Large Model    DOS 3.20
+
+Ver   Date  Stat  HW    C Compiler                   Operating System    (Notes)
+----  ----- ----  ----- -------------------------    ----------------    -------
+12.3  10/91 CLRT  RS    IBM XLC 1.01.0001.0001       Aix 3.1
+12.3  10/91 CLRT  RT    cc  7.3                      Aix 2.2.1
+12.3  10/91 CLRT  370   MetaWare High C R2.1t        Aix 1.2.1 PAIX Rel 4
+12.3  10/91 CLRT  80386 IBM PS/2 C Language 1.1.0170 Aix 1.2.0014
+12.3  10/91 CLRT  Sun4  gcc                          Sun OS
+12.2  10/91 CL    370   Waterloo C  V3.2 IBM 370     VM/XA SP 2.1 + CMS 5.6
+
+Ver   Date  Stat  HW    C Compiler                   Operating System    (Notes)
+----  ----- ----  ----- -------------------------    ----------------    -------
+ 9.6  01/91 CLRT  RT    cc  7.3                      Aix 2.2.1 
+ 9.6  01/91 CLRT  RS    IBM XLC                      Aix 3.1
+ 9.6  01/91 CLRT  370   MetaWare High C (R2.1r)      Aix 1.2
+ 9.6  01/91 CLRT  80386 IBM PS/2 C Language 1.1      Aix 1.2.0
+ 9.6  01/91 CLRT  Sun4  gcc                          Sun OS
+ 9.7  01/91 CLR   80286 TURBO C++  1.0 Large Model   DOS 3.20
+ 9.6  01/91 CL    370   Waterloo C  V3.2 IBM 370     VM/XA SP 2.1 + CMS     

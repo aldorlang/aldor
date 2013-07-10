@@ -1,0 +1,188 @@
+\typeout{tty verbatim environment -- V1.0, September 29, 1994}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% Copyright (c)1994 by ETH Zuerich
+%
+% Author: Niklaus Mannhart (mannhart@inf.ethz.ch)
+%
+% ---------------------------------------------------------------------
+%   This style file is free software; you can redistribute it and/or
+%   modify it under the terms of the GNU General Public License as 
+%   published by the Free Software Foundation version 2 of the license.
+% 
+%   This style file is dsitributed in the hope that it will be usefull,
+%   but WITHOUT ANY WARRANTY; without even the implied warranty of 
+%   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+%   General Public License for more details.
+% ---------------------------------------------------------------------
+%
+% changes:
+%
+%%%%%%%%
+% This style file improves the original verbatim environment as follow:
+%    - font and size can be changed (default: \small\tt)
+%    - the space is narrower than the original version of verbatim
+%    - tabs are converted to as many spaces as you like (default 8)
+%
+% Usage:
+%    \begin{ttyout}
+%       .....
+%    \end{ttyout}
+%
+% Options:
+%    - \TtyFont     (default \tt)
+%    - \TtySize     (default \small)
+%    - \TtyTab      (default 8)
+%    - \LeftTtySkip (default 5ex)
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%
+%%%%%%%%
+% dimension and counter definition
+%%%%%%%%
+\newdimen\LeftTtySkip 
+\newcount\TtyTab
+%
+%%%%%%%%
+% predefined variables
+%%%%%%%%
+\LeftTtySkip  = 5ex             % environment spacing
+\let\TtyFont\tt                 
+\let\TtySize\small
+\TtyTab = 8
+%
+%%%%%%%%
+% utilities 
+%%%%%%%%
+%
+% it's easier for changing the character codes with the following macros
+\def\MakeLetter#1{\catcode `#1 = 11 }
+\def\MakeOther#1{\catcode `#1 = 12 }
+\def\MakeActive#1{\catcode `#1 = \active\relax }
+\def\MakeTabActive{\MakeActive{\^^I}}
+\def\MakeEolActive{\MakeActive{\^^M}}
+%
+% In ttyout environment every line is treated as a paragraph.
+\def\@TtyPar{\par\@@par}%
+%
+%%%%%%%%
+% characters requiring special treatment
+%%%%%%%%
+% Spaces
+%
+\def\TtySpace{\ }
+\def\@ObeySpaces{\MakeActive{\ }\@@ObeySpaces\relax}
+{%
+\MakeActive{\ }\gdef\@@ObeySpaces{\edef {\TtySpace}}%
+}%
+%
+% Tabs
+%
+\newdimen\@TtyTabSize
+\def\@ObeyTabs{\MakeTabActive\@@ObeyTabs\relax}
+{%
+\MakeTabActive\gdef\@@ObeyTabs{\def^^I{\@TtyTab}}  
+}%
+\def\@TtyTab{%
+  \leavevmode      % ensure that we are in horizontal mode
+  \egroup          % terminate box register 0
+  \dimen0=\wd0     % store its length and ...
+  \divide\dimen0 by \@TtyTabSize    % ... round up to the next stop
+  \advance\dimen0 by 1sp
+  \multiply \dimen0 by \@TtyTabSize
+  \wd0 = \dimen0
+  \box0
+  \setbox0 = \hbox\bgroup
+}
+%
+% EOL character
+%
+\def\@ObeyEol{\MakeEolActive\@@ObeyEol\relax}%
+{%
+  \MakeEolActive %
+  \gdef\@@ObeyEol{%
+    \let^^M=\@TtyEol%
+  }%
+}
+\def\@TtyEol{%
+    \leavevmode%
+    \egroup%
+    \box 0%
+    \@TtyPar%
+}
+%%%%%%%%
+% utilities 
+%%%%%%%%
+% Macro for setting up the verbatim like environents
+\def\@SetupTty{%
+\begingroup
+  %%%%  compute and set tab positions
+  \setbox 0 = \hbox{\TtySize\TtyFont X}
+  \@TtyTabSize = \wd0
+  \multiply\@TtyTabSize by \TtyTab
+  \setbox0 = \hbox{\relax}  % Clearing \box 0
+  %
+  %%%% set paragraph dimensions and line spacing
+  \rightskip = 0pt 
+  \parindent=0pt
+  \parskip = 0pt 
+  \leftskip=\LeftTtySkip
+  \parfillskip = 0pt plus 1fil
+  %
+  %%%%  \raggedright changes the following two variables. Thus we
+  %%%%   reset them.
+  \spaceskip = 0pt   \xspaceskip = 0pt
+  %
+%
+%%% Get ready to handle every paragraph i.e. line!
+\everypar = {\setbox0 = \hbox \bgroup}
+%
+%%%  change size and font
+\TtySize\TtyFont%
+\lineskiplimit=0\normalbaselineskip
+\baselineskip=0.8\normalbaselineskip
+\@noligs%
+\let\do\@makeother \dospecials
+\catcode ``=\active
+\frenchspacing%
+\@ObeySpaces% 
+\@ObeyTabs%
+\@ObeyEol%
+}
+%%%%%%%%
+% Macros executed to start verbatim like environments
+% for special Tty regions.  These calls do all the work
+% of scanning for the environment terminator.
+\begingroup
+  \catcode`| = 0    % escape character
+  \catcode`[ = 1    % begin group
+  \catcode`] = 2    % end group
+  \catcode`@ = 11   % regular character (for macro names)
+  \catcode`\{ = 12  % other character
+  \catcode`\} = 12  % other character
+  \catcode`\\ = 12  % other character
+  |gdef|@BeginTtyout#1\end{ttyout}[#1|end[ttyout]]%
+|endgroup
+%%%%%%%%
+% Definition of the actual \ttyout environment
+% usage: \begin{ttyout} ... \end{ttyout}
+%%%%%%%%
+\def\ttyout{
+  %\nopagebreak[3]%  ??? it might be better to set a nonpagebreak penalty
+  \@TtyPar
+  \removelastskip
+  \@SetupTty
+  \@BeginTtyout%
+}
+%%%
+\def\endttyout{
+  \endgroup      % matches the \begingroup inside of @SetupTtyInput
+  %\pagebreak[3] % ??? it might be better to set a pagebreak penalty
+  \par
+}
+
+
+
+
+

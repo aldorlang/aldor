@@ -1,0 +1,374 @@
+
+(|Sequence|
+   (|Import| NIL |AxiomLib|)
+   (|Import| NIL |Boolean|)
+   (|Export|
+      (|Declare|
+         |PatternMatchListAggregate|
+         (|Apply|
+            |->|
+            (|Comma|
+               (|Declare| |#1| |SetCategory|)
+               (|Declare| |#2| (|Apply| |PatternMatchable| |#1|))
+               (|Declare| |#3| (|Apply| |ListAggregate| |#2|)))
+            (|With|
+               NIL
+               (|Sequence|
+                  (|Declare|
+                     |patternMatch|
+                     (|Apply|
+                        |->|
+                        (|Comma|
+                           |#3|
+                           (|Apply| |Pattern| |#1|)
+                           (|Apply|
+                              |PatternMatchListResult|
+                              |#1|
+                              |#2|
+                              |#3|))
+                        (|Apply|
+                           |PatternMatchListResult|
+                           |#1|
+                           |#2|
+                           |#3|)))) )))
+      NIL
+      NIL)
+   (|Export|
+      (|Declare|
+         |PatternMatchTools|
+         (|Apply|
+            |->|
+            (|Comma|
+               (|Declare| |#1| |SetCategory|)
+               (|Declare|
+                  |#2|
+                  (|With| NIL (|Sequence| |Ring| |OrderedSet|)))
+               (|Declare|
+                  |#3|
+                  (|With|
+                     NIL
+                     (|Sequence|
+                        |Ring|
+                        (|Apply| |ConvertibleTo| (|Apply| |Pattern| |#1|))
+                        (|Apply| |RetractableTo| |#2|)))) )
+            (|With|
+               NIL
+               (|Sequence|
+                  (|Declare|
+                     |patternMatch|
+                     (|Apply|
+                        |->|
+                        (|Comma|
+                           (|Apply| |List| |#3|)
+                           (|Apply| |List| (|Apply| |Pattern| |#1|))
+                           (|Apply|
+                              |->|
+                              (|Comma| (|Apply| |List| |#3|))
+                              |#3|)
+                           (|Apply| |PatternMatchResult| |#1| |#3|)
+                           (|Apply|
+                              |->|
+                              (|Comma|
+                                 |#3|
+                                 (|Apply| |Pattern| |#1|)
+                                 (|Apply| |PatternMatchResult| |#1| |#3|))
+                              (|Apply| |PatternMatchResult| |#1| |#3|)))
+                        (|Apply| |PatternMatchResult| |#1| |#3|)))
+                  (|Declare|
+                     |patternMatchTimes|
+                     (|Apply|
+                        |->|
+                        (|Comma|
+                           (|Apply| |List| |#3|)
+                           (|Apply| |List| (|Apply| |Pattern| |#1|))
+                           (|Apply| |PatternMatchResult| |#1| |#3|)
+                           (|Apply|
+                              |->|
+                              (|Comma|
+                                 |#3|
+                                 (|Apply| |Pattern| |#1|)
+                                 (|Apply| |PatternMatchResult| |#1| |#3|))
+                              (|Apply| |PatternMatchResult| |#1| |#3|)))
+                        (|Apply| |PatternMatchResult| |#1| |#3|)))) )))
+      NIL
+      NIL)
+   (|Export|
+      (|Declare|
+         |PatternMatchPushDown|
+         (|Apply|
+            |->|
+            (|Comma|
+               (|Declare| |#1| |SetCategory|)
+               (|Declare| |#2| (|Apply| |PatternMatchable| |#1|))
+               (|Declare|
+                  |#3|
+                  (|With|
+                     NIL
+                     (|Sequence|
+                        |SetCategory|
+                        (|Apply| |RetractableTo| |#2|)))) )
+            (|With|
+               NIL
+               (|Sequence|
+                  (|Declare|
+                     |fixPredicate|
+                     (|Apply|
+                        |->|
+                        (|Comma| (|Apply| |->| (|Comma| |#3|) |Boolean|))
+                        (|Apply| |->| (|Comma| |#2|) |Boolean|)))
+                  (|Declare|
+                     |patternMatch|
+                     (|Apply|
+                        |->|
+                        (|Comma|
+                           |#2|
+                           (|Apply| |Pattern| |#1|)
+                           (|Apply| |PatternMatchResult| |#1| |#3|))
+                        (|Apply| |PatternMatchResult| |#1| |#3|)))) )))
+      NIL
+      NIL)
+   (|Export|
+      (|Declare|
+         |PatternMatchKernel|
+         (|Apply|
+            |->|
+            (|Comma|
+               (|Declare| |#1| |SetCategory|)
+               (|Declare|
+                  |#2|
+                  (|With|
+                     NIL
+                     (|Sequence|
+                        |OrderedSet|
+                        (|Apply| |RetractableTo| (|Apply| |Kernel| |%|))
+                        (|Apply| |ConvertibleTo| (|Apply| |Pattern| |#1|))
+                        (|Apply| |PatternMatchable| |#1|)))) )
+            (|With|
+               NIL
+               (|Sequence|
+                  (|Declare|
+                     |patternMatch|
+                     (|Apply|
+                        |->|
+                        (|Comma|
+                           (|Apply| |Kernel| |#2|)
+                           (|Apply| |Pattern| |#1|)
+                           (|Apply| |PatternMatchResult| |#1| |#2|))
+                        (|Apply| |PatternMatchResult| |#1| |#2|)))) )))
+      NIL
+      NIL)
+   (|Export|
+      (|Declare|
+         |PatternMatchSymbol|
+         (|Apply|
+            |->|
+            (|Declare| |#1| |SetCategory|)
+            (|With|
+               NIL
+               (|Sequence|
+                  (|Declare|
+                     |patternMatch|
+                     (|Apply|
+                        |->|
+                        (|Comma|
+                           |Symbol|
+                           (|Apply| |Pattern| |#1|)
+                           (|Apply| |PatternMatchResult| |#1| |Symbol|))
+                        (|Apply| |PatternMatchResult| |#1| |Symbol|)))) )))
+      NIL
+      NIL)
+   (|Define|
+      (|Declare|
+         |FullyPatternMatchable|
+         (|Apply| |->| (|Declare| |#1| |Type|) |Category|))
+      (|Lambda|
+         (|Comma| (|Declare| |#1| |Type|))
+         |Category|
+         (|Label|
+            |FullyPatternMatchable|
+            (|With|
+               NIL
+               (|Sequence|
+                  (|If|
+                     (|Test|
+                        (|Has|
+                           |#1|
+                           (|Apply| |PatternMatchable| |Integer|)))
+                     (|Apply|
+                        |PatternMatchable|
+                        (|PretendTo| |Integer| |SetCategory|))
+                     NIL)
+                  (|If|
+                     (|Test|
+                        (|Has| |#1| (|Apply| |PatternMatchable| |Float|)))
+                     (|Apply|
+                        |PatternMatchable|
+                        (|PretendTo| |Float| |SetCategory|))
+                     NIL)))) ))
+   (|Define|
+      (|Declare|
+         |PatternMatchable|
+         (|Apply| |->| (|Declare| |#1| |SetCategory|) |Category|))
+      (|Lambda|
+         (|Comma| (|Declare| |#1| |SetCategory|))
+         |Category|
+         (|Label|
+            |PatternMatchable|
+            (|With|
+               NIL
+               (|Sequence|
+                  |SetCategory|
+                  (|Declare|
+                     |patternMatch|
+                     (|Apply|
+                        |->|
+                        (|Comma|
+                           |%|
+                           (|Apply| |Pattern| |#1|)
+                           (|Apply| |PatternMatchResult| |#1| |%|))
+                        (|Apply| |PatternMatchResult| |#1| |%|)))) ))) )
+   (|Export|
+      (|Declare|
+         |PatternMatchListResult|
+         (|Apply|
+            |->|
+            (|Comma|
+               (|Declare| |#1| |SetCategory|)
+               (|Declare| |#2| |SetCategory|)
+               (|Declare| |#3| (|Apply| |ListAggregate| |#2|)))
+            (|With|
+               NIL
+               (|Sequence|
+                  |SetCategory|
+                  (|Declare|
+                     |failed?|
+                     (|Apply| |->| (|Comma| |%|) |Boolean|))
+                  (|Declare| |failed| (|Apply| |->| (|Comma|) |%|))
+                  (|Declare| |new| (|Apply| |->| (|Comma|) |%|))
+                  (|Declare|
+                     |makeResult|
+                     (|Apply|
+                        |->|
+                        (|Comma|
+                           (|Apply| |PatternMatchResult| |#1| |#2|)
+                           (|Apply| |PatternMatchResult| |#1| |#3|))
+                        |%|))
+                  (|Declare|
+                     |atoms|
+                     (|Apply|
+                        |->|
+                        (|Comma| |%|)
+                        (|Apply| |PatternMatchResult| |#1| |#2|)))
+                  (|Declare|
+                     |lists|
+                     (|Apply|
+                        |->|
+                        (|Comma| |%|)
+                        (|Apply| |PatternMatchResult| |#1| |#3|)))) )))
+      NIL
+      NIL)
+   (|Export|
+      (|Declare|
+         |PatternMatchResultFunctions2|
+         (|Apply|
+            |->|
+            (|Comma|
+               (|Declare| |#1| |SetCategory|)
+               (|Declare| |#2| |SetCategory|)
+               (|Declare| |#3| |SetCategory|))
+            (|With|
+               NIL
+               (|Sequence|
+                  (|Declare|
+                     |map|
+                     (|Apply|
+                        |->|
+                        (|Comma|
+                           (|Apply| |->| (|Comma| |#2|) |#3|)
+                           (|Apply| |PatternMatchResult| |#1| |#2|))
+                        (|Apply| |PatternMatchResult| |#1| |#3|)))) )))
+      NIL
+      NIL)
+   (|Export|
+      (|Declare|
+         |PatternMatchResult|
+         (|Apply|
+            |->|
+            (|Comma|
+               (|Declare| |#1| |SetCategory|)
+               (|Declare| |#2| |SetCategory|))
+            (|With|
+               NIL
+               (|Sequence|
+                  |SetCategory|
+                  (|Declare|
+                     |failed?|
+                     (|Apply| |->| (|Comma| |%|) |Boolean|))
+                  (|Declare| |failed| (|Apply| |->| (|Comma|) |%|))
+                  (|Declare| |new| (|Apply| |->| (|Comma|) |%|))
+                  (|Declare| |union| (|Apply| |->| (|Comma| |%| |%|) |%|))
+                  (|Declare|
+                     |getMatch|
+                     (|Apply|
+                        |->|
+                        (|Comma| (|Apply| |Pattern| |#1|) |%|)
+                        (|Apply|
+                           |Union|
+                           (|Declare| |value1| |#2|)
+                           (|Declare|
+                              |failed|
+                              (|Apply| |Enumeration| |failed|)))) )
+                  (|Declare|
+                     |addMatch|
+                     (|Apply|
+                        |->|
+                        (|Comma| (|Apply| |Pattern| |#1|) |#2| |%|)
+                        |%|))
+                  (|Declare|
+                     |insertMatch|
+                     (|Apply|
+                        |->|
+                        (|Comma| (|Apply| |Pattern| |#1|) |#2| |%|)
+                        |%|))
+                  (|Declare|
+                     |addMatchRestricted|
+                     (|Apply|
+                        |->|
+                        (|Comma| (|Apply| |Pattern| |#1|) |#2| |%| |#2|)
+                        |%|))
+                  (|Declare|
+                     |destruct|
+                     (|Apply|
+                        |->|
+                        (|Comma| |%|)
+                        (|Apply|
+                           |List|
+                           (|Apply|
+                              |Record|
+                              (|Declare| |key| |Symbol|)
+                              (|Declare| |entry| |#2|)))) )
+                  (|Declare|
+                     |construct|
+                     (|Apply|
+                        |->|
+                        (|Comma|
+                           (|Apply|
+                              |List|
+                              (|Apply|
+                                 |Record|
+                                 (|Declare| |key| |Symbol|)
+                                 (|Declare| |entry| |#2|))))
+                        |%|))
+                  (|Declare|
+                     |satisfy?|
+                     (|Apply|
+                        |->|
+                        (|Comma| |%| (|Apply| |Pattern| |#1|))
+                        (|Apply|
+                           |Union|
+                           (|Declare| |value1| |Boolean|)
+                           (|Declare|
+                              |failed|
+                              (|Apply| |Enumeration| |failed|)))) ))) ))
+      NIL
+      NIL))

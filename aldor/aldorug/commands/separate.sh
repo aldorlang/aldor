@@ -1,0 +1,3 @@
+aldor -O -Fao -Fo choose.as
+aldor -O -Fao -Fo -lChooseLib=choose.ao  poker.as
+aldor -e poker -Fx -laldor poker.o choose.o

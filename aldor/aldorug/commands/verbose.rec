@@ -1,0 +1,11 @@
+% aldor -v file.as 
+Aldor version 1.0.0 for LINUX(glibc2.2) 
+               ld in sc sy li pa ma ab ck sb ti gf of pb pl pc po mi
+ Time    0.1 s  0  6  0  0  0  0  0  0  0  0 94  0  0  0  0  0  0  0 %
+ Alloc  2523 K  0 .3 .3  3 .2 .2 .2 .1  0 .2 93  1 .2  1  0 .0 .0 .0 %
+ Free    924 K  0 .1 .1 .0  1 .0 .3 .1  0 .1 92  1  1  4  0 .0  0  2 %
+ GC      313 K  0  0  0  0  0  0  0  0  0  0100  0  0  0  0  0  0  0 %
+
+ Source   90 lines,  33750 lines per minute
+ Lib    6533 bytes,  2323syme 1241foam 36fsyme 1080name 101kind 1034file 266lazy 246type 2inl 32twins 2ext 2doc 9id 3macros
+ Store  2280 K pool, 2523K alloc - 924K free - 313K gc = 1286K final

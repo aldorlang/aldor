@@ -1,0 +1,115 @@
+#----------------------------------------------------------------------------
+# This is a simple database to control the colouring of messages generated
+# by the Aldor compiler. Set $ALDOR_TERMINFO to the path of this file and
+# $ALDOR_TERM to a terminal name defined here (e.g. "html").
+#----------------------------------------------------------------------------
+# Copyright (c) 1990-2007 Aldor Software Organization Ltd (Aldor.org).
+#----------------------------------------------------------------------------
+
+#----------------------------------------------------------------------------
+# The format of this file is simple: it contains zero or more sections, one
+# for each terminal definition. The terminal name is enclosed in [] with [
+# being the first character on a line. Anything after the ] character is
+# ignored. Each subsequent line line contains a message class tag (see below),
+# a colon (":"), a sequence of characters to prefix messages of that class, a
+# second colon and a sequence of characters to postfix messages. The second
+# sequence may be terminated by a colon and any subsequent text on the line
+# is ignored. Empty sequences are permitted and entries for a class may be
+# specified multiple times. Only the last valid entry processed will be used.
+#
+# The characters \ and : must be preceded by a single \ character if they are
+# to retain their meaning. The character pairs \E, \t and \n are replaced by
+# ESC (ASCII 27), TAB and NEWLINE respectively.
+#
+# Valid message tags are:
+#    remark  : Remarks (ALDOR_R_)
+#    note    : Notes (ALDOR_N_)
+#    warning : Warning messages (ALDOR_W_)
+#    error   : Error messages (ALDOR_E_)
+#    fatal   : Fatal error messages (ALDOR_F_)
+# Any other tag is ignored.
+#
+# See [Aldor xterm] below for an explanation and example of ANSI/Tektronix
+# escape codes. See [Aldor hpterm] for an explanation and example of HP codes.
+#----------------------------------------------------------------------------
+
+#----------------------------------------------------------------------------
+# This terminal type encloses every error and fatal error with <B> and </B>.
+# It also encloses every warning with <I> and </I> and noet messages
+# with <em> and </em>. We demonstrate sloppy termination of values.
+[html]
+   error:<B>:</B>:
+   fatal:<b>:</b>
+   warning:<I>:</I>
+   note:<em>:</em>
+
+#----------------------------------------------------------------------------
+# This terminal defines colourings using ANSI escapes for a standard xterm.
+# It also demonstrates the use of spaces in terminal names. This ought to
+# work for ddterms as well.
+#
+# For ANSI/Tektronix (e.g. xterm) terminals the foreground colour is usually
+# changed by the escape "\E[3%dm" where %d is an integer 0-7. The background
+# colour is usually changed in a similar way via "\E[4%dm". The mapping from
+# RBG colours to ANSI colour number are simply the RGB values with 0 for off
+# and 1 for maximum; red is the least significant bit. Hence 0=black, 1=red,
+# 2=green, 3=yellow, 4=blue, 5=magenta, 6=cyan, 7=white). Removing colour
+# usually works by using the escape "\E[m" or "\E[0m".
+[Aldor xterm]
+   remark:\E[34m:\E[m:    # Blue
+   note:\E[36m:\E[m:      # Cyan
+   warning:\E[32m:\E[m:   # Green
+   error:\E[31;1m:\E[m:   # Enhanced red (usually bold)
+   fatal:\E[36;41m:\E[m:  # Cyan on red
+
+#----------------------------------------------------------------------------
+# The AIX terminals implement ANSI escapes but unfortunately there seems to
+# no escape sequence to turn off the colouring. The \E[0;10m sequence only
+# removes bold and underline highlighting. We define two AIX terminals here,
+# the first assuming that text is white-on-black by default and the second
+# assuming black-on-white text. Even if you chose one of these your aixterm
+# probably won't look the same afterwards, particularly if it started with
+# the standard X aixterm of white on slate-grey!
+[aix-wob]
+   remark:\E[34m:\E[37;40;0;10m:    # Blue
+   note:\E[36m:\E[37;40;0;10m:      # Cyan
+   warning:\E[32m:\E[37;40;0;10m:   # Green
+   error:\E[31m:\E[37;40;0;10m:     # Red
+   fatal:\E[36;41m:\E[37;40;0;10m:  # Cyan on red
+[aix-bow]
+   remark:\E[34m:\E[30;47;0;10m:    # Blue
+   note:\E[36m:\E[30;47;0;10m:      # Cyan
+   warning:\E[32m:\E[30;47;0;10m:   # Green
+   error:\E[31m:\E[30;47;0;10m:     # Red
+   fatal:\E[36;41m:\E[30;47;0;10m:  # Cyan on red
+
+#----------------------------------------------------------------------------
+# Sun's cmdtool and shelltool support some ANSI escapes but no colour. Also
+# what is bold on other terminals is reverse video on these terminals. Here
+# we use reverse video for error and fatal error messages.
+[sun-cmd]
+   error:\E[1m:\E[m:
+   fatal:\E[1m:\E[m:
+
+#----------------------------------------------------------------------------
+# HP terminals can only display eight out of the possible 64 colour pairs on
+# screen at once. Also, on terminals which allow the RGB values of the colour
+# pairs to be changed, existing text will be affected by colour changes.
+# Here we initialise colour-pairs 1-7 to blue, green, red, cyan on red, red
+# on yellow and yellow respectively. Then we set the colour-pair for each
+# message class to match [Aldor xterm]. Ideally the colour-pair initialisation
+# would take place once rather than each time we display a message.
+#
+# The escape "\E&v%H%dI" sets colour-pair %d to the RGB value %H where %H
+# contains 1a for maximum red foreground, 1b for maximum green foreground,
+# 1c for maximum blue foreground, 1x for maximum red background, 1y for
+# maximum green background and 1z for maximum blue background. Thus cyan on
+# magenta (green+blue on red+blue) is 1b1c1x1z. The escape "\E&v%dS" selects
+# colour pair %d with 0 representing the default foreground/background pair.
+[Aldor hpterm]
+   remark:\E&v1c1x1y1z1I\E&v1S:\E&v0S:      # Blue on white (colour-pair 1)
+   note:\E&v1b1c1x1y1z1I\E&v1S:\E&v0S:      # Blue on white (colour-pair 1)
+   warning:\E&v1b1x1y1z2I\E&v2S:\E&v0S:     # Green on white (colour-pair 2)
+   error:\E&v1a1x1y1z3I\E&v3S:\E&v0S:       # Red on white (colour-pair 3)
+   fatal:\E&v1b1c1x4I\E&v4S:\E&v0S:         # Cyan on red (colour-pair 4)
+

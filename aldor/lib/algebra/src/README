@@ -1,0 +1,34 @@
+This is the full source tree of the Algebra library. You can use it to
+build libalgebra from the sources (rather than from the distributed portable
+object libraries) as well as to extract the documentation and test files.
+Type '[g]make' for more infos on the various targets available.
+
+NOTE: Where you see '[g]make', use 'gmake' on DEC/OSF1, 'make' on linux
+
+
+1) To build the portable object libraries:
+- set your ALGEBRAROOT environment variable to the main Algebra directory,
+  your LIBPATH variable to $ALDORLIBROOT/lib:$ALGEBRAROOT/lib
+  and INCPATH to $ALDORLIBROOT/include:$ALGEBRAROOT/include
+
+- go to the src directory and issue:
+   [g]make gmp        to make libalgebra-gmp.al
+   [g]make release    to make libalgebra.al
+   [g]make debug      to make libalgebrad.al
+
+
+2) To build the object libraries, go to the lib directory and issue:
+   'sh makealgebra-gmp' to make libalgebra-gmp.a
+   'sh makealgebra'     to make libalgebra.a
+   'sh makealgebrad'    to make libalgebrad.a
+
+
+3) To build the test-suite:
+- make sure that the executable 'extract' is built and in your path
+- go to the src directory and issue '[g]make test'
+- go to the test directory and issue 'make'
+
+
+Report any problems to  sumit@sophia.inria.fr
+
+-- Manuel Bronstein  December 11, 2003

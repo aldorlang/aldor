@@ -1,0 +1,12 @@
+r = -42
+    s = (r + 1) ^ 3 = -68921
+    t = (r - 1) ^ 2 = 3418801
+    s * t = -235627183721
+The result is negative
+
+r = -42
+    s = (r + 1) ^ 3 = -68921
+    t = (r - 1) ^ 2 = 3418801
+    s * t = 596017559
+The result is positive
+

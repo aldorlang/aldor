@@ -1,0 +1,168 @@
+Building the ALDOR compiler for Windows:
+
+CygWin/MinGW version:
+---------------------
+Updated for Aldor 1.0.2:
+------------------------
+-make the Visual Studio environment runnable from cygwin. 
+  1. add all the env variable from vcvars32.bat
+  2. now visual cl.exe, lib.exe should be available at the command promt in
+     bash
+  3. build the compiler from the MSDEV environment, to generate aldor.exe +
+     libfoam and libfoamlib.  Use an older project if necessary.
+ 3a. Everything can be done from CLI.  
+  5. set ALDORROOT unix style - Makefiles will do the rest
+  5a. if ALDORROOT is WIN style, after compilation aldor.exe can be used,
+      else ALDORROOT is UNIX style, aldor.sh must be used with all UNIX paths.
+  6. compile gmp lib in cygwin. (it comes with cygwin, but that one does not
+     compile with MSVC).
+  7. all libaldor+libalgebra+libaxllib can be built from cygwin now using the
+     the official Makefiles (modified to accept $MACHINE=win32msvc or
+     $MACHINE=win32gcc.
+ This is to build the libraries from command line but with cl instead of gcc.
+
+-it seems that cygwin uses ash for sh. Remove the ash package and link sh to
+bash. ash misses the time command.
+
+-it seems easy to build the rest with gcc (MinGW version) provided that 
+ aldor.sh is used that transforms cygwin path to windows path before calling 
+ aldor.exe.  This way the porting is very easy.
+TODO: DO NOT erase the modified files before checkin in a branch... mainly
+makelibaldor.sh, makelibalgebra.sh, makelibaxlliba.sh, makeaxllibal,sh, 
+aldor.sh, some small changes to Makefile files in aldor and algebra lib to 
+call aldor.sh instead of aldor. Aldor makeon was modified.
+
+============================================================================
+The rest is outdated information!
+============================================================================
+
+
+- set the environment variables:
+	- MACHINE: 		win32gcc
+	- ALDORROOT: 		C:\foo\bar\...\aldor\base\%MACHINE%
+	- ALDOR_INSTALL: 	C:\foo\bar\...\aldor\base\%MACHINE%
+	- ALDOR_DISTRIB:	C:\foo\bar\...\aldor\base\%MACHINE%
+	- ALDORSRC:		C:\foo\bar\...\aldor\version\current
+
+- ensure that CygWin (or MinGW and MSYS) are installed on the machine.
+	- create a symbolic link /c to point to c root. To make aldor work
+	  from CygWin.
+	- also download and use MinGW compiler for building the compiler. To 
+	  do that, modify the docc and doccjr utilities to include the 
+	  libraries and headers from MinGW. NOTE: normally it should work only
+	  by using the -mno-cygwin switch but for some reason, the 
+	  trigonometric functions are taken from cygwin1.dll.
+	- GMP library should be installed in order to be used for aldor.
+
+- put sources in %ALDORSRC%
+cd
+- Building process:
+	- start shell.
+	- cd $ALDORSRC
+	- make
+	- cd contrib
+	- make gmpdir
+	  (NOTE: for gmp to work, the gmp package must be compiled without
+	   cygwin1.dll (-mno-cygwin) )
+	- cd ../lib/libaldor
+	- cp include/aldorinterp.as $ALDORROOT/include
+	- bin/createdistrib.sh `pwd` 
+	- aldor -fao lib/aldor_gloop.as
+	- mv lib/aldor_gloop.ao $ALDORROOT/lib
+	- aldor -fao lib/aldor_gloopd.as
+	- mv lib/aldor_gloopd.ao $ALDORROOT/lib
+	- cd $ALDORROOT
+	- export GmpDir=`path to GMP library libgmp.a'
+	- make -e ALDORLIBROOT=`pwd` -f Makefile.libaldor
+
+- Packaging:
+	- delete extra files from the obtained distribution (e.g. libaxllib.*)
+		- cd $ALDORROOT
+		- rm bin/aldor bin/cyg2win bin/aldor_t.exe bin/echon.exe 
+		  rm bin/extract bin/msgcat.exe
+		- rm lib/*.lsp lib/*.asy lib/libaxldem lib/libcmm.a lib/libfoam-car.a
+		- rm -rf src srclib toolbin
+	- cp $ALDORSRC/tools/win32/gccgenerated.nsi $ALDORROOT/../
+	- cp $ALDORSRC/tools/win32/license.txt $ALDORROOT/../
+	- cp $ALDORSRC/tools/win32/readme.txt $ALDORROOT/
+	- cd ..
+	- run makeNSIS gccgenerated.nsi
+	
+
+Microsoft Visual C++ version:
+-----------------------------
+
+- set the environment variables:
+	- MACHINE: 		win32msvc
+	- ALDORROOT: 		C:\foo\bar\...\aldor\base\%MACHINE%
+	- ALDOR_INSTALL: 	C:\foo\bar\...\aldor\base\%MACHINE%
+	- ALDORSRC:		C:\foo\bar\...\aldor\version\current
+
+- ensure that the C compiler can be executed from the command prompt.
+  (use vcvar32.bat if cl.exe does not work)
+
+- building process:
+	- start IDE.
+	- load the project ...\version\project\axiomxl.
+	- Build the sub-project "The Libraries"
+	- Build contrib (make sure the path to gmp is set in NMakefile)
+	- Build libaldor
+	- clean the binaries (TODO: detail here)
+		- del lib\foamlib\ 
+		- del srclib\
+		- del *.libaldor
+		- del test\libaldor\*.exe
+	- build packager
+
+Here's what I did to compile the Aldor compiler on my Windows machine:
+
+============================================================================
+Nathanael's Aldor Installation Guide for Windows
+============================================================================
+
+
+1.	First, I set up my CVS environment and got the source code for Aldor.
+	
+	export CVS_RSH=ssh
+	export CVSROOT=:ext:your_username@cvs.aldor.org:/local/cvsroot
+	mkdir $HOME/aldor_tree
+	cd $HOME/aldor_tree
+	cvs checkout aldor --> this will copy everything
+	cvs checkout aldor/lib/algebra --> this will copy the algebra library
+	cvs checkout aldor/lib/aldor --> this will copy the libaldor library
+
+
+2.	This updates the source code with the Windows version.
+	
+	cd $HOME/aldor_tree/aldor
+	cvs update -r windows-port
+
+
+3.	In the file $HOME/aldor_tree/aldor/Makefile.globals I change the 
+	following:
+
+	i)   	"ALDOR_PROJECT=$(HOME)/aldor" I changed to 
+		"ALDOR_PROJECT=$(HOME)/aldor_tree/aldor"
+
+	ii)  	"MACHINE=win32gcc" I didn't change, but you may have to 
+		depending on what type of machine you have.
+
+	iii) 	"GmpDir=/usr/something" I changed to "GmpDir=/usr"
+
+
+4.	Something was wrong with the yacc command.  There were 2 versions:
+	yacc and byacc.  To compile, I had to delete yacc and then create a
+	symbolic link so that whenever the command yacc was issued, byacc was
+	used in it's place.  I can't remember which directory you need to do
+	this in :P
+
+	rm yacc
+	ln -s yacc byacc
+
+
+5.	Now it's time to compile.  The machine I am on is a Pentium III with a 
+	479 MHz processor and it took FOREVER... well, it was well over an hour.
+	Grab your Aldor user guide and a coffee, it's going to be a while.
+
+	cd $HOME/aldor_tree/aldor
+	make distrib

@@ -1,0 +1,360 @@
+
+
+        Compilation of AXIOM-XL to Lisp or FOAM [lines per minute]
+		    (and  Size of stripped binary)
+        
+	Compilers built with -O -DNDEBUG unless otherwise noted.
+
+----------------------------------------------------------------------------
+
+Host            Model        "axiomxl -v big.as big.as big.as"
+spadserv (xlc)  RS 6000/350       13,500 v36.0   Jun  28/94  (1240867 bytes)
+
+
+Host            Model        "axiomxl -v -O -Q inline-all -F c hilbert1.as"
+spadserv (xlc)  RS 6000/350          426 v36.0   Jun  28/94  (1240867 bytes)
+
+Host            Model        "axiomxl -v -Q3 -Flsp -lAxiomLib=axiom hilbert0.as"
+spadserv (xlc)  RS 6000/350          208 v36.0   Jun  28/94  (1240867 bytes)
+
+Host            Model        "axiomxl -v -Q3 -Flsp -lAxiomLib=ax0   hilbert0.as"
+spadserv (xlc)  RS 6000/350          326 v36.0   Jun  28/94  (1240867 bytes)
+
+----------------------------------------------------------------------------
+
+Host            Model             "axiomxl -v big.as big.as big.as"
+aixproj         9021/900          58,900 v35.0-  May  03/94  (1529450 bytes)
+margit		DEC 3000/400 AXP  20,100 v35.0-  May  03/93  (1490944 bytes)
+spadserv (xlc)  RS 6000/350       15,600 v35.0-  May  03/94  (1150853 bytes)
+frod (dosgcc)   486 DX2 66 (*)    15,375 v35.0-  May  03/94  ( 786755 bytes)
+forland (gcc)   Sun4/4490?        10,100 v35.0   May  03/94  ( 933888 bytes)
+forland	(suncc) SUN 4/4490	  10,053 v35.0-  May  03/94  (1138688 bytes)
+
+
+Host            Model             "axiomxl -v -O -Q inline-all -F c hilbert1.as"
+aixproj         9021/900           2,409 v35.0-  May  03/94  (1529450 bytes)
+margit		DEC 3000/400 AXP   1,032 v35.0-  May  03/93  (1490944 bytes)
+spadserv (xlc)  RS 6000/350          715 v35.0-  May  03/94  (1150853 bytes)
+frod (dosgcc)   486 DX2 66 (*)       480 v35.0-  May  03/94  ( 786755 bytes)
+forland (gcc)   Sun4/4490?           398 v35.0   May  03/94  ( 933888 bytes)
+forland (suncc) SUN 4/4490	     388 v35.0-  May  03/94  (1138688 bytes)
+
+(*): machine with 16Mb of ram running MsDos 5.0 and smartdrv (2Mb of cache)
+
+----------------------------------------------------------------------------
+
+Host            Model             "axiomxl -v big.as big.as big.as"
+aixproj         9021/900          68,100 v34.0-  Feb  05/94  (1316078 bytes)
+spadserv (xlc)  RS 6000/350       16,600 v34.0   Feb  05/94  ( 947113 bytes)
+matteo (gcc2)   RS 6000/530E      12,330 v34.0   Feb  07/94  (1017702 bytes)
+
+Host            Model             "axiomxl -v -O -Q inline-all -F c hilbert1.as"
+aixproj         9021/900           4,060 v34.0-  Feb  05/94  (1316078 bytes)
+spadserv (xlc)  RS 6000/350        1,247 v34.0   Feb  05/94  ( 947113 bytes)
+matteo (gcc2)   RS 6000/530E         834 v34.0   Feb  07/94  (1017702 bytes)
+
+----------------------------------------------------------------------------
+
+Note v33.0 timings have big.as no longer use basic0.as and use libaxllib instead.
+
+Host            Model             "axiomxl -v big.as big.as big.as"
+aixproj         9021/900          70,000 v32.5   Dec  01/93  (1244322 bytes)
+margit		DEC 3000/400 AXP  27,000 v33.0   Dec  03/93  (1179648 bytes)
+ricci		MIPS 33MHz IP12   13,400 v33.4-  Jan  04/94  ( 880640 bytes)
+matteo (gcc2)   RS 6000/530E      12,200 v32.5   Nov  29/93  ( 953073 bytes)
+dougie (gcc)    486/DX 33Mhz (*)   8,802 v33.0   Dec  04/93  ( 695209 bytes)
+descartes (next)M68040 25Mhz       8,500 v33.5-  Jan  11/93  ( 557056 bytes)
+       (linux)  Compac 4/25 486SL  6,000 v33.0   Dec  07/93  ( 533508 bytes)
+hydride (gcc)   Sun 4/60           5,437 v33.0   Dec  04/93  ( 860160 bytes)
+
+Host            Model             "axiomxl -v -O -Q inline-all -F c hilbert1.as"
+aixproj         9021/900           2,985 v32.5   Dec  01/93  (1244322 bytes)
+margit		DEC 3000/400 AXP   1,200 v33.0   Dec  03/93  (1179648 bytes)
+ricci		MIPS 33MHz IP12      793 v33.4-  Jan  04/94  ( 880640 bytes)
+matteo (gcc2)   RS 6000/530E         561 v32.5   Nov  29/93  ( 953073 bytes)
+dougie (gcc)    486/DX 33Mhz (*)     316 v33.0   Dec  04/93  ( 695209 bytes)
+       (linux)  Compac 4/25 486SL    313 v33.0   Dec  07/93  ( 533508 bytes)
+hydride (gcc)   Sun 4/60             260 v33.0   Dec  04/93  ( 860160 bytes)
+
+(*) = on MsDos machine we used Smartdrv disk cache utility. The size of the
+      cache was 8000 kbytes. The total extended memory was 20000 kbytes.
+----------------------------------------------------------------------------
+
+Host            Model             "axiomxl -v big.as"
+aixproj         9021/900          95,800 v32.0   Oct  17/93  (1191686 bytes)
+margit		DEC 3000/400 AXP  40,500 v32.0-  Oct  15/93  (1097728 bytes)
+spadserv (xlc)  RS 6000/350       19,900 v32.0   Oct  17/93  ( 856454 bytes)
+midi (suncc)	Sun 4/60 147       8,600 v32.0   Oct  17/93  ( 753664 bytes)
+
+Host            Model             "axiomxl -v -O -Q inline-all -F c hilbert1.as"
+aixproj         9021/900           3,544 v32.0   Oct  17/93  (1191686 bytes)
+margit		DEC 3000/400 AXP   1,398 v32.0-  Oct  15/93  (1097728 bytes)
+spadserv (xlc)  RS 6000/350        1,084 v32.0   Oct  17/93  ( 856454 bytes)
+midi (suncc)	Sun 4/60 147         303 v32.0   Oct  17/93  ( 753664 bytes)
+
+----------------------------------------------------------------------------
+
+Host            Model             "axiomxl -v big.as"
+pi (xlc)        RS 6000/530E      12,350 v31.0   Oct  04/93  (1026937 bytes)
+midi (suncc)	Sun 4/60 147       5,450 v31.0   Oct  04/93  ( 974848 bytes)
+galois (xlc)	RS/6000/320	   8,722 v31.0   Oct  05/93  (1080396 bytes)
+galois (gcc)	RS/6000/320	   6,079 v31.0   Oct  05/93  (1448920 bytes)
+
+Host            Model             "axiomxl -v -O -Q inline-all -F c hilbert1.as"
+galois (xlc)	RS/6000/320	     303 v31.0   Oct  05/93  (1080396 bytes)
+galois (gcc)	RS/6000/320	     226 v31.0   Oct  05/93  (1448920 bytes)
+
+----------------------------------------------------------------------------
+
+Host            Model             "axiomxl -v big.as"
+aixproj         9021/900          96,500 v30.0-  Aug  23/93  (1139842 bytes)
+spadserv (xlc)  RS 6000/350       12,500 v30.0-  Aug  23/93  ( 812554 bytes)
+midi (gcc2)	Sun 4/60 147       8,900 v30.0-  Aug  23/93  ( 647168 bytes)
+midi (suncc)	Sun 4/60 147       8,300 v30.0-  Aug  23/93  ( 671744 bytes)
+        (gcc2)  PS/2 95            9,094 v30.0   Aug  26/93  ( 752615 bytes)
+clunker (gcc2)  PS/2 80 16MHz      1,872 v29.8   Aug  22/93  ( 762827 bytes)
+
+----------------------------------------------------------------------------
+
+Host            Model             "axiomxl -v big.as"
+aixproj         9021/900         115,745 v29.0   July 02/93  (1099058 bytes)
+bengals (xlc)   RS 6000/9x0       40,807 v29.0   July 02/93  ( 784354 bytes)
+midi (suncc)	Sun 4/60 147       9,900 v29.0   July 02/93  ( 696320 bytes)
+midi (gcc2)	Sun 4/60 147       9,800 v29.0   July 02/93  ( 647168 bytes)
+netslip94 (gcc) RS 6000/320H      16,000 v29.0   July 02/93  ( 845986 bytes)
+
+----------------------------------------------------------------------------
+
+Host            Model             "axiomxl -v big.as"
+aixproj         9021/900         123,111 v28.0   Apr  19/93  (986602 bytes)
+yktvmv          9021/900          56,240 v28.0   Apr  19/93 (1507305 unstripped)
+forland (gcc2)	Sun 4/4490        22,000 v28.0   Apr  20/93  (573440 bytes)
+forland (suncc)	Sun 4/4490        21,000 v28.0   Apr  20/93  (630784 bytes)
+katie (os2/bcc) PS/2 486/33       13,060 v28.0   Apr  15/93  (577575 bytes)
+midi (gcc2)	Sun 4/60 147      10,800 v28.0   Apr  20/93  (573440 bytes)
+midi (suncc)	Sun 4/60 147      10,500 v28.0   Apr  20/93  (630784 bytes)
+football (gcc)	700C 50MHz         9,500 v28.0   Apr  19/93  (677845 bytes)
+six             RT  6150/135       4,300 v28.0   Apr  15/93  (857908 bytes)
+
+Host            Model             "axiomxl -v -O -Q inline-all -F c hilbert1.as"
+aixproj         9021/900           6,739 v28.0   Apr  19/93  (986602 bytes)
+yktvmv          9021/900           3,910 v28.0   Apr  19/93 (1507305 unstripped)
+forland (gcc2)	Sun 4/4490         1,150 v28.0   Apr  20/93  (573440 bytes)
+midi (suncc)	Sun 4/4490         1,100 v28.0   Apr  20/93  (630784 bytes)
+midi (suncc)	Sun 4/60 147         554 v28.0   Apr  20/93  (630784 bytes)
+midi (gcc2)	Sun 4/60 147         543 v28.0   Apr  20/93  (573440 bytes)
+football (gcc)	700C 50MHz           478 v28.0   Apr  19/93  (677845 bytes)
+katie (os2/bcc) PS/2 486/33          322 v28.0   Apr  15/93  (577575 bytes)
+six             RT  6150/135         245 v28.0   Apr  15/93  (857908 bytes)
+
+----------------------------------------------------------------------------
+
+Host            Model             "axiomxl -v big.as"
+aixproj         9021/900         110,500 v27.0   Mar  02/93  (924116 bytes)
+yktvmv          9021/900          76,786 v27.0   Mar  03/92 (1179630 unstripped)
+bengals (xlc)   RS 6000/9x0       41,254 v27.0   Mar  03/93  (657958 bytes)
+forland (gcc2)  Sun 4/4490        20,756 v27.0   Mar  03/93  (532480 bytes)
+forland (suncc) Sun 4/4490        20,100 v27.0   Mar  04/93  (589824 bytes)
+netslip94       RS 6000/320H      19,800 v27.0   Mar  02/93  (661639 bytes)
+football (gcc)	700C 50MHz        11,000 v27.0   Mar  02/93  (568346 bytes)
+six             RT  6150/135       4,000 v27.0   Mar  04/93  (785360 bytes)
+
+Host            Model             "axiomxl -v -O -Q inline-all -F c hilbert1.as"
+aixproj         9021/900           9,365 v27.0   Mar  02/93  (924116 bytes)
+bengals (xlc)   RS 6000/9x0        3,440 v27.0   Mar  02/93  (657958 bytes)
+forland (gcc2)  Sun 4/4490         1,600 v27.0   Mar  03/93  (532480 bytes)
+forland (suncc) Sun 4/4490         1,500 v27.0   Mar  04/93  (589824 bytes)
+netslip94       RS 6000/320H       1,600 v27.0   Mar  02/93  (661639 bytes)
+football (gcc)	700C 50MHz           580 v27.0   Mar  02/93  (568346 bytes)
+six             RT  6150/135         320 v27.0   Mar  04/93  (785360 bytes)
+
+----------------------------------------------------------------------------
+
+clunker (gcc2)  PS/2 80 16MHz      2,700 v26.1+  Feb  16/93  (446671 bytes)
+katie (os2/bcc) PS/2 486/33       11,600 v26.0   Jan  29/93  (493086 bytes)
+radical (xlc)   RS  6000/530      14,800 v26.0   Jan  29/93  (612530 bytes)
+leonardo(xlc)   RS  6000/520      15.900 v26.0   Jan  29/93  (617235 bytes)
+forland (suncc) Sun 4/4490        21,000 v26.0   Jan  29/93  (548864 bytes)
+forland (gcc2)  Sun 4/4490        21,000 v26.0   Jan  28/93  (499712 bytes)
+matteo  (gcc2)  RS  6000/530E     23,200 v26.0   Jan  29/93  (652652 bytes)
+yktvmv          9021/900          69,900 v26.0   Nov  05/92 (1114095 unstripped)
+aixtst2         9021/900         128,100 v26.0   Jan  29/93  (884712 bytes)
+
+----------------------------------------------------------------------------
+
+katie (os2/bcc) PS/2 486/33       10,800 v25.0   Dec  18/92 (479768 bytes)
+leonardo        RS  6000/520      14,600 v25.0   Dec  18/92 (608543 bytes)
+matteo (xlc)    RS  6000/530E     19,800 v25.0   Dec  18/92 (603326 bytes)
+forland (suncc) Sun 4/4490        20,500 v25.0   Dec  18/92 (548864 bytes)
+forland (gcc2)  Sun 4/4490        22,000 v25.0   Dec  18/92 (491520 bytes)
+matteo (gcc2)   RS  6000/530E     23,300 v25.0   Dec  18/92 (645476 bytes)
+aixtst2         9021/900         129,400 v25.0-  Dec  18/92 (864728 bytes)
+
+----------------------------------------------------------------------------
+
+six             RT  6150/135       4,160 v24.0   Nov  06/92 (600284 bytes)
+katie (os2/bcc)	PS/2 486/33	  11,652 v24.0-  Nov  04/92 (460312 bytes)
+leonardo        RS  6000/520      17,700 v24.0   Nov  06/92 (534355 bytes)
+matteo (xlc)    RS  6000/530E     21,300 v24.0   Nov  06/92 (531186 bytes)
+forland (suncc) Sun 4/4490        22,100 v24.0   Nov  06/92 (475136 bytes)
+forland (gcc2)  Sun 4/4490        22,600 v24.0   Nov  06/92 (434176 bytes)
+matteo (gcc2)   RS  6000/530E     25,500 v24.0   Nov  06/92 (567244 bytes)
+yktvmv          9021/900          69,800 v24.0-  Nov  05/92 (983025 unstripped)
+aixtst2         9021/900         127,200 v24.0-  Nov  06/92 (754108 bytes)
+
+----------------------------------------------------------------------------
+
+six             RT  6150/135       3,900 v23.0-  Oct  02/92 (545884 bytes)
+forland (suncc) Sun 4/4490        21,100 v23.0-  Oct  01/92 (409600 bytes)
+forland (gcc2)  Sun 4/4490        23,000 v23.0-  Oct  01/92 (376832 bytes)
+spadserv        RS  6000/350      28,000 v23.0-  Oct  02/92 (455506 bytes)
+bengals	(gcc2)	RS  6000/550	  33,000 v23.0   Oct  04/92 (494520 bytes)
+aixtst2         9021/900         110,500 v23.0-  Oct  01/92 (665992 bytes)
+aixproj         9021/900         123,000 v23.0   Oct  04/92 (426976 bytes)
+
+----------------------------------------------------------------------------
+
+obelix          RT  6150/135       3,200 v22.0   Sep  02/92 (474044 bytes)
+arnor  (gcc1)   Sun 4/4380        15,000 v22.0   Sep  01/92 (368640 bytes)
+matteo          RS  6000/520      17,600 v22.0   Sep  01/92 (422731 bytes)
+idefix (gcc2)   RS  6000/530      20,500 v22.0   Sep  01/92 (454066 bytes)
+idefix (gcc2 O2)RS  6000/530      21,100 v22.0   Sep  01/92 (449242 bytes)
+pi              RS  6000/530E     21,800 v22.0   Sep  01/92 (418050 bytes)
+yktvmz          3090/600S         22,000 v22.0   Sep  01/92 (851955 unstripped)
+forland (gcc1)  Sun 4/4490        22,400 v22.0   Sep  01/92 (368640 bytes)
+forland (suncc) Sun 4/4490        23,000 v22.0   Sep  01/92 (376832 bytes)
+idefix  (xlc)   RS  6000/530      23,200 v22.0   Sep  01/92 (422219 bytes)
+forland (gcc2)  Sun 4/4490        25,000 v22.0   Sep  01/92 (352256 bytes)
+aixproj         3090/600S         41,500 v22.0   Sep  01/92 (396352 bytes)
+
+----------------------------------------------------------------------------
+
+six             RT  6150/135       4,400 v21.0   Aug  05/92 (404772 bytes)
+arnor           Sun 4/4380        16,000 v21.0   Jul  30/92 (319488 bytes)
+matteo          RS  6000/520      19,800 v21.0   Jul  30/92 (362499 bytes)
+yktvmz          3090/600S         26,100 v21.0   Jul  30/92 (786420 unstripped)
+aixproj         3090/600S         46,000 v21.0   Jul  30/92 (349184 bytes)
+
+----------------------------------------------------------------------------
+
+six             RT  6150/135       4,600 v20.0   Jun  26/92 (401292 bytes)
+arnor           Sun 4/4380        15,400 v20.0   Jun  25/92 (311296 bytes)
+spadserv        RS  6000/350      33,700 v20.0   Jun  24/92 (351298 bytes)
+yktvmz          3090/600S         29,000 v20.0   Jun  26/92 (786420 unstripped)
+aixproj         3090/600S         51,000 v20.0   Jun  26/92 (343784 bytes)
+
+----------------------------------------------------------------------------
+
+six             RT  6150/135       5,200 v19.0   May  29/92 (364188 bytes)
+arnor           Sun 4/4380        19,800 v19.0   May  29/92 (286720 bytes)
+leonardo        RS  6000/520      26,000 v19.0   May  29/92 (318795 bytes)
+yktvmz          3090/600S         32,000 v19.0   May  29/92 (786420 unstripped)
+aixproj         3090/600S         62,000 v19.0   May  29/92 (312688 bytes)
+
+----------------------------------------------------------------------------
+
+six             RT  6150/135       6,000 v18.0   May  05/92 (311896 bytes)
+arnor           Sun 4/4380        21,500 v18.0   Apr  30/92 (253952 bytes)
+yktvmz (debug)  3090/600S         28,500 v18.0   Apr  1/92  (786420 unstripped)
+idefix          RS  6000/530      35,500 v18.0   Apr  30/92 (284487 bytes)
+spadserv        RS  6000/350      53,000 v18.0   Apr  30/92 (284487 bytes)
+aixproj         3090/600S         63,000 v18.0   Apr  30/92 (284352 bytes)
+
+----------------------------------------------------------------------------
+
+
+six             RT  6150/135       6,000 v17.0   Apr  1/92  (288048 bytes)
+arnor           Sun 4/4380        22,200 v17.0   Apr  1/92  (237568 bytes)
+leonardo        RS  6000/520      28,400 v17.0   Apr  1/92  (266443 bytes)
+idefix          RS  6000/530      35,000 v17.0   Apr  1/92  (266443 bytes)
+yktvmz          3090/600S         39,000 v17.0   Apr  1/92  (589815 unstripped)
+pi              RS  6000/530E     49,500 v17.0   Apr  1/92  (262551 bytes)
+spadserv        RS  6000/350      59,000 v17.0   Apr  1/92  (266443 bytes)
+aixproj         3090/600S         66,800 v17.0   Apr  1/92  (264840 bytes)
+		(cf v16.1.  The differences are due to new axlib includes.)
+
+----------------------------------------------------------------------------
+
+
+six             RT  6150/135       7,000 v16.1   Mar 11/92
+arnor           Sun 4/4380        24,400 v16.1   Mar 10/92
+obelix          RS  6000/320H     42,400 v16.1   Mar 10/92
+aixproj         3090/600S         77,800 v16.1   Mar 10/92
+		(Compare 16.1:42,400 vs 15.6:45,000 w/o compressOffsets.)
+
+
+pewter          PS2 80                   v16.0*  Mar  8/92   (188608 bytes)
+six             RT  6150/135       3,700 v16.0*  Mar  8/92   (245412 bytes)
+leonardo        RS  6000/520      19,000 v16.0*  Mar  8/92   (228931 bytes)
+arnor           Sun 4/4380        13,000 v16.0*  Mar  8/92   (212992 bytes)
+aixproj         3090/600S         45,500 v16.0*  Mar  8/92   (237448 bytes)
+		(* efficiency bug in compressOffsets)
+
+----------------------------------------------------------------------------
+
+
+obelix          RS  6000/320H     45,000 v15.6   Mar  4/92
+
+
+pewter          PS2 80             5,300 v15.0   Feb  5/92 (TAGS)
+six             RT  6150/135       6,200 v15.0   Jan 24/92 (TAGS)
+arnor           Sun 4/4380        21,800 v15.0   Jan 24/92 (TAGS)
+leonardo        RS  6000/520      30,000 v15.0   Jan 24/92 (TAGS)
+galois          RS  6000/320      30,600 v15.0   Jan 24/92 (TAGS)
+forland		Sun 4/4490        33,000 v15.0   Feb  7/92 (TAGS)
+obelix          RS  6000/320H     39,000 v15.0   Jan 24/92 (TAGS)
+idefix          RS  6000/530      39,000 v15.0   Jan 24/92 (TAGS)
+pi              RS  6000/530E     49,500 v15.0   Jan 24/92 (TAGS)
+aixproj         3090/600S         71,800 v15.0   Jan 24/92 (TAGS)
+
+----------------------------------------------------------------------------
+
+
+idefix          RS  6000/530      41,500 v14.1   Jan 10/92 (gcc -O)
+idefix          RS  6000/530      44,000 v14.1   Jan 10/92 (gcc -O2)
+obelix          RS  6000/320H     48,500 v14.0   Dec 20/91 (absyn directly)
+obelix          RS  6000/320H     42,600 v13.6+  Dec 18/91 (fun cast lists)
+
+----------------------------------------------------------------------------
+
+
+pewter          PS2 80             5,400 v12.3   Oct 30/91
+six             RT  6150/135       6,100 v12.2   Oct 26/91
+arnor           Sun 4/4380        19,100 v12.2   Oct 26/91
+leonardo        RS  6000/520      31,000 v12.2   Oct 26/91
+idefix          RS  6000/530      40,700 v12.2   Oct 26/91
+aixproj         3090/600S         54,100 v12.2   Oct 26/91
+
+----------------------------------------------------------------------------
+
+
+six+            RT  6150/135       5,900 v11.3   Oct 16/91 (BTREE)
+leonardo+       RS  6000/520      29,700 v11.3   Oct 16/91 (BTREE)
+obelix          RS  6000/320H     38,400 v11.1   Oct 14/91 (BTREE)
+
+----------------------------------------------------------------------------
+
+
+pewter          PS2 80             4,720 v 9.5   Jan  8/91
+leonardo        RT  6150/135       4,990 v 9.1   Jan  3/91
+arnor           Sun 4/4380        19,955 v 9.1   Jan  3/91
+idefix          RS  6000/530      31,400 v 9.1   Jan  4/91
+aixproj         3090/600S         61,860 v 9.1   Jan  4/91
+
+----------------------------------------------------------------------------
+
+                                New comp/C      New comp/Boot     Old comp
+                                "big.ax"        "sam.spad"      "float.spad"
+                RT 6150/135       5,370 v 8.2        10~             21*
+                RS 6000/IUO      23,500 v 8.2        44*             93
+                RS 6000/320H     35,800 v 8.2        67*            140*
+
+  ~ est based on 30 min for sam.spad (later improved to 10 min)
+  * based on machine ratios for big.spad
+  + renamed leonardo->six
+
+    forland is a Sun4 4490
+
+Parse teapot.ax	 20s C newcomp		obelix
+		300s Boot newcomp	obelix
+		  ?s Boot oldcomp

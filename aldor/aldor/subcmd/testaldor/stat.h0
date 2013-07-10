@@ -1,0 +1,49 @@
+/******************************************************************************
+ *
+ * stat.h0
+ *
+ * Enough gumf to get a reasonable mkdir and friends
+ *
+ *****************************************************************************/
+
+#ifndef _STAT_H0
+#define _STAT_H0
+
+#ifdef _AIXFOO
+#define _ALL_SOURCE
+#define _POSIX_SOURCE
+#endif 
+
+#ifndef No_Stat_H
+#if !defined(__linux__) && !defined(__APPLE__) && ! defined (__hpux) && !defined(sun)
+# include <sys/mode.h>
+#endif
+# include <sys/stat.h>
+#else /* Our own stat.h */
+#define _S_IFMT		0170000		/* type of file */
+#define   _S_IFREG	0100000		/*   regular */
+#define   _S_IFDIR	0040000		/*   directory */
+#define   _S_IFBLK	0060000		/*   block special */
+#define   _S_IFCHR	0020000		/*   character special */
+#define   _S_IFIFO	0010000		/*   fifo */
+
+#define S_ISUID		0004000		/* set user id on execution */
+#define S_ISGID		0002000		/* set group id on execution */
+
+					/* ->>> /usr/group definitions <<<- */
+#define S_IRWXU		0000700		/* read,write,execute perm: owner */
+#define S_IRUSR		0000400		/* read permission: owner */
+#define S_IWUSR		0000200		/* write permission: owner */
+#define S_IXUSR		0000100		/* execute/search permission: owner */
+#define S_IRWXG		0000070		/* read,write,execute perm: group */
+#define S_IRGRP		0000040		/* read permission: group */
+#define S_IWGRP		0000020		/* write permission: group */
+#define S_IXGRP		0000010		/* execute/search permission: group */
+#define S_IRWXO		0000007		/* read,write,execute perm: other */
+#define S_IROTH		0000004		/* read permission: other */
+#define S_IWOTH		0000002		/* write permission: other */
+#define S_IXOTH		0000001		/* execute/search permission: other */
+#include <stat.h>
+#endif
+
+#endif

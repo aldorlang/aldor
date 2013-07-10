@@ -1,0 +1,58 @@
+STDMATH/src/multpoly/exponent/OLD
+---------------------------------
+
+
+define ExponentCategory(V: VariableType): Category == 
+ GeneralExponentCategory with {
+..........................................................................
+--	default {
+--                exponent(g: Generator Cross(V, Z)): % == {
+--                   local v: V; 
+--                   local d: Z;
+--                   x: % := 0;
+--                   for cross in g repeat {
+--                      (v,d) := cross;
+--                      x := add!(x,v,d);
+--                   }
+--		     x;
+--                }
+--                exponent(lv: List(V), ln: List(Z)): % == {
+--                   x: % := 0;
+--                   for v in lv for d in ln repeat {
+--                      x := add!(x,v,d);
+--                   }
+--                   x;
+--                }
+--		local tt(v: V, n: Z): ExpressionTree == {
+--			import from ExpressionNodePackage;
+--			vt := any(V)(v) ;
+--			assert(not zero? n);
+--			n = 1 => vt;
+--			expt(vt, tree n);
+--		}
+--		tree(e: %): ExpressionTree == {
+--			import from ExpressionNodePackage;
+--			local lst:List ExpressionTree;
+--			zero? e => extree(1$Integer);
+--			lst:= [tt pair for pair in terms e];
+--			empty? rest lst => first lst;
+--			product lst;
+--		}
+--	}
+
+define DirectProductCategory(dim: MachineInteger, T: SumitType): 
+ Category == Join(SumitType, CopyableType, LinearStructureType T) with {
+..........................................................................
+--        if T has GeneralExponentCategory then GeneralExponentCategory;
+--           gcd: (%, %) -> %;
+--             ++ `gcd(x, y)' computes the monomial gcd of `x' and `y' 
+--             ++ that is the greatest `z' w.r.t. `>'  such that
+--             ++ `cancellation?(x,z)' and `cancellation?(z,y)' both hold.
+--           lcm: (%, %) -> %;
+--             ++ `lcm(x, y)' computes the monomial lcm of `x' and `y'
+--             ++ that is the smallest `z' w.r.t. `<'  such that
+--             ++ `cancellation?(z,x)' and `cancellation?(z,y)' both hold.
+--           syzygy: (%, %) -> (%, %);          
+--             ++ `syzygy(x, y)' returns `(a, b)' such that `a+x' and 
+--             ++ `b+y' are `lcm(x, y)'.
+--        }

@@ -1,0 +1,173 @@
+
+(|Sequence|
+   (|Import| NIL |AxiomLib|)
+   (|Extend|
+      (|Define|
+         (|Declare|
+            |Float|
+            (|With|
+               NIL
+               (|Sequence|
+                  |FloatingPointSystem|
+                  |DifferentialRing|
+                  (|Apply| |ConvertibleTo| |String|)
+                  (|Apply| |CoercibleTo| |DoubleFloat|)
+                  |TranscendentalFunctionCategory|
+                  (|Apply| |ConvertibleTo| |InputForm|)
+                  (|Declare|
+                     |/|
+                     (|Apply| |->| (|Comma| |%| |Integer|) |%|))
+                  (|Declare| |**| (|Apply| |->| (|Comma| |%| |%|) |%|))
+                  (|Declare| |normalize| (|Apply| |->| (|Comma| |%|) |%|))
+                  (|Declare|
+                     |relerror|
+                     (|Apply| |->| (|Comma| |%| |%|) |Integer|))
+                  (|Declare|
+                     |shift|
+                     (|Apply| |->| (|Comma| |%| |Integer|) |%|))
+                  (|Declare|
+                     |rationalApproximation|
+                     (|Apply|
+                        |->|
+                        (|Comma| |%| |NonNegativeInteger|)
+                        (|Apply| |Fraction| |Integer|)))
+                  (|Declare|
+                     |rationalApproximation|
+                     (|Apply|
+                        |->|
+                        (|Comma|
+                           |%|
+                           |NonNegativeInteger|
+                           |NonNegativeInteger|)
+                        (|Apply| |Fraction| |Integer|)))
+                  (|Declare| |log2| (|Apply| |->| (|Comma|) |%|))
+                  (|Declare| |log10| (|Apply| |->| (|Comma|) |%|))
+                  (|Declare| |exp1| (|Apply| |->| (|Comma|) |%|))
+                  (|Declare| |atan| (|Apply| |->| (|Comma| |%| |%|) |%|))
+                  (|Declare| |log2| (|Apply| |->| (|Comma| |%|) |%|))
+                  (|Declare| |log10| (|Apply| |->| (|Comma| |%|) |%|))
+                  (|Declare|
+                     |convert|
+                     (|Apply| |->| (|Comma| |DoubleFloat|) |%|))
+                  (|Declare|
+                     |outputFloating|
+                     (|Apply| |->| (|Comma|) (|Comma|)))
+                  (|Declare|
+                     |outputFloating|
+                     (|Apply|
+                        |->|
+                        (|Comma| |NonNegativeInteger|)
+                        (|Comma|)))
+                  (|Declare|
+                     |outputFixed|
+                     (|Apply| |->| (|Comma|) (|Comma|)))
+                  (|Declare|
+                     |outputFixed|
+                     (|Apply|
+                        |->|
+                        (|Comma| |NonNegativeInteger|)
+                        (|Comma|)))
+                  (|Declare|
+                     |outputGeneral|
+                     (|Apply| |->| (|Comma|) (|Comma|)))
+                  (|Declare|
+                     |outputGeneral|
+                     (|Apply|
+                        |->|
+                        (|Comma| |NonNegativeInteger|)
+                        (|Comma|)))
+                  (|Declare|
+                     |outputSpacing|
+                     (|Apply|
+                        |->|
+                        (|Comma| |NonNegativeInteger|)
+                        (|Comma|)))
+                  (|RestrictTo| |arbitraryPrecision| |Category|)
+                  (|RestrictTo| |arbitraryExponent| |Category|))))
+         (|Add|
+            (|PretendTo|
+               (|Add| NIL NIL)
+               (|With|
+                  NIL
+                  (|Sequence|
+                     |FloatingPointSystem|
+                     |DifferentialRing|
+                     (|Apply| |ConvertibleTo| |String|)
+                     (|Apply| |CoercibleTo| |DoubleFloat|)
+                     |TranscendentalFunctionCategory|
+                     (|Apply| |ConvertibleTo| |InputForm|)
+                     (|Declare|
+                        |/|
+                        (|Apply| |->| (|Comma| |%| |Integer|) |%|))
+                     (|Declare| |**| (|Apply| |->| (|Comma| |%| |%|) |%|))
+                     (|Declare|
+                        |normalize|
+                        (|Apply| |->| (|Comma| |%|) |%|))
+                     (|Declare|
+                        |relerror|
+                        (|Apply| |->| (|Comma| |%| |%|) |Integer|))
+                     (|Declare|
+                        |shift|
+                        (|Apply| |->| (|Comma| |%| |Integer|) |%|))
+                     (|Declare|
+                        |rationalApproximation|
+                        (|Apply|
+                           |->|
+                           (|Comma| |%| |NonNegativeInteger|)
+                           (|Apply| |Fraction| |Integer|)))
+                     (|Declare|
+                        |rationalApproximation|
+                        (|Apply|
+                           |->|
+                           (|Comma|
+                              |%|
+                              |NonNegativeInteger|
+                              |NonNegativeInteger|)
+                           (|Apply| |Fraction| |Integer|)))
+                     (|Declare| |log2| (|Apply| |->| (|Comma|) |%|))
+                     (|Declare| |log10| (|Apply| |->| (|Comma|) |%|))
+                     (|Declare| |exp1| (|Apply| |->| (|Comma|) |%|))
+                     (|Declare|
+                        |atan|
+                        (|Apply| |->| (|Comma| |%| |%|) |%|))
+                     (|Declare| |log2| (|Apply| |->| (|Comma| |%|) |%|))
+                     (|Declare| |log10| (|Apply| |->| (|Comma| |%|) |%|))
+                     (|Declare|
+                        |convert|
+                        (|Apply| |->| (|Comma| |DoubleFloat|) |%|))
+                     (|Declare|
+                        |outputFloating|
+                        (|Apply| |->| (|Comma|) (|Comma|)))
+                     (|Declare|
+                        |outputFloating|
+                        (|Apply|
+                           |->|
+                           (|Comma| |NonNegativeInteger|)
+                           (|Comma|)))
+                     (|Declare|
+                        |outputFixed|
+                        (|Apply| |->| (|Comma|) (|Comma|)))
+                     (|Declare|
+                        |outputFixed|
+                        (|Apply|
+                           |->|
+                           (|Comma| |NonNegativeInteger|)
+                           (|Comma|)))
+                     (|Declare|
+                        |outputGeneral|
+                        (|Apply| |->| (|Comma|) (|Comma|)))
+                     (|Declare|
+                        |outputGeneral|
+                        (|Apply|
+                           |->|
+                           (|Comma| |NonNegativeInteger|)
+                           (|Comma|)))
+                     (|Declare|
+                        |outputSpacing|
+                        (|Apply|
+                           |->|
+                           (|Comma| |NonNegativeInteger|)
+                           (|Comma|)))
+                     (|RestrictTo| |arbitraryPrecision| |Category|)
+                     (|RestrictTo| |arbitraryExponent| |Category|))))
+            NIL))))

@@ -1,0 +1,9 @@
+"fact.as", line 25: print << fact 7    << newline
+                    ......................^
+[L25 C23] #2 (Error) There are no suitable meanings for 
+		     the operator `newline'.
+
+"fact.as", line 26: print << fact 78   << newline;
+                    ^
+[L26 C1] #1 (Warning) Suspicious juxtaposition.  Check for missing `;'.
+Check indentation if you are using `#pile'.

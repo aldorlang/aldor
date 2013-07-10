@@ -1,0 +1,14 @@
+#!/bin/sh
+#
+# This script calls the assembler, with whatever flags are needed.
+
+
+case "$MACHINE" in
+linux*)         as $* ;;
+irixmips1*)     as -o any_as.o $* ;;
+irixmips3*)     as -n32 -mips3 $* ;;
+irixmips4*)     as -64 -mips4 $* ;;
+axposf1v4*)     as -o any_as.o $* ;;
+hpux*)          /usr/ccs/lbin/cpp $* | /usr/ccs/bin/as -o any_as.o ;;
+*)		echo "trying generic docc ..."; docc $* ;;
+esac

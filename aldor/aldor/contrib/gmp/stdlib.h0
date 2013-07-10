@@ -1,0 +1,105 @@
+/*****************************************************************************
+ *
+ * stdlib.h0: Fixups for <stdlib.h>.
+ *
+ * Copyright (c) 1990-2007 Aldor Software Organization Ltd (Aldor.org).
+ *
+ *****************************************************************************/
+
+/*
+ * This file either includes the ANSI C header <stdlib.h> or gives
+ * declarations for those standard macros, types and functions.
+ *
+ * This file also protects against certain headers which do not
+ * guard against re-typedefing the standard types.
+ */
+
+#ifndef _STDLIB_H0_
+#define _STDLIB_H0_
+
+/*
+ * Including stddef here is technically illegal, but saves repetition of
+ * guards against platform include files which do not work with stdlib.
+ */
+#include "stddef.h0"
+
+#ifndef CC_no_stdlib_h
+
+#  include <stdlib.h>
+
+#  ifdef CC_stdlib_no_exits
+#    define EXIT_SUCCESS 0
+#    define EXIT_FAILURE 1
+#  endif
+
+#else
+
+#  define EXIT_SUCCESS	0	/* A typical convention. */
+#  define EXIT_FAILURE	1	/* Not 0. */
+
+#  define RAND_MAX	32767	/* Assuming 16 bit ints. */
+#  define MB_CUR_MAX	2	/* Typical. */
+
+#  ifndef _DIV_T
+#    define _DIV_T
+     typedef struct { int quot, rem; } div_t;
+#  endif
+   
+#  ifndef _LDIV_T
+#    define _LDIV_T
+     typedef struct { long int quot, rem; } ldiv_t;
+#  endif
+   
+   extern double    	atof    _of((_const char *));
+   extern int	    	atoi    _of((_const char *));
+   extern long      	atol    _of((_const char *));
+
+   extern double    	strtod  _of((_const char *, char **endp));
+   extern long      	strtol  _of((_const char *, char **endp, int base));
+   extern unsigned long	strtoul _of((_const char *, char **endp, int base));
+
+   extern int		rand	_of((void));
+   extern void		srand	_of((unsigned int seed));
+
+   extern _void *	calloc	_of((size_t n, size_t size));
+   extern _void *	malloc  _of((size_t));
+   extern _void *	realloc	_of((_void *, size_t));
+   extern void		free	_of((_void *));
+
+   extern void		abort	_of((void));
+   extern void		exit	_of((int status));
+   extern int		atexit	_of((void (*fn) _of((void)) ));
+
+   extern int		system	_of((_const char *));
+   extern char *	getenv	_of((_const char *));
+
+   /* Work to not split _of(()) across lines.  Some cpp-s can't hack it. */
+#  define _kptr		_const _void *
+#  define _cmpfn	int (*cmpfn) _of((_kptr, _kptr))
+
+   extern _void *bsearch _of((_kptr key,_kptr base,size_t n,size_t sz,_cmpfn));
+   extern void	 qsort	 _of((_void *base,         size_t n,size_t sz,_cmpfn));
+
+#  undef _kptr
+#  undef _cmpfn
+
+   extern int		abs	_of((int));
+   extern long		labs	_of((long));
+   extern div_t		div	_of((int n, int d));
+   extern ldiv_t	ldiv	_of((long n, long d));
+
+   extern int		mblen	_of((_const char *, size_t));
+   extern int		mbtowc	_of((wchar_t *, _const char *, size_t));
+   extern int		wctomb	_of((char *, wchar_t));
+   extern size_t 	mbstowcs _of((wchar_t *, _const char *, size_t));
+   extern size_t 	wcstombs _of((char *, _const wchar_t *, size_t));
+
+
+#  ifdef abs
+#    undef abs
+#  endif
+
+
+#endif /* !CC_no_stdlib_h */
+
+#endif /* !_STDLIB_H0_ */

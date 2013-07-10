@@ -1,0 +1,14 @@
+ALGEBRA/src/multpoly/exponent/README
+------------------------------------
+
+
+o ATTENTION
+
+  Du fait des regles sur l'heritage au nveau des domaines et
+  categories, NE PAS modifier quoi que ce soit pouvant avoir
+  un impact sur la recherche des definitions des operations.
+
+  Deplacer la definition de `extree' de `DirectProductCategory'
+  a `DirectProduct' modofierait `extree' pour tous les domaines
+  de `MachineIntegerExponentVectorCategory'.
+

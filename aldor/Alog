@@ -1,0 +1,56 @@
+Friday Jan 11:
+1. Fixed up .profile to define ALDORROOT properly on various platforms.
+   Added MACHINE = linux
+2. Build the tools directory.
+   -- Updated tools Makefile to create bin and toolbin directories if needed
+   -- Added dependency of tools written in c on docc
+   -- Updated memlay to use unsigned longs for the integer values containing pointers.
+   -- installed flex and bison
+   -- Modified Makefile to have space between $(OUTFLAG) [e.g. -o] and the file argument
+   -- modified zaccgram.y to work with bison
+3. Build the subcmd director.
+   -- Updated various tools to have ALDORROOT/bin or ALDORROOT/toolbin in their PATH
+   -- Update Makefile to create $ALDORROOT/srclib/unitools if needed
+   -- update os_macosx_vm to change vm_region to mach_vm_region
+   -- Update Makefile to create $ALDORROOT/include if needed
+4. Build the src directory
+   -- Updated makemake
+   -- Updated Makefile to give proper SRC= argument to makemake
+   -- Updated Makefiles to give paths to various commands, like unicl
+   -- Need to actually figure out what was going on with the mach_vm_region stuff.... switch to Linux fo rnow
+   
+
+=========================================================
+2a3
+> # define YYSTYPE yystype
+16d16
+< %type<str> TK_Id TK_String
+35c35
+< 			{ seeTokenType($3); }
+---
+> 			{ seeTokenType($3.str); }
+37c37
+< 			{ seeRuleType($3); }
+---
+> 			{ seeRuleType($3.str); }
+39c39
+< 			{ seeIncludeEnum($2, $3); }
+---
+> 			{ seeIncludeEnum($2.str, $3.str); }
+62,63c62,63
+< PhraseName0:	TK_Id 				 { seeName($1); }
+< |		TK_Id TK_OPren Args TK_CPren 	 { seeName($1); }
+---
+> PhraseName0:	TK_Id 				 { seeName($1.str); }
+> |		TK_Id TK_OPren Args TK_CPren 	 { seeName($1.str); }
+65,66c65,66
+< Args:		TK_Id 				 { seeArg($1); }
+< |		Args TK_Comma TK_Id		 { seeArg($3); }
+---
+> Args:		TK_Id 				 { seeArg($1.str); }
+> |		Args TK_Comma TK_Id		 { seeArg($3.str); }
+69c69
+< |		TK_OAngle TK_Id TK_CAngle 	 { seeType($2); }
+---
+> |		TK_OAngle TK_Id TK_CAngle 	 { seeType($2.str); }
+=========================================================

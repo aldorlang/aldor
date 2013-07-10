@@ -1,0 +1,132 @@
+\newcommand{\Language}{$AXIOM-XL$}
+\newcommand{\See}[1]{See ``#1''.}
+\newcommand{\PlatformSpecific}{\See{Platform-Specific Notes}}
+\newcommand{\Term}[1]{{\em #1\/}}
+%
+% For grammar
+%
+\newcommand{\Kw}[1]{{\tt #1\/}}
+\newcommand{\Sn}[1]{{\sf #1\/}}
+\newcommand{\Meta}[1]{{\it #1\/}}
+\newcommand{\Alt}{$|$}
+%
+% Tokens
+%
+\newcommand{\TkId}{\verb!ID!}
+\newcommand{\TkBlank}{\verb!BLANK!}
+\newcommand{\TkInt}{\verb!INT!}
+\newcommand{\TkFloat}{\verb!FLOAT!}
+\newcommand{\TkString}{\verb!STRING!}
+\newcommand{\TkPreDoc}{\verb!PREDOC!}
+\newcommand{\TkPostDoc}{\verb!POSTDOC!}
+\newcommand{\TkComment}{\verb!COMMENT!}
+\newcommand{\TkError}{\verb!ERROR!}
+\newcommand{\KwAdd}{``\verb!add!''}
+\newcommand{\KwAlways}{``\verb!always!''}
+\newcommand{\KwAnd}{``\verb!and!''}
+\newcommand{\KwAssert}{``\verb!assert!''}
+\newcommand{\KwBreak}{``\verb!break!''}
+\newcommand{\KwBut}{``\verb!but!''}
+\newcommand{\KwBy}{``\verb!by!''}
+\newcommand{\KwCase}{``\verb!case!''}
+\newcommand{\KwDefault}{``\verb!default!''}
+\newcommand{\KwDelay}{``\verb!delay!''}
+\newcommand{\KwDo}{``\verb!do!''}
+\newcommand{\KwElse}{``\verb!else!''}
+\newcommand{\KwExcept}{``\verb!except!''}
+\newcommand{\KwExport}{``\verb!export!''}
+\newcommand{\KwExtend}{``\verb!except!''}
+\newcommand{\KwFix}{``\verb!fix!''}
+\newcommand{\KwFor}{``\verb!for!''}
+\newcommand{\KwFluid}{``\verb!fluid!''}
+\newcommand{\KwFree}{``\verb!free!''}
+\newcommand{\KwFrom}{``\verb!from!''}
+\newcommand{\KwGenerate}{``\verb!generate!''}
+\newcommand{\KwGoto}{``\verb!goto!''}
+\newcommand{\KwHas}{``\verb!has!''}
+\newcommand{\KwHide}{``\verb!hide!''}
+\newcommand{\KwIf}{``\verb!if!''}
+\newcommand{\KwImport}{``\verb!import!''}
+\newcommand{\KwIn}{``\verb!in!''}
+\newcommand{\KwInline}{``\verb!inline!''}
+\newcommand{\KwIs}{``\verb!is!''}
+\newcommand{\KwIsnt}{``\verb!isnt!''}
+\newcommand{\KwIterate}{``\verb!iterate!''}
+\newcommand{\KwLabel}{``\verb!label!''}
+\newcommand{\KwLocal}{``\verb!local!''}
+\newcommand{\KwMacro}{``\verb!macro!''}
+\newcommand{\KwMod}{``\verb!mod!''}
+\newcommand{\KwNever}{``\verb!never!''}
+\newcommand{\KwNext}{``\verb!next!''}
+\newcommand{\KwNot}{``\verb!not!''}
+\newcommand{\KwOr}{``\verb!or!''}
+\newcommand{\KwPretend}{``\verb!pretend!''}
+\newcommand{\KwQuo}{``\verb!quo!''}
+\newcommand{\KwRem}{``\verb!rem!''}
+\newcommand{\KwRepeat}{``\verb!repeat!''}
+\newcommand{\KwReturn}{``\verb!return!''}
+\newcommand{\KwRule}{``\verb!rule!''}
+\newcommand{\KwSelect}{``\verb!select!''}
+\newcommand{\KwSurprise}{``\verb!surprise!''}
+\newcommand{\KwThen}{``\verb!then!''}
+\newcommand{\KwTo}{``\verb!to!''}
+\newcommand{\KwTry}{``\verb!try!''}
+\newcommand{\KwUse}{``\verb!use!''}
+\newcommand{\KwWhere}{``\verb!where!''}
+\newcommand{\KwWhile}{``\verb!while!''}
+\newcommand{\KwWith}{``\verb!with!''}
+\newcommand{\KwYield}{``\verb!yield!''}
+\newcommand{\KwQuote}{``\verb!'!''}
+\newcommand{\KwGrave}{``\verb!`!''}
+\newcommand{\KwComma}{``\verb!,!''}
+\newcommand{\KwSemicolon}{``\verb!;!''}
+\newcommand{\KwDollar}{``\verb!\$!''}
+\newcommand{\KwSharp}{``\verb!\#!''}
+\newcommand{\KwAmpersand}{``\verb!&!''}
+\newcommand{\KwAssign}{``\verb!:=!''}
+\newcommand{\KwColon}{``\verb!:!''}
+\newcommand{\KwColonStar}{``\verb!:*!''}
+\newcommand{\KwIIColon}{``\verb!::!''}
+\newcommand{\KwAt}{``\verb!@!''}
+\newcommand{\KwIIAt}{``\verb!@@!''}
+\newcommand{\KwStar}{``\verb!*!''}
+\newcommand{\KwIIStar}{``\verb!**!''}
+\newcommand{\KwDot}{``\verb!.!''}
+\newcommand{\KwIIDot}{``\verb!..!''}
+\newcommand{\KwEQ}{``\verb!=!''}
+\newcommand{\KwIIEQ}{``\verb!==!''}
+\newcommand{\KwMArrow}{``\verb!==>!''}
+\newcommand{\KwImplies}{``\verb!=>!''}
+\newcommand{\KwGT}{``\verb!>!''}
+\newcommand{\KwIIGT}{``\verb!>>!''}
+\newcommand{\KwGE}{``\verb!>=!''}
+\newcommand{\KwLT}{``\verb!<!''}
+\newcommand{\KwIILT}{``\verb!<<!''}
+\newcommand{\KwLE}{``\verb!<=!''}
+\newcommand{\KwLArrow}{``\verb!<-!''}
+\newcommand{\KwHat}{``{\tt\^{ }}''}		% Special
+\newcommand{\KwHatE}{``{\tt\^{ }=}''}		% Special
+\newcommand{\KwTilde}{``{$\sim$}''}		% Special
+\newcommand{\KwTildeE}{``{$\sim$\tt =}''}	% Special
+\newcommand{\KwPlus}{``\verb!+!''}
+\newcommand{\KwMapsTo}{``\verb!+->!''}
+\newcommand{\KwMinus}{``\verb!-!''}
+\newcommand{\KwRArrow}{``\verb!->!''}
+\newcommand{\KwSlash}{``$/$''}			% Special
+\newcommand{\KwWedge}{``$/\backslash$''}	% Special
+\newcommand{\KwBackslash}{``$\backslash$''}	% Special
+\newcommand{\KwVee}{``$\backslash/$''}		% Special
+\newcommand{\KwOBrack}{``\verb![!''}
+\newcommand{\KwOCurly}{``$\{$''}		% Special
+\newcommand{\KwOPren}{``\verb!(!''}
+\newcommand{\KwOParen}{``\verb!(!''}
+\newcommand{\KwOPPren}{``\verb!(|!''}
+\newcommand{\KwCBrack}{``\verb!]!''}
+\newcommand{\KwCCurly}{``$\}$''}		% Special
+\newcommand{\KwCPren}{``\verb!)!''}
+\newcommand{\KwCParen}{``\verb!)!''}
+\newcommand{\KwCPPren}{``\verb!|)!''}
+\newcommand{\KwBar}{``\verb!|!''}
+\newcommand{\KwSetTab}{\verb!SETTAB!}
+\newcommand{\KwBackSet}{\verb!BACKSET!}
+\newcommand{\KwBackTab}{\verb!BACKTAB!}

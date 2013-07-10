@@ -1,0 +1,48 @@
+#
+# Copyright (c) 1990-2007 Aldor Software Organization Ltd (Aldor.org).
+#
+
+ThisDir = gmp
+
+COMPILER=aldor
+ALDOR=$(COMPILER)
+MAKEFILE=NMakefile
+MSGFLAGS = -Mno-mactext -M2
+AFLAGS=  -fao $(MSGFLAGS) -Y $(LibDir) -I $(IncDir)
+AOFLAGS=$(AFLAGS) -q5 -qinline-all
+AODFLAGS=$(AFLAGS) -q1 -dDEBUG
+ARREPLFLAGS  = rv
+
+LibDir = $(ALDORLIBROOT)/lib
+IncDir = $(ALDORLIBROOT)/include
+DocDir = $(ALDORLIBROOT)/doc/tex
+TestDir = $(ALDORLIBROOT)/test
+StampDir  = $(LibDir)
+DocStampDir  = $(DocDir)
+TestStampDir  = $(TestDir)
+
+ALDOR=$(COMPILER) $(FLAGS)
+
+.SUFFIXES: .ao .as
+
+# Implicit rule for building .al file
+.as.ao: 
+	@echo Compiling $*.as ...
+	$(ALDOR) $(MAKEDIR)\$*.as
+	@uniar rv $(ALDORLIB) $*.ao
+	@del $*.ao
+
+SRCS = sal_intgmp sal_fltgmp sal_gmptls
+
+# directories that we depend on
+
+aobj:  sal_gmptls.ao sal_intgmp.ao sal_fltgmp.ao
+
+clean:
+	-@del /q *.c *.h *.fm *.ao *.o *~
+
+# Explicit dependencies
+
+sal_gmptls.ao:
+sal_intgmp.ao: sal_gmptls.ao
+sal_fltgmp.ao: sal_intgmp.ao

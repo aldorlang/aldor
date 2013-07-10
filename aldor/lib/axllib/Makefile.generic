@@ -1,0 +1,44 @@
+##########################################
+#
+# Makefile to build an Aldor distribution
+#
+# Yannis Chicha, July 2003
+#
+##########################################
+
+include ../../Makefile.globals
+
+AXLLIBROOT=$(GENERIC_DIR)/lib/axllib
+
+all:
+	@echo "Usage:"
+	@echo "   make objects         => make the objects for libaldor"
+	@echo "   make installdistrib  => install libaldor in the aldor directory"
+	@echo "   make clean           => clean the directory"
+
+objects: check
+	@(echo "Creating libaxllib.a ..."; \
+	  export PATH="$(ALDORROOT)/bin:$$PATH"; \
+	  cd $(AXLLIBROOT); \
+	  bin/makeaxlliba.sh lib/libaxllib.al; \
+	  echo " ... done.")
+
+installdistrib: msginstall objects
+	@(echo "Installing libaxllib in Aldor directory"; \
+	  cd $(AXLLIBROOT); \
+	  cp include/axllib.as $(ALDORROOT)/include; \
+	  cp lib/libaxllib.a lib/libaxllib.al $(ALDORROOT)/lib)
+
+msginstall:
+	@(echo "*****************************************************"; \
+	  echo "Compiling and installing libaxllib in Aldor directory"; \
+	  echo "*****************************************************")
+
+check:
+	-@ if [ "x$(ALDORROOT)" = "x" ] ; then echo "*** ALDORROOT unset"; fi
+	@ [ "x$(ALDORROOT)" != "x" ]
+
+clean:
+	-@$(RM) lib/*.a
+	-@$(RM) *~
+	-@$(RM) */*~

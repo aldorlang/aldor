@@ -1,0 +1,28 @@
+#
+# Copyright (c) 1990-2007 Aldor Software Organization Ltd (Aldor.org).
+#
+
+LibDir = $(ALDORLIBROOT)\lib
+IncDir = $(ALDORLIBROOT)\include
+
+ALDOR=$(COMPILER) $(FLAGS)
+
+.SUFFIXES: .ao .as
+
+# Implicit rule for building .al file
+.as.ao: 
+	@echo Compiling $*.as ...
+	$(ALDOR) $(MAKEDIR)\$*.as
+	@uniar rv $(ALDORLIB) $*.ao
+	@del $*.ao
+
+
+SRCS = sal_lang
+
+aobj: sal_lang.ao
+
+clean:
+	-@del /q *.c *.h *.fm *.ao *.o *~
+
+sal_lang.ao:
+

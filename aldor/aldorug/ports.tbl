@@ -1,0 +1,60 @@
+\begin{figure}[p]
+\leftskip=\baseLeftSkip%
+\label{PortsTable}
+\caption{\asharp{} Ports}
+\vspace{1mm}
+\begin{tabular}{|lllll|} \hline \hline
+\multicolumn{2}{|c}{\bf \asharp{}}
+                & \bf Processor      & \bf Operating & \bf Subordinate\\
+\multicolumn{2}{|c}{\bf Version}
+                & \                  & \bf System    & \bf C Compiler \\
+\hline
+\multicolumn{5}{|l|}{} \\
+\multicolumn{5}{|l|}{\it Unix-derivatives} \\
+1.1.12 & linux    & Intel i386         & Linux               & GNU C        \\
+1.1.12 & rs4.1    & IBM RS/6000        & AIX 4.1             & IBM XLC      \\
+1.1.12 & sun4os4g & Sun Sparc          & SunOS 4.1.x         & GNU C        \\
+1.1.12 & sun4os55g & Sun Sparc	       & SunOS 5.5           & GNU C	    \\
+1.1.12 & sun4os55c & Sun Sparc	       & SunOS 5.5           & SUNPRO	    \\
+1.1.12 & irixmips1& MIPS I             & IRIX 5              & MIPS C       \\
+1.1.12 & irixmips3& MIPS III           & IRIX 6              & MIPS C       \\
+1.1.12 & hpux     & HP                 & HP/UX 10            & HP C         \\
+1.1.12 & axposf1v4 & DEC Alpha         & OSF/1(V4.0)        & DEC C        \\
+1.1.10 & sun4os4c & Sun Sparc          & SunOS 4.1.x         & Sun C (K\&R) \\
+1.00.6 & rsgcc    & IBM RS/6000        & AIX 3.2             & GNU C        \\
+0.33.0 & aixrt    & IBM RT/PC          & AIX 2.2             & IBM C (K\&R) \\
+0.35.0 & aixesa   & IBM S/370          & AIX/ESA             & Metaware C   \\
+0.33.5 & next     & Motorola 680x0     & Next Mach           & GNU C        \\
+\hline
+\multicolumn{5}{|l|}{} \\
+\multicolumn{5}{|l|}{\it DOS, Windows} \\
+0.28.0 & dosbcc  & Intel i386 (16 bit) & DOS 5.0             & Borland C++ \\
+1.00.0 & dosgcc  & Intel i386 (32 bit) & DOS 5.0,            & GNU C       \\
+{}     & {}      & {}                  & Windows 3.1         & {}       \\
+\hline
+\multicolumn{5}{|l|}{} \\
+\multicolumn{5}{|l|}{\it OS/2} \\
+0.23.0 & os2cset2 & Intel i386         & OS/2 2.0            & IBM C Set2  \\
+0.28.0 & os2bcc   & Intel i386         & OS/2 2.0            & Borland C++ \\
+\hline
+\multicolumn{5}{|l|}{} \\
+\multicolumn{5}{|l|}{\it Macintosh} \\
+0.36.0 & macsys7 & Motorola 680x0      & System 7            & {}*         \\
+{}*    & macppc  & Power PC            & System 7            & Metrowerks C\\
+\hline
+\multicolumn{5}{|l|}{} \\
+\multicolumn{5}{|l|}{\it Others} \\
+0.31.0 & cms     & IBM S/370           & VM/CMS              & C 370       \\
+{}*    & vmsaxp  & DEC Alpha    & VMS                 & DEC C       \\
+\hline
+\end{tabular}
+\vspace{1mm}
+* in progress 
+
+\vspace{3mm}
+Entries in this table do not imply commercial availability.
+\end{figure}
+
+
+
+

@@ -1,0 +1,526 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%                                                                        %%%
+%%% :: Introductory Programs
+%%%                                                                        %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\head{chapter}{Some simple programs}{asugLangSimple}
+
+% Perhaps the easiest way to get a feeling for a programming language is
+% to read a few programs.  This % section
+% chapter presents simple programs
+% and uses them as a departure point to discuss some of the basic ideas
+% of \asharp{}.
+
+Perhaps the easiest way to get a feeling for a programming language is
+to read a few programs.  This chapter presents simple programs
+and uses them as a departure point to discuss some of the basic ideas
+of \asharp{}.
+
+Two main options are available to readers after completing this
+chapter.  Those who prefer a structured approach may choose to
+progress through the development in part II.  Those preferring to
+learn by example may want to skip ahead to \chapref{asugSample},
+where they will find extended examples of more advanced
+programming techniques in the form of further annotated programs,
+and refer to part II only as necessary.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\newpage
+\head{section}{Doubling integers}{asugLangSimpleI}
+\thegeneralfile{h}{SimpleProgI}
+{Simple program 1}{examples/simple1.as}
+
+The first program is one which doubles integers.
+%shown in Figure~\ref{SimpleProgI}.
+This program illustrates a number of things:
+\begin{enumerate}
+\item
+The \asharp{} language is itself almost empty. 
+This allows libraries to define their own environments all the
+way down to such basic questions such as what an integer ought to be.
+Therefore, almost all programs begin with an \ttin{\#include} line
+to establish a basic context.
+The \ttin{\#include} line in this example provides a context in
+which \ttin{Integer} has a specific meaning, provided by the stand-alone
+\libaldor{} library. Actually the identifier \ttin{Integer} is a convenient
+\ttin{macro} (see \chapref{asugLangMacros}) for \ttin{AldorInteger}.
+Please refer to the \libaldor{} library documentation for more details
+about \ttin{Integer} and \ttin{AldorInteger}.
+%To allow the standard libraries to be used with a
+%user's own libraries without name-clashes, the types in \libaldor{} are
+%prefixed by a unique identifier (in this case {\tt BL}).
+%To avoid these
+%names and make the program more readable a macro file is automatically
+%included to allow this prefix to be ignored.
+\item The symbol \ttin{==} indicates a definition --- in this case
+a definition of a function named \ttin{double}.
+\keywordIndex{==}
+\item
+The function has two declarations using the syntax
+\ttin{:~Integer}.  
+Names indicating values (variables, parameters, \etc{})
+may each contain values of only a specific {\em type}\index{type}.  
+The first declaration in this program
+states that the parameter \verb"n" must be an \verb"Integer". 
+The second asserts that the result of the function will
+also be an \verb"Integer".  (The type of the function itself is
+represented as \ttin{Integer -> Integer}; a name and type together
+are called a {\em signature}\index{signature}, as in
+\ttin{double: Integer -> Integer}.)
+\item
+The declarations cause the exports from the type \verb"Integer"
+to be visible.  Typically, a type exports special
+values (such as 0 and 1) and functions on its members.
+In this example, the name \ttin{+} has a meaning as an exported
+function from \verb"Integer".
+\item
+The body of the function \verb"double" is the expression
+\ttin{n + n}.  
+The value of this expression is returned as the result
+of the function.  
+It is not necessary to use an explicit \ttin{return}
+statement, although it is permitted.
+This turns out to be very convenient when many functions have very
+short definitions, as is normal with abstract data types or
+object-oriented programs.
+\end{enumerate}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\newpage
+\head{section}{Square roots}{asugLangSimpleII}
+\thegeneralfile{h}{SimpleProgII}
+{Simple program 2}{examples/simple2.as}
+
+Our second program 
+%is given in Figure~\ref{SimpleProgII} and
+illustrates several more aspects of the language:
+
+\begin{enumerate}
+\item Comments begin with two hyphens \ttin{--} and continue to
+      the end of the line.
+\item Abbreviations (``macros'') may be defined using \ttin{==>}.
+\keywordIndex{==>}
+    The line
+
+\begin{verbatim}
+    DF ==> DoubleFloat;
+\end{verbatim}
+
+    causes \ttin{DF} to be replaced by \ttin{DoubleFloat} wherever it is used.
+%\item Functions can accept multiple arguments and return multiple results.
+%      In this example, the function \verb"sums" accepts three parameters
+%      and produces three results, all of which are \verb"Integer"s.
+
+\item A function's body may be a compound expression.  In this example
+      the body of the function is a sequence consisting of eight
+      expressions separated by semicolons and grouped together by braces.
+      These expressions are evaluated in the order given.
+      The  value of the last expression is the value of the sequence,
+      and hence is the value of the function.
+
+\item The semicolons separate expressions.  It is permitted, but not
+      necessary, to have one after the last expression in a sequence.
+
+\item Variables may be assigned values using \ttin{:=}.
+\keywordIndex{:=}
+
+\item The variable \ttin{r} is local to the function
+      \verb"miniSqrt": it will not be seen from outside it.
+      Variables may be made local to a function by a \ttin{local}
+      declaration or, as in this case, implicitly, by assignment.
+
+\item In this function the variable \ttin{r}
+      contains double precision floating point values.
+      Since this may be inferred from the program,
+      it is not necessary to provide a type declaration.
+\end{enumerate}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\newpage
+\head{section}{A loop and output}{asugLangSimpleIII}
+\thegeneralfile{h}{SimpleProgIII}
+{Simple program 3}{examples/simple3.as}
+
+The third program
+%, shown in Figure~\ref{SimpleProgIII},
+has a loop and produces some output.  Things to notice about
+this program are:
+\begin{enumerate}
+
+\item This example has expressions which occur at the top-level,
+outside any function definition.  This illustrates how the entire source
+program is treated as an expression sequence, which may (or may not) contain
+definitions among other things.  
+This entire source program is treated in the same way as a compound
+expression forming the body of a function:  it is evaluated from 
+top to bottom, performing definitions, assignments and function calls
+along the way.
+
+\item As we saw in a previous example,
+the declarations \ttin{:~Integer} suffice
+to make the exports from \verb"Integer" visible within the
+\verb"factorial" function.
+This gives meaning to \ttin{1}, \ttin{*} and \ttin{..}.
+
+These declarations do not, however, cause 
+the exports from \verb"Integer" to be visible at the top-level
+of the file, outside the function \verb"factorial".
+%Word order changed to avoid overfull box.
+This conservative behaviour turns out to be quite desirable when
+writing large programs, since adding a new function to a working
+program will not pollute the name space of the program into which it
+is inserted.
+
+In order to be able to use the exports of \verb"Integer" at the 
+top-level of the file, we have used an \ttin{import} statement.
+Importing \verb+TextWriter+ allows the use of \verb+stdout+,
+\verb+String+ is needed for \verb+"factorial 10 = "+ and
+\verb+Character+ allows the use of \verb+newline+.
+
+\item The last line of the example produces some output.
+The general idea is to use the infixed name \ttin{<<} to
+output the right-hand expression via the left-hand text writer.
+
+Syntactically, \ttin{<<} groups from left to right so a minimum number
+of parentheses are needed:  the line in the example is equivalent to
+
+\begin{small}
+\begin{verbatim}
+((stdout << "factorial 10 = ") << factorial 10) << newline;
+\end{verbatim}
+\end{small}
+
+\item The last line is simple but refers to many things.
+We shall say exactly where each of them comes from:
+\begin{itemize}
+\item The name \ttin{stdout} is a \verb"TextWriter".
+\item The expression \ttin{"factorial 10 ="} is a \verb"String" constant.
+\item \ttin{newline} is a \verb"Character".
+\end{itemize}
+All the above are visible by virtue of the \ttin{\#include "aldorio"} statement
+at the beginning of the example.
+\begin{itemize}
+\item We have already seen where \ttin{factorial} and \ttin{10} come from.
+\item This leaves \ttin{<<}.  
+There are three uses, and each use refers to a different function.  
+The first one takes a string as its right (second) argument and comes
+from the \verb+#include "aldorio"+ statement. 
+The second one takes an \verb"Integer" and is imported along with
+the other operations in with the \ttin{:~Integer} declaration.
+The last one takes a \verb"Character" and also comes from
+the \verb+#include "aldorio"+ statement.
+\end{itemize}
+
+%%FIXME: Describe formatted output
+%It is also possible to produce formatted output, and this is described
+%in \chapref{asugBaselibDoms}.
+
+\item Let us look more closely at the use of the \verb"factorial" function
+in the last line: \ttin{factorial 10}.
+No parentheses are needed here because the function has only a single argument.
+If the function took two arguments, \eg{} \ttin{5, 5},
+or if the argument were a more complicated expression, \eg{} \ttin{5 + 5},
+then parentheses would be needed to force the desired grouping.
+
+\item A word of caution is necessary here: the manner of output is defined
+by the particular library, not the language.  
+The form of output in this example is appropriate when using
+\ttin{\#include "aldorio"} but may not work in other contexts.
+%but {\em will not work\/} when using \ttin{\#include "axiom"}.
+%(In the \axiom{} library, output is done by coercion to type
+%{\tt OutputForm}).
+\end{enumerate}
+
+The difference between \verb+#include "aldor"+ and \verb+#include "aldorio"+
+might not be clear yet, here is an
+explanation. \verb+#include "aldor"+ is the general include statement
+that will allow the types and functions from \verb+libaldor+ to be
+visible. It is necessary to use it (or an equivalent library) in order
+to write programs. \verb+#include "aldorio"+ is merely a convenience
+which will automatically import types used for input/output (and, in
+particular, printing values to the standard output).
+
+\clearpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\head{section}{Forming a type}{asugLangSimpleIV}\index{type}
+\thegeneralfile{h}{SimpleProgIVa}
+{Simple program 4 --- Skeleton}{examples/simple4a.as}
+
+The fourth example shows {\tt MiniList}, a type-constructing function.
+
+%% I wonder if this example isn't a bit heavyweight for this stage of
+%% the development.  I have added a forward reference for "Generator S"
+%% and for the function "generate", which I've also mentioned explicitly
+%% (otherwise its use in defining "generator" looks pretty circular).
+%% A lot of other things in the example are still unexplained at this
+%% point - for example:
+%%
+%%      Why does the definition of "cons" need a "per"?
+%%
+%%      What does the "union" in this definition do?  How is the user
+%%      to find the answers to such questions?
+%%
+%%      How do the definitions of first and rest work?  (The "dot" is
+%%      undefined, as yet - it's meaning can, perhaps, be guessed - but
+%%      what happens if "l" is null?)
+%%
+%% It seems a bit pious to say "This program should be easy to
+%% understand..."
+%%
+%% MGR
+
+We will defer showing the body of the function for a moment,
+until we have had a first look at the definition.
+
+The {\tt MiniList} function will provide a simple list data type
+constructor, allowing lists to be formed with brackets, for example
+\verb"[a, b, c]".  All the elements of the list must belong to the same
+type, \verb"S", the parameter to the function.  
+
+This is a simple example of how one might use \verb"MiniList":
+
+\begin{small}
+\begin{verbatim}
+MI ==> MachineInteger;
+square(n: MI): MI == {
+        sql: MiniList MI := [1, 4, 9, 16, 25];
+        if n < 1 or n > 5 then error "Value out of range";
+        sql.n  -- the (n)th component of sql
+}
+\end{verbatim}
+\end{small}
+
+The definition of \verb"MiniList" is just like the definitions
+we have seen in the previous examples:
+\begin{itemize}
+\item
+  {\tt MiniList} accepts a parameter, \verb"S", which is declared to belong
+  to a particular type --- in this case \ttin{OutputType}.
+\item
+  {\tt MiniList} returns a result which is declared to belong to
+  a particular type --- in this case to the type \ttin{MiniListType(S)}.
+\item
+  The body of the function {\tt MiniList} is an expression
+  to compute the return value, given a value for the parameter. 
+\end{itemize}
+
+The name \verb"OutputType" is meaningful by virtue of the
+``\verb+#include+'' line.
+
+\verb"OutputType" is a type whose members are themselves types.
+The same is true for \verb"MiniListType(S)".
+A type such as this, whose members are types, will be called a
+{\em type category}, or simply a {\em category} where no confusion
+can arise.
+\index{Category}
+
+What we have seen implies that \verb"MiniList" is a function
+which takes a type parameter and computes a new type as its value.
+%The next step is to ask why the arguments
+%are declared as being {\em different} kinds of types.
+% I don't understand the above sentence - Minilist only has one argument
+% so what are the "arguments" referred to?  The exposition is clearer
+% without it.  MGR
+%% PI - Last sentence should be:
+%% Why the parameter of {\tt MiniList} is declared to be of type 
+%% \ttin{BasicType}? The parameter type determines the set of operations 
+%% available for the parameter. In other words, it provides
+%% informations about the nature of parameter. We'll clearify this
+%% concept later.
+
+Now that we have had the bird's eye view, 
+it is time to take a second look at the function.   
+The complete definition is given in Figure~\ref{SimpleProgIVb}.
+\thegeneralfile{t}{SimpleProgIVb}
+{Simple program 4 --- Details}{examples/simple4b.as}
+\clearpage
+A few points will help in understanding this program:
+\begin{enumerate}
+\item 
+
+The first thing to note is that the new type constructor is defined as
+a function \verb"MiniList" whose body is an \ttin{add} expression,
+itself containing several function definitions.  It is these internal
+functions of an \ttin{add} function which provide the means to
+manipulate values belonging to the resulting types (such as
+\verb"MiniList(Integer)" in this case).
+
+\item
+This program uses various names we have not seen before,
+for example \ttin{Record}, \ttin{Pointer}, \ttin{element}, \etc{}
+Some of these, such as \ttin{Pointer},
+are made visible by the \verb"#include" lines,
+while others, such as \ttin{element}, are made visible by
+declaring values to belong to particular types.
+
+The names which have meanings in \libaldor{} are detailed in
+the documentation for that library.
+
+\item
+While \verb"OutputType" and \verb"MiniListType(S)" are both
+type categories, the types in each category have different characteristics.  
+The difference lies in what exports their types must provide:
+
+\begin{itemize}
+\item
+Every type which is a \verb"OutputType" must supply an
+output function (\ttin{<<}).
+
+Since \verb"S" is declared to be a \verb"OutputType",
+the implementation of \verb"MiniList" can use
+the \ttin{<<} from \verb"S"
+in the definitions of \verb"MiniList"' own operations.
+%% PI, last sentence: Since \verb"S" is declared to be a
+%% \verb"BasicType", the implementation of \verb"MiniList" can use
+%% equality and output, \ie{} the \ttin{=} and \ttin{<<} operators, 
+%% on elements of \verb"S" in the definitions of its own operations.
+
+\item
+Every type which is a \verb"MiniListType(S)" must supply 
+several other operations, such as a constructor function called \ttin{bracket}
+to form new values, a test function called \ttin{empty?}, and so on.
+\verb"MiniList(S)" provides a \verb"MiniListType(S)", so
+% Avoiding overfull box again!
+it must supply all these operations.  
+Users of \verb"MiniList(S)"
+will be able to rely on these operations being available.
+\end{itemize}
+
+\item 
+The first line of  the \ttin{add}
+expression defines a type \ttin{Rep} (specific to \ttin{MiniList}).
+This is how values of the type being defined are really represented.
+The fact that they are represented this way is not visible outside
+the \ttin{add} expression.
+%% PI, last two sentences: When a new type is created, its internal 
+%% representation must be supplied. The elements belonging to the new
+%% domain will be represented using previously existing domains. This
+%% representation is not visible outside the \ttin{add} expression,
+%% \ie{} is {\em encapsulated}, according to the {\em Abstract
+%% Data Type} paradigm. \ttin{Rep} is a special type that must be
+%% defined inside the \ttin{add} body to specify the representation
+%% that must be adopted for the new domain.
+
+\item
+Several of the functions defined in the body have parameters or
+results declared to be of type \ttin{\%}.
+In any \ttin{add} expression, the name \ttin{\%} refers to the type
+under construction.  
+For now, \ttin{\%} can be thought of as a shorthand for \ttin{MiniList(S)}.
+
+\item
+There are several uses of the operations \ttin{per} and \ttin{rep}
+in this program.  
+These are conversions which allow a data value to be regarded
+in is public guise, as a member of \ttin{\%}, or by its private
+representation as a member of \ttin{Rep}.
+
+\Export{rep}{\% -> Rep}{}
+\ExportToo{per}{Rep -> \%}{}
+
+These can be remembered by the types they produce:  \ttin{rep} produces
+a value in \verb"Rep", the {\em rep\/}resentation,
+and \ttin{per} produces a value in \verb"%", {\em per\/}cent.
+
+\item
+Some of the function definitions are preceded by the word \ttin{local}.
+This means they will be private to the \ttin{add}, and consequently
+will not be available to users of \verb"MiniList".
+
+\item
+Some of the definitions have left-hand sides with an unusual syntax:
+
+\begin{verbatim}
+    [t: Tuple S]: % == ...
+    [g: Generator S]: % == ...
+    (out: TextWriter) << (l: %): TextWriter == ...
+\end{verbatim}
+
+In general, the left-hand sides of function definitions in \asharp{}
+look like function calls with added type declarations.
+%% PI, last sentence: In general, function {\em definitions} in \asharp{}
+%% look like function calls with added type declarations\footnote{Note that
+%% this is not true when functions are {\em declared}, as we'll see
+%% later.}.
+Some names have infix syntax, for instance \ttin{<<}
+above.  These are nevertheless just names and, aside from the grouping,
+behave in exactly the same way as other names.
+The special syntactic properties of names may be avoided by
+enclosing them in parentheses.
+Other special syntactic forms
+are really just a nice way to write certain function calls.
+The form \ttin{[a,b,c]} is competely equivalent to the call
+\ttin{bracket(a,b,c)}.
+
+With this explanation, we see that the defining forms above are
+equivalent to the following, more orthodox forms:
+%% PI doesn't like the word `familiar'; MGR is inclined to agree.
+
+\begin{verbatim}
+    bracket(t: Tuple S): % == ...
+    bracket(g: Generator S): % == ...
+    (<<)(out: TextWriter, l: %): TextWriter == ...
+\end{verbatim}
+
+\item
+The use of the type \ttin{Generator S} is explained fully in
+\chapref{asugLangGener}, so for now we will only provide a brief
+overview.
+
+The function \ttin{generator} illustrates how a type can
+define its own {\em traversal method}, which allows the new type to 
+decide how its component values should be obtained, say for use in a
+loop.  Such a definition utilises the function \ttin{generate}, in 
+conjuction with \ttin{yield}: each time a \ttin{yield} is encountered,
+\ttin{generate} makes the given value available to the caller and then
+suspends itself.  This technique is described more fully in 
+\secref{asugLangGenerCreating}.
+When the next value is needed, the generator resumes where it left off.
+
+Since 
+\verb"MiniList(S)" implements a \ttin{generator} function for
+objects of type \verb"MiniList",
+it is possible to iterate over them in a \ttin{for} loop.  For
+example, in the output function \ttin{<<}, we see the line
+
+\begin{verbatim}
+    for s in rest l repeat out << ", " << s;
+\end{verbatim}
+
+Here \ttin{rest l} is traversed by the \verb"generator" to obtain
+values for \ttin{s}.
+
+%% PI, change example with a simpler one: For example, if \ttin{l} is
+%% of type \verb"MiniList(S)", in your program you can write:
+%%
+%% 	for elem in l repeat
+%%    		stdout << elem;
+%%
+%% \asharp{} is smart enough to understand that, since \ttin{l}
+%% appears in a \ttin{for} loop, we want to traverse it, so implicit
+%% applications of the \ttin{generator} function happen. As we'll see
+%% later, there are other situations in which implicit call to
+%% \ttin{generator} happen. In general, you'll never see explicit call
+%% to \ttin{generator} in your programs.
+
+\end{enumerate}
+
+\clearpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\head{section}{Continuing ...}{asugLangSimpleContinuing}
+
+These first examples already give a fairly good start at reading
+\asharp{} programs.  The reader is now equipped to understand
+most \asharp{} programs, at least in broad terms.
+For those who wish to understand the language in more detail,
+Part II presents further aspects of the language and
+revisits what we have already seen in more depth.
+
+At this point, readers may decide to continue by studying the examples
+given in \chapref{asugSample}, or by trying examples of their own.
+%Some may wish to skip to \chapref{asugNovice} to see how someone
+%else went about learning to use \asharp{}.  
+%Others may wish to read \chapref{asugFNotes},
+%in which a medium-sized example is developed step-by-step.

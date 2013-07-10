@@ -1,0 +1,66 @@
+#!/bin/sh
+#
+# This script calls the appropriate C compiler, with whatever flags are needed.
+
+args="`buildarg docc-extra`"
+
+for i in $* 
+do
+case "$i" in
+	-motif-ld) args="$args `buildarg docc-motif-ld`" ;;
+	-motif-cc) args="$args `buildarg docc-motif-cc`" ;;
+	-src) 	   args="$args `buildarg docc-src`" ;;
+	*) 	   args="$args $i" ;;
+esac
+done
+
+case "$MACHINE" in
+rt)	     krcc cc -a -DYYMAXDEPTH=500 -Nn5000 -Nd5000 -Np6000 -Nt5000 $args -lm ;;
+rsgcc*)	     gcc -Wall -Wno-format $args ;;
+rsxlc)	     xlc $args ;;
+rs4*)	     cc -D_POSIX_SOURCE $args ;;
+rs*)	     xlc  -D_POSIX_SOURCE $args ;;
+sun4os4c*)    krcc -va __builtin_va_alist cc -fsingle $args ;;
+sun4os4g*)   g++ -L/users/axiom/tmp/gcc/libstdc++-derwent-install/lib -I/users/axiom/tmp/gcc/libstdc++-derwent-install/include/g++ $args ;; 
+sun4uos56c)  cc -D__USE_CC $args ;;
+sun4os55c*)   cc -D__USE_CC $args ;;
+sun4os55g*)   g++ -L /users/axiom/tmp/gcc/libstdc++-frisco-install/lib -I /users/axiom/tmp/gcc/libstdc++-frisco-install/include/g++ $args ;;
+linux*)      gcc -Wall -Wno-format -pipe $args ;;
+win32gcc)    
+		comm="";
+		sss="0";
+		ooo="";
+		for i in $args 
+		do
+			name=`echo $i | sed 's/\/cygdrive\/\([a-z]\)\(.*\)/\1:\2/'`;
+			comm="$comm "$name;
+			if [ $sss = "1" ]; then 
+				ooo=$name;
+				sss="0";
+			fi;
+			if [ $i = "-o" ]; then
+				sss="1";
+			fi
+		done
+		#echo gcc -Wall -pipe $comm
+		gcc -I/c/mingw/include -L/c/mingw/lib -mno-cygwin -Wall -pipe $comm
+		if [ $ooo ]; then
+			if [ -e $ooo.exe ]; then
+				echo ln -s $ooo.exe $ooo;
+			fi
+		else
+			if [ -e a.exe ]; then
+				mv a.exe a.out;
+			fi
+		fi
+		
+		;;
+irixgcc*)    gcc -Wall -Wno-format $args ;; 
+irixmips3*)  cc -n32 -mips3 -woff all -OPT:IEEE_arithmetic=1 -OPT:IEEE_comparisons=ON -OPT:Olimit=0 "-Wl,-woff 84" $args;;
+irixmips4*)  cc -64  -mips4 -woff all -OPT:IEEE_arithmetic=1 -OPT:IEEE_comparisons=ON -OPT:Olimit=0 "-Wl,-woff 84" $args;;
+irixmips1*)  g++ -L /users/axiom/tmp/gcc/libstdc++-sedi14-install/lib -I /users/axiom/tmp/gcc/libstdc++-sedi14-install/include/g++  $args;;
+hpuxgcc*)    gcc -Wall -Wno-format $args ;;
+hpux*)	     g++ -L /users/axiom/tmp/gcc/libstdc++-l4-install/lib -I /users/axiom/tmp/gcc/libstdc++-l4-install/include/g++  $args ;;
+axposf1v4*)  g++ -taso -L/users/axiom/tmp/gcc/libstdc++-ultimate-install/lib -I /users/axiom/tmp/gcc/libstdc++-ultimate-install/include/g++  $args ;;
+*)	echo "no machine given, using cc."; cc $args ;;
+esac

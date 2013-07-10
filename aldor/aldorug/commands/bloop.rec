@@ -1,0 +1,32 @@
+% aldor -Minspect error3.as
+"error3.as", line 33: 
+        b := left(b, z)                 -- lbi-b+zi or lbb-b+zb: ambiguous
+.............^
+[L33 C14] #1 (Error) There are 2 meanings for the operator `left'.
+        Meaning 1: (Boolean, Boolean) -> Boolean
+        Meaning 2: (Boolean, AldorInteger) -> Boolean
+
+"error3.as", line 34:         b := left(i, i)                 -- no meaning
+                      ..................^
+[L34 C19] #2 (Error) Argument 1 of `left' did not match any possible parameter type.
+    The rejected type is AldorInteger.
+    Expected type Boolean.
+
+Aldor compiler break ------------------------------------------------------
+::: up
+left(b, z)
+::: down
+left
+::: next
+b
+::: means
+1: Param b : Boolean
+
+::: next
+z
+::: means
+1: LexConst z : AldorInteger
+2: LexConst z : Boolean
+
+::: quit
+------------------------------------------------------------------------------

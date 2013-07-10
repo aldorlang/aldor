@@ -1,0 +1,487 @@
+\section{User Guide}
+
+This guide introduces the common types and categories provided by \libalgebra,
+and presupposes some familiarity with programming in \aldor and \libaldor.
+If you are unfamiliar with \aldor or \libaldor, we suggest that you first go
+through the tutorial in {\tt aldorlib/tutorial/}, which
+will familiarize you both with \aldor and \libaldor.
+
+\libalgebra{} provides over 180 categories and domains, and over 400 different
+exported functions, which can look daunting at first. Remember however
+that a large part of those are low--level functionalities that make it
+possible to programmers to write efficient applications. Most of the
+high-level functionalities are found in a small subset of types and
+those are the ones described in this short guide. As you become more
+familiar with \libalgebra, you will find the reference guide to be more
+useful when browsed on line.
+
+As you learn programming with \libalgebra, make sure to check the
+{\tt algebra/samples} directory for various programming samples.
+
+\subsection{Basic algebraic categories}
+The basic algebraic categories provided by \libalgebra{} are shown in
+Figure~\ref{fig:cats}.
+While it follows quite closely the usual algebraic structures, a few
+points needs to be mentioned.
+\begin{figure}[htb!]
+\begin{center}
+\includegraphics{algbcat}
+\end{center}
+\caption{The \libalgebra{} basic algebraic category hierarchy}
+\label{fig:cats}
+\end{figure}
+\begin{itemize}
+\item
+The multiplication $\ast$ is in general not assumed to be commutative,
+except in the subtree starting at \altype{CommutativeRing}, which appears
+in blue in Figure~\ref{fig:cats}.
+This means that code written for the other categories
+should be careful and not assume commutativity of $\ast$. Addition is on
+the other hand always assumed commutative.
+\item
+The \libalgebra{} category tree has a unique root
+\altype{ExpressionType} to which
+almost all the types provided by \libalgebra{} belong. The category
+\altype{ExpressionType} inherits \altype{PrimitiveType} from \libaldor,
+which means that types in \libalgebra{} must export an equality.
+That equality however does not need to be complete, as described
+in the \alfunc{PrimitiveType}{$=$} page of the \libaldor{} reference manual.
+\altype{ExpressionType} plays also an important role in input/output as
+explained below.
+\item
+The \libaldor{} categories \altype{AdditiveType},
+\altype{ArithmeticType} and \altype{LinearCombinationType}
+already export the basic arithmetic operations provided respectively
+by abelian groups, rings and modules. In fact
+\altype{AbelianGroup}, \altype{Ring} and \altype{Module}
+do inherit their exports from them. There is however
+a fundamental difference: while the \libaldor{} categories
+export the usual operations $=$, $+$, $-$, $\ast$,\dots,
+they make no assumption about their algebraic properties whatsoever.
+On the other hand, the corresponding algebraic categories
+in \libalgebra{} do assume that $=$ is a complete equality test, and that
+the arithmetic operations satisfy the algebraic axioms of their
+mathematical structure. So for example, while \altype{Integer} is
+extended by \libalgebra{} to be a \altype{Ring} (among other things),
+\altype{SingleFloat} remains an \altype{ArithmeticType} but is
+not a \altype{Ring}.
+There is a similar relationship between \altype{LinearArithmeticType}
+and \altype{Algebra}, both provided by \libalgebra.
+Mathematical types such as
+\altype{DenseMatrix}$(R)$ or
+\altype{DenseUnivariatePolynomial}$(R)$
+allow their argument $R$ to be an \altype{ArithmeticType} rather
+than a \altype{Ring}, but those among their functions that require
+a complete equality on $R$ are not exported when $R$ is not a \altype{Ring}.
+Similarly, while \altype{DenseUnivariatePolynomial}$(R)$ is always an
+\altype{ArithmeticType}, it is a \altype{Ring} only when $R$ itself
+is a \altype{Ring}. For example,\\
+\vspace{-5mm}
+\begin{center}
+\altype{DenseMatrix}~\altype{DenseUnivariatePolynomial}~\altype{SingleFloat}
+\end{center}
+is a valid type in \libalgebra, but Gaussian elimination is not available for
+such matrices, and the Euclidean algorithm is not available for their
+polynomial entries. Basic arithmetic, as provided by \altype{ArithmeticType}
+is however available.
+\end{itemize}
+
+\subsection{Arithmetic}
+All of the arithmetic types provided by \libaldor (machine and software
+integers, floats, as well as \altype{Complex}) remain available
+in \libalgebra, and most of them are extended to various algebraic categories.
+As in \libaldor, {\tt Integer} is actually a macro that defaults to
+\altype{AldorInteger}. If integer efficiency is important for your application,
+we strongly recommend that you link with the GMP version of
+\libalgebra instead,
+see the section on~\alalias{\this}{sec:gmp}{using GMP} for
+more details. Regardless of the integer implementation that you choose,
+we also recommended that you use~\alexttype{MachineInteger}{} whenever
+appropriate, in particular for loop
+or data structure indices. Conversions between
+\alexttype{MachineInteger}{}
+and \altype{Integer} are provided by \alfunc{IntegerType}{coerce}
+and \alfunc{IntegerType}{machine}.
+
+In addition, \libalgebra{}
+provides two different implementations of the finite field $\ZZ / p\ZZ$
+when $p$ is a machine prime: \altype{SmallPrimeField} provides a
+standard implementation, while \altype{ZechPrimeField} provides
+a significantly faster implementation based on a logarithmic
+representation of its elements.
+However, \altype{ZechPrimeField}
+precomputes a table of size ${\cal O}(p)$ so it should only be used
+for reasonably small values of $p$ and when a significant amount
+of calculations in $\ZZ / p\ZZ$ are made following the creation
+of the type (we have found the precomputation time to be under one second
+for $p$ around $10^6$ on recent workstations).
+
+The type \altype{Fraction}$(R)$ implements the fraction field of
+the \altype{GcdDomain} $R$. Typical arguments are \altype{Integer}
+(to get the rational numbers) or polynomial types. Note that fractions
+are automatically normalized after each arithmetic operation.
+
+
+\subsection{Data structures}
+All the data structure of \libalgebra{} are provided by \libaldor. Some of them
+are extended by mathematical operations and take on a new name:
+\altype{Sequence} corresponds to \altype{Stream} from \libaldor{} and
+\altype{Vector} corresponds to \altype{Array} from \libaldor,
+in both cases with pointwise arithmetic operations added.
+Note however that \altype{Array} is $0$--indexed while \altype{Vector}
+is $1$--indexed.
+
+\subsection{Input/Output}
+\label{sec:inputoutput}
+\libalgebra{} inherits the stream I/O model provided by \libaldor. In particular
+\altype{ExpressionType} inherits \altype{OutputType} from \libaldor, which means
+that elements of a \altype{ExpressionType} can be written in text format
+to any \altype{TextWriter} (in particular I/O streams, strings or files).
+Because it is desirable to output mathematical objects such as
+matrices and polynomials in more than one format depending on the
+context, \libalgebra{} types do not in general define their own
+\alfunc{OutputType}{$<<$} function. Rather, they implement
+the \alfunc{ExpressionType}{extree} function, that converts their elements
+into elements of \altype{ExpressionTree}. Expression trees,
+wich are similar to Lisp's S--expressions, are the unique layer
+between all the types in \libalgebra{} and the outside world. When
+writing your own types, once you provide or inherit an implementation
+of \alfunc{ExpressionType}{extree}, your elements can then be written
+to any \altype{TextWriter} in any of the many formats that
+\altype{ExpressionTree} understands, for example using
+\alfunc{ExpressionTree}{lisp} to produce Lisp output.
+In that case, the default behavior of the \alfunc{OutputType}{$<<$}
+is to convert your objects to expression trees and then to
+use \alfunc{ExpressionTree}{tex} to produce \TeX output. You
+can override this default behaviour by providing your own
+implementation of \alfunc{OutputType}{$<<$} if you choose.
+As with \libaldor, you can use {\tt \#include "aldorio"} {\em after}
+{\tt \#include "algebra"} in order to import the types commonly used
+for input and output.
+
+\subsection{Linear algebra}
+The basic types to use for doing linear algebra
+are \altype{Vector} and \altype{DenseMatrix}.
+The basic linear algebra computations are provided
+by the type \altype{LinearAlgebra}. Although
+\libalgebra{} provides many specialized types for
+performing various sorts of triangulations and solving
+linear systems, \altype{LinearAlgebra} knows about all of
+them and contains procedures that decide which algorithm is
+best suited for your particular input. So do not call
+directly the more specialized packages unless you have
+a particular reason to use a specific algorithm rather
+than let \libalgebra{} decide for you.
+
+The type of the entries of vectors and matrices does
+not need to be a \altype{Ring}, it can be an
+\altype{AdditiveType} or \altype{ArithmeticType} respectively.
+This allows types that do not have a full equality such
+as \altype{SingleFloat} or \altype{DenseUnivariateTaylorSeries}
+to be entries of vectors and matrices. However,
+\altype{LinearAlgebra} requires the entries to be from
+a \altype{CommutativeRing} so its functionalities are
+not available for matrices of series or floating point numbers.
+
+\libalgebra{} contains many fraction--free algorithms that
+allow you to perform
+some computations, such as matrix inverses or solving systems,
+over an \altype{IntegralDomain} rather than over a \altype{Field}
+as is usually done.
+Those fraction--free
+algorithms are significantly faster over integral domains than
+over their fraction fields, so consider using domains
+such as $\ZZ$ or $R[x]$ as matrix entries rather than
+fractions. See for example the description of the
+\alfunc{LinearAlgebra}{inverse} function to see the
+effect of working over domains rather than fields
+on the signatures of the functions.
+
+To write generic linear algebra code that does not depend
+on the implementation of matrices, use a type parameter
+of category \altype{MatrixCategory}. For example, a normal
+form package could look like:
+\begin{verbatim}
+NormalForms(R:IntegralDomain, M:MatrixCategory R): with {
+        frobenius: M -> M;     -- Returns the Frobenius form of its argument
+        ...
+} == add { ... }
+\end{verbatim}
+
+\subsection{Univariate polynomials and series}
+The basic types to use for computing with polynomials and
+series are \altype{DenseUnivariatePolynomial}
+and \altype{DenseUnivariateTaylorSeries} respectively.
+Both types are univariate but can be nested if needed to
+produce dense multivariate polynomials and series with
+a fixed number of variables. When the number of variables
+is too large for a dense representation, you can also use
+\altype{SparseUnivariatePolynomial} but be aware that for
+univariate or bivariate use, its arithmetic is much less 
+efficient than the one of \altype{DenseUnivariatePolynomial}.
+
+As for matrices, the type of the coefficients of polynomials
+or series does not need to be a \altype{Ring}, it can be an
+\altype{ArithmeticType} instead.
+This allows types that do not have a full equality such
+as \altype{SingleFloat} to be used as coefficients, but
+some polynomial functionalities are only available when
+the coefficient type is a \altype{Ring} or something stronger.
+The polynomial and series types take a \altype{Symbol} as
+second argument. That symbol is used only for output when
+converting the polynomial or series to an \altype{ExpressionTree},
+so it is not necessary to give one when you use polynomials
+or series inside a calculation. If you insist on naming the
+variable, use \alfunc{Symbol}{-} with any string as argument
+to create a symbol. For example,
+{\tt DenseUnivariatePolynomial(Integer)} and
+{\tt SparseUnivariatePolynomial(Fraction Integer, -"x")}
+are both valid polynomial types.
+Whether you give a name for a variable or not, you
+can override that choice using \alfunc{MonogenicLinearArithmeticType}{apply}
+with a \altype{Symbol} or \altype{ExpressionTree} as argument.
+For example, if $p$ is a polynomial or series,
+{\tt stdout(p, -"z")} writes $p$ to \alfunc{TextWriter}{stdout}
+using ``z'' as variable name, and {\tt p(extree leaf(-"y"))}
+returns the \altype{ExpressionTree} corresponding to $p$ with
+``y'' as variable name.
+
+To write generic code for manipulating polynomials or series
+use a type parameter usually of category
+\altype{UnivariatePolynomialCategory}
+or \altype{UnivariateTaylorSeriesCategory} respectively.
+Because polynomials, skew--polynomials and series share
+many common operations, \libalgebra{} provides in fact a complete
+category hierarchy for them, shown in Figure~\ref{fig:stdpolcat}.
+\begin{figure}[htb!]
+\begin{center}
+\includegraphics{algpolcat}
+\end{center}
+\caption{The \libalgebra{} univariate polynomial category hierarchy}
+\label{fig:stdpolcat}
+\end{figure}
+Those categories make it possible to write functions
+that work for polynomials, skew--polynomials, series
+or any combination of them.
+\altype{UnivariatePolynomialCategory}$(R)$ is the category
+for types whose elements are usual polynomials of
+the form $\sum_n r_n x^n$ with finite support. While
+$R$ is not assumed to be commutative, the generator $x$
+is assumed to commute with coefficients in $R$, \ie~$rx = xr$.
+Similarly, \altype{UnivariateTaylorSeriesCategory}$(R)$
+is the category for types whose elements are series of
+the form $\sum_n r_n x^n$. Here also, $R$ is not assumed
+to be commutative, but the generator $x$ commutes with
+coefficients in $R$. Those two categories are shown
+in blue in Figure~\ref{fig:stdpolcat}, as they are the only ones assuming
+that $x$ commutes with $R$.
+The more general category \altype{UnivariatePolynomialAlgebra}$(R)$
+is for types whose elements are sums of the form $\sum_n r_n x^n$ with
+finite support, but where $x$ does not necessarily commute with $R$.
+Polynomials and skew-polynomials are both in that category.
+Even more general, \altype{MonogenicAlgebra}$(R)$
+is for types whose elements are sums of the form $\sum_n r_n P_n$ with
+finite support, but where the family $P_n$ is not necessarily the
+power basis $x^n$. An example of such a type is
+\altype{UnivariateFactorialPolynomial} for which
+$P_n = x(x-1)\dots(x-n+1)$. Finally, \altype{MonogenicLinearArithmeticType}$(R)$
+is for types whose elements are potentially infinite sums of the form
+$\sum_n r_n P_n$. Code written at that level works for polynomials, series
+and skew-polynomials as well.
+
+The elements of \altype{DenseUnivariateTaylorSeries} are lazy series
+represented by their coefficient sequences, themselves of type
+\altype{Sequence}. Those coefficient sequences are in turn represented
+as \altype{Stream} from \libaldor. Therefore, the usual way to write a
+function producing a series is to produce first its coefficient stream $s$,
+then call \alfunc{Sequence}{sequence} on $s$ to produce the
+coefficient sequence, and finally call
+\alfunc{UnivariateTaylorSeriesCategory}{series} on the coefficient sequence
+to produce the series. Since streams are lazy, constructing a series
+does not compute any of its coefficients until they are
+specifically requested by another operation. There are several ways
+to create streams, all documented in the \libaldor{} reference manual,
+and you should become familiar with them before programming with series.
+For example, the following function takes constants
+$a_0$ and $c$ and produces the hypergeometric series
+$\sum_{n\ge 0} a_n x^n$ where $a_{n+1}/a_n = c$.
+\begin{verbatim}
+SeriesSample(R:CommutativeRing, Rx:UnivariateTaylorSeriesCategory R): with {
+         hypergeometricSeries: (R, R) -> Rx;
+} == add {
+         hypergeometricSeries(a0:R, c:R):Rx == {
+                import from Sequence F;
+                zero? a0 => 0;
+                -- the following creates the stream [a0, c a0, c^2 a0, ... ]
+                coeffs:Stream R := orbit(a0, (x:R):R +-> c * x);
+                series sequence coeffs;
+         }
+}
+\end{verbatim}
+Finally, the type \altype{UnivariateTaylorSeriesCategory2Poly} provides
+conversions between univariate polynomials and series.
+
+\subsection{Multivariate polynomials}
+The basic types for computing with multivariate polynomials
+are \altype{SparseMultivariatePolynomial} and
+\altype{DistributedMultivariatePolynomial1}.
+Both types use a sparse representation.
+Elements of the former one are regarded as univariate polynomials
+with polynomial coefficients.
+Elements of the latter one are regarded as lists of terms
+where a term is the product of a coefficient by a power product
+of variables.
+
+To construct a multivariate polynomial type with 
+\altype{SparseMultivariatePolynomial}
+one needs a \altype{Ring} as  a coefficient type 
+and a \altype{VariableType} as a variable type.
+\begin{verbatim}
+#include "algebra"
+import from String, Symbol;
+macro V == OrderedVariableTuple(-"x",-"y",-"z");
+import from MachineInteger, V;
+macro P == SparseMultivariatePolynomial(Integer,V);
+x: P := variable(1)$V :: P;
+y: P := variable(2)$V :: P;
+z: P := variable(3)$V :: P;
+p := (y + z)*x^2 + (y^3 + z)*x + z^4;
+\end{verbatim}
+
+To construct a multivariate polynomial type with 
+\altype{DistributedMultivariatePolynomial1}
+one needs a \altype{Ring} as  a coefficient type ,
+a \altype{VariableType} as a variable type.
+and \altype{ExponentCategory(V)} as an exponent type.
+So we can continue the above sample program as follows
+\begin{verbatim}
+macro E1 == MachineIntegerDegreeLexicographicalExponent(V);
+macro E2 == MachineIntegerLexicographicalExponent(V);
+macro Q1 == DistributedMultivariatePolynomial1(Integer, V, E1);
+macro Q2 == DistributedMultivariatePolynomial1(Integer, V, E2);
+q1 := expand(E1)(Q1)(p);
+q2 := expand(E2)(Q2)(p);
+\end{verbatim}
+
+The above polynomials appear respectively as follows
+in an interpreter session.
+\begin{verbatim}
+%20 >> q1 := expand(E1)(Q1)(p)
+x*y^3 + z^4 + x^2*y + x^2*z + x*z @ Q1
+
+%21 >> q2 := expand(E2)(Q2)(p);
+x^2*y + x^2*z + x*y^3 + x*z + z^4 @ Q2
+\end{verbatim}
+Do not forget to enter
+\begin{verbatim}
+#include "aldorinterp"
+\end{verbatim}
+after 
+\begin{verbatim}
+#include "algebra"
+\end{verbatim}
+in every interpreter session.
+
+There are other multivariate polynomial types 
+like \altype{RecursiveMultivariatePolynomial0}.
+It is similar to \altype{SparseMultivariatePolynomial}
+but takes a third argument which is a univariate polynomial
+type constructor:
+\begin{verbatim}
+  UP: (R: Join(ArithmeticType, ExpressionType), avar: Symbol == new()
+       ) -> UnivariatePolynomialCategory(R),
+\end{verbatim}
+This third argument is used for the internal representation.
+
+Another useful type is \altype{IntegerPolynomial}
+which provides multivariate polynomial with integer coefficient
+and variables from \altype{OrderedSymbol}.
+This multivariate polynomial type is easy to use as
+shown by the following interpreter session.
+\begin{verbatim}
+%1 >> #include "algebra"
+                                           Comp: 130 msec, Interp: 0 msec
+%2 >> #include "aldorinterp"
+                                           Comp: 70 msec, Interp: 0 msec
+%3 >> macro P == IntegerPolynomial;
+                                           Comp: 0 msec, Interp: 0 msec
+%4 >> import from String, P, Integer;
+                                           Comp: 210 msec, Interp: 0 msec
+%5 >> x: P := "x" :: P
+x @ IntegerPolynomial
+                                           Comp: 0 msec, Interp: 520 msec
+%6 >> y: P := "y" :: P        
+y @ IntegerPolynomial
+                                           Comp: 0 msec, Interp: 0 msec
+%7 >> z: P := "z" ::P
+z @ IntegerPolynomial
+                                           Comp: 0 msec, Interp: 0 msec
+%8 >> p := (y + z)*x^2 + (y^3 + z)*x + z^4 + 3::P;
+z^4+(x^2+x)*z+x*y^3+x^2*y+3 @ IntegerPolynomial
+\end{verbatim}
+Observe the {\tt 3::P}. Indeed, it is necessary to convert
+the integer {\tt 3} into a polynomial.
+Observe also the ordering on symbols is reversed w.r.t. the dictionnary one.
+
+\subsection{Compatibility with C types}
+All the types of \libaldor{} that are compatible with their C counterparts
+remain so inside \libalgebra. In addition, if you are using the GMP version
+of the library, then \altype{Integer} and \altype{Float}
+are compatible with {\tt mpz\_t} and {\tt mpf\_t} respectively.
+
+\subsection{Using GMP}
+\altarget{sec:gmp}
+As in \libaldor, the type {\tt Integer} is actually a macro,
+which defaults to \altype{AldorInteger}, the software integers provided
+by the \aldor{} runtime. For efficiency or other reasons, you may prefer
+to use the GMP library, which is supported by \libalgebra.
+The easiest way
+to use GMP is to compile all your source files with the option {\tt -dGMP}
+and then to use the options
+\begin{center}
+{\tt -lalgebra-gmp -laldor -cruntime=foam-gmp,gmp -y\$ALGEBRAROOT/lib}
+\end{center}
+when linking your final executable. All you need is GMP 3.0 or later
+installed in a file called {\tt libgmp.a} to produce executables.
+Using GMP generally produces more efficient programs,
+but programs calling GMP cannot be interpreted by the \aldor{}
+compiler, nor can they run inside its interactive loop.
+
+Using the {\tt -dGMP} option allows you to compile the same sources
+either with or without GMP, which can be appreciable, but you must
+ensure that you do not mix files compiled with and without {\tt -dGMP} since
+the macro {\tt Integer} would then be expanded into two different types.
+
+An additional advantage of using GMP, is that \altype{GMPInteger}
+exports and uses internally several of the in--place or higher--level
+operations of GMP, which are not available with \altype{AldorInteger}.
+In addition, variables of type \altype{GMPInteger} are compatible
+with the C type {\tt mpz\_t} from GMP, so you can directly call
+C programs that use GMP from your \aldor{} code.
+
+\subsection{Exceptions}
+In addition to the exceptions thrown by \libaldor, \libalgebra throws a
+\altype{ReducibleModulusException} when a divisor of zero
+is discovered in a \altype{SimpleAlgebraicExtension}. This can be used
+to implement algorithms based on lazy factorisation, since such an
+exception contains a non--trivial factor of the polynomial defining
+the extension.
+
+\subsection{Profiling and debugging}
+\altarget{sec:debug}
+The macros TIME, TRACE and AGAT provided by \libaldor{} remain available
+in \libalgebra. In addition,
+\libalgebra{} also comes with a debug version, which makes many assertions
+about the arguments of the functions called as well as their results.
+While those assertions slow down the code considerably they tend to
+be quite useful when chasing bugs since the release version of \libalgebra{}
+does not make validity checks to most of its inputs.
+The debug version of \libalgebra{} must be used jointly with the debug
+version of \libaldor. To use them, just compile your application with the
+\begin{center}
+{\tt -lalgebrad -laldord -dDEBUG}
+\end{center}
+options rather than {\tt -lalgebra -laldor}.
+It is also preferable when debugging to add the {\tt -q1} option
+in order to prevent inlining.
+

@@ -1,0 +1,116 @@
+
+(|Sequence|
+   (|Import| NIL |AxiomLib|)
+   (|Import| NIL |Boolean|)
+   (|Export|
+      (|Declare|
+         |IndexedExponents|
+         (|Apply|
+            |->|
+            (|Declare| |#1| |OrderedSet|)
+            (|With|
+               NIL
+               (|Sequence|
+                  |OrderedAbelianMonoidSup|
+                  (|Apply|
+                     |IndexedDirectProductCategory|
+                     |NonNegativeInteger|
+                     |#1|)))) )
+      NIL
+      NIL)
+   (|Export|
+      (|Declare|
+         |SparseMultivariatePolynomial|
+         (|Apply|
+            |->|
+            (|Comma| (|Declare| |#1| |Ring|) (|Declare| |#2| |OrderedSet|))
+            (|Apply|
+               |PolynomialCategory|
+               |#1|
+               (|Apply| |IndexedExponents| |#2|)
+               |#2|)))
+      NIL
+      NIL)
+   (|Export|
+      (|Declare|
+         |MultivariatePolynomial|
+         (|Apply|
+            |->|
+            (|Comma|
+               (|Declare| |#1| (|Apply| |List| |Symbol|))
+               (|Declare| |#2| |Ring|))
+            (|Apply|
+               |PolynomialCategory|
+               |#2|
+               (|Apply|
+                  |IndexedExponents|
+                  (|Apply| |OrderedVariableList| |#1|))
+               (|Apply| |OrderedVariableList| |#1|))))
+      NIL
+      NIL)
+   (|Export|
+      (|Declare|
+         |PolynomialFunctions2|
+         (|Apply|
+            |->|
+            (|Comma| (|Declare| |#1| |Ring|) (|Declare| |#2| |Ring|))
+            (|With|
+               NIL
+               (|Sequence|
+                  (|Declare|
+                     |map|
+                     (|Apply|
+                        |->|
+                        (|Comma|
+                           (|Apply| |->| (|Comma| |#1|) |#2|)
+                           (|Apply| |Polynomial| |#1|))
+                        (|Apply| |Polynomial| |#2|)))) )))
+      NIL
+      NIL)
+   (|Sequence|
+      (|Define|
+         (|Declare|
+            |PolynomialExtendCategory|
+            (|Apply| |->| (|Declare| |#1| |Ring|) |Category|))
+         (|Lambda|
+            (|Comma| (|Declare| |#1| |Ring|))
+            |Category|
+            (|Label|
+               |PolynomialExtendCategory|
+               (|With|
+                  NIL
+                  (|Sequence|
+                     (|Apply|
+                        |PolynomialCategory|
+                        |#1|
+                        (|Apply| |IndexedExponents| |Symbol|)
+                        |Symbol|)
+                     (|If|
+                        (|Test|
+                           (|Has|
+                              |#1|
+                              (|Apply|
+                                 |Algebra|
+                                 (|Apply| |Fraction| |Integer|))))
+                        (|Declare|
+                           |integrate|
+                           (|Apply| |->| (|Comma| |%| |Symbol|) |%|))
+                        NIL)))) ))
+      (|Extend|
+         (|Define|
+            (|Declare|
+               |Polynomial|
+               (|Apply|
+                  |->|
+                  (|Declare| |#1| |Ring|)
+                  (|Apply| |PolynomialExtendCategory| |#1|)))
+            (|Lambda|
+               (|Comma| (|Declare| |#1| |Ring|))
+               (|Apply| |PolynomialExtendCategory| |#1|)
+               (|Label|
+                  |Polynomial|
+                  (|Add|
+                     (|PretendTo|
+                        (|Add| NIL NIL)
+                        (|Apply| |PolynomialExtendCategory| |#1|))
+                     NIL)))) )))

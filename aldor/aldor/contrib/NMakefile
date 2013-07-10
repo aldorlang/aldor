@@ -1,0 +1,56 @@
+#
+# Copyright (c) 1990-2007 Aldor Software Organization Ltd (Aldor.org).
+#
+# E.g. setenv MACHINE rs ; make -e
+#
+# See src/Makefile for the supported MACHINEs.
+#
+
+MAKE = nmake PATH="$(PATH)" /f NMakefile /nologo /x -
+
+SHELL	= /bin/sh
+
+OKFILES	= Makefile tree xmandel scheme frisco gmp lip
+
+all:	friscodir gmpdir 
+
+clean::
+	@ del /q *~
+
+junk::	
+	@ ls -d $(OKFILES) * | sort | grep -v CVS | uniq -u
+
+
+friscodir: 
+	-cd frisco 
+	$(MAKE) all
+
+clean::
+	cd frisco
+	$(MAKE) clean
+
+junk::
+	cd frisco
+	$(MAKE) junk
+
+samples::
+	cd frisco
+	$(MAKE) samples
+
+
+gmpdir: 
+	cd gmp
+	$(MAKE) all
+
+clean::
+	cd gmp
+	$(MAKE) clean
+
+junk::
+	cd gmp
+	$(MAKE) junk
+
+samples::
+	cd gmp
+	$(MAKE) samples
+

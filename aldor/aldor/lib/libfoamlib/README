@@ -1,0 +1,30 @@
+
+This library has been specially designed so that libfoam/runtime.as can
+be compiled in an environment that won't be subject to changes in
+Axllib/Basiclib etc. Please be very careful about changing anything
+here, especially when changing the implementation of domains such as
+PrimitiveArray. The Aldor runtime system (runtime.as) relies on being
+able to inline every domain that it uses (with the exception of rtexns).
+
+Recent changes to libaxllib domains were causing problems with the
+optimisation of runtime.as. Coupled with the fact that we are moving
+towards replacing Axllib with Basiclib, there is a need for a stable and
+independent library for runtime.as.
+
+In reality this library has been constructed by taking a stable version
+of libaxllib and removing domains and categories that are not used by
+the runtime system. Over time more domains can be removed but we have to
+stop somewhere.
+
+Note that this library is only used to provide something that runtime.as
+will compile against. It does not need to be distributed with the final
+system unless the libraries that will be used are missing the rtexns
+stuff. Since Axllib and Basiclib both have these features the compiler
+can link against those libraries rather than this one (which is
+preferable).
+
+Avoid using defaults if possible: the compiler currently inlines them
+when it ought not to. However, without inlining of defaults we suffer
+a huge performance loss.
+
+MND 08-Nov-1999

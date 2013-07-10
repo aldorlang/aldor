@@ -1,0 +1,797 @@
+
+(|Sequence|
+   (|Import| NIL |AxiomLib|)
+   (|Foreign| (|Declare| |dummyDefault| |Exit|) |Lisp|)
+   (|Export|
+      (|Declare|
+         |StreamFunctions3|
+         (|Apply|
+            |->|
+            (|Comma|
+               (|Declare| |#1| |Type|)
+               (|Declare| |#2| |Type|)
+               (|Declare| |#3| |Type|))
+            (|With|
+               NIL
+               (|Sequence|
+                  (|Declare|
+                     |map|
+                     (|Apply|
+                        |->|
+                        (|Comma|
+                           (|Apply| |->| (|Comma| |#1| |#2|) |#3|)
+                           (|Apply| |Stream| |#1|)
+                           (|Apply| |Stream| |#2|))
+                        (|Apply| |Stream| |#3|)))) )))
+      NIL
+      NIL)
+   (|Export|
+      (|Declare|
+         |StreamFunctions2|
+         (|Apply|
+            |->|
+            (|Comma| (|Declare| |#1| |Type|) (|Declare| |#2| |Type|))
+            (|With|
+               NIL
+               (|Sequence|
+                  (|Declare|
+                     |map|
+                     (|Apply|
+                        |->|
+                        (|Comma|
+                           (|Apply| |->| (|Comma| |#1|) |#2|)
+                           (|Apply| |Stream| |#1|))
+                        (|Apply| |Stream| |#2|)))
+                  (|Declare|
+                     |scan|
+                     (|Apply|
+                        |->|
+                        (|Comma|
+                           |#2|
+                           (|Apply| |->| (|Comma| |#1| |#2|) |#2|)
+                           (|Apply| |Stream| |#1|))
+                        (|Apply| |Stream| |#2|)))
+                  (|Declare|
+                     |reduce|
+                     (|Apply|
+                        |->|
+                        (|Comma|
+                           |#2|
+                           (|Apply| |->| (|Comma| |#1| |#2|) |#2|)
+                           (|Apply| |Stream| |#1|))
+                        |#2|)))) ))
+      NIL
+      NIL)
+   (|Export|
+      (|Declare|
+         |StreamFunctions1|
+         (|Apply|
+            |->|
+            (|Declare| |#1| |Type|)
+            (|With|
+               NIL
+               (|Sequence|
+                  (|Declare|
+                     |concat|
+                     (|Apply|
+                        |->|
+                        (|Comma|
+                           (|Apply| |Stream| (|Apply| |Stream| |#1|)))
+                        (|Apply| |Stream| |#1|)))) )))
+      NIL
+      NIL)
+   (|Export|
+      (|Declare|
+         |Stream|
+         (|Apply|
+            |->|
+            (|Declare| |#1| |Type|)
+            (|With|
+               NIL
+               (|Sequence|
+                  (|Apply| |LazyStreamAggregate| |#1|)
+                  (|RestrictTo| |shallowlyMutable| |Category|)
+                  (|Declare|
+                     |coerce|
+                     (|Apply| |->| (|Comma| (|Apply| |List| |#1|)) |%|))
+                  (|Declare|
+                     |repeating|
+                     (|Apply| |->| (|Comma| (|Apply| |List| |#1|)) |%|))
+                  (|If|
+                     (|Test| (|Has| |#1| |SetCategory|))
+                     (|Declare|
+                        |repeating?|
+                        (|Apply|
+                           |->|
+                           (|Comma|
+                              (|Apply| |List| (|PretendTo| |#1| |Type|))
+                              |%|)
+                           |Boolean|))
+                     NIL)
+                  (|Declare|
+                     |findCycle|
+                     (|Apply|
+                        |->|
+                        (|Comma| |NonNegativeInteger| |%|)
+                        (|Apply|
+                           |Record|
+                           (|Declare| |cycle?| |Boolean|)
+                           (|Declare| |prefix| |NonNegativeInteger|)
+                           (|Declare| |period| |NonNegativeInteger|))))
+                  (|Declare|
+                     |delay|
+                     (|Apply|
+                        |->|
+                        (|Comma| (|Apply| |->| (|Comma|) |%|))
+                        |%|))
+                  (|Declare| |cons| (|Apply| |->| (|Comma| |#1| |%|) |%|))
+                  (|If|
+                     (|Test| (|Has| |#1| |SetCategory|))
+                     (|Sequence|
+                        (|Declare|
+                           |output|
+                           (|Apply|
+                              |->|
+                              (|Comma| |Integer| |%|)
+                              (|Comma|)))
+                        (|Declare|
+                           |showAllElements|
+                           (|Apply| |->| (|Comma| |%|) |OutputForm|))
+                        (|Declare|
+                           |showAll?|
+                           (|Apply| |->| (|Comma|) |Boolean|)))
+                     NIL)
+                  (|Declare|
+                     |setrest!|
+                     (|Apply| |->| (|Comma| |%| |Integer| |%|) |%|))
+                  (|Declare|
+                     |generate|
+                     (|Apply|
+                        |->|
+                        (|Comma| (|Apply| |->| (|Comma|) |#1|))
+                        |%|))
+                  (|Declare|
+                     |generate|
+                     (|Apply|
+                        |->|
+                        (|Comma| (|Apply| |->| (|Comma| |#1|) |#1|) |#1|)
+                        |%|))
+                  (|Declare|
+                     |filterWhile|
+                     (|Apply|
+                        |->|
+                        (|Comma|
+                           (|Apply| |->| (|Comma| |#1|) |Boolean|)
+                           |%|)
+                        |%|))
+                  (|Declare|
+                     |filterUntil|
+                     (|Apply|
+                        |->|
+                        (|Comma|
+                           (|Apply| |->| (|Comma| |#1|) |Boolean|)
+                           |%|)
+                        |%|)))) ))
+      NIL
+      NIL)
+   (|Export|
+      (|Declare|
+         |CyclicStreamTools|
+         (|Apply|
+            |->|
+            (|Comma|
+               (|Declare| |#1| |Type|)
+               (|Declare| |#2| (|Apply| |LazyStreamAggregate| |#1|)))
+            (|With|
+               NIL
+               (|Sequence|
+                  (|Declare|
+                     |cycleElt|
+                     (|Apply|
+                        |->|
+                        (|Comma| |#2|)
+                        (|Apply|
+                           |Union|
+                           (|Declare| |value1| |#2|)
+                           (|Declare|
+                              |failed|
+                              (|Apply| |Enumeration| |failed|)))) )
+                  (|Declare|
+                     |computeCycleLength|
+                     (|Apply| |->| (|Comma| |#2|) |NonNegativeInteger|))
+                  (|Declare|
+                     |computeCycleEntry|
+                     (|Apply| |->| (|Comma| |#2| |#2|) |#2|)))) ))
+      NIL
+      NIL)
+   (|Define|
+      (|Declare|
+         |LazyStreamAggregate|
+         (|Apply| |->| (|Declare| |#1| |Type|) |Category|))
+      (|Lambda|
+         (|Comma| (|Declare| |#1| |Type|))
+         |Category|
+         (|Label|
+            |LazyStreamAggregate|
+            (|With|
+               NIL
+               (|Sequence|
+                  (|Apply| |StreamAggregate| |#1|)
+                  (|Declare|
+                     |remove|
+                     (|Apply|
+                        |->|
+                        (|Comma|
+                           (|Apply| |->| (|Comma| |#1|) |Boolean|)
+                           |%|)
+                        |%|))
+                  (|Declare|
+                     |select|
+                     (|Apply|
+                        |->|
+                        (|Comma|
+                           (|Apply| |->| (|Comma| |#1|) |Boolean|)
+                           |%|)
+                        |%|))
+                  (|Declare|
+                     |explicitEntries?|
+                     (|Apply| |->| (|Comma| |%|) |Boolean|))
+                  (|Declare|
+                     |explicitlyEmpty?|
+                     (|Apply| |->| (|Comma| |%|) |Boolean|))
+                  (|Declare|
+                     |lazy?|
+                     (|Apply| |->| (|Comma| |%|) |Boolean|))
+                  (|Declare|
+                     |lazyEvaluate|
+                     (|Apply| |->| (|Comma| |%|) |%|))
+                  (|Declare| |frst| (|Apply| |->| (|Comma| |%|) |#1|))
+                  (|Declare| |rst| (|Apply| |->| (|Comma| |%|) |%|))
+                  (|Declare|
+                     |numberOfComputedEntries|
+                     (|Apply| |->| (|Comma| |%|) |NonNegativeInteger|))
+                  (|Declare|
+                     |extend|
+                     (|Apply| |->| (|Comma| |%| |Integer|) |%|))
+                  (|Declare| |complete| (|Apply| |->| (|Comma| |%|) |%|))
+                  (|Default|
+                     (|Sequence|
+                        (|Define|
+                           (|Declare|
+                              |#|
+                              (|Apply|
+                                 |->|
+                                 (|Comma| |%|)
+                                 |NonNegativeInteger|))
+                           (|Lambda|
+                              (|Comma| (|Declare| |t#1| |%|))
+                              |NonNegativeInteger|
+                              (|Label| |#| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |=|
+                              (|Apply| |->| (|Comma| |%| |%|) |Boolean|))
+                           (|Lambda|
+                              (|Comma|
+                                 (|Declare| |t#1| |%|)
+                                 (|Declare| |t#2| |%|))
+                              |Boolean|
+                              (|Label| |=| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |any?|
+                              (|Apply|
+                                 |->|
+                                 (|Comma|
+                                    (|Apply| |->| (|Comma| |#1|) |Boolean|)
+                                    |%|)
+                                 |Boolean|))
+                           (|Lambda|
+                              (|Comma|
+                                 (|Declare|
+                                    |t#1|
+                                    (|Apply|
+                                       |->|
+                                       (|Comma| |#1|)
+                                       |Boolean|))
+                                 (|Declare| |t#2| |%|))
+                              |Boolean|
+                              (|Label| |any?| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |child?|
+                              (|Apply| |->| (|Comma| |%| |%|) |Boolean|))
+                           (|Lambda|
+                              (|Comma|
+                                 (|Declare| |t#1| |%|)
+                                 (|Declare| |t#2| |%|))
+                              |Boolean|
+                              (|Label| |child?| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |children|
+                              (|Apply|
+                                 |->|
+                                 (|Comma| |%|)
+                                 (|Apply|
+                                    |List|
+                                    (|PretendTo| |%| |Type|))))
+                           (|Lambda|
+                              (|Comma| (|Declare| |t#1| |%|))
+                              (|Apply| |List| (|PretendTo| |%| |Type|))
+                              (|Label| |children| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |complete|
+                              (|Apply| |->| (|Comma| |%|) |%|))
+                           (|Lambda|
+                              (|Comma| (|Declare| |t#1| |%|))
+                              |%|
+                              (|Label| |complete| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |construct|
+                              (|Apply|
+                                 |->|
+                                 (|Comma|
+                                    (|Apply|
+                                       |List|
+                                       (|PretendTo| |#1| |Type|)))
+                                 |%|))
+                           (|Lambda|
+                              (|Comma|
+                                 (|Declare|
+                                    |t#1|
+                                    (|Apply|
+                                       |List|
+                                       (|PretendTo| |#1| |Type|))))
+                              |%|
+                              (|Label| |construct| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |cycleEntry|
+                              (|Apply| |->| (|Comma| |%|) |%|))
+                           (|Lambda|
+                              (|Comma| (|Declare| |t#1| |%|))
+                              |%|
+                              (|Label| |cycleEntry| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |cycleLength|
+                              (|Apply|
+                                 |->|
+                                 (|Comma| |%|)
+                                 |NonNegativeInteger|))
+                           (|Lambda|
+                              (|Comma| (|Declare| |t#1| |%|))
+                              |NonNegativeInteger|
+                              (|Label| |cycleLength| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |cycleTail|
+                              (|Apply| |->| (|Comma| |%|) |%|))
+                           (|Lambda|
+                              (|Comma| (|Declare| |t#1| |%|))
+                              |%|
+                              (|Label| |cycleTail| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |cyclic?|
+                              (|Apply| |->| (|Comma| |%|) |Boolean|))
+                           (|Lambda|
+                              (|Comma| (|Declare| |t#1| |%|))
+                              |Boolean|
+                              (|Label| |cyclic?| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |delete|
+                              (|Apply|
+                                 |->|
+                                 (|Comma|
+                                    |%|
+                                    (|Apply|
+                                       |UniversalSegment|
+                                       (|PretendTo| |Integer| |Type|)))
+                                 |%|))
+                           (|Lambda|
+                              (|Comma|
+                                 (|Declare| |t#1| |%|)
+                                 (|Declare|
+                                    |t#2|
+                                    (|Apply|
+                                       |UniversalSegment|
+                                       (|PretendTo| |Integer| |Type|))))
+                              |%|
+                              (|Label| |delete| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |delete|
+                              (|Apply| |->| (|Comma| |%| |Integer|) |%|))
+                           (|Lambda|
+                              (|Comma|
+                                 (|Declare| |t#1| |%|)
+                                 (|Declare| |t#2| |Integer|))
+                              |%|
+                              (|Label| |delete| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |distance|
+                              (|Apply| |->| (|Comma| |%| |%|) |Integer|))
+                           (|Lambda|
+                              (|Comma|
+                                 (|Declare| |t#1| |%|)
+                                 (|Declare| |t#2| |%|))
+                              |Integer|
+                              (|Label| |distance| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |apply|
+                              (|Apply|
+                                 |->|
+                                 (|Comma|
+                                    |%|
+                                    (|Apply| |Enumeration| |first|))
+                                 |#1|))
+                           (|Lambda|
+                              (|Comma|
+                                 (|Declare| |t#1| |%|)
+                                 (|Declare|
+                                    |t#2|
+                                    (|Apply| |Enumeration| |first|)))
+                              |#1|
+                              (|Label| |apply| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |apply|
+                              (|Apply|
+                                 |->|
+                                 (|Comma|
+                                    |%|
+                                    (|Apply| |Enumeration| |rest|))
+                                 |%|))
+                           (|Lambda|
+                              (|Comma|
+                                 (|Declare| |t#1| |%|)
+                                 (|Declare|
+                                    |t#2|
+                                    (|Apply| |Enumeration| |rest|)))
+                              |%|
+                              (|Label| |apply| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |apply|
+                              (|Apply|
+                                 |->|
+                                 (|Comma|
+                                    |%|
+                                    (|Apply| |Enumeration| |last|))
+                                 |#1|))
+                           (|Lambda|
+                              (|Comma|
+                                 (|Declare| |t#1| |%|)
+                                 (|Declare|
+                                    |t#2|
+                                    (|Apply| |Enumeration| |last|)))
+                              |#1|
+                              (|Label| |apply| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |apply|
+                              (|Apply|
+                                 |->|
+                                 (|Comma|
+                                    |%|
+                                    (|Apply|
+                                       |UniversalSegment|
+                                       (|PretendTo| |Integer| |Type|)))
+                                 |%|))
+                           (|Lambda|
+                              (|Comma|
+                                 (|Declare| |t#1| |%|)
+                                 (|Declare|
+                                    |t#2|
+                                    (|Apply|
+                                       |UniversalSegment|
+                                       (|PretendTo| |Integer| |Type|))))
+                              |%|
+                              (|Label| |apply| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |apply|
+                              (|Apply| |->| (|Comma| |%| |Integer|) |#1|))
+                           (|Lambda|
+                              (|Comma|
+                                 (|Declare| |t#1| |%|)
+                                 (|Declare| |t#2| |Integer|))
+                              |#1|
+                              (|Label| |apply| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |apply|
+                              (|Apply|
+                                 |->|
+                                 (|Comma| |%| |Integer| |#1|)
+                                 |#1|))
+                           (|Lambda|
+                              (|Comma|
+                                 (|Declare| |t#1| |%|)
+                                 (|Declare| |t#2| |Integer|)
+                                 (|Declare| |t#3| |#1|))
+                              |#1|
+                              (|Label| |apply| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |entries|
+                              (|Apply|
+                                 |->|
+                                 (|Comma| |%|)
+                                 (|Apply|
+                                    |List|
+                                    (|PretendTo| |#1| |Type|))))
+                           (|Lambda|
+                              (|Comma| (|Declare| |t#1| |%|))
+                              (|Apply| |List| (|PretendTo| |#1| |Type|))
+                              (|Label| |entries| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |every?|
+                              (|Apply|
+                                 |->|
+                                 (|Comma|
+                                    (|Apply| |->| (|Comma| |#1|) |Boolean|)
+                                    |%|)
+                                 |Boolean|))
+                           (|Lambda|
+                              (|Comma|
+                                 (|Declare|
+                                    |t#1|
+                                    (|Apply|
+                                       |->|
+                                       (|Comma| |#1|)
+                                       |Boolean|))
+                                 (|Declare| |t#2| |%|))
+                              |Boolean|
+                              (|Label| |every?| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |explicitlyFinite?|
+                              (|Apply| |->| (|Comma| |%|) |Boolean|))
+                           (|Lambda|
+                              (|Comma| (|Declare| |t#1| |%|))
+                              |Boolean|
+                              (|Label|
+                                 |explicitlyFinite?|
+                                 |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |extend|
+                              (|Apply| |->| (|Comma| |%| |Integer|) |%|))
+                           (|Lambda|
+                              (|Comma|
+                                 (|Declare| |t#1| |%|)
+                                 (|Declare| |t#2| |Integer|))
+                              |%|
+                              (|Label| |extend| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |first|
+                              (|Apply|
+                                 |->|
+                                 (|Comma| |%| |NonNegativeInteger|)
+                                 |%|))
+                           (|Lambda|
+                              (|Comma|
+                                 (|Declare| |t#1| |%|)
+                                 (|Declare| |t#2| |NonNegativeInteger|))
+                              |%|
+                              (|Label| |first| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |index?|
+                              (|Apply|
+                                 |->|
+                                 (|Comma| |Integer| |%|)
+                                 |Boolean|))
+                           (|Lambda|
+                              (|Comma|
+                                 (|Declare| |t#1| |Integer|)
+                                 (|Declare| |t#2| |%|))
+                              |Boolean|
+                              (|Label| |index?| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |indices|
+                              (|Apply|
+                                 |->|
+                                 (|Comma| |%|)
+                                 (|Apply|
+                                    |List|
+                                    (|PretendTo| |Integer| |Type|))))
+                           (|Lambda|
+                              (|Comma| (|Declare| |t#1| |%|))
+                              (|Apply|
+                                 |List|
+                                 (|PretendTo| |Integer| |Type|))
+                              (|Label| |indices| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |insert|
+                              (|Apply|
+                                 |->|
+                                 (|Comma| |#1| |%| |Integer|)
+                                 |%|))
+                           (|Lambda|
+                              (|Comma|
+                                 (|Declare| |t#1| |#1|)
+                                 (|Declare| |t#2| |%|)
+                                 (|Declare| |t#3| |Integer|))
+                              |%|
+                              (|Label| |insert| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |insert|
+                              (|Apply|
+                                 |->|
+                                 (|Comma| |%| |%| |Integer|)
+                                 |%|))
+                           (|Lambda|
+                              (|Comma|
+                                 (|Declare| |t#1| |%|)
+                                 (|Declare| |t#2| |%|)
+                                 (|Declare| |t#3| |Integer|))
+                              |%|
+                              (|Label| |insert| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |last|
+                              (|Apply| |->| (|Comma| |%|) |#1|))
+                           (|Lambda|
+                              (|Comma| (|Declare| |t#1| |%|))
+                              |#1|
+                              (|Label| |last| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |last|
+                              (|Apply|
+                                 |->|
+                                 (|Comma| |%| |NonNegativeInteger|)
+                                 |%|))
+                           (|Lambda|
+                              (|Comma|
+                                 (|Declare| |t#1| |%|)
+                                 (|Declare| |t#2| |NonNegativeInteger|))
+                              |%|
+                              (|Label| |last| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |leaf?|
+                              (|Apply| |->| (|Comma| |%|) |Boolean|))
+                           (|Lambda|
+                              (|Comma| (|Declare| |t#1| |%|))
+                              |Boolean|
+                              (|Label| |leaf?| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |less?|
+                              (|Apply|
+                                 |->|
+                                 (|Comma| |%| |NonNegativeInteger|)
+                                 |Boolean|))
+                           (|Lambda|
+                              (|Comma|
+                                 (|Declare| |t#1| |%|)
+                                 (|Declare| |t#2| |NonNegativeInteger|))
+                              |Boolean|
+                              (|Label| |less?| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |maxIndex|
+                              (|Apply| |->| (|Comma| |%|) |Integer|))
+                           (|Lambda|
+                              (|Comma| (|Declare| |t#1| |%|))
+                              |Integer|
+                              (|Label| |maxIndex| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |minIndex|
+                              (|Apply| |->| (|Comma| |%|) |Integer|))
+                           (|Lambda|
+                              (|Comma| (|Declare| |t#1| |%|))
+                              |Integer|
+                              (|Label| |minIndex| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |more?|
+                              (|Apply|
+                                 |->|
+                                 (|Comma| |%| |NonNegativeInteger|)
+                                 |Boolean|))
+                           (|Lambda|
+                              (|Comma|
+                                 (|Declare| |t#1| |%|)
+                                 (|Declare| |t#2| |NonNegativeInteger|))
+                              |Boolean|
+                              (|Label| |more?| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |node?|
+                              (|Apply| |->| (|Comma| |%| |%|) |Boolean|))
+                           (|Lambda|
+                              (|Comma|
+                                 (|Declare| |t#1| |%|)
+                                 (|Declare| |t#2| |%|))
+                              |Boolean|
+                              (|Label| |node?| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |nodes|
+                              (|Apply|
+                                 |->|
+                                 (|Comma| |%|)
+                                 (|Apply|
+                                    |List|
+                                    (|PretendTo| |%| |Type|))))
+                           (|Lambda|
+                              (|Comma| (|Declare| |t#1| |%|))
+                              (|Apply| |List| (|PretendTo| |%| |Type|))
+                              (|Label| |nodes| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |possiblyInfinite?|
+                              (|Apply| |->| (|Comma| |%|) |Boolean|))
+                           (|Lambda|
+                              (|Comma| (|Declare| |t#1| |%|))
+                              |Boolean|
+                              (|Label|
+                                 |possiblyInfinite?|
+                                 |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |rest|
+                              (|Apply| |->| (|Comma| |%|) |%|))
+                           (|Lambda|
+                              (|Comma| (|Declare| |t#1| |%|))
+                              |%|
+                              (|Label| |rest| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |rest|
+                              (|Apply|
+                                 |->|
+                                 (|Comma| |%| |NonNegativeInteger|)
+                                 |%|))
+                           (|Lambda|
+                              (|Comma|
+                                 (|Declare| |t#1| |%|)
+                                 (|Declare| |t#2| |NonNegativeInteger|))
+                              |%|
+                              (|Label| |rest| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |size?|
+                              (|Apply|
+                                 |->|
+                                 (|Comma| |%| |NonNegativeInteger|)
+                                 |Boolean|))
+                           (|Lambda|
+                              (|Comma|
+                                 (|Declare| |t#1| |%|)
+                                 (|Declare| |t#2| |NonNegativeInteger|))
+                              |Boolean|
+                              (|Label| |size?| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |tail|
+                              (|Apply| |->| (|Comma| |%|) |%|))
+                           (|Lambda|
+                              (|Comma| (|Declare| |t#1| |%|))
+                              |%|
+                              (|Label| |tail| |dummyDefault|)))
+                        (|Define|
+                           (|Declare|
+                              |value|
+                              (|Apply| |->| (|Comma| |%|) |#1|))
+                           (|Lambda|
+                              (|Comma| (|Declare| |t#1| |%|))
+                              |#1|
+                              (|Label| |value| |dummyDefault|)))) ))) ))) )

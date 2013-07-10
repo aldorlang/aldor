@@ -1,0 +1,19 @@
+#!/bin/sh
+#
+# This script calls the appropriate makemake command.
+
+export PATH=$ALDORROOT/toolbin:$PATH
+case "$MACHINE" in
+rt)	makemake -loose "$@" ;;
+sparc*)	makemake -expanded "$@" ;;
+sun4os4g) makemake -loose "$@" ;;
+sun4os55*) makemake -loose "$@" ;;
+sun*)	makemake -f=rlv -expanded "$@" ;;
+hpux*)	makemake -loose "$@" ;;
+axp*)	makemake -loose "$@" ;;
+linux*) makemake -loose "$@" ;;
+win32gcc) makemake -loose "$@" ;;
+rs*) makemake -loose "$@" ;;
+irix*) makemake -loose "$@" ;;
+*)	makemake "$@" ;;
+esac

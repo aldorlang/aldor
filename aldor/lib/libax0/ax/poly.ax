@@ -1,0 +1,290 @@
+
+(|Sequence|
+   (|Import| NIL |AxiomLib|)
+   (|Import| NIL |Boolean|)
+   (|Export|
+      (|Declare|
+         |PolynomialSquareFree|
+         (|Apply|
+            |->|
+            (|Comma|
+               (|Declare| |#1| |OrderedSet|)
+               (|Declare| |#2| |OrderedAbelianMonoidSup|)
+               (|Declare| |#3| |GcdDomain|)
+               (|Declare|
+                  |#4|
+                  (|Apply| |PolynomialCategory| |#3| |#2| |#1|)))
+            (|With|
+               NIL
+               (|Sequence|
+                  (|Declare|
+                     |squareFree|
+                     (|Apply|
+                        |->|
+                        (|Comma| |#4|)
+                        (|Apply| |Factored| |#4|)))) )))
+      NIL
+      NIL)
+   (|Export|
+      (|Declare|
+         |UnivariatePolynomialSquareFree|
+         (|Apply|
+            |->|
+            (|Comma|
+               (|Declare| |#1| |IntegralDomain|)
+               (|Declare|
+                  |#2|
+                  (|With|
+                     NIL
+                     (|Sequence|
+                        (|Apply| |UnivariatePolynomialCategory| |#1|)
+                        |IntegralDomain|
+                        (|Declare|
+                           |gcd|
+                           (|Apply| |->| (|Comma| |%| |%|) |%|)))) ))
+            (|With|
+               NIL
+               (|Sequence|
+                  (|Declare|
+                     |squareFree|
+                     (|Apply|
+                        |->|
+                        (|Comma| |#2|)
+                        (|Apply| |Factored| |#2|)))
+                  (|Declare|
+                     |squareFreePart|
+                     (|Apply| |->| (|Comma| |#2|) |#2|))
+                  (|Declare|
+                     |BumInSepFFE|
+                     (|Apply|
+                        |->|
+                        (|Comma|
+                           (|Apply|
+                              |Record|
+                              (|Declare|
+                                 |flg|
+                                 (|Apply|
+                                    |Union|
+                                    (|Declare|
+                                       |nil|
+                                       (|Apply| |Enumeration| |nil|))
+                                    (|Declare|
+                                       |sqfr|
+                                       (|Apply| |Enumeration| |sqfr|))
+                                    (|Declare|
+                                       |irred|
+                                       (|Apply| |Enumeration| |irred|))
+                                    (|Declare|
+                                       |prime|
+                                       (|Apply| |Enumeration| |prime|))))
+                              (|Declare| |fctr| |#2|)
+                              (|Declare| |xpnt| |Integer|)))
+                        (|Apply|
+                           |Record|
+                           (|Declare|
+                              |flg|
+                              (|Apply|
+                                 |Union|
+                                 (|Declare|
+                                    |nil|
+                                    (|Apply| |Enumeration| |nil|))
+                                 (|Declare|
+                                    |sqfr|
+                                    (|Apply| |Enumeration| |sqfr|))
+                                 (|Declare|
+                                    |irred|
+                                    (|Apply| |Enumeration| |irred|))
+                                 (|Declare|
+                                    |prime|
+                                    (|Apply| |Enumeration| |prime|))))
+                           (|Declare| |fctr| |#2|)
+                           (|Declare| |xpnt| |Integer|)))) ))) )
+      NIL
+      NIL)
+   (|Export|
+      (|Declare|
+         |PolynomialToUnivariatePolynomial|
+         (|Apply|
+            |->|
+            (|Comma| (|Declare| |#1| |Symbol|) (|Declare| |#2| |Ring|))
+            (|With|
+               NIL
+               (|Sequence|
+                  (|Declare|
+                     |univariate|
+                     (|Apply|
+                        |->|
+                        (|Comma|
+                           (|Apply| |Polynomial| |#2|)
+                           (|Apply| |Variable| |#1|))
+                        (|Apply|
+                           |UnivariatePolynomial|
+                           |#1|
+                           (|Apply| |Polynomial| |#2|)))) ))) )
+      NIL
+      NIL)
+   (|Export|
+      (|Declare|
+         |UnivariatePolynomialFunctions2|
+         (|Apply|
+            |->|
+            (|Comma|
+               (|Declare| |#1| |Symbol|)
+               (|Declare| |#2| |Ring|)
+               (|Declare| |#3| |Symbol|)
+               (|Declare| |#4| |Ring|))
+            (|With|
+               NIL
+               (|Sequence|
+                  (|Declare|
+                     |map|
+                     (|Apply|
+                        |->|
+                        (|Comma|
+                           (|Apply| |->| (|Comma| |#2|) |#4|)
+                           (|Apply| |UnivariatePolynomial| |#1| |#2|))
+                        (|Apply| |UnivariatePolynomial| |#3| |#4|)))) )))
+      NIL
+      NIL)
+   (|Export|
+      (|Declare|
+         |UnivariatePolynomial|
+         (|Apply|
+            |->|
+            (|Comma| (|Declare| |#1| |Symbol|) (|Declare| |#2| |Ring|))
+            (|With|
+               NIL
+               (|Sequence|
+                  (|Apply| |UnivariatePolynomialCategory| |#2|)
+                  (|Declare|
+                     |coerce|
+                     (|Apply|
+                        |->|
+                        (|Comma| (|Apply| |Variable| |#1|))
+                        |%|))
+                  (|Declare|
+                     |fmecg|
+                     (|Apply|
+                        |->|
+                        (|Comma| |%| |NonNegativeInteger| |#2| |%|)
+                        |%|)))) ))
+      NIL
+      NIL)
+   (|Export|
+      (|Declare|
+         |SparseUnivariatePolynomialFunctions2|
+         (|Apply|
+            |->|
+            (|Comma| (|Declare| |#1| |Ring|) (|Declare| |#2| |Ring|))
+            (|With|
+               NIL
+               (|Sequence|
+                  (|Declare|
+                     |map|
+                     (|Apply|
+                        |->|
+                        (|Comma|
+                           (|Apply| |->| (|Comma| |#1|) |#2|)
+                           (|Apply| |SparseUnivariatePolynomial| |#1|))
+                        (|Apply| |SparseUnivariatePolynomial| |#2|)))) )))
+      NIL
+      NIL)
+   (|Sequence|
+      (|Define|
+         (|Declare|
+            |SparseUnivariatePolynomialExtendCategory|
+            (|Apply| |->| (|Declare| |#1| |Ring|) |Category|))
+         (|Lambda|
+            (|Comma| (|Declare| |#1| |Ring|))
+            |Category|
+            (|Label|
+               |SparseUnivariatePolynomialExtendCategory|
+               (|With|
+                  NIL
+                  (|Sequence|
+                     (|Apply| |UnivariatePolynomialCategory| |#1|)
+                     (|Declare|
+                        |outputForm|
+                        (|Apply|
+                           |->|
+                           (|Comma| |%| |OutputForm|)
+                           |OutputForm|))
+                     (|Declare|
+                        |fmecg|
+                        (|Apply|
+                           |->|
+                           (|Comma| |%| |NonNegativeInteger| |#1| |%|)
+                           |%|)))) )))
+      (|Extend|
+         (|Define|
+            (|Declare|
+               |SparseUnivariatePolynomial|
+               (|Apply|
+                  |->|
+                  (|Declare| |#1| |Ring|)
+                  (|Apply|
+                     |SparseUnivariatePolynomialExtendCategory|
+                     |#1|)))
+            (|Lambda|
+               (|Comma| (|Declare| |#1| |Ring|))
+               (|Apply| |SparseUnivariatePolynomialExtendCategory| |#1|)
+               (|Label|
+                  |SparseUnivariatePolynomial|
+                  (|Add|
+                     (|PretendTo|
+                        (|Add| NIL NIL)
+                        (|Apply|
+                           |SparseUnivariatePolynomialExtendCategory|
+                           |#1|))
+                     NIL)))) ))
+   (|Export|
+      (|Declare|
+         |PolynomialRing|
+         (|Apply|
+            |->|
+            (|Comma|
+               (|Declare| |#1| |Ring|)
+               (|Declare| |#2| |OrderedAbelianMonoid|))
+            (|With|
+               NIL
+               (|Sequence|
+                  (|Apply| |FiniteAbelianMonoidRing| |#1| |#2|)
+                  (|If|
+                     (|Test| (|Has| |#1| |IntegralDomain|))
+                     (|If|
+                        (|Test| (|Has| |#2| |CancellationAbelianMonoid|))
+                        (|Declare|
+                           |fmecg|
+                           (|Apply| |->| (|Comma| |%| |#2| |#1| |%|) |%|))
+                        NIL)
+                     NIL)
+                  (|If|
+                     (|Test|
+                        (|Has|
+                           |#1|
+                           (|RestrictTo|
+                              |canonicalUnitNormal|
+                              |Category|)))
+                     (|RestrictTo| |canonicalUnitNormal| |Category|)
+                     NIL)))) )
+      NIL
+      NIL)
+   (|Export|
+      (|Declare|
+         |FreeModule|
+         (|Apply|
+            |->|
+            (|Comma| (|Declare| |#1| |Ring|) (|Declare| |#2| |OrderedSet|))
+            (|With|
+               NIL
+               (|Sequence|
+                  (|Apply| |BiModule| |#1| |#1|)
+                  (|Apply| |IndexedDirectProductCategory| |#1| |#2|)
+                  (|If|
+                     (|Test| (|Has| |#1| |CommutativeRing|))
+                     (|Apply|
+                        |Module|
+                        (|PretendTo| |#1| |CommutativeRing|))
+                     NIL)))) )
+      NIL
+      NIL))

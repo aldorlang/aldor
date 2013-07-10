@@ -1,0 +1,222 @@
+{\codeline{1}\verb& #include "aldor"&}\\
+{\codeline{2}\verb&&}\\
+{\codeline{3}\verb& R ==> DoubleFloat;&}\\
+{\codeline{4}\verb& I ==> MachineInteger;&}\\
+{\codeline{5}\verb&&}\\
+{\codeline{6}\verb& +++ quanc8: Quadrature, Newton-Cotes 8-panel&}\\
+{\codeline{7}\verb& +++&}\\
+{\codeline{8}\verb& +++ (This is a literal translation of the Fortran program given&}\\
+{\codeline{9}\verb& +++  in ``Computer Methods for Mathematical Computations'' by Forsythe,&}\\
+{\codeline{10}\verb& +++  Malcolm and Moler, Prentice-Hall 1977.)&}\\
+{\codeline{11}\verb& +++&}\\
+{\codeline{12}\verb& +++ Estimate the integral of fun(x) from a to b to a given tolerance.&}\\
+{\codeline{13}\verb& +++ An automatic adaptive routine based on the 8-panel Newton-Cotes&}\\
+{\codeline{14}\verb& +++ rule.&}\\
+{\codeline{15}\verb& +++&}\\
+{\codeline{16}\verb& +++ Input:&}\\
+{\codeline{17}\verb& +++   fun     The name of the integrand function subprogram f(x).&}\\
+{\codeline{18}\verb& +++   a       The lower limit of integration.&}\\
+{\codeline{19}\verb& +++   b       The upper limit of integration. (b may be less than a.)&}\\
+{\codeline{20}\verb& +++   relerr  A relative error tolerance. (Should be non-negative)&}\\
+{\codeline{21}\verb& +++   abserr  An absolute error tolerance. (Should be non-negative)&}\\
+{\codeline{22}\verb& +++&}\\
+{\codeline{23}\verb& +++ Output:&}\\
+{\codeline{24}\verb& +++   result  An approximation to the integral hopefully satisfying&}\\
+{\codeline{25}\verb& +++           the least stringent of the two error tolerances.&}\\
+{\codeline{26}\verb& +++   errest  An estimate of the magnitute of the actual error.&}\\
+{\codeline{27}\verb& +++   nofun   The number of function values used in the calculation of&}\\
+{\codeline{28}\verb& +++           the result.&}\\
+{\codeline{29}\verb& +++   flag    A reliability indicator.  If flag is zero, then result&}\\
+{\codeline{30}\verb& +++           probably satisfies the error tolerance.  If flag is&}\\
+{\codeline{31}\verb& +++           xxx.yyy then xxx = the number of intervals which have&}\\
+{\codeline{32}\verb& +++           not converged and 0.yyy = the fraction of the interval&}\\
+{\codeline{33}\verb& +++           left to do when the limit on nofun was approached.&}\\
+{\codeline{34}\verb&&}\\
+{\codeline{35}\verb& quanc8(fun: R -> R, a: R, b: R, abserr: R, relerr: R):&}\\
+{\codeline{36}\verb&       (Xresult: R, Xerrest: R, Xnofun: I, Xflag: R)&}\\
+{\codeline{37}\verb& == {&}\\
+{\codeline{38}\verb&         local result, errest, flag: R;&}\\
+{\codeline{39}\verb&         local nofun: I;&}\\
+{\codeline{40}\verb&         RETURN ==> return (result, errest, nofun, flag);&}\\
+{\codeline{41}\verb&&}\\
+{\codeline{42}\verb&         local w0, w1, w2, w3, w4, area, x0, f0, stone, step, cor11: R;&}\\
+{\codeline{43}\verb&         local qprev, qnow, qdiff, qleft, esterr, tolerr, temp: R;&}\\
+{\codeline{44}\verb&         default i, j : I;&}\\
+{\codeline{45}\verb&&}\\
+{\codeline{46}\verb&         qright: Array R       := new(31, 0.0);&}\\
+{\codeline{47}\verb&         f:      Array R       := new(16, 0.0);&}\\
+{\codeline{48}\verb&         x:      Array R       := new(16, 0.0);&}\\
+{\codeline{49}\verb&         fsave:  Array Array R := [new(30, 0.0) for i in 1..8];&}\\
+{\codeline{50}\verb&         xsave:  Array Array R := [new(30, 0.0) for i in 1..8];&}\\
+{\codeline{51}\verb&&}\\
+{\codeline{52}\verb&         local levmin, levmax, levout, nomax, nofin, lev, nim: I;&}\\
+{\codeline{53}\verb&&}\\
+{\codeline{54}\verb&         --&}\\
+{\codeline{55}\verb&         -- *** Stage 1 ***    General initializations&}\\
+{\codeline{56}\verb&         -- Set constants&}\\
+{\codeline{57}\verb&         --&}\\
+{\codeline{58}\verb&         levmin := 1;&}\\
+{\codeline{59}\verb&         levmax := 30;&}\\
+{\codeline{60}\verb&         levout := 6;&}\\
+{\codeline{61}\verb&         nomax  := 5000;&}\\
+{\codeline{62}\verb&         nofin  := nomax - 8 * (levmax - levout + 2 ^ (levout + 1));&}\\
+{\codeline{63}\verb&         --&}\\
+{\codeline{64}\verb&         -- Trouble when nofun reaches nofin&}\\
+{\codeline{65}\verb&         --&}\\
+{\codeline{66}\verb&         w0 :=   3956.0 / 14175.0;&}\\
+{\codeline{67}\verb&         w1 :=  23552.0 / 14175.0;&}\\
+{\codeline{68}\verb&         w2 :=  -3712.0 / 14175.0;&}\\
+{\codeline{69}\verb&         w3 :=  41984.0 / 14175.0;&}\\
+{\codeline{70}\verb&         w4 := -18160.0 / 14175.0;&}\\
+{\codeline{71}\verb&         --&}\\
+{\codeline{72}\verb&         -- Initialize running sums to zero.&}\\
+{\codeline{73}\verb&         --&}\\
+{\codeline{74}\verb&         flag := 0.0;&}\\
+{\codeline{75}\verb&         result := 0.0;&}\\
+{\codeline{76}\verb&         cor11 := 0.0;&}\\
+{\codeline{77}\verb&         errest := 0.0;&}\\
+{\codeline{78}\verb&         area := 0.0;&}\\
+{\codeline{79}\verb&         nofun := 0;&}\\
+{\codeline{80}\verb&         if a = b then RETURN;&}\\
+{\codeline{81}\verb&         --&}\\
+{\codeline{82}\verb&         -- *** Stage 2 ***   Iniitalization for first interval&}\\
+{\codeline{83}\verb&         --&}\\
+{\codeline{84}\verb&         lev := 0;&}\\
+{\codeline{85}\verb&         nim := 1;&}\\
+{\codeline{86}\verb&         x0  := a;&}\\
+{\codeline{87}\verb&         x(16) := b;&}\\
+{\codeline{88}\verb&         qprev := 0.0;&}\\
+{\codeline{89}\verb&         f0 := fun(x0);&}\\
+{\codeline{90}\verb&         stone := (b - a)/16.0;&}\\
+{\codeline{91}\verb&         x(8)  := (x0   + x(16)) / 2.0;&}\\
+{\codeline{92}\verb&         x(4)  := (x0   + x(8) ) / 2.0;&}\\
+{\codeline{93}\verb&         x(12) := (x(8) + x(16)) / 2.0;&}\\
+{\codeline{94}\verb&         x(2)  := (x0   + x(4) ) / 2.0;&}\\
+{\codeline{95}\verb&         x(6)  := (x(4) + x(8) ) / 2.0;&}\\
+{\codeline{96}\verb&         x(10) := (x(8) + x(12)) / 2.0;&}\\
+{\codeline{97}\verb&         x(14) := (x(12)+ x(16)) / 2.0;&}\\
+{\codeline{98}\verb&         for j in 2..16 by 2 repeat&}\\
+{\codeline{99}\verb&                 f(j) := fun(x(j));&}\\
+{\codeline{100}\verb&         nofun := 9;&}\\
+{\codeline{101}\verb&         --&}\\
+{\codeline{102}\verb&         -- *** Stage 3 ***   Central calculation&}\\
+{\codeline{103}\verb&         -- Requires qprev,x0,x1,...,x16,f0,f2,f4,...,f16.&}\\
+{\codeline{104}\verb&         -- Calculates x1,x3,...x15, f1,f3,...f15,qleft,qright,&}\\
+{\codeline{105}\verb&         --            qnow,qdiff,area.&}\\
+{\codeline{106}\verb&         --&}\\
+{\codeline{107}\verb& @L30    x(1) := (x0 + x(2)) / 2.0;&}\\
+{\codeline{108}\verb&         f(1) := fun(x(1));&}\\
+{\codeline{109}\verb&         for j in 3..15 by 2 repeat {&}\\
+{\codeline{110}\verb&                 x(j) := (x(j-1) + x(j+1)) / 2.0;&}\\
+{\codeline{111}\verb&                 f(j) := fun(x(j));&}\\
+{\codeline{112}\verb&         }&}\\
+{\codeline{113}\verb&         nofun := nofun + 8;&}\\
+{\codeline{114}\verb&         step := (x(16) - x0) / 16.0;&}\\
+{\codeline{115}\verb&         qleft := (w0*(f0+f(8)) + w1*(f(1)+f(7)) + w2*(f(2)+f(6)) +&}\\
+{\codeline{116}\verb&                   w3*(f(3)+f(5)) + w4*f(4)) * step;&}\\
+{\codeline{117}\verb&         qright(lev+1) := (w0*(f(8) + f(16))+w1*(f(9)+f(15))+w2*(f(10)+&}\\
+{\codeline{118}\verb&                   f(14)) + w3*(f(11)+f(13)) + w4*f(12)) * step;&}\\
+{\codeline{119}\verb&         qnow := qleft + qright(lev+1);&}\\
+{\codeline{120}\verb&         qdiff := qnow - qprev;&}\\
+{\codeline{121}\verb&         area := area + qdiff;&}\\
+{\codeline{122}\verb&         --&}\\
+{\codeline{123}\verb&         -- *** Stage 4 ***   Interval convergence test&}\\
+{\codeline{124}\verb&         --&}\\
+{\codeline{125}\verb&         esterr := abs(qdiff) / 1023.0;&}\\
+{\codeline{126}\verb&         tolerr := max(abserr, relerr*abs(area)) * (step/stone);&}\\
+{\codeline{127}\verb&         if lev < levmin then goto L50;&}\\
+{\codeline{128}\verb&         if lev >=levmax then goto L62;&}\\
+{\codeline{129}\verb&         if nofun > nofin then goto L60;&}\\
+{\codeline{130}\verb&         if esterr <= tolerr then goto L70;&}\\
+{\codeline{131}\verb&         --&}\\
+{\codeline{132}\verb&         -- *** Stage 5 ***   No convergence&}\\
+{\codeline{133}\verb&         -- Locate next interval&}\\
+{\codeline{134}\verb&         --&}\\
+{\codeline{135}\verb& @L50    nim := 2*nim;&}\\
+{\codeline{136}\verb&         lev := lev + 1;&}\\
+{\codeline{137}\verb&         --&}\\
+{\codeline{138}\verb&         -- Store right hand elements for future use.&}\\
+{\codeline{139}\verb&         --&}\\
+{\codeline{140}\verb&         for i in 1..8 repeat {&}\\
+{\codeline{141}\verb&                 fsave(i)(lev) := f(i+8);&}\\
+{\codeline{142}\verb&                 xsave(i)(lev) := x(i+8);&}\\
+{\codeline{143}\verb&         }&}\\
+{\codeline{144}\verb&         --&}\\
+{\codeline{145}\verb&         -- Assemble left hand elements for immediate use.&}\\
+{\codeline{146}\verb&         --&}\\
+{\codeline{147}\verb&         qprev := qleft;&}\\
+{\codeline{148}\verb&         for i in 1..8 repeat {&}\\
+{\codeline{149}\verb&                 j := -i;&}\\
+{\codeline{150}\verb&                 f(2*j+18) := f(j+9);&}\\
+{\codeline{151}\verb&                 x(2*j+18) := x(j+9);&}\\
+{\codeline{152}\verb&         }&}\\
+{\codeline{153}\verb&         goto L30;&}\\
+{\codeline{154}\verb&         --&}\\
+{\codeline{155}\verb&         -- *** Stage 6 ***   Trouble section&}\\
+{\codeline{156}\verb&         -- Number of function values is about to exceed limit.&}\\
+{\codeline{157}\verb&         --&}\\
+{\codeline{158}\verb& @L60    nofin := 2*nofin;&}\\
+{\codeline{159}\verb&         levmax := levout;&}\\
+{\codeline{160}\verb&         flag := flag + (b - x0)/(b - a);&}\\
+{\codeline{161}\verb&         goto L70;&}\\
+{\codeline{162}\verb&         --&}\\
+{\codeline{163}\verb&         -- Current level is levmax.&}\\
+{\codeline{164}\verb&         --&}\\
+{\codeline{165}\verb& @L62    flag := flag + 1;&}\\
+{\codeline{166}\verb&         --&}\\
+{\codeline{167}\verb&         -- *** Stage 7 ***   Interval converged&}\\
+{\codeline{168}\verb&         -- Add contributions into running sums.&}\\
+{\codeline{169}\verb&         --&}\\
+{\codeline{170}\verb& @L70    result := result + qnow;&}\\
+{\codeline{171}\verb&         errest := errest + esterr;&}\\
+{\codeline{172}\verb&         cor11 := cor11 + qdiff / 1023.0;&}\\
+{\codeline{173}\verb&         --&}\\
+{\codeline{174}\verb&         -- Locate next interval.&}\\
+{\codeline{175}\verb&         --&}\\
+{\codeline{176}\verb& @L72    if nim = 2*(nim quo 2) then goto L75;&}\\
+{\codeline{177}\verb&         nim := nim quo 2;&}\\
+{\codeline{178}\verb&         lev := lev - 1;&}\\
+{\codeline{179}\verb&         goto L72;&}\\
+{\codeline{180}\verb&&}\\
+{\codeline{181}\verb& @L75    nim := nim + 1;&}\\
+{\codeline{182}\verb&         if lev <= 0 then goto L80;&}\\
+{\codeline{183}\verb&         --&}\\
+{\codeline{184}\verb&         -- Assemble elements required for the next interval.&}\\
+{\codeline{185}\verb&         --&}\\
+{\codeline{186}\verb&         qprev := qright(lev);&}\\
+{\codeline{187}\verb&         x0 := x(16);&}\\
+{\codeline{188}\verb&         f0 := f(16);&}\\
+{\codeline{189}\verb&         for i in 1..8 repeat {&}\\
+{\codeline{190}\verb&                 f(2*i) := fsave(i)(lev);&}\\
+{\codeline{191}\verb&                 x(2*i) := xsave(i)(lev);&}\\
+{\codeline{192}\verb&         }&}\\
+{\codeline{193}\verb&         goto L30;&}\\
+{\codeline{194}\verb&         --&}\\
+{\codeline{195}\verb&         -- *** Stage 8 ***   Finalize and return&}\\
+{\codeline{196}\verb&         --&}\\
+{\codeline{197}\verb& @L80    result := result + cor11;&}\\
+{\codeline{198}\verb&         --&}\\
+{\codeline{199}\verb&         -- Make sure errest not less than roundoff level.&}\\
+{\codeline{200}\verb&         --&}\\
+{\codeline{201}\verb&         if errest = 0.0 then RETURN;&}\\
+{\codeline{202}\verb& @L82    temp := abs(result) + errest;&}\\
+{\codeline{203}\verb&         if temp ~= abs(result) then RETURN;&}\\
+{\codeline{204}\verb&         errest := 2.0 * errest;&}\\
+{\codeline{205}\verb&         goto L82;&}\\
+{\codeline{206}\verb& }&}\\
+{\codeline{207}\verb&&}\\
+{\codeline{208}\verb& -- Test with a well-known example: the result should be Pi.&}\\
+{\codeline{209}\verb&&}\\
+{\codeline{210}\verb& import from R, I, TextWriter, Character, String;&}\\
+{\codeline{211}\verb&&}\\
+{\codeline{212}\verb& f(x:R):R == 4.0/(x*x+1);&}\\
+{\codeline{213}\verb&&}\\
+{\codeline{214}\verb& (result, errest, nofun, flag) := quanc8(f,0.0,1.0,0.00001,0.00001);&}\\
+{\codeline{215}\verb&&}\\
+{\codeline{216}\verb& if zero? flag then {&}\\
+{\codeline{217}\verb&   stdout << "result = " << result << newline;&}\\
+{\codeline{218}\verb&   stdout << "error = " << errest << newline;&}\\
+{\codeline{219}\verb&   stdout << "(after " << nofun << " function evaluations)" << newline;&}\\
+{\codeline{220}\verb& }&}\\
+{\codeline{221}\verb& else&}\\
+{\codeline{222}\verb&   stdout << "error flag is " << flag << newline;&}\\

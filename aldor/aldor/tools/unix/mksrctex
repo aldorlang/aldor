@@ -1,0 +1,41 @@
+#!/bin/sh
+#
+# This script creates a tex file from .c and .h source files and
+# creates an index. The .tex file is then latex'ed to produce a .dvi
+# file. The produced file is mksrctex.dvi.
+#
+# Example: mksrctex *.[ch]
+#
+# Other files besides .c and .h can also be accepted, and .tex files
+# are included assuming they contain formatting commands.
+
+# add to the path for makeindex
+PATH=/usr/local/bin:"$PATH"
+export PATH
+
+rm -rf /tmp/mksrctex 2> /dev/null
+mkdir /tmp/mksrctex
+echo Processing file: $*
+echo Untabbing files ...
+for i in $*
+do
+        untab < $i > /tmp/mksrctex/$i
+done
+
+# get the name of the directory from which we are executing
+# need the full name, not something like ., since we are goung
+# to change to /tmp/mksrctex
+cd `dirname $0`
+execdir=`pwd`
+cd /tmp/mksrctex
+echo Creating master tex file ...
+echo '%' > mksrctex.ind
+awk -f $execdir/cprt.awk $* mksrctex > mksrctex.tex
+echo Latexing ...
+latex mksrctex
+latex mksrctex
+makeindex mksrctex.idx
+latex mksrctex
+rm $*
+rm -f *.aux *.log *.idx *.ilg *.toc 2> /dev/null
+echo Print /tmp/mksrctex/mksrctex.dvi for the hardcopy source listing.

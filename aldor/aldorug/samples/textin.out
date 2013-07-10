@@ -1,0 +1,34 @@
+entering test
+entering lines
+rt:x:0:0:rt:/rt:/bn/bsh
+bn:x:1:1:bn:/bn:
+dmn:x:2:2:dmn:/sbn:
+dm:x:3:4:dm:/vr/dm:
+lp:x:4:7:lp:/vr/spl/lpd:
+sync:x:5:0:sync:/sbn:/bn/sync
+shtdwn:x:6:0:shtdwn:/sbn:/sbn/shtdwn
+hlt:x:7:0:hlt:/sbn:/sbn/hlt
+ml:x:8:12:ml:/vr/spl/ml:
+nws:x:9:13:nws:/vr/spl/nws:
+cp:x:10:14:cp:/vr/spl/cp:
+prtr:x:11:0:prtr:/rt:
+gms:x:12:100:gms:/sr/gms:
+gphr:x:13:30:gphr:/sr/lb/gphr-dt:
+nbdy:x:99:99:Nbdy:/:
+nscd:x:28:28:NSCD Dmn:/:/bn/fls
+mlnll:x:47:47::/vr/spl/mq:/dv/nll
+dnt:x:98:98:pdnt sr:/:/bn/fls
+rpc:x:32:32:Prtmppr RPC sr:/:/bn/fls
+rpcsr:x:29:29:RPC Srvc Usr:/vr/lb/nfs:/bn/fls
+xfs:x:43:43:X Fnt Srvr:/tc/X11/fs:/bn/fls
+gdm:x:42:42::/hm/gdm:/bn/bsh
+pstgrs:x:26:26:PstgrSQL Srvr:/vr/lb/pgsql:/bn/bsh
+pch:x:48:48:Apch:/vr/www:/bn/fls
+nmd:x:25:25:Nmd:/vr/nmd:/bn/fls
+mnd:x:33:6:Amnd sr:/vr/lb/mnd:/bn/bsh
+mysql:x:27:27:MySQL Srvr:/vr/lb/mysql:/bn/bsh
+ldp:x:55:55:LDAP Usr:/vr/lb/ldp:/bn/fls
+pvm:x:24:24::/sr/shr/pvm3:/bn/bsh
+sqd:x:23:23::/vr/spl/sqd:/dv/nll
+leaving lines
+leaving test

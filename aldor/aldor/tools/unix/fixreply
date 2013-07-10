@@ -1,0 +1,58 @@
+# This script extracts the sender from a bug fix and mails him the
+# top of the fixed bug file with the fix report.
+
+awk '
+BEGIN   {
+    sender = ""
+    mailfile = "/tmp/axiomxlfix.mail"
+    system("rm -f " mailfile)
+    print "The following AXIOM-XL bug you reported has been fixed." >> mailfile
+    print " " >> mailfile
+    print ARGV[1] >> mailfile
+    print " " >> mailfile
+}
+
+/--\* Subject: /   {
+    print >> mailfile
+    next
+}
+
+/--\* From: /   {
+    if (sender == "") {
+        sender = $3
+        for (i = 3; i <= NF; i++) {
+            if (index($i, "@")) {
+                sender = $i
+                break;
+            }
+        }
+        if ("<" == substr(sender,1,1)) {
+            sender = substr(sender,2)
+            if (">" == substr(sender,length(sender),1))
+            sender = substr(sender,1,length(sender)-1)
+        }
+    }
+    next
+}
+
+/--\* /   {
+    next
+}
+
+    {
+    print >> mailfile
+    next
+}
+
+END {
+    if (sender == "")
+        print "Could not identify sender. No report sent."
+    else {
+        close(mailfile)
+        printf "\tMailing bug fix report to %s\n",sender
+        subject = "\"AXIOM-XL fix notification\""
+        mail = "mail -s " subject " " sender " < " mailfile
+        system(mail)
+    }
+    system("rm -f " mailfile)
+}'  $*

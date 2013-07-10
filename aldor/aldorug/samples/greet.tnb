@@ -1,0 +1,25 @@
+{\codeline{1}\verb& #include "aldor"&}\\
+{\codeline{2}\verb&&}\\
+{\codeline{3}\verb& -- the following imports can be avoided by including "aldorio"&}\\
+{\codeline{4}\verb& import from File;       -- so we can do input&}\\
+{\codeline{5}\verb& import from TextReader; -- for stdin&}\\
+{\codeline{6}\verb& import from TextWriter; -- for stdout&}\\
+{\codeline{7}\verb& import from Character;  -- for newline&}\\
+{\codeline{8}\verb& import from String;     -- for string literals&}\\
+{\codeline{9}\verb&&}\\
+{\codeline{10}\verb& -- function to prompt for and return the user's name from the console&}\\
+{\codeline{11}\verb& readName(): String == {&}\\
+{\codeline{12}\verb&         stdout << "What is your name?" << newline;&}\\
+{\codeline{13}\verb&         line := <<$String stdin;&}\\
+{\codeline{14}\verb&         -- delete the trailing newline, and return the result&}\\
+{\codeline{15}\verb&         line := [c for c in line | c ~= newline];&}\\
+{\codeline{16}\verb&         line;&}\\
+{\codeline{17}\verb& }&}\\
+{\codeline{18}\verb&&}\\
+{\codeline{19}\verb& -- main function&}\\
+{\codeline{20}\verb& greet(): () == {&}\\
+{\codeline{21}\verb&         name := readName();&}\\
+{\codeline{22}\verb&         stdout << "Hello " << name << ", and goodbye..." << newline;&}\\
+{\codeline{23}\verb& }&}\\
+{\codeline{24}\verb&&}\\
+{\codeline{25}\verb& greet();&}\\

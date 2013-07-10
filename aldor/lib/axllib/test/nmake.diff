@@ -1,0 +1,129 @@
+33c33
+< SamDir	= $(AXIOMXLROOT)/samples/test
+---
+> SamDir	= $(AXIOMXLROOT)/share/samples/test
+40c40
+< 	hilbert.as hilbert0.as hilbert1.as \
+---
+> 	hilbert.as hilbert0.as hilbert1.as intbug1.as gbtest1.as \
+47c47
+< 	error0.as \
+---
+> 	error0.as error1.as \
+49c49,50
+< 	domain0.as domain1.as mandel.as bigmand.as \
+---
+> 	domain0.as domain1.as domain2.as domain3.as \
+> 	mandel.as bigmand.as \
+56,57c57,58
+< 	scan0.as scan1.as scan2.as scan3.as scan4.as scan5.as \
+< 	linear0.as linear1.as linear2.as linear3.as linear4.as \
+---
+> 	scan0.as scan1.as scan2.as scan3.as scan4.as scan5.as scan6.as \
+> 	linear0.as linear1.as linear2.as linear3.as linear4.as linear5.as \
+64c65
+< 	scobind5.as \
+---
+> 	scobind5.as scobind6.as \
+69c70
+< 	catdef0.as catdef1.as catdef2.as self0.as grok.as \
+---
+> 	catdef0.as catdef1.as catdef2.as catdef3.as self0.as grok.as \
+72c73
+< 	depend6.as depend7.as
+---
+> 	depend6.as depend7.as depend8.as depend9.as
+76a78
+> 	default9.as \
+80,82c82,93
+< 	genops.as exit0.as none0.as none1.as none2.as \
+< 	if0.as if1.as if2.as if3.as if4.as \
+< 	tuple0.as tuple1.as tuple2.as tuple3.as tuple4.as embed.as \
+---
+> 	genops.as \
+> 	exit0.as exit1.as exit2.as \
+> 	none0.as none1.as none2.as \
+> 	if0.as if1.as if2.as if3.as if4.as if5.as \
+> 	ifcross0.as \
+> 	tuple0.as tuple1.as tuple2.as tuple3.as tuple4.as \
+> 	embed.as embed1.as \
+> 	impl.as \
+> 	const0.as const1.as const2.as \
+> 	const3.as const4.as const5.as \
+> 	const6.as const7.as const8.as \
+> 	defgroup0.as defgroup1.as defgroup2.as defgroup3.as \
+84a96
+> 	try0.as	\
+95c107,108
+< 	where0.as where1.as \
+---
+> 	eager0.sh \
+> 	where0.as where1.as where3. as \
+100c113,115
+< 	inline0.as inline1.as inline2.as inline3.as inline4.as \
+---
+> 	forn5.as forn5o.as forn6.as forn6o.as forn7.as \
+> 	forn7a.as forn8.sh forn9.sh forn10.sh\
+> 	inline0.as inline1.as inline2.as inline3.as inline4.as inline5.as \
+106c121,129
+< 	emit0.sh emit1.sh respfile.sh
+---
+> 	exn1.as exn2.as exn3.as exn4.as exn5.as exn6.as \
+> 	emit0.sh emit1.sh respfile.sh \
+> 	emerge0.as \
+> 	t1009.as t1024.as t1053.as t1059.as t1106.as t619.as \
+> 	t672.as t715.as t897.as t1142.as t1145.as t1149.as t1157.sh t1158.as\
+> 	t934.as t936.as t944.as t947.as t950.as t958.as t966.as t967.as \
+> 	t973.as t986.as t1099.as t1105.as ddata.as \
+> 
+> 
+108a132,140
+> 	defarg10.as \
+> 	bug852.as \
+> 	bug941.as bug954.as bug969.as \
+> 	bug1127 \
+> 	bug1144.as bug1164.as bug1165.as bug1170.as bug1172.as bug1189.as \
+> 	bug1192.as bug1193.as bug1200.as \
+> 	bug1210.as bug1212.as bug1213.sh bug1226.sh bug1235.as bug1237.as \
+> 	bug1238.as bug1242.as \
+> 	ref0.as \
+111,112c143,144
+<         exptoc.sh exptoc2.sh \
+< 	assign0.as assign1.as assign2.as \
+---
+>         exptoc.sh exptoc2.sh exptoc2.as \
+> 	assign0.as assign1.as assign2.as assign3.as assign4.as \
+115c147
+< 	coerce.as has1.as has2.as \
+---
+> 	coerce.as condapply1.as condapply2.as has1.as has2.as \
+116a149,150
+> 	gfGener1.as gfGener2.as \
+> 	pretend1.as  setBANG.as \
+117a152
+> 	select0.as select1.as select2.as select3.sh \
+121c156
+< 	funlist1.as \
+---
+> 	funlist1.as slist.as \
+128c163,166
+< 	vector0.as vector1.as vector2.as
+---
+> 	vector0.as vector1.as vector2.as \
+> 	gc0.as \
+> 	rawrec1.as rawrec2.as rawrec3.as rawrec4.as rawrec5.sh \
+> 
+137,138c175,176
+< 	segext0.as segext1.as segext2.as segext3.as segext4.as
+< 
+---
+> 	segext0.as segext1.as segext2.as segext3.as segext4.as \
+> 	forn5_c.c 
+150c188
+< 	forn2.as forn3.as forn4.as funlist1.as funvar.as gbtest1.as \
+---
+> 	forn2.as forn3.as forn4.as funlist1.as funvar.as intbug1.as gbtest1.as \
+181c219
+< TIMINGS= mandel_t.as mandel_t.c sieve.c
+---
+> TIMINGS= mandel_t.as mandel_c.c sieve.c

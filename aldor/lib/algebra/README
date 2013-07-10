@@ -1,0 +1,63 @@
+README for the algebra library
+------------------------------
+
+This is version 1.0.3 of libalgebra.
+
+You need Aldor 1.0.3 with libaldor 1.0.3 installed in order to
+use this version of algebra library. Aldor and libaldor can be 
+downloaded from http://www.aldor.org.
+
+INSTALLATION:
+-------------
+o What the `algebra' sources for developers look like
+
+[moreno@iguanodon algebra]$ ls
+bin        doc      lib       Makefile.generic  src
+COPYRIGHT  include  Makefile  README            test
+
+o Variables that need to be set 
+  - before building the libraries from the sources: ALGEBRAROOT giving
+    the location of the directory above
+  - The variable ALDORROOT giving the location of the aldor compiler
+  - Optionally, the variable LIBALDORROT giving the location of the 
+    libaldor library. This library could also be located in $ALDORROOT/lib
+
+o Targets for users
+  - objects
+    Builds the 3 `.a' archives.
+  - runtest
+    Runs the tests. 
+    !!! DO NOT WORRY ABOUT `ERROR' message for the moment !!!
+
+o Targets for developers
+  - checksrc
+    Checks that all scripts and directories are in the right place.
+  - aofiles
+    Builds the 3 `.al' archives (see `src/Makefile' for more details).
+  - testfiles
+    Extracts the test files from the sources in src/.
+  - install
+    Moves the archives somewhere (see the scripts).
+    (this target should only be used for developement
+     and is not needed for building the distribution).
+  - uninstall 
+    Reverse operation.
+  - clean
+    Resets the `algebra' set of files (i.e. removes test files and archives).
+
+
+USING libalgebra:
+-----------------
+The most convenient way is to copy or link the various lib/libalgebra* files
+into the lib/ directory of aldor, as well as the include/*.as files into
+the include/ directory of aldor.
+If you choose not to do that, then you must add ALGEBRAROOT/lib and
+ALGEBRAROOT/include to your LIBPATH and INCPATH environment variables
+respectively, where ALGEBRAROOT stands for the libalgebra root path.
+Please see the libalgebra user guide in the doc/ directory for more
+information on using libalgebra.
+
+Please report any problem/bugs to sumit@sophia.inria.fr
+Notifying that address of a successful installation will put you on
+a notification list for futures versions of libalgebra.
+

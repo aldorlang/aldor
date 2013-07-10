@@ -1,0 +1,67 @@
+{\codeline{1}\verb& #include "aldor"&}\\
+{\codeline{2}\verb& #include "aldorio"&}\\
+{\codeline{3}\verb&&}\\
+{\codeline{4}\verb& -- implementation of stacks via lists&}\\
+{\codeline{5}\verb& -- the lines starting with ++ are saved in the output of&}\\
+{\codeline{6}\verb& -- the compiler, and may be browsed with an appropriate tool&}\\
+{\codeline{7}\verb&&}\\
+{\codeline{8}\verb& Stack(S: OutputType): OutputType with {&}\\
+{\codeline{9}\verb&         empty?:    % -> Boolean; ++ test for an empty stack&}\\
+{\codeline{10}\verb&         empty:    () -> %;       ++ create an empty stack&}\\
+{\codeline{11}\verb&         push!:(S, %) -> %;       ++ put a new element onto the stack&}\\
+{\codeline{12}\verb&         pop!:      % -> S;       ++ remove the top element and return it&}\\
+{\codeline{13}\verb&         top:       % -> S;       ++ return the top of the stack&}\\
+{\codeline{14}\verb&&}\\
+{\codeline{15}\verb&         export from S;&}\\
+{\codeline{16}\verb&                 -- expose all operations from S&}\\
+{\codeline{17}\verb&                 -- when Stack S is imported&}\\
+{\codeline{18}\verb& } == add {&}\\
+{\codeline{19}\verb&         -- Stacks are represented using a list.&}\\
+{\codeline{20}\verb&         -- To go between the representation and % we use the&}\\
+{\codeline{21}\verb&         -- rep and per functions.&}\\
+{\codeline{22}\verb&         Rep == Record(contents: List S);&}\\
+{\codeline{23}\verb&         import from Rep;&}\\
+{\codeline{24}\verb&&}\\
+{\codeline{25}\verb&         -- utility functions&}\\
+{\codeline{26}\verb&         local contents(stack: %): List S == rep(stack).contents;&}\\
+{\codeline{27}\verb&&}\\
+{\codeline{28}\verb&         -- simple functions&}\\
+{\codeline{29}\verb&         empty(): % == per [empty];&}\\
+{\codeline{30}\verb&         empty?(s: %): Boolean == empty? contents s;&}\\
+{\codeline{31}\verb&         top(s: %): S == first contents s;&}\\
+{\codeline{32}\verb&&}\\
+{\codeline{33}\verb&         push!(elt: S, s: %): % == {&}\\
+{\codeline{34}\verb&                 rep(s).contents := cons(elt, contents s);&}\\
+{\codeline{35}\verb&                 s&}\\
+{\codeline{36}\verb&         }&}\\
+{\codeline{37}\verb&&}\\
+{\codeline{38}\verb&         pop!(s: %): S == {&}\\
+{\codeline{39}\verb&                 next := first contents s;&}\\
+{\codeline{40}\verb&                 rep(s).contents := rest contents s;&}\\
+{\codeline{41}\verb&                 next;&}\\
+{\codeline{42}\verb&         }&}\\
+{\codeline{43}\verb&&}\\
+{\codeline{44}\verb&         -- needed to satisfy OutputType&}\\
+{\codeline{45}\verb&         import from String;&}\\
+{\codeline{46}\verb&         (tw: TextWriter) << (s: %): TextWriter == tw << "<stack>";&}\\
+{\codeline{47}\verb& }&}\\
+{\codeline{48}\verb&&}\\
+{\codeline{49}\verb&&}\\
+{\codeline{50}\verb& test(): () == {&}\\
+{\codeline{51}\verb&         -- Importing the domains involed in the next two&}\\
+{\codeline{52}\verb&         -- lines is made by the affectations.&}\\
+{\codeline{53}\verb&         l: List MachineInteger := [1,2,3,4,5,6];&}\\
+{\codeline{54}\verb&         stack: Stack MachineInteger := empty();&}\\
+{\codeline{55}\verb&         for x in l repeat&}\\
+{\codeline{56}\verb&                 push!(x, stack);&}\\
+{\codeline{57}\verb&         -- Importing the domains involed in the next&}\\
+{\codeline{58}\verb&         -- line is needed.&}\\
+{\codeline{59}\verb&         stdout << "stack is:" << stack << newline;&}\\
+{\codeline{60}\verb&         while not empty? stack repeat {&}\\
+{\codeline{61}\verb&                 stdout << "Next is: " << top stack << newline;&}\\
+{\codeline{62}\verb&                 pop! stack;&}\\
+{\codeline{63}\verb&         }&}\\
+{\codeline{64}\verb& }&}\\
+{\codeline{65}\verb&&}\\
+{\codeline{66}\verb& test()&}\\
+{\codeline{67}\verb&&}\\

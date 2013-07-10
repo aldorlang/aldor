@@ -1,0 +1,197 @@
+% *********************************************************************
+\head{chapter}{Separate compilation}{asugSeparate}
+% *********************************************************************
+\index{separate compilation}
+
+% Redefinition for asugmacs.tex:
+% \newcommand{\fname}[1]{``{\tt #1}''}
+% I can't see any reason to have the `"' in monospace - it isn't part of
+% the name (and isn't done in analogous commands).  MGR
+
+This chapter describes how to run the \asharp{} compiler to produce
+libraries or executable programs from multiple files.
+
+% *********************************************************************
+\head{section}{Multiple files}{asugSeparateMulti}
+% *********************************************************************
+\thegeneraltwofile{t}{SeparateCompFigure}%
+{A program consisting of two files.}{examples/choose.as}{examples/poker.as}
+
+Unless a program is very small, it is normal to develop it in stages
+and to identify parts of it for potential re-use, compiling them 
+separately.  \asharp{} supports separate compilation to platform-independent
+\ttin{.ao} files.
+\index{files!ano@\protect{\tt .ao}}
+These files contain type information, intermediate code and other information
+to allow type-safe separate compilation and cross-file optimisation.
+These files have a portable format and it is possible to
+move them between machines of different architectures, with different
+character sets, byte orders or floating-point formats.
+The \ttin{.ao} files can be thought of as platform-independent object files,
+which may be imported into other \asharp{} programs or used to generate
+C or Lisp or object code for a particular platform.
+
+Let us give a a toy example which illustrates the steps one takes to
+do separate compilation with the \asharp{} compiler.
+Suppose we have two files: \fname{choose.as}, containing some functions,
+and \fname{poker.as}, which uses them.
+These files are shown in Figure \ref{SeparateCompFigure}.
+The commands to compile these individual files together are:
+
+\shin{separate}
+
+The first step compiles the file \fname{choose.as}.
+The \option{-Fao} option causes the compiler to create
+a platform-independent file, \fname{choose.ao}, and the
+\option{-Fo} option gives a platform-dependent object file,
+such as \fname{choose.o} on Unix, containing machine code.
+The \option{-O} option requests optimised code.
+
+%\newpage
+The second step compiles the file \fname{poker.as},
+which uses \fname{choose.as}.
+The \option{-lChooseLib=choose.ao} option tells the compiler that the
+library \fname{choose.ao} is to be made visible within the program
+as a package named \ttin{ChooseLib}.
+This \option{-l} option could be avoided by using a \verb"#library"
+command, as described in ~\secref{asugCmdlineLibSysCmd}.
+
+In the third command, the \option{-Fx} option directs the compiler
+%%% WHAT third command?  There are only two in "separate.in"!
+to link an executable image from the object files on the command line.
+The \option{-e} option causes the resulting program to begin execution
+by evaluating the top-level statements of the file \fname{poker.as}.
+The \option{-e} option also directs the compiler to give the executable
+file the name \fname{poker} (possibly with some system-dependent extension,
+such as \ttin{.exe} under DOS).
+\index{compiler options!F@\protect{\tt -Fx}}
+\index{compiler options!E@\protect{\tt -e}}
+
+%AXIOM Note that if you were using \asharp{} to compile \axiom{} libraries
+%AXIOM separately, then \option{-Fo} options and the link step would not be
+%AXIOM necessary.
+%AXIOM \index{compiler options!F@\protect{\tt -Fo}}
+%AXIOM \index{AXIOM}
+
+% *********************************************************************
+\head{section}{Libraries}{asugCmdlineLib}
+% *********************************************************************
+%
+In order to handle large numbers of separately compiled files,
+the \asharp{} compiler allows \ttin{.ao} files to be combined
+into aggregate \ttin{.al} files.  The aggregate library files
+may be created and maintained on Unix using the \ttin{ar} command.
+For the platforms for which \ttin{ar} is not available, the \asharp{}
+distribution provides a program \ttin{uniar}.
+\index{files!.ao}
+\index{files!.al}
+
+When specifying a library to the compiler with the {\tt -l{\it name}} option,
+\index{libraries}
+{\it name} is treated as a filename if it has a file extension or a
+directory specification.  Otherwise it is treated as a shorthand reference
+to either or both of the libraries \ttin{lib{\it name}.al} and
+\ttin{lib{\it name}.a} in the current directory or on {\tt \$LIBPATH}. 
+\index{LIBPATH}
+
+Examples:
+\begin{itemize}
+
+\item The command-line argument {\tt -lnewmath} is treated as a reference
+to the library {\tt libnewmath.al} in the current directory or on
+{\tt \$LIBPATH}.%
+\index{compiler options!l@\protect{\tt -l} (library)}%
+
+\item The command-line argument {\tt -lmyfile.ao} is treated
+as a reference to the file {\tt myfile.ao} in the current directory
+or on {\tt \$LIBPATH}.
+\index{files!ano@\protect{\tt .ao}!and \protect{\tt -l} option}
+
+\item The command-line argument {\tt -lstuff/myfile.ao} is treated
+as a relative pathname reference to the file {\tt myfile.ao} in
+the directory {\tt stuff}.
+
+\item The command-line argument {\tt -l/u/joe/myfile.ao} is treated
+as an absolute pathname reference to the file {\tt myfile.ao} in the
+directory {\tt /u/joe}.
+
+\end{itemize}
+
+When the \asharp{} compiler is asked to create an executable file,
+references to libraries via {\tt -l} will be passed to the linker,
+if appropriate.  This can be convenient on certain platforms.
+For example, on Unix, it allows one to have  \ttin{lib{\it xxx}.al}
+and \ttin{lib{\it xxx}.a} containing the platform-independent \ttin{.ao}
+files and the platform-dependent \ttin{.o} files, respectively.
+
+% *********************************************************************
+\head{section}{Source code references to libraries}{asugCmdlineLibSysCmd}
+% *********************************************************************
+
+A separately compiled module can be referenced directly from the
+source text of a program much the same way that it is referenced
+from the command line.
+In a source program, the system command {\tt \#library} plays the
+same r\^ole as {\tt -l} does from the command-line.
+\index{library@\protect{\tt \#library}}
+The treatment of names in the {\tt \#library} system command is
+exactly the same as in the {\tt -l} command-line argument
+(see \secref{asugOptionsDirLib}.
+When using the {\tt \#library} system command, however, remember
+to put the name in quotation marks.
+
+References to files using {\tt \#library} will be passed to the linker
+under the same circumstances as the corresponding {\tt -l} command-line
+argument.
+
+% *********************************************************************
+\head{section}{Importing from compiled libraries}{asugCmdlineLibTag}
+% *********************************************************************
+
+Compiled object files ({\tt .ao}) and compiled libraries ({\tt
+.al}) have the same top-level semantics as \asharp{} domains:
+before the symbols defined in a separately compiled file are
+visible during the compilation of a given source file, the symbols
+must be imported into the current scope.
+Before a domain can be imported, it must be given a name.
+The same is true of compiler object files: before symbols can be
+imported from an object file or a library, it must be given a name.
+
+Names are assigned to compiler libraries using an extension of the
+{\tt -l} syntax and an extension of the {\tt \#library} syntax
+described in the previous two sections.
+If the argument to either of these forms is prefixed by a symbol
+(which should {\it not} be enclosed in quotation marks), then the
+compiler object or library which follows is taken as the
+definition of a domain whose name is the given symbol.
+%%% Why does the example in section 4.1 say "-lChooselib=choose.ao"
+%%% rather than "-lChooselib choose.ao"? Are these optional
+%%% alternatives or do the keyline and inline syntaxes differ?
+The symbols exported from the newly named domain are exactly those
+exported from the source code used to produce the compiled object.
+
+Consider the following \asharp{} source file:
+
+\begin{verbatim}
+
+#library String "/tmp/mystring.ao"
+import from String;
+
+...
+
+\end{verbatim}
+
+%The first two lines specify that the domain {\tt String}, which is
+%% Avoiding bad line break:
+The first two lines specify that the domain {\tt String},
+usually provided by the compiler libraries found in the
+distribution, will, for the extent of the file, be provided by the
+compiled object file \fname{/tmp/mystring.ao}.
+The {\tt \#library} command specifies a binding for the symbol
+{\tt String}, and then the {\tt import} command operates as it does
+in any other context, extracting the exported symbols from the
+domain {\tt String} and making them visible in the current scope.%
+\index{importing from libraries}  Note that, unlike the command line
+usage, the \ttin{\#library} command requires a space, rather than
+\ttin{=}, between the domain and library names.
+

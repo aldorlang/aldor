@@ -1,0 +1,1177 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%                                                                        %%%
+%%% :: Name Spaces
+%%%                                                                        %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\head{chapter}{Name spaces}{asugLangNames}
+
+For a computer, or a human being for that matter, to understand an \asharp{}
+%% Fixing linebreak
+program it is necessary to establish the context which gives the
+meanings of symbols.
+This is perhaps more important than in other familiar programming
+environments, since \asharp{} has fewer built-in assumptions.
+Much of what is built-in with other programming languages is provided
+by libraries in \asharp{}.  For example, \asharp{} libraries define the types
+\ttin{String}, \ttin{Integer}, and \ttin{DoubleFloat} and their operations.
+Typically, the interface to these libraries is through an include
+file which imports the library so that it may be used in the current
+program.
+
+This chapter describes how symbols in a program are associated with
+particular meanings, and how a meaning is selected when several are
+applicable.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\head{section}{Scopes}{asugLangNamesScope}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+A symbol's meaning is given by the context in which it appears. A
+particular meaning (for example: ``{\tt n} is the second parameter in
+the definition of the `\verb"+"' function in the domain
+{\tt Integer}'') has a visibility, or scope, governed by the
+constructs in which it is introduced. In common with most
+programming languages, \asharp{} mainly uses lexical scoping.
+
+New scopes in \asharp{} are introduced by the following expressions:
+\begin{itemize}
+\item {\tt $E$ where $Definitions$}
+\item {\verb@+->@}
+\item {\tt with}
+\item {\tt add}
+\item {\tt for $i$ in \ldots}
+\item Applications, \eg{} \verb"Record(i: Integer == 12)"
+\end{itemize}
+
+These forms may be nested to any depth. Note that the last two bind
+names in particular positions in the expression, and do not form
+general scope levels.
+
+Lexical scoping implies that the only variables
+visible at a given point in a program are those that have been
+created locally or imported into scopes surrounding the current
+point.
+
+In \asharp{}, there are two types of meaning for a given symbol ---
+it must either be a constant or a variable. Constants are created in
+the following ways
+\begin{itemize}
+\item \ttin{==} statements.
+\keywordIndex{==}
+\item The bound symbols in a \ttin{for} iterator
+\keywordIndex{for}
+\item implicitly via an \ttin{import} statement
+\item implicitly via a declaration
+\keywordIndex{import}
+\end{itemize}
+
+A constant may not be assigned to, and therefore holds the same
+value throughout its lifetime. If two constants have identical names
+in the same scope (the name is {\em overloaded}), then an assigned
+variable's type or a qualification (using \verb"$") is used to disambiguate
+the uses of the constants.
+
+A variable may be created explicitly, by a declaration, or implicitly,
+when it appears on the left of the assignment operator, \ttin{:=}%
+\keywordIndex{:=}.
+Variables may be re-assigned; they may not be used in type-forming
+expressions.
+
+When a scope forming expression is used in \asharp{}, all definitions
+and declarations directly within that scope are visible throughout the
+scope~--- sequences have no effect on what names are in scope.
+In the example
+
+\begin{small}
+\begin{verbatim}
+  ...
+  {
+    x: Integer := 4;
+    y: Integer := 3;
+  }
+  adds(a: Integer): Integer == x + a + z;
+  z: Integer := 3 + y
+  ...
+\end{verbatim}
+\end{small}
+
+the current scope is extended with the variables
+{\tt x},
+{\tt y} and
+{\tt z} along with the constant {\tt adds}. Note that {\tt adds} uses
+{\tt z} before it is defined in the outer sequence, and that {\tt x}
+and {\tt y} are defined in a subsequence, but the definitions are at
+the same scoping level as the others in the example.
+
+A type may be viewed as an environment, mapping constant names and
+types into value bindings from a particular type. In \asharp{},
+object files and libraries are values which map names and types
+into the values defined inside the file or library. This idea allows
+types, object files and libraries to be treated uniformly.
+
+\section{Constants}
+\index{constant}
+
+A constant definition may appear at almost any point in a
+program. If its outer defining scope is a {\tt with} or {\tt add}
+then it will be treated as an export of that type. If the type is
+used in a context not requiring the export, then the export will not be
+visible when the type is imported. A definition returns the type of
+the new variable.
+
+A particular name in a scope may be overloaded with several
+constant values, either defined in the local scope or imported into it.
+
+\begin{small}
+\begin{verbatim}
+  #include "aldor"
+  #include "aldorio"
+
+  x: Integer == 3;
+  x: String  == "hello";
+  stdout << (x*x)       << newline;     -- uses x: Integer
+  stdout << concat(x,x) << newline;     -- uses x: String
+\end{verbatim}
+\end{small}
+
+Here the name \ttin{x} refers to both a constant of type {\tt String}
+and a constant of type {\tt Integer}. In the two print statements, the
+constant to be used is selected according to context, in this case according
+to the available signatures for {\tt +} and {\tt concat}.  In the first
+case there is no signature for {\tt +} which takes a string as an argument,
+but there is one which takes two integers and returns an integer.  In the
+second case there is no {\tt concat} which takes an integer as an argument,
+but there is one which takes two strings and returns a string.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\head{widesection}{Disambiguators}{asugLangNamesDisamb}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Occasionally, it is not possible to tell which constant to use given
+a particular name. For example
+
+\begin{small}
+\begin{verbatim}
+  x: Array Integer == [3,2,1];
+  x: List String  == ["Hello","my","friend"];
+  a: MachineInteger := 2;
+
+  stdout << x.a << newline;
+\end{verbatim}
+\end{small}
+
+In this case, \ttin{x.a} is ambiguous, as it may refer to either the
+{\tt apply} operation from {\tt List~String} or the {\tt apply} from
+{\tt Array~Integer}.  In this case, we can specify which is required by {\em
+restricting} the%
+\index{restriction}%
+\index{"@@"@ (restriction)}%
+result to be of an appropriate type. If the second {\tt String} of
+the list (note that {\tt List}s indexing starts at 1 while {\tt Array}s start
+at 0) is wanted then the print line should read
+
+\begin{small}
+\begin{verbatim}
+  stdout << (x.a)@String << newline;
+\end{verbatim}
+\end{small}
+
+\index{qualifier}
+\index{"$@"\$ (qualifier)}
+Sometimes a constant with the same name and type may be imported
+from different domains. In this case the package call operator, {\tt
+\$}, can be used to disambiguate the constants. For example, both
+{\tt SingleFloat} and {\tt DoubleFloat} export a constant \ttin{max}.
+Thus
+\begin{small}
+\begin{verbatim}
+  stdout << max$SingleFloat << newline;
+  stdout << max$DoubleFloat << newline;
+\end{verbatim}
+\end{small}
+
+might print 3.40282320e+38 and then 1.79769313486231467e+308 on a particular
+machine.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\head{section}{Import from}{asugLangNamesImport}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\keywordIndex{import}
+\keywordIndex{from}
+
+The \ttin{import} statement brings constants which are exported from
+types into scope%
+\footnote{Libraries in \asharp{} are simply types which export their
+ contents.}.
+The simplest form of an {\tt import} statement is
+
+\verb^    ^{\tt import from $D_1, \ldots, D_n$;}
+
+with $n \geq 1$.  This form imports all of the exported constants from the
+given domains (these are treated as type-forming expressions, see
+\chapref{asugLangTypes}). The importations are made in sequence, so that later
+domains can depend on exports from earlier ones. The precise exports
+of types are given by the category of the type, as described on page
+\pageref{asugLangTypesExports}.
+
+The complete form of the {\tt import} statement is:
+
+\verb^    ^{\tt import {\em restrictions} from $D_1, \ldots, D_n$;}
+
+This form is used less often than the previous one, typically when a
+small number of operations are required from a group of types.
+Importing the \ttin{<<} operations from a type is a common example.
+
+This form introduces the exported constants from  $D_1, \ldots, D_n$ into
+the current scope. In this case, the restrictions are either a category
+expression or a sequence of declarations.
+
+\begin{small}
+\begin{verbatim}
+  import { +: (%, %) -> %; -: % -> % }
+        from Integer, String, Float;
+  import ArithmeticType from DoubleFloat, Integer;
+\end{verbatim}
+\end{small}
+
+The first statement will import the constants for addition and
+negation from {\tt Integer} and {\tt Float} into the current
+scope. Nothing will be imported from {\tt String} as this type does
+not export either operation.
+
+The second will import the operations necessary to satisfy {\tt
+ArithmeticType} from the given domains.
+
+Values created by programs written in other languages can be made visible
+using an import from a \ttin{Foreign} type.
+This is described in \secref{asugLangTypesForeign}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\head{section}{Inline from}{asugLangNamesInline}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\keywordIndex{inline}
+\keywordIndex{from}
+\index{inlining!permissions}
+
+The \ttin{inline} keyword is similar to the \ttin{import} keyword,
+but instead of importing names into a scope, it allows the result of
+compiling the current scope to depend on the compiled values of the
+constants indicated. This dependency information may then be used by
+the compiler to determine if a particular function may be inlined
+(for optimisation) instead of called in the normal way. Allowing
+this form of optimisation can give very high quality code.  The cost
+is that, if a file is recompiled, then every file which contains an
+{\tt inline} statement mentioning that file should also be recompiled to
+ensure consistency, slowing down the development cycle.
+
+\begin{small}
+\begin{verbatim}
+#library AldorLib "aldor"
+
+import from AldorLib;
+import from Integer;
+import from DoubleFloat;
+import from TextWriter;         -- For `stdout and ...
+import from Character;          -- for `newline' and `<<'
+                                -- (all normally imported
+                                -- when `aldor' included).
+inline from Integer;
+
+stdout << 3 + 2     << newline;  -- 3 + 2 gets optimised.
+stdout << 3.0 + 2.0 << newline;  -- 3.0 + 2.0 doesn't.
+\end{verbatim}
+\end{small}
+
+(See section \secref{asugCmdlineLib} and section
+\secref{asugCmdlineLibSysCmd} for an explanation of \ttin{\#library}.)
+This code, when compiled with optimisation on, converts the function
+calls from the {\tt Integer} domain into machine-level operations,
+but leaves the other operations as ordinary function calls.
+
+One consequence of granting permission to inline from a domain is that
+permission is also granted to inline from all types exported by
+the domain.  So using \verb"inline from AldorLib", for example, grants
+permission to inline from {\em all} the domains in the
+above example (and the rest of the \asharp{} library).
+%The
+%standard include file \fname{aldor.as} includes this statement, so
+%all files compiled using it automatically have a dependency on the
+%base library.
+
+There are two other consequences of inlining: first of all it can increase
+the size of the compiled code, and secondly it can make debugging harder.
+For these reasons no inlining is done automatically, and there are a number
+of compiler flags which the user can use to either enable inlining of any
+function, disable all inlining, or restrict the increase in code size by
+a particular amount (see the documentation for {\tt -Q inline}, 
+{\tt -Q inline-all} and {\tt -Q inline-limit} in 
+\secref{asugOptionsOptimize}).
+
+As in the {\tt import} statement, there may also be restrictions on
+the particular constants allowed to be inlined.
+%% a _worthwhile_ example is needed here
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\head{section}{Variables}{asugLangNamesVariables}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\keywordIndex{:=}
+\index{variable}
+New variables are created by declaration statements (described
+below), or implicitly by the first assignment to a variable inside a
+scope.  In the implicit case, the variable is lexical and local to the
+scope.
+
+It is an error to have two variables with the
+same name in the same scope---thus
+
+\begin{small}
+\begin{verbatim}
+  x: Integer := 3;
+  x: String  := "hello";
+\end{verbatim}
+\end{small}
+
+
+will give a compile-time error ``Variables cannot have different types
+in the same scope''.
+In addition, it is an error to define a constant with the same name as
+a variable within a scope. An assignment will create a new variable
+hiding any names not explicitly imported. For example:
+
+\begin{small}
+\begin{verbatim}
+import from Integer;
+
+-: Integer := 3;
+\end{verbatim}
+\end{small}
+
+defines a new variable of type {\tt Integer}. The \ttin{-} function
+from the domain {\tt Integer} is hidden by this statement --- it can
+still be accessed by using the qualified name: \verb@-$Integer@.
+
+\asharp{} will generate a warning if an implicitly local variable in
+a new scope shadows a similarly named variable in an outer scope.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\head{section}{Functions}{asugLangNamesFunctions}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\index{function}
+\index{closure}
+
+A function introduces a new scope level which includes the parameters
+to the function: As you might expect, parameters to the function are
+visible inside the function. A function expression has the following
+form:
+
+\begin{small}
+\begin{verbatim}
+    (s1: S1 == v1, ..., sn: Sn == vn) : (t1: T1, ..., tm: Tm) +-> E
+\end{verbatim}
+\end{small}
+
+where the expression {\tt E} is treated as being in a new scope,
+with {\tt s1}, \ldots, {\tt sn} being introduced into that scope.
+The value of such an expression is a function which, when called with
+arguments {\tt a}{\em i}, of appropriate types, will return the result
+of evaluating E with the the actual argument values {\tt a}{\em i}
+substituted for the formal parameters {\tt s}{\em i}. See the rules
+described in \secref{asugLangFunExpr} for how this expression is
+evaluated.
+%% v's changed to p's in the above description, since v's are defaults,
+%% not actual parameters.  Also {\tt sn} changed to {\tt s}{\em i}, as
+%% we want the general, not the final, term.  "A" substituted with "B"
+%% replaced by "B" substituted for "A", since the former unknown in
+%% British English, latter recognised in all forms of of English.
+%% The "functions" subsection in \chapref{asugLangExpr} simply refers
+%% forward to \secref{asugLangFunExpr}, so may as well refer there
+%% directly, here.   MGR
+
+The resulting function is sometimes known as a {\em closure}, as it
+closes over (\ie{} gathers up, and places somewhere safe) the lexical
+variables (not the values of the variables) that it references.
+
+%\pagebreak
+For example,
+
+\begin{small}
+\begin{verbatim}
+    ...
+    import from List Integer;
+    n := 2;
+    m := 3;
+    if cond() then
+            f := (a: Integer): Integer +-> n+a;
+    else
+            f := (a: Integer): Integer +-> m*a + n;
+    m := 22;
+    return map f lst;
+\end{verbatim}
+\end{small}
+
+When the function-valued variable {\tt f} is passed into the function
+{\tt map}, the value of {\tt m} used is 22 --- not the value 3 which was
+in effect when {\tt f} was defined.
+
+\index{parameter}
+\subsubsection{Parameters}
+
+A function parameter may be assigned to, in the right hand side of a
+``\verb:+->:'' expression, where it is an implicit local; the right hand
+side of the ``\verb:+->:'' expression is a fresh scope.
+
+Parameters may be updated as variables. However, if they are not
+modified within the scope of the function, then they may be used in
+type-forming expressions (\eg{}, expressions used in import statements).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\head{section}{Where}{asugLangNamesWhere}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\keywordIndex{where}
+
+A \ttin{where} expression is of the form:
+
+\verb^    ^{\tt {\em Expr} where {\em Defns}}
+
+in which {\em Defns} is a sequence of declarations and definitions,
+used in the evaluation of {\em Expr}. For example
+
+\begin{small}
+\begin{verbatim}
+        x+y where { import from Integer; x := 2; y := 3}
+\end{verbatim}
+\end{small}
+
+evaluates to 5. This can be useful when an expression has many
+repeated parts which can be factored out as a sequence of
+definitions. The names introduced in the declarations are visible in
+the expression part and also in the declarations (note that
+this expression does not import bindings from {\tt Integer} into the
+outer scope). However, names introduced in the {\em Expr} are treated
+as if they are declared at the outer scope level, so
+
+\begin{small}
+\begin{verbatim}
+        x: Integer == y where { import from Integer; y := 2}
+\end{verbatim}
+\end{small}
+
+adds a variable \ttin{x} to the outer scope, the definition of which
+references \ttin{y} which will not be visible in the outer scope.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\head{section}{For iterators}{asugLangNamesIters}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\keywordIndex{for}
+\keywordIndex{repeat}
+
+A \ttin{for} iterator introduces a new local name, unless that name
+is declared free (see \secref{asugLangExprLoop}).
+The name is local to the \ttin{repeat} loop or collect form,
+and is treated as a constant.  That is, it may not be updated within the
+body of the loop or collect expression.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\head{section}{Add}{asugLangNamesAdd}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\keywordIndex{add}
+
+The \ttin{add} operator  has the following syntax:
+
+\verb^    ^{\tt {\em Add-domain} add {\em declarations}}
+
+It combines a group of declarations
+%% Don't need
+%  (for of all the non-local constants in {\em declarations})
+%% since state this again in the next sentence.  MGR
+with a (possibly omitted) domain, to form a new type
+(see \secref{asugLangNTypeDomains}).  Declarations on the right hand
+side of the \verb"add" are marked as being exports of the new type,
+provided that they are not explicitly defined as local.
+
+An \verb"add" expression also introduces a binding for the constant
+{\tt \%}, which is a reference to the domain formed by the {\tt add}
+expression.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\head{section}{With}{asugLangNamesWith}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\keywordIndex{with}
+
+A \ttin{with} expression forms a new category, and has the following
+syntax:
+
+\verb"    "{\tt {\em L\/} with {\em R}}
+
+This is equivalent to
+
+\verb"    "{\tt with \{ {\em L\/} ; {\em R\/} \}}
+
+where {\em L\/} evaluates to a category and {\em R} is a sequence of
+either declarations or other category expressions. These form a new
+scope, which also contains a binding for {\tt \%}, which refers to the
+domain over which the category is built (that is, the domain under
+consideration in the category) and whose type is the value of the
+{\tt with} expression.
+(For more details on categories, see \secref{asugLangNTypeCats}.)
+
+For example,
+
+\begin{small}
+\begin{verbatim}
+  #include "aldor"
+
+  define BinaryAggregate: Category ==
+     Join(BoundedFiniteLinearStructureType(Boolean), BooleanArithmeticType) with {
+                      default {
+                              ~(barr: %): % ==
+                                   [not bit for bit in barr];
+                              (a: %) /\ (b: %): % ==
+                                   [b1 and b2 for b1 in a for b2 in b];
+                      }
+      }
+
+  DumbBitArray: BinaryAggregate == Array Boolean add {
+      (\/)(x: %, y: %): % == ~( (~(x) /\ ~(y)));
+
+      xor(x: %, y: %): % == (x /\ ~y) \/ (~x /\ y);
+
+      (=)(x: %, y: %): Boolean == {
+               for bitx in x for bity in y repeat
+                        if bitx ~= bity then return false;
+               true;
+      }
+  }
+
+\end{verbatim}
+\end{small}
+
+Defines a new category (the {\tt define} keyword is explained in
+\secref{asugLangNamesDeclarations}) called {\tt BinaryAggregate}.
+The type {\tt DumbBitArray} is a simple domain satisfying
+{\tt BinaryAggregate}.
+
+The {\tt \%} in the body of the {\tt with} statement refers to a
+domain of type {\tt BinaryAggregate}.
+
+A \verb"with" expression also defines a constant named \ttin{\%\%} for
+{\em each} category from which the {\tt with} expression inherits. The
+type of {\tt \%\%} is the inherited category, and the value is the
+domain viewed as a member of that category.  In the example, {\tt \%\%}
+bindings are in scope for the following categories:
+{\tt BinaryAggregate},
+{\tt BooleanArithmeticType},
+{\tt BoundedFiniteLinearStructureType} {\tt Boolean},
+{\tt BoundedFiniteDataStructureType} {\tt Boolean},
+{\tt FiniteLinearStructureType} {\tt Boolean},
+{\tt PrimitiveType}, and so on. The {\tt \%\%} bindings are generally most useful for
+checking conditions.
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\head{section}{Application}{asugLangNamesApplication}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\index{,@{\tt ,} (comma)}
+\index{applications}
+\label{asugLangNamesComma}
+
+%% A comma expression within an application may declare identifiers to
+%% be used in later elements. In the expression $(e_1, \ldots, e_n)$, if
+%% any $e_i$ is a declaration, then the declared name is visible in the
+%% expressions $e_j$, $i < j \le n$. This allows dependent types to be
+%% created. The declarations place names in the current scope --- the
+%% comma expression of itself does not create a new scope.
+%%
+%% An application admits dependency in a similar way.  For example, the
+%% \verb@->@ operator is simply a function which is applied to two tuples
+%% of types.  For the expression
+%% $(S_1,\ldots, S_n)$ {\tt ->} $(T_1, \ldots, T_m)$,
+%% any identifiers declared in $S_i$ are visible in any of the $T_j$. In
+%% addition, both the left and right hand sides are comma expressions, so
+%% the above rules apply.
+%%
+%% Application also creates a new scope in which constants declared
+%% inside inner comma expressions are bound.
+%%
+%% The following is a possible example of the use of dependent types to
+%% form a new function type:
+%%
+%% \begin{small}
+%% \begin{verbatim}
+%%     f: (T: Type, t: T) -> (LT: Aggregate T, lt: LT)
+%% \end{verbatim}
+%% \end{small}
+%%
+%% Note that \ttin{T} is used on both sides of the arrow. Certain
+%% functions do admit this form of dependency, but the language does not
+%% currently provide a mechanism for creating new functions which do so%
+%% \footnote{Making this the default for {\em all} functions would be
+%% add a significant run-time cost to almost all applications in a
+%% program.}.
+%% Thus, although \verb"HashTable(n: Integer, IntegerMod n)" is a legal
+%% call, a  {\tt HashTable} cannot support this form of dependency, and
+%% an error may be signalled by the compiler when this type is used.
+
+Applications allow arguments which are declarations or definitions.
+The identifiers which are declared or defined in arguments are then local
+to the application form.
+For example, in
+
+\begin{small}
+\begin{verbatim}
+F(3.2, 5.8, tolerance == 0.02)
+G(T: Type, List T),
+\end{verbatim}
+\end{small}
+
+the identifier \verb"tolerance" is local to the application of \verb"F",
+and the identifier \verb"T" is local to the application of "G".
+
+A comma expression may declare identifiers to
+be used in later elements. In the expression $(e_1, \ldots, e_n)$, if
+any $e_i$ is a declaration or definition, then the name is visible in the
+expressions $e_j$, $i < j \le n$.
+The declarations place names in the current scope --- the
+comma expression of itself does not create a new scope.
+So, in the case where a comma expression provides arguments to a function,
+declared identifiers are local to the application.
+
+This allows dependent function types to be created: the
+\verb@->@ operator is simply a function which is applied to two tuples
+of types.  For the expression
+$(S_1,\ldots, S_n)$ {\tt ->} $(T_1, \ldots, T_m)$
+any identifiers declared in $S_i$ are visible in any of the $T_j$. In
+addition, both the left and right hand sides are comma expressions, so
+the above rules apply.
+
+The following is a possible example of the use of dependent types to
+form a new function type:
+
+\begin{small}
+\begin{verbatim}
+    f: (T: Type, t: T) -> (LT: ListType T, lt: LT)
+\end{verbatim}
+\end{small}
+
+Note that \ttin{T} is used on both sides of the arrow.
+
+It is similarly possible to create dependent product types:
+the \verb"Cross" operator is a function which accepts some
+number of types as arguments and produces the product type.
+The argument types may have declarations which induce dependency.
+For instance:
+
+\begin{small}
+\begin{verbatim}
+    Cross(T: Type, List T)
+\end{verbatim}
+\end{small}
+
+While the built-in functions \ttin{->} and \ttin{Cross} allow
+dependency inducing declarations as their arguments,
+the language does not currently provide a mechanism for creating new functions
+which support this%
+\footnote{Making this the default for {\em all} functions would 
+add a significant run-time cost to almost all function applications in a
+program.}.
+Thus, although
+
+\begin{small}
+\begin{verbatim}
+    HashTable(n: Integer, IntegerMod n)
+\end{verbatim}
+\end{small}
+
+is a legal call, {\tt HashTable} as a type defined in a library
+cannot support this form of dependency, and
+an error may be signalled by the compiler when this type is used.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\head{widesection}{Declarations}{asugLangNamesDeclarations}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Declarations associate a type with a name. A declaration is of the
+form:
+
+\verb@    @{\tt {\em modifier} {\em idlist}:~{\em Type}}.
+
+The {\em modifier} is one of:
+\begin{itemize}
+\item default
+\item define
+\item local
+\item fluid
+\item free
+\item export
+\end{itemize}
+Either (but not both) of the modifier and the \ttin{:~{\em Type}} may be
+omitted. A declaration may appear in any context not requiring a value,
+and remains in force throughout the enclosing scope. If the modifier is
+omitted, the compiler assumes that {\tt local} is meant and issues a
+warning that {\tt default} may be intended.
+
+Some modifiers allow definitions or assignments in a declaration.
+In this case, the type part is optional and the declaration has one
+of the forms
+
+{\small\verb@    @{\tt {\em Modifier}~{\em id [}:~{\em Type ]} := {\em E}}} \\
+{\small\verb@    @{\tt {\em Modifier}~{\em id [}:~{\em Type ]} == {\em E}}}
+
+
+If the type information is omitted, then the type is inferred or
+taken from {\tt default} declarations.
+\index{:@{\protect{\tt :}}}
+\index{:@{\protect{\tt :*}}}
+\index{implicit imports}
+When the type information is present, say declaring {\em id: T},
+the declaration also imports type {\em T} into the current scope.
+If this is not desired, then the declaration may use \ttin{:*} in place
+of \ttin{:} to avoid the import.
+
+Finally, it should be noted that it is also possible to give a sequence
+of assignments or definitions in these statements.  For example,
+
+\begin{small}
+\begin{verbatim}
+local {
+        a: Integer := 1;
+        b: Integer := 2;
+        c: Integer := 3
+}
+\end{verbatim}
+\end{small}
+
+\subsubsection{Default}
+\keywordIndex{default}
+
+The \ttin{default} modifier declares that any instances of the names
+specified will have the type indicated. This does not create any new
+bindings.
+
+\vbox{
+\begin{small}
+\begin{verbatim}
+  default n: Integer;
+  n := 23;
+  f(n): Integer == n + 1;
+  stdout << n^10 << newline where { local n := 2 };
+  stdout << n    << newline;
+\end{verbatim}
+\end{small}
+}
+
+This example creates 3 integer variables named \ttin{n}. The type of
+these does not need to be specified as it is given in the default
+statement. This example prints 1024, and then 23.
+
+The \ttin{local} declaration in the \ttin{where} statement is
+included to avoid a warning about the n in the outer scope.
+
+A warning is given if a binding has a default type and there is a
+declaration in scope with a second type.
+
+A default statement around a definition or definition sequence inside a
+%\ttin{with} or (not in the current release of \asharp) \ttin{add} scope
+\ttin{with} scope
+modifies the way that exports from the current domain are
+interpreted. This allows generic methods to be defined which employ
+definitions found in inheriting types. This is further explained in
+\secref{asugLangNTypeCats}.
+
+
+\subsubsection{Define}
+\keywordIndex{define}
+
+A \ttin{define} modifier allows the definition of a value to be
+visible as well as its type. This is especially useful in
+category-forming definitions, because without the \verb"define" it is
+impossible to decide what signatures are exported by the category.
+
+\begin{small}
+\begin{verbatim}
+    define Monoid: Category == PrimitiveType with {
+        1:      %;            ++ Identity for multiplication.
+        *:      (%, %) -> %;  ++ Multiplication.
+    }
+\end{verbatim}
+\end{small}
+
+The above example defines the category {\tt Monoid}. Without the
+\ttin{define} keyword, uses of this definition would only have the
+type of the category ({\tt Category} in this case) available.
+
+\subsubsection{Local}
+\keywordIndex{local}
+
+The \ttin{local} modifier declares that the given identifiers are
+local to the current lexical scope. For example \verb+local x+ declares that
+the \ttin{x} will be a local, and does not specify a type, so this
+will be deduced at the first assignment to the variable.
+A {\tt local} declaration may also include an initial assignment or
+definition of the names it introduces.
+
+Names which are assigned using \ttin{:=} and
+not otherwise declared are treated as {\tt local}.
+
+\subsubsection{Fluid}
+\keywordIndex{fluid}
+
+The \ttin{fluid} declaration declares that the given identifiers should
+be treated as having dynamic, as opposed to lexical scope. The
+declaration is enforced within the lexical scope containing the
+declaration. Refer to section \secref{asugLangEnvsFluid} for more
+details.
+
+\subsubsection{Free}
+\keywordIndex{free}
+
+A \ttin{free} declaration indicates to the compiler that the given name
+references a variable in an outer scope, and that the initial
+assignment to the variable should be interpreted as an assignment to
+the outer variable, rather than an initialisation of a new variable.
+
+\begin{small}
+\begin{verbatim}
+   callCount := 0;
+   f(n: Integer): () == {
+        free callCount;
+        callCount := callCount + 1;
+        n + 1;
+   ...
+\end{verbatim}
+\end{small}
+%% "count" is imported from Integer and confuses the issue - changed
+%% to "callCount".  MGR
+
+The code above counts the number of times the function \ttin{f} is
+called. Without the \verb"free" declaration for {\tt callCount},
+{\tt callCount} inside the function would refer to a new local variable
+shadowing the outer variable. The free declaration may refer to either a
+parameter or a (possibly fluid) variable.
+
+\subsubsection{Export}
+\keywordIndex{export}
+
+An \ttin{export} modifier may be used to declare that certain names
+are to be made visible outside the scope in which they are defined.
+This is the effect when \verb"export" is used at the top level of
+an \ttin{add}, \ttin{with} or file scope.
+In other contexts, \verb"export" has the same meaning
+as \verb"local".
+
+An {\tt export} declaration may be followed by an optional
+\ttin{to} part.  This is used to make \asharp{} values visible
+to programs written in other programming languages.
+See \secref{asugLangTypesForeign} for details.
+
+An {\tt export} declaration occurring in a {\tt with}-expression
+may be followed by an optional \ttin{from} part.  This indicates
+the source of the items to be exported, in the same way the
+\ttin{from} part of an {\tt import} or {\tt inline} statement
+indicates the source of the items to be imported or inlined.
+This is described in  \secref{asugLangTypesExports}.
+
+Names which are defined using \ttin{==} and
+not otherwise declared are treated as {\tt export}s.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\head{section}{Fluid variables}{asugLangEnvsFluid}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\keywordIndex{fluid}
+\index{dynamic scope}
+
+Fluid variables are not often needed but can be useful when a large
+amount of dynamic state is needed, or a routine is parameterised by
+%% Ugh!  How can there be an amount of state?
+a very large number of variables.
+%For example, a compiler typically
+%needs to store scope information while descending a parse tree.
+%While it is possible to extend every function to have this
+%information passed in as a parameter, it is more convenient to
+%allow the dynamic scoping rules of fluids to model the shape of the
+%parse tree.
+
+A fluid variable exists throughout the lifetime of a program, and
+its value is always the most recent extant binding of the
+variable. The extant bindings are the bindings of the variable inside
+{\tt fluid} declarations from scopes which
+have not yet been exited.
+
+When a variable is declared fluid, all references to that name {\em
+inside} the declaration's scope are assumed to be fluid.
+
+\vbox{
+An example might help:%
+% All these examples have been checked with -Fx  and run. SMW
+
+\begin{small}
+\begin{verbatim}
+   #include "aldor"
+   #include "aldorio"
+
+   fluid n: Integer := 2;
+
+   f(): () == stdout << "The value of n is " << n << newline;
+   g(): () == { fluid n := 3; f() }
+
+   f();
+   g();
+\end{verbatim}
+\end{small}
+}
+
+The fluid variable \ttin{n} is bound at the top-level and given the
+value {\tt 2}.
+This is the value printed by the top-level call to {\tt f}.
+In the next call, the function {\tt g}
+re-binds {\tt n} giving it the value {\tt 3}.
+Then when {\tt f} is called, it is the new value, {\tt 3}, that is printed.
+On exit from {\tt g}, this binding of {\tt n} is removed
+and {\tt n} assumes the value it had in the outer scope.
+
+As usual, an inner declaration (\eg{} {\tt local}, {\tt export})
+may locally over-ride an outer declaration (\eg{} {\tt fluid}).
+Note that without the \ttin{fluid} declaration in {\tt g},
+the inner {\tt n} would be treated
+as having an implicit \ttin{local} declaration.
+This would then behave as in the example below.
+The inner occurrence of {\tt n} is a new local variable,
+unrelated to the outer {\tt n},
+and the call to {\tt g} results in {\tt 2} being printed.
+
+\begin{small}
+\begin{verbatim}
+   #include "aldor"
+   #include "aldorio"
+
+   fluid n: Integer := 2;
+
+   f(): () == stdout << "The value of n is " << n << newline;
+   g(): () == { local n := 3; f() }
+
+   f();
+   g();
+\end{verbatim}
+\end{small}
+
+If no initialisation is given in the \verb"fluid" declaration, then
+the variable is taken to exist in an outer dynamic scope.
+In the example below,
+the function \ttin{g} provides a binding for the variable \ttin{n}.
+Then, when the function {\tt f} is called from {\tt g},
+the uses of \ttin{n} in {\tt f} refer to the binding in {\tt g}.
+
+\begin{small}
+\begin{verbatim}
+   #include "aldor"
+   #include "aldorio"
+
+   f(): () == {
+            fluid n: Integer;
+            stdout << "The value of n is " << n << newline;
+   }
+   g(): () == {
+            fluid n: Integer := 3;
+            f();
+   }
+
+   g()
+\end{verbatim}
+\end{small}
+
+If an assignment to an existing fluid variable occurs in a context
+other than a {\tt fluid} declaration, it will modify the current
+value of the variable, rather than creating a new one:
+
+\begin{small}
+\begin{verbatim}
+   #include "aldor"
+   #include "aldorio"
+
+   fluid n: Integer := 2;
+
+   f(): () == stdout << "The value of n is " << n << newline;
+
+   g(): () == {
+           fluid n: Integer;
+           n := n + 1;
+           f()
+   }
+
+   g();
+   g();
+\end{verbatim}
+\end{small}
+
+%% This is misleading - if the assignment is at the same scope level
+%% this behaviour is hardly surprising; if it is at a lower level, this
+%% isn't true, due to the implicit local declaration which occurs.  MGR
+%%% It is indeed true -- added example to clarify. SMW
+
+%If an assignment to an existing fluid variable is required in an inner
+%scope, then a {\tt free} declaration is needed, to avoid creating a new,
+%similarly named local variable.
+%% Removed since this may change.
+
+A file may use fluid variables which have been bound in other files, but
+no type information regarding these variable is known, so it is
+the programmer's responsibility to ensure that the types
+match\footnote{Compare \secref{asugLangNTypeWhy}.}.
+
+In the current implementation of \asharp{}, a fluid variable must
+have a binding point at the top level of some file. It is an error to
+have two fluid variables of the same name and different types in a
+program.
+
+%The current syntax for rebinding fluids --- using assignment inside
+%a fluid declaration --- may be changed in future.
+%\footnote{The new scheme would likely
+%be that the (currently erroneous) form
+%\ttin{local fluid} would rebind a fluid variable.
+%}
+
+
+%% OLD:statement to have a standard file establish an environment.
+%% OLD:\index{include@\protect{\tt \#include}}
+%% OLD:
+%% OLD:Practically speaking, most files will begin with {\em either}
+%% OLD:\begin{TextBox}
+%% OLD:\begin{verbatim}
+%% OLD:-- This establishes an A# context.
+%% OLD:#include "aldor"
+%% OLD:-- Now the contents of the basic types A# library are visible.
+%% OLD:\end{verbatim}
+%% OLD:\end{TextBox}
+%% OLD:
+%% OLD:{\em or}
+%% OLD:
+%% OLD:\begin{TextBox}
+%% OLD:\begin{verbatim}
+%% OLD:-- This establishes an Axiom context.
+%% OLD:#include "axiom"
+%% OLD:-- Now the contents of the Axiom library are visible.
+%% OLD:\end{verbatim}
+%% OLD:\end{TextBox}
+%% OLD:
+%% OLD:\begin{More}
+%% OLD:\item
+%% OLD:  It is inconvienent to use \verb+#include "axiom"+ and
+%% OLD:  \verb+#include "aldor"+ together.
+%% OLD:  This can be done only by experts.
+%% OLD:  Don't try this at home.
+%% OLD:\item
+%% OLD:  Eventually \verb+#include "axiom"+ will be a superset
+%% OLD:  of \verb+#include "aldor"+.
+%% OLD:\item
+%% OLD:  You don't have to use one of these include files -- it is possible
+%% OLD:  to do this yourself with \verb+#library+ and \verb+import+ statements.
+%% OLD:\end{More}
+%% OLD:\index{include files!axiom}
+%% OLD:\index{include files!aldor}
+%% OLD:
+%% OLD:
+%% OLD:Constants defined within a domain may be local, exported.
+%% OLD:A {\em type} is a domain which exports values or functions to manipulate
+%% OLD:values with some internally defined representation.
+%% OLD:
+%% OLD:A {\em package} is a domain which does not
+%% OLD:The environment value is treated as the type
+%% OLD:Since types are ordinary values,
+%% OLD:they may be computed by ordinary expressions, and themselves have types.
+%% OLD:Normal functions provide parameterised type constructors.
+%% OLD:
+%% OLD:
+%% OLD:Certain forms of expression localise names in nested lexical scopes.
+%% OLD:These names provide variables and overloaded symbolic constants.
+%% OLD:Other
+%% OLD:
+%% OLD:Any function or set of multiple values may have dependent type,
+%% OLD:and follows naturally from the lexical scoping rules.
+%% OLD:
+%% OLD:
+%% OLD:\mysubsect{Support for separate compilation in large systems}
+%% OLD:\begin{verbatim}
+%% OLD:  -- source level abstraction
+%% OLD:  -- object level dependency control
+%% OLD:  -- do not have #include file build up as in C
+%% OLD:\end{verbatim}
+%% OLD:
+%% OLD:It is not necessary to always make declarations; the localisation and
+%% OLD:type of names may be inferred if desired.
+%% OLD:The language structure ensures programs provide enough information
+%% OLD:to allow compilation to efficient machine code.
+%% OLD:
+%% OLD:
+
+%% OLD: \incomplete{}
+%% OLD:
+%% OLD:\begin{verbatim}
+%% OLD:    overloading
+%% OLD:    names, a$T a@T
+%% OLD:    extend
+%% OLD:    dependent types
+%% OLD:    keyword arguments
+%% OLD:    default values
+%% OLD:    defines
+%% OLD:\end{verbatim}
+%% OLD:
+%% OLD:\begin{small}
+%% OLD:\mysect{Name Spaces}
+%% OLD:\begin{verbatim}
+%% OLD:  -- Using values from other contexts
+%% OLD:  -- Providing values to other contexts
+%% OLD:  -- Defining types and packages
+%% OLD:  -- Defining foreign exports
+%% OLD:\end{verbatim}
+%% OLD:\mysubsect{{\tt +->}, where}
+%% OLD:\mysubsect{define}
+%% OLD:\mysubsect{default}
+%% OLD:\mysubsect{extend}
+%% OLD:\mysubsect{==}
+%% OLD:\mysubsect{:=}
+%% OLD:\mysubsect{import from}
+%% OLD:\begin{verbatim}
+%% OLD:  import from T;
+%% OLD:  import from T1, T2, ..., Tn;
+%% OLD:  import { a: S1; b: % -> %; } from T1;
+%% OLD:  import C from T1;
+%% OLD:  import C from Builtin;
+%% OLD:  import C from Foreign;
+%% OLD:  import C from Foreign C; -- Lisp ?
+%% OLD:  import C from Foreign C "<stdio.h>"
+%% OLD:  import C from Foreign C "myfile.h"
+%% OLD:\end{verbatim}
+%% OLD:\mysubsect{inline from}
+%% OLD:\begin{verbatim}
+%% OLD:  import inline export
+%% OLD:\end{verbatim}
+%% OLD:\mysubsect{export from to}
+%% OLD:\begin{verbatim}
+%% OLD:  export a, b, c;
+%% OLD:  export a: T == c;
+%% OLD:  export (x: A) + (y: A): A == g(x,y);
+%% OLD:  export a, b, c: T
+%% OLD:  export a, b, c: T to Foreign C
+%% OLD:  export a, b, c: T to Builtin
+%% OLD:  export a, b, c: T from Foo(X)
+%% OLD:\end{verbatim}
+%% OLD:\mysubsect{: vs :*}
+%% OLD:\mysubsect{local}
+%% OLD:\mysubsect{implicit locals by assignment}
+%% OLD:\mysubsect{free}
+%% OLD:\mysubsect{fluid}
+%% OLD:\mysubsect{default}
+%% OLD:\mysubsect{define}
+%% OLD:\mysubsect{\$ @}
+%% OLD:\end{small}
+%% OLD:
+

@@ -1,0 +1,2 @@
+#!/bin/sh
+$ALDORROOT/bin/axiomxl $dir -Cruntime=foam-gmp3,gmp-3 $*

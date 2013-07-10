@@ -1,0 +1,190 @@
+% *********************************************************************
+\head{chapter}{Installation}{asugInstall}
+% *********************************************************************
+
+In this chapter we tell you how to install the tester's subset
+and the full internal development version of the compiler.
+\index{installation}
+
+% *********************************************************************
+\head{section}{Directories and environment variables}{asugInstallDir}
+% *********************************************************************
+
+The installer of the compiler must decide on a main directory in
+which to place the package.
+This main directory will contain the files necessary to run the
+compiler on a particular platform plus, if the internal
+developer's version is also being installed, the source code for
+one or more versions of the compiler.
+If you are using the compiler under Unix, we recommend you
+use ``{\tt /usr/\asharpcmd{}}'' for the main directory.
+
+Each user must set the {\tt ALDORROOT}
+\index{environment variables!ALDORROOT@\protect{\tt ALDORROOT}}
+environment
+\index{ALDORROOT@\protect{\tt ALDORROOT} environment variable}
+variable\footnote{In a later version, we will recommend that the main
+directory be {\tt /usr} and it will not be necessary for each user
+to set ALDORROOT.}.
+If you are running AIX 3.2 on an IBM RS/6000, we currently recommend
+you use ``{\tt /usr/\asharpcmd{}/base/rs3.2}''.
+Each user must also modify the {\tt PATH} environment variable to
+include ``{\tt \$ALDORROOT/bin}''.
+\index{environment variables!PATH@\protect{\tt PATH}}
+\index{PATH@\protect{\tt PATH} environment variable}
+
+For example, if you are using the Korn shell, you would place
+the following commands in  your {\tt .profile} file.
+
+{\tt export ALDORROOT=/usr/\asharpcmd{}/base/rs3.2}
+
+{\tt export PATH=\$PATH:\$ALDORROOT/bin}
+
+Each user can then access these subdirectories of
+the {\tt \$ALDORROOT} directory:
+
+\begin{tabular}{@{}lp{4.09in}@{}}
+\tt bin & This directory contains the executables {\tt \asharpcmd{}}
+(the \asharp{} compiler) and {\tt mailbug} (a tool for reporting
+problems).
+In the internal developer's version, it also contains additional
+tools for building the compiler.
+\index{directories!bin@\protect{\tt bin}}
+\\
+\tt lib & This directory contains compiled \asharp{} libraries
+and the library needed for run-time support of stand-alone programs.
+In the internal developer's version, it also contains additional
+object files or libraries for building the compiler.
+\index{directories!lib@\protect{\tt lib}}
+\\
+\tt include & This directory contains the C include file for
+creating stand-alone programs and the basic \asharp{} include files.
+\index{directories!include@\protect{\tt include}}
+\\
+\tt samples & This directory contains sample \asharp{} programs.
+\index{directories!samples@\protect{\tt samples}}
+\end{tabular}
+
+If you are using a fileserver, there may be present
+different versions of the compiler for different machines.
+For example, the directories
+\begin{verbatim}
+/usr/aldor/base/rs3.1
+/usr/aldor/base/rs3.2
+/usr/aldor/base/sungcc
+\end{verbatim}
+may all exist.
+
+The installer of the compiler must also decide on a version
+\index{directories!compiler version}
+directory if the compiler source code is also being installed.
+If the main directory is ``{\tt /usr/\asharpcmd{}}'' and the version
+level is ``\asharpver{}'', it is common to use
+``{\tt /usr/\asharpcmd{}/version/\asharpver{}}'' as the version
+directory.
+Note, however, that the source directory may be placed anywhere in
+the file system and is not required to be in any particular
+position relative to {\tt \$ALDORROOT}.
+Only installers and internal compiler developers need to be aware
+of the exact version directory.
+No environment variable needs to be set.
+
+The following diagram shows the above suggested directory
+structure, with {\tt \$ALDORROOT} set to ``{\tt /usr/\asharpcmd{}/base/rs3.2}''.
+
+\input{treedef}
+
+\hfill\hbox{\tt%
+\tree
+  /usr/aldor
+
+  \subtree
+    base
+    \subtree
+      rs3.2
+      \leaf{bin}
+      \leaf{include}
+      \leaf{lib}
+      \leaf{samples}
+    \endsubtree
+  \endsubtree
+
+  \subtree
+    version
+    \subtree
+      \asharpver{}
+      \leaf{src}
+      \leaf{aldor}
+      \leaf{test}
+      \leaf{\ldots}
+    \endsubtree
+  \endsubtree
+\endtree
+}\hfill\break
+
+
+% *********************************************************************
+\head{section}{Installing from diskettes}{asugInstallDisk}
+% *********************************************************************
+
+This section describes installing the compiler package on an IBM RS/6000.
+\index{installation!from diskettes}
+The package has the following configuration when shipped
+on diskettes for the IBM RS/6000 running AIX: there are four
+diskettes, each containing one compressed tar file (with file
+extension {\tt .tz}) and one file listing file (with file extension
+{\tt .lst}).
+\index{diskettes}
+In addition, the first diskette contains a program ({\tt
+aldor.ins}) that does the installation.
+The diskettes are written using {\tt doswrite} and are read by {\tt dosread.}
+
+\begin{tabular}{@{}l|l@{}}
+\bf Disks &  \bf Contents \\ \hline \\
+1, 2     &  {\it Installation:\/} executable programs for AIX, \\
+         &  {\tt lib} and {\tt include} subdirectories of {\tt \$ALDORROOT} \\
+         &  and sample programs. \\ \\
+3        &  {\it Regression tests\/} and their output. \\
+4        &  {\it Source} for compiler, tools and libraries. \\
+\end{tabular}
+
+Disks 1 and 2 are installed relative to the compiler main
+directory.
+Disks 3 and 4 are installed relative to the compiler version
+directory.
+
+Do the following to install the compiler.
+\begin{enumerate}
+\item Use {\tt su}, if necessary, to get the appropriate
+permissions for creating the compiler directories.
+%
+\item Create the compiler main and version directories with the
+names discussed in \spadref{asugInstallDir}.
+We now assume
+
+\begin{tabular}{@{\qquad}lcl}
+main directory & =  & {\tt /usr/\asharpcmd{}} \\
+version directory & = & {\tt /usr/\asharpcmd{}/version/\asharpver{}}.
+\end{tabular}
+
+Update your {\tt PATH} and {\tt ALDORROOT} environment variables in
+your profile file (that is, {\tt .profile} for {\tt ksh} users,
+and {\tt .cshrc} for {\tt csh} users.
+%
+\item Issue {\tt cd /tmp}
+\item Insert diskette 1 into the diskette drive.
+\item Issue {\tt dosread natural.ins > natural.ins}
+\item Issue {\tt sh natural.ins}
+\item Respond to the prompts.
+If you are installing the tester's version of the compiler,
+respond ``{\tt t}'' when you are asked about the version.
+If you are installing the internal developer's version
+respond ``{\tt d}''.
+\item Issue {\tt rm natural.ins}
+\item If you used {\tt su} in step 1,
+enter the Ctrl-D key combination to the shell.
+\end{enumerate}
+
+Once your environment variable updates take effect, you can use
+the compiler as we discuss in \chapref{asugUsing}.
+

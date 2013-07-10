@@ -1,0 +1,1586 @@
+--------------------------------------------------------------------------------
+--
+-- sup-ori.as: sparse univariate polynomials represented as lists of terms.
+--
+--------------------------------------------------------------------------------
+-- Copyright (c) 1990-2007 Aldor Software Organization Ltd (Aldor.org).
+--------------------------------------------------------------------------------
+
+-- dom SparseUnivariatePolynomial
+-- dom OuterSparseUnivariatePolynomial
+
+#include "basicmath"
+ 
+NNI ==> NonNegativeInteger;
+
++++ `SparseUnivariatePolynomial(R,s)' provides a basic domain for 
++++ univariate polynomials with sparse representation.
++++ The symbol argument is optional, with `?' as default.
++++ Author: Teresa Gomez-Diaz, Peter Broadbery and Marc Moreno Maza
++++ Date Created: 1997
++++ Date Last Update: 31/03/2000
++++ Keywords: univariate polynomial, sparse representation, destructive operations, gcd
+ 
+SparseUnivariatePolynomial(R: Ring, s: Symbol == +"?"): _
+  UnivariatePolynomialCategory(R) with { 
+} == add {
+	Term == Record(co: R, ex: NNI);
+	Rep  ==> List Term;
+		-- always ordered terms, decreasing wrt exponent's order
+		-- and non-zero coefficients
+	import from Rep;
+	import from SingleInteger, Integer;
+	import from DoubleEndedList(%), DoubleEndedList(Term);
+	import from List Cross(R, NNI);
+	import from Symbol, TextWriter, String, TracePackage(print);
+        MPEP ==> MultivariatePolynomialExponentiationPackage;
+        UPKP ==> UnivariatePolynomialKaratsubaPackage;
+
+	integralDomain?  == R has IntegralDomain;
+	commutativeRing? == R has CommutativeRing;
+	field?	   == R has Field;
+	orderedAbelianGroup? == R has OrderedAbelianGroup;
+	orderedRing? == R has OrderedRing;
+        orderedField? == R has OrderedField;
+	characteristicZero? == R has CharacteristicZero;
+        characteristicNonZero? == R has CharacteristicNonZero;
+        goodRing? == integralDomain? and characteristicZero?;
+        karatsuba? == R has KaratsubaPolynomialMultiplication;
+	numberSystem? == (R has PrimeFiniteField) or _
+	    (R has IntegerNumberSystem) or (R has QuotientFieldCategory(Integer));
+
+        local levelK__product: NNI == {
+          not karatsuba? => exsub((+2)^(+6),1)@NNI;
+          import from R pretend KaratsubaPolynomialMultiplication;
+          productLevel()$(R pretend KaratsubaPolynomialMultiplication);
+        }
+        local levelK__square: NNI == {
+          not karatsuba? => exsub((+2)^(+5),1)@NNI;
+          import from R pretend KaratsubaPolynomialMultiplication;
+          squareLevel()$(R pretend KaratsubaPolynomialMultiplication);
+        }
+
+	------------------------------
+	--% local basic functions  %--
+	------------------------------
+
+	--- term negation
+	local - (tx: Term) : Term == [-tx.co, tx.ex];
+
+	--- term equal-test
+	local teq(tx: Term, ty: Term): Boolean == 
+		tx.ex = ty.ex and tx.co = ty.co;
+
+	--- destructive negation of a term
+	local neg!(tt: Term): Term  == {
+		tt.co := -tt.co;
+		tt;
+	}
+
+	--- term * polynomial
+	local tepo(tco: R, tex: NNI, rx: Rep): Rep == {
+		if integralDomain? then {
+			termTimes(tx:Term):Term == [tco*tx.co, tex+tx.ex];
+			map(termTimes, rx);
+		}
+		else {
+			[[r, tex + tx.ex] for tx in rx |
+				not zero? (r := tco * tx.co)];
+		}
+	}
+
+	local copyterm(t: Term): Term == [explode t];
+
+	local raise(co: R, n: NonNegativeInteger):  ExpressionTree == {
+		import from ExpressionNodePackage;
+		import from List ExpressionTree;
+		zero? n => tree co;
+		nocoef := co = 1;
+		n = 1 => if nocoef then tree s else product [tree co, tree s];
+		if nocoef then expt(tree s, tree n) 
+		else product [tree co, expt(tree s, tree n)];
+	}
+
+        ----------------------------------------------------------
+        --% exported operationns as a Join(Ring,FreeModule(R)) %--
+        ----------------------------------------------------------
+
+	local tree0;
+	tree0(co: R, deg: NNI): ExpressionTree == {
+		import from ExpressionNodePackage;
+		-- handle neg. coefs
+		if orderedRing? then { 
+		      import from R pretend OrderedRing;
+		      if co < 0 then {
+				co := -co;
+				tm := negate raise(co, deg);
+			} else
+				tm := raise(co, deg);
+		} else 
+			tm := raise(co, deg);
+		return tm
+	}
+	tree(p: %): ExpressionTree == {
+		import from ExpressionNodePackage;
+		local lst: DoubleEndedList ExpressionTree;
+		import from List ExpressionTree;
+		lst := empty();
+		for pair in terms p repeat concat!(lst, tree0 pair);
+		ll := firstCell lst;
+		empty? ll => extree(0$Integer);
+		empty? rest ll => first ll;
+		sum ll;
+	}
+	<<(p: TextWriter, x: %): TextWriter == {
+		local pri(t: Term): () == {
+			numberSystem? => {
+			    zero? t.ex => p << t.co;
+			    if t.co ~= 1 then p << t.co << "*";
+			    one?  t.ex => p << s;
+			    p << s << "^" << t.ex;
+			}
+			zero? t.ex => p << t.co;
+			if t.co ~= 1 then p << "(" << t.co << ")*";
+			one?  t.ex => p << s;
+			p << s << "^" << t.ex;
+		}
+		xx := rep x;
+		empty? xx => p << 0$R;
+		if (xx.first.co = -1) and characteristicZero?  then {
+			p << " -";
+			pri(-(first xx));
+		}
+		else {
+			pri(first xx);
+		}
+		xx := rest xx;
+		if orderedAbelianGroup? then {
+			import from R pretend OrderedAbelianGroup;
+			while xx repeat {
+				tx := first xx;
+				if tx.co >= 0 then {
+					p << " + ";
+					pri(tx);
+				}
+				else {
+					p << " - ";
+					pri(-tx);
+				}
+				xx := rest xx;
+			}
+		}
+		else {
+			while xx repeat {
+				p << " + ";
+				pri(first xx);
+				xx := rest xx;
+			}
+		}
+		p;
+	}
+	copy(x: %): % == per map(copyterm, rep x);
+        copy!(p: %, q: %): % == {
+          zero? p => copy q;
+          zero? q => q;
+          setRest!(rep(p), copy rest(rep(q)));
+          setFirst!(rep(p), first(rep(q)));
+          p;
+        }
+        dispose!(x: %): () == {
+          for t in rep(x) repeat dispose!(t);
+          dispose!(rep(x));
+        }
+	(x: %) = (y: %) : Boolean == compare(teq, rep(x), rep(y));
+
+	zero? (x: %) : Boolean == empty? rep x;
+
+        zero(): % == per empty();
+
+	0: % == zero();
+
+        one(): % == per [[one()$R, 0]];
+
+	1: % == one();
+
+	one? (x: %) : Boolean == {
+		xx:= rep x;
+                empty? xx => false;
+		(empty? rest xx) and (zero? xx.first.ex) and (one? xx.first.co);
+	}
+	(x: %) + (y: %) : %  == {
+		xx := rep x;
+		yy := rep y;
+		res: DoubleEndedList Term := empty();
+		while xx and yy repeat {
+			tx := first xx;
+			ty := first yy;
+			if tx.ex > ty.ex then {
+				concat!(res, tx);
+				xx := rest xx;
+			}
+			else if ty.ex > tx.ex then {
+				concat!(res, ty);
+				yy := rest yy;
+			}
+			else {
+				r:R := tx.co + ty.co;
+				if not zero? r then {
+					concat!(res, [r, tx.ex]);
+				}
+				xx := rest xx;
+				yy := rest yy;
+			}
+		}
+		tt: Rep := if xx then xx else yy;
+		empty? firstCell(res) => per tt;
+		lastCell(res).rest := tt;
+		per firstCell(res);
+	}
+	(p: %) + (r: R) : % == {
+	   zero? r => p;
+	   zero? p => r::%;
+           ground? p => (ground(p) + r)::%;
+	   l := rep p;
+	   headNewl : Rep := [first l];
+	   newl := headNewl;
+	   l := rest l;
+	   while (not empty? l) and (first(l).ex > 0) repeat {
+	      setRest!(headNewl,[first l]);
+	      headNewl := rest headNewl;
+	      l := rest l;
+	   }
+	   empty? l => {
+	      tx : Term := [r,0@NNI]$Term;
+	      setRest!(headNewl,[tx]$Rep);
+	      return(per newl);
+	   }
+	   r := r + first(l).co;
+	   zero? r => per newl;
+	   tx : Term := [r,0@NNI]$Term;
+	   setRest!(headNewl,[tx]$Rep);
+	   per newl;
+	}
+	(r: R) + (p: %) : % == p + r;
+
+	add!(x: %, y: %): % == {
+		local res, last, newend: Rep;
+		xx := rep x;
+		yy := rep y;
+		res := empty();
+		while xx and yy repeat {
+			tx := first xx;
+			ty := first yy;
+			if tx.ex > ty.ex then {
+				newend := xx;
+				xx := rest xx;
+			}
+			else if ty.ex > tx.ex then {
+				newend := [copyterm ty];
+				yy := rest yy;
+			}
+			else {
+				r: R := tx.co + ty.co;
+				yy := rest yy;
+				if zero? r then {
+					xx := rest xx;
+					iterate;
+				}
+				else {
+					tx.co := r;
+					newend := xx;
+					xx:= rest xx;
+				}
+			}
+			if empty? res then {
+				res := newend;
+				last := res;
+			}
+			else {
+				last.rest := newend;
+				last := newend;
+			}
+		}
+		newend := if xx then xx else map(copyterm, yy);
+		empty? res => per newend;
+		last.rest := newend;
+		per res;
+	}
+	add!(p: %, r: R): % == {
+	   zero? r => p;
+	   ground? p => 
+	       (ground(p) + r)::%;
+	   l := rep p;
+	   empty? (rest l) => {
+	       t : Term := [r,0]$Term;
+	       setRest!(l,[t]);
+	       per l;
+	   }	  
+	   local k: Rep;     
+	   while (not empty? rest l) repeat {
+	       k := l;
+	       l := rest l;
+	   }
+	   (first l).ex > 0 => {
+	       t : Term := [r,0]$Term;
+	       setRest!(l,[t]);
+	       p;
+	   } 
+	   r := r + first(l).co;
+	   zero? r => {
+	      setRest!(k,empty());
+	      p;
+	   }
+	   first(l).co := r;
+	   p;
+	}
+	- (x: %) : % == per map(-, rep x);
+
+	negate!(x: %): % == per map(neg!, rep x);
+
+	(x: %) - (y: %) : %  == {
+		xx := rep x;
+		yy := rep y;
+		res :DoubleEndedList Term := empty();
+		while xx and yy repeat {
+			tx: Term := first xx;
+			ty: Term := first yy;
+			if tx.ex > ty.ex then {
+				concat!(res, tx);
+				xx := rest xx;
+			}
+			else if ty.ex > tx.ex then {
+				concat!(res, -ty);
+				yy := rest yy;
+			}
+			else {
+				r: R := tx.co - ty.co;
+				if not zero? r then {
+					concat!(res, [r, tx.ex]);
+				}
+				xx := rest xx;
+				yy := rest yy;
+			}
+		}
+		tt: Rep := if xx then xx else map(-, yy);
+		empty? firstCell(res) => per tt;
+		lastCell(res).rest := tt;
+		per firstCell(res);
+	}
+	subtract!(x: %, y: %): % == {
+		local res, last, newend: Rep;
+		xx := rep x;
+		yy := rep y;
+		res := empty();
+		while xx and yy repeat {
+			tx: Term := first xx;
+			ty: Term := first yy;
+			if tx.ex > ty.ex then {
+				newend := xx;
+				xx := rest xx;
+			}
+			else if ty.ex > tx.ex then {
+				newend := [- ty];
+				yy := rest yy;
+			}
+			else {
+				r: R := tx.co - ty.co;
+				yy := rest yy;
+				if zero? r then {
+					xx := rest xx;
+					iterate;
+				}
+				else {
+					tx.co := r;
+					newend := xx;
+					xx:= rest xx;
+				}
+			}
+			if empty? res then {
+				res := newend;
+				last := res;
+			}
+			else {
+				last.rest := newend;
+				last := newend;
+			}
+		}
+		newend := if xx then xx else map(-, yy);
+		empty? res => per newend;
+		last.rest := newend;
+		per res;
+	}
+	(n: NNI) * (x: %) : % == (n::Integer)*x;
+
+	(i: Integer) * (x: %) : % == { 
+		zero? i => zero()@%;
+		one?  i => x;
+		zero? (r:= i :: R) => zero()@%;
+		if goodRing? then {
+			per [[i*tx.co, tx.ex] for tx in rep x];
+		}
+		else {
+			per [[r1, tx.ex] for tx in rep x | 
+				not zero? (r1 := i*tx.co) ];
+		}
+	}
+
+	if not (R has IntegerNumberSystem) then {
+	      (x: %) * (i: Integer) : %  == i * x;
+	}
+	times!(r: R, e: NNI, x: %): % == {
+		zero? r => per [];
+		if integralDomain? then {
+			termTimes!(tx:Term):Term == {
+				tx.co := r * tx.co;
+				tx.ex := e + tx.ex;
+				tx;
+			};
+			per map(termTimes!, rep x);
+		}
+		else {
+			local res, last, newend : Rep;
+			xx := rep x;
+			res := empty();
+			while xx repeat {
+				tx := first xx;
+				tx.co := r * tx.co;
+				if zero? tx.co then {
+					xx := rest xx;
+					iterate;
+				}
+				else {
+					tx.ex := e + tx.ex;
+					newend := xx;
+					xx := rest xx;
+				}
+				if empty? res then {
+					res := newend;
+					last := res;
+				}
+				else {
+					last.rest := newend;
+					last := newend;
+				}
+			}
+			per res;
+		}
+	}
+	times!(x: %,r: R, e: NNI): % == {
+		zero? r => per [];
+		if integralDomain? then {
+			termTimes!(tx:Term):Term == {
+				tx.co := r * tx.co;
+				tx.ex := e + tx.ex;
+				tx;
+			};
+			per map(termTimes!, rep x);
+		}
+		else {
+                  -- CANNOT make code too big.
+                  -- SO we do it in this lazy following way
+                  x := times!(x,r);
+                  multiplyExponents!(x,e);
+               }
+        }
+	--- constant * pol + term * pol
+	--- assumes that constant and term are non-zero
+	local pomopo!(isone?:Boolean,c:R,xx:Rep,tco:R,tex:NNI,yy:Rep): Rep == {
+                -- assert(not zero? tco);
+		local res, newend, last: Rep;
+		res := empty();
+		while xx and yy repeat {
+			tx := first xx;
+			ty := first yy;
+			exy := tex + ty.ex;
+			if tx.ex > exy then {
+				if not isone? then tx.co := c * tx.co;
+				if (not(isone?) and not(integralDomain?)
+				    and (zero? tx.co)) then {
+					xx := rest xx;
+					iterate;
+				}
+				newend := xx;
+				xx := rest xx;
+			}
+			else {
+				coy := tco * ty.co;
+				yy := rest yy;
+				if exy > tx.ex then {
+					if (not(integralDomain?) and
+					    (zero? coy)) then {
+						iterate;
+					}
+					newend := [[coy, exy]];
+				}
+				else {
+					if not isone? then tx.co:= c*tx.co;
+					tx.co := tx.co + coy;
+					if zero? tx.co then {
+						xx := rest xx;
+						iterate;
+					}
+					else {
+						newend := xx;
+						xx := rest xx;
+					}
+				}
+			}
+			if empty? res then {
+				res := newend;
+				last := res;
+			}
+			else {
+				last.rest := newend;
+				last := newend;
+			}
+		}
+		if xx then { -- then end is c * xx
+			if isone? then newend := xx;
+			else newend := rep times!(c, per xx);
+		}
+		else {  -- then end is (tco, tex) * yy
+			newend := tepo(tco, tex, yy);
+		}
+		empty? res => newend;
+		last.rest := newend;
+		res;
+	}
+	caddmp!(c1: R, x: %, c2: R, e: NNI, y: %): % == {
+		zero? c1 => per tepo(c2, e, rep y);
+		zero? c2 => times!(c1, x);
+		per pomopo!(one? c1, c1, rep x, c2, e, rep y);
+	}
+	(x: %) * (y: %) : % == {
+		xx := rep x;
+		empty? xx => x;
+		yy := rep y;
+		empty? yy => y;
+		zero? first(xx).ex => first(xx).co * y;
+		zero? first(yy).ex => x * first(yy).co;
+                local n__x: NNI := +(#xx :: Integer);
+                local n__y: NNI := +(#yy :: Integer);
+                (n__x > levelK__product) and (n__y > levelK__product) => {
+                  karatsuba__internal(levelK__product,x,y)$UPKP(R,%);
+                }
+		if commutativeRing? and (n__x > n__y) then {
+			(xx,yy) := (yy,xx);
+			(x,y) := (y,x);
+		}
+		res : Rep := empty();
+		xx := reverse xx;
+		for tx in xx repeat res:=pomopo!(true,one(),res,tx.co,tx.ex,yy);
+		per res;
+	}
+        square(x: %): % == {
+		xx := rep x;
+		empty? xx => x;
+                zero? first(xx).ex => square(first(xx).co) :: %;
+                local n__x: NNI := +(#xx :: Integer);
+                commutativeRing? and (n__x > levelK__square) => 
+                  karatsubaSquare__internal(levelK__square,x)$UPKP(R,%);
+                yy := rep x;
+		res : Rep := empty();
+		xx := reverse xx;
+		for tx in xx repeat res:=pomopo!(true,one(),res,tx.co,tx.ex,yy);
+		per res;
+	}
+        times!(x: %, y: %): % == {
+                -- MAY MODIFY BOTH x and y
+                -- MODIFIES x and y except in trivial cases
+                -- USEFUL to make one's GC by hand
+                xx := rep x;
+		empty? xx => x;
+		yy := rep y;
+		empty? yy => y;
+		zero? first(xx).ex => times!(first(xx).co,y);
+                zero? first(yy).ex => times!(x,first(yy).co);
+                empty? rest xx => times!(first(xx).co,first(xx).ex,y);
+                empty? rest yy => times!(x,first(yy).co,first(yy).ex);
+                local n__x: NNI := +(#xx :: Integer);
+                local n__y: NNI := +(#yy :: Integer);
+                (n__x > levelK__product) and (n__y > levelK__product) => {
+                  karatsuba__internal!(levelK__product,x,y)$UPKP(R,%);
+                }
+		if commutativeRing? and (n__x > n__y) then {
+			(xx,yy) := (yy,xx);
+			(x,y) := (y,x);
+		}
+                res : Rep := empty();
+		xx := reverse xx;
+		for tx in xx repeat res:=pomopo!(true,one(),res,tx.co,tx.ex,yy);
+                x := copy!(x, per res);
+                y := copy!(y, per res);
+                dispose! res;
+                x;
+        }
+	local binomialTheorem__4(xco: R, xex: NNI, yy: Rep, n: NNI): % == {
+                -- assert(characteristicZero?);
+		lt: List Term := [[xco, xex]];
+		local co: R; 
+		local ex: NNI;
+		for i in 2..singleInt(n) repeat {
+			(co, ex) := explode first lt;
+			lt := cons( [xco * co, xex + ex], lt);
+		}
+		yn: % := per yy;
+		res: Rep := [first lt];
+		i: Integer := 1;
+		ni: Integer := n:: Integer;
+		bincoef: Integer := ni;
+		for tx in rest lt repeat {
+			(co, ex):= explode tx;
+                        res:= pomopo!(true,one()$R,res,bincoef*co,ex,rep yn);
+			bincoef := ((ni -i) * bincoef) quo (i + 1);
+			i := i + 1;
+			yn := yn * (per yy);
+		}
+		per(res) + yn;
+	}
+        power(xco: R, xex: NNI, y: %, n: NNI): % == {
+          assert(not zero? xco);
+          assert(not zero? y);
+          assert(n > 1);
+          commutativeRing? and characteristicZero? => 
+            binomialTheorem__4(xco,xex,rep(y),n);
+          commutativeRing? => binomialTheorem(xco,xex,y,n)$MPEP(R,NNI,%);
+          characteristicNonZero? => power__x__p(term(xco,xex) + y,n)$MPEP(R,NNI,%);
+          power__x__0(term(xco,xex) + y,n)$MPEP(R,NNI,%);
+        }
+--	(x: %) ^ (n: NNI): % == {
+--		zero? n => one()@%;
+--		n = 1  => x;
+--		xx := rep x;
+--		empty? xx => x;
+--		empty? rest xx => {
+--			r: R := (first(xx).co ^ n)$R;
+--			if zero? r then return zero()@%;
+--			per [[r, n * xx.first.ex]$Term];
+--		}
+--		if commutativeRing? and characteristicZero? then {
+--			(xco, xex):= explode first xx;
+--			binomialTheorem__4(xco, xex, rest xx, n);
+--		}
+--		else {
+--			import from BinaryPowering(%, *, Integer);
+--			power!(one()@%, x, n::Integer);
+--		}
+--	}
+
+	coerce(i: Integer): % == (i::R)::%;
+
+	(r: R) * (x: %) : % == {
+		zero? r => zero()@%;
+		if integralDomain? then {
+			per [[r*tx.co,tx.ex] for tx in rep x];
+		}
+		else {
+			per [[rr, tx.ex] for tx in rep x | 
+				not zero? (rr: R := r*tx.co)];
+		}
+	}
+
+	times!(r: R, x: %): % == {
+	      	zero? r => per [];
+		one?  r => x;
+		if integralDomain? then {
+			times!(tx:Term):Term == {tx.co:= r*tx.co;tx};
+			per map(times!, rep x);
+		}
+		else {
+			local res, last, newend : Rep;
+			xx := rep x;
+			res := empty();
+			while xx repeat {
+				tx := first xx;
+				tx.co := r * tx.co;
+				if zero? tx.co then {
+					xx := rest xx;
+					iterate;
+				}
+				else {
+					newend := xx;
+					xx := rest xx;
+				}
+				if empty? res then {
+					res := newend;
+					last := res;
+				}
+				else {
+					last.rest := newend;
+					last := newend;
+				}
+			}
+			per res;
+		}
+	}
+
+	(x: %) * (r: R) : % == {
+		zero? r => zero()@%;
+		if integralDomain? then {
+			per [[tx.co*r, tx.ex] for tx in rep x];
+		}
+		else {
+			per [[rr, tx.ex] for tx in rep x | 
+				not zero? (rr: R := tx.co*r)];
+		}
+
+	}
+	times!(x: %, r: R): % == {
+	      	zero? r => per [];
+		one?  r => x;
+		if integralDomain? then {
+			times!(tx:Term):Term == {tx.co:= r*tx.co;tx};
+			per map(times!, rep x);
+		}
+		else {
+			local res, last, newend : Rep;
+			xx := rep x;
+			res := empty();
+			while xx repeat {
+				tx := first xx;
+				tx.co := tx.co * r;
+				if zero? tx.co then {
+					xx := rest xx;
+					iterate;
+				}
+				else {
+					newend := xx;
+					xx := rest xx;
+				}
+				if empty? res then {
+					res := newend;
+					last := res;
+				}
+				else {
+					last.rest := newend;
+					last := newend;
+				}
+			}
+			per res;
+		}
+	}
+
+      --------------------------------------------------
+      --% exported functions as a AbelianMonoidRing  %--
+      ---------------------------------------------------
+
+	degree(x: %): NNI == {
+		xx := rep x;
+		if empty? xx then 0@NNI else xx.first.ex;
+	}
+	leadingCoefficient(x: %): R == {
+		empty? rep x => zero()@R;
+		tx: Term := first rep x;
+		tx.co;
+	}
+        leadingTerm(x: %): (R, NNI) == {
+                empty? rep x => (zero()@R,0@NNI);
+		tx: Term := first rep x;
+		(tx.co,tx.ex);
+	}
+	leadingMonomial(x: %): % == {
+		empty? rep x => one()@%;
+		term(one(),(first rep x).ex);
+	}
+	reductum(x: %): % == per rest rep x;
+
+	exponents(x: %): Generator NNI == generate {
+		xx := rep x;
+		if empty? xx then { 
+			yield 0;
+		} 
+		else { 
+		     	while (not empty? xx) repeat {
+			 	yield ((first xx).ex);
+			 	xx := rest xx;
+		    	}
+		}
+	}
+	coefficients(x: %): Generator R == generate {
+		xx := rep x;
+		if empty? xx then { 
+		       yield zero()@R
+		} 
+		else { 
+			while (not empty? xx) repeat {
+			   	yield ((first xx).co);
+			   	xx := rest xx;
+		       	}
+		}
+	}
+	terms(x: %): Generator Cross(R, NNI) == generate {
+		for tx in rep x repeat yield (tx.co, tx.ex);
+	}
+	monomials(x: %): Generator % == generate {
+		xx := rep x;
+		if empty? xx then {
+		      	yield one();
+		} 
+		else {
+		     	while (not empty? xx) repeat {
+			 	yield(term(one(),(first xx).ex));
+			 	xx := rest xx;
+		     	}
+		}
+	}
+	map (f: R -> R, x: %): % == {
+	   	xx := rep x;
+	   	empty? xx => x;
+	   	res: DoubleEndedList Term := empty();
+	   	while (not empty? xx) repeat {
+	       		tx := first xx;
+	       		r := f(tx.co);
+	       		xx := rest xx;
+	       		if not zero?(r) then concat!(res,[r,tx.ex]$Term);
+	   }
+	   per firstCell(res);
+	}
+
+	map! (f: R -> R, x: %): % == {
+	   	-- !!! A lazy version that assumes f(x)=0 iff x=0 !!!
+	   	xx := rep x;
+	   	empty? xx => x;
+	   	while (not empty? xx) repeat {
+	       		tx := first xx;
+	       		r := f(tx.co);
+	       		assert(not zero? r);
+	       		tx.co := r;
+	       		xx := rest xx;
+	   	}
+	   	x;
+	}
+
+	map (f: NNI -> NNI, p: %): % == {
+	   zero? p => p;
+	   sumTerms( (pp:=(tx.co, f(tx.ex)); pp) for tx in rep p);
+        }
+
+        map! (f: NNI -> NNI, x: %): % == {
+           xx := rep x;
+           empty? xx => x;
+           local lx : DoubleEndedList %;
+           lx := empty();
+           local yy : DoubleEndedList Term;
+           while (not empty? xx) repeat {
+               tx := first xx;
+               xx := rest xx;
+               d := f(tx.ex);
+               tx.ex := d;
+               yy := empty();
+               concat!(yy,tx);
+               while (not empty? xx) and ((e := f((first xx).ex)) < d) repeat {
+                   (first xx).ex := e;
+                   d := e;
+                   concat!(yy,(first xx));
+                   xx := rest xx;
+               }
+               concat!(lx,per(firstCell yy)); -- FIXED?
+           }
+           sum(firstCell lx);
+        }
+        divideExponents(x:%,n:NNI): % == {
+          per [[tx.co,exsub(tx.ex,n)] for tx in rep x];
+        }
+        divideExponents!(x:%,n:NNI): % == {
+          xx := rep x;
+          repeat {
+            empty? xx => return x;
+            tx := first xx;
+            tx.ex := exsub(tx.ex,n);
+            xx := rest xx;
+          }
+        }
+        multiplyExponents(x:%,n:NNI): % == {
+          per [[tx.co,tx.ex + n] for tx in rep x];
+        }
+        multiplyExponents!(x:%,n:NNI): % == {
+          xx := rep x;
+          repeat {
+            empty? xx => return x;
+            tx := first xx;
+            tx.ex := tx.ex + n;
+            xx := rest xx;
+          }
+        }
+	monomial?(x: %): Boolean == {
+           zero? x => true;
+           nullReductum?(x) => one? leadingCoefficient(x);
+           false;
+        }
+	coefficient(x: %, e: NNI): R == {
+		for tx in rep x repeat {
+			e = tx.ex => return tx.co;
+			e > tx.ex => return zero()@R;
+		}
+		zero()@R;
+	}
+
+        addTerm!(x: %, e: NNI, r: R): % == {
+          zero? r => x;
+          zero? x => per [[r,e]$Term];
+          local s: R; local d: NNI;
+          l: Rep := rep x;
+          t: Term := first(l);
+          (s, d) := explode(t);
+          e > d => {
+             per cons([r,e]$Term,l);
+          }
+          e = d => {
+             r := r + s;
+             zero? r => per rest(l);
+             per cons([r,e]$Term,rest(l));
+          }
+          empty? rest(l) => {
+             setRest!(l,[[r,e]$Term]);
+             per l;
+          }
+	  local k: Rep;     
+          repeat {
+            k := l;
+            l := rest l;
+            t := first(l);
+            t.ex <= e => break;
+            empty? rest(l) => break;
+          }
+          t.ex = e => {
+             r := r + t.co;
+             zero? r => {
+              setRest!(k,rest(l));
+              return x;
+            }
+            t.co := r;
+            return x;
+          }
+          t.ex < e => {
+            setRest!(k,cons([r,e]$Term,l));
+            return x;
+          }
+          setRest!(l,[[r,e]$Term]);
+          x;
+        }
+
+        coefficient!(x: %, e:NNI, r: R): % == {
+          zero? x => {
+            zero? r => x;
+            per [[r,e]$Term];
+          }
+          local s: R; local d: NNI;
+          l: Rep := rep x;
+          t: Term := first(l);
+          (s, d) := explode(t);
+          e > d => {
+             zero? r => x;
+             per cons([r,e]$Term,l);
+          }
+          e = d => {
+             zero? r => per rest(l);
+             per cons([r,e]$Term,rest(l));
+          }
+          empty? rest(l) => {
+             zero? r => x;
+             setRest!(l,[[r,e]$Term]);
+             per l;
+          }
+	  local k: Rep;     
+          repeat {
+            k := l;
+            l := rest l;
+            t := first(l);
+            t.ex <= e => break;
+            empty? rest(l) => break;
+          }
+          t.ex = e => {
+            zero? r => {
+              setRest!(k,rest(l));
+              return x;
+            }
+            t.co := r;
+            return x;
+          }
+          t.ex < e => {
+            zero? r => return x;
+            setRest!(k,cons([r,e]$Term,l));
+            return x;
+          }
+          zero? r => x;
+          setRest!(l,[[r,e]$Term]);
+          x;
+        }
+
+	term (r: R, n: NNI): % == {
+		zero? r => zero()@%;
+		per [[r, n]$Term];
+	}
+	sum(lx: List(%)): % == {
+	    local acc: %;
+	    acc := zero();
+	    while (not empty? lx) repeat {
+		acc := add!(acc, first lx);
+		lx := rest lx;
+	    }
+	    acc;
+	}
+	sum(gp: Generator %): % == {
+	    local acc: %;
+	    acc := zero();
+	    for p in gp repeat {
+		acc := add!(acc, p);
+	    }
+	    acc;
+	}
+
+	sumTerms(gp: Generator Cross(R, NNI)): % == {
+	    local acc: %;
+	    acc := zero();
+	    for pair in gp repeat {
+		(co, deg) := pair;
+		acc := add!(acc, term(co, deg));
+	    }
+	    acc;
+	}
+	
+      	--------------------------------------------------------
+      	--% exported functions as a FiniteAbelianMonoidRing  %--
+      	--------------------------------------------------------
+
+	coerce(r: R): % == {
+		zero? r => zero()@%;
+		per [[r, 0@NNI]$Term];
+	} 
+	ground? (x: %): Boolean == {
+		empty? rep x => true;
+                tx: Term := first rep x;
+		(zero? tx.ex) and (empty? rest(rep x));
+	}
+	ground(x: %): R == {
+                empty? rep x => 0;
+                assert((empty? rest(rep x)) and zero?((first rep x).ex));
+                (first rep x).co;
+	}
+	numberOfMonomials(x: %): NNI == +(#(rep x) :: Integer);
+
+	minimumDegree(x: %): NNI == {
+ 		xx:= rep x;
+                empty? xx => 0;
+                repeat {
+                  empty? rest xx => return ((first xx).ex);
+                  xx := rest xx;
+                }
+        }
+	trailingMonomial(x: %): % == {
+ 		xx:= rep x;
+                empty? xx => one()@%;
+                while (not empty? rest xx) repeat xx := rest xx;
+                per [[one(),(first xx).ex]$Term];
+        }
+        trailingCoefficient(x: %): R == {
+ 		xx:= rep x;
+                empty? xx => zero()@R;
+                while (not empty? rest xx) repeat xx := rest xx;
+                (first xx).co;
+        }              
+	trailingTerm(x: %): (R, NNI) == {
+ 		xx:= rep x;
+		empty? xx => (zero()@R, 0@NNI);
+		while (not empty? rest xx) repeat xx := rest xx;
+		((first xx).co,(first xx).ex);
+	}		
+	coefficients(x: %): List R == [tx.co for tx in rep x];
+
+	exponents(x: %): List NNI == [tx.ex for tx in rep x];
+
+	monomials(x: %): List % == [term(one(),tx.ex) for tx in rep x];
+
+	terms(x: %): List Cross(R, NNI) == {
+	   list(terms(x)@(Generator(Cross(R, NNI))));
+	}
+
+      ------------------------------------------------------------------
+      --% exported functions as a InnerUnivariatePolynomialCategory  %--
+      ------------------------------------------------------------------
+
+	differentiate!(x: %): % == {
+          not goodRing? => copy!(x,differentiate(x)); -- TO BE DONE later
+          xx := rep x;
+          y := x;
+          repeat {
+            empty? xx => return y;
+            tx := first xx; xx := rest xx;
+            zero? (tx.ex) => return y;
+            tx.co := tx.ex * tx.co;
+            tx.ex := exsub(tx.ex,1)$NNI;
+          }
+        }
+	differentiate(x: %): % == {
+		empty? rep x => zero()@%;
+		res: Rep := empty();
+		xx:= reverse rep x;
+		if zero? xx.first.ex then xx:= rest xx;
+                goodRing? => {
+                   repeat {
+                     empty? xx => return (per res);
+                     tx := first xx; xx := rest xx;
+                     res:= cons([tx.ex * tx.co,exsub(tx.ex,1)$NNI], res);
+                   }
+                }
+                local r: R;
+		repeat {
+                        empty? xx => return (per res);
+                        tx := first xx; xx := rest xx;
+                        not zero?(r := tx.ex * tx.co) => {
+				res:= cons([r,exsub(tx.ex,1)$NNI], res);
+                       }
+		}
+	}
+	differentiate(x: %, n: NNI): % == {
+		xx:= reverse rep x;
+		while xx and xx.first.ex < n repeat xx:= rest xx;
+		empty? xx => per xx;
+		res: Rep := empty()$Rep;
+		for tx in xx repeat {
+			import from Generator Integer;
+			ns: Integer := (exsub(tx.ex,n) + 1)::Integer;
+			nc: Integer := 
+			    reduce(*, m for m in ns..(tx.ex::Integer),1);
+			r: R := nc * tx.co;
+			goodRing? =>
+				res:= cons([r,exsub(tx.ex,n)$NNI], res);
+			not zero? r =>
+				res:= cons([r,exsub(tx.ex,n)$NNI], res);
+		}
+		per res;
+	}
+	eval(x: %, r: R): R == {
+		-- Horner evaluation
+		xx := rep x;
+		empty? xx => zero()@R;
+		res: R := first(xx).co;
+		n: NNI := first(xx).ex;
+		xx:= rest xx;
+		empty? xx => res * (r ^ n);
+		for tx in xx repeat {
+			n := exsub(n, tx.ex);
+			res := (res * r^n) + tx.co;
+			n := tx.ex;
+		}
+		n = 0 => res;
+		res * r^n;
+	}
+	eval(x: %, y: %): % == {
+		-- Horner evaluation
+		xx := rep x;
+		empty? xx => zero()@%;
+		res: % := first(xx).co :: %;
+		n: NNI := first(xx).ex;
+		xx := rest xx;
+		for tx in xx repeat {
+			n := exsub(n, tx.ex);
+			res := (res * (y^n)) + (tx.co::%);
+			n := tx.ex;
+		}
+		n = 0 => res;
+		res * (y^n);
+	}
+        divide(x:%, n:NNI): (%, %) == {
+          zero? n => (x, 0);
+          q: DoubleEndedList Term := empty();
+          r: Rep := rep x;
+          repeat {
+            empty? r => return (per (firstCell q), per r);
+            tx := first r;
+            tx.ex < n => return (per (firstCell q), per r);
+            concat!(q,[tx.co,exsub(tx.ex,n)@NNI]$Term);
+            r := rest r;
+          }
+        }
+
+      ------------------------------------------------
+      --% exported functions as DivisionOperations %--
+      ------------------------------------------------
+
+        local monicDivide!(x: Rep, y: Rep):(%, %) == {
+          -- ASSUME y is not constant
+          -- ASSUME leadingCoefficient(y) is 1
+          local lc__x: R;
+          local deg__x, deg__y, n__q: NNI;
+          deg__y := (first(y)).ex;
+          y := rest(y);
+          resquo: DoubleEndedList Term := empty();
+          repeat {
+            empty? x => return (per firstCell(resquo), per x);
+            (lc__x, deg__x) := ((first(x)).co, (first(x)).ex);
+            deg__x < deg__y => return (per firstCell(resquo), per x);
+            n__q := exsub(deg__x,deg__y);
+            concat!(resquo, [lc__x,n__q]);
+            x := pomopo!(true,1,rest(x),-lc__x,n__q,y);
+          }
+        }
+	monicDivide(x: %, y: %):(%, %) == {
+                assert(not ground? y);
+		lc: R := leadingCoefficient(y);
+                not one?(lc) => {
+                    pr: Partial(R) := recip(lc);
+                    assert(not failed? pr);
+                    local q, r: %;
+                    (q, r) := monicDivide(pr::R * x, pr::R * y);
+                    (q, lc * r);
+                }
+                ground? x => (zero()@%, x);
+                degree(x) < degree(y)  => (zero()@%, x);
+                monicDivide!(map(copyterm, rep x), rep y);
+        }
+	local remainder!(x: %, y: %, r: R): % == {
+                -- ASSUME y is not constant and 
+                -- ASSUME leadingCoefficient(y) is a unit whose inverse is r
+		resrem:= rep x;
+		yy := rep y;
+		yex: NNI := yy.first.ex;
+		yy:= rest rep y;
+                monic?: Boolean := one?(r);
+                r := -r;
+		while not empty? resrem repeat {
+			pn: Partial NNI := exsub(resrem.first.ex, yex);
+			failed? pn => break;
+			nn: NNI := retract pn;
+			xco: R := resrem.first.co;
+			monic? => resrem := pomopo!(true,one(),rest resrem,-xco,nn,yy);
+                        resrem := pomopo!(true,one(),rest resrem,r * xco,nn,yy);
+		}
+		per resrem;
+        }
+	monicRemainder(x: %, y: %): % == {
+                assert(not ground? y);
+		lc: R := leadingCoefficient(y);
+                not one?(lc) => {
+                    pr: Partial(R) := recip(lc);
+                    assert(not failed? pr);
+                    times!(lc,remainder!(pr::R * x, pr::R * y,1));
+                }
+		ground? x => x;
+                degree(x) < degree(y) => x;
+                remainder!(copy x, y, 1);
+	}
+        monicRemainder!(x: %, y: %): % == {
+                assert((not ground?(y)) and (one?(leadingCoefficient(y))));
+                remainder!(x, y, 1);
+        }
+        local pseudoRemainder!(x: %, y: %, lazy?: Boolean): % == {
+                       -- ASSUME y is not constant
+                       -- ASSUME degree(x) >= degree(y)
+                       local lc__x, lc__y: R;
+                       local deg__x, deg__y, n, e: NNI;
+                       xx := rep x;
+                       yy := rep y;
+                       (lc__x, deg__x) := (xx.first.co, xx.first.ex);
+                       (lc__y, deg__y) := (yy.first.co, yy.first.ex);
+                       iso: Boolean := one? lc__y;
+                       yy := rest yy;
+                       n := exsub(deg__x, deg__y);
+                       e := n + 1;
+                       repeat {
+                         xx := pomopo!(iso,lc__y,rest(xx),-lc__x,n,yy);
+                         e := exsub(e,1);
+                         empty? xx => return (per xx);
+                         (lc__x, deg__x) := (xx.first.co, xx.first.ex);
+                         deg__x < deg__y => {
+                           lazy? or (zero? e) => return (per xx);
+                           return times!(lc__y^e, per(xx));
+                         }
+                         n := exsub(deg__x, deg__y);
+                       }
+        }
+        pseudoRemainder(x: %, y: %): % == {
+                  assert(not ground? y);
+                  zero? x => zero()@%;
+                  degree(x) < degree(y) => x;
+                  pseudoRemainder!(copy x, y, false);
+        }
+        pseudoRemainder!(x: %, y: %): % == {
+                  assert((not ground? y));
+                  zero? x => zero()@%;
+                  degree(x) < degree(y) => x;
+                  pseudoRemainder!(x, y, false);
+        }
+        lazyPseudoRemainder(x: %, y: %): % == {
+                  assert((not ground? y));
+                  zero? x => zero()@%;
+                  degree(x) < degree(y) => x;
+                  pseudoRemainder!(copy x, y, true);
+        }
+        lazyPseudoRemainder!(x: %, y: %): % == {
+                  assert((not ground? y));
+                  zero? x => zero()@%;
+                  degree(x) < degree(y) => x;
+                  pseudoRemainder!(x, y, true);
+        }
+        if R has ModularComputation then {
+            import from R pretend ModularComputation;
+            local reduce(r:R,m:R): R == {
+              orderedRing? => 
+                symmetricMod(r,m)$(R pretend Join(OrderedRing,ModularComputation));
+              r mod m;
+            }
+	    --- term * polynomial
+	    local tepo(tco: R, tex: NNI, rx: Rep, m:R): Rep == {
+		[[r, tex + tx.ex] for tx in rx |
+				not zero? (r := reduce(tco * tx.co,m))];
+	    }
+	    modTimes!(r: R, x: %, m:R): % == {
+	      	        zero? r => per [];
+		        one?  r => x;
+                        local res, last, newend : Rep;
+			xx := rep x;
+			res := empty();
+			while xx repeat {
+				tx := first xx;
+				tx.co := reduce(r * tx.co,m);
+				if zero? tx.co then {
+					xx := rest xx;
+					iterate;
+				}
+				else {
+					newend := xx;
+					xx := rest xx;
+				}
+				if empty? res then {
+					res := newend;
+					last := res;
+				}
+				else {
+					last.rest := newend;
+					last := newend;
+				}
+			}
+			per res;
+	}
+        --- constant * pol + term * pol
+	--  assumes that constant and term are non-zero
+	    local pomopo!(isone?:Boolean,c:R,xx:Rep,tco:R,tex:NNI,yy:Rep,m:R): Rep == {
+		local res, newend, last: Rep;
+		res := empty();
+		while xx and yy repeat {
+			tx := first xx;
+			ty := first yy;
+			exy := tex + ty.ex;
+			if tx.ex > exy then {
+				if not isone? then tx.co := reduce(c * tx.co,m);
+				if (not(isone?) and (zero? tx.co)) then {
+					xx := rest xx;
+					iterate;
+				}
+				newend := xx;
+				xx := rest xx;
+			}
+			else {
+				coy := reduce(tco * ty.co,m);
+				yy := rest yy;
+				if exy > tx.ex then {
+					if  (zero? coy) then {
+						iterate;
+					}
+					newend := [[coy, exy]];
+				}
+				else {
+					if not isone? then tx.co:= c*tx.co;
+					tx.co := reduce(tx.co + coy,m);
+					if zero? tx.co then {
+						xx := rest xx;
+						iterate;
+					}
+					else {
+						newend := xx;
+						xx := rest xx;
+					}
+				}
+			}
+			if empty? res then {
+				res := newend;
+				last := res;
+			}
+			else {
+				last.rest := newend;
+				last := newend;
+			}
+		}
+		if xx then { -- then end is c * xx
+			if isone? then newend := xx;
+			else {
+                          newend := rep modTimes!(c,per xx,m);
+                       }
+		}
+		else {  -- then end is (tco, tex) * yy
+			newend := tepo(tco, tex, yy, m);
+		}
+		empty? res => newend;
+		last.rest := newend;
+		res;
+	    }
+	    modCaddmp!(c1: R, x: %, c2: R, e: NNI, y: %, m:R): % == {
+		zero? c1 => per tepo(c2, e, rep y,m);
+		zero? c2 => modTimes!(c1, x, m);
+		per pomopo!(one? c1, c1, rep x, c2, e, rep y, m);
+	    }
+        }
+	if R has IntegralDomain then {
+		import from R pretend IntegralDomain;
+		exquo(x: %, r: R): % == {
+                        assert(not zero? r);
+                        zero? x => zero();
+			one? r => x;
+			res: DoubleEndedList Term := empty();
+                        xx := rep x;
+			repeat {
+                          tx := first xx;
+                          concat!(res, [exquo(tx.co,r), tx.ex]);
+                          xx := rest xx;
+                          empty? xx => return (per firstCell(res));
+			}
+                }
+		exquo!(x: %, r: R): % == {
+                        assert(not zero? r);
+                        zero? x => zero();
+			one? r => x;
+                        xx := rep x;
+                        repeat {
+                          tx := first xx;
+                          tx.co := exquo(tx.co,r);
+                          xx := rest xx;
+                          empty? xx => return x;
+                        }
+                }
+		exquo(x: %, r: R): Partial % == {
+                        assert(not zero? r);
+                        zero? x => [zero()];
+			one? r  => [x];
+			res: DoubleEndedList Term := empty();
+			for tx in rep x repeat {
+				pr: Partial R := exquo(tx.co, r);
+				failed? pr => return failed();
+				concat!(res, [retract pr, tx.ex]);
+			}
+			[per firstCell(res)];
+		}
+		exquo(x: %, y: %): % == {
+                        assert(not zero? y);
+                        zero? x => x;
+			ground? y => exquo(x, ground y);
+			res: DoubleEndedList Term := empty();
+			xx:= map(copyterm, rep x);
+			yy := rep y;
+			(tyc, tye):= explode first yy;
+			yy:= rest rep y;
+			while not empty? xx repeat {
+				(txc, txe):= explode first xx;
+				rr: R := exquo(txc, tyc);
+				nn: NNI := exsub(txe, tye);
+				xx := pomopo!(true,one(),rest xx,-rr,nn,yy);
+				concat!(res, [rr, nn]);
+			}
+			per firstCell(res);
+		}
+		exquo!(x: %, y: %): % == {
+                        assert(not zero? y);
+                        zero? x => zero()$%;
+			ground? y => exquo(x, ground y);
+			res: DoubleEndedList Term := empty();
+			xx := rep x;
+			yy := rep y;
+			(tyc, tye):= explode first yy;
+			yy:= rest rep y;
+			while not empty? xx repeat {
+				(txc, txe):= explode first xx;
+				rr: R := exquo(txc, tyc);
+				nn: NNI := exsub(txe, tye);
+				xx := pomopo!(true,one(),rest xx,-rr,nn,yy);
+				concat!(res, [rr, nn]);
+			}
+			per firstCell(res);
+		}
+		exquo(x: %, y: %): Partial % == {
+                        assert(not zero? y);
+                        zero? x => [zero()$%];
+			ground? y => exquo(x, ground y);
+                        degree(x) < degree(y) => failed();
+			res: DoubleEndedList Term := empty();
+			xx:= map(copyterm, rep x);
+			yy := rep y;
+			(tyc, tye):= explode first yy;
+			yy:= rest rep y;
+			while not empty? xx repeat {
+				(txc, txe):= explode first xx;
+				pr: Partial R := exquo(txc, tyc);
+				failed? pr => return failed();
+				pn: Partial NNI := exsub(txe, tye);
+				failed? pn => return failed();
+				rr:= retract pr;
+				nn:= retract pn;
+				xx:= pomopo!(true,one(),rest xx,-rr,nn,yy);
+				concat!(res, [rr, nn]);
+			}
+			[per firstCell(res)];
+		}
+	}
+	if R has GcdDomain then {
+		import from R pretend GcdDomain;
+		content(p: %): R == {
+                    xx := rep p;
+                    empty? xx => zero();
+                    field? => one();
+                    local c: R;
+                    c := (first xx).co;
+                    xx := rest xx;
+                    while (not empty? xx) repeat {
+                        unit? c => return one();
+                        c := gcd(c,(first xx).co);
+                        xx := rest xx;
+                    }
+                    unitCanonical c;
+                }
+                primitivePart(p:%): % == {
+                    zero? p => p;
+                    field? => unitCanonical(p);
+                    unitCanonical exquo(p,content(p))@%;
+                }
+                primitivePart!(p:%): % == {
+                    zero? p => p;
+                    field? => unitCanonical!(p);
+                    unitCanonical! exquo!(p,content(p));
+                }
+	}
+	if R has Field 
+           then {
+                import from R pretend Field;
+
+		-- all use inv from R
+		divide(x: %, r: R): % == inv(r)*x;
+
+		divide(x: %, y: %):(%, %) == {
+                        assert(not zero? y);
+			ground? y => (inv(ground y)*x, zero()@%);
+                        monicDivide(x,y);
+		}
+		(quo)(x: %, y: %): % == {
+			(qu, re) := divide(x,y);
+			qu;
+		}
+		(rem)(x: %, y: %): % == {
+                        assert(not zero? y);
+			ground? y => zero()@%;
+                        ground? x => x;
+                        degree(x) < degree(y) => x;
+                        remainder!(copy(x),y,inv(leadingCoefficient(y)));
+		}
+                remainder!(x: %, y: %): % == {
+                        assert(not zero? y);
+			ground? y => zero()@%;
+                        ground? x => x;
+                        degree(x) < degree(y) => x;
+                        remainder!(x,y,inv(leadingCoefficient(y)));
+		}
+	}
+}
+
+OuterSparseUnivariatePolynomial(R: Ring, s: Symbol == +"?"): _
+  OuterUnivariatePolynomialCategory(R,Singleton(Symbol, s)) with { 
+} == SparseUnivariatePolynomial(R,s) add {}
+

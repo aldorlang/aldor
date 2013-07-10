@@ -1,0 +1,66 @@
+/*****************************************************************************
+ *
+ * float.h0: Fixups for <float.h>
+ *
+ * Copyright (c) 1990-2007 Aldor Software Organization Ltd (Aldor.org).
+ *
+ ****************************************************************************/
+
+#ifndef _FLOAT_H0_
+#define _FLOAT_H0_
+
+#ifndef CC_no_float_h
+#  include <float.h>
+#else
+
+#ifndef CC_non_ieee_floats
+
+/*
+ *      General definitions
+ */
+#define FLT_ROUNDS	(-1)	/* This means indeterminable. */
+#define FLT_RADIX	2	/* Base for exponents. */
+
+/*
+ *      Float definitions
+ */
+#define FLT_DIG		6				/* base 10 precision */
+#define FLT_MANT_DIG	24				/* radix precision */
+#define FLT_EPSILON	((float) 1.1920928955078125e-7)	/* 1ulp for expon=0 */
+
+/* These quantities relate to normalized numbers */
+#define FLT_MIN		((float) 1.1754943508222875e-38)/* smallest +ve */
+#define FLT_MIN_EXP	(-125)				/* min radix expon */
+#define FLT_MIN_10_EXP	(-37)				/* min base 10 expon */
+
+#define FLT_MAX		((float) 3.4028234663852886e+38)/* largest */
+#define FLT_MAX_EXP	128				/* max exponent */
+#define FLT_MAX_10_EXP	38				/* min base 10 expon */
+
+/*
+ *      Double definitions
+ */
+#define DBL_DIG		15				/* base 10 precision */
+#define DBL_MANT_DIG	53				/* radix precision */
+#define DBL_EPSILON	2.2204460492503132e-16		/* 1ulp for expon=0 */
+
+/* These quantities relate to normalized numbers */
+#define DBL_MIN		2.2250738585072015e-308		/* smallest +ve */
+#define DBL_MIN_EXP	(-1021)				/* min radix expon */
+#define DBL_MIN_10_EXP	(-307)				/* min base 10 expon */
+
+#define DBL_MAX		1.797693134862315708e+308	/* largest */
+#define DBL_MAX_EXP	1024				/* max radix expon */
+#define DBL_MAX_10_EXP	308				/* max base 10 expon */
+
+#endif  /* !CC_non_ieee_floats */
+
+#endif  /* !CC_no_float_h */
+
+
+#if defined(CC_small_dbl_max) && !defined(CC_non_ieee_floats)
+# undef  DBL_MAX
+# define DBL_MAX 	1.797693134862315365e+308	/* largest */
+#endif
+
+#endif	/* !_FLOAT_H0_ */

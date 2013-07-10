@@ -1,0 +1,25 @@
+{\codeline{1}\verb& #include "aldor"&}\\
+{\codeline{2}\verb&&}\\
+{\codeline{3}\verb& MINT ==> MachineInteger;&}\\
+{\codeline{4}\verb&&}\\
+{\codeline{5}\verb& import {&}\\
+{\codeline{6}\verb&   fsort: (Array(DoubleFloat),MINT,MINT,Ref(MINT)) -> ();&}\\
+{\codeline{7}\verb& } from Foreign Fortran;&}\\
+{\codeline{8}\verb&&}\\
+{\codeline{9}\verb& import {random : () -> Integer} from RandomNumberSource;&}\\
+{\codeline{10}\verb& import from DoubleFloat;&}\\
+{\codeline{11}\verb&&}\\
+{\codeline{12}\verb& -- Set up data&}\\
+{\codeline{13}\verb& error?: MINT := 0;&}\\
+{\codeline{14}\verb& n     : MINT := 10;&}\\
+{\codeline{15}\verb& v     : Array(DoubleFloat) := new(10);&}\\
+{\codeline{16}\verb& for i in 1..n repeat&}\\
+{\codeline{17}\verb&   set!(v,i,random()::DoubleFloat/random()::DoubleFloat);&}\\
+{\codeline{18}\verb&&}\\
+{\codeline{19}\verb& fsort(v, 1, n, ref error?);&}\\
+{\codeline{20}\verb&&}\\
+{\codeline{21}\verb& if zero? error? then {&}\\
+{\codeline{22}\verb&   print << "sorted data: " << newline;&}\\
+{\codeline{23}\verb&   for i in 1..n repeat print << v.(i::MINT) << newline;&}\\
+{\codeline{24}\verb& }&}\\
+{\codeline{25}\verb&&}\\

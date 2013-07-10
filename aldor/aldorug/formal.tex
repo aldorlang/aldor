@@ -1,0 +1,410 @@
+\head{chapter}{Formal syntax}{asugFLang}
+
+\head{section}{Source}{asugFLangSource}
+
+\asharp{} source is a collection of lines containing
+a textual representation of a program.
+
+Lines beginning with the character ``\verb'#'''
+are {\em system commands} and are not part of the program text.
+
+\vskip .5cm
+
+\subsection{Source inclusion}%
+{\em Source inclusion} collects the source lines which make up a program.
+This process is controlled by the following system commands:
+\index{include@\protect{\tt \#include}}
+%%\index{\#include@\protect{\tt \#include}}
+\begin{itemize}
+\item
+\verb'#include   "'{\it file-name\/}\verb'"'
+\\
+\verb'#reinclude "'{\it file-name\/}\verb'"'
+\\
+These commands collect the lines from the named file.
+If a given file has already been included, then subsequent
+\verb'include' commands for that file have no effect.
+A \verb'reinclude' command always includes the file, whether or not it
+has already been included.
+
+The includer tries to find the file relative to the directory of the current
+source file and then in a sequence of user-specified and platform-specific
+directories.
+%
+\item
+\verb'#assert  '  {\it identifier\/}
+\\
+\verb'#unassert'  {\it identifier\/}
+\\
+These commands turn on or off named properties which may be tested
+for conditional source inclusion.
+\index{global assertions!inside a source file}
+%%\index{\#assert@\protect{\tt \#assert}}
+\index{assert@\protect{\tt \#assert}}
+%%\index{\#unassert@\protect{\tt \#unassert}}
+\index{unassert@\protect{\tt \#unassert}}
+%
+\item
+\verb'#if    '    {\it identifier\/}
+\\
+\verb'#elseif'    {\it identifier\/}
+\\
+\verb'#else'
+\\
+\verb'#endif'
+\\
+These commands provide conditional source inclusion.
+\index{conditional source inclusion}
+%%\index{\#if@\protect{\tt \#if}}
+\index{if@\protect{\tt \#if}}
+%%\index{\#elseif@\protect{\tt \#elseif}}
+\index{elseif@\protect{\tt \#elseif}}
+%%\index{\#else@\protect{\tt \#else}}
+\index{else@\protect{\tt \#else}}
+%%\index{\#endif@\protect{\tt \#endif}}
+\index{endif@\protect{\tt \#endif}}
+%
+\item 
+\verb'#!' {\it text\/}
+\\
+\verb'#'
+\\
+Lines are ignored if they begin with ``\verb'#!''' or
+begin with ``\verb'#''' and contain only white space.
+\end{itemize}
+
+\subsection{Prepared source}%
+The following commands allow source to be prepared by another program.
+\begin{itemize}
+\item
+\verb'#line'      {\it line-number\/} [\verb'"'{\it file-name\/}\verb'"']
+\\
+The next line is recorded as occurring at the given line number
+in the named file.  The first line of a file is line number 1.
+If the file name is missing, then the current file name is used.
+%%\index{\#line@\protect{\tt \#line}}
+\index{line@\protect{\tt \#line}}
+%
+\item
+\verb'#error' {\it text\/}
+\\
+An error is considered to have occurred at the position of the system
+command line and the given text is used as the message.
+%%\index{\#error@\protect{\tt \#error}}
+\index{error@\protect{\tt \#error}}
+\end{itemize}
+%
+\subsection{Other system commands}%
+Other system commands control the environment:
+\begin{itemize}
+\item
+\verb'#pile'
+\\
+\verb'#endpile'
+\\
+These commands create a context in which indentation is significant.
+Braces may be used to revert to a normal
+state where indentation has no meaning, and
+it is possible to nest
+``\verb"#pile"''/``\verb"#endpile"''
+and
+``\verb"{"''/``\verb"}"''
+pairs.
+Closing ``\verb"#endpile"'' lines
+at the end of the program may be omitted.
+%%\index{\#pile@\protect{\tt \#pile}}
+\index{pile@\protect{\tt \#pile}}
+%%\index{\#endpile@\protect{\tt \#endpile}}
+\index{endpile@\protect{\tt \#endpile}}
+\item
+\verb'#library' {\it identifier\/} \verb'"'{\it file-name\/}\verb'"'
+\\
+This links an entry in the file system to an identifier in the
+source program.  
+The identifier is treated as a defined constant with a domain value
+in the file scope.
+A specified sequence of directories is searched for the named library file.
+See ``\verb"#libraryDir"''.
+%%\index{\#library@\protect{\tt \#library}}
+\index{library@\protect{\tt \#library}}
+%
+\item
+\verb'#includeDir' \verb'"'{\it directory-name\/}\verb'"'
+\\
+\verb'#libraryDir' \verb'"'{\it directory-name\/}\verb'"'
+\\
+The given directory is prepended to a sequence of directories to be searched
+for include files or libraries, respectively.
+The sequences are initialised to platform-specific sets, which may be
+augmented by environment variables or command line arguments.
+%%\index{\#libraryDir@\protect{\tt \#libraryDir}}
+\index{libraryDir@\protect{\tt \#libraryDir}}
+%
+\item
+\verb'#int' {\it options}
+\\
+This command controls the behaviour of the compiler when used 
+interactively. See \secref{asugInteractSyscmds} for a complete
+description of available options.
+%%\index{\#int@\protect{\tt \#int}}
+\index{int@\protect{\tt \#int}}
+\item
+\verb'#quit'
+\\
+The \verb'quit' command causes the language processor to abandon the
+program. If \asharp{} is running in interactive mode (\option{-g
+loop}), then this command causes the termination of the interactive session.
+%%\index{\#quit@\protect{\tt \#quit}}
+\index{quit@\protect{\tt \#quit}}
+\end{itemize}
+
+\vbox{
+\widesection{Lexical structure}
+\vspace{-3mm}
+\subsection{Characters}%
+The \Term{standard \asharp{} character set} contains the
+following 97 characters:
+\begin{itemize}
+\item the blank, tab and newline characters
+\item the Roman letters: \verb'a-z A-Z'
+\item the digits: \verb'0-9'
+\item and the following special characters:
+\\
+\begin{tabular}{llll}
+\verb'('  & left parenthesis   & \verb')' & right parenthesis  \\
+\verb'['  & left bracket       & \verb']' & right bracket      \\
+\verb'{'  & left brace         & \verb'}' & right brace        \\
+\verb'<'  & less than          & \verb'>' & greater than       \\
+\verb','  & comma              & \verb'.' & period             \\
+\verb';'  & semicolon          & \verb':' & colon              \\
+\verb'?'  & question mark      & \verb'!' & exclamation mark   \\
+\verb'='  & equals             & \verb'_' & underscore         \\
+\verb'+'  & plus               & \verb'-' & minus (hypen)      \\
+\verb'&'  & ampersand          & \verb'*' & asterisk           \\
+\verb'/'  & slash              & \verb'\' & back-slash         \\
+\verb"'"  & apostrophe (quote) & \verb'`' & grave (back-quote) \\
+\verb'"'  & double quote       & \verb'|' & vertical bar       \\
+\verb'^'  & circumflex         & \verb'~' & tilde              \\
+\verb'@'  & commercial at      & \verb'#' & sharp              \\
+\verb'$'  & dollar             & \verb'%' & percent
+\end{tabular}
+\end{itemize}
+Other characters may appear in source programs, but only in comments and
+string-style literals.
+Blank, tab and newline are called \Term{white space} characters.
+All the special characters except quote, grave and ampersand are required for
+use in tokens.  Grave and ampersand are reserved for future use.
+
+\subsection{The escape character}%
+Underscore is used as an ``escape'' character, which alters the meaning
+of the following text.  The nature of the change depends on the context
+in which the underscore appears.  
+
+An escaped underscore is not an escape character.
+
+An escape character followed by one or more white space characters
+causes the white space to be ignored.
+%\footnote{It is planned that it will also cause comments to be ignored.}
+The remainder of this section assumes that escaped white space has been
+removed from the source.
+}
+
+\head{subsection}{Tokens}{asugFLangLexTokens}%
+The sequence of source characters is partitioned into \Term{tokens}.
+The longest possible match is always used.
+
+The tokens are classified as follows:
+\begin{itemize}
+%
+\item the following language-defined \Term{keywords}:
+\begin{verbatim}
+add      and       always    assert    break
+but      catch     default   define    delay
+do       else      except    export    extend
+fix      for       fluid     free      from
+generate goto      has       if        import
+in       inline    is        isnt      iterate
+let      local     macro     never     not
+of       or        pretend   ref       repeat
+return   rule      select    then      throw
+to       try       where     while     with
+yield
+
+.   ,    ;    :    ::   :*   $    @
+|   =>   +->  :=   ==   ==>  '
+[   ]    {    }    (    )
+\end{verbatim}
+The characters in a keyword cannot be escaped.
+That is, if a character is escaped, the token is not 
+treated as a keyword.
+%
+\item the following are not defined by the language
+but are \Term{reserved words} for future use:
+\begin{verbatim}
+delay    fix       is        isnt       let       rule
+
+(|  |)   [|  |]    {|  |}    `    &    ||
+\end{verbatim}
+%
+\item the following set of definable \Term{operators}:
+\begin{verbatim}
+by      case     mod      quo      rem
+
+#        +       -        +-       ~        ^
+*        **      ..       =        ~=       ^=   
+/  \     /\  \/  <   >    <=  >=   <<  >>   <-   ->   
+\end{verbatim}
+The characters in an operator cannot be escaped.
+%
+\item \Term{identifiers}:
+\\
+\verb'0'
+\\
+\verb'1'
+\\
+\verb'[%a-zA-Z][%?!a-zA-Z0-9]*'
+\\
+Any non-white space standard character may be included in an identifer
+by escaping it.  
+Thus ``\verb"a"'', ``\verb"_*"'', ``\verb"a_*"'' and ``\verb"_if"''
+are all identifiers.
+The escape character is not part of the identifier so ``\verb"ab"''
+``\verb"_a_b"'' represent the same identifier.
+Identifiers are the only tokens for which the leading character may be
+escaped.
+%\item \Term{pattern variables}:
+%\\
+%\verb'?[%?!a-zA-Z0-9]*'
+%
+\item \Term{string-style literals}:
+\\
+\verb=`"'[^"]*`"'=
+\\
+An underscore or double quote may be included in a string-style literal
+by escaping it.
+%
+\item \Term{integer-style literals}:
+\\
+\verb=[2-9]=
+\\
+\verb=[0-9][0-9]+=
+\\
+\verb=[0-9]+`r'[0-9A-Z]+=
+\\
+Escape characters are ignored in integer-style literals and so may be used
+to group digits.
+\item \Term{floating point-style literals}:
+\\
+\verb=[0-9]*`.'[0-9]+{[eE]{[+-]}[0-9]+}=
+\\
+\verb=[0-9]+`.'[0-9]*{[eE]{[+-]}[0-9]+}=
+\\
+\verb=[0-9]+[eE]{[+-]}[0-9]+=
+\\
+\verb=[0-9]+`r'[0-9A-Z]*`.'[0-9A-Z]+{e{[+-]}[0-9]+}=
+\\
+\verb=[0-9]+`r'[0-9A-Z]+`.'[0-9A-Z]*{e{[+-]}[0-9]+}=
+\\
+\verb=[0-9]+`r'[0-9A-Z]+`e'{[+-]}[0-9]+=
+\\
+Escape characters are ignored in floating point-style literals
+and so may be used to group digits.
+
+Certain lexical contexts restrict the form of floats allowed.
+This distinguishes cases such as \verb'sin 1.2' {\it vs} \verb'm.1.2'.
+A floating point literal may not
+\begin{itemize}
+\item 
+begin with ``\verb"."'', unless the preceding token is a keyword
+other than ``\verb")"'', ``\verb"|)"'', ``\verb"]"'' or ``\verb"}"'',
+\item
+contain ``\verb"."'', if the preceding token is ``\verb"."'',
+\item
+end with ``\verb"."'', if the following character is ``\verb"."''.
+\end{itemize}
+%
+\item \Term{comments}:
+\\
+The two characters ``\verb'--''' and all characters up to the end of the line.
+Underscores are not treated as escape characters in comments.
+%
+\item \Term{documentation}: 
+\\
+The two characters ``\verb'++''' and all characters up to the end of the line.
+Underscores are not treated as escape characters in documentation.
+%
+\item \Term{leading white space}:
+\\
+a sequence of blanks or tabs at the beginning of a line.
+%
+\item \Term{embedded white space}:
+\\
+a sequence of blanks or tabs not at the beginning of a line.
+%
+\item \Term{newline}:
+\\
+a newline character.
+%
+\item \Term{layout markers}:
+\\
+{\it SETTAB}\verb"       "{\it BACKSET}\verb"        "{\it BACKTAB}
+\\
+These do not appear in a source program but may be used
+to represent a linearized from of the token sequence.
+\end{itemize}
+Comments and embedded white space are always ignored, except as used to 
+separate tokens.  
+For example, ``\verb"abc"'' is taken as one token but ``\verb"a b c"''
+is taken as three.
+
+\head{section}{Layout}{asugFLangLayout}
+Normally page layout is not significant in an \asharp{} program.
+Within a ``\verb"#pile"''/``\verb"#endpile"'' pair, however,
+indendation and newlines have meaning,
+and are used to group collections of lines.
+Source within such a pair is in a \Term{piling context}.
+
+Indentation sensitivity may be turned off by enclosing source
+in a ``\verb"{"''/``\verb"}"'' pair.
+Within braces all white space~--- leading, embedded, and newlines~---
+is ignored.
+This is a \Term{non-piling context}.
+Piling and non-piling contexts may be nested.
+
+The layout of a program in a piling context is understood by converting
+leading white space and newlines to special markers
+which are part of the language syntax.
+
+This conversion follows the \Term{linearization rules}:
+%\footnote{These rules are somewhat out of date and will be simplified.}
+\begin{itemize}
+\item Blank lines are ignored.
+\item Consecutive lines indented the same ammount form a pile.
+\item The pile is enclosed in a {\it SETTAB}-{\it BACKTAB} pair if
+  \begin{itemize}
+  \item the pile has more than one line, or
+  \item the pile has only one line and the last token of the line before the
+    pile is ``\verb"then"'', ``\verb"else"'', ``\verb"with"'' or ``\verb"add"''.
+  \end{itemize}
+\item The pile lines are joined to form a single line.
+ A {\it BACKSET} inserted between adjacent pair of lines, unless
+  \begin{itemize}
+  \item the first contains only comments or documentation, or
+  \item the first ends with ``\verb"("'', ``\verb"["'',
+     ``\verb"{"'' or ``\verb","'', or
+  \item the second begins with ``\verb"in"'', ``\verb"then"'',
+     ``\verb"else"'', ``\verb")"'', ``\verb"]"'' or ``\verb"}"''.
+  \end{itemize}
+\item A line is joined to the previous line if it is indented with
+  respect to it, forming a new single line.
+\end{itemize}
+These rules are applied from the most indented lines back out to the least
+indented lines.
+
+\clearpage
+\section{Grammar}%
+
+This section presents the grammar used by the \asharp{} compiler.
+After expanding parameterized rules, this grammar is conflict-free and LALR(1).
+
+\input{grammar}

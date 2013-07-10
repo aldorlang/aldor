@@ -1,0 +1,117 @@
+QUICK DEVELOPPER REFERENCE GUIDE
+--------------------------------
+
+PRELIMINARY REMARK
+------------------
+
+(1) I am mainly interesting in building, modifying and running
+    the libraries for myself
+(2) I want my aldor source tree to be $HOME/aldor
+
+
+I  Building everything from the sources
+-------------------------------------
+
+(1) Modify Makefile.globals to have ALDOR_PROJECT set 
+    to a convenience place. For me, this
+    
+ALDOR_PROJECT=$(HOME)
+
+(2) Modify Makefile.globals to have
+
+GENERIC_DIR=$(ALDOR_SRC)/install/aldor_generic
+
+This last redefinition will make your entire aldor tree
+(sources and builds) to be under ALDOR_SRC.
+This will prevent you from catastrophes ....
+
+(3) Make sure your env does contain any variables
+
+ALDORROOT, LIBAXLLIBROOT, ALDORLIBROOT, LIBALDORROOT, ALGEBRAROOT
+
+(3) Type `make aldorcompiler'
+
+(4) Type 'make generic'
+
+(5) Let GENERIC_DIR be pointing to the install/aldor_generic directory
+
+    Type `cd $GENERIC_DIR'
+
+    Type `make objects'
+
+    Type `make install'
+
+    Type `make clean'
+
+    All the library archives are now in install/aldor/linux/1.0.3/lib/
+
+(6) Now set the following env. variables
+
+    export ALDORROOT=$HOME/aldor/install/aldor/linux/1.0.3/
+    export PATH=$ALDORROOT/bin:$PATH
+    export ALGEBRAROOT=$HOME/aldor/lib/algebra
+
+(7) cd $ALGEBRAROOT/lib
+
+    ln -s $ALDORROOT/lib/libalgebra-gmp.al
+    ln -s $ALDORROOT/lib/libalgebra-gmp.a
+    ln -s $ALDORROOT/lib/libalgebradbg.al
+    ln -s $ALDORROOT/lib/libalgebradbg.a
+    ln -s $ALDORROOT/lib/libalgebrad.al
+    ln -s $ALDORROOT/lib/libalgebrad.a
+    ln -s $ALDORROOT/lib/libalgebra.al
+    ln -s $ALDORROOT/lib/libalgebra.a
+
+II Modifying a library
+----------------------
+
+Consider the case of libalgebra
+
+(8) cd $ALGEBRAROOT/src
+    make release 
+
+
+III Building the documentation
+------------------------------
+
+(1) Set up the environment variables  ALDORLIBROOT and ALGEBRAROOT
+
+    In my case
+
+    export ALDORLIBROOT=$HOME/aldor/lib/aldor
+    export ALGEBRAROOT=$HOME/aldor/lib/algebra
+
+(2) Type `docpdf'
+
+
+IV Running the tests
+---------------------
+
+(1) Follow steps (1) to (6) from Section I
+
+(2) Set up the environment variables  ALDORLIBROOT 
+
+    In my case
+
+    export ALDORLIBROOT=$HOME/aldor/lib/aldor
+
+(3) Type `cd $ALDORLIBROOT'
+
+	`make runtest'
+
+(4) Type `cd $ALGEBRAROOT'
+
+	`make  testfiles'
+
+	`make runtest'
+
+
+V Buiding the distribution
+--------------------------
+
+(1) Follow steps (1) to (5) from Section I
+
+
+(2) Type `cd $GENERIC_DIR'
+
+    Type `make distrib'

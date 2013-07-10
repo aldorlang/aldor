@@ -1,0 +1,68 @@
+##############################################################################
+#
+# Makefile
+#
+# Make program to compile the Frisco runtime 
+#
+# Copyright (c) 1990-2007 Aldor Software Organization Ltd (Aldor.org).
+#
+#
+##############################################################################
+#
+# Targets: all, junk, clean, quick
+#
+#    make all	-- make the runtime files for the Aldor compiler
+#    make junk	-- list files which are not part of the Aldor compiler
+#    make clean -- remove generated files  (e.g. foo.c~)
+#
+
+MAKE = nmake PATH="$(PATH)" /f NMakefile /nologo /x -
+
+SHELL	= /bin/sh
+PWD = $(MAKEDIR)
+
+OKFILES	= Makefile foam cmm BigInt posso
+
+all: foamdir BigIntDir cmmdir
+
+clean::
+	@ del /q *~
+
+junk::	
+	@ ls -d $(OKFILES) * | sort | grep -v CVS | uniq -u
+
+foamdir: 
+	cd $(PWD)\foam 
+    $(MAKE) all
+clean::
+	cd $(PWD)\foam 
+    $(MAKE) clean
+junk::
+	cd $(PWD)\foam 
+    $(MAKE) junk
+
+
+BigIntDir: 
+	cd $(PWD)\BigInt 
+    $(MAKE) all
+clean::
+	cd $(PWD)\BigInt 
+    $(MAKE) clean
+junk::
+	cd $(PWD)\BigInt 
+    $(MAKE) junk
+
+
+cmmdir: 
+	cd $(PWD)\cmm 
+    $(MAKE) all
+clean::
+	cd $(PWD)\cmm 
+    $(MAKE) clean
+junk::
+	cd $(PWD)\cmm 
+    $(MAKE) junk
+samples::
+	cd $(PWD)\cmm 
+    $(MAKE) samples
+

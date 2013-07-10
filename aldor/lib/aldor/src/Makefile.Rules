@@ -1,0 +1,49 @@
+MSGFLAGS = -Mno-mactext -M2
+AFLAGS=  -fao $(MSGFLAGS) -Y $(LibDir) -I $(IncDir)
+AOFLAGS=$(AFLAGS) -q5 -qinline-all
+AODFLAGS=$(AFLAGS) -q1 -dDEBUG
+ARREPLFLAGS  = rv
+
+# Implicit rule for building .test.as files
+${TestDir}/%.test.as: %.as
+	@(echo Extracting test from $*.as ... ;		\
+	  extract -mALDORTEST -o$*.test $*.as;		\
+	  if [ -f '$*.test' ] ; then	\
+		mv $*.test ${TestDir}/$*.test.as;	\
+	  else				\
+		false;				\
+	  fi)
+
+# Implicit rule for building .tex files
+${DocDir}/%.tex: %.as
+	@(echo Extracting doc from $*.as ... ;		\
+	  extract -mALDOC $*.as;		\
+	  if [ -f '$*.tex' ] ; then	\
+		mv $*.tex ${DocDir};	\
+	  else				\
+		false;				\
+	  fi)
+
+# Implicit rule for building .al file
+${ALDORLIB}(%.ao): %.as
+	@(here=`pwd`; 				\
+          cd `dirname ${ALDORLIB}`;			\
+	  echo Compiling $*.as ... ;		\
+	  $(ALDOR) $$here/$*.as;	\
+	  if [ -f '$*.ao' ] ; then 		\
+		${AR} $(ARREPLFLAGS) ${ALDORLIB} $*.ao;	\
+		rm -rf $*.ao;			\
+	        rm -rf /tmp/vAAA*;             \
+	  else					\
+		false;				\
+	  fi)
+
+# Generic rules
+def.rule:
+	@echo "type [g]make release to make libaldor.al (release)"
+	@echo "type [g]make debug to make libaldord.al (debug)"
+	@echo "type [g]make doc to make the reference manual"
+	@echo "type [g]make test to make the tests"
+	@echo "type [g]make extract to make the extract executable"
+	@echo "type [g]make aldoc2html to make the aldoc2html executable"
+

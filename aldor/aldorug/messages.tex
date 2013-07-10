@@ -1,0 +1,100 @@
+% *********************************************************************
+\head{chapter}{Compiler messages}{asugMessages}
+% *********************************************************************
+%
+\vspace{1mm}
+This chapter lists the messages produced by the
+\index{error messages!list of}
+\asharp{} compiler.
+Each message has a {\em name} and an associated {\em text}.
+For example, one message has the name ``{\tt ALDOR\_E\_TinOpMeans}''
+and the associated text ``{\tt Operator has \%d possible types.}''
+
+\vspace{1mm}
+The name of this message has four parts:
+
+\vspace{1mm}
+%\begin{tabbing}
+%{\tt OpMeans}~~\=\kill
+%{\tt ALDOR}      \> indicates this message is for the \asharp{} compiler, \\
+%{\tt E}       \> indicates this is an {\em error\/} message, \\
+%{\tt Tin}     \> indicates the message arises in type inference, \\
+%{\tt OpMeans} \> identifies the particular message.
+%\end{tabbing}
+\begin{tabular}{@{}ll@{}}   % @{} kills default whitespace
+{\tt ALDOR}      & indicates this message is for the \asharp{} compiler, \\
+{\tt E}       & indicates this is an {\em error\/} message, \\
+{\tt Tin}     & indicates the message arises in type inference, \\
+{\tt OpMeans} & identifies the particular message.
+\end{tabular}
+
+\vspace{1mm}
+A number of letters may occur in the place of ``{\tt E}'' above.
+The letters and their meanings are:
+%\begin{tabbing}
+%{\tt M}~~\=\kill
+%{\tt F}\> fatal errors --- compiler stops \\
+%{\tt E}\> soft errors  --- compiler keeps going \\
+%{\tt W}\> warnings \\
+%{\tt R}\> remarks \\
+%\ \\
+%{\tt H}\> help \\
+%{\tt M}\> interactive loop messages \\
+%{\tt N}\> notes --- cross references to other source lines \\
+%{\tt D}\> details for another message\\
+%{\tt P}\> punctuation \\
+%{\tt X}\> continuation, when a message is given in parts \\
+%\end{tabbing}
+
+\vspace{1mm}
+\begin{tabular}{@{}ll@{}}
+{\tt F}& fatal errors --- compiler stops \\
+{\tt E}& soft errors  --- compiler keeps going \\
+{\tt W}& warnings \\
+{\tt R}& remarks \\
+\quad \\
+{\tt H}& help \\
+{\tt M}& interactive loop messages \\
+{\tt N}& notes --- cross references to other source lines \\
+{\tt D}& details for another message\\
+{\tt P}& punctuation 
+\end{tabular}
+
+\vspace{1mm}
+The name  can be used to enable or disable the display of a specific
+warning or a remark.  
+See \spadref{asugErrorsSelect} for details.
+
+%\pagebreak
+We show below the name and the text of most of the compiler messages.
+The only messages we have omitted are those which give the command
+line help:
+\begin{center}
+\begin{tabular}{@{}ll}
+{\tt ALDOR\_H\_HelpCmd}            & {\tt ALDOR\_H\_HelpFileTypes} \\
+{\tt ALDOR\_H\_HelpOptionSummary}  & {\tt ALDOR\_H\_HelpHelpOpt}   \\
+{\tt ALDOR\_H\_HelpArgOpt}         & {\tt ALDOR\_H\_HelpDirOpt}	   \\
+{\tt ALDOR\_H\_HelpFileOpt}        & {\tt ALDOR\_H\_HelpGoOpt}	   \\
+{\tt ALDOR\_H\_HelpOptimOpt}       & {\tt ALDOR\_H\_HelpDebugOpt}  \\
+{\tt ALDOR\_H\_HelpCOpt}       	   & {\tt ALDOR\_H\_HelpLispOpt}   \\
+{\tt ALDOR\_H\_HelpMsgOpt}         & {\tt ALDOR\_H\_HelpDevOpt}	   \\
+{\tt ALDOR\_H\_HelpMenuPointer}
+\end{tabular}
+\end{center}
+This information is given in \chapref{asugOptions}.
+
+Within the text of the messages,
+items such as ``{\tt \%s}'' and ``{\tt \%d}'' have strings and
+numbers substituted into them before the message is actually used.
+For example, the message with the text
+``{\tt Operator has \%d possible types.}''
+might appear as
+``{\tt Operator has 4 possible types.}''
+when it is actually displayed in a given context.
+
+
+\hbadness=10001 \vbadness=10001
+\def\errmsg#1#2{\begin{tabular}{@{}p{48mm}p{68mm}@{}}\raggedright\small\tt
+#1&\raggedright{}\small#2\end{tabular}\hfill\newline}
+
+\input{msghelp.tex}

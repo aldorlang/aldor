@@ -1,0 +1,112 @@
+
+(|Sequence|
+   (|Import| NIL |AxiomLib|)
+   (|Export|
+      (|Declare|
+         |IndexedDirectProductAbelianGroup|
+         (|Apply|
+            |->|
+            (|Comma|
+               (|Declare| |#1| |AbelianGroup|)
+               (|Declare| |#2| |OrderedSet|))
+            (|With|
+               NIL
+               (|Sequence|
+                  |AbelianGroup|
+                  (|Apply| |IndexedDirectProductCategory| |#1| |#2|)))) )
+      NIL
+      NIL)
+   (|Export|
+      (|Declare|
+         |IndexedDirectProductOrderedAbelianMonoidSup|
+         (|Apply|
+            |->|
+            (|Comma|
+               (|Declare| |#1| |OrderedAbelianMonoidSup|)
+               (|Declare| |#2| |OrderedSet|))
+            (|With|
+               NIL
+               (|Sequence|
+                  |OrderedAbelianMonoidSup|
+                  (|Apply| |IndexedDirectProductCategory| |#1| |#2|)))) )
+      NIL
+      NIL)
+   (|Export|
+      (|Declare|
+         |IndexedDirectProductOrderedAbelianMonoid|
+         (|Apply|
+            |->|
+            (|Comma|
+               (|Declare| |#1| |OrderedAbelianMonoid|)
+               (|Declare| |#2| |OrderedSet|))
+            (|With|
+               NIL
+               (|Sequence|
+                  |OrderedAbelianMonoid|
+                  (|Apply| |IndexedDirectProductCategory| |#1| |#2|)))) )
+      NIL
+      NIL)
+   (|Export|
+      (|Declare|
+         |IndexedDirectProductAbelianMonoid|
+         (|Apply|
+            |->|
+            (|Comma|
+               (|Declare| |#1| |AbelianMonoid|)
+               (|Declare| |#2| |OrderedSet|))
+            (|With|
+               NIL
+               (|Sequence|
+                  |AbelianMonoid|
+                  (|Apply| |IndexedDirectProductCategory| |#1| |#2|)))) )
+      NIL
+      NIL)
+   (|Export|
+      (|Declare|
+         |IndexedDirectProductObject|
+         (|Apply|
+            |->|
+            (|Comma|
+               (|Declare| |#1| |SetCategory|)
+               (|Declare| |#2| |OrderedSet|))
+            (|Apply| |IndexedDirectProductCategory| |#1| |#2|)))
+      NIL
+      NIL)
+   (|Define|
+      (|Declare|
+         |IndexedDirectProductCategory|
+         (|Apply|
+            |->|
+            (|Comma|
+               (|Declare| |#1| |SetCategory|)
+               (|Declare| |#2| |OrderedSet|))
+            |Category|))
+      (|Lambda|
+         (|Comma|
+            (|Declare| |#1| |SetCategory|)
+            (|Declare| |#2| |OrderedSet|))
+         |Category|
+         (|Label|
+            |IndexedDirectProductCategory|
+            (|With|
+               NIL
+               (|Sequence|
+                  |SetCategory|
+                  (|Declare|
+                     |map|
+                     (|Apply|
+                        |->|
+                        (|Comma| (|Apply| |->| (|Comma| |#1|) |#1|) |%|)
+                        |%|))
+                  (|Declare|
+                     |monomial|
+                     (|Apply| |->| (|Comma| |#1| |#2|) |%|))
+                  (|Declare|
+                     |leadingCoefficient|
+                     (|Apply| |->| (|Comma| |%|) |#1|))
+                  (|Declare|
+                     |leadingSupport|
+                     (|Apply| |->| (|Comma| |%|) |#2|))
+                  (|Declare|
+                     |reductum|
+                     (|Apply| |->| (|Comma| |%|) |%|)))) ))) )

@@ -1,0 +1,71 @@
+#!/bin/sh
+#
+# krcc first converts an ANSI source file to K+R C, then compiles.
+# The argument is the C compiler command line, e.g.,
+# 
+# krcc cc -DNDEBUG -c foo.c
+#
+
+if [ "$1" = "-va" ] ; then
+	oargs="$1 $2"
+	shift; shift
+else
+	oargs=""
+fi
+
+cc=$1; shift
+
+# File arguments
+fargs=""
+
+# Pre-processor arguments
+pargs=""
+
+# Other cc arguments
+xargs=""
+
+for a in "$@" 
+do
+	case $a in
+	*.c)			fargs="$fargs $a" ;;
+	-D* | -U* | -I*)	pargs="$pargs $a" ;;
+	*)			xargs="$xargs $a" ;;
+	esac
+done
+
+if [ "$fargs" = "" ] ; then
+	$cc $*
+	exit $?
+else
+	for a in "$fargs"
+	do
+		efile=`basename $a     .c`-cpp.c
+		ifile=`basename $a     .c`-kr.c
+		tfile=`basename $ifile .c`.o
+		ofile=`basename $a     .c`.o
+
+		$cc -E $pargs $a > $efile
+		if [ "$?" != 0 ]; then
+			echo "C pre-processor failed on file $a."
+			rm -f $efile
+			exit 3
+		fi
+		oldc $oargs < $efile > $ifile
+		if [ "$?" != 0 ]; then
+			echo "Conversion to K+R C failed."
+			echo "Files $efile and $ifile not deleted."
+			exit 3
+		fi
+
+		$cc $pargs $xargs $ifile
+		if [ "$?" != 0 ]; then
+			echo "C compiler failed on generated K+R file."
+			echo "File $ifile not deleted."
+			rm -f $tfile
+			exit 3
+		fi
+		# if we didn't pass -c, then we made an executable...
+		if [ -f $tfile ] ; then mv $tfile $ofile ; fi
+		rm $efile $ifile
+	done
+fi

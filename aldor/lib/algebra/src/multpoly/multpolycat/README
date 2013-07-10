@@ -1,0 +1,89 @@
+-------------------------------------------
+--% ALGEBRA/src/multpoly/README %--
+-------------------------------------------
+
+o {sm_polring0, sm_polring}.as
+  -> Adaptation of BasicMath/src/polycat/polring.as
+  -> The following operations have been removed but should be elsewehere 
+        + : (%, R) -> %;  
+        ++ `p+r' returns the same as `p + r::%'.
+      + : (R, %) -> %;  
+        ++ `r+p' returns the same as `r::% + p'.
+      - : (%, R) -> %;  
+        ++ `p+r' returns the same as `p + r::%'.
+      - : (R, %) -> %;  
+        ++ `r+p' returns the same as `r::% + p'.
+      add!: (%, R) -> %;  
+          ++ `add!(p,r)' returns `p+r' and may modify the value 
+          ++ of `p'.
+        --------------------------------------
+        --% SHOULD ONLY appear in sup.as   %--
+        --------------------------------------
+           (p:%) + (r:R): % == p + r::%;
+           (r:R) + (p:%): % == p + r::%;
+           (p:%) - (r:R): % == p + (-r);
+           (r:R) - (p:%): % == -p + r;
+           add!(p:%,r:R): % == p + r::%;
+
+	degree: (%, List V) -> List NonNegativeInteger;
+	  ++ `degree(p, lv)' returns the list of degrees of the 
+	  ++ polynomial `p' with respect to the variables in the list `lv'.
+	totalDegree: (%, List V) -> NonNegativeInteger;
+	  ++ `totalDegree(p, lv)' returns the largest sum over all monomials
+	  ++ of the exponents of the variables in `lv'.
+
+           degree(p:%, lv: List(V)): List NNI == {
+              [degree(p,v) for v in lv];
+           }
+
+   -> The following operations HAVE BEEN REMOVED because they do
+      make clear sense anymore in this category.
+        leadingMonomial: % -> %;
+        ++ `leadingMonomial(p)' returns the leading monomial of `p'.
+
+  -> The following operations should BE DECLARED in a HIGHER CATEGORY.
+        ground?: % -> Boolean; --% ground? WILL BE PROVIDED BY FreeModule %--
+
+  -> The SIGNATURES and/or SPECS of the following operations HAVE CHANGED
+        mainVariable : % -> V;  --% WAS mainVariable : % -> Partial(V); %--
+        combine: % -> Generator Cross(%,NonNegativeInteger); -- WAS  (NNI, %)
+          ++ `combine(p)' generates only the couple `(0,p)' if
+          ++ `ground?(p)' holds otherwise generates `(n,an)...(m,am)' 
+          ++ such that `p' writes `an*v^n+...+am*v^m' as a univariate
+          ++ polynomial in its main variable `v'. Couples in the output 
+          ++ are sorted by (strictly) increasing degree w.r.t. `v'.
+        combine: (%,V) -> Generator Cross(%,NonNegativeInteger); - WAS  (NNI, %)
+          ++ `combine(p,v)' generates only the couple `(0,p)' if
+          ++ `ground?(p)' holds otherwise generates `(n,an)...(m,am)' 
+          ++ such that `p' writes `an*v^n+...+am*v^m' as a univariate
+          ++ polynomial in the variable `v'. Couples in the output 
+          ++ are sorted by (strictly) increasing degree w.r.t. `v'.
+
+  -> The following operations DO NOT HAVE DEFAULT and are DOMAINS RESPONSABILITY.
+
+        ground?: % -> Boolean;           ++
+        coerce : V -> %;                 ++
+        variable? : % -> Boolean;        ++
+        variable : % -> V;               ++
+        variables: % -> List V;
+        mainVariable : % -> V;
+        term: (R, V, NonNegativeInteger) -> %;
+
+  -> The following operations DO NOT HAVE DEFAULT and are SUBCATEGORIES OR DOMAINS RESPONSABILITY.
+        leadingCoefficient: (%, V) -> %;
+        degree: (%, V) -> NonNegativeInteger;
+        reductum: (%, V) -> %;
+        coefficient: (%, V, NonNegativeInteger) -> %;
+        differentiate: (%, V) -> %;
+	monicDivide: (%, %, V) -> (%, %);
+
+  -> The following operations HAVE DEFAULT in polring0.as
+        univariate?: % -> Boolean;
+        degrees: % -> Generator(Cross(V, NonNegativeInteger));
+        totalDegree: % -> NonNegativeInteger; !!!!!!!!! REIMPLEMENTED. NEEDS TESTING !!!!!!!!!!
+        coefficient: (%, List(V), List(NonNegativeInteger)) -> %;
+        term: (R, List V, List NonNegativeInteger) -> %;
+        term: (R, Generator(Cross(V, NonNegativeInteger))) -> %;
+        differentiate: (%, V, NonNegativeInteger) -> %;
+	differentiate: (%, List V) -> %;
+	differentiate: (%, List V, List NonNegativeInteger) -> %;

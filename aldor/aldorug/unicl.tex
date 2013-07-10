@@ -1,0 +1,280 @@
+% *********************************************************************
+\head{chapter}{The \uniclcmd{} driver}{asugUnicl}
+%
+%*********************************************************************
+
+\index{unicl!{\em see \chapref{asugUnicl}}}
+\newcommand{\uoption}[1]{{\tt #1}}
+
+
+The \uniclcmd{} program, which is supplied in the distribution and
+can be found in {\tt \$ALDORROOT/bin}, is a configurable driver for 
+the C compiler and linker. It is used whenever the \asharpcmd{} options \uoption{-Fo} or 
+\uoption{-Fx} are specified.
+
+The \asharpcmd{} option \uoption{-v} can be used to show how \uniclcmd{}
+is invoked and how it calls the underlying C compiler. Invoking \uniclcmd{}
+on its own will display some useful information about the options it understands.
+These include some options commonly found in C compilers such as 
+\begin{itemize}
+\item [\uoption{-O} :] Optimize.
+\item [\uoption{-c} :] Compile only, do not link.
+\item [\uoption{-g} :] Include debug information in generated objects.
+\item [\uoption{-o \meta{name}} :] Name the executable.
+\item [\uoption{-p} :] Include profiling code.
+\item [\uoption{-D \meta{def}} :] Define a macro.
+\item [\uoption{-U \meta{undef}} :] Undefine a macro.
+\item [\uoption{-I \meta{dir}} :] Specify directory for included files.
+\item [\uoption{-L \meta{dir}} :] Specify directory for linked libraries.
+\item [\uoption{-l \meta{lib}} :] Specify libraries to link.
+\end{itemize}
+
+Additionally, \uniclcmd{} understands the following options
+
+\begin{itemize}
+\item [\uoption{-Wh} :] Show help information.
+\item [\uoption{-Wv} :] Be verbose.
+\item [\uoption{-Wv=\meta{n}} :] Set verbosity level (currently 0-4).
+\item [\uoption{-Wn} :] Do not execute generated commands.
+%NOT SUPPORTED \item \uoption{-R \meta{dir}} Specify directory for generated files.
+\end{itemize}
+
+An extra set of options act as flags for certain non-default \uniclcmd{} behaviour. These are
+\begin{itemize}
+\item [\uoption{-Wstdc} :] Use an ANSI C compiler. \\ This is passed  from \asharpcmd{}
+unless \asharpcmd{} \uoption{-Cold} is specified.
+\item [\uoption{-Wshared} :] Produce a shared object.
+\item [\uoption{-Wfortran} :] Link in FORTRAN code. \\ This is passed from \asharpcmd{}
+when \asharpcmd{} option \uoption{-Cfortran} is specified.
+\item [\uoption{-Wfnonstd} :] Enable non-standard (non-IEEE) floating point. \\ This is passed
+from \asharpcmd{} when \asharpcmd{} \uoption{-Q4} or \uoption{-Qcc-fnonstd} is specified.
+\end{itemize}
+
+The \uniclcmd{} program will also look for options in the {\tt UNICL} environment variable
+and will prepend them to the command line options if the variable exists.
+
+The \uniclcmd{} program itself does not have any knowledge about the underlying
+C compiler for each platform. All the necessary information is read by \uniclcmd{} from 
+an ASCII configuration file. By default, this file is searched for in 
+{\tt \$ALDORROOT/include/aldor.conf} but the 
+\begin{itemize}
+\item [\uoption{-Wconfig=\meta{file}} :] Specify location of configuration file.
+\end{itemize}
+
+option can be used to select an alternative. The configuration file consists of named sections
+introduced by an identifier enclosed in square brackets. Each section consists of assignments of the 
+form key=value. The options
+\begin{itemize}
+\item [\uoption{-Wsys=\meta{name}} :] Specify which section of the configuration file to use.
+\item [\uoption{-Wv=2} :] Show which section is being used.
+\end{itemize}
+
+set and show the section selected. When \asharpcmd{} calls \uniclcmd{} it automatically
+\footnote {Currently, it does this
+via the {\tt UNICL} environment variable so you need to give the \asharpcmd{} option
+\uoption{-Cargs=-Wv=3} to see that. The \uniclcmd{} option \uoption{-Wstdc} is also passed that way
+unless you specify \asharpcmd{} option \uoption{-Cold}.} 
+specifies the appropriate section of the configuration file. 
+The advantage of this method is that 
+all the details for every implementation of \asharpName{} can be kept in one place.
+It also means that the compiler user has complete control over the back end C compiler
+and linker. It is a simple matter, for instance to introduce a new section with a modified name, 
+populate it with some  variations on the original values and give the \asharpcmd{} option 
+\uoption{-Csys=newname}.
+
+%\newpage
+These are the meaningful keys in the configuration file.
+\renewcommand{\descriptionlabel}[1]%
+{\texttt{#1}}
+
+
+\begin{itemize}
+
+%# name
+\item The name of the program to call for compiling and linking
+\begin{description}
+\item    [cc-name :]  compiling only, non-ANSI C
+\item    [link-name :] linking, non-ANSI C 
+\item    [std-cc-name :] compiling only, ANSI C
+\item    [std-link-name :] linking, ANSI C
+\end{description}
+
+%# -g
+\item The flag to use when \uoption{-g} (debugging) is given 
+\begin{description}
+\item    [cc-debug :]  compiling only, non-ANSI C 
+\item    [link-debug :]  linking, non-ANSI C
+\item    [std-cc-debug :]  compiling only, ANSI C
+\item    [std-link-debug :] linking, ANSI C
+\end{description}
+
+%# -p 
+\item The flag to use when \uoption{-p} (profiling) is given 
+\begin{description}
+\item    [cc-profile :] compiling only, non-ANSI C
+\item    [link-profile :] linking, non-ANSI C
+\item    [std-cc-profile :] compiling only, ANSI C
+\item    [std-link-profile :] linking, ANSI C
+\end{description}
+
+%# -O 
+\item The flags to use when \uoption{-O} (optimise) is given (without the
+option \uoption{-Wfnonstd})
+\begin{description}
+\item    [cc-optimize :] compiling only, non-ANSI C
+\item    [link-optimize :] linking, non-ANSI C
+\item    [std-cc-optimize :] compiling only, ANSI C
+\item    [std-link-optimize :] linking, ANSI C
+\end{description}
+
+%# -Wfnonstd 
+\item The flags to use when \uoption{-O} and \uoption{-Wfnonstd}
+(non-IEEE optimisation) are given
+\begin{description}
+\item    [cc-non-std-float :] compiling only, non-ANSI C
+\item    [link-non-std-float :] linking, non-ANSI C
+\item    [std-cc-non-std-float :] compiling only, ANSI C
+\item    [std-link-non-std-float :] linking, ANSI C
+\end{description}
+
+%# -Wopts
+\item The flags to use in any case. These will appear before any specified files.
+\begin{description}
+\item    [cc-opts :] compiling only, non-ANSI C 
+\item    [link-opts :] linking, non-ANSI C
+\item    [std-cc-opts :] compiling only, ANSI C
+\item    [std-link-opts :] linking, ANSI C
+\end{description}
+
+%# -Wpost
+\item The flags to use in any case. These will appear at the end of the command.
+\begin{description}
+\item    [cc-post :] compiling only, non-ANSI C 
+\item    [link-post :] linking, non-ANSI C
+\item    [std-cc-post :] compiling only, ANSI C
+\item    [std-link-post :] linking, ANSI C
+\end{description}
+
+%# -Wtwixt
+\item The flags to use in any case. These will appear after filenames but before 
+any library specification only at the link step.
+\begin{description}
+\item    [link-twixt :]  linking, non-ANSI C
+\item    [std-link-twixt :] linking, ANSI C
+\end{description}
+
+%# -l 
+\item The flags to use when linking libraries.
+\begin{description}
+
+\item    [library :] The flag for linking libraries (commonly \uoption{-l}).
+\item    [library-sep :] Do we need a space between the flag and the name of the library (true/false).
+\item    [lib-extra :] A space delimited list of libraries to be linked. \\ Example: {\tt nsl socket}. 
+
+%# -L 
+\item    [libpath :] The flag for specifying library directories (commonly \uoption{-L}).
+\item    [libpath-sep :] Do we need a space between the flag and the name of the library directory (true/false).
+\item    [expand-libs :] Do we turn {\tt -llib} options into complete file arguments (true/false).
+\item    [lib-ext :] The file extension for libraries (commonly {\tt a}).
+\item    [lib-default-path :] A space delimited list of the directories to be searched for libraries. \\ 
+          Example: {\tt /usr/local/lib /usr/X11/lib}.
+\end{description}
+
+
+%# -I 
+\item The flags to use when specifying include file directories.
+\begin{description}
+\item    [include :] The flag for specifying include file directories (commonly \uoption{-I}).
+\item    [include-sep :] Do we need a space between the flag and the name of the include file directories (true/false).
+\item    [include-default-path :]  A space delimited list of directories to be searched for include files. \\
+         Examples: {\tt /usr/local/include /usr/X11/include}.
+\end{description}
+
+
+%# -D 
+\item The flags to use when defining or undefining macros.
+\begin{description}
+\item    [define :] The flag for defining a macro (commonly \uoption{-D}).
+\item    [define-sep :] Do we need a space between the flag and the name of the macro (true/false).
+
+%# -U 
+\item    [undefine :] The flag for undefining a macro (commonly \uoption{-U}).
+\item    [undefine-sep :] Do we need a space between the flag and the name of the macro (true/false).
+\end{description}
+
+%# -o 
+\item The flag to use when specifying name of linked executable.
+\begin{description}
+\item    [output-name :] The flag for specifying the name of the executable (commonly \uoption{-o}).
+\item    [output-name-sep :] Do we need a space between the flag and the name (true/false).
+\end{description}
+
+\item Miscellaneous keys
+\begin{description}
+%# -c 
+\item    [compile-only :] The flag that specifies compilation only (commonly \uoption{-c}).
+%# General things 
+\item    [debug-profile-ok :] Can we specify debugging and profiling at the same time (true/false).
+\item    [debug-optimize-ok :] Can we specify debugging and optimizing at the same time (true/false).
+\item    [fortran-libraries :] A string which will be passed verbatim to
+the linker  when \uoption{-Wfortran} is specified (see
+\secref{asugFortPlatform}).  For example: {\tt -lfort -lf77}
+\end{description}
+
+%# Aldor looks for these things
+\item Keys that \asharpcmd{} looks for
+\begin{description}
+\item    [generate-stdc :] Do we generate ANSI C (true/false).
+\item    [fortran-cmplx-fns :] The scheme to use when dealing with 
+         FORTRAN functions which return complex numbers. 
+         The possible values are {\tt string}, {\tt return-void}, 
+         {\tt return-struct}, and {\tt disallowed}.
+         See \secref{asugFortPlatform}.
+\item    [fortran-naming-scheme :] Which scheme to use when resolving external FORTRAN names.
+         The possible values are {\tt underscore} {\tt no-underscore} {\tt underscore-bug}.
+         See \secref{asugFortPlatform}.
+\end{description}
+\end{itemize}
+
+The special key {\tt inherit} takes as value a section name and directs \uniclcmd{}
+to look in the named section if a key is not found in the current one. The special character
+{\tt \$} prepended to a key name stands for the value of that key. You can introduce your own
+keys for convenience and refer to them using {\tt \$}. The following conditions are provided 
+\begin{itemize}
+\item  [{\tt compile}]     the program is compiling C  code (one of `link' and `compile' will be true)
+\item  [{\tt link}]        the program is linking its arguments to an executable
+\item  [{\tt stdc}]       \uoption{-Wstdc} was specified
+\item  [{\tt shared}]      \uoption{-Wshared} was specified
+\item  [{\tt optimize}]    \uoption{-O} was specified
+\item  [{\tt nonstdfloat}] \uoption{-Wnonstdfloat} was specified
+\item  [{\tt stdfloat}]    \uoption{-Wnonstdfloat} was not specified
+\item  [{\tt profile}]     \uoption{-p} was specified.
+\end{itemize}
+You can use the conditions when specifying values with this form:
+\begin{small}
+\begin{verbatim}
+{\tt \$?condition w1 w2 w3 : w4 ;}
+\end{verbatim}
+\end{small}
+meaning 'If condition is true then {\tt w1 w2 w3} else {\tt w4}'. Conditional 
+forms can be nested.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

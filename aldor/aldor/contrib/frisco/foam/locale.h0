@@ -1,0 +1,18 @@
+/*****************************************************************************
+ *
+ * locale.h0: Fixups for <locale.h>
+ *
+ * Copyright (c) 1990-2007 Aldor Software Organization Ltd (Aldor.org).
+ *
+ ****************************************************************************/
+
+#ifndef _LOCALE_H0_
+#define _LOCALE_H0_
+
+#ifndef CC_no_locale_h
+#  include <locale.h>
+#else
+  /* Not yet used.  */
+#endif  /* !CC_no_locale_h */
+
+#endif	/* !_LOCALE_H0_ */

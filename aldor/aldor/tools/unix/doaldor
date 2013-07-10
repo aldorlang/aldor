@@ -1,0 +1,87 @@
+#!/bin/sh
+#
+# doaldor $(FILE) $(LIB) [as/ax] $(AXLFLAGS)
+#
+# example:  doaldor lang axllib
+
+# Command line arguments
+# -l: Set library directory
+
+export PATH=$ALDORROOT/bin:$PATH
+
+# ${ALDORROOT} is retrieved from the environment
+LibDir="${ALDORROOT}/lib"
+
+if [ $# -gt 0 ] ; then
+    case "$1" in 
+	-l) LibDir=$2; shift; shift;;
+    *) ;;
+    esac
+
+fi
+
+FILE="$1"
+LIB="$2"
+shift
+shift
+
+TYPE="as"
+DOBJ="yes"
+
+if [ $# -gt 0 ] ; then
+	case "$1" in
+	as)	TYPE="as"  ; DOBJ="no" ; shift ;;
+	ax)	TYPE="ax" ; DOBJ="no" ; shift ;;
+	*)	;;
+	esac
+fi
+AXLFLAGS="$*"
+
+# Environment
+
+
+LAXL="${LibDir}/lib${LIB}.al"
+LOB="${LibDir}/lib${LIB}.a"
+
+ALDOR="aldor"
+if [ $MACHINE = "win32gcc" ]; then
+	ALDOR="aldor.sh";
+fi
+
+if [ "${DOBJ}" = "yes" ] ; then
+	AEFLAGS="-Q3 -Qinline-all -Fao -Fo ${AXLFLAGS}"
+else
+	AEFLAGS="-Q3 -Qinline-all -Fao ${AXLFLAGS}"
+fi
+AXLFLAGS="-R${LibDir} ${AEFLAGS} -M no-ALDOR_W_OverRideLibraryFile"
+
+AR="ar"
+ARFLAGS="rv"
+ARR="${AR} ${ARFLAGS}"
+TMPDIR=/tmp/doaldor.$$
+mkdir $TMPDIR
+export TMPDIR
+
+RM="rm -f"
+
+# Remove the ao file from the library, compile the file, update the libraries.
+
+echo "${ALDOR} ${AXLFLAGS} ${FILE}.${TYPE}"
+
+if ${ALDOR} ${AXLFLAGS} ${FILE}.${TYPE}
+then
+	cd ${LibDir}
+	FILEPREF=`echo ${FILE} | awk '{printf("%.5s", $0)}'`
+
+	${ARR} ${LAXL} ${FILE}.ao
+	if [ "${DOBJ}" = "yes" ] ; then
+		${ARR} ${LOB} ${FILEPREF}*.o
+	fi
+	${RM} ${FILE}.ao ${FILEPREF}*.o
+	rm -rf $TMPDIR
+else
+	status=$?
+	rm -rf $TMPDIR
+	exit $status # $? (martin@nag)
+fi
+

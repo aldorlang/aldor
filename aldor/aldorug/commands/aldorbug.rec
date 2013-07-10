@@ -1,0 +1,7 @@
+% aldorbug
+Priority (1=urgent,..,9=detail): 1
+Subject (brief description): Can't compile /etc/passwd file
+Name of file with detailed description (default none): 
+Source file demonstrating the bug: /etc/passwd
+Compiler version: v34.0 for AIX/ESA
+%

@@ -1,0 +1,285 @@
+% *********************************************************************
+\head{chapter}{Using \asharp{} with C}{asugUsingWithC}
+% *********************************************************************
+
+\thegeneraltwofile{p}{AtoCFigure}%
+{\asharp{} code using a C function.}{examples/arigato.as}{examples/nputs.c}
+\thegeneraltwofile{p}{CtoAFigure}%
+{C code using an \asharp{} function.}{examples/cside.c}{examples/aside.as}
+\index{C, interface with!{\em see \chapref{asugUsingWithC}}}
+
+Functions and data structures may be shared between programs written
+in \asharp{} and other languages.  Here we give simple examples
+of sharing functions in a mixed \asharp{} and C programming environment.
+
+\asharp{} has types corresponding to the primitive C types.
+These will be described in \secref{asugUsingWithCTypes}.
+
+\section{Using C code from \asharp{}}
+
+For the first example, we show how to call a C function from \asharp{}.
+The \asharp{} file \fname{arigato.as} refers to the function \ttin{nputs,}
+supplied by the C file \fname{nputs.c}.
+Figure \ref{AtoCFigure} shows these files.
+
+The commands to compile these two files and link them together,
+say on Unix, are:
+\shio{arigato}
+
+The first command produces the object file \fname{nputs.o}.
+The second command compiles the file \fname{arigato.as}
+and links it with our other file to form an executable program.
+Finally, the third command runs the resulting program.
+
+%\pagebreak
+The \asharp{} compiler can make use of C-generated object files,
+whether they are kept loose or packaged with others in a library archive.
+The \asharp{} file using the code or data from C must declare it with
+the statement 
+\ttin{import ... from Foreign C}: this is the purpose of this
+statement in \fname{arigato.as}.
+When a function is imported from C, a declaration is placed at the
+head of the generated C file. This declaration is constructed using
+the data correspondence below. 
+
+To call a C function or macro (such as {\tt fputc}) defined in a header file
+(such as \fname{<stdio.h>} or \fname{myfile.h}) an import of the following form should be used:
+\begin{verbatim}
+import { fputc: (MachineInteger, OutFile) -> MachineInteger }
+       from Foreign C "<stdio.h>";
+
+import { myfun: MachineInteger -> () }
+       from Foreign C "myfile.h";
+\end{verbatim}
+\keywordIndex{import}
+The filename indicates the file to include when generating C. No
+declaration for {\tt fputc} or {\tt myfun} is produced in the generated C
+--- it is assumed that all the imports are declared
+(or, in the case of macros, defined). 
+
+A ``\verb+#include+'' line is produced in the generated C
+for every foreign header file mentioned in
+the source code, even when no imported function is used.
+One use of this would be to allow
+some of the definitions in \fname{foam\_c.h} to be over-ridden. For
+example, one could replace the memory management primitives with
+operations specifically optimised for the current
+application\footnote{This is only useful in very unusual
+circumstances.}.
+
+%\pagebreak
+\section{Using \asharp{} code from C}
+
+
+For the second example, we show how to call an \asharp{} function from C.
+
+C code which uses \asharp{} functions should include the file
+\fname{foam\_c.h}.  This file contains the C type definitions
+which correspond to the various \asharp{} primitive types.
+For example, \ttin{FiSInt} is a {\tt typedef} for the C type corresponding
+to \ttin{MachineInteger}.
+On Unix, the full path name for this file is
+\fname{\$ALDORROOT/include/foam\_c.h}.
+\index{files!foam\_c.h}
+
+For this example, the C file \fname{cside.c} refers to the function \ttin{lcm,}
+supplied by the \asharp{} file \fname{aside.as}.
+These files are shown in figure \ref{CtoAFigure}.
+
+The commands to compile, link, and run these files are:
+\shio{cside}
+
+The first command compiles the \asharp{} code in the normal way
+to produce an object file.
+On Unix, this produces the object file \fname{aside.o}.
+
+Compiling the C code which uses \fname{aside.o}
+requires the use of a \option{-I} option to tell the compiler where
+\index{compiler options!I@\protect{-I}}
+to find \fname{foam\_c.h}.
+
+Additional options are needed to link an executable program:
+a \option{-L} option tells the C compiler where to look for libraries,
+and the \option{-l} options list the libraries which provide \asharp{}
+support functions.
+%\index{compiler options!l@\protect{-L}}
+
+The \option{-laldor} option provides a library with basic \asharp{} types
+such as floating point numbers, lists, file I/O, and so on.
+\index{compiler options!l@\protect{\tt -laldor}}
+\index{compiler options!l@\protect{\tt -lfoam}}
+
+The \option{-lfoam} option provides a library with run-time support for
+such things as memory management and  big integer arithmetic.
+Applications can supply their own run time support library instead, if desired
+%%The steps to do this will be described in Section \ref{asugReplacingFoam}
+%%but,
+(this involves providing alternative macro definitions to those
+in \fname{foam\_c.h} and a C file with whatever code is needed by the macros).
+
+The \option{-lm} option makes the standard C math library available.
+\index{compiler options!l@\protect{\tt -lm}} Because of
+the way \asharp{} compiles domains, this generally needs to be
+included even if no operations from the math library are used.
+
+In \fname{aside.as}, the line beginning \ttin{export to} tells the
+\keywordIndex{export}
+compiler that a wrapper function called {\tt lcm} should be generated
+for the \asharp{} function with the same name. This wrapper will
+convert the C calling convention into that used by
+\asharp{} using the rules in the next section. Currently it is
+possible to export only functions in this way (an \asharp{} constant
+can be wrapped in a function, and types have no particular use in C).
+
+\head{section}{Data correspondence}{asugUsingWithCTypes}
+%% FIXME: This section needs to understand packed arrays etc.
+
+This section describes the correspondence between the way data values are
+represented in \asharp{} and the way they are represented in C.
+It should be possible from this to understand which \asharp{}
+declaration will correspond to a declaration in C, and {\em vice versa\/}.
+
+\asharp{}'s abstract machine defines a number of types which
+correspond to types on the target machine (in this case C on top of
+some operating system). 
+The ``{\tt Machine}'' package, described in \spadref{asugLangTypesMachine},
+exports the types provided by the abstract machine.
+All \asharp{} values are represented internally as
+elements of one of these types. 
+The complete listing and definition of
+the types is given in the FOAM reference guide.  
+%% PI: are we giving this guide with A#? If not, we must give a reference.
+
+Because many \asharp{} domains can be parameterized over different
+types, \asharp{} uses a pointer-sized object when passing
+domains. Thus, double precision floating point numbers (which are
+typically bigger than pointers)  are ``boxed'',
+and a pointer to the box is passed, rather that the number
+itself. Types which are the same size or smaller than pointer-size are
+cast to the pointer type when used in a generic context and cast back
+as appropriate.
+
+In order to make the underlying types available, \asharp{} provides
+the \\ \ttin{Machine} package, which exports these types and operations
+on them. For example, the underlying representation type of {\tt
+DoubleFloat} is \\ {\tt DFlo\$Machine}\footnote{or equivalently {\tt
+BDFlo}, which is a macro defined in \fname{aldor.as}}. This type
+should be used when calling foreign functions, and the result coerced
+back to appropriate generic type at the \asharp{} level.
+
+Records in \asharp{} are represented by an aggregate type of some kind
+in the hosting language. For example, in Scheme a vector is used (and
+all objects are the same size anyway). In C, structures are used. When
+calling C-defined functions that use records it is important to ensure
+that the elements of the \asharp{} record correspond to elements in the
+C structure. This implies that records intended for use in Foreign
+functions should use the underlying types, rather than the user-level
+types\footnote{A brief perusal of the file
+\fname{\$ALDORROOT/samples/lib/libaldorX11} provides a rather extended example
+of this.}.
+
+The \asharp{} types correspond to C types which are
+given as {\tt typedef}s
+in the file \ttin{\$ALDORROOT/include/foam\_c.h}.  
+The following table shows the correspondance between the types
+exported from the \asharp{} package \ttin{Machine} and C:
+
+{\tt
+\begin{tabular}{lll}
+\asharp{} type &  C typedef &  Usual C type \\
+\hline \\
+ \verb+Nil$Machine+          &  \verb+FiNil+      &  \verb+Ptr+       \\
+ \verb+Word$Machine+         &  \verb+FiWord+     &  \verb+int+       \\
+ \verb+Arb$Machine+          &  \verb+FiArb+      &  \verb+long int+  \\
+ \verb+Ptr$Machine+          &  \verb+FiPtr+      &  \verb+Ptr+       \\
+ \verb+Bool$Machine+         &  \verb+FiBool+     &  \verb+char+      \\
+ \verb+Byte$Machine+         &  \verb+FiByte+     &  \verb+char+      \\
+ \verb+HInt$Machine+         &  \verb+FiHInt+     &  \verb+short+     \\
+ \verb+SInt$Machine+         &  \verb+FiSInt+     &  \verb+long+      \\
+ \verb+Char$Machine+         &  \verb+FiChar+     &  \verb+char+      \\
+ \verb+Arr$Machine+          &  \verb+FiArr+      &  \verb+Ptr+       \\
+ \verb+Rec$Machine+          &  \verb+FiRec+      &  \verb+Ptr+       \\
+ \verb+BInt$Machine+         &  \verb+FiBInt+     &  \verb+Ptr+       \\
+ \verb+SFlo$Machine+         &  \verb+FiSFlo+     &  \verb+float+     \\
+ \verb+DFlo$Machine+         &  \verb+FiDFlo+     &  \verb+double+    \\
+ {\em A\/} \verb"->" {\em B} &  \verb+FiClos+     &  \verb+struct _FiClos *+ \\
+% ---                     &  \verb+FiEnv+      &  \verb+struct _FiEnv *+  \\
+% ---                     &  \verb+FiProg+     &  \verb+struct _FiProg *+ \\
+% ---                     &  \verb+FiFun+      &  \verb+Ptr (*X)()+        \\
+\end{tabular}
+}
+
+Here \ttin{Ptr} is defined as the type \ttin{char *} for compatibility
+with old C dialects, but could equally well be defined as \ttin{void *}.
+
+All other \asharp{} types defined by the system (\eg{}~in the
+\libaldor{} library) or by a user correspond to the C 
+typedef
+\ttin{FiWord}. This includes {\tt Integer}, {\tt MachineInteger} and so
+on. The data correspondence on most 32 bit machines allows one to
+treat {\tt MachineInteger} and \verb+SInt$Machine+ as the same type
+(which is the reason that \ttin{arigato}, above, works). However, on
+other machines, for example 16 or 64 bit machines, the two types are
+not equivalent.
+
+Values belonging to \ttin"Record" types, are pointers to C structs of
+the corresponding members.  For example, the C declaration
+
+\begin{small}%
+\begin{verbatim}
+struct {
+        int    x;
+        short  y;
+        double z;
+} *r;
+\end{verbatim}
+\end{small}
+%
+corresponds to the the \asharp{} declaration
+%
+\begin{small}%
+\begin{verbatim}
+local r: Record(
+        x: SInt$Machine,    -- or  x: MachineInteger
+        y: HInt$Machine, 
+        z: DFlo$Machine
+);
+\end{verbatim}
+\end{small}
+
+Functions which return no value, or more than one value,  are
+declared to be of type void, and additional return results are
+returned through pointers passed in as additional arguments.
+
+Thus, the expression:
+\begin{small}%
+\begin{verbatim}
+import {
+        foo: (Integer, Integer) -> (SInt$Machine, BInt$Machine)
+} from Foreign C;
+\end{verbatim}
+\end{small}
+implies that foo should be declared (in ANSI C) as:
+{\small
+\begin{verbatim}
+static void foo(FiWord, FiWord, FiSInt *, FiBInt *);
+\end{verbatim}
+}
+
+%$ALDORROOT/samples/lib/.. whereever mentioned.
+
+A number of examples of exporting and importing C-defined functions
+can be found in \fname{\$ALDORROOT/samples/test}.
+
+%Examples using Foreign C "<stdio.h>"
+%Foreign C "myheader.h"
+
+%\section{\asharp{} Types}
+%
+% This section describes the representation of \asharp{} types as FOAM
+% objects. 
+%
+% Unfortunately, there is almost no point doing this as we haven't
+% exported any useful operations for combining or producing
+% hashcodes, plus it's all a bit complicated really...
+

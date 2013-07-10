@@ -1,0 +1,275 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%                                                                        %%%
+%%% :: The Machine Interface
+%%%                                                                        %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\head{chapter}{Standard interfaces}{asugLangStdints}
+\head{section}{The machine interface}{asugLangMachine}
+\index{Machine}
+We provide here a detailed list of the exports
+from the \ttin{Machine} package.
+This package provides the basic machine-level types and operations
+on them to \asharp{}.
+%\footnote{In the first implementation, only a
+%subset of these operations is available for Lisp generation;
+%they are all available when C code is being generated.}.
+
+\Export{Bool, Char, Nil, Ptr, Arr, Rec, Word}{Type}{}
+\ExportToo{XByte, HInt, SInt, BInt, SFlo, DFlo}{Type}{}
+These are the types provided by \ttin{Machine}.
+They are described in \secref{asugLangTypesMachine}.
+
+\Export{true, false}{Bool}{}
+\ExportToo{space, tab, newline}{Char}{}
+\ExportToo{nil}{Ptr}{}
+\Export{0, 1}{XByte}{}
+\ExportToo{0, 1}{SInt}{}
+\ExportToo{0, 1}{HInt}{}
+\ExportToo{0, 1}{BInt}{}
+\ExportToo{0, 1}{SFlo}{}
+\ExportToo{0, 1}{DFlo}{}
+\Export{min, max}{Char}{}
+\ExportToo{min, max}{XByte}{}
+\ExportToo{min, max}{HInt}{}
+\ExportToo{min, max}{SInt}{}
+\ExportToo{min, max}{SFlo}{}
+\ExportToo{min, max}{DFlo}{}
+\ExportToo{epsilon}{SFlo}{}
+\ExportToo{epsilon}{DFlo}{}
+These are special values of the various types:
+\ttin{min} and \ttin{max} are the smallest (most negative) and
+largest (most positive) values belonging to the finite arithmetic types;
+\ttin{epsilon} is the smallest number $\varepsilon$ such that 
+$1 + \varepsilon$ is distinguishable from $1$ in floating point
+arithmetic.
+
+\Export{nil?}{Ptr -> Bool}{}
+\ExportToo{digit?, letter?}{Char -> Bool}{}
+\ExportToo{zero?, positive?, negative?}{SInt -> Bool}{}
+\ExportToo{zero?, positive?, negative?}{BInt -> Bool}{}
+\ExportToo{zero?, positive?, negative?}{SFlo -> Bool}{}
+\ExportToo{zero?, positive?, negative?}{DFlo -> Bool}{}
+\ExportToo{even?, odd?}{BInt -> Bool}{}
+\ExportToo{even?, odd?}{SInt -> Bool}{}
+\ExportToo{single?}{BInt -> Bool}{}
+These operations provide various tests to inquire about values.
+The \ttin{single?} function tests whether a \verb"BInt" value
+can be represented as a member of \verb"SInt".
+
+\Export{=, \~{}=, <, <=}{(Bool, Bool) -> Bool}{}
+\ExportToo{=, \~{}=, <, <=}{(Char, Char) -> Bool}{}
+\ExportToo{=, \~{}=, <, <=}{(SInt, SInt) -> Bool}{}
+\ExportToo{=, \~{}=, <, <=}{(BInt, BInt) -> Bool}{}
+\ExportToo{=, \~{}=, <, <=}{(SFlo, SFlo) -> Bool}{}
+\ExportToo{=, \~{}=, <, <=}{(DFlo, DFlo) -> Bool}{}
+\ExportToo{=, \~{}=}{(Ptr, Ptr) -> Bool}{}
+These functions provide tests for equality, inequality and order.
+
+\Export{upper, lower}{Char -> Char}{}
+\ExportToo{char}{SInt -> Char}{}
+\ExportToo{ord}{Char -> SInt}{}
+These operations manipulate character data.  
+The \ttin{upper} and \ttin{lower} operations change the case of letters,
+and leave characters which are not letters unchanged.
+The \ttin{ord} and \ttin{char} are inverse operations
+mapping between character and integer values.
+
+\Export{+, -, *}{(SInt, SInt) -> SInt}{}
+\ExportToo{+, -, *}{(BInt, BInt) -> BInt}{}
+\ExportToo{+, -, *}{(SFlo, SFlo) -> SFlo}{}
+\ExportToo{+, -, *}{(DFlo, DFlo) -> DFlo}{}
+\ExportToo{/}{(SFlo, SFlo) -> SFlo}{}
+\ExportToo{/}{(DFlo, DFlo) -> DFlo}{}
+\ExportToo{\^{}}{(BInt, SInt) -> BInt}{}
+\ExportToo{\^{}}{(BInt, BInt) -> BInt}{}
+These are the arithmetic operations of addition,
+subtraction, multiplication, division and exponentiation.
+
+%\pagebreak
+\Export{\_*\_+}{(SInt, SInt, SInt) -> SInt}{}
+\ExportToo{\_*\_+}{(BInt, BInt, BInt) -> BInt}{}
+\ExportToo{\_*\_+}{(SFlo, SFlo, SFlo) -> SFlo}{}
+\ExportToo{\_*\_+}{(DFlo, DFlo, DFlo) -> DFlo}{}
+These are ``multiply-add'' operations: 
+\verb"_*_+(a,b,c)" is mathematically equivalent to \verb"a*b + c"
+but may be faster or have less rounding error.
+
+\Export{quo, rem, mod, gcd}{(SInt, SInt) -> SInt}{}
+\ExportToo{quo, rem, mod, gcd}{(BInt, BInt) -> BInt}{}
+\ExportToo{divide}{(SInt, SInt) -> (SInt, SInt)}{}
+\ExportToo{divide}{(BInt, BInt) -> (BInt, BInt)}{}
+These are operations related to integer division.  
+The \ttin{divide} operations return a quotient-remainder pair.
+
+\Export{mod\_+, mod\_-, mod\_*}{(SInt, SInt, SInt) -> SInt}{}
+\ExportToo{mod\_*inv}{(SInt, SInt, SInt, DFlo) -> SInt}{}
+These operations perform arithmetic modulo their third arguments.
+The \ttin{mod\_*inv} operation is equivalent to \ttin{mod\_*}
+but expects an accurate floating point approximation
+to the inverse of the modulus as its last argument.
+
+\Export{\~{}}{Bool -> Bool}{}
+\ExportToo{\~{}}{SInt -> SInt}{}
+\ExportToo{\slope\back}{(Bool, Bool) -> Bool}{}
+\ExportToo{\slope\back}{(SInt, SInt) -> SInt}{}
+\ExportToo{\back\slope}{(Bool, Bool) -> Bool}{}
+\ExportToo{\back\slope}{(SInt, SInt) -> SInt}{}
+% Better to have "/" and "\" in the same typeface.
+% (Both in \tt style would be nicer, but how?)
+These are bit-wise logical operations.
+
+\Export{length}{SInt -> SInt}{}
+\ExportToo{length}{BInt -> SInt}{}
+\ExportToo{bit}{(SInt, SInt) -> Bool}{}
+\ExportToo{bit}{(BInt, SInt) -> Bool}{}
+\ExportToo{shiftUp, shiftDown}{(SInt, SInt) -> SInt}{}
+\ExportToo{shiftUp, shiftDown}{(BInt, SInt) -> BInt}{}
+These functions provide access to the bits in the base-2 representation
+of integers.
+
+\Export{next, prev}{SInt -> SInt}{}
+\ExportToo{next, prev}{BInt -> BInt}{}
+\ExportToo{next, prev}{SFlo -> SFlo}{}
+\ExportToo{next, prev}{DFlo -> DFlo}{}
+These functions provide next and previous values of the given type.
+For example, \ttin{next 1} is 2 for \verb"SInt" and \verb"BInt" values,
+but might be approximately
+\verb"1.0000000000000002220446"
+for \verb"DFlo", depending on the platform.
+
+\Export{double\_*}{(Word, Word) -> (Word, Word)}{}
+\ExportToo{doubleDivide}{(Word, Word, Word) -> (Word, Word)}{}
+\ExportToo{plusStep}{(Word, Word, Word) -> (Word, Word)}{}
+\ExportToo{timesStep}{(Word, Word, Word, Word) -> (Word, Word)}{}
+These are the basic operations underpinning multi-word arithmetic.%
+The first two functions
+provide double word integer multiply and divide operations.
+The double word multiply instruction returns its results as a pair.
+The double word division accepts the dividend as a pair,
+passed as the first two arguments,
+the divisor as the third argument, and returns the quotient and remainder.
+The \ttin{plusStep} operation adds two values and a carry to produce
+a result and a carry.
+The \ttin{timesStep} operation computes the product of its first two
+arguments, adds in the other two, and represents the result as a word pair.
+This may be summarised as:
+
+\begin{small}
+\begin{verbatim}
+double_*:  (rH, rL)    = divide(a * b,            wordsize)
+plusStep:  (kout,  r)  = divide(a + b + kin,      wordsize)
+timesStep: (rHout, rL) = divide(a * b + c + rHin, wordsize)
+\end{verbatim}
+\end{small}
+
+
+\Export{assemble}{(SInt, SInt, Word) -> SFlo}{}
+\ExportToo{assemble}{(SInt, SInt, Word, Word) -> DFlo}{}
+\ExportToo{dissemble}{SFlo -> (SInt, SInt, Word)}{}
+\ExportToo{dissemble}{DFlo -> (SInt, SInt, Word, Word)}{}
+These operations allow manipulation of the
+sign $s = \pm 1$, exponent $e$, 
+and mantissa $x$ of floating point numbers, $f = s \times x \times 2^e$.
+
+
+\ExportToo{nearest, zero, up, down, any}{() -> SInt}{}
+\ExportToo{round}{SFlo -> BInt}{}
+\ExportToo{round}{DFlo -> BInt}{}
+\ExportToo{round\_+, round\_-, round\_*, round\_/}{(SFlo, SFlo, SInt) -> SFlo}{}
+\ExportToo{round\_+, round\_-, round\_*, round\_/}{(DFlo, DFlo, SInt) -> DFlo}{}
+These provide rounded floating point arithmetic.%
+The third argument
+of the \verb"round_"{\it op\/} functions is a rounding mode, as supplied
+by \verb"Bnearest",
+\verb"Bzero" (toward zero),
+\verb"Bup" (toward plus infinity),
+\verb"Bdown" (toward minus infinity),
+or \verb"Bany" (doesn't matter).
+
+\Export{convert}{SFlo -> DFlo}{}
+\ExportToo{convert}{DFlo -> SFlo}{}
+\ExportToo{convert}{XByte -> SInt}{}
+\ExportToo{convert}{SInt -> XByte}{}
+\ExportToo{convert}{HInt -> SInt}{}
+\ExportToo{convert}{SInt -> HInt}{}
+\ExportToo{convert}{SInt -> BInt}{}
+\ExportToo{convert}{BInt -> SInt}{}
+\ExportToo{convert}{SInt -> SFlo}{}
+\ExportToo{convert}{SInt -> DFlo}{}
+\ExportToo{convert}{BInt -> SFlo}{}
+\ExportToo{convert}{BInt -> DFlo}{}
+\ExportToo{convert}{Ptr -> SInt}{}
+\ExportToo{convert}{SInt -> Ptr}{}
+\ExportToo{convert}{Arr -> SFlo}{}
+\ExportToo{convert}{Arr -> DFlo}{}
+\ExportToo{convert}{Arr -> SInt}{}
+\ExportToo{convert}{Arr -> BInt}{}
+These functions convert values between the various \verb"Machine" types.
+Most of the operations may be accomplished by simply padding or narrowing
+the internal representation of values.
+Others such as the integer to floating point conversion are more complex.
+
+\Export{format}{(SInt, Arr, SInt) -> SInt}{}
+\ExportToo{format}{(BInt, Arr, SInt) -> SInt}{}
+\ExportToo{format}{(SFlo, Arr, SInt) -> SInt}{}
+\ExportToo{format}{(DFlo, Arr, SInt) -> SInt}{}
+\ExportToo{scan}{(Arr, SInt) -> (SFlo, SInt)}{}
+\ExportToo{scan}{(Arr, SInt) -> (DFlo, SInt)}{}
+\ExportToo{scan}{(Arr, SInt) -> (SInt, SInt)}{}
+\ExportToo{scan}{(Arr, SInt) -> (BInt, SInt)}{}
+These operations allow the conversion of numeric data to and from
+a textual form.
+
+\Export{array}{(E: Type) -> (E, SInt) -> Arr}{}
+\ExportToo{get}{(E: Type) -> (Arr, SInt) -> E}{}
+\ExportToo{set!}{(E: Type) -> (Arr, SInt, E) -> E}{}
+These operations allow the implementation of array types.
+
+\Export{dispose!}{Arr -> ()}{}
+\ExportToo{dispose!}{BInt -> ()}{}
+Calling one of these operations indicates that the storage for
+the argument will no longer be used.  On some platforms this makes the
+storage available for immediate re-use, while on others it does not
+become available until after the next garbage collection.
+If a program does not make calls to \ttin{dispose!}, then the storage
+is reclaimed by garbage collection.
+
+\Export{RTE}{() -> SInt}{}
+\ExportToo{OS}{() -> SInt}{}
+These operations allow programs
+to inquire about the platform on which they are running.
+
+The \ttin{RTE} operation indicates the run time environment.
+This is sometimes useful in selecting between alternative foreign imports.
+The following values may be returned:
+
+\begin{tabular}{rl}
+0 & The environment cannot be determined. \\
+1 & The program is linked as a C-based application. \\
+2 & The program is running on top of a Common Lisp system.
+\end{tabular}
+
+The \ttin{OS} operation specifies the operating system.
+This is sometimes useful in understanding how to parse file names,
+for example.
+The values below correspond to the given operating systems:
+
+\begin{tabular}{cl}
+OS() quo 1000 & Operating system \\
+\hline
+0 & Cannot be  determined. \\
+1 & A Unix derivative. \\
+2 & IBM VM/CMS. \\
+3 & OS/2. \\
+4 & DOS for IBM PC compatibles. \\
+5 & Microsoft Windows. \\
+6 & DEC VMS. \\
+7 & Macintosh System 7
+\end{tabular}
+
+\Export{halt}{SInt -> Exit}{}
+Finally, this operation terminates the execution of a program.
+On platforms which support it, the integer argument is returned
+to the calling environment.

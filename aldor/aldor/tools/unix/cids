@@ -1,0 +1,23 @@
+#!/bin/sh
+#
+# cids  file1.c ... >idfile
+#
+# This program determines all identifiers used in the input files.
+# The files are first macro expanded so concatenated identifiers are seen.
+#
+# SMW Jan/91
+# SMW Mar/92 -- modified to extract cflags
+
+cflags=""
+cfiles=""
+
+for a in $* ; do
+	case $a in
+	-*)	cflags="$cflags $a" ;;
+	*)	cfiles="$cfiles $a" ;;
+	esac
+done
+
+( for f in $cfiles ; do cc -E $cflags $f | exclude -I "/usr/include" ; done ) \
+| cwords \
+| sort -u

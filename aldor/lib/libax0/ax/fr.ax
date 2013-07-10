@@ -1,0 +1,322 @@
+
+(|Sequence|
+   (|Import| NIL |AxiomLib|)
+   (|Import| NIL |Boolean|)
+   (|Export|
+      (|Declare|
+         |FactoredFunctions2|
+         (|Apply|
+            |->|
+            (|Comma|
+               (|Declare| |#1| |IntegralDomain|)
+               (|Declare| |#2| |IntegralDomain|))
+            (|With|
+               NIL
+               (|Sequence|
+                  (|Declare|
+                     |map|
+                     (|Apply|
+                        |->|
+                        (|Comma|
+                           (|Apply| |->| (|Comma| |#1|) |#2|)
+                           (|Apply| |Factored| |#1|))
+                        (|Apply| |Factored| |#2|)))) )))
+      NIL
+      NIL)
+   (|Export|
+      (|Declare|
+         |FactoredFunctionUtilities|
+         (|Apply|
+            |->|
+            (|Declare| |#1| |IntegralDomain|)
+            (|With|
+               NIL
+               (|Sequence|
+                  (|Declare|
+                     |refine|
+                     (|Apply|
+                        |->|
+                        (|Comma|
+                           (|Apply| |Factored| |#1|)
+                           (|Apply|
+                              |->|
+                              (|Comma| |#1|)
+                              (|Apply| |Factored| |#1|)))
+                        (|Apply| |Factored| |#1|)))
+                  (|Declare|
+                     |mergeFactors|
+                     (|Apply|
+                        |->|
+                        (|Comma|
+                           (|Apply| |Factored| |#1|)
+                           (|Apply| |Factored| |#1|))
+                        (|Apply| |Factored| |#1|)))) )))
+      NIL
+      NIL)
+   (|Sequence|
+      (|Define|
+         (|Declare|
+            |FactoredExtendCategory|
+            (|Apply| |->| (|Declare| |#1| |IntegralDomain|) |Category|))
+         (|Lambda|
+            (|Comma| (|Declare| |#1| |IntegralDomain|))
+            |Category|
+            (|Label|
+               |FactoredExtendCategory|
+               (|With|
+                  NIL
+                  (|Sequence|
+                     |IntegralDomain|
+                     (|Apply| |DifferentialExtension| |#1|)
+                     (|Apply| |Algebra| |#1|)
+                     (|Apply| |FullyEvalableOver| |#1|)
+                     (|Apply| |FullyRetractableTo| |#1|)
+                     (|Declare| |expand| (|Apply| |->| (|Comma| |%|) |#1|))
+                     (|Declare|
+                        |exponent|
+                        (|Apply| |->| (|Comma| |%|) |Integer|))
+                     (|Declare|
+                        |makeFR|
+                        (|Apply|
+                           |->|
+                           (|Comma|
+                              |#1|
+                              (|Apply|
+                                 |List|
+                                 (|Apply|
+                                    |Record|
+                                    (|Declare|
+                                       |flg|
+                                       (|Apply|
+                                          |Union|
+                                          (|Declare|
+                                             |nil|
+                                             (|Apply| |Enumeration| |nil|))
+                                          (|Declare|
+                                             |sqfr|
+                                             (|Apply|
+                                                |Enumeration|
+                                                |sqfr|))
+                                          (|Declare|
+                                             |irred|
+                                             (|Apply|
+                                                |Enumeration|
+                                                |irred|))
+                                          (|Declare|
+                                             |prime|
+                                             (|Apply|
+                                                |Enumeration|
+                                                |prime|))))
+                                    (|Declare| |fctr| |#1|)
+                                    (|Declare| |xpnt| |Integer|))))
+                           |%|))
+                     (|Declare|
+                        |factorList|
+                        (|Apply|
+                           |->|
+                           (|Comma| |%|)
+                           (|Apply|
+                              |List|
+                              (|Apply|
+                                 |Record|
+                                 (|Declare|
+                                    |flg|
+                                    (|Apply|
+                                       |Union|
+                                       (|Declare|
+                                          |nil|
+                                          (|Apply| |Enumeration| |nil|))
+                                       (|Declare|
+                                          |sqfr|
+                                          (|Apply| |Enumeration| |sqfr|))
+                                       (|Declare|
+                                          |irred|
+                                          (|Apply| |Enumeration| |irred|))
+                                       (|Declare|
+                                          |prime|
+                                          (|Apply|
+                                             |Enumeration|
+                                             |prime|))))
+                                 (|Declare| |fctr| |#1|)
+                                 (|Declare| |xpnt| |Integer|)))) )
+                     (|Declare|
+                        |nilFactor|
+                        (|Apply| |->| (|Comma| |#1| |Integer|) |%|))
+                     (|Declare|
+                        |factors|
+                        (|Apply|
+                           |->|
+                           (|Comma| |%|)
+                           (|Apply|
+                              |List|
+                              (|Apply|
+                                 |Record|
+                                 (|Declare| |factor| |#1|)
+                                 (|Declare| |exponent| |Integer|)))) )
+                     (|Declare|
+                        |irreducibleFactor|
+                        (|Apply| |->| (|Comma| |#1| |Integer|) |%|))
+                     (|Declare|
+                        |nthExponent|
+                        (|Apply| |->| (|Comma| |%| |Integer|) |Integer|))
+                     (|Declare|
+                        |nthFactor|
+                        (|Apply| |->| (|Comma| |%| |Integer|) |#1|))
+                     (|Declare|
+                        |nthFlag|
+                        (|Apply|
+                           |->|
+                           (|Comma| |%| |Integer|)
+                           (|Apply|
+                              |Union|
+                              (|Declare|
+                                 |nil|
+                                 (|Apply| |Enumeration| |nil|))
+                              (|Declare|
+                                 |sqfr|
+                                 (|Apply| |Enumeration| |sqfr|))
+                              (|Declare|
+                                 |irred|
+                                 (|Apply| |Enumeration| |irred|))
+                              (|Declare|
+                                 |prime|
+                                 (|Apply| |Enumeration| |prime|)))) )
+                     (|Declare|
+                        |numberOfFactors|
+                        (|Apply| |->| (|Comma| |%|) |NonNegativeInteger|))
+                     (|Declare|
+                        |primeFactor|
+                        (|Apply| |->| (|Comma| |#1| |Integer|) |%|))
+                     (|Declare|
+                        |sqfrFactor|
+                        (|Apply| |->| (|Comma| |#1| |Integer|) |%|))
+                     (|Declare|
+                        |flagFactor|
+                        (|Apply|
+                           |->|
+                           (|Comma|
+                              |#1|
+                              |Integer|
+                              (|Apply|
+                                 |Union|
+                                 (|Declare|
+                                    |nil|
+                                    (|Apply| |Enumeration| |nil|))
+                                 (|Declare|
+                                    |sqfr|
+                                    (|Apply| |Enumeration| |sqfr|))
+                                 (|Declare|
+                                    |irred|
+                                    (|Apply| |Enumeration| |irred|))
+                                 (|Declare|
+                                    |prime|
+                                    (|Apply| |Enumeration| |prime|))))
+                           |%|))
+                     (|Declare| |unit| (|Apply| |->| (|Comma| |%|) |#1|))
+                     (|Declare|
+                        |unitNormalize|
+                        (|Apply| |->| (|Comma| |%|) |%|))
+                     (|Declare|
+                        |map|
+                        (|Apply|
+                           |->|
+                           (|Comma| (|Apply| |->| (|Comma| |#1|) |#1|) |%|)
+                           |%|))
+                     (|If|
+                        (|Test| (|Has| |#1| |GcdDomain|))
+                        |GcdDomain|
+                        NIL)
+                     (|If|
+                        (|Test| (|Has| |#1| |RealConstant|))
+                        |RealConstant|
+                        NIL)
+                     (|If|
+                        (|Test| (|Has| |#1| |UniqueFactorizationDomain|))
+                        |UniqueFactorizationDomain|
+                        NIL)
+                     (|If|
+                        (|Test|
+                           (|Has|
+                              |#1|
+                              (|Apply| |ConvertibleTo| |InputForm|)))
+                        (|Apply|
+                           |ConvertibleTo|
+                           (|PretendTo| |InputForm| |Type|))
+                        NIL)
+                     (|If|
+                        (|Test| (|Has| |#1| |IntegerNumberSystem|))
+                        (|Sequence|
+                           (|Declare|
+                              |rational?|
+                              (|Apply| |->| (|Comma| |%|) |Boolean|))
+                           (|Declare|
+                              |rational|
+                              (|Apply|
+                                 |->|
+                                 (|Comma| |%|)
+                                 (|Apply|
+                                    |Fraction|
+                                    (|PretendTo|
+                                       |Integer|
+                                       |IntegralDomain|))))
+                           (|Declare|
+                              |rationalIfCan|
+                              (|Apply|
+                                 |->|
+                                 (|Comma| |%|)
+                                 (|Apply|
+                                    |Union|
+                                    (|Declare|
+                                       |value1|
+                                       (|Apply|
+                                          |Fraction|
+                                          (|PretendTo|
+                                             |Integer|
+                                             |IntegralDomain|)))
+                                    (|Declare|
+                                       |failed|
+                                       (|Apply|
+                                          |Enumeration|
+                                          |failed|)))) ))
+                        NIL)
+                     (|If|
+                        (|Test| (|Has| |#1| (|Apply| |Eltable| |%| |%|)))
+                        (|Apply|
+                           |Eltable|
+                           (|PretendTo| |%| |SetCategory|)
+                           (|PretendTo| |%| |Type|))
+                        NIL)
+                     (|If|
+                        (|Test| (|Has| |#1| (|Apply| |Evalable| |%|)))
+                        (|Apply|
+                           |Evalable|
+                           (|PretendTo| |%| |SetCategory|))
+                        NIL)
+                     (|If|
+                        (|Test|
+                           (|Has|
+                              |#1|
+                              (|Apply| |InnerEvalable| |Symbol| |%|)))
+                        (|Apply|
+                           |InnerEvalable|
+                           (|PretendTo| |Symbol| |SetCategory|)
+                           (|PretendTo| |%| |Type|))
+                        NIL)))) ))
+      (|Extend|
+         (|Define|
+            (|Declare|
+               |Factored|
+               (|Apply|
+                  |->|
+                  (|Declare| |#1| |IntegralDomain|)
+                  (|Apply| |FactoredExtendCategory| |#1|)))
+            (|Lambda|
+               (|Comma| (|Declare| |#1| |IntegralDomain|))
+               (|Apply| |FactoredExtendCategory| |#1|)
+               (|Label|
+                  |Factored|
+                  (|Add|
+                     (|PretendTo|
+                        (|Add| NIL NIL)
+                        (|Apply| |FactoredExtendCategory| |#1|))
+                     NIL)))) )))

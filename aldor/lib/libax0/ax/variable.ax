@@ -1,0 +1,81 @@
+
+(|Sequence|
+   (|Import| NIL |AxiomLib|)
+   (|Import| NIL |Boolean|)
+   (|Export| (|Declare| |AnonymousFunction| |SetCategory|) NIL NIL)
+   (|Export|
+      (|Declare|
+         |FunctionCalled|
+         (|Apply|
+            |->|
+            (|Declare| |#1| |Symbol|)
+            (|With|
+               NIL
+               (|Sequence|
+                  |SetCategory|
+                  (|Declare|
+                     |name|
+                     (|Apply| |->| (|Comma| |%|) |Symbol|)))) ))
+      NIL
+      NIL)
+   (|Export|
+      (|Declare|
+         |RuleCalled|
+         (|Apply|
+            |->|
+            (|Declare| |#1| |Symbol|)
+            (|With|
+               NIL
+               (|Sequence|
+                  |SetCategory|
+                  (|Declare|
+                     |name|
+                     (|Apply| |->| (|Comma| |%|) |Symbol|)))) ))
+      NIL
+      NIL)
+   (|Export|
+      (|Declare|
+         |Variable|
+         (|Apply|
+            |->|
+            (|Declare| |#1| |Symbol|)
+            (|With|
+               NIL
+               (|Sequence|
+                  |SetCategory|
+                  (|Apply| |CoercibleTo| |Symbol|)
+                  (|Declare|
+                     |coerce|
+                     (|Apply| |->| (|Comma| |%|) |Symbol|))
+                  (|Declare|
+                     |variable|
+                     (|Apply| |->| (|Comma|) |Symbol|)))) ))
+      NIL
+      NIL)
+   (|Export|
+      (|Declare|
+         |OrderedVariableList|
+         (|Apply|
+            |->|
+            (|Declare| |#1| (|Apply| |List| |Symbol|))
+            (|With|
+               NIL
+               (|Sequence|
+                  |OrderedFinite|
+                  (|Apply| |ConvertibleTo| |Symbol|)
+                  (|Apply| |ConvertibleTo| |InputForm|)
+                  (|Apply| |ConvertibleTo| (|Apply| |Pattern| |Float|))
+                  (|Apply| |ConvertibleTo| (|Apply| |Pattern| |Integer|))
+                  (|Declare|
+                     |variable|
+                     (|Apply|
+                        |->|
+                        (|Comma| |Symbol|)
+                        (|Apply|
+                           |Union|
+                           (|Declare| |value1| |%|)
+                           (|Declare|
+                              |failed|
+                              (|Apply| |Enumeration| |failed|)))) ))) ))
+      NIL
+      NIL))

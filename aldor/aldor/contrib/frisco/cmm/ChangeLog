@@ -1,0 +1,579 @@
+Thu Feb 29 18:32:42 1996  Giuseppe Attardi  <attardi@omega>
+
+	* cmm.h: restructured include files, eliminated memory.h
+
+Fri Feb 16 11:24:37 1996  Giuseppe Attardi  <attardi@omega>
+
+	* test6.cc: it now compiles
+
+	* cmm.cc (collect): procedure CmmExamineStaticAreas takes as argument
+	function to scan the areas.
+
+	* memory.c: eliminated memGetSegments().
+
+Thu Feb 15 18:22:04 1996  Giuseppe Attardi  <attardi@omega>
+
+	* memory.c: added memory.h containg exported definitions,
+	including memSetStackBottom(), used to set stackBottom as
+	early as possible in main.
+
+Mon Feb 12 23:48:00 1996  Pietro Iglio <iglio@di.unipi.it>
+
+	* Added memGetSegments() in memory.c.
+	* CMM port for Borland C++ 4.5 and Win95.
+
+Mon Jan 22 11:37:24 1996  Giuseppe Attardi  <attardi@omega>
+
+	* memory.c: added to handle memory areas in Windows95 and NT
+
+Thu Nov  2 16:11:11 1995  Pietro Iglio  <iglio@attardi.di.unipi.it>
+
+	* Added CmmObject::operator new[] and CmmObject::operator delete[].
+	  Now CmmArray shouldn't be necessary.
+
+Wed Nov  1 13:53:42 1995  Giuseppe Attardi  <attardi@omega>
+
+	* cmm.h (Cmm): renamed mswHeap to theMSHeap
+	(GcObject): renamed fo CmmObject
+	(GcVarObject): renamed fo CmmVarObject
+	(GcArray): renamed fo CmmArray
+
+Tue Oct 31 14:00:35 1995  Pietro Iglio  <iglio@attardi>
+        * C++ programs don't need to call mswInit() any more.
+
+Mon Oct 30 19:00:35 1995  Pietro Iglio  <iglio@attardi>
+
+	* Added virtual method "CmmHeap::scanRoots(page)" that promote pages
+	  for each allocated object inside "page". Such method has a
+	  meaningful implementation for MarkAndSweep and UncollectedHeap heaps.
+	* Minor changes/cleanings.
+
+Thu Oct 26 19:37:35 1995  Giuseppe Attardi  <attardi@omega>
+
+	* cmm.cc (Cmm): added parameter newGcThreshold
+
+Thu Oct 12 13:06:18 1995  Giuseppe Attardi  <attardi@omega>
+
+	* cmm.h (bytesPerPageLg): eliminated
+
+	* cmm.cc: default traverse() is again empty:
+	it is not possible to call promotePage during traverse, since
+	all promotions must be done in first phase of collector.
+	Objects in such pages might have been already copied.
+
+Tue Oct  3 11:43:54 1995  Giuseppe Attardi  <attardi@omega>
+
+	* cmm.cc: added default traverse() for GcObject
+
+Sat Jun 10 10:47:08 1995  Giuseppe Attardi  <attardi@omega>
+
+	* cmm.cc (collect):
+	 verify_object -> verifyObject
+	 verify_header -> verifyHeader
+	 log_root -> logRoot
+
+	* cmm.h (WHEN_FLAGS): fixed
+
+Thu Mar 23 18:58:17 1995  Giuseppe Attardi  <attardi@omega>
+
+	* cmm.cc (CmmInit): removed memalign because it is not
+	available on Linux
+
+Tue Mar 21 09:19:25 1995  Giuseppe Attardi  <attardi@omega>
+
+	* cmm.cc (expandHeap): added parameter increment
+	  Replaced new char with MEMALIGN, normally defined as memalign
+
+	* cmm.cc: allocatePage -> allocatePages
+
+Fri Mar  3 12:17:21 1995  Giuseppe Attardi  <attardi@omega>
+
+	* cmm.h (GCPtoPage): fixes for Alpha
+
+	* cmm.cc (basePointer): fixes for Alpha
+
+Thu Mar  2 09:59:03 1995  Giuseppe Attardi  <attardi@omega>
+
+	* tempheap.cc (scavenge): fixed MARKING with TempHeap
+
+Tue Feb 28 09:52:56 1995  Giuseppe Attardi  <attardi@omega>
+
+	* cmm.cc: fixes for RS/6000:
+	added DefaultHeap::DefaultHeap() to initialize usedPages
+	added STACKBOTTOM
+
+Wed Feb 22 12:51:01 1995  Giuseppe Attardi  <attardi@omega>
+
+	* cmm.cc (collect): traverse Marked objects only in pages not yet scanned
+
+	* cmm.h (GcObject): Marked() -> isMarked()
+
+Tue Feb 21 10:14:34 1995  Giuseppe Attardi  <attardi@omega>
+
+	* cmm.cc (promotePage): fixed to work with MARKING
+
+Sat Feb 18 13:12:05 1995  Giuseppe Attardi  <attardi@omega>
+
+	* cmm.h: typedef long  *GCP, for compatibility with
+	64-bit architecutres
+
+Fri Feb 17 19:16:23 1995  Giuseppe Attardi  <attardi@omega>
+
+	* machine.h: fixed DATASTART for SVR4 (Solaris2)
+
+	* cmm.cc (emptyStableSet): empties up to page.
+	This allows retaininig in stable set pages which have just been
+	copied during last collection which is not worth while to copy
+	again in the immediately following full collection.
+
+Sat Feb 11 12:45:43 1995  Giuseppe Attardi  <attardi@omega>
+
+	* tempheap.cc (collect): fixed printout when VERBOSE
+
+Thu Jan 19 11:02:34 1995  Giuseppe Attardi  <attardi@omega>
+
+	* cmm.h (GcArray): revised by Tito to use overloaded [].
+
+Tue Jan  3 13:25:16 1995  Giuseppe Attardi  <attardi@omega>
+
+	* cmm.h (CmmHeap): 
+	changed transparent to opaque, so that default is 0 (false).
+	 isTransparent() ->  isOpaque()
+	 setTransparent(bool) -> setOpaque(bool)
+	 bool transparent -> bool opaque
+
+Mon Dec 19 12:35:11 1994  Giuseppe Attardi  <attardi@omega>
+
+	* cmm.h (Cmm): added
+	  inline bool isTransparent()
+	  inline void setTransparent(bool transparency)
+	 private:
+	  bool transparent = false;
+
+Wed Dec 14 13:03:28 1994  Giuseppe Attardi  <attardi@omega>
+
+	* cmm.cc (scavenge): fixed to visit only if base pointer is not
+	OUTSIDE_HEAP
+
+Tue Dec 13 12:07:04 1994  Giuseppe Attardi  <attardi@omega>
+
+	* cmm.*:
+	added support for SGI (contributed by Uttam M. Narsu" <narsu@styx.hks.com>)
+
+	* test*.cc:
+	updated to version 1.4
+
+	* doc/CMMguide.tex: 
+	updated to version 1.4
+
+Thu Dec  1 10:56:13 1994  Giuseppe Attardi  <attardi@omega>
+
+	* tempheap.cc (alloc):
+	When HEADER_SIZE && defined(DOUBLE_ALIGN), top is kept at an odd value
+	by incrementing it if necessary after alloc() or copy().
+
+	* tempheap.h: 
+	In class Container replaced  variable bytes with size, which measures
+	the size in words.
+
+Sun Nov 27 10:43:30 1994  Giuseppe Attardi  <attardi@neuron>
+
+	* cmm.h: renamed
+	gcobject -> isTraced
+
+Fri Nov 25 13:47:50 1994  Giuseppe Attardi  <attardi@neuron>
+
+	* cmm.cc (expandHeap): restored from version 1.3
+
+Mon Nov 21 17:16:19 1994  Giuseppe Attardi  <attardi@omega>
+
+	* tempheap.cc: renamed
+	BBStack -> TempHeap
+	heapstack.cc -> tempheap.cc
+	heapstack.h -> tempheap.h
+	Eliminated HeapStack.
+
+Sat Nov 19 12:35:36 1994  Giuseppe Attardi  <attardi@neuron>
+
+	* cmm.cc: 
+	firstp -> firstFreeWord
+
+	* heapstack.cc (Container::alloc, Container::copy, HeapStack::collect,
+	BBStack::collect):
+	added handling of case HEADER_SIZE && defined(DOUBLE_ALIGN)
+
+Mon Nov  7 17:36:34 1994  Giuseppe Attardi  <attardi@omega>
+
+	* machine.H: #undef STACK_GROWS_DOWNWARD for hp pa architecture
+
+Thu Oct 27 12:26:20 1994  Giuseppe Attardi  (attardi@omega)
+
+	* cmm.H: renamed STATIC_0 as DATASTART
+	DATASTART is defined for many architectures
+
+	* cmm.C, cmm.H: updated for g++ 2.6
+
+Thu Oct 20 11:11:16 1994  Giuseppe Attardi  (attardi@omega)
+
+	* HeapStack.C (scavenge): 
+	use OUTSIDE_HEAP instead of !inside
+
+Wed Oct 19 11:39:50 1994  Giuseppe Attardi  (attardi@omega)
+
+	* cmm.H (DefaultHeap::scavenge): 
+	moved to cmm.C
+
+	* cmm.C (allocate_page): 
+	removed bzero of page
+
+Thu Oct 13 09:07:15 1994  Giuseppe Attardi  (attardi@omega)
+
+	* cmm.H (CmmHeap): 
+	DefaultHeap -> theDefaultHeap
+	gcmove -> CmmMove
+
+	* cmm.C (reserve_pages):
+	maintain reservedPages instead of unusedPages
+
+	* cmm.C ():
+	UNALLOCATEDPAGE -> UNALLOCATEDSPACE with value 1 to ensure it is
+	not STABLE()
+
+Tue Oct 11 09:44:33 1994  Giuseppe Attardi  (attardi@omega)
+
+	* cmm.C (reserve_page): 
+	restricted search for unused pages to pages between
+	firstReservedPage and lastReservedPage
+
+	* cmm.C:
+	use memset (STD C) instead of bzero (BSD) when not GCC
+	(bzero is 3 times faster than memset)
+
+Mon Oct 10 10:24:06 1994  Giuseppe Attardi  (attardi@omega)
+
+	* cmm.C (collect): 
+	#ifdef STACK_GROWS_DOWNWARD
+	    register unsigned *lim = (unsigned *)regs;
+	#else
+	    register unsigned *lim = (unsigned *)regs + sizeof(regs);
+	#endif    
+
+Fri Oct  7 18:49:27 1994  Giuseppe Attardi  (attardi@omega)
+
+	* cmm.C (collect): 
+	  while (cp < nextcp ||
+	   inCurrentPage && cp < (nextcp = (cp <= freep && freep < nextPage) ?
+				  freep : nextPage)) {
+	was: cp < freep
+
+	* cmm.C : restored working version with HEADER_SIZE = 1,
+	Revised DOUBLE_SIZE handling with HEADER_SIZE = 1.
+
+Tue Oct  4 11:52:29 1994  Giuseppe Attardi  (attardi@igor)
+
+	* HeapStack.C (scavenge): eliminated Heapstack::outside
+
+Mon Oct  3 20:15:02 1994  Giuseppe Attardi  (attardi@igor)
+
+	* HeapStack.C (collect): added
+	   SET_OBJECTMAP(ToSpace->current());
+	   SET_OBJECTMAP(container->current());
+	  to ensure that we stop at the end of the container.
+
+	* cmm.C (allocate_page): 
+	set pageGroup for the benefit of words() in non default heap
+
+Fri Sep 30 16:20:00 1994  Giuseppe Attardi  (attardi@igor)
+
+	* cmm.C (collect): 
+	Added
+	  if (freePages + unusedPages < usedPages)
+	      expandHeap();
+	to ensure that expandHeap is not called within gcmove.
+	
+	* cmm.C (CmmInitEarly): 
+	#ifdef STACK_GROWS_DOWNWARD
+	#else
+	    stackBottom = (unsigned)&i & ~STACKBOTTOM_ALIGNMENT_M1;
+	#endif
+
+	* HeapStack.C (scavenge): 
+	Added cast for correct offset computation:
+	    *ptr = (GcObject *)((char *)newObj + offset);
+
+	Moved #include <iostream.h> to HeapStack.C to avoid unnecessary
+	inclusion
+
+Fri Sep 30 09:55:24 1994  Giuseppe Attardi  (attardi@omega)
+
+	* HeapStack.C (scan): 
+	modified so that it the argument heap is used in traversal
+
+	* HeapStack.H ():
+	insert -> copy
+	ContainerStack -> Container
+	WordsInUse -> usedWords
+	used -> usedBytes
+	entryNump -> entrypNum
+	BBStack::top -> BBStack::current
+
+Thu Sep 29 14:27:17 1994  Giuseppe Attardi  (attardi@omega)
+
+	* HeapStack.C: 
+	HeapStack::scavenge() and BBStack::scavenge() use just MARKED(p)
+	(rather than p->forwarded()) to determine whether object is forwarded
+	added resetLiveMap to clear LiveMap at beginning of collection
+
+	* cmm.H: 
+	SetForward() marks object
+
+Tue Sep 20 20:37:17 1994  Giuseppe Attardi  (attardi@neuron)
+
+	* Makefile.schema (HFILES): added machine,h,
+	new file containing processor parameters.
+	
+	* cmm.C (alloc): added alignment support
+	On processors requiring double alignment, objects of size > 12
+	are aligned to double words boundaries.
+	A padding is added when a large object is adjacent to a small one.
+
+Fri Sep 16 14:41:17 1994  Giuseppe Attardi  (attardi@omega)
+
+	* cmm.C (collect): 
+	Added STACK_GROWS_DOWNWARD for stack limit identification.
+
+Thu Sep 15 10:30:59 1994  Giuseppe Attardi  (attardi@omega)
+
+	* Makefile.schema (demo): eliminated LCFLAGS
+
+Tue Sep  6 11:40:40 1994  Giuseppe Attardi  (attardi@omega)
+
+	* cmm.H: added #define VirtualBase(A)
+
+Fri Aug 12 13:18:56 1994  Giuseppe Attardi  (attardi@igor)
+
+	* cmm.H (GcObject): 
+	Can't use IS_OBJECT(++nextObj), since macro evaluates arg twice:
+
+	    while (! IS_OBJECT(nextObj) && nextObj < lastObj)
+	          nextObj++;
+
+Wed Aug 10 14:36:28 1994  Giuseppe Attardi  (attardi@omega)
+
+	* cmm.C (collect):
+	Bartlett discards current page after sweeping it.
+	We continue using it instead.
+
+	* cmm.C (collect):
+	  With traversal of uncollected heap:
+	   valla   207.5     1.30    2150400
+	  Without:
+           valla   166.94    1.9     2146304
+
+Thu Aug  4 17:49:50 1994  Giuseppe Attardi  (attardi@posso)
+
+	* Gr13/gc/cmm/cmm.H (MARK): 
+	MARK operates on pointer to object, not to header
+	
+	Eliminated flag GCHEAPMAP
+
+Thu Aug  4 07:47:19 1994  Giuseppe Attardi  (attardi@omega)
+
+	* Gr13/groebner/groebner.C (ShowTime):
+	Display name of problem and results on a single line so that it
+	can be pasted in a result file.
+
+	* Gr13/gc/cmm/cmm.C:
+	Eliminated callbacks.
+	HEADER_CALLBACK -> HEADER_TAG
+	freespace_callback -> freespace_tag
+
+	* Gr12a/gc/cmm/cmm.H (CmmHeap): 
+	Eliminated CmmHeap()
+
+	* Gr12a/configure.in: 
+	bartlett -> default
+	heapzone -> heap
+	with- ->
+
+	* Gr12a/gc/cmm/cmm.C (new): 
+	Eliminated heap->id();
+
+Wed Aug  3 12:07:01 1994  Giuseppe Attardi  (attardi@omega)
+
+	* Gr12a/gc/cmm/cmm.C (reserve_pages): 
+	moved call to queue in gcmove
+
+	* Gr12a/gc/cmm/cmm.C:
+	Eliminated
+	 #include <sys/time.h>
+	 #include <sys/ioctl.h>
+	 #include <machine/vmparam.h>
+
+	 #include <machine/param.h> -> <sys/param.h>
+
+Tue Aug  2 11:16:51 1994  Giuseppe Attardi  (attardi@omega)
+
+	* Gr12a/gc/cmm/cmm.C:
+	Introduced flag STACK_GROWS_DOWNWARD
+
+	* Gr12a/gc/cmm/cmm.C (alloc): 
+	Should be better that alloc would return (object+1), i.e. pointer
+	to data, rather than to header.
+
+Mon Aug  1 08:52:27 1994  Giuseppe Attardi  (attardi@omega)
+
+	* Gr12a/gc/cmm/cmm.H (CmmHeap): 
+	  alloc returns GCP instead of GcObject*
+
+	* Gr12a/gc/cmm/interface.H (IsAnObject): eliminated
+
+	* Gr12a/gc/cmm/cmm.H (scavenge): 
+	  We must distinguish membership among several heaps.
+	  So we use the following:
+
+	  OUSIDE_HEAP			outside any heap
+	  gcobject			recognised GcObject (to which traverse
+	  				can be applied)
+	  CmmHeap::outside		outside this heap
+
+	  OutsideHeap -> !gcobject
+
+Sat Jul 30 11:25:15 1994  Giuseppe Attardi  (attardi@omega)
+
+	* Gr12a/gc/cmm/ecl.doc: 
+
+	  /* Shifting by 32 is noop, so we must do it in two steps: */
+	  MTword(p) |= (~0 << MTbit(p)) & ~(~0 << MTbit(q) << 1);
+
+	* Rename:
+
+	  Bartlett -> DefaultHeap
+	  reclaimer -> reclaim
+	  zone() -> heap()
+	  firstword -> ObjectMap
+	  GetBeginning -> basePointer
+	  makecurrentstableset -> stableset_to_current
+	  gcallpercent -> gcFullGcThreshold
+	  GCALLPERCENT -> GCFULLGCTHRESHOLD
+	  MARKED -> MARKING
+	  IS_MARKED -> MARKED
+	  IsMarked -> Marked
+
+	* Gr12a/Makefile (Makefiles):
+	  Added:
+	     rm -f junk.c \
+
+Fri Jul 29 11:43:20 1994  Giuseppe Attardi  (attardi@omega)
+
+	* Gr12a/gc/cmm/cmm.C: 
+	  GcObject -> gcobject (according to what mentioned in header file)
+
+	* Eliminated _gcinit: initialization is done by _CmmInit() in
+	  interface.H
+
+	* stackbase is aligned to segment boundary:
+
+	  stackbase = (((unsigned)&i + NBPG - 1) / NBPG) * NBPG;
+	  ->
+	  stackbase = ((unsigned)&i + STACKBOTTOM_ALIGNMENT_M1)
+	        & ~STACKBOTTOM_ALIGNMENT_M1;
+
+	* Eliminated STACKINC
+
+Thu Jul 28 21:37:14 1994  Giuseppe Attardi  (attardi@omega)
+
+	* Gr12a/gc/cmm/cmm.C (expand_heap): 
+
+	   new_firstword[i + (firstHeapPage-new_firstHeapPage)*BITSxWORD] = firstword[i];
+	   ->
+	   new_firstword[i] = firstword[i];
+
+
+	* Gr12a/greobner/Makefile.schema (bench): 
+	Added dependencies:
+	H = BaseItem.H gdiv.H pair.H algebra.H groebner.H poly.H util.H ../util/List.H
+	groebner:	$(OBJS) $(GC_LIBS)
+
+	groebner.o: groebner.C  $(H)
+
+Thu Jul 28 12:09:26 1994  Giuseppe Attardi  (attardi@omega)
+
+	* Gr12a/gc/cmm/cmm.C (promote_page): 
+	  Eliminated guess_pointer_count, guess_pointers and GCGUESSPTRS
+
+	* Gr12a/gc/cmm/cmm.H: 
+	  Eliminated  __GCVariable and gcvnew
+
+	  Introduced new flag TRACE: only when defined logging and
+	  tracing are performed.
+
+	* Gr12a/gc/cmm/cmm.C (gccollect): 
+	  Serious error in Bartlett code:
+
+	   for  (int i = 0; i < roots_count; i++)  {
+	     fp = roots[i].addr;
+	     for  (int j = roots[i].bytes; j > 0; j = j-STACKINC)  {
+	       promote_page((GCP)*fp);
+	     }
+	     fp++;  <- should be inside previous for loop
+	   }
+
+	  Serious error in Bartlett code:
+
+	   if  (gcflags & GCHEAPROOTS  ||  gcflags & GCHEAPLOG)  {
+	     if  (gcflags & GCHEAPLOG)
+	       fprintf(stderr, "non-GC heap roots:\n");
+	     unsigned*  heapend = (unsigned*)sbrk(0);
+	     while  (fp < heapend)  {
+		     ^^ is not initialized
+
+	* Gr12a/gc/cmm/interface.H: 
+
+	  follow -> visit
+
+	* Gr12a/gc/cmm/cmm.C
+
+	  (allocate_page):
+	  bzero((char*)&firstword[firstpage*BITSxWORD],
+		 	BIT_BYTES*pages);
+	  ->
+
+	  bzero((char*)&firstword[WORD_INDEX(firstpage*BYTESxPAGE)],
+		 	pages*(WORDSxPAGE/BITSxWORD));
+
+  	  (gccollect): 
+	  bzero((char*)&marked[firstHeapPage*BITSxWORD],
+	       BIT_BYTES*heapspanpages);
+	  ->
+
+	  bzero((char*)&marked[WORD_INDEX(firstHeapPage*BYTESxWORD)],
+	       heapspanpages*(WORDSxPAGE/BITSxWORD));
+
+	* Global renaming:
+
+	  BIT_WORDS -> BITSxWORD
+	  WORDBYTES -> BYTESxWORD
+	  PAGEBYTES -> BYTESxPAGE
+	  PAGEWORDS -> WORDSxPAGE
+
+	  HeapZone  -> CmmHeap
+
+	* Gr12a/gc/cmm/cmm.C (GcObject): 
+
+	  firstword = firstword - WORD_INDEX(firstHeapPage*BYTESxPAGE);
+	  marked = marked - WORD_INDEX(firstHeapPage*BYTESxPAGE);
+
+	  corretto di nuovo GcObjectect -> GcObject
+
+Wed Jul 27 21:44:23 1994  Giuseppe Attardi  (attardi@posso)
+
+	* Gr12a/config.h.in:
+	  BARTLETT -> __BARTLETT
+	  BOEHM -> __BOEHM
+
+	* Gr12a/groebner/main.H: added #ifdef __CMM before
+	  extern HeapZone *hs;
+
+	* Gr12a/gc/cmm/gcalloc.C (gccollect):
+	  replaced gcregisters with setjmp/longjmp

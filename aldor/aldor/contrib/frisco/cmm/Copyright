@@ -1,0 +1,55 @@
+
+_______________________________________________________________________________
+
+  Copyright (c) 1993, 1994, 1995 Giuseppe Attardi and Tito Flagella
+_______________________________________________________________________________
+
+Summary:
+
+  Permission is granted to use, copy, modify this program,
+  EXCEPT that the copyright notice must be reproduced on copies, and
+  credit should be given to the authors where it is due.
+  WE MAKE NO WARRANTY AND ACCEPT NO LIABILITY FOR THIS PROGRAM.
+
+
+In detail:
+
+  Permission to use, copy, and modify this software and its documentation is
+  hereby granted only under the following terms and conditions.  Both the
+  above copyright notice and this permission notice must appear in all copies
+  of the software, derivative works or modified versions, and any portions
+  thereof, and both notices must appear in supporting documentation.
+
+  Users of this software agree to the terms and conditions set forth herein,
+  and agree to license at no charge to all parties under these terms and
+  conditions any derivative works or modified versions of this software.
+  
+  This software may be distributed (but not offered for sale or transferred
+  for compensation) to third parties, provided such third parties agree to
+  abide by the terms and conditions of this notice.  
+  
+  THE SOFTWARE IS PROVIDED "AS IS" AND THE COPYRIGHT HOLDERS DISCLAIM ALL
+  WARRANTIES WITH REGARD TO THIS SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES OF
+  MERCHANTABILITY AND FITNESS.   IN NO EVENT SHALL THE COPYRIGHT HOLDERS
+  BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR
+  ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER
+  IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT
+  OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+
+
+Address:
+
+  Giuseppe Attardi		  Tito Flagella
+  Dipartimento di Informatica	  Dipartimento di Informatica 
+  Corso Italia 40		  Corso Italia 40             
+  I-56125 Pisa, Italy		  I-56125 Pisa, Italy         
+  attardi@di.unipi.it         	  tito@di.unipi.it         
+
+Address for reporting bugs, comments, suggestions:
+
+  cmm@di.unipi.it
+
+Contributors:
+
+	Uttam M. Narsu	<narsu@styx.hks.com>
+	Pietro Iglio	<iglio@di.unipi.it>

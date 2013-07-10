@@ -1,0 +1,806 @@
+% *********************************************************************
+\head{chapter}{Sample programs}{asugSample}
+% *********************************************************************
+\index{samples of \asharp{} code}
+In this chapter we show several examples of \asharp{} programs.
+The first few give a brief introduction to the language, followed by some
+examples using more advanced features of the language. The final
+few examples show how \asharp{} can variously emulate or interact with
+other languages.
+
+This chapter supplements the material in \chapref{asugLangSimple} and
+in part II, the language description.
+For reference, the examples are as follows:
+
+\begin{tabular}{@{}llr@{}}
+{\bf Hello} & A few simple constructs
+            & p. \pageref{helloWorldSample} \\
+{\bf Fact}  & Function definition and calling, and simple 
+            & p. \pageref{factorialSample} \\
+            & iteration & \\
+{\bf Greet} & More function definitions, user input and 
+            & p. \pageref{greetSample} \\
+            & importing & \\
+{\bf Cycle} & Functions and multi-valued returns
+            & p. \pageref{cycleSample} \\
+{\bf Gener} & Generators and iteration
+            & p. \pageref{generSample} \\
+{\bf Symbol} & Defining domains
+            & p. \pageref{symbolSample} \\
+{\bf Stack} & Defining parameterised domains
+            & p. \pageref{stackSample} \\
+{\bf Tree} & Defining recursive data types
+           & p. \pageref{recurseSample} \\
+{\bf Swap} & Dependent types and higher order functions
+           & p. \pageref{swapSample} \\
+{\bf Object} & Object-oriented programming
+             & p. \pageref{objectSample} \\
+%{\bf Table} & Hash-tables from the \asharp{} library
+%            & p. \pageref{libTableSample} \\
+%{\bf Float} & Arbitrary precision floating point, formatted output
+%            & p. \pageref{floatSample} \\
+{\bf Mandel} & Machine floating point arithmetic
+             & p. \pageref{mandelSample} \\
+%{\bf Gr\"obner} & Use of the Gr\"obner basis package
+%            & p. \pageref{gbSample} \\
+{\bf Imod} & Integers modulo some number
+           & p. \pageref{imodnSample} \\
+{\bf Extend} & Extensions
+             & p. \pageref{extendSample} \\
+{\bf TextIo} & Input and output
+             & p. \pageref{ioSample} \\
+{\bf Quanc8} & Fortran-style programming 
+             & p. \pageref{quanc8Sample} \\
+%{\bf Xmandel} & \x11{} interoperability
+%            & p. \pageref{x11Sample} \\
+%{\bf Hilbert} & \axiom{} interoperability
+%            & p. \pageref{AxiomSample} \\
+\end{tabular}
+\newpage
+% *********************************************************************
+\head{section}{Hello}{helloWorldSample}
+% *********************************************************************
+
+This program prints out a familiar greeting, and then exits. Line 1
+allows the use of the base \asharp{} library in this
+program. Line 3 prints the greeting. The program shows how a simple
+program is written, and the syntax for printing objects.
+
+\program{hello}
+
+\begin{description}
+\lineNote{1} Include the file \ttin{aldor.as}. This allows all the domains
+and categories in the standard library to be used.
+%(see chapters \ref{asugBaselibCats} and \ref{asugBaselibDoms}).
+\lineNote{2} Include the file \ttin{aldorio.as}. This allows to import
+automatically the necessary types to do some input/output.
+\lineNote{4} Print the message. \ttin{stdout} (available because \fname{aldorio.as}
+has been included) is an identifier referring
+to the console output stream. ``\verb+<<+'' is an infix operator that
+prints an object to a given stream, and returns the stream as a
+value. This allows a cascade of ``\verb+<<+'' calls.
+\end{description}
+\index{stdout}
+
+\newpage
+% *********************************************************************
+\head{section}{Factorial}{factorialSample}
+% *********************************************************************
+
+The next example\label{factpage} shows how to define and call functions in \asharp,
+and a simple form of iteration.
+
+\program{myfact}
+
+This program defines two functions for calculating the factorial of an
+integer. The first shows a simple recursive version, the second is
+an iterative version. 
+\index{recursion}
+\begin{description}
+\lineNote{3} Activates the ``piling'' syntax mode (see \secref{asugFLangPiles} for details).
+\lineNote{5} Defines a function called {\tt rfact}, which takes an {\tt
+Integer} and returns the result as an {\tt Integer}
+\lineNote{7} Defines a function {\tt ifact} with the same signature as {\tt
+rfact}. 
+\lineNote{8} Assigns the \verb"Integer" \verb"1"
+to {\tt i}. Note that no declaration is
+needed if the compiler can infer the type of {\tt i}.
+In this example, \verb"1"
+must have been exported from the domain {\tt Integer}. If, for example,
+{\tt MachineInteger} was also imported, a declaration would have been
+necessary.
+\lineNote{9} The {\tt repeat} keyword is used to indicate a loop, and the
+{\tt while} keyword gives the test for the loop, in this case the loop
+will exit once {\tt n} is less than or equal to one.
+\lineNote{10,11} The loop body --- multiply {\tt i} and decrement {\tt n} by
+one. Note that it is legal to assign to a function's parameters.
+\lineNote{12} The last statement in the function body gives the value to
+be returned.
+\end{description}
+\keywordIndex{repeat}
+\index{loop}
+\keywordIndex{while}
+
+\newpage
+% *********************************************************************
+\head{section}{Greetings}{greetSample}
+% *********************************************************************
+
+Most operations in \asharp{} are defined in and exported by {\em
+domains}. In order to import from a domain,
+the {\tt import} statement is used. Imports implicitly happen for the
+types of parameters of a function, and its return value. The example
+program below shows the use of the {\tt import} statement, and also
+how to read user input.
+\index{domain}
+\keywordIndex{import}
+
+\program{greet}
+
+This program declares functions to read a name from the console, and
+then print a personalised note for that name. 
+\begin{description}
+\lineNote{1} include the standard library
+\lineNote{4 to 8} import operations from the given domains, allowing us
+to use operations. Note that the {\tt import from} statement is only
+needed when operations have not been implicitly imported. In this example,
+\fname{aldorio.as} was not included and so imports for input/output are
+necessary.
+\lineNote{11} Defines a function, {\tt readName}. Note that the {\tt ()}
+indicates that the function takes no parameters.
+\lineNote{20} Defines a function, {\tt greet}. The return type of the
+function, {\tt ()} indicates that the function does not return a
+value.
+\lineNote{25} Call the function.
+\end{description}
+
+The program produces the following output (user input is in {\it italic}):
+\begin{flushleft}\small\leftskip=\baseLeftSkip
+\tt
+What is your name?	\\
+{\it Aldor}	\\
+Hello Aldor, and goodbye...
+\end{flushleft}
+
+% *********************************************************************
+\newpage
+\head{section}{Cycle}{cycleSample}
+% *********************************************************************
+
+This example demonstrates the manipulation of functions as first-class
+values, creating new closures over the course of the computation and
+multiple valued returns.
+\index{multiple values!returning}
+
+\program{cycle}
+
+\begin{description}
+\lineNote{9--11} Define some macros as shorthand for some common types
+used in the program. \ttin{MapIII} is a map type for functions that
+take three integers and return three integers.
+\lineNote{13} The identity function for {\tt MapIII}. Note that
+\ttin{+->} produces a closure (otherwise known as a ``lambda expression'',
+``anonymous function'' or just ``function'').
+\lineNote{16} Define a function \ttin{*} (which is an infix operator)
+to be a function that given two functions (of type {\tt MapIII})
+returns a third function (in this case the composition of the two
+functions).
+\lineNote{19--24} Define a function that returns 
+$\underbrace{f f \cdots f}_{n \; {\rm times}} (a,b,c)$. \\
+The new function is computed by repeated squaring.
+\lineNote{27--38} A test routine.
+\lineNote{28, 30} One can define constants inside functions. These have
+scope local to the function.
+\end{description}
+\index{closure}
+\index{function expression}
+
+The program produces the following output:
+\verbatiminput{samples/cycle.out}
+
+% *********************************************************************
+\newpage
+\head{section}{Generators}{generSample}
+% *********************************************************************
+
+Iteration in \asharp{} is mainly achieved through the use of
+generators. These are objects representing the state of an iteration,
+and may be passed around as first-class values. There are two ways of
+creating generators in \asharp{}: The {\tt generate} keyword, and the
+collect form, created by iterators.
+\index{generators}
+
+\program{gens}
+
+\begin{description}
+\lineNote{5} Define a helper function which computes an approximated
+exponential for a \verb+DoubleFloat+ value.
+\lineNote{17} Define a function which creates a generator of 
+\verb"DoubleFloat"s.
+\lineNote{17} The \verb+generate+ keyword introduces the generator body. This is
+evaluated when a value from the generator is needed, up to the first
+yield statement, the value of which is returned as the next value for
+the generator. 
+\lineNote{18--23} The body of the generator. In this case we yield the
+value of $e^{-x^2}$ for increasing values of $x$.
+\lineNote{25} Define a function to calculate the running mean of a
+sequence. 
+\lineNote{28--34} The generator body. The value is calculated by
+maintaining a sum of values so far, and dividing by the number of
+values. 
+\lineNote{37} Define a helper function which returns a generator of
+\verb+step+s between $a$ and $b$ using $n$ as the size of the interval.
+\lineNote{49} create a generator and iterate over it. In this case the
+generator is the running average of 0, 0.1, \ldots, 1.0.
+\lineNote{52} where more than one iterator  (formed by {\tt for}
+and {\tt while}) precedes the repeat, iteration is in parallel and
+terminates when one of the iterators reaches its end condition. In
+this case we want the first few values of a generator, so the parallel
+iteration ensures that the loop will complete at or before 10 iterations.
+\end{description}
+\keywordIndex{yield}
+There is a further example on the use of generators on page \pageref{recurseSample}.
+
+
+% *********************************************************************
+\newpage
+\head{section}{Symbol}{symbolSample}
+% *********************************************************************
+
+Most programming in \asharp{} is done by defining domains and
+packages. Here we give a small example of a domain. A package is simply
+a domain which does not export any operations involving values of
+type \%. 
+
+Typically, writing a domain is done in four stages:
+\begin{enumerate}
+\item decide what operations a domain will provide, and from which
+\linebreak categories it should inherit,
+\item decide how to represent the domain,
+\item implement the operations,
+\item test the domain.
+\end{enumerate}
+In this example we show how to define a domain. The example is a
+symbol datatype which ensures that only a single instance of a given
+symbol is created.
+
+\program{symbol}
+
+\begin{description}
+\lineNote{4} Define the category \verb+BasicType+ which is the union of
+PrimitiveType and OutputType.
+\lineNote{6} Define symbol to be a constant with the given type --- in
+this case \verb"Symbol" is a \verb"Domain"
+which implements {\tt BasicType} and
+provides 3 additional operations.
+\lineNote{6--9} Signatures for operations on the domain. {\tt \%} in the
+type refers to ``this \verb"Domain"''.
+\lineNote{10} The {\tt add} expression creates a domain from a sequence of
+definitions. 
+\lineNote{11} Define how \verb"Symbols",
+our new type are represented. In this case,
+we just use a string. If the signature required that additional
+information was stored on the symbol we might want to use a different
+representation.
+\lineNote{13} Allow operations from the representation domain, \ie{}
+{\tt String} to be used.
+\lineNote{15} {\tt \%} can be used inside the add body to refer to the
+current domain.
+\lineNote{15} define a local variable for storing the symbol table.
+\lineNote{17--34} Define functions exported by the domain.
+\lineNote{19 and 26} The operation {\tt rep} allows a value of type
+\% to be treated as if it were of type {\tt Rep}. {\tt per} is the
+inverse operation, \ie{} it converts an object of type {\tt Rep} into 
+type \%. These two operations are currently macros\footnote{ {\tt per}
+can be thought of as `rep backwards', or as `{\em per}cent'.}. See
+\secref{asugLangSimpleIV}.
+\end{description}
+%\index{"%@"{\tt \%}}
+\keywordIndex{add}
+\index{macros}
+\keywordIndex{pretend}
+
+% *********************************************************************
+\newpage
+\head{section}{Stack}{stackSample}
+% *********************************************************************
+
+It is possible to define a function whose return type is a domain. In
+this case, the result is called a {\em parameterised domain}.  The
+example is a simple stack with a few operations for creating new
+stacks, as well as pushing and popping values from an existing stack.
+\index{parameterised type}
+
+\program{stack}
+
+The chosen representation type is a list over the same domain as the
+stack. This allows us to implement the operations with minimum
+complications. A better representation might be a linked list of
+arrays, but this would clutter the example more than necessary.
+
+\begin{description}
+\lineNote{8} Define {\tt Stack} to be a function that takes a
+BasicType (\ie{} most of the domains in \asharp{}),
+% --- see \chapref{asugBaselibCats})
+and returns an object which satisfies
+BasicType, and additionally provides some stack operations. The
+interface is specified by the {\tt with} construct.
+\lineNote{9} Declare an operation `empty?' which takes a value from the
+current domain as an argument, and returns a Boolean value.
+The line starting `++' is a description comment, and is saved along
+with the declaration of {\tt empty?} in the intermediate file.
+\lineNote{16} The `export from' statement indicates that all operations
+exported by {\tt S} should be imported when Stream S is imported. 
+\lineNote{23} Define the representation of the Stack. This form of a
+define statement (without a declaration) implies that the type of Rep
+is exactly that of the type of the right hand side of the expression,
+\ie{} {\tt Record(contents: List S)}.
+\lineNote{24} Allow operations from Rep to be used. We do not need to say
+{\tt import from List S}, as Record exports its arguments.
+\lineNote{27} Define a function which returns the internal list of values
+maintained by the stack. 
+\lineNote{30--43} Define the operations required explicitly by the category.
+\lineNote{46--47} Define the operations needed to satisfy inherited operations.
+\end{description}
+\keywordIndex{with}
+
+\newpage
+Once the domain is defined, it may be tested. \asharp{}'s interactive
+loop, \ttin{aldor -G loop} is useful here.
+\index{compiler options!\protect{\tt -Gloop}}
+\begin{flushleft}\small\leftskip=\baseLeftSkip
+\verb+%+ {\em aldor -G loop}			\\
+\verb+%1 >>+ {\em \#include "stack.as"}	\\
+\verb+stack is:<stack>+\\
+\verb+Next is: 6+\\
+\verb+Next is: 5+\\
+\verb+Next is: 4+\\
+\verb+Next is: 3+\\
+\verb+Next is: 2+\\
+\verb+Next is: 1+\\
+\verb+%2 >>+ {\em import from Stack MachineInteger}	\\
+\verb+%3 >>+ {\em s: Stack MachineInteger := empty()}	\\
+\verb+<stack> @ Stack(MachineInteger)+			\\
+\verb+%4 >>+ {\em push!(12, s)}		\\
+\verb+<stack> @ Stack(MachineInteger)+	\\
+\verb+%5 >>+ {\em top s}	\\
+12 @ MachineInteger		\\
+\verb+%5 >>+ {\em pop! s}	\\
+12 @ MachineInteger
+\end{flushleft}
+
+We should probably test it a little further (\eg{}~boundary conditions),
+but this gives the general idea.
+
+% *********************************************************************
+\newpage
+\head{section}{Recursive structures}{recurseSample}
+% *********************************************************************
+
+This program shows a recursively defined data type:
+\index{recursion}
+the type of binary trees parameterised with respect to the type
+of data placed on the interior nodes.  This tree type provides
+several generators which allow the trees to be traversed in different ways.
+
+\program{tree}
+
+When compiled and run, this program gives the following output:
+\begin{small}
+\verbatiminput{samples/tree.out}
+\end{small}
+
+% *********************************************************************
+%\newpage
+%\head{section}{swap}{swapSample}
+% *********************************************************************
+
+%The following is an example of a package which is parameterised over a
+%domain.
+
+%\program{mysort}
+
+%The next example demonstrates how parameterised type constructors may
+%themselves be passed as arguments to other functions.
+
+% *********************************************************************
+\newpage
+\head{section}{Swap}{swapSample}
+% *********************************************************************
+
+Higher order functions which construct types are first-class values.  
+This example shows how to swap structure layers in a data type
+by using higher order functions as parameters to a generic program.
+
+\program{swap}
+
+\begin{description}
+\lineNote{6} Define a macro \ttin{Ag} as a shorthand for the type
+which takes a Type as an argument, and returns a second type which
+is a {\tt BoundedFiniteLinearStructureType} over it.
+\lineNote{11--13} Define the \ttin{swap} function.  This curried definition
+exchanges the \ttin{X} and \ttin{Y} layers in a structure.
+This function is written generically to use
+\begin{itemize}
+\item \ttin{generator} from \verb"X Y S" for the outer iteration,
+\item \ttin{generator} from \verb"Y S" for the inner iteration,
+\item \ttin{bracket} from \verb"X S" as the inner constructor,
+\item \ttin{bracket} from \verb"Y X S" as the outer constructor.
+\end{itemize}
+
+\lineNote{25} Call \ttin{swap} to exchange the \verb"Array"
+and \verb"List" layers.
+\end{description}
+
+When executed via ``{\tt \asharpcmd{} -G run swap.as},'' the following
+output is produced.
+{\small
+\verbatiminput{samples/swap.out}
+}
+
+% *********************************************************************
+\newpage
+\head{section}{Objects}{objectSample}
+% *********************************************************************
+
+In \asharp{}, values are {\sl not\/} self-identifying --- there is no way
+of retrieving a given value's type from the value itself.  
+\index{self-identifying values}
+
+We can implement this functionality in the \ttin{Object}
+datatype, which holds both a value and its type.
+
+The following example shows the implementation of Object and a use of it.
+
+\program{objectb}
+
+\begin{description}
+\lineNote{9}
+   Define the \verb+Object+ datatype. As we can see there is a constructor
+   called \verb+object+ to bundle a value and its type and a ``dismantler''
+   called \verb+avail+ to get the value and the type from a previously
+   constructed object. This domain is parameterized by a category called
+   \verb+C+. All types that we can bundle in an \verb+Object(C)+ will
+   satisfy the category \verb+C+.
+\lineNote{23}
+   Define a function, \ttin{bobfun}, to take object arguments.
+   The arguments are objects whose underlying type satisfies the
+   category \verb"OutputType".
+\lineNote{24}
+   Use the \ttin{avail} operation to split an object into its type
+   and value components, then call the local function \ttin{f}
+   on the dependent type/value pair.
+\lineNote{26}
+   Print the object value.  The \ttin{<<} operation is available,
+   because each object's type satisfies \verb"OutputType".
+\lineNote{30}
+   Form a list of \verb"OutputType" objects.  Each is formed with the
+   \ttin{object} function from \verb"Object(OutputType)".
+\lineNote{35}
+   Call \ttin{bobfun} on each of the objects in the list.
+\end{description}
+
+When run with ``{\tt \asharpcmd{} -G run objectb.as}'' this program
+produces the following output:
+{\small
+\verbatiminput{samples/objectb.out}
+}
+
+\vspace{1cm}
+The richer the category argument to \verb"Object", the more interesting
+operations may be performed on the object values.  A second example
+of using \verb"Object" is shown below.  In this case each object
+value belongs to some ring, and this fact is used in the arithmetic
+calculation.
+%%FIXME: Need to make this work!
+\program{objectr}
+\begin{description}
+\lineNote{24}
+   Define a function, \ttin{robfun,} to take object arguments.
+   This time the arguments are objects whose type slots satisfy the
+   category \verb"IntegerType".
+   Again \ttin{avail} is used to split an object into its component parts
+   (type and value).
+\lineNote{28--30}
+   Perform various arithmetic operations on the value.
+   All of \ttin{+} \ttin{-} \ttin{*} ``\verb"^"'' and \ttin{1} are provided
+   by the particular object.
+\lineNote{33--36}
+   Print the results of the arithmetic.  This is possible because each
+   \verb"IntegerType" provides a \ttin{<<} operation.
+\lineNote{39}
+   The {\tt has} operator tests whether a given domain
+   satisfies a particular category. This test is made at run-time.
+\lineNote{40--44} 
+   Inside an {\tt if} statement, if it can be deduced that
+   an imported domain satisfies an additional category
+   (using the information in the evaluation of the {\tt if} expression),
+   then the additional operations are made available within the \ttin{then}
+   branch of the {\tt if} statement. 
+   In this case, \ttin{<} and \ttin{>} are available because \verb"T" 
+   is seen to also satisfy \verb"TotallyOrderedType".
+\end{description}
+
+The output produced when running this program with the command
+``{\tt \asharpcmd{} -G run objectb.as}'' is shown below.
+{\small
+\verbatiminput{samples/objectr.out}
+}
+%% % *********************************************************************
+%% \newpage
+%% \head{section}{\asharp{} libraries}{libNotesSample}
+%% % *********************************************************************
+%% 
+%% Here we give some examples of code which uses a number of domains from
+%% the libraries provided with \asharp{}. Four libraries are provided in
+%% the \asharp{} distribution: 
+%% \begin{itemize}
+%% \item The basic library (\ttin{libaldor})
+%% \item The \axiom{} interoperability library (\ttin{libaxiom})
+%% \item A library of useful demonstration code (\ttin{libaldordem})
+%% \item The \x11{} interface library (\ttin{libaldorX11})
+%% \end{itemize}
+%% The first two libraries are documented elsewhere (see
+%% \chapref{asugBaselibCats} and \chapref{asugBaselibDoms} for
+%% \ttin{libaldor} and \chapref{asugUsingAxiom} for \ttin{libaxiom}).
+%% 
+%% Source code for \ttin{libaldordem} is provided in the distribution.
+%% It includes the following types:
+%% \io{Dir\-ect\-Prod\-uct},
+%% \io{Groeb\-ner\-Pack\-age},
+%% \io{Index\-ed\-Bits},
+%% \io{Multi\-Dict\-ionary},
+%% \io{List\-Multi\-Dict\-ionary},
+%% \io{Matrix\-Op\-Dom},
+%% \io{Matrix},
+%% \io{Non\-Neg\-ative\-Int\-eger},
+%% \io{Poly\-nomial\-Cat\-egory},
+%% \io{Poly\-nomial},
+%% \io{Int\-eger\-Primes\-Package},
+%% \io{Rand\-om\-Number\-Source},
+%% \io{Small\-Prime\-Field} and
+%% \io{Vect\-or}. To use this library, use \verb+#include"aldordem"+.
+%% 
+%% The \ttin{libaldorX11} library contains declarations for
+%% the data structures and functions found in the Xlib library. 
+%% This library provides an interface to the
+%% low level \x11{} functions, on top of which can be built various
+%% toolkits.
+%% 
+\newpage
+% *********************************************************************
+%\head{section}{Tables}{libTableSample}
+% *********************************************************************
+
+%The next example shows a possible implementation of a \verb"Table" datatype
+%using a hash table.
+
+%\program{table}
+
+% *********************************************************************
+%%\newpage
+%%\head{section}{Floating point}{floatSample}
+%%% *********************************************************************
+%%
+%%The next example demonstrates the use of arbitrary precision floating
+%%point numbers
+%%
+%%\program{float1}
+%%
+%%When executed via ``{\tt \asharpcmd{} -G run float1.as},'' the following
+%%output is produced.
+%%{\small
+%%\verbatiminput{samples/float1.out}
+%%}
+
+% *********************************************************************
+\newpage
+\head{section}{Mandel}{mandelSample}
+% *********************************************************************
+
+The next example shows the use of machine-level floating point in \asharp.  
+This program would be a bit simpler if we first implemented a Complex
+domain.
+
+\program{mandel}
+
+Machine level operations are done inline when the optimiser is used
+while compiling (use the options ``{\tt -Q3 -Qinline-limit=10}'').
+\index{optimisation}
+This has the result that the generated code speed is
+comparable with that of the equivalent code in languages such as C.
+
+%%% *********************************************************************
+%%\newpage
+%%\head{section}{Gr\"obner bases }{gbSample}
+%%% *********************************************************************
+%%
+%%Some symbolic algebra packages are supplied in the \asharp{}
+%%demonstration library. For example, \io{GroebnerPackage} provides a
+%%mechanism for computing the Gr\"obner basis of a list of polynomials.
+%%(These may be used to solve polynomial systems of equations,
+%%among other things.)
+%%Compile this file with the \verb"-laldordem" option to link with the appropriate
+%%library.
+%%
+%%\program{gbtest1}
+%%\newpage
+%%When executed via ``{\tt \asharpcmd{} -G run gbtest1.as -L aldordem}'' the program
+%%produces the following output: 
+%%{\small
+%%\verbatiminput{samples/gbtest1.out}
+%%}
+%%
+% *********************************************************************
+\newpage
+\head{section}{Integers mod n}{imodnSample}
+% *********************************************************************
+
+This example shows how add-inheritance can be used in the
+implementation of integers modulo a particular number.  We first
+define a category and a generic member of the category, called
+{\tt ModularIntegerNumberRep}.  We then have two specific instances of the
+category which inherit most of their operations from the generic
+domain.  Note that in the definition of {\tt MachineIntegerMod} we
+over-ride the generic multiplication with something more efficient.
+Also note that the definition of {\tt Rep} is required in both the specific
+implementations so that the {\tt rep} and {\tt per} macros will work,
+however it is essential that it is compatible with the {\tt Rep} in
+the generic case.
+
+\program{imod}
+
+% *********************************************************************
+\newpage
+\head{section}{Extensions}{extendSample}
+% *********************************************************************
+
+
+\asharp{} allows the library types to be extended with new
+operations. For example, one may wish to add a {\tt DifferentialRing}
+category to the language. The extension mechanism allows existing
+domains, such as {\tt Integer} and {Polynomial} to include these new
+categories. The extension mechanism operates via the \ttin{extend} 
+keyword.
+
+The following example allows us to sort lists of symbols.  The {\tt List(S)}
+domain exports a {\tt sort} operator if {\tt S} belongs to the category
+{\tt TotallyOrderedType}.  Although {\tt Symbol} does not belong to this category
+{\tt String} does, and we can use this fact to implement the necessary
+exports in a fairly straightforward manner.
+\keywordIndex{extend}
+
+\program{extend}
+
+\begin{description}
+\lineNote{6--24} Extend Symbol. In order to satisfy {\tt TotallyOrderedType} we need
+to provide six operations which in this case we implement in terms of
+strings.
+\lineNote{26--32} Test the extended domain constructor.
+\end{description}
+
+% *********************************************************************
+\newpage
+\head{section}{Text input}{ioSample}
+% *********************************************************************
+
+%The next example uses the \asharp{} datatypes {\tt TextReader} and
+%{\tt TextWriter} to provide a number of useful text processing
+%operations. 
+%% gives a bad linebreak.
+In the next example, the \asharp{} {\tt TextReader} and
+{\tt TextWriter} {\hyphenation{datatypes data-types} datatypes}
+are used to provide a number of useful text processing operations. 
+
+\program{textin}
+
+\begin{description}
+\lineNote{7} Define a predicate for testing whether a given character
+is a vowel
+\lineNote{15} Define a function to print the non-vowel characters in a
+file. 
+\lineNote{15} {\tt TextReader} provides a generator on a reader which
+returns the sequence of characters in the reader. {\tt TextWriter}
+provides primitives to write on a stream.
+\lineNote{19} {\tt write!} puts a single character onto a stream.
+The stream is passed as a parameter with the name {\tt tw}. A
+possible value for {\tt tw} would be {\tt stdout} which is a value
+of type {\tt TextWriter} and thus an output stream. It is attached
+to the default output device of the process.
+\lineNote{25} Define a function to print a text message.
+\lineNote{33} Define a conversion function from a list of {\tt Character}s
+to a String.
+\lineNote{44} {\tt lines} creates a generator which returns the
+contents of an input stream (passed as a {\tt TextReader}) as a
+sequence of lines terminated by {\tt newline}.
+\lineNote{61} Open a file for input. The value {\tt fileRead} is exported
+by {\tt File} and is the mode chosen to open the file.
+\lineNote{62} {\tt fileWrite} is also exported by {\tt File}.
+\lineNote{63} The file {\tt f1} is \verb+coerce+d to an input stream of
+type {\tt TextReader}.
+\lineNote{64} The file {\tt f2} is \verb+coerce+d to an output stream of
+type {\tt TextWriter}.
+\end{description}
+
+
+% *********************************************************************
+\newpage
+\head{section}{Quanc8}{quanc8Sample}
+% *********************************************************************
+
+The next example gives a Fortran-style program for numeric
+integration. The program demonstrates how an algorithm described in
+the pre-structured programming era may be transcribed without
+introducing errors by reworking its logic. The program was transcribed
+from the textbook described in the first comment, and produced correct
+values on its first run. Of course, if you have access to a callable
+library containing the routines it should be possible to import the
+operations directly into \asharp{}.
+\index{Fortran}
+
+The \ttin{goto} construct in \asharp{} takes the name of a label, and
+transfers control to that label. Labels are introduced by the
+\ttin{@} symbol.
+\keywordIndex{goto}
+\keywordIndex{label}
+
+\program{quanc8}
+
+
+% *********************************************************************
+%\newpage
+%\head{section}{\x11{}}{x11Sample}
+% *********************************************************************
+%
+%\asharp{} provides an interface to \x11{}. The following example
+%draws a Mandelbrot fractal set in a window and allows it to be resized,
+%recoloured, etc.
+%
+%\program{xmandel}
+%
+%%% *********************************************************************
+%%\newpage
+%%\head{section}{\axiom{} library }{AxiomSample}
+%%% *********************************************************************
+%%
+%%\asharp{} programs can run within the \axiom{} environment, and can use all the
+%%categories, domains and packages supplied by \axiom{}. The following
+%%example computes the Hilbert polynomial for a set of monomials.
+%%
+%%\program{hilbert0}
+%%
+%%\pagebreak
+%%Note that \axiom{} domains and categories are used freely within the
+%%program, for example, {\tt OrderedSet}, {\tt Monomial} and {\tt List}. 
+%%
+%%As well as providing all the \axiom{} domains, {\tt libaxiom} also
+%%extends a few so that features new in \asharp{} are (apparently)
+%%provided in the old \axiom{} domain. As an example, in the function {\tt
+%%variables}, the \verb"List" \ttin{M}{} is iterated using a generator, the
+%%definition of which came from the \asharp{} extension of \verb"List".
+%%
+%Data structures
+%	table.as
+%Mathematical
+%	Numeric
+%		-- arb. precision floating point
+%		-- dfloat arithmetic
+%	Algebraic
+%		groebner basis
+%		imodn
+%			
+%	Note: Testing using the interpreter
+%Tuning
+%
+%Fortran code
+%	quanc8.as
+%
+%C Code
+% Array DFlo, and sort it
+%Not covered:
+%	Implicit operations
+%	categories
+%	Enumerations 
+%	Unions
+%
+%

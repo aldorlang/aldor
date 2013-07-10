@@ -1,0 +1,274 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%                                                                        %%%
+%%% :: Generic Tie-ins
+%%%                                                                        %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\newpage
+\head{chapter}{Generic tie-ins}{asugLangTies}
+
+Several syntactic constructs are defined in terms of function
+application in \asharp{}:
+the treatment of literal values,
+the application of one object to another,
+the updating of objects,
+the interpretation of tests in conditional statements and
+the mechanism for generating a set of values for iteration.
+
+This allows user programs to define how these syntactic constructs
+behave in a particular lexical context. The function calls themselves
+are treated as standard function calls, so the normal rules apply.
+
+%\asharp{} has provisions which allow newly defined types to mimic
+%nlanguage-defined types in every aspect.  Some of these are syntactic
+%equivalences and others are semantic operations.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\head{section}{Literals}{asugLangTiesLiterals}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Types provide meanings for literal constants by defining
+functions named \ttin{integer}, \ttin{float} or \ttin{string}
+taking values of type \verb+Literal+. The type {\tt Literal}
+represents the source text of the particular literal. Valid literal
+values are described in \secref{asugLangExprLiterals}.
+
+The meaning of string-style literals is determined by what operations
+
+\begin{tt}
+\verb@    @string: Literal -> X
+\end{tt}
+
+are visible, where \ttin{X} may be any type.
+In \libaldor{}
+the type \verb"String" provides string-style literals.
+
+%Both integer and floating literals are passed in the same way, so it
+%is legal to call the function {\tt string} on a floating point or
+%integer literal. This can be used to allow numbers to be parsed as
+% changed to avoid very bad page break:
+Both integer and floating point literals are passed in the same way,
+so it is legal to call the function {\tt string} on them.
+This can be used to allow numbers to be parsed as
+strings. For example, the function \verb"scan", from {\tt
+IntegerTypeTools} in the \asharp{} base library, scans a {\tt
+TextReader} stream to find a possible {\tt Integer} value.
+The following example is a possible implementation to
+create an {\tt Integer} from a {\tt Literal}.
+
+\begin{small}
+\begin{verbatim}
+        integer(l: Literal): Integer == {
+                 import from IntegerTypeTools Integer, String;
+                 scan (string l)::TextReader
+        }
+\end{verbatim}
+\end{small}
+
+Note that the literal \ttin{l} is converted to a string, and then 
+to a {\tt TextReader} input stream before {\tt scan} is called on
+the result to form a new value.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\head{section}{Program-defined tests}{asugLangTiesTests}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+There are several types of expression in which a condition controls
+the evaluation of an \asharp{} program:  
+
+\begin{small}
+\begin{tt}
+\verb@    @if {\it condition} then ... \\
+\verb@    @{\it condition} => ... \\
+\verb@    @while {\em condition} repeat ... \\
+\verb@    @for ... in ... \verb+|+ {\it condition} repeat ... \\
+\verb@    @not {\it condition} \\
+\verb@    @${\it condition}_1$ and ${\it condition}_2$ \\
+\verb@    @${\it condition}_1$ or ${\it condition}_2$
+\end{tt}
+\end{small}
+
+%% So far we have only seen cases where the condition produced a \io{Boolean}
+%% value, but we are not limited to this case.
+
+In many situations, a value can be treated as a condition, even though
+it may not be a value from the \ttin{Boolean} type. \asharp{} allows
+these to be treated as logical values in the above constructs. If a
+{\em condition} above  produces a value of type $T$, different from
+\io{Boolean}, and there is a single function \ttin{test: $T$ ->
+Boolean} in scope, then that
+\ttin{test} function is implicitly applied to the condition value to determine
+the outcome of the test. For example:
+\keywordIndex{test}
+
+\begin{small}%
+\begin{verbatim}
+#include "aldor"
+
+-- In "aldor" the type List(S) has a function "test" which
+-- returns true on non-empty lists.
+
+-- This function determines which of two lists is longer.
+LI ==> List Integer;
+
+longer(a: LI, b: LI): LI == {
+        (a0, b0) := (a, b);
+        while a and b repeat (a, b) := (rest a, rest b);
+        if a then a0 else b0
+}
+\end{verbatim}
+\end{small}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\head{section}{Generator}{asugLangTiesGenerators}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+If an expression traversed by a \ttin{for} iterator does not evaluate
+to a {\tt Generator} value, then the operator \ttin{generator} is
+implicitly applied to the expression. This makes loops more readable
+if the {\tt for} is traversing, for example, a list or an array:
+
+\begin{small}%
+\begin{verbatim}
+    #include "aldor"
+    #include "aldorio"
+
+    import from List Integer, Integer;
+
+    ls := [1,2,3,4];
+
+    for elem in ls repeat stdout << elem << newline;
+\end{verbatim}
+\end{small}
+
+The \ttin{for elem in ls repeat ...} of the previous example is
+equivalent to:
+
+\begin{small}
+\begin{verbatim}
+    for elem in generator ls repeat ...
+\end{verbatim}
+\end{small}
+
+When {\tt List Integer} is imported, then the application:
+
+{\small \verb^    generator: List(Integer) -> Generator(Integer)^}
+
+comes into the current scope.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\head{section}{Apply}{asugLangTiesApply}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+In the absence of an explicit function named \ttin{a}, the application
+\ttin{a(b)} is treated as a call to the function \ttin{apply} with the
+first argument being taken to be \ttin{a}, and the remaining arguments
+being taken from the arguments to the original application.
+Example:
+
+\verb^    ^{\tt f(a,b,c)} becomes {\tt apply(f,a,b,c)}
+
+For example, consider a matrix domain over a ring, $R$. A desirable
+syntax for retrieving elements of a particular matrix might be:
+
+\begin{small}
+\begin{verbatim}
+    mat(a, b)
+\end{verbatim}
+\end{small}
+
+where {\tt a} and {\tt b} are integer indices for the matrix. To
+achieve this, a matrix domain would export a function with signature:
+
+\begin{small}\begin{verbatim}
+    apply: (%, Integer, Integer) -> R;
+\end{verbatim}
+\end{small}
+
+The function is defined in the normal way.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\head{section}{Set!}{asugLangTiesSetBang}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+If the left hand side of an assignment is an application, the
+assignment is treated as an application of the operator {\tt set!}  to
+the operator of the left hand side, the operands of the left hand side
+and the right hand side.
+
+\verb^    f(a,b) := E ^ becomes \verb^ set!(f,a,b,E)^ \\
+\verb^    f a    := E ^ becomes \verb^ set!(f,a,E)^   \\
+\verb^    f.a    := E ^ becomes \verb^ set!(f,a,E)^   \\
+\verb^    f.a.b  := E ^ becomes \verb^ set!(f.a,b,E)^
+
+As an example, consider the matrix domain above. We would like to assign
+into the matrix using a syntax like:
+
+\begin{small}\begin{verbatim}
+	mat(a, b) := 1;
+\end{verbatim}
+\end{small}
+
+To achieve this, the domain should export a function with signature:
+
+\begin{small}\begin{verbatim}
+    set!: (%, Integer, Integer, R) -> R
+    ++ update and return the previous value of the element
+\end{verbatim}
+\end{small}
+
+As this is just a normal function, there are no restrictions on the
+return type or value. In this case a value from $R$ is returned, and
+the description indicates which. Note that the description is purely
+for documentation purposes, and not used to interpret the program.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\head{section}{Bracket}{asugLangTiesBracket}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+An expression of the form:
+
+{\small \verb^[ ^ {\em Expr} \verb^ ]^}
+
+is treated as an application of the operator \ttin{bracket} to {\em
+Expr}.
+
+Example:
+
+\begin{small}%
+\begin{verbatim}
+   #include "aldor"
+   #include "aldorio"
+
+   import from List Integer, Integer;
+
+   a := [1,2,3];
+   b := bracket(1,2,3);
+
+   stdout << a << newline; -- Produces: [1,2,3]
+   stdout << b << newline; -- Produces: [1,2,3]
+
+\end{verbatim}
+\end{small}
+
+As can be seen above, this is a useful syntax for creating aggregates
+of various types. The value passed to the \ttin{bracket} function in
+this case is a tuple of the three values 1, 2 and 3.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\head{section}{Coerce}{asugLangTiesCoerce}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+An expression of the form:
+
+{\small \verb^    ^{\em Expr}\verb^ :: ^{\em T}}
+
+is treated as an application of the operator \verb"coerce" to {\em
+Expr} and restricted to be of type {\em T}:
+
+{\small \verb^    coerce(^ {\em Expr} \verb^)@^{\em T}}
+
+This allows types to define their own mechanisms for converting
+between types, and enables types to do appropriate error checking.

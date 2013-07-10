@@ -1,0 +1,55 @@
+%% SMW: Changed to small font to make table look less crowded.
+\newcommand{\AssLtoR}{{\small $(e \; \circ \; e) \; \circ \; e$}}
+\newcommand{\AssRtoL}{{\small $e \; \circ \; (e \; \circ \; e)$}}
+\newcommand{\AssPref}{{\small $\circ \; e$}}
+\newcommand{\AssPost}{{\small $e \; \circ$}}
+\newcommand{\sdag}{\hspace{1mm}\dag}
+
+%% SMW: Fixed spacing, alphebetized within items.
+%% SMW: Modified \hline-s and \caption to conform to guide style.
+%% SMW: Use \clearpage at the end of the page it's on. !!!!!!!!!!!!!!!!!!!!!!!!!!!
+%% MCD: What about always, assert, but, catch, else, except, from, in, select
+%%      then, throw, to, try, where ??
+\begin{figure}[h]
+%\vskip -2mm
+\begin{center}
+\begin{tabular}{|r@{\hspace{0mm}}rl|c@{\hspace{3mm}}c|}
+\hline
+\hline
+ \multicolumn{3}{|c|}{Keyword/Operator}                   & Associativity & Unary \\
+\hline
+ 1.\  &       & \verb";"                                  & \AssLtoR &  ---     \\
+ 2.\  &       & \verb"default define  export   extend"  &  ---     &  ---     \\
+   \  &       & \verb"fluid   free    import   inline"  &  ---     &  ---     \\
+   \  &       & \verb"local   macro"                    &  ---     &  ---     \\
+ 3.\  &       & \verb","                                & \AssLtoR &  ---     \\
+ 4.\  &       & \verb"where"                            & \AssLtoR &  ---     \\
+ 5.\  &       & \verb":=      ==      ==>      +->"     & \AssRtoL &  ---     \\
+ 6.\  &       & \verb"break   do      generate goto"    &  ---     &  ---     \\
+   \  &       & \verb"if      iterate never    repeat"  &  ---     &  ---     \\
+   \  &       & \verb"return  yield"                    &  ---     &  ---     \\
+   \  &       & \verb"=>"                               & \AssRtoL &  ---     \\
+ 7.\  &       & \verb"for     while"                    &  ---     &  ---     \\
+ 8.\  &       & \verb"and     or"                       & \AssLtoR &  ---     \\
+   \  & \sdag & \verb"/\      \/"                       & \AssLtoR &  ---     \\
+ 9.\  & \sdag & \verb"=  ~=  ^=  >=  >  >>  <=  <  <<"  & \AssLtoR & \AssPref \\
+   \  & \sdag & \verb"case    is      isnt"             & \AssLtoR & \AssPref \\
+   \  &       & \verb"has"                              & \AssLtoR &  ---     \\
+10.\  & \sdag & \verb"..  by"                           & \AssLtoR & \AssPost \\
+11.\  & \sdag & \verb"+       -       +-"               & \AssLtoR & \AssPref \\
+12.\  & \sdag & \verb"mod     quo     rem"              & \AssLtoR &  ---     \\
+13.\  & \sdag & \verb"*       /       \"                & \AssLtoR &  ---     \\
+14.\  & \sdag & \verb"**      ^"                        & \AssRtoL &  ---     \\
+15.\  &       & \verb"::      @       pretend"          & \AssLtoR &  ---     \\
+16.\  & \sdag & \verb"->      <-"                       & \AssRtoL &  ---     \\
+17.\  &       & \verb"$"                                & \AssRtoL &  ---     \\
+18.\  &       & \verb"add     with"                     & \AssLtoR & \AssPref \\
+19.\  &       & \verb"per ref rep not  ~  #"            &  ---     & \AssPref \\
+   \  &       & $A \; B$ \ \ (juxtaposition)            & \AssRtoL &  ---     \\
+20.\  &       & $A(B)$\ \ $A[B]$\ \ $A.B$               & \AssLtoR &  ---     \\
+\hline
+\end{tabular}
+\end{center}
+\caption{\label{asugLangPrecTable} Keyword and operator precedence}
+\end{figure}
+

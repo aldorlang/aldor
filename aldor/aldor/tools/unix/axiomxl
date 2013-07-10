@@ -1,0 +1,8 @@
+#!/bin/sh
+#
+# A script to ease the pain of migration.
+echo "           ************************************************"
+echo "           *** axiomxl is obsolete: use 'aldor' instead ***"
+echo "           ************************************************"
+echo ""
+aldor $*

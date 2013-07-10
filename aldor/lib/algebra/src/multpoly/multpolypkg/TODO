@@ -1,0 +1,14 @@
+algebra/distrib/src/multpoly/multpolypkg/TODO
+---------------------------------------------
+
+o alg_bivarpk.as
+  - implement the bound from MCA
+
+
+o Benchmarks:
+  - Compare the following four options
+    1) generic algo in Z[u][v]
+    2) generic algo in Z/pZ[u][v] + CRA to recover the Z-coefficients
+    3) (evaluation + generic algo in Z/pZ[v] + interpolation) + CRA to recover the Z-coefficients
+    4) (evaluation + generic algo in Z/pZ[v] + CRA) + CRA to recover the Z-coefficients
+  - Compare for the following values of (d_u, d_v)

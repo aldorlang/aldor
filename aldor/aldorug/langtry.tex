@@ -1,0 +1,332 @@
+%\documentstyle[fullpage,a4]{article}
+%\begin{document}
+%\newcommand{\SrcQuote}[1]{``{\tt #1}''}
+%\setlength{\parindent}{0pt}
+%\setlength{\parskip}{1em}
+%
+%\begin{abstract}
+% {\em Anything you read here may change, as the syntax is improved or 
+%  various semantic difficulties are found and fixed.  However, the 
+%  overall structure will remain the same, and hopefully syntax and 
+%  related details won't change that much}
+%
+% Exceptions are domains, exception types are categories.  Exceptions
+% are thrown by \SrcQuote{throw} statements, and caught within 'try'
+% blocks.  An \SrcQuote{finally} construct is provided to allow a place
+% for resource deallocation.
+%
+% There is an except operator indicating what exceptions may
+% be thrown by a function (following C++'s semantics, because they
+% don't require too much in the way of work). Exceptions may be
+% parameterised, and may pass information back to their handler.
+% Since exception types are categories, all the usual inheritance
+% rules apply. 
+%
+% Exceptions are not (currently) resumable, as it adds a bit more
+% expense to each throw, and there isn't a reasonable syntax
+% for doing so just yet (think type-safety).  
+%\end{abstract}
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%                                                                        %%%
+%%% :: Exceptions
+%%%                                                                        %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\SrcQuote}[1]{``{\tt #1}''}
+\head{chapter}{Exceptions}{asugExcept}
+\index{exceptions!{\em see \chapref{asugExcept}}}
+\head{widesection}{Introduction}{asugExcIntro}
+
+What happens when something goes wrong during a call to a function?
+For example, the system detects an error in its arguments (\eg{}~divide
+by zero), or that it can't perform a particular operation (\eg{}~opening
+a file).
+
+Using normal call and return code, you have two options:
+the function can cause the program to halt, \eg{}~by a call to
+``error''; or it can return a partial or union type which includes a flag to
+say that the operation failed.
+The former may be a bit extreme, especially if the program is in some
+way interactive.
+The latter option then causes every function that calls it to have to
+be aware of and check for the failure case, which may or may not be useful.  It
+certainly gets long-winded if the failure case has to be propagated
+through a deep call-chain.
+
+A more concise way of signalling error conditions is provided by the
+exceptions mechanism.  There are four parts to the mechanism:
+\begin{enumerate}
+\item Throwing (or raising) an exception
+\item Catching exceptions that we are interested in
+\item Declaring which exceptions may be thrown by an expression
+\item Defining exception objects
+\end{enumerate}
+
+\head{section}{Throwing Exceptions}{asugExcThrow}
+\index{except}
+The syntax for raising an error is:
+
+% The original syntax is deprecated and generates a warning if used:
+%    \egindent{\tt except {\em exception}}
+\egindent{\tt throw {\em exception}}
+
+where {\em exception} is an expression evaluating to an exception object.
+When an exception is thrown, execution of the current function halts,
+and control is passed to the most recent handler (note that this uses
+dynamic scope for determining ``most recent'').  The type of an throw
+expression is {\tt Exit} (but see later)~--- \ie{}~no value is created by
+the expression, but control does not pass to the expression (compare this
+with the return statement, for example).  A throw statement is
+therefore a way of causing a function to terminate abnormally.
+
+
+\head{section}{Catching Exceptions}{asugExcCatch}
+\index{try}
+\index{catch}
+\index{in}
+\index{finally}
+To catch an exception the syntax is:
+
+% The original syntax is deprecated and generates a warning if used:
+%    \egindent{\tt try {\em Expr} but {\em id} in {\em handler} always {\em stmts}}
+\egindent{\tt try {\em Expr} catch {\em id} in {\em handler} finally {\em stmts}}
+
+%% I've implemented the above syntax, but I'm beginning to prefer:
+%% try expr but {
+%%    (e: ZeroDivide) => ...
+%%    (e: BadReduction) => ...
+%%    (e: FileException) => ...
+%% }
+%% Hmm....
+
+where {\em Expr} is the expression we are protecting, {\em id} is an
+identifier, {\em handler} is an (optional) error handler and {\em
+stmts} are some (optional) statements to do any resource freeing on
+abnormal exits.
+
+When a handler is executed, the {\em id} is bound to whatever exception
+was raised.  The handler block is then evaluated.
+
+Typically it will look something like:
+
+% The original syntax has changed ...
+% \begin{verbatim}
+% try ... but E in {
+%         E has ZeroDivide(Integer) => ...
+%         E has BadReduction => ...
+%         E has FileException => ...
+%         true => except E;
+%         never;
+% }
+% \end{verbatim}
+\begin{small}
+\begin{verbatim}
+   try ... catch E in {
+        E has ZeroDivide(Integer) => ...
+        E has BadReduction => ...
+        E has FileException => ...
+        true => throw E;
+        never;
+   }
+\end{verbatim}
+\end{small}
+
+Where each item on the right hand side of the {\tt has} denotes an
+exception type.  The last line is to ensure that the statement
+compiles successfully.
+
+Each branch of the handler block (the parts after {\tt =>}) should
+evaluate to the same type as that of the expression protected by the
+handler.
+
+This is so that one can do:
+
+% \begin{verbatim}
+% n := try divide(a, x) but E in { E has ZeroDivide => 22; ... }
+% \end{verbatim}
+\begin{small}
+\begin{verbatim}
+n := try divide(a,x) catch E in {E has ZeroDivide => 22; ... }
+\end{verbatim}
+\end{small}
+
+which will attempt the division, and if successful assign the result
+to {\tt n}, otherwise if a division by zero exception is raised,
+then {\tt n} will have the value 22.
+
+After the handler has been executed, the {\em stmts} in the 
+{\tt finally} part of the try expression are evaluated.  These are
+guaranteed to be evaluated even if the handler itself raises an exception.
+
+The typical reason to use an {\tt finally} block is to deallocate any
+resources the function may have allocated, for example:
+
+\begin{small}
+\begin{verbatim}
+   f := open(file);
+   try doWonderfulThings(f, data) finally close!(f);
+\end{verbatim}
+\end{small}
+
+Note that the '{\tt catch {\em id} in ...}' part is also optional
+provided that a {\tt finally} part is supplied.
+
+This will ensure that the file is always closed regardless of what
+exceptions are thrown by {\tt doWonderfulThings}.
+
+\head{section}{Specifying Exceptions}{asugExcSpec}
+\index{throw}
+
+It is possible to declare what exceptions are thrown by a particular
+expression.  This is done using the {\tt throw} keyword as an
+infix operator (the two uses are rarely confused).  The operator takes
+two arguments, a base type and a (possible empty) comma-separated list
+of exception types.  Typically, the {\tt throw} keyword is applied to the
+return types of functions to indicate which exceptions they can raise,
+for example:
+
+\egindent {\em foo{\tt :(}args{\tt) ->} returns {\tt throw (} x1,x2,x3,...{\tt)}}
+
+This indicates that {\em foo} may only raise exceptions of types {\em x1,x2,x3}
+etc.  The programs behaviour is undefined if other exceptions are
+raised.  To indicate that a function raises no exceptions, the tuple
+should be empty.  If there is no {\tt throw} clause on the return type,
+then the compiler assumes that any exception may be raised by the
+function.  This does lead to some unsafe code --- for example:
+
+\begin{small}
+\begin{verbatim}
+    justDie(): Integer == throw ZeroDivide;
+
+    badIdea(): Integer throw () == justDie();
+\end{verbatim}
+\end{small}
+
+Here {\tt badIdea} indicates that it will not raise an exception,
+while {\tt justDie} will always raise an error.  The compiler may
+warn the user in this situation.
+
+The compiler will check if any exceptions are explicitly
+raised that do not satisfy the functions signature, for example:
+\begin{small}
+\begin{verbatim}
+   foo(): Integer throw ZeroDivide == {
+        throw FileError;
+   }
+\end{verbatim}
+\end{small}
+will not compile.  This also works within try blocks:
+\begin{small}
+\begin{verbatim}
+   bar(): () throw Ex1 == {
+       try zzz() catch E in {
+           E has ExA => throw ZeroDivide; --- error
+           E has ExB => throw Ex1; --- OK
+           true => throw E --- error
+           never
+       }
+   }
+\end{verbatim}
+\end{small}
+
+The {\tt throw} qualifier on types works just like any other type
+constructor, and so you can use it as part of a type as normal:
+\begin{small}
+\begin{verbatim}
+foo(fn: Integer -> Integer throw ()): () == ...
+\end{verbatim}
+\end{small}
+
+indicates that the argument to {\tt foo} must be a function that never
+raises an exception.  Naturally, there are only a few places where it
+makes sense to use these types.
+
+NB: We simplified things earlier when we said that the type of an {\tt throw}
+statement was {\tt Exit} --- the actual type of \SrcQuote{throw X} is
+{\tt Exit throw {\em typeof({\tt X})}}.  Where {\em typeof({\tt
+X})} indicates the exact type of the exception expression.  This
+indicates that flow of control stops, but the exception {\tt X}
+may be raised.
+
+\head{section}{Defining Exceptions}{asugExcDef}
+\index{exceptions, definition of}
+
+An exception definition is made up of two parts --- a category
+definition and a domain definition.  The category definition provides
+a means to specify related exceptions (so that {\tt ZeroDivideException}
+may inherit from {\tt ArithmeticException} for example), and the
+domain definition provides a mechanism for creating the exception.
+
+For example, 
+\begin{small}
+\begin{verbatim}
+define ZeroDivideException: Category == ArithmeticException with;
+ZeroDivide: ZeroDivideException == add;
+\end{verbatim}
+\end{small}
+
+If {\tt ZeroDivide} is defined this way, then any handler with a clause 
+\SrcQuote{E has ArithmeticException} will also catch {\tt ZeroDivide} exceptions.
+There is an {\tt is} keyword in the language if you need to do exact
+matching, but it shouldn't be needed that often.
+\index{is}
+
+This mechanism also allows one to create parameterised exceptions:
+\begin{small}
+\begin{verbatim}
+define ZeroDivideException(R:Ring):Category == ArithmeticException with;
+ZeroDivide(R:Ring):ZeroDivide(R)@Category == add;
+\end{verbatim}
+\end{small} 
+and to have values defined within the exception:
+\begin{small}
+\begin{verbatim}
+define FileException: Category == ArithmeticException with {
+        name(): String;
+}
+
+FileError(vvv: String): FileException == add { 
+        name(): String == vvv;
+}
+\end{verbatim}
+\end{small} 
+
+In fact, there is a myriad of ways to insert values into exceptions:
+\begin{small}
+\begin{verbatim}
+foo(): () == {
+        ...
+        throw (add {name(): String == <bizzare-calculation>})_
+		@FileException
+        ...
+}
+\end{verbatim}
+\end{small} 
+
+is one, which has the single advantage that {\tt name} will only
+be calculated if it is actually used.  Defining a 'lazy' version of 
+{\tt FileException} is a much better thing to do in this situation.
+
+
+Another example that keeps the {\tt add} definition simple, but 
+defines rather a lot of objects, is:
+
+\begin{small}
+\begin{verbatim}
+define FileException: Category == Exception with {
+        name(): String;
+}
+
+define FileException(vvv: String): Category == 
+	FileException@Category with {
+        default name(): String == vvv;
+}
+
+FileError(vvv: String): FileException(vvv) == add;
+
+\end{verbatim}
+\end{small}
+
+

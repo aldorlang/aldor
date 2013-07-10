@@ -1,0 +1,186 @@
+
+(|Sequence|
+   (|Import| NIL |AxiomLib|)
+   (|Import| NIL |Boolean|)
+   (|Export|
+      (|Declare|
+         |RomanNumeral|
+         (|With|
+            NIL
+            (|Sequence|
+               |IntegerNumberSystem|
+               (|RestrictTo| |canonical| |Category|)
+               (|RestrictTo| |canonicalsClosed| |Category|)
+               (|RestrictTo| |noetherian| |Category|)
+               (|Declare| |convert| (|Apply| |->| (|Comma| |Symbol|) |%|))
+               (|Declare| |roman| (|Apply| |->| (|Comma| |Symbol|) |%|))
+               (|Declare|
+                  |roman|
+                  (|Apply| |->| (|Comma| |Integer|) |%|)))) )
+      NIL
+      NIL)
+   (|Extend|
+      (|Define|
+         (|Declare|
+            |PositiveInteger|
+            (|With|
+               NIL
+               (|Sequence|
+                  |AbelianSemiGroup|
+                  |OrderedSet|
+                  |Monoid|
+                  (|Declare| |gcd| (|Apply| |->| (|Comma| |%| |%|) |%|))
+                  (|RestrictTo|
+                     (|Apply| |commutative| (|Apply| |Enumeration| |*|))
+                     |Category|))))
+         (|Add|
+            (|PretendTo|
+               (|Add| NIL NIL)
+               (|With|
+                  NIL
+                  (|Sequence|
+                     |AbelianSemiGroup|
+                     |OrderedSet|
+                     |Monoid|
+                     (|Declare| |gcd| (|Apply| |->| (|Comma| |%| |%|) |%|))
+                     (|RestrictTo|
+                        (|Apply| |commutative| (|Apply| |Enumeration| |*|))
+                        |Category|))))
+            NIL)))
+   (|Extend|
+      (|Define|
+         (|Declare|
+            |NonNegativeInteger|
+            (|With|
+               NIL
+               (|Sequence|
+                  |OrderedAbelianMonoidSup|
+                  |Monoid|
+                  (|Declare| |quo| (|Apply| |->| (|Comma| |%| |%|) |%|))
+                  (|Declare| |rem| (|Apply| |->| (|Comma| |%| |%|) |%|))
+                  (|Declare| |gcd| (|Apply| |->| (|Comma| |%| |%|) |%|))
+                  (|Declare|
+                     |divide|
+                     (|Apply|
+                        |->|
+                        (|Comma| |%| |%|)
+                        (|Apply|
+                           |Record|
+                           (|Declare| |quotient| |%|)
+                           (|Declare| |remainder| |%|))))
+                  (|Declare|
+                     |exquo|
+                     (|Apply|
+                        |->|
+                        (|Comma| |%| |%|)
+                        (|Apply|
+                           |Union|
+                           (|Declare| |value1| |%|)
+                           (|Declare|
+                              |failed|
+                              (|Apply| |Enumeration| |failed|)))) )
+                  (|Declare|
+                     |shift|
+                     (|Apply| |->| (|Comma| |%| |Integer|) |%|))
+                  (|Declare| |random| (|Apply| |->| (|Comma| |%|) |%|))
+                  (|RestrictTo|
+                     (|Apply| |commutative| (|Apply| |Enumeration| |*|))
+                     |Category|))))
+         (|Add|
+            (|PretendTo|
+               (|Add| NIL NIL)
+               (|With|
+                  NIL
+                  (|Sequence|
+                     |OrderedAbelianMonoidSup|
+                     |Monoid|
+                     (|Declare| |quo| (|Apply| |->| (|Comma| |%| |%|) |%|))
+                     (|Declare| |rem| (|Apply| |->| (|Comma| |%| |%|) |%|))
+                     (|Declare| |gcd| (|Apply| |->| (|Comma| |%| |%|) |%|))
+                     (|Declare|
+                        |divide|
+                        (|Apply|
+                           |->|
+                           (|Comma| |%| |%|)
+                           (|Apply|
+                              |Record|
+                              (|Declare| |quotient| |%|)
+                              (|Declare| |remainder| |%|))))
+                     (|Declare|
+                        |exquo|
+                        (|Apply|
+                           |->|
+                           (|Comma| |%| |%|)
+                           (|Apply|
+                              |Union|
+                              (|Declare| |value1| |%|)
+                              (|Declare|
+                                 |failed|
+                                 (|Apply| |Enumeration| |failed|)))) )
+                     (|Declare|
+                        |shift|
+                        (|Apply| |->| (|Comma| |%| |Integer|) |%|))
+                     (|Declare| |random| (|Apply| |->| (|Comma| |%|) |%|))
+                     (|RestrictTo|
+                        (|Apply| |commutative| (|Apply| |Enumeration| |*|))
+                        |Category|))))
+            NIL)))
+   (|Extend|
+      (|Define|
+         (|Declare|
+            |Integer|
+            (|With|
+               NIL
+               (|Sequence|
+                  |IntegerNumberSystem|
+                  (|Apply| |ConvertibleTo| |String|)
+                  (|Declare| |random| (|Apply| |->| (|Comma| |%|) |%|))
+                  (|RestrictTo| |canonical| |Category|)
+                  (|RestrictTo| |canonicalsClosed| |Category|)
+                  (|RestrictTo| |noetherian| |Category|)
+                  (|RestrictTo| |infinite| |Category|))))
+         (|Add|
+            (|PretendTo|
+               (|Add| NIL NIL)
+               (|With|
+                  NIL
+                  (|Sequence|
+                     |IntegerNumberSystem|
+                     (|Apply| |ConvertibleTo| |String|)
+                     (|Declare| |random| (|Apply| |->| (|Comma| |%|) |%|))
+                     (|RestrictTo| |canonical| |Category|)
+                     (|RestrictTo| |canonicalsClosed| |Category|)
+                     (|RestrictTo| |noetherian| |Category|)
+                     (|RestrictTo| |infinite| |Category|))))
+            NIL)))
+   (|Export|
+      (|Declare|
+         |IntegerSolveLinearPolynomialEquation|
+         (|With|
+            NIL
+            (|Sequence|
+               (|Declare|
+                  |solveLinearPolynomialEquation|
+                  (|Apply|
+                     |->|
+                     (|Comma|
+                        (|Apply|
+                           |List|
+                           (|Apply|
+                              |SparseUnivariatePolynomial|
+                              |Integer|))
+                        (|Apply| |SparseUnivariatePolynomial| |Integer|))
+                     (|Apply|
+                        |Union|
+                        (|Declare|
+                           |value1|
+                           (|Apply|
+                              |List|
+                              (|Apply|
+                                 |SparseUnivariatePolynomial|
+                                 |Integer|)))
+                        (|Declare|
+                           |failed|
+                           (|Apply| |Enumeration| |failed|)))) ))) )
+      NIL
+      NIL))

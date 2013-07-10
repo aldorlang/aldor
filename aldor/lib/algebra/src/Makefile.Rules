@@ -1,0 +1,51 @@
+MSGFLAGS = -Mno-mactext -M2
+AFLAGS=  -fao $(MSGFLAGS) -Y $(LIBPATH) -I $(INCPATH) 
+AOFLAGS=$(AFLAGS) -q5 -qinline-all
+AOGFLAGS=$(AOFLAGS) -dGMP
+AODFLAGS=$(AFLAGS) -q1 -dDEBUG
+AODEBUGGERFLAGS=-wdebugger -dDEBUGGER $(AFLAGS) 
+ARREPLFLAGS  = rv
+
+# Implicit rule for building .test.as files
+${TestDir}/%.test.as: %.as
+	@(echo Extracting test from $*.as ... ;		\
+	  extract -mALDORTEST -o$*.test $*.as;		\
+	  if [ -f '$*.test' ] ; then	\
+		mv $*.test ${TestDir}/$*.test.as;	\
+	  else				\
+		false;				\
+	  fi)
+
+# Implicit rule for building .tex files
+${DocDir}/%.tex: %.as
+	@(echo Extracting doc from $*.as ... ;		\
+	  extract -mALDOC $*.as;		\
+	  if [ -f '$*.tex' ] ; then	\
+		mv $*.tex ${DocDir};	\
+	  else				\
+		false;				\
+	  fi)
+
+# Implicit rule for building .al file
+${ALGEBRA}(%.ao): %.as
+	@(here=`pwd`; 				\
+          cd `dirname ${ALGEBRA}`;			\
+	  echo Compiling $*.as ... ;		\
+	  echo $(ALDOR) $$here/$*.as;	\
+	  $(ALDOR) $$here/$*.as;	\
+	  if [ -f '$*.ao' ] ; then 		\
+		${AR} $(ARREPLFLAGS) ${ALGEBRA} $*.ao;	\
+		rm -rf $*.ao;			\
+	        rm -rf /tmp/vAAA*;             \
+	  else					\
+		false;				\
+	  fi)
+
+# Generic rules
+def.rule:
+	@echo "type [g]make gmp to make libalgebra-gmp.al (release, GMP)"
+	@echo "type [g]make release to make libalgebra.al (release)"
+	@echo "type [g]make debug to make libalgebrad.al (debug)"
+	@echo "type [g]make doc to make the reference manual"
+	@echo "type [g]make test to make the tests"
+

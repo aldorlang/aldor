@@ -1,0 +1,32 @@
+{\codeline{1}\verb& #include "aldor"&}\\
+{\codeline{2}\verb& #include "aldorio"&}\\
+{\codeline{3}\verb&&}\\
+{\codeline{4}\verb& MI ==> MachineInteger;&}\\
+{\codeline{5}\verb&&}\\
+{\codeline{6}\verb& extend String:TotallyOrderedType with { } == add {&}\\
+{\codeline{7}\verb&         import from Character, MI;&}\\
+{\codeline{8}\verb&&}\\
+{\codeline{9}\verb&         (<)(u:%, v:%):Boolean == {&}\\
+{\codeline{10}\verb&              (a: MI, b: MI) := (#u, #v);&}\\
+{\codeline{11}\verb&              zero? a => not zero? b;&}\\
+{\codeline{12}\verb&              zero? b => false;&}\\
+{\codeline{13}\verb&              for i in 0..min(a,b) repeat {&}\\
+{\codeline{14}\verb&                  u.i < v.i => return true;&}\\
+{\codeline{15}\verb&                  u.i > v.i => return false;&}\\
+{\codeline{16}\verb&              }&}\\
+{\codeline{17}\verb&              a < b;&}\\
+{\codeline{18}\verb&          }&}\\
+{\codeline{19}\verb&         (>)(u:%, v:%):Boolean == v < u;&}\\
+{\codeline{20}\verb&         (<=)(u:%, v:%):Boolean == not (u > v);&}\\
+{\codeline{21}\verb&         (>=)(u:%, v:%):Boolean == not (v > u);&}\\
+{\codeline{22}\verb&         min(u:%, v:%):% == if u < v then u else v;&}\\
+{\codeline{23}\verb&         max(u:%, v:%):% == if u < v then v else u;&}\\
+{\codeline{24}\verb& }&}\\
+{\codeline{25}\verb&&}\\
+{\codeline{26}\verb& import from List String;&}\\
+{\codeline{27}\verb&&}\\
+{\codeline{28}\verb& l1 := ["animal","aldor","apple","anaconda","atlantic"];&}\\
+{\codeline{29}\verb& l2 := sort! copy l1;&}\\
+{\codeline{30}\verb&&}\\
+{\codeline{31}\verb& stdout << l1 << newline;&}\\
+{\codeline{32}\verb& stdout << l2 << newline;&}\\

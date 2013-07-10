@@ -1,0 +1,726 @@
+\newcommand{\mysubhead}[1]{\vskip -2mm {$\bullet$ \bf #1}}
+\newcommand{\mysubcont}[1]{\vskip -2mm \hspace{1.9mm} {\bf #1}}
+\newcommand{\Dos}[0]{DOS} % I believe that's the standard form.  MGR
+%
+% *********************************************************************
+\head{chapter}{Understanding messages}{asugMsgs}
+% *********************************************************************
+%
+
+The \asharp{} compiler may display messages of various sorts, including
+errors, warnings and remarks about the program being compiled.
+This section is a guide to understanding the format and controlling the 
+generation of \asharp{} messages.
+
+A complete list of the messages produced by the compiler
+may be found in \chapref{asugMessages}.
+
+% *********************************************************************
+\head{section}{\asharp{} error messages}{asugErrors}
+% *********************************************************************
+
+Even a particularly skilled programmer will have to deal with compiler
+error messages at some point.  Upon initial encounter, these messages
+often seem confusing.  However, with practice their meaning will
+become clear.  The \asharp{} compiler tries to give messages which are
+reasonably brief, but still informative.  Although more detailed
+messages may be useful to novice programmers, most beginners quickly
+move past the initial desire for more detailed messages.  The
+following paragraphs describe the components of the messages produced
+by the \asharp{} compiler.
+
+% *********************************************************************
+\head{subsubsection}{Format of \asharp{} error messages}{asugErrorsFormat}
+% *********************************************************************
+
+Each message produced by the \asharp{} compiler is assigned a line and
+a column position based on the place in the source text of the program
+associated with the message.
+Then, for each source line for which messages have been generated, the
+compiler reports the source line, a line containing pointers to the
+column assigned to each message, and a description of each message
+which appears for the source line.
+
+Each source line is reported by showing the source file name in which the
+line appears (enclosed in quotation marks), the line number within the
+file, followed by a colon (\verb":"), and then the text of the line itself.
+
+After the source line is reported, the next output line contains a
+circumflex (\verb+^+), used as a caret below each column at which an
+error was detected.
+Dots (\verb"...") are used to fill in the spaces between the carets.
+
+Each error that appears on a line is then precisely located and shown
+in a format which can be used to quickly locate and fix the error.
+For each error, the line and column number are printed first,
+enclosed within square brackets (\verb"[ ]"), then the severity of the
+error is \index{error messages!severity of}
+indicated by one of the keywords \ttin{Fatal}, \ttin{Error},
+\ttin{Warning}, or \ttin{Remark} appearing in parentheses.
+% I'd rather omit the quotes here - but this seems to fit closer to a
+% "form" than a "value" in SMW's terminology.  MGR
+Following the severity of the error is the text of the
+message, which may include references to parts of the source text,
+or references to types or other data structures used to compile the program.
+
+% *********************************************************************
+\head{section}{Example showing \asharp{} messages}{asugErrorsExample}
+% *********************************************************************
+
+The message format described in the previous section will be illustrated
+by examining the error messages produced when we attempt to compile the file
+\fname{error0.as} shown in \figref{FigureError0In}.  The command
+``\asharpcmd{ error0.as}'' produces the messages shown in
+\figref{FigureError0Out}.
+
+\thefile{FigureError0In}{\fname{error0.as} --- A program containing mistakes.}{examples/error0.as}
+
+\thefile{FigureError0Out}{Error messages for \fname{error0.as}.}{examples/error0.out}
+
+The first line of this message indicates that the message was generated
+from line~4 of the file \fname{error0.as}.  The next lines specify that
+errors were detected at columns 12 and 15 on this line.  The carets
+indicate that the first error reported on this line is due
+to the operator {\tt =>} and that the second error reported on this line
+resulted from the symbol {\tt 1}.
+In addition, these are the second and third messages, respectively,
+which were encountered during the compilation of \fname{error0.as}.
+
+The next message shown is actually the first detected by the compiler.
+It is a ``Warning'' which complains of a missing ``\verb+;+''.
+There is also a hint which suggests that piling has been used incorrectly.
+However, since the declaration ``\verb+#pile+'' was not included in the file,
+piling syntax (see \secref{asugFLangLayout}) is not being used.
+
+\thefile{FigureError1In}{\fname{error1.as} -- A program containing fewer mistakes.}{examples/error1.as}
+\thefile{FigureError1Out}{Error messages for \fname{error1.as}.}{examples/error1.out}
+\thefile{FigureError2In}{\fname{error2.as} -- A program which compiles.}{examples/error2.as}
+
+Let's add the declaration ``\verb+#pile+'' to \fname{error0.as} and call
+the updated file \fname{error1.as}, shown in
+\figref{FigureError1In}.  Compiling this file produces the messages
+shown in \figref{FigureError1Out}.
+Now there is a single error message at line~6, which complains that
+no meaning can be found for the operator ``\verb+f+''.  There is certainly
+no declaration for ``\verb+f+'' in \fname{error1.as}.  This operator
+should in fact be ``\verb+factorial+'', and not ``\verb+f+''.
+After making this change (shown in \figref{FigureError2In}),
+the file will compile cleanly.
+
+This example was compiled using the default message options as described
+in \figref{asugErrorsDefault}.  The compiler's message options
+determine what kinds of messages the compiler will generate.
+
+% *********************************************************************
+\head{section}{Some common error messages}{asugComErrMsg}
+% *********************************************************************
+
+\newcommand{\Situation}[1]{{\bf \underline \sf {#1}}}
+
+This section explains some error messages likely to be seen by new users.
+
+Compiler error messages do not always explain the real nature of
+the problem. This statement is true in general, and not only for the
+\asharp{} compiler. Compilers analyse programs on the basis of more or
+less rigid syntactic rules, and they can become enormously confused by
+a missing character, or misspelled word.
+
+What follows is a collection of `mysterious' messages (or, at least,
+messages which are puzzling to new \asharp{} programmers), generated by
+\asharp{}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\mysubsect{`aldor.as' cannot be opened}
+
+{\small
+\begin{verbatim}
+"myfile.as", line 1: #include "aldor.as"
+                     ^
+[L1 C1] #1 (Error) Could not open file `aldor.as'.
+\end{verbatim}
+}
+
+{\small
+\begin{verbatim}
+"myfile.as", line 1: import from Integer;
+                     ............^
+[L1 C13] #1 (Error) No meaning for identifier `Integer'.
+\end{verbatim}
+}
+
+This is probably a message that will occur only once --- it indicates
+that \asharp{} has not been set up properly.
+\begin{itemize}
+\item Check the {\tt ALDORROOT} environment variable. For Unix
+users, for \linebreak
+example, the file \fname{aldor.as} must be located in the directory
+\linebreak \fname{\$ALDORROOT/include}; for \Dos{} users it must be
+located in the directory \fname{\%ALDORROOT\%\back include}.  (Type
+\ttin{set} on \Dos{} to see the value of this environment variable.
+Check the installation instructions to ensure that you have completed
+all necessary steps.)
+
+\item (For \Dos{} users only) check ``{\tt FILES=}...'' in your 
+\verb"config.sys".  A minimum value of 40 is recommended.
+\end{itemize}
+See also \secref{asugOptionsEnvironment}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\mysubsect{No meaning for integer-style literal `{\it xxx}'}
+\mysubhead{No meaning for string-style literal `{\it xxx}'}
+\mysubhead{No meaning for float-style literal `{\it xxx.xx}'}
+
+Unlike traditional programming languages, in \asharp{} there is no
+built-in knowledge about the meaning of numeric or string constants.
+Every domain can export an interpretation for these constants, with the
+advantage that you can define your own methods for interpreting them.
+The standard \asharp{} library contains some standard domains
+exporting interpretations for these constants, but you must explicitly import
+these domains in the scope of your program. So in your program you need to
+say:
+
+{\small \verb"import from MachineInteger;    "}%
+{\em or}{\small \verb"    import from Integer;"}
+
+to specify if you want to use the machine representation or the
+infinite
+precision representation for integer-style literals such as 2, 3, 4, ...
+%
+% IS 1 an "integer-style literal"?  It was included (with "i.e.") in the
+% original list, here; if so, why not 0 as well?  Or was the "i.e."
+% meant to be "e.g."?
+%
+For string-style literals, such as \ttin{dog} and \ttin{cat}, you can
+import from the \ttin{String} domain, and for floating point-style
+literals you can import from \ttin{SingleFloat} (single precision
+hardware floating point) or \ttin{DoubleFloat} (double precision hardware
+floating point).  See also \secref{asugLangExprLiterals}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\mysubsect{No one possible return type satisfies the context type}
+
+\asharp{} is a strongly typed language. This means that the type of
+each expression forming the program is determined during the
+compilation process. The following example shows a typical situation
+in which this message occurs:
+
+{\small
+\begin{verbatim}
+#include "aldor"
+
+foo():Integer == 1;
+
+b: MachineInteger == foo();
+\end{verbatim}
+}
+
+Compiling this example with the option \option{-M2} (full error
+messages), gives:
+
+\begin{small}
+\begin{verbatim}
+"myfile.as", line 5: b: MachineInteger == foo();
+                     .....................^
+[L5 C22] #1 (Error) No one possible return type satisfies the context type.
+  These possible return types were rejected:
+          -- AldorInteger
+  The context requires an expression of type MachineInteger.
+\end{verbatim}
+\end{small}
+
+\ttin{b} is a constant whose type is \ttin{MachineInteger}, so on the right-hand
+side of the definition an expression of the same type is required. When
+the compiler searches for all the possible return types of the
+expression \ttin{foo()}, it
+finds that the unique possible type, \ttin{AldorInteger} does not satisfy
+\ttin{MachineInteger}\footnote{The error message is in terms of {\tt AldorInteger},
+whereas the source code uses {\tt Integer}.  This is because the {\tt aldor.as}
+file maps the readable name {\tt Integer} to the unique identifier
+{\tt AldorInteger}, as explained in \secref{asugLangSimpleI}.}.
+Note that a function could be overloaded, which is why
+the message says: ``{\tt No one possible return type}...''. To fix this
+problem, \ttin{foo} can be overloaded with a new definition, or the result of
+foo can be {\em coerced} to a {\tt MachineInteger} as in:
+\begin{verbatim}
+b: MachineInteger == foo()::MachineInteger;
+\end{verbatim}
+% Overgeneral, but I'm not sure what to point at!
+See also part II.
+
+\goodbreak
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\mysubsect{No meaning for identifier `{\it domain}'}
+
+\begin{itemize}
+
+\item If you are defining {\it domain} in the same file, are you sure that the
+spelling for {\it domain} is correct? (Remember that \asharp{} is 
+case-sensitive: \ttin{Integer} and \ttin{integer} are two different
+identifiers!)
+
+\item If {\it domain} is from an external library, for example 
+\ttin{mylib}, did you
+include the \ttin{\#library} statement in your file? For instance:
+
+{\small
+\begin{verbatim}
+#library MyLib "mylib"
+import from MyLib;
+\end{verbatim}
+}
+
+In this case, if you get the error message in the import statement and the
+symbol that you are importing has been defined in a \ttin{\#library}
+statement, then check the following rules:
+\begin{enumerate}
+\item If the library is a library created with \ttin{ar} (with suffix .al), than
+you must {\em not} write the suffix. This is the case,  for  \ttin{mylib}
+--- it corresponds to the file \fname{libmylib.al}
+\item If the library is a \ttin{.ao} file, than you {\bf must} use the
+\verb".ao" suffix in the \verb+#library+ statement.
+\end{enumerate}
+\end{itemize}
+See also \secref{asugCmdlineLib}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\mysubsect{Argument 1 of `test' did not match any possible parameter}
+\mysubcont{type}
+% "With" deleted from message database at NAG.  MGR
+
+If the test is for equality, in an \ttin{if} statement, are you sure that you
+are using \ttin{=} and not \ttin{==}? This can be a frequent mistake for C/C++
+programmers.  The message says ``{\tt Argument 1 of `test'}...'' even if
+there is no explicit call to the \ttin{test} operator, because in some
+%contexts, such as an \ttin{if} statement, there is an implicit
+%application of the \ttin{test} operator.
+%% Avoiding bad page break
+contexts, such as an \ttin{if} statement, the \ttin{test} operator
+is implicitly applied.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\mysubsect{`Syntax error' at the beginning of a line}
+
+If you are sure about the correctness of the displayed line, look at the
+previous line. A macro definition using \ttin{==>} and not ending
+with \ttin{;} can often cause this error. For example, compiling the following
+statements from the file \fname{myfile.as}:
+
+{\small
+\begin{verbatim}
+#include "aldor"
+-- Not using `#pile'.
+
+MI==>MachineInteger
+
+import from MI;
+\end{verbatim}
+}
+
+gives the error message:
+{\small
+\begin{verbatim}
+"myfile.as", line 6: import from MI;
+                     ^
+[L6 C1] #1 (Error) Syntax error.
+\end{verbatim}
+}
+See also \chapref{asugFLang}.
+
+% *********************************************************************
+\head{section}{Common pitfalls}{asugComPitf}
+% *********************************************************************
+
+This is a collection of mistakes frequently made by novice \asharp{}
+programmers. A subclass of this consists of common mistakes for
+programmers from other languages, such as C, C++ and Fortran.  It is
+important to be able to recognise situations where such mistakes occur,
+so that you can understand the compiler's error messages.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\mysubsect{{\tt `==>'} and {\tt `=>'}}
+
+These symbols have completely different uses in \asharp{}. The
+\ttin{==>} (long arrow) symbol is used to define a macro (you can
+% a "double arrow" would be =>=>
+also use the form ``{\tt macro} ...''), see \chapref{asugLangMacros},
+whereas the \ttin{=>} (short arrow) symbol is used as an early exit in a
+sequence, see \secref{asugLangExprExit}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\mysubsect{`=' and `==', `=' and `:='}
+
+The \ttin{=} symbol is usually used as an equality operator (but can
+be overloaded by user programs). The \ttin{==} (double-equal) is used
+to define constants --- categories, domains, functions and values are
+all \asharp{} constants. The double-equal symbol is sometimes referred
+to as the ``very-equal'' symbol for obvious reasons. The \ttin{:=}
+operator is used for assignments.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\mysubsect{Using `{\tt \_}' as a separator in identifiers}
+
+The \ttin{\_} (underscore) symbol is used as an escape character in
+\asharp{} --- thus the identifiers \ttin{list\_of\_integers} and
+\ttin{listofintegers} are exactly the same.
+ For this reason, to prevent ambiguities, we suggest using capital
+letters, instead of \ttin{\_}, to separate words in identifiers, as in
+\ttin{listOfIntegers}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\mysubsect{Missing `;' at the end of a macro definition}
+
+Unlike other languages, such as C, the \asharp{} preprocessor requires
+that macro definitions end with a \ttin{;} (or a newline, if you are
+using \ttin{\#pile}.  Unfortunately the compiler has no way of knowing
+that the statement defining the macro has ended and so will usually complain
+about a syntax error at the start of the next line.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\mysubsect{Undefined symbol \_INIT\_\_xxx referenced from text segment}
+
+This is a message generated by the C compiler (cc, gcc, xlc, \etc{}) that
+\asharp{} is using on your platform to generate stand-alone executable
+files. 
+Everything in the compilation process of the \asharp{} program succeeded, but
+something went wrong in the final linking step.
+
+One common cause of this kind of problem is compilation using another
+library, as well as/instead of the standard \asharp{} library
+\libaldor{}, without letting the compiler know about the other
+library.
+%
+% Using "you" in the above sentence sounds like blame, best avoided.
+%
+When you include a \ttin{.al} library, you should add
+\verb"-l"{\em libname} to the command line\footnote{Note that \asharp{}
+options, such as {\tt -l}, are case-insensitive.}.
+
+See \chapref{asugSeparate} and, in particular, 
+\secref{asugCmdlineLib} to understand how to use other libraries with
+\asharp{}.  A particular point to note when {\em compiling} is:
+\begin{itemize}
+\item If you want to use a domain from \ttin{mylib} (a library containing
+definitions of some domains), you should include the following lines
+in your \asharp{} program:
+
+{\small
+\begin{verbatim}
+#library MyLib "mylib"
+import from MyLib;
+\end{verbatim}
+}
+
+(Note that any identifier may be used in place of \ttin{MyLib}.)
+When calling the compiler, you need to include the \option{-lmylib}
+option among the parameters; for example:
+
+\osprompt \asharpcmd{\ -lmylib myprog.as}
+\end{itemize}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\mysubsect{User program with the same name as a library file}
+
+If you create a \ttin{.as} file with the same name of a library file,
+it won't compile. The compiler will issue a warning message if there
+is such a name conflict.  For example, there is a file in \libaldor{}
+with the name \ttin{sal\_int.as}; suppose that your file is also named
+\ttin{sal\_int.as}, when your file is compiled you will get a
+warning, followed by one or more error messages
+relating to the symbols being used in your file:
+{\small
+\begin{verbatim}
+#1 (Warning) Current file over-rides existing library in
+ `/usr/local/aldor/lib/libaldor.al'.
+"pointer.as", line 4: foo():Integer == 1;
+                      .................^
+[L4 C18] #2 (Error) No meaning for identifier `1'.
+\end{verbatim}
+}
+The easiest way to view the names of the files in a library is usually
+to use a command provided for that purpose by your operating system ---
+for example, the \ttin{ar} command in Unix (see \secref{asugCmdlineLib}
+for an alternative):
+{\small
+\begin{verbatim}
+cd $ALDORROOT/lib
+ar vt libaldor.al
+ar vt libfoam.al
+\end{verbatim}
+}
+
+The compiler will issue a warning message if the name of your file is
+used by any library needed for compilation of the file.
+If you are recompiling a library, then the warning can safely be
+ignored.
+
+
+%\newpage
+% *********************************************************************
+\head{section}{Controlling compiler messages}{asugErrorsMessages}
+% *********************************************************************
+
+The types of messages returned by the \asharp{} compiler are controlled
+using the {\tt -M} option, which takes an argument identifying the
+kind of message information to display.
+Preceding any message option with ``\verb+no-+'' negates that option, 
+so {\tt -M no-details} will suppress the details associated with a compiler 
+message.  A complete listing of the message options can be found in 
+\secref{asugOptionsMessage}.
+\index{compiler options!M@\protect{\tt -M}}
+%%\index{compiler options!M@\protect{\tt M}!M@\protect{-M no-opt}}
+
+% *********************************************************************
+\head{subsubsection}{The default compiler message options}{asugErrorsDefault}
+% *********************************************************************
+
+The default message option used by the \asharp{} compiler is {\tt -M 2},
+which is equivalent to the following collection of options:  {\tt -M number},
+{\tt -M sort}, {\tt -M warnings}, {\tt -M source}, {\tt -M details},
+{\tt -M notes}, {\tt -M mactext}, {\tt -M abbrev} and {\tt -M human}.
+%\index{compiler options!M@\protect{\tt M}!M@\protect{-M 2}}
+%\index{compiler options!M@\protect{\tt M}!M@\protect{-M details}}
+
+The option {\tt -M human} indicates that the compiler 
+messages are to be read and interpreted by a human user, as opposed to a 
+computer program.
+%\index{compiler options!M@\protect{\tt M}!M@\protect{-M human}}
+
+The {\tt -M number} option enumerates the order in which the
+compiler messages were encountered.  An ordinal {\tt \#}{\it n} appears
+after the bracketed line and column values.  The default option
+{\tt -M sort} shows the compiler messages sorted by the order in which
+they appear within the file.  Using {\tt -M no-sort} instead causes the
+messages to appear in the order in which they are encountered by the
+compiler, which may be different from their order in in the program.
+%\index{compiler options!M@\protect{\tt M}!M@\protect{-M number}}
+%\index{compiler options!M@\protect{\tt M}!M@\protect{-M sort}}
+
+The {\tt -M warnings} option will display the compile time
+warnings which do not prevent a successful compilation.  When the option
+is changed to {\tt -M no-warnings} then those messages, which are only
+advisory in nature, are suppressed.
+%\index{compiler options!M@\protect{\tt M}!M@\protect{-M warnings}}
+
+The compiler normally displays the source text which caused each
+message.  However, using {\tt -M no-source} displays only the compiler message
+with the line and character location without showing the source text.
+%\index{compiler options!M@\protect{\tt M}!M@\protect{-M source}}
+
+Some compiler messages may have notes associated with them which cross
+reference other compiler messages having a similar or identical meaning.
+They are produced by the option {\tt -M notes}.
+%\index{compiler options!M@\protect{\tt M}!M@\protect{-M notes}}
+
+Compiler messages abbreviate the data types which are contained within
+the text of the message, when the option {\tt -M abbrev} is used.
+To expand the type names, use the option {\tt -M no-abbrev}.
+%\index{compiler options!M@\protect{\tt M}!M@\protect{-M abbrev}}
+
+%\newpage
+% *********************************************************************
+\head{section}{Interactive error investigation}{asugErrorsBloop}
+% *********************************************************************
+
+In most cases, the error messages will give enough information for
+the programmer to determine what is wrong with a program.
+In some cases, however, extra detail is required.
+Rather than print many lines of debugging information for each error,
+the \asharp{} compiler gives messages of moderate length and allows
+the programmer to get more information interactively.
+
+The {\tt -M~inspect} option (not to be confused with {\tt -G~loop})
+must be given if interactive error investigation is desired.  Then,
+whenever the compiler detects an error, it stops and enters
+a debugger or ``break loop''.
+The break loop gives the programmer access to information such as the
+types of variables and the names in scope.
+An example using the interactive loop is shown in \figref{FigureBloop}.
+\thegeneralfile{h}{FigureBloop}{Interactive Error Investigation}{commands/bloop.rec}
+\clearpage
+The interactive error inspector allows the following commands:
+
+\begin{tabular}{ll}
+\\{\bf help} &    
+list the commands, with descriptions
+\\{\bf show} &
+show the current node
+\\{\bf means} &
+show the possible meanings of the current node
+\\{\bf use} &
+show how the current node is used
+\\{\bf seman} &
+show the extra semantic information for the current \\ & node
+\\{\bf scope} &
+show information about the current scope
+\\
+\\{\bf up} &
+use the parent as the current node
+\\{\bf down} &
+use the $0$th child as the current node
+\\{\bf next} &
+use the next sibling as the current node
+\\{\bf prev} &
+use the previous sibling as the current node
+\\{\bf home} &
+return to the original node
+\\{\bf where} &
+return the source position of the current node 
+\\
+\\{\bf getcomsg} &
+get information on the current message
+\\{\bf notes} &   
+show the notes associated with the current message
+\\{\bf mselect} {\em i} &
+select message {\em i} to be the current message
+\\{\bf mnext} &   
+select the next message in the list
+\\{\bf mprev} &   
+select the previous message in the list
+\\{\bf msg} &     
+display the error message again
+\\{\bf nice} &    
+show with pretty printed form
+\\{\bf ugly} &    
+show with more detailed, internal form
+\\
+\\{\bf quit} &
+exit the compiler, showing all messages so far
+\\ & \\
+\end{tabular}
+
+%When the options
+%{\tt -M inspect} and {\tt -M no-human} are both given, the interactive
+%break loop operates under the same mode as the \xasharp{} debugger.  Refer
+%to \chapref{asugXasharp} for more detail on \xasharp{}.%
+%\index{compiler options!M@\protect{\tt M}!M@\protect{-M inspect}}
+%\index{\xasharpcmd{}@\xasharp{}} This doesn't work
+%				  - macro before @ not expanded
+%\index{xaxiomxl@\xasharp{}}
+
+\clearpage
+% *********************************************************************
+\head{section}{Selecting error messages}{asugErrorsSelect}
+% *********************************************************************
+
+The \asharp{} compiler is organised in such a way that messages may
+be replaced, enabled, and/or disabled from the command line.
+\index{error messages!selecting display of}
+Messages are identified by a name tag, \eg{} ``AXL\_W\_CantUseLibrary''.
+The name tags of all messages used by
+the compiler may be found in the catalogue of error messages in
+\chapref{asugMessages}.
+
+Once the name of a particular message is identified, the command
+
+{\small
+{\tt \asharpcmd{} -M {\it msgname} input.as}
+}
+
+can be used to enable
+the message {\it msgname} if it is otherwise disabled.  Conversely, the
+command 
+
+{\small
+{\tt \asharpcmd{} -M no-{\it msgname} input.as}
+}
+
+will disable the message {\it msgname} if it is otherwise enabled.
+Normally, the messages classified as warnings are enabled,
+while those classified as remarks are disabled.
+%\index{compiler options!M@\protect{\tt M}!M@\protect{-M msgname} (enable message)}
+
+The special message name ``\verb+warnings+'' can be used to enable or
+disable all warning messages, and the special name ``\verb+remarks+'' can
+be used to enable or disable all remarks.
+``\verb"Error"'' messages cannot be disabled.
+
+In addition to selecting error messages by name, it is possible to use
+the command
+
+{\small
+{\tt \asharpcmd{} -M emax={\it n}}
+}
+
+to specify the number
+of error messages which will be reported before \asharpcmd{} gives up and
+stops processing the input file.  The default is ten.
+%\index{compiler options!M@\protect{\tt M}!M@\protect{-M emax}}
+
+% *********************************************************************
+\head{section}{Error messages and macros}{asugErrorsMactext}
+% *********************************************************************
+
+When an error occurs in the processing of program text which involves
+a macro, it is sometimes useful for the error message to point to the
+macro invocation, and sometimes for it to
+point into the body of the macro to the location where the error was
+detected.  The command 
+
+{\small
+{\tt \asharpcmd{} -M mactext}
+}
+
+instructs
+\asharpcmd{} to point to the text of the macro, while the command
+
+{\small
+{\tt \asharpcmd{} -M no-mactext}
+}
+
+instructs \asharpcmd{} to point to the macro invocation.
+%\index{compiler options!M@\protect{\tt M}!M@\protect{-M mactext}}
+\index{macros}
+
+There is no mechanism for instructing \asharpcmd{} to point to the
+invocation of a macro which appears in the body of another macro.
+
+% *********************************************************************
+\head{section}{Error messages and GNU Emacs}{asugErrorsEmacs}
+% *********************************************************************
+
+GNU Emacs offers several commands for compiling and debugging
+\index{Emacs}
+programs.
+\index{error messages!and GNU Emacs}
+Among these are ``{\tt M-x compile}'', which can be used to compile
+\asharp{} programs.
+By default, {\tt M-x compile} issues the command ``{\tt make}'', in a
+separate process, but the command may be changed to any other Unix
+command, including any command line which invokes the \asharp{}
+compiler.
+Output from the command goes to the buffer {\tt *compilation*}.
+% Quote *compilation* here?
+The format of the error messages produced by the \asharp{} compiler
+is then understood by the command ``{\tt C-x `}'', which finds the
+next error message in the {\tt *compilation*} buffer and displays
+the source line which produced the error.
+%\index{compiler options!M@\protect{\tt M}!M@\protect{-M compile}}
+
+% *********************************************************************
+\head{section}{Using an alternative message database}{asugErrorsDB}
+% *********************************************************************
+
+It is possible to have the \asharp{} compiler use an alternative
+message database.
+\index{error messages!database of}
+This is done via the {\tt -Mdb} command line option.
+Thus, a command script can cause the compiler to use a database of
+messages translated to some other language, or which give a
+different level of detail.
+%\index{compiler options!M@\protect{\tt M}!M@\protect{-Mdb} (set message database)}
+
+The messages which have been built into the compiler were derived
+from the database {\tt samples/comsgdb.msg}.
+\index{files!comsgdb.msg@\protect{\tt comsgdb.msg}}
+A replacement message database must provide messages for all the
+message tags in that file, and should 
+be in the X/Open format\footnote{Note that
+the {\tt comsgdb.msg} file is {\em not} in that format}.
+\index{X/Open message database format}
+
+Once a new message database file has been created, it can be
+placed in any directory which is normally searched for executable
+programs.
+If the database is called {\tt newcomsgs.cat,} for example, then
+the compiler argument ``{\tt -Mdb=newcomsgs}'' will find it.

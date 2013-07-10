@@ -1,0 +1,108 @@
+/*****************************************************************************
+ *
+ * signal.h0: Fixups for <signal.h>
+ *
+ * Copyright (c) 1990-2007 Aldor Software Organization Ltd (Aldor.org).
+ *
+ ****************************************************************************/
+
+/*
+ * Provide stubs for signals which exist only on some platforms.
+ */
+
+#ifndef _SIGNAL_H0_
+#define _SIGNAL_H0_
+
+#ifdef CC_broken_ieeetrap
+# define   _h_IEEETRAP			/* Bad header -- don't include it. */
+  typedef  int fpvmach;			/* Lie instead. */
+#endif
+
+#include <signal.h>
+
+#if !defined(SIGABRT) && defined(SIGIOT)
+#  define SIGABRT	SIGIOT		/* Pre-POSIX name. */
+#endif
+
+
+#define	 SIGFAKE	(-2)		/* To rename signals not supported. */
+
+
+#ifndef SIGABRT
+#  define SIGABRT	SIGFAKE
+#endif
+
+#ifndef SIGALRM
+#  define SIGALRM	SIGFAKE
+#endif
+
+#ifndef SIGBREAK
+#  define SIGBREAK	SIGFAKE
+#endif
+
+#ifndef SIGBUS
+#  define SIGBUS	SIGFAKE
+#endif
+
+#ifndef SIGEMT
+#  define SIGEMT	SIGFAKE
+#endif
+
+#ifndef SIGFPE
+#  define SIGFPE	SIGFAKE
+#endif
+
+#ifndef SIGHUP
+#  define SIGHUP	SIGFAKE
+#endif
+
+#ifndef SIGILL
+#  define SIGILL	SIGFAKE
+#endif
+
+#ifndef SIGINT
+#  define SIGINT	SIGFAKE
+#endif
+
+#ifndef SIGKILL
+#  define SIGKILL	SIGFAKE
+#endif
+
+#ifndef SIGPIPE
+#  define SIGPIPE	SIGFAKE
+#endif
+
+#ifndef SIGQUIT
+#  define SIGQUIT	SIGFAKE
+#endif
+
+#ifndef SIGSEGV
+#  define SIGSEGV	SIGFAKE
+#endif
+
+#ifndef SIGSYS
+#  define SIGSYS	SIGFAKE
+#endif
+
+#ifndef SIGTERM
+#  define SIGTERM	SIGFAKE
+#endif
+
+#ifndef SIGTRAP
+#  define SIGTRAP	SIGFAKE
+#endif
+
+#ifndef SIGXCPU
+#  define SIGXCPU	SIGFAKE
+#endif
+
+#ifndef SIGXFSZ
+#  define SIGXFSZ	SIGFAKE
+#endif
+
+#ifndef SIGDANGER
+#  define SIGDANGER	SIGFAKE
+#endif
+
+#endif /* !_SIGNAL_H0_ */
+

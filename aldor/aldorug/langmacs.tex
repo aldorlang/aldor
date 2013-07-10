@@ -1,0 +1,220 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%                                                                       %%%
+%%% :: Source Macro Expansion
+%%%                                                                       %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\stdindent}{{\normalsize {\tt \ \ \ \ }}}
+
+\head{chapter}{Source macros}{asugLangMacros}
+\index{macros}
+
+\head{section}{Macro definition}{asugLangMacrosDefining}
+\asharp{} provides a way to define abbreviations, or {\em macros},
+to make programs easier to read.
+
+A common use of macros is to abbreviate names or type expressions,
+as in the example below.
+The lines containing \ttin{==>} are macro definitions:
+\keywordIndex{==>}
+
+\begin{small}
+\begin{verbatim}
+    -- Abbreviations for frequently used types:
+    MI  ==> MachineInteger;
+    L T ==> List T;
+
+    split(lmi: L MI): Record(first: MI, second: MI, rest: L MI) ==
+            [first lmi, first rest lmi, rest rest lmi];
+
+    -- Abbreviations for long package names:
+    MStudy ==> LongitudinalStudiesOfMitralValveReplacementPatients;
+
+    d0 := intakes()$MStudy;
+    d1 := examinations()$MStudy;
+\end{verbatim}
+\end{small}
+
+The left hand side of a macro definition may be either an
+identifier or an application.
+A definition of the form
+
+\stdindent {\it Op} {\it Parms} {\tt ==>} {\it Body}
+
+is equivalent to
+
+\stdindent {\it Op} {\tt ==> macro} {\it Parms} {\tt +->} {\it Body}
+\keywordIndex{macro}
+
+and defines a parameterised macro.
+Any application syntax is permitted on the original left hand side:
+prefix, infix, or bracketed.
+The resulting right hand side is called a \Term{macro function}.
+
+This rule is applied until the left hand side is an identifier.
+Macros \linebreak may consequently be defined to receive their arguments
+in groups, in a ``curried'' fashion.
+For example, when $P_1$ and $P_2$ are parameter sequences, the definition
+
+\stdindent {\tt {\it Op} ($P_1$)($P_2$) ==> {\it Body}}
+
+is equivalent to
+
+\stdindent {\tt {\it Op} ==> macro ($P_1$) +-> macro ($P_2$) +-> {\it Body}}
+
+Macro functions may appear directly in the source program,
+and may be written with their parameters in groups:
+
+\stdindent {\tt macro ($P_1$)($P_2$)...($P_n$) +-> {\it Body}}
+
+is equivalent to
+
+\stdindent {\tt macro ($P_1$) +-> macro ($P_2$) +-> ... macro ($P_n$) +-> {\it Body}}
+
+\head{section}{Macro expansion}{asugLangMacrosExpansion}
+The process or replacing the abbreviations with what they stand for
+is called {\em macro expansion}.
+Macro expansion works by making substitutions
+in the parsed form of programs.
+Because the substitution is on trees, it is not
+necessary to include extra parentheses in macro definitions.
+
+Macro expansion transforms the source syntax trees with the following steps:
+\begin{itemize}
+\item
+   Record and remove any new macro definitions encountered.
+   A macro definition is scoped and persists for the remainder of the
+  ``\verb"+->"'', ``\verb"where"'', ``\verb"add"'' or ``\verb"with"''
+  in which it occurs.
+\item
+   Replace identifiers, if they have macro definitions,
+   with the right-hand side of their macro definitions.
+\item
+   Reduce expressions of the form
+
+\stdindent {\tt (macro {\it Parms} +-> {\it Body}) ({\it Exprs})}
+
+by introducing new macro definitions for the formal parameters
+and replacing the application with the macro expanded body.
+\end{itemize}
+Once macro expansion is complete, the entire program should be
+free of macro definitions and macro functions.
+The process of macro expansion removes all macro definitions;
+any remaining unreduced macro functions are reported as errors.
+
+
+\head{section}{Examples}{asugLangMacrosExamples}
+
+Given the following definitions,
+
+\begin{small}
+\begin{verbatim}
+    a ==> A1 - A2;
+    b ==> B;
+    c ==> C;
+    d(e,f)(g,h) ==> (e+f)*(g+h);
+    x + y    ==> c(x,y);
+    f(g,x,y) ==> g(x,y) / g(y,x);
+\end{verbatim}
+\end{small}
+
+the following expressions expand as shown:
+
+\begin{small}
+\begin{verbatim}
+    a;                                            --> A1 - A2
+    b;                                            --> B
+    a + b;                                        --> C(A1 - A2, B)
+    d(1,2)(3,4);                                  --> C(1,2) * C(3,4)
+    f(+,u,v);                                     --> C(u,v) / C(v,u)
+    f((macro (a,b) +-> a), u, v);                 --> u / v
+    (macro (a,b)(c)(d) +-> [a,b,c,d])(3,4)(5)(6); --> [3, 4, 5, 6]
+\end{verbatim}
+\end{small}
+
+
+\head{section}{Points of style}{asugLangMacrosStyle}
+It is often convenient to use macros which are local to a function
+or expression.  Below, we show a macro \ttin{l1?} which is
+local to the function \ttin{f}.
+
+\begin{small}
+\begin{verbatim}
+    f(li: List Integer, lp: List Pointer): () == {
+
+            l1? x0 ==> (not empty? x and empty? rest x) where x := x0;
+
+            if l1? li then ...
+            if l1? lp then ...
+            ...
+    }
+\end{verbatim}
+\end{small}
+The purpose of \ttin{l1?} is to provide an inexpensive test
+whether a list has length one.
+%(If a list \ttin{li} might be long,
+%then asking the question \ttin{\#li = 1} can be expensive.)
+This example illustrates two additional points:
+\begin{itemize}
+\item
+   Since macros are strictly syntactic substitutions the \ttin{l1?}
+   macro may be applied to different values of different types.
+\item
+   Since the macro uses the parameter in two places, the best practice
+   is to introduce a new temporary variable so the argument is evaluated
+   only once.
+\end{itemize}
+
+If the body of the macro is large, having a \ttin{where} at the end of
+a long expression can make a program harder to read.
+A convenient way to introduce local variables in this case is to make
+the left-hand side of the \ttin{where} a local macro.
+
+% Better not use "BigMac" - they might object to the possibility of
+% "Bad Food"!
+\begin{small}
+\begin{verbatim}
+    BigBurger(patty1, patty2) ==> BB where {
+            p1 := patty1;
+            p2 := patty2;
+
+            BB ==> {
+                    if not allBeef? p1 or not allBeef? p2 then
+                            error "Bad food";
+
+                    b := burger();
+                    b << bottomBun;
+                    b << p1;
+                    b << cheese;
+                    b << lettuce;
+                    b << onions;
+                    b << sauce;
+                    b << middleBun;
+                    b << p2;
+                    b << cheese;
+                    b << lettuce;
+                    b << onions;
+                    b << sauce;
+                    b << topBun;
+                    b
+            }
+    }
+\end{verbatim}
+\end{small}
+
+Just as a macro function
+
+\stdindent {\tt macro {\it Parms} +-> {\it Body}}
+
+is analogous to a function \ttin{{\it Parms} +-> {\it Body\/}},
+a macro definition
+
+\stdindent {\tt {\em Lhs} ==> {\em Expr}}.
+
+is analogous to a definition \ttin{{\it Lhs} == {\it Expr\/}}.
+For this reason, a macro definition may be written
+in the equivalent form
+
+\stdindent {\tt macro {\em Lhs} == {\em Expr}}.
+

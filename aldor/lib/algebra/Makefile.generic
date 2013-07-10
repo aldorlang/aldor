@@ -1,0 +1,60 @@
+##############################################################################
+#
+# Makefile.generic
+#
+# The Aldor Development Group (2001-2002)
+#
+##############################################################################
+
+include ../../Makefile.globals
+
+ALGEBRAROOT=$(GENERIC_DIR)/lib/algebra
+
+all:
+	@echo "Usage:"
+	@echo "   make objects        => make the objects for algebra"
+	@echo "   make installdistrib => install algebra in the aldor directory"
+	@echo "   make clean          => clean the directory"
+
+objects: check
+	-@ (PATH=$(ALDORROOT)/bin:$(PATH); \
+	    export PATH; \
+	    cd $(ALGEBRAROOT)/lib; \
+	    echo "*********** Building libalgebra.a ***********"; \
+	    $(SHELL) ../bin/makealgebra.sh $(ALGEBRAROOT) libalgebra.al '-q5 -qinline-all' ; \
+	    if ([ -f libalgebra-gmp.al ]) then \
+	       echo "*********** Building libalgebra-gmp.a ***********"; \
+	       $(SHELL) ../bin/makealgebra.sh $(ALGEBRAROOT) libalgebra-gmp.al '-q5 -qinline-all -dGMP'; \
+	    fi; \
+	    if ([ -f libalgebrad.al ]) then \
+	       echo "*********** Building libalgebrad.a ***********"; \
+	       $(SHELL) ../bin/makealgebra.sh $(ALGEBRAROOT) libalgebrad.al '-q1 -dDEBUG'; \
+	    fi; \
+	    if ([ -f libalgebradbg.al ]) then \
+	       echo "*********** Building libalgebradbg.a ***********"; \
+	       $(SHELL) ../bin/makealgebra.sh $(ALGEBRAROOT) libalgebradbg.al '-wdebugger -dDEBUGGER'; \
+	    fi; \
+	    cd .. )
+
+installdistrib: msginstall objects
+	@(echo "Installing algebra in Aldor directory"; \
+	  cd $(ALGEBRAROOT); \
+	  cp include/algebra*.as $(ALDORROOT)/include; \
+	  cp lib/libalgebra* $(ALDORROOT)/lib; \
+	  cp bin/*.sh bin/Makefile $(ALDORROOT)/bin)
+
+msginstall:
+	@(echo "***************************************************"; \
+	  echo "Compiling and installing algebra in Aldor directory"; \
+	  echo "***************************************************")
+
+check:
+	-@ if [ "x$(ALGEBRAROOT)" = "x" ] ; then echo "*** ALGEBRAROOT unset"; fi
+	@ [ "x$(ALGEBRAROOT)" != "x" ]
+	-@ if [ "x$(ALDORROOT)" = "x" ] ; then echo "*** ALDORROOT unset"; fi
+	@ [ "x$(ALDORROOT)" != "x" ]
+
+clean:
+	-@$(RM) lib/*.a
+	-@$(RM) *~
+	-@$(RM) */*~
