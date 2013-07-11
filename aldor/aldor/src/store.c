@@ -6,6 +6,10 @@
  *
  ****************************************************************************/
 
+#if __APPLE__
+#define STO_USE_ONCE 1
+#endif
+
 /*
  *   Select one of:
  *	STO_USE_BTREE	B-Tree based quick fit.
@@ -5002,11 +5006,20 @@ void stoShow			(void)		{ }
 void stoShowDetail		(int x)		{ }
 void stoAudit			(void)		{ }
 void stoRegister		(StoInfo info)	{ }
-void stoSetAldorTracer		(int code, StoFiClos clos) {}
-void stoSetTracer		(int code, StoTraceFun fun) {}
+void stoSetAldorTracer		(int code, Pointer clos) {}
+void stoSetTracer		(int code, Pointer fun) {}
 int  stoMarkObject		(Pointer p)	{ }
 int  stoWritablePointer		(Pointer p)	{ return POINTER_IS_UNKNOWN; }
 int  stoCtl			(int cmd, ...)	{ return 0; }
+
+typedef struct {
+	long time;
+	long start;
+	long live;
+} *TmTimer, _TmTimer;
+
+static _TmTimer stoGcTimer;
+TmTimer gcTimer			(void) { return &stoGcTimer; }
 
 
 /*

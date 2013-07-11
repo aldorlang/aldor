@@ -298,6 +298,7 @@ next_os_vm_region(os_vm_region_t region)
             break ;
 
         default:
+            fprintf(stderr, "Unexpected return from vm_region: %d", response) ;
             assert("Unexpected return from vm_region" && 0) ;
         }
     return region ;

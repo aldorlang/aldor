@@ -278,11 +278,19 @@ osRunRedirect(String cmd, BOOL wait, HANDLE hin, HANDLE hout, HANDLE herr)
         return wait ? rc : (int)pi.hProcess;
 }
 
+#if __CYGWIN__
+int
+osRun(String cmd)
+{
+	return system(cmd);
+}
+#else
 int
 osRun(String cmd)
 {
 	return osRunRedirect(cmd, TRUE, NULL, NULL, NULL);
 }
+#endif
 
 
 /*****************************************************************************

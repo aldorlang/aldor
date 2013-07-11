@@ -40,6 +40,8 @@
 # include <stdio.h>
 # include <stdlib.h>
 # include <string.h>
+# include <time.h>
+# include <unistd.h>
 # include "zacc.h"
 # include "zaccgram.h"
 # include "cenum.h"
@@ -102,6 +104,45 @@ static int  isExtra();		/* Is this a XXX_START or XXX_LIMIT word? */
 static int  isTerminal();	/* Is the given word a terminal (token)? */
 static void prWord();		/* Print the given word. */
 
+struct phrUse;
+struct phrDef;
+struct phrInfo;
+
+int yylex();
+void handleRule();
+void _2_endRule();
+void _2_startRule();
+void _2_endPhraseName();
+void _2_seeArg();
+void _2_seeType();
+void _2_seeName();
+void _2_endCommand();
+void _2_startCommand();
+void _2_seeIncludeEnum();
+void _2_wholeEpilog();
+void _2_endProlog();
+void _2_startProlog();
+void _2_endRule();
+void _2_startPhraseName();
+void _2_midRule();
+void _1_endRule();
+void _1_midRule();
+void _1_startRule();
+void _1_seeType();
+void _1_endPhraseName();
+void _1_seeArg();
+void _1_seeName();
+void _1_startPhraseName();
+void _1_seeIncludeEnum();
+void _1_endCommand();
+void _1_startCommand();
+void _1_wholeEpilog();
+void _1_endProlog();
+void _1_startProlog();
+struct phrUse *findUse(struct phrInfo	*pinfo, struct phrDef	*context, struct phrUse	*);
+void _1_();
+void _1_();
+
 
 static int	inLhs, inAction;	/* context information */
 
@@ -113,9 +154,37 @@ static int	inLhs, inAction;	/* context information */
  *****************************************************************************/
 
 
-main(argc, argv)
-	int	argc;
-	char	**argv;
+void
+zaccPass(char	*fn, int n)
+{
+	yyin   = mustOpen(fn, "r");
+	fnin   = fn;
+	passno = n;
+	yyparse();
+	fclose(yyin);
+}
+
+
+void
+zacc(char	*fn, char	*yfn)
+{
+	dirin = fnameDir(fn);
+	
+	fout = mustOpen(yfn, "w");
+
+#ifdef COMMENTARY
+	fprintf(fout, "/*\n * \"zacc\" output from \"%s\" on %s\n */\n\n", 
+		      fn, timeNow());
+#endif
+	zaccPass(fn, 1);
+	if (errcount > 0) exit(3);
+	zaccPass(fn, 2);
+
+	fclose(fout);
+}
+
+int
+main(int argc, char **argv)
 {
 	int	options = 1;
 
@@ -159,7 +228,7 @@ main(argc, argv)
 		rc = system(cmd);
 		if (rc != 0) {
 			fprintf(stderr, "Yacc failed on file \"%s\"\n", yfile);
-			exit(3);
+			return 3;
 		}
 		if (!hadyfile) unlink(yfile);
 
@@ -168,50 +237,18 @@ main(argc, argv)
 			fprintf(stderr,
 				"Rename failed from \"y.tab.c\" to \"%s\"\n",
 				cfile);
-			exit(3);
+			return 3;
 		}
 
 	}
 	
-	exit(0);
+        return 0;
 }
-
-zacc(fn, yfn)
-	char	*fn;
-	char	*yfn;
-{
-	dirin = fnameDir(fn);
-	
-	fout = mustOpen(yfn, "w");
-
-#ifdef COMMENTARY
-	fprintf(fout, "/*\n * \"zacc\" output from \"%s\" on %s\n */\n\n", 
-		      fn, timeNow());
-#endif
-	zaccPass(fn, 1);
-	if (errcount > 0) exit(3);
-	zaccPass(fn, 2);
-
-	fclose(fout);
-}
-
-zaccPass(fn, n)
-	char	*fn;
-	int	n;
-{
-	yyin   = mustOpen(fn, "r");
-	fnin   = fn;
-	passno = n;
-	yyparse();
-	fclose(yyin);
-}
-
 
 int lineNo;
 
 int
-yyerror(s)
-	char	*s;
+yyerror(char	*s)
 {
 	fprintf(stderr, "\"%s\", line %d: %s\n", fnin, lineNo, s);
 	return errcount++;
@@ -234,9 +271,7 @@ struct tokList {
 } *tokListHead, *tokListTail;
 
 void
-token(tag, str)
-	int	tag;
-	char	*str;
+token(int	tag, char	*str)
 {
 	/* 
 	 * To finesse parser lookahead. 
@@ -333,16 +368,13 @@ endCommand()
 
 
 void
-seeTokenType(str)
-	char	*str;
+seeTokenType(char	*str)
 {
 	dfltTokenType = str;
 }
 
 void
-seeIncludeEnum(fname, ename)
-	char	*fname;
-	char	*ename;
+seeIncludeEnum(char	*fname, char	*ename)
 {
 	char	fbuf[500];
 	int	i;
@@ -361,8 +393,7 @@ seeIncludeEnum(fname, ename)
 }
 
 void
-seeRuleType(str)
-	char	*str;
+seeRuleType(char	*str)
 {
 	dfltRuleType = str;
 }
@@ -377,8 +408,7 @@ startPhraseName()
 }
 
 void
-seeName(str)
-	char *str;
+seeName(char *str)
 {
 	switch(passno) {
 	  case 1: _1_seeName(str); break;
@@ -387,8 +417,7 @@ seeName(str)
 }
 
 void
-seeArg(str)
-	char *str;
+seeArg(char *str)
 {
 	switch(passno) {
 	  case 1: _1_seeArg(str); break;
@@ -406,8 +435,7 @@ endPhraseName()
 }
 
 void
-seeType(str)
-	char *str;
+seeType(char *str)
 {
 	switch(passno) {
 	  case 1: _1_seeType(str); break;
@@ -502,9 +530,7 @@ struct phrUse	*tokenSet, *genSet;
 
 #define UNQ(s)  ( ((s)[0] == '`') ? (s) + 1 : (s) )
 void
-fprintInfo(fout, pinfo)
-	FILE		*fout;
-	struct phrInfo	*pinfo;
+fprintInfo(FILE		*fout, struct phrInfo	*pinfo)
 {
 	int	i;
 
@@ -521,8 +547,7 @@ fprintInfo(fout, pinfo)
 
 /* Does the arg use &1, etc? */
 int
-usesBV(pinfo)
-	struct phrInfo	*pinfo;
+usesBV(struct phrInfo	*pinfo)
 {
 	int	i, j;
 	for (i = 0; i < pinfo->argc; i++)
@@ -533,9 +558,7 @@ usesBV(pinfo)
 
 /* Rename bound variables to &1, etc. */
 char *
-renameBV(str, pinfo)
-	char		*str;
-	struct phrInfo	*pinfo;
+renameBV(char		*str, struct phrInfo	*pinfo)
 {
 	int	i;
 
@@ -547,8 +570,7 @@ renameBV(str, pinfo)
 }
 
 int
-unnameBV(str)
-	char	*str;
+unnameBV(char	*str)
 {
 	int	i;
 	for (i = 0; i < MAXARGC; i++)
@@ -557,8 +579,7 @@ unnameBV(str)
 }
 
 struct phrUse	*
-instance(withFV, withBV)
-	struct phrUse	*withFV, *withBV;
+instance(struct phrUse	*withFV, struct phrUse	*withBV)
 {
 	struct phrUse	*inst;
 	int		i;
@@ -579,9 +600,7 @@ instance(withFV, withBV)
 }
 
 struct phrDef *
-findDef(str, l)
-	char		*str;
-	struct phrDef 	*l;
+findDef(char *str, struct phrDef 	*l)
 {
 	for ( ; l; l = l->next) {
 		if (!strcmp(str, l->name)) return l;
@@ -590,10 +609,7 @@ findDef(str, l)
 }
 
 struct phrUse *
-findUse(pinfo, context, l)
-	struct phrInfo	*pinfo;
-	struct phrDef	*context;
-	struct phrUse	*l;
+findUse(struct phrInfo	*pinfo, struct phrDef	*context, struct phrUse	*l)
 {
 	for ( ; l; l = l->next) {
 		int	different = strcmp(pinfo->name, l->info.name);
@@ -610,10 +626,7 @@ findUse(pinfo, context, l)
 
 
 struct phrDef *
-addDef(name, argc, type)
-	char	*name;
-	int	argc;
-	char	*type;
+addDef(char	*name, int argc, char *type)
 {
 	struct phrDef	*def;
 
@@ -639,8 +652,7 @@ addDef(name, argc, type)
 }
 
 struct phrDef *
-defListNReverse(l)
-	struct phrDef	*l;
+defListNReverse(struct phrDef	*l)
 {
 	struct phrDef	*r, *t;
 
@@ -655,8 +667,7 @@ defListNReverse(l)
 }
 
 int
-dontAddUse(str)
-	char	*str;
+dontAddUse(char	*str)
 {
 	int	i;
 	
@@ -669,9 +680,7 @@ dontAddUse(str)
 }
 
 struct phrUse *
-addUse(pinfo, context)
-	struct phrInfo	*pinfo;
-	struct phrDef	*context;
+addUse(struct phrInfo	*pinfo, struct phrDef	*context)
 {
 	struct phrUse	*use;
 
@@ -691,8 +700,8 @@ addUse(pinfo, context)
 }
 
 
-showDefs(l)
-	struct phrDef	*l;
+void
+showDefs(struct phrDef	*l)
 {
 	for ( ; l; l = l->next) {
 		fprintf(stdout, "\t%s", l->name);
@@ -704,8 +713,8 @@ showDefs(l)
 	}
 }
 
-showUses(l)
-	struct phrUse	*l;
+void
+showUses(struct phrUse	*l)
 {
 	for ( ; l; l = l->next) {
 		int	i;
@@ -723,6 +732,7 @@ showUses(l)
 	}
 }
 
+void
 phraseClosure()
 {
 	struct phrUse	*withFV = 0, *undone = 0;
@@ -807,18 +817,21 @@ static struct phrInfo lhsInfo;
 static char          *lhsType;
 static struct phrDef *lhsDef;
 
+void
 _1_startProlog()
 {
 	tokEcho     = 0;
 	tokEnlist   = 0;
 }
 
+void
 _1_endProlog()
 {
 	if (hasPctType && (dfltTokenType || dfltRuleType))
 		fatalErr();
 }
 
+void
 _1_wholeEpilog()
 {
 	while (yylex() != 0) ;
@@ -826,19 +839,20 @@ _1_wholeEpilog()
 	phraseClosure();
 }
 
+void
 _1_startCommand()
 {
 }
 
+void
 _1_endCommand()
 {
 }
 
 static EnumItem inclEnums = 0;
 
-_1_seeIncludeEnum(fname, ename)
-	char	*fname;
-	char	*ename;
+void
+_1_seeIncludeEnum(char *fname, char *ename)
 {
 	EnumItem tt;
 
@@ -851,20 +865,21 @@ _1_seeIncludeEnum(fname, ename)
 	inclEnums = skimNConcat(inclEnums, tt);
 }
 
+void
 _1_startPhraseName()
 {
 	phrInfo.name = 0;
 	phrInfo.argc = 0;
 }
 
-_1_seeName(str)
-	char *str;
+void
+_1_seeName(char *str)
 {
 	phrInfo.name = (!inLhs) ? renameBV(str, &lhsInfo) : str;
 }
 
-_1_seeArg(str)
-	char *str;
+void
+_1_seeArg(char *str)
 {
 	if (phrInfo.argc == MAXARGC) 
 		fatalErr();
@@ -880,6 +895,7 @@ _1_seeArg(str)
 	}
 }
 
+void
 _1_endPhraseName()
 {
 	if (inLhs) 
@@ -888,8 +904,8 @@ _1_endPhraseName()
 		addUse(&phrInfo, lhsDef);
 }
 
-_1_seeType(str)
-	char *str;
+void
+_1_seeType(char *str)
 {
 	if (passno != 1) return;
 
@@ -897,17 +913,20 @@ _1_seeType(str)
 }
 
 
+void
 _1_startRule()
 {
 	lhsType = 0;
 	lhsDef  = 0;
 }
 
+void
 _1_midRule()
 {
 	lhsDef = addDef(lhsInfo.name, lhsInfo.argc, lhsType);
 }
 
+void
 _1_endRule()
 {
 }
@@ -920,8 +939,7 @@ _1_endRule()
  *****************************************************************************/
 
 static int
-isTerminal(w)
-	char	*w;
+isTerminal(char *w)
 {
 	struct phrUse	*l = tokenSet;
 
@@ -934,8 +952,7 @@ isTerminal(w)
 char *extraSuffix[] = { "_START", "_LIMIT", 0 };
 
 static int
-isExtra(w)
-	char	*w;
+isExtra(char *w)
 {
 	char	*x;
 	int	i, nx, nw;
@@ -954,9 +971,7 @@ isExtra(w)
 }
 
 static void
-prWord(fout, w)
-	FILE *fout;
-	char *w;
+prWord(FILE *fout, char *w)
 {
 	char *p;
 	p = isTerminal(w) ? prefix : "";
@@ -964,6 +979,7 @@ prWord(fout, w)
 
 }
 
+void
 _2_startProlog()
 {	tokEcho  = 1;
 	tokEnlist= 1;
@@ -972,6 +988,7 @@ _2_startProlog()
 	tokListTail = 0;
 }
 
+void
 _2_endProlog()
 {
 	struct phrUse	*ul;
@@ -1030,6 +1047,7 @@ _2_endProlog()
 		fprintf(fout,"\n");
 }
 
+void
 _2_wholeEpilog()
 {
 	while (yylex() != 0) ;
@@ -1037,9 +1055,8 @@ _2_wholeEpilog()
   	token(TK_Other, "");	/* Force echo of last token read */
 }
 
-_2_seeIncludeEnum(fname, ename)
-	char	*fname;
-	char	*ename;
+void
+_2_seeIncludeEnum(char *fname, char *ename)
 {
 	EnumItem el, tl;
 	el = skimEnums(fname, 1, &ename);
@@ -1056,49 +1073,56 @@ _2_seeIncludeEnum(fname, ename)
 	skimFree(el);
 }
 
+void
 _2_startCommand()
 {
 	tokEcho = 0;
 }
 
+void
 _2_endCommand()
 {
 	tokEcho = 1;
 }
 
+void
 _2_startPhraseName()
 {
 }
 
-_2_seeName(str)
-	char *str;
+void
+_2_seeName(char *str)
 {
 }
 
-_2_seeArg(str)
-	char *str;
+void
+_2_seeArg(char *str)
 {
 }
 
+void
 _2_endPhraseName()
 {
 }
 
-_2_seeType(str)
-	char *str;
+void
+_2_seeType(char *str)
 {
 }
 
+void
 _2_startRule()
 {
 	tokEcho = 0;
 	tokListHead = tokListTail;
 }
 
+void
 _2_midRule()
 {
 }
 
+void
 _2_endRule()
 {
 	tokEcho = 1;
@@ -1107,17 +1131,15 @@ _2_endRule()
 
 
 struct tokList *
-nextMeaty(tl)
-	struct tokList	*tl;
+nextMeaty(struct tokList	*tl)
 {
 	while (tl && (tl->tag == TK_Space || tl->tag == TK_Comment))
 		tl = tl->next;
 	return tl;
 }
 	
-emitRule(tl0, use)
-	struct tokList	*tl0;
-	struct phrUse	*use;
+void
+emitRule(struct tokList	*tl0, struct phrUse	*use)
 {
 	struct tokList	*tl;
 	char	*str;
@@ -1150,8 +1172,8 @@ emitRule(tl0, use)
 }
 
 
-handleRule(tl0)
-	struct tokList	*tl0;
+void
+handleRule(struct tokList	*tl0)
 {
 	struct tokList	*tl;
 	struct phrInfo	info;
@@ -1234,8 +1256,7 @@ handleRule(tl0)
  *****************************************************************************/
 
 char *
-mustAlloc(n)
-	int	n;
+mustAlloc(int	n)
 {
 	/*extern char *malloc();*/
 	char	*s;
@@ -1245,15 +1266,13 @@ mustAlloc(n)
 }
 
 char *
-strAlloc(str)
-	char	*str;
+strAlloc(char	*str)
 {
 	return strcpy(mustAlloc(strlen(str) + 1), str);
 }
 
 char *
-fnameDir(fn)
-	char	*fn;
+fnameDir(char	*fn)
 {
 	int	i, n, slashPos;
 	char	*d;
@@ -1274,8 +1293,7 @@ fnameDir(fn)
 }
 
 FILE *
-mustOpen(fname, mode)
-	char	*fname, *mode;
+mustOpen(char	*fname, char	*mode)
 {
 	FILE *f;
 	f = fopen(fname, mode);
@@ -1299,7 +1317,9 @@ timeNow()
 void
 fatalErr()
 {
+#if 0
 	va_list argp;
+#endif
 
 	fprintf(stderr, "zacc (fatal error): ");
 #if 0

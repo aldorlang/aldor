@@ -1,6 +1,7 @@
 
 %{
 # include "zacc.h"
+int yylex();
 %}
 %no-lines
 %defines
