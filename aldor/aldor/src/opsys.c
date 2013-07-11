@@ -1006,7 +1006,7 @@ osAllocShow(void)
 
 #if !defined(OS_Has_MemMap)
 
-struct osMemMap *
+struct osMemMap **
 osMemMap(int mask)
 {
 	return 0;
