@@ -492,7 +492,7 @@ typedef double	MostAlignedType;
 #ifndef CC_no_empty_file
 #  define ThatsAll
 #else
-#  define ThatsAll	int _ThatsAll_(x) int x; {return x;}
+#  define ThatsAll	extern int _ThatsAll_;
 #endif
 
 /*****************************************************************************

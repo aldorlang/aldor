@@ -58,7 +58,7 @@ runtime_AXLFLAGS := -Wruntime
 
 $(patsubst %, %.c, $(library)): %.c: %.ao %.dep
 	@echo AO_TO_C $*
-	@$(aldorexedir)/aldor -Nfile=$(aldorexedir)/aldor.conf -Fc=$(builddir)/$@ $<	
+	 $(aldorexedir)/aldor -Nfile=$(aldorsrcdir)/aldor.conf -Fc=$(builddir)/$@ $<	
 
 $(patsubst %, %.java, $(library)): %.java: %.fm $(aldorexedir)/javagen
 	 $(aldorexedir)/javagen $< > $@
@@ -95,7 +95,7 @@ $(patsubst %, %.cmd, $(library)): %.cmd: Makefile
 $(patsubst %,%.fm,$(library)): %.fm: %.ao
 	@echo AO_TO_FM $*
 	@$(aldorexedir)/aldor \
-		     -Nfile=$(aldorexedir)/aldor.conf 	\
+		     -Nfile=$(aldorsrcdir)/aldor.conf 	\
 		     -Ffm=$@ $*.ao
 
 define dep_template
@@ -121,6 +121,7 @@ $(patsubst %, %.class, $(library)): %.class: %.java
 
 # All..
 all: Makefile \
+	$(patsubst %,%.c,$(library)) \
 	$(patsubst %,%.fm,$(library)) 	\
 	$(patsubst %,%.java,$(library)) \
 	$(patsubst %,%.class,$(library)) \

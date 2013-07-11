@@ -1,6 +1,16 @@
 #SUBDIRS = . java
 
-bin_PROGRAMS =  javagen aldor
+bin_PROGRAMS = aldor aldortest structtest gentest javagen
+
+dataincludedir = $(datadir)/include
+datainclude_DATA=aldor.conf 
+
+datalib_DATA = comsgpig.cat
+datalibdir = $(datadir)/lib
+
+include_HEADERS=foam_c.h cconfig.h platform.h optcfg.h foamopt.h basic.typ
+
+noinst_LIBRARIES = libtest.a libphase.a libstruct.a libgen.a libport.a 
 
 javagen_SOURCES = java/main.c java/genjava.c java/javacode.c		\
 		java/javaobj.c axlcomp.c cmdline.c
@@ -8,15 +18,11 @@ javagen_SOURCES = java/main.c java/genjava.c java/javacode.c		\
 javagen_LDADD = libphase.a libstruct.a libgen.a libport.a -lm
 javagen_LDFLAGS =
 javagen_CFLAGS = -g
-include_HEADERS=foam_c.h cconfig.h platform.h optcfg.h foamopt.h basic.typ
-
 
 aldor_SOURCES = main.c axlcomp.c cmdline.c
 aldor_LDADD = libphase.a libstruct.a libgen.a libport.a -lm
-aldor_LDFLAGS = 
+aldor_LDFLAGS =
 aldor_CFLAGS  = -g
-
-noinst_LIBRARIES = libphase.a libstruct.a libgen.a libport.a 
 
 aldortest_CFLAGS=-DTEST_STAND_ALONE -DTEST_ALL --save-temps
 aldortest_SOURCES = test.c

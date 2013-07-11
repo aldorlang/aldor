@@ -68,9 +68,9 @@ AC_CONFIG_FILES([Makefile
 		 aldor/lib/libfoamlib/al/Makefile
 		 aldor/lib/libfoam/Makefile
 		 aldor/lib/libfoam/al/Makefile
-		 aldor/test/Makefile
 		 aldor/lib/java/Makefile
 		 aldor/lib/java/src/Makefile
+		 aldor/test/Makefile
 		 aldor/tools/Makefile
 		 aldor/tools/unix/Makefile
 		 lib/Makefile
@@ -78,14 +78,6 @@ AC_CONFIG_FILES([Makefile
 		 lib/axllib/src/Makefile
 		 lib/axllib/src/al/Makefile
 		 lib/axllib/test/Makefile
-		 lib/libaxldem/Makefile
-		 lib/libaxldem/src/Makefile
-		 lib/libaxldem/src/al/Makefile
-		 lib/libaxldem/test/Makefile
-		 lib/libax0/Makefile
-		 lib/libax0/src/Makefile
-		 lib/libax0/src/al/Makefile
-		 lib/libax0/test/Makefile
 		 lib/aldor/Makefile
 		 lib/aldor/include/Makefile
 		 lib/aldor/src/Makefile
@@ -128,7 +120,15 @@ AC_CONFIG_FILES([Makefile
 		 lib/algebra/src/multpoly/multpolycat/Makefile
 		 lib/algebra/src/multpoly/multpolydom/Makefile
 		 lib/algebra/src/multpoly/multpolypkg/Makefile
-		 lib/algebra/src/multpoly/multpolytest/Makefile])
+		 lib/algebra/src/multpoly/multpolytest/Makefile
+		 lib/libaxldem/Makefile
+		 lib/libaxldem/src/Makefile
+		 lib/libaxldem/src/al/Makefile
+		 lib/libaxldem/test/Makefile
+		 lib/libax0/Makefile
+		 lib/libax0/src/Makefile
+		 lib/libax0/src/al/Makefile
+		 lib/libax0/test/Makefile])
 AC_OUTPUT
 
 # Shared libraries

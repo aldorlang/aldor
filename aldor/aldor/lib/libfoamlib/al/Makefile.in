@@ -63,7 +63,7 @@ $(patsubst %, %.c, $(library)): %.c: %.ao %.dep
 aldoropt := -Q8 -Qinline-all
 define aldor_args
 	-I$(srcdir)/.. $(aldoropt) $(aldordebug_$*) \
-	-Nfile=$(aldorsrcdir)/aldor.conf 	\
+	-Nfile=$(aldorexedir)/aldor.conf 	\
 	-lAxlLib=foamlib_$* 		\
 	-DBuildAxlLib 		\
 	-Fao=$*.ao $(srcdir)/../$*.as

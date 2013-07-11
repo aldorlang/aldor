@@ -17,7 +17,6 @@
 #else
 #  define YYDEBUG 1
 #endif
-int yydebug;
 
 # define TPOS(t)((t)->pos)
 # define TEND(t)((t)->end-1)
