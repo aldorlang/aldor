@@ -135,7 +135,8 @@ DUMMY:
 $(tmpdir): DUMMY
 	mkdir -p $(tmpdir)
 
-comsgdb.h comsgdb.c: $(srcdir)/comsgdb.msg $(tmpdir)
+comsgdb.h: comsgdb.c
+comsgdb.c: $(srcdir)/comsgdb.msg $(tmpdir)
 	@if [ ! -f comsgdb.h ] ; then touch comsgdb.h ; fi
 	@if [ ! -f comsgdb.c ] ; then touch comsgdb.c ; fi
 	@cp $(srcdir)/comsgdb.msg $(tmpdir)/comsgdb.msg
