@@ -1,5 +1,6 @@
 %{
 # include "zacc.h"
+int yylex();
 %}
 
 %union yystype {

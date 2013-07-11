@@ -36,4 +36,9 @@ extern void	seeTokenType	of((char *));
 extern void	seeRuleType	of((char *));
 
 extern void     incLineNo	of((void));
+
+void seeIncludeEnum(char	*fname, char	*ename);
+void endPhraseName();
+void incLineCount();
+int yyerror(char	*s);
 #endif
