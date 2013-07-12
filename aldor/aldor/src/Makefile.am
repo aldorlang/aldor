@@ -63,8 +63,6 @@ libstruct_a_SOURCES = gf_syme.c ti_top.c fbox.c \
 structtest_SOURCES=structtest.c
 structtest_LDADD=libstruct.a libgen.a libport.a -lm
 structtest_LDFLAGS =
-# make sure these are built before things are compiled
-BUILT_SOURCES = comsgdb.h comsgdb.c
 
 libphase_a_SOURCES = phase.c bloop.c fintphase.c \
 		include.c scan.c syscmd.c linear.c parseby.c macex.c \
@@ -134,6 +132,8 @@ toolexedir=$(abs_top_builddir)/aldor/tools/unix
 DUMMY:
 $(tmpdir): DUMMY
 	mkdir -p $(tmpdir)
+
+# make sure these are built before things are compiled
 BUILT_SOURCES = comsgdb.h comsgdb.c
 CLEANFILES = $(BUILT_SOURCES)
 
