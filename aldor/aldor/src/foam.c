@@ -2712,8 +2712,6 @@ foamGetDDecl(int index, Foam fmts, FoamBox fbox)
  *	Array		->	type of elements
  */
 
-typedef Foam (*FoamExprTypeCallback)(void *, Foam);
-
 FoamTag
 foamExprTypeCB(Foam expr, AInt *extra, FoamExprTypeCallback callback, void *arg)
 {
