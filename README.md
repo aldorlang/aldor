@@ -24,4 +24,4 @@ the same for libaldor.
 This version of Aldor was tested on Linux 64 bit and Cygwin 32 bit. Users of
 Mac OS X, FreeBSD and other platforms are welcome to report their issues.
 
-See the wiki for more information.
+See the [wiki](https://github.com/pippijn/aldor/wiki) for more information.
