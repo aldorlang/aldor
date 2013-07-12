@@ -38,17 +38,17 @@ AFLAGS =			\
 	-Y $(LIBDIR)		\
 	-Y $(dir $@)		\
 	-Q8 -Qinline-all	\
-	-fao=$(@:.o=.ao)	\
+	-fao=$(@:$(OBJEXT)=.ao)	\
 	-fo=$@
 
-TARGETS =		\
-	$(BINDIR)/aldor	\
-	$(LIBDIR)/libaldor.a	\
-	$(LIBDIR)/libalgebra.a	\
-	$(LIBDIR)/libaxllib.a	\
-	$(LIBDIR)/libaxldem.a	\
-	$(LIBDIR)/libfoam.a	\
-	$(LIBDIR)/libfoamlib.a	\
+TARGETS =			\
+	$(BINDIR)/aldor$(EXEEXT)	\
+	$(LIBDIR)/libaldor$(LIBEXT)	\
+	$(LIBDIR)/libalgebra$(LIBEXT)	\
+	$(LIBDIR)/libaxllib$(LIBEXT)	\
+	$(LIBDIR)/libaxldem$(LIBEXT)	\
+	$(LIBDIR)/libfoam$(LIBEXT)	\
+	$(LIBDIR)/libfoamlib$(LIBEXT)	\
 	$(LIBDIR)/aldor_gloop.ao
 
 all: $(TARGETS)
