@@ -10,8 +10,8 @@ libfoamlib_ALDOR=al/array.c al/basic.c al/bool.c al/character.c		\
 other_files=al/libfoamlib.al
 aldorsrcdir = $(abs_top_srcdir)/aldor/src
 
-AM_CFLAGS = -I$(aldorsrcdir)
 libfoamlib_a_SOURCES=$(libfoamlib_ALDOR)
+CFLAGS=-Wno-error -I$(aldorsrcdir)
 
 noinst_LIBRARIES=libfoamlib.a
 

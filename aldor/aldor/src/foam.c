@@ -120,11 +120,12 @@ local int
 foamFormatter(OStream ostream, Pointer p)
 {
 	Foam foam = (Foam) p;
+	int c;
 
 	SExpr sx = foamToSExpr(foam);
 	Buffer b = bufNew();
 	sxiToBufferFormatted(b, sx, SXRW_MixedCase);
-	int c = ostreamWrite(ostream, bufLiberate(b), -1);
+	c = ostreamWrite(ostream, bufLiberate(b), -1);
 	sxiFree(sx);
 
 	return c;

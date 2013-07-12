@@ -319,8 +319,11 @@ String
 strReplace(String txt, String orig, String repl)
 {
 	Buffer buf = bufNew();
+	String s;
+	int replLen;
+
 	bufNeed(buf, strlen(orig));
-	int replLen = strlen(repl);
+	replLen = strlen(repl);
 	while (true) {
 		char *nxt = strstr(txt, orig);
 		if (nxt == NULL)
@@ -332,7 +335,7 @@ strReplace(String txt, String orig, String repl)
 	}
 	bufAddn(buf, txt, strlen(txt));
 	bufAdd1(buf, '\0');
-	String s = bufLiberate(buf);
+	s = bufLiberate(buf);
 	return s;
 }
 

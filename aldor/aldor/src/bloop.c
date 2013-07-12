@@ -475,7 +475,8 @@ bloopGetCommand(void)
 	else
 		prompt(fin, fout, "(ready \"\")\n");
 
-	fgets(cmd, sizeof(cmd), fin);
+	if (fgets(cmd, sizeof(cmd), fin) == NULL)
+	  return NULL;
 
 	/* Trim white space from both ends. */
 	s = cmd + strlen(cmd) - 1;

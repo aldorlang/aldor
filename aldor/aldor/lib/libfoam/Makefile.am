@@ -22,7 +22,7 @@ libfoam_SRC=\
 
 aldorsrcdir = $(abs_top_srcdir)/aldor/src
 
-AM_CFLAGS = -I$(aldorsrcdir) -DFOAM_RTS 
+CFLAGS = -I$(aldorsrcdir) -DFOAM_RTS
 libfoam_a_SOURCES=$(libfoam_SRC) $(libfoam_ALDOR)
 
 lib_LIBRARIES=libfoam.a 

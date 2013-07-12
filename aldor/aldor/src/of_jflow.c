@@ -1094,14 +1094,16 @@ jflowSpecializeBlock2(int val, BBlock bb, int exit,
 		      Bitv cloneSet, BitvClass class)
 {
 	FlowGraph flog = bb->graph;
+	BBlockList bbsToCheck;
 	BBlock	newb;
+	BBlock *cloneArray;
 	Bitv    cloned = bitvNew(class);
-	int	i, j;
+	int	i, j, pos, bbpos;
 
 	jflowDmDEBUG(afprintf(dbOut, "Header: %pBBlock Exit: %d\n", bb, exit));
 
 	bitvClearAll(class, cloned);
-	BBlockList bbsToCheck = listList(BBlock)(1, bb);
+	bbsToCheck = listList(BBlock)(1, bb);
 
 	while (bbsToCheck != listNil(BBlock)) {
 		BBlock bb = car(bbsToCheck);
@@ -1119,15 +1121,15 @@ jflowSpecializeBlock2(int val, BBlock bb, int exit,
 
 	jflowDmDEBUG(afprintf(dbOut, "Cloning %d blocks\n", bitvCount(class, cloned)));
 	/* Copy the blocks that need copying */
-	BBlock *cloneArray = (BBlock *) stoAlloc(OB_Other, bitvCount(class, cloned) * sizeof(BBlock));
-	int pos = 0;
+	cloneArray = (BBlock *) stoAlloc(OB_Other, bitvCount(class, cloned) * sizeof(BBlock));
+	pos = 0;
 	for (i=0; i <= bitvMax(class, cloned); i++) {
-		BBlock bb;
+		BBlock bb, clone;
 		int j;
 		if (!bitvTest(class, cloned, i))
 			continue;
 		bb = flogBlock(flog, i);
-		BBlock clone = bbCopy(bb);
+		clone = bbCopy(bb);
 		cloneArray[pos++] = clone;
 	}
 	assert(pos == bitvCount(class, cloned));
@@ -1135,10 +1137,12 @@ jflowSpecializeBlock2(int val, BBlock bb, int exit,
 	/* Now wire them up */
 	pos = 0;
 	for (i=0; i <= bitvMax(class, cloned); i++) {
+		BBlock origBB;
+		BBlock clonedBB;
 		if (!bitvTest(class, cloned, i))
 			continue;
-		BBlock origBB = flogBlock(flog, i);
-		BBlock clonedBB = cloneArray[pos++];
+		origBB = flogBlock(flog, i);
+		clonedBB = cloneArray[pos++];
 		if (origBB == dummy) {
 			bbSpecializeExit(clonedBB, val);
 		}
@@ -1153,7 +1157,7 @@ jflowSpecializeBlock2(int val, BBlock bb, int exit,
 				      origBB==dummy ? "dummy" : "std", origBB, clonedBB));
 	}
 
-	int bbpos = bitvCountTo(class, cloned, bbExit(bb, exit)->label);
+	bbpos = bitvCountTo(class, cloned, bbExit(bb, exit)->label);
 	bbSetExit(bb, exit, cloneArray[bbpos]);
 
 	jflowDmDEBUG(afprintf(dbOut, "Header: %pBBlock\n", bb));

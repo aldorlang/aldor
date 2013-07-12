@@ -105,7 +105,7 @@ $(patsubst %,%.fm,$(library)): %.fm: %.ao
 		     -Ffm=$@ $*.ao
 
 # Java->class
-javaopts=-cp $(abs_top_builddir)/aldor/lib/java/build/foamj.jar
+javaopts=-cp $(abs_top_builddir)/aldor/lib/java/src/foamj.jar
 
 $(patsubst %, %.class, $(library)): %.class: %.java
 	javac $(javaopts) $<
@@ -133,6 +133,8 @@ mostlyclean:
 	rm -f $(patsubst %, %.fm, $(library))
 	rm -f $(patsubst %, %.java, $(library))
 	rm -f $(patsubst %, %.dep, $(library))
+	rm -f $(patsubst %, %.java, $(library))
+	rm -f $(patsubst %, %*.class, $(library))
 	rm -f $(patsubst %, libfoamlib_%.fm, $(library))
 
 clean: mostlyclean

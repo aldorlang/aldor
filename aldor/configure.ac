@@ -53,6 +53,7 @@ AC_FUNC_ALLOCA
 #AC_CHECK_FUNCS([atexit bzero clock_gettime fesetround floor ftime getcwd isascii localeconv localtime_r mblen memchr memmove memset modf pow putenv realpath rint rpmatch select setenv setlocale sqrt stime strcasecmp strchr strcspn strdup strerror strncasecmp strpbrk strrchr strspn strstr strtol strtoul strtoull tzset])
 AC_CHECK_FUNCS([atexit])
 
+ALDOR_ERROR_ON_WARN
 # Just in case
 GENERATED_WARNING="THIS IS A GENERATED FILE"
 AC_SUBST([GENERATED_WARNING])

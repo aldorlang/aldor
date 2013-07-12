@@ -425,7 +425,7 @@ testTinfer9()
 	typeInfer(stab, absyn);
 	
 	testTrue("Declare is sefo", abIsSefo(absyn));
-	testIntEqual("Error Count", 1, comsgErrorCount());
+	testIntEqual("Error Count", 2, comsgErrorCount());
 	
 	finiFile();
 }

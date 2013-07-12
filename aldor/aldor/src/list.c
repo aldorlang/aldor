@@ -73,9 +73,10 @@ ptrlistListv(va_list argp)
 
 	while (true) {
 		Pointer nextElt = (Pointer) va_arg(argp, Pointer);
+		PointerList cell;
 		if (nextElt == NULL)
 			break;
-		PointerList cell = listCons(Pointer)(nextElt,
+		cell = listCons(Pointer)(nextElt,
 						     listNil(Pointer));
 		*nextptr = cell;
 		nextptr = &cell->rest;

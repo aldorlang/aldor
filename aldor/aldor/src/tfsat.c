@@ -1668,6 +1668,7 @@ tfSatExport(SatMask mask, SymeList mods, AbSyn Sab, SymeList S, Syme t)
 	Bool tryHarder = true;
 	static int serialNo = 0;
 	int serialThis = serialNo++;
+	AbSub sigma;
 
 	tfsExportDEBUG(afprintf(dbOut, "tfSatExport[%d]:: Start S: %pAbSyn\n", serialThis, Sab));
 
@@ -1702,17 +1703,18 @@ tfSatExport(SatMask mask, SymeList mods, AbSyn Sab, SymeList S, Syme t)
 	 * various local values for '%', and swapping them with the value used locally
 	 * should let us match 'Foo %' with 'Foo X'.
 	 */
-	AbSub sigma = absFrSymes(stabFile(), mods, Sab);
+	sigma = absFrSymes(stabFile(), mods, Sab);
 	tfsExportDEBUG(afprintf(dbOut, "tfSatExport[%d]:: Incoming S: %pAbSyn\n", serialThis, Sab));
 
 	for (symes = S; !tfSatSucceed(result) && symes; symes = cdr(symes)) {
 		Syme	s = car(symes);
-
+		TForm   substS;
+		Bool    weakEq;
 		if (!symeIsSelfSelf(s))
 			continue;
 
-		TForm substS = tfSubst(sigma, symeType(s));
-		Bool weakEq = abEqualModDeclares(tfExpr(substS), tfExpr(symeType(t)));
+		substS = tfSubst(sigma, symeType(s));
+		weakEq = abEqualModDeclares(tfExpr(substS), tfExpr(symeType(t)));
 		tfsExportDEBUG(afprintf(dbOut, "tfsatExport[%d]::CompareTF: [%pTForm], [%pTForm] = %d\n",
 					serialThis, substS, symeType(t), weakEq));
 

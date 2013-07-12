@@ -716,7 +716,7 @@ testDirectSFloatToXSFloat(void)
 	sfAssemble(&test, 0, expon, pb);
 */
 	printf("Enter a float:");
-	scanf("%f", &test);
+	IgnoreResult(scanf("%f", &test));
 
 	sfDissemble(&test, &sign, &expon, pb,NULL);
 	printf("[%d|%d]\n", sign, expon);
@@ -756,7 +756,7 @@ testDirectXSFloatToSFloat(void)
 	printf("Enter a 6-bytes xsfloat:\n");
 
 	for (i = 0; i < 6; i++) {
-		scanf("%x",&u0);
+		IgnoreResult(scanf("%x",&u0));
 		*p++ = (UByte) u0;
 	}
 
@@ -793,7 +793,7 @@ testFloatInteractiveConversion(void)
 		printf("\t2: extended -> native;");
 		printf("\t0: exit > ");
 
-		scanf("%c", &c);
+		IgnoreResult(scanf("%c", &c));
 
 		if (c == '1')
 			testDirectSFloatToXSFloat();

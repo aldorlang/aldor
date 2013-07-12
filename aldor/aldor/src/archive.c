@@ -376,7 +376,7 @@ arFirstPosAIX(Archive ar)
 	Offset	pos;
 
 	AR_SEEK(ar, AIXFSTMOFF);
-	fscanf(arFile(ar), "%12lu ", &pos);
+	IgnoreResult(fscanf(arFile(ar), "%12lu ", &pos));
 	return pos;
 }
 
@@ -388,7 +388,7 @@ arFirstPosAIX4(Archive ar)
 	Offset	pos;
 
 	AR_SEEK(ar, AIX4FSTMOFF);
-	fscanf(arFile(ar), "%20lu ", &pos);
+	IgnoreResult(fscanf(arFile(ar), "%20lu ", &pos));
 	return pos;
 }
 

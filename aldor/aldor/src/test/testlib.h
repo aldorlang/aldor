@@ -6,6 +6,7 @@
 void testStringEqual(String testName, String s1, String s2);
 void testPointerEqual(String testName, void *, void *);
 void testIntEqual(String testName, int s1, int s2);
+void testIntIsNotZero(String testName, int s1);
 
 void testTrue(String testName, Bool flg);
 void testFalse(String testName, Bool flg);

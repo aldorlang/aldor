@@ -218,7 +218,7 @@ int InitBasicTypesArray(String file) {
   /* 1st: how many lines in the file ? */
   numberOfTypes = 0;
   while (!feof(basic)) {
-    fgets(s,1000,basic);
+    IgnoreResult(fgets(s,1000,basic));
     numberOfTypes++;
   }
   numberOfTypes--; /* there is always one extra loop, don't know why */
@@ -231,7 +231,7 @@ int InitBasicTypesArray(String file) {
   /* 3rd: filling the arrays */
   rewind(basic);
   for (i = 0; i < numberOfTypes; i++) {
-    fgets(s,1000,basic);
+    IgnoreResult(fgets(s,1000,basic));
     updateBasicTypes(s, i);
   }
 

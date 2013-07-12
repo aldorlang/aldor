@@ -723,8 +723,8 @@ lpEdgeListPrintDb(EdgeList edges)
 void
 lpLoopPrintDb(Loop loop)
 {
-	fprintf(dbOut, "Loop (0x%x):  headerBlock = %d\n",
-		(unsigned int)loop, loop->header->label);
+	fprintf(dbOut, "Loop (%p):  headerBlock = %d\n",
+		loop, loop->header->label);
 
 	assert(loop->bitvClass);
 	assert(bitvClassSize(loop->bitvClass) >= listLength(BBlock)(loop->blockList));
