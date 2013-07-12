@@ -20,17 +20,17 @@ libaxldem_ASOURCES :=	\
 libaxldem_ASOURCES := $(addprefix $(THIS), $(libaxldem_ASOURCES))
 
 libaxldem_AOBJECTS := $(libaxldem_ASOURCES:.as=.ao)
-libaxldem_COBJECTS := $(libaxldem_ASOURCES:.as=.o)
+libaxldem_COBJECTS := $(libaxldem_ASOURCES:.as=$(OBJEXT))
 
 
 # C library
-$(LIBDIR)/libaxldem.a: $(libaxldem_COBJECTS)
+$(LIBDIR)/libaxldem$(LIBEXT): $(libaxldem_COBJECTS)
 	$(AR) cr $@ $^
 
 # Local aldor build rule
-$(THIS)%.o: $(THIS)%.as $(BINDIR)/aldor $(BINDIR)/unicl $(aldor_HEADERS) $(INCDIR)/axldem.as
-	$(BINDIR)/aldor $(AFLAGS) $<
-	$(AR) cr $(LIBDIR)/libaxldem.al $(@:.o=.ao)
+$(THIS)%$(OBJEXT): $(THIS)%.as $(BINDIR)/aldor$(EXEEXT) $(BINDIR)/unicl$(EXEEXT) $(aldor_HEADERS) $(INCDIR)/axldem.as
+	$(BINDIR)/aldor$(EXEEXT) $(AFLAGS) $<
+	$(AR) cr $(LIBDIR)/libaxldem.al $(@:$(OBJEXT)=.ao)
 
 # Copy includes
 $(INCDIR)/axldem.as: $(THIS)axldem.as
@@ -43,25 +43,25 @@ clean-libaxldem:
 	$(RM) $(libaxldem_AOBJECTS)
 	$(RM) $(libaxldem_COBJECTS)
 	$(RM) $(libaxldem_ASOURCES:.as=.c)
-	$(RM) $(LIBDIR)/libaxldem.a $(LIBDIR)/libaxldem.al
+	$(RM) $(LIBDIR)/libaxldem$(LIBEXT) $(LIBDIR)/libaxldem.al
 
 # Depend
-$(THIS)dirprod.o:	\
-	$(THIS)polycat.o
-$(THIS)gb.o:	\
-	$(THIS)polycat.o
-$(THIS)matopdom.o:	\
-	$(THIS)matrix.o
-$(THIS)matrix.o:	\
-	$(THIS)vector.o
-$(THIS)nni.o:	\
-	$(THIS)polycat.o
-$(THIS)poly.o:	\
-	$(THIS)polycat.o
-$(THIS)poly3.o:	\
-	$(THIS)poly.o
-$(THIS)prime.o:	\
-	$(THIS)nni.o	\
-	$(THIS)vector.o
-$(THIS)polycat.o:	\
-	$(LIBDIR)/libaxllib.a
+$(THIS)dirprod$(OBJEXT):	\
+	$(THIS)polycat$(OBJEXT)
+$(THIS)gb$(OBJEXT):	\
+	$(THIS)polycat$(OBJEXT)
+$(THIS)matopdom$(OBJEXT):	\
+	$(THIS)matrix$(OBJEXT)
+$(THIS)matrix$(OBJEXT):	\
+	$(THIS)vector$(OBJEXT)
+$(THIS)nni$(OBJEXT):	\
+	$(THIS)polycat$(OBJEXT)
+$(THIS)poly$(OBJEXT):	\
+	$(THIS)polycat$(OBJEXT)
+$(THIS)poly3$(OBJEXT):	\
+	$(THIS)poly$(OBJEXT)
+$(THIS)prime$(OBJEXT):	\
+	$(THIS)nni$(OBJEXT)	\
+	$(THIS)vector$(OBJEXT)
+$(THIS)polycat$(OBJEXT):	\
+	$(LIBDIR)/libaxllib$(LIBEXT)

@@ -10,15 +10,15 @@ zacc_SOURCES =	\
 	zacc.c	\
 	cenum.c
 
-zacc_OBJECTS := $(addprefix $(THIS), $(zacc_SOURCES:.c=.o))
+zacc_OBJECTS := $(addprefix $(THIS), $(zacc_SOURCES:.c=$(OBJEXT)))
 zacc_BUILT_SOURCES := $(addprefix $(THIS), zaccgram.c zaccgram.h zaccscan.c)
 
-$(BINDIR)/zacc: $(zacc_OBJECTS)
+$(BINDIR)/zacc$(EXEEXT): $(zacc_OBJECTS)
 	mkdir -p $(dir $@)
 	$(LINK.c) $+ -o $@
 
-%.y: %.z $(BINDIR)/zacc
-	$(BINDIR)/zacc -y $@ -p $<
+%.y: %.z $(BINDIR)/zacc$(EXEEXT)
+	$(BINDIR)/zacc$(EXEEXT) -y $@ -p $<
 
 %.c: %.y
 	$(YACC) $< -o $@
@@ -31,14 +31,14 @@ clean: clean-zacc
 clean-zacc:
 	$(RM) $(zacc_OBJECTS)
 	$(RM) $(zacc_BUILT_SOURCES)
-	$(RM) $(BINDIR)/zacc
+	$(RM) $(BINDIR)/zacc$(EXEEXT)
 
 # Depend
 $(THIS)zaccgram.h: $(THIS)zaccgram.c
 $(THIS)zaccgram.c: $(THIS)zaccgram.y
 	$(YACC) -d -o $@ $<
 
-$(THIS)zaccscan.o: $(THIS)zaccgram.h
+$(THIS)zaccscan$(OBJEXT): $(THIS)zaccgram.h
 
 
 
@@ -49,17 +49,17 @@ $(THIS)zaccscan.o: $(THIS)zaccgram.h
 msgcat_SOURCES =	\
 	msgcat.c
 
-msgcat_OBJECTS := $(addprefix $(THIS), $(msgcat_SOURCES:.c=.o))
+msgcat_OBJECTS := $(addprefix $(THIS), $(msgcat_SOURCES:.c=$(OBJEXT)))
 
-$(BINDIR)/msgcat: $(msgcat_OBJECTS)
+$(BINDIR)/msgcat$(EXEEXT): $(msgcat_OBJECTS)
 	mkdir -p $(dir $@)
 	$(LINK.c) $^ -o $@
 
-%.c %.h: %.msg $(BINDIR)/msgcat
-	cd $(dir $@); $(CURDIR)/$(BINDIR)/msgcat -h -c $(notdir $*)
+%.c %.h: %.msg $(BINDIR)/msgcat$(EXEEXT)
+	cd $(dir $@); $(CURDIR)/$(BINDIR)/msgcat$(EXEEXT) -h -c $(notdir $*)
 
 clean: clean-msgcat
 clean-msgcat:
 	$(RM) $(msgcat_OBJECTS)
 	$(RM) $(msgcat_BUILT_SOURCES)
-	$(RM) $(BINDIR)/msgcat
+	$(RM) $(BINDIR)/msgcat$(EXEEXT)

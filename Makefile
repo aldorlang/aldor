@@ -1,7 +1,10 @@
 # Parallel build doesn't work, yet.
 .NOTPARALLEL:
 
-# Find lex/flex
+# Toolchain selection.
+include config.mk
+
+# Find lex/flex.
 LEX = $(shell which flex)
 ifeq ($(LEX),)
 LEX = $(shell which lex)
@@ -10,7 +13,7 @@ ifeq ($(LEX),)
 $(error lex or flex are not installed; cannot build aldor)
 endif
 
-# Find bison/yacc
+# Find bison/yacc.
 YACC = $(shell which bison)
 ifeq ($(YACC),)
 YACC = $(shell which byacc)

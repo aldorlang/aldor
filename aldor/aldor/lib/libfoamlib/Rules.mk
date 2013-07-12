@@ -30,18 +30,18 @@ libfoamlib_ASOURCES :=	\
 libfoamlib_ASOURCES := $(addprefix $(THIS), $(libfoamlib_ASOURCES))
 
 libfoamlib_AOBJECTS := $(libfoamlib_ASOURCES:.as=.ao)
-libfoamlib_COBJECTS := $(libfoamlib_ASOURCES:.as=.o)
+libfoamlib_COBJECTS := $(libfoamlib_ASOURCES:.as=$(OBJEXT))
 
 
 # C library
-$(LIBDIR)/libfoamlib.a: $(libfoamlib_COBJECTS)
+$(LIBDIR)/libfoamlib$(LIBEXT): $(libfoamlib_COBJECTS)
 	mkdir -p $(dir $@)
 	$(AR) cr $@ $^
 
 # Local aldor build rule
-$(THIS)%.o: $(THIS)%.as $(BINDIR)/aldor $(BINDIR)/unicl $(aldor_HEADERS) $(INCDIR)/foamlib.as
-	$(BINDIR)/aldor $(AFLAGS) $<
-	$(AR) cr $(LIBDIR)/libfoamlib.al $(@:.o=.ao)
+$(THIS)%$(OBJEXT): $(THIS)%.as $(BINDIR)/aldor$(EXEEXT) $(BINDIR)/unicl$(EXEEXT) $(aldor_HEADERS) $(INCDIR)/foamlib.as
+	$(BINDIR)/aldor$(EXEEXT) $(AFLAGS) $<
+	$(AR) cr $(LIBDIR)/libfoamlib.al $(@:$(OBJEXT)=.ao)
 
 # Copy includes
 $(INCDIR)/foamlib.as: $(THIS)foamlib.as
@@ -54,30 +54,30 @@ clean-libfoamlib:
 	$(RM) $(libfoamlib_AOBJECTS)
 	$(RM) $(libfoamlib_COBJECTS)
 	$(RM) $(libfoamlib_ASOURCES:.as=.c)
-	$(RM) $(LIBDIR)/libfoamlib.a $(LIBDIR)/libfoamlib.al
+	$(RM) $(LIBDIR)/libfoamlib$(LIBEXT) $(LIBDIR)/libfoamlib.al
 
 # Depend
-$(THIS)array.o:		$(THIS)foamcat.o $(THIS)tuple.o $(THIS)sinteger.o $(THIS)parray.o $(THIS)
-$(THIS)basic.o:		$(THIS)lang.o $(THIS)machine.o
-$(THIS)bool.o:		$(THIS)foamcat.o
-$(THIS)character.o:	$(THIS)foamcat.o
-$(THIS)file.o:		$(THIS)foamcat.o $(THIS)fname.o
-$(THIS)fname.o:		$(THIS)foamcat.o $(THIS)parray.o $(THIS)string.o $(THIS)oslow.o
-$(THIS)foamcat.o:	$(THIS)basic.o
-$(THIS)format.o:	$(THIS)foamcat.o $(THIS)sinteger.o
-$(THIS)gener.o:		$(THIS)foamcat.o
-$(THIS)langx.o:		$(THIS)lv.o $(THIS)foamcat.o $(THIS)tuple.o $(THIS)sinteger.o $(THIS)list.o
-$(THIS)list.o:		$(THIS)foamcat.o $(THIS)tuple.o $(THIS)segment.o $(THIS)sinteger.o $(THIS)pointer.o
-$(THIS)lv.o:		$(THIS)basic.o
-$(THIS)machine.o:	$(THIS)lang.o
-$(THIS)opsys.o:		$(THIS)foamcat.o $(THIS)oslow.o $(THIS)file.o
-$(THIS)oslow.o:		$(THIS)foamcat.o $(THIS)parray.o $(THIS)pointer.o $(THIS)string.o
-$(THIS)parray.o:	$(THIS)foamcat.o $(THIS)sinteger.o
-$(THIS)partial.o:	$(THIS)foamcat.o $(THIS)pointer.o
-$(THIS)pointer.o:	$(THIS)foamcat.o
-$(THIS)segment.o:	$(THIS)foamcat.o $(THIS)bool.o
-$(THIS)sfloat.o:	$(THIS)foamcat.o $(THIS)sinteger.o
-$(THIS)sinteger.o:	$(THIS)foamcat.o $(THIS)segment.o
-$(THIS)string.o:	$(THIS)foamcat.o $(THIS)character.o $(THIS)array.o
-$(THIS)textwrit.o:	$(THIS)foamcat.o $(THIS)fname.o $(THIS)file.o $(THIS)array.o $(THIS)opsys.o
-$(THIS)tuple.o:		$(THIS)foamcat.o
+$(THIS)array$(OBJEXT):		$(THIS)foamcat$(OBJEXT) $(THIS)tuple$(OBJEXT) $(THIS)sinteger$(OBJEXT) $(THIS)parray$(OBJEXT) $(THIS)
+$(THIS)basic$(OBJEXT):		$(THIS)lang$(OBJEXT) $(THIS)machine$(OBJEXT)
+$(THIS)bool$(OBJEXT):		$(THIS)foamcat$(OBJEXT)
+$(THIS)character$(OBJEXT):	$(THIS)foamcat$(OBJEXT)
+$(THIS)file$(OBJEXT):		$(THIS)foamcat$(OBJEXT) $(THIS)fname$(OBJEXT)
+$(THIS)fname$(OBJEXT):		$(THIS)foamcat$(OBJEXT) $(THIS)parray$(OBJEXT) $(THIS)string$(OBJEXT) $(THIS)oslow$(OBJEXT)
+$(THIS)foamcat$(OBJEXT):	$(THIS)basic$(OBJEXT)
+$(THIS)format$(OBJEXT):	$(THIS)foamcat$(OBJEXT) $(THIS)sinteger$(OBJEXT)
+$(THIS)gener$(OBJEXT):		$(THIS)foamcat$(OBJEXT)
+$(THIS)langx$(OBJEXT):		$(THIS)lv$(OBJEXT) $(THIS)foamcat$(OBJEXT) $(THIS)tuple$(OBJEXT) $(THIS)sinteger$(OBJEXT) $(THIS)list$(OBJEXT)
+$(THIS)list$(OBJEXT):		$(THIS)foamcat$(OBJEXT) $(THIS)tuple$(OBJEXT) $(THIS)segment$(OBJEXT) $(THIS)sinteger$(OBJEXT) $(THIS)pointer$(OBJEXT)
+$(THIS)lv$(OBJEXT):		$(THIS)basic$(OBJEXT)
+$(THIS)machine$(OBJEXT):	$(THIS)lang$(OBJEXT)
+$(THIS)opsys$(OBJEXT):		$(THIS)foamcat$(OBJEXT) $(THIS)oslow$(OBJEXT) $(THIS)file$(OBJEXT)
+$(THIS)oslow$(OBJEXT):		$(THIS)foamcat$(OBJEXT) $(THIS)parray$(OBJEXT) $(THIS)pointer$(OBJEXT) $(THIS)string$(OBJEXT)
+$(THIS)parray$(OBJEXT):	$(THIS)foamcat$(OBJEXT) $(THIS)sinteger$(OBJEXT)
+$(THIS)partial$(OBJEXT):	$(THIS)foamcat$(OBJEXT) $(THIS)pointer$(OBJEXT)
+$(THIS)pointer$(OBJEXT):	$(THIS)foamcat$(OBJEXT)
+$(THIS)segment$(OBJEXT):	$(THIS)foamcat$(OBJEXT) $(THIS)bool$(OBJEXT)
+$(THIS)sfloat$(OBJEXT):	$(THIS)foamcat$(OBJEXT) $(THIS)sinteger$(OBJEXT)
+$(THIS)sinteger$(OBJEXT):	$(THIS)foamcat$(OBJEXT) $(THIS)segment$(OBJEXT)
+$(THIS)string$(OBJEXT):	$(THIS)foamcat$(OBJEXT) $(THIS)character$(OBJEXT) $(THIS)array$(OBJEXT)
+$(THIS)textwrit$(OBJEXT):	$(THIS)foamcat$(OBJEXT) $(THIS)fname$(OBJEXT) $(THIS)file$(OBJEXT) $(THIS)array$(OBJEXT) $(THIS)opsys$(OBJEXT)
+$(THIS)tuple$(OBJEXT):		$(THIS)foamcat$(OBJEXT)

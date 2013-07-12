@@ -215,17 +215,17 @@ libalgebra_ASOURCES :=	\
 libalgebra_ASOURCES := $(addprefix $(THIS), $(libalgebra_ASOURCES))
 
 libalgebra_AOBJECTS := $(libalgebra_ASOURCES:.as=.ao)
-libalgebra_COBJECTS := $(libalgebra_ASOURCES:.as=.o)
+libalgebra_COBJECTS := $(libalgebra_ASOURCES:.as=$(OBJEXT))
 
 
 # C library
-$(LIBDIR)/libalgebra.a: $(libalgebra_COBJECTS)
+$(LIBDIR)/libalgebra$(LIBEXT): $(libalgebra_COBJECTS)
 	$(AR) cr $@ $^
 
 # Local aldor build rule
-$(THIS)%.o: $(THIS)%.as $(BINDIR)/aldor $(BINDIR)/unicl $(aldor_HEADERS) $(INCDIR)/algebra.as $(INCDIR)/algebrauid.as
-	$(BINDIR)/aldor $(AFLAGS) -q1 $<
-	$(AR) cr $(LIBDIR)/libalgebra.al $(@:.o=.ao)
+$(THIS)%$(OBJEXT): $(THIS)%.as $(BINDIR)/aldor$(EXEEXT) $(BINDIR)/unicl$(EXEEXT) $(aldor_HEADERS) $(INCDIR)/algebra.as $(INCDIR)/algebrauid.as
+	$(BINDIR)/aldor$(EXEEXT) $(AFLAGS) -q1 $<
+	$(AR) cr $(LIBDIR)/libalgebra.al $(@:$(OBJEXT)=.ao)
 
 # Clean
 clean: clean-libalgebra
@@ -233,791 +233,791 @@ clean-libalgebra:
 	$(RM) $(libalgebra_AOBJECTS)
 	$(RM) $(libalgebra_COBJECTS)
 	$(RM) $(libalgebra_ASOURCES:.as=.c)
-	$(RM) $(LIBDIR)/libalgebra.a $(LIBDIR)/libalgebra.al
+	$(RM) $(LIBDIR)/libalgebra$(LIBEXT) $(LIBDIR)/libalgebra.al
 
 # Depend
-$(THIS)algext/sit_algext.o:	\
-	$(THIS)series/compbug/sit_duts.o	\
-	$(THIS)util/alg_version.o
-$(THIS)algext/sit_sae.o:	\
-	$(THIS)algext/sit_saexcpt.o	\
-	$(THIS)algext/sit_upmod.o	\
-	$(THIS)util/alg_version.o
-$(THIS)algext/sit_saexcpt.o:	\
-	$(THIS)categories/sit_comring.o	\
-	$(THIS)util/alg_version.o
-$(THIS)algext/sit_upmod.o:	\
-	$(THIS)algext/sit_algext.o	\
-	$(THIS)util/alg_version.o
-$(THIS)basic/compbug/sit_interp.o:	\
-	$(THIS)basic/sit_pring.o	\
-	$(THIS)categories/sit_gexpcat.o	\
-	$(THIS)util/alg_version.o
-$(THIS)basic/compbug/sit_shell.o:	\
-	$(THIS)basic/compbug/sit_interp.o	\
-	$(THIS)util/alg_version.o
-$(THIS)basic/sit_complex.o:	\
-	$(THIS)categories/alg_ffield.o	\
-	$(THIS)categories/sit_algebra.o	\
-	$(THIS)categories/sit_qring.o	\
-	$(THIS)extree/operators/sit_OPcplex.o	\
-	$(THIS)util/alg_version.o
-$(THIS)basic/sit_indvar.o:	\
-	$(THIS)extree/operators/sit_OPsubsc.o	\
-	$(THIS)util/alg_version.o
-$(THIS)basic/sit_mkpring.o:	\
-	$(THIS)basic/sit_pring.o	\
-	$(THIS)categories/sit_field.o	\
-	$(THIS)util/alg_version.o
-$(THIS)basic/sit_permut.o:	\
-	$(THIS)categories/sit_gexpcat.o	\
-	$(THIS)categories/sit_group.o	\
-	$(THIS)util/alg_version.o
-$(THIS)basic/sit_pring.o:	\
-	$(THIS)categories/sit_basic.o	\
-	$(THIS)util/alg_version.o
-$(THIS)basic/sit_product.o:	\
-	$(THIS)categories/sit_gexpcat.o	\
-	$(THIS)util/alg_version.o
-$(THIS)categories/alg_cansimp.o:	\
-	$(THIS)categories/sit_euclid.o	\
-	$(THIS)util/alg_version.o
-$(THIS)categories/alg_ffield.o:	\
-	$(THIS)categories/sit_charp.o	\
-	$(THIS)categories/sit_field.o	\
-	$(THIS)categories/sit_fset.o	\
-	$(THIS)util/alg_version.o
-$(THIS)categories/alg_frering.o:	\
-	$(THIS)categories/alg_rring.o	\
-	$(THIS)categories/sit_charp.o	\
-	$(THIS)categories/sit_freelar.o	\
-	$(THIS)categories/sit_freemod.o	\
-	$(THIS)categories/sit_qring.o	\
-	$(THIS)util/alg_version.o
-$(THIS)categories/alg_idxfrng.o:	\
-	$(THIS)categories/alg_frering.o	\
-	$(THIS)categories/sit_idxflar.o	\
-	$(THIS)categories/sit_idxfmod.o	\
-	$(THIS)util/alg_version.o
-$(THIS)categories/alg_modcmp.o:	\
-	$(THIS)categories/alg_cansimp.o	\
-	$(THIS)categories/alg_rescls.o	\
-	$(THIS)categories/sit_chrem.o	\
-	$(THIS)util/alg_version.o
-$(THIS)categories/alg_primsrc.o:	\
-	$(THIS)categories/sit_euclid.o	\
-	$(THIS)categories/sit_gexpcat.o	\
-	$(THIS)util/alg_version.o
-$(THIS)categories/alg_rescls.o:	\
-	$(THIS)categories/alg_primsrc.o	\
-	$(THIS)categories/sit_field.o	\
-	$(THIS)util/alg_version.o
-$(THIS)categories/alg_rring.o:	\
-	$(THIS)categories/sit_linarit.o	\
-	$(THIS)categories/sit_module.o	\
-	$(THIS)util/alg_version.o
-$(THIS)categories/sit_abgroup.o:	\
-	$(THIS)categories/sit_abmon.o	\
-	$(THIS)util/alg_version.o
-$(THIS)categories/sit_abmon.o:	\
-	$(THIS)categories/sit_basic.o	\
-	$(THIS)util/alg_version.o
-$(THIS)categories/sit_algebra.o:	\
-	$(THIS)categories/alg_rring.o	\
-	$(THIS)util/alg_version.o
-$(THIS)categories/sit_automor.o:	\
-	$(THIS)categories/sit_gexpcat.o	\
-	$(THIS)categories/sit_group.o	\
-	$(THIS)util/alg_version.o
-$(THIS)categories/sit_basic.o:	\
-	$(THIS)categories/sit_pable.o	\
-	$(THIS)util/alg_version.o
-$(THIS)categories/sit_char0.o:	\
-	$(THIS)categories/sit_ring.o	\
-	$(THIS)util/alg_version.o
-$(THIS)categories/sit_charp.o:	\
-	$(THIS)categories/sit_gexpcat.o	\
-	$(THIS)util/alg_version.o
-$(THIS)categories/sit_chrem.o:	\
-	$(THIS)categories/sit_euclid.o	\
-	$(THIS)categories/sit_gexpcat.o	\
-	$(THIS)util/alg_version.o
-$(THIS)categories/sit_comring.o:	\
-	$(THIS)categories/sit_ring.o	\
-	$(THIS)util/alg_version.o
-$(THIS)categories/sit_dcmprng.o:	\
-	$(THIS)categories/sit_comring.o	\
-	$(THIS)util/alg_version.o
-$(THIS)categories/sit_deriv.o:	\
-	$(THIS)categories/sit_gexpcat.o	\
-	$(THIS)categories/sit_module.o	\
-	$(THIS)util/alg_version.o
-$(THIS)categories/sit_diffext.o:	\
-	$(THIS)categories/sit_difring.o	\
-	$(THIS)util/alg_version.o
-$(THIS)categories/sit_difring.o:	\
-	$(THIS)categories/sit_deriv.o	\
-	$(THIS)util/alg_version.o
-$(THIS)categories/sit_euclid.o:	\
-	$(THIS)categories/sit_gcd.o	\
-	$(THIS)util/alg_version.o
-$(THIS)categories/sit_field.o:	\
-	$(THIS)categories/sit_euclid.o	\
-	$(THIS)categories/sit_group.o	\
-	$(THIS)util/alg_version.o
-$(THIS)categories/sit_freealg.o:	\
-	$(THIS)categories/alg_frering.o	\
-	$(THIS)categories/sit_algebra.o	\
-	$(THIS)util/alg_version.o
-$(THIS)categories/sit_freelar.o:	\
-	$(THIS)categories/sit_freelc.o	\
-	$(THIS)categories/sit_linarit.o	\
-	$(THIS)util/alg_version.o
-$(THIS)categories/sit_freelc.o:	\
-	$(THIS)categories/sit_ring.o	\
-	$(THIS)util/alg_version.o
-$(THIS)categories/sit_freemod.o:	\
-	$(THIS)categories/sit_field.o	\
-	$(THIS)categories/sit_freelc.o	\
-	$(THIS)categories/sit_module.o	\
-	$(THIS)util/alg_version.o
-$(THIS)categories/sit_fset.o:	\
-	$(THIS)extree/operators/sit_OPsubsc.o	\
-	$(THIS)util/alg_version.o
-$(THIS)categories/sit_gcd.o:	\
-	$(THIS)categories/sit_intdom.o	\
-	$(THIS)util/alg_version.o
-$(THIS)categories/sit_gexpcat.o:	\
-	$(THIS)categories/sit_ptools.o	\
-	$(THIS)util/alg_version.o
-$(THIS)categories/sit_group.o:	\
-	$(THIS)categories/sit_monoid.o	\
-	$(THIS)util/alg_version.o
-$(THIS)categories/sit_idxfalg.o:	\
-	$(THIS)categories/alg_idxfrng.o	\
-	$(THIS)util/alg_version.o
-$(THIS)categories/sit_idxflar.o:	\
-	$(THIS)categories/sit_freelar.o	\
-	$(THIS)categories/sit_idxflc.o	\
-	$(THIS)util/alg_version.o
-$(THIS)categories/sit_idxflc.o:	\
-	$(THIS)categories/sit_freelc.o	\
-	$(THIS)util/alg_version.o
-$(THIS)categories/sit_idxfmod.o:	\
-	$(THIS)categories/sit_freemod.o	\
-	$(THIS)categories/sit_idxflc.o	\
-	$(THIS)util/alg_version.o
-$(THIS)categories/sit_intdom.o:	\
-	$(THIS)categories/sit_comring.o	\
-	$(THIS)util/alg_version.o
-$(THIS)categories/sit_integer.o:	\
-	$(THIS)categories/alg_modcmp.o	\
-	$(THIS)categories/sit_char0.o	\
-	$(THIS)categories/sit_spzble.o	\
-	$(THIS)numbers/sit_primgen.o	\
-	$(THIS)util/alg_version.o
-$(THIS)categories/sit_intgmp.o:	\
-	$(THIS)categories/sit_integer.o	\
-	$(THIS)univpoly/gcd/sit_gcdint.o	\
-	$(THIS)util/alg_version.o
-$(THIS)categories/sit_linarit.o:	\
-	$(THIS)categories/sit_ring.o	\
-	$(THIS)util/alg_version.o
-$(THIS)categories/sit_module.o:	\
-	$(THIS)categories/sit_ring.o	\
-	$(THIS)util/alg_version.o
-$(THIS)categories/sit_monoid.o:	\
-	$(THIS)categories/sit_basic.o	\
-	$(THIS)util/alg_version.o
-$(THIS)categories/sit_ncid.o:	\
-	$(THIS)categories/sit_ring.o	\
-	$(THIS)util/alg_version.o
-$(THIS)categories/sit_pable.o:	\
-	$(THIS)extree/parser/sit_infexpr.o	\
-	$(THIS)util/alg_version.o
-$(THIS)categories/sit_prfcat0.o:	\
-	$(THIS)categories/alg_ffield.o	\
-	$(THIS)util/alg_version.o
-$(THIS)categories/sit_ptools.o:	\
-	$(THIS)categories/sit_intdom.o	\
-	$(THIS)util/alg_version.o
-$(THIS)categories/sit_qring.o:	\
-	$(THIS)categories/sit_char0.o	\
-	$(THIS)categories/sit_field.o	\
-	$(THIS)util/alg_version.o
-$(THIS)categories/sit_ring.o:	\
-	$(THIS)categories/sit_abgroup.o	\
-	$(THIS)categories/sit_monoid.o	\
-	$(THIS)util/alg_version.o
-$(THIS)categories/sit_spf0.o:	\
-	$(THIS)categories/sit_spfcat0.o	\
-	$(THIS)numbers/sit_primgen.o	\
-	$(THIS)util/alg_version.o
-$(THIS)categories/sit_spfcat0.o:	\
-	$(THIS)categories/sit_prfcat0.o	\
-	$(THIS)util/alg_version.o
-$(THIS)categories/sit_spzble.o:	\
-	$(THIS)categories/sit_comring.o	\
-	$(THIS)util/alg_version.o
-$(THIS)extree/operators/sit_OPand.o:	\
-	$(THIS)categories/sit_gexpcat.o	\
-	$(THIS)util/alg_version.o
-$(THIS)extree/operators/sit_OPassgn.o:	\
-	$(THIS)extree/sit_optools.o	\
-	$(THIS)util/alg_version.o
-$(THIS)extree/operators/sit_OPbigO.o:	\
-	$(THIS)categories/sit_gexpcat.o	\
-	$(THIS)util/alg_version.o
-$(THIS)extree/operators/sit_OPcase.o:	\
-	$(THIS)extree/operators/sit_OPif.o	\
-	$(THIS)util/alg_version.o
-$(THIS)extree/operators/sit_OPcplex.o:	\
-	$(THIS)categories/sit_gexpcat.o	\
-	$(THIS)util/alg_version.o
-$(THIS)extree/operators/sit_OPequal.o:	\
-	$(THIS)categories/sit_gexpcat.o	\
-	$(THIS)util/alg_version.o
-$(THIS)extree/operators/sit_OPexpt.o:	\
-	$(THIS)extree/sit_optools.o	\
-	$(THIS)util/alg_version.o
-$(THIS)extree/operators/sit_OPfact.o:	\
-	$(THIS)categories/sit_gexpcat.o	\
-	$(THIS)util/alg_version.o
-$(THIS)extree/operators/sit_OPif.o:	\
-	$(THIS)categories/sit_gexpcat.o	\
-	$(THIS)util/alg_version.o
-$(THIS)extree/operators/sit_OPless.o:	\
-	$(THIS)extree/sit_extree.o	\
-	$(THIS)util/alg_version.o
-$(THIS)extree/operators/sit_OPlist.o:	\
-	$(THIS)extree/sit_optools.o	\
-	$(THIS)util/alg_version.o
-$(THIS)extree/operators/sit_OPllist.o:	\
-	$(THIS)categories/sit_gexpcat.o	\
-	$(THIS)util/alg_version.o
-$(THIS)extree/operators/sit_OPmatrx.o:	\
-	$(THIS)categories/sit_gexpcat.o	\
-	$(THIS)util/alg_version.o
-$(THIS)extree/operators/sit_OPminus.o:	\
-	$(THIS)extree/sit_optools.o	\
-	$(THIS)util/alg_version.o
-$(THIS)extree/operators/sit_OPmore.o:	\
-	$(THIS)extree/sit_extree.o	\
-	$(THIS)util/alg_version.o
-$(THIS)extree/operators/sit_OPnoteq.o:	\
-	$(THIS)categories/sit_gexpcat.o	\
-	$(THIS)util/alg_version.o
-$(THIS)extree/operators/sit_OPplus.o:	\
-	$(THIS)extree/operators/sit_OPminus.o	\
-	$(THIS)util/alg_version.o
-$(THIS)extree/operators/sit_OPprefx.o:	\
-	$(THIS)extree/sit_optools.o	\
-	$(THIS)util/alg_version.o
-$(THIS)extree/operators/sit_OPquot.o:	\
-	$(THIS)extree/sit_optools.o	\
-	$(THIS)util/alg_version.o
-$(THIS)extree/operators/sit_OPsubsc.o:	\
-	$(THIS)categories/sit_gexpcat.o	\
-	$(THIS)util/alg_version.o
-$(THIS)extree/operators/sit_OPtimes.o:	\
-	$(THIS)extree/sit_optools.o	\
-	$(THIS)util/alg_version.o
-$(THIS)extree/operators/sit_OPvect.o:	\
-	$(THIS)categories/sit_gexpcat.o	\
-	$(THIS)util/alg_version.o
-$(THIS)extree/parser/sit_infexpr.o:	\
-	$(THIS)extree/operators/sit_OPlist.o	\
-	$(THIS)extree/parser/sit_parser.o	\
-	$(THIS)extree/parser/sit_scanner.o	\
-	$(THIS)util/alg_version.o
-$(THIS)extree/parser/sit_lspexpr.o:	\
-	$(THIS)extree/operators/sit_OPllist.o	\
-	$(THIS)util/alg_version.o
-$(THIS)extree/parser/sit_maple.o:	\
-	$(THIS)categories/sit_gexpcat.o	\
-	$(THIS)util/alg_version.o
-$(THIS)extree/parser/sit_parser.o:	\
-	$(THIS)extree/sit_extree.o	\
-	$(THIS)util/alg_version.o
-$(THIS)extree/parser/sit_scanner.o:	\
-	$(THIS)extree/operators/sit_OPassgn.o	\
-	$(THIS)extree/operators/sit_OPless.o	\
-	$(THIS)extree/operators/sit_OPmore.o	\
-	$(THIS)extree/parser/sit_token.o	\
-	$(THIS)util/alg_version.o
-$(THIS)extree/parser/sit_token.o:	\
-	$(THIS)extree/operators/sit_OPexpt.o	\
-	$(THIS)extree/operators/sit_OPplus.o	\
-	$(THIS)extree/operators/sit_OPprefx.o	\
-	$(THIS)extree/operators/sit_OPquot.o	\
-	$(THIS)extree/operators/sit_OPtimes.o	\
-	$(THIS)util/alg_version.o
-$(THIS)extree/sit_extree.o:	\
-	$(THIS)util/alg_version.o
-$(THIS)extree/sit_optools.o:	\
-	$(THIS)extree/sit_extree.o	\
-	$(THIS)util/alg_version.o
-$(THIS)ffield/alg_pf2.o:	\
-	$(THIS)ffield/sit_sprfcat.o	\
-	$(THIS)util/alg_version.o
-$(THIS)ffield/sit_prfcat.o:	\
-	$(THIS)polyfactorp/sit_upfactp.o	\
-	$(THIS)util/alg_version.o
-$(THIS)ffield/sit_spf.o:	\
-	$(THIS)ffield/sit_sprfcat.o	\
-	$(THIS)util/alg_version.o
-$(THIS)ffield/sit_sprfcat.o:	\
-	$(THIS)ffield/sit_prfcat.o	\
-	$(THIS)ffield/sit_sprfgcd.o	\
-	$(THIS)ffield/sit_sprfmat.o	\
-	$(THIS)util/alg_version.o
-$(THIS)ffield/sit_sprfgcd.o:	\
-	$(THIS)univpoly/categories/sit_upolc0.o	\
-	$(THIS)univpoly/gcd/sit_modpgcd.o	\
-	$(THIS)util/alg_version.o
-$(THIS)ffield/sit_sprfmat.o:	\
-	$(THIS)categories/sit_spfcat0.o	\
-	$(THIS)mat/modular/sit_modpoge.o	\
-	$(THIS)mat/sit_matcat.o	\
-	$(THIS)util/alg_version.o
-$(THIS)ffield/sit_zpf.o:	\
-	$(THIS)ffield/sit_sprfcat.o	\
-	$(THIS)numbers/sit_prmroot.o	\
-	$(THIS)util/alg_version.o
-$(THIS)fraction/sit_lcqotct.o:	\
-	$(THIS)fraction/sit_qotbyc0.o	\
-	$(THIS)fraction/sit_qotfct0.o	\
-	$(THIS)util/alg_version.o
-$(THIS)fraction/sit_matquot.o:	\
-	$(THIS)fraction/sit_vecquot.o	\
-	$(THIS)util/alg_version.o
-$(THIS)fraction/sit_qotbyc0.o:	\
-	$(THIS)fraction/sit_quotcat.o	\
-	$(THIS)util/alg_version.o
-$(THIS)fraction/sit_qotbyct.o:	\
-	$(THIS)fraction/sit_matquot.o	\
-	$(THIS)fraction/sit_uflgqot.o	\
-	$(THIS)univpoly/sit_dup.o	\
-	$(THIS)util/alg_version.o
-$(THIS)fraction/sit_qotfcat.o:	\
-	$(THIS)fraction/sit_matquot.o	\
-	$(THIS)fraction/sit_uflgqot.o	\
-	$(THIS)univpoly/sit_dup.o	\
-	$(THIS)util/alg_version.o
-$(THIS)fraction/sit_qotfct0.o:	\
-	$(THIS)fraction/sit_quotcat.o	\
-	$(THIS)util/alg_version.o
-$(THIS)fraction/sit_qotient.o:	\
-	$(THIS)fraction/sit_qotfcat.o	\
-	$(THIS)util/alg_version.o
-$(THIS)fraction/sit_quotby.o:	\
-	$(THIS)fraction/sit_qotbyct.o	\
-	$(THIS)util/alg_version.o
-$(THIS)fraction/sit_quotcat.o:	\
-	$(THIS)categories/sit_algebra.o	\
-	$(THIS)categories/sit_diffext.o	\
-	$(THIS)univpoly/categories/sit_fring.o	\
-	$(THIS)univpoly/categories/sit_ugring.o	\
-	$(THIS)util/alg_version.o
-$(THIS)fraction/sit_uflgqot.o:	\
-	$(THIS)fraction/sit_lcqotct.o	\
-	$(THIS)util/alg_version.o
-$(THIS)fraction/sit_vecquot.o:	\
-	$(THIS)fraction/sit_lcqotct.o	\
-	$(THIS)util/alg_version.o
-$(THIS)mat/gauss/sit_dfge.o:	\
-	$(THIS)basic/sit_permut.o	\
-	$(THIS)mat/gauss/sit_linelim.o	\
-	$(THIS)util/alg_version.o
-$(THIS)mat/gauss/sit_ff2ge.o:	\
-	$(THIS)basic/sit_permut.o	\
-	$(THIS)mat/gauss/sit_linelim.o	\
-	$(THIS)util/alg_version.o
-$(THIS)mat/gauss/sit_ffge.o:	\
-	$(THIS)basic/sit_permut.o	\
-	$(THIS)mat/gauss/sit_linelim.o	\
-	$(THIS)util/alg_version.o
-$(THIS)mat/gauss/sit_hermge.o:	\
-	$(THIS)basic/sit_permut.o	\
-	$(THIS)categories/sit_euclid.o	\
-	$(THIS)mat/gauss/sit_linelim.o	\
-	$(THIS)util/alg_version.o
-$(THIS)mat/gauss/sit_linelim.o:	\
-	$(THIS)mat/sit_matcat.o	\
-	$(THIS)util/alg_version.o
-$(THIS)mat/gauss/sit_oge.o:	\
-	$(THIS)basic/sit_permut.o	\
-	$(THIS)categories/sit_field.o	\
-	$(THIS)mat/gauss/sit_linelim.o	\
-	$(THIS)util/alg_version.o
-$(THIS)mat/linalg/sit_bsolve.o:	\
-	$(THIS)basic/sit_permut.o	\
-	$(THIS)categories/sit_field.o	\
-	$(THIS)mat/sit_matcat.o	\
-	$(THIS)util/alg_version.o
-$(THIS)mat/linalg/sit_laring.o:	\
-	$(THIS)mat/sit_matcat.o	\
-	$(THIS)util/alg_version.o
-$(THIS)mat/linalg/sit_linalg.o:	\
-	$(THIS)mat/gauss/sit_dfge.o	\
-	$(THIS)mat/gauss/sit_ff2ge.o	\
-	$(THIS)mat/gauss/sit_oge.o	\
-	$(THIS)mat/linalg/sit_bsolve.o	\
-	$(THIS)mat/linalg/sit_laring.o	\
-	$(THIS)mat/linalg/sit_overdet.o	\
-	$(THIS)mat/modular/compbug/sit_speclin.o	\
-	$(THIS)util/alg_version.o
-$(THIS)mat/linalg/sit_overdet.o:	\
-	$(THIS)categories/sit_gcd.o	\
-	$(THIS)mat/sit_matcat.o	\
-	$(THIS)util/alg_version.o
-$(THIS)mat/linalg2/alg_ffupla.o:	\
-	$(THIS)mat/linalg2/sit_popov.o	\
-	$(THIS)util/alg_version.o
-$(THIS)mat/linalg2/sit_popov.o:	\
-	$(THIS)univpoly/categories/sit_upolc0.o	\
-	$(THIS)util/alg_version.o
-$(THIS)mat/linalg2/sit_upcrtla.o:	\
-	$(THIS)univpoly/categories/sit_upolc0.o	\
-	$(THIS)util/alg_version.o
-$(THIS)mat/linalg3/sit_hensela.o:	\
-	$(THIS)fraction/sit_qotient.o	\
-	$(THIS)mat/linalg2/sit_upcrtla.o	\
-	$(THIS)util/alg_version.o
-$(THIS)mat/modular/compbug/sit_speclin.o:	\
-	$(THIS)categories/sit_spf0.o	\
-	$(THIS)categories/sit_spzble.o	\
-	$(THIS)mat/modular/sit_modpoge.o	\
-	$(THIS)mat/sit_matcat.o	\
-	$(THIS)util/alg_version.o
-$(THIS)mat/modular/sit_modpoge.o:	\
-	$(THIS)numbers/sit_primgen.o	\
-	$(THIS)util/alg_version.o
-$(THIS)mat/modular/sit_zcrtla.o:	\
-	$(THIS)categories/sit_integer.o	\
-	$(THIS)univpoly/gcd/sit_gcdintg.o	\
-	$(THIS)util/alg_version.o
-$(THIS)mat/sit_dnsemat.o:	\
-	$(THIS)mat/sit_matcat.o	\
-	$(THIS)util/alg_version.o
-$(THIS)mat/sit_matcat.o:	\
-	$(THIS)categories/sit_difring.o	\
-	$(THIS)categories/sit_linarit.o	\
-	$(THIS)extree/operators/sit_OPmatrx.o	\
-	$(THIS)mat/sit_vector.o	\
-	$(THIS)util/alg_version.o
-$(THIS)mat/sit_vector.o:	\
-	$(THIS)extree/operators/sit_OPvect.o	\
-	$(THIS)util/alg_version.o
-$(THIS)multpoly/exponent/sm_dirprod.o:	\
-	$(THIS)multpoly/exponent/sm_dirprodc.o	\
-	$(THIS)util/alg_version.o
-$(THIS)multpoly/exponent/sm_dirprodc.o:	\
-	$(THIS)categories/sit_gexpcat.o	\
-	$(THIS)util/alg_version.o
-$(THIS)multpoly/exponent/sm_expocat.o:	\
-	$(THIS)categories/sit_gexpcat.o	\
-	$(THIS)multpoly/exponent/sm_vt.o	\
-	$(THIS)util/alg_version.o
-$(THIS)multpoly/exponent/sm_fvt.o:	\
-	$(THIS)categories/sit_gexpcat.o	\
-	$(THIS)multpoly/exponent/sm_vt.o	\
-	$(THIS)util/alg_version.o
-$(THIS)multpoly/exponent/sm_listovar.o:	\
-	$(THIS)multpoly/exponent/sm_fvt.o	\
-	$(THIS)util/alg_version.o
-$(THIS)multpoly/exponent/sm_midl.o:	\
-	$(THIS)multpoly/exponent/sm_midrl.o	\
-	$(THIS)util/alg_version.o
-$(THIS)multpoly/exponent/sm_midrl.o:	\
-	$(THIS)multpoly/exponent/sm_dirprod.o	\
-	$(THIS)multpoly/exponent/sm_mievc.o	\
-	$(THIS)util/alg_version.o
-$(THIS)multpoly/exponent/sm_mievc.o:	\
-	$(THIS)multpoly/exponent/sm_expocat.o	\
-	$(THIS)multpoly/exponent/sm_fvt.o	\
-	$(THIS)util/alg_version.o
-$(THIS)multpoly/exponent/sm_milex.o:	\
-	$(THIS)multpoly/exponent/sm_midrl.o	\
-	$(THIS)util/alg_version.o
-$(THIS)multpoly/exponent/sm_osymbol.o:	\
-	$(THIS)multpoly/exponent/sm_vt.o	\
-	$(THIS)util/alg_version.o
-$(THIS)multpoly/exponent/sm_tuplovar.o:	\
-	$(THIS)multpoly/exponent/sm_listovar.o	\
-	$(THIS)util/alg_version.o
-$(THIS)multpoly/exponent/sm_vt.o:	\
-	$(THIS)categories/sit_basic.o	\
-	$(THIS)util/alg_version.o
-$(THIS)multpoly/exponent/sm_zevc.o:	\
-	$(THIS)multpoly/exponent/sm_dirprodc.o	\
-	$(THIS)multpoly/exponent/sm_expocat.o	\
-	$(THIS)multpoly/exponent/sm_fvt.o	\
-	$(THIS)util/alg_version.o
-$(THIS)multpoly/multpolycat/alg_defgcd.o:	\
-	$(THIS)multpoly/multpolycat/sm_polring0.o	\
-	$(THIS)univpoly/sit_dup.o	\
-	$(THIS)util/alg_version.o
-$(THIS)multpoly/multpolycat/alg_poltype.o:	\
-	$(THIS)multpoly/multpolycat/alg_stdfrng.o	\
-	$(THIS)univpoly/alg_sup.o	\
-	$(THIS)util/alg_version.o
-$(THIS)multpoly/multpolycat/alg_stdfrng.o:	\
-	$(THIS)categories/alg_frering.o	\
-	$(THIS)util/alg_version.o
-$(THIS)multpoly/multpolycat/sm_famr0.o:	\
-	$(THIS)multpoly/exponent/sm_expocat.o	\
-	$(THIS)multpoly/multpolycat/sm_polring0.o	\
-	$(THIS)util/alg_version.o
-$(THIS)multpoly/multpolycat/sm_polring.o:	\
-	$(THIS)multpoly/multpolycat/alg_defgcd.o	\
-	$(THIS)multpoly/multpolycat/sm_famr0.o	\
-	$(THIS)univpoly/gcd/sit_gcdintg.o	\
-	$(THIS)util/alg_version.o
-$(THIS)multpoly/multpolycat/sm_polring0.o:	\
-	$(THIS)categories/sit_freealg.o	\
-	$(THIS)multpoly/multpolycat/alg_poltype.o	\
-	$(THIS)util/alg_version.o
-$(THIS)multpoly/multpolycat/sm_rmpcat0.o:	\
-	$(THIS)multpoly/multpolycat/sm_polring.o	\
-	$(THIS)util/alg_version.o
-$(THIS)multpoly/multpolydata/sm_delist.o:	\
-	$(THIS)categories/sit_basic.o	\
-	$(THIS)util/alg_version.o
-$(THIS)multpoly/multpolydom/alg_smp.o:	\
-	$(THIS)multpoly/multpolycat/sm_rmpcat0.o	\
-	$(THIS)util/alg_version.o
-$(THIS)multpoly/multpolydom/sm_dmp0.o:	\
-	$(THIS)categories/sit_gexpcat.o	\
-	$(THIS)categories/sit_idxfmod.o	\
-	$(THIS)multpoly/multpolydata/sm_delist.o	\
-	$(THIS)util/alg_version.o
-$(THIS)multpoly/multpolydom/sm_dmp1.o:	\
-	$(THIS)multpoly/multpolycat/sm_famr0.o	\
-	$(THIS)multpoly/multpolydom/sm_dmp0.o	\
-	$(THIS)util/alg_version.o
-$(THIS)multpoly/multpolydom/sm_rmp.o:	\
-	$(THIS)multpoly/multpolycat/sm_rmpcat0.o	\
-	$(THIS)util/alg_version.o
-$(THIS)multpoly/multpolydom/sm_rmpz.o:	\
-	$(THIS)multpoly/exponent/sm_osymbol.o	\
-	$(THIS)multpoly/multpolydom/sm_rmp.o	\
-	$(THIS)util/alg_version.o
-$(THIS)multpoly/multpolydom/sm_rmpzx.o:	\
-	$(THIS)multpoly/multpolydom/sm_rmp.o	\
-	$(THIS)util/alg_version.o
-$(THIS)multpoly/multpolypkg/alg_ZpUVres.o:	\
-	$(THIS)ffield/sit_spf.o	\
-	$(THIS)util/alg_version.o
-$(THIS)multpoly/multpolypkg/alg_bivarpk.o:	\
-	$(THIS)ffield/sit_spf.o	\
-	$(THIS)util/alg_version.o
-$(THIS)multpoly/multpolypkg/alg_mresbiv.o:	\
-	$(THIS)multpoly/multpolypkg/alg_ZpUVres.o	\
-	$(THIS)multpoly/multpolypkg/alg_bivarpk.o	\
-	$(THIS)util/alg_version.o
-$(THIS)multpoly/multpolytest/alg_bivtst1.o:	\
-	$(THIS)multpoly/multpolypkg/alg_bivarpk.o	\
-	$(THIS)util/alg_version.o
-$(THIS)multpoly/multpolytest/alg_bivtst2.o:	\
-	$(THIS)multpoly/multpolypkg/alg_mresbiv.o	\
-	$(THIS)util/alg_version.o
-$(THIS)multpoly/multpolytest/alg_bivtst3.o:	\
-	$(THIS)ffield/sit_spf.o	\
-	$(THIS)util/alg_version.o
-$(THIS)multpoly/multpolytest/sm_dmp0pkgt.o:	\
-	$(THIS)categories/sit_gexpcat.o	\
-	$(THIS)categories/sit_idxfmod.o	\
-	$(THIS)util/alg_version.o
-$(THIS)multpoly/multpolytest/sm_exppkgt.o:	\
-	$(THIS)multpoly/exponent/sm_expocat.o	\
-	$(THIS)util/alg_version.o
-$(THIS)multpoly/multpolytest/sm_pr0pkgt.o:	\
-	$(THIS)multpoly/multpolycat/sm_polring0.o	\
-	$(THIS)util/alg_version.o
-$(THIS)numbers/sit_primes.o:	\
-	$(THIS)numbers/sit_prmtabl.o	\
-	$(THIS)util/alg_version.o
-$(THIS)numbers/sit_primgen.o:	\
-	$(THIS)numbers/sit_primes.o	\
-	$(THIS)util/alg_version.o
-$(THIS)numbers/sit_prmroot.o:	\
-	$(THIS)numbers/sit_primgen.o	\
-	$(THIS)util/alg_version.o
-$(THIS)numbers/sit_prmtabl.o:	\
-	$(THIS)categories/sit_gexpcat.o	\
-	$(THIS)util/alg_version.o
-$(THIS)polyfactor0/sit_fhensel.o:	\
-	$(THIS)categories/sit_integer.o	\
-	$(THIS)univpoly/categories/sit_upolc0.o	\
-	$(THIS)util/alg_version.o
-$(THIS)polyfactor0/sit_zfactor.o:	\
-	$(THIS)ffield/sit_zpf.o	\
-	$(THIS)polyfactor0/sit_fhensel.o	\
-	$(THIS)util/alg_version.o
-$(THIS)polyfactor0/sit_zfring.o:	\
-	$(THIS)univpoly/categories/sit_fring.o	\
-	$(THIS)util/alg_version.o
-$(THIS)polyfactor0/sit_zfringg.o:	\
-	$(THIS)univpoly/categories/sit_fring.o	\
-	$(THIS)util/alg_version.o
-$(THIS)polyfactorp/sit_upfactp.o:	\
-	$(THIS)algext/sit_upmod.o	\
-	$(THIS)util/alg_version.o
-$(THIS)series/alg_serpoly.o:	\
-	$(THIS)series/sit_sercat.o	\
-	$(THIS)util/alg_version.o
-$(THIS)series/compbug/sit_duts.o:	\
-	$(THIS)extree/operators/sit_OPbigO.o	\
-	$(THIS)series/sit_sercat.o	\
-	$(THIS)util/alg_version.o
-$(THIS)series/sit_seqence.o:	\
-	$(THIS)mat/sit_vector.o	\
-	$(THIS)univpoly/categories/sit_ufalg.o	\
-	$(THIS)util/alg_version.o
-$(THIS)series/sit_sercat.o:	\
-	$(THIS)fraction/sit_qotient.o	\
-	$(THIS)series/sit_seqence.o	\
-	$(THIS)util/alg_version.o
-$(THIS)univpoly/alg_sup.o:	\
-	$(THIS)univpoly/alg_sup1.o	\
-	$(THIS)univpoly/sit_spread.o	\
-	$(THIS)util/alg_version.o
-$(THIS)univpoly/alg_sup0.o:	\
-	$(THIS)categories/sit_idxfmod.o	\
-	$(THIS)categories/sit_integer.o	\
-	$(THIS)categories/sit_prfcat0.o	\
-	$(THIS)multpoly/multpolydata/sm_delist.o	\
-	$(THIS)univpoly/categories/sit_umonom.o	\
-	$(THIS)util/alg_version.o
-$(THIS)univpoly/alg_sup1.o:	\
-	$(THIS)univpoly/alg_sup0.o	\
-	$(THIS)univpoly/categories/sit_upolalg.o	\
-	$(THIS)util/alg_version.o
-$(THIS)univpoly/alg_unitool.o:	\
-	$(THIS)univpoly/categories/sit_upolc0.o	\
-	$(THIS)util/alg_version.o
-$(THIS)univpoly/alg_uprcr.o:	\
-	$(THIS)univpoly/categories/sit_upolc0.o	\
-	$(THIS)util/alg_version.o
-$(THIS)univpoly/categories/alg_chrem2.o:	\
-	$(THIS)univpoly/categories/sit_upolc0.o	\
-	$(THIS)util/alg_version.o
-$(THIS)univpoly/categories/alg_modgcdp.o:	\
-	$(THIS)univpoly/categories/alg_chrem2.o	\
-	$(THIS)util/alg_version.o
-$(THIS)univpoly/categories/alg_polydio.o:	\
-	$(THIS)univpoly/categories/sit_resprs.o	\
-	$(THIS)util/alg_version.o
-$(THIS)univpoly/categories/sit_fftring.o:	\
-	$(THIS)univpoly/categories/sit_upolc0.o	\
-	$(THIS)util/alg_version.o
-$(THIS)univpoly/categories/sit_fring.o:	\
-	$(THIS)univpoly/categories/sit_zring.o	\
-	$(THIS)util/alg_version.o
-$(THIS)univpoly/categories/sit_froot.o:	\
-	$(THIS)categories/sit_field.o	\
-	$(THIS)util/alg_version.o
-$(THIS)univpoly/categories/sit_resprs.o:	\
-	$(THIS)univpoly/categories/sit_upolc0.o	\
-	$(THIS)util/alg_version.o
-$(THIS)univpoly/categories/sit_sqfree.o:	\
-	$(THIS)univpoly/categories/sit_upolc0.o	\
-	$(THIS)util/alg_version.o
-$(THIS)univpoly/categories/sit_ufalg.o:	\
-	$(THIS)categories/sit_idxflar.o	\
-	$(THIS)util/alg_version.o
-$(THIS)univpoly/categories/sit_uffalg.o:	\
-	$(THIS)categories/alg_idxfrng.o	\
-	$(THIS)mat/sit_dnsemat.o	\
-	$(THIS)univpoly/categories/sit_ufalg.o	\
-	$(THIS)util/alg_version.o
-$(THIS)univpoly/categories/sit_ugring.o:	\
-	$(THIS)univpoly/categories/sit_upolc0.o	\
-	$(THIS)util/alg_version.o
-$(THIS)univpoly/categories/sit_umonom.o:	\
-	$(THIS)categories/sit_charp.o	\
-	$(THIS)util/alg_version.o
-$(THIS)univpoly/categories/sit_upolalg.o:	\
-	$(THIS)univpoly/categories/sit_uffalg.o	\
-	$(THIS)univpoly/categories/sit_umonom.o	\
-	$(THIS)util/alg_version.o
-$(THIS)univpoly/categories/sit_upolc0.o:	\
-	$(THIS)basic/sit_product.o	\
-	$(THIS)categories/alg_modcmp.o	\
-	$(THIS)categories/sit_dcmprng.o	\
-	$(THIS)categories/sit_idxfalg.o	\
-	$(THIS)mat/linalg/sit_linalg.o	\
-	$(THIS)univpoly/categories/sit_upolalg.o	\
-	$(THIS)util/alg_version.o
-$(THIS)univpoly/categories/sit_zring.o:	\
-	$(THIS)univpoly/categories/sit_froot.o	\
-	$(THIS)univpoly/categories/sit_upolc0.o	\
-	$(THIS)util/alg_version.o
-$(THIS)univpoly/gcd/sit_gcdint.o:	\
-	$(THIS)univpoly/categories/sit_resprs.o	\
-	$(THIS)univpoly/categories/sit_ugring.o	\
-	$(THIS)util/alg_version.o
-$(THIS)univpoly/gcd/sit_gcdintg.o:	\
-	$(THIS)univpoly/categories/sit_ugring.o	\
-	$(THIS)util/alg_version.o
-$(THIS)univpoly/gcd/sit_heugcd.o:	\
-	$(THIS)categories/sit_integer.o	\
-	$(THIS)univpoly/categories/sit_upolc0.o	\
-	$(THIS)util/alg_version.o
-$(THIS)univpoly/gcd/sit_modgcd.o:	\
-	$(THIS)categories/sit_integer.o	\
-	$(THIS)univpoly/categories/sit_upolc0.o	\
-	$(THIS)univpoly/gcd/sit_modpgcd.o	\
-	$(THIS)util/alg_version.o
-$(THIS)univpoly/gcd/sit_modpgcd.o:	\
-	$(THIS)numbers/sit_primgen.o	\
-	$(THIS)util/alg_version.o
-$(THIS)univpoly/sit_dup.o:	\
-	$(THIS)univpoly/alg_sup.o	\
-	$(THIS)univpoly/categories/sit_fftring.o	\
-	$(THIS)univpoly/sit_polkara.o	\
-	$(THIS)util/alg_version.o
-$(THIS)univpoly/sit_polkara.o:	\
-	$(THIS)categories/sit_gexpcat.o	\
-	$(THIS)util/alg_version.o
-$(THIS)univpoly/sit_spread.o:	\
-	$(THIS)univpoly/sit_upolc.o	\
-	$(THIS)util/alg_version.o
-$(THIS)univpoly/sit_ufacpol.o:	\
-	$(THIS)extree/operators/sit_OPfact.o	\
-	$(THIS)univpoly/sit_upolc.o	\
-	$(THIS)util/alg_version.o
-$(THIS)univpoly/sit_upolc.o:	\
-	$(THIS)mat/linalg2/alg_ffupla.o	\
-	$(THIS)univpoly/alg_uprcr.o	\
-	$(THIS)univpoly/categories/alg_modgcdp.o	\
-	$(THIS)univpoly/categories/sit_fring.o	\
-	$(THIS)univpoly/categories/sit_resprs.o	\
-	$(THIS)univpoly/categories/sit_sqfree.o	\
-	$(THIS)univpoly/categories/sit_ugring.o	\
-	$(THIS)util/alg_version.o
-$(THIS)univpoly/categories/sit_ufalg.o:	\
-	$(THIS)categories/sit_integer.o
-$(THIS)univpoly/categories/sit_froot.o:	\
-	$(THIS)categories/sit_integer.o
-$(THIS)multpoly/exponent/sm_expocat.o:	\
-	$(THIS)categories/sit_integer.o
-$(THIS)basic/sit_product.o:	\
-	$(THIS)categories/sit_integer.o
-$(THIS)categories/sit_fset.o:	\
-	$(THIS)categories/sit_integer.o
-$(THIS)univpoly/categories/sit_umonom.o:	\
-	$(THIS)categories/sit_integer.o
-$(THIS)univpoly/gcd/sit_gcdintg.o:	\
-	$(THIS)categories/sit_intgmp.o
-$(THIS)univpoly/gcd/sit_gcdint.o:	\
-	$(THIS)univpoly/gcd/sit_heugcd.o	\
-	$(THIS)univpoly/gcd/sit_modgcd.o
-$(THIS)polyfactor0/sit_zfring.o:	\
-	$(THIS)polyfactor0/sit_zfactor.o
-$(THIS)polyfactor0/sit_zfringg.o:	\
-	$(THIS)categories/sit_intgmp.o	\
-	$(THIS)polyfactor0/sit_zfactor.o
-$(THIS)util/alg_version.o:	\
-	$(LIBDIR)/libaldor.a
+$(THIS)algext/sit_algext$(OBJEXT):	\
+	$(THIS)series/compbug/sit_duts$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)algext/sit_sae$(OBJEXT):	\
+	$(THIS)algext/sit_saexcpt$(OBJEXT)	\
+	$(THIS)algext/sit_upmod$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)algext/sit_saexcpt$(OBJEXT):	\
+	$(THIS)categories/sit_comring$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)algext/sit_upmod$(OBJEXT):	\
+	$(THIS)algext/sit_algext$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)basic/compbug/sit_interp$(OBJEXT):	\
+	$(THIS)basic/sit_pring$(OBJEXT)	\
+	$(THIS)categories/sit_gexpcat$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)basic/compbug/sit_shell$(OBJEXT):	\
+	$(THIS)basic/compbug/sit_interp$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)basic/sit_complex$(OBJEXT):	\
+	$(THIS)categories/alg_ffield$(OBJEXT)	\
+	$(THIS)categories/sit_algebra$(OBJEXT)	\
+	$(THIS)categories/sit_qring$(OBJEXT)	\
+	$(THIS)extree/operators/sit_OPcplex$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)basic/sit_indvar$(OBJEXT):	\
+	$(THIS)extree/operators/sit_OPsubsc$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)basic/sit_mkpring$(OBJEXT):	\
+	$(THIS)basic/sit_pring$(OBJEXT)	\
+	$(THIS)categories/sit_field$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)basic/sit_permut$(OBJEXT):	\
+	$(THIS)categories/sit_gexpcat$(OBJEXT)	\
+	$(THIS)categories/sit_group$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)basic/sit_pring$(OBJEXT):	\
+	$(THIS)categories/sit_basic$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)basic/sit_product$(OBJEXT):	\
+	$(THIS)categories/sit_gexpcat$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)categories/alg_cansimp$(OBJEXT):	\
+	$(THIS)categories/sit_euclid$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)categories/alg_ffield$(OBJEXT):	\
+	$(THIS)categories/sit_charp$(OBJEXT)	\
+	$(THIS)categories/sit_field$(OBJEXT)	\
+	$(THIS)categories/sit_fset$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)categories/alg_frering$(OBJEXT):	\
+	$(THIS)categories/alg_rring$(OBJEXT)	\
+	$(THIS)categories/sit_charp$(OBJEXT)	\
+	$(THIS)categories/sit_freelar$(OBJEXT)	\
+	$(THIS)categories/sit_freemod$(OBJEXT)	\
+	$(THIS)categories/sit_qring$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)categories/alg_idxfrng$(OBJEXT):	\
+	$(THIS)categories/alg_frering$(OBJEXT)	\
+	$(THIS)categories/sit_idxflar$(OBJEXT)	\
+	$(THIS)categories/sit_idxfmod$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)categories/alg_modcmp$(OBJEXT):	\
+	$(THIS)categories/alg_cansimp$(OBJEXT)	\
+	$(THIS)categories/alg_rescls$(OBJEXT)	\
+	$(THIS)categories/sit_chrem$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)categories/alg_primsrc$(OBJEXT):	\
+	$(THIS)categories/sit_euclid$(OBJEXT)	\
+	$(THIS)categories/sit_gexpcat$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)categories/alg_rescls$(OBJEXT):	\
+	$(THIS)categories/alg_primsrc$(OBJEXT)	\
+	$(THIS)categories/sit_field$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)categories/alg_rring$(OBJEXT):	\
+	$(THIS)categories/sit_linarit$(OBJEXT)	\
+	$(THIS)categories/sit_module$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)categories/sit_abgroup$(OBJEXT):	\
+	$(THIS)categories/sit_abmon$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)categories/sit_abmon$(OBJEXT):	\
+	$(THIS)categories/sit_basic$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)categories/sit_algebra$(OBJEXT):	\
+	$(THIS)categories/alg_rring$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)categories/sit_automor$(OBJEXT):	\
+	$(THIS)categories/sit_gexpcat$(OBJEXT)	\
+	$(THIS)categories/sit_group$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)categories/sit_basic$(OBJEXT):	\
+	$(THIS)categories/sit_pable$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)categories/sit_char0$(OBJEXT):	\
+	$(THIS)categories/sit_ring$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)categories/sit_charp$(OBJEXT):	\
+	$(THIS)categories/sit_gexpcat$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)categories/sit_chrem$(OBJEXT):	\
+	$(THIS)categories/sit_euclid$(OBJEXT)	\
+	$(THIS)categories/sit_gexpcat$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)categories/sit_comring$(OBJEXT):	\
+	$(THIS)categories/sit_ring$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)categories/sit_dcmprng$(OBJEXT):	\
+	$(THIS)categories/sit_comring$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)categories/sit_deriv$(OBJEXT):	\
+	$(THIS)categories/sit_gexpcat$(OBJEXT)	\
+	$(THIS)categories/sit_module$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)categories/sit_diffext$(OBJEXT):	\
+	$(THIS)categories/sit_difring$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)categories/sit_difring$(OBJEXT):	\
+	$(THIS)categories/sit_deriv$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)categories/sit_euclid$(OBJEXT):	\
+	$(THIS)categories/sit_gcd$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)categories/sit_field$(OBJEXT):	\
+	$(THIS)categories/sit_euclid$(OBJEXT)	\
+	$(THIS)categories/sit_group$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)categories/sit_freealg$(OBJEXT):	\
+	$(THIS)categories/alg_frering$(OBJEXT)	\
+	$(THIS)categories/sit_algebra$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)categories/sit_freelar$(OBJEXT):	\
+	$(THIS)categories/sit_freelc$(OBJEXT)	\
+	$(THIS)categories/sit_linarit$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)categories/sit_freelc$(OBJEXT):	\
+	$(THIS)categories/sit_ring$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)categories/sit_freemod$(OBJEXT):	\
+	$(THIS)categories/sit_field$(OBJEXT)	\
+	$(THIS)categories/sit_freelc$(OBJEXT)	\
+	$(THIS)categories/sit_module$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)categories/sit_fset$(OBJEXT):	\
+	$(THIS)extree/operators/sit_OPsubsc$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)categories/sit_gcd$(OBJEXT):	\
+	$(THIS)categories/sit_intdom$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)categories/sit_gexpcat$(OBJEXT):	\
+	$(THIS)categories/sit_ptools$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)categories/sit_group$(OBJEXT):	\
+	$(THIS)categories/sit_monoid$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)categories/sit_idxfalg$(OBJEXT):	\
+	$(THIS)categories/alg_idxfrng$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)categories/sit_idxflar$(OBJEXT):	\
+	$(THIS)categories/sit_freelar$(OBJEXT)	\
+	$(THIS)categories/sit_idxflc$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)categories/sit_idxflc$(OBJEXT):	\
+	$(THIS)categories/sit_freelc$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)categories/sit_idxfmod$(OBJEXT):	\
+	$(THIS)categories/sit_freemod$(OBJEXT)	\
+	$(THIS)categories/sit_idxflc$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)categories/sit_intdom$(OBJEXT):	\
+	$(THIS)categories/sit_comring$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)categories/sit_integer$(OBJEXT):	\
+	$(THIS)categories/alg_modcmp$(OBJEXT)	\
+	$(THIS)categories/sit_char0$(OBJEXT)	\
+	$(THIS)categories/sit_spzble$(OBJEXT)	\
+	$(THIS)numbers/sit_primgen$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)categories/sit_intgmp$(OBJEXT):	\
+	$(THIS)categories/sit_integer$(OBJEXT)	\
+	$(THIS)univpoly/gcd/sit_gcdint$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)categories/sit_linarit$(OBJEXT):	\
+	$(THIS)categories/sit_ring$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)categories/sit_module$(OBJEXT):	\
+	$(THIS)categories/sit_ring$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)categories/sit_monoid$(OBJEXT):	\
+	$(THIS)categories/sit_basic$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)categories/sit_ncid$(OBJEXT):	\
+	$(THIS)categories/sit_ring$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)categories/sit_pable$(OBJEXT):	\
+	$(THIS)extree/parser/sit_infexpr$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)categories/sit_prfcat0$(OBJEXT):	\
+	$(THIS)categories/alg_ffield$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)categories/sit_ptools$(OBJEXT):	\
+	$(THIS)categories/sit_intdom$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)categories/sit_qring$(OBJEXT):	\
+	$(THIS)categories/sit_char0$(OBJEXT)	\
+	$(THIS)categories/sit_field$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)categories/sit_ring$(OBJEXT):	\
+	$(THIS)categories/sit_abgroup$(OBJEXT)	\
+	$(THIS)categories/sit_monoid$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)categories/sit_spf0$(OBJEXT):	\
+	$(THIS)categories/sit_spfcat0$(OBJEXT)	\
+	$(THIS)numbers/sit_primgen$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)categories/sit_spfcat0$(OBJEXT):	\
+	$(THIS)categories/sit_prfcat0$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)categories/sit_spzble$(OBJEXT):	\
+	$(THIS)categories/sit_comring$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)extree/operators/sit_OPand$(OBJEXT):	\
+	$(THIS)categories/sit_gexpcat$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)extree/operators/sit_OPassgn$(OBJEXT):	\
+	$(THIS)extree/sit_optools$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)extree/operators/sit_OPbigO$(OBJEXT):	\
+	$(THIS)categories/sit_gexpcat$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)extree/operators/sit_OPcase$(OBJEXT):	\
+	$(THIS)extree/operators/sit_OPif$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)extree/operators/sit_OPcplex$(OBJEXT):	\
+	$(THIS)categories/sit_gexpcat$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)extree/operators/sit_OPequal$(OBJEXT):	\
+	$(THIS)categories/sit_gexpcat$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)extree/operators/sit_OPexpt$(OBJEXT):	\
+	$(THIS)extree/sit_optools$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)extree/operators/sit_OPfact$(OBJEXT):	\
+	$(THIS)categories/sit_gexpcat$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)extree/operators/sit_OPif$(OBJEXT):	\
+	$(THIS)categories/sit_gexpcat$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)extree/operators/sit_OPless$(OBJEXT):	\
+	$(THIS)extree/sit_extree$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)extree/operators/sit_OPlist$(OBJEXT):	\
+	$(THIS)extree/sit_optools$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)extree/operators/sit_OPllist$(OBJEXT):	\
+	$(THIS)categories/sit_gexpcat$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)extree/operators/sit_OPmatrx$(OBJEXT):	\
+	$(THIS)categories/sit_gexpcat$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)extree/operators/sit_OPminus$(OBJEXT):	\
+	$(THIS)extree/sit_optools$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)extree/operators/sit_OPmore$(OBJEXT):	\
+	$(THIS)extree/sit_extree$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)extree/operators/sit_OPnoteq$(OBJEXT):	\
+	$(THIS)categories/sit_gexpcat$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)extree/operators/sit_OPplus$(OBJEXT):	\
+	$(THIS)extree/operators/sit_OPminus$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)extree/operators/sit_OPprefx$(OBJEXT):	\
+	$(THIS)extree/sit_optools$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)extree/operators/sit_OPquot$(OBJEXT):	\
+	$(THIS)extree/sit_optools$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)extree/operators/sit_OPsubsc$(OBJEXT):	\
+	$(THIS)categories/sit_gexpcat$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)extree/operators/sit_OPtimes$(OBJEXT):	\
+	$(THIS)extree/sit_optools$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)extree/operators/sit_OPvect$(OBJEXT):	\
+	$(THIS)categories/sit_gexpcat$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)extree/parser/sit_infexpr$(OBJEXT):	\
+	$(THIS)extree/operators/sit_OPlist$(OBJEXT)	\
+	$(THIS)extree/parser/sit_parser$(OBJEXT)	\
+	$(THIS)extree/parser/sit_scanner$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)extree/parser/sit_lspexpr$(OBJEXT):	\
+	$(THIS)extree/operators/sit_OPllist$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)extree/parser/sit_maple$(OBJEXT):	\
+	$(THIS)categories/sit_gexpcat$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)extree/parser/sit_parser$(OBJEXT):	\
+	$(THIS)extree/sit_extree$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)extree/parser/sit_scanner$(OBJEXT):	\
+	$(THIS)extree/operators/sit_OPassgn$(OBJEXT)	\
+	$(THIS)extree/operators/sit_OPless$(OBJEXT)	\
+	$(THIS)extree/operators/sit_OPmore$(OBJEXT)	\
+	$(THIS)extree/parser/sit_token$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)extree/parser/sit_token$(OBJEXT):	\
+	$(THIS)extree/operators/sit_OPexpt$(OBJEXT)	\
+	$(THIS)extree/operators/sit_OPplus$(OBJEXT)	\
+	$(THIS)extree/operators/sit_OPprefx$(OBJEXT)	\
+	$(THIS)extree/operators/sit_OPquot$(OBJEXT)	\
+	$(THIS)extree/operators/sit_OPtimes$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)extree/sit_extree$(OBJEXT):	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)extree/sit_optools$(OBJEXT):	\
+	$(THIS)extree/sit_extree$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)ffield/alg_pf2$(OBJEXT):	\
+	$(THIS)ffield/sit_sprfcat$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)ffield/sit_prfcat$(OBJEXT):	\
+	$(THIS)polyfactorp/sit_upfactp$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)ffield/sit_spf$(OBJEXT):	\
+	$(THIS)ffield/sit_sprfcat$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)ffield/sit_sprfcat$(OBJEXT):	\
+	$(THIS)ffield/sit_prfcat$(OBJEXT)	\
+	$(THIS)ffield/sit_sprfgcd$(OBJEXT)	\
+	$(THIS)ffield/sit_sprfmat$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)ffield/sit_sprfgcd$(OBJEXT):	\
+	$(THIS)univpoly/categories/sit_upolc0$(OBJEXT)	\
+	$(THIS)univpoly/gcd/sit_modpgcd$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)ffield/sit_sprfmat$(OBJEXT):	\
+	$(THIS)categories/sit_spfcat0$(OBJEXT)	\
+	$(THIS)mat/modular/sit_modpoge$(OBJEXT)	\
+	$(THIS)mat/sit_matcat$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)ffield/sit_zpf$(OBJEXT):	\
+	$(THIS)ffield/sit_sprfcat$(OBJEXT)	\
+	$(THIS)numbers/sit_prmroot$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)fraction/sit_lcqotct$(OBJEXT):	\
+	$(THIS)fraction/sit_qotbyc0$(OBJEXT)	\
+	$(THIS)fraction/sit_qotfct0$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)fraction/sit_matquot$(OBJEXT):	\
+	$(THIS)fraction/sit_vecquot$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)fraction/sit_qotbyc0$(OBJEXT):	\
+	$(THIS)fraction/sit_quotcat$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)fraction/sit_qotbyct$(OBJEXT):	\
+	$(THIS)fraction/sit_matquot$(OBJEXT)	\
+	$(THIS)fraction/sit_uflgqot$(OBJEXT)	\
+	$(THIS)univpoly/sit_dup$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)fraction/sit_qotfcat$(OBJEXT):	\
+	$(THIS)fraction/sit_matquot$(OBJEXT)	\
+	$(THIS)fraction/sit_uflgqot$(OBJEXT)	\
+	$(THIS)univpoly/sit_dup$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)fraction/sit_qotfct0$(OBJEXT):	\
+	$(THIS)fraction/sit_quotcat$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)fraction/sit_qotient$(OBJEXT):	\
+	$(THIS)fraction/sit_qotfcat$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)fraction/sit_quotby$(OBJEXT):	\
+	$(THIS)fraction/sit_qotbyct$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)fraction/sit_quotcat$(OBJEXT):	\
+	$(THIS)categories/sit_algebra$(OBJEXT)	\
+	$(THIS)categories/sit_diffext$(OBJEXT)	\
+	$(THIS)univpoly/categories/sit_fring$(OBJEXT)	\
+	$(THIS)univpoly/categories/sit_ugring$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)fraction/sit_uflgqot$(OBJEXT):	\
+	$(THIS)fraction/sit_lcqotct$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)fraction/sit_vecquot$(OBJEXT):	\
+	$(THIS)fraction/sit_lcqotct$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)mat/gauss/sit_dfge$(OBJEXT):	\
+	$(THIS)basic/sit_permut$(OBJEXT)	\
+	$(THIS)mat/gauss/sit_linelim$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)mat/gauss/sit_ff2ge$(OBJEXT):	\
+	$(THIS)basic/sit_permut$(OBJEXT)	\
+	$(THIS)mat/gauss/sit_linelim$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)mat/gauss/sit_ffge$(OBJEXT):	\
+	$(THIS)basic/sit_permut$(OBJEXT)	\
+	$(THIS)mat/gauss/sit_linelim$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)mat/gauss/sit_hermge$(OBJEXT):	\
+	$(THIS)basic/sit_permut$(OBJEXT)	\
+	$(THIS)categories/sit_euclid$(OBJEXT)	\
+	$(THIS)mat/gauss/sit_linelim$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)mat/gauss/sit_linelim$(OBJEXT):	\
+	$(THIS)mat/sit_matcat$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)mat/gauss/sit_oge$(OBJEXT):	\
+	$(THIS)basic/sit_permut$(OBJEXT)	\
+	$(THIS)categories/sit_field$(OBJEXT)	\
+	$(THIS)mat/gauss/sit_linelim$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)mat/linalg/sit_bsolve$(OBJEXT):	\
+	$(THIS)basic/sit_permut$(OBJEXT)	\
+	$(THIS)categories/sit_field$(OBJEXT)	\
+	$(THIS)mat/sit_matcat$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)mat/linalg/sit_laring$(OBJEXT):	\
+	$(THIS)mat/sit_matcat$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)mat/linalg/sit_linalg$(OBJEXT):	\
+	$(THIS)mat/gauss/sit_dfge$(OBJEXT)	\
+	$(THIS)mat/gauss/sit_ff2ge$(OBJEXT)	\
+	$(THIS)mat/gauss/sit_oge$(OBJEXT)	\
+	$(THIS)mat/linalg/sit_bsolve$(OBJEXT)	\
+	$(THIS)mat/linalg/sit_laring$(OBJEXT)	\
+	$(THIS)mat/linalg/sit_overdet$(OBJEXT)	\
+	$(THIS)mat/modular/compbug/sit_speclin$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)mat/linalg/sit_overdet$(OBJEXT):	\
+	$(THIS)categories/sit_gcd$(OBJEXT)	\
+	$(THIS)mat/sit_matcat$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)mat/linalg2/alg_ffupla$(OBJEXT):	\
+	$(THIS)mat/linalg2/sit_popov$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)mat/linalg2/sit_popov$(OBJEXT):	\
+	$(THIS)univpoly/categories/sit_upolc0$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)mat/linalg2/sit_upcrtla$(OBJEXT):	\
+	$(THIS)univpoly/categories/sit_upolc0$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)mat/linalg3/sit_hensela$(OBJEXT):	\
+	$(THIS)fraction/sit_qotient$(OBJEXT)	\
+	$(THIS)mat/linalg2/sit_upcrtla$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)mat/modular/compbug/sit_speclin$(OBJEXT):	\
+	$(THIS)categories/sit_spf0$(OBJEXT)	\
+	$(THIS)categories/sit_spzble$(OBJEXT)	\
+	$(THIS)mat/modular/sit_modpoge$(OBJEXT)	\
+	$(THIS)mat/sit_matcat$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)mat/modular/sit_modpoge$(OBJEXT):	\
+	$(THIS)numbers/sit_primgen$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)mat/modular/sit_zcrtla$(OBJEXT):	\
+	$(THIS)categories/sit_integer$(OBJEXT)	\
+	$(THIS)univpoly/gcd/sit_gcdintg$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)mat/sit_dnsemat$(OBJEXT):	\
+	$(THIS)mat/sit_matcat$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)mat/sit_matcat$(OBJEXT):	\
+	$(THIS)categories/sit_difring$(OBJEXT)	\
+	$(THIS)categories/sit_linarit$(OBJEXT)	\
+	$(THIS)extree/operators/sit_OPmatrx$(OBJEXT)	\
+	$(THIS)mat/sit_vector$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)mat/sit_vector$(OBJEXT):	\
+	$(THIS)extree/operators/sit_OPvect$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)multpoly/exponent/sm_dirprod$(OBJEXT):	\
+	$(THIS)multpoly/exponent/sm_dirprodc$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)multpoly/exponent/sm_dirprodc$(OBJEXT):	\
+	$(THIS)categories/sit_gexpcat$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)multpoly/exponent/sm_expocat$(OBJEXT):	\
+	$(THIS)categories/sit_gexpcat$(OBJEXT)	\
+	$(THIS)multpoly/exponent/sm_vt$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)multpoly/exponent/sm_fvt$(OBJEXT):	\
+	$(THIS)categories/sit_gexpcat$(OBJEXT)	\
+	$(THIS)multpoly/exponent/sm_vt$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)multpoly/exponent/sm_listovar$(OBJEXT):	\
+	$(THIS)multpoly/exponent/sm_fvt$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)multpoly/exponent/sm_midl$(OBJEXT):	\
+	$(THIS)multpoly/exponent/sm_midrl$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)multpoly/exponent/sm_midrl$(OBJEXT):	\
+	$(THIS)multpoly/exponent/sm_dirprod$(OBJEXT)	\
+	$(THIS)multpoly/exponent/sm_mievc$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)multpoly/exponent/sm_mievc$(OBJEXT):	\
+	$(THIS)multpoly/exponent/sm_expocat$(OBJEXT)	\
+	$(THIS)multpoly/exponent/sm_fvt$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)multpoly/exponent/sm_milex$(OBJEXT):	\
+	$(THIS)multpoly/exponent/sm_midrl$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)multpoly/exponent/sm_osymbol$(OBJEXT):	\
+	$(THIS)multpoly/exponent/sm_vt$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)multpoly/exponent/sm_tuplovar$(OBJEXT):	\
+	$(THIS)multpoly/exponent/sm_listovar$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)multpoly/exponent/sm_vt$(OBJEXT):	\
+	$(THIS)categories/sit_basic$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)multpoly/exponent/sm_zevc$(OBJEXT):	\
+	$(THIS)multpoly/exponent/sm_dirprodc$(OBJEXT)	\
+	$(THIS)multpoly/exponent/sm_expocat$(OBJEXT)	\
+	$(THIS)multpoly/exponent/sm_fvt$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)multpoly/multpolycat/alg_defgcd$(OBJEXT):	\
+	$(THIS)multpoly/multpolycat/sm_polring0$(OBJEXT)	\
+	$(THIS)univpoly/sit_dup$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)multpoly/multpolycat/alg_poltype$(OBJEXT):	\
+	$(THIS)multpoly/multpolycat/alg_stdfrng$(OBJEXT)	\
+	$(THIS)univpoly/alg_sup$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)multpoly/multpolycat/alg_stdfrng$(OBJEXT):	\
+	$(THIS)categories/alg_frering$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)multpoly/multpolycat/sm_famr0$(OBJEXT):	\
+	$(THIS)multpoly/exponent/sm_expocat$(OBJEXT)	\
+	$(THIS)multpoly/multpolycat/sm_polring0$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)multpoly/multpolycat/sm_polring$(OBJEXT):	\
+	$(THIS)multpoly/multpolycat/alg_defgcd$(OBJEXT)	\
+	$(THIS)multpoly/multpolycat/sm_famr0$(OBJEXT)	\
+	$(THIS)univpoly/gcd/sit_gcdintg$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)multpoly/multpolycat/sm_polring0$(OBJEXT):	\
+	$(THIS)categories/sit_freealg$(OBJEXT)	\
+	$(THIS)multpoly/multpolycat/alg_poltype$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)multpoly/multpolycat/sm_rmpcat0$(OBJEXT):	\
+	$(THIS)multpoly/multpolycat/sm_polring$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)multpoly/multpolydata/sm_delist$(OBJEXT):	\
+	$(THIS)categories/sit_basic$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)multpoly/multpolydom/alg_smp$(OBJEXT):	\
+	$(THIS)multpoly/multpolycat/sm_rmpcat0$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)multpoly/multpolydom/sm_dmp0$(OBJEXT):	\
+	$(THIS)categories/sit_gexpcat$(OBJEXT)	\
+	$(THIS)categories/sit_idxfmod$(OBJEXT)	\
+	$(THIS)multpoly/multpolydata/sm_delist$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)multpoly/multpolydom/sm_dmp1$(OBJEXT):	\
+	$(THIS)multpoly/multpolycat/sm_famr0$(OBJEXT)	\
+	$(THIS)multpoly/multpolydom/sm_dmp0$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)multpoly/multpolydom/sm_rmp$(OBJEXT):	\
+	$(THIS)multpoly/multpolycat/sm_rmpcat0$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)multpoly/multpolydom/sm_rmpz$(OBJEXT):	\
+	$(THIS)multpoly/exponent/sm_osymbol$(OBJEXT)	\
+	$(THIS)multpoly/multpolydom/sm_rmp$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)multpoly/multpolydom/sm_rmpzx$(OBJEXT):	\
+	$(THIS)multpoly/multpolydom/sm_rmp$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)multpoly/multpolypkg/alg_ZpUVres$(OBJEXT):	\
+	$(THIS)ffield/sit_spf$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)multpoly/multpolypkg/alg_bivarpk$(OBJEXT):	\
+	$(THIS)ffield/sit_spf$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)multpoly/multpolypkg/alg_mresbiv$(OBJEXT):	\
+	$(THIS)multpoly/multpolypkg/alg_ZpUVres$(OBJEXT)	\
+	$(THIS)multpoly/multpolypkg/alg_bivarpk$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)multpoly/multpolytest/alg_bivtst1$(OBJEXT):	\
+	$(THIS)multpoly/multpolypkg/alg_bivarpk$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)multpoly/multpolytest/alg_bivtst2$(OBJEXT):	\
+	$(THIS)multpoly/multpolypkg/alg_mresbiv$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)multpoly/multpolytest/alg_bivtst3$(OBJEXT):	\
+	$(THIS)ffield/sit_spf$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)multpoly/multpolytest/sm_dmp0pkgt$(OBJEXT):	\
+	$(THIS)categories/sit_gexpcat$(OBJEXT)	\
+	$(THIS)categories/sit_idxfmod$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)multpoly/multpolytest/sm_exppkgt$(OBJEXT):	\
+	$(THIS)multpoly/exponent/sm_expocat$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)multpoly/multpolytest/sm_pr0pkgt$(OBJEXT):	\
+	$(THIS)multpoly/multpolycat/sm_polring0$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)numbers/sit_primes$(OBJEXT):	\
+	$(THIS)numbers/sit_prmtabl$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)numbers/sit_primgen$(OBJEXT):	\
+	$(THIS)numbers/sit_primes$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)numbers/sit_prmroot$(OBJEXT):	\
+	$(THIS)numbers/sit_primgen$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)numbers/sit_prmtabl$(OBJEXT):	\
+	$(THIS)categories/sit_gexpcat$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)polyfactor0/sit_fhensel$(OBJEXT):	\
+	$(THIS)categories/sit_integer$(OBJEXT)	\
+	$(THIS)univpoly/categories/sit_upolc0$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)polyfactor0/sit_zfactor$(OBJEXT):	\
+	$(THIS)ffield/sit_zpf$(OBJEXT)	\
+	$(THIS)polyfactor0/sit_fhensel$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)polyfactor0/sit_zfring$(OBJEXT):	\
+	$(THIS)univpoly/categories/sit_fring$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)polyfactor0/sit_zfringg$(OBJEXT):	\
+	$(THIS)univpoly/categories/sit_fring$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)polyfactorp/sit_upfactp$(OBJEXT):	\
+	$(THIS)algext/sit_upmod$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)series/alg_serpoly$(OBJEXT):	\
+	$(THIS)series/sit_sercat$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)series/compbug/sit_duts$(OBJEXT):	\
+	$(THIS)extree/operators/sit_OPbigO$(OBJEXT)	\
+	$(THIS)series/sit_sercat$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)series/sit_seqence$(OBJEXT):	\
+	$(THIS)mat/sit_vector$(OBJEXT)	\
+	$(THIS)univpoly/categories/sit_ufalg$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)series/sit_sercat$(OBJEXT):	\
+	$(THIS)fraction/sit_qotient$(OBJEXT)	\
+	$(THIS)series/sit_seqence$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)univpoly/alg_sup$(OBJEXT):	\
+	$(THIS)univpoly/alg_sup1$(OBJEXT)	\
+	$(THIS)univpoly/sit_spread$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)univpoly/alg_sup0$(OBJEXT):	\
+	$(THIS)categories/sit_idxfmod$(OBJEXT)	\
+	$(THIS)categories/sit_integer$(OBJEXT)	\
+	$(THIS)categories/sit_prfcat0$(OBJEXT)	\
+	$(THIS)multpoly/multpolydata/sm_delist$(OBJEXT)	\
+	$(THIS)univpoly/categories/sit_umonom$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)univpoly/alg_sup1$(OBJEXT):	\
+	$(THIS)univpoly/alg_sup0$(OBJEXT)	\
+	$(THIS)univpoly/categories/sit_upolalg$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)univpoly/alg_unitool$(OBJEXT):	\
+	$(THIS)univpoly/categories/sit_upolc0$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)univpoly/alg_uprcr$(OBJEXT):	\
+	$(THIS)univpoly/categories/sit_upolc0$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)univpoly/categories/alg_chrem2$(OBJEXT):	\
+	$(THIS)univpoly/categories/sit_upolc0$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)univpoly/categories/alg_modgcdp$(OBJEXT):	\
+	$(THIS)univpoly/categories/alg_chrem2$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)univpoly/categories/alg_polydio$(OBJEXT):	\
+	$(THIS)univpoly/categories/sit_resprs$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)univpoly/categories/sit_fftring$(OBJEXT):	\
+	$(THIS)univpoly/categories/sit_upolc0$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)univpoly/categories/sit_fring$(OBJEXT):	\
+	$(THIS)univpoly/categories/sit_zring$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)univpoly/categories/sit_froot$(OBJEXT):	\
+	$(THIS)categories/sit_field$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)univpoly/categories/sit_resprs$(OBJEXT):	\
+	$(THIS)univpoly/categories/sit_upolc0$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)univpoly/categories/sit_sqfree$(OBJEXT):	\
+	$(THIS)univpoly/categories/sit_upolc0$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)univpoly/categories/sit_ufalg$(OBJEXT):	\
+	$(THIS)categories/sit_idxflar$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)univpoly/categories/sit_uffalg$(OBJEXT):	\
+	$(THIS)categories/alg_idxfrng$(OBJEXT)	\
+	$(THIS)mat/sit_dnsemat$(OBJEXT)	\
+	$(THIS)univpoly/categories/sit_ufalg$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)univpoly/categories/sit_ugring$(OBJEXT):	\
+	$(THIS)univpoly/categories/sit_upolc0$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)univpoly/categories/sit_umonom$(OBJEXT):	\
+	$(THIS)categories/sit_charp$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)univpoly/categories/sit_upolalg$(OBJEXT):	\
+	$(THIS)univpoly/categories/sit_uffalg$(OBJEXT)	\
+	$(THIS)univpoly/categories/sit_umonom$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)univpoly/categories/sit_upolc0$(OBJEXT):	\
+	$(THIS)basic/sit_product$(OBJEXT)	\
+	$(THIS)categories/alg_modcmp$(OBJEXT)	\
+	$(THIS)categories/sit_dcmprng$(OBJEXT)	\
+	$(THIS)categories/sit_idxfalg$(OBJEXT)	\
+	$(THIS)mat/linalg/sit_linalg$(OBJEXT)	\
+	$(THIS)univpoly/categories/sit_upolalg$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)univpoly/categories/sit_zring$(OBJEXT):	\
+	$(THIS)univpoly/categories/sit_froot$(OBJEXT)	\
+	$(THIS)univpoly/categories/sit_upolc0$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)univpoly/gcd/sit_gcdint$(OBJEXT):	\
+	$(THIS)univpoly/categories/sit_resprs$(OBJEXT)	\
+	$(THIS)univpoly/categories/sit_ugring$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)univpoly/gcd/sit_gcdintg$(OBJEXT):	\
+	$(THIS)univpoly/categories/sit_ugring$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)univpoly/gcd/sit_heugcd$(OBJEXT):	\
+	$(THIS)categories/sit_integer$(OBJEXT)	\
+	$(THIS)univpoly/categories/sit_upolc0$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)univpoly/gcd/sit_modgcd$(OBJEXT):	\
+	$(THIS)categories/sit_integer$(OBJEXT)	\
+	$(THIS)univpoly/categories/sit_upolc0$(OBJEXT)	\
+	$(THIS)univpoly/gcd/sit_modpgcd$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)univpoly/gcd/sit_modpgcd$(OBJEXT):	\
+	$(THIS)numbers/sit_primgen$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)univpoly/sit_dup$(OBJEXT):	\
+	$(THIS)univpoly/alg_sup$(OBJEXT)	\
+	$(THIS)univpoly/categories/sit_fftring$(OBJEXT)	\
+	$(THIS)univpoly/sit_polkara$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)univpoly/sit_polkara$(OBJEXT):	\
+	$(THIS)categories/sit_gexpcat$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)univpoly/sit_spread$(OBJEXT):	\
+	$(THIS)univpoly/sit_upolc$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)univpoly/sit_ufacpol$(OBJEXT):	\
+	$(THIS)extree/operators/sit_OPfact$(OBJEXT)	\
+	$(THIS)univpoly/sit_upolc$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)univpoly/sit_upolc$(OBJEXT):	\
+	$(THIS)mat/linalg2/alg_ffupla$(OBJEXT)	\
+	$(THIS)univpoly/alg_uprcr$(OBJEXT)	\
+	$(THIS)univpoly/categories/alg_modgcdp$(OBJEXT)	\
+	$(THIS)univpoly/categories/sit_fring$(OBJEXT)	\
+	$(THIS)univpoly/categories/sit_resprs$(OBJEXT)	\
+	$(THIS)univpoly/categories/sit_sqfree$(OBJEXT)	\
+	$(THIS)univpoly/categories/sit_ugring$(OBJEXT)	\
+	$(THIS)util/alg_version$(OBJEXT)
+$(THIS)univpoly/categories/sit_ufalg$(OBJEXT):	\
+	$(THIS)categories/sit_integer$(OBJEXT)
+$(THIS)univpoly/categories/sit_froot$(OBJEXT):	\
+	$(THIS)categories/sit_integer$(OBJEXT)
+$(THIS)multpoly/exponent/sm_expocat$(OBJEXT):	\
+	$(THIS)categories/sit_integer$(OBJEXT)
+$(THIS)basic/sit_product$(OBJEXT):	\
+	$(THIS)categories/sit_integer$(OBJEXT)
+$(THIS)categories/sit_fset$(OBJEXT):	\
+	$(THIS)categories/sit_integer$(OBJEXT)
+$(THIS)univpoly/categories/sit_umonom$(OBJEXT):	\
+	$(THIS)categories/sit_integer$(OBJEXT)
+$(THIS)univpoly/gcd/sit_gcdintg$(OBJEXT):	\
+	$(THIS)categories/sit_intgmp$(OBJEXT)
+$(THIS)univpoly/gcd/sit_gcdint$(OBJEXT):	\
+	$(THIS)univpoly/gcd/sit_heugcd$(OBJEXT)	\
+	$(THIS)univpoly/gcd/sit_modgcd$(OBJEXT)
+$(THIS)polyfactor0/sit_zfring$(OBJEXT):	\
+	$(THIS)polyfactor0/sit_zfactor$(OBJEXT)
+$(THIS)polyfactor0/sit_zfringg$(OBJEXT):	\
+	$(THIS)categories/sit_intgmp$(OBJEXT)	\
+	$(THIS)polyfactor0/sit_zfactor$(OBJEXT)
+$(THIS)util/alg_version$(OBJEXT):	\
+	$(LIBDIR)/libaldor$(LIBEXT)

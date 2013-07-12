@@ -84,20 +84,20 @@ libaldor_ASOURCES := $(addprefix $(THIS), $(libaldor_ASOURCES))
 libaldor_CSOURCES := $(addprefix $(THIS), $(libaldor_CSOURCES))
 
 libaldor_AOBJECTS := $(libaldor_ASOURCES:.as=.ao)
-libaldor_COBJECTS := $(libaldor_ASOURCES:.as=.o) $(libaldor_CSOURCES:.c=.o)
+libaldor_COBJECTS := $(libaldor_ASOURCES:.as=$(OBJEXT)) $(libaldor_CSOURCES:.c=$(OBJEXT))
 
 
 # C library
-$(LIBDIR)/libaldor.a: $(libaldor_COBJECTS)
+$(LIBDIR)/libaldor$(LIBEXT): $(libaldor_COBJECTS)
 	$(AR) cr $@ $^
 
-$(LIBDIR)/aldor_%.ao: $(THIS)/aldor_%.as $(BINDIR)/aldor $(LIBDIR)/libaldor.a
-	$(BINDIR)/aldor -Y $(LIBDIR) -I $(INCDIR) -Fao=$@ $<
+$(LIBDIR)/aldor_%.ao: $(THIS)/aldor_%.as $(BINDIR)/aldor$(EXEEXT) $(LIBDIR)/libaldor$(LIBEXT)
+	$(BINDIR)/aldor$(EXEEXT) -Y $(LIBDIR) -I $(INCDIR) -Fao=$@ $<
 
 # Local aldor build rule
-$(THIS)%.o: $(THIS)%.as $(BINDIR)/aldor $(BINDIR)/unicl $(aldor_HEADERS) $(libaldor_HEADERS)
-	$(BINDIR)/aldor $(AFLAGS) $<
-	$(AR) cr $(LIBDIR)/libaldor.al $(@:.o=.ao)
+$(THIS)%$(OBJEXT): $(THIS)%.as $(BINDIR)/aldor$(EXEEXT) $(BINDIR)/unicl$(EXEEXT) $(aldor_HEADERS) $(libaldor_HEADERS)
+	$(BINDIR)/aldor$(EXEEXT) $(AFLAGS) $<
+	$(AR) cr $(LIBDIR)/libaldor.al $(@:$(OBJEXT)=.ao)
 
 # Clean
 clean: clean-libaldor
@@ -105,214 +105,214 @@ clean-libaldor:
 	$(RM) $(libaldor_AOBJECTS)
 	$(RM) $(libaldor_COBJECTS)
 	$(RM) $(libaldor_ASOURCES:.as=.c)
-	$(RM) $(LIBDIR)/libaldor.a $(LIBDIR)/libaldor.al
+	$(RM) $(LIBDIR)/libaldor$(LIBEXT) $(LIBDIR)/libaldor.al
 
 # Depend
-$(THIS)arith/sal_arith.o:	\
-	$(THIS)base/sal_copy.o
-$(THIS)arith/sal_binpow.o:	\
-	$(THIS)arith/sal_arith.o	\
-	$(THIS)arith/sal_intcat.o
-$(THIS)arith/sal_bool.o:	\
-	$(THIS)base/sal_htype.o
-$(THIS)arith/sal_bsearch.o:	\
-	$(THIS)arith/sal_intcat.o
-$(THIS)arith/sal_complex.o:	\
-	$(THIS)arith/sal_fltcat.o	\
-	$(THIS)arith/sal_lincomb.o
-$(THIS)arith/sal_dfloat.o:	\
-	$(THIS)arith/sal_sfloat.o
-$(THIS)arith/sal_fltcat.o:	\
-	$(THIS)arith/sal_int.o
-$(THIS)arith/sal_ftools.o:	\
-	$(THIS)arith/sal_fltcat.o
-$(THIS)arith/sal_int.o:	\
-	$(THIS)arith/sal_random.o	\
-	$(THIS)arith/sal_binpow.o	\
-	$(THIS)arith/sal_segment.o	\
-	$(THIS)arith/sal_itools.o	\
-	$(THIS)base/sal_byte.o
-$(THIS)arith/sal_intcat.o:	\
-	$(THIS)arith/sal_bool.o	\
-	$(THIS)arith/sal_oarith.o	\
-	$(THIS)base/sal_serial.o	\
-	$(THIS)base/sal_itype.o	\
-	$(THIS)base/sal_otype.o
-$(THIS)arith/sal_itools.o:	\
-	$(THIS)arith/sal_bsearch.o	\
-	$(THIS)arith/sal_intcat.o	\
-	$(THIS)base/sal_partial.o
-$(THIS)arith/sal_lincomb.o:	\
-	$(THIS)arith/sal_arith.o
-$(THIS)arith/sal_mint.o:	\
-	$(THIS)arith/sal_itools.o	\
-	$(THIS)arith/sal_segment.o	\
-	$(THIS)base/sal_byte.o
-$(THIS)arith/sal_oarith.o:	\
-	$(THIS)arith/sal_arith.o	\
-	$(THIS)base/sal_torder.o
-$(THIS)arith/sal_pointer.o:	\
-	$(THIS)arith/sal_mint.o
-$(THIS)arith/sal_random.o:	\
-	$(THIS)arith/sal_mint.o	\
-	$(THIS)base/sal_gener.o
-$(THIS)arith/sal_segment.o:	\
-	$(THIS)arith/sal_intcat.o	\
-	$(THIS)base/sal_partial.o
-$(THIS)arith/sal_sfloat.o:	\
-	$(THIS)arith/sal_ftools.o
-$(THIS)base/ald_pfunc.o:	\
-	$(THIS)arith/sal_pointer.o
-$(THIS)base/sal_base.o:	\
-	$(THIS)lang/sal_lang.o
-$(THIS)base/sal_bstream.o:	\
-	$(THIS)base/sal_base.o
-$(THIS)base/sal_byte.o:	\
-	$(THIS)base/sal_htype.o	\
-	$(THIS)base/sal_itype.o	\
-	$(THIS)base/sal_otype.o	\
-	$(THIS)base/sal_bstream.o	\
-	$(THIS)base/sal_serial.o
-$(THIS)base/sal_char.o:	\
-	$(THIS)base/sal_htype.o	\
-	$(THIS)base/sal_itype.o	\
-	$(THIS)base/sal_otype.o	\
-	$(THIS)base/sal_bstream.o	\
-	$(THIS)base/sal_serial.o	\
-	$(THIS)base/sal_byte.o	\
-	$(THIS)base/sal_torder.o
-$(THIS)base/sal_copy.o:	\
-	$(THIS)base/sal_base.o
-$(THIS)base/sal_gener.o:	\
-	$(THIS)lang/sal_lang.o
-$(THIS)base/sal_htype.o:	\
-	$(THIS)base/sal_base.o
-$(THIS)base/sal_itype.o:	\
-	$(THIS)base/sal_tstream.o
-$(THIS)base/sal_manip.o:	\
-	$(THIS)base/sal_byte.o
-$(THIS)base/sal_order.o:	\
-	$(THIS)base/sal_base.o
-$(THIS)base/sal_otype.o:	\
-	$(THIS)base/sal_tstream.o
-$(THIS)base/sal_partial.o:	\
-	$(THIS)base/sal_char.o	\
-	$(THIS)base/sal_gener.o	\
-	$(THIS)base/sal_syntax.o
-$(THIS)base/sal_serial.o:	\
-	$(THIS)base/sal_bstream.o
-$(THIS)base/sal_syntax.o:	\
-	$(THIS)base/sal_base.o
-$(THIS)base/sal_torder.o:	\
-	$(THIS)base/sal_order.o
-$(THIS)base/sal_tstream.o:	\
-	$(THIS)base/sal_base.o
-$(THIS)datastruc/ald_flags.o:	\
-	$(THIS)datastruc/sal_barray.o
-$(THIS)datastruc/ald_queue.o:	\
-	$(THIS)datastruc/ald_symtab.o
-$(THIS)datastruc/ald_symbol.o:	\
-	$(THIS)datastruc/sal_hash.o
-$(THIS)datastruc/ald_symtab.o:	\
-	$(THIS)datastruc/ald_symbol.o
-$(THIS)datastruc/sal_array.o:	\
-	$(THIS)arith/sal_bsearch.o	\
-	$(THIS)datastruc/sal_parray.o
-$(THIS)datastruc/sal_barray.o:	\
-	$(THIS)datastruc/sal_pkarray.o
-$(THIS)datastruc/sal_bdata.o:	\
-	$(THIS)arith/sal_mint.o	\
-	$(THIS)datastruc/sal_data.o
-$(THIS)datastruc/sal_bstruc.o:	\
-	$(THIS)datastruc/sal_bdata.o	\
-	$(THIS)datastruc/sal_fstruc.o
-$(THIS)datastruc/sal_ckarray.o:	\
-	$(THIS)datastruc/sal_array.o
-$(THIS)datastruc/sal_cklist.o:	\
-	$(THIS)datastruc/sal_list.o	\
-	$(THIS)arith/sal_random.o
-$(THIS)datastruc/sal_ckmembk.o:	\
-	$(THIS)datastruc/sal_memblk.o
-$(THIS)datastruc/sal_data.o:	\
-	$(THIS)base/sal_char.o
-$(THIS)datastruc/sal_ddata.o:	\
-	$(THIS)datastruc/sal_bdata.o
-$(THIS)datastruc/sal_fstruc.o:	\
-	$(THIS)datastruc/sal_lstruc.o
-$(THIS)datastruc/sal_hash.o:	\
-	$(THIS)datastruc/sal_kntry.o	\
-	$(THIS)datastruc/sal_table.o
-$(THIS)datastruc/sal_kntry.o:	\
-	$(THIS)base/sal_char.o	\
-	$(THIS)base/sal_copy.o
-$(THIS)datastruc/sal_list.o:	\
-	$(THIS)base/sal_partial.o	\
-	$(THIS)datastruc/sal_bstruc.o	\
-	$(THIS)datastruc/sal_ddata.o
-$(THIS)datastruc/sal_lstruc.o:	\
-	$(THIS)base/sal_gener.o	\
-	$(THIS)datastruc/sal_data.o
-$(THIS)datastruc/sal_memblk.o:	\
-	$(THIS)datastruc/sal_array.o	\
-	$(THIS)datastruc/sal_barray.o
-$(THIS)datastruc/sal_parray.o:	\
-	$(THIS)arith/sal_random.o	\
-	$(THIS)datastruc/sal_fstruc.o	\
-	$(THIS)datastruc/sal_list.o
-$(THIS)datastruc/sal_pkarray.o:	\
-	$(THIS)datastruc/sal_parray.o
-$(THIS)datastruc/sal_set.o:	\
-	$(THIS)datastruc/ald_symtab.o
-$(THIS)datastruc/sal_slist.o:	\
-	$(THIS)arith/sal_random.o	\
-	$(THIS)datastruc/sal_bstruc.o	\
-	$(THIS)datastruc/sal_list.o
-$(THIS)datastruc/sal_sortas.o:	\
-	$(THIS)datastruc/sal_kntry.o	\
-	$(THIS)datastruc/sal_sset.o	\
-	$(THIS)datastruc/sal_table.o
-$(THIS)datastruc/sal_sset.o:	\
-	$(THIS)datastruc/sal_list.o	\
-	$(THIS)datastruc/sal_ddata.o	\
-	$(THIS)datastruc/sal_bstruc.o	\
-	$(THIS)arith/sal_random.o
-$(THIS)datastruc/sal_stream.o:	\
-	$(THIS)arith/sal_pointer.o	\
-	$(THIS)datastruc/sal_list.o	\
-	$(THIS)datastruc/sal_lstruc.o	\
-	$(THIS)datastruc/sal_parray.o	\
-	$(THIS)datastruc/sal_string.o
-$(THIS)datastruc/sal_string.o:	\
-	$(THIS)datastruc/sal_array.o	\
-	$(THIS)datastruc/sal_pkarray.o
-$(THIS)datastruc/sal_table.o:	\
-	$(THIS)datastruc/sal_string.o
-$(THIS)gmp/sal_fltgmp.o:	\
-	$(THIS)datastruc/sal_string.o	\
-	$(THIS)arith/sal_dfloat.o	\
-	$(THIS)gmp/sal_intgmp.o
-$(THIS)gmp/sal_gmptls.o:	\
-	$(THIS)datastruc/sal_parray.o
-$(THIS)gmp/sal_intgmp.o:	\
-	$(THIS)arith/sal_int.o	\
-	$(THIS)gmp/sal_gmptls.o
-$(THIS)util/ald_trace.o:	\
-	$(THIS)datastruc/sal_string.o	\
-	$(THIS)arith/sal_pointer.o
-$(THIS)util/eio_rsto.o:	\
-	$(THIS)base/sal_base.o
-$(THIS)util/rtexns.o:	\
-	$(THIS)base/sal_manip.o	\
-	$(THIS)util/ald_trace.o
-$(THIS)util/sal_agat.o:	\
-	$(THIS)datastruc/sal_string.o	\
-	$(THIS)arith/sal_dfloat.o
-$(THIS)util/sal_cmdline.o:	\
-	$(THIS)datastruc/sal_string.o	\
-	$(THIS)arith/sal_pointer.o
-$(THIS)util/sal_file.o:	\
-	$(THIS)datastruc/sal_string.o
-$(THIS)util/sal_timer.o:	\
-	$(THIS)arith/sal_pointer.o
-$(THIS)util/sal_version.o:	\
-	$(THIS)datastruc/sal_string.o
+$(THIS)arith/sal_arith$(OBJEXT):	\
+	$(THIS)base/sal_copy$(OBJEXT)
+$(THIS)arith/sal_binpow$(OBJEXT):	\
+	$(THIS)arith/sal_arith$(OBJEXT)	\
+	$(THIS)arith/sal_intcat$(OBJEXT)
+$(THIS)arith/sal_bool$(OBJEXT):	\
+	$(THIS)base/sal_htype$(OBJEXT)
+$(THIS)arith/sal_bsearch$(OBJEXT):	\
+	$(THIS)arith/sal_intcat$(OBJEXT)
+$(THIS)arith/sal_complex$(OBJEXT):	\
+	$(THIS)arith/sal_fltcat$(OBJEXT)	\
+	$(THIS)arith/sal_lincomb$(OBJEXT)
+$(THIS)arith/sal_dfloat$(OBJEXT):	\
+	$(THIS)arith/sal_sfloat$(OBJEXT)
+$(THIS)arith/sal_fltcat$(OBJEXT):	\
+	$(THIS)arith/sal_int$(OBJEXT)
+$(THIS)arith/sal_ftools$(OBJEXT):	\
+	$(THIS)arith/sal_fltcat$(OBJEXT)
+$(THIS)arith/sal_int$(OBJEXT):	\
+	$(THIS)arith/sal_random$(OBJEXT)	\
+	$(THIS)arith/sal_binpow$(OBJEXT)	\
+	$(THIS)arith/sal_segment$(OBJEXT)	\
+	$(THIS)arith/sal_itools$(OBJEXT)	\
+	$(THIS)base/sal_byte$(OBJEXT)
+$(THIS)arith/sal_intcat$(OBJEXT):	\
+	$(THIS)arith/sal_bool$(OBJEXT)	\
+	$(THIS)arith/sal_oarith$(OBJEXT)	\
+	$(THIS)base/sal_serial$(OBJEXT)	\
+	$(THIS)base/sal_itype$(OBJEXT)	\
+	$(THIS)base/sal_otype$(OBJEXT)
+$(THIS)arith/sal_itools$(OBJEXT):	\
+	$(THIS)arith/sal_bsearch$(OBJEXT)	\
+	$(THIS)arith/sal_intcat$(OBJEXT)	\
+	$(THIS)base/sal_partial$(OBJEXT)
+$(THIS)arith/sal_lincomb$(OBJEXT):	\
+	$(THIS)arith/sal_arith$(OBJEXT)
+$(THIS)arith/sal_mint$(OBJEXT):	\
+	$(THIS)arith/sal_itools$(OBJEXT)	\
+	$(THIS)arith/sal_segment$(OBJEXT)	\
+	$(THIS)base/sal_byte$(OBJEXT)
+$(THIS)arith/sal_oarith$(OBJEXT):	\
+	$(THIS)arith/sal_arith$(OBJEXT)	\
+	$(THIS)base/sal_torder$(OBJEXT)
+$(THIS)arith/sal_pointer$(OBJEXT):	\
+	$(THIS)arith/sal_mint$(OBJEXT)
+$(THIS)arith/sal_random$(OBJEXT):	\
+	$(THIS)arith/sal_mint$(OBJEXT)	\
+	$(THIS)base/sal_gener$(OBJEXT)
+$(THIS)arith/sal_segment$(OBJEXT):	\
+	$(THIS)arith/sal_intcat$(OBJEXT)	\
+	$(THIS)base/sal_partial$(OBJEXT)
+$(THIS)arith/sal_sfloat$(OBJEXT):	\
+	$(THIS)arith/sal_ftools$(OBJEXT)
+$(THIS)base/ald_pfunc$(OBJEXT):	\
+	$(THIS)arith/sal_pointer$(OBJEXT)
+$(THIS)base/sal_base$(OBJEXT):	\
+	$(THIS)lang/sal_lang$(OBJEXT)
+$(THIS)base/sal_bstream$(OBJEXT):	\
+	$(THIS)base/sal_base$(OBJEXT)
+$(THIS)base/sal_byte$(OBJEXT):	\
+	$(THIS)base/sal_htype$(OBJEXT)	\
+	$(THIS)base/sal_itype$(OBJEXT)	\
+	$(THIS)base/sal_otype$(OBJEXT)	\
+	$(THIS)base/sal_bstream$(OBJEXT)	\
+	$(THIS)base/sal_serial$(OBJEXT)
+$(THIS)base/sal_char$(OBJEXT):	\
+	$(THIS)base/sal_htype$(OBJEXT)	\
+	$(THIS)base/sal_itype$(OBJEXT)	\
+	$(THIS)base/sal_otype$(OBJEXT)	\
+	$(THIS)base/sal_bstream$(OBJEXT)	\
+	$(THIS)base/sal_serial$(OBJEXT)	\
+	$(THIS)base/sal_byte$(OBJEXT)	\
+	$(THIS)base/sal_torder$(OBJEXT)
+$(THIS)base/sal_copy$(OBJEXT):	\
+	$(THIS)base/sal_base$(OBJEXT)
+$(THIS)base/sal_gener$(OBJEXT):	\
+	$(THIS)lang/sal_lang$(OBJEXT)
+$(THIS)base/sal_htype$(OBJEXT):	\
+	$(THIS)base/sal_base$(OBJEXT)
+$(THIS)base/sal_itype$(OBJEXT):	\
+	$(THIS)base/sal_tstream$(OBJEXT)
+$(THIS)base/sal_manip$(OBJEXT):	\
+	$(THIS)base/sal_byte$(OBJEXT)
+$(THIS)base/sal_order$(OBJEXT):	\
+	$(THIS)base/sal_base$(OBJEXT)
+$(THIS)base/sal_otype$(OBJEXT):	\
+	$(THIS)base/sal_tstream$(OBJEXT)
+$(THIS)base/sal_partial$(OBJEXT):	\
+	$(THIS)base/sal_char$(OBJEXT)	\
+	$(THIS)base/sal_gener$(OBJEXT)	\
+	$(THIS)base/sal_syntax$(OBJEXT)
+$(THIS)base/sal_serial$(OBJEXT):	\
+	$(THIS)base/sal_bstream$(OBJEXT)
+$(THIS)base/sal_syntax$(OBJEXT):	\
+	$(THIS)base/sal_base$(OBJEXT)
+$(THIS)base/sal_torder$(OBJEXT):	\
+	$(THIS)base/sal_order$(OBJEXT)
+$(THIS)base/sal_tstream$(OBJEXT):	\
+	$(THIS)base/sal_base$(OBJEXT)
+$(THIS)datastruc/ald_flags$(OBJEXT):	\
+	$(THIS)datastruc/sal_barray$(OBJEXT)
+$(THIS)datastruc/ald_queue$(OBJEXT):	\
+	$(THIS)datastruc/ald_symtab$(OBJEXT)
+$(THIS)datastruc/ald_symbol$(OBJEXT):	\
+	$(THIS)datastruc/sal_hash$(OBJEXT)
+$(THIS)datastruc/ald_symtab$(OBJEXT):	\
+	$(THIS)datastruc/ald_symbol$(OBJEXT)
+$(THIS)datastruc/sal_array$(OBJEXT):	\
+	$(THIS)arith/sal_bsearch$(OBJEXT)	\
+	$(THIS)datastruc/sal_parray$(OBJEXT)
+$(THIS)datastruc/sal_barray$(OBJEXT):	\
+	$(THIS)datastruc/sal_pkarray$(OBJEXT)
+$(THIS)datastruc/sal_bdata$(OBJEXT):	\
+	$(THIS)arith/sal_mint$(OBJEXT)	\
+	$(THIS)datastruc/sal_data$(OBJEXT)
+$(THIS)datastruc/sal_bstruc$(OBJEXT):	\
+	$(THIS)datastruc/sal_bdata$(OBJEXT)	\
+	$(THIS)datastruc/sal_fstruc$(OBJEXT)
+$(THIS)datastruc/sal_ckarray$(OBJEXT):	\
+	$(THIS)datastruc/sal_array$(OBJEXT)
+$(THIS)datastruc/sal_cklist$(OBJEXT):	\
+	$(THIS)datastruc/sal_list$(OBJEXT)	\
+	$(THIS)arith/sal_random$(OBJEXT)
+$(THIS)datastruc/sal_ckmembk$(OBJEXT):	\
+	$(THIS)datastruc/sal_memblk$(OBJEXT)
+$(THIS)datastruc/sal_data$(OBJEXT):	\
+	$(THIS)base/sal_char$(OBJEXT)
+$(THIS)datastruc/sal_ddata$(OBJEXT):	\
+	$(THIS)datastruc/sal_bdata$(OBJEXT)
+$(THIS)datastruc/sal_fstruc$(OBJEXT):	\
+	$(THIS)datastruc/sal_lstruc$(OBJEXT)
+$(THIS)datastruc/sal_hash$(OBJEXT):	\
+	$(THIS)datastruc/sal_kntry$(OBJEXT)	\
+	$(THIS)datastruc/sal_table$(OBJEXT)
+$(THIS)datastruc/sal_kntry$(OBJEXT):	\
+	$(THIS)base/sal_char$(OBJEXT)	\
+	$(THIS)base/sal_copy$(OBJEXT)
+$(THIS)datastruc/sal_list$(OBJEXT):	\
+	$(THIS)base/sal_partial$(OBJEXT)	\
+	$(THIS)datastruc/sal_bstruc$(OBJEXT)	\
+	$(THIS)datastruc/sal_ddata$(OBJEXT)
+$(THIS)datastruc/sal_lstruc$(OBJEXT):	\
+	$(THIS)base/sal_gener$(OBJEXT)	\
+	$(THIS)datastruc/sal_data$(OBJEXT)
+$(THIS)datastruc/sal_memblk$(OBJEXT):	\
+	$(THIS)datastruc/sal_array$(OBJEXT)	\
+	$(THIS)datastruc/sal_barray$(OBJEXT)
+$(THIS)datastruc/sal_parray$(OBJEXT):	\
+	$(THIS)arith/sal_random$(OBJEXT)	\
+	$(THIS)datastruc/sal_fstruc$(OBJEXT)	\
+	$(THIS)datastruc/sal_list$(OBJEXT)
+$(THIS)datastruc/sal_pkarray$(OBJEXT):	\
+	$(THIS)datastruc/sal_parray$(OBJEXT)
+$(THIS)datastruc/sal_set$(OBJEXT):	\
+	$(THIS)datastruc/ald_symtab$(OBJEXT)
+$(THIS)datastruc/sal_slist$(OBJEXT):	\
+	$(THIS)arith/sal_random$(OBJEXT)	\
+	$(THIS)datastruc/sal_bstruc$(OBJEXT)	\
+	$(THIS)datastruc/sal_list$(OBJEXT)
+$(THIS)datastruc/sal_sortas$(OBJEXT):	\
+	$(THIS)datastruc/sal_kntry$(OBJEXT)	\
+	$(THIS)datastruc/sal_sset$(OBJEXT)	\
+	$(THIS)datastruc/sal_table$(OBJEXT)
+$(THIS)datastruc/sal_sset$(OBJEXT):	\
+	$(THIS)datastruc/sal_list$(OBJEXT)	\
+	$(THIS)datastruc/sal_ddata$(OBJEXT)	\
+	$(THIS)datastruc/sal_bstruc$(OBJEXT)	\
+	$(THIS)arith/sal_random$(OBJEXT)
+$(THIS)datastruc/sal_stream$(OBJEXT):	\
+	$(THIS)arith/sal_pointer$(OBJEXT)	\
+	$(THIS)datastruc/sal_list$(OBJEXT)	\
+	$(THIS)datastruc/sal_lstruc$(OBJEXT)	\
+	$(THIS)datastruc/sal_parray$(OBJEXT)	\
+	$(THIS)datastruc/sal_string$(OBJEXT)
+$(THIS)datastruc/sal_string$(OBJEXT):	\
+	$(THIS)datastruc/sal_array$(OBJEXT)	\
+	$(THIS)datastruc/sal_pkarray$(OBJEXT)
+$(THIS)datastruc/sal_table$(OBJEXT):	\
+	$(THIS)datastruc/sal_string$(OBJEXT)
+$(THIS)gmp/sal_fltgmp$(OBJEXT):	\
+	$(THIS)datastruc/sal_string$(OBJEXT)	\
+	$(THIS)arith/sal_dfloat$(OBJEXT)	\
+	$(THIS)gmp/sal_intgmp$(OBJEXT)
+$(THIS)gmp/sal_gmptls$(OBJEXT):	\
+	$(THIS)datastruc/sal_parray$(OBJEXT)
+$(THIS)gmp/sal_intgmp$(OBJEXT):	\
+	$(THIS)arith/sal_int$(OBJEXT)	\
+	$(THIS)gmp/sal_gmptls$(OBJEXT)
+$(THIS)util/ald_trace$(OBJEXT):	\
+	$(THIS)datastruc/sal_string$(OBJEXT)	\
+	$(THIS)arith/sal_pointer$(OBJEXT)
+$(THIS)util/eio_rsto$(OBJEXT):	\
+	$(THIS)base/sal_base$(OBJEXT)
+$(THIS)util/rtexns$(OBJEXT):	\
+	$(THIS)base/sal_manip$(OBJEXT)	\
+	$(THIS)util/ald_trace$(OBJEXT)
+$(THIS)util/sal_agat$(OBJEXT):	\
+	$(THIS)datastruc/sal_string$(OBJEXT)	\
+	$(THIS)arith/sal_dfloat$(OBJEXT)
+$(THIS)util/sal_cmdline$(OBJEXT):	\
+	$(THIS)datastruc/sal_string$(OBJEXT)	\
+	$(THIS)arith/sal_pointer$(OBJEXT)
+$(THIS)util/sal_file$(OBJEXT):	\
+	$(THIS)datastruc/sal_string$(OBJEXT)
+$(THIS)util/sal_timer$(OBJEXT):	\
+	$(THIS)arith/sal_pointer$(OBJEXT)
+$(THIS)util/sal_version$(OBJEXT):	\
+	$(THIS)datastruc/sal_string$(OBJEXT)

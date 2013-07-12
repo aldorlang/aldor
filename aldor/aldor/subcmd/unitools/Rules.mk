@@ -19,14 +19,14 @@ unicl_SOURCES =	\
 	../../src/xfloat.c	\
 	unicl.c	\
 
-unicl_OBJECTS := $(addprefix $(THIS), $(unicl_SOURCES:.c=.o))
+unicl_OBJECTS := $(addprefix $(THIS), $(unicl_SOURCES:.c=$(OBJEXT)))
 
-$(BINDIR)/unicl: $(unicl_OBJECTS)
+$(BINDIR)/unicl$(EXEEXT): $(unicl_OBJECTS)
 	mkdir -p $(dir $@)
 	$(LINK.c) $+ -o $@
 
 
-$(THIS)%.o: $(THIS)%.c
+$(THIS)%$(OBJEXT): $(THIS)%.c
 	$(COMPILE.c) $< -o $@ -I$(dir $@)../../src
 
 
@@ -34,4 +34,4 @@ clean: clean-unicl
 clean-unicl:
 	$(RM) $(unicl_OBJECTS)
 	$(RM) $(unicl_BUILT_SOURCES)
-	$(RM) $(BINDIR)/unicl
+	$(RM) $(BINDIR)/unicl$(EXEEXT)

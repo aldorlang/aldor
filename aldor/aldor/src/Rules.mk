@@ -168,7 +168,7 @@ aldor_SOURCES =		\
 	xfloat_t.c
 
 aldor_SOURCES := $(addprefix $(THIS), $(aldor_SOURCES))
-aldor_OBJECTS := $(aldor_SOURCES:.c=.o)
+aldor_OBJECTS := $(aldor_SOURCES:.c=$(OBJEXT))
 
 aldor_HEADERS =	\
 	cconfig.h	\
@@ -184,7 +184,7 @@ $(aldor_OBJECTS): $(aldor_BUILT_SOURCES)
 aldor_HEADERS := $(addprefix $(INCDIR)/, $(aldor_HEADERS))
 .PRECIOUS: $(aldor_HEADERS)
 
-$(BINDIR)/aldor: $(aldor_OBJECTS)
+$(BINDIR)/aldor$(EXEEXT): $(aldor_OBJECTS)
 	mkdir -p $(dir $@)
 	$(LINK.c) $^ -lm -o $@
 
@@ -215,7 +215,7 @@ libruntime_SOURCES =	\
 	xfloat.c
 
 libruntime_SOURCES := $(addprefix $(THIS), $(libruntime_SOURCES))
-libruntime_OBJECTS := $(libruntime_SOURCES:.c=.o)
+libruntime_OBJECTS := $(libruntime_SOURCES:.c=$(OBJEXT))
 
 
 clean: clean-aldor
@@ -223,4 +223,4 @@ clean-aldor:
 	$(RM) $(libruntime_OBJECTS)
 	$(RM) $(aldor_OBJECTS)
 	$(RM) $(aldor_BUILT_SOURCES)
-	$(RM) $(BINDIR)/aldor
+	$(RM) $(BINDIR)/aldor$(EXEEXT)
