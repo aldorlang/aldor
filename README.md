@@ -1,7 +1,13 @@
-aldor
-=====
+The Aldor Programming Language
+==============================
 
-The Aldor Programming Language.
+Building the compiler
+---------------------
+
+Before you start the build, take a look at `config.mk`. This file contains
+some toolchains and build-specific variables. You will probably not need to
+touch most of those, but in the first section, you can select your platform.
+This is set to `unix` by default, and can be modified for other platforms.
 
 To build, run `make` in the project root directory. This will create a
 directory called `build` with everything in it. If you use a bourne shell
@@ -21,7 +27,27 @@ clean-aldor` removes the compiler program from the build directory and cleans
 up all the object files for the program. Running `make clean-libaldor` will do
 the same for libaldor.
 
-This version of Aldor was tested on Linux 64 bit and Cygwin 32 bit. Users of
+This version of Aldor was tested on Linux64, Cygwin32, and Mingw32. Users of
 Mac OS X, FreeBSD and other platforms are welcome to report their issues.
 
 See the [wiki](https://github.com/pippijn/aldor/wiki) for more information.
+
+
+Advanced method
+---------------
+
+The directory `aldor` contains a more advanced build infrastructure based on
+the GNU build system: autoconf and automake. In order to use it, you will need
+these two tools, and run the command `autoreconf`. The command might complain
+about missing files, in which case you run `automake --add-missing`. After
+that, you can set up the build with `./configure` and start it with `make`.
+
+Unlike the simple build above, the advanced build supports parallel builds
+with `make -jN` where N is the number of parallel tasks (generally: number of
+CPU cores + 2).
+
+Also unlike the above method, the autotools based build supports installing
+and uninstalling. You can run `./configure --prefix=/install/path` to select
+the path you want to install aldor to (in this case `/install/path`, but you
+will likely want a different path). You will still need to set ALDORROOT to
+the install path in order to use the installed aldor.
