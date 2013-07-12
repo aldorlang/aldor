@@ -31,18 +31,18 @@ fnewline(FILE *fout)
 }
 
 String
-asprintf(const char *fmt, ...)
+aStrPrintf(const char *fmt, ...)
 {
 	String str;
 	va_list argp;
 	va_start(argp, fmt);
-	str = asvprintf(fmt, argp);
+	str = vaStrPrintf(fmt, argp);
 	va_end(argp);
 	return str;
 }
 
 String
-asvprintf(const char *fmt, va_list argp)
+vaStrPrintf(const char *fmt, va_list argp)
 {
 	int cc;
 	Buffer buf = bufNew();

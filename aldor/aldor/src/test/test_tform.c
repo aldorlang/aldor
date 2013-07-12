@@ -42,7 +42,7 @@ testAbParse()
 {
 	AbSyn ab = abqParse("x := y");
 
-	String s = asprintf("%pAbSyn", ab);
+	String s = aStrPrintf("%pAbSyn", ab);
 
 	testStringEqual("compare strings:", s, "(Assign x y)");
 }

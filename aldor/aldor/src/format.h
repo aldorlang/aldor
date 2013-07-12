@@ -32,8 +32,8 @@ extern  int  vxprintf	(XPutFun f, const char *fmt, va_list argp);
  * go via ostreamVPrintf. This allows fun stuff like '%p' formatting
  * methods.
  */
-extern String asvprintf(const char *fmt, va_list argp);
-extern String asprintf(const char *fmt, ...);
+extern String vaStrPrintf(const char *fmt, va_list argp);
+extern String aStrPrintf(const char *fmt, ...);
 
 extern int afprintf(FILE *fout, const char *fmt, ...);
 extern int afvprintf(FILE *fout, const char *fmt, va_list argp);
