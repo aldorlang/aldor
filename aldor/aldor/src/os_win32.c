@@ -417,7 +417,11 @@ osPutEnv(String eqn)
 
 #define FCURDIR		 '.'
 #define FDEVSEP		 ':'
+#ifdef __CYGWIN__
+#define FDIRSEP		 '/'
+#else
 #define FDIRSEP		 '\\'
+#endif
 #define FDIRSEPALT	 '/'
 #define FTYPESEP	 '.'
 #define FTYPEARC	 'A'
