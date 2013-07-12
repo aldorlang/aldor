@@ -11,9 +11,7 @@
 
 #include "axlobs.h"
 #include "foam.h"
-
-typedef struct TfCond *TfCond;
-typedef struct TfCondElt *TfCondElt;
+#include "tfcond.h"
 
 extern SymeList tfSetSymesFn(TForm, SymeList);
 
