@@ -22,7 +22,6 @@ unicl_SOURCES =	\
 unicl_OBJECTS := $(addprefix $(THIS), $(unicl_SOURCES:.c=$(OBJEXT)))
 
 $(BINDIR)/unicl$(EXEEXT): $(unicl_OBJECTS)
-	mkdir -p $(dir $@)
 	$(LINK.c) $+ -o $@
 
 

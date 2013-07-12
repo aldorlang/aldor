@@ -14,7 +14,6 @@ zacc_OBJECTS := $(addprefix $(THIS), $(zacc_SOURCES:.c=$(OBJEXT)))
 zacc_BUILT_SOURCES := $(addprefix $(THIS), zaccgram.c zaccgram.h zaccscan.c)
 
 $(BINDIR)/zacc$(EXEEXT): $(zacc_OBJECTS)
-	mkdir -p $(dir $@)
 	$(LINK.c) $+ -o $@
 
 %.y: %.z $(BINDIR)/zacc$(EXEEXT)
@@ -52,7 +51,6 @@ msgcat_SOURCES =	\
 msgcat_OBJECTS := $(addprefix $(THIS), $(msgcat_SOURCES:.c=$(OBJEXT)))
 
 $(BINDIR)/msgcat$(EXEEXT): $(msgcat_OBJECTS)
-	mkdir -p $(dir $@)
 	$(LINK.c) $^ -o $@
 
 %.c %.h: %.msg $(BINDIR)/msgcat$(EXEEXT)

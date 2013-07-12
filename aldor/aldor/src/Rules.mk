@@ -185,11 +185,9 @@ aldor_HEADERS := $(addprefix $(INCDIR)/, $(aldor_HEADERS))
 .PRECIOUS: $(aldor_HEADERS)
 
 $(BINDIR)/aldor$(EXEEXT): $(aldor_OBJECTS)
-	mkdir -p $(dir $@)
 	$(LINK.c) $^ -lm -o $@
 
 $(INCDIR)/%: $(THIS)%
-	mkdir -p $(dir $@)
 	cp $< $@
 
 

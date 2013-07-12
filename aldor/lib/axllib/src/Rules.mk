@@ -69,7 +69,6 @@ $(THIS)%$(OBJEXT): $(THIS)%.as $(BINDIR)/aldor$(EXEEXT) $(BINDIR)/unicl$(EXEEXT)
 
 # Copy includes
 $(INCDIR)/axllib.as: $(THIS)axllib.as
-	mkdir -p $(dir $@)
 	cp $< $@
 
 # Clean

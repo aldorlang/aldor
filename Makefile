@@ -59,3 +59,9 @@ loop:
 	$(RLWRAP) $(BINDIR)/aldor -Y $(LIBDIR) -I $(INCDIR) -Gloop
 
 include aldor/Rules.mk
+
+-include init
+init:
+	mkdir -p $(BINDIR)
+	mkdir -p $(INCDIR)
+	mkdir -p $(LIBDIR)

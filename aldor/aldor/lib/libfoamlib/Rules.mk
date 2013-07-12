@@ -35,7 +35,6 @@ libfoamlib_COBJECTS := $(libfoamlib_ASOURCES:.as=$(OBJEXT))
 
 # C library
 $(LIBDIR)/libfoamlib$(LIBEXT): $(libfoamlib_COBJECTS)
-	mkdir -p $(dir $@)
 	$(AR) cr $@ $^
 
 # Local aldor build rule
@@ -45,7 +44,6 @@ $(THIS)%$(OBJEXT): $(THIS)%.as $(BINDIR)/aldor$(EXEEXT) $(BINDIR)/unicl$(EXEEXT)
 
 # Copy includes
 $(INCDIR)/foamlib.as: $(THIS)foamlib.as
-	mkdir -p $(dir $@)
 	cp $< $@
 
 # Clean
