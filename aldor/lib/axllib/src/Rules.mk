@@ -73,8 +73,8 @@ $(INCDIR)/axllib.as: $(THIS)axllib.as
 	cp $< $@
 
 # Clean
-clean: clean-$(THIS)
-clean-$(THIS):
+clean: clean-libaxllib
+clean-libaxllib:
 	$(RM) $(libaxllib_AOBJECTS)
 	$(RM) $(libaxllib_COBJECTS)
 	$(RM) $(libaxllib_ASOURCES:.as=.c)

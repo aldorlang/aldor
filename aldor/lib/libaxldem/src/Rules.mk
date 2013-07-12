@@ -38,8 +38,8 @@ $(INCDIR)/axldem.as: $(THIS)axldem.as
 	cp $< $@
 
 # Clean
-clean: clean-$(THIS)
-clean-$(THIS):
+clean: clean-libaxldem
+clean-libaxldem:
 	$(RM) $(libaxldem_AOBJECTS)
 	$(RM) $(libaxldem_COBJECTS)
 	$(RM) $(libaxldem_ASOURCES:.as=.c)

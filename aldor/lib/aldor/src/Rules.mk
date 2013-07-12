@@ -100,8 +100,8 @@ $(THIS)%.o: $(THIS)%.as $(BINDIR)/aldor $(BINDIR)/unicl $(aldor_HEADERS) $(libal
 	$(AR) cr $(LIBDIR)/libaldor.al $(@:.o=.ao)
 
 # Clean
-clean: clean-$(THIS)
-clean-$(THIS):
+clean: clean-libaldor
+clean-libaldor:
 	$(RM) $(libaldor_AOBJECTS)
 	$(RM) $(libaldor_COBJECTS)
 	$(RM) $(libaldor_ASOURCES:.as=.c)

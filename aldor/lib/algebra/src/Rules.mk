@@ -228,8 +228,8 @@ $(THIS)%.o: $(THIS)%.as $(BINDIR)/aldor $(BINDIR)/unicl $(aldor_HEADERS) $(INCDI
 	$(AR) cr $(LIBDIR)/libalgebra.al $(@:.o=.ao)
 
 # Clean
-clean: clean-$(THIS)
-clean-$(THIS):
+clean: clean-libalgebra
+clean-libalgebra:
 	$(RM) $(libalgebra_AOBJECTS)
 	$(RM) $(libalgebra_COBJECTS)
 	$(RM) $(libalgebra_ASOURCES:.as=.c)

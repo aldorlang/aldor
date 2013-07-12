@@ -30,8 +30,8 @@ $(THIS)%.o: $(THIS)%.c
 	$(COMPILE.c) $< -o $@ -I$(dir $@)../../src
 
 
-clean: clean-$(THIS)
-clean-$(THIS):
+clean: clean-unicl
+clean-unicl:
 	$(RM) $(unicl_OBJECTS)
 	$(RM) $(unicl_BUILT_SOURCES)
 	$(RM) $(BINDIR)/unicl
