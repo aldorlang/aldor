@@ -390,8 +390,9 @@ JavaCode
 jcApplyV(JavaCode c, int n, ...)
 {
 	va_list  argp;
+	JavaCode jc;
 	va_start(argp, n);
-	JavaCode jc = jcApplyP(c, n, argp);
+	jc = jcApplyP(c, n, argp);
 	va_end(argp);
 	return jc;
 }
@@ -413,9 +414,11 @@ JavaCode
 jcApplyMethodV(JavaCode c, JavaCode id, int n, ...)
 {
 	va_list  argp;
+	JavaCode jc;
+
 	va_start(argp, n);
 
-	JavaCode jc =  jcApplyP(jcMemRef(c, id), n, argp);
+	jc =  jcApplyP(jcMemRef(c, id), n, argp);
 	va_end(argp);
 	return jc;
 }
@@ -1103,9 +1106,9 @@ JavaCode
 jcSpaceSeqV(int n, ...) 
 {
 	va_list argp;
-
+	JavaCode jc;
 	va_start(argp, n);
-	JavaCode jc = jcoNewP(jc0ClassObj(JCO_CLSS_SpaceSeq), n, argp);
+	jc = jcoNewP(jc0ClassObj(JCO_CLSS_SpaceSeq), n, argp);
 	va_end(argp);
 	return jc;
 }
@@ -1114,9 +1117,9 @@ JavaCode
 jcNLSeqV(int n, ...) 
 {
 	va_list argp;
-
+	JavaCode jc;
 	va_start(argp, n);
-	JavaCode jc = jcoNewP(jc0ClassObj(JCO_CLSS_NLSeq), n, argp);
+	jc = jcoNewP(jc0ClassObj(JCO_CLSS_NLSeq), n, argp);
 	va_end(argp);
 	return jc;
 }

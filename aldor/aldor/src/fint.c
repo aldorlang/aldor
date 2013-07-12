@@ -3510,8 +3510,9 @@ local dataType fintEval_(DataObj retDataObj);
 local dataType
 fintEval(DataObj retDataObj)
 {
+	dataType d;
 	fintDEBUG(fprintf(dbOut, "(fintEval:\n"));
-	dataType d = fintEval_(retDataObj);
+	d = fintEval_(retDataObj);
 	fintDEBUG(fprintf(dbOut, " fintEval)"));
 
 	return d;

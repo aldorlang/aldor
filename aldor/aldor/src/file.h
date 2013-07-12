@@ -45,10 +45,10 @@ extern void     	fileRename      	(FileName, FileName);
  */
 
 #define FILE_PUT_CHARS(fout, s, cc)			\
-  (void) fwrite(s, BYTE_BYTES, cc, fout)
+  IgnoreResult(fwrite(s, BYTE_BYTES, cc, fout))
 
 #define FILE_GET_CHARS(fin, s, cc)			\
-  (void) fread(s, BYTE_BYTES, cc, fin)
+  IgnoreResult(fread(s, BYTE_BYTES, cc, fin))
 
 /*
  * Macros for putting and getting integers as byte sequences.

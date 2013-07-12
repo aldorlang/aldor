@@ -6240,7 +6240,7 @@ gc0TypeId(AInt t, AInt fmt)
 			cc = ccoTypedefId(gc0VarId(gcFmtType, fmt));
 		break;
 	  case FOAM_Arr:
-	        if (fmt == emptyFormatSlot)
+	        if (fmt == emptyFormatSlot || fmt == FOAM_Nil)
 		        cc =  ccoTypeIdOf(gcFiPtr);
 		else 
 		        cc = ccoPostStar(gc0TypeId(fmt, emptyFormatSlot));

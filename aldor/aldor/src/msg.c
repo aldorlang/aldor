@@ -281,7 +281,7 @@ msgLoadHdr(FILE *file)
 	struct msgHdr	*hdr;
 
 	fseek(file, long0, SEEK_SET);
-        fread(&hdr0, sizeof(hdr0), 1, file);
+        IgnoreResult(fread(&hdr0, sizeof(hdr0), 1, file));
 
 	if (hdr0.magic != MSG0_MAGIC) return 0;
 
@@ -304,7 +304,7 @@ msgLoadSets(FILE *file, long offset, unsigned count)
 	set = msgSetNew(count);
 
 	for (i = 0; i < count; i++) {
-		fread(&set0, sizeof(set0), 1, file);
+		IgnoreResult(fread(&set0, sizeof(set0), 1, file));
 		set[i].setno    = set0.setno;
 		set[i].msgcount = set0.msgcount;
 		set[i].msg      = 0;
@@ -327,7 +327,7 @@ msgLoadMsgs(FILE *file, long offset, unsigned count)
 	msg = msgMsgNew(count);
 
 	for (i = 0; i < count; i++) {
-		fread(&msg0, sizeof(msg0), 1, file);
+		IgnoreResult(fread(&msg0, sizeof(msg0), 1, file));
 		msg[i].msgno    = msg0.msgno;
 		msg[i].length   = msg0.length;
 		msg[i].position = msg0.position;
@@ -340,8 +340,8 @@ static char *
 msgLoadText(FILE *file, long offset, unsigned count)
 {
 	char	*s;
-	fseek(file, offset, SEEK_SET);
+	IgnoreResult(fseek(file, offset, SEEK_SET));
 	s = strAlloc(count);
-	fread(s, sizeof(char), count, file);
+	IgnoreResult(fread(s, sizeof(char), count, file));
 	return s;
 }

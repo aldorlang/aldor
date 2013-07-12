@@ -2433,12 +2433,14 @@ tibupCollect(Stab stab, AbSyn absyn, TForm type)
 
 	for (tpossITER(tit,bposs); tpossMORE(tit); tpossSTEP(tit)){
 		TForm	t = tpossELT(tit);
+		TForm   retType;
+		SatMask result;
 #if EDIT_1_0_n1_05
 		t = tfFollow(t);
 #endif
 		if (tfIsMulti(t)) t = tfCrossFrMulti(t);
-		TForm retType = tfGenerator(t);
-		SatMask result = tfSat(tfSatBupMask(), retType, type);
+		retType = tfGenerator(t);
+		result = tfSat(tfSatBupMask(), retType, type);
 		if (tfSatSucceed(result)) {
 			cposs = tpossAdd1(cposs, retType);
 		}

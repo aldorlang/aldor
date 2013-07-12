@@ -246,16 +246,16 @@ testRangeInteractive()
 	while (1) {
 
 		printf("SFlo0= ");
-		scanf("%f", &sf0);
+		IgnoreResult(scanf("%f", &sf0));
 		printf("SFlo1= ");
-		scanf("%f", &sf1);
+		IgnoreResult(scanf("%f", &sf1));
 
 		testSFloInRange(&sf0, &sf1);
 
 		printf("DFlo0= ");
-		scanf("%lf", &df0);
+		IgnoreResult(scanf("%lf", &df0));
 		printf("DFlo1= ");
-		scanf("%lf", &df1);
+		IgnoreResult(scanf("%lf", &df1));
 
 		testDFloInRange(&df0, &df1);
 	}
@@ -273,7 +273,7 @@ testInteractive()
 	while (1) {
 
 		fprintf(dbOut, "\nEnter a single float: ");
-		scanf("%f", &sfl);
+		IgnoreResult(scanf("%f", &sfl));
 
 		fprintf(dbOut, "\ntrunc(%.*g) = ", 9, sfl);
 
@@ -289,7 +289,7 @@ testInteractive()
 		fprintf(dbOut, "Next: %.*g (eq = %d)\n", 9, sfl0, sfl == sfl0);
 
 		fprintf(dbOut, "\nEnter a double float: ");
-		scanf("%lf", &dfl);
+		IgnoreResult(scanf("%lf", &dfl));
 
 		fprintf(dbOut, "\ntrunc(%.*g) = ", 50, dfl);
 

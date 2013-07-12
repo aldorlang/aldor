@@ -3,6 +3,8 @@
 #include "genjava.h"
 #include "ostream.h"
 
+local void generate(String name);
+
 int main(int argc, char *argv[])
 {
 	osInit();
@@ -24,23 +26,33 @@ int main(int argc, char *argv[])
 
 	}
 
-	FILE *file  = fopen(argv[0], "r");
+	generate(argv[0]);
+
+	return 0;
+}
+
+local void
+generate(String name)
+{
+	FILE *file  = fopen(name, "r");
 	Foam f      = foamRdSExpr(file, NULL, NULL);
-	PathList pl = pathListFrString(argv[0]);
+	PathList pl = pathListFrString(name);
 	String lastElt = car(listLastCons(String)(pl));
+	JavaCode jc;
+	OStream o;
+	JavaCodePContext ctxt;
+
 	lastElt[strlen(lastElt)-3] = '\0';
-	JavaCode jc = gjGenJavaUnit(f, lastElt);
+	jc = gjGenJavaUnit(f, lastElt);
 	foamFree(f);
 
 	printf("/*...\n");
 	jcoPrint(stdout, jc);
 	printf("...*/\n");
-	OStream o = ostreamNewFrFile(stdout);
-	JavaCodePContext ctxt = jcoPContextNew(o, true);
+	o = ostreamNewFrFile(stdout);
+	ctxt = jcoPContextNew(o, true);
 	jcoWrite(ctxt, jc);
 	jcoPContextFree(ctxt);
 	jcoFree(jc);
-
-	return 0;
 }
 
