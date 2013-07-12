@@ -1,7 +1,7 @@
 #if BuildDemoLib
 #else
-#library AxlDem "axldem"
+#library DemoLib "axldem"
 #endif
 
-import from AxlDem;
-inline from AxlDem;
+import from DemoLib;
+inline from DemoLib;

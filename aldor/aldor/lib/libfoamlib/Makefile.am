@@ -11,7 +11,7 @@ other_files=al/libfoamlib.al
 aldorsrcdir = $(abs_top_srcdir)/aldor/src
 
 libfoamlib_a_SOURCES=$(libfoamlib_ALDOR)
-CFLAGS=-Wno-error -I$(aldorsrcdir)
+AM_CFLAGS=-Wno-error -I$(aldorsrcdir)
 
 noinst_LIBRARIES=libfoamlib.a
 
