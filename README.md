@@ -16,7 +16,7 @@ first. The dependencies are as follows: libfoam -> libfoamlib, libalgebra ->
 libaldor, libaxldem -> libaxllib.
 
 In order to clean a single target (library or program), run `make
-clean-$TARGET`, where $TARGET is the target you want to clean. E.g. `make
+clean-$TARGET`, where `$TARGET` is the target you want to clean. E.g. `make
 clean-aldor` removes the compiler program from the build directory and cleans
 up all the object files for the program. Running `make clean-libaldor` will do
 the same for libaldor.
