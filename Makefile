@@ -6,6 +6,9 @@ LEX = $(shell which flex)
 ifeq ($(LEX),)
 LEX = $(shell which lex)
 endif
+ifeq ($(LEX),)
+$(error lex or flex are not installed; cannot build aldor)
+endif
 
 # Find bison/yacc
 YACC = $(shell which bison)
@@ -14,6 +17,9 @@ YACC = $(shell which byacc)
 endif
 ifeq ($(YACC),)
 YACC = $(shell which yacc)
+endif
+ifeq ($(LEX),)
+$(error bison, byacc or yacc are not installed; cannot build aldor)
 endif
 
 export ALDORROOT := build
