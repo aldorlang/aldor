@@ -61,7 +61,7 @@ loop:
 include aldor/Rules.mk
 
 -include init
-init:
-	mkdir -p $(BINDIR)
-	mkdir -p $(INCDIR)
-	mkdir -p $(LIBDIR)
+init: $(BINDIR) $(INCDIR) $(LIBDIR)
+$(BINDIR): ; mkdir -p $@
+$(INCDIR): ; mkdir -p $@
+$(LIBDIR): ; mkdir -p $@

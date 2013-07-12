@@ -15,7 +15,7 @@ endif
 # :: Configurations.
 #########################################################
 
-# Default UNIX-like platform, let the environment decide CC and AR.
+# Default UNIX-like platform, let the environment decide CC.
 ifeq ($(CONFIG), unix)
 OBJEXT = .o
 LIBEXT = .a
@@ -46,7 +46,6 @@ endif
 # Mingw32 toolchain.
 ifeq ($(CONFIG), ming32)
 CC = i686-pc-mingw32-gcc
-AR = i686-pc-mingw32-ar
 
 OBJEXT = .o
 LIBEXT = .a
@@ -57,7 +56,6 @@ endif
 # Cygwin toolchain.
 ifeq ($(CONFIG), cygwin)
 CC = i686-pc-cygwin-gcc
-AR = i686-pc-cygwin-ar
 
 OBJEXT = .o
 LIBEXT = .a
