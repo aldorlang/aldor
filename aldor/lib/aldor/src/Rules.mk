@@ -98,7 +98,6 @@ $(LIBDIR)/aldor_%.ao: $(THIS)/aldor_%.as $(BINDIR)/aldor $(LIBDIR)/libaldor.a
 $(THIS)%.o: $(THIS)%.as $(BINDIR)/aldor $(BINDIR)/unicl $(aldor_HEADERS) $(libaldor_HEADERS)
 	$(BINDIR)/aldor $(AFLAGS) $<
 	$(AR) cr $(LIBDIR)/libaldor.al $(@:.o=.ao)
-	mv $(notdir $@) $@
 
 # Clean
 clean: clean-$(THIS)

@@ -226,7 +226,6 @@ $(LIBDIR)/libalgebra.a: $(libalgebra_COBJECTS)
 $(THIS)%.o: $(THIS)%.as $(BINDIR)/aldor $(BINDIR)/unicl $(aldor_HEADERS) $(INCDIR)/algebra.as $(INCDIR)/algebrauid.as
 	$(BINDIR)/aldor $(AFLAGS) -q1 $<
 	$(AR) cr $(LIBDIR)/libalgebra.al $(@:.o=.ao)
-	mv $(notdir $@) $@
 
 # Clean
 clean: clean-$(THIS)

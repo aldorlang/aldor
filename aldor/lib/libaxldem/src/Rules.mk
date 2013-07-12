@@ -31,7 +31,6 @@ $(LIBDIR)/libaxldem.a: $(libaxldem_COBJECTS)
 $(THIS)%.o: $(THIS)%.as $(BINDIR)/aldor $(BINDIR)/unicl $(aldor_HEADERS) $(INCDIR)/axldem.as
 	$(BINDIR)/aldor $(AFLAGS) $<
 	$(AR) cr $(LIBDIR)/libaxldem.al $(@:.o=.ao)
-	mv $(notdir $@) $@
 
 # Copy includes
 $(INCDIR)/axldem.as: $(THIS)axldem.as

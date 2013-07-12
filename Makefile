@@ -30,7 +30,7 @@ AFLAGS =			\
 	-Y $(dir $@)		\
 	-Q8 -Qinline-all	\
 	-fao=$(@:.o=.ao)	\
-	-fo
+	-fo=$@
 
 TARGETS =		\
 	$(BINDIR)/aldor	\

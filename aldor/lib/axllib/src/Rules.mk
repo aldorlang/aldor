@@ -66,7 +66,6 @@ $(LIBDIR)/libaxllib.a: $(libaxllib_COBJECTS)
 $(THIS)%.o: $(THIS)%.as $(BINDIR)/aldor $(BINDIR)/unicl $(aldor_HEADERS) $(INCDIR)/axllib.as
 	$(BINDIR)/aldor $(AFLAGS) $<
 	$(AR) cr $(LIBDIR)/libaxllib.al $(@:.o=.ao)
-	mv $(notdir $@) $@
 
 # Copy includes
 $(INCDIR)/axllib.as: $(THIS)axllib.as

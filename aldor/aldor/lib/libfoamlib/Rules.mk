@@ -42,7 +42,6 @@ $(LIBDIR)/libfoamlib.a: $(libfoamlib_COBJECTS)
 $(THIS)%.o: $(THIS)%.as $(BINDIR)/aldor $(BINDIR)/unicl $(aldor_HEADERS) $(INCDIR)/foamlib.as
 	$(BINDIR)/aldor $(AFLAGS) $<
 	$(AR) cr $(LIBDIR)/libfoamlib.al $(@:.o=.ao)
-	mv $(notdir $@) $@
 
 # Copy includes
 $(INCDIR)/foamlib.as: $(THIS)foamlib.as

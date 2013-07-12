@@ -34,7 +34,15 @@ $(THIS)%.o: $(THIS)%.as $(BINDIR)/aldor $(BINDIR)/unicl $(aldor_HEADERS)
 	$(BINDIR)/aldor $(AFLAGS) -Q9 -LRuntimeLib=libfoam_$*.al $<
 	$(RM) libfoam_$*.al
 	$(AR) cr $(LIBDIR)/libfoam.al $(@:.o=.ao)
-	mv $(notdir $@) $@
+
+# Specialised build rule for runtime
+$(THIS)runtime.o: $(THIS)runtime.as $(BINDIR)/aldor $(BINDIR)/unicl $(aldor_HEADERS)
+	$(AR) cr libfoam_runtime.al $(filter %.ao, $(^:.o=.ao))
+	$(BINDIR)/aldor $(AFLAGS) -Q9 -Wruntime -LRuntimeLib=libfoam_runtime.al $<
+	$(RM) libfoam_runtime.al
+	# Delete everything from libfoam and make one with just runtime.ao in it
+	$(RM) $(LIBDIR)/libfoam.al
+	$(AR) cr $(LIBDIR)/libfoam.al $(@:.o=.ao)
 
 # Clean
 clean: clean-libfoam
