@@ -37,10 +37,9 @@ Advanced method
 ---------------
 
 The directory `aldor` contains a more advanced build infrastructure based on
-the GNU build system: autoconf and automake. In order to use it, you will need
-these two tools, and run the command `autoreconf`. The command might complain
-about missing files, in which case you run `automake --add-missing`. After
-that, you can set up the build with `./configure` and start it with `make`.
+the GNU build system: libtool, autoconf and automake. In order to use it, you
+will need these tools, and run the command `./autogen.sh`. After that, you can
+set up the build with `./configure` and start it with `make`.
 
 Unlike the simple build above, the advanced build supports parallel builds
 with `make -jN` where N is the number of parallel tasks (generally: number of
