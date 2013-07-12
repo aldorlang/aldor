@@ -10,7 +10,7 @@ libfoam_COBJECTS := $(libfoam_ASOURCES:.as=.o)
 
 
 # C library
-$(LIBDIR)/libfoam.a: $(libfoam_COBJECTS)
+$(LIBDIR)/libfoam.a: $(libfoam_COBJECTS) $(libruntime_OBJECTS)
 	$(AR) cr $@ $^
 
 # Local aldor build rule

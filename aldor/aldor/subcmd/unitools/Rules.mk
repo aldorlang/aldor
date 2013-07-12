@@ -10,6 +10,7 @@ unicl_SOURCES =	\
 	../../src/format.c	\
 	../../src/list.c	\
 	../../src/opsys.c	\
+	../../src/ostream.c	\
 	../../src/stdc.c	\
 	../../src/store.c	\
 	../../src/strops.c	\

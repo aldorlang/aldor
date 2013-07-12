@@ -3,8 +3,8 @@ THIS := $(dir $(lastword $(MAKEFILE_LIST)))
 libfoamlib_ASOURCES :=	\
 	array.as	\
 	basic.as	\
-	boolean.as	\
-	char.as	\
+	bool.as	\
+	character.as	\
 	file.as	\
 	fname.as	\
 	foamcat.as	\
@@ -60,8 +60,8 @@ clean-$(THIS):
 # Depend
 $(THIS)array.o:		$(THIS)foamcat.o $(THIS)tuple.o $(THIS)sinteger.o $(THIS)parray.o $(THIS)
 $(THIS)basic.o:		$(THIS)lang.o $(THIS)machine.o
-$(THIS)boolean.o:	$(THIS)foamcat.o
-$(THIS)char.o:		$(THIS)foamcat.o
+$(THIS)bool.o:		$(THIS)foamcat.o
+$(THIS)character.o:	$(THIS)foamcat.o
 $(THIS)file.o:		$(THIS)foamcat.o $(THIS)fname.o
 $(THIS)fname.o:		$(THIS)foamcat.o $(THIS)parray.o $(THIS)string.o $(THIS)oslow.o
 $(THIS)foamcat.o:	$(THIS)basic.o
@@ -76,9 +76,9 @@ $(THIS)oslow.o:		$(THIS)foamcat.o $(THIS)parray.o $(THIS)pointer.o $(THIS)string
 $(THIS)parray.o:	$(THIS)foamcat.o $(THIS)sinteger.o
 $(THIS)partial.o:	$(THIS)foamcat.o $(THIS)pointer.o
 $(THIS)pointer.o:	$(THIS)foamcat.o
-$(THIS)segment.o:	$(THIS)foamcat.o $(THIS)boolean.o
+$(THIS)segment.o:	$(THIS)foamcat.o $(THIS)bool.o
 $(THIS)sfloat.o:	$(THIS)foamcat.o $(THIS)sinteger.o
 $(THIS)sinteger.o:	$(THIS)foamcat.o $(THIS)segment.o
-$(THIS)string.o:	$(THIS)foamcat.o $(THIS)char.o $(THIS)array.o
+$(THIS)string.o:	$(THIS)foamcat.o $(THIS)character.o $(THIS)array.o
 $(THIS)textwrit.o:	$(THIS)foamcat.o $(THIS)fname.o $(THIS)file.o $(THIS)array.o $(THIS)opsys.o
 $(THIS)tuple.o:		$(THIS)foamcat.o

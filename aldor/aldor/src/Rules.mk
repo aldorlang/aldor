@@ -40,9 +40,11 @@ aldor_SOURCES =		\
 	doc.c	\
 	dword.c	\
 	emit.c	\
+	fbox.c	\
 	file.c	\
 	file_t.c	\
 	fint.c	\
+	fintphase.c	\
 	flatten.c	\
 	float_t.c	\
 	flog.c	\
@@ -51,10 +53,12 @@ aldor_SOURCES =		\
 	fname.c	\
 	fname_t.c	\
 	foam.c	\
-	foamopt.c	\
 	foam_c.c	\
 	foam_cfp.c	\
 	foam_i.c	\
+	foamopt.c	\
+	foamsig.c	\
+	forg.c	\
 	format.c	\
 	format_t.c	\
 	fortran.c	\
@@ -73,6 +77,7 @@ aldor_SOURCES =		\
 	gf_reference.c	\
 	gf_rtime.c	\
 	gf_seq.c	\
+	gf_syme.c	\
 	include.c	\
 	inlutil.c	\
 	lib.c	\
@@ -106,6 +111,7 @@ aldor_SOURCES =		\
 	opsys_t.c	\
 	optfoam.c	\
 	opttools.c	\
+	ostream.c	\
 	output.c	\
 	parseby.c	\
 	path.c	\
@@ -122,10 +128,10 @@ aldor_SOURCES =		\
 	srcpos.c	\
 	stab.c	\
 	stdc.c	\
-	store.c	\
 	store1_t.c	\
 	store2_t.c	\
 	store3_t.c	\
+	store.c	\
 	strops.c	\
 	strops_t.c	\
 	symbol.c	\
@@ -141,14 +147,16 @@ aldor_SOURCES =		\
 	textansi.c	\
 	textcolour.c	\
 	texthp.c	\
+	tfcond.c	\
 	tform.c	\
 	tfsat.c	\
-	timer.c	\
-	tinfer.c	\
 	ti_bup.c	\
 	ti_decl.c	\
+	timer.c	\
+	tinfer.c	\
 	ti_sef.c	\
 	ti_tdn.c	\
+	ti_top.c	\
 	token.c	\
 	tposs.c	\
 	tqual.c	\
@@ -194,6 +202,7 @@ libruntime_SOURCES =	\
 	format.c	\
 	list.c	\
 	opsys.c	\
+	ostream.c	\
 	output.c	\
 	stdc.c	\
 	store.c	\
@@ -205,10 +214,6 @@ libruntime_SOURCES =	\
 
 libruntime_SOURCES := $(addprefix $(THIS), $(libruntime_SOURCES))
 libruntime_OBJECTS := $(libruntime_SOURCES:.c=.o)
-
-$(LIBDIR)/libruntime.a: $(libruntime_OBJECTS)
-	mkdir -p $(dir $@)
-	$(AR) cr $@ $^
 
 
 clean: clean-$(THIS)

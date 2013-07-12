@@ -55,7 +55,7 @@ $(BINDIR)/msgcat: $(msgcat_OBJECTS)
 	mkdir -p $(dir $@)
 	$(LINK.c) $^ -o $@
 
-%.h: %.msg $(BINDIR)/msgcat
+%.c %.h: %.msg $(BINDIR)/msgcat
 	cd $(dir $@); $(CURDIR)/$(BINDIR)/msgcat -h -c $(notdir $*)
 
 clean: clean-msgcat

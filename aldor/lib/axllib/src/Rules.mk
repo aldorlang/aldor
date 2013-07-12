@@ -4,17 +4,17 @@ libaxllib_ASOURCES :=	\
 	array.as	\
 	axlcat.as	\
 	basic.as	\
-	boolean.as	\
+	axl_boolean.as	\
 	bpower.as	\
-	byte.as	\
-	char.as	\
+	axl_byte.as	\
+	axl_char.as	\
 	complex.as	\
 	debug.as	\
 	dfloat.as	\
 	efuns.as	\
 	except.as	\
 	file.as	\
-	float.as	\
+	axl_float.as	\
 	fmtout.as	\
 	fname.as	\
 	format.as	\
@@ -94,14 +94,14 @@ $(THIS)ieeectl.o:	\
 	$(THIS)dfloat.o
 $(THIS)basic.o:	\
 	$(THIS)machine.o
-$(THIS)boolean.o:	\
+$(THIS)axl_boolean.o:	\
 	$(THIS)lang.o	\
 	$(THIS)axlcat.o
 $(THIS)bpower.o:	\
 	$(THIS)sinteger.o
-$(THIS)byte.o:	\
+$(THIS)axl_byte.o:	\
 	$(THIS)sinteger.o
-$(THIS)char.o:	\
+$(THIS)axl_char.o:	\
 	$(THIS)integer.o	\
 	$(THIS)segment.o
 $(THIS)complex.o:	\
@@ -126,8 +126,8 @@ $(THIS)file.o:	\
 	$(THIS)pointer.o	\
 	$(THIS)array.o	\
 	$(THIS)fname.o	\
-	$(THIS)char.o
-$(THIS)float.o:	\
+	$(THIS)axl_char.o
+$(THIS)axl_float.o:	\
 	$(THIS)format.o	\
 	$(THIS)except.o	\
 	$(THIS)integer.o	\
@@ -138,7 +138,7 @@ $(THIS)fmtout.o:	\
 $(THIS)fname.o:	\
 	$(THIS)oslow.o
 $(THIS)format.o:	\
-	$(THIS)char.o	\
+	$(THIS)axl_char.o	\
 	$(THIS)dfloat.o	\
 	$(THIS)textwrit.o
 $(THIS)fprint.o:	\
@@ -188,7 +188,7 @@ $(THIS)pkarray.o:	\
 	$(THIS)sinteger.o	\
 	$(THIS)axlcat.o
 $(THIS)pointer.o:	\
-	$(THIS)boolean.o
+	$(THIS)axl_boolean.o
 $(THIS)ratio.o:	\
 	$(THIS)langx.o	\
 	$(THIS)string.o	\
@@ -197,7 +197,7 @@ $(THIS)ratio.o:	\
 $(THIS)ref.o:	\
 	$(THIS)basic.o
 $(THIS)segment.o:	\
-	$(THIS)boolean.o	\
+	$(THIS)axl_boolean.o	\
 	$(THIS)gener.o
 $(THIS)sfloat.o:	\
 	$(THIS)bpower.o	\
@@ -210,7 +210,7 @@ $(THIS)sort.o:	\
 	$(THIS)list.o
 $(THIS)string.o:	\
 	$(THIS)array.o	\
-	$(THIS)char.o	\
+	$(THIS)axl_char.o	\
 	$(THIS)tuple.o	\
 	$(THIS)axlcat.o
 $(THIS)table.o:	\
