@@ -21,4 +21,7 @@ clean-aldor` removes the compiler program from the build directory and cleans
 up all the object files for the program. Running `make clean-libaldor` will do
 the same for libaldor.
 
+This version of Aldor was tested on Linux 64 bit and Cygwin 32 bit. Users of
+Mac OS X, FreeBSD and other platforms are welcome to report their issues.
+
 See the wiki for more information.
