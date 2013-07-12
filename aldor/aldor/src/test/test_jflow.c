@@ -23,12 +23,6 @@ testJFlow1()
 {
 	Foam body;
 
-	jflowCatDebug = 1;
-	jflowDfDebug = 1;
-	jflowDfiDebug = 1;
-	jflowGoDebug = 1;
-	jflowDmDebug = 1;
-
 	body = foamNewSeq(foamNewSet(foamNewLoc(int0), foamNewSInt(int0)),
 			  foamNewLabel(int0),
 			  foamNewIf(foamNewPCall(FOAM_Proto_C, FOAM_NOp, foamNewGlo(int0), NULL), 1),

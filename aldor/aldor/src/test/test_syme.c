@@ -25,7 +25,6 @@ testSymeSExpr()
 	AbSyn absyn = abNewSequenceL(sposNone, code);
 
 	initFile();
-	stabDebug = 1;
 	Stab stab = stabFile();
 	
 	abPutUse(absyn, AB_Use_NoValue);
@@ -42,6 +41,5 @@ testSymeSExpr()
 	SExpr sx = symeSExprAList(syme);
 	afprintf(dbOut, "%pSExpr", sx);
 	
-	stabDebug = 0;
 	finiFile();
 }
