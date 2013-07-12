@@ -177,7 +177,9 @@ aldor_HEADERS =	\
 	optcfg.h	\
 	aldor.conf
 
-$(aldor_OBJECTS): $(THIS)comsgdb.h
+aldor_BUILT_SOURCES := $(THIS)comsgdb.h $(THIS)comsgdb.c
+
+$(aldor_OBJECTS): $(aldor_BUILT_SOURCES)
 
 aldor_HEADERS := $(addprefix $(INCDIR)/, $(aldor_HEADERS))
 .PRECIOUS: $(aldor_HEADERS)
@@ -216,8 +218,9 @@ libruntime_SOURCES := $(addprefix $(THIS), $(libruntime_SOURCES))
 libruntime_OBJECTS := $(libruntime_SOURCES:.c=.o)
 
 
-clean: clean-$(THIS)
-clean-$(THIS):
+clean: clean-aldor
+clean-aldor:
 	$(RM) $(libruntime_OBJECTS)
 	$(RM) $(aldor_OBJECTS)
+	$(RM) $(aldor_BUILT_SOURCES)
 	$(RM) $(BINDIR)/aldor $(LIBDIR)/libruntime.a

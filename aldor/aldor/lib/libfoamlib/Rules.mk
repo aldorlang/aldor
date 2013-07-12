@@ -50,8 +50,8 @@ $(INCDIR)/foamlib.as: $(THIS)foamlib.as
 	cp $< $@
 
 # Clean
-clean: clean-$(THIS)
-clean-$(THIS):
+clean: clean-libfoamlib
+clean-libfoamlib:
 	$(RM) $(libfoamlib_AOBJECTS)
 	$(RM) $(libfoamlib_COBJECTS)
 	$(RM) $(libfoamlib_ASOURCES:.as=.c)
