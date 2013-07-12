@@ -1,6 +1,5 @@
 #include "axllib.as"
---#library DemoLib "axldem"
-import from DemoLib;
+#include "axldem.as"
 
 NonNegativeInteger: Join(Monoid, OrderedAbelianMonoidSup) with {
 	subtractIfCan: (%, %) -> Partial %;
