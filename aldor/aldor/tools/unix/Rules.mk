@@ -1,5 +1,9 @@
 THIS := $(dir $(lastword $(MAKEFILE_LIST)))
 
+#############################################################################
+# :: YACC preprocessor
+#############################################################################
+
 zacc_SOURCES =	\
 	zaccscan.c	\
 	zaccgram.c	\
@@ -23,8 +27,8 @@ $(BINDIR)/zacc: $(zacc_OBJECTS)
 	$(LEX) -o$@ $<
 
 
-clean: clean-$(THIS)
-clean-$(THIS):
+clean: clean-zacc
+clean-zacc:
 	$(RM) $(zacc_OBJECTS)
 	$(RM) $(zacc_BUILT_SOURCES)
 	$(RM) $(BINDIR)/zacc
@@ -35,3 +39,27 @@ $(THIS)zaccgram.c: $(THIS)zaccgram.y
 	$(YACC) -d -o $@ $<
 
 $(THIS)zaccscan.o: $(THIS)zaccgram.h
+
+
+
+#############################################################################
+# :: Message catalog generator
+#############################################################################
+
+msgcat_SOURCES =	\
+	msgcat.c
+
+msgcat_OBJECTS := $(addprefix $(THIS), $(msgcat_SOURCES:.c=.o))
+
+$(BINDIR)/msgcat: $(msgcat_OBJECTS)
+	mkdir -p $(dir $@)
+	$(LINK.c) $^ -o $@
+
+%.h: %.msg $(BINDIR)/msgcat
+	cd $(dir $@); $(CURDIR)/$(BINDIR)/msgcat -h -c $(notdir $*)
+
+clean: clean-msgcat
+clean-msgcat:
+	$(RM) $(msgcat_OBJECTS)
+	$(RM) $(msgcat_BUILT_SOURCES)
+	$(RM) $(BINDIR)/msgcat

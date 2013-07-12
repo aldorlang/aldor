@@ -159,7 +159,8 @@ aldor_SOURCES =		\
 	xfloat.c	\
 	xfloat_t.c
 
-aldor_OBJECTS := $(addprefix $(THIS), $(aldor_SOURCES:.c=.o))
+aldor_SOURCES := $(addprefix $(THIS), $(aldor_SOURCES))
+aldor_OBJECTS := $(aldor_SOURCES:.c=.o)
 
 aldor_HEADERS =	\
 	cconfig.h	\
@@ -167,6 +168,8 @@ aldor_HEADERS =	\
 	foamopt.h	\
 	optcfg.h	\
 	aldor.conf
+
+$(aldor_OBJECTS): $(THIS)comsgdb.h
 
 aldor_HEADERS := $(addprefix $(INCDIR)/, $(aldor_HEADERS))
 .PRECIOUS: $(aldor_HEADERS)
@@ -200,7 +203,8 @@ libruntime_SOURCES =	\
 	util.c	\
 	xfloat.c
 
-libruntime_OBJECTS := $(addprefix $(THIS), $(libruntime_SOURCES:.c=.o))
+libruntime_SOURCES := $(addprefix $(THIS), $(libruntime_SOURCES))
+libruntime_OBJECTS := $(libruntime_SOURCES:.c=.o)
 
 $(LIBDIR)/libruntime.a: $(libruntime_OBJECTS)
 	mkdir -p $(dir $@)
