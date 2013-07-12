@@ -223,4 +223,4 @@ clean-aldor:
 	$(RM) $(libruntime_OBJECTS)
 	$(RM) $(aldor_OBJECTS)
 	$(RM) $(aldor_BUILT_SOURCES)
-	$(RM) $(BINDIR)/aldor $(LIBDIR)/libruntime.a
+	$(RM) $(BINDIR)/aldor

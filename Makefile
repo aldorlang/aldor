@@ -34,7 +34,6 @@ AFLAGS =			\
 
 TARGETS =		\
 	$(BINDIR)/aldor	\
-	$(LIBDIR)/libruntime.a	\
 	$(LIBDIR)/libaldor.a	\
 	$(LIBDIR)/libalgebra.a	\
 	$(LIBDIR)/libaxllib.a	\
