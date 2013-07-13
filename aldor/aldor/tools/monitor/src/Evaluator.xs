@@ -80,9 +80,7 @@ setactions ()
   for (int i = 0; (call = allowed_calls[i].name); i++)
     for (int j = 0; (nest = calls[j].name); j++)
       if (!strcmp (call, nest))
-        {
-          calls[j].access = allowed_calls[i].access;
-        }
+        calls[j].access = allowed_calls[i].access;
 
   return true;
 }
@@ -94,12 +92,12 @@ struct auto_fd
   typedef int fd_type;
 
   explicit auto_fd (fd_type fd = -1) throw ()
-  : fd_ (fd), do_throw (false)
+    : fd_ (fd), do_throw (false)
   {
   }
   
   auto_fd (auto_fd &a) throw ()
-  : fd_ (a.release ()), do_throw (a.throws ())
+    : fd_ (a.release ()), do_throw (a.throws ())
   {
   }
   
@@ -206,43 +204,6 @@ newSVpvv (const char *fmt, ...)
   return newSVpvn (buf, len);
 }
 
-#ifdef HAVE_VALGRIND
-#include <valgrind/memcheck.h>
-static inline void
-memcheck ()
-{
-#ifdef __x86_64__
-  {
-    unsigned int _qzz_res;
-    {
-      volatile unsigned long _zzq_args[6];
-      volatile unsigned long _zzq_result;
-      _zzq_args[0] = (unsigned long) (VG_USERREQ__DO_LEAK_CHECK);
-      _zzq_args[1] = (unsigned long) (0);
-      _zzq_args[2] = (unsigned long) (0);
-      _zzq_args[3] = (unsigned long) (0);
-      _zzq_args[4] = (unsigned long) (0);
-      _zzq_args[5] = (unsigned long) (0);
-      asm volatile ("rolq $3,  %%rdi ; rolq $13, %%rdi\n\t"
-                    "rolq $61, %%rdi ; rolq $51, %%rdi\n\t"
-                    "xchgq %%rbx, %%rbx"
-                    : "=d" (_zzq_result)
-                    : "a" (&_zzq_args[0]), "0" (0)
-                    : "cc", "memory" );
-      _qzz_res = _zzq_result;
-    }
-  }
-#else
-  VALGRIND_DO_LEAK_CHECK;
-#endif
-}
-#else
-static inline void
-memcheck ()
-{
-}
-#endif // HAVE_VALGRIND
-
 namespace cpu
 {
   enum reg
@@ -270,48 +231,13 @@ namespace cpu
   };
 }
 
-#ifdef __GNUC__
-#include <cxxabi.h>
-
-static char *
-demangle (const char * const name)
-{
-  int st;
-  char *p = abi::__cxa_demangle (name, 0, 0, &st);
-  
-  switch (st)
-    {
-    case 0:
-      return p;
-    case -1:
-      throw std::runtime_error ("demangle: A memory allocation failure occurred.");
-    case -2:
-      throw std::runtime_error ("demangle: Not a valid name under the GCC C++ ABI mangling rules.");
-    case -3:
-      throw std::runtime_error ("demangle: One of the arguments is invalid.");
-    default:
-      throw std::runtime_error ("demangle: Unexpected demangle status.");
-    }
-}
-#else
-static const char *
-demangle (const char * const name)
-{
-  return "No demangling routines known for this compiler. Please report";
-}
-#endif
-
-template<typename T>
-static const char *
-type_desc (T v)
-{
-  return demangle (typeid (T).name ());
-}
-
 struct resources
 {
-  resources (unsigned int max_time, rlim_t max_open_files, rlim_t max_memory, rlim_t max_filesize)
-  : time (max_time)
+  resources (unsigned int max_time,
+             rlim_t max_open_files,
+             rlim_t max_memory,
+             rlim_t max_filesize)
+    : time (max_time)
   {
     open_files.rlim_max = max_open_files;
     open_files.rlim_cur = max_open_files;
@@ -319,17 +245,6 @@ struct resources
     memory.rlim_cur     = max_memory * mebi;
     filesize.rlim_max   = max_filesize * mebi;
     filesize.rlim_cur   = max_filesize * mebi;
-  }
-
-  resources (resources const &other)
-  : time (other.time)
-  {
-    open_files.rlim_max = other.open_files.rlim_max;
-    open_files.rlim_cur = other.open_files.rlim_cur;
-    memory.rlim_max     = other.memory.rlim_max;
-    memory.rlim_cur     = other.memory.rlim_cur;
-    filesize.rlim_max   = other.filesize.rlim_max;
-    filesize.rlim_cur   = other.filesize.rlim_cur;
   }
 
   void enforce () const
@@ -351,7 +266,6 @@ static int
 checked (const char * const name, const int ret, const char * const location)
 {
   if (ret == -1)
-//    throw std::runtime_error ("%s: Error code %d (%s)", name, errno, strerror (errno));
     throw std::runtime_error (strerror (errno) + std::string (" from ") + location);
 
   return ret;
@@ -371,7 +285,7 @@ struct executable
 
   template<size_t argc>
   executable (char * const (&argv)[argc], resources const &limits)
-  : name (argv[0]), argv (argv), argc (argc), limits (limits)
+    : name (argv[0]), argv (argv), argc (argc), limits (limits)
   {
   }
   
@@ -460,14 +374,11 @@ executable::execute (char const *input, bool traced, bool block) const
   if (pipe (pipes) < 0)
     return 0;
 
-#define READ    0
-#define WRITE   1
+  static int const READ  = 0;
+  static int const WRITE = 1;
 
   auto_fd readpipe (pipes[READ]);
   auto_fd writepipe (pipes[WRITE]);
-
-#undef READ
-#undef WRITE
 
   if ((child = fork ()) == -1)
     {
@@ -592,8 +503,8 @@ struct Evaluator
   // Our perl object
   HV *self;
 
-  Evaluator (const char * const _root, uid_t _uid, gid_t _gid)
-  : self (0), root (_root), uid (_uid), gid (_uid), initialised (0)
+  Evaluator (const char * const root, uid_t uid, gid_t gid)
+    : self (0), root (root), uid (uid), gid (uid), initialised (0)
   {
   }
 
@@ -612,17 +523,12 @@ struct Evaluator
     initialised = true;
   }
 
-  bool inited () const
-  {
-    return initialised;
-  }
-
   SV *eval (char const *code, char const *line);
 
 private:
   // Can't copy Evaluator objects
   Evaluator (Evaluator const &other)
-  : self (0), root (0), uid (0), gid (0), initialised (0)
+    : self (0), root (0), uid (0), gid (0), initialised (0)
   {
   }
 
@@ -631,6 +537,7 @@ private:
   uid_t const uid;
   gid_t const gid;
 
+public:
   bool initialised;
 };
 
@@ -683,7 +590,7 @@ SV *
 new (const char *klass)
     CODE:
 {
-    if (!eval->inited ())
+    if (!eval->initialised)
       {
         warn ("Evaluator::new (): The evaluator was not initialised; initialising now");
         eval->setup ();
@@ -711,7 +618,7 @@ new (const char *klass)
 void
 Evaluator::DESTROY ()
     CODE:
-    croak ("Evaluator::DESTROY (): Illegally attempted to destroy the C++ evaluator");
+    croak ("Evaluator::DESTROY (): Illegally attempted to destroy the evaluator");
 
 SV *
 Evaluator::eval (char *code, char *line)
