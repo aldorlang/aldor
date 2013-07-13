@@ -7,20 +7,26 @@ use JSON::XS;
 
 $Data::Dumper::Indent = 1;
 $Data::Dumper::Terse = 1;
+$Data::Dumper::Sortkeys = 1;
 
 my $log = retrieve 'evaluator.pst';
 # transform a bit for readability
-my @log = map { {
-   # Time stamp.
-   time => $log->{$_}[0],
-   # Processing time.
-   proc => $log->{$_}[1],
-   # Client host.
-   host => $log->{$_}[2],
-   # REPL line.
-   line => $log->{$_}[3],
+my @log = map { my $code = $_; {
    # Source code.
-   code => [split "\n", $_],
+   code => [split "\n", $code],
+
+   # REPL lines
+   reqs => [map { {
+      # REPL line.
+      line => $_,
+
+      # Time stamp.
+      time => $log->{$code}{$_}->[0],
+      # Processing time.
+      proc => $log->{$code}{$_}->[1],
+      # Client host.
+      host => $log->{$code}{$_}->[2],
+   } } keys %{ $log->{$code} }],
 } } keys %$log;
 
 print Dumper \@log;

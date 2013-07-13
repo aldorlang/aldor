@@ -29,7 +29,10 @@ sub evaluator {
    $aldor
 }
  
-my $httpd = AnyEvent::HTTPD->new (port => 9090);
+
+###################################################
+# :: Logging code
+###################################################
 
 # read log
 my $log = -f "evaluator.pst" ? retrieve 'evaluator.pst' : {};
@@ -38,6 +41,28 @@ open my $pst, '>', 'evaluator.pst' or die "evaluator.pst: $!";
 # write back the log
 store_fd $log, $pst;
 $pst->flush;
+
+sub log_entry {
+   my ($proc, $host, $code, $line) = @_;
+
+   # Write log entry.
+   $log->{$code}->{$line} = [time, $proc, $host];
+
+   # reset file to 0 bytes
+   truncate $pst, 0;
+   seek $pst, 0, SEEK_SET;
+
+   # store new log to disk
+   store_fd $log, $pst;
+   $pst->flush;
+}
+
+
+###################################################
+# :: HTTP responder
+###################################################
+
+my $httpd = AnyEvent::HTTPD->new (port => 9090);
 
 $httpd->reg_cb (
    '/' => sub {
@@ -63,14 +88,7 @@ EOF
       # Check how long it took.
       my $proc = gettimeofday - $start;
 
-      # Write log entry.
-      $log->{$code} = [time, $proc, $req->client_host, $line];
-      # reset file to 0 bytes
-      truncate $pst, 0;
-      seek $pst, 0, SEEK_SET;
-      # write new log
-      store_fd $log, $pst;
-      $pst->flush;
+      log_entry $proc, $req->client_host, $code, $line;
 
       printf "[%s] Request from %s:%d took %.4fs\n",
          (scalar localtime time),
