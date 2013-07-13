@@ -1,5 +1,6 @@
 --
 -- sieve.as: A prime number sieve to count primes <= n.
+-- Usage: Run the code "doit()" in the REPL below.
 --
 # include "aldor"
 # include "aldorio"
