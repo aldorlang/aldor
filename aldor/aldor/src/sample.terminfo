@@ -38,10 +38,11 @@
 # It also encloses every warning with <I> and </I> and noet messages
 # with <em> and </em>. We demonstrate sloppy termination of values.
 [html]
-   error:<B>:</B>:
-   fatal:<b>:</b>
-   warning:<I>:</I>
-   note:<em>:</em>
+   remark:<span class="remark">:</span>
+   note:<span class="note">:</span>
+   warning:<span class="warning">:</span>
+   error:<span class="error">:</span>:
+   fatal:<span class="fatal">:</span>
 
 #----------------------------------------------------------------------------
 # This terminal defines colourings using ANSI escapes for a standard xterm.
