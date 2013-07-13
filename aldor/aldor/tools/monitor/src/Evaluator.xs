@@ -17,7 +17,6 @@
 #include <sys/reg.h>
 #include <sys/ptrace.h>
 #include <sys/prctl.h>
-#include <sys/capability.h>
 #include <linux/ptrace.h>
 #include <linux/securebits.h>
 #include <unistd.h>

@@ -75,7 +75,7 @@ src/syscalls$(ARCH).C: src/getsyscalls
 
 eval/bin/Evaluator.so: Evaluator.o syscalls$(ARCH).o
 	echo "  LD  $@"
-	${CXX} -shared -lcap ${OPTS} ${CXXFLAGS} $+ -o $@ ${PERLLIB}
+	${CXX} -shared ${OPTS} ${CXXFLAGS} $+ -o $@ ${PERLLIB}
 
 eval/bin/evaluator: src/evaluator
 	cp $< $@
