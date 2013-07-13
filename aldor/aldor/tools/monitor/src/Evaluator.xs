@@ -305,9 +305,9 @@ static executable const program (program_args, limits);
 
 template<int N>
 static void
-filter_output (char (&buf)[N], char * &bufptr)
+filter_output (uint8_t (&buf)[N], uint8_t *&bufptr)
 {
-  char utf8code[N] = { 0 };
+  uint8_t utf8code[N] = { 0 };
   uint32_t utf32print[N];
   uint32_t *utf32printptr = utf32print;
 
@@ -322,7 +322,7 @@ filter_output (char (&buf)[N], char * &bufptr)
 
   utf::conv32_8 (utf32print, utf32printptr, utf8code);
   bufptr = buf;
-  while (char c = utf8code[bufptr - buf])
+  while (uint8_t c = utf8code[bufptr - buf])
     *bufptr++ = c;
   *bufptr = 0;
 }
@@ -333,8 +333,8 @@ getoutput (auto_fd fd)
   int chunksize = 10;
   ssize_t bytes = chunksize;
 
-  char buf[30000];
-  char *bufptr = buf;
+  uint8_t buf[30000];
+  uint8_t *bufptr = buf;
 
   pollfd fds[] = { { fd.get (), POLLIN, 0 } };
   
@@ -352,7 +352,7 @@ getoutput (auto_fd fd)
 
   checked ("close", fd.close ());
 
-  char *valid_until = utf::valid_until (buf, bufptr);
+  uint8_t *valid_until = utf::valid_until (buf, bufptr);
   if (bufptr - valid_until)
     {
       filter_output (buf, valid_until);
@@ -360,7 +360,8 @@ getoutput (auto_fd fd)
     }
   
   filter_output (buf, bufptr);
-  return newSVpvn (buf, bufptr - buf <= 30000 ? bufptr - buf : 30000);
+  return newSVpvn (reinterpret_cast<char const *> (buf),
+                   bufptr - buf <= 30000 ? bufptr - buf : 30000);
 }
 
 SV *
