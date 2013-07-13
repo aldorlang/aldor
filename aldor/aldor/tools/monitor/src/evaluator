@@ -53,7 +53,7 @@ $line
 #quit
 EOF
 
-      $log->{$code} = [time, $req->client_host];
+      $log->{$code} = [$line, time, $req->client_host];
       # reset file to 0 bytes
       truncate $pst, 0;
       seek $pst, 0, SEEK_SET;

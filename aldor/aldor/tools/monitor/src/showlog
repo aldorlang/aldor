@@ -13,6 +13,7 @@ my $log = retrieve 'evaluator.pst';
 my @log = map { {
    time => $log->{$_}[0],
    host => $log->{$_}[1],
+   line => $log->{$_}[2],
    code => [split "\n", $_],
 } } keys %$log;
 
