@@ -14,6 +14,7 @@ ostreamNewFrFile(FILE *file)
 	OStream s = (OStream) stoAlloc(OB_Other, sizeof(*s));
 	s->ops = &ostreamFileOps;
 	s->data = file;
+	return s;
 }
 
 void 
@@ -78,6 +79,7 @@ ostreamNewFrDevNull()
 {
 	OStream s = (OStream) stoAlloc(OB_Other, sizeof(*s));
 	s->ops = &ostreamDevNullOps;
+	return s;
 }
 
 local void 
@@ -112,6 +114,7 @@ ostreamNewFrBuffer(Buffer b)
 	OStream s = (OStream) stoAlloc(OB_Other, sizeof(*s));
 	s->ops = &ostreamBufferOps;
 	s->data = b;
+	return s;
 }
 
 local void 
