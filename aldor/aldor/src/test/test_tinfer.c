@@ -272,8 +272,6 @@ testTinfer3()
 	testIntEqual("Inferred X", 1, listLength(Syme)(symes));
 	Syme syme = car(symes);
 	tf = symeType(syme);
-	tfImportDebug = 1;
-	tfDebug = 1;
 	symes = tfGetDomImports(tf);
 	symeListPrintDb(symes);
 	finiFile();
@@ -354,9 +352,9 @@ testConditionalAdd()
 	titfDebug = 0;
 	titfOneDebug = 0;
 	tfDebug = 0;
-	tcDebug = 1;
-	tipAddDebug = 1;
-	tfImportDebug = 1;
+	tcDebug = 0;
+	tipAddDebug = 0;
+	tfImportDebug = 0;
 
 	Stab stab = stabFile();
 	

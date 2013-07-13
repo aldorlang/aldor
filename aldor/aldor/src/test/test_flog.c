@@ -31,17 +31,14 @@ local void testBBCopy()
 	prog->foamProg.nLabels = 2;
 	prog->foamProg.levels = foamNewEmptyDEnv();
 	foamOptInfo(prog) = inlInfoNew(NULL, prog, NULL, false);
-	foamPrintDb(prog);
 
 	FlowGraph flog;
 	
 	flog = flogFrProg(prog, FLOG_MultipleExits);
-	flogPrintDb(flog);
+
 	testTrue("Blocks", flogBlockC(flog) > 0);
 	BBlock entry = flog->block0;
 	testIntEqual("exits", 0, bbExitC(entry));
-	foamPrintDb(bodyCopy);
-	foamPrintDb(entry->code);
 	testTrue("code preserved..", foamEqual(bodyCopy, entry->code));
 	
 	cmdDebugReset();

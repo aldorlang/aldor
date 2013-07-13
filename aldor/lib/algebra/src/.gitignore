@@ -2,3 +2,4 @@
 *.c
 *.dep
 *.dep_tmp
+/Makefile.in
