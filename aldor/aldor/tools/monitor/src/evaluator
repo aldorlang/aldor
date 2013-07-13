@@ -1,0 +1,76 @@
+#!/usr/bin/env perl
+
+# Copyright © 2007 Pippijn van Steenhoven
+
+use common::sense;
+use lib "eval/bin";
+
+use Evaluator {
+   username => "nobody",
+   chroot   => "eval/rt" . $Evaluator::BITS,
+};
+
+use Fcntl ':seek';
+use Storable 'store_fd', 'retrieve';
+use AnyEvent::HTTPD;
+use JSON::XS;
+use IO::Handle;
+
+my $aldor;
+sub evaluator {
+   if (not $aldor) {
+      Evaluator::setup;
+      $ENV{ALDOR_TERM} = "html";
+      $ENV{ALDOR_TERMINFO} = "include/sample.terminfo";
+      $aldor = new Evaluator;
+   }
+
+   $aldor
+}
+ 
+my $httpd = AnyEvent::HTTPD->new (port => 9090);
+
+# read log
+my $log = -f "evaluator.pst" ? retrieve 'evaluator.pst' : {};
+# open log file
+open my $pst, '>', 'evaluator.pst' or die "evaluator.pst: $!";
+# write back the log
+store_fd $log, $pst;
+$pst->flush;
+
+$httpd->reg_cb (
+   '/' => sub {
+      my ($httpd, $req) = @_;
+
+      my $aldor = evaluator;
+
+      my $code = $req->parm ("code");
+      my $line = $req->parm ("line");
+
+      $line = <<EOF;
+#include "tryaldor"
+$line
+#quit
+EOF
+
+      $log->{$code} = [time, $req->client_host];
+      # reset file to 0 bytes
+      truncate $pst, 0;
+      seek $pst, 0, SEEK_SET;
+      # write new log
+      store_fd $log, $pst;
+      $pst->flush;
+
+      my $result = $aldor->eval ($code, $line);
+      $result =~ s/Aldor\n\nCopyright.*\n\n//;
+
+      $req->respond ([
+         200, 'OK', {
+            'Content-Type' => 'text/plain',
+            'Access-Control-Allow-Origin' => 'http://xinutec.org',
+         }, $result
+      ]);
+   }
+);
+
+$httpd->run

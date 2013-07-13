@@ -1,0 +1,19 @@
+#!/usr/bin/env perl
+
+use common::sense;
+use Storable;
+use Data::Dumper;
+use JSON::XS;
+
+$Data::Dumper::Indent = 1;
+$Data::Dumper::Terse = 1;
+
+my $log = retrieve 'evaluator.pst';
+# transform a bit for readability
+my @log = map { {
+   time => $log->{$_}[0],
+   host => $log->{$_}[1],
+   code => [split "\n", $_],
+} } keys %$log;
+
+print Dumper \@log;

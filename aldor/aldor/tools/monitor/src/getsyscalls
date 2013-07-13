@@ -1,0 +1,13 @@
+#!/bin/sh
+
+echo '#include <cstdio>'
+echo '#include "syscalls.h"'
+echo
+echo 'bool syscall::entering;'
+echo
+echo 'syscall calls[] = {'
+echo '#include <asm/unistd.h>' | g++ -E -dM - | grep '#define __NR_\w\+ [[:digit:]]\+' | sed -e 's/#define //;s/__NR_//g' | sort -nk2 | uniq -f1 | sed -r 's/(\w+) ([[:digit:]]+)/  { "\1",\t\2,\tsyscall::deny\t},/'
+echo '  { 0, 0, syscall::deny }'
+echo '};'
+echo
+echo 'int const callcnt = sizeof (calls);'

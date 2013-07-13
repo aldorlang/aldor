@@ -1,0 +1,12 @@
+#!/bin/bash
+
+RT="eval/rt64"
+
+find $RT		-type d | xargs chmod 0701
+find $RT/bin		-type f | xargs chmod 0701
+find $RT/include	-type f | xargs chmod 0604
+find $RT/lib		-type f | xargs chmod 0604
+
+:> $RT/t.as > $RT/t.ao
+chmod 0705 $RT/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2
+chmod 0606 $RT/t.as $RT/t.ao

@@ -1,0 +1,37 @@
+# Copyright © 2007 Pippijn van Steenhoven
+
+TYPEMAP
+
+char const *		T_PV
+
+Evaluator *		EVALUATOR
+
+
+INPUT
+
+EVALUATOR
+        if (!eval)
+          {
+            warn (\"${Package}::$func_name (): The global C++ evaluator was not instantiated yet\");
+            XSRETURN_UNDEF;
+          }
+        else
+          $var = eval;
+
+T_OBJECT
+	if (sv_isobject ($arg) && (SvTYPE (SvRV ($arg)) == SVt_PVMG))
+	  $var = ($type) SvIV ((SV *) SvRV ($arg));
+	else
+	  {
+	    warn (\"${Package}::$func_name() -- $var is not a blessed SV reference\" );
+	    XSRETURN_UNDEF;
+	  }
+
+
+OUTPUT
+
+EVALUATOR
+	sv_setref_pv ($arg, klass, (void *) $var);
+
+T_OBJECT
+	sv_setref_pv ($arg, klass, (void *) $var);

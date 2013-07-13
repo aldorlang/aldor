@@ -1,0 +1,64 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+   <head>
+      <link rel="stylesheet" href="/~pippijn/static/css/home.css" type="text/css" title="Clean Blue" media="screen"/>
+      <link rel="stylesheet" href="aldor.css" type="text/css" media="screen"/>
+      <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+      <script src="aldor.js"></script>
+   </head>
+   <body>
+
+      <div id="header">
+         <h1>Try Aldor</h1>
+      </div>
+
+      <div id="sidebar">
+         <h2>Links</h2>
+         <div>
+            <ul>
+               <li>Development
+                  <ul>
+                     <li><a href="https://github.com/pippijn/aldor">Source repository</a></li>
+                     <li><a href="https://github.com/pippijn/aldor/wiki">Community wiki</a></li>
+                     <li><a href="https://groups.google.com/forum/#!forum/aldor-devel">Mailing list</a></li>
+                     <li><a href="http://www.aldor.org/docs/aldorug.pdf">Aldor User Guide</a></li>
+                  </ul>
+               </li>
+            </ul>
+         </div>
+         <h2>Code snippets</h2>
+         <div id="menubar">
+            <ul>
+               <li>Examples
+                  <ul id="examples">
+                     <li><a>intro</a></li>
+                     <li><a>sieve</a></li>
+                  </ul>
+               </li>
+               <li>My snippets
+                  <ul id="snippets">
+                  </ul>
+               </li>
+            </ul>
+         </div>
+      </div>
+
+      <div id="content">
+         <h2>Your code</h2>
+         <form>
+            <textarea id="code" style="width: 90%; height: 10em"></textarea>
+            <input id="line" style="width: 90%" value='import from String; "hello world"'/>
+         </form>
+         <button name="run" id="run">Run</button>
+         <button name="save" id="save">Save</button>
+         <br/>
+         <blockquote id="response"></blockquote>
+      </div>
+
+      <div id="footer"> 
+         <div id="copyright"><a href="/~pippijn/home/contact">Copyright &copy; 2013 Pippijn van Steenhoven</a></div> 
+         <div id="updated">Source available at <a href="https://github.com/pippijn/aldor">github</a> under GNU Affero General Public License 3.0 or higher</div> 
+      </div> 
+
+   </body>
+</html> 

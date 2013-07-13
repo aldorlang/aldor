@@ -1,0 +1,39 @@
+.remark {
+   color: blue;
+}
+
+.note {
+   color: darkcyan;
+}
+
+.warning {
+   color: green;
+}
+
+.error {
+   color: red;
+   font-weight: bold;
+}
+
+.fatal {
+   color: red;
+   background-color: yellow;
+   font-weight: bold;
+}
+
+blockquote {
+   width: 85%;
+   min-height: 10em;
+   white-space: pre;
+   font-family: monospace;
+}
+
+blockquote.spinner {
+   display: table;
+   text-align: center;
+}
+
+.spinner p {
+   display: table-cell;
+   vertical-align: middle;
+}
