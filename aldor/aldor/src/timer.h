@@ -7,8 +7,8 @@
 #ifndef _TIMER_H_
 #define _TIMER_H_
  
-#include "foam_c.h"
 #include "axlgen.h"
+#include "foam_c.h"
 
 typedef struct {
 	FiWord time;
