@@ -10,6 +10,7 @@ use Evaluator {
    chroot   => "eval/rt" . $Evaluator::BITS,
 };
 
+use Time::HiRes 'gettimeofday';
 use Fcntl ':seek';
 use Storable 'store_fd', 'retrieve';
 use AnyEvent::HTTPD;
@@ -53,7 +54,17 @@ $line
 #quit
 EOF
 
-      $log->{$code} = [$line, time, $req->client_host];
+      my $start = gettimeofday;
+
+      # Run the code.
+      my $result = $aldor->eval ($code, $line);
+      $result =~ s/Aldor\n\nCopyright.*\n\n//;
+
+      # Check how long it took.
+      my $proc = gettimeofday - $start;
+
+      # Write log entry.
+      $log->{$code} = [time, $proc, $req->client_host, $line];
       # reset file to 0 bytes
       truncate $pst, 0;
       seek $pst, 0, SEEK_SET;
@@ -61,8 +72,11 @@ EOF
       store_fd $log, $pst;
       $pst->flush;
 
-      my $result = $aldor->eval ($code, $line);
-      $result =~ s/Aldor\n\nCopyright.*\n\n//;
+      printf "[%s] Request from %s:%d took %.4fs\n",
+         (scalar localtime time),
+         $req->client_host,
+         $req->client_port,
+         $proc;
 
       $req->respond ([
          200, 'OK', {

@@ -11,9 +11,15 @@ $Data::Dumper::Terse = 1;
 my $log = retrieve 'evaluator.pst';
 # transform a bit for readability
 my @log = map { {
+   # Time stamp.
    time => $log->{$_}[0],
-   host => $log->{$_}[1],
-   line => $log->{$_}[2],
+   # Processing time.
+   proc => $log->{$_}[1],
+   # Client host.
+   host => $log->{$_}[2],
+   # REPL line.
+   line => $log->{$_}[3],
+   # Source code.
    code => [split "\n", $_],
 } } keys %$log;
 
