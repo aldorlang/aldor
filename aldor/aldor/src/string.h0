@@ -38,7 +38,7 @@
     * Strictly speaking, this is non-conforming.
     */
 #  define strcasecmp  stricmp
-#  define strncasecmp strncasecmp
+#  define strncasecmp strnicmp
 
 #endif 
 
