@@ -48,7 +48,7 @@ $httpd->reg_cb (
       my $code = $req->parm ("code");
       my $line = $req->parm ("line");
 
-      $line = <<EOF;
+      my $repl = <<EOF;
 #include "tryaldor"
 $line
 #quit
@@ -57,7 +57,7 @@ EOF
       my $start = gettimeofday;
 
       # Run the code.
-      my $result = $aldor->eval ($code, $line);
+      my $result = $aldor->eval ($code, $repl);
       $result =~ s/Aldor\n\nCopyright.*\n\n//;
 
       # Check how long it took.
