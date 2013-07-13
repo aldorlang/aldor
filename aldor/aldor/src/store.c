@@ -4820,38 +4820,11 @@ extern	void	free	(Pointer);
 
 #ifdef STO_USE_BOEHM
 /* uncomment this */
-/* #include "gc.h" */
+#include <gc/gc.h>
 
-# define stoMore(sz)               ((Pointer) GC_debug_malloc(sz))
-# define stoMoreOrLess(p,osz,nsz)  ((Pointer) GC_debug_realloc(p,nsz))
-# define stoLess(p)                GC_debug_free(p)
-
-MostAlignedType *
-stoAlloc(unsigned code, ULong size)
-{
-  stoMore(size);
-}
-
-void
-stoFree(Pointer p)
-{
-  stoLess(p);
-}
-
-void
-stoRegister(StoInfo info)
-{
-        return;
-}
-
-void
-gcTimer()
-{
-  	return;
-}
-
-
-
+# define stoMore(sz)               ((Pointer) GC_malloc(sz))
+# define stoMoreOrLess(p,osz,nsz)  ((Pointer) GC_realloc(p,nsz))
+# define stoLess(p)                GC_free(p)
 #endif
 
 
@@ -4922,7 +4895,6 @@ struct stoHdr {
 local MostAlignedType * stoDefaultError	 (int errnum);
 static StoErrorFun	stoError	 = stoDefaultError;
 
-#if !defined(STO_USE_BOEHM)
 MostAlignedType *
 stoAlloc(unsigned code, ULong size)
 {
@@ -4953,7 +4925,7 @@ stoFree(Pointer p)
 	stoTally(stoBytesFree += stoPtrToHdr(p)->size);
 	stoLess(stoPtrToHdr(p));
 }
-#endif
+
 ULong
 stoSize(Pointer p)
 {
