@@ -31,18 +31,23 @@ jQuery(function ($) {
       response.addClass("spinner");
       response.html(spinner);
 
+      $('#run').attr("disabled", "disabled");
+
       $.post('http://xinutec.org:9090/', {
          code: $('#code').val(),
          line: $('#line').val()
       }, function (data) {
          response.removeClass("spinner");
          response.html(data);
+         $('#run').removeAttr("disabled");
       });
    });
 
-   $('form').submit(function (event) {
-      $('#run').click();
+   $('#form').submit(function (event) {
       event.preventDefault();
+      if (!$('#run').attr('disabled')) {
+         $('#run').click();
+      }
    });
 
    $('#save').click(function (event) {
