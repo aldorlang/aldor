@@ -134,4 +134,6 @@ extern FILE *		 compFileError	  	(FileName, IOMode);
 extern SExpr		 compSExprError	  	(SrcPos, int errnum, va_list);
 extern void		compFintBreakHandler	(int signo);
 
+extern String compRootDir;
+
 #endif /* !_AXLCOMP_H_ */

@@ -192,9 +192,7 @@ int InitBasicTypesArray(String file) {
     basic = fopen("./basic.typ","r");
     if (!basic) { /* no user defined basic types */
       /* Try in the standard directory */
-#if AXL_EDIT_1_1_13_17
-      extern String compRootDir; /* Defined in axlcomp.c */
-#else
+#if !AXL_EDIT_1_1_13_17
       String compRootDir = strCopyIf(osGetEnv("AXIOMXLROOT"));
 #endif
       if (compRootDir) { 
