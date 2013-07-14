@@ -1,0 +1,93 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{83D564CC-84B2-4684-902A-3B36867605F3}</ProjectGuid>
+    <RootNamespace>libfoamlib</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>..\..\aldor\aldor\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\aldor\aldor\lib\libfoamlib\array.c" />
+    <ClCompile Include="..\..\aldor\aldor\lib\libfoamlib\basic.c" />
+    <ClCompile Include="..\..\aldor\aldor\lib\libfoamlib\bool.c" />
+    <ClCompile Include="..\..\aldor\aldor\lib\libfoamlib\character.c" />
+    <ClCompile Include="..\..\aldor\aldor\lib\libfoamlib\file.c" />
+    <ClCompile Include="..\..\aldor\aldor\lib\libfoamlib\fname.c" />
+    <ClCompile Include="..\..\aldor\aldor\lib\libfoamlib\foamcat.c" />
+    <ClCompile Include="..\..\aldor\aldor\lib\libfoamlib\foamlib.c" />
+    <ClCompile Include="..\..\aldor\aldor\lib\libfoamlib\format.c" />
+    <ClCompile Include="..\..\aldor\aldor\lib\libfoamlib\gener.c" />
+    <ClCompile Include="..\..\aldor\aldor\lib\libfoamlib\lang.c" />
+    <ClCompile Include="..\..\aldor\aldor\lib\libfoamlib\langx.c" />
+    <ClCompile Include="..\..\aldor\aldor\lib\libfoamlib\list.c" />
+    <ClCompile Include="..\..\aldor\aldor\lib\libfoamlib\lv.c" />
+    <ClCompile Include="..\..\aldor\aldor\lib\libfoamlib\machine.c" />
+    <ClCompile Include="..\..\aldor\aldor\lib\libfoamlib\opsys.c" />
+    <ClCompile Include="..\..\aldor\aldor\lib\libfoamlib\oslow.c" />
+    <ClCompile Include="..\..\aldor\aldor\lib\libfoamlib\parray.c" />
+    <ClCompile Include="..\..\aldor\aldor\lib\libfoamlib\partial.c" />
+    <ClCompile Include="..\..\aldor\aldor\lib\libfoamlib\pointer.c" />
+    <ClCompile Include="..\..\aldor\aldor\lib\libfoamlib\segment.c" />
+    <ClCompile Include="..\..\aldor\aldor\lib\libfoamlib\sfloat.c" />
+    <ClCompile Include="..\..\aldor\aldor\lib\libfoamlib\sinteger.c" />
+    <ClCompile Include="..\..\aldor\aldor\lib\libfoamlib\string.c" />
+    <ClCompile Include="..\..\aldor\aldor\lib\libfoamlib\textwrit.c" />
+    <ClCompile Include="..\..\aldor\aldor\lib\libfoamlib\tuple.c" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

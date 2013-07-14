@@ -1,0 +1,408 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{772A27CB-6B07-486C-8851-B42C5A34EAB6}</ProjectGuid>
+    <RootNamespace>Aldor</RootNamespace>
+    <ProjectName>ascomp</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>TEST_ALL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\aldor\aldor\src\ctype.h0" />
+    <ClInclude Include="..\..\aldor\aldor\src\errno.h0" />
+    <ClInclude Include="..\..\aldor\aldor\src\float.h0" />
+    <ClInclude Include="..\..\aldor\aldor\src\limits.h0" />
+    <ClInclude Include="..\..\aldor\aldor\src\locale.h0" />
+    <ClInclude Include="..\..\aldor\aldor\src\math.h0" />
+    <ClInclude Include="..\..\aldor\aldor\src\setjmp.h0" />
+    <ClInclude Include="..\..\aldor\aldor\src\signal.h0" />
+    <ClInclude Include="..\..\aldor\aldor\src\stdarg.h0" />
+    <ClInclude Include="..\..\aldor\aldor\src\stddef.h0" />
+    <ClInclude Include="..\..\aldor\aldor\src\stdio.h0" />
+    <ClInclude Include="..\..\aldor\aldor\src\stdlib.h0" />
+    <ClInclude Include="..\..\aldor\aldor\src\string.h0" />
+    <ClInclude Include="..\..\aldor\aldor\src\time.h0" />
+    <ClInclude Include="..\..\aldor\aldor\src\unistd.h0" />
+    <ClInclude Include="..\..\aldor\aldor\src\abcheck.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\ablogic.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\abnorm.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\abpretty.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\absub.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\absyn.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\abuse.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\archive.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\axl.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\axlcomp.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\axlgen.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\axlgen0.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\axlobs.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\axlphase.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\axlport.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\axltop.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\bigint.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\bitv.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\bloop.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\btree.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\buffer.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\ccode.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\ccomp.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\cconfig.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\cfgfile.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\cmdline.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\compcfg.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\compopt.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\comsg.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\comsgdb.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\cport.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\debug.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\depdag.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\dflow.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\dnf.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\doc.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\dword.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\editlevels.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\emit.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\fbox.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\file.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\fint.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\fintphase.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\flatten.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\flog.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\fluid.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\fname.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\foam.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\foamopt.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\foamsig.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\foam_c.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\foam_cfp.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\foam_i.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\forg.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\format.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\fortran.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\freevar.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\genc.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\gencpp.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\genfoam.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\genlisp.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\gf_add.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\gf_excpt.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\gf_fortran.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\gf_gener.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\gf_implicit.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\gf_imps.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\gf_prog.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\gf_reference.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\gf_rtime.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\gf_seq.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\gf_syme.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\gf_util.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\include.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\inlutil.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\intset.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\lib.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\linear.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\list.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\loops.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\macex.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\msg.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\of_argsub.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\of_cfold.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\of_comex.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\of_cprop.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\of_deada.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\of_deadv.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\of_emerg.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\of_env.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\of_hfold.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\of_inlin.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\of_jflow.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\of_killp.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\of_loops.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\of_peep.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\of_retyp.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\of_rrfmt.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\of_util.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\os_cms.c" />
+    <ClInclude Include="..\..\aldor\aldor\src\os_dos.c" />
+    <ClInclude Include="..\..\aldor\aldor\src\os_macosx_vm.c" />
+    <ClInclude Include="..\..\aldor\aldor\src\os_macs7.c " />
+    <ClInclude Include="..\..\aldor\aldor\src\os_os2.c" />
+    <ClInclude Include="..\..\aldor\aldor\src\os_unix.c" />
+    <ClInclude Include="..\..\aldor\aldor\src\os_vms.c" />
+    <ClInclude Include="..\..\aldor\aldor\src\os_win32.c" />
+    <ClInclude Include="..\..\aldor\aldor\src\opsys.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\optcfg.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\optfoam.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\opttools.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\ostream.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\output.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\parseby.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\path.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\phase.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\platform.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\priq.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\scan.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\scobind.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\sefo.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\sexpr.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\simpl.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\spesym.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\srcline.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\srcpos.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\stab.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\stdc.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\store.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\strops.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\symbol.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\syme.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\syscmd.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\table.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\tconst.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\termtype.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\terror.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\test.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\textansi.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\textcolour.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\texthp.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\tfcond.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\tform.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\tfsat.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\timer.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\tinfer.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\ti_bup.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\ti_decl.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\ti_sef.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\ti_tdn.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\ti_top.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\token.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\tposs.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\tqual.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\usedef.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\util.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\version.h" />
+    <ClInclude Include="..\..\aldor\aldor\src\xfloat.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\aldor\aldor\src\abcheck.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\ablogic.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\abnorm.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\abpretty.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\absub.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\absyn.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\abuse.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\archive.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\axl.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\axlcomp.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\axlobs.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\bigint.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\bigint_t.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\bitv.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\bitv_t.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\bloop.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\btree.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\btree_t.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\buffer.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\buffer_t.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\ccode.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\ccode_t.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\ccomp.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\cfgfile.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\cmdline.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\compcfg.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\compopt.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\comsg.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\comsgdb.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\cport.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\cport_t.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\debug.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\depdag.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\dflow.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\dnf.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\dnf_t.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\doc.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\dword.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\emit.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\fbox.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\file.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\file_t.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\fint.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\fintphase.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\flatten.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\float_t.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\flog.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\fluid.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\fluid_t.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\fname.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\fname_t.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\foam.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\foamopt.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\foamsig.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\foam_c.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\foam_cfp.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\foam_i.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\forg.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\format.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\format_t.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\fortran.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\freevar.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\genc.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\gencpp.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\genfoam.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\genlisp.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\gf_add.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\gf_excpt.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\gf_fortran.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\gf_gener.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\gf_implicit.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\gf_imps.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\gf_prog.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\gf_reference.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\gf_rtime.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\gf_seq.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\gf_syme.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\include.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\inlutil.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\intset.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\lib.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\linear.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\link_t.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\list.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\list_t.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\loops.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\macex.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\msg.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\msg_t.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\of_argsub.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\of_cfold.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\of_comex.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\of_cprop.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\of_deada.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\of_deadv.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\of_emerg.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\of_env.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\of_hfold.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\of_inlin.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\of_jflow.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\of_killp.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\of_loops.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\of_peep.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\of_retyp.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\of_rrfmt.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\of_util.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\opsys.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\opsys_t.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\optfoam.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\opttools.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\ostream.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\output.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\parseby.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\path.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\phase.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\priq.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\priq_t.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\scan.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\scobind.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\sefo.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\sexpr.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\simpl.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\spesym.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\srcline.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\srcpos.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\stab.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\stdc.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\store.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\store1_t.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\store2_t.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\store3_t.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\strops.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\strops_t.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\symbol.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\symbol_t.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\syme.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\syscmd.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\table.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\table_t.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\tconst.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\termtype.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\terror.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\test.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\textansi.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\textcolour.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\texthp.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\tfcond.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\tform.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\tfsat.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\timer.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\tinfer.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\ti_bup.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\ti_decl.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\ti_sef.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\ti_tdn.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\ti_top.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\token.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\tposs.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\tqual.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\usedef.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\util.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\util_t.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\version.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\xfloat.c" />
+    <ClCompile Include="..\..\aldor\aldor\src\xfloat_t.c" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

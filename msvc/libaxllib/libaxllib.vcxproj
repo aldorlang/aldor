@@ -1,0 +1,117 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{4842E57D-5CC8-495C-A09E-1F9B77DEE1D2}</ProjectGuid>
+    <RootNamespace>libaxllib</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>..\..\aldor\aldor\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\aldor\lib\axllib\src\array.c" />
+    <ClCompile Include="..\..\aldor\lib\axllib\src\axlcat.c" />
+    <ClCompile Include="..\..\aldor\lib\axllib\src\axl_boolean.c" />
+    <ClCompile Include="..\..\aldor\lib\axllib\src\axl_byte.c" />
+    <ClCompile Include="..\..\aldor\lib\axllib\src\axl_char.c" />
+    <ClCompile Include="..\..\aldor\lib\axllib\src\axl_float.c" />
+    <ClCompile Include="..\..\aldor\lib\axllib\src\basic.c" />
+    <ClCompile Include="..\..\aldor\lib\axllib\src\bpower.c" />
+    <ClCompile Include="..\..\aldor\lib\axllib\src\complex.c" />
+    <ClCompile Include="..\..\aldor\lib\axllib\src\debug.c" />
+    <ClCompile Include="..\..\aldor\lib\axllib\src\dfloat.c" />
+    <ClCompile Include="..\..\aldor\lib\axllib\src\efuns.c" />
+    <ClCompile Include="..\..\aldor\lib\axllib\src\except.c" />
+    <ClCompile Include="..\..\aldor\lib\axllib\src\file.c" />
+    <ClCompile Include="..\..\aldor\lib\axllib\src\fmtout.c" />
+    <ClCompile Include="..\..\aldor\lib\axllib\src\fname.c" />
+    <ClCompile Include="..\..\aldor\lib\axllib\src\format.c" />
+    <ClCompile Include="..\..\aldor\lib\axllib\src\fprint.c" />
+    <ClCompile Include="..\..\aldor\lib\axllib\src\fstring.c" />
+    <ClCompile Include="..\..\aldor\lib\axllib\src\gener.c" />
+    <ClCompile Include="..\..\aldor\lib\axllib\src\hinteger.c" />
+    <ClCompile Include="..\..\aldor\lib\axllib\src\ieeectl.c" />
+    <ClCompile Include="..\..\aldor\lib\axllib\src\imod.c" />
+    <ClCompile Include="..\..\aldor\lib\axllib\src\integer.c" />
+    <ClCompile Include="..\..\aldor\lib\axllib\src\lang.c" />
+    <ClCompile Include="..\..\aldor\lib\axllib\src\langx.c" />
+    <ClCompile Include="..\..\aldor\lib\axllib\src\list.c" />
+    <ClCompile Include="..\..\aldor\lib\axllib\src\list2.c" />
+    <ClCompile Include="..\..\aldor\lib\axllib\src\machine.c" />
+    <ClCompile Include="..\..\aldor\lib\axllib\src\object.c" />
+    <ClCompile Include="..\..\aldor\lib\axllib\src\opsys.c" />
+    <ClCompile Include="..\..\aldor\lib\axllib\src\oslow.c" />
+    <ClCompile Include="..\..\aldor\lib\axllib\src\parray.c" />
+    <ClCompile Include="..\..\aldor\lib\axllib\src\partial.c" />
+    <ClCompile Include="..\..\aldor\lib\axllib\src\pfloat.c" />
+    <ClCompile Include="..\..\aldor\lib\axllib\src\pkarray.c" />
+    <ClCompile Include="..\..\aldor\lib\axllib\src\pointer.c" />
+    <ClCompile Include="..\..\aldor\lib\axllib\src\ratio.c" />
+    <ClCompile Include="..\..\aldor\lib\axllib\src\ref.c" />
+    <ClCompile Include="..\..\aldor\lib\axllib\src\rtexns.c" />
+    <ClCompile Include="..\..\aldor\lib\axllib\src\segment.c" />
+    <ClCompile Include="..\..\aldor\lib\axllib\src\sfloat.c" />
+    <ClCompile Include="..\..\aldor\lib\axllib\src\sinteger.c" />
+    <ClCompile Include="..\..\aldor\lib\axllib\src\sort.c" />
+    <ClCompile Include="..\..\aldor\lib\axllib\src\string.c" />
+    <ClCompile Include="..\..\aldor\lib\axllib\src\table.c" />
+    <ClCompile Include="..\..\aldor\lib\axllib\src\textread.c" />
+    <ClCompile Include="..\..\aldor\lib\axllib\src\textwrit.c" />
+    <ClCompile Include="..\..\aldor\lib\axllib\src\tuple.c" />
+    <ClCompile Include="..\..\aldor\lib\axllib\src\uarray.c" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

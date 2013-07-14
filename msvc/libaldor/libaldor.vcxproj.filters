@@ -1,0 +1,265 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Source Files\arith">
+      <UniqueIdentifier>{27c4f68b-bdea-490a-85ce-aaf2a2a6f2a2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\base">
+      <UniqueIdentifier>{a95e166b-9d16-4fdc-bc8b-668cbe99d622}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\datastruc">
+      <UniqueIdentifier>{735a2eca-afba-466f-94b3-9e65f2604e30}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gmp">
+      <UniqueIdentifier>{6a619e5f-3d1c-4c34-bb02-b2fa53058c48}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\lang">
+      <UniqueIdentifier>{c74e0fd1-fc60-43cf-b774-00907ac14718}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\util">
+      <UniqueIdentifier>{446e1736-954b-4421-a14f-89bfe36362bb}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\aldor\lib\aldor\src\arith\sal_arith.c">
+      <Filter>Source Files\arith</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\aldor\src\arith\sal_binpow.c">
+      <Filter>Source Files\arith</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\aldor\src\arith\sal_bool.c">
+      <Filter>Source Files\arith</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\aldor\src\arith\sal_bsearch.c">
+      <Filter>Source Files\arith</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\aldor\src\arith\sal_complex.c">
+      <Filter>Source Files\arith</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\aldor\src\arith\sal_dfloat.c">
+      <Filter>Source Files\arith</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\aldor\src\arith\sal_fltcat.c">
+      <Filter>Source Files\arith</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\aldor\src\arith\sal_ftools.c">
+      <Filter>Source Files\arith</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\aldor\src\arith\sal_int.c">
+      <Filter>Source Files\arith</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\aldor\src\arith\sal_intcat.c">
+      <Filter>Source Files\arith</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\aldor\src\arith\sal_itools.c">
+      <Filter>Source Files\arith</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\aldor\src\arith\sal_lincomb.c">
+      <Filter>Source Files\arith</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\aldor\src\arith\sal_mint.c">
+      <Filter>Source Files\arith</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\aldor\src\arith\sal_oarith.c">
+      <Filter>Source Files\arith</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\aldor\src\arith\sal_pointer.c">
+      <Filter>Source Files\arith</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\aldor\src\arith\sal_random.c">
+      <Filter>Source Files\arith</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\aldor\src\arith\sal_segment.c">
+      <Filter>Source Files\arith</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\aldor\src\arith\sal_sfloat.c">
+      <Filter>Source Files\arith</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\aldor\src\base\ald_pfunc.c">
+      <Filter>Source Files\base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\aldor\src\base\sal_base.c">
+      <Filter>Source Files\base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\aldor\src\base\sal_bstream.c">
+      <Filter>Source Files\base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\aldor\src\base\sal_byte.c">
+      <Filter>Source Files\base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\aldor\src\base\sal_char.c">
+      <Filter>Source Files\base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\aldor\src\base\sal_copy.c">
+      <Filter>Source Files\base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\aldor\src\base\sal_gener.c">
+      <Filter>Source Files\base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\aldor\src\base\sal_htype.c">
+      <Filter>Source Files\base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\aldor\src\base\sal_itype.c">
+      <Filter>Source Files\base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\aldor\src\base\sal_manip.c">
+      <Filter>Source Files\base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\aldor\src\base\sal_order.c">
+      <Filter>Source Files\base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\aldor\src\base\sal_otype.c">
+      <Filter>Source Files\base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\aldor\src\base\sal_partial.c">
+      <Filter>Source Files\base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\aldor\src\base\sal_serial.c">
+      <Filter>Source Files\base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\aldor\src\base\sal_syntax.c">
+      <Filter>Source Files\base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\aldor\src\base\sal_torder.c">
+      <Filter>Source Files\base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\aldor\src\base\sal_tstream.c">
+      <Filter>Source Files\base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\aldor\src\datastruc\ald_flags.c">
+      <Filter>Source Files\datastruc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\aldor\src\datastruc\ald_queue.c">
+      <Filter>Source Files\datastruc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\aldor\src\datastruc\ald_symbol.c">
+      <Filter>Source Files\datastruc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\aldor\src\datastruc\ald_symtab.c">
+      <Filter>Source Files\datastruc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\aldor\src\datastruc\sal_array.c">
+      <Filter>Source Files\datastruc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\aldor\src\datastruc\sal_barray.c">
+      <Filter>Source Files\datastruc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\aldor\src\datastruc\sal_bdata.c">
+      <Filter>Source Files\datastruc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\aldor\src\datastruc\sal_bstruc.c">
+      <Filter>Source Files\datastruc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\aldor\src\datastruc\sal_ckarray.c">
+      <Filter>Source Files\datastruc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\aldor\src\datastruc\sal_cklist.c">
+      <Filter>Source Files\datastruc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\aldor\src\datastruc\sal_ckmembk.c">
+      <Filter>Source Files\datastruc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\aldor\src\datastruc\sal_data.c">
+      <Filter>Source Files\datastruc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\aldor\src\datastruc\sal_ddata.c">
+      <Filter>Source Files\datastruc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\aldor\src\datastruc\sal_fstruc.c">
+      <Filter>Source Files\datastruc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\aldor\src\datastruc\sal_hash.c">
+      <Filter>Source Files\datastruc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\aldor\src\datastruc\sal_kntry.c">
+      <Filter>Source Files\datastruc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\aldor\src\datastruc\sal_list.c">
+      <Filter>Source Files\datastruc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\aldor\src\datastruc\sal_lstruc.c">
+      <Filter>Source Files\datastruc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\aldor\src\datastruc\sal_memblk.c">
+      <Filter>Source Files\datastruc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\aldor\src\datastruc\sal_parray.c">
+      <Filter>Source Files\datastruc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\aldor\src\datastruc\sal_pkarray.c">
+      <Filter>Source Files\datastruc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\aldor\src\datastruc\sal_set.c">
+      <Filter>Source Files\datastruc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\aldor\src\datastruc\sal_slist.c">
+      <Filter>Source Files\datastruc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\aldor\src\datastruc\sal_sortas.c">
+      <Filter>Source Files\datastruc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\aldor\src\datastruc\sal_sset.c">
+      <Filter>Source Files\datastruc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\aldor\src\datastruc\sal_stream.c">
+      <Filter>Source Files\datastruc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\aldor\src\datastruc\sal_string.c">
+      <Filter>Source Files\datastruc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\aldor\src\datastruc\sal_table.c">
+      <Filter>Source Files\datastruc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\aldor\src\gmp\sal_fltgmp.c">
+      <Filter>Source Files\gmp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\aldor\src\gmp\sal_gmptls.c">
+      <Filter>Source Files\gmp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\aldor\src\gmp\sal_intgmp.c">
+      <Filter>Source Files\gmp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\aldor\src\lang\sal_lang.c">
+      <Filter>Source Files\lang</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\aldor\src\util\ald_trace.c">
+      <Filter>Source Files\util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\aldor\src\util\eio_rsto.c">
+      <Filter>Source Files\util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\aldor\src\util\rtexns.c">
+      <Filter>Source Files\util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\aldor\src\util\sal_agat.c">
+      <Filter>Source Files\util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\aldor\src\util\sal_cmdline.c">
+      <Filter>Source Files\util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\aldor\src\util\sal_file.c">
+      <Filter>Source Files\util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\aldor\src\util\sal_timer.c">
+      <Filter>Source Files\util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\aldor\src\util\sal_util.c">
+      <Filter>Source Files\util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\aldor\src\util\sal_version.c">
+      <Filter>Source Files\util</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

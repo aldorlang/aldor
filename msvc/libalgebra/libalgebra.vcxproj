@@ -1,0 +1,277 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{47C45ECC-9612-41E6-8A5C-D49BC56EEE10}</ProjectGuid>
+    <RootNamespace>libalgebra</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>..\..\aldor\aldor\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\algext\sit_algext.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\algext\sit_sae.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\algext\sit_saexcpt.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\algext\sit_upmod.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\basic\compbug\sit_interp.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\basic\compbug\sit_shell.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\basic\sit_complex.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\basic\sit_indvar.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\basic\sit_mkpring.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\basic\sit_permut.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\basic\sit_pring.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\basic\sit_product.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\alg_cansimp.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\alg_ffield.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\alg_frering.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\alg_idxfrng.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\alg_modcmp.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\alg_primsrc.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\alg_rescls.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\alg_rring.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\sit_abgroup.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\sit_abmon.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\sit_algebra.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\sit_automor.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\sit_basic.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\sit_char0.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\sit_charp.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\sit_chrem.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\sit_comring.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\sit_dcmprng.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\sit_deriv.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\sit_diffext.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\sit_difring.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\sit_euclid.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\sit_field.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\sit_freealg.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\sit_freelar.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\sit_freelc.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\sit_freemod.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\sit_fset.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\sit_gcd.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\sit_gexpcat.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\sit_group.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\sit_idxfalg.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\sit_idxflar.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\sit_idxflc.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\sit_idxfmod.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\sit_intdom.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\sit_integer.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\sit_intgmp.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\sit_linarit.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\sit_module.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\sit_monoid.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\sit_ncid.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\sit_pable.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\sit_prfcat0.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\sit_ptools.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\sit_qring.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\sit_ring.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\sit_spf0.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\sit_spfcat0.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\sit_spzble.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\extree\operators\sit_OPand.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\extree\operators\sit_OPassgn.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\extree\operators\sit_OPbigO.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\extree\operators\sit_OPcase.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\extree\operators\sit_OPcplex.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\extree\operators\sit_OPequal.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\extree\operators\sit_OPexpt.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\extree\operators\sit_OPfact.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\extree\operators\sit_OPif.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\extree\operators\sit_OPless.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\extree\operators\sit_OPlist.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\extree\operators\sit_OPllist.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\extree\operators\sit_OPmatrx.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\extree\operators\sit_OPminus.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\extree\operators\sit_OPmore.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\extree\operators\sit_OPnoteq.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\extree\operators\sit_OPplus.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\extree\operators\sit_OPprefx.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\extree\operators\sit_OPquot.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\extree\operators\sit_OPsubsc.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\extree\operators\sit_OPtimes.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\extree\operators\sit_OPvect.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\extree\parser\sit_infexpr.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\extree\parser\sit_lspexpr.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\extree\parser\sit_maple.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\extree\parser\sit_parser.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\extree\parser\sit_scanner.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\extree\parser\sit_token.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\extree\sit_extree.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\extree\sit_optools.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\ffield\alg_pf2.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\ffield\sit_prfcat.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\ffield\sit_spf.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\ffield\sit_sprfcat.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\ffield\sit_sprfgcd.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\ffield\sit_sprfmat.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\ffield\sit_zpf.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\fraction\sit_lcqotct.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\fraction\sit_matquot.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\fraction\sit_qotbyc0.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\fraction\sit_qotbyct.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\fraction\sit_qotfcat.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\fraction\sit_qotfct0.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\fraction\sit_qotient.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\fraction\sit_quotby.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\fraction\sit_quotcat.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\fraction\sit_uflgqot.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\fraction\sit_vecquot.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\mat\gauss\sit_dfge.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\mat\gauss\sit_ff2ge.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\mat\gauss\sit_ffge.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\mat\gauss\sit_hermge.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\mat\gauss\sit_linelim.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\mat\gauss\sit_oge.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\mat\linalg2\alg_ffupla.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\mat\linalg2\sit_popov.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\mat\linalg2\sit_upcrtla.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\mat\linalg3\sit_hensela.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\mat\linalg\sit_bsolve.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\mat\linalg\sit_laring.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\mat\linalg\sit_linalg.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\mat\linalg\sit_overdet.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\mat\modular\compbug\sit_speclin.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\mat\modular\sit_modpoge.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\mat\modular\sit_zcrtla.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\mat\sit_dnsemat.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\mat\sit_matcat.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\mat\sit_vector.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\multpoly\exponent\sm_dirprod.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\multpoly\exponent\sm_dirprodc.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\multpoly\exponent\sm_expocat.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\multpoly\exponent\sm_fvt.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\multpoly\exponent\sm_listovar.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\multpoly\exponent\sm_midl.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\multpoly\exponent\sm_midrl.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\multpoly\exponent\sm_mievc.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\multpoly\exponent\sm_milex.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\multpoly\exponent\sm_osymbol.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\multpoly\exponent\sm_tuplovar.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\multpoly\exponent\sm_vt.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\multpoly\exponent\sm_zevc.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\multpoly\multpolycat\alg_defgcd.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\multpoly\multpolycat\alg_poltype.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\multpoly\multpolycat\alg_stdfrng.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\multpoly\multpolycat\sm_famr0.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\multpoly\multpolycat\sm_polring0.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\multpoly\multpolycat\sm_polring.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\multpoly\multpolycat\sm_rmpcat0.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\multpoly\multpolydata\sm_delist.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\multpoly\multpolydom\alg_smp.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\multpoly\multpolydom\sm_dmp0.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\multpoly\multpolydom\sm_dmp1.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\multpoly\multpolydom\sm_rmp.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\multpoly\multpolydom\sm_rmpz.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\multpoly\multpolydom\sm_rmpzx.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\multpoly\multpolypkg\alg_bivarpk.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\multpoly\multpolypkg\alg_mresbiv.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\multpoly\multpolypkg\alg_ZpUVres.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\multpoly\multpolytest\alg_bivtst1.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\multpoly\multpolytest\alg_bivtst2.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\multpoly\multpolytest\alg_bivtst3.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\multpoly\multpolytest\sm_dmp0pkgt.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\multpoly\multpolytest\sm_exppkgt.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\multpoly\multpolytest\sm_pr0pkgt.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\numbers\sit_primes.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\numbers\sit_primgen.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\numbers\sit_prmroot.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\numbers\sit_prmtabl.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\polyfactor0\sit_fhensel.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\polyfactor0\sit_zfactor.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\polyfactor0\sit_zfring.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\polyfactor0\sit_zfringg.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\polyfactorp\sit_upfactp.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\series\alg_serpoly.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\series\compbug\sit_duts.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\series\sit_seqence.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\series\sit_sercat.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\univpoly\alg_sup0.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\univpoly\alg_sup1.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\univpoly\alg_sup.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\univpoly\alg_unitool.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\univpoly\alg_uprcr.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\univpoly\categories\alg_chrem2.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\univpoly\categories\alg_modgcdp.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\univpoly\categories\alg_polydio.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\univpoly\categories\sit_fftring.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\univpoly\categories\sit_fring.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\univpoly\categories\sit_froot.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\univpoly\categories\sit_resprs.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\univpoly\categories\sit_sqfree.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\univpoly\categories\sit_ufalg.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\univpoly\categories\sit_uffalg.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\univpoly\categories\sit_ugring.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\univpoly\categories\sit_umonom.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\univpoly\categories\sit_upolalg.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\univpoly\categories\sit_upolc0.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\univpoly\categories\sit_zring.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\univpoly\gcd\sit_gcdint.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\univpoly\gcd\sit_gcdintg.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\univpoly\gcd\sit_heugcd.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\univpoly\gcd\sit_modgcd.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\univpoly\gcd\sit_modpgcd.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\univpoly\sit_dup.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\univpoly\sit_polkara.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\univpoly\sit_spread.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\univpoly\sit_ufacpol.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\univpoly\sit_upolc.c" />
+    <ClCompile Include="..\..\aldor\lib\algebra\src\util\alg_version.c" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

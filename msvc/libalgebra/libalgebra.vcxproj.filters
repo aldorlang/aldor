@@ -1,0 +1,745 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Source Files\algext">
+      <UniqueIdentifier>{23c0a577-8365-44a4-9002-ba58ad09edf2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\basic">
+      <UniqueIdentifier>{53b7bff0-c6d9-461b-9f51-6e87e1000a1b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\basic\compbug">
+      <UniqueIdentifier>{ac636c90-8af4-4c1b-bea8-7e0f864583e8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\categories">
+      <UniqueIdentifier>{a90f16a9-6fa6-44c8-bc88-69c6a7905034}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\extree">
+      <UniqueIdentifier>{3241d48d-cbef-4eb2-877f-8e5a5cec4055}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\extree\operators">
+      <UniqueIdentifier>{bce92411-88c0-46b6-aa2b-a38cbf6c02ae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ffield">
+      <UniqueIdentifier>{141e18d7-1516-4e12-9394-cb4a2e60d486}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\extree\parser">
+      <UniqueIdentifier>{64518eef-80db-4506-8735-c01c36e2656a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\fraction">
+      <UniqueIdentifier>{18f37d09-12d4-44ca-bd8f-07d009095eb7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\mat">
+      <UniqueIdentifier>{851a2a23-ba32-445a-abd3-48b9d01ef09e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\mat\gauss">
+      <UniqueIdentifier>{8071db8e-80b1-4d14-96a7-6c8c440eabf8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\mat\linalg2">
+      <UniqueIdentifier>{503cc5d6-b00d-415b-8b4b-fc97ebc2417a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\mat\linalg3">
+      <UniqueIdentifier>{aa8c393f-3f64-4884-8e98-07c823246569}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\mat\linalg">
+      <UniqueIdentifier>{c1d7562e-4a80-43d2-ab41-fe41d63fd979}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\mat\modular">
+      <UniqueIdentifier>{02c57836-fe42-4b42-86f5-e7cce3429512}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\mat\modular\compbug">
+      <UniqueIdentifier>{8ca17aea-00ac-4827-9ac0-504cf42c8848}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\multpoly">
+      <UniqueIdentifier>{56ae9fd6-3c29-4560-9971-169418b01d5a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\multpoly\exponent">
+      <UniqueIdentifier>{81c179db-0d66-4242-b373-2c06ec9ff920}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\multpoly\multpolycat">
+      <UniqueIdentifier>{224fd6e8-9cbb-4795-908a-dea4cc6e37f8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\multpoly\multpolydata">
+      <UniqueIdentifier>{94f9dbc7-d44b-49f9-b068-9e5fa0bc089e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\multpoly\multpolydom">
+      <UniqueIdentifier>{b7682952-0215-4502-aee4-a8363d09c2d3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\multpoly\multpolypkg">
+      <UniqueIdentifier>{dfca071e-108c-4118-b2e2-ac5cd1bdf2bd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\multpoly\multpolytest">
+      <UniqueIdentifier>{ccf659e8-f728-4ffd-8734-2d27942b2efd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\numbers">
+      <UniqueIdentifier>{61531a2f-47d7-4098-b43d-ee5b941d7634}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\polyfactor0">
+      <UniqueIdentifier>{994416bc-7017-474b-b7cf-72209b72a609}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\series">
+      <UniqueIdentifier>{ec4756c5-a361-4a0f-b1cc-e77dcf970088}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\series\compbug">
+      <UniqueIdentifier>{04d351db-57c8-40c5-ab8d-c806fdb55004}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\univpoly">
+      <UniqueIdentifier>{2febcd33-5e2e-42a6-9899-49d8add7a256}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\univpoly\categories">
+      <UniqueIdentifier>{da9b0e29-781f-445c-957b-bbb2ee692fa0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\univpoly\gcd">
+      <UniqueIdentifier>{c1b9eac7-8f5d-41a4-b5b4-18a97193d4ef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\util">
+      <UniqueIdentifier>{4e7a113b-bc42-4586-8ff1-125bbe131e65}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\polyfactorp">
+      <UniqueIdentifier>{eb7bdaa0-b727-47f6-b8f3-7d23a3460f71}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\algext\sit_algext.c">
+      <Filter>Source Files\algext</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\algext\sit_sae.c">
+      <Filter>Source Files\algext</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\algext\sit_saexcpt.c">
+      <Filter>Source Files\algext</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\algext\sit_upmod.c">
+      <Filter>Source Files\algext</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\basic\compbug\sit_interp.c">
+      <Filter>Source Files\basic\compbug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\basic\compbug\sit_shell.c">
+      <Filter>Source Files\basic\compbug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\basic\sit_complex.c">
+      <Filter>Source Files\basic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\basic\sit_indvar.c">
+      <Filter>Source Files\basic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\basic\sit_mkpring.c">
+      <Filter>Source Files\basic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\basic\sit_permut.c">
+      <Filter>Source Files\basic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\basic\sit_pring.c">
+      <Filter>Source Files\basic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\basic\sit_product.c">
+      <Filter>Source Files\basic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\alg_cansimp.c">
+      <Filter>Source Files\categories</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\alg_ffield.c">
+      <Filter>Source Files\categories</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\alg_frering.c">
+      <Filter>Source Files\categories</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\alg_idxfrng.c">
+      <Filter>Source Files\categories</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\alg_modcmp.c">
+      <Filter>Source Files\categories</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\alg_primsrc.c">
+      <Filter>Source Files\categories</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\alg_rescls.c">
+      <Filter>Source Files\categories</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\alg_rring.c">
+      <Filter>Source Files\categories</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\sit_abgroup.c">
+      <Filter>Source Files\categories</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\sit_abmon.c">
+      <Filter>Source Files\categories</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\sit_algebra.c">
+      <Filter>Source Files\categories</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\sit_automor.c">
+      <Filter>Source Files\categories</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\sit_basic.c">
+      <Filter>Source Files\categories</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\sit_char0.c">
+      <Filter>Source Files\categories</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\sit_charp.c">
+      <Filter>Source Files\categories</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\sit_chrem.c">
+      <Filter>Source Files\categories</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\sit_comring.c">
+      <Filter>Source Files\categories</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\sit_dcmprng.c">
+      <Filter>Source Files\categories</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\sit_deriv.c">
+      <Filter>Source Files\categories</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\sit_diffext.c">
+      <Filter>Source Files\categories</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\sit_difring.c">
+      <Filter>Source Files\categories</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\sit_euclid.c">
+      <Filter>Source Files\categories</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\sit_field.c">
+      <Filter>Source Files\categories</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\sit_freealg.c">
+      <Filter>Source Files\categories</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\sit_freelar.c">
+      <Filter>Source Files\categories</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\sit_freelc.c">
+      <Filter>Source Files\categories</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\sit_freemod.c">
+      <Filter>Source Files\categories</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\sit_fset.c">
+      <Filter>Source Files\categories</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\sit_gcd.c">
+      <Filter>Source Files\categories</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\sit_gexpcat.c">
+      <Filter>Source Files\categories</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\sit_group.c">
+      <Filter>Source Files\categories</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\sit_idxfalg.c">
+      <Filter>Source Files\categories</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\sit_idxflar.c">
+      <Filter>Source Files\categories</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\sit_idxflc.c">
+      <Filter>Source Files\categories</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\sit_idxfmod.c">
+      <Filter>Source Files\categories</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\sit_intdom.c">
+      <Filter>Source Files\categories</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\sit_integer.c">
+      <Filter>Source Files\categories</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\sit_intgmp.c">
+      <Filter>Source Files\categories</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\sit_linarit.c">
+      <Filter>Source Files\categories</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\sit_module.c">
+      <Filter>Source Files\categories</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\sit_monoid.c">
+      <Filter>Source Files\categories</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\sit_ncid.c">
+      <Filter>Source Files\categories</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\sit_pable.c">
+      <Filter>Source Files\categories</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\sit_prfcat0.c">
+      <Filter>Source Files\categories</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\sit_ptools.c">
+      <Filter>Source Files\categories</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\sit_qring.c">
+      <Filter>Source Files\categories</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\sit_ring.c">
+      <Filter>Source Files\categories</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\sit_spf0.c">
+      <Filter>Source Files\categories</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\sit_spfcat0.c">
+      <Filter>Source Files\categories</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\categories\sit_spzble.c">
+      <Filter>Source Files\categories</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\extree\operators\sit_OPand.c">
+      <Filter>Source Files\extree\operators</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\extree\operators\sit_OPassgn.c">
+      <Filter>Source Files\extree\operators</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\extree\operators\sit_OPbigO.c">
+      <Filter>Source Files\extree\operators</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\extree\operators\sit_OPcase.c">
+      <Filter>Source Files\extree\operators</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\extree\operators\sit_OPcplex.c">
+      <Filter>Source Files\extree\operators</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\extree\operators\sit_OPequal.c">
+      <Filter>Source Files\extree\operators</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\extree\operators\sit_OPexpt.c">
+      <Filter>Source Files\extree\operators</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\extree\operators\sit_OPfact.c">
+      <Filter>Source Files\extree\operators</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\extree\operators\sit_OPif.c">
+      <Filter>Source Files\extree\operators</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\extree\operators\sit_OPless.c">
+      <Filter>Source Files\extree\operators</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\extree\operators\sit_OPlist.c">
+      <Filter>Source Files\extree\operators</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\extree\operators\sit_OPllist.c">
+      <Filter>Source Files\extree\operators</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\extree\operators\sit_OPmatrx.c">
+      <Filter>Source Files\extree\operators</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\extree\operators\sit_OPminus.c">
+      <Filter>Source Files\extree\operators</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\extree\operators\sit_OPmore.c">
+      <Filter>Source Files\extree\operators</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\extree\operators\sit_OPnoteq.c">
+      <Filter>Source Files\extree\operators</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\extree\operators\sit_OPplus.c">
+      <Filter>Source Files\extree\operators</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\extree\operators\sit_OPprefx.c">
+      <Filter>Source Files\extree\operators</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\extree\operators\sit_OPquot.c">
+      <Filter>Source Files\extree\operators</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\extree\operators\sit_OPsubsc.c">
+      <Filter>Source Files\extree\operators</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\extree\operators\sit_OPtimes.c">
+      <Filter>Source Files\extree\operators</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\extree\operators\sit_OPvect.c">
+      <Filter>Source Files\extree\operators</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\extree\parser\sit_infexpr.c">
+      <Filter>Source Files\extree\parser</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\extree\parser\sit_lspexpr.c">
+      <Filter>Source Files\extree\parser</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\extree\parser\sit_maple.c">
+      <Filter>Source Files\extree\parser</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\extree\parser\sit_parser.c">
+      <Filter>Source Files\extree\parser</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\extree\parser\sit_scanner.c">
+      <Filter>Source Files\extree\parser</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\extree\parser\sit_token.c">
+      <Filter>Source Files\extree\parser</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\extree\sit_extree.c">
+      <Filter>Source Files\extree</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\extree\sit_optools.c">
+      <Filter>Source Files\extree</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\ffield\alg_pf2.c">
+      <Filter>Source Files\ffield</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\ffield\sit_prfcat.c">
+      <Filter>Source Files\ffield</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\ffield\sit_spf.c">
+      <Filter>Source Files\ffield</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\ffield\sit_sprfcat.c">
+      <Filter>Source Files\ffield</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\ffield\sit_sprfgcd.c">
+      <Filter>Source Files\ffield</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\ffield\sit_sprfmat.c">
+      <Filter>Source Files\ffield</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\ffield\sit_zpf.c">
+      <Filter>Source Files\ffield</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\fraction\sit_lcqotct.c">
+      <Filter>Source Files\fraction</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\fraction\sit_matquot.c">
+      <Filter>Source Files\fraction</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\fraction\sit_qotbyc0.c">
+      <Filter>Source Files\fraction</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\fraction\sit_qotbyct.c">
+      <Filter>Source Files\fraction</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\fraction\sit_qotfcat.c">
+      <Filter>Source Files\fraction</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\fraction\sit_qotfct0.c">
+      <Filter>Source Files\fraction</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\fraction\sit_qotient.c">
+      <Filter>Source Files\fraction</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\fraction\sit_quotby.c">
+      <Filter>Source Files\fraction</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\fraction\sit_quotcat.c">
+      <Filter>Source Files\fraction</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\fraction\sit_uflgqot.c">
+      <Filter>Source Files\fraction</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\fraction\sit_vecquot.c">
+      <Filter>Source Files\fraction</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\mat\gauss\sit_dfge.c">
+      <Filter>Source Files\mat\gauss</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\mat\gauss\sit_ff2ge.c">
+      <Filter>Source Files\mat\gauss</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\mat\gauss\sit_ffge.c">
+      <Filter>Source Files\mat\gauss</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\mat\gauss\sit_hermge.c">
+      <Filter>Source Files\mat\gauss</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\mat\gauss\sit_linelim.c">
+      <Filter>Source Files\mat\gauss</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\mat\gauss\sit_oge.c">
+      <Filter>Source Files\mat\gauss</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\mat\linalg2\alg_ffupla.c">
+      <Filter>Source Files\mat\linalg2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\mat\linalg2\sit_popov.c">
+      <Filter>Source Files\mat\linalg2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\mat\linalg2\sit_upcrtla.c">
+      <Filter>Source Files\mat\linalg2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\mat\linalg3\sit_hensela.c">
+      <Filter>Source Files\mat\linalg3</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\mat\linalg\sit_bsolve.c">
+      <Filter>Source Files\mat\linalg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\mat\linalg\sit_laring.c">
+      <Filter>Source Files\mat\linalg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\mat\linalg\sit_linalg.c">
+      <Filter>Source Files\mat\linalg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\mat\linalg\sit_overdet.c">
+      <Filter>Source Files\mat\linalg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\mat\modular\compbug\sit_speclin.c">
+      <Filter>Source Files\mat\modular\compbug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\mat\modular\sit_modpoge.c">
+      <Filter>Source Files\mat\modular</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\mat\modular\sit_zcrtla.c">
+      <Filter>Source Files\mat\modular</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\mat\sit_dnsemat.c">
+      <Filter>Source Files\mat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\mat\sit_matcat.c">
+      <Filter>Source Files\mat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\mat\sit_vector.c">
+      <Filter>Source Files\mat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\multpoly\exponent\sm_dirprod.c">
+      <Filter>Source Files\multpoly\exponent</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\multpoly\exponent\sm_dirprodc.c">
+      <Filter>Source Files\multpoly\exponent</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\multpoly\exponent\sm_expocat.c">
+      <Filter>Source Files\multpoly\exponent</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\multpoly\exponent\sm_fvt.c">
+      <Filter>Source Files\multpoly\exponent</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\multpoly\exponent\sm_listovar.c">
+      <Filter>Source Files\multpoly\exponent</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\multpoly\exponent\sm_midl.c">
+      <Filter>Source Files\multpoly\exponent</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\multpoly\exponent\sm_midrl.c">
+      <Filter>Source Files\multpoly\exponent</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\multpoly\exponent\sm_mievc.c">
+      <Filter>Source Files\multpoly\exponent</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\multpoly\exponent\sm_milex.c">
+      <Filter>Source Files\multpoly\exponent</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\multpoly\exponent\sm_osymbol.c">
+      <Filter>Source Files\multpoly\exponent</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\multpoly\exponent\sm_tuplovar.c">
+      <Filter>Source Files\multpoly\exponent</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\multpoly\exponent\sm_vt.c">
+      <Filter>Source Files\multpoly\exponent</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\multpoly\exponent\sm_zevc.c">
+      <Filter>Source Files\multpoly\exponent</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\multpoly\multpolycat\alg_defgcd.c">
+      <Filter>Source Files\multpoly\multpolycat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\multpoly\multpolycat\alg_poltype.c">
+      <Filter>Source Files\multpoly\multpolycat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\multpoly\multpolycat\alg_stdfrng.c">
+      <Filter>Source Files\multpoly\multpolycat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\multpoly\multpolycat\sm_famr0.c">
+      <Filter>Source Files\multpoly\multpolycat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\multpoly\multpolycat\sm_polring0.c">
+      <Filter>Source Files\multpoly\multpolycat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\multpoly\multpolycat\sm_polring.c">
+      <Filter>Source Files\multpoly\multpolycat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\multpoly\multpolycat\sm_rmpcat0.c">
+      <Filter>Source Files\multpoly\multpolycat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\multpoly\multpolydata\sm_delist.c">
+      <Filter>Source Files\multpoly\multpolydata</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\multpoly\multpolydom\alg_smp.c">
+      <Filter>Source Files\multpoly\multpolydom</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\multpoly\multpolydom\sm_dmp0.c">
+      <Filter>Source Files\multpoly\multpolydom</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\multpoly\multpolydom\sm_dmp1.c">
+      <Filter>Source Files\multpoly\multpolydom</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\multpoly\multpolydom\sm_rmp.c">
+      <Filter>Source Files\multpoly\multpolydom</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\multpoly\multpolydom\sm_rmpz.c">
+      <Filter>Source Files\multpoly\multpolydom</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\multpoly\multpolydom\sm_rmpzx.c">
+      <Filter>Source Files\multpoly\multpolydom</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\multpoly\multpolypkg\alg_bivarpk.c">
+      <Filter>Source Files\multpoly\multpolypkg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\multpoly\multpolypkg\alg_mresbiv.c">
+      <Filter>Source Files\multpoly\multpolypkg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\multpoly\multpolypkg\alg_ZpUVres.c">
+      <Filter>Source Files\multpoly\multpolypkg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\multpoly\multpolytest\alg_bivtst1.c">
+      <Filter>Source Files\multpoly\multpolytest</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\multpoly\multpolytest\alg_bivtst2.c">
+      <Filter>Source Files\multpoly\multpolytest</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\multpoly\multpolytest\alg_bivtst3.c">
+      <Filter>Source Files\multpoly\multpolytest</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\multpoly\multpolytest\sm_dmp0pkgt.c">
+      <Filter>Source Files\multpoly\multpolytest</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\multpoly\multpolytest\sm_exppkgt.c">
+      <Filter>Source Files\multpoly\multpolytest</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\multpoly\multpolytest\sm_pr0pkgt.c">
+      <Filter>Source Files\multpoly\multpolytest</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\numbers\sit_primes.c">
+      <Filter>Source Files\numbers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\numbers\sit_primgen.c">
+      <Filter>Source Files\numbers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\numbers\sit_prmroot.c">
+      <Filter>Source Files\numbers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\numbers\sit_prmtabl.c">
+      <Filter>Source Files\numbers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\polyfactor0\sit_fhensel.c">
+      <Filter>Source Files\polyfactor0</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\polyfactor0\sit_zfactor.c">
+      <Filter>Source Files\polyfactor0</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\polyfactor0\sit_zfring.c">
+      <Filter>Source Files\polyfactor0</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\polyfactor0\sit_zfringg.c">
+      <Filter>Source Files\polyfactor0</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\series\alg_serpoly.c">
+      <Filter>Source Files\series</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\series\compbug\sit_duts.c">
+      <Filter>Source Files\series\compbug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\series\sit_seqence.c">
+      <Filter>Source Files\series</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\series\sit_sercat.c">
+      <Filter>Source Files\series</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\univpoly\alg_sup0.c">
+      <Filter>Source Files\univpoly</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\univpoly\alg_sup1.c">
+      <Filter>Source Files\univpoly</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\univpoly\alg_sup.c">
+      <Filter>Source Files\univpoly</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\univpoly\alg_unitool.c">
+      <Filter>Source Files\univpoly</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\univpoly\alg_uprcr.c">
+      <Filter>Source Files\univpoly</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\univpoly\categories\alg_chrem2.c">
+      <Filter>Source Files\univpoly\categories</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\univpoly\categories\alg_modgcdp.c">
+      <Filter>Source Files\univpoly\categories</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\univpoly\categories\alg_polydio.c">
+      <Filter>Source Files\univpoly\categories</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\univpoly\categories\sit_fftring.c">
+      <Filter>Source Files\univpoly\categories</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\univpoly\categories\sit_fring.c">
+      <Filter>Source Files\univpoly\categories</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\univpoly\categories\sit_froot.c">
+      <Filter>Source Files\univpoly\categories</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\univpoly\categories\sit_resprs.c">
+      <Filter>Source Files\univpoly\categories</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\univpoly\categories\sit_sqfree.c">
+      <Filter>Source Files\univpoly\categories</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\univpoly\categories\sit_ufalg.c">
+      <Filter>Source Files\univpoly\categories</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\univpoly\categories\sit_uffalg.c">
+      <Filter>Source Files\univpoly\categories</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\univpoly\categories\sit_ugring.c">
+      <Filter>Source Files\univpoly\categories</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\univpoly\categories\sit_umonom.c">
+      <Filter>Source Files\univpoly\categories</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\univpoly\categories\sit_upolalg.c">
+      <Filter>Source Files\univpoly\categories</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\univpoly\categories\sit_upolc0.c">
+      <Filter>Source Files\univpoly\categories</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\univpoly\categories\sit_zring.c">
+      <Filter>Source Files\univpoly\categories</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\univpoly\gcd\sit_gcdint.c">
+      <Filter>Source Files\univpoly\gcd</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\univpoly\gcd\sit_gcdintg.c">
+      <Filter>Source Files\univpoly\gcd</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\univpoly\gcd\sit_heugcd.c">
+      <Filter>Source Files\univpoly\gcd</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\univpoly\gcd\sit_modgcd.c">
+      <Filter>Source Files\univpoly\gcd</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\univpoly\gcd\sit_modpgcd.c">
+      <Filter>Source Files\univpoly\gcd</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\univpoly\sit_dup.c">
+      <Filter>Source Files\univpoly</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\univpoly\sit_polkara.c">
+      <Filter>Source Files\univpoly</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\univpoly\sit_spread.c">
+      <Filter>Source Files\univpoly</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\univpoly\sit_ufacpol.c">
+      <Filter>Source Files\univpoly</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\univpoly\sit_upolc.c">
+      <Filter>Source Files\univpoly</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\util\alg_version.c">
+      <Filter>Source Files\util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\aldor\lib\algebra\src\polyfactorp\sit_upfactp.c">
+      <Filter>Source Files\polyfactorp</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,143 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{D23B3D0A-3E80-4451-B834-62925CDB1614}</ProjectGuid>
+    <RootNamespace>libaldor</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>..\..\aldor\aldor\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\aldor\lib\aldor\src\arith\sal_arith.c" />
+    <ClCompile Include="..\..\aldor\lib\aldor\src\arith\sal_binpow.c" />
+    <ClCompile Include="..\..\aldor\lib\aldor\src\arith\sal_bool.c" />
+    <ClCompile Include="..\..\aldor\lib\aldor\src\arith\sal_bsearch.c" />
+    <ClCompile Include="..\..\aldor\lib\aldor\src\arith\sal_complex.c" />
+    <ClCompile Include="..\..\aldor\lib\aldor\src\arith\sal_dfloat.c" />
+    <ClCompile Include="..\..\aldor\lib\aldor\src\arith\sal_fltcat.c" />
+    <ClCompile Include="..\..\aldor\lib\aldor\src\arith\sal_ftools.c" />
+    <ClCompile Include="..\..\aldor\lib\aldor\src\arith\sal_int.c" />
+    <ClCompile Include="..\..\aldor\lib\aldor\src\arith\sal_intcat.c" />
+    <ClCompile Include="..\..\aldor\lib\aldor\src\arith\sal_itools.c" />
+    <ClCompile Include="..\..\aldor\lib\aldor\src\arith\sal_lincomb.c" />
+    <ClCompile Include="..\..\aldor\lib\aldor\src\arith\sal_mint.c" />
+    <ClCompile Include="..\..\aldor\lib\aldor\src\arith\sal_oarith.c" />
+    <ClCompile Include="..\..\aldor\lib\aldor\src\arith\sal_pointer.c" />
+    <ClCompile Include="..\..\aldor\lib\aldor\src\arith\sal_random.c" />
+    <ClCompile Include="..\..\aldor\lib\aldor\src\arith\sal_segment.c" />
+    <ClCompile Include="..\..\aldor\lib\aldor\src\arith\sal_sfloat.c" />
+    <ClCompile Include="..\..\aldor\lib\aldor\src\base\ald_pfunc.c" />
+    <ClCompile Include="..\..\aldor\lib\aldor\src\base\sal_base.c" />
+    <ClCompile Include="..\..\aldor\lib\aldor\src\base\sal_bstream.c" />
+    <ClCompile Include="..\..\aldor\lib\aldor\src\base\sal_byte.c" />
+    <ClCompile Include="..\..\aldor\lib\aldor\src\base\sal_char.c" />
+    <ClCompile Include="..\..\aldor\lib\aldor\src\base\sal_copy.c" />
+    <ClCompile Include="..\..\aldor\lib\aldor\src\base\sal_gener.c" />
+    <ClCompile Include="..\..\aldor\lib\aldor\src\base\sal_htype.c" />
+    <ClCompile Include="..\..\aldor\lib\aldor\src\base\sal_itype.c" />
+    <ClCompile Include="..\..\aldor\lib\aldor\src\base\sal_manip.c" />
+    <ClCompile Include="..\..\aldor\lib\aldor\src\base\sal_order.c" />
+    <ClCompile Include="..\..\aldor\lib\aldor\src\base\sal_otype.c" />
+    <ClCompile Include="..\..\aldor\lib\aldor\src\base\sal_partial.c" />
+    <ClCompile Include="..\..\aldor\lib\aldor\src\base\sal_serial.c" />
+    <ClCompile Include="..\..\aldor\lib\aldor\src\base\sal_syntax.c" />
+    <ClCompile Include="..\..\aldor\lib\aldor\src\base\sal_torder.c" />
+    <ClCompile Include="..\..\aldor\lib\aldor\src\base\sal_tstream.c" />
+    <ClCompile Include="..\..\aldor\lib\aldor\src\datastruc\ald_flags.c" />
+    <ClCompile Include="..\..\aldor\lib\aldor\src\datastruc\ald_queue.c" />
+    <ClCompile Include="..\..\aldor\lib\aldor\src\datastruc\ald_symbol.c" />
+    <ClCompile Include="..\..\aldor\lib\aldor\src\datastruc\ald_symtab.c" />
+    <ClCompile Include="..\..\aldor\lib\aldor\src\datastruc\sal_array.c" />
+    <ClCompile Include="..\..\aldor\lib\aldor\src\datastruc\sal_barray.c" />
+    <ClCompile Include="..\..\aldor\lib\aldor\src\datastruc\sal_bdata.c" />
+    <ClCompile Include="..\..\aldor\lib\aldor\src\datastruc\sal_bstruc.c" />
+    <ClCompile Include="..\..\aldor\lib\aldor\src\datastruc\sal_ckarray.c" />
+    <ClCompile Include="..\..\aldor\lib\aldor\src\datastruc\sal_cklist.c" />
+    <ClCompile Include="..\..\aldor\lib\aldor\src\datastruc\sal_ckmembk.c" />
+    <ClCompile Include="..\..\aldor\lib\aldor\src\datastruc\sal_data.c" />
+    <ClCompile Include="..\..\aldor\lib\aldor\src\datastruc\sal_ddata.c" />
+    <ClCompile Include="..\..\aldor\lib\aldor\src\datastruc\sal_fstruc.c" />
+    <ClCompile Include="..\..\aldor\lib\aldor\src\datastruc\sal_hash.c" />
+    <ClCompile Include="..\..\aldor\lib\aldor\src\datastruc\sal_kntry.c" />
+    <ClCompile Include="..\..\aldor\lib\aldor\src\datastruc\sal_list.c" />
+    <ClCompile Include="..\..\aldor\lib\aldor\src\datastruc\sal_lstruc.c" />
+    <ClCompile Include="..\..\aldor\lib\aldor\src\datastruc\sal_memblk.c" />
+    <ClCompile Include="..\..\aldor\lib\aldor\src\datastruc\sal_parray.c" />
+    <ClCompile Include="..\..\aldor\lib\aldor\src\datastruc\sal_pkarray.c" />
+    <ClCompile Include="..\..\aldor\lib\aldor\src\datastruc\sal_set.c" />
+    <ClCompile Include="..\..\aldor\lib\aldor\src\datastruc\sal_slist.c" />
+    <ClCompile Include="..\..\aldor\lib\aldor\src\datastruc\sal_sortas.c" />
+    <ClCompile Include="..\..\aldor\lib\aldor\src\datastruc\sal_sset.c" />
+    <ClCompile Include="..\..\aldor\lib\aldor\src\datastruc\sal_stream.c" />
+    <ClCompile Include="..\..\aldor\lib\aldor\src\datastruc\sal_string.c" />
+    <ClCompile Include="..\..\aldor\lib\aldor\src\datastruc\sal_table.c" />
+    <ClCompile Include="..\..\aldor\lib\aldor\src\gmp\sal_fltgmp.c" />
+    <ClCompile Include="..\..\aldor\lib\aldor\src\gmp\sal_gmptls.c" />
+    <ClCompile Include="..\..\aldor\lib\aldor\src\gmp\sal_intgmp.c" />
+    <ClCompile Include="..\..\aldor\lib\aldor\src\lang\sal_lang.c" />
+    <ClCompile Include="..\..\aldor\lib\aldor\src\util\ald_trace.c" />
+    <ClCompile Include="..\..\aldor\lib\aldor\src\util\eio_rsto.c" />
+    <ClCompile Include="..\..\aldor\lib\aldor\src\util\rtexns.c" />
+    <ClCompile Include="..\..\aldor\lib\aldor\src\util\sal_agat.c" />
+    <ClCompile Include="..\..\aldor\lib\aldor\src\util\sal_cmdline.c" />
+    <ClCompile Include="..\..\aldor\lib\aldor\src\util\sal_file.c" />
+    <ClCompile Include="..\..\aldor\lib\aldor\src\util\sal_timer.c" />
+    <ClCompile Include="..\..\aldor\lib\aldor\src\util\sal_util.c" />
+    <ClCompile Include="..\..\aldor\lib\aldor\src\util\sal_version.c" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
