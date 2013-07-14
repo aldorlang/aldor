@@ -6,8 +6,6 @@ libaldor_HEADERS =	\
 	aldorio.as	\
 	aldortest.as
 
-libaldor_HEADERS := $(addprefix $(INCDIR)/, $(libaldor_HEADERS))
-
 # Copy includes
 $(INCDIR)/aldor.as: $(THIS)aldor.as
 	cp $< $@

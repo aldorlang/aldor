@@ -1,6 +1,4 @@
-*.fm
-*.c
-*.dep
-*.dep_tmp
 /Makefile.in
 Makefile
+*.dep
+*.dep_tmp

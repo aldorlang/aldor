@@ -52,179 +52,160 @@ libaxllib_ASOURCES :=	\
 	tuple.as	\
 	uarray.as
 
-libaxllib_ASOURCES := $(addprefix $(THIS), $(libaxllib_ASOURCES))
-
-libaxllib_AOBJECTS := $(libaxllib_ASOURCES:.as=.ao)
-libaxllib_COBJECTS := $(libaxllib_ASOURCES:.as=$(OBJEXT))
-
-
-# C library
-$(LIBDIR)/libaxllib$(LIBEXT): $(libaxllib_COBJECTS)
-	$(AR) cr $@ $^
-
-# Local aldor build rule
-$(THIS)%$(OBJEXT): $(THIS)%.as $(BINDIR)/aldor$(EXEEXT) $(BINDIR)/unicl$(EXEEXT) $(aldor_HEADERS) $(INCDIR)/axllib.as
-	$(BINDIR)/aldor$(EXEEXT) $(AFLAGS) $<
-	$(AR) cr $(LIBDIR)/libaxllib.al $(@:$(OBJEXT)=.ao)
+libaxllib_INCLUDES := $(INCDIR)/axllib.as
 
 # Copy includes
 $(INCDIR)/axllib.as: $(THIS)axllib.as
-	cp $< $@
+	cp $$< $$@
 
-# Clean
-clean: clean-libaxllib
-clean-libaxllib:
-	$(RM) $(libaxllib_AOBJECTS)
-	$(RM) $(libaxllib_COBJECTS)
-	$(RM) $(libaxllib_ASOURCES:.as=.c)
-	$(RM) $(LIBDIR)/libaxllib$(LIBEXT) $(LIBDIR)/libaxllib.al
+$(eval $(call aldor-target,axllib))
 
 # Depend
-$(THIS)array$(OBJEXT):	\
-	$(THIS)langx$(OBJEXT)	\
-	$(THIS)parray$(OBJEXT)
-$(THIS)axlcat$(OBJEXT):	\
-	$(THIS)basic$(OBJEXT)
-$(THIS)list2$(OBJEXT):	\
-	$(THIS)list$(OBJEXT)
-$(THIS)ieeectl$(OBJEXT):	\
-	$(THIS)axlcat$(OBJEXT)\
-	$(THIS)dfloat$(OBJEXT)
-$(THIS)basic$(OBJEXT):	\
-	$(THIS)machine$(OBJEXT)
-$(THIS)axl_boolean$(OBJEXT):	\
-	$(THIS)lang$(OBJEXT)	\
-	$(THIS)axlcat$(OBJEXT)
-$(THIS)bpower$(OBJEXT):	\
-	$(THIS)sinteger$(OBJEXT)
-$(THIS)axl_byte$(OBJEXT):	\
-	$(THIS)sinteger$(OBJEXT)
-$(THIS)axl_char$(OBJEXT):	\
-	$(THIS)integer$(OBJEXT)	\
-	$(THIS)segment$(OBJEXT)
-$(THIS)complex$(OBJEXT):	\
-	$(THIS)langx$(OBJEXT)	\
-	$(THIS)bpower$(OBJEXT)	\
-	$(THIS)integer$(OBJEXT)	\
-	$(THIS)string$(OBJEXT)
-$(THIS)debug$(OBJEXT):	\
-	$(THIS)langx$(OBJEXT)	\
-	$(THIS)textwrit$(OBJEXT)
-$(THIS)dfloat$(OBJEXT):	\
-	$(THIS)langx$(OBJEXT)	\
-	$(THIS)sfloat$(OBJEXT)
-$(THIS)efuns$(OBJEXT):	\
-	$(THIS)complex$(OBJEXT)	\
-	$(THIS)except$(OBJEXT)	\
-	$(THIS)dfloat$(OBJEXT)	\
-	$(THIS)textwrit$(OBJEXT)
-$(THIS)except$(OBJEXT):	\
-	$(THIS)axlcat$(OBJEXT)
-$(THIS)file$(OBJEXT):	\
-	$(THIS)pointer$(OBJEXT)	\
-	$(THIS)array$(OBJEXT)	\
-	$(THIS)fname$(OBJEXT)	\
-	$(THIS)axl_char$(OBJEXT)
-$(THIS)axl_float$(OBJEXT):	\
-	$(THIS)format$(OBJEXT)	\
-	$(THIS)except$(OBJEXT)	\
-	$(THIS)integer$(OBJEXT)	\
-	$(THIS)fprint$(OBJEXT)	\
-	$(THIS)segment$(OBJEXT)
-$(THIS)fmtout$(OBJEXT):	\
-	$(THIS)textwrit$(OBJEXT)
-$(THIS)fname$(OBJEXT):	\
-	$(THIS)oslow$(OBJEXT)
-$(THIS)format$(OBJEXT):	\
-	$(THIS)axl_char$(OBJEXT)	\
-	$(THIS)dfloat$(OBJEXT)	\
-	$(THIS)textwrit$(OBJEXT)
-$(THIS)fprint$(OBJEXT):	\
-	$(THIS)langx$(OBJEXT)	\
-	$(THIS)string$(OBJEXT)
-$(THIS)fstring$(OBJEXT):	\
-	$(THIS)textwrit$(OBJEXT)
-$(THIS)gener$(OBJEXT):	\
-	$(THIS)basic$(OBJEXT)
-$(THIS)hinteger$(OBJEXT):	\
-	$(THIS)sinteger$(OBJEXT)
-$(THIS)imod$(OBJEXT):	\
-	$(THIS)bpower$(OBJEXT)	\
-	$(THIS)integer$(OBJEXT)	\
-	$(THIS)axlcat$(OBJEXT)	\
-	$(THIS)segment$(OBJEXT)
-$(THIS)integer$(OBJEXT):	\
-	$(THIS)sinteger$(OBJEXT)
-$(THIS)langx$(OBJEXT):	\
-	$(THIS)axlcat$(OBJEXT)	\
-	$(THIS)segment$(OBJEXT)	\
-	$(THIS)list$(OBJEXT)
-$(THIS)list$(OBJEXT):	\
-	$(THIS)pointer$(OBJEXT)	\
-	$(THIS)sinteger$(OBJEXT)	\
-	$(THIS)tuple$(OBJEXT)
-$(THIS)machine$(OBJEXT):	\
-	$(THIS)lang$(OBJEXT)
-$(THIS)object$(OBJEXT):	\
-	$(THIS)langx$(OBJEXT)
-$(THIS)opsys$(OBJEXT):	\
-	$(THIS)file$(OBJEXT)
-$(THIS)oslow$(OBJEXT):	\
-	$(THIS)langx$(OBJEXT)	\
-	$(THIS)string$(OBJEXT)
-$(THIS)parray$(OBJEXT):	\
-	$(THIS)integer$(OBJEXT)
-$(THIS)partial$(OBJEXT):	\
-	$(THIS)pointer$(OBJEXT)	\
-	$(THIS)machine$(OBJEXT)	\
-	$(THIS)string$(OBJEXT)
-$(THIS)pfloat$(OBJEXT):	\
-	$(THIS)format$(OBJEXT)	\
-	$(THIS)except$(OBJEXT)	\
-	$(THIS)fprint$(OBJEXT)
-$(THIS)pkarray$(OBJEXT):	\
-	$(THIS)sinteger$(OBJEXT)	\
-	$(THIS)axlcat$(OBJEXT)
-$(THIS)pointer$(OBJEXT):	\
-	$(THIS)axl_boolean$(OBJEXT)
-$(THIS)ratio$(OBJEXT):	\
-	$(THIS)langx$(OBJEXT)	\
-	$(THIS)string$(OBJEXT)	\
-	$(THIS)bpower$(OBJEXT)	\
-	$(THIS)integer$(OBJEXT)
-$(THIS)ref$(OBJEXT):	\
-	$(THIS)basic$(OBJEXT)
-$(THIS)segment$(OBJEXT):	\
-	$(THIS)axl_boolean$(OBJEXT)	\
-	$(THIS)gener$(OBJEXT)
-$(THIS)sfloat$(OBJEXT):	\
-	$(THIS)bpower$(OBJEXT)	\
-	$(THIS)integer$(OBJEXT)	\
-	$(THIS)string$(OBJEXT)
-$(THIS)sinteger$(OBJEXT):	\
-	$(THIS)segment$(OBJEXT)
-$(THIS)sort$(OBJEXT):	\
-	$(THIS)string$(OBJEXT)	\
-	$(THIS)list$(OBJEXT)
-$(THIS)string$(OBJEXT):	\
-	$(THIS)array$(OBJEXT)	\
-	$(THIS)axl_char$(OBJEXT)	\
-	$(THIS)tuple$(OBJEXT)	\
-	$(THIS)axlcat$(OBJEXT)
-$(THIS)table$(OBJEXT):	\
-	$(THIS)sfloat$(OBJEXT)	\
-	$(THIS)list$(OBJEXT)	\
-	$(THIS)textwrit$(OBJEXT)
-$(THIS)textread$(OBJEXT):	\
-	$(THIS)string$(OBJEXT)	\
-	$(THIS)file$(OBJEXT)
-$(THIS)textwrit$(OBJEXT):	\
-	$(THIS)opsys$(OBJEXT)	\
-	$(THIS)string$(OBJEXT)
-$(THIS)tuple$(OBJEXT):	\
-	$(THIS)basic$(OBJEXT)
-$(THIS)uarray$(OBJEXT):	\
-	$(THIS)sinteger$(OBJEXT)
-$(THIS)rtexns$(OBJEXT):	\
-	$(THIS)langx$(OBJEXT)	\
-	$(THIS)textwrit$(OBJEXT)
+$(THIS)array.ao:	\
+	$(THIS)langx.ao	\
+	$(THIS)parray.ao
+$(THIS)axlcat.ao:	\
+	$(THIS)basic.ao
+$(THIS)list2.ao:	\
+	$(THIS)list.ao
+$(THIS)ieeectl.ao:	\
+	$(THIS)axlcat.ao\
+	$(THIS)dfloat.ao
+$(THIS)basic.ao:	\
+	$(THIS)machine.ao
+$(THIS)axl_boolean.ao:	\
+	$(THIS)lang.ao	\
+	$(THIS)axlcat.ao
+$(THIS)bpower.ao:	\
+	$(THIS)sinteger.ao
+$(THIS)axl_byte.ao:	\
+	$(THIS)sinteger.ao
+$(THIS)axl_char.ao:	\
+	$(THIS)integer.ao	\
+	$(THIS)segment.ao
+$(THIS)complex.ao:	\
+	$(THIS)langx.ao	\
+	$(THIS)bpower.ao	\
+	$(THIS)integer.ao	\
+	$(THIS)string.ao
+$(THIS)debug.ao:	\
+	$(THIS)langx.ao	\
+	$(THIS)textwrit.ao
+$(THIS)dfloat.ao:	\
+	$(THIS)langx.ao	\
+	$(THIS)sfloat.ao
+$(THIS)efuns.ao:	\
+	$(THIS)complex.ao	\
+	$(THIS)except.ao	\
+	$(THIS)dfloat.ao	\
+	$(THIS)textwrit.ao
+$(THIS)except.ao:	\
+	$(THIS)axlcat.ao
+$(THIS)file.ao:	\
+	$(THIS)pointer.ao	\
+	$(THIS)array.ao	\
+	$(THIS)fname.ao	\
+	$(THIS)axl_char.ao
+$(THIS)axl_float.ao:	\
+	$(THIS)format.ao	\
+	$(THIS)except.ao	\
+	$(THIS)integer.ao	\
+	$(THIS)fprint.ao	\
+	$(THIS)segment.ao
+$(THIS)fmtout.ao:	\
+	$(THIS)textwrit.ao
+$(THIS)fname.ao:	\
+	$(THIS)oslow.ao
+$(THIS)format.ao:	\
+	$(THIS)axl_char.ao	\
+	$(THIS)dfloat.ao	\
+	$(THIS)textwrit.ao
+$(THIS)fprint.ao:	\
+	$(THIS)langx.ao	\
+	$(THIS)string.ao
+$(THIS)fstring.ao:	\
+	$(THIS)textwrit.ao
+$(THIS)gener.ao:	\
+	$(THIS)basic.ao
+$(THIS)hinteger.ao:	\
+	$(THIS)sinteger.ao
+$(THIS)imod.ao:	\
+	$(THIS)bpower.ao	\
+	$(THIS)integer.ao	\
+	$(THIS)axlcat.ao	\
+	$(THIS)segment.ao
+$(THIS)integer.ao:	\
+	$(THIS)sinteger.ao
+$(THIS)langx.ao:	\
+	$(THIS)axlcat.ao	\
+	$(THIS)segment.ao	\
+	$(THIS)list.ao
+$(THIS)list.ao:	\
+	$(THIS)pointer.ao	\
+	$(THIS)sinteger.ao	\
+	$(THIS)tuple.ao
+$(THIS)machine.ao:	\
+	$(THIS)lang.ao
+$(THIS)object.ao:	\
+	$(THIS)langx.ao
+$(THIS)opsys.ao:	\
+	$(THIS)file.ao
+$(THIS)oslow.ao:	\
+	$(THIS)langx.ao	\
+	$(THIS)string.ao
+$(THIS)parray.ao:	\
+	$(THIS)integer.ao
+$(THIS)partial.ao:	\
+	$(THIS)pointer.ao	\
+	$(THIS)machine.ao	\
+	$(THIS)string.ao
+$(THIS)pfloat.ao:	\
+	$(THIS)format.ao	\
+	$(THIS)except.ao	\
+	$(THIS)fprint.ao
+$(THIS)pkarray.ao:	\
+	$(THIS)sinteger.ao	\
+	$(THIS)axlcat.ao
+$(THIS)pointer.ao:	\
+	$(THIS)axl_boolean.ao
+$(THIS)ratio.ao:	\
+	$(THIS)langx.ao	\
+	$(THIS)string.ao	\
+	$(THIS)bpower.ao	\
+	$(THIS)integer.ao
+$(THIS)ref.ao:	\
+	$(THIS)basic.ao
+$(THIS)segment.ao:	\
+	$(THIS)axl_boolean.ao	\
+	$(THIS)gener.ao
+$(THIS)sfloat.ao:	\
+	$(THIS)bpower.ao	\
+	$(THIS)integer.ao	\
+	$(THIS)string.ao
+$(THIS)sinteger.ao:	\
+	$(THIS)segment.ao
+$(THIS)sort.ao:	\
+	$(THIS)string.ao	\
+	$(THIS)list.ao
+$(THIS)string.ao:	\
+	$(THIS)array.ao	\
+	$(THIS)axl_char.ao	\
+	$(THIS)tuple.ao	\
+	$(THIS)axlcat.ao
+$(THIS)table.ao:	\
+	$(THIS)sfloat.ao	\
+	$(THIS)list.ao	\
+	$(THIS)textwrit.ao
+$(THIS)textread.ao:	\
+	$(THIS)string.ao	\
+	$(THIS)file.ao
+$(THIS)textwrit.ao:	\
+	$(THIS)opsys.ao	\
+	$(THIS)string.ao
+$(THIS)tuple.ao:	\
+	$(THIS)basic.ao
+$(THIS)uarray.ao:	\
+	$(THIS)sinteger.ao
+$(THIS)rtexns.ao:	\
+	$(THIS)langx.ao	\
+	$(THIS)textwrit.ao

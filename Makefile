@@ -33,15 +33,7 @@ LIBDIR = $(ALDORROOT)/lib
 
 export PATH := $(BINDIR):$(PATH)
 
-AFLAGS =			\
-	-I $(INCDIR)		\
-	-Y $(LIBDIR)		\
-	-Y $(dir $@)		\
-	-Q8 -Qinline-all	\
-	-fao=$(@:$(OBJEXT)=.ao)	\
-	-fo=$@
-
-TARGETS =			\
+TARGETS =				\
 	$(BINDIR)/aldor$(EXEEXT)	\
 	$(LIBDIR)/libaldor$(LIBEXT)	\
 	$(LIBDIR)/libalgebra$(LIBEXT)	\
@@ -58,6 +50,7 @@ RLWRAP = $(shell which rlwrap)
 loop:
 	$(RLWRAP) $(BINDIR)/aldor -Y $(LIBDIR) -I $(INCDIR) -Gloop
 
+include aldor.mk
 include aldor/Rules.mk
 
 -include init

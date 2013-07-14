@@ -1,5 +1,6 @@
+/Makefile.in
+/Makefile
 *.fm
 *.c
 *.dep
 *.dep_tmp
-/Makefile.in

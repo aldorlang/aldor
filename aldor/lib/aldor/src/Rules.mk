@@ -80,32 +80,11 @@ libaldor_ASOURCES :=	\
 libaldor_CSOURCES =		\
 	util/sal_util.c
 
-libaldor_ASOURCES := $(addprefix $(THIS), $(libaldor_ASOURCES))
-libaldor_CSOURCES := $(addprefix $(THIS), $(libaldor_CSOURCES))
-
-libaldor_AOBJECTS := $(libaldor_ASOURCES:.as=.ao)
-libaldor_COBJECTS := $(libaldor_ASOURCES:.as=$(OBJEXT)) $(libaldor_CSOURCES:.c=$(OBJEXT))
-
-
-# C library
-$(LIBDIR)/libaldor$(LIBEXT): $(libaldor_COBJECTS)
-	$(AR) cr $@ $^
+$(eval $(call aldor-target,aldor))
 
 $(LIBDIR)/aldor_%.ao: $(THIS)/aldor_%.as $(BINDIR)/aldor$(EXEEXT) $(LIBDIR)/libaldor$(LIBEXT)
 	$(BINDIR)/aldor$(EXEEXT) -Y $(LIBDIR) -I $(INCDIR) -Fao=$@ $<
 
-# Local aldor build rule
-$(THIS)%$(OBJEXT): $(THIS)%.as $(BINDIR)/aldor$(EXEEXT) $(BINDIR)/unicl$(EXEEXT) $(aldor_HEADERS) $(libaldor_HEADERS)
-	$(BINDIR)/aldor$(EXEEXT) $(AFLAGS) $<
-	$(AR) cr $(LIBDIR)/libaldor.al $(@:$(OBJEXT)=.ao)
-
-# Clean
-clean: clean-libaldor
-clean-libaldor:
-	$(RM) $(libaldor_AOBJECTS)
-	$(RM) $(libaldor_COBJECTS)
-	$(RM) $(libaldor_ASOURCES:.as=.c)
-	$(RM) $(LIBDIR)/libaldor$(LIBEXT) $(LIBDIR)/libaldor.al
 
 # Depend
 $(THIS)arith/sal_arith$(OBJEXT):	\

@@ -17,32 +17,13 @@ libaxldem_ASOURCES :=	\
 	spf.as	\
 	vector.as
 
-libaxldem_ASOURCES := $(addprefix $(THIS), $(libaxldem_ASOURCES))
-
-libaxldem_AOBJECTS := $(libaxldem_ASOURCES:.as=.ao)
-libaxldem_COBJECTS := $(libaxldem_ASOURCES:.as=$(OBJEXT))
-
-
-# C library
-$(LIBDIR)/libaxldem$(LIBEXT): $(libaxldem_COBJECTS)
-	$(AR) cr $@ $^
-
-# Local aldor build rule
-$(THIS)%$(OBJEXT): $(THIS)%.as $(BINDIR)/aldor$(EXEEXT) $(BINDIR)/unicl$(EXEEXT) $(aldor_HEADERS) $(INCDIR)/axldem.as
-	$(BINDIR)/aldor$(EXEEXT) $(AFLAGS) $<
-	$(AR) cr $(LIBDIR)/libaxldem.al $(@:$(OBJEXT)=.ao)
+libaxldem_HEADERS := axldem.as
 
 # Copy includes
 $(INCDIR)/axldem.as: $(THIS)axldem.as
 	cp $< $@
 
-# Clean
-clean: clean-libaxldem
-clean-libaxldem:
-	$(RM) $(libaxldem_AOBJECTS)
-	$(RM) $(libaxldem_COBJECTS)
-	$(RM) $(libaxldem_ASOURCES:.as=.c)
-	$(RM) $(LIBDIR)/libaxldem$(LIBEXT) $(LIBDIR)/libaxldem.al
+$(eval $(call aldor-target,axldem))
 
 # Depend
 $(THIS)dirprod$(OBJEXT):	\
