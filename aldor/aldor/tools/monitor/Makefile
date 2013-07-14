@@ -65,7 +65,7 @@ trace: all
 
 upload: all
 	sh perms.rt
-	rsync -avP --delete eval/ ra:public_html/eval
+	rsync -avP eval/ ra:public_html/eval
 
 memcheck: all
 	sudo valgrind --num-callers=20 --leak-check=full --leak-resolution=high perl evaluator
@@ -75,7 +75,7 @@ src/syscalls$(ARCH).C: src/getsyscalls
 
 eval/bin/Evaluator.so: Evaluator.o syscalls$(ARCH).o
 	echo "  LD  $@"
-	${CXX} -shared ${OPTS} ${CXXFLAGS} $+ -o $@ ${PERLLIB}
+	${CXX} -shared ${CXXFLAGS} $+ -o $@ ${PERLLIB}
 
 eval/bin/evaluator: src/evaluator
 	cp $< $@
@@ -106,5 +106,25 @@ clean:
 
 distclean:
 	rm -f eval/bin/* .depend
+
+rt:
+	if [ -z "$(ALDORROOT)" ]; then					\
+	  echo 'Please set $$ALDORROOT before running "make rt"';	\
+	  false;							\
+	fi
+	mkdir -p eval/rt64/bin
+	mkdir -p eval/rt64/include
+	mkdir -p eval/rt64/lib/x86_64-linux-gnu
+	mkdir -p eval/rt64/lib64
+	echo "Installing compiler and libraries"
+	cp $(ALDORROOT)/bin/aldor eval/rt64/bin/
+	cp $(ALDORROOT)/include/*.as eval/rt64/include/
+	cp $(ALDORROOT)/include/aldor.conf eval/rt64/include/
+	cp $(ALDORROOT)/include/sample.terminfo eval/rt64/include/
+	cp $(ALDORROOT)/lib/*.a[lo] eval/rt64/lib/
+	echo "Installing minimal Linux environment"
+	cp /lib/x86_64-linux-gnu/ld-linux-x86-64.so.2 eval/rt64/lib/x86_64-linux-gnu/
+	cp /lib/x86_64-linux-gnu/libc.so.6 eval/rt64/lib/x86_64-linux-gnu/
+	ln -sf /lib/x86_64-linux-gnu/ld-linux-x86-64.so.2 eval/rt64/lib64/
 
 Evaluator.o: src/syscalls.h

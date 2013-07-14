@@ -52,11 +52,11 @@ libaxllib_ASOURCES :=	\
 	tuple.as	\
 	uarray.as
 
-libaxllib_INCLUDES := $(INCDIR)/axllib.as
+libaxllib_HEADERS := axllib.as
 
 # Copy includes
 $(INCDIR)/axllib.as: $(THIS)axllib.as
-	cp $$< $$@
+	cp $< $@
 
 $(eval $(call aldor-target,axllib))
 
