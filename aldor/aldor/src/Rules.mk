@@ -175,7 +175,9 @@ aldor_HEADERS =	\
 	foam_c.h	\
 	foamopt.h	\
 	optcfg.h	\
-	aldor.conf
+	aldor.conf	\
+	basic.typ	\
+	sample.terminfo
 
 aldor_BUILT_SOURCES := $(THIS)comsgdb.h $(THIS)comsgdb.c
 
