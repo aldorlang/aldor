@@ -123,8 +123,13 @@ rt:
 	cp $(ALDORROOT)/include/sample.terminfo eval/rt64/include/
 	cp $(ALDORROOT)/lib/*.a[lo] eval/rt64/lib/
 	echo "Installing minimal Linux environment"
-	cp /lib/x86_64-linux-gnu/ld-linux-x86-64.so.2 eval/rt64/lib/x86_64-linux-gnu/
-	cp /lib/x86_64-linux-gnu/libc.so.6 eval/rt64/lib/x86_64-linux-gnu/
-	ln -sf /lib/x86_64-linux-gnu/ld-linux-x86-64.so.2 eval/rt64/lib64/
+	# symlinks
+	cp -a /lib/x86_64-linux-gnu/libc.so.6 eval/rt64/lib/x86_64-linux-gnu/
+	cp -a /lib/x86_64-linux-gnu/libm.so.6 eval/rt64/lib/x86_64-linux-gnu/
+	cp -a /lib64/ld-linux-x86-64.so.2 eval/rt64/lib64/
+	# actual libraries
+	cp -a /lib/x86_64-linux-gnu/ld-*.so eval/rt64/lib/x86_64-linux-gnu/
+	cp -a /lib/x86_64-linux-gnu/libc-*.so eval/rt64/lib/x86_64-linux-gnu/
+	cp -a /lib/x86_64-linux-gnu/libm-*.so eval/rt64/lib/x86_64-linux-gnu/
 
 Evaluator.o: src/syscalls.h
