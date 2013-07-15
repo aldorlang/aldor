@@ -1,0 +1,92 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+   <head>
+      <link rel="stylesheet" href="http://xinutec.org/~pippijn/static/css/home.css" type="text/css" media="screen"/>
+      <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+      <title>Run Aldor code</title>
+   </head>
+
+   <body>
+
+      <div id="header">
+         <h1><a href="/">Aldor</a></h1>
+         <p id="slogan">Programming Language</p>
+      </div>
+
+      <div id="sidebar">
+         <h2>Menu</h2>
+         <div>
+            <ul id="main-menu" class="menu level-1">
+  <li>
+    <a href="/">Home</a>
+  </li>
+  <li>
+    <a href="/users">Using Aldor</a>
+    <ul class="menu level-3">
+      <li>
+        <a href="https://github.com/pippijn/aldor/wiki">Community wiki</a>
+      </li>
+      <li>
+        <a href="http://www.aldor.org/docs/aldorug.pdf">Aldor User Guide</a>
+      </li>
+    </ul>
+  </li>
+  <li>
+    <a href="/devel">Development</a>
+    <ul class="menu level-3">
+      <li>
+        <a href="/eval">Try Aldor</a>
+      </li>
+      <li>
+        <a href="https://github.com/pippijn/aldor">Source repository</a>
+      </li>
+      <li>
+        <a href="https://groups.google.com/forum/%23!forum/aldor-devel">Mailing list</a>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+         </div>
+      </div>
+
+      <div id="content">
+         <h2>Run Aldor code</h2>
+         <link rel="stylesheet" href="aldor.css" type="text/css" media="screen"/>
+<script src="aldor.js"></script>
+
+<div id="snippets">
+   <h2>Code snippets</h2>
+   <ul>
+      <li><a>Examples</a>
+         <ul id="examples">
+            <li><a href="#">intro</a></li>
+            <li><a href="#">sieve</a></li>
+         </ul>
+      </li>
+      <li><a>My snippets</a>
+         <ul id="userdef">
+         </ul>
+      </li>
+   </ul>
+</div>
+
+
+<form id="form">
+   <textarea id="code" style="width: 90%; height: 10em"></textarea>
+   <input id="line" style="width: 90%" value='import from String; "hello world"'/>
+</form>
+<button name="run" id="run">Run</button>
+<button name="save" id="save">Save</button>
+<br/>
+<blockquote id="response"></blockquote>
+
+      </div>
+
+      <div id="footer"> 
+         <div id="copyright"><a href="http://xinutec.org/~pippijn/home/contact">Copyright &copy; 2013 Pippijn van Steenhoven</a></div> 
+         <div id="updated">Source available at <a href="https://github.com/pippijn/aldor/tree/master/aldor/aldor/tools/monitor">github</a></div> 
+      </div> 
+
+   </body>
+</html> 
