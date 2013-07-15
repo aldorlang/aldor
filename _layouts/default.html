@@ -3,13 +3,14 @@
    <head>
       <link rel="stylesheet" href="http://xinutec.org/~pippijn/static/css/home.css" type="text/css" media="screen"/>
       <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+      <title>{{ page.title }}</title>
    </head>
 
    <body>
 
       <div id="header">
-         <h1><a href="/">Aldor</a></h1>
-         <p id="slogan">Programming Language</p>
+         <h1><a href="/">{{ site.name }}</a></h1>
+         <p id="slogan">{{ site.slogan }}</p>
       </div>
 
       <div id="sidebar">
@@ -19,7 +20,10 @@
          </div>
       </div>
 
-      {{ content }}
+      <div id="content">
+         <h2>{{ page.title }}</h2>
+         {{ content }}
+      </div>
 
       <div id="footer"> 
          <div id="copyright"><a href="http://xinutec.org/~pippijn/home/contact">Copyright &copy; 2013 Pippijn van Steenhoven</a></div> 

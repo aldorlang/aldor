@@ -1,5 +1,10 @@
 jQuery(function ($) {
-   var saved = document.cookie ? $.parseJSON(document.cookie) : {};
+   var saved;
+   try {
+      saved = $.parseJSON(document.cookie);
+   } catch (e) {
+      saved = {};
+   }
 
    function store () {
       document.cookie = JSON.stringify(saved);

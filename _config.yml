@@ -1,3 +1,8 @@
+name: Aldor
+slogan: Programming Language
+markdown: redcarpet
+pygments: true
+
 menus:
    main:
       - 'Home': /index.html
