@@ -1,14 +1,18 @@
 jQuery(function ($) {
    var saved;
-   try {
-      saved = $.parseJSON(document.cookie);
-   } catch (e) {
-      saved = {};
+
+   function load () {
+      try {
+         saved = $.parseJSON(document.cookie);
+      } catch (e) {
+         saved = {};
+      }
    }
 
    function store () {
       document.cookie = JSON.stringify(saved);
    }
+
 
    function add_snippet (name, code) {
       var li = $('<li style="cursor: pointer"/>');
@@ -27,6 +31,7 @@ jQuery(function ($) {
       );
    }
 
+   load();
    $.each(saved, add_snippet);
    
    var spinner = $('<p class="spinner"><img src="loading.gif"/></p>');
