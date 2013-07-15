@@ -7,7 +7,7 @@ jQuery(function ($) {
 
    function add_snippet (name, code) {
       var li = $('<li style="cursor: pointer"/>');
-      $('#snippets').append(
+      $('#userdef').append(
          li.append(
             $('<a/>').text(name).click(function (event) {
                $('#code').val(code);
@@ -72,6 +72,11 @@ jQuery(function ($) {
    $('#examples a').click(function (event) {
       example($(event.target).text());
    });
+
+   // append snippets menu to the main menu
+   var snippets = $('#snippets');
+   $('#sidebar').append(snippets.children());
+   snippets.remove();
 
    // load introductory example
    example("intro");

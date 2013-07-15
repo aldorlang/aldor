@@ -1,0 +1,31 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+   <head>
+      <link rel="stylesheet" href="http://xinutec.org/~pippijn/static/css/home.css" type="text/css" media="screen"/>
+      <link rel="stylesheet" href="aldor.css" type="text/css" media="screen"/>
+      <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+   </head>
+
+   <body>
+
+      <div id="header">
+         <h1><a href="/">Aldor</a></h1>
+         <p id="slogan">Programming Language</p>
+      </div>
+
+      <div id="sidebar">
+         <h2>Menu</h2>
+         <div>
+            {% menu main %}
+         </div>
+      </div>
+
+      {{ content }}
+
+      <div id="footer"> 
+         <div id="copyright"><a href="http://xinutec.org/~pippijn/home/contact">Copyright &copy; 2013 Pippijn van Steenhoven</a></div> 
+         <div id="updated">Source available at <a href="https://github.com/pippijn/aldor/tree/master/aldor/aldor/tools/monitor">github</a> under GNU Affero General Public License 3.0 or higher</div> 
+      </div> 
+
+   </body>
+</html> 
