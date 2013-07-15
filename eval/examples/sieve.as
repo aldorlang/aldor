@@ -1,6 +1,6 @@
 --
 -- sieve.as: A prime number sieve to count primes <= n.
--- Usage: Run the code "printSieve(4)" in the REPL below.
+-- Usage: Run the code "printSieve()" in the REPL below.
 --
 #include "aldor"
 #include "aldorio"
@@ -18,8 +18,8 @@ sieve(n: MachineInteger): MachineInteger == {
 	np
 }
 
-printSieve(m: MachineInteger):() == {
-	for i in 1..m repeat {
+printSieve():() == {
+	for i in 1..4 repeat {
 		n  := 10^i;
 		stdout << "There are " << sieve n << " primes <= " << n;
 		stdout << newline;
