@@ -1,3 +1,6 @@
-SUBDIRS=aldor lib
+SUBDIRS=aldor
+if BUILD_LIBS
+SUBDIRS+=lib
+endif
 
 ACLOCAL_AMFLAGS=-I m4

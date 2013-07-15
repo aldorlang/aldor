@@ -16,6 +16,12 @@ AM_SILENT_RULES([yes])
 AC_PROG_LEX
 AC_PROG_YACC
 
+AC_ARG_ENABLE(libraries,
+              [AS_HELP_STRING([--enable-libraries],
+                              [Build Aldor libraries])],
+              [AM_CONDITIONAL(BUILD_LIBS, true)],
+              [AM_CONDITIONAL(BUILD_LIBS, false)])
+
 # Checks for libraries.
 LT_INIT
 AC_SUBST([LIBTOOL_DEPS])
