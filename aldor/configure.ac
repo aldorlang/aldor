@@ -9,7 +9,7 @@ AC_CONFIG_AUX_DIR([amaux])
 
 # Automake
 AM_MAINTAINER_MODE([enable])
-AM_INIT_AUTOMAKE([foreign silent-rules])
+AM_INIT_AUTOMAKE([foreign silent-rules parallel-tests])
 AM_SILENT_RULES([yes])
 
 # Checks for programs
