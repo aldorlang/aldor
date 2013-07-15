@@ -7,6 +7,6 @@ menus:
          - 'Aldor User Guide': http://www.aldor.org/docs/aldorug.pdf
       - 'Development':
          - /devel
-         - 'Try Aldor': /eval/aldor.html
+         - 'Try Aldor': /eval
          - 'Source repository': https://github.com/pippijn/aldor
          - 'Mailing list': https://groups.google.com/forum/#!forum/aldor-devel
