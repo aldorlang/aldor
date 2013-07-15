@@ -1,16 +1,17 @@
 jQuery(function ($) {
+   const COOKIE = 'aldor-code';
    var saved;
 
    function load () {
       try {
-         saved = $.parseJSON(document.cookie);
+         saved = $.parseJSON($.cookie(COOKIE));
       } catch (e) {
          saved = {};
       }
    }
 
    function store () {
-      document.cookie = JSON.stringify(saved);
+      $.cookie(COOKIE, JSON.stringify(saved));
    }
 
 
