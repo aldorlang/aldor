@@ -1,0 +1,65 @@
+
+            aldoc -- Aldor documentation class for LaTeX2e
+                  extract -- Aldor to LaTeX2e utility
+               aldoc2thml -- Aldor to LaTeX2HTML utility
+
+                  Copyright(c) 1995-2001 by ETH Zuerich
+                Niklaus Mannhart, mannhart@inf.ethz.ch
+
+ ---------------------------------------------------------------------
+   This package is free software; you can redistribute it and/or 
+   modify it under the terms of the GNU General Public License 
+   as published by the Free Software Foundation version 2 of the 
+   license.
+
+   This package is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+   General Public License for more details.
+ ---------------------------------------------------------------------
+
+
+
+aldoc, extract and aldoc2html are utilities that help programmers 
+documenting their Aldor programs in a easy way. The LaTeX2e class 
+file aldoc provides useful macros with a unique manual page layout. 
+extract is a utility that converts documented Aldor programs to 
+LaTeX2e code and aldoc2html converts .tex files to optimized .tex 
+files for latex2html.
+
+
+Installation
+------------
+
+1. copy the file aldoc.tgz in a temporary directory, 
+   uncompress and extract and copy the files with the command:
+   gzip -dc aldoc.tar.gz | tar -xvf -
+ 
+2. edit the customization section of the Makefile (in doubt, 
+   leave the defaults)
+  
+3. create the class file and the extract program with the command:
+   make all
+   
+4. copy "aldoc.cls", "ttyverb.sty" and "aldoc2html.tex" to the 
+   directory where your local class/style files are stored. 
+   (e.g. ~aldor/texinput)
+   
+5. copy "extract" and aldoc2html to the directory where your 
+   local binaries are stored. (e.g ~aldor/bin)
+
+6. copy "aldoc.ps" (the manual) and "example.as" to the directory 
+   where your axiomxl manuals are stored (e.g. ~aldor/doc)
+   If you prefer to keep the dvi version of the manual then copy
+   aldoc.dvi and all eps file to the directory where your manuals
+   are stored.
+
+7. remove the temporary directory
+
+
+Note: A detailed description of the class file and the extract
+      utility is found in aldoc.ps
+	  
+
+%%%% That's it %%%%
+
