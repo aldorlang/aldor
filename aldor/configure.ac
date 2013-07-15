@@ -9,7 +9,8 @@ AC_CONFIG_AUX_DIR([amaux])
 
 # Automake
 AM_MAINTAINER_MODE([enable])
-AM_INIT_AUTOMAKE([foreign])
+AM_INIT_AUTOMAKE([foreign silent-rules])
+AM_SILENT_RULES([yes])
 AM_PROG_CC_C_O
 AM_PROG_LEX
 AC_PROG_YACC
