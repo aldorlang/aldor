@@ -16,6 +16,6 @@
 	  --builddirectory=build	\
 	  --parallel
 
-build-arch: aldor/configure
+build: aldor/configure
 aldor/configure: aldor/autogen.sh
 	cd $(dir $@) && sh autogen.sh
