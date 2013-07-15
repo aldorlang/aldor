@@ -58,7 +58,7 @@ Reporting issues
 Questions about compiler and library behaviour are best asked on the public
 [mailing list](https://groups.google.com/forum/#!forum/aldor-devel). For
 issues such as inexplicable program crashes, compiler crashes, incorrect code
-generation, etc., the [issue tracker](https://github.com/pippijn/aldor/wiki)
+generation, etc., the [issue tracker](https://github.com/pippijn/aldor/issues)
 is the place to report them.
 
 When reporting an issue, it is best to provide a minimal test case that we can
