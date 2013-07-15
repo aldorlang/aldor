@@ -14,6 +14,8 @@
 #include "ostream.h"
 #include "list.h"
 #include "store.h"
+#include "strops.h"
+
 /*
  * fnewline(fout) prints a newline and indents next line by amount findent.
  */
@@ -377,7 +379,8 @@ fmtMatch(const char *fmtTxt)
 	while (list != listNil(Format)) {
 		Format format = car(list);
 		list = cdr(list);
-		if (strIsPrefix(format->name, fmtTxt) != NULL && strlen(format->name) > longestMatch) {
+		if (strIsPrefix(format->name, fmtTxt)
+		    && (size_t) strlen(format->name) > longestMatch) {
 			match = format;
 			longestMatch = strlen(match->name);
 		}
