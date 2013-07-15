@@ -64,7 +64,7 @@ is the place to report them.
 When reporting an issue, it is best to provide a minimal test case that we can
 use to reproduce your issue. If the issue occurs with interpreted code, you
 can test it on the latest version of the compiler and interpreter provided at
-[Try Aldor](http://pippijn.github.io/aldor/eval/aldor.html).
+[Try Aldor](http://pippijn.github.io/aldor/eval).
 
 #### Report format
 
