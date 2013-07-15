@@ -30,6 +30,7 @@ foamlibdir = $(abs_top_builddir)/aldor/lib/libfoamlib
 library = basictuple box stringtable dispatchvector dv dd domain	\
 	  aldordomainrep catdispatchvector catobj aldorcatrep ptrcache	\
 	  ptrcatobj runtime pointerdomain lazyimport
+javalibrary = runtime
 
 basictuple_deps      :=
 box_deps 	     :=
@@ -60,7 +61,7 @@ $(patsubst %, %.c, $(library)): %.c: %.ao %.dep
 	@echo AO_TO_C $*
 	 $(aldorexedir)/aldor -Nfile=$(aldorsrcdir)/aldor.conf -Fc=$(builddir)/$@ $<	
 
-$(patsubst %, %.java, $(library)): %.java: %.fm $(aldorexedir)/javagen
+$(patsubst %, %.java, $(javalibrary)): %.java: %.fm $(aldorexedir)/javagen
 	 $(aldorexedir)/javagen $< > $@
 
 #AXLCDB	  = -W check -Csmax=0 -Fc -Zdb -Qno-cc
