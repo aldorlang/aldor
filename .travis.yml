@@ -1,2 +1,7 @@
 language: c
 script: dpkg-buildpackage -b -us -uc
+
+# whitelist
+branches:
+   only:
+      - master
