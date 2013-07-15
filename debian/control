@@ -1,0 +1,22 @@
+Source: aldor
+Section: devel
+Priority: extra
+Maintainer: Pippijn van Steenhoven <pippijn@osiris.xinutec.org>
+Build-Depends: debhelper (>= 8.0.0), autotools-dev
+Standards-Version: 3.9.4
+Homepage: http://pippijn.github.io/aldor/
+Vcs-Git: git://github.com/pippijn/aldor.git
+Vcs-Browser: https://github.com/pippijn/aldor
+
+Package: aldor
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Aldor compiler and libraries
+ The Aldor Programming Language is the successor of A# as the extension
+ language of the Axiom computer algebra system.
+ .
+ The Aldor language combines imperative, functional, and object-oriented
+ features. It has an elaborate dependent type system, allowing types to be used
+ as first-class values. Aldor's syntax is heavily influenced by Pascal, but it
+ is optionally indentation-sensitive, like Python. In its current
+ implementation, it is compiled, but an interactive listener is provided.

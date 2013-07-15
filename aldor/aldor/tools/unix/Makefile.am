@@ -1,7 +1,7 @@
 
-tooldir= $(abs_top_builddir)/build/tools
-tool_SCRIPTS=doaldor doas doaxiomxl docc dog++ dolatex domkmk	\
-	     dopdflatex doranlib buildarg
+#tooldir= $(abs_top_builddir)/build/tools
+#tool_SCRIPTS=doaldor doas doaxiomxl docc dog++ dolatex domkmk	\
+#	     dopdflatex doranlib buildarg
 
 noinst_PROGRAMS=zacc msgcat atinlay
 

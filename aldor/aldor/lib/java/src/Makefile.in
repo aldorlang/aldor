@@ -23,12 +23,13 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 buildfiles := $(shell cd $(srcdir); find foamj -name \*.java)
 
 # Build directly to a .jar file (easier than tracking .class files)
-foamj.jar: $(buildfiles)
+$(abs_builddir)/foamj.jar: $(buildfiles)
 	mkdir -p $(abs_builddir)/classes
 	(cd $(srcdir); javac -d $(abs_builddir)/classes $(buildfiles))
-	(wd=$$(pwd); cd $(abs_builddir)/classes; jar cf $$wd/foamj.jar .)
+	(wd=$$(pwd); cd $(abs_builddir)/classes; jar cf $(abs_builddir)/foamj.jar .)
 
-all: foamj.jar
+all: $(abs_builddir)/foamj.jar
+	echo $<
 
 # 
 # :: Automake requires this little lot

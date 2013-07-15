@@ -1,5 +1,6 @@
 
-bin_PROGRAMS = unicl platform
+bin_PROGRAMS = unicl
+noinst_PROGRAMS = platform
 unicl_SOURCES = unicl.c
 unicl_LDADD = libport.a
 unicl_CFLAGS = -I $(s) $(AM_CFLAGS)

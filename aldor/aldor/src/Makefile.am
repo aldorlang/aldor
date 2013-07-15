@@ -1,6 +1,7 @@
 #SUBDIRS = . java
 
-bin_PROGRAMS = aldor aldortest structtest gentest javagen
+bin_PROGRAMS = aldor javagen
+noinst_PROGRAMS = aldortest structtest gentest
 
 dataincludedir = $(datadir)/include
 datainclude_DATA=aldor.conf 
