@@ -10,7 +10,7 @@
 
 \input{version}
 \input{aldorugmacs}
-\makeindex
+
 %\nofiles
 %% DON'T USE \nofiles - it wrecks the pagination of this!
 %% Instead, save a cleaned-up aldorug.toc in aldorug.toc.keep
@@ -23,7 +23,6 @@
 \input{notices}
 \cleardoublepage
 
-\pagenumbering{roman}
 \input{ack}
 \input{preface}
 \cleardoublepage
@@ -66,6 +65,7 @@
 %\input{axiom}
 \input{c}
 \input{fortran}
+
 %\input{xaxiomxl}
 
 \part{Sample Programs}
@@ -84,6 +84,5 @@
 
 %\part{Version 1.1.12 additions}
 
-\NoHyper
-\input{aldorug.ind}
+\printindex
 \end{document}

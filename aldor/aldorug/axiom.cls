@@ -289,8 +289,7 @@ minus 2pt \dbltextfloatsep 20pt plus 2pt minus 4pt
 
 \def\@schapter#1{\if@twocolumn \@topnewpage[\@makeschapterhead{#1}]
  \else \@makeschapterhead{#1}
- \@afterheading\fi
- \bookmark{#1}}
+ \@afterheading\fi}
 
 \newbox\sectionBox
 
@@ -576,7 +575,8 @@ minus 2pt \dbltextfloatsep 20pt plus 2pt minus 4pt
 \def\theindex{\typeout{INDEX}\@restonecoltrue\if@twocolumn\@restonecolfalse\fi
 \columnseprule \z@
 \columnsep 35pt\twocolumn[\@makeschapterhead{Index}]%
- \addcontentsline{toc}{chapter}{Index}%
+ \refstepcounter{chapter}
+ \addcontentsline{toc}{chapter}{Index}
  \@mkboth{\pageBullet~~Index}{Index~~\pageBullet}%
  \parindent\z@\leftskip\z@%
  \baselineskip 11pt\ixpt{}%
@@ -1276,5 +1276,5 @@ minus 2pt \dbltextfloatsep 20pt plus 2pt minus 4pt
 \def\epsfsize#1#2{.24\textheight}
 
 \pagestyle{headings}
+\usepackage{makeidx}
 \makeindex
-
