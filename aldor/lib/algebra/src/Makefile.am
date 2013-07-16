@@ -10,32 +10,207 @@ SUBDIRS = util numbers extree extree/operators extree/parser categories	\
 #	  multpoly/multpolytest
 
 
-#lang_ALDOR = lang/sal_lang.c
+lib_LIBRARIES=libalgebra.a
+libalgebra_a_SOURCES =	\
+	extree/operators/sit_OPfact.c	\
+	extree/operators/sit_OPquot.c	\
+	extree/operators/sit_OPcase.c	\
+	extree/operators/sit_OPbigO.c	\
+	extree/operators/sit_OPprefx.c	\
+	extree/operators/sit_OPsubsc.c	\
+	extree/operators/sit_OPequal.c	\
+	extree/operators/sit_OPexpt.c	\
+	extree/operators/sit_OPlist.c	\
+	extree/operators/sit_OPminus.c	\
+	extree/operators/sit_OPand.c	\
+	extree/operators/sit_OPllist.c	\
+	extree/operators/sit_OPplus.c	\
+	extree/operators/sit_OPif.c	\
+	extree/operators/sit_OPtimes.c	\
+	extree/operators/sit_OPcplex.c	\
+	extree/operators/sit_OPmore.c	\
+	extree/operators/sit_OPassgn.c	\
+	extree/operators/sit_OPvect.c	\
+	extree/operators/sit_OPnoteq.c	\
+	extree/operators/sit_OPmatrx.c	\
+	extree/operators/sit_OPless.c	\
+	extree/sit_optools.c	\
+	extree/parser/sit_parser.c	\
+	extree/parser/sit_maple.c	\
+	extree/parser/sit_lspexpr.c	\
+	extree/parser/alg_tokens.c	\
+	extree/parser/sit_token.c	\
+	extree/parser/sit_scanner.c	\
+	extree/parser/sit_infexpr.c	\
+	extree/sit_extree.c	\
+	algext/sit_upmod.c	\
+	algext/sit_sae.c	\
+	algext/sit_saexcpt.c	\
+	algext/sit_algext.c	\
+	polyfactorp/sit_upfactp.c	\
+	multpoly/exponent/sm_expocat.c	\
+	multpoly/exponent/sm_osymbol.c	\
+	multpoly/exponent/sm_vt.c	\
+	multpoly/exponent/sm_tuplovar.c	\
+	multpoly/exponent/sm_midl.c	\
+	multpoly/exponent/sm_milex.c	\
+	multpoly/exponent/sm_midrl.c	\
+	multpoly/exponent/sm_dirprod.c	\
+	multpoly/exponent/sm_listovar.c	\
+	multpoly/exponent/sm_dirprodc.c	\
+	multpoly/exponent/sm_mievc.c	\
+	multpoly/exponent/sm_zevc.c	\
+	multpoly/exponent/sm_fvt.c	\
+	multpoly/multpolydata/sm_delist.c	\
+	univpoly/sit_ufacpol.c	\
+	univpoly/sit_polkara.c	\
+	univpoly/alg_unitool.c	\
+	univpoly/alg_sup0.c	\
+	univpoly/gcd/sit_modpgcd.c	\
+	univpoly/gcd/sit_heugcd.c	\
+	univpoly/gcd/sit_gcdint.c	\
+	univpoly/gcd/sit_gcdintg.c	\
+	univpoly/gcd/sit_modgcd.c	\
+	univpoly/sit_upolc.c	\
+	univpoly/alg_sup1.c	\
+	univpoly/alg_uprcr.c	\
+	univpoly/alg_sup.c	\
+	univpoly/categories/sit_sqfree.c	\
+	univpoly/categories/sit_ufalg.c	\
+	univpoly/categories/sit_upolalg.c	\
+	univpoly/categories/sit_uffalg.c	\
+	univpoly/categories/sit_ugring.c	\
+	univpoly/categories/alg_chrem2.c	\
+	univpoly/categories/alg_modgcdp.c	\
+	univpoly/categories/sit_upolc0.c	\
+	univpoly/categories/sit_fring.c	\
+	univpoly/categories/sit_fftring.c	\
+	univpoly/categories/alg_polydio.c	\
+	univpoly/categories/sit_froot.c	\
+	univpoly/categories/sit_zring.c	\
+	univpoly/categories/sit_resprs.c	\
+	univpoly/categories/sit_umonom.c	\
+	univpoly/sit_spread.c	\
+	univpoly/sit_dup.c	\
+	ffield/sit_sprfcat.c	\
+	ffield/alg_pf2.c	\
+	ffield/sit_sprfmat.c	\
+	ffield/sit_spf.c	\
+	ffield/sit_sprfgcd.c	\
+	ffield/sit_zpf.c	\
+	ffield/sit_prfcat.c	\
+	series/sit_sercat.c	\
+	series/compbug/sit_duts.c	\
+	series/alg_serpoly.c	\
+	series/sit_seqence.c	\
+	numbers/sit_prmtabl.c	\
+	numbers/sit_primes.c	\
+	numbers/sit_prmroot.c	\
+	numbers/sit_primgen.c	\
+	fraction/sit_lcqotct.c	\
+	fraction/sit_vecquot.c	\
+	fraction/sit_qotfcat.c	\
+	fraction/sit_qotbyc0.c	\
+	fraction/sit_qotbyct.c	\
+	fraction/sit_qotient.c	\
+	fraction/sit_qotfct0.c	\
+	fraction/sit_quotby.c	\
+	fraction/sit_quotcat.c	\
+	fraction/sit_matquot.c	\
+	fraction/sit_uflgqot.c	\
+	util/alg_version.c	\
+	basic/sit_indvar.c	\
+	basic/sit_complex.c	\
+	basic/sit_product.c	\
+	basic/compbug/sit_shell.c	\
+	basic/compbug/sit_interp.c	\
+	basic/sit_pring.c	\
+	basic/sit_mkpring.c	\
+	basic/sit_permut.c	\
+	mat/sit_vector.c	\
+	mat/linalg/sit_linalg.c	\
+	mat/linalg/sit_bsolve.c	\
+	mat/linalg/sit_overdet.c	\
+	mat/linalg/sit_laring.c	\
+	mat/linalg3/sit_hensela.c	\
+	mat/sit_dnsemat.c	\
+	mat/gauss/sit_oge.c	\
+	mat/gauss/sit_ffge.c	\
+	mat/gauss/sit_dfge.c	\
+	mat/gauss/sit_hermge.c	\
+	mat/gauss/sit_linelim.c	\
+	mat/gauss/sit_ff2ge.c	\
+	mat/sit_matcat.c	\
+	mat/linalg2/sit_popov.c	\
+	mat/linalg2/sit_upcrtla.c	\
+	mat/linalg2/alg_ffupla.c	\
+	mat/modular/compbug/sit_speclin.c	\
+	mat/modular/sit_modpoge.c	\
+	mat/modular/sit_zcrtla.c	\
+	categories/alg_rring.c	\
+	categories/sit_algebra.c	\
+	categories/sit_spf0.c	\
+	categories/sit_basic.c	\
+	categories/sit_linarit.c	\
+	categories/sit_diffext.c	\
+	categories/sit_euclid.c	\
+	categories/alg_frering.c	\
+	categories/sit_abmon.c	\
+	categories/sit_ncid.c	\
+	categories/sit_spzble.c	\
+	categories/sit_gexpcat.c	\
+	categories/sit_char0.c	\
+	categories/sit_idxfmod.c	\
+	categories/sit_automor.c	\
+	categories/sit_freelc.c	\
+	categories/sit_difring.c	\
+	categories/sit_charp.c	\
+	categories/sit_intdom.c	\
+	categories/alg_primsrc.c	\
+	categories/alg_cansimp.c	\
+	categories/sit_idxflc.c	\
+	categories/sit_fset.c	\
+	categories/sit_freealg.c	\
+	categories/sit_deriv.c	\
+	categories/sit_module.c	\
+	categories/sit_pable.c	\
+	categories/sit_prfcat0.c	\
+	categories/sit_spfcat0.c	\
+	categories/sit_qring.c	\
+	categories/sit_abgroup.c	\
+	categories/sit_group.c	\
+	categories/sit_comring.c	\
+	categories/sit_freelar.c	\
+	categories/alg_modcmp.c	\
+	categories/sit_ptools.c	\
+	categories/sit_idxflar.c	\
+	categories/sit_idxfalg.c	\
+	categories/sit_monoid.c	\
+	categories/sit_ring.c	\
+	categories/alg_rescls.c	\
+	categories/alg_ffield.c	\
+	categories/sit_freemod.c	\
+	categories/sit_chrem.c	\
+	categories/sit_field.c	\
+	categories/sit_gcd.c	\
+	categories/sit_dcmprng.c	\
+	categories/sit_intgmp.c	\
+	categories/alg_idxfrng.c	\
+	categories/sit_integer.c
 
-aldorsrcdir = $(abs_top_builddir)/aldor/src
+
+aldorsrcdir = $(abs_top_srcdir)/aldor/src
+
+datalibdir=$(datadir)/lib
+datalib_DATA=libalgebra.al
 
 AM_CFLAGS = -I$(aldorsrcdir)
 
 all: libalgebra.al libalgebra.a
 
-libalgebra.al: $(foreach i,$(SUBDIRS),$(i)/algebra.al)
-	for i in $(SUBDIRS); \
-	do 				\
-	   l=$${i}/algebra.al;	\
-	   for mbr in $$(ar t $$l);	\
-	   do 				\
-		ar x $$l $$mbr;		\
-		ar r $@ $$mbr;		\
-		rm $$mbr;		\
-	   done;			\
-	done
-
-libalgebra.a: libalgebra.al
-	rm -f libalgebra.a
-	for i in $(ar t libalgebra.al); 	\
-	do				\
-		ar x libalgebra.al $$i;	\
-		$(aldorsrcdir)/aldor -Fo  $$i; \
-		ar r libalgebra.a $$(basename $$i).o; \
-		rm $$i; \
+libalgebra.al: $(foreach i,$(SUBDIRS),$i/algebra.al)
+	for l in $+; do		\
+	   ar x $$l;		\
+	   ar r $@ $$(ar t $$l);\
+	   rm $$(ar t $$l);	\
 	done

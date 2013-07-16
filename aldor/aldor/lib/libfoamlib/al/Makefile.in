@@ -7,7 +7,10 @@ srcdir = @srcdir@
 top_builddir = @top_builddir@
 builddir = @builddir@
 abs_top_srcdir = @abs_top_srcdir@
+top_srcdir = @top_srcdir@
 subdir = aldor/lib/libfoamlib/al
+
+UNIQ = perl $(top_srcdir)/aldor/tools/unix/uniq
 
 # Check the makefile
 .PRECIOUS: Makefile
@@ -74,10 +77,10 @@ $(patsubst %, %.ao, $(library)): %.ao: $(srcdir)/../foamlib.as
 $(patsubst %, %.ao, $(library)): %.ao: $(srcdir)/../%.as
 $(patsubst %, %.ao, $(library)): %.ao: 
 $(patsubst %, %.ao, $(library)): %.ao: 
-	rm -f libfoamlib_$*.al;	rm -f $*.c; rm -f $*.ao;		\
-	ar r libfoamlib_$*.al Makefile;					\
-	for i in $$(cat $*.dep); do ar r libfoamlib_$*.al $$i.ao; done; \
+	rm -f libfoamlib_$*.al $*.c $*.ao
+	ar r libfoamlib_$*.al $(addsuffix .ao, $(shell $(UNIQ) $*.dep))
 	$(aldorexedir)/aldor $(aldor_args)
+	rm -f libfoamlib_$*.al
 
 $(patsubst %, %.cmd, $(library)): %.cmd: Makefile
 	echo "run $(aldor_args)" > $@
@@ -122,8 +125,9 @@ libfoamlib.dep: $(patsubst %,%.dep,$(library))
 libfoamlib.al: $(patsubst %,%.dep, $(library))
 libfoamlib.al: $(patsubst %,%.ao, $(library))
 libfoamlib.al: libfoamlib.dep
-	rm -f libfoamlib.al
-	for i in $$(cat libfoamlib.dep); do ar r libfoamlib.al $$i.ao; done
+	@echo LIB $(patsubst %.al, %, $@)
+	@rm -f $@
+	@ar cr $@ $(addsuffix .ao, $(shell $(UNIQ) $(@:.al=.dep)))
 
 # 
 # :: Automake requires this little lot
