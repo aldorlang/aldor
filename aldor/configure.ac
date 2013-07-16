@@ -26,6 +26,9 @@ AC_ARG_ENABLE(libraries,
 LT_INIT
 AC_SUBST([LIBTOOL_DEPS])
 
+# Enable extra warnings and -Werror if supported.
+ALDOR_ERROR_ON_WARN
+
 AC_CONFIG_FILES([Makefile
 		 aldor/Makefile
 		 aldor/subcmd/Makefile
