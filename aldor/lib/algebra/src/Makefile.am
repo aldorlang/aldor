@@ -206,8 +206,6 @@ datalib_DATA=libalgebra.al
 
 AM_CFLAGS = -I$(aldorsrcdir)
 
-all: libalgebra.al libalgebra.a
-
 libalgebra.al: $(foreach i,$(SUBDIRS),$i/algebra.al)
 	for l in $+; do		\
 	   ar x $$l;		\
