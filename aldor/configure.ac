@@ -17,10 +17,10 @@ AC_PROG_LEX
 AC_PROG_YACC
 
 AC_ARG_ENABLE(libraries,
-              [AS_HELP_STRING([--enable-libraries],
-                              [Build Aldor libraries])],
-              [AM_CONDITIONAL(BUILD_LIBS, true)],
-              [AM_CONDITIONAL(BUILD_LIBS, false)])
+              [AS_HELP_STRING([--disable-libraries],
+                              [Do not build Aldor libraries])],
+              [AM_CONDITIONAL(BUILD_LIBS, false)],
+              [AM_CONDITIONAL(BUILD_LIBS, true)])
 
 # Checks for libraries.
 LT_INIT
