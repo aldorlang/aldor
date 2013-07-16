@@ -207,8 +207,9 @@ datalib_DATA=libalgebra.al
 AM_CFLAGS = -I$(aldorsrcdir)
 
 libalgebra.al: $(foreach i,$(SUBDIRS),$i/algebra.al)
+	$(AM_V_AR)		\
 	for l in $+; do		\
 	   ar x $$l;		\
-	   ar r $@ $$(ar t $$l);\
+	   ar cr $@ $$(ar t $$l);\
 	   rm $$(ar t $$l);	\
 	done

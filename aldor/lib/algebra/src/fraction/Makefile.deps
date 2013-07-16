@@ -7,7 +7,7 @@ sit_qotfct0_deps := sit_quotcat
 sit_qotient_deps := sit_qotfcat
 sit_quotby_deps := sit_qotbyct
 sit_quotcat_deps :=
-sit_uflgqot_deps := sit_quotcat sit_qotbyct sit_qotbyc0 sit_lcqotct sit_qotfct0
+sit_uflgqot_deps := sit_quotcat sit_qotbyc0 sit_lcqotct sit_qotfct0
 sit_vecquot_deps := sit_quotcat sit_qotbyc0 sit_lcqotct sit_qotfct0
 
 library_deps := util numbers extree extree/operators extree/parser	\
