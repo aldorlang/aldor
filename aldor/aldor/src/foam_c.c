@@ -2079,7 +2079,7 @@ fiRaiseException(FiWord problem)
 	else {
 		printf("Aldor runtime: An Aldor runtime error occurred : %s\n\
 Note: there seems to be no aldorRuntimeException function defined\n\
-so it is not possible to throw an exception.\n", problem);
+so it is not possible to throw an exception.\n", (char *) problem);
 		exit(2);
 	}
 #else

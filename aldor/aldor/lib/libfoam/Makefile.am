@@ -20,6 +20,7 @@ libfoam_SRC=\
 	$(aldorsrcdir)/compopt.c \
 	$(aldorsrcdir)/xfloat.c  	
 
+libfoam_a_CFLAGS = -save-temps -Werror $(AM_CFLAGS)
 aldorsrcdir = $(abs_top_srcdir)/aldor/src
 
 AM_CFLAGS = -I$(aldorsrcdir) -DFOAM_RTS
