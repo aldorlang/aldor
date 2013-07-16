@@ -21,3 +21,5 @@ library = sal_arith sal_binpow sal_bool sal_bsearch sal_complex		\
 	  sal_random sal_segment sal_sfloat
 
 include $(abs_top_srcdir)/lib/aldor/src/common.mk
+
+AXLFLAGS	+= -Q2

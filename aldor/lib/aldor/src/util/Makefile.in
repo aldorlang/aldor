@@ -19,3 +19,5 @@ library = ald_trace eio_rsto rtexns sal_agat sal_cmdline sal_file	\
 	  sal_timer sal_version
 
 include $(abs_top_srcdir)/lib/aldor/src/common.mk
+
+AXLFLAGS	+= -Q2
