@@ -80,11 +80,11 @@ aldorincdir = $(srcdir)/../include
 datalibdir = $(datadir)/lib
 datalib_DATA = libaldor.al aldor_gloop.ao #aldor_gloopd.ao
 
-%d.ao: %.as $(aldorexedir)/aldor
+%d.ao: %.as $(aldorexedir)/aldor libaldor.al
 	$(aldorexedir)/aldor -DDEBUG	\
 	   -Nfile=$(aldorsrcdir)/aldor.conf -Y. -I$(aldorincdir) -Fao=$@ $<
 
-%.ao: %.as $(aldorexedir)/aldor
+%.ao: %.as $(aldorexedir)/aldor libaldor.al
 	$(aldorexedir)/aldor	\
 	   -Nfile=$(aldorsrcdir)/aldor.conf -Y. -I$(aldorincdir) -Fao=$@ $<
 
