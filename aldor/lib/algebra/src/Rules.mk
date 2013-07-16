@@ -212,7 +212,7 @@ libalgebra_ASOURCES :=	\
 	polyfactor0/sit_zfringg.as	\
 	univpoly/gcd/sit_gcdintg.as
 
-libalgebra_AFLAGS := -Q1
+libalgebra_AFLAGS := -Q2
 
 $(eval $(call aldor-target,algebra))
 

@@ -48,15 +48,9 @@ AM_CFLAGS = -I$(aldorsrcdir)
 
 all: libaldor.al libaldor.a
 
-libaldor.al: $(foreach i,$(SUBDIRS),$(i)/aldor$(i).al)
-	for i in $(SUBDIRS); \
-	do 				\
-	   l=$${i}/aldor$${i}.al;	\
-	   for mbr in $$(ar t $$l);	\
-	   do 				\
-		ar x $$l $$mbr;		\
-		ar r $@ $$mbr;		\
-		rm $$mbr;		\
-	   done;			\
+libaldor.al: $(foreach i,$(SUBDIRS),$i/aldor$i.al)
+	for i in $+; do		\
+	   ar x $$l;		\
+	   ar r $@ $$(ar t $$l);\
+	   rm $$(ar t $$l);	\
 	done
-

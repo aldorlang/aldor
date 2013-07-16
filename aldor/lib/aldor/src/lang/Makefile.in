@@ -7,7 +7,10 @@ srcdir = @srcdir@
 top_builddir = @top_builddir@
 builddir = @builddir@
 abs_top_srcdir = @abs_top_srcdir@
+top_srcdir = @top_srcdir@
 subdir = lib/aldor/src/lang
+
+UNIQ = perl $(top_srcdir)/aldor/tools/unix/uniq
 
 # Check the makefile
 .PRECIOUS: Makefile
@@ -50,11 +53,24 @@ endef
 $(patsubst %, %.dep,$(library)): %.dep: Makefile $(srcdir)/%.as
 $(patsubst %, %.ao, $(library)): %.ao: $(srcdir)/%.as
 $(patsubst %, %.ao, $(library)): %.ao: $(foamlibdir)/al/libfoamlib.al
-$(patsubst %, %.ao, $(library)): %.ao: 
-	rm -f $(libraryname)_$*.al;	rm -f $*.c; rm -f $*.ao
-	ar r $(libraryname)_$*.al Makefile
-	for i in $$(cat $*.dep); do ar r $(libraryname)_$*.al $$i.ao; done
+$(patsubst %, %.ao, $(library)): %.ao: $(libraryname)_libdep.al
+	rm -f $*.c $*.ao
+	cp $(libraryname)_libdep.al lib$(libraryname)_$*.al
+	ar r lib$(libraryname)_$*.al $(addsuffix .ao, $(shell $(UNIQ) $*.dep))
 	$(aldorexedir)/aldor $(aldor_args)
+	rm lib$(libraryname)_$*.al
+
+$(libraryname)_libdep.al: $(foreach l,$(library_deps),../$l/aldor$l.al)
+	ar cr $@
+	for l in $+; do 		\
+	   if [ ! -f $$l ]; then	\
+	      echo "missing $$l";	\
+	      exit 1;			\
+	   fi;				\
+	   ar x $$l;			\
+	   ar r $@ $$(ar t $$l);	\
+	   rm $$(ar t $$l);		\
+        done
 
 $(patsubst %, %.cmd, $(library)): %.cmd: Makefile
 	echo "run $(aldor_args)" > $@
@@ -83,7 +99,9 @@ $(libraryname).dep: $(patsubst %,%.dep,$(library))
 $(libraryname).al: $(libraryname).dep
 $(libraryname).al: $(patsubst %,%.ao,$(library))
 $(libraryname).al:
-	for i in $$(cat $(libraryname).dep); do ar r $@ $$i.ao; done
+	@echo LIB $(patsubst %.al, %, $@)
+	@rm -f $@
+	@ar cr $@ $(addsuffix .ao, $(shell $(UNIQ) $(@:.al=.dep)))
 
 all: Makefile $(patsubst %,%.fm,$(library)) $(libraryname).al
 

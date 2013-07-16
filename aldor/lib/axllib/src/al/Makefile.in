@@ -7,7 +7,10 @@ srcdir = @srcdir@
 top_builddir = @top_builddir@
 builddir = @builddir@
 abs_top_srcdir = @abs_top_srcdir@
+top_srcdir = @top_srcdir@
 subdir = lib/axllib/src/al
+
+UNIQ = perl $(top_srcdir)/aldor/tools/unix/uniq
 
 default: all
 
@@ -102,10 +105,10 @@ $(patsubst %, %.ao, $(library)): %.ao: $(srcdir)/../../include/axllib.as
 $(patsubst %, %.ao, $(library)): %.ao: $(srcdir)/../%.as
 $(patsubst %, %.ao, $(library)): %.ao: 
 	@echo AO $*
-	@rm -f lib$(libname)_$*.al;	rm -f $*.c; rm -f $*.ao;		\
-	 ar r lib$(libname)_$*.al Makefile;					\
-	 for i in $$(cat $*.dep); do ar r lib$(libname)_$*.al $$i.ao; done; 	\
-	 $(aldorexedir)/aldor $(aldor_args)
+	@rm -f lib$(libname)_$*.al $*.c $*.ao
+	@ar cr lib$(libname)_$*.al $(addsuffix .ao, $(shell $(UNIQ) $*.dep))
+	@$(aldorexedir)/aldor $(aldor_args)
+	@rm lib$(libname)_$*.al
 
 $(patsubst %, %.cmd, $(library)): %.cmd: Makefile
 	echo "run $(aldor_args)" > $@
@@ -143,8 +146,8 @@ lib$(libname).al: $(patsubst %,%.dep, $(library))
 lib$(libname).al: $(patsubst %,%.ao, $(library))
 lib$(libname).al: lib$(libname).dep
 	@echo LIB $(patsubst %.al, %, $@)
-	@rm -f lib$(libname).al
-	@for i in $$(cat lib$(libname).dep); do ar r lib$(libname).al $$i.ao; done
+	@rm -f $@
+	@ar cr $@ $(addsuffix .ao, $(shell $(UNIQ) $(@:.al=.dep)))
 
 # 
 # :: Automake requires this little lot

@@ -7,8 +7,11 @@ srcdir = @srcdir@
 top_builddir = @top_builddir@
 builddir = @builddir@
 abs_top_srcdir = @abs_top_srcdir@
+top_srcdir = @top_srcdir@
 subdir = lib/libax0/src/al
 axllibdir = $(abs_top_srcdir)/lib/axllib/src
+
+UNIQ = perl $(top_srcdir)/aldor/tools/unix/uniq
 
 # Check the makefile
 .PRECIOUS: Makefile
@@ -101,11 +104,11 @@ $(patsubst %, %.ao, $(library)): %.ao: $(srcdir)/../%.as
 $(patsubst %, %.ao, $(all_library)): $(aldorexedir)/aldor
 $(patsubst %, %.ao, $(all_library)): %.ao: 
 	@echo AO $*
-	@set -x; rm -f lib$(libname)_$*.al; rm -f $*.ao;		\
-	 ar r lib$(libname)_$*.al Makefile;					\
-	 for i in $$(cat $*.dep); do ar r lib$(libname)_$*.al $$i.ao; done; 	\
-	 $(aldorexedir)/aldor $(aldor_args) $(filter %.ax %.as %.ap,$^)
-	test -f $@
+	@rm -f lib$(libname)_$*.al
+	@rm -f $*.ao
+	@ar cr lib$(libname)_$*.al $(addsuffix .ao, $(shell $(UNIQ) $*.dep))
+	@$(aldorexedir)/aldor $(aldor_args) $(filter %.ax %.as %.ap,$^)
+	@rm lib$(libname)_$*.al
 
 $(patsubst %, %.cmd, $(all_library)): %.cmd: Makefile
 	@echo "run $(aldor_args)" > $@
@@ -122,6 +125,7 @@ $(patsubst %,%.dep,$(all_library) lib$(libname)): Makefile.in
 	 do d=$$(basename $$i .dep); \
 	   cat $$i >> $@.tmp; echo $(basename $$d .dep)>> $@.tmp;  \
 	 done
+	@if test ! -f $@; then touch $@; fi
 	@if diff $@ $@.tmp > /dev/null; then rm $@.tmp; else mv $@.tmp $@; fi
 
 
@@ -142,8 +146,8 @@ lib$(libname).al: $(patsubst %,%.dep, $(all_library))
 lib$(libname).al: $(patsubst %,%.ao, $(all_library))
 lib$(libname).al: lib$(libname).dep
 	@echo LIB $(patsubst %.al, %, $@)
-	@rm -f lib$(libname).al
-	@for i in $$(cat lib$(libname).dep); do ar r lib$(libname).al $$i.ao; done
+	@rm -f $@
+	@ar cr $@ $(addsuffix .ao, $(shell $(UNIQ) $(@:.al=.dep)))
 
 # 
 # :: Automake requires this little lot
