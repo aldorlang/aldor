@@ -46,7 +46,7 @@ datalib_DATA=libaldor.al
 
 AM_CFLAGS = -I$(aldorsrcdir)
 
-libaldor.al: $(foreach i,$(SUBDIRS),$i/aldor$i.al)
+libaldor.al: $(foreach i,$(SUBDIRS),$i/aldor.al)
 	for l in $+; do		\
 	   ar x $$l;		\
 	   ar r $@ $$(ar t $$l);\

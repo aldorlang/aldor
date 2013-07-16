@@ -1,0 +1,32 @@
+library_deps := lang base arith
+sal_bdata_deps := sal_data
+sal_ddata_deps := sal_bdata sal_data
+
+sal_lstruc_deps := sal_data
+sal_fstruc_deps := sal_lstruc
+
+sal_bstruc_deps := sal_bdata sal_fstruc
+sal_list_deps := sal_ddata sal_bdata sal_bstruc
+
+sal_parray_deps := sal_fstruc sal_list 
+
+sal_array_deps   :=sal_bstruc sal_parray
+sal_pkarray_deps := sal_parray
+sal_string_deps := sal_data sal_list sal_parray sal_pkarray sal_array
+sal_table_deps  := sal_bdata sal_string
+sal_hash_deps   := sal_table sal_list sal_kntry 
+
+sal_barray_deps := sal_pkarray
+sal_memblk_deps := sal_array sal_barray
+
+sal_set_deps := sal_bstruc sal_list
+
+sal_slist_deps := sal_ddata sal_bstruc sal_list
+
+sal_sset_deps := sal_bstruc sal_ddata sal_list
+sal_sortas_deps := sal_table sal_kntry sal_sset
+
+sal_stream_deps := sal_list sal_parray sal_lstruc sal_string
+
+ald_symbol_deps := sal_hash
+ald_symtab_deps := ald_symbol sal_hash

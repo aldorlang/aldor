@@ -1,0 +1,4 @@
+library_deps := lang base arith datastruc
+
+sal_fltgmp_deps := sal_gmptls sal_intgmp
+sal_intgmp_deps := sal_gmptls

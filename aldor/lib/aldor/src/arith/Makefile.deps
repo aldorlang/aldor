@@ -1,0 +1,23 @@
+library_deps := lang base
+
+sal_arith_deps  :=
+sal_oarith_deps  := sal_arith
+sal_bool_deps   :=
+sal_intcat_deps := sal_oarith sal_bool
+sal_binpow_deps := sal_arith sal_intcat
+sal_bsearch_deps := sal_intcat 
+sal_intcat_deps := sal_arith sal_oarith sal_bool
+sal_segment_deps := sal_intcat
+sal_itools_deps := sal_intcat sal_bsearch
+sal_mint_deps := sal_arith sal_intcat sal_segment sal_itools
+sal_fltcat_deps := sal_oarith sal_binpow sal_mint
+sal_lincomb_deps := sal_oarith 
+sal_complex_deps := sal_arith sal_binpow sal_fltcat sal_lincomb
+
+sal_random_deps := sal_mint
+sal_int_deps := sal_oarith sal_bool sal_mint sal_random sal_binpow
+sal_ftools_deps := sal_fltcat sal_mint sal_int
+sal_sfloat_deps := sal_fltcat sal_ftools
+sal_dfloat_deps := sal_fltcat sal_sfloat
+
+sal_pointer_deps := sal_mint sal_itools

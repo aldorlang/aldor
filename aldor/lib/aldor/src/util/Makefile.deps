@@ -1,0 +1,3 @@
+rtexns_deps := ald_trace
+
+library_deps := lang base arith datastruc

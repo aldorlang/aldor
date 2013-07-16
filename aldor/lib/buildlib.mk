@@ -1,5 +1,8 @@
 default: all
 
+aldorsrcdir	:= $(top_srcdir)/aldor/src
+aldorexedir	:= $(top_builddir)/aldor/src
+
 UNIQ = perl $(top_srcdir)/aldor/tools/unix/uniq
 
 # Aldor

@@ -1,149 +1,23 @@
-# ..From autoconf
 @SET_MAKE@
-
 VPATH = @srcdir@
-abs_top_builddir = @abs_top_builddir@
-srcdir = @srcdir@
-top_builddir = @top_builddir@
-builddir = @builddir@
-abs_top_srcdir = @abs_top_srcdir@
-top_srcdir = @top_srcdir@
-subdir = lib/aldor/src/arith
 
-UNIQ = perl $(top_srcdir)/aldor/tools/unix/uniq
+# For AM_V_*
+AM_DEFAULT_VERBOSITY = @AM_DEFAULT_VERBOSITY@
 
-# Check the makefile
-.PRECIOUS: Makefile
-Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
-	@case '$?' in \
-	  *config.status*) \
-	    cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh;; \
-	  *) \
-	    echo ' cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ '; \
-	    cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ ;; \
-	esac;
-
+builddir	:= @builddir@
+abs_builddir	:= @abs_builddir@
+top_builddir	:= @top_builddir@
+abs_top_builddir:= @abs_top_builddir@
+srcdir		:= @srcdir@
+abs_srcdir	:= @abs_srcdir@
+top_srcdir	:= @top_srcdir@
+abs_top_srcdir	:= @abs_top_srcdir@
+subdir		:= $(subst $(abs_top_builddir)/,,$(abs_builddir))
 
 # Build starts here
-aldorsrcdir = $(abs_top_srcdir)/aldor/src
-aldorexedir = $(abs_top_builddir)/aldor/src
-
-libraryname=aldorarith
 library = sal_arith sal_binpow sal_bool sal_bsearch sal_complex		\
 	  sal_dfloat sal_fltcat sal_ftools sal_int sal_intcat		\
 	  sal_itools sal_lincomb sal_mint sal_oarith sal_pointer	\
 	  sal_random sal_segment sal_sfloat
 
-library_deps := lang base
-
-sal_arith_deps  :=
-sal_oarith_deps  := sal_arith
-sal_bool_deps   :=
-sal_intcat_deps := sal_oarith sal_bool
-sal_binpow_deps := sal_arith sal_intcat
-sal_bsearch_deps := sal_intcat 
-sal_intcat_deps := sal_arith sal_oarith sal_bool
-sal_segment_deps := sal_intcat
-sal_itools_deps := sal_intcat sal_bsearch
-sal_mint_deps := sal_arith sal_intcat sal_segment sal_itools
-sal_fltcat_deps := sal_oarith sal_binpow sal_mint
-sal_lincomb_deps := sal_oarith 
-sal_complex_deps := sal_arith sal_binpow sal_fltcat sal_lincomb
-
-sal_random_deps := sal_mint
-sal_int_deps := sal_oarith sal_bool sal_mint sal_random sal_binpow
-sal_ftools_deps := sal_fltcat sal_mint sal_int
-sal_sfloat_deps := sal_fltcat sal_ftools
-sal_dfloat_deps := sal_fltcat sal_sfloat
-
-sal_pointer_deps := sal_mint sal_itools
-
-$(patsubst %, %.c, $(library)): %.c: %.ao %.dep
-	 $(aldorexedir)/aldor -Nfile=$(aldorsrcdir)/aldor.conf -Fc=$(builddir)/$@ $<	
-
-#AXLCDB	  = -W check -Csmax=0 -Fc -Zdb -Qno-cc
-AXLFLAGS  := -Z db -Fc -Q2 $(AXLCDB)
-
-define aldor_args
-	-Nfile=$(aldorsrcdir)/aldor.conf 	\
-	-Y.					\
-	-I$(abs_top_srcdir)/lib/aldor/include	\
-	-lAldorLib=$(libraryname)_$*		\
-	$(AXLFLAGS)				\
-	-Fao=$*.ao $(srcdir)/$*.as
-endef
-
-$(patsubst %, %.dep,$(library)): %.dep: Makefile $(srcdir)/%.as
-$(patsubst %, %.ao, $(library)): %.ao: $(srcdir)/%.as
-$(patsubst %, %.ao, $(library)): %.ao: $(libraryname)_libdep.al
-	rm -f $*.c $*.ao
-	cp $(libraryname)_libdep.al lib$(libraryname)_$*.al
-	ar r lib$(libraryname)_$*.al $(addsuffix .ao, $(shell $(UNIQ) $*.dep))
-	$(aldorexedir)/aldor $(aldor_args)
-	rm lib$(libraryname)_$*.al
-
-$(libraryname)_libdep.al: $(foreach l,$(library_deps),../$l/aldor$l.al)
-	for l in $+; do 		\
-	   if [ ! -f $$l ]; then	\
-	      echo "missing $$l";	\
-	      exit 1;			\
-	   fi;				\
-	   ar x $$l;			\
-	   ar r $@ $$(ar t $$l);	\
-	   rm $$(ar t $$l);		\
-        done
-
-$(patsubst %, %.cmd, $(library)): %.cmd: Makefile
-	echo "run $(aldor_args)" > $@
-
-$(patsubst %,%.fm,$(library)): %.fm: %.ao
-	$(aldorexedir)/aldor \
-		     -Nfile=$(aldorsrcdir)/aldor.conf 	\
-		     -Ffm=$@ $*.ao
-
-define dep_template
-$(1).ao: $(1).dep $$(patsubst %,%.ao,$$($(1)_deps))
-$(1).dep: $$(patsubst %,%.dep,$$($(1)_deps))
-endef
-$(patsubst %, %.dep,$(library) $(libraryname)): 
-	truncate --size=0 $@
-	for i in $(filter %.dep, $^); \
-	do d=$$(basename $$i .dep); \
-	   cat $$i >> $@; echo $(basename $$d .dep)>> $@;  \
-	done
-
-$(foreach l,$(library), $(eval $(call dep_template,$(l))))
-
-$(libraryname).dep: $(patsubst %,%.dep,$(library))
-
-$(libraryname).al: $(libraryname).dep
-$(libraryname).al: $(patsubst %,%.ao,$(library))
-$(libraryname).al:
-	@echo LIB $(patsubst %.al, %, $@)
-	@rm -f $@
-	@ar cr $@ $(addsuffix .ao, $(shell $(UNIQ) $(@:.al=.dep)))
-
-all: Makefile $(patsubst %,%.fm,$(library)) $(libraryname).al
-
-# 
-# :: Automake requires this little lot
-#
-mostlyclean: 
-	rm -f $(patsubst %, %.c, $(library))
-	rm -f $(patsubst %, %.ao, $(library))
-	rm -f $(patsubst %, %.fm, $(library))
-
-clean: mostlyclean
-distclean: clean 
-	rm Makefile
-maintainer-clean: distclean
-
-
-EMPTY_AUTOMAKE_TARGETS  = dvi pdf ps info html tags ctags
-EMPTY_AUTOMAKE_TARGETS += install install-data install-exec uninstall
-EMPTY_AUTOMAKE_TARGETS += install-dvi install-html install-info install-ps install-pdf
-EMPTY_AUTOMAKE_TARGETS += installdirs
-EMPTY_AUTOMAKE_TARGETS += check installcheck
-
-.PHONY: $(EMPTY_AUTOMAKE_TARGETS)
-$(EMPTY_AUTOMAKE_TARGETS):
+include $(abs_top_srcdir)/lib/aldor/src/common.mk
