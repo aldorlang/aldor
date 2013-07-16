@@ -202,7 +202,7 @@ libalgebra_a_SOURCES =	\
 aldorsrcdir = $(abs_top_srcdir)/aldor/src
 
 datalibdir=$(datadir)/lib
-datalib_DATA=libaldor.al
+datalib_DATA=libalgebra.al
 
 AM_CFLAGS = -I$(aldorsrcdir)
 
