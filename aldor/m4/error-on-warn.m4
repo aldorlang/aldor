@@ -11,7 +11,7 @@ then
   #warnFLAGS="${warnFLAGS} -Wmissing-declarations"
   #warnFLAGS="${warnFLAGS} -Werror-implicit-function-declaration" # In -Wall
 
-  error_on_warning_as_default="yes"
+  #error_on_warning_as_default="yes"
 
   AC_ARG_ENABLE(error-on-warning,
     [AS_HELP_STRING([--disable-error-on-warning],[disable treating compile warnings as errors])],

@@ -26,13 +26,9 @@ LT_INIT
 AC_SUBST([LIBTOOL_DEPS])
 
 # Enable extra warnings and -Werror if supported.
-AC_ARG_ENABLE(libraries,
-              [AS_HELP_STRING([--enable-werror],
-                              [Abort build on C compiler warnings])],
-              [ALDOR_ERROR_ON_WARN])
+ALDOR_ERROR_ON_WARN
 
-
-
+# Generate Makefiles
 AC_CONFIG_FILES([Makefile
 		 aldor/Makefile
 		 aldor/subcmd/Makefile
