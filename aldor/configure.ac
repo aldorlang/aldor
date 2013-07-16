@@ -8,7 +8,6 @@ AC_CONFIG_SRCDIR([aldor/src/main.c])
 AC_CONFIG_AUX_DIR([amaux])
 
 # Automake
-AM_MAINTAINER_MODE([enable])
 AM_INIT_AUTOMAKE([foreign silent-rules parallel-tests])
 AM_SILENT_RULES([yes])
 
@@ -27,7 +26,12 @@ LT_INIT
 AC_SUBST([LIBTOOL_DEPS])
 
 # Enable extra warnings and -Werror if supported.
-ALDOR_ERROR_ON_WARN
+AC_ARG_ENABLE(libraries,
+              [AS_HELP_STRING([--enable-werror],
+                              [Abort build on C compiler warnings])],
+              [ALDOR_ERROR_ON_WARN])
+
+
 
 AC_CONFIG_FILES([Makefile
 		 aldor/Makefile
