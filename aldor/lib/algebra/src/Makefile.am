@@ -10,7 +10,8 @@ SUBDIRS = util numbers extree extree/operators extree/parser categories	\
 #	  multpoly/multpolytest
 
 
-lib_LIBRARIES=libalgebra.a
+lib_LIBRARIES = libalgebra.a
+
 libalgebra_a_SOURCES =	\
 	extree/operators/sit_OPfact.c	\
 	extree/operators/sit_OPquot.c	\
@@ -201,12 +202,12 @@ libalgebra_a_SOURCES =	\
 
 aldorsrcdir = $(abs_top_srcdir)/aldor/src
 
-datalibdir=$(datadir)/lib
-datalib_DATA=libalgebra.al
+datalibdir = $(datadir)/lib
+datalib_DATA = libalgebra.al
 
 AM_CFLAGS = -I$(aldorsrcdir)
 
-libalgebra.al: $(foreach i,$(SUBDIRS),$i/algebra.al)
+libalgebra.al: $(foreach i,$(SUBDIRS),$i/_sublib.al)
 	$(AM_V_AR)		\
 	for l in $+; do		\
 	   ar x $$l;		\

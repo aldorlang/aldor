@@ -3,6 +3,9 @@ default: all
 aldorsrcdir	:= $(top_srcdir)/aldor/src
 aldorexedir	:= $(top_builddir)/aldor/src
 
+libraryincdir	:= $(top_srcdir)/lib/$(libraryname)/include
+librarylibdir	:= $(top_builddir)/lib/$(libraryname)/src
+
 UNIQ = perl $(top_srcdir)/aldor/tools/unix/uniq
 
 # Aldor
@@ -53,15 +56,15 @@ aldor_args =					\
 
 $(addsuffix .dep,$(library)): %.dep: Makefile $(srcdir)/%.as Makefile.deps
 $(addsuffix .ao, $(library)): %.ao: $(srcdir)/%.as
-$(addsuffix .ao, $(library)): %.ao: $(libraryname)_libdep.al
+$(addsuffix .ao, $(library)): %.ao: _sublib_libdep.al
 	$(AM_V_ALDOR)								\
 	rm -f $*.c $*.ao;							\
-	cp $(libraryname)_libdep.al lib$(libraryname)_$*.al;			\
+	cp _sublib_libdep.al lib$(libraryname)_$*.al;			\
 	ar r lib$(libraryname)_$*.al $(addsuffix .ao, $(shell $(UNIQ) $*.dep));	\
 	$(aldorexedir)/aldor $(aldor_args);					\
 	rm lib$(libraryname)_$*.al;						\
 
-$(libraryname)_libdep.al: $(foreach l,$(library_deps),$(librarylibdir)/$l/$(libraryname).al)
+_sublib_libdep.al: $(foreach l,$(library_deps),$(librarylibdir)/$l/_sublib.al)
 	$(AM_V_AR)			\
 	ar cr $@;			\
 	for l in $+; do 		\
@@ -88,7 +91,7 @@ $1.ao: $1.dep $(addsuffix .ao,$($1_deps))
 $1.dep: $(addsuffix .dep,$($1_deps))
 endef
 
-$(addsuffix .dep,$(library) $(libraryname)): 
+$(addsuffix .dep,$(library) _sublib): 
 	$(AM_V_DEP)						\
 	truncate --size 0 $@_tmp;				\
 	for i in $(filter %.dep, $^); do			\
@@ -105,29 +108,29 @@ $(addsuffix .dep,$(library) $(libraryname)):
 
 $(foreach l,$(library), $(eval $(call dep_template,$(l))))
 
-$(libraryname).dep: $(addsuffix .dep,$(library))
-$(libraryname).dep: Makefile.deps
+_sublib.dep: $(addsuffix .dep,$(library))
+_sublib.dep: Makefile.deps
 
-$(libraryname).al: $(libraryname).dep
-$(libraryname).al: $(addsuffix .ao,$(library))
-$(libraryname).al:
+_sublib.al: _sublib.dep
+_sublib.al: $(addsuffix .ao,$(library))
+_sublib.al:
 	$(AM_V_AR)							\
 	rm -f $@;							\
 	ar cr $@ $(addsuffix .ao, $(shell $(UNIQ) $(@:.al=.dep)))
 
-all: Makefile $(addsuffix .fm,$(library)) $(libraryname).al
+all: Makefile $(addsuffix .fm,$(library)) _sublib.al
 
 # 
 # :: Automake requires this little lot
 #
 mostlyclean: 
-	rm -f $(libraryname)_libdep.al
+	rm -f _sublib_libdep.al
 	rm -f $(addsuffix .c,$(library))
 	rm -f $(addsuffix .ao,$(library))
 	rm -f $(addsuffix .fm,$(library))
 
 clean: mostlyclean
-	rm -f $(libraryname).al
+	rm -f _sublib.al
 
 distclean: clean 
 	rm -f $(addsuffix .dep,$(library))

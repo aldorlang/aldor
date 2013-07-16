@@ -1,9 +1,6 @@
 aldorincdir	:= $(top_srcdir)/lib/aldor/include
 aldorlibdir	:= $(top_builddir)/lib/aldor/src
 
-libraryincdir	:= $(top_srcdir)/lib/algebra/include
-librarylibdir	:= $(top_builddir)/lib/algebra/src
-
 libraryname	:= algebra
 
 #AXLCDB		:= -W check -Csmax=0 -Fc -Zdb -Qno-cc
