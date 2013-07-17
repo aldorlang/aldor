@@ -14,6 +14,7 @@
 #include "fint.h"
 #include "fluid.h"
 #include "foam_c.h"
+#include "opsys.h"
 #include "output.h"
 #include "store.h"
 #include "syscmd.h"

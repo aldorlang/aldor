@@ -8,6 +8,7 @@
 
 #include "cfgfile.h"
 #include "debug.h"
+#include "opsys.h"
 #include "stdio.h0"
 #include "store.h"
 #include "strops.h"

@@ -10,6 +10,7 @@
 #include "comsg.h"
 #include "debug.h"
 #include "file.h"
+#include "opsys.h"
 #include "store.h"
 
 /*

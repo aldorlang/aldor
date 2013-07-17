@@ -11,6 +11,7 @@
 #include "syscmd.h"
 #include "foam_c.h"
 #include "fint.h"
+#include "opsys.h"
 #include "output.h"
 #include "phase.h"
 #include "cmdline.h"

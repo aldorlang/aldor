@@ -6,8 +6,9 @@
  *
  ****************************************************************************/
 
-# include "axlobs.h"
-# include "version.h"
+#include "axlobs.h"
+#include "opsys.h"
+#include "version.h"
 
 /*
  * The version of this program.

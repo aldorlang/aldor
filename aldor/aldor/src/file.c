@@ -9,6 +9,7 @@
 #include "axlgen.h"
 #include "debug.h"
 #include "file.h"
+#include "opsys.h"
 #include "strops.h"
 #include "xfloat.h"
 

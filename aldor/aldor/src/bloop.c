@@ -7,6 +7,7 @@
  ****************************************************************************/
 
 #include "axlphase.h"
+#include "opsys.h"
 #include "store.h"
 #include "util.h"
 

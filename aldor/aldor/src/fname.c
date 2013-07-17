@@ -9,6 +9,7 @@
 #include "axlgen.h"
 #include "fname.h"
 #include "format.h"
+#include "opsys.h"
 #include "store.h"
 #include "strops.h"
 

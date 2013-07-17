@@ -9,6 +9,7 @@
 #include "axlgen.h"
 #include "file.h"
 #include "msg.h"
+#include "opsys.h"
 #include "store.h"
 #include "strops.h"
 

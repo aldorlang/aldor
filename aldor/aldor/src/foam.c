@@ -30,6 +30,7 @@
 #include "debug.h"
 #include "file.h"
 #include "fluid.h"
+#include "opsys.h"
 #include "store.h"
 #include "util.h"
 #include "xfloat.h"

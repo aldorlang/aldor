@@ -8,6 +8,7 @@
 
 #include "axlgen0.h"
 #include "axlport.h"
+#include "opsys.h"
 
 Bool    dbFlag  = false;
 

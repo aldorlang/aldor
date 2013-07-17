@@ -28,6 +28,7 @@
 #include "axlphase.h"
 #include "file.h"
 #include "fluid.h"
+#include "opsys.h"
 #include "util.h"
 
 /******************************************************************************

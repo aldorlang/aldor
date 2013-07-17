@@ -5,6 +5,7 @@
 #include "axlgen.h"
 #include "bigint.h"
 #include "foam_c.h"
+#include "opsys.h"
 #include "store.h"
 
 local String

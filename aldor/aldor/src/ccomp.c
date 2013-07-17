@@ -8,7 +8,9 @@
 
 #include "axlphase.h"
 #include "compcfg.h"
+#include "opsys.h"
 #include "store.h"
+
 /*
  * Default compiler and linker.  
  * They can be overridden by the env. variable CC or the option * -Ccc=....

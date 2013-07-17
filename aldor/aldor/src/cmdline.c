@@ -10,6 +10,7 @@
 #include "cmdline.h"
 #include "file.h"
 #include "of_emerg.h"
+#include "opsys.h"
 #include "store.h"
 #include "test.h"
 

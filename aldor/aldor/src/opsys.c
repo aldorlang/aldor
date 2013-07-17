@@ -9,8 +9,9 @@
 
 #define _ALL_SOURCE   /* For RS/6000 - should come before axlport.h include. */
 
-# include "axlport.h"
-# include "editlevels.h"
+#include "axlport.h"
+#include "editlevels.h"
+#include "opsys.h"
 
 /*
  * Select OS-specific file.  Note, olde compilers complain about #elif.

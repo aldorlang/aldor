@@ -14,6 +14,7 @@ void testBtree(void) { }
 
 #include "axlgen.h"
 #include "btree.h"
+#include "opsys.h"
 
 void
 testBtree(void)

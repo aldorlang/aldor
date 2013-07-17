@@ -6,6 +6,7 @@
  ****************************************************************************/
 
 #include "file.h"
+#include "opsys.h"
 #include "textcolour.h"
 #include "strops.h"
 

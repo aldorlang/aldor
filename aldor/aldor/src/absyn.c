@@ -9,6 +9,7 @@
 #include "axlobs.h"
 #include "debug.h"
 #include "format.h"
+#include "opsys.h"
 #include "store.h"
 #include "util.h"
 

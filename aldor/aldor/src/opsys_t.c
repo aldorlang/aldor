@@ -17,6 +17,7 @@ void testOpsys(void) { }
  */
 #include "axlgen.h"
 #include "axlport.h"
+#include "opsys.h"
 
 local void
 showMemMap(struct osMemMap **mm)

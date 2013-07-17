@@ -13,6 +13,7 @@
 #include "file.h"
 #include "fintphase.h"
 #include "fluid.h"
+#include "opsys.h"
 #include "store.h"
 #include "util.h"
 

@@ -51,6 +51,7 @@
  * penalty of a 48K table in static data.
  */
 
+#include "opsys.h"
 #include "store.h"
 
 /*

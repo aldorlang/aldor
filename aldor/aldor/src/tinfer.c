@@ -10,13 +10,13 @@
 #include "debug.h"
 #include "fluid.h"
 #include "format.h"
+#include "opsys.h"
 #include "store.h"
-
-#include "ti_bup.h"
-#include "ti_tdn.h"
-#include "ti_sef.h"
 #include "terror.h"
 #include "tfcond.h"
+#include "ti_bup.h"
+#include "ti_sef.h"
+#include "ti_tdn.h"
 
 /*****************************************************************************
  *

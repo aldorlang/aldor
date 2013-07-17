@@ -14,6 +14,7 @@ void testBitv(void) { }
 
 #include "axlgen.h"
 #include "bitv.h"
+#include "opsys.h"
 
 static BitvClass  bitvClass;
 

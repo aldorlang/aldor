@@ -13,6 +13,7 @@ void testPriq(void) { }
 #else
 
 #include "axlgen.h"
+#include "opsys.h"
 #include "priq.h"
 
 static PriQKey	testData[] = {

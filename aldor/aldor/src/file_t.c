@@ -14,6 +14,7 @@ void testFile(void) { }
 
 #include "axlgen.h"
 #include "file.h"
+#include "opsys.h"
 #include "path.h"
 
 void

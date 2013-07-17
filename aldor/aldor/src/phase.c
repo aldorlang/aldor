@@ -8,6 +8,7 @@
 
 #include "axlphase.h"
 #include "debug.h"
+#include "opsys.h"
 #include "store.h"
 #include "util.h"
 
