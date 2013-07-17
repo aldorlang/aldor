@@ -6,7 +6,8 @@
  *
  ****************************************************************************/
 
-# include "axlgen0.h"
+#include "axlgen0.h"
+#include "store.h"
 
 
 #ifdef TEST_STAND_ALONE

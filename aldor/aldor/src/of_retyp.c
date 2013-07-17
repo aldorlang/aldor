@@ -7,10 +7,11 @@
  ****************************************************************************/
 
 #include "axlphase.h"
-#include "of_retyp.h"
-#include "opttools.h"
 #include "of_peep.h"
+#include "of_retyp.h"
 #include "of_util.h"
+#include "opttools.h"
+#include "store.h"
 
 /******************************************************************************
  *

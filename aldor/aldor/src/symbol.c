@@ -7,6 +7,8 @@
  ****************************************************************************/
 
 #include "axlgen.h"
+#include "store.h"
+#include "strops.h"
 #include "symbol.h"
 #include "table.h"
 

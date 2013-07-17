@@ -17,7 +17,9 @@
  *
  */
  
-# include "axlphase.h"
+#include "axlphase.h"
+#include "format.h"
+#include "store.h"
  
 # undef MacDeclArgs
 

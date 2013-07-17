@@ -28,6 +28,9 @@
 
 #include "axlobs.h"
 #include "file.h"
+#include "fluid.h"
+#include "store.h"
+#include "util.h"
 #include "xfloat.h"
 
 #define	 FOAM_NARY	(-1)	/* Identifies tags with N-ary data argument. */

@@ -1,5 +1,6 @@
 #include "axlobs.h"
 #include "gf_syme.h"
+#include "store.h"
 
 static Length	gen0SymeTableC;
 static Syme	*gen0SymeTableV;

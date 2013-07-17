@@ -8,6 +8,8 @@
 
 #include "axlobs.h"
 #include "btree.h"
+#include "store.h"
+#include "util.h"
 
 /*
  * Initialize specific list parameterizations.

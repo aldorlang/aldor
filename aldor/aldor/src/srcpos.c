@@ -9,6 +9,7 @@
 #include "axlgen.h"
 #include "comsg.h"
 #include "file.h"
+#include "store.h"
 
 /*
  * The "fields" are

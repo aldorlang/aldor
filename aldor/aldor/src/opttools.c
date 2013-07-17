@@ -119,9 +119,10 @@
  * 
  ****************************************************************************/
 
-#include "opttools.h"
 #include "genfoam.h"
 #include "gf_rtime.h"
+#include "opttools.h"
+#include "store.h"
 
 CREATE_LIST(VarInfo);
 

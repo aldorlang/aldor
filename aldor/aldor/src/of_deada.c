@@ -33,8 +33,9 @@
 #include "axlobs.h"
 #include "of_deada.h"
 #include "of_util.h"
-#include "opttools.h"
 #include "optfoam.h"
+#include "opttools.h"
+#include "store.h"
 
 Bool      daDebug;
 

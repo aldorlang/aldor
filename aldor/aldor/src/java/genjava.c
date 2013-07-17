@@ -1,6 +1,8 @@
-#include "javacode.h"
 #include "foamsig.h"
 #include "intset.h"
+#include "javacode.h"
+#include "store.h"
+#include "util.h"
 
 /*
  * Implement as the following...

@@ -14,6 +14,7 @@ void testCCode(void) { }
 
 #include "axlgen.h"
 #include "ccode.h"
+#include "util.h"
 
 char	floatBuf[MAX_FLOAT_SIZE];
 

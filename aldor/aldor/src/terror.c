@@ -1,13 +1,15 @@
 /****************************************************************************
  *
- * terror.c  Type errors.
+ * terror.c: Type errors.
  *
  * Copyright (c) 1990-2007 Aldor Software Organization Ltd (Aldor.org).
  *
  ***************************************************************************/
 
 #include "axlphase.h"
+#include "store.h"
 #include "terror.h"
+#include "util.h"
 
 extern void		tiBottomUp		(Stab, AbSyn, TForm);
 extern void		tiTopDown		(Stab, AbSyn, TForm);

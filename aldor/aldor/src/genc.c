@@ -1,4 +1,3 @@
-
 /*****************************************************************************
  *
  * genc.c: Foam-to-C translation.
@@ -8,12 +7,15 @@
  ****************************************************************************/
 
 #include "axlphase.h"
-#include "gf_util.h"
-#include "fortran.h"
 #include "compcfg.h"
-#include "optfoam.h"
+#include "fluid.h"
+#include "fortran.h"
+#include "gf_util.h"
 #include "of_killp.h"
 #include "of_rrfmt.h"
+#include "optfoam.h"
+#include "store.h"
+#include "util.h"
 
 
 /*

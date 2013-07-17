@@ -98,13 +98,15 @@
  *
  ***************************************************************************/
 
-# include "axlphase.h"
-# include "of_inlin.h"
-# include "gf_rtime.h"
-# include "loops.h"
-# include "inlutil.h"
-# include "opttools.h"
-# include "optfoam.h"
+#include "axlphase.h"
+#include "fluid.h"
+#include "gf_rtime.h"
+#include "inlutil.h"
+#include "loops.h"
+#include "of_inlin.h"
+#include "optfoam.h"
+#include "opttools.h"
+#include "store.h"
 
 
 /*****************************************************************************

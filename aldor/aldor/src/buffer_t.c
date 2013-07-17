@@ -12,7 +12,8 @@ void testBuffer(void) { }
 
 #else
 
-# include "axlgen.h"
+#include "axlgen.h"
+#include "buffer.h"
 
 void
 testBuffer(void)

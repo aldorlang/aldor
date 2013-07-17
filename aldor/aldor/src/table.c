@@ -7,6 +7,7 @@
  ****************************************************************************/
 
 #include "axlgen.h"
+#include "store.h"
 #include "table.h"
 
 # define TBL_InitBuckC	 7	 /* Largest prime under 2**i, for some i. */

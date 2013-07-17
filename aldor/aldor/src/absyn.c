@@ -6,7 +6,10 @@
  *
  ****************************************************************************/
 
-# include "axlobs.h"
+#include "axlobs.h"
+#include "format.h"
+#include "store.h"
+#include "util.h"
 
 Bool	abDebug		= false;
 #define abDEBUG(s)	DEBUG_IF(abDebug, s)

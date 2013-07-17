@@ -108,8 +108,9 @@
  *  usedefFreeChains
  ****************************************************************************/
 
-# include "usedef.h"
-# include "opttools.h"
+#include "opttools.h"
+#include "store.h"
+#include "usedef.h"
 
 /****************************************************************************
  * :: Debug

@@ -15,6 +15,8 @@
 
 #include "axlgen.h"
 #include "ccode.h"
+#include "store.h"
+#include "util.h"
 
 CCode
 ccoNewToken(CCodeTag tag, Symbol sym)

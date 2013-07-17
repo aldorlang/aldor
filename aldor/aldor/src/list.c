@@ -6,7 +6,11 @@
  *
  ****************************************************************************/
 
-# include "axlgen.h"
+#include "axlgen.h"
+#include "format.h"
+#include "list.h"
+#include "store.h"
+#include "strops.h"
 
 typedef void    (*PointerListEltFreeFun)(Pointer);
 typedef Pointer (*PointerListEltFun)    (Pointer);

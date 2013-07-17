@@ -27,6 +27,8 @@
 
 #include "axlphase.h"
 #include "file.h"
+#include "fluid.h"
+#include "util.h"
 
 /******************************************************************************
  *

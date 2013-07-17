@@ -25,9 +25,11 @@
  *		an as-needed basis.
  */
 
-# include "axlphase.h"
-# include "gf_rtime.h"
-# include "optfoam.h"
+#include "axlphase.h"
+#include "fluid.h"
+#include "gf_rtime.h"
+#include "optfoam.h"
+#include "store.h"
 
 Bool	dvDebug		= false;
 

@@ -6,7 +6,9 @@
  *
  ****************************************************************************/
 
-# include "axlobs.h"
+#include "axlobs.h"
+#include "store.h"
+#include "util.h"
 
 Bool	tcDebug		= false;
 

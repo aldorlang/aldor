@@ -10,7 +10,9 @@
  * See comments in fluid.h
  */
 
-# include "axlgen0.h"
+#include "axlgen0.h"
+#include "fluid.h"
+#include "store.h"
 
 # define FLUID_INC	100
 

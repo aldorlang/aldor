@@ -6,10 +6,12 @@
  *
  ****************************************************************************/
 
-# include "axlobs.h"
-# include "genfoam.h"
-# include "srcpos.h"
-# include "ostream.h"
+#include "axlobs.h"
+#include "genfoam.h"
+#include "ostream.h"
+#include "srcpos.h"
+#include "store.h"
+#include "util.h"
 
 Bool	sstDebug            	= false;
 Bool	sstMarkDebug		= false;

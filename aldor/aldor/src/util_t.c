@@ -12,7 +12,8 @@ void testUtil(void) { }
 
 #else
 
-# include "axlgen.h"
+#include "axlgen.h"
+#include "util.h"
 
 local void
 junkobits(int nb, UByte *bb)

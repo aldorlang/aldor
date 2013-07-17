@@ -23,6 +23,7 @@ void testStore1d(void) { }
 #else
 
 #include "axlgen.h"
+#include "store.h"
 
 /*****************************************************************************
  *

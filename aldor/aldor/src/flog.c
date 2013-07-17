@@ -8,6 +8,8 @@
  
 #include "axlphase.h"
 #include "file.h"
+#include "store.h"
+#include "util.h"
 
 
 Bool	    flogDebug 		= false;

@@ -8,6 +8,8 @@
 
 #include "axlobs.h"
 #include "file.h"
+#include "store.h"
+#include "util.h"
 
 Bool	arDebug		= false;
 #define arDEBUG(s)	DEBUG_IF(arDebug, s)

@@ -7,7 +7,10 @@
  *****************************************************************************/
 
 #include "axlphase.h"
+#include "format.h"
+#include "store.h"
 #include "tfcond.h"
+#include "util.h"
 
 Bool	scoDebug		= false;
 Bool	scoStabDebug		= false;

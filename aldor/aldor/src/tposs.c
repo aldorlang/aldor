@@ -13,6 +13,7 @@
  */
 
 #include "axlobs.h"
+#include "store.h"
 #include "terror.h"
 
 /*

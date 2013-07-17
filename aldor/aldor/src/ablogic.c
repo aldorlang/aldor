@@ -8,6 +8,7 @@
 
 #include "axlobs.h"
 #include "dnf.h"
+#include "store.h"
 
 Bool	ablogDebug		= false;
 #define ablogDEBUG(s)		DEBUG_IF(ablogDebug, s)

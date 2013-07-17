@@ -10,6 +10,7 @@
 #include "file.h"
 #include "opttools.h"
 #include "simpl.h"
+#include "store.h"
 
 Bool	libDebug 	= false;
 Bool	libLazyDebug 	= false;

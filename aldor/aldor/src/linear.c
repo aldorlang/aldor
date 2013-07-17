@@ -16,7 +16,8 @@
  * post-facto and may be incorrect.
  */
 
-# include "axlphase.h"
+#include "axlphase.h"
+#include "store.h"
 
 Bool	linDebug	= false;
 #define linDEBUG(s)	DEBUG_IF(linDebug, s)

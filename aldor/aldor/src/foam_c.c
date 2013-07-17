@@ -14,8 +14,9 @@
  * The include of "foam_c.h" must come last.
  */
 #include "axlgen.h"
-#include "table.h"
 #include "foam_c.h"
+#include "store.h"
+#include "table.h"
 
 local Hash	localStrHash	(String); 
 /*****************************************************************************

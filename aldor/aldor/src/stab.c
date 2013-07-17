@@ -6,8 +6,10 @@
  *
  ****************************************************************************/
 
-# include "axlobs.h"
-# include "simpl.h"
+#include "axlobs.h"
+#include "format.h"
+#include "simpl.h"
+#include "store.h"
 
 Bool	stabDebug		= false;
 Bool	stabImportDebug		= false;

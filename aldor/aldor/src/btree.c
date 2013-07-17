@@ -8,6 +8,7 @@
 
 #include "axlgen.h"
 #include "btree.h"
+#include "store.h"
 
 local BTree    btreeAllocNode    (ULong nbytes);
 local void     btreeFreeNode     (BTree);

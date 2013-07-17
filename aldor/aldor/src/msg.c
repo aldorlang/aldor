@@ -9,6 +9,8 @@
 #include "axlgen.h"
 #include "file.h"
 #include "msg.h"
+#include "store.h"
+#include "strops.h"
 
 /*
  * In-core structures to keep track of messages.

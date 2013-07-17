@@ -11,6 +11,9 @@
 #include "emit.h"
 #include "file.h"
 #include "fintphase.h"
+#include "fluid.h"
+#include "store.h"
+#include "util.h"
 
 String 		compRootDir     = 0;
 Bool   		compIsDebug     = false;

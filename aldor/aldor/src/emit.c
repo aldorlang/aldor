@@ -9,6 +9,7 @@
 #include "axlphase.h"
 #include "compcfg.h"
 #include "file.h"
+#include "store.h"
 
 /****************************************************************************
  *

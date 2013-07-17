@@ -11,6 +11,8 @@
 #include "file.h"
 #include "list.h"
 #include "path.h"
+#include "store.h"
+#include "strops.h"
 
 CREATE_LIST(String);
 

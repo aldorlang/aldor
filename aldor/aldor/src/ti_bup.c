@@ -6,10 +6,13 @@
  *
  ***************************************************************************/
 
+#include "fluid.h"
+#include "store.h"
 #include "ti_bup.h"
 #include "ti_tdn.h"
 #include "tinfer.h"
 #include "terror.h"
+#include "util.h"
 
 
 /*****************************************************************************

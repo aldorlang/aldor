@@ -1,5 +1,7 @@
 
 #include "foamsig.h"
+#include "store.h"
+#include "util.h"
 
 local Bool aintEqual(AInt i1, AInt i2);
 

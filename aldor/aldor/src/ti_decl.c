@@ -6,11 +6,13 @@
  *
  ***************************************************************************/
 
-#include "ti_decl.h"
+#include "fluid.h"
+#include "store.h"
+#include "terror.h"
 #include "ti_bup.h"
+#include "ti_decl.h"
 #include "ti_tdn.h"
 #include "tinfer.h"
-#include "terror.h"
 
 
 struct _pendingDecl

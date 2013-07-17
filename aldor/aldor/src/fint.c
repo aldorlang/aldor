@@ -11,9 +11,12 @@
 #include "cmdline.h"
 #include "file.h"
 #include "fint.h"
+#include "fluid.h"
 #include "foam_c.h"
 #include "output.h"
+#include "store.h"
 #include "syscmd.h"
+#include "util.h"
 #include "xfloat.h"
 
 

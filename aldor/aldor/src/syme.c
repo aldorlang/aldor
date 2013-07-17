@@ -6,9 +6,11 @@
  *
  ****************************************************************************/
 
-# include "axlobs.h"
+#include "axlobs.h"
+#include "fluid.h"
 
-# include "simpl.h"
+#include "simpl.h"
+#include "store.h"
 
 Bool	symeDebug		= false;
 Bool	symeFillDebug		= false;

@@ -7,6 +7,9 @@
  ***************************************************************************/
 
 #include "axlphase.h"
+#include "fluid.h"
+#include "format.h"
+#include "store.h"
 
 #include "ti_bup.h"
 #include "ti_tdn.h"

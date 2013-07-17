@@ -19,10 +19,6 @@
 
 # include "test.h"
 # include "debug.h"
-# include "format.h"
-# include "fluid.h"
-# include "store.h"
-# include "util.h"
 
 
 # include "compopt.h"

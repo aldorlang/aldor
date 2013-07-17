@@ -9,7 +9,7 @@
 #ifndef _ABCHECK_H_
 #define _ABCHECK_H_
 
-# include "axlobs.h"
+#include "axlobs.h"
 
 extern void abCheck    (AbSyn);
 

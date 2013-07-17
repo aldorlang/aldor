@@ -13,6 +13,7 @@ void testFormat(void) { }
 #else
 
 #include "axlgen.h"
+#include "strops.h"
 
 #define ZF	((XPutFun) 0)
 

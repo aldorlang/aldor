@@ -70,7 +70,11 @@
  */
 
 #include "axlgen.h"
+#include "fluid.h"
+#include "format.h"
 #include "sexpr.h"
+#include "store.h"
+#include "util.h"
 
 Bool sexprDebug = false;
 #define sexprDEBUG(s)	DEBUG_IF(sexprDebug, s)

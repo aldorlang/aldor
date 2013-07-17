@@ -13,6 +13,7 @@ void testXFloat(void) { }
 #else
 
 #include "axlgen.h"
+#include "util.h"
 #include "xfloat.h"
 
 #ifdef XFLOAT_DEBUG
