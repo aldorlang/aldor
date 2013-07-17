@@ -48,7 +48,6 @@
 # include "list.h"
 # include "msg.h"
 # include "path.h"
-# include "priq.h"
 # include "strops.h"
 #else
 # include "table.h"

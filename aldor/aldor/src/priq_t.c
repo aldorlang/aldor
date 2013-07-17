@@ -13,6 +13,7 @@ void testPriq(void) { }
 #else
 
 #include "axlgen.h"
+#include "priq.h"
 
 static PriQKey	testData[] = {
 	100, 98, 7, 2, 33, 4, 5, 56, 78, 7, 1, 7, 4, 
