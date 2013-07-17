@@ -10,11 +10,7 @@
  * This uses sprintf to do the actual formatting into stack allocated buffer.
  */
 
-# include "axlgen.h"
-#include "ostream.h"
-#include "list.h"
-#include "store.h"
-#include "strops.h"
+#include "axlgen.h"
 
 /*
  * fnewline(fout) prints a newline and indents next line by amount findent.
