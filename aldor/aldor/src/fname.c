@@ -7,6 +7,7 @@
  ****************************************************************************/
 
 #include "axlgen.h"
+#include "fname.h"
 
 local FileName
 fnameTemplate(void)

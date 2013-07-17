@@ -13,6 +13,7 @@ void testMsg(void) { }
 #else
 
 #include "axlgen.h"
+#include "msg.h"
 #include "path.h"
 
 struct msgInfo testmsgdb_msgs[] = {

@@ -12,7 +12,8 @@ void testBigint(void) { }
 
 #else
 
-# include "axlgen.h"
+#include "axlgen.h"
+#include "bigint.h"
 
 #define testBI_Limit (sizeof(testBI)/sizeof(testBI[0]))
 #define ReallyBig   303030

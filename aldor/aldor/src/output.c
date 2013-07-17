@@ -2,8 +2,9 @@
  * Foreign functions for Aldor output functions.
  */
 
-# include "axlgen.h"
-# include "foam_c.h"
+#include "axlgen.h"
+#include "bigint.h"
+#include "foam_c.h"
 
 local String
 localStrAlloc(Length n)

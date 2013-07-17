@@ -6,7 +6,8 @@
  *
  ****************************************************************************/
 
-# include "axlgen.h"
+#include "axlgen.h"
+#include "btree.h"
 
 local BTree    btreeAllocNode    (ULong nbytes);
 local void     btreeFreeNode     (BTree);

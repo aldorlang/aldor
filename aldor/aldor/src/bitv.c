@@ -33,6 +33,7 @@
  ***************************************************************************/
 
 #include "axlgen.h"
+#include "bitv.h"
 
 #define 	BpW	bitsizeof(BitvWord)
 

@@ -35,19 +35,9 @@
 # define  OB_SExpr		13
 # define  OB_AXLGEN_LIMIT	14
 
-# include "bigint.h"
-# include "btree.h"
-
 #ifndef FOAM_RTS
-# include "bitv.h"
-# include "buffer.h"
-# include "fname.h"
 # include "list.h"
-# include "msg.h"
 # include "strops.h"
-#else
-# include "table.h"
-# include "bigint.h"
 #endif
 
 

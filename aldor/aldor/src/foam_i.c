@@ -21,8 +21,9 @@
 /*
  * The include of "foam_c.h" must come second.
  */
-# include "axlgen.h"
-# include "foam_c.h"
+#include "axlgen.h"
+#include "bigint.h"
+#include "foam_c.h"
 
 /*****************************************************************************
  *

@@ -8,6 +8,7 @@
 
 #include "axlgen.h"
 #include "file.h"
+#include "msg.h"
 
 /*
  * In-core structures to keep track of messages.
