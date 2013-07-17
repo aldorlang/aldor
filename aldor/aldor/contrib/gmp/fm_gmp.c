@@ -440,7 +440,7 @@ fiBIntTimesPlus(FiBInt a, FiBInt b, FiBInt c)
 	FiBInt tmp, res;
 	tmp = fiBIntTimes(a, b);
 	res = fiBIntPlus(tmp, c);
-	fiBIntFree((FGmpBInt) tmp);
+	fiBIntFree(tmp);
 	return res;
 }
 
@@ -498,7 +498,7 @@ fiBIntBit(FiBInt b, FiSInt n)
 	mpz_tdiv_q_2exp(F2MPZ(tmp), F2MPZ(tmp), n);
 
 	res = (mpz_cmp_si(F2MPZ(tmp), 0) != 0);
-	fiBIntFree(tmp);
+	fiBIntFree((FiBInt) tmp);
 	return res;
 }
 
@@ -747,7 +747,7 @@ fiFormatBInt(FiBInt x, FiArr s, FiSInt i)
 	String	buf;
 	int	l;
 
-	buf = fiBIntToString((BInt) x);
+	buf = fiBIntToString((FiBInt) x);
 	l   = strlen(buf);
 	if (l+i > strlen((String) s)) {
 		fprintf(stderr, "Error -- not enough space!\n");

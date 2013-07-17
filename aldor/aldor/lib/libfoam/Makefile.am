@@ -1,31 +1,55 @@
-SUBDIRS=al
+SUBDIRS = al
 
-libfoam_ALDOR=al/runtime.c
-libfoam_SRC=\
-	$(aldorsrcdir)/bigint.c \
-	$(aldorsrcdir)/btree.c  \
-	$(aldorsrcdir)/dword.c \
-	$(aldorsrcdir)/foamopt.c \
-	$(aldorsrcdir)/output.c \
-	$(aldorsrcdir)/opsys.c \
-	$(aldorsrcdir)/store.c \
-	$(aldorsrcdir)/table.c \
-	$(aldorsrcdir)/foam_c.c \
-	$(aldorsrcdir)/foam_i.c \
-	$(aldorsrcdir)/foam_cfp.c \
-	$(aldorsrcdir)/format.c  \
-	$(aldorsrcdir)/stdc.c  \
-	$(aldorsrcdir)/util.c	\
-	$(aldorsrcdir)/timer.c	\
-	$(aldorsrcdir)/compopt.c \
-	$(aldorsrcdir)/xfloat.c  	
-
-libfoam_a_CFLAGS = -save-temps -Werror $(AM_CFLAGS)
 aldorsrcdir = $(abs_top_srcdir)/aldor/src
 
-AM_CFLAGS = -I$(aldorsrcdir) -DFOAM_RTS
-libfoam_a_SOURCES=$(libfoam_SRC) $(libfoam_ALDOR)
+runtime_ALDOR = al/runtime.c
+runtime_CSOURCES =			\
+	$(aldorsrcdir)/btree.c		\
+	$(aldorsrcdir)/dword.c		\
+	$(aldorsrcdir)/foamopt.c	\
+	$(aldorsrcdir)/output.c		\
+	$(aldorsrcdir)/opsys.c		\
+	$(aldorsrcdir)/store.c		\
+	$(aldorsrcdir)/table.c		\
+	$(aldorsrcdir)/foam_c.c		\
+	$(aldorsrcdir)/foam_i.c		\
+	$(aldorsrcdir)/foam_cfp.c	\
+	$(aldorsrcdir)/format.c		\
+	$(aldorsrcdir)/stdc.c		\
+	$(aldorsrcdir)/util.c		\
+	$(aldorsrcdir)/timer.c		\
+	$(aldorsrcdir)/compopt.c	\
+	$(aldorsrcdir)/xfloat.c  	
 
-lib_LIBRARIES=libfoam.a 
+AM_CFLAGS = -I$(aldorsrcdir) -DFOAM_RTS
+
+lib_LIBRARIES =
+
+#############################################################################
+# :: Built-in bigint
+#############################################################################
+
+lib_LIBRARIES += libfoam.a 
+
+libfoam_a_SOURCES =			\
+	$(aldorsrcdir)/bigint.c		\
+	$(runtime_ALDOR)		\
+	$(runtime_CSOURCES)
+
+#############################################################################
+# :: GMP for bigint
+#############################################################################
+
+lib_LIBRARIES += libfoam-gmp.a 
+
+libfoam_gmp_a_SOURCES =			\
+	../../contrib/gmp/fm_gmp.c	\
+	$(runtime_ALDOR)		\
+	$(runtime_CSOURCES)
+
+#############################################################################
+# :: Common portable byte-code library
+#############################################################################
+
 datalibdir = $(datadir)/lib
-datalib_DATA=al/libfoam.al
+datalib_DATA = al/libfoam.al
