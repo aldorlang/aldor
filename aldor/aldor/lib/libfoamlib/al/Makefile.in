@@ -31,31 +31,7 @@ library= lang machine basic foamcat tuple gener bool segment sinteger	\
 	 sfloat pointer character parray array lv list langx string	\
 	 oslow fname file format textwrit opsys partial
 
-lang_deps    :=
-machine_deps := lang
-basic_deps   := lang machine
-foamcat_deps := basic
-tuple_deps   := foamcat
-gener_deps   := foamcat
-bool_deps    := foamcat
-segment_deps := foamcat bool
-sinteger_deps := foamcat segment
-sfloat_deps   := foamcat sinteger
-pointer_deps  := foamcat
-character_deps := foamcat
-parray_deps   := foamcat sinteger
-array_deps    := foamcat tuple sinteger parray 
-list_deps     := foamcat tuple segment sinteger pointer 
-lv_deps       := basic
-langx_deps    := lv foamcat tuple sinteger list 
-string_deps   := foamcat character array
-oslow_deps    := foamcat parray pointer string
-fname_deps    := foamcat parray string oslow
-file_deps     := foamcat fname
-opsys_deps    := foamcat oslow file
-format_deps   := foamcat sinteger
-textwrit_deps := foamcat fname file array opsys
-partial_deps  := foamcat pointer
+include $(srcdir)/Makefile.deps
 
 aldorsrcdir=$(abs_top_srcdir)/aldor/src
 aldorexedir=$(abs_top_builddir)/aldor/src

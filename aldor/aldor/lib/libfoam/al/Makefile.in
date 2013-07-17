@@ -32,24 +32,7 @@ library = basictuple box stringtable dispatchvector dv dd domain	\
 	  ptrcatobj runtime pointerdomain lazyimport
 javalibrary = runtime
 
-basictuple_deps      :=
-box_deps 	     :=
-dispatchvector_deps  := basictuple box 
-stringtable_deps     := 
-ptrcache_deps        := basictuple
-domain_deps          := basictuple dispatchvector 
-pointerdomain_deps   := basictuple dispatchvector domain
-catobj_deps	     := basictuple domain catdispatchvector ptrcache
-aldordomainrep_deps  := basictuple domain catobj stringtable
-runtime_deps         := basictuple aldordomainrep
-catdispatchvector_deps := box domain
-dv_deps		     := basictuple box
-dd_deps              := basictuple dv stringtable
-aldorcatrep_deps     := basictuple catdispatchvector catobj stringtable
-ptrcatobj_deps 	     := catdispatchvector catobj 
-lazyimport_deps	     := box domain
-runtime_deps         := domain aldordomainrep aldorcatrep ptrcatobj	\
-			pointerdomain lazyimport ptrcache
+include $(srcdir)/Makefile.deps
 
 #domain.ao: AXLFLAGS += -WD+tfImport -WD+tipBup -WD+syme -WD+tf
 dd.ao: AXLFLAGS += #-WD+tfImport -WD+tipBup -WD+tipTdn -WD+syme -WD+tf -WD+lib -WD+libVerbose -WD+sefoEqual -WD+sefoPrint
