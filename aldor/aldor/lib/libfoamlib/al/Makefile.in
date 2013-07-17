@@ -44,15 +44,15 @@ library =		\
 
 javalibrary	:= $(library)
 
-aldorincdir	:= $(top_srcdir)/lib/aldor/include
-aldorlibdir	:= $(top_builddir)/lib/aldor/src
-
 libraryname	:= foamlib
 
 #AXLCDB		:= -W check -Csmax=0 -Fc -Zdb -Qno-cc
 AXLFLAGS	:= -Z db -Fc -Q8 -Qinline-all $(AXLCDB)
-AXLFLAGS	+= -Y $(aldorlibdir) -I $(aldorincdir) -laldor
 
 include $(top_srcdir)/lib/buildlib.mk
 
 Libraryname	:= Axl
+
+all: libfoamlib.al
+libfoamlib.al: _sublib.al
+	cp $< $@

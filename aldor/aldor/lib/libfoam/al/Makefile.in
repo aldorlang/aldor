@@ -1,152 +1,45 @@
-# ..From autoconf
 @SET_MAKE@
-
 VPATH = @srcdir@
-abs_top_builddir = @abs_top_builddir@
-srcdir = @srcdir@
-top_builddir = @top_builddir@
-builddir = @builddir@
-abs_top_srcdir = @abs_top_srcdir@
-subdir = aldor/lib/libfoam/al
 
-# Check the makefile
-.PRECIOUS: Makefile
-Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
-	@case '$?' in \
-	  *config.status*) \
-	    cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh;; \
-	  *) \
-	    echo ' cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ '; \
-	    cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ ;; \
-	esac;
+# For AM_V_*
+AM_DEFAULT_VERBOSITY = @AM_DEFAULT_VERBOSITY@
 
+builddir	:= @builddir@
+abs_builddir	:= @abs_builddir@
+top_builddir	:= @top_builddir@
+abs_top_builddir:= @abs_top_builddir@
+srcdir		:= @srcdir@
+abs_srcdir	:= @abs_srcdir@
+top_srcdir	:= @top_srcdir@
+abs_top_srcdir	:= @abs_top_srcdir@
+subdir		:= $(subst $(abs_top_builddir)/,,$(abs_builddir))
 
 # Build starts here
-aldorsrcdir = $(abs_top_srcdir)/aldor/src
-aldorexedir = $(abs_top_builddir)/aldor/src
-foamlibsrcdir = $(abs_top_srcdir)/aldor/lib/libfoamlib
-foamlibdir = $(abs_top_builddir)/aldor/lib/libfoamlib
+internal = basictuple box stringtable dispatchvector dv dd domain	\
+	   aldordomainrep catdispatchvector catobj aldorcatrep ptrcache	\
+	   ptrcatobj pointerdomain lazyimport
+library = runtime
+javalibrary = $(library)
 
-library = basictuple box stringtable dispatchvector dv dd domain	\
-	  aldordomainrep catdispatchvector catobj aldorcatrep ptrcache	\
-	  ptrcatobj runtime pointerdomain lazyimport
-javalibrary = runtime
+libraryname	:= foam
 
-include $(srcdir)/Makefile.deps
+foamlibsrcdir = $(top_srcdir)/aldor/lib/libfoamlib
+foamliblibdir = $(top_builddir)/aldor/lib/libfoamlib
 
-#domain.ao: AXLFLAGS += -WD+tfImport -WD+tipBup -WD+syme -WD+tf
-dd.ao: AXLFLAGS += #-WD+tfImport -WD+tipBup -WD+tipTdn -WD+syme -WD+tf -WD+lib -WD+libVerbose -WD+sefoEqual -WD+sefoPrint
-dv.ao: AXLFLAGS += #-WD+tfImport -WD+tipBup -WD+tipTdn -WD+syme -WD+tf -WD+lib -WD+libVerbose -WD+sefoPrint
+#AXLCDB	  = -W check -Csmax=0 -Fc -Zdb -Qno-cc
+AXLFLAGS  := -Z db -Q9 -Qinline-all $(AXLCDB) -I$(foamlibsrcdir)/al -Y$(foamliblibdir)/al
 
 runtime_AXLFLAGS := -Wruntime
 
-$(patsubst %, %.c, $(library)): %.c: %.ao %.dep
-	@echo AO_TO_C $*
-	 $(aldorexedir)/aldor -Nfile=$(aldorsrcdir)/aldor.conf -Fc=$(builddir)/$@ $<	
+include $(top_srcdir)/lib/buildlib.mk
 
-$(patsubst %, %.java, $(javalibrary)): %.java: %.fm $(aldorexedir)/javagen
-	 $(aldorexedir)/javagen $< > $@
+Libraryname	:= Runtime
 
-#AXLCDB	  = -W check -Csmax=0 -Fc -Zdb -Qno-cc
-AXLFLAGS  := -Z db -Q9 -Qinline-all $(AXLCDB) 
-
-define aldor_args
-	-Nfile=$(aldorsrcdir)/aldor.conf 	\
-	-Y$(foamlibdir)/al			\
-	-Y.				\
-	-I$(foamlibsrcdir)			\
-	-lAxlLib=foamlib 		\
-	-lRuntimeLib=runtime_$* 	\
-	$(AXLFLAGS) $($*_AXLFLAGS)	\
-	-Fao=$*.ao $(srcdir)/../$*.as
-endef
-
-$(patsubst %, %.dep,$(library)): %.dep: Makefile $(srcdir)/../%.as
-$(patsubst %, %.ao, $(library)): %.ao: $(srcdir)/../%.as
-$(patsubst %, %.ao, $(library)): %.ao: $(foamlibdir)/al/libfoamlib.al
-$(patsubst %, %.ao, $(library)): %.ao: 
-	@echo AO $*
-	@rm -f libruntime_$*.al;	rm -f $*.c; rm -f $*.ao
-	@ar r libruntime_$*.al Makefile
-	@for i in $$(cat $*.dep); do ar r libruntime_$*.al $$i.ao; done
-	@$(aldorexedir)/aldor $(aldor_args)
-
-$(patsubst %, %.cmd, $(library)): %.cmd: Makefile
-	@echo CMD $*
-	@echo "run $(aldor_args)" > $@
-
-
-$(patsubst %,%.fm,$(library)): %.fm: %.ao
-	@echo AO_TO_FM $*
-	@$(aldorexedir)/aldor \
-		     -Nfile=$(aldorsrcdir)/aldor.conf 	\
-		     -Ffm=$@ $*.ao
-
-define dep_template
-$(1).ao: $(1).dep $$(patsubst %,%.ao,$$($(1)_deps))
-$(1).dep: $$(patsubst %,%.dep,$$($(1)_deps))
-endef
-$(patsubst %, %.dep,$(library)): 
-	@echo DEP $*
-	@echo > $@
-	@for i in $(filter %.dep, $^); \
-	 do d=$$(basename $$i .dep); \
-	   cat $$i >> $@; echo $(basename $$d .dep)>> $@;  \
-	done
-
-$(foreach l,$(library), $(eval $(call dep_template,$(l))))
-$(patsubst %,%.ao,$(library)): ../runtimelib.as
-
-# Java->class
-javaopts=-cp $(abs_top_builddir)/aldor/lib/java/src/foamj.jar
-
-$(patsubst %, %.class, $(library)): %.class: %.java
-	javac $(javaopts) $<
-
-# All..
-all: Makefile \
-	$(patsubst %,%.c,$(library)) \
-	$(patsubst %,%.fm,$(library)) 	\
-	$(patsubst %,%.java,$(javalibrary)) \
-	$(patsubst %,%.class,$(javalibrary)) \
-	libfoam.al 			
-
-all: Makefile $(patsubst %,%.fm,$(library)) libfoam.al
-libfoam.al: $(patsubst %,%.ao,$(library))
-	rm -f $@
-	ar r $@ runtime.ao
+all: libfoam.al
+libfoam.al: runtime.ao
+	$(AM_V_AR)ar cr $@ $<
 
 all:
-	-@grep 'fiFileInitializer(' runtime.c | grep -v rtexns > runtime-gets.txt
+	@grep 'fiFileInitializer(' runtime.c | grep -v rtexns > runtime-gets.txt || true
 	@cat runtime-gets.txt | sed -e 's/^[^"]*"\([^"]*\).*$$/*** Error from Makefile: gets from \1 are not allowed./' 
-	[ ! -s runtime-gets.txt ]
-
-install: all
-
-# 
-# :: Automake requires this little lot
-#
-mostlyclean: 
-	rm -f $(patsubst %, %.c, $(library))
-	rm -f $(patsubst %, %.ao, $(library))
-	rm -f $(patsubst %, %.fm, $(library))
-	rm -f $(patsubst %, %.java, $(library))
-	rm -f $(patsubst %, %.dep, $(library))
-	rm -f $(patsubst %, %.java, $(library))
-	rm -f $(patsubst %, %*.class, $(library))
-	rm -f $(patsubst %, libruntime_%.al, $(library))
-
-clean: mostlyclean
-distclean: clean 
-	rm Makefile
-maintainer-clean: distclean
-
-
-EMPTY_AUTOMAKE_TARGETS  = dvi pdf ps info html tags ctags
-EMPTY_AUTOMAKE_TARGETS += install install-data install-exec uninstall
-EMPTY_AUTOMAKE_TARGETS += install-dvi install-html install-info install-ps install-pdf
-EMPTY_AUTOMAKE_TARGETS += installdirs
-EMPTY_AUTOMAKE_TARGETS += check installcheck
-
-.PHONY: $(EMPTY_AUTOMAKE_TARGETS)
-$(EMPTY_AUTOMAKE_TARGETS):
+	@rm runtime-gets.txt
