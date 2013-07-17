@@ -52,7 +52,6 @@
 # include "sexpr.h"
 # include "srcpos.h"
 # include "strops.h"
-# include "symbol.h"
 #else
 # include "table.h"
 # include "bigint.h"
