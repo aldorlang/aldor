@@ -1,12 +1,15 @@
+include $(srcdir)/Makefile.deps
+
 default: all
 
 aldorsrcdir	:= $(top_srcdir)/aldor/src
 aldorexedir	:= $(top_builddir)/aldor/src
+aldorlibdir	:= $(top_builddir)/aldor/lib
 
 libraryincdir	:= $(top_srcdir)/lib/$(libraryname)/include
 librarylibdir	:= $(top_builddir)/lib/$(libraryname)/src
 
-UNIQ = perl $(top_srcdir)/aldor/tools/unix/uniq
+UNIQ		:= perl $(top_srcdir)/aldor/tools/unix/uniq
 
 # Aldor
 AM_V_ALDOR = $(am__v_ALDOR_$(V))
@@ -25,9 +28,17 @@ AM_V_DEP = $(am__v_DEP_$(V))
 am__v_DEP_ = $(am__v_DEP_$(AM_DEFAULT_VERBOSITY))
 am__v_DEP_0 = @echo "  DEP   " $@;
 
-#AM_V_GEN = $(am__v_GEN_$(V))
-#am__v_GEN_ = $(am__v_GEN_$(AM_DEFAULT_VERBOSITY))
-#am__v_GEN_0 = @echo "  GEN   " $@;
+AM_V_FOAMJ = $(am__v_FOAMJ_$(V))
+am__v_FOAMJ_ = $(am__v_FOAMJ_$(AM_DEFAULT_VERBOSITY))
+am__v_FOAMJ_0 = @echo "  FOAMJ " $@;
+
+AM_V_JAR = $(am__v_JAR_$(V))
+am__v_JAR_ = $(am__v_JAR_$(AM_DEFAULT_VERBOSITY))
+am__v_JAR_0 = @echo "  JAR   " $@;
+
+AM_V_JAVAC = $(am__v_JAVAC_$(V))
+am__v_JAVAC_ = $(am__v_JAVAC_$(AM_DEFAULT_VERBOSITY))
+am__v_JAVAC_0 = @echo "  JAVAC " $@;
 
 # Check the makefile
 .PRECIOUS: Makefile
@@ -100,7 +111,7 @@ $(addsuffix .dep,$(library) _sublib):
 	done;							\
 	if test ! -f $@; then					\
 	   mv $@_tmp $@;					\
-	elif diff $@ $@_tmp; then				\
+	elif diff $@ $@_tmp > /dev/null; then			\
 	   mv $@_tmp $@;					\
 	else							\
 	   rm $@_tmp;						\
@@ -118,16 +129,40 @@ _sublib.al:
 	rm -f $@;							\
 	ar cr $@ $(addsuffix .ao, $(shell $(UNIQ) $(@:.al=.dep)))
 
-all: Makefile $(addsuffix .fm,$(library)) _sublib.al
+all: Makefile _sublib.al		\
+	$(addsuffix .c,$(library))	\
+	$(addsuffix .fm,$(library))
+
+ifneq ($(javalibrary),)
+$(addsuffix .java, $(library)): %.java: %.fm $(aldorexedir)/javagen
+	$(AM_V_FOAMJ)$(aldorexedir)/javagen $< > $@
+
+$(addsuffix .class, $(library)): %.class: $(libraryname).classlib
+$(libraryname).classlib: $(addsuffix .java, $(library))
+	$(AM_V_JAVAC)javac -cp $(aldorlibdir)/java/src/foamj.jar $^
+	@touch $@
+
+$(libraryname).jar: $(addsuffix .class, $(library))
+	$(AM_V_JAR)jar -cf $@ $(addsuffix *.class, $(library))
+
+all: $(libraryname).jar				\
+	$(addsuffix .java,$(javalibrary))	\
+	$(addsuffix .class,$(javalibrary))
+endif
 
 # 
 # :: Automake requires this little lot
 #
 mostlyclean: 
 	rm -f _sublib_libdep.al
+	rm -f lib$(libraryname).al
+	rm -f $(libraryname).classlib
+	rm -f $(libraryname).jar
 	rm -f $(addsuffix .c,$(library))
 	rm -f $(addsuffix .ao,$(library))
 	rm -f $(addsuffix .fm,$(library))
+	rm -f $(addsuffix .java,$(library))
+	rm -f $(addsuffix *.class,$(library))
 
 clean: mostlyclean
 	rm -f _sublib.al

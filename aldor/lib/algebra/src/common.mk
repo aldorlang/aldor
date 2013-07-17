@@ -7,5 +7,4 @@ libraryname	:= algebra
 AXLFLAGS	:= -Z db -Fc -Q2 $(AXLCDB)
 AXLFLAGS	+= -Y $(aldorlibdir) -I $(aldorincdir) -laldor
 
-include $(srcdir)/Makefile.deps
 include $(top_srcdir)/lib/buildlib.mk
