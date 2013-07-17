@@ -1,6 +1,9 @@
 language: c
 script: dpkg-buildpackage -b -us -uc
 
+install:
+   - sudo apt-get install libgmp3-dev
+
 # whitelist
 branches:
    only:
