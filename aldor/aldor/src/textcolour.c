@@ -5,6 +5,7 @@
  * Copyright (c) 1990-2007 Aldor Software Organization Ltd (Aldor.org).
  ****************************************************************************/
 
+#include "file.h"
 #include "textcolour.h"
 #include "strops.h"
 

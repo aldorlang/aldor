@@ -7,10 +7,11 @@
  ****************************************************************************/
 
 #include "axlgen.h"
-#include "compcfg.h"
 #include "cfgfile.h"
+#include "compcfg.h"
 #include "comsgdb.h"
 #include "comsg.h"
+#include "file.h"
 
 /****************************************************************************
  *

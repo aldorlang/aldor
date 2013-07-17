@@ -7,6 +7,7 @@
  ****************************************************************************/
 
 #include "axlgen.h"
+#include "dnf.h"
 
 Bool	dnfDebug	= false;
 #define dnfDEBUG(s)	DEBUG_IF(dnfDebug, s)

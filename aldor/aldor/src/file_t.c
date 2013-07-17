@@ -13,6 +13,7 @@ void testFile(void) { }
 #else
 
 #include "axlgen.h"
+#include "file.h"
 #include "path.h"
 
 void

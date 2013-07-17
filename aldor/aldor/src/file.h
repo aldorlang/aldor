@@ -9,8 +9,9 @@
 #ifndef _FILE_H_
 #define _FILE_H_
 
-# include "axlport.h"
-# include "fname.h"
+#include "axlport.h"
+#include "buffer.h"
+#include "fname.h"
 
 #ifndef SEEK_SET
 #  define SEEK_SET 0

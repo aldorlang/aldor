@@ -7,6 +7,7 @@
  ****************************************************************************/
 
 #include "axlgen.h"
+#include "file.h"
 #include "xfloat.h"
 
 Bool	fileDebug	= false;

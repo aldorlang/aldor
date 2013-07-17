@@ -7,6 +7,7 @@
  ****************************************************************************/
 
 #include "axlobs.h"
+#include "file.h"
 
 Bool	arDebug		= false;
 #define arDEBUG(s)	DEBUG_IF(arDebug, s)

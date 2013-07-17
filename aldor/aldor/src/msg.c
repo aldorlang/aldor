@@ -6,7 +6,8 @@
  *
  ****************************************************************************/
 
-# include "axlgen.h"
+#include "axlgen.h"
+#include "file.h"
 
 /*
  * In-core structures to keep track of messages.

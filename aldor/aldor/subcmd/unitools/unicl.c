@@ -10,6 +10,7 @@
 #include "axlgen.h"
 
 #include "cfgfile.h"
+#include "file.h"
 
 /*
  * ToDo: 

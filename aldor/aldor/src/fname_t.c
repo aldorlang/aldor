@@ -12,7 +12,8 @@ void testFname(void) { }
 
 #else
 
-# include "axlgen.h"
+#include "axlgen.h"
+#include "file.h"
 
 #define NFNTEMP	40	/* number of temp files to allocate, */
 			/* > 36 to test base 36 conversion */

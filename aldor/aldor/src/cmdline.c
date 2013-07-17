@@ -6,9 +6,10 @@
  *
  ****************************************************************************/
  
-# include "axlphase.h"
-# include "cmdline.h"
-# include "of_emerg.h"
+#include "axlphase.h"
+#include "cmdline.h"
+#include "file.h"
+#include "of_emerg.h"
 
 String		cmdName		    = "aldor";    /* Could use argv[0]. */
 String		cmdInitFile	    = "aldorinit.as";

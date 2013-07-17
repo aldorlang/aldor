@@ -13,6 +13,7 @@ void testDnf(void) { }
 #else
 
 #include "axlgen.h"
+#include "dnf.h"
 
 void
 testDnf(void)

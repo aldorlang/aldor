@@ -7,8 +7,9 @@
  ****************************************************************************/
 
 #include "axlobs.h"
-#include "simpl.h"
+#include "file.h"
 #include "opttools.h"
+#include "simpl.h"
 
 Bool	libDebug 	= false;
 Bool	libLazyDebug 	= false;

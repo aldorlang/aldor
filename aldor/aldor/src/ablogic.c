@@ -7,6 +7,7 @@
  ****************************************************************************/
 
 #include "axlobs.h"
+#include "dnf.h"
 
 Bool	ablogDebug		= false;
 #define ablogDEBUG(s)		DEBUG_IF(ablogDebug, s)

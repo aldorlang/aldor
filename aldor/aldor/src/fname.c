@@ -6,7 +6,7 @@
  *
  ****************************************************************************/
 
-# include "axlgen.h"
+#include "axlgen.h"
 
 local FileName
 fnameTemplate(void)
