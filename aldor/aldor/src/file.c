@@ -6,7 +6,8 @@
  *
  ****************************************************************************/
 
-# include "axlgen.h"
+#include "axlgen.h"
+#include "xfloat.h"
 
 Bool	fileDebug	= false;
 #define fileDEBUG(s)	DEBUG_IF(fileDebug, s)

@@ -26,7 +26,8 @@
  *	))
  */
 
-# include "axlobs.h"
+#include "axlobs.h"
+#include "xfloat.h"
 
 #define	 FOAM_NARY	(-1)	/* Identifies tags with N-ary data argument. */
 

@@ -13,6 +13,7 @@
 #include "fint.h"
 #include "output.h"
 #include "cmdline.h"
+#include "xfloat.h"
 
 
 

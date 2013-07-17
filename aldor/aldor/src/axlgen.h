@@ -53,10 +53,8 @@
 # include "srcpos.h"
 # include "strops.h"
 # include "symbol.h"
-# include "xfloat.h"
 #else
 # include "table.h"
-# include "xfloat.h"
 # include "bigint.h"
 #endif
 
