@@ -15,7 +15,8 @@ void testOpsys(void) { }
 /*
  *!! This is very limited at the moment.  More tests are needed.
  */
-# include "axlgen.h"
+#include "axlgen.h"
+#include "axlport.h"
 
 local void
 showMemMap(struct osMemMap **mm)

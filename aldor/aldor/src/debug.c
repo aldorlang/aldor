@@ -6,7 +6,8 @@
  *
  ****************************************************************************/
 
-# include "axlgen0.h"
+#include "axlgen0.h"
+#include "axlport.h"
 
 Bool    dbFlag  = false;
 
