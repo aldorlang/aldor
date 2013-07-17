@@ -42,7 +42,7 @@ library =		\
 	textwrit	\
 	tuple
 
-javalibrary	:= $(library)
+@BUILD_JAVA_TRUE@javalibrary := $(library)
 
 libraryname	:= foamlib
 

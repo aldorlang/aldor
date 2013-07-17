@@ -15,11 +15,17 @@ AM_SILENT_RULES([yes])
 AC_PROG_LEX
 AC_PROG_YACC
 
-AC_ARG_ENABLE(libraries,
+AC_ARG_ENABLE([libraries],
               [AS_HELP_STRING([--disable-libraries],
                               [Do not build Aldor libraries])],
               [AM_CONDITIONAL(BUILD_LIBS, false)],
               [AM_CONDITIONAL(BUILD_LIBS, true)])
+
+AC_ARG_ENABLE([java],
+              [AS_HELP_STRING([--disable-java],
+                              [Do not build Aldor Java libraries])],
+              [AM_CONDITIONAL(BUILD_JAVA, false)],
+              [AM_CONDITIONAL(BUILD_JAVA, true)])
 
 # Checks for libraries.
 LT_INIT
