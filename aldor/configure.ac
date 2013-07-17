@@ -27,12 +27,12 @@ AC_ARG_ENABLE([java],
               [AM_CONDITIONAL(BUILD_JAVA, false)],
               [AM_CONDITIONAL(BUILD_JAVA, true)])
 
-AC_ARG_ENABLE([boehm-gc],
-              [AS_HELP_STRING([--enable-boehm-gc],
-                              [Use Boehm Garbage Collector instead of built-in])],
-              [CFLAGS="$CFLAGS -DSTO_USE_BOEHM"
-               LIBS="$LIBS -lgc"
-              ])
+AC_ARG_WITH([boehm-gc],
+            [AS_HELP_STRING([--with-boehm-gc],
+                            [Use Boehm Garbage Collector instead of built-in])],
+            [CFLAGS="$CFLAGS -DSTO_USE_BOEHM"
+             LIBS="$LIBS -lgc"
+            ])
 
 # Checks for libraries.
 LT_INIT
