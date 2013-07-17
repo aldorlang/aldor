@@ -8,6 +8,7 @@
 
 #include "axlgen.h"
 #include "comsg.h"
+#include "debug.h"
 #include "file.h"
 #include "store.h"
 

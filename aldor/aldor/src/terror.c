@@ -7,6 +7,7 @@
  ***************************************************************************/
 
 #include "axlphase.h"
+#include "debug.h"
 #include "store.h"
 #include "terror.h"
 #include "util.h"

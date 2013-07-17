@@ -11,6 +11,7 @@
  * Aldor and Fortran.
  */
 
+#include "debug.h"
 #include "fortran.h"
 
 Bool    fortranTypesDebug       = false;

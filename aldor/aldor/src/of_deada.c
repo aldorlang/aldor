@@ -31,6 +31,7 @@
  * to the Out Set within the BB, starting from the last stmt.
  */
 #include "axlobs.h"
+#include "debug.h"
 #include "of_deada.h"
 #include "of_util.h"
 #include "optfoam.h"

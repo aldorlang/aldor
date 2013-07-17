@@ -26,6 +26,7 @@
  */
 
 #include "compcfg.h"
+#include "debug.h"
 #include "fluid.h"
 #include "fortran.h"
 #include "genfoam.h"

@@ -99,6 +99,7 @@
  ***************************************************************************/
 
 #include "axlphase.h"
+#include "debug.h"
 #include "fluid.h"
 #include "gf_rtime.h"
 #include "inlutil.h"

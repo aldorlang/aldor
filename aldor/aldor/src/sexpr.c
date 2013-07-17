@@ -70,6 +70,7 @@
  */
 
 #include "axlgen.h"
+#include "debug.h"
 #include "fluid.h"
 #include "format.h"
 #include "sexpr.h"

@@ -8,6 +8,7 @@
 
 #include "axlgen0.h"
 #include "store.h"
+#include "test.h"
 
 
 #ifdef TEST_STAND_ALONE

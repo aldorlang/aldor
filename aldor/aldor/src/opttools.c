@@ -119,6 +119,7 @@
  * 
  ****************************************************************************/
 
+#include "debug.h"
 #include "genfoam.h"
 #include "gf_rtime.h"
 #include "opttools.h"

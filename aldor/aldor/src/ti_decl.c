@@ -6,6 +6,7 @@
  *
  ***************************************************************************/
 
+#include "debug.h"
 #include "fluid.h"
 #include "store.h"
 #include "terror.h"

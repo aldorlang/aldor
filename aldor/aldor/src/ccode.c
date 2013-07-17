@@ -15,6 +15,7 @@
 
 #include "axlgen.h"
 #include "ccode.h"
+#include "debug.h"
 #include "store.h"
 #include "util.h"
 

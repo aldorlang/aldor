@@ -7,6 +7,7 @@
  ****************************************************************************/
 
 #include "axlphase.h"
+#include "debug.h"
 #include "of_peep.h"
 #include "of_retyp.h"
 #include "of_util.h"

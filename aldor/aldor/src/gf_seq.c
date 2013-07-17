@@ -6,6 +6,7 @@
  *
  ****************************************************************************/
 
+#include "debug.h"
 #include "gf_add.h"
 #include "gf_implicit.h"
 #include "gf_prog.h"

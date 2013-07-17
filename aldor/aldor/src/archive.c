@@ -7,6 +7,7 @@
  ****************************************************************************/
 
 #include "axlobs.h"
+#include "debug.h"
 #include "file.h"
 #include "store.h"
 #include "util.h"

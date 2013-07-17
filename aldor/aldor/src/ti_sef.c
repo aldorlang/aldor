@@ -6,6 +6,7 @@
  *
  ***************************************************************************/
 
+#include "debug.h"
 #include "fluid.h"
 #include "ti_sef.h"
 #include "tinfer.h"

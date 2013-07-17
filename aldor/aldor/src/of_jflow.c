@@ -7,6 +7,7 @@
  ****************************************************************************/
 
 #include "axlphase.h"
+#include "debug.h"
 #include "loops.h"
 #include "of_jflow.h"
 #include "opttools.h"

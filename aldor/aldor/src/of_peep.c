@@ -7,6 +7,7 @@
  ****************************************************************************/
 
 #include "axlobs.h"
+#include "debug.h"
 #include "of_peep.h"
 #include "optfoam.h"
 #include "opttools.h"

@@ -8,6 +8,7 @@
 
 #include "axlphase.h"
 #include "compcfg.h"
+#include "debug.h"
 #include "fluid.h"
 #include "fortran.h"
 #include "gf_util.h"

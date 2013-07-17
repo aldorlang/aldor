@@ -6,8 +6,9 @@
  *
  ****************************************************************************/
 
-# include "axlobs.h"
-# include "terror.h"
+#include "axlobs.h"
+#include "debug.h"
+#include "terror.h"
 
 Bool			tfsDebug 		= false;
 Bool			tfsMultiDebug		= false;

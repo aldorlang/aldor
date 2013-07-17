@@ -7,6 +7,7 @@
  ****************************************************************************/
 
 #include "axlgen.h"
+#include "debug.h"
 #include "dnf.h"
 #include "store.h"
 

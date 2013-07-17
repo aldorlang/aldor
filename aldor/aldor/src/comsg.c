@@ -7,6 +7,7 @@
  ****************************************************************************/
 
 #include "axlphase.h"
+#include "debug.h"
 #include "store.h"
 #if EDIT_1_0_n1_04
 #include "textcolour.h"

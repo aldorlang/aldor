@@ -6,6 +6,7 @@
  *
  ****************************************************************************/
 
+#include "debug.h"
 #include "fluid.h"
 #include "genfoam.h"
 #include "gf_util.h"

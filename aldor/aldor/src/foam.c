@@ -27,6 +27,7 @@
  */
 
 #include "axlobs.h"
+#include "debug.h"
 #include "file.h"
 #include "fluid.h"
 #include "store.h"

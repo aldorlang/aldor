@@ -9,6 +9,7 @@
 
 #include "axlobs.h"
 #include "cmdline.h"
+#include "debug.h"
 #include "file.h"
 #include "fint.h"
 #include "fluid.h"

@@ -94,7 +94,8 @@
 #define UseTypeVariables
 #undef	UseTypeVariables
 
-# include "axlphase.h"
+#include "axlphase.h"
+#include "debug.h"
 
 Bool abnormDebug	= false;
 Bool abnDefineDebug	= false;

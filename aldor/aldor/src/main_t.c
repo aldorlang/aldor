@@ -7,6 +7,7 @@
  ****************************************************************************/
 
 #include "axltop.h"
+#include "test.h"
 
 int
 main(int argc, String *argv)

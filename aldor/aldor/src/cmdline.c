@@ -11,6 +11,7 @@
 #include "file.h"
 #include "of_emerg.h"
 #include "store.h"
+#include "test.h"
 
 String		cmdName		    = "aldor";    /* Could use argv[0]. */
 String		cmdInitFile	    = "aldorinit.as";

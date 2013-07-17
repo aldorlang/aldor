@@ -8,6 +8,7 @@
  
 #include "axltop.h"
 #include "compcfg.h"
+#include "debug.h"
 #include "emit.h"
 #include "file.h"
 #include "fintphase.h"

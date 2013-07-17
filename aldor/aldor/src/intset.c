@@ -1,5 +1,6 @@
 #include "axlgen.h"
 #include "bitv.h"
+#include "debug.h"
 #include "intset.h"
 #include "store.h"
 

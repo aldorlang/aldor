@@ -123,6 +123,7 @@
  *
  ****************************************************************************/
 
+#include "debug.h"
 #include "of_comex.h"
 #include "of_rrfmt.h"
 #include "of_util.h"

@@ -7,6 +7,7 @@
  ****************************************************************************/
 
 #include "axlphase.h"
+#include "debug.h"
 #include "optfoam.h"
 #include "of_cfold.h"
 

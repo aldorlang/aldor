@@ -8,6 +8,7 @@
 
 
 #include "axlobs.h"
+#include "debug.h"
 #include "simpl.h"
 #include "store.h"
 

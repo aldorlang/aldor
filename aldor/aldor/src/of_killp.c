@@ -44,6 +44,7 @@
  *  - Consider If, Repeat etc.
  */
 #include "axlobs.h"
+#include "debug.h"
 #include "of_deada.h"
 #include "of_killp.h"
 #include "of_util.h"

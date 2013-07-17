@@ -25,6 +25,7 @@
  *
  ****************************************************************************/
 
+#include "debug.h"
 #include "loops.h"
 #include "of_loops.h"
 #include "opttools.h"

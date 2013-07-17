@@ -17,9 +17,6 @@
 
 # include "axlport.h"
 
-# include "test.h"
-# include "debug.h"
-
 
 # include "compopt.h"
 
