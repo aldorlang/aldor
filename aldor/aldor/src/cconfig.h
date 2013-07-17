@@ -144,6 +144,7 @@
 #ifndef _CCONFIG_H_
 #define _CCONFIG_H_
 
+#include "platform.h"
 
 /*
  * :: PC platforms
