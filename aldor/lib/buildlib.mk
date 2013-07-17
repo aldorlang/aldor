@@ -76,10 +76,10 @@ $(addsuffix .ao, $(alldomains)): %.ao: $(srcdir)/%.as
 $(addsuffix .ao, $(alldomains)): %.ao: _sublib_libdep.al
 	$(AM_V_ALDOR)								\
 	rm -f $*.c $*.ao;							\
-	cp _sublib_libdep.al lib$(libraryname)_$*.al;			\
+	cp _sublib_libdep.al lib$(libraryname)_$*.al;				\
 	ar r lib$(libraryname)_$*.al $(addsuffix .ao, $(shell $(UNIQ) $*.dep));	\
-	$(aldorexedir)/aldor $(aldor_args);					\
-	rm lib$(libraryname)_$*.al;						\
+	$(aldorexedir)/aldor $(aldor_args) &&					\
+	rm lib$(libraryname)_$*.al
 
 _sublib_libdep.al: $(foreach l,$(library_deps),$(librarylibdir)/$l/_sublib.al)
 	$(AM_V_AR)			\
