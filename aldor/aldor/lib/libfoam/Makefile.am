@@ -1,6 +1,6 @@
 SUBDIRS = al
 
-aldorsrcdir = $(abs_top_srcdir)/aldor/src
+aldorsrcdir = $(top_srcdir)/aldor/src
 
 runtime_ALDOR = al/runtime.c
 runtime_CSOURCES =			\
@@ -45,8 +45,8 @@ lib_LIBRARIES += libfoam-gmp.a
 
 # TODO: get rid of bigint.c in here
 libfoam_gmp_a_SOURCES =			\
-	$(aldorsrcdir)/bigint.c		\
 	../../contrib/gmp/fm_gmp.c	\
+	$(aldorsrcdir)/bigint.c		\
 	$(runtime_ALDOR)		\
 	$(runtime_CSOURCES)
 
