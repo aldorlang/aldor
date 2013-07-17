@@ -9,7 +9,7 @@
 #ifndef _PHASE_H_
 #define _PHASE_H_
 
-# include "axlobs.h"
+#include "axlobs.h"
 
 enum phTag {
 	PH_START,

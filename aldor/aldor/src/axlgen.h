@@ -49,8 +49,6 @@
 # include "msg.h"
 # include "path.h"
 # include "priq.h"
-# include "sexpr.h"
-# include "srcpos.h"
 # include "strops.h"
 #else
 # include "table.h"

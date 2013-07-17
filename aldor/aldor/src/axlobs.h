@@ -16,8 +16,9 @@
 #ifndef _AXLOBS_H_
 #define _AXLOBS_H_
 
-# include "axlgen.h"
-# include "comsgdb.h"
+#include "axlgen.h"
+#include "sexpr.h"
+#include "comsgdb.h"
 
 /*
  * Forward declarations of the types

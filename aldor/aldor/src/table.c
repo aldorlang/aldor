@@ -6,7 +6,8 @@
  *
  ****************************************************************************/
 
-# include "axlgen.h"
+#include "axlgen.h"
+#include "table.h"
 
 # define TBL_InitBuckC	 7	 /* Largest prime under 2**i, for some i. */
 # define TBL_MaxLoad	 5

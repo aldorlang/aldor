@@ -69,7 +69,8 @@
  *	   _ word separation rather than bicaps
  */
 
-# include "axlgen.h"
+#include "axlgen.h"
+#include "sexpr.h"
 
 Bool sexprDebug = false;
 #define sexprDEBUG(s)	DEBUG_IF(sexprDebug, s)
