@@ -41,13 +41,11 @@
 #ifndef FOAM_RTS
 # include "bitv.h"
 # include "buffer.h"
-# include "ccode.h"
 # include "dnf.h"
 # include "file.h"
 # include "fname.h"
 # include "list.h"
 # include "msg.h"
-# include "path.h"
 # include "strops.h"
 #else
 # include "table.h"

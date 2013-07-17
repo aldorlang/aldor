@@ -12,7 +12,8 @@ void testFile(void) { }
 
 #else
 
-# include "axlgen.h"
+#include "axlgen.h"
+#include "path.h"
 
 void
 testFile(void)

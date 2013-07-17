@@ -7,6 +7,7 @@
  ****************************************************************************/
 
 #include "axlgen.h"
+#include "symbol.h"
 #include "table.h"
 
 static Table	symbolPool = 0;

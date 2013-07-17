@@ -13,7 +13,8 @@
  * -- ccoString/Char/Integer/Float with appropriate data types in nodes.
  */
 
-# include "axlgen.h"
+#include "axlgen.h"
+#include "ccode.h"
 
 CCode
 ccoNewToken(CCodeTag tag, Symbol sym)

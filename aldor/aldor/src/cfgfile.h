@@ -10,6 +10,7 @@
 #define _CFGFILE_H_
  
 #include "axlgen.h"
+#include "path.h"
 
 typedef struct _ConfigItem {
   	char *optName;
