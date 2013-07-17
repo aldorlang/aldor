@@ -59,7 +59,8 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 
 
 $(addsuffix .c, $(library)): %.c: %.ao %.dep
-	$(AM_V_AO2C)$(aldorexedir)/aldor -Nfile=$(aldorsrcdir)/aldor.conf -Fc=$(builddir)/$@ $<	
+	$(AM_V_AO2C)	\
+	$(aldorexedir)/aldor -Nfile=$(aldorsrcdir)/aldor.conf -Fc=$(builddir)/$@ $<	
 
 Libraryname := $(shell echo '$(libraryname)' | sed -e 's/^[a-z]/\u&/')
 aldor_args =					\
@@ -74,15 +75,15 @@ aldor_args =					\
 $(addsuffix .dep,$(alldomains)): %.dep: Makefile $(srcdir)/%.as Makefile.deps
 $(addsuffix .ao, $(alldomains)): %.ao: $(srcdir)/%.as
 $(addsuffix .ao, $(alldomains)): %.ao: _sublib_libdep.al
-	$(AM_V_ALDOR)								\
+	$(AM_V_ALDOR)set -e;							\
 	rm -f $*.c $*.ao;							\
 	cp _sublib_libdep.al lib$(libraryname)_$*.al;				\
 	ar r lib$(libraryname)_$*.al $(addsuffix .ao, $(shell $(UNIQ) $*.dep));	\
-	$(aldorexedir)/aldor $(aldor_args) &&					\
+	$(DBG) $(aldorexedir)/aldor $(aldor_args);				\
 	rm lib$(libraryname)_$*.al
 
 _sublib_libdep.al: $(foreach l,$(library_deps),$(librarylibdir)/$l/_sublib.al)
-	$(AM_V_AR)			\
+	$(AM_V_AR)set -e;		\
 	ar cr $@;			\
 	for l in $+; do 		\
 	   if [ ! -f $$l ]; then	\
@@ -109,7 +110,7 @@ $1.dep: $(addsuffix .dep,$($1_deps))
 endef
 
 $(addsuffix .dep,$(alldomains) _sublib): 
-	$(AM_V_DEP)						\
+	$(AM_V_DEP)set -e;					\
 	truncate --size 0 $@_tmp;				\
 	for i in $(filter %.dep, $^); do			\
 	   d=$$(basename $$i .dep);				\
