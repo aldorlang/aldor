@@ -110,9 +110,10 @@ $(patsubst %,%.fm,$(library)): %.fm: %.ao
 # Java->class
 javaopts=-cp $(abs_top_builddir)/aldor/lib/java/src/foamj.jar
 
-$(patsubst %, %.class, $(library)): build-classes
-build-classes: $(patsubst %, %.java, $(library))
+$(patsubst %, %.class, $(library)): .classes
+.classes: $(patsubst %, %.java, $(library))
 	javac $(javaopts) $^
+	touch $@
 
 all: Makefile \
 	$(patsubst %, %.class, $(library)) \
@@ -141,6 +142,7 @@ mostlyclean:
 	rm -f $(patsubst %, %.java, $(library))
 	rm -f $(patsubst %, %*.class, $(library))
 	rm -f $(patsubst %, libfoamlib_%.fm, $(library))
+	rm -f .classes
 
 clean: mostlyclean
 distclean: clean 
