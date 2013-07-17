@@ -11,6 +11,8 @@
  */
 
 #include "axlgen.h"
+#include "list.h"
+#include "strops.h"
 
 /*
  * fnewline(fout) prints a newline and indents next line by amount findent.

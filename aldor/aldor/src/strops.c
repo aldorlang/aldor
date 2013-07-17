@@ -6,7 +6,8 @@
  *
  ****************************************************************************/
 
-# include "axlgen.h"
+#include "axlgen.h"
+#include "strops.h"
 
 String
 strAlloc(Length n)

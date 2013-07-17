@@ -11,6 +11,7 @@
 
 #include "cfgfile.h"
 #include "file.h"
+#include "strops.h"
 
 /*
  * ToDo: 

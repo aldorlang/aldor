@@ -35,10 +35,4 @@
 # define  OB_SExpr		13
 # define  OB_AXLGEN_LIMIT	14
 
-#ifndef FOAM_RTS
-# include "list.h"
-# include "strops.h"
-#endif
-
-
 #endif /* !_AXLGEN_H_ */

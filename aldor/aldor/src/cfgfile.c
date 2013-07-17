@@ -8,6 +8,7 @@
 
 #include "cfgfile.h"
 #include "stdio.h0"
+#include "strops.h"
 
 Bool	cfgDebug		= false;
 

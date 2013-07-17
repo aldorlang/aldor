@@ -8,6 +8,7 @@
 
 #include "axlgen.h"
 #include "fname.h"
+#include "strops.h"
 
 local FileName
 fnameTemplate(void)
