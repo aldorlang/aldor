@@ -1,5 +1,6 @@
 #include "axlobs.h"
 #include "abquick.h"
+#include "debug.h"
 #include "testlib.h"
 
 local void testAblog();

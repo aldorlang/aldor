@@ -1,5 +1,6 @@
 #include "axlobs.h"
 #include "testlib.h"
+#include "format.h"
 #include "abquick.h"
 
 local void testTFormFormat();

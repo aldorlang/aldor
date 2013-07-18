@@ -1,4 +1,5 @@
 #include "axlobs.h"
+#include "debug.h"
 #include "testlib.h"
 #include "abquick.h"
 #include "tinfer.h"

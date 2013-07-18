@@ -1,5 +1,6 @@
 #include "axlobs.h"
 #include "abquick.h"
+#include "format.h"
 #include "testlib.h"
 
 local void init(void);

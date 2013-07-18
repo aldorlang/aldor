@@ -1,6 +1,7 @@
+#include "fname.h"
+#include "srcpos.h"
 #include "testall.h"
 #include "testlib.h"
-#include "fname.h"
 
 local void test_srcpos(void);
 
