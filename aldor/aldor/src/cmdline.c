@@ -19,6 +19,7 @@
 #include "optfoam.h"
 #include "store.h"
 #include "test.h"
+#include "tinfer.h"
 #include "util.h"
 
 String		cmdName		    = "aldor";    /* Could use argv[0]. */

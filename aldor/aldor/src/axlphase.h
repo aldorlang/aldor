@@ -21,6 +21,5 @@
 # include "abcheck.h"
 # include "abuse.h"
 # include "scobind.h"
-# include "tinfer.h"
 
 #endif /* !_AXLPHASE_H_ */
