@@ -7,6 +7,7 @@
  ****************************************************************************/
 
 #include "debug.h"
+#include "dflow.h"
 #include "format.h"
 #include "loops.h"
 #include "of_jflow.h"

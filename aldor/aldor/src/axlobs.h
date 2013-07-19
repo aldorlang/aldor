@@ -128,7 +128,6 @@ DECLARE_LIST(SymeList);
 # include "of_comex.h"
 # include "comsg.h"
 # include "flog.h"
-# include "dflow.h"
 # include "fbox.h"
 
 /*

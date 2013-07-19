@@ -109,6 +109,7 @@
  ****************************************************************************/
 
 #include "debug.h"
+#include "dflow.h"
 #include "opttools.h"
 #include "store.h"
 #include "usedef.h"

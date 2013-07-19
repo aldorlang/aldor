@@ -7,6 +7,7 @@
  ****************************************************************************/
  
 #include "debug.h"
+#include "dflow.h"
 #include "file.h"
 #include "opsys.h"
 #include "phase.h"

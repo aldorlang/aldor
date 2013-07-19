@@ -30,8 +30,10 @@
  * Eliminating within a BB is a matter of applying these rules 
  * to the Out Set within the BB, starting from the last stmt.
  */
+
 #include "axlobs.h"
 #include "debug.h"
+#include "dflow.h"
 #include "of_deada.h"
 #include "of_util.h"
 #include "optfoam.h"
