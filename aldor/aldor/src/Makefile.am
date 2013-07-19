@@ -203,6 +203,7 @@ libphase_a_SOURCES =	\
 	inlutil.c	\
 	linear.c	\
 	macex.c		\
+	of_argsub.c	\
 	of_cfold.c	\
 	of_comex.c	\
 	of_cprop.c	\
