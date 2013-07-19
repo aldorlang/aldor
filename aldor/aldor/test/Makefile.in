@@ -33,7 +33,7 @@ aptests := exquo
 fmtests := rectest enumtest clos strtable1 
 ctests  := rectest enumtest
 otests  := enumtest
-jtests  := simple_j enumtest run_j
+@BUILD_JAVA_TRUE@jtests  := simple_j enumtest run_j
 
 simple_j_AXLFLAGS=-Q2
 
