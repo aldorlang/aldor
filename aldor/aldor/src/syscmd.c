@@ -6,6 +6,7 @@
  *
  ****************************************************************************/
 
+#include "abnorm.h"
 #include "axlphase.h"
 #include "fintphase.h"
 #include "util.h"

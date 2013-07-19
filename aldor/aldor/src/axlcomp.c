@@ -6,6 +6,9 @@
  *
  ****************************************************************************/
  
+#include "abcheck.h"
+#include "abnorm.h"
+#include "abuse.h"
 #include "axltop.h"
 #include "ccomp.h"
 #include "cmdline.h"
@@ -21,6 +24,7 @@
 #include "genlisp.h"
 #include "opsys.h"
 #include "optfoam.h"
+#include "scobind.h"
 #include "store.h"
 #include "tinfer.h"
 #include "util.h"

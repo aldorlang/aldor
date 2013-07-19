@@ -17,9 +17,5 @@
 # include "linear.h"
 # include "parseby.h"
 # include "macex.h"
-# include "abnorm.h"
-# include "abcheck.h"
-# include "abuse.h"
-# include "scobind.h"
 
 #endif /* !_AXLPHASE_H_ */
