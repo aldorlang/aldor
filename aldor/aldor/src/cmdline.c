@@ -7,12 +7,18 @@
  ****************************************************************************/
  
 #include "axlphase.h"
+#include "ccomp.h"
 #include "cmdline.h"
+#include "emit.h"
 #include "file.h"
+#include "gencpp.h"
+#include "genlisp.h"
 #include "of_emerg.h"
 #include "opsys.h"
+#include "optfoam.h"
 #include "store.h"
 #include "test.h"
+#include "util.h"
 
 String		cmdName		    = "aldor";    /* Could use argv[0]. */
 String		cmdInitFile	    = "aldorinit.as";

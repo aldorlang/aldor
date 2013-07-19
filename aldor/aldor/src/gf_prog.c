@@ -10,6 +10,7 @@
 #include "gf_prog.h"
 #include "gf_util.h"
 #include "of_inlin.h"
+#include "store.h"
 
 /*****************************************************************************
  *

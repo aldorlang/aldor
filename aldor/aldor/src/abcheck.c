@@ -9,6 +9,7 @@
 #include "axlphase.h"
 #include "debug.h"
 #include "format.h"
+#include "util.h"
 
 /*****************************************************************************
  *

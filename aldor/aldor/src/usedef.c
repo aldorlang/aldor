@@ -112,6 +112,7 @@
 #include "opttools.h"
 #include "store.h"
 #include "usedef.h"
+#include "util.h"
 
 /****************************************************************************
  * :: Debug

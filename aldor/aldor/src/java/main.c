@@ -1,6 +1,8 @@
 #include <stdlib.h>
-#include "javacode.h"
+#include "debug.h"
 #include "genjava.h"
+#include "javacode.h"
+#include "opsys.h"
 #include "ostream.h"
 
 local void generate(String name);

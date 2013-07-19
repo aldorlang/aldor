@@ -11,6 +11,7 @@
 #include "debug.h"
 #include "fluid.h"
 #include "fortran.h"
+#include "genc.h"
 #include "gf_util.h"
 #include "of_killp.h"
 #include "of_rrfmt.h"

@@ -11,6 +11,7 @@
 #include "file.h"
 #include "opsys.h"
 #include "strops.h"
+#include "util.h"
 #include "xfloat.h"
 
 Bool	fileDebug	= false;

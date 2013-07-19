@@ -33,7 +33,6 @@
 
 # include "axlphase.h"
 
-# include "cmdline.h"
 # include "axlcomp.h"
 
 #endif	/* !_AXLTOP_H_ */

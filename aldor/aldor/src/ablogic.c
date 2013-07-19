@@ -9,6 +9,7 @@
 #include "axlobs.h"
 #include "debug.h"
 #include "dnf.h"
+#include "format.h"
 #include "store.h"
 
 Bool	ablogDebug		= false;
@@ -146,18 +147,6 @@ ablogFini(void)
  * :: General operations.
  *
  ****************************************************************************/
-local int
-ablogFormatter(OStream ostream, Pointer p)
-{
-	TForm tf = (TForm) p;
-	int c;
-
-	c = ablogWrite(ostream, p);
-
-	return c;
-}
-
-
 int
 ablogWrite(OStream ostream, AbLogic xx0)
 {
@@ -188,6 +177,18 @@ ablogWrite(OStream ostream, AbLogic xx0)
 
 	return cc;
 }
+
+local int
+ablogFormatter(OStream ostream, Pointer p)
+{
+	TForm tf = (TForm) p;
+	int c;
+
+	c = ablogWrite(ostream, p);
+
+	return c;
+}
+
 
 /*****************************************************************************
  *

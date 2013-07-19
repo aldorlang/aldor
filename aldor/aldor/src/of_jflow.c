@@ -8,8 +8,10 @@
 
 #include "axlphase.h"
 #include "debug.h"
+#include "format.h"
 #include "loops.h"
 #include "of_jflow.h"
+#include "optfoam.h"
 #include "opttools.h"
 #include "store.h"
 

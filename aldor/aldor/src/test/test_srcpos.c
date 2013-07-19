@@ -1,4 +1,5 @@
 #include "fname.h"
+#include "opsys.h"
 #include "srcpos.h"
 #include "testall.h"
 #include "testlib.h"

@@ -9,7 +9,7 @@
 #ifndef _GENFOAM_H_
 #define _GENFOAM_H_
 
-# include "axlobs.h"
+#include "axlobs.h"
 
 extern Foam	generateFoam	(Stab, AbSyn, String);
 

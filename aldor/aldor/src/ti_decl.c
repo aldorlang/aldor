@@ -8,6 +8,7 @@
 
 #include "debug.h"
 #include "fluid.h"
+#include "format.h"
 #include "store.h"
 #include "terror.h"
 #include "ti_bup.h"

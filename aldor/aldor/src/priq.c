@@ -9,6 +9,7 @@
 #include "axlgen.h"
 #include "priq.h"
 #include "store.h"
+#include "util.h"
 
 
 /*****************************************************************************

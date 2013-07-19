@@ -18,6 +18,7 @@
 
 #include "axlphase.h"
 #include "debug.h"
+#include "format.h"
 #include "store.h"
 
 Bool	linDebug	= false;

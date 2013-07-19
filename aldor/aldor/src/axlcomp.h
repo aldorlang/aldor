@@ -11,6 +11,7 @@
 
 #include "axlgen.h"
 #include "sexpr.h"
+#include "emit.h"
 
 
 /*

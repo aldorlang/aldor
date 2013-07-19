@@ -8,8 +8,10 @@
 
 #include "axlphase.h"
 #include "debug.h"
+#include "format.h"
 #include "optfoam.h"
 #include "of_cfold.h"
+#include "store.h"
 
 Bool	cfoldDebug	= false;
 #define cfoldDEBUG(s)	DEBUG_IF(cfoldDebug, s)

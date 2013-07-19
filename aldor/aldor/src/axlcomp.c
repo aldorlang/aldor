@@ -7,14 +7,21 @@
  ****************************************************************************/
  
 #include "axltop.h"
+#include "ccomp.h"
+#include "cmdline.h"
 #include "compcfg.h"
 #include "debug.h"
 #include "emit.h"
 #include "file.h"
 #include "fintphase.h"
 #include "fluid.h"
+#include "genc.h"
+#include "gencpp.h"
+#include "genlisp.h"
 #include "opsys.h"
+#include "optfoam.h"
 #include "store.h"
+#include "tinfer.h"
 #include "util.h"
 
 String 		compRootDir     = 0;

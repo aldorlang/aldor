@@ -1,11 +1,24 @@
-#include "axlobs.h"
 #include "abquick.h"
+#include "abuse.h"
+#include "axlobs.h"
+#include "cmdline.h"
 #include "debug.h"
+#include "format.h"
+#include "macex.h"
+#include "opsys.h"
+#include "optfoam.h"
+#include "phase.h"
+#include "scobind.h"
+#include "symbol.h"
 #include "testlib.h"
 #include "tinfer.h"
 #include "ti_sef.h"
-#include "symbol.h"
-#include "cmdline.h"
+
+/* XXX: from test_tinfer.c */
+void init(void);
+void fini(void);
+void initFile(void);
+void finiFile(void);
 
 void testSelfTInfer();
 void testSimpleTInfer();

@@ -129,6 +129,7 @@
 #include "of_util.h"
 #include "optfoam.h"
 #include "store.h"
+#include "util.h"
 
 /****************************************************************************
  *

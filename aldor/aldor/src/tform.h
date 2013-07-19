@@ -284,6 +284,8 @@ extern void		tfOwnExpr		(TForm);
 extern void		tfReleaseExpr		(TForm, AbSyn);
 extern void		tfTransferSemantics	(TForm, TForm);
 
+extern void		tfSyntaxConditions	(Stab stab, TForm tf, TfCondElt conditions);
+
 extern TForm		tfSyntaxFrAbSyn		(Stab, AbSyn);
 extern TForm		tfSyntaxMap		(Stab, AbSyn, TForm);
 extern TForm		tfSyntaxDefine		(Stab, AbSyn, AbSyn);

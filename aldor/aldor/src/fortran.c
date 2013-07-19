@@ -12,6 +12,7 @@
  */
 
 #include "debug.h"
+#include "format.h"
 #include "fortran.h"
 
 Bool    fortranTypesDebug       = false;

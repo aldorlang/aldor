@@ -101,6 +101,7 @@
 #include "axlphase.h"
 #include "debug.h"
 #include "fluid.h"
+#include "format.h"
 #include "gf_rtime.h"
 #include "inlutil.h"
 #include "loops.h"
@@ -108,6 +109,7 @@
 #include "optfoam.h"
 #include "opttools.h"
 #include "store.h"
+#include "util.h"
 
 
 /*****************************************************************************

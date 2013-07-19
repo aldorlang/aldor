@@ -7,6 +7,7 @@
  ****************************************************************************/
 
 #include "axltop.h"
+#include "debug.h"
 #include "opsys.h"
 #include "test.h"
 

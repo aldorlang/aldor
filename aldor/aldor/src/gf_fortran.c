@@ -18,26 +18,28 @@
  */
 
 
-/* TO DO: delete the #includes that aren't needed anymore */
-# include "genfoam.h"
-# include "gf_util.h"
-# include "gf_prog.h"
-# include "gf_fortran.h"
-# include "gf_rtime.h"
-# include "fortran.h"
-# include "gf_add.h"
-# include "gf_gener.h"
-# include "gf_reference.h"
-# include "gf_excpt.h"
-# include "gf_imps.h"
-# include "opttools.h"
-# include "of_inlin.h"
-# include "of_util.h"
-# include "optfoam.h"
-# include "simpl.h"
-# include "scobind.h"
-# include "compcfg.h"
-# include "tform.h"
+/* TODO: delete the #includes that aren't needed anymore */
+#include "axlphase.h"
+#include "compcfg.h"
+#include "fortran.h"
+#include "genfoam.h"
+#include "gf_add.h"
+#include "gf_excpt.h"
+#include "gf_fortran.h"
+#include "gf_gener.h"
+#include "gf_imps.h"
+#include "gf_prog.h"
+#include "gf_reference.h"
+#include "gf_rtime.h"
+#include "gf_util.h"
+#include "of_inlin.h"
+#include "of_util.h"
+#include "optfoam.h"
+#include "opttools.h"
+#include "scobind.h"
+#include "simpl.h"
+#include "tform.h"
+#include "util.h"
 
 
 extern Bool	genfoamDebug;
@@ -1498,7 +1500,6 @@ gen0ExportToFortran(AbSyn absyn)
  * ought to be relatively stable. Anyway, we usually eliminate
  * the reference getter/setter functions during inlining.
  */
-# include "axlphase.h"
 Foam
 gen0FortranExportFn(TForm tf, FoamTag rtype, Foam op, String name, AbSyn absyn)
 {

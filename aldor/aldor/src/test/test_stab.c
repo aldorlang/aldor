@@ -1,4 +1,8 @@
 #include "axlobs.h"
+#include "abuse.h"
+#include "format.h"
+#include "tinfer.h"
+#include "scobind.h"
 #include "debug.h"
 #include "tinfer.h"
 #include "testlib.h"
@@ -7,6 +11,10 @@
 local void testStabIsChild();
 
 local void testTFormCascadedImport();
+
+/* XXX: from test_tinfer.c */
+void init(void);
+void fini(void);
 void initFile();
 void finiFile();
 

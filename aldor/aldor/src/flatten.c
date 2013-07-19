@@ -7,6 +7,7 @@
  ****************************************************************************/
 
 #include "axlobs.h"
+#include "debug.h"
 #include "flatten.h"
 #include "store.h"
 

@@ -47,6 +47,7 @@ ABQK_DECLARE3(apply2, abNewApply2);
 ABQK_DECLARE3(lambda, abNewLambda);
 ABQK_DECLARE3(_if0, abNewIf);
 ABQK_DECLARE2(import, abNewImport);
+ABQK_DECLARE1(test, abNewTest);
 
 ABQK_DECLARE1_Symbol(id, abNewId);
 

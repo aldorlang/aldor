@@ -2017,7 +2017,6 @@ typeInferTFormList(Stab stab, TFormList tfl)
 	}
 }
 
-void tiTfImportCascades(Stab stab, TQualList tq);
 /* Import the exports from each type form. */
 local void
 tiTfImport1(Stab stab, TFormUses tfu)

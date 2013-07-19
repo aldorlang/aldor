@@ -7,8 +7,11 @@
  ****************************************************************************/
 
 #include "axlphase.h"
+#include "ccomp.h"
 #include "compcfg.h"
+#include "emit.h"
 #include "file.h"
+#include "genlisp.h"
 #include "opsys.h"
 #include "store.h"
 

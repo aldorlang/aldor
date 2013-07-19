@@ -8,6 +8,7 @@
  * [Not really a part of foam, but easiest to put here]
  */
 
+#include "opsys.h"
 #include "store.h"
 #include "timer.h"
 

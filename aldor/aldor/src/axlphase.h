@@ -23,11 +23,5 @@
 # include "scobind.h"
 # include "tinfer.h"
 # include "genfoam.h"
-# include "optfoam.h"
-# include "emit.h"
-# include "ccomp.h"
-# include "genc.h"
-# include "genlisp.h"
-# include "gencpp.h"
 
 #endif /* !_AXLPHASE_H_ */

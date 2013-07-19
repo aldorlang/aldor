@@ -21,6 +21,7 @@
 #include "debug.h"
 #include "loops.h"
 #include "store.h"
+#include "util.h"
 
 /****************************************************************************
  *

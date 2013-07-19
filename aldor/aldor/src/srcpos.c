@@ -12,6 +12,7 @@
 #include "file.h"
 #include "opsys.h"
 #include "store.h"
+#include "util.h"
 
 /*
  * The "fields" are

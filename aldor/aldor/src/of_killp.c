@@ -45,6 +45,7 @@
  */
 #include "axlobs.h"
 #include "debug.h"
+#include "format.h"
 #include "of_deada.h"
 #include "of_killp.h"
 #include "of_util.h"

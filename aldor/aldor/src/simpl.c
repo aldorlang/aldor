@@ -9,8 +9,10 @@
 
 #include "axlobs.h"
 #include "debug.h"
+#include "format.h"
 #include "simpl.h"
 #include "store.h"
+#include "util.h"
 
 Bool implDebug = false;
 

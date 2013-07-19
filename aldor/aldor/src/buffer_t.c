@@ -15,6 +15,7 @@ void testBuffer(void) { }
 #include "axlgen.h"
 #include "buffer.h"
 #include "opsys.h"
+#include "strops.h"
 
 void
 testBuffer(void)

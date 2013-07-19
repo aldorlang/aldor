@@ -12,6 +12,7 @@
 #include "comsgdb.h"
 #include "comsg.h"
 #include "file.h"
+#include "opsys.h"
 #include "store.h"
 
 /****************************************************************************

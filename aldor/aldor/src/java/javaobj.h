@@ -888,4 +888,6 @@ extern void jcoPContextWrite(JavaCodePContext ctxt, String s);
 extern void jcoPContextNewlineIndent(JavaCodePContext ctxt);
 extern void jcoPContextNewlineUnindent(JavaCodePContext ctxt);
 
+extern void jcoPrint(FILE *f, JavaCode c);
+
 #endif

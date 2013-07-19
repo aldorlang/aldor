@@ -9,9 +9,10 @@
 #include "axlobs.h"
 #include "debug.h"
 #include "fluid.h"
-
+#include "format.h"
 #include "simpl.h"
 #include "store.h"
+#include "util.h"
 
 Bool	symeDebug		= false;
 Bool	symeFillDebug		= false;
@@ -52,7 +53,6 @@ local Bool		 symeCheckIdentifier	(AbSyn, Syme);
 extern void		tiTfSefo		(Stab, TForm);
 extern TForm		tiGetTForm		(Stab, AbSyn);
 extern TForm		abGetCategory		(AbSyn);
-extern Hash		gen0SymeTypeCode	(Syme);
 
 /******************************************************************************
  *

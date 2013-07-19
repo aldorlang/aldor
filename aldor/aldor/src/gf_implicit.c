@@ -11,7 +11,8 @@
  * domain exports. At the moment we only deal with array operations.
  */
 
-# include "gf_implicit.h"
+#include "gf_implicit.h"
+#include "util.h"
 
 extern Bool	genfoamDebug;
 extern Bool	genfoamHashDebug;

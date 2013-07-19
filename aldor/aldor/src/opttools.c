@@ -124,6 +124,7 @@
 #include "gf_rtime.h"
 #include "opttools.h"
 #include "store.h"
+#include "util.h"
 
 CREATE_LIST(VarInfo);
 

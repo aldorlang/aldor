@@ -8,6 +8,7 @@
 
 #include "axlobs.h"
 #include "debug.h"
+#include "format.h"
 #include "terror.h"
 
 Bool			tfsDebug 		= false;

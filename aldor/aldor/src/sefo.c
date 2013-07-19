@@ -8,6 +8,7 @@
 
 #include "axlobs.h"
 #include "debug.h"
+#include "format.h"
 #include "genfoam.h"
 #include "ostream.h"
 #include "srcpos.h"

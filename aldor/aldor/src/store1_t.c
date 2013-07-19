@@ -23,7 +23,9 @@ void testStore1d(void) { }
 #else
 
 #include "axlgen.h"
+#include "opsys.h"
 #include "store.h"
+#include "util.h"
 
 /*****************************************************************************
  *

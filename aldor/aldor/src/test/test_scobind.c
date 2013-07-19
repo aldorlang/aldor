@@ -1,10 +1,17 @@
-#include "axlobs.h"
-#include "testlib.h"
 #include "abquick.h"
+#include "axlobs.h"
+#include "scobind.h"
+#include "testlib.h"
 
 local void testScobind();
 local void testScobindCondition();
 local void testScobindConditionMulti();
+
+/* XXX: from test_tinfer.c */
+void init(void);
+void fini(void);
+void initFile(void);
+void finiFile(void);
 
 void
 scobindTest()

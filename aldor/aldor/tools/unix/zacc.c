@@ -54,6 +54,7 @@
 
 extern FILE *yyin;
 extern int  yydebug;
+extern int  yyparse();
 
 extern char *ctime();
 /*extern char *malloc();*/
