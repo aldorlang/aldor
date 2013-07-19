@@ -8,6 +8,7 @@
 
 #include "axlobs.h"
 #include "btree.h"
+#include "flog.h"
 #include "opsys.h"
 #include "store.h"
 #include "util.h"

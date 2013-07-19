@@ -1,5 +1,6 @@
 #include "axlobs.h"
 #include "cmdline.h"
+#include "flog.h"
 #include "foam.h"
 #include "of_inlin.h"
 #include "testlib.h"

@@ -127,7 +127,6 @@ DECLARE_LIST(SymeList);
 # include "of_util.h"
 # include "of_comex.h"
 # include "comsg.h"
-# include "flog.h"
 # include "fbox.h"
 
 /*

@@ -64,6 +64,7 @@
 
 #include "debug.h"
 #include "dflow.h"
+#include "flog.h"
 #include "of_cprop.h"
 #include "of_peep.h"
 #include "optfoam.h"

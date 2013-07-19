@@ -99,6 +99,7 @@
  ***************************************************************************/
 
 #include "debug.h"
+#include "flog.h"
 #include "fluid.h"
 #include "format.h"
 #include "genfoam.h"

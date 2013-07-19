@@ -1,4 +1,5 @@
 #include "axlobs.h"
+#include "bitv.h"
 #include "foam.h"
 #include "testlib.h"
 

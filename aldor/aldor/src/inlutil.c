@@ -6,6 +6,7 @@
  *
  ****************************************************************************/
 
+#include "flog.h"
 #include "inlutil.h"
 #include "opttools.h"
 #include "of_inlin.h"

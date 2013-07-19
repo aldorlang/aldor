@@ -47,6 +47,7 @@
 #include "axlobs.h"
 #include "debug.h"
 #include "dflow.h"
+#include "flog.h"
 #include "format.h"
 #include "of_deada.h"
 #include "of_killp.h"

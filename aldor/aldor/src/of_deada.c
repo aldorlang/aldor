@@ -34,6 +34,7 @@
 #include "axlobs.h"
 #include "debug.h"
 #include "dflow.h"
+#include "flog.h"
 #include "of_deada.h"
 #include "of_util.h"
 #include "optfoam.h"

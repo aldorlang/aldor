@@ -8,6 +8,7 @@
 
 #include "axlobs.h"
 #include "dflow.h"
+#include "flog.h"
 #include "util.h"
 
 

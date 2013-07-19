@@ -26,6 +26,7 @@
  ****************************************************************************/
 
 #include "debug.h"
+#include "flog.h"
 #include "loops.h"
 #include "of_loops.h"
 #include "opttools.h"

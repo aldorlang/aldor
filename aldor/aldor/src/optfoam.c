@@ -9,6 +9,7 @@
 #include "axlobs.h"
 #include "debug.h"
 #include "flatten.h"
+#include "flog.h"
 #include "format.h"
 #include "inlutil.h"
 #include "loops.h"

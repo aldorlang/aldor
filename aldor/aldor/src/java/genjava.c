@@ -1,4 +1,5 @@
 #include "debug.h"
+#include "flog.h"
 #include "foamsig.h"
 #include "intset.h"
 #include "javacode.h"

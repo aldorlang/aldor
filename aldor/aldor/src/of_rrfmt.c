@@ -30,6 +30,7 @@
  ****************************************************************************/
 
 #include "debug.h"
+#include "flog.h"
 #include "of_rrfmt.h"
 #include "util.h"
 

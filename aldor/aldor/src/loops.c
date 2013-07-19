@@ -19,6 +19,7 @@
  ****************************************************************************/
 
 #include "debug.h"
+#include "flog.h"
 #include "loops.h"
 #include "store.h"
 #include "util.h"

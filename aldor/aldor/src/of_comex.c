@@ -125,6 +125,7 @@
 
 #include "debug.h"
 #include "dflow.h"
+#include "flog.h"
 #include "of_comex.h"
 #include "of_rrfmt.h"
 #include "of_util.h"

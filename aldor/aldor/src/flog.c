@@ -9,6 +9,7 @@
 #include "debug.h"
 #include "dflow.h"
 #include "file.h"
+#include "flog.h"
 #include "opsys.h"
 #include "phase.h"
 #include "store.h"
