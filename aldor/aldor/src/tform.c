@@ -8,11 +8,13 @@
 
 #include "axlobs.h"
 #include "debug.h"
+#include "fint.h"
 #include "format.h"
 #include "store.h"
-#include "ti_sef.h"
-#include "tinfer.h"
 #include "tfcond.h"
+#include "ti_sef.h"
+#include "ti_top.h"
+#include "tinfer.h"
 #include "util.h"
 
 Bool	tfDebug		= false;

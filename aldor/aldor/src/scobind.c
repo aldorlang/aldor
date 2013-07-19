@@ -8,6 +8,7 @@
 
 #include "abuse.h"
 #include "debug.h"
+#include "fint.h"
 #include "format.h"
 #include "store.h"
 #include "tfcond.h"

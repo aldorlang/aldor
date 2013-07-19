@@ -19,6 +19,7 @@
  
 #include "abnorm.h"
 #include "debug.h"
+#include "fint.h"
 #include "format.h"
 #include "phase.h"
 #include "store.h"

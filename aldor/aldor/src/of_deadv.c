@@ -32,6 +32,7 @@
 #include "gf_rtime.h"
 #include "optfoam.h"
 #include "store.h"
+#include "fint.h"
 
 Bool	dvDebug		= false;
 

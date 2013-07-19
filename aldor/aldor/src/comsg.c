@@ -13,6 +13,7 @@
 #include "textcolour.h"
 #endif
 #include "util.h"
+#include "fint.h"
 
 /****************************************************************************
  *

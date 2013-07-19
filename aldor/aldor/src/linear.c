@@ -20,6 +20,7 @@
 #include "format.h"
 #include "linear.h"
 #include "store.h"
+#include "fint.h"
 
 Bool	linDebug	= false;
 #define linDEBUG(s)	DEBUG_IF(linDebug, s)

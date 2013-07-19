@@ -8,6 +8,7 @@
 
 #include "axlobs.h"
 #include "debug.h"
+#include "fint.h"
 #include "format.h"
 #include "simpl.h"
 #include "store.h"

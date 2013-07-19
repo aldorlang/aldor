@@ -50,6 +50,7 @@
 #include "store.h"
 #include "tform.h"
 #include "util.h"
+#include "fint.h"
 
 Bool	genfoamDebug		= false;
 Bool	genfoamHashDebug	= false;

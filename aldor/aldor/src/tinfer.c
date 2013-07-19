@@ -16,6 +16,7 @@
 #include "ti_bup.h"
 #include "ti_sef.h"
 #include "ti_tdn.h"
+#include "ti_top.h"
 #include "tinfer.h"
 
 /*****************************************************************************

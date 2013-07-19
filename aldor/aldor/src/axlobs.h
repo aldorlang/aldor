@@ -129,10 +129,7 @@ DECLARE_LIST(SymeList);
 # include "comsg.h"
 # include "flog.h"
 # include "dflow.h"
-# include "fint.h"
-# include "depdag.h"
 # include "fbox.h"
-# include "ti_top.h"
 
 /*
  * Tags for labelled storage.  These continue where "axlgen.h" ends.

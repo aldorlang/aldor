@@ -7,6 +7,7 @@
  ****************************************************************************/
 
 #include "debug.h"
+#include "depdag.h"
 #include "format.h"
 #include "gf_add.h"
 #include "gf_implicit.h"

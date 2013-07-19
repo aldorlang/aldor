@@ -11,6 +11,7 @@
 #include "cmdline.h"
 #include "emit.h"
 #include "file.h"
+#include "fint.h"
 #include "gencpp.h"
 #include "genfoam.h"
 #include "genlisp.h"

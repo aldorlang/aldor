@@ -11,6 +11,7 @@
 #include "dnf.h"
 #include "format.h"
 #include "store.h"
+#include "ti_top.h"
 
 Bool	ablogDebug		= false;
 #define ablogDEBUG(s)		DEBUG_IF(ablogDebug, s)

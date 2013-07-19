@@ -11,6 +11,7 @@
 #include "opsys.h"
 #include "scan.h"
 #include "util.h"
+#include "fint.h"
 
 
 /******************************************************************************

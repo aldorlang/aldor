@@ -10,6 +10,7 @@
 #include "debug.h"
 #include "format.h"
 #include "terror.h"
+#include "ti_top.h"
 
 Bool			tfsDebug 		= false;
 Bool			tfsMultiDebug		= false;

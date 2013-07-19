@@ -17,6 +17,7 @@
 #include "debug.h"
 #include "emit.h"
 #include "file.h"
+#include "fint.h"
 #include "fintphase.h"
 #include "fluid.h"
 #include "genc.h"

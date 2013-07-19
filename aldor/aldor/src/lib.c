@@ -9,6 +9,7 @@
 #include "axlobs.h"
 #include "debug.h"
 #include "file.h"
+#include "fint.h"
 #include "format.h"
 #include "opsys.h"
 #include "opttools.h"
