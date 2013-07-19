@@ -11,6 +11,7 @@
 #include "fint.h"
 #include "format.h"
 #include "simpl.h"
+#include "spesym.h"
 #include "store.h"
 
 Bool	stabDebug		= false;

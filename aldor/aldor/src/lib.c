@@ -14,6 +14,7 @@
 #include "opsys.h"
 #include "opttools.h"
 #include "simpl.h"
+#include "spesym.h"
 #include "store.h"
 #include "util.h"
 

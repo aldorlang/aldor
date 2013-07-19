@@ -10,6 +10,7 @@
 #include "fluid.h"
 #include "format.h"
 #include "simpl.h"
+#include "spesym.h"
 #include "terror.h"
 #include "ti_tdn.h"
 #include "tinfer.h"

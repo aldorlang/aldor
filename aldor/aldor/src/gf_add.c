@@ -17,6 +17,7 @@
 #include "gf_seq.h"
 #include "of_util.h"
 #include "of_inlin.h"
+#include "spesym.h"
 #include "store.h"
 #include "util.h"
 

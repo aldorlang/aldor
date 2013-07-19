@@ -12,6 +12,7 @@
 #include "fluid.h"
 #include "format.h"
 #include "simpl.h"
+#include "spesym.h"
 #include "store.h"
 #include "ti_top.h"
 #include "util.h"

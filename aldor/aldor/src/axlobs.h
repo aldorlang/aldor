@@ -121,9 +121,6 @@ DECLARE_LIST(SymeList);
 # include "sefo.h"
 # include "stab.h"
 # include "version.h"
-# include "spesym.h"
-# include "usedef.h"
-# include "of_loops.h"
 # include "comsg.h"
 # include "fbox.h"
 

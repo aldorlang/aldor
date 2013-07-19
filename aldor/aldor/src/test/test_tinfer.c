@@ -9,6 +9,7 @@
 #include "optfoam.h"
 #include "phase.h"
 #include "scobind.h"
+#include "spesym.h"
 #include "symbol.h"
 #include "testlib.h"
 #include "tinfer.h"

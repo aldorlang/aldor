@@ -9,6 +9,7 @@
 #include "debug.h"
 #include "fluid.h"
 #include "format.h"
+#include "spesym.h"
 #include "store.h"
 #include "ti_bup.h"
 #include "ti_tdn.h"

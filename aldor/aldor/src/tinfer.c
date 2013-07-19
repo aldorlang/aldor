@@ -10,6 +10,7 @@
 #include "fluid.h"
 #include "format.h"
 #include "opsys.h"
+#include "spesym.h"
 #include "store.h"
 #include "terror.h"
 #include "tfcond.h"

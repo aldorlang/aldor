@@ -15,6 +15,7 @@
 #include "opsys.h"
 #include "output.h"
 #include "phase.h"
+#include "spesym.h"
 #include "store.h"
 #include "syscmd.h"
 #include "tinfer.h"

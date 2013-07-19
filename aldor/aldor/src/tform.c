@@ -10,6 +10,7 @@
 #include "debug.h"
 #include "fint.h"
 #include "format.h"
+#include "spesym.h"
 #include "store.h"
 #include "tfcond.h"
 #include "ti_sef.h"

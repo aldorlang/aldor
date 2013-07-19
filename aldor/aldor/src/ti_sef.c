@@ -9,6 +9,7 @@
 #include "debug.h"
 #include "fluid.h"
 #include "format.h"
+#include "spesym.h"
 #include "ti_sef.h"
 #include "tinfer.h"
 #include "terror.h"

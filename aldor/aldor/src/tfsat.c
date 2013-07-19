@@ -9,6 +9,7 @@
 #include "axlobs.h"
 #include "debug.h"
 #include "format.h"
+#include "spesym.h"
 #include "terror.h"
 #include "ti_top.h"
 

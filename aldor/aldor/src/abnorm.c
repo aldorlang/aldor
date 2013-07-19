@@ -97,6 +97,7 @@
 #include "debug.h"
 #include "format.h"
 #include "macex.h"
+#include "spesym.h"
 
 Bool abnormDebug	= false;
 Bool abnDefineDebug	= false;

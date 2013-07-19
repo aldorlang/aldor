@@ -33,6 +33,7 @@
 #include "phase.h"
 #include "scan.h"
 #include "scobind.h"
+#include "spesym.h"
 #include "store.h"
 #include "syscmd.h"
 #include "tinfer.h"

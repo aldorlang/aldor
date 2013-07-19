@@ -47,6 +47,7 @@
 #include "opttools.h"
 #include "scobind.h"
 #include "simpl.h"
+#include "spesym.h"
 #include "store.h"
 #include "tform.h"
 #include "util.h"

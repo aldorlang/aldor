@@ -9,6 +9,7 @@
 #include "debug.h"
 #include "format.h"
 #include "phase.h"
+#include "spesym.h"
 #include "util.h"
 
 /*****************************************************************************

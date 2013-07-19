@@ -11,6 +11,7 @@
 #include "format.h"
 #include "genfoam.h"
 #include "ostream.h"
+#include "spesym.h"
 #include "srcpos.h"
 #include "store.h"
 #include "util.h"
