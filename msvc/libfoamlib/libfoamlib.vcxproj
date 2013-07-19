@@ -60,32 +60,31 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\aldor\aldor\lib\libfoamlib\array.c" />
-    <ClCompile Include="..\..\aldor\aldor\lib\libfoamlib\basic.c" />
-    <ClCompile Include="..\..\aldor\aldor\lib\libfoamlib\bool.c" />
-    <ClCompile Include="..\..\aldor\aldor\lib\libfoamlib\character.c" />
-    <ClCompile Include="..\..\aldor\aldor\lib\libfoamlib\file.c" />
-    <ClCompile Include="..\..\aldor\aldor\lib\libfoamlib\fname.c" />
-    <ClCompile Include="..\..\aldor\aldor\lib\libfoamlib\foamcat.c" />
-    <ClCompile Include="..\..\aldor\aldor\lib\libfoamlib\foamlib.c" />
-    <ClCompile Include="..\..\aldor\aldor\lib\libfoamlib\format.c" />
-    <ClCompile Include="..\..\aldor\aldor\lib\libfoamlib\gener.c" />
-    <ClCompile Include="..\..\aldor\aldor\lib\libfoamlib\lang.c" />
-    <ClCompile Include="..\..\aldor\aldor\lib\libfoamlib\langx.c" />
-    <ClCompile Include="..\..\aldor\aldor\lib\libfoamlib\list.c" />
-    <ClCompile Include="..\..\aldor\aldor\lib\libfoamlib\lv.c" />
-    <ClCompile Include="..\..\aldor\aldor\lib\libfoamlib\machine.c" />
-    <ClCompile Include="..\..\aldor\aldor\lib\libfoamlib\opsys.c" />
-    <ClCompile Include="..\..\aldor\aldor\lib\libfoamlib\oslow.c" />
-    <ClCompile Include="..\..\aldor\aldor\lib\libfoamlib\parray.c" />
-    <ClCompile Include="..\..\aldor\aldor\lib\libfoamlib\partial.c" />
-    <ClCompile Include="..\..\aldor\aldor\lib\libfoamlib\pointer.c" />
-    <ClCompile Include="..\..\aldor\aldor\lib\libfoamlib\segment.c" />
-    <ClCompile Include="..\..\aldor\aldor\lib\libfoamlib\sfloat.c" />
-    <ClCompile Include="..\..\aldor\aldor\lib\libfoamlib\sinteger.c" />
-    <ClCompile Include="..\..\aldor\aldor\lib\libfoamlib\string.c" />
-    <ClCompile Include="..\..\aldor\aldor\lib\libfoamlib\textwrit.c" />
-    <ClCompile Include="..\..\aldor\aldor\lib\libfoamlib\tuple.c" />
+    <ClCompile Include="..\..\build\aldor\lib\libfoamlib\al\array.c" />
+    <ClCompile Include="..\..\build\aldor\lib\libfoamlib\al\basic.c" />
+    <ClCompile Include="..\..\build\aldor\lib\libfoamlib\al\bool.c" />
+    <ClCompile Include="..\..\build\aldor\lib\libfoamlib\al\character.c" />
+    <ClCompile Include="..\..\build\aldor\lib\libfoamlib\al\file.c" />
+    <ClCompile Include="..\..\build\aldor\lib\libfoamlib\al\fname.c" />
+    <ClCompile Include="..\..\build\aldor\lib\libfoamlib\al\foamcat.c" />
+    <ClCompile Include="..\..\build\aldor\lib\libfoamlib\al\format.c" />
+    <ClCompile Include="..\..\build\aldor\lib\libfoamlib\al\gener.c" />
+    <ClCompile Include="..\..\build\aldor\lib\libfoamlib\al\lang.c" />
+    <ClCompile Include="..\..\build\aldor\lib\libfoamlib\al\langx.c" />
+    <ClCompile Include="..\..\build\aldor\lib\libfoamlib\al\list.c" />
+    <ClCompile Include="..\..\build\aldor\lib\libfoamlib\al\lv.c" />
+    <ClCompile Include="..\..\build\aldor\lib\libfoamlib\al\machine.c" />
+    <ClCompile Include="..\..\build\aldor\lib\libfoamlib\al\opsys.c" />
+    <ClCompile Include="..\..\build\aldor\lib\libfoamlib\al\oslow.c" />
+    <ClCompile Include="..\..\build\aldor\lib\libfoamlib\al\parray.c" />
+    <ClCompile Include="..\..\build\aldor\lib\libfoamlib\al\partial.c" />
+    <ClCompile Include="..\..\build\aldor\lib\libfoamlib\al\pointer.c" />
+    <ClCompile Include="..\..\build\aldor\lib\libfoamlib\al\segment.c" />
+    <ClCompile Include="..\..\build\aldor\lib\libfoamlib\al\sfloat.c" />
+    <ClCompile Include="..\..\build\aldor\lib\libfoamlib\al\sinteger.c" />
+    <ClCompile Include="..\..\build\aldor\lib\libfoamlib\al\string.c" />
+    <ClCompile Include="..\..\build\aldor\lib\libfoamlib\al\textwrit.c" />
+    <ClCompile Include="..\..\build\aldor\lib\libfoamlib\al\tuple.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

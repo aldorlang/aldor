@@ -60,7 +60,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\aldor\aldor\lib\libfoam\runtime.c" />
+    <ClCompile Include="..\..\build\aldor\lib\libfoam\al\runtime.c" />
     <ClCompile Include="..\..\aldor\aldor\src\bigint.c" />
     <ClCompile Include="..\..\aldor\aldor\src\btree.c" />
     <ClCompile Include="..\..\aldor\aldor\src\buffer.c" />

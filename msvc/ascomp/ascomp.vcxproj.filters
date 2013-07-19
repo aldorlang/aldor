@@ -102,9 +102,6 @@
     <ClInclude Include="..\..\aldor\aldor\src\comsg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\aldor\aldor\src\comsgdb.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\aldor\aldor\src\cport.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -534,6 +531,9 @@
     <ClInclude Include="..\..\aldor\aldor\src\time.h0">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\build\aldor\src\comsgdb.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\aldor\aldor\src\abcheck.c">
@@ -558,9 +558,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\aldor\aldor\src\archive.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\aldor\aldor\src\axl.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\aldor\aldor\src\axlcomp.c">
@@ -618,9 +615,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\aldor\aldor\src\comsg.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\aldor\aldor\src\comsgdb.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\aldor\aldor\src\cport.c">
@@ -1029,6 +1023,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\aldor\aldor\src\xfloat_t.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\build\aldor\src\comsgdb.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\build\aldor\src\axl.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
