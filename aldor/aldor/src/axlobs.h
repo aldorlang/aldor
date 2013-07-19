@@ -119,8 +119,6 @@ DECLARE_LIST(SymeList);
 # include "archive.h"
 # include "syme.h"
 # include "sefo.h"
-# include "stab.h"
-# include "version.h"
 # include "comsg.h"
 # include "fbox.h"
 

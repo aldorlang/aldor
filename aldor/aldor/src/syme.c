@@ -13,6 +13,7 @@
 #include "format.h"
 #include "simpl.h"
 #include "spesym.h"
+#include "stab.h"
 #include "store.h"
 #include "ti_top.h"
 #include "util.h"

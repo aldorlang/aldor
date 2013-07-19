@@ -13,6 +13,7 @@
 #include "ostream.h"
 #include "spesym.h"
 #include "srcpos.h"
+#include "stab.h"
 #include "store.h"
 #include "util.h"
 

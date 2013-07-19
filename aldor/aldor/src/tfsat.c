@@ -10,6 +10,7 @@
 #include "debug.h"
 #include "format.h"
 #include "spesym.h"
+#include "stab.h"
 #include "terror.h"
 #include "ti_top.h"
 

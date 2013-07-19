@@ -4,10 +4,11 @@
 #include "debug.h"
 #include "format.h"
 #include "scobind.h"
+#include "stab.h"
 #include "testlib.h"
 #include "ti_bup.h"
-#include "tinfer.h"
 #include "ti_tdn.h"
+#include "tinfer.h"
 
 local void testTiBupCollect1();
 local void testTiBupCollect2();

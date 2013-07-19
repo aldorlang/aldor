@@ -1,7 +1,8 @@
-#include "axlobs.h"
-#include "testlib.h"
-#include "format.h"
 #include "abquick.h"
+#include "axlobs.h"
+#include "format.h"
+#include "stab.h"
+#include "testlib.h"
 
 local void testTFormFormat();
 local void testTFormSyntaxConditions();

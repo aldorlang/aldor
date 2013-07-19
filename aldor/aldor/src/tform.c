@@ -11,6 +11,7 @@
 #include "fint.h"
 #include "format.h"
 #include "spesym.h"
+#include "stab.h"
 #include "store.h"
 #include "tfcond.h"
 #include "ti_sef.h"

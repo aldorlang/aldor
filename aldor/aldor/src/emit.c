@@ -14,6 +14,7 @@
 #include "include.h"
 #include "genlisp.h"
 #include "opsys.h"
+#include "stab.h"
 #include "store.h"
 
 /****************************************************************************

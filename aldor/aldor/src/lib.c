@@ -15,6 +15,7 @@
 #include "opttools.h"
 #include "simpl.h"
 #include "spesym.h"
+#include "stab.h"
 #include "store.h"
 #include "util.h"
 

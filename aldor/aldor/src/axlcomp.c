@@ -34,10 +34,12 @@
 #include "scan.h"
 #include "scobind.h"
 #include "spesym.h"
+#include "stab.h"
 #include "store.h"
 #include "syscmd.h"
 #include "tinfer.h"
 #include "util.h"
+#include "version.h"
 
 String 		compRootDir     = 0;
 Bool   		compIsDebug     = false;

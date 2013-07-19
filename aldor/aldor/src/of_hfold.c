@@ -19,6 +19,7 @@
 #include "of_inlin.h"
 #include "of_util.h"
 #include "gf_rtime.h"
+#include "stab.h"
 
 Bool	hfoldDebug	= false;
 #define hfoldDEBUG(s)	DEBUG_IF(cfoldDebug, s)

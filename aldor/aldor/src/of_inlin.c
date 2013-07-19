@@ -110,6 +110,7 @@
 #include "of_util.h"
 #include "optfoam.h"
 #include "opttools.h"
+#include "stab.h"
 #include "store.h"
 #include "util.h"
 

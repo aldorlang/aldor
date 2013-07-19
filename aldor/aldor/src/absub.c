@@ -9,6 +9,7 @@
 #include "axlobs.h"
 #include "debug.h"
 #include "format.h"
+#include "stab.h"
 #include "store.h"
 
 Bool	absDebug 	= false;

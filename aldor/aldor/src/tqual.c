@@ -9,6 +9,7 @@
 #include "axlobs.h"
 #include "format.h"
 #include "spesym.h"
+#include "stab.h"
 #include "store.h"
 
 Bool	tqDebug		= false;

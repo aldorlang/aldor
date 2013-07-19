@@ -1,6 +1,7 @@
 #include "abquick.h"
 #include "axlobs.h"
 #include "scobind.h"
+#include "stab.h"
 #include "testlib.h"
 
 local void testScobind();

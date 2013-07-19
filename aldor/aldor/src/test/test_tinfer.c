@@ -10,10 +10,11 @@
 #include "phase.h"
 #include "scobind.h"
 #include "spesym.h"
+#include "stab.h"
 #include "symbol.h"
 #include "testlib.h"
-#include "tinfer.h"
 #include "ti_sef.h"
+#include "tinfer.h"
 
 /* XXX: from test_tinfer.c */
 void init(void);

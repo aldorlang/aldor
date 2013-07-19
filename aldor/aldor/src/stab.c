@@ -12,6 +12,7 @@
 #include "format.h"
 #include "simpl.h"
 #include "spesym.h"
+#include "stab.h"
 #include "store.h"
 
 Bool	stabDebug		= false;

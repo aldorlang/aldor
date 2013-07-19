@@ -4,6 +4,7 @@
 #include "debug.h"
 #include "format.h"
 #include "scobind.h"
+#include "stab.h"
 #include "testlib.h"
 #include "tinfer.h"
 

@@ -18,6 +18,7 @@
 #include "of_util.h"
 #include "of_inlin.h"
 #include "spesym.h"
+#include "stab.h"
 #include "store.h"
 #include "util.h"
 
