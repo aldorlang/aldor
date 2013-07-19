@@ -12,6 +12,7 @@
 #include "emit.h"
 #include "file.h"
 #include "gencpp.h"
+#include "genfoam.h"
 #include "genlisp.h"
 #include "of_emerg.h"
 #include "opsys.h"

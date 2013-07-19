@@ -22,6 +22,5 @@
 # include "abuse.h"
 # include "scobind.h"
 # include "tinfer.h"
-# include "genfoam.h"
 
 #endif /* !_AXLPHASE_H_ */

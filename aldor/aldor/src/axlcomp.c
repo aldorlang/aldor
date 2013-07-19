@@ -17,6 +17,7 @@
 #include "fluid.h"
 #include "genc.h"
 #include "gencpp.h"
+#include "genfoam.h"
 #include "genlisp.h"
 #include "opsys.h"
 #include "optfoam.h"

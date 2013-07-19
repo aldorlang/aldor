@@ -9,6 +9,7 @@
 #include "axlphase.h"
 #include "debug.h"
 #include "format.h"
+#include "genfoam.h"
 #include "optfoam.h"
 #include "of_cfold.h"
 #include "store.h"

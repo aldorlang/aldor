@@ -102,6 +102,7 @@
 #include "debug.h"
 #include "fluid.h"
 #include "format.h"
+#include "genfoam.h"
 #include "gf_rtime.h"
 #include "inlutil.h"
 #include "loops.h"
