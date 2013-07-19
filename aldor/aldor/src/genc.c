@@ -6,7 +6,6 @@
  *
  ****************************************************************************/
 
-#include "axlphase.h"
 #include "compcfg.h"
 #include "debug.h"
 #include "fluid.h"

@@ -7,7 +7,7 @@
  */
 
 %{
-# include "axlphase.h"
+#include "parseby.h"
 
 # define yyerror(s)	yyerrorfn(s)
 #define UNUSED_LABELS

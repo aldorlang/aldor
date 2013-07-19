@@ -6,10 +6,10 @@
  *
  ****************************************************************************/
  
-#include "axlphase.h"
 #include "debug.h"
 #include "file.h"
 #include "opsys.h"
+#include "phase.h"
 #include "store.h"
 #include "util.h"
 

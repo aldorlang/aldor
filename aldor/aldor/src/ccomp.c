@@ -6,7 +6,6 @@
  *
  ****************************************************************************/
 
-#include "axlphase.h"
 #include "ccomp.h"
 #include "compcfg.h"
 #include "emit.h"

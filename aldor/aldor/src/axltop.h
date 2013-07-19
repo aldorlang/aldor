@@ -31,8 +31,6 @@
 /* Pre-empt the include by axlphase.h to avoid too deep nesting. */
 # include "axlgen.h"
 
-# include "axlphase.h"
-
 # include "axlcomp.h"
 
 #endif	/* !_AXLTOP_H_ */

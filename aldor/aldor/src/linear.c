@@ -16,9 +16,9 @@
  * post-facto and may be incorrect.
  */
 
-#include "axlphase.h"
 #include "debug.h"
 #include "format.h"
+#include "linear.h"
 #include "store.h"
 
 Bool	linDebug	= false;

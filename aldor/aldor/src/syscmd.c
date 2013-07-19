@@ -7,8 +7,11 @@
  ****************************************************************************/
 
 #include "abnorm.h"
-#include "axlphase.h"
 #include "fintphase.h"
+#include "macex.h"
+#include "parseby.h"
+#include "scan.h"
+#include "syscmd.h"
 #include "util.h"
 
 /*****************************************************************************
