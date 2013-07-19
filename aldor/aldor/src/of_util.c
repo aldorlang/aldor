@@ -7,6 +7,7 @@
  ****************************************************************************/
  
 #include "debug.h"
+#include "of_util.h"
 #include "phase.h"
 #include "store.h"
 #include "util.h"

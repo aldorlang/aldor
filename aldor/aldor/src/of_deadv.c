@@ -30,6 +30,7 @@
 #include "format.h"
 #include "genfoam.h"
 #include "gf_rtime.h"
+#include "of_util.h"
 #include "optfoam.h"
 #include "store.h"
 #include "fint.h"

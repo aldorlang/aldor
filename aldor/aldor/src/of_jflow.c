@@ -12,6 +12,7 @@
 #include "format.h"
 #include "loops.h"
 #include "of_jflow.h"
+#include "of_util.h"
 #include "optfoam.h"
 #include "opttools.h"
 #include "store.h"

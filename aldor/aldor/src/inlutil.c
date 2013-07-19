@@ -10,6 +10,7 @@
 #include "inlutil.h"
 #include "opttools.h"
 #include "of_inlin.h"
+#include "of_util.h"
 #include "loops.h"
 #include "optfoam.h"
 

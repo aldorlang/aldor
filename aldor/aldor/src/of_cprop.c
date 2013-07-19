@@ -67,9 +67,11 @@
 #include "flog.h"
 #include "of_cprop.h"
 #include "of_peep.h"
+#include "of_util.h"
 #include "optfoam.h"
 #include "opttools.h"
 #include "store.h"
+
 /****************************************************************************
  * :: Macros
  ****************************************************************************/

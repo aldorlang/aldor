@@ -17,6 +17,7 @@
 #include "genlisp.h"
 #include "include.h"
 #include "of_emerg.h"
+#include "of_util.h"
 #include "opsys.h"
 #include "optfoam.h"
 #include "phase.h"

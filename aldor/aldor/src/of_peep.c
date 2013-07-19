@@ -10,6 +10,7 @@
 #include "debug.h"
 #include "format.h"
 #include "of_peep.h"
+#include "of_util.h"
 #include "optfoam.h"
 #include "opttools.h"
 #include "util.h"

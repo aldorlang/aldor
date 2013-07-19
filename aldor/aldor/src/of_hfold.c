@@ -15,7 +15,9 @@
  * To fix: The hashNum slot could, with a bit of work, be held by a prog.
  * 	   
  */
+
 #include "of_inlin.h"
+#include "of_util.h"
 #include "gf_rtime.h"
 
 Bool	hfoldDebug	= false;

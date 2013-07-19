@@ -124,8 +124,6 @@ DECLARE_LIST(SymeList);
 # include "spesym.h"
 # include "usedef.h"
 # include "of_loops.h"
-# include "of_util.h"
-# include "of_comex.h"
 # include "comsg.h"
 # include "fbox.h"
 
