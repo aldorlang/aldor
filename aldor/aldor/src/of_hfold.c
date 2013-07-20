@@ -1,4 +1,3 @@
-
 /*****************************************************************************
  *
  * hfold.c: Foam syme hash constant folding
@@ -6,6 +5,7 @@
  * Copyright (c) 1990-2007 Aldor Software Organization Ltd (Aldor.org).
  *
  ****************************************************************************/
+
 /* 
  * Takes foam, assumed to be decorated with symes and
  * replaces calls to domainGetHash! with the expected result 
@@ -15,9 +15,11 @@
  * To fix: The hashNum slot could, with a bit of work, be held by a prog.
  * 	   
  */
-# include "axlphase.h"
-# include "of_inlin.h"
-# include "gf_rtime.h"
+
+#include "of_inlin.h"
+#include "of_util.h"
+#include "gf_rtime.h"
+#include "stab.h"
 
 Bool	hfoldDebug	= false;
 #define hfoldDEBUG(s)	DEBUG_IF(cfoldDebug, s)

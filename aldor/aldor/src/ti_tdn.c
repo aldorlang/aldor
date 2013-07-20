@@ -6,10 +6,16 @@
  *
  ***************************************************************************/
 
+#include "debug.h"
+#include "fluid.h"
+#include "format.h"
+#include "simpl.h"
+#include "spesym.h"
+#include "stab.h"
+#include "terror.h"
 #include "ti_tdn.h"
 #include "tinfer.h"
-#include "terror.h"
-#include "simpl.h"
+#include "util.h"
 
 /*
  * To do:

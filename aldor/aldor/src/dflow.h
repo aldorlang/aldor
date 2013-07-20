@@ -9,7 +9,8 @@
 #ifndef _DFLOW_H_
 #define _DFLOW_H_
 
-# include "axlobs.h"
+#include "axlobs.h"
+#include "bitv.h"
 
 struct dflowInfo {
 	Bitv		in;

@@ -13,6 +13,7 @@ void testStore3(void) { }
 #else
 
 #include "axlgen.h"
+#include "store.h"
 
 void
 testStore3(void)

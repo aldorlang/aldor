@@ -10,7 +10,8 @@
  * The main job is done by axl.y.
  */
 
-# include "axlphase.h"
+#include "debug.h"
+#include "phase.h"
 
 static TokenList        yytoklist;      /* The unseen tokens */
 static int              yyerrcount;

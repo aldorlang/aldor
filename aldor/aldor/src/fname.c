@@ -6,7 +6,13 @@
  *
  ****************************************************************************/
 
-# include "axlgen.h"
+#include "axlgen.h"
+#include "file.h"
+#include "fname.h"
+#include "format.h"
+#include "opsys.h"
+#include "store.h"
+#include "strops.h"
 
 local FileName
 fnameTemplate(void)

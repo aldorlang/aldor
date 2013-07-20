@@ -12,7 +12,9 @@ void testString(void) { }
 
 #else
 
-# include "axlgen.h"
+#include "axlgen.h"
+#include "opsys.h"
+#include "strops.h"
 
 String
 testStrVPrintf(const char *fmt, ...)

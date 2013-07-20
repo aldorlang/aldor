@@ -6,8 +6,13 @@
  *
  ****************************************************************************/
 
-# include "axlgen.h"
-# include "comsg.h"
+#include "axlgen.h"
+#include "comsg.h"
+#include "debug.h"
+#include "file.h"
+#include "opsys.h"
+#include "store.h"
+#include "util.h"
 
 /*
  * The "fields" are

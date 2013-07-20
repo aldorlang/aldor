@@ -13,6 +13,8 @@ void testDnf(void) { }
 #else
 
 #include "axlgen.h"
+#include "dnf.h"
+#include "opsys.h"
 
 void
 testDnf(void)

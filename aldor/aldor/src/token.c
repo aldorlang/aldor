@@ -6,7 +6,9 @@
  *
  ****************************************************************************/
 
-# include "axlobs.h"
+#include "axlobs.h"
+#include "format.h"
+#include "store.h"
 
 Token
 tokNew(SrcPos pos, SrcPos end, TokenTag tag, ...)

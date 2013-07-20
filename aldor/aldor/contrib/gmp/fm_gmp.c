@@ -18,12 +18,12 @@
  * rather than  FiPtr fiEnvMake(FiSInt size) { ... }
  */
 
-/*
- * The include of "foam_c.h" must come second.
- */
-# include "axlgen.h"
-# include "foam_c.h"
-# include <gmp.h>
+#include "axlgen.h"
+#include "bigint.h"
+#include "foam_c.h"
+#include "store.h"
+
+#include <gmp.h>
 
 /*****************************************************************************
  *

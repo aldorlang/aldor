@@ -12,7 +12,9 @@ void testTable(void) { }
 
 #else
 
-# include "axlgen.h"
+#include "axlgen.h"
+#include "opsys.h"
+#include "table.h"
 
 local void	tblHistogram	(Table);
 local TblElt	tblTestMap	(TblElt);

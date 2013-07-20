@@ -6,7 +6,10 @@
  *
  ****************************************************************************/
 
-# include "axltop.h"
+#include "axltop.h"
+#include "debug.h"
+#include "opsys.h"
+#include "test.h"
 
 int
 main(int argc, String *argv)

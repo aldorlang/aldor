@@ -6,10 +6,14 @@
  *
  ****************************************************************************/
 
-# include "axlgen.h"
-# include "fname.h"
-# include "file.h"
-# include "list.h"
+#include "axlgen.h"
+#include "fname.h"
+#include "file.h"
+#include "list.h"
+#include "opsys.h"
+#include "path.h"
+#include "store.h"
+#include "strops.h"
 
 CREATE_LIST(String);
 

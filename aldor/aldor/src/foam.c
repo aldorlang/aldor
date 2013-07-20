@@ -26,7 +26,15 @@
  *	))
  */
 
-# include "axlobs.h"
+#include "axlobs.h"
+#include "debug.h"
+#include "file.h"
+#include "fluid.h"
+#include "format.h"
+#include "opsys.h"
+#include "store.h"
+#include "util.h"
+#include "xfloat.h"
 
 #define	 FOAM_NARY	(-1)	/* Identifies tags with N-ary data argument. */
 
@@ -2932,7 +2940,7 @@ foamExprTypeG0(Foam expr, Foam prog, Foam formats, FoamBox locals,
 
 FoamTag
 foamExprType0(Foam expr, Foam prog, Foam formats, FoamBox locals,
-	     FoamBox formatBox, AInt * extra)
+	      FoamBox formatBox, AInt *extra)
 {
 	struct foamExprTypeStd stdArgs;
 

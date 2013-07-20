@@ -7,8 +7,17 @@
  ****************************************************************************/
 
 #include "axlobs.h"
-#include "simpl.h"
+#include "debug.h"
+#include "file.h"
+#include "fint.h"
+#include "format.h"
+#include "opsys.h"
 #include "opttools.h"
+#include "simpl.h"
+#include "spesym.h"
+#include "stab.h"
+#include "store.h"
+#include "util.h"
 
 Bool	libDebug 	= false;
 Bool	libLazyDebug 	= false;

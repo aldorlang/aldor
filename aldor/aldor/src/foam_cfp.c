@@ -15,6 +15,7 @@
 #endif
 
 #include "axlgen.h"
+#include "axlport.h"
 #include "foam_c.h"
 #include "foam_cfp.h"
 

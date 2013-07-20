@@ -46,9 +46,10 @@
  *              up after us.
  */
 
-# include "axlphase.h"
-# include "of_deadv.h"
-# include "of_util.h"
+#include "debug.h"
+#include "of_deadv.h"
+#include "of_util.h"
+#include "store.h"
 
 Bool	emergeDebug	= false;
 #define emergeDEBUG(s)	DEBUG_IF(emergeDebug, s)

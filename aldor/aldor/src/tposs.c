@@ -13,6 +13,10 @@
  */
 
 #include "axlobs.h"
+#include "debug.h"
+#include "format.h"
+#include "spesym.h"
+#include "store.h"
 #include "terror.h"
 
 /*

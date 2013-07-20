@@ -6,8 +6,16 @@
  *
  ****************************************************************************/
 
-# include "axlphase.h"
-# include "compcfg.h"
+#include "ccomp.h"
+#include "compcfg.h"
+#include "emit.h"
+#include "file.h"
+#include "fint.h"
+#include "include.h"
+#include "genlisp.h"
+#include "opsys.h"
+#include "stab.h"
+#include "store.h"
 
 /****************************************************************************
  *

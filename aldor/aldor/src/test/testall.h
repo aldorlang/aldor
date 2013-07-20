@@ -18,7 +18,7 @@ void scobindTest(void);
 void symeTest(void);
 void tibupTest(void);
 void tformTest(void);
-void srcpos(void);
+void srcposTest(void);
 
 #endif
 

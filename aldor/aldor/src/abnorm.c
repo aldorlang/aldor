@@ -94,7 +94,11 @@
 #define UseTypeVariables
 #undef	UseTypeVariables
 
-# include "axlphase.h"
+#include "debug.h"
+#include "format.h"
+#include "macex.h"
+#include "spesym.h"
+#include "stab.h"
 
 Bool abnormDebug	= false;
 Bool abnDefineDebug	= false;

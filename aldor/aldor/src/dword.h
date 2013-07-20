@@ -8,6 +8,8 @@
 
 #ifndef _DWORD_H_
 #define _DWORD_H_
+
+#include "cport.h"
  
 extern void	xxTestGtDouble(int *, ULong, ULong, ULong, ULong);
 extern void	xxPlusStep    (ULong *, ULong *, ULong, ULong, ULong);

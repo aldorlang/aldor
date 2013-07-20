@@ -6,7 +6,12 @@
  *
  ****************************************************************************/
 
-# include "axlobs.h"
+#include "axlobs.h"
+#include "debug.h"
+#include "format.h"
+#include "store.h"
+#include "ti_top.h"
+#include "util.h"
 
 Bool	tcDebug		= false;
 

@@ -1541,6 +1541,8 @@ extern Foam		 foamGetProgHdrFrBuffer	(Buffer, int);
 
 extern FoamTag		 foamExprType	(Foam, Foam, Foam, FoamBox, FoamBox,
 					 AInt *);
+extern FoamTag		 foamExprType0	(Foam expr, Foam prog, Foam formats, FoamBox locals,
+					 FoamBox formatBox, AInt *extra);
 extern FoamTag		 foamExprTypeG0	(Foam, Foam, Foam, FoamBox, FoamBox,
 					 FoamBox, AInt *);
 typedef Foam (*FoamExprTypeCallback)(void *, Foam);
@@ -1590,4 +1592,3 @@ typedef Bool (*FoamTestFn)(Foam f);
 extern Foam foamFindFirst(FoamTestFn testFn, Foam foam);
 
 #endif /* !_FOAM_H_ */
-

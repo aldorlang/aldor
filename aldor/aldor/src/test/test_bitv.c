@@ -1,9 +1,14 @@
 #include "axlobs.h"
+#include "bitv.h"
 #include "foam.h"
 #include "testlib.h"
 
 local void testBitvToInt();
 local void testBitvCount();
+
+/* XXX: from test_tinfer.c */
+void init(void);
+void fini(void);
 
 void
 bitvTestSuite()

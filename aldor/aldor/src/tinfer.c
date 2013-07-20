@@ -6,13 +6,20 @@
  *
  ***************************************************************************/
 
-#include "axlphase.h"
-
-#include "ti_bup.h"
-#include "ti_tdn.h"
-#include "ti_sef.h"
+#include "debug.h"
+#include "fluid.h"
+#include "format.h"
+#include "opsys.h"
+#include "spesym.h"
+#include "stab.h"
+#include "store.h"
 #include "terror.h"
 #include "tfcond.h"
+#include "ti_bup.h"
+#include "ti_sef.h"
+#include "ti_tdn.h"
+#include "ti_top.h"
+#include "tinfer.h"
 
 /*****************************************************************************
  *
@@ -2013,7 +2020,6 @@ typeInferTFormList(Stab stab, TFormList tfl)
 	}
 }
 
-void tiTfImportCascades(Stab stab, TQualList tq);
 /* Import the exports from each type form. */
 local void
 tiTfImport1(Stab stab, TFormUses tfu)

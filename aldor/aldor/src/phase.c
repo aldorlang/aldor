@@ -6,7 +6,12 @@
  *
  ****************************************************************************/
 
-# include "axlphase.h"
+#include "debug.h"
+#include "include.h"
+#include "opsys.h"
+#include "phase.h"
+#include "store.h"
+#include "util.h"
 
 
 /*****************************************************************************

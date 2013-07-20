@@ -6,7 +6,9 @@
  *
  ****************************************************************************/
 
-# include "of_argsub.h"
+#include "debug.h"
+#include "of_argsub.h"
+#include "store.h"
 
 /*
  * IMPORTANT: this is code "in progress" so don't link it in yet!

@@ -6,7 +6,8 @@
  *
  ****************************************************************************/
 
-# include "axl.h"
+#include "axl.h"
+#include "opsys.h"
 
 int
 main(int argc, String *argv)

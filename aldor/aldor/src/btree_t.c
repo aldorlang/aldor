@@ -12,7 +12,9 @@ void testBtree(void) { }
 
 #else
 
-# include "axlgen.h"
+#include "axlgen.h"
+#include "btree.h"
+#include "opsys.h"
 
 void
 testBtree(void)

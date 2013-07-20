@@ -12,7 +12,8 @@ void testCPort(void) { }
 
 #else
 
-# include "axlgen.h"
+#include "axlgen.h"
+#include "axlport.h"
 
 /*
  * Test the integer byte-ordering macros.

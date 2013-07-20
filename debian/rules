@@ -9,6 +9,9 @@
 # Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
 
+# FIXME: This breaks the Aldor B-tree based GC.
+#export DEB_BUILD_HARDENING=1
+
 %:
 	dh $@				\
 	  --with autotools-dev		\

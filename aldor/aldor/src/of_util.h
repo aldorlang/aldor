@@ -10,6 +10,7 @@
 #define _OF_UTIL_H_
 
 #include "axlobs.h"
+#include "priq.h"
 
 typedef enum {
 	INL_NotInlined,

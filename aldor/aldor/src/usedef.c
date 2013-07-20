@@ -108,8 +108,13 @@
  *  usedefFreeChains
  ****************************************************************************/
 
-# include "usedef.h"
-# include "opttools.h"
+#include "debug.h"
+#include "dflow.h"
+#include "flog.h"
+#include "opttools.h"
+#include "store.h"
+#include "usedef.h"
+#include "util.h"
 
 /****************************************************************************
  * :: Debug

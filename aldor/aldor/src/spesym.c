@@ -6,7 +6,8 @@
  *
  ****************************************************************************/
 
-# include "symbol.h"
+#include "spesym.h"
+#include "symbol.h"
 
 /*
  * Symbols for Foam types.

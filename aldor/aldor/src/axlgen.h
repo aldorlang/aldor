@@ -35,30 +35,4 @@
 # define  OB_SExpr		13
 # define  OB_AXLGEN_LIMIT	14
 
-# include "bigint.h"
-# include "btree.h"
-
-#ifndef FOAM_RTS
-# include "bitv.h"
-# include "buffer.h"
-# include "ccode.h"
-# include "dnf.h"
-# include "file.h"
-# include "fname.h"
-# include "list.h"
-# include "msg.h"
-# include "path.h"
-# include "priq.h"
-# include "sexpr.h"
-# include "srcpos.h"
-# include "strops.h"
-# include "symbol.h"
-# include "xfloat.h"
-#else
-# include "table.h"
-# include "xfloat.h"
-# include "bigint.h"
-#endif
-
-
 #endif /* !_AXLGEN_H_ */

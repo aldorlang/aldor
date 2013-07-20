@@ -9,7 +9,7 @@
 #ifndef _EMIT_H_
 #define _EMIT_H_
 
-# include "axlobs.h"
+#include "axlobs.h"
 
 /*
  * Controlling options.

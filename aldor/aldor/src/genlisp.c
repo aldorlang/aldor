@@ -6,8 +6,8 @@
  *
  ****************************************************************************/
 
-# include "axlphase.h"
-# include "gf_util.h"
+#include "gf_util.h"
+#include "util.h"
 
 /*
  * The following naming conventions are used in this file:

@@ -6,11 +6,16 @@
  *
  ****************************************************************************/
 
+#include "debug.h"
+#include "depdag.h"
+#include "format.h"
+#include "gf_add.h"
+#include "gf_implicit.h"
+#include "gf_prog.h"
 #include "gf_seq.h"
 #include "gf_util.h"
-#include "gf_add.h"
-#include "gf_prog.h"
-#include "gf_implicit.h"
+#include "stab.h"
+#include "store.h"
 
 extern	Bool genfExportDebug;	/* gf_add.c */
 Bool	genfImplicitDebug	= false;

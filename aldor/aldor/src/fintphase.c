@@ -8,13 +8,18 @@
 
 
 #include "axlobs.h"
-#include "syscmd.h"
-#include "foam_c.h"
+#include "cmdline.h"
 #include "fint.h"
+#include "fintphase.h"
+#include "foam_c.h"
+#include "opsys.h"
 #include "output.h"
 #include "phase.h"
-#include "cmdline.h"
-#include "fintphase.h"
+#include "spesym.h"
+#include "stab.h"
+#include "store.h"
+#include "syscmd.h"
+#include "tinfer.h"
 
 /* Declare a new option for the interactive mode. 
  * Example:

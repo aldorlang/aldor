@@ -12,7 +12,8 @@ void testSymbol(void) { }
 
 #else
 
-# include "axlgen.h"
+#include "axlgen.h"
+#include "symbol.h"
 
 void
 testSymbol(void)

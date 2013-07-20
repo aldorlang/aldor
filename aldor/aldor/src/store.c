@@ -51,6 +51,9 @@
  * penalty of a 48K table in static data.
  */
 
+#include "opsys.h"
+#include "store.h"
+
 /*
  * If no other allocator is specified, used the B-Tree based by default.
  */
@@ -58,9 +61,10 @@
 #  define STO_USE_BTREE
 #endif
 
-# include "axlgen0.h"
-# include "memclim.h"
-# include "btree.h"
+#include "axlgen0.h"
+#include "btree.h"
+#include "memclim.h"
+#include "util.h"
 
 /* this will create a debug version of GC that should be safer */
 #undef NDEBUG

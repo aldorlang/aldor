@@ -1,5 +1,7 @@
 #include "axlobs.h"
 #include "forg.h"
+#include "spesym.h"
+#include "store.h"
 
 /*****************************************************************************
  *

@@ -6,7 +6,8 @@
  *
  ****************************************************************************/
 
-# include "axlphase.h"
+#include "phase.h"
+#include "spesym.h"
 
 /*
  * :: abPutUse

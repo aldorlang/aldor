@@ -7,7 +7,12 @@
  ****************************************************************************/
 
 #include "cfgfile.h"
+#include "debug.h"
+#include "file.h"
+#include "opsys.h"
 #include "stdio.h0"
+#include "store.h"
+#include "strops.h"
 
 Bool	cfgDebug		= false;
 

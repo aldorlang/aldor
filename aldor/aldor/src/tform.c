@@ -6,10 +6,18 @@
  *
  ****************************************************************************/
 
-# include "axlobs.h"
-# include "tinfer.h"
-# include "ti_sef.h"
-# include "tfcond.h"
+#include "axlobs.h"
+#include "debug.h"
+#include "fint.h"
+#include "format.h"
+#include "spesym.h"
+#include "stab.h"
+#include "store.h"
+#include "tfcond.h"
+#include "ti_sef.h"
+#include "ti_top.h"
+#include "tinfer.h"
+#include "util.h"
 
 Bool	tfDebug		= false;
 Bool	tfExprDebug	= false;

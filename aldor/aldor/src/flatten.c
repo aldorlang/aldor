@@ -5,8 +5,11 @@
  * Copyright (c) 1990-2007 Aldor Software Organization Ltd (Aldor.org).
  *
  ****************************************************************************/
-# include "axlobs.h"
-# include "flatten.h"
+
+#include "axlobs.h"
+#include "debug.h"
+#include "flatten.h"
+#include "store.h"
 
 /******************************************************************************
  *

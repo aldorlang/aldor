@@ -1,13 +1,16 @@
 #include "axlobs.h"
+#include "cmdline.h"
 #include "foam.h"
-#include "testlib.h"
 #include "of_inlin.h"
+#include "of_jflow.h"
+#include "testlib.h"
 
 local void testJFlow1();
 local void testJFlow2();
 
 local Foam fmTestSideEffectingStmt(FoamTag type, ...);
 local Foam fmTestProgFrCode(Foam locals, Foam seq);
+local int fmTestNLabels(Foam seq);
 
 void
 jflowTest()

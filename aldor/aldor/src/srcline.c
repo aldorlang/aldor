@@ -6,7 +6,8 @@
  *
  ****************************************************************************/
 
-# include "axlobs.h"
+#include "axlobs.h"
+#include "store.h"
 
 SrcLine
 slineNew(SrcPos spos, int indent, String text)

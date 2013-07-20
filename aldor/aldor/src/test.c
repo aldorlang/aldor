@@ -6,7 +6,11 @@
  *
  ****************************************************************************/
 
-# include "axlgen0.h"
+#include "axlgen0.h"
+#include "opsys.h"
+#include "store.h"
+#include "test.h"
+#include "util.h"
 
 
 #ifdef TEST_STAND_ALONE

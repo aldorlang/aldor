@@ -6,7 +6,11 @@
  *
  ****************************************************************************/
 
-# include "axlphase.h"
+#include "bloop.h"
+#include "opsys.h"
+#include "stab.h"
+#include "store.h"
+#include "util.h"
 
 /*
  * :: External state control
