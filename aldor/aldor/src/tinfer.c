@@ -21,6 +21,7 @@
 #include "ti_top.h"
 #include "tinfer.h"
 #include "sefo.h"
+#include "lib.h"
 
 /*****************************************************************************
  *

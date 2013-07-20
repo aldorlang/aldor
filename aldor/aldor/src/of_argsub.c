@@ -11,6 +11,7 @@
 #include "store.h"
 #include "util.h"
 #include "sefo.h"
+#include "lib.h"
 
 /*
  * IMPORTANT: this is code "in progress" so don't link it in yet!

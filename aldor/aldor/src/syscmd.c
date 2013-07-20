@@ -16,6 +16,7 @@
 #include "syscmd.h"
 #include "util.h"
 #include "archive.h"
+#include "lib.h"
 
 /*****************************************************************************
  *

@@ -9,6 +9,7 @@
 #include "axlobs.h"
 #include "spesym.h"
 #include "syme.h"
+#include "lib.h"
 
 
 #define CONTINUED	"..."

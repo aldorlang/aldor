@@ -16,6 +16,7 @@
 #include "ti_tdn.h"
 #include "tinfer.h"
 #include "util.h"
+#include "lib.h"
 
 /*
  * To do:

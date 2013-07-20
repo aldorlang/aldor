@@ -115,7 +115,6 @@ DECLARE_LIST(SymeList);
 # include "tconst.h"
 # include "tqual.h"
 # include "foam.h"
-# include "lib.h"
 # include "comsg.h"
 # include "fbox.h"
 

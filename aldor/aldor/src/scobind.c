@@ -15,6 +15,7 @@
 #include "store.h"
 #include "tfcond.h"
 #include "util.h"
+#include "lib.h"
 
 Bool	scoDebug		= false;
 Bool	scoStabDebug		= false;

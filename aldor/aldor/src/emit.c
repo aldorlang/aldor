@@ -16,6 +16,7 @@
 #include "opsys.h"
 #include "stab.h"
 #include "store.h"
+#include "lib.h"
 
 /****************************************************************************
  *

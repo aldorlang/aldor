@@ -17,6 +17,7 @@
 #include "stab.h"
 #include "store.h"
 #include "sefo.h"
+#include "lib.h"
 
 extern	Bool genfExportDebug;	/* gf_add.c */
 Bool	genfImplicitDebug	= false;

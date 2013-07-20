@@ -12,6 +12,7 @@
 #include "stab.h"
 #include "store.h"
 #include "sefo.h"
+#include "lib.h"
 
 Bool	tqDebug		= false;
 

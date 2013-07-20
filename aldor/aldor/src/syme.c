@@ -18,6 +18,7 @@
 #include "ti_top.h"
 #include "util.h"
 #include "sefo.h"
+#include "lib.h"
 
 Bool	symeDebug		= false;
 Bool	symeFillDebug		= false;

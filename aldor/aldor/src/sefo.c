@@ -18,6 +18,7 @@
 #include "util.h"
 #include "sefo.h"
 #include "archive.h"
+#include "lib.h"
 
 Bool	sstDebug            	= false;
 Bool	sstMarkDebug		= false;

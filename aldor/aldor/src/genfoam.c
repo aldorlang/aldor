@@ -54,6 +54,7 @@
 #include "tform.h"
 #include "util.h"
 #include "fint.h"
+#include "lib.h"
 
 Bool	genfoamDebug		= false;
 Bool	genfoamHashDebug	= false;

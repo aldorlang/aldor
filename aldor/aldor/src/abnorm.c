@@ -100,6 +100,7 @@
 #include "spesym.h"
 #include "stab.h"
 #include "archive.h"
+#include "lib.h"
 
 Bool abnormDebug	= false;
 Bool abnDefineDebug	= false;

@@ -16,6 +16,7 @@
 #include "terror.h"
 #include "util.h"
 #include "sefo.h"
+#include "lib.h"
 
 /* see ti_tdn.c for definitions of following */
 

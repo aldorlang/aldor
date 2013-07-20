@@ -41,6 +41,7 @@
 #include "util.h"
 #include "version.h"
 #include "archive.h"
+#include "lib.h"
 
 String 		compRootDir     = 0;
 Bool   		compIsDebug     = false;

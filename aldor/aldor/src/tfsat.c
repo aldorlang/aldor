@@ -14,6 +14,7 @@
 #include "terror.h"
 #include "ti_top.h"
 #include "sefo.h"
+#include "lib.h"
 
 Bool			tfsDebug 		= false;
 Bool			tfsMultiDebug		= false;
