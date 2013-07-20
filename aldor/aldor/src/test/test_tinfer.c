@@ -18,6 +18,7 @@
 #include "sefo.h"
 #include "ablogic.h"
 #include "comsg.h"
+#include "sexpr.h"
 
 /* XXX: from test_tinfer.c */
 void init(void);

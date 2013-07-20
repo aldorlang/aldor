@@ -23,6 +23,8 @@
 #include "abpretty.h"
 #include "doc.h"
 #include "comsg.h"
+#include "table.h"
+#include "strops.h"
 
 Bool	stabDebug		= false;
 Bool	stabImportDebug		= false;

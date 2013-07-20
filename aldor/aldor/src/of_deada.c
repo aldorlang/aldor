@@ -40,6 +40,7 @@
 #include "optfoam.h"
 #include "opttools.h"
 #include "store.h"
+#include "table.h"
 
 Bool      daDebug;
 

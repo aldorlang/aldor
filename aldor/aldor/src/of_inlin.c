@@ -119,6 +119,8 @@
 #include "tfsat.h"
 #include "absub.h"
 #include "abpretty.h"
+#include "symbol.h"
+#include "strops.h"
 
 
 /*****************************************************************************

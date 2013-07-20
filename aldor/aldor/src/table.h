@@ -30,7 +30,7 @@ struct TblSlot {
 	struct TblSlot  *next;
 };
 
-typedef struct {
+typedef struct table {
 	TblHashFun      hashFun;
 	TblEqFun        eqFun;
 	Pointer         info;           /* Use-specific extra info. */

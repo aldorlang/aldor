@@ -51,6 +51,7 @@
 #include "of_util.h"
 #include "store.h"
 #include "syme.h"
+#include "sexpr.h"
 
 Bool	emergeDebug	= false;
 #define emergeDEBUG(s)	DEBUG_IF(emergeDebug, s)

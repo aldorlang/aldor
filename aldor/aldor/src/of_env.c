@@ -9,6 +9,7 @@
 #include "axlobs.h"
 #include "debug.h"
 #include "store.h"
+#include "sexpr.h"
 
 /*
  * ToDo: Consider splitting environments, deleting "empty" environments, etc.

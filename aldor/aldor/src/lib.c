@@ -24,6 +24,8 @@
 #include "tqual.h"
 #include "doc.h"
 #include "comsg.h"
+#include "strops.h"
+#include "table.h"
 
 Bool	libDebug 	= false;
 Bool	libLazyDebug 	= false;

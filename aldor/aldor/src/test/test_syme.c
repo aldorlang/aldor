@@ -10,6 +10,7 @@
 #include "sefo.h"
 #include "ablogic.h"
 #include "comsg.h"
+#include "symbol.h"
 
 local void testSymeSExpr();
 

@@ -11,6 +11,7 @@
 #include "sefo.h"
 #include "freevar.h"
 #include "absub.h"
+#include "table.h"
 
 Bool	fvDebug		= false;
 #define fvDEBUG(s)	DEBUG_IF(fvDebug, s)

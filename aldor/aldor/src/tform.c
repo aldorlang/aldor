@@ -30,6 +30,7 @@
 #include "ablogic.h"
 #include "abpretty.h"
 #include "comsg.h"
+#include "strops.h"
 
 Bool	tfDebug		= false;
 Bool	tfExprDebug	= false;

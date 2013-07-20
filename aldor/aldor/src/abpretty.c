@@ -14,6 +14,7 @@
 #include "abpretty.h"
 #include "doc.h"
 #include "comsg.h"
+#include "strops.h"
 
 
 #define CONTINUED	"..."

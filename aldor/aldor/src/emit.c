@@ -19,6 +19,7 @@
 #include "lib.h"
 #include "comsg.h"
 #include "ccode.h"
+#include "sexpr.h"
 
 /****************************************************************************
  *

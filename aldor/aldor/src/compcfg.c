@@ -14,6 +14,7 @@
 #include "file.h"
 #include "opsys.h"
 #include "store.h"
+#include "strops.h"
 
 /****************************************************************************
  *

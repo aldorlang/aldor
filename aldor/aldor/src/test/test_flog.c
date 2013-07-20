@@ -5,6 +5,7 @@
 #include "of_inlin.h"
 #include "testlib.h"
 #include "syme.h"
+#include "strops.h"
 
 local void testBBCopy();
 

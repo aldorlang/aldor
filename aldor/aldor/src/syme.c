@@ -24,6 +24,9 @@
 #include "abpretty.h"
 #include "doc.h"
 #include "comsg.h"
+#include "strops.h"
+#include "table.h"
+#include "sexpr.h"
 
 Bool	symeDebug		= false;
 Bool	symeFillDebug		= false;

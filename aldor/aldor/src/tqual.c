@@ -16,6 +16,7 @@
 #include "tqual.h"
 #include "abpretty.h"
 #include "comsg.h"
+#include "strops.h"
 
 Bool	tqDebug		= false;
 

@@ -27,6 +27,8 @@
 #include "ablogic.h"
 #include "abpretty.h"
 #include "comsg.h"
+#include "strops.h"
+#include "table.h"
 
 #if EDIT_1_0_n1_06
 local Foam         gen0AddBody1           (AbSyn, Stab, AbSyn);

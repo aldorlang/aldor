@@ -16,6 +16,7 @@
 #include "fint.h"
 #include "abpretty.h"
 #include "path.h"
+#include "strops.h"
 
 /****************************************************************************
  *

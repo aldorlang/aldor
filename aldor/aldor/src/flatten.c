@@ -11,6 +11,7 @@
 #include "flatten.h"
 #include "store.h"
 #include "syme.h"
+#include "strops.h"
 
 /******************************************************************************
  *

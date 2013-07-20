@@ -14,6 +14,8 @@
 #include "fint.h"
 #include "srcline.h"
 #include "comsg.h"
+#include "strops.h"
+#include "symbol.h"
 
 
 /******************************************************************************

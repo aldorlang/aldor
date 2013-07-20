@@ -36,6 +36,8 @@
 #include "util.h"
 #include "xfloat.h"
 #include "comsg.h"
+#include "symbol.h"
+#include "sexpr.h"
 
 #define	 FOAM_NARY	(-1)	/* Identifies tags with N-ary data argument. */
 

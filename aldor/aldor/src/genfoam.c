@@ -59,6 +59,7 @@
 #include "ablogic.h"
 #include "abpretty.h"
 #include "comsg.h"
+#include "strops.h"
 
 Bool	genfoamDebug		= false;
 Bool	genfoamHashDebug	= false;

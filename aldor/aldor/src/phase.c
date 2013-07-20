@@ -13,6 +13,8 @@
 #include "store.h"
 #include "util.h"
 #include "lib.h"
+#include "strops.h"
+#include "symbol.h"
 
 
 /*****************************************************************************

@@ -16,6 +16,8 @@
 #include "archive.h"
 #include "lib.h"
 #include "comsg.h"
+#include "strops.h"
+#include "table.h"
 
 Bool	arDebug		= false;
 #define arDEBUG(s)	DEBUG_IF(arDebug, s)

@@ -19,6 +19,7 @@
 #include "util.h"
 #include "syme.h"
 #include "comsg.h"
+#include "bigint.h"
 
 
 /*

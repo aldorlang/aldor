@@ -25,6 +25,8 @@
 #include "ablogic.h"
 #include "abpretty.h"
 #include "comsg.h"
+#include "strops.h"
+#include "table.h"
 
 
 /*****************************************************************************

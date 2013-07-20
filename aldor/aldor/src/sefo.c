@@ -24,6 +24,8 @@
 #include "freevar.h"
 #include "absub.h"
 #include "abpretty.h"
+#include "strops.h"
+#include "table.h"
 
 Bool	sstDebug            	= false;
 Bool	sstMarkDebug		= false;

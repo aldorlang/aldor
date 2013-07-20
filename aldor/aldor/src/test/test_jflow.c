@@ -5,6 +5,7 @@
 #include "of_jflow.h"
 #include "testlib.h"
 #include "syme.h"
+#include "strops.h"
 
 local void testJFlow1();
 local void testJFlow2();

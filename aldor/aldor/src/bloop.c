@@ -9,12 +9,14 @@
 #include "bloop.h"
 #include "opsys.h"
 #include "stab.h"
+#include "strops.h"
 #include "store.h"
 #include "util.h"
 #include "tposs.h"
 #include "abpretty.h"
 #include "doc.h"
 #include "comsg.h"
+#include "sexpr.h"
 
 /*
  * :: External state control

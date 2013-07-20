@@ -22,6 +22,9 @@
 #include "ablogic.h"
 #include "abpretty.h"
 #include "comsg.h"
+#include "table.h"
+#include "strops.h"
+#include "symbol.h"
 
 extern	Bool genfExportDebug;	/* gf_add.c */
 Bool	genfImplicitDebug	= false;

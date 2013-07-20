@@ -19,6 +19,9 @@
 #include "doc.h"
 #include "srcline.h"
 #include "ccode.h"
+#include "bigint.h"
+#include "table.h"
+#include "sexpr.h"
 
 /*
  * Initialize specific list parameterizations.

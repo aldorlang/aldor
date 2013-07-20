@@ -21,6 +21,9 @@
 #include "lib.h"
 #include "tfsat.h"
 #include "tform.h"
+#include "symbol.h"
+#include "strops.h"
+#include "table.h"
 
 /*****************************************************************************
  *

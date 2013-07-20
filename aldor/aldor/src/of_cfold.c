@@ -14,6 +14,9 @@
 #include "of_util.h"
 #include "store.h"
 #include "syme.h"
+#include "bigint.h"
+#include "strops.h"
+#include "symbol.h"
 
 Bool	cfoldDebug	= false;
 #define cfoldDEBUG(s)	DEBUG_IF(cfoldDebug, s)

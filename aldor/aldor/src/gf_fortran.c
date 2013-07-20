@@ -43,6 +43,7 @@
 #include "util.h"
 #include "sefo.h"
 #include "comsg.h"
+#include "strops.h"
 
 
 extern Bool	genfoamDebug;

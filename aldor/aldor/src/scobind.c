@@ -21,6 +21,8 @@
 #include "abpretty.h"
 #include "doc.h"
 #include "comsg.h"
+#include "strops.h"
+#include "table.h"
 
 Bool	scoDebug		= false;
 Bool	scoStabDebug		= false;

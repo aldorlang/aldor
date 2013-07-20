@@ -15,6 +15,9 @@
 #include "lib.h"
 #include "absub.h"
 #include "abpretty.h"
+#include "symbol.h"
+#include "bigint.h"
+#include "table.h"
 
 Bool	absDebug 	= false;
 #define absDEBUG(s)	DEBUG_IF(absDebug, s)

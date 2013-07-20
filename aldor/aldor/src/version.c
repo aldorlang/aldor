@@ -10,6 +10,7 @@
 #include "opsys.h"
 #include "version.h"
 #include "comsg.h"
+#include "strops.h"
 
 /*
  * The version of this program.

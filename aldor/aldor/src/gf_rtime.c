@@ -11,6 +11,7 @@
 #include "gf_util.h"
 #include "of_inlin.h"
 #include "store.h"
+#include "strops.h"
 /* ToDo:
  * Allow 'runtime' calls that are not in runtime.as
  */

@@ -2,6 +2,7 @@
 #include "abquick.h"
 #include "format.h"
 #include "testlib.h"
+#include "strops.h"
 
 local void init(void);
 local void fini(void);

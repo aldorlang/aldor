@@ -24,6 +24,7 @@
 #include "ablogic.h"
 #include "abpretty.h"
 #include "comsg.h"
+#include "strops.h"
 
 /* Declare a new option for the interactive mode. 
  * Example:

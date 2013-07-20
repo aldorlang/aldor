@@ -17,6 +17,7 @@
 #include "tposs.h"
 #include "doc.h"
 #include "comsg.h"
+#include "sexpr.h"
 
 Bool	abDebug		= false;
 #define abDEBUG(s)	DEBUG_IF(abDebug, s)

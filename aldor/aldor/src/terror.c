@@ -23,6 +23,8 @@
 #include "ablogic.h"
 #include "abpretty.h"
 #include "comsg.h"
+#include "strops.h"
+#include "table.h"
 
 extern void		tiBottomUp		(Stab, AbSyn, TForm);
 extern void		tiTopDown		(Stab, AbSyn, TForm);

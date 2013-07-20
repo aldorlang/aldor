@@ -12,6 +12,8 @@
 #include "util.h"
 #include "sefo.h"
 #include "lib.h"
+#include "symbol.h"
+#include "strops.h"
 
 /*
  * IMPORTANT: this is code "in progress" so don't link it in yet!
