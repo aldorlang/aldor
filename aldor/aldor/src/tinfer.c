@@ -23,6 +23,7 @@
 #include "sefo.h"
 #include "lib.h"
 #include "tqual.h"
+#include "tconst.h"
 
 /*****************************************************************************
  *

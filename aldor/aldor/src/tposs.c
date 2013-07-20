@@ -19,6 +19,7 @@
 #include "store.h"
 #include "terror.h"
 #include "syme.h"
+#include "tconst.h"
 
 /*
  *   Each node is given a set of possible meanings.

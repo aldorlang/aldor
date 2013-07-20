@@ -15,6 +15,7 @@
 #include "ti_top.h"
 #include "sefo.h"
 #include "lib.h"
+#include "tconst.h"
 
 Bool			tfsDebug 		= false;
 Bool			tfsMultiDebug		= false;
