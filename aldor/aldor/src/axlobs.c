@@ -17,6 +17,7 @@
 #include "tconst.h"
 #include "tposs.h"
 #include "doc.h"
+#include "srcline.h"
 
 /*
  * Initialize specific list parameterizations.

@@ -44,6 +44,7 @@
 #include "lib.h"
 #include "ablogic.h"
 #include "abpretty.h"
+#include "srcline.h"
 
 String 		compRootDir     = 0;
 Bool   		compIsDebug     = false;

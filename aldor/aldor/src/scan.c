@@ -12,6 +12,7 @@
 #include "scan.h"
 #include "util.h"
 #include "fint.h"
+#include "srcline.h"
 
 
 /******************************************************************************

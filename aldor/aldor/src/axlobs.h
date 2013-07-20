@@ -101,8 +101,6 @@ DECLARE_LIST(SymeList);
  * Include files which give meaning to the above declarations.
  */
 # include "comsg.h"
-# include "srcline.h"
-# include "token.h"
 # include "absyn.h"
 # include "foam.h"
 # include "comsg.h"

@@ -9,7 +9,8 @@
 #ifndef _ABSYN_H_
 #define _ABSYN_H_
 
-# include "axlobs.h"
+#include "axlobs.h"
+#include "token.h"
 
 /******************************************************************************
  *

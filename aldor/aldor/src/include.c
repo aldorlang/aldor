@@ -32,6 +32,7 @@
 #include "syscmd.h"
 #include "util.h"
 #include "path.h"
+#include "srcline.h"
 
 /******************************************************************************
  *
