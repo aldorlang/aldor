@@ -16,6 +16,7 @@
 #include "tinfer.h"
 #include "abuse.h"
 #include "syme.h"
+#include "tform.h"
 
 
 local Foam gen0RefGetter(Foam, AbSyn, TForm);

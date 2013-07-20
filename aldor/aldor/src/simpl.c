@@ -15,6 +15,7 @@
 #include "util.h"
 #include "sefo.h"
 #include "lib.h"
+#include "tform.h"
 
 Bool implDebug = false;
 

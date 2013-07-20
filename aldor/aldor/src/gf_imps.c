@@ -20,6 +20,7 @@
 #include "sefo.h"
 #include "lib.h"
 #include "tfsat.h"
+#include "tform.h"
 
 /*****************************************************************************
  *

@@ -10,6 +10,7 @@
 #include "spesym.h"
 #include "syme.h"
 #include "lib.h"
+#include "tform.h"
 
 
 #define CONTINUED	"..."

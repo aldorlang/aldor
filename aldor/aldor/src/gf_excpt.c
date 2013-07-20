@@ -14,6 +14,7 @@
 #include "gf_rtime.h"
 #include "gf_excpt.h"
 #include "util.h"
+#include "tform.h"
 
 local Foam	gen0TryExprPart	(AbSyn);
 
