@@ -9,6 +9,8 @@
 #ifndef _COMPOPT_H_
 #define _COMPOPT_H_
  
+#include "optcfg.h"
+
 /*
  * Internal (both to RTS and compiler) optimizations.
  *

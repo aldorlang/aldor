@@ -15,8 +15,4 @@
 
 # include "editlevels.h"
 
-
-
-# include "compopt.h"
-
 #endif /* !_AXLGEN0_H_ */
