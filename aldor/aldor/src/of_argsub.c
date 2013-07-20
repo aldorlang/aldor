@@ -175,7 +175,7 @@ argsubUnit(Foam unit)
 	if (agsNumConsts)
 	{
 		agsDEBUG({(void)fprintf(dbOut, "(%d new constants)\n",
-				agsNumConsts);});
+				(int)agsNumConsts);});
 	}
 
 
@@ -643,7 +643,7 @@ agsDoOCall(Foam foam)
 	agsDEBUG({
 		for (i = 0; i < rargc; i++)
 		{
-			(void)fprintf(dbOut, "     [%d] = ", i);
+			(void)fprintf(dbOut, "     [%d] = ", (int)i);
 			foamPrintDb(sigma[i]);
 		}
 	});
