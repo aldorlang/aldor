@@ -15,6 +15,7 @@
 #include "stab.h"
 #include "syscmd.h"
 #include "util.h"
+#include "archive.h"
 
 /*****************************************************************************
  *

@@ -19,6 +19,7 @@
 #include "tinfer.h"
 #include "util.h"
 #include "sefo.h"
+#include "archive.h"
 
 Bool	tfDebug		= false;
 Bool	tfExprDebug	= false;

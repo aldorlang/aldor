@@ -13,6 +13,7 @@
 #include "store.h"
 #include "util.h"
 #include "syme.h"
+#include "archive.h"
 
 Bool	arDebug		= false;
 #define arDEBUG(s)	DEBUG_IF(arDebug, s)

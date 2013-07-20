@@ -40,6 +40,7 @@
 #include "tinfer.h"
 #include "util.h"
 #include "version.h"
+#include "archive.h"
 
 String 		compRootDir     = 0;
 Bool   		compIsDebug     = false;

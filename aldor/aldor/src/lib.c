@@ -19,6 +19,7 @@
 #include "store.h"
 #include "util.h"
 #include "sefo.h"
+#include "archive.h"
 
 Bool	libDebug 	= false;
 Bool	libLazyDebug 	= false;
