@@ -9,6 +9,7 @@
 #ifndef _COMPOPT_H_
 #define _COMPOPT_H_
  
+#include "cport.h"
 #include "optcfg.h"
 
 /*
