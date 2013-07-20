@@ -5,7 +5,7 @@ Maintainer: Pippijn van Steenhoven <pippijn@xinutec.org>
 Build-Depends:
  debhelper (>= 8.0.0),
  autotools-dev,
- libgmp3-dev,
+ libgmp-dev | libgmp3-dev,
  openjdk-7-jdk | openjdk-6-jdk | java-sdk,
  bison | byacc,
  flex
