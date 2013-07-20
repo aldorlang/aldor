@@ -14,6 +14,7 @@
 #include "store.h"
 #include "util.h"
 #include "syme.h"
+#include "tposs.h"
 
 Bool	abDebug		= false;
 #define abDEBUG(s)	DEBUG_IF(abDebug, s)

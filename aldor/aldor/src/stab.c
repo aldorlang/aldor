@@ -17,6 +17,7 @@
 #include "sefo.h"
 #include "lib.h"
 #include "tqual.h"
+#include "tposs.h"
 
 Bool	stabDebug		= false;
 Bool	stabImportDebug		= false;

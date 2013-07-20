@@ -11,6 +11,7 @@
 #include "stab.h"
 #include "store.h"
 #include "util.h"
+#include "tposs.h"
 
 /*
  * :: External state control

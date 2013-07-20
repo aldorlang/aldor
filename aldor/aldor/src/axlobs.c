@@ -15,6 +15,7 @@
 #include "sefo.h"
 #include "tqual.h"
 #include "tconst.h"
+#include "tposs.h"
 
 /*
  * Initialize specific list parameterizations.

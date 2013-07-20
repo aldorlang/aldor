@@ -16,6 +16,7 @@
 #include "sefo.h"
 #include "lib.h"
 #include "tconst.h"
+#include "tposs.h"
 
 Bool			tfsDebug 		= false;
 Bool			tfsMultiDebug		= false;

@@ -10,6 +10,7 @@
 #include "ti_tdn.h"
 #include "tinfer.h"
 #include "sefo.h"
+#include "tposs.h"
 
 local void testTiBupCollect1();
 local void testTiBupCollect2();

@@ -23,6 +23,7 @@
 #include "lib.h"
 #include "tqual.h"
 #include "tconst.h"
+#include "tposs.h"
 
 Bool	tfDebug		= false;
 Bool	tfExprDebug	= false;

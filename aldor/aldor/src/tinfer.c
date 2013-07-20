@@ -24,6 +24,7 @@
 #include "lib.h"
 #include "tqual.h"
 #include "tconst.h"
+#include "tposs.h"
 
 /*****************************************************************************
  *

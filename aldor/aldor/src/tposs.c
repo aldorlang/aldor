@@ -20,6 +20,7 @@
 #include "terror.h"
 #include "syme.h"
 #include "tconst.h"
+#include "tposs.h"
 
 /*
  *   Each node is given a set of possible meanings.

@@ -111,7 +111,6 @@ DECLARE_LIST(SymeList);
 # include "freevar.h"
 # include "tform.h"
 # include "tfsat.h"
-# include "tposs.h"
 # include "foam.h"
 # include "comsg.h"
 # include "fbox.h"

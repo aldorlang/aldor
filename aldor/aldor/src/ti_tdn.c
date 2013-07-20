@@ -17,6 +17,7 @@
 #include "tinfer.h"
 #include "util.h"
 #include "lib.h"
+#include "tposs.h"
 
 /*
  * To do:

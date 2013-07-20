@@ -16,6 +16,7 @@
 #include "sefo.h"
 #include "lib.h"
 #include "tconst.h"
+#include "tposs.h"
 
 extern void		tiBottomUp		(Stab, AbSyn, TForm);
 extern void		tiTopDown		(Stab, AbSyn, TForm);

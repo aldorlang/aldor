@@ -17,6 +17,7 @@
 #include "util.h"
 #include "sefo.h"
 #include "lib.h"
+#include "tposs.h"
 
 /* see ti_tdn.c for definitions of following */
 

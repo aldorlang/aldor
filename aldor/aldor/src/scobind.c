@@ -17,6 +17,7 @@
 #include "util.h"
 #include "lib.h"
 #include "tqual.h"
+#include "tposs.h"
 
 Bool	scoDebug		= false;
 Bool	scoStabDebug		= false;
