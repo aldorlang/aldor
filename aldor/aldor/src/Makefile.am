@@ -230,9 +230,9 @@ libphase_a_SOURCES =	\
 	terror.c	\
 	ti_bup.c	\
 	ti_decl.c	\
-	tinfer.c	\
 	ti_sef.c	\
 	ti_tdn.c	\
+	tinfer.c	\
 	usedef.c
 
 #libphase_a_LIBADD = libstruct.a libgen.a libport.a
