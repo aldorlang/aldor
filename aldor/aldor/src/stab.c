@@ -16,6 +16,7 @@
 #include "store.h"
 #include "sefo.h"
 #include "lib.h"
+#include "tqual.h"
 
 Bool	stabDebug		= false;
 Bool	stabImportDebug		= false;

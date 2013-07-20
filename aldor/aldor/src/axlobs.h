@@ -113,7 +113,6 @@ DECLARE_LIST(SymeList);
 # include "tfsat.h"
 # include "tposs.h"
 # include "tconst.h"
-# include "tqual.h"
 # include "foam.h"
 # include "comsg.h"
 # include "fbox.h"

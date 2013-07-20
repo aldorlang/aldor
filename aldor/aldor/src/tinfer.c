@@ -22,6 +22,7 @@
 #include "tinfer.h"
 #include "sefo.h"
 #include "lib.h"
+#include "tqual.h"
 
 /*****************************************************************************
  *

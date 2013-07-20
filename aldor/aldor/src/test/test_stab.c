@@ -8,6 +8,7 @@
 #include "testlib.h"
 #include "tinfer.h"
 #include "tinfer.h"
+#include "tqual.h"
 
 local void testStabIsChild();
 

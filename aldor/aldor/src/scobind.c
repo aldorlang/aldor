@@ -16,6 +16,7 @@
 #include "tfcond.h"
 #include "util.h"
 #include "lib.h"
+#include "tqual.h"
 
 Bool	scoDebug		= false;
 Bool	scoStabDebug		= false;

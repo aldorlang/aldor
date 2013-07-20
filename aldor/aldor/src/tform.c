@@ -21,6 +21,7 @@
 #include "sefo.h"
 #include "archive.h"
 #include "lib.h"
+#include "tqual.h"
 
 Bool	tfDebug		= false;
 Bool	tfExprDebug	= false;

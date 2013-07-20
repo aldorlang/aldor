@@ -13,6 +13,7 @@
 #include "store.h"
 #include "util.h"
 #include "sefo.h"
+#include "tqual.h"
 
 /*
  * Initialize specific list parameterizations.
