@@ -41,7 +41,9 @@ libfoam_a_SOURCES =			\
 # :: GMP for bigint
 #############################################################################
 
+if GMP
 lib_LIBRARIES += libfoam-gmp.a
+endif
 
 # TODO: get rid of bigint.c in here
 libfoam_gmp_a_SOURCES =			\

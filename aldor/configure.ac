@@ -15,6 +15,12 @@ AM_SILENT_RULES([yes])
 AC_PROG_LEX
 AC_PROG_YACC
 
+# Check for GMP
+AC_CHECK_HEADER([gmp.h],
+                [AM_CONDITIONAL(GMP, true)],
+                [AM_CONDITIONAL(GMP, false)])
+
+# Options
 AC_ARG_ENABLE([libraries],
               [AS_HELP_STRING([--disable-libraries],
                               [Do not build Aldor libraries])],
