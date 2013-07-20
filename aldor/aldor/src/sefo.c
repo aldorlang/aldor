@@ -21,6 +21,7 @@
 #include "lib.h"
 #include "tqual.h"
 #include "tfsat.h"
+#include "freevar.h"
 
 Bool	sstDebug            	= false;
 Bool	sstMarkDebug		= false;

@@ -18,6 +18,7 @@
 #include "tconst.h"
 #include "tposs.h"
 #include "tfsat.h"
+#include "freevar.h"
 
 extern void		tiBottomUp		(Stab, AbSyn, TForm);
 extern void		tiTopDown		(Stab, AbSyn, TForm);

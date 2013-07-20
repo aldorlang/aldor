@@ -108,7 +108,6 @@ DECLARE_LIST(SymeList);
 # include "abpretty.h"
 # include "ablogic.h"
 # include "absub.h"
-# include "freevar.h"
 # include "foam.h"
 # include "comsg.h"
 # include "fbox.h"
