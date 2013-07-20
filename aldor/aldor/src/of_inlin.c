@@ -117,6 +117,7 @@
 #include "lib.h"
 #include "tqual.h"
 #include "tfsat.h"
+#include "absub.h"
 
 
 /*****************************************************************************

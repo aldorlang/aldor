@@ -22,6 +22,7 @@
 #include "tqual.h"
 #include "tfsat.h"
 #include "freevar.h"
+#include "absub.h"
 
 Bool	sstDebug            	= false;
 Bool	sstMarkDebug		= false;

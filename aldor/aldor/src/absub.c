@@ -13,6 +13,7 @@
 #include "store.h"
 #include "sefo.h"
 #include "lib.h"
+#include "absub.h"
 
 Bool	absDebug 	= false;
 #define absDEBUG(s)	DEBUG_IF(absDebug, s)

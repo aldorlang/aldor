@@ -21,6 +21,7 @@
 #include "lib.h"
 #include "tposs.h"
 #include "tfsat.h"
+#include "absub.h"
 
 
 /*****************************************************************************
