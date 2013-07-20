@@ -18,7 +18,6 @@
 
 #include "axlgen.h"
 #include "ccode.h"
-#include "comsgdb.h"
 #include "list.h"
 #include "sexpr.h"
 

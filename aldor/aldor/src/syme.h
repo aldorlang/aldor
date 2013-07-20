@@ -9,8 +9,9 @@
 #ifndef _SYME_H_
 #define _SYME_H_
 
-# include "axlobs.h"
-# include "forg.h"
+#include "axlobs.h"
+#include "forg.h"
+#include "msg.h"
 
 /******************************************************************************
  *
