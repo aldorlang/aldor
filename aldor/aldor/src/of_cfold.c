@@ -13,6 +13,7 @@
 #include "of_cfold.h"
 #include "of_util.h"
 #include "store.h"
+#include "syme.h"
 
 Bool	cfoldDebug	= false;
 #define cfoldDEBUG(s)	DEBUG_IF(cfoldDebug, s)

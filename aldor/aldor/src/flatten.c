@@ -10,6 +10,7 @@
 #include "debug.h"
 #include "flatten.h"
 #include "store.h"
+#include "syme.h"
 
 /******************************************************************************
  *

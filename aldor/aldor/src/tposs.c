@@ -18,6 +18,7 @@
 #include "spesym.h"
 #include "store.h"
 #include "terror.h"
+#include "syme.h"
 
 /*
  *   Each node is given a set of possible meanings.

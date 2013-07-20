@@ -54,6 +54,7 @@
 #include "of_util.h"
 #include "opttools.h"
 #include "optfoam.h"
+#include "syme.h"
 
 Bool      kpDebug;
 

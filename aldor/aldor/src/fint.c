@@ -20,6 +20,7 @@
 #include "syscmd.h"
 #include "util.h"
 #include "xfloat.h"
+#include "syme.h"
 
 
 

@@ -17,6 +17,7 @@
 #include "optfoam.h"
 #include "store.h"
 #include "util.h"
+#include "syme.h"
 
 
 /*

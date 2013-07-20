@@ -12,6 +12,7 @@
 #include "opsys.h"
 #include "store.h"
 #include "util.h"
+#include "syme.h"
 
 Bool	arDebug		= false;
 #define arDEBUG(s)	DEBUG_IF(arDebug, s)

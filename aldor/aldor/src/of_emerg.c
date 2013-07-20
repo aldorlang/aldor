@@ -50,6 +50,7 @@
 #include "of_deadv.h"
 #include "of_util.h"
 #include "store.h"
+#include "syme.h"
 
 Bool	emergeDebug	= false;
 #define emergeDEBUG(s)	DEBUG_IF(emergeDebug, s)

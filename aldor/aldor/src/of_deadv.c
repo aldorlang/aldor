@@ -34,6 +34,7 @@
 #include "optfoam.h"
 #include "store.h"
 #include "fint.h"
+#include "syme.h"
 
 Bool	dvDebug		= false;
 

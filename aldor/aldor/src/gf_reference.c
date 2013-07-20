@@ -6,15 +6,16 @@
  *
  ****************************************************************************/
 
-# include "genfoam.h"
-# include "gf_util.h"
-# include "gf_prog.h"
-# include "gf_rtime.h"
-# include "gf_reference.h"
-# include "of_inlin.h"
-# include "of_util.h"
-# include "tinfer.h"
-# include "abuse.h"
+#include "genfoam.h"
+#include "gf_util.h"
+#include "gf_prog.h"
+#include "gf_rtime.h"
+#include "gf_reference.h"
+#include "of_inlin.h"
+#include "of_util.h"
+#include "tinfer.h"
+#include "abuse.h"
+#include "syme.h"
 
 
 local Foam gen0RefGetter(Foam, AbSyn, TForm);

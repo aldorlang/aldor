@@ -4,6 +4,7 @@
 #include "foam.h"
 #include "of_inlin.h"
 #include "testlib.h"
+#include "syme.h"
 
 local void testBBCopy();
 

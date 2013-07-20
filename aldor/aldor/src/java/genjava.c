@@ -5,6 +5,7 @@
 #include "javacode.h"
 #include "store.h"
 #include "util.h"
+#include "syme.h"
 
 /*
  * Implement as the following...

@@ -33,6 +33,7 @@
 #include "flog.h"
 #include "of_rrfmt.h"
 #include "util.h"
+#include "syme.h"
 
 /*****************************************************************************
  *

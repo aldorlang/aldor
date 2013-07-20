@@ -13,6 +13,7 @@
 #include "spesym.h"
 #include "store.h"
 #include "util.h"
+#include "syme.h"
 
 Bool	abDebug		= false;
 #define abDEBUG(s)	DEBUG_IF(abDebug, s)
