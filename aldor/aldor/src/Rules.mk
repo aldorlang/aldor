@@ -175,6 +175,7 @@ aldor_HEADERS =	\
 	foam_c.h	\
 	foamopt.h	\
 	optcfg.h	\
+	platform.h	\
 	aldor.conf	\
 	basic.typ	\
 	sample.terminfo
