@@ -49,8 +49,8 @@ typedef Enum(symeTag)	SymeTag;
 
 struct symeInfo {
 	SymeTag		kind;
-	String		str;
-	String		descr;
+	CString		str;
+	CString		descr;
 	Msg		msgId; 		
 };
 

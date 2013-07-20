@@ -19,8 +19,8 @@
 extern String           strOfChars      (char *);
 #define                 strChars(s)     (s)
 
-extern Length           strLength       (String);
-extern Length		strUntabLength	(String, Length tabstop);
+extern Length           strLength       (CString);
+extern Length		strUntabLength	(CString, Length tabstop);
 	
 extern String           strCopy         (CString);
 extern String           strnCopy        (CString s, Length n);
