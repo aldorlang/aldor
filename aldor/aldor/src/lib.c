@@ -22,6 +22,7 @@
 #include "archive.h"
 #include "lib.h"
 #include "tqual.h"
+#include "doc.h"
 
 Bool	libDebug 	= false;
 Bool	libLazyDebug 	= false;

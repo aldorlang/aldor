@@ -21,6 +21,7 @@
 #include "tfsat.h"
 #include "ablogic.h"
 #include "abpretty.h"
+#include "doc.h"
 
 Bool	stabDebug		= false;
 Bool	stabImportDebug		= false;

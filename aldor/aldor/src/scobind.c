@@ -19,6 +19,7 @@
 #include "tqual.h"
 #include "tposs.h"
 #include "abpretty.h"
+#include "doc.h"
 
 Bool	scoDebug		= false;
 Bool	scoStabDebug		= false;

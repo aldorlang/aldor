@@ -31,6 +31,7 @@
 #include "opsys.h"
 #include "syscmd.h"
 #include "util.h"
+#include "path.h"
 
 /******************************************************************************
  *

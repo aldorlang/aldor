@@ -102,6 +102,7 @@
 #include "archive.h"
 #include "lib.h"
 #include "abpretty.h"
+#include "doc.h"
 
 Bool abnormDebug	= false;
 Bool abnDefineDebug	= false;

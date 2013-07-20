@@ -2,6 +2,7 @@
 #include "foam.h"
 #include "testlib.h"
 #include "ostream.h"
+#include "path.h"
 
 void testBuffer(void);
 void testBuffer2(void);

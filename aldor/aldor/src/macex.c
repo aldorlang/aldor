@@ -23,6 +23,7 @@
 #include "format.h"
 #include "phase.h"
 #include "store.h"
+#include "doc.h"
  
 # undef MacDeclArgs
 

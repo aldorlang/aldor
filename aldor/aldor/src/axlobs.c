@@ -16,6 +16,7 @@
 #include "tqual.h"
 #include "tconst.h"
 #include "tposs.h"
+#include "doc.h"
 
 /*
  * Initialize specific list parameterizations.

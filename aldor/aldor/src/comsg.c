@@ -15,6 +15,7 @@
 #include "util.h"
 #include "fint.h"
 #include "abpretty.h"
+#include "path.h"
 
 /****************************************************************************
  *

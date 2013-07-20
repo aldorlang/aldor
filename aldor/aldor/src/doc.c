@@ -9,6 +9,7 @@
 #include "axlobs.h"
 #include "debug.h"
 #include "store.h"
+#include "doc.h"
 
 CREATE_LIST(Doc);
 

@@ -12,6 +12,7 @@
 #include "lib.h"
 #include "tform.h"
 #include "abpretty.h"
+#include "doc.h"
 
 
 #define CONTINUED	"..."

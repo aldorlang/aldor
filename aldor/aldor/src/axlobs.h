@@ -103,7 +103,6 @@ DECLARE_LIST(SymeList);
 # include "comsg.h"
 # include "srcline.h"
 # include "token.h"
-# include "doc.h"
 # include "absyn.h"
 # include "foam.h"
 # include "comsg.h"

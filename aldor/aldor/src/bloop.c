@@ -13,6 +13,7 @@
 #include "util.h"
 #include "tposs.h"
 #include "abpretty.h"
+#include "doc.h"
 
 /*
  * :: External state control
