@@ -1,3 +1,9 @@
+aldor (1.2.0~20130720) precise; urgency=low
+
+  * Prefer libgmp-dev and use libgmp3-dev if that doesn't exist.
+
+ -- Pippijn van Steenhoven <pippijn@xinutec.org>  Sat, 20 Jul 2013 17:32:08 +0200
+
 aldor (1.2.0~20130718) precise; urgency=low
 
   * Initial release (Closes: #9999)
