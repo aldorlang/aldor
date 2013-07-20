@@ -14,6 +14,7 @@
 #include "spesym.h"
 #include "stab.h"
 #include "store.h"
+#include "sefo.h"
 
 Bool	stabDebug		= false;
 Bool	stabImportDebug		= false;

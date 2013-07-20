@@ -13,6 +13,7 @@
 #include "store.h"
 #include "terror.h"
 #include "util.h"
+#include "sefo.h"
 
 extern void		tiBottomUp		(Stab, AbSyn, TForm);
 extern void		tiTopDown		(Stab, AbSyn, TForm);

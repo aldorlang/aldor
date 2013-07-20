@@ -12,6 +12,7 @@
 #include "opsys.h"
 #include "store.h"
 #include "util.h"
+#include "sefo.h"
 
 /*
  * Initialize specific list parameterizations.

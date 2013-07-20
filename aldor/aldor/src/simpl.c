@@ -13,6 +13,7 @@
 #include "simpl.h"
 #include "store.h"
 #include "util.h"
+#include "sefo.h"
 
 Bool implDebug = false;
 

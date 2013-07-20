@@ -8,6 +8,7 @@
 
 #include "axlobs.h"
 #include "store.h"
+#include "sefo.h"
 
 Bool	fvDebug		= false;
 #define fvDEBUG(s)	DEBUG_IF(fvDebug, s)

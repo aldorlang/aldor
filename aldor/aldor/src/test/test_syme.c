@@ -7,6 +7,7 @@
 #include "stab.h"
 #include "testlib.h"
 #include "tinfer.h"
+#include "sefo.h"
 
 local void testSymeSExpr();
 

@@ -18,6 +18,7 @@
 #include "stab.h"
 #include "store.h"
 #include "util.h"
+#include "sefo.h"
 
 Bool	libDebug 	= false;
 Bool	libLazyDebug 	= false;

@@ -10,6 +10,7 @@
 #include "of_argsub.h"
 #include "store.h"
 #include "util.h"
+#include "sefo.h"
 
 /*
  * IMPORTANT: this is code "in progress" so don't link it in yet!

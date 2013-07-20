@@ -17,6 +17,7 @@
 #include "store.h"
 #include "ti_top.h"
 #include "util.h"
+#include "sefo.h"
 
 Bool	symeDebug		= false;
 Bool	symeFillDebug		= false;

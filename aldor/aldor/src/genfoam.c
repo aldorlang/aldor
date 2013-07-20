@@ -46,6 +46,7 @@
 #include "optfoam.h"
 #include "opttools.h"
 #include "scobind.h"
+#include "sefo.h"
 #include "simpl.h"
 #include "spesym.h"
 #include "stab.h"

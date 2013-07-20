@@ -11,6 +11,7 @@
 #include "format.h"
 #include "stab.h"
 #include "store.h"
+#include "sefo.h"
 
 Bool	absDebug 	= false;
 #define absDEBUG(s)	DEBUG_IF(absDebug, s)

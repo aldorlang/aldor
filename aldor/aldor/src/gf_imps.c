@@ -17,6 +17,7 @@
 #include "gf_util.h"
 #include "of_inlin.h"
 #include "store.h"
+#include "sefo.h"
 
 /*****************************************************************************
  *

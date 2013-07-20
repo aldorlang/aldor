@@ -8,6 +8,7 @@
 #include "testlib.h"
 #include "ti_sef.h"
 #include "tinfer.h"
+#include "sefo.h"
 
 local void testAblog();
 

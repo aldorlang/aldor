@@ -13,6 +13,7 @@
 #include "stab.h"
 #include "terror.h"
 #include "ti_top.h"
+#include "sefo.h"
 
 Bool			tfsDebug 		= false;
 Bool			tfsMultiDebug		= false;

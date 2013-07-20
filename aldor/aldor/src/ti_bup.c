@@ -17,6 +17,7 @@
 #include "tinfer.h"
 #include "terror.h"
 #include "util.h"
+#include "sefo.h"
 
 
 /*****************************************************************************

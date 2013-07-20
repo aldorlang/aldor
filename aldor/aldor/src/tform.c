@@ -18,6 +18,7 @@
 #include "ti_top.h"
 #include "tinfer.h"
 #include "util.h"
+#include "sefo.h"
 
 Bool	tfDebug		= false;
 Bool	tfExprDebug	= false;

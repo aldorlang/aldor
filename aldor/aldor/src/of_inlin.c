@@ -113,6 +113,7 @@
 #include "stab.h"
 #include "store.h"
 #include "util.h"
+#include "sefo.h"
 
 
 /*****************************************************************************
