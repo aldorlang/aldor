@@ -60,21 +60,21 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\aldor\lib\libaxldem\src\dirprod.c" />
-    <ClCompile Include="..\..\aldor\lib\libaxldem\src\gb.c" />
-    <ClCompile Include="..\..\aldor\lib\libaxldem\src\ibits.c" />
-    <ClCompile Include="..\..\aldor\lib\libaxldem\src\lmdict.c" />
-    <ClCompile Include="..\..\aldor\lib\libaxldem\src\matopdom.c" />
-    <ClCompile Include="..\..\aldor\lib\libaxldem\src\matrix.c" />
-    <ClCompile Include="..\..\aldor\lib\libaxldem\src\nni.c" />
-    <ClCompile Include="..\..\aldor\lib\libaxldem\src\poly.c" />
-    <ClCompile Include="..\..\aldor\lib\libaxldem\src\poly3.c" />
-    <ClCompile Include="..\..\aldor\lib\libaxldem\src\polycat.c" />
-    <ClCompile Include="..\..\aldor\lib\libaxldem\src\prime.c" />
-    <ClCompile Include="..\..\aldor\lib\libaxldem\src\quanc8.c" />
-    <ClCompile Include="..\..\aldor\lib\libaxldem\src\random.c" />
-    <ClCompile Include="..\..\aldor\lib\libaxldem\src\spf.c" />
-    <ClCompile Include="..\..\aldor\lib\libaxldem\src\vector.c" />
+    <ClCompile Include="..\..\build\lib\libaxldem\src\al\dirprod.c" />
+    <ClCompile Include="..\..\build\lib\libaxldem\src\al\gb.c" />
+    <ClCompile Include="..\..\build\lib\libaxldem\src\al\ibits.c" />
+    <ClCompile Include="..\..\build\lib\libaxldem\src\al\lmdict.c" />
+    <ClCompile Include="..\..\build\lib\libaxldem\src\al\matopdom.c" />
+    <ClCompile Include="..\..\build\lib\libaxldem\src\al\matrix.c" />
+    <ClCompile Include="..\..\build\lib\libaxldem\src\al\nni.c" />
+    <ClCompile Include="..\..\build\lib\libaxldem\src\al\poly.c" />
+    <ClCompile Include="..\..\build\lib\libaxldem\src\al\poly3.c" />
+    <ClCompile Include="..\..\build\lib\libaxldem\src\al\polycat.c" />
+    <ClCompile Include="..\..\build\lib\libaxldem\src\al\prime.c" />
+    <ClCompile Include="..\..\build\lib\libaxldem\src\al\quanc8.c" />
+    <ClCompile Include="..\..\build\lib\libaxldem\src\al\random.c" />
+    <ClCompile Include="..\..\build\lib\libaxldem\src\al\spf.c" />
+    <ClCompile Include="..\..\build\lib\libaxldem\src\al\vector.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
