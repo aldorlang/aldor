@@ -13,6 +13,7 @@
 #include "util.h"
 #include "syme.h"
 #include "strops.h"
+#include "fbox.h"
  
 /*****************************************************************************
  *

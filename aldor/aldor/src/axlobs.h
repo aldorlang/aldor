@@ -106,7 +106,6 @@ DECLARE_LIST(SymeList);
  */
 # include "absyn.h"
 # include "foam.h"
-# include "fbox.h"
 
 /*
  * Tags for labelled storage.  These continue where "axlgen.h" ends.

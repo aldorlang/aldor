@@ -1,5 +1,6 @@
 #include "axlobs.h"
 #include "store.h"
+#include "fbox.h"
 
 FoamBox
 fboxNewEmpty(FoamTag tag)

@@ -17,6 +17,7 @@
 #include "bigint.h"
 #include "strops.h"
 #include "symbol.h"
+#include "fbox.h"
 
 Bool	cfoldDebug	= false;
 #define cfoldDEBUG(s)	DEBUG_IF(cfoldDebug, s)

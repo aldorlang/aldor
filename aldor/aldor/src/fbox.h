@@ -1,6 +1,8 @@
 #ifndef _FBOX_H
 #define _FBOX_H
 
+#include "foam.h"
+
 struct foamBox {
 	FoamTag		tag;
 	FoamList	l;

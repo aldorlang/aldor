@@ -60,6 +60,7 @@
 #include "abpretty.h"
 #include "comsg.h"
 #include "strops.h"
+#include "fbox.h"
 
 Bool	genfoamDebug		= false;
 Bool	genfoamHashDebug	= false;

@@ -121,6 +121,7 @@
 #include "abpretty.h"
 #include "symbol.h"
 #include "strops.h"
+#include "fbox.h"
 
 
 /*****************************************************************************
