@@ -18,6 +18,7 @@
 #include "tposs.h"
 #include "doc.h"
 #include "srcline.h"
+#include "ccode.h"
 
 /*
  * Initialize specific list parameterizations.

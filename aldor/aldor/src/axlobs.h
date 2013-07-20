@@ -17,13 +17,13 @@
 #define _AXLOBS_H_
 
 #include "axlgen.h"
-#include "ccode.h"
 #include "list.h"
 #include "sexpr.h"
 
 /*
  * Forward declarations of the types
  */
+typedef union  ccode *             CCode;
 typedef struct srcLine *           SrcLine;
 typedef struct comsg *		   CoMsg;
 typedef struct token *             Token;
