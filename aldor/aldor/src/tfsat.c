@@ -17,6 +17,7 @@
 #include "lib.h"
 #include "tconst.h"
 #include "tposs.h"
+#include "tfsat.h"
 
 Bool			tfsDebug 		= false;
 Bool			tfsMultiDebug		= false;

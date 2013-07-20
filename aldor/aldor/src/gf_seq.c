@@ -18,6 +18,7 @@
 #include "store.h"
 #include "sefo.h"
 #include "lib.h"
+#include "tfsat.h"
 
 extern	Bool genfExportDebug;	/* gf_add.c */
 Bool	genfImplicitDebug	= false;

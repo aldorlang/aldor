@@ -110,7 +110,6 @@ DECLARE_LIST(SymeList);
 # include "absub.h"
 # include "freevar.h"
 # include "tform.h"
-# include "tfsat.h"
 # include "foam.h"
 # include "comsg.h"
 # include "fbox.h"

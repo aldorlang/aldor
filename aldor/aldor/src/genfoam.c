@@ -55,6 +55,7 @@
 #include "util.h"
 #include "fint.h"
 #include "lib.h"
+#include "tfsat.h"
 
 Bool	genfoamDebug		= false;
 Bool	genfoamHashDebug	= false;

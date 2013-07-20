@@ -18,6 +18,7 @@
 #include "util.h"
 #include "lib.h"
 #include "tposs.h"
+#include "tfsat.h"
 
 /*
  * To do:

@@ -23,6 +23,7 @@
 #include "util.h"
 #include "sefo.h"
 #include "lib.h"
+#include "tfsat.h"
 
 #if EDIT_1_0_n1_06
 local Foam         gen0AddBody1           (AbSyn, Stab, AbSyn);

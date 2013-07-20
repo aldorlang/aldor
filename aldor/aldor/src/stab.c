@@ -18,6 +18,7 @@
 #include "lib.h"
 #include "tqual.h"
 #include "tposs.h"
+#include "tfsat.h"
 
 Bool	stabDebug		= false;
 Bool	stabImportDebug		= false;

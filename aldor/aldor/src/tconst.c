@@ -13,6 +13,7 @@
 #include "ti_top.h"
 #include "util.h"
 #include "tconst.h"
+#include "tfsat.h"
 
 Bool	tcDebug		= false;
 

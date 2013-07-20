@@ -116,6 +116,7 @@
 #include "sefo.h"
 #include "lib.h"
 #include "tqual.h"
+#include "tfsat.h"
 
 
 /*****************************************************************************

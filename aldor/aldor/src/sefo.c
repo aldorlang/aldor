@@ -20,6 +20,7 @@
 #include "archive.h"
 #include "lib.h"
 #include "tqual.h"
+#include "tfsat.h"
 
 Bool	sstDebug            	= false;
 Bool	sstMarkDebug		= false;

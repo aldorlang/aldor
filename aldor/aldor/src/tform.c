@@ -24,6 +24,7 @@
 #include "tqual.h"
 #include "tconst.h"
 #include "tposs.h"
+#include "tfsat.h"
 
 Bool	tfDebug		= false;
 Bool	tfExprDebug	= false;

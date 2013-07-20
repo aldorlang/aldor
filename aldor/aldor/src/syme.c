@@ -19,6 +19,7 @@
 #include "util.h"
 #include "sefo.h"
 #include "lib.h"
+#include "tfsat.h"
 
 Bool	symeDebug		= false;
 Bool	symeFillDebug		= false;

@@ -18,6 +18,7 @@
 #include "sefo.h"
 #include "lib.h"
 #include "tposs.h"
+#include "tfsat.h"
 
 /* see ti_tdn.c for definitions of following */
 

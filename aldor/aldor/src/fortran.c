@@ -15,6 +15,7 @@
 #include "format.h"
 #include "fortran.h"
 #include "spesym.h"
+#include "tfsat.h"
 
 Bool    fortranTypesDebug       = false;
 #define fortranTypesDEBUG(s)    DEBUG_IF(fortranTypesDebug, s)
