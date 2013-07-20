@@ -25,7 +25,10 @@
  * and perform the big integer arithmetic algorithms.
  */
 
-# include "axlgen.h"
+#include "axlgen.h"
+#include "bigint.h"
+#include "store.h"
+#include "util.h"
 
 /*
  * The following symbols are used to conditionalize code in this file:

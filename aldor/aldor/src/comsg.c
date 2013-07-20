@@ -6,10 +6,14 @@
  *
  ****************************************************************************/
 
-# include "axlphase.h"
+#include "debug.h"
+#include "opsys.h"
+#include "store.h"
 #if EDIT_1_0_n1_04
-# include "textcolour.h"
+#include "textcolour.h"
 #endif
+#include "util.h"
+#include "fint.h"
 
 /****************************************************************************
  *

@@ -13,6 +13,10 @@ void testBitv(void) { }
 #else
 
 #include "axlgen.h"
+#include "bitv.h"
+#include "opsys.h"
+#include "store.h"
+#include "strops.h"
 
 static BitvClass  bitvClass;
 

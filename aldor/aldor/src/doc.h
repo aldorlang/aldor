@@ -9,7 +9,8 @@
 #ifndef _DOC_H_
 #define _DOC_H_
 
-# include "axlobs.h"
+#include "axlobs.h"
+#include "path.h"
 
 /*****************************************************************************
  *

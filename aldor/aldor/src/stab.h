@@ -9,7 +9,7 @@
 #ifndef _STAB_H_
 #define _STAB_H_
 
-# include "axlobs.h"
+#include "axlobs.h"
 
 /******************************************************************************
  *

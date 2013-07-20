@@ -1,6 +1,7 @@
 
-#include "ostream.h"
 #include "axlgen.h"
+#include "ostream.h"
+#include "store.h"
 
 local void ostreamFileWriteChar(OStream os, char c);
 local int ostreamFileWriteString(OStream os, const char *s, int n);

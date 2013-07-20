@@ -11,6 +11,8 @@
 #define OF_RRFMT_H
 
 #include "axlobs.h"
+#include "bitv.h"
+#include "of_util.h"
 #include "optfoam.h"
 #include "opttools.h"
 #include "table.h"

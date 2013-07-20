@@ -6,8 +6,13 @@
  *
  ****************************************************************************/
 
-# include "axlobs.h"
-# include "terror.h"
+#include "axlobs.h"
+#include "debug.h"
+#include "format.h"
+#include "spesym.h"
+#include "stab.h"
+#include "terror.h"
+#include "ti_top.h"
 
 Bool			tfsDebug 		= false;
 Bool			tfsMultiDebug		= false;

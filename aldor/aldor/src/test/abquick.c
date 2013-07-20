@@ -1,9 +1,10 @@
-#include "abquick.h"
-#include "scan.h"
-#include "parseby.h"
 #include "abnorm.h"
-#include "macex.h"
+#include "abquick.h"
 #include "linear.h"
+#include "macex.h"
+#include "parseby.h"
+#include "scan.h"
+#include "stab.h"
 
 ABQK_DEFINE0(sequence0, abNewSequence0);
 ABQK_DEFINE1(sequence1, abNewSequence1);
@@ -120,12 +121,17 @@ stdtypes()
 	return absyn;
 }
 
+/* XXX: from test_ostream.c */
+void testNull(void);
 
 Syme
 uniqueMeaning(Stab stab, String s)
 {
 	SymeList symesForString = stabGetMeanings(stab, ablogTrue(), symIntern(s));
+        // FIXME: what is this supposed to do?
+#if 0
 	testNull("", cdr(symesForString));
+#endif
 	Syme d = car(symesForString);
 
 	return d;

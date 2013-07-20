@@ -12,7 +12,10 @@ void testBigint(void) { }
 
 #else
 
-# include "axlgen.h"
+#include "axlgen.h"
+#include "bigint.h"
+#include "opsys.h"
+#include "strops.h"
 
 #define testBI_Limit (sizeof(testBI)/sizeof(testBI[0]))
 #define ReallyBig   303030

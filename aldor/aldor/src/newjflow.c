@@ -6,10 +6,9 @@
  *
  ****************************************************************************/
 
-# include "axlphase.h"
-# include "of_jflow.h"
-# include "opttools.h"
-# include "loops.h"
+#include "loops.h"
+#include "of_jflow.h"
+#include "opttools.h"
 
 Bool      jflowCatDebug   = false;
 Bool      jflowDfDebug 	  = false;

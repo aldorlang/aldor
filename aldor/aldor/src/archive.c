@@ -7,6 +7,11 @@
  ****************************************************************************/
 
 #include "axlobs.h"
+#include "debug.h"
+#include "file.h"
+#include "opsys.h"
+#include "store.h"
+#include "util.h"
 
 Bool	arDebug		= false;
 #define arDEBUG(s)	DEBUG_IF(arDebug, s)

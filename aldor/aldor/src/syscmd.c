@@ -6,7 +6,15 @@
  *
  ****************************************************************************/
 
-# include "axlphase.h"
+#include "abnorm.h"
+#include "fint.h"
+#include "fintphase.h"
+#include "macex.h"
+#include "parseby.h"
+#include "scan.h"
+#include "stab.h"
+#include "syscmd.h"
+#include "util.h"
 
 /*****************************************************************************
  *

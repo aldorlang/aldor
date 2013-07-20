@@ -500,6 +500,8 @@ extern SExpr		symeSExprAList		(Syme);
 extern SExpr		symeListToSExpr		(SymeList, Bool);
 extern int		symeListWrSExpr		(FILE *, String, SymeList, ULong);
 
+/* TODO: does this belong here? */
+extern Hash		gen0SymeTypeCode	(Syme);
 
 /******************************************************************************
  *

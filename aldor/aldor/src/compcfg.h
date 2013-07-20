@@ -8,6 +8,8 @@
 
 #ifndef _COMPCFG_H_
 #define _COMPCFG_H_
+
+#include "cport.h"
  
 extern void compCfgInit(String);
 extern void compCfgFini();

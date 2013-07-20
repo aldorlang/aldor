@@ -6,7 +6,11 @@
  *
  ****************************************************************************/
 
-# include "axlgen.h"
+#include "axlgen.h"
+#include "format.h"
+#include "store.h"
+#include "strops.h"
+#include "xfloat.h"
 
 Buffer
 bufNew(void)

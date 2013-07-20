@@ -9,7 +9,8 @@
 #ifndef _LIST_H_
 #define _LIST_H_
 
-# include "axlport.h"
+#include "axlport.h"
+#include "ostream.h"
 
 /*****************************************************************************
  *

@@ -6,15 +6,21 @@
  *
  ****************************************************************************/
 
-# include "genfoam.h"
-# include "gf_util.h"
-# include "gf_prog.h"
-# include "gf_add.h"
-# include "gf_imps.h"
-# include "gf_rtime.h"
-# include "gf_seq.h"
-# include "of_util.h"
-# include "of_inlin.h"
+#include "debug.h"
+#include "fluid.h"
+#include "genfoam.h"
+#include "gf_util.h"
+#include "gf_prog.h"
+#include "gf_add.h"
+#include "gf_imps.h"
+#include "gf_rtime.h"
+#include "gf_seq.h"
+#include "of_util.h"
+#include "of_inlin.h"
+#include "spesym.h"
+#include "stab.h"
+#include "store.h"
+#include "util.h"
 
 #if EDIT_1_0_n1_06
 local Foam         gen0AddBody1           (AbSyn, Stab, AbSyn);

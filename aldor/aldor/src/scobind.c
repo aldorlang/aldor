@@ -6,8 +6,15 @@
  *
  *****************************************************************************/
 
-#include "axlphase.h"
+#include "abuse.h"
+#include "debug.h"
+#include "fint.h"
+#include "format.h"
+#include "spesym.h"
+#include "stab.h"
+#include "store.h"
 #include "tfcond.h"
+#include "util.h"
 
 Bool	scoDebug		= false;
 Bool	scoStabDebug		= false;

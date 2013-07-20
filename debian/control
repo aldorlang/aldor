@@ -1,9 +1,15 @@
 Source: aldor
 Section: devel
 Priority: extra
-Maintainer: Pippijn van Steenhoven <pippijn@osiris.xinutec.org>
-Build-Depends: debhelper (>= 8.0.0), autotools-dev
-Standards-Version: 3.9.4
+Maintainer: Pippijn van Steenhoven <pippijn@xinutec.org>
+Build-Depends:
+ debhelper (>= 8.0.0),
+ autotools-dev,
+ libgmp3-dev,
+ openjdk-7-jdk | openjdk-6-jdk | java-sdk,
+ bison | byacc,
+ flex
+Standards-Version: 3.9.3
 Homepage: http://pippijn.github.io/aldor/
 Vcs-Git: git://github.com/pippijn/aldor.git
 Vcs-Browser: https://github.com/pippijn/aldor

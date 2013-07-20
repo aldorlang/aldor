@@ -14,6 +14,7 @@
 #include "cmdline.h"
 #include "util.h"
 #include "emit.h"
+#include "test.h"
 #include <windows.h>
 #include "pfc.h"
 #include "winmain.h"

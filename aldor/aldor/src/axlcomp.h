@@ -9,7 +9,9 @@
 #ifndef _AXLCOMP_H_
 #define _AXLCOMP_H_
 
-# include "axlgen.h"
+#include "axlgen.h"
+#include "sexpr.h"
+#include "emit.h"
 
 
 /*

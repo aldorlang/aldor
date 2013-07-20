@@ -43,7 +43,12 @@
  *  - Consider LHS of Sets: deal with (Values)
  *  - Consider If, Repeat etc.
  */
+
 #include "axlobs.h"
+#include "debug.h"
+#include "dflow.h"
+#include "flog.h"
+#include "format.h"
 #include "of_deada.h"
 #include "of_killp.h"
 #include "of_util.h"

@@ -6,12 +6,14 @@
  *
  ****************************************************************************/
 
-# include "genfoam.h"
-# include "gf_util.h"
-# include "gf_prog.h"
-# include "gf_gener.h"
-# include "of_inlin.h"
-# include "of_util.h"
+#include "fluid.h"
+#include "genfoam.h"
+#include "gf_util.h"
+#include "gf_prog.h"
+#include "gf_gener.h"
+#include "of_inlin.h"
+#include "of_util.h"
+#include "store.h"
 
 #define GenerBetterGuesses
 

@@ -10,6 +10,7 @@
 #define _FLOG_H_
 
 #include "axlobs.h"
+#include "bitv.h"
 
 /*
  * A flow graph represents a program as a directed graph with

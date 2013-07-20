@@ -12,7 +12,10 @@ void testList(void) { }
 
 #else
 
-# include "axlgen.h"
+#include "axlgen.h"
+#include "list.h"
+#include "opsys.h"
+#include "store.h"
 
 int
 testListPrintElt(FILE *fout, Pointer p)

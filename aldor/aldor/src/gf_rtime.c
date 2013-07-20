@@ -6,10 +6,11 @@
  *
  ****************************************************************************/
 
-# include "gf_util.h"
-# include "gf_prog.h"
-# include "gf_rtime.h"
-# include "of_inlin.h"
+#include "gf_prog.h"
+#include "gf_rtime.h"
+#include "gf_util.h"
+#include "of_inlin.h"
+#include "store.h"
 /* ToDo:
  * Allow 'runtime' calls that are not in runtime.as
  */

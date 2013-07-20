@@ -1,10 +1,18 @@
-#include "axlobs.h"
-#include "testlib.h"
 #include "abquick.h"
+#include "axlobs.h"
+#include "format.h"
+#include "stab.h"
+#include "testlib.h"
 
 local void testTFormFormat();
 local void testTFormSyntaxConditions();
 local void testTFormFormatOne(String name, String expect, TForm tf);
+
+/* XXX: from test_tinfer.c */
+void init(void);
+void fini(void);
+void initFile(void);
+void finiFile(void);
 
 void
 tformTest()
@@ -55,7 +63,7 @@ testTFormSyntaxConditions()
 	AbSyn ab = apply2(id("->"), id("A"), id("B"));
 	TForm tf = tfSyntaxFrAbSyn(stabFile(), ab);
 	AbSynList cond = listList(AbSyn)(1, test(has(id("X"), id("Y"))));
-	tfSyntaxConditions(stabFile(), tf, cond);
+	tfSyntaxConditions(stabFile(), tf, tfCondEltNew(stab, cond));
 	
 	finiFile();
 }

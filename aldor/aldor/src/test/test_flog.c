@@ -1,7 +1,9 @@
 #include "axlobs.h"
+#include "cmdline.h"
+#include "flog.h"
 #include "foam.h"
-#include "testlib.h"
 #include "of_inlin.h"
+#include "testlib.h"
 
 local void testBBCopy();
 

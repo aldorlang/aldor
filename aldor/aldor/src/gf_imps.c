@@ -10,12 +10,13 @@
  *	saving and restoring where information in gen0{x}State
  * 	More efficient mechanism for constants
  */
-# include "gf_util.h"
-# include "gf_prog.h"
-# include "gf_add.h"
-# include "gf_imps.h"
-# include "gf_rtime.h"
-# include "of_inlin.h"
+#include "gf_add.h"
+#include "gf_imps.h"
+#include "gf_prog.h"
+#include "gf_rtime.h"
+#include "gf_util.h"
+#include "of_inlin.h"
+#include "store.h"
 
 /*****************************************************************************
  *

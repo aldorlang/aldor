@@ -6,7 +6,12 @@ void testFloat(void) { }
 #else  /* defined(TEST_FLOAT) || defined(TEST_ALL) */
 
 #include "axlgen.h"
+#include "bigint.h"
+#include "debug.h"
 #include "foam_c.h"
+#include "opsys.h"
+#include "strops.h"
+#include "util.h"
 
 static FiSFlo  fv[] = {0.0f, 0.1f, 0.9f, 1.0f, 1.2f, 1.6f, 2.0f, 2.5f, 4.0f, 
 	       4.990934234f, 5.8f, 9.0f, 9.9999999999999f, 100.0f,

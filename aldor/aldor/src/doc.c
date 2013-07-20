@@ -6,7 +6,9 @@
  *
  ****************************************************************************/
 
-# include "axlobs.h"
+#include "axlobs.h"
+#include "debug.h"
+#include "store.h"
 
 CREATE_LIST(Doc);
 

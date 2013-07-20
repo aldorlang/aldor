@@ -6,9 +6,17 @@
  *
  ****************************************************************************/
 
-# include "axlobs.h"
-
-# include "simpl.h"
+#include "axlobs.h"
+#include "debug.h"
+#include "fint.h"
+#include "fluid.h"
+#include "format.h"
+#include "simpl.h"
+#include "spesym.h"
+#include "stab.h"
+#include "store.h"
+#include "ti_top.h"
+#include "util.h"
 
 Bool	symeDebug		= false;
 Bool	symeFillDebug		= false;
@@ -49,7 +57,6 @@ local Bool		 symeCheckIdentifier	(AbSyn, Syme);
 extern void		tiTfSefo		(Stab, TForm);
 extern TForm		tiGetTForm		(Stab, AbSyn);
 extern TForm		abGetCategory		(AbSyn);
-extern Hash		gen0SymeTypeCode	(Syme);
 
 /******************************************************************************
  *

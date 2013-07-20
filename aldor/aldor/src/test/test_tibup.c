@@ -1,11 +1,24 @@
-#include "axlobs.h"
-#include "testlib.h"
 #include "abquick.h"
+#include "abuse.h"
+#include "axlobs.h"
+#include "debug.h"
+#include "format.h"
+#include "scobind.h"
+#include "stab.h"
+#include "testlib.h"
+#include "ti_bup.h"
+#include "ti_tdn.h"
 #include "tinfer.h"
 
 local void testTiBupCollect1();
 local void testTiBupCollect2();
 local void testTiTdnPretend();
+
+/* XXX: from test_tinfer.c */
+void init(void);
+void fini(void);
+void initFile(void);
+void finiFile(void);
 
 void
 tibupTest()

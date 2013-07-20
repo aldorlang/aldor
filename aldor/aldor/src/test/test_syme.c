@@ -1,8 +1,20 @@
-#include "axlobs.h"
-#include "testlib.h"
 #include "abquick.h"
+#include "abuse.h"
+#include "axlobs.h"
+#include "debug.h"
+#include "format.h"
+#include "scobind.h"
+#include "stab.h"
+#include "testlib.h"
+#include "tinfer.h"
 
 local void testSymeSExpr();
+
+/* XXX: from test_tinfer.c */
+void init(void);
+void fini(void);
+void initFile(void);
+void finiFile(void);
 
 void
 symeTest()

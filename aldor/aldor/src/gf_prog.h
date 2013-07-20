@@ -9,7 +9,8 @@
 #ifndef _GF_PROG_H_
 #define _GF_PROG_H_
 
-# include "axlobs.h"
+#include "axlobs.h"
+#include "gf_util.h"
 
 /*****************************************************************************
  *

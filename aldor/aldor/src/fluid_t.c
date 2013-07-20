@@ -13,6 +13,7 @@ void testFluid(void) { }
 #else
 
 #include "axlgen.h"
+#include "fluid.h"
 
 JmpBuf	testFluidBuffer;
 int	testFluidI = 32;

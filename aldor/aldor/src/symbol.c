@@ -6,7 +6,11 @@
  *
  ****************************************************************************/
 
-# include "axlgen.h"
+#include "axlgen.h"
+#include "store.h"
+#include "strops.h"
+#include "symbol.h"
+#include "table.h"
 
 static Table	symbolPool = 0;
 static long	genSymCount = 0;

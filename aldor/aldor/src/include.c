@@ -25,7 +25,12 @@
  * Other #xxx lines are passed on untouched.
  */
 
-# include "axlphase.h"
+#include "file.h"
+#include "fluid.h"
+#include "include.h"
+#include "opsys.h"
+#include "syscmd.h"
+#include "util.h"
 
 /******************************************************************************
  *

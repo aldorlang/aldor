@@ -62,10 +62,16 @@
  *
  *************************************************************************/
 
-# include "of_cprop.h"
-# include "opttools.h"
-# include "of_peep.h"
-# include "optfoam.h"
+#include "debug.h"
+#include "dflow.h"
+#include "flog.h"
+#include "of_cprop.h"
+#include "of_peep.h"
+#include "of_util.h"
+#include "optfoam.h"
+#include "opttools.h"
+#include "store.h"
+
 /****************************************************************************
  * :: Macros
  ****************************************************************************/

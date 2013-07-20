@@ -12,7 +12,10 @@ void testCCode(void) { }
 
 #else
 
-# include "axlgen.h"
+#include "axlgen.h"
+#include "ccode.h"
+#include "opsys.h"
+#include "util.h"
 
 char	floatBuf[MAX_FLOAT_SIZE];
 

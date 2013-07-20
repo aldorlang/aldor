@@ -1,5 +1,5 @@
 #include "axlobs.h"
-#include "ostream.h"
+#include "format.h"
 #include "testlib.h"
 
 local void testFormat1();

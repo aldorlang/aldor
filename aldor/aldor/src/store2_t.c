@@ -12,7 +12,9 @@ void testStore2(void) { }
 
 #else
 
-# include "axlgen.h"
+#include "axlgen.h"
+#include "opsys.h"
+#include "store.h"
  
 struct tree {
 	int		argc;

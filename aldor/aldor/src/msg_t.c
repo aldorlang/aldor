@@ -12,7 +12,9 @@ void testMsg(void) { }
 
 #else
 
-# include "axlgen.h"
+#include "axlgen.h"
+#include "msg.h"
+#include "path.h"
 
 struct msgInfo testmsgdb_msgs[] = {
 	{1, 1,	"RedMsg",   "This is the first  default message of set 1. A."},

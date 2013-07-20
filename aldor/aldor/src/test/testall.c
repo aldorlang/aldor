@@ -1,11 +1,30 @@
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include "testall.h"
+#include "testlib.h"
 
 static int theArgc;
 static char **theArgv;
 
 extern int fluidLevel;
+
+int
+testShouldRun(char *name)
+{
+	int i;
+
+	if (theArgc == 1) {
+		return 1;
+	}
+	for (i=1; i<theArgc; i++) {
+		if (strcmp(theArgv[i], name) == 0) {
+			return 1;
+		}
+	}
+	return 0;
+}
 
 int 
 main(int argc, char *argv[])
@@ -37,20 +56,4 @@ main(int argc, char *argv[])
 	testShowSummary();
 	
 	return testAllPassed() ? 0 : 1;
-}
-
-int
-testShouldRun(char *name)
-{
-	int i;
-
-	if (theArgc == 1) {
-		return 1;
-	}
-	for (i=1; i<theArgc; i++) {
-		if (strcmp(theArgv[i], name) == 0) {
-			return 1;
-		}
-	}
-	return 0;
 }

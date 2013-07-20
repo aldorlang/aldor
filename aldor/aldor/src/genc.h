@@ -9,7 +9,8 @@
 #ifndef _GENC_H_
 #define _GENC_H_
 
-# include "axlobs.h"
+#include "axlobs.h"
+#include "ccode.h"
 
 extern CCodeList	genC			(Foam, String);
 extern CCode		genAXLmainC		(String);

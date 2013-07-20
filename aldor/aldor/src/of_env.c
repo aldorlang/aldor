@@ -7,6 +7,8 @@
  ****************************************************************************/
 
 #include "axlobs.h"
+#include "debug.h"
+#include "store.h"
 
 /*
  * ToDo: Consider splitting environments, deleting "empty" environments, etc.

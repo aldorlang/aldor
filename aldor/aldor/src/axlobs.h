@@ -16,8 +16,11 @@
 #ifndef _AXLOBS_H_
 #define _AXLOBS_H_
 
-# include "axlgen.h"
-# include "comsgdb.h"
+#include "axlgen.h"
+#include "ccode.h"
+#include "comsgdb.h"
+#include "list.h"
+#include "sexpr.h"
 
 /*
  * Forward declarations of the types
@@ -116,20 +119,8 @@ DECLARE_LIST(SymeList);
 # include "archive.h"
 # include "syme.h"
 # include "sefo.h"
-# include "stab.h"
-# include "version.h"
-# include "spesym.h"
-# include "usedef.h"
-# include "of_loops.h"
-# include "of_util.h"
-# include "of_comex.h"
 # include "comsg.h"
-# include "flog.h"
-# include "dflow.h"
-# include "fint.h"
-# include "depdag.h"
 # include "fbox.h"
-# include "ti_top.h"
 
 /*
  * Tags for labelled storage.  These continue where "axlgen.h" ends.

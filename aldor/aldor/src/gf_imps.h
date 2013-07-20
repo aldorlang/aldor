@@ -9,6 +9,8 @@
 #ifndef _GF_IMPS_H_
 #define _GF_IMPS_H_
 
+#include "gf_util.h"
+
 extern void 	gen0IssueLazyFunctions	(void);
 extern void 	gen0InitImport		(Syme);
 extern Foam 	gen0GetDomainLex	(TForm);

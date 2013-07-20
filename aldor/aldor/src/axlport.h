@@ -9,9 +9,7 @@
 #ifndef _AXLPORT_H_
 #define _AXLPORT_H_
 
-# include "stdc.h"
-# include "cport.h"
-# include "optcfg.h"
-# include "opsys.h"
+#include "cport.h"
+#include "optcfg.h"
 
 #endif /* !_AXLPORT_H_ */

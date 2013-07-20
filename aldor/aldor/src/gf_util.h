@@ -9,8 +9,9 @@
 #ifndef _GF_UTIL_H_
 #define _GF_UTIL_H_
 
-# include "axlobs.h"
-# include "foamsig.h"
+#include "axlobs.h"
+#include "foamsig.h"
+#include "of_util.h"
 
 extern Bool genfoamDebug, genfoamHashDebug, genfoamConstDebug;
 

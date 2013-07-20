@@ -42,6 +42,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>TEST_ALL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\aldor\aldor\src;..\..\build\aldor\src</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -105,7 +106,7 @@
     <ClInclude Include="..\..\aldor\aldor\src\compcfg.h" />
     <ClInclude Include="..\..\aldor\aldor\src\compopt.h" />
     <ClInclude Include="..\..\aldor\aldor\src\comsg.h" />
-    <ClInclude Include="..\..\aldor\aldor\src\comsgdb.h" />
+    <ClInclude Include="..\..\build\aldor\src\comsgdb.h" />
     <ClInclude Include="..\..\aldor\aldor\src\cport.h" />
     <ClInclude Include="..\..\aldor\aldor\src\debug.h" />
     <ClInclude Include="..\..\aldor\aldor\src\depdag.h" />
@@ -244,7 +245,7 @@
     <ClCompile Include="..\..\aldor\aldor\src\absyn.c" />
     <ClCompile Include="..\..\aldor\aldor\src\abuse.c" />
     <ClCompile Include="..\..\aldor\aldor\src\archive.c" />
-    <ClCompile Include="..\..\aldor\aldor\src\axl.c" />
+    <ClCompile Include="..\..\build\aldor\src\axl_y.c" />
     <ClCompile Include="..\..\aldor\aldor\src\axlcomp.c" />
     <ClCompile Include="..\..\aldor\aldor\src\axlobs.c" />
     <ClCompile Include="..\..\aldor\aldor\src\bigint.c" />
@@ -264,7 +265,7 @@
     <ClCompile Include="..\..\aldor\aldor\src\compcfg.c" />
     <ClCompile Include="..\..\aldor\aldor\src\compopt.c" />
     <ClCompile Include="..\..\aldor\aldor\src\comsg.c" />
-    <ClCompile Include="..\..\aldor\aldor\src\comsgdb.c" />
+    <ClCompile Include="..\..\build\aldor\src\comsgdb.c" />
     <ClCompile Include="..\..\aldor\aldor\src\cport.c" />
     <ClCompile Include="..\..\aldor\aldor\src\cport_t.c" />
     <ClCompile Include="..\..\aldor\aldor\src\debug.c" />

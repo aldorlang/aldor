@@ -11,6 +11,8 @@
 
 #include "axlobs.h"
 
+extern void	tinferInit();
+
 extern TForm	typeInferAs(Stab, AbSyn, TForm);
 			/*
 			 * Infer the type of the given abstract syntax tree, in
@@ -67,6 +69,7 @@ extern void		tiTfSefo		(Stab, TForm);
 extern void		tiTfPushDefinee 	(AbSyn);
 extern void		tiTfPopDefinee		(void);
 extern Bool		tiTfDoDefault		(Sefo);
+extern void		tiTfImportCascades	(Stab stab, TQualList tq);
 extern SymeList		tiAddSymes		(Stab, AbSyn, TForm, TForm, SymeList *);
 extern TForm		tiGetTForm		(Stab, AbSyn);
 extern Syme		tiGetMeaning		(Stab, AbSyn, TForm);
