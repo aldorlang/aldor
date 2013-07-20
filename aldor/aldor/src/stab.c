@@ -20,6 +20,7 @@
 #include "tposs.h"
 #include "tfsat.h"
 #include "ablogic.h"
+#include "abpretty.h"
 
 Bool	stabDebug		= false;
 Bool	stabImportDebug		= false;

@@ -23,6 +23,7 @@
 #include "syme.h"
 #include "archive.h"
 #include "lib.h"
+#include "abpretty.h"
 
 
 

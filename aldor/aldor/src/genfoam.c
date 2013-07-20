@@ -57,6 +57,7 @@
 #include "lib.h"
 #include "tfsat.h"
 #include "ablogic.h"
+#include "abpretty.h"
 
 Bool	genfoamDebug		= false;
 Bool	genfoamHashDebug	= false;

@@ -43,6 +43,7 @@
 #include "archive.h"
 #include "lib.h"
 #include "ablogic.h"
+#include "abpretty.h"
 
 String 		compRootDir     = 0;
 Bool   		compIsDebug     = false;

@@ -16,6 +16,7 @@
 #include "tfsat.h"
 #include "tform.h"
 #include "ablogic.h"
+#include "abpretty.h"
 
 Bool	ablogDebug		= false;
 #define ablogDEBUG(s)		DEBUG_IF(ablogDebug, s)

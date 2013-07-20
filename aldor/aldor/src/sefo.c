@@ -23,6 +23,7 @@
 #include "tfsat.h"
 #include "freevar.h"
 #include "absub.h"
+#include "abpretty.h"
 
 Bool	sstDebug            	= false;
 Bool	sstMarkDebug		= false;

@@ -12,6 +12,7 @@
 #include "store.h"
 #include "util.h"
 #include "tposs.h"
+#include "abpretty.h"
 
 /*
  * :: External state control

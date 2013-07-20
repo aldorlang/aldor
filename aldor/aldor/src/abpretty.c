@@ -11,6 +11,7 @@
 #include "syme.h"
 #include "lib.h"
 #include "tform.h"
+#include "abpretty.h"
 
 
 #define CONTINUED	"..."

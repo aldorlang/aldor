@@ -118,6 +118,7 @@
 #include "tqual.h"
 #include "tfsat.h"
 #include "absub.h"
+#include "abpretty.h"
 
 
 /*****************************************************************************

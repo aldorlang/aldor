@@ -23,6 +23,7 @@
 #include "tfsat.h"
 #include "absub.h"
 #include "ablogic.h"
+#include "abpretty.h"
 
 
 /*****************************************************************************

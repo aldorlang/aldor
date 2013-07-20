@@ -14,6 +14,7 @@
 #include "sefo.h"
 #include "lib.h"
 #include "absub.h"
+#include "abpretty.h"
 
 Bool	absDebug 	= false;
 #define absDEBUG(s)	DEBUG_IF(absDebug, s)

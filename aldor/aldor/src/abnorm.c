@@ -101,6 +101,7 @@
 #include "stab.h"
 #include "archive.h"
 #include "lib.h"
+#include "abpretty.h"
 
 Bool abnormDebug	= false;
 Bool abnDefineDebug	= false;

@@ -21,6 +21,7 @@
 #include "lib.h"
 #include "tfsat.h"
 #include "ablogic.h"
+#include "abpretty.h"
 
 Bool	symeDebug		= false;
 Bool	symeFillDebug		= false;

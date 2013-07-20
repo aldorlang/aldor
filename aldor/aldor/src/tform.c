@@ -28,6 +28,7 @@
 #include "freevar.h"
 #include "absub.h"
 #include "ablogic.h"
+#include "abpretty.h"
 
 Bool	tfDebug		= false;
 Bool	tfExprDebug	= false;
