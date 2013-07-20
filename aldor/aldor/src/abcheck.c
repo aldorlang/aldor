@@ -11,6 +11,7 @@
 #include "phase.h"
 #include "spesym.h"
 #include "util.h"
+#include "comsg.h"
 
 /*****************************************************************************
  *

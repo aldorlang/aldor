@@ -22,6 +22,7 @@
 #include "ablogic.h"
 #include "abpretty.h"
 #include "doc.h"
+#include "comsg.h"
 
 Bool	stabDebug		= false;
 Bool	stabImportDebug		= false;

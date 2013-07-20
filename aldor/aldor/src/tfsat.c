@@ -20,6 +20,7 @@
 #include "tfsat.h"
 #include "absub.h"
 #include "ablogic.h"
+#include "comsg.h"
 
 Bool			tfsDebug 		= false;
 Bool			tfsMultiDebug		= false;

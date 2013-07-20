@@ -15,6 +15,7 @@
 #include "util.h"
 #include "syme.h"
 #include "lib.h"
+#include "comsg.h"
 
 extern Bool	genfoamDebug;
 extern Bool	genfoamHashDebug;

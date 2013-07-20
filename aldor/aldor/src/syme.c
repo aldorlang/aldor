@@ -23,6 +23,7 @@
 #include "ablogic.h"
 #include "abpretty.h"
 #include "doc.h"
+#include "comsg.h"
 
 Bool	symeDebug		= false;
 Bool	symeFillDebug		= false;

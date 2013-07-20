@@ -12,6 +12,7 @@
 #include "termtype.h"
 #include "textansi.h"
 #include "texthp.h"
+#include "comsg.h"
 
 /* Exported functions */
 extern String tcolPrefix(CoMsgTag);

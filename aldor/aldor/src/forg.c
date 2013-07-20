@@ -2,6 +2,7 @@
 #include "forg.h"
 #include "spesym.h"
 #include "store.h"
+#include "comsg.h"
 
 /*****************************************************************************
  *

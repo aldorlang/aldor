@@ -23,6 +23,7 @@
 #include "tfsat.h"
 #include "ablogic.h"
 #include "abpretty.h"
+#include "comsg.h"
 
 /* Declare a new option for the interactive mode. 
  * Example:

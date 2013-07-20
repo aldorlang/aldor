@@ -103,6 +103,7 @@
 #include "lib.h"
 #include "abpretty.h"
 #include "doc.h"
+#include "comsg.h"
 
 Bool abnormDebug	= false;
 Bool abnDefineDebug	= false;

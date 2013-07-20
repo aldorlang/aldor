@@ -9,6 +9,7 @@
 #include "axlobs.h"
 #include "opsys.h"
 #include "version.h"
+#include "comsg.h"
 
 /*
  * The version of this program.

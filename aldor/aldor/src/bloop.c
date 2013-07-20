@@ -14,6 +14,7 @@
 #include "tposs.h"
 #include "abpretty.h"
 #include "doc.h"
+#include "comsg.h"
 
 /*
  * :: External state control

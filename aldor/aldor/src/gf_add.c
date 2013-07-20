@@ -26,6 +26,7 @@
 #include "tfsat.h"
 #include "ablogic.h"
 #include "abpretty.h"
+#include "comsg.h"
 
 #if EDIT_1_0_n1_06
 local Foam         gen0AddBody1           (AbSyn, Stab, AbSyn);

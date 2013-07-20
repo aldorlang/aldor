@@ -17,6 +17,7 @@
 #include "stab.h"
 #include "store.h"
 #include "lib.h"
+#include "comsg.h"
 
 /****************************************************************************
  *

@@ -18,6 +18,7 @@
 #include "archive.h"
 #include "lib.h"
 #include "srcline.h"
+#include "comsg.h"
 
 /*****************************************************************************
  *

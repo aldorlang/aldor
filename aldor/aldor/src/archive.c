@@ -15,6 +15,7 @@
 #include "syme.h"
 #include "archive.h"
 #include "lib.h"
+#include "comsg.h"
 
 Bool	arDebug		= false;
 #define arDEBUG(s)	DEBUG_IF(arDebug, s)

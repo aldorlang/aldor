@@ -23,6 +23,7 @@
 #include "lib.h"
 #include "tqual.h"
 #include "doc.h"
+#include "comsg.h"
 
 Bool	libDebug 	= false;
 Bool	libLazyDebug 	= false;

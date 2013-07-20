@@ -24,6 +24,7 @@
 #include "phase.h"
 #include "store.h"
 #include "doc.h"
+#include "comsg.h"
  
 # undef MacDeclArgs
 

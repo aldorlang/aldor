@@ -15,6 +15,7 @@
 #include "lib.h"
 #include "tqual.h"
 #include "abpretty.h"
+#include "comsg.h"
 
 Bool	tqDebug		= false;
 

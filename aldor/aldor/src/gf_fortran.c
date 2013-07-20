@@ -42,6 +42,7 @@
 #include "tform.h"
 #include "util.h"
 #include "sefo.h"
+#include "comsg.h"
 
 
 extern Bool	genfoamDebug;

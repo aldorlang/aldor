@@ -22,6 +22,7 @@
 #include "absub.h"
 #include "ablogic.h"
 #include "abpretty.h"
+#include "comsg.h"
 
 extern void		tiBottomUp		(Stab, AbSyn, TForm);
 extern void		tiTopDown		(Stab, AbSyn, TForm);

@@ -27,6 +27,7 @@
 #include "tinfer.h"
 #include "util.h"
 #include "archive.h"
+#include "comsg.h"
 
 String		cmdName		    = "aldor";    /* Could use argv[0]. */
 String		cmdInitFile	    = "aldorinit.as";

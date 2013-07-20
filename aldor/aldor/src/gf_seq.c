@@ -21,6 +21,7 @@
 #include "tfsat.h"
 #include "ablogic.h"
 #include "abpretty.h"
+#include "comsg.h"
 
 extern	Bool genfExportDebug;	/* gf_add.c */
 Bool	genfImplicitDebug	= false;

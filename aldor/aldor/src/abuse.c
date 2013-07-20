@@ -8,6 +8,7 @@
 
 #include "phase.h"
 #include "spesym.h"
+#include "comsg.h"
 
 /*
  * :: abPutUse

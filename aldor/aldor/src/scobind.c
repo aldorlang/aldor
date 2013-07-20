@@ -20,6 +20,7 @@
 #include "tposs.h"
 #include "abpretty.h"
 #include "doc.h"
+#include "comsg.h"
 
 Bool	scoDebug		= false;
 Bool	scoStabDebug		= false;

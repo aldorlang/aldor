@@ -13,6 +13,7 @@
 #include "util.h"
 #include "fint.h"
 #include "srcline.h"
+#include "comsg.h"
 
 
 /******************************************************************************
