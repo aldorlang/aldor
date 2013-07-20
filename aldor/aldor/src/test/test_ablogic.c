@@ -9,6 +9,7 @@
 #include "ti_sef.h"
 #include "tinfer.h"
 #include "sefo.h"
+#include "ablogic.h"
 
 local void testAblog();
 

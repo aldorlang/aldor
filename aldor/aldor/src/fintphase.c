@@ -21,6 +21,7 @@
 #include "syscmd.h"
 #include "tinfer.h"
 #include "tfsat.h"
+#include "ablogic.h"
 
 /* Declare a new option for the interactive mode. 
  * Example:

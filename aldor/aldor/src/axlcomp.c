@@ -42,6 +42,7 @@
 #include "version.h"
 #include "archive.h"
 #include "lib.h"
+#include "ablogic.h"
 
 String 		compRootDir     = 0;
 Bool   		compIsDebug     = false;

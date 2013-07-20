@@ -56,6 +56,7 @@
 #include "fint.h"
 #include "lib.h"
 #include "tfsat.h"
+#include "ablogic.h"
 
 Bool	genfoamDebug		= false;
 Bool	genfoamHashDebug	= false;

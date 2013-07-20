@@ -3,6 +3,7 @@
 #include "scobind.h"
 #include "stab.h"
 #include "testlib.h"
+#include "ablogic.h"
 
 local void testScobind();
 local void testScobindCondition();

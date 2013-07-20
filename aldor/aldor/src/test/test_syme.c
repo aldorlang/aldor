@@ -8,6 +8,7 @@
 #include "testlib.h"
 #include "tinfer.h"
 #include "sefo.h"
+#include "ablogic.h"
 
 local void testSymeSExpr();
 

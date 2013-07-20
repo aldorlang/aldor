@@ -19,6 +19,7 @@
 #include "tposs.h"
 #include "tfsat.h"
 #include "absub.h"
+#include "ablogic.h"
 
 Bool			tfsDebug 		= false;
 Bool			tfsMultiDebug		= false;

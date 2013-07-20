@@ -20,6 +20,7 @@
 #include "tfsat.h"
 #include "freevar.h"
 #include "absub.h"
+#include "ablogic.h"
 
 extern void		tiBottomUp		(Stab, AbSyn, TForm);
 extern void		tiTopDown		(Stab, AbSyn, TForm);

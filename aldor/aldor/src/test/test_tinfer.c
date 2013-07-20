@@ -16,6 +16,7 @@
 #include "ti_sef.h"
 #include "tinfer.h"
 #include "sefo.h"
+#include "ablogic.h"
 
 /* XXX: from test_tinfer.c */
 void init(void);

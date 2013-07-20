@@ -26,6 +26,7 @@
 #include "tconst.h"
 #include "tposs.h"
 #include "tfsat.h"
+#include "ablogic.h"
 
 /*****************************************************************************
  *

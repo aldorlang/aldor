@@ -5,6 +5,7 @@
 #include "parseby.h"
 #include "scan.h"
 #include "stab.h"
+#include "ablogic.h"
 
 ABQK_DEFINE0(sequence0, abNewSequence0);
 ABQK_DEFINE1(sequence1, abNewSequence1);

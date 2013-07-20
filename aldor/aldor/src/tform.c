@@ -27,6 +27,7 @@
 #include "tfsat.h"
 #include "freevar.h"
 #include "absub.h"
+#include "ablogic.h"
 
 Bool	tfDebug		= false;
 Bool	tfExprDebug	= false;

@@ -19,6 +19,7 @@
 #include "tqual.h"
 #include "tposs.h"
 #include "tfsat.h"
+#include "ablogic.h"
 
 Bool	stabDebug		= false;
 Bool	stabImportDebug		= false;

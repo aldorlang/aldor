@@ -20,6 +20,7 @@
 #include "sefo.h"
 #include "lib.h"
 #include "tfsat.h"
+#include "ablogic.h"
 
 Bool	symeDebug		= false;
 Bool	symeFillDebug		= false;

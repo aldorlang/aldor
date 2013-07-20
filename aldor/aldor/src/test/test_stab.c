@@ -9,6 +9,7 @@
 #include "tinfer.h"
 #include "tinfer.h"
 #include "tqual.h"
+#include "ablogic.h"
 
 local void testStabIsChild();
 
