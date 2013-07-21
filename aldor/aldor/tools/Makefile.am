@@ -1,2 +1,1 @@
-
-SUBDIRS=unix 
+SUBDIRS = unix 

@@ -1,3 +1,9 @@
+aldor (1.2.0~20130721) precise; urgency=low
+
+  * Add aldor wrapper script for inferring ALDORROOT.
+
+ -- Pippijn van Steenhoven <pippijn@xinutec.org>  Sun, 21 Jul 2013 03:49:34 +0200
+
 aldor (1.2.0~20130720) precise; urgency=low
 
   * Prefer libgmp-dev and use libgmp3-dev if that doesn't exist.

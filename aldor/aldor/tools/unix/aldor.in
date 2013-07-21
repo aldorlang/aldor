@@ -1,0 +1,15 @@
+#!/bin/sh
+
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libexecdir=@libexecdir@
+EXEEXT=@EXEEXT@
+
+ALDOR=$libexecdir/aldor$EXEEXT
+if test ! -f $ALDOR; then
+   echo "Error: unable to locate Aldor installation"
+   exit 1
+fi
+
+# Aldor will infer ALDORROOT from its own location.
+$ALDOR "$@"

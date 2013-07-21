@@ -1,6 +1,7 @@
 #SUBDIRS = . java
 
-bin_PROGRAMS = aldor javagen
+libexec_PROGRAMS = aldor
+bin_PROGRAMS = javagen
 noinst_PROGRAMS = aldortest structtest gentest
 
 dataincludedir = $(datadir)/include
