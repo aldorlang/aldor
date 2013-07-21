@@ -13,7 +13,7 @@
 
 #define BUF_INIT_SIZE	64
 
-typedef struct {
+typedef struct buffer {
 	Length		pos;		/* amount used == next position */
 	Length		argc;		/* amount available */
 	UByte		*argv;

@@ -20,7 +20,7 @@
  * Runtime call information
  */
 
-struct RuntimeCallInfo runtimeCallInfoTable[] = {
+struct runtimeCallInfo runtimeCallInfoTable[] = {
 	{ "domainMake",			false,	1, 0 },
 	{ "domainAddParents!", 		true,	2, 0 },
 	{ "domainAddNameFn!", 		true,	2, 0 },
@@ -88,7 +88,7 @@ struct RuntimeCallInfo runtimeCallInfoTable[] = {
 	(sizeof(runtimeCallInfoTable)/sizeof(runtimeCallInfoTable[0]))
 
 
-struct RuntimeCallInfo runtimeStdLazyGetterPrefix = { 
+struct runtimeCallInfo runtimeStdLazyGetterPrefix = { 
  "", false, 1, 0
 };
 
