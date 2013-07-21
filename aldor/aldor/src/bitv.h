@@ -9,7 +9,7 @@
 #ifndef _BITV_H_
 #define _BITV_H_
 
-#include "axlport.h"
+#include "cport.h"
 
 typedef ULong		BitvWord;
 

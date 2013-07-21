@@ -10,6 +10,7 @@
 #define _ABSYN_H_
 
 #include "axlobs.h"
+#include "srcpos.h"
 #include "token.h"
 
 /******************************************************************************

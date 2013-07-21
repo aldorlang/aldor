@@ -9,7 +9,7 @@
 #ifndef _MSG_H_
 #define _MSG_H_
 
-#include "axlport.h"
+#include "cport.h"
 #include "fname.h"
 
 typedef int	Msg;

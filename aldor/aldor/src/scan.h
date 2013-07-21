@@ -9,7 +9,7 @@
 #ifndef _SCAN_H_
 #define _SCAN_H_
 
-# include "axlobs.h"
+#include "axlobs.h"
 
 extern TokenList scan     	  (SrcLineList);
 extern Bool	 scanIsContinued  (String line);

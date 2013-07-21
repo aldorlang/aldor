@@ -9,8 +9,8 @@
 #ifndef _OF_CFOLD_H_
 #define _OF_CFOLD_H_
 
-# include "axlobs.h"
-# include "foam_c.h" /* For fiType*() calls */
+#include "axlobs.h"
+#include "foam_c.h" /* For fiType*() calls */
 
 extern Bool     	cfoldUnit	    	(Foam, Bool, Bool);
 

@@ -14,7 +14,7 @@
 #ifndef _STROPS_H_
 #define _STROPS_H_
 
-# include "axlport.h"
+#include "cport.h"
 
 extern String           strOfChars      (char *);
 #define                 strChars(s)     (s)

@@ -9,7 +9,7 @@
 #ifndef _DEBUG_H_
 #define _DEBUG_H_
 
-#include "axlport.h"
+#include "cport.h"
 
 #if defined(NDEBUG)
 

@@ -16,7 +16,7 @@
 #ifndef _LINEAR_H_
 #define _LINEAR_H_
 
-# include "axlobs.h"
+#include "axlobs.h"
 
 extern TokenList        linearize       (TokenList tl);
 

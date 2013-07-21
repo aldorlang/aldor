@@ -13,7 +13,7 @@ void	testLink(void) { }
 #else
 
 #include "axlgen.h"
-#include "axlport.h"
+#include "cport.h"
 #include "foam_c.h"
 
 int	glo1;

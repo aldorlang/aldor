@@ -48,7 +48,7 @@
 #ifndef _FLUID_H_
 #define _FLUID_H_
 
-# include "axlport.h"
+#include "cport.h"
 
 struct fluidCell {
 	String		scopeName;	/* Name of the scope. */

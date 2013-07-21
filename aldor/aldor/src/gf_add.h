@@ -9,7 +9,7 @@
 #ifndef _GF_ADD_H_
 #define _GF_ADD_H_
 
-# include "axlobs.h"
+#include "axlobs.h"
 
 extern Foam	genAdd			(AbSyn);
 extern Foam	genWith			(AbSyn);

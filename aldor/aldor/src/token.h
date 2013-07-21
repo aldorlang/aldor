@@ -9,7 +9,7 @@
 #ifndef _TOKEN_H_
 #define _TOKEN_H_
 
-# include "axlobs.h"
+#include "axlobs.h"
 
 /*
  * The enumeration of Token Tags.

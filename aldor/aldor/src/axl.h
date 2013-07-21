@@ -9,7 +9,7 @@
 #ifndef _AXL_H_
 #define _AXL_H_
 
-# include "axlport.h"
+#include "cport.h"
 
 extern int     		compCmd(int argc, String *argv);
 			/*

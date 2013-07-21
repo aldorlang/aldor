@@ -9,7 +9,7 @@
 #ifndef _TEST_H_
 #define _TEST_H_
 
-# include "axlport.h"
+#include "cport.h"
 
 extern void	testSelf	(String testName);
 

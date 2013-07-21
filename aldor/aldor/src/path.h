@@ -9,8 +9,8 @@
 #ifndef _PATH_H_
 #define _PATH_H_
 
-# include "axlport.h"
-# include "list.h"
+#include "cport.h"
+#include "list.h"
 
 DECLARE_LIST(String);
 

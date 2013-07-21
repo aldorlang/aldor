@@ -19,7 +19,7 @@
 #ifndef _SYMBOL_H_
 #define _SYMBOL_H_
 
-# include "axlport.h"
+#include "cport.h"
 
 struct symbol {
 	MostAlignedType *info;	  /* Used as desired, initialized to 0 */

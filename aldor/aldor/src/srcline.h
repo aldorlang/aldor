@@ -9,7 +9,7 @@
 #ifndef _SRCLINE_H_
 #define _SRCLINE_H_
 
-# include "axlobs.h"
+#include "axlobs.h"
 
 struct srcLine {
 	SrcPos		spos;

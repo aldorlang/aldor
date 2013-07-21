@@ -9,7 +9,7 @@
 #ifndef _OPTFOAM_H_
 #define _OPTFOAM_H_
 
-# include "axlobs.h"
+#include "axlobs.h"
 
 
 extern void	optInit		        (void);

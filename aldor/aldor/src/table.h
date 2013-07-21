@@ -9,7 +9,7 @@
 #ifndef _TABLE_H_
 #define _TABLE_H_
 
-# include "axlport.h"
+#include "cport.h"
 
 typedef Pointer         TblKey;
 typedef Pointer         TblElt;

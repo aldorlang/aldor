@@ -9,7 +9,7 @@
 #ifndef _CCODE_H_
 #define _CCODE_H_
 
-#include "axlport.h"
+#include "cport.h"
 
 #include "srcpos.h"
 #include "strops.h"

@@ -6,7 +6,7 @@
  *
  ****************************************************************************/
 
-# include "axlport.h"
+#include "cport.h"
 
 /*****************************************************************************
  *
@@ -17,7 +17,7 @@
 # if defined(CC_noncanonical_pointer) && defined(OS_MS_DOS) && \
          (defined(CC_BORLAND) || defined(CC_MICROSOFT))
 
-# include <dos.h>
+#include <dos.h>
 
 # define  SEG_SHIFT 4
 # define  OFF_MASK  ((1 << SEG_SHIFT) - 1)

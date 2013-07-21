@@ -9,7 +9,7 @@
 #ifndef _UTIL_H_
 #define _UTIL_H_
 
-# include "axlport.h"
+#include "cport.h"
 
 /******************************************************************************
  *

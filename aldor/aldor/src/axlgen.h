@@ -14,7 +14,7 @@
  * Defining FOAM_RTS gives only those needed for store.c and bigint.c.
  */
 
-# include "axlgen0.h"
+#include "axlgen0.h"
 
 # define  OB_Other		0
 # define  OB_Bogus		1
