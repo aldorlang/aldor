@@ -44,7 +44,7 @@ aldor_LDADD = libphase.a libstruct.a libgen.a libport.a -lm
 aldor_LDFLAGS =
 aldor_CFLAGS  = -g
 
-aldortest_CFLAGS = -DTEST_STAND_ALONE -DTEST_ALL --save-temps
+aldortest_CFLAGS = -DTEST_STAND_ALONE -DTEST_ALL -save-temps
 aldortest_SOURCES = test.c
 aldortest_LDADD = libtest.a libstruct.a libgen.a libport.a -lm
 aldortest_LDFLAGS = 
