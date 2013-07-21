@@ -303,7 +303,7 @@ ALDOR_W_GenBadDefCycle		"Illegal recursive definition: %s"
 ALDOR_W_GenBadDefOrder		"Implementation restriction: the value of `%s' depends on the value of %s. Perhaps you ought to define `%s' later?"
 
 ALDOR_M_FintBreakHandler    "Execution terminated: use #quit if you want to quit."
-ALDOR_M_FintBreakHandler0   "Use '#quit' to quit Axiomxl."
+ALDOR_M_FintBreakHandler0   "Use '#quit' to quit Aldor."
 ALDOR_M_FintYesOrNo         "\nPlease, answer y or n."
 ALDOR_M_FintRedefined       "%s redefined."
 ALDOR_M_FintOptionState     "%s is %s."
