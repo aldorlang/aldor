@@ -11,5 +11,6 @@ if test ! -f $ALDOR; then
    exit 1
 fi
 
-# Aldor will infer ALDORROOT from its own location.
+export ALDORROOT=$prefix
+
 $ALDOR "$@"

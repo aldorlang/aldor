@@ -7,6 +7,7 @@
 /* #ifdef FOAM_RTS */
 #include "axlgen.h"
 #include "bigint.h"
+#include "optcfg.h"
 typedef ULong	BIntD;		/* To contain two BInt digits. */
 
 #define BINT_LG_RADIX		(bitsizeof(BIntS))
