@@ -1,0 +1,11 @@
+# Magic data for recognising Aldor byte code libraries
+
+0	string		=!<arch>\n
+>&0	regex		[a-z_]+\.ao/[0-9\ ]+`\n
+>>&0	leshort		=0420			Aldor bytecode archive
+>>>&0	leshort		<0x7fff			major %d
+>>>>&0	leshort		<0x7fff			minor %d
+
+0	leshort		=0420			Aldor bytecode file
+>&0	leshort		<0x7fff			major %d
+>>&0	leshort		<0x7fff			minor %d
