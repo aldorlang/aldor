@@ -3,9 +3,11 @@
 0	string		=!<arch>\n
 >&0	regex		[a-z_]+\.ao/[0-9\ ]+`\n
 >>&0	leshort		=0420			Aldor bytecode archive
+!:mime	application/octet-stream
 >>>&0	leshort		<0x7fff			major %d
 >>>>&0	leshort		<0x7fff			minor %d
 
 0	leshort		=0420			Aldor bytecode file
+!:mime	application/octet-stream
 >&0	leshort		<0x7fff			major %d
 >>&0	leshort		<0x7fff			minor %d
