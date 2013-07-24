@@ -1726,10 +1726,8 @@ tiTfCategory1(Stab stab, TFormUses tfu, TForm tf, AbSynList params)
 			tfu->extension = NULL;
 		}
 
-#if AXL_EDIT_1_1_12p6_06
 		/* Add the new symes to tfSymes for the add */
 		tiAppendSymes(tfa, extras);
-#endif
 	}
 	if (abt && tfu)
 		tfu->extension = listCons(AbSyn)(abt, listNil(AbSyn));
