@@ -157,6 +157,7 @@ foamNewAlloc(FoamTag tag, Length argsize)
 
 	if (!foamIsInit) foamInit();
 
+	argsize = (argsize + (sizeof(Foam) - 1)) & -sizeof(Foam);
 	sz  = sizeof(struct foamGen) + argsize - NARY * sizeof(Foam);
 	foam = (Foam) stoAlloc((unsigned) OB_Foam, sz);
 
