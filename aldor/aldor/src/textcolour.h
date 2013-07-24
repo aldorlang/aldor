@@ -8,7 +8,6 @@
 #ifndef _TEXTCOLOUR_H_
 #define _TEXTCOLOUR_H_
 
-#include "axlobs.h"
 #include "termtype.h"
 #include "textansi.h"
 #include "texthp.h"

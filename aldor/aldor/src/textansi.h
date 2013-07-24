@@ -8,7 +8,7 @@
 #ifndef _TEXTANSI_H_
 #define _TEXTANSI_H_
 
-#include "axlobs.h"
+#include "cport.h"
 
 /* ANSI terminal colours */
 enum colourName_enum {

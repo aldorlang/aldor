@@ -8,7 +8,7 @@
 #ifndef _TEXTHP_H_
 #define _TEXTHP_H_
 
-#include "axlobs.h"
+#include "cport.h"
 
 /* Expanded AF/AB escapes must not exceed HP_ESCAPE_MAXLEN in length */
 #define HP_ESCAPE_MAXLEN 512
