@@ -150,7 +150,6 @@
  */
 #define AXL_EDIT_1_1_12p6_07 1	/* tibupComma more cautious creating defs */
 #define AXL_EDIT_1_1_12p6_06 1	/* inheritence/inlining bugs */
-#define AXL_EDIT_1_1_12p6_05 1	/* tiTfCategory1() fix for bug 1242 */
 
 
 #define AXL_EDIT_1_1_12p6_04 1	/* inlining limit now user-defined */

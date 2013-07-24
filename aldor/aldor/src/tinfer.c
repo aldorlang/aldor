@@ -1720,17 +1720,11 @@ tiTfCategory1(Stab stab, TFormUses tfu, TForm tf, AbSynList params)
 		}
 		tiAddSymes(nstab, capsule, abTForm(base), tfw, &extras);
 
-#if AXL_EDIT_1_1_12p6_05
 		/* When is tfu allowed to be NULL? */
 		if (tfu) {
 			listFree(AbSyn)(tfu->extension);
 			tfu->extension = NULL;
 		}
-#else
-		listFree(AbSyn)(tfu->extension);
-		tfu->extension = NULL;
-#endif
-
 
 #if AXL_EDIT_1_1_12p6_06
 		/* Add the new symes to tfSymes for the add */
