@@ -8,6 +8,8 @@
 #ifndef _TERMTYPE_H_
 #define _TERMTYPE_H_
 
+#include "cport.h"
+
 /*
  * This is a list of all the terminal types that we recognise. If you
  * extend this enumeration you MUST update textansi.c and texthp.c.
