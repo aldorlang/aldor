@@ -28,7 +28,7 @@ typedef Enum(colourName_enum) ColourANSI;
 #define ANSI_ESCAPE_MAXLEN 512
 
 /* Exported operations */
-extern char *txtBoldANSI(void);
+extern String txtBoldANSI(void);
   /*
    * txtBoldANSI() returns a string of escape codes for enabling the
    * bold terminal text attribute (extra bright). The only way to remove
@@ -37,28 +37,28 @@ extern char *txtBoldANSI(void);
    * assume term_type() returns a valid ANSI terminal (not UnknownTerm).
    */
 
-extern char *txtNormalANSI(void);
+extern String txtNormalANSI(void);
   /*
    * txtNormalANSI() returns a string of escape codes for disabling all
    * terminal text attributes currently in force. Note that we assume
    * term_type() returns a valid ANSI terminal (not UnknownTerm).
    */
 
-extern char *txtForegroundANSI(ColourANSI);
+extern String txtForegroundANSI(ColourANSI);
   /*
    * txtForegroundANSI(col) returns a string of escape codes for setting
    * the terminal text foreground colour to "col". Note that we assume
    * term_type() returns a valid ANSI terminal (not UnknownTerm).
    */
 
-extern char *txtBackgroundANSI(ColourANSI);
+extern String txtBackgroundANSI(ColourANSI);
   /*
    * txtBackgroundANSI(col) returns a string of escape codes for setting
    * the terminal text background colour to "col". Note that we assume
    * term_type() returns a valid ANSI terminal (not UnknownTerm).
    */
 
-extern char *txtColourANSI(ColourANSI, ColourANSI);
+extern String txtColourANSI(ColourANSI, ColourANSI);
   /*
    * txtColourANSI(fg,bg) returns a string of escape codes for setting
    * the terminal foreground and background colours to "fg" and "bg"
