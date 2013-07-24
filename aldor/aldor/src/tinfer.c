@@ -1718,48 +1718,7 @@ tiTfCategory1(Stab stab, TFormUses tfu, TForm tf, AbSynList params)
 				tiWithSymes(nstab, otf);
 			}
 		}
-/*
- * The following edit goes a little way to resolving the issue raised by
- * bug 1274. Namely, given domains D1 and D2, the expression "D1 add D2"
- * ought to yield a valid domain consisting of all the exports of D1 and
- * all the exports of D2. This edit enables the compiler to find the
- * exports of D2 but allowing bug 1274 to compile. However, there is no
- * code in gen0AddBody1 or gen0DefTypeSequence to allow exports of D2 to
- * be found at runtime. Thus bug 1274 will only run if it is compiled with
- * inlining and all D2 lookups eliminated.
- */
-#if AXL_EDIT_1_1_13_20
-		/* The capsule isn't always a set of definitions */
-		if (!abHasTag(capsule, AB_Define) &&
-			!abHasTag(capsule, AB_Sequence))
-		{
-			SymeList mods, dmods, cmods, exps;
-			TForm tfb = abTForm(base);
-			/* The capsule MUST be domain valued */
-			tiGetTForm(nstab, capsule);
-
-			/* Get the capsule exports */
-			exps = tfGetDomExports(abTForm(capsule));
-
-			/* Insert exports of capsule into stab */
-			dmods = listCopy(Syme)(tfGetDomSelf(tfb));
-			cmods = listCopy(Syme)(tfGetCatSelf(tfw));
-			mods  = listNConcat(Syme)(dmods,cmods);
-			mods  = listNConcat(Syme)(tfGetSelfFrStab(stab), mods);
-			exps  = symeListSubstCat(nstab, mods, tfUnknown, exps);
-			stabPutMeanings(nstab, exps);
-
-			/* Now look for add symes */
-			(void)tiAddSymes(nstab, capsule, tfb, tfw, &extras);
-			extras = listNConcat(Syme)(exps, extras);
-		}
-		else {
-			TForm tfb = abTForm(base);
-			(void)tiAddSymes(nstab, capsule, tfb, tfw, &extras);
-		}
-#else
 		tiAddSymes(nstab, capsule, abTForm(base), tfw, &extras);
-#endif
 
 #if AXL_EDIT_1_1_12p6_05
 		/* When is tfu allowed to be NULL? */
