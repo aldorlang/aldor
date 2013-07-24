@@ -2663,8 +2663,6 @@ tformFreeVars0(TForm *pa, TForm parent, TForm tf)
 	else
 		bugBadCase(tfTag(tf));
 
-	if (tfStab(tf))
-		sfvDelStab(tfStab(tf));
 	if (tfSymes(tf)) {
 		if (!(tfIsLibrary(tf) || tfIsArchive(tf)))
 			symeListUnboundVars0(&ancestor, parent, tfSymes(tf));
@@ -2678,6 +2676,8 @@ tformFreeVars0(TForm *pa, TForm parent, TForm tf)
 	if (!cascade && tfCascades(tf))
 		tqualListUnboundVars0(&ancestor, parent, tfCascades(tf));
 
+	if (tfStab(tf))
+		sfvDelStab(tfStab(tf));
 	if (tfSelf(tf))
 		sfvDelSymes(tfSelf(tf));
 	if (tfSelfSelf(tf))
