@@ -16,6 +16,7 @@
 #include "ti_decl.h"
 #include "ti_tdn.h"
 #include "tinfer.h"
+#include "abpretty.h"
 
 
 struct _pendingDecl

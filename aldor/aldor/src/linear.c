@@ -21,6 +21,7 @@
 #include "linear.h"
 #include "store.h"
 #include "fint.h"
+#include "comsg.h"
 
 Bool	linDebug	= false;
 #define linDEBUG(s)	DEBUG_IF(linDebug, s)

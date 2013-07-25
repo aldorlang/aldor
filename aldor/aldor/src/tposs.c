@@ -18,6 +18,10 @@
 #include "spesym.h"
 #include "store.h"
 #include "terror.h"
+#include "syme.h"
+#include "tconst.h"
+#include "tposs.h"
+#include "tfsat.h"
 
 /*
  *   Each node is given a set of possible meanings.

@@ -9,7 +9,7 @@
 #ifndef _SCOBIND_H_
 #define _SCOBIND_H_
 
-# include "axlobs.h"
+#include "axlobs.h"
 
 extern void	scopeBind 	(Stab, AbSyn);
 

@@ -12,7 +12,7 @@
 /* 
  * Info on builtin runtime calls
  */
-typedef struct RuntimeCallInfo {
+typedef struct runtimeCallInfo {
 	String  name;
 	Bool 	hasSideFx;
 	int 	argc;
@@ -123,7 +123,7 @@ extern void gen0CopyComplex(Foam, Foam, AInt, AInt, FoamList *);
  * Caches
  */
 
-typedef struct {
+typedef struct rtCacheInfo {
 	Foam	tuple;		/* tuple holding parameters */
 	Foam 	value;		/* Return variable	*/
 	Foam    cache;		/* Lexical var. holding cache */
@@ -144,7 +144,7 @@ extern void		gen0CacheKill		(RTCacheInfo);
  * Debugging (old style via -Wdebug)
  */
 
-typedef enum {
+enum genDebugKind {
 	GenDebugAssign,
 	GenDebugFnEntry,
 	GenDebugFnExit,
@@ -153,7 +153,9 @@ typedef enum {
 	GenDebugCatch,
 	GenDebugDeclare,
 	GenDebugStep
-} GenDebugKind;
+};
+
+typedef Enum(genDebugKind) GenDebugKind;
 
 void	gen0DebugIssueStmt(GenDebugKind, String, int, Foam, Foam, Foam);
 

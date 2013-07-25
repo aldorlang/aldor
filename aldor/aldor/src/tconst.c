@@ -12,6 +12,9 @@
 #include "store.h"
 #include "ti_top.h"
 #include "util.h"
+#include "tconst.h"
+#include "tfsat.h"
+#include "tform.h"
 
 Bool	tcDebug		= false;
 

@@ -17,6 +17,16 @@
 #include "store.h"
 #include "ti_top.h"
 #include "util.h"
+#include "sefo.h"
+#include "lib.h"
+#include "tfsat.h"
+#include "ablogic.h"
+#include "abpretty.h"
+#include "doc.h"
+#include "comsg.h"
+#include "strops.h"
+#include "table.h"
+#include "sexpr.h"
 
 Bool	symeDebug		= false;
 Bool	symeFillDebug		= false;

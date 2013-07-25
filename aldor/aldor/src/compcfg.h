@@ -14,8 +14,8 @@
 extern void compCfgInit(String);
 extern void compCfgFini();
 
-extern String compCfgLookupString();
-extern Bool   compCfgLookupBoolean();
+extern String compCfgLookupString(String);
+extern Bool   compCfgLookupBoolean(String);
 
 extern void compCfgSetConfigFile(String);
 extern void compCfgSetSysName(String);

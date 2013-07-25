@@ -13,6 +13,8 @@
 #include "opsys.h"
 #include "store.h"
 #include "util.h"
+#include "srcpos.h"
+#include "strops.h"
 
 /*
  * The "fields" are

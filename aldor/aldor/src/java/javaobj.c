@@ -1,6 +1,7 @@
 #include "javacode.h"
 #include "store.h"
 #include "util.h"
+#include "sexpr.h"
 
 CREATE_LIST(JavaCode);
 

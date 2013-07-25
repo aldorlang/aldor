@@ -5,6 +5,9 @@
 #include "javacode.h"
 #include "store.h"
 #include "util.h"
+#include "syme.h"
+#include "table.h"
+#include "sexpr.h"
 
 /*
  * Implement as the following...

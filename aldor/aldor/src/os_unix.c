@@ -842,7 +842,7 @@ extern char	**environ;
 #endif
 
 #if defined(OS_AIX_RT)
-# include <sys/seg.h>
+#include <sys/seg.h>
 # define OsBegInitData	((Pointer) (BASE(DATASEG)))
 # define OsEndInitData	((Pointer) (&end))
   extern int	end;
@@ -875,7 +875,7 @@ osMachBegInitData()
 #endif
 
 #if defined(OS_SUN) && !defined(OS_SUNOS5)
-# include <sys/param.h>
+#include <sys/param.h>
 # define OsBegInitData	((Pointer) (ROUND_UP((long) &etext, DATA_ALIGN)))
 # define OsEndInitData	((Pointer) (&end))
   extern int	etext, end;
@@ -887,7 +887,7 @@ osMachBegInitData()
 
 #if defined(OS_LINUX)
 #if 1 
-# include <sys/param.h>
+#include <sys/param.h>
 # define OsBegInitData	((Pointer) (ROUND_UP((long) &etext, EXEC_PAGESIZE)))
 # define OsEndInitData	((Pointer) (&end))
   extern int	etext, end;
@@ -900,7 +900,7 @@ osMachBegInitData()
 #endif
 
 #if defined(OS_NEXT)
-# include <sys/param.h>
+#include <sys/param.h>
 # define OsBegInitData	((Pointer) (ROUND_UP((long) get_etext(), NBPG)))
 # define OsEndInitData	((Pointer) get_end())
   extern void	*get_etext(void), *get_end(void);

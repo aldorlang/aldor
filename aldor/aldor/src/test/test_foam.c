@@ -1,6 +1,8 @@
 #include "axlobs.h"
 #include "foam.h"
 #include "testlib.h"
+#include "syme.h"
+#include "sexpr.h"
 
 local void testCall();
 local void testDDecl();

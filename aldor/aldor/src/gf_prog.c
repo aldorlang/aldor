@@ -11,6 +11,9 @@
 #include "gf_util.h"
 #include "of_inlin.h"
 #include "store.h"
+#include "syme.h"
+#include "strops.h"
+#include "fbox.h"
 
 /*****************************************************************************
  *

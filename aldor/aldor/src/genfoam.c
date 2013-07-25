@@ -46,6 +46,7 @@
 #include "optfoam.h"
 #include "opttools.h"
 #include "scobind.h"
+#include "sefo.h"
 #include "simpl.h"
 #include "spesym.h"
 #include "stab.h"
@@ -53,6 +54,13 @@
 #include "tform.h"
 #include "util.h"
 #include "fint.h"
+#include "lib.h"
+#include "tfsat.h"
+#include "ablogic.h"
+#include "abpretty.h"
+#include "comsg.h"
+#include "strops.h"
+#include "fbox.h"
 
 Bool	genfoamDebug		= false;
 Bool	genfoamHashDebug	= false;

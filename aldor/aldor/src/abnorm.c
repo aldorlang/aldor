@@ -99,6 +99,12 @@
 #include "macex.h"
 #include "spesym.h"
 #include "stab.h"
+#include "archive.h"
+#include "lib.h"
+#include "abpretty.h"
+#include "doc.h"
+#include "comsg.h"
+#include "strops.h"
 
 Bool abnormDebug	= false;
 Bool abnDefineDebug	= false;

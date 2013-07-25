@@ -9,7 +9,7 @@
 #ifndef _OF_INLIN_H_
 #define _OF_INLIN_H_
 
-# include "axlobs.h"
+#include "axlobs.h"
 
 extern void     	inlineUnit	    	(Foam, Bool, int, Bool);
 extern OptInfo		inlInfoNew		(Stab, Foam, Syme, Bool);

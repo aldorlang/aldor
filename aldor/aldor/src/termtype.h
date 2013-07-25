@@ -8,7 +8,7 @@
 #ifndef _TERMTYPE_H_
 #define _TERMTYPE_H_
 
-#include "axlobs.h"
+#include "cport.h"
 
 /*
  * This is a list of all the terminal types that we recognise. If you
@@ -55,4 +55,5 @@ extern int termIsHP(void);
 
 extern int termIsAldor(void);
 	/* Returns non-zero if the terminal is defined by $ALDOR_TERM */
+
 #endif /* TERMTYPE_H_INCLUDED */

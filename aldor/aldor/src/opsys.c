@@ -7,9 +7,9 @@
  ****************************************************************************/
 
 
-#define _ALL_SOURCE   /* For RS/6000 - should come before axlport.h include. */
+#define _ALL_SOURCE   /* For RS/6000 - should come before cport.h include. */
 
-#include "axlport.h"
+#include "cport.h"
 #include "editlevels.h"
 #include "opsys.h"
 
@@ -17,31 +17,31 @@
  * Select OS-specific file.  Note, olde compilers complain about #elif.
  */
 #if defined(OS_UNIX)
-# include "os_unix.c"
+#include "os_unix.c"
 #endif
 
 #if defined(OS_IBM_OS2)
-# include "os_os2.c"
+#include "os_os2.c"
 #endif
 
 #if defined(OS_MS_DOS)
-# include "os_dos.c"
+#include "os_dos.c"
 #endif
 
 #if defined(OS_WIN32)
-# include "os_win32.c"
+#include "os_win32.c"
 #endif
 
 #if defined(OS_CMS)
-# include "os_cms.c"
+#include "os_cms.c"
 #endif
 
 #if defined(OS_VMS)
-# include "os_vms.c"
+#include "os_vms.c"
 #endif
 
 #if defined(OS_MAC_SYS7)
-# include "os_macs7.c"
+#include "os_macs7.c"
 #endif
 
 /*****************************************************************************
@@ -924,8 +924,8 @@ osSetSignalHandlers(OsSignalHandler *posigfn,int *sigv,OsSignalHandler nsigfn)
 OsSignalHandler
 osSetSignalHandlers(OsSignalHandler *posigfn,int *sigv,OsSignalHandler nsigfn)
 {
-	struct sigaction oldaction;
-	struct sigaction newaction;
+	struct sigaction oldaction = { };
+	struct sigaction newaction = { };
 
 	newaction.sa_handler = nsigfn ? nsigfn : SIG_DFL;
 

@@ -10,6 +10,7 @@
 #define _TPOSS_H_
 
 #include "axlobs.h"
+#include "tform.h"
 
 struct tposs {
 	TFormList	possl;

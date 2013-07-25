@@ -9,7 +9,7 @@
 #ifndef _STORE_H_
 #define _STORE_H_
 
-# include "axlport.h"
+#include "cport.h"
 
 # define STO_CODE_LIMIT	32
 

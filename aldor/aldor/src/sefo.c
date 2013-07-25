@@ -16,6 +16,16 @@
 #include "stab.h"
 #include "store.h"
 #include "util.h"
+#include "sefo.h"
+#include "archive.h"
+#include "lib.h"
+#include "tqual.h"
+#include "tfsat.h"
+#include "freevar.h"
+#include "absub.h"
+#include "abpretty.h"
+#include "strops.h"
+#include "table.h"
 
 Bool	sstDebug            	= false;
 Bool	sstMarkDebug		= false;

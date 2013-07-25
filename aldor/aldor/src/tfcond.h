@@ -3,14 +3,14 @@
 
 #include "axlobs.h"
 
-typedef struct TfCondElt {
+typedef struct tfCondElt {
 	Stab stab;
 	AbSynList list;
 } *TfCondElt;
 
 DECLARE_LIST(TfCondElt);
 
-typedef struct TfCond {
+typedef struct tfCond {
 	Bool          containsEmpty;
 	TfCondEltList conditions;
 } *TfCond;

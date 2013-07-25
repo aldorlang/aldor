@@ -20,6 +20,17 @@
 #include "ti_tdn.h"
 #include "ti_top.h"
 #include "tinfer.h"
+#include "sefo.h"
+#include "lib.h"
+#include "tqual.h"
+#include "tconst.h"
+#include "tposs.h"
+#include "tfsat.h"
+#include "ablogic.h"
+#include "abpretty.h"
+#include "comsg.h"
+#include "strops.h"
+#include "table.h"
 
 /*****************************************************************************
  *

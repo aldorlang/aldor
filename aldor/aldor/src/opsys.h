@@ -9,7 +9,7 @@
 #ifndef _OPSYS_H_
 #define _OPSYS_H_
 
-#include "axlport.h"
+#include "cport.h"
 #include "editlevels.h"
 
 /*****************************************************************************

@@ -17,6 +17,16 @@
 #include "tinfer.h"
 #include "terror.h"
 #include "util.h"
+#include "sefo.h"
+#include "lib.h"
+#include "tposs.h"
+#include "tfsat.h"
+#include "absub.h"
+#include "ablogic.h"
+#include "abpretty.h"
+#include "comsg.h"
+#include "strops.h"
+#include "table.h"
 
 
 /*****************************************************************************

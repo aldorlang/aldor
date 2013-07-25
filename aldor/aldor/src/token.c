@@ -9,6 +9,8 @@
 #include "axlobs.h"
 #include "format.h"
 #include "store.h"
+#include "symbol.h"
+#include "strops.h"
 
 Token
 tokNew(SrcPos pos, SrcPos end, TokenTag tag, ...)

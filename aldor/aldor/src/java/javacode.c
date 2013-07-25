@@ -1,5 +1,6 @@
 #include "javacode.h"
 #include "javaobj.h"
+#include "sexpr.h"
 
 static Bool initialised = false;
 

@@ -9,7 +9,7 @@
 #ifndef _FORMAT_H_
 #define _FORMAT_H_
 
-# include "axlport.h"
+#include "cport.h"
 #include "ostream.h"
 
 extern int  findent;

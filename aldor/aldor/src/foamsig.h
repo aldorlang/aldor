@@ -6,7 +6,7 @@
  * nRets == NULL indicates that all return values
  * are FOAM_Words.
  */
-typedef struct {
+typedef struct foamSig {
 	AIntList inArgs;
 	int	 nRets;
 	AInt     retType;

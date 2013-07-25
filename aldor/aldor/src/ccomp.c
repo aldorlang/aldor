@@ -12,6 +12,8 @@
 #include "genc.h"
 #include "opsys.h"
 #include "store.h"
+#include "archive.h"
+#include "comsg.h"
 
 /*
  * Default compiler and linker.  

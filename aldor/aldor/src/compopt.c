@@ -7,7 +7,6 @@
  ****************************************************************************/
 
 #include "compopt.h"
-#include "cport.h" /* for ThatsAll */
 
 #ifdef OPT_Linux_i386
 

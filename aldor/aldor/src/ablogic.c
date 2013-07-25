@@ -12,6 +12,12 @@
 #include "format.h"
 #include "store.h"
 #include "ti_top.h"
+#include "sefo.h"
+#include "tfsat.h"
+#include "tform.h"
+#include "ablogic.h"
+#include "abpretty.h"
+#include "table.h"
 
 Bool	ablogDebug		= false;
 #define ablogDEBUG(s)		DEBUG_IF(ablogDebug, s)

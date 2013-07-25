@@ -9,7 +9,7 @@
 #ifndef _TABLE_H_
 #define _TABLE_H_
 
-# include "axlport.h"
+#include "cport.h"
 
 typedef Pointer         TblKey;
 typedef Pointer         TblElt;
@@ -30,7 +30,7 @@ struct TblSlot {
 	struct TblSlot  *next;
 };
 
-typedef struct {
+typedef struct table {
 	TblHashFun      hashFun;
 	TblEqFun        eqFun;
 	Pointer         info;           /* Use-specific extra info. */

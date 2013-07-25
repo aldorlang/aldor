@@ -9,7 +9,7 @@
 #ifndef _BIGINT_H_
 #define _BIGINT_H_
 
-# include "axlport.h"
+#include "cport.h"
 
 typedef UNotAsLong 	BIntS;	/* Unsigned integer type for BInt digits. */
 				/* s/b the second largest integer type. */

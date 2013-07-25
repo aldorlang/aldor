@@ -3,6 +3,7 @@
 #include "format.h"
 #include "stab.h"
 #include "testlib.h"
+#include "strops.h"
 
 local void testTFormFormat();
 local void testTFormSyntaxConditions();

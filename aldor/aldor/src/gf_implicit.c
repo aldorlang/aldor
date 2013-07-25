@@ -13,6 +13,11 @@
 
 #include "gf_implicit.h"
 #include "util.h"
+#include "syme.h"
+#include "lib.h"
+#include "comsg.h"
+#include "strops.h"
+#include "symbol.h"
 
 extern Bool	genfoamDebug;
 extern Bool	genfoamHashDebug;

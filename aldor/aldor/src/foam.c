@@ -35,6 +35,10 @@
 #include "store.h"
 #include "util.h"
 #include "xfloat.h"
+#include "comsg.h"
+#include "symbol.h"
+#include "sexpr.h"
+#include "fbox.h"
 
 #define	 FOAM_NARY	(-1)	/* Identifies tags with N-ary data argument. */
 
@@ -153,6 +157,7 @@ foamNewAlloc(FoamTag tag, Length argsize)
 
 	if (!foamIsInit) foamInit();
 
+	argsize = (argsize + (sizeof(Foam) - 1)) & -sizeof(Foam);
 	sz  = sizeof(struct foamGen) + argsize - NARY * sizeof(Foam);
 	foam = (Foam) stoAlloc((unsigned) OB_Foam, sz);
 

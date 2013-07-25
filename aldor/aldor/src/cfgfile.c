@@ -664,24 +664,26 @@ cfgGetLine(FILE *file, Bool *atEof)
   	String s;
 	int n, lim, c;
 	
-	s = strAlloc(50);
-	n = 0;
 	lim = 50;
+	s = strAlloc(lim);
+	n = 0;
 
   	c = fgetc(file);
 	while (c != '\n' && c != EOF) {
 		if (n == lim) {
+		  	int const incr = 20;
 		  	String tmp = s;
-			s = strAlloc(lim + 20);
+			s = strAlloc(lim + incr);
 			strncpy(s, tmp, n);
 			strFree(tmp);
-			lim += 20;
+			lim += incr;
 		}
 		s[n] = c;
 		c = fgetc(file);
 		n++;
 	}
-	s[n] = '\0';
+	while (n < lim)
+		s[n++] = '\0';
 	if (c == EOF) *atEof = true;
 	return s;
 }

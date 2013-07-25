@@ -6,7 +6,7 @@
 #ifndef _OUTPUT_H_
 #define _OUTPUT_H_
 
-# include <stdio.h>
+#include <stdio.h>
 
 extern FILE * stdinFile(void);
 extern FILE * stdoutFile(void);

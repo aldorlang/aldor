@@ -9,6 +9,8 @@
 #ifndef _FOAMOPT_H_
 #define _FOAMOPT_H_
  
+#include "optcfg.h"
+
 /* Define optimisations we want */
 
 /* 

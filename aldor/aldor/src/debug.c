@@ -7,7 +7,7 @@
  ****************************************************************************/
 
 #include "axlgen0.h"
-#include "axlport.h"
+#include "cport.h"
 #include "opsys.h"
 
 Bool    dbFlag  = false;

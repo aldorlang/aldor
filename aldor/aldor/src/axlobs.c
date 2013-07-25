@@ -12,6 +12,16 @@
 #include "opsys.h"
 #include "store.h"
 #include "util.h"
+#include "sefo.h"
+#include "tqual.h"
+#include "tconst.h"
+#include "tposs.h"
+#include "doc.h"
+#include "srcline.h"
+#include "ccode.h"
+#include "bigint.h"
+#include "table.h"
+#include "sexpr.h"
 
 /*
  * Initialize specific list parameterizations.

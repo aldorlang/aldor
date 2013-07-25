@@ -64,6 +64,7 @@ AC_CONFIG_FILES([Makefile
 		 aldor/test/Makefile
 		 aldor/tools/Makefile
 		 aldor/tools/unix/Makefile
+		 aldor/tools/unix/aldor
 		 lib/Makefile
 		 lib/axllib/Makefile
 		 lib/axllib/src/Makefile

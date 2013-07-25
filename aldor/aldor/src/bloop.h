@@ -9,7 +9,8 @@
 #ifndef _BLOOP_H_
 #define _BLOOP_H_
 
-# include "axlobs.h"
+#include "axlobs.h"
+#include "msg.h"
 
 extern AbSyn	breakSetRoot	(AbSyn);
 extern void     breakLoop	(Bool forHuman, int msgc, CoMsg* msgv);

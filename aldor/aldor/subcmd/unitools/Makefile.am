@@ -1,19 +1,37 @@
-
-bin_PROGRAMS = unicl
-noinst_PROGRAMS = platform
-unicl_SOURCES = unicl.c
-unicl_LDADD = libport.a
-unicl_CFLAGS = -I $(s) $(AM_CFLAGS)
-
-platform_CFLAGS = -I $(s) $(AM_CFLAGS)
-
+# Aldor portability layer
 noinst_LIBRARIES = libport.a
 s = $(srcdir)/../../src
 
-libport_a_SOURCES=$(s)/file.c $(s)/fname.c $(s)/opsys.c $(s)/store.c $(s)/memclim.c \
-	$(s)/fluid.c $(s)/btree.c $(s)/stdc.c $(s)/strops.c \
-	$(s)/debug.c $(s)/xfloat.c $(s)/buffer.c $(s)/timer.c \
-	$(s)/util.c $(s)/list.c $(s)/format.c $(s)/cfgfile.c \
-	$(s)/ostream.c 
+libport_a_SOURCES =	\
+	$s/btree.c	\
+	$s/buffer.c	\
+	$s/cfgfile.c	\
+	$s/debug.c	\
+	$s/file.c	\
+	$s/fluid.c	\
+	$s/fname.c	\
+	$s/format.c	\
+	$s/list.c	\
+	$s/memclim.c	\
+	$s/opsys.c	\
+	$s/ostream.c	\
+	$s/stdc.c	\
+	$s/store.c	\
+	$s/strops.c	\
+	$s/timer.c	\
+	$s/util.c	\
+	$s/xfloat.c
 
 
+# C compiler driver
+bin_PROGRAMS = unicl
+
+unicl_SOURCES = unicl.c
+unicl_LDADD = libport.a
+unicl_CFLAGS = -I $s $(AM_CFLAGS)
+
+
+# Print platform information
+noinst_PROGRAMS = platform
+
+platform_CFLAGS = -I $s $(AM_CFLAGS)

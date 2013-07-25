@@ -41,6 +41,9 @@
 #include "stab.h"
 #include "tform.h"
 #include "util.h"
+#include "sefo.h"
+#include "comsg.h"
+#include "strops.h"
 
 
 extern Bool	genfoamDebug;

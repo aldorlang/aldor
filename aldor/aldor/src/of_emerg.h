@@ -9,7 +9,7 @@
 #ifndef _OF_EMERG_H_
 #define _OF_EMERG_H_
 
-# include "axlobs.h"
+#include "axlobs.h"
 
 extern  void     	emMergeUnit    	(Foam);
 extern 	void		emSetNoAlias	(void);

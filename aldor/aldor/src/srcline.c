@@ -8,6 +8,8 @@
 
 #include "axlobs.h"
 #include "store.h"
+#include "srcline.h"
+#include "strops.h"
 
 SrcLine
 slineNew(SrcPos spos, int indent, String text)

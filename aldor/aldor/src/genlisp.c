@@ -8,6 +8,8 @@
 
 #include "gf_util.h"
 #include "util.h"
+#include "strops.h"
+#include "sexpr.h"
 
 /*
  * The following naming conventions are used in this file:
@@ -973,6 +975,7 @@ gl0Prog(Foam lhs, Foam prog)
 	
 	glvLexFormats = 0;
 	foamFree(glvActualLexFormats);
+	glvActualLexFormats = NULL;
 	return(sxNConc(hdr,sxNConc(ei,sx)));
 }
 
@@ -1069,6 +1072,10 @@ gl0UseEnv(Foam foam)
 		break;
 	}
 	
+	if (glvLexFormats == NULL) {
+		printf("Internal warning: Use Env called outside gl0Prog (glvLexFormats is NULL)\n");
+		return;
+	}
 	if (glvActualLexFormats->foamDEnv.argv[level] == emptyFormatSlot
 	    || glvActualLexFormats->foamDEnv.argv[level] == 0)
 		glvActualLexFormats->foamDEnv.argv[level] = val;

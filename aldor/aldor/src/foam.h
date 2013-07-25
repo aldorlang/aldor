@@ -9,7 +9,7 @@
 #ifndef _FOAM_H_
 #define _FOAM_H_
 
-# include "axlobs.h"
+#include "axlobs.h"
 
 /*****************************************************************************
  *

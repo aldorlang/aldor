@@ -30,6 +30,7 @@
 #include "of_rrfmt.h"
 #include "optfoam.h"
 #include "store.h"
+#include "strops.h"
 
 Bool	optfDebug = false;
 

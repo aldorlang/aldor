@@ -14,7 +14,7 @@
  * possible should be used.
  *
  *   	stdc.h		-- Fixups to make enviroment closer to Stanard C
- *   	axlport.h	-- Additional portability definitions
+ *   	cport.h	-- Additional portability definitions
  *
  *   	axlgen0.h	-- General functions on standard types
  *   	axlgen.h		-- Additional general types
@@ -29,8 +29,8 @@
 #define _AXLTOP_H_
 
 /* Pre-empt the include by axlphase.h to avoid too deep nesting. */
-# include "axlgen.h"
+#include "axlgen.h"
 
-# include "axlcomp.h"
+#include "axlcomp.h"
 
 #endif	/* !_AXLTOP_H_ */

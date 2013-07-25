@@ -132,6 +132,7 @@
 #include "optfoam.h"
 #include "store.h"
 #include "util.h"
+#include "fbox.h"
 
 /****************************************************************************
  *
@@ -719,6 +720,7 @@ cseFillGenKill(FlowGraph flog, BBlock bb)
 	/*
 	 * Clear the vectors.
 	 */
+	bitvClearAll(class, dfFwdIn(bb));
 	bitvClearAll(class, dfFwdGen(bb));
 	bitvClearAll(class, dfFwdKill(bb, int0));
 

@@ -9,7 +9,7 @@
 #ifndef _FNAME_H_
 #define _FNAME_H_
 
-# include "axlport.h"
+#include "cport.h"
 
 typedef struct fileName {
 	String	partv[NARY];

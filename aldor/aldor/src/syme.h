@@ -9,8 +9,9 @@
 #ifndef _SYME_H_
 #define _SYME_H_
 
-# include "axlobs.h"
-# include "forg.h"
+#include "axlobs.h"
+#include "forg.h"
+#include "msg.h"
 
 /******************************************************************************
  *
@@ -48,8 +49,8 @@ typedef Enum(symeTag)	SymeTag;
 
 struct symeInfo {
 	SymeTag		kind;
-	String		str;
-	String		descr;
+	CString		str;
+	CString		descr;
 	Msg		msgId; 		
 };
 

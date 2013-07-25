@@ -9,7 +9,7 @@
 #ifndef _PRIQ_H
 #define _PRIQ_H
 
-# include "axlport.h"
+#include "cport.h"
 
 typedef struct priq     *PriQ;
 

@@ -20,6 +20,13 @@
 #include "syscmd.h"
 #include "util.h"
 #include "xfloat.h"
+#include "syme.h"
+#include "archive.h"
+#include "lib.h"
+#include "abpretty.h"
+#include "comsg.h"
+#include "strops.h"
+#include "bigint.h"
 
 
 

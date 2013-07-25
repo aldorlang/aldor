@@ -10,6 +10,7 @@
 #define _TERROR_H_
 
 #include "axlobs.h"
+#include "comsgdb.h"
 
 extern Bool terror (Stab stab, AbSyn absyn, TForm type);
 extern void terrorNoTypes	    (Msg, AbSyn, TForm, TPoss);

@@ -9,7 +9,8 @@
 #ifndef _SEFO_H_
 #define _SEFO_H_
 
-# include "axlobs.h"
+#include "axlobs.h"
+#include "syme.h"
 
 #define			abIsSefo(ab)	(abState(ab) == AB_State_HasUnique)
 
