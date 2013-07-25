@@ -11,6 +11,12 @@
 #include "spesym.h"
 #include "stab.h"
 #include "store.h"
+#include "sefo.h"
+#include "lib.h"
+#include "tqual.h"
+#include "abpretty.h"
+#include "comsg.h"
+#include "strops.h"
 
 Bool	tqDebug		= false;
 

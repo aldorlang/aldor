@@ -9,7 +9,7 @@
 #ifndef _CCODE_H_
 #define _CCODE_H_
 
-#include "axlport.h"
+#include "cport.h"
 
 #include "srcpos.h"
 #include "strops.h"
@@ -331,7 +331,7 @@
  *
  *****************************************************************************/
 
-typedef enum ccodeTag {
+enum ccodeTag {
     CCO_START,
 	CCO_Unit = CCO_START,		/* file		 */
 
@@ -457,7 +457,9 @@ typedef enum ccodeTag {
         /* Meta-nodes */
         CCO_Many,                       /* many args, determined by context */
     CCO_LIMIT
-} CCodeTag;
+};
+
+typedef Enum(ccodeTag) CCodeTag;
 
 
 /******************************************************************************
@@ -627,14 +629,16 @@ union ccode {
  *
  *****************************************************************************/
 
-typedef enum {
+enum ccodeKind {
         CCOK_Keywd,     /* auto, char, ... */
         CCOK_Infix,     /* +,  -,  ->, ... */
         CCOK_Prefix,    /* ++, --, &, ... */
         CCOK_Postfix,   /* ++, -- */
         CCOK_Token,     /* ids, strings, ... */
         CCOK_Misc       /* for, decls, ... */
-} CCodeKind;
+};
+
+typedef Enum(ccodeKind) CCodeKind;
 
 struct cco_info {
         BPack(CCodeTag)  tag;
@@ -656,11 +660,13 @@ extern struct cco_info ccoInfoTable[];
  *****************************************************************************/
 
 /* Note: StandardC and OldC are mutually exclusive. */
-typedef enum {
+enum ccodeMode {
         CCOM_StandardC = 1 << 0,
         CCOM_OldC      = 1 << 1,
 	CCOM_LineNo    = 1 << 2
-} CCodeMode;
+};
+
+typedef Enum(ccodeMode) CCodeMode;
 
 
 typedef void (*CCodeSrcFn)(SrcPos, String *fname, Length *lno, Length *cno);

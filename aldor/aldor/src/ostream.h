@@ -1,6 +1,7 @@
 #ifndef _OSTREAM_H
 #define _OSTREAM_H
-#include "axlport.h"
+
+#include "cport.h"
 #include "buffer.h"
 
 typedef struct _OStream *OStream;

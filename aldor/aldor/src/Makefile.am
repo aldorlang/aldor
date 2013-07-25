@@ -1,6 +1,7 @@
 #SUBDIRS = . java
 
-bin_PROGRAMS = aldor javagen
+libexec_PROGRAMS = aldor
+bin_PROGRAMS = javagen
 noinst_PROGRAMS = aldortest structtest gentest
 
 dataincludedir = $(datadir)/include
@@ -44,7 +45,7 @@ aldor_LDADD = libphase.a libstruct.a libgen.a libport.a -lm
 aldor_LDFLAGS =
 aldor_CFLAGS  = -g
 
-aldortest_CFLAGS = -DTEST_STAND_ALONE -DTEST_ALL --save-temps
+aldortest_CFLAGS = -DTEST_STAND_ALONE -DTEST_ALL -save-temps
 aldortest_SOURCES = test.c
 aldortest_LDADD = libtest.a libstruct.a libgen.a libport.a -lm
 aldortest_LDFLAGS = 
@@ -230,9 +231,9 @@ libphase_a_SOURCES =	\
 	terror.c	\
 	ti_bup.c	\
 	ti_decl.c	\
-	tinfer.c	\
 	ti_sef.c	\
 	ti_tdn.c	\
+	tinfer.c	\
 	usedef.c
 
 #libphase_a_LIBADD = libstruct.a libgen.a libport.a

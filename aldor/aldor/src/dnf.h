@@ -9,7 +9,7 @@
 #ifndef _DNF_H_
 #define _DNF_H_
 
-#include "axlport.h"
+#include "cport.h"
 
 /*
  * The literals are numbers:

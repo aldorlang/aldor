@@ -12,6 +12,8 @@
 
 #include "debug.h"
 #include "phase.h"
+#include "comsg.h"
+#include "strops.h"
 
 static TokenList        yytoklist;      /* The unseen tokens */
 static int              yyerrcount;

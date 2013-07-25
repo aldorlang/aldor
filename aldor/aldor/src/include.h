@@ -9,7 +9,7 @@
 #ifndef _INCLUDE_H_
 #define _INCLUDE_H_
 
-# include "axlobs.h"
+#include "axlobs.h"
 
 typedef Bool		(*InclIsContinuedFun)(String line);
 			/*

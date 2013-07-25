@@ -9,7 +9,7 @@
 #ifndef _ABNORM_H_
 #define _ABNORM_H_
 
-# include "axlobs.h"
+#include "axlobs.h"
 
 extern AbSyn abNormal   (AbSyn, Bool);
 

@@ -12,7 +12,7 @@
 #ifndef _PARSEBY_H_
 #define _PARSEBY_H_
 
-# include "axlobs.h"
+#include "axlobs.h"
 
 extern AbSyn parse             (TokenList *prest);
 

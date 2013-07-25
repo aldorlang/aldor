@@ -1,6 +1,7 @@
 #include "axlobs.h"
 #include "format.h"
 #include "testlib.h"
+#include "strops.h"
 
 local void testPrintf1();
 local void testPrintf2();

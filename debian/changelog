@@ -1,10 +1,28 @@
-aldor (1.2.0~20130720) precise; urgency=low
+aldor (1.2.0+20130721.2) precise; urgency=low
+
+  * Fix package for Ubuntu directory layout.
+
+ -- Pippijn van Steenhoven <pippijn@xinutec.org>  Sun, 21 Jul 2013 10:52:47 +0200
+
+aldor (1.2.0+20130721.1) precise; urgency=low
+
+  * Fix package on i386.
+
+ -- Pippijn van Steenhoven <pippijn@xinutec.org>  Sun, 21 Jul 2013 10:47:04 +0200
+
+aldor (1.2.0+20130721) precise; urgency=low
+
+  * Add aldor wrapper script for inferring ALDORROOT.
+
+ -- Pippijn van Steenhoven <pippijn@xinutec.org>  Sun, 21 Jul 2013 03:49:34 +0200
+
+aldor (1.2.0+20130720) precise; urgency=low
 
   * Prefer libgmp-dev and use libgmp3-dev if that doesn't exist.
 
  -- Pippijn van Steenhoven <pippijn@xinutec.org>  Sat, 20 Jul 2013 17:32:08 +0200
 
-aldor (1.2.0~20130718) precise; urgency=low
+aldor (1.2.0) precise; urgency=low
 
   * Initial release (Closes: #9999)
 

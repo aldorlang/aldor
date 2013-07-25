@@ -10,7 +10,7 @@
 #ifndef _GF_SEQ_H_
 #define _GF_SEQ_H_
 
-# include "axlobs.h"
+#include "axlobs.h"
 
 extern Foam genFix		(AbSyn);
 extern void gen0DefTypeSequence	(AbSyn, SymeList);

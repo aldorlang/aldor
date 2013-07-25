@@ -9,7 +9,8 @@
 #ifndef _COMSG_H_
 #define _COMSG_H_
 
-# include "axlobs.h"
+#include "axlobs.h"
+#include "comsgdb.h"
 
 enum comsgTag {
 	COMSG_REMARK,

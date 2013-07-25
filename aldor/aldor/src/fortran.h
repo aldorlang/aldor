@@ -9,7 +9,7 @@
 #ifndef _FORTRAN_H_
 #define _FORTRAN_H_
 
-typedef enum
+enum fortranType
 {
 	FTN_Machine = 1,
 	FTN_FSComplex,
@@ -25,7 +25,9 @@ typedef enum
 	FTN_FDouble,
 	FTN_Array,
 	FTN_Word
-} FortranType;
+};
+
+typedef Enum(fortranType) FortranType;
 
 #define MODIFIABLEARG "[Modifiable]"
 

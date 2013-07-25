@@ -9,7 +9,7 @@
 #ifndef _OF_DEADV_H_
 #define _OF_DEADV_H_
 
-# include "axlobs.h"
+#include "axlobs.h"
 
 extern void		dvInit			(void);
 extern void     	dvElim		    	(Foam);

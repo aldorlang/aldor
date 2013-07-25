@@ -10,6 +10,8 @@
 #define _STAB_H_
 
 #include "axlobs.h"
+#include "syme.h"
+#include "tform.h"
 
 /******************************************************************************
  *

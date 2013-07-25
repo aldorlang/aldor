@@ -13,6 +13,7 @@
 #include "optfoam.h"
 #include "opttools.h"
 #include "store.h"
+#include "fbox.h"
 
 /******************************************************************************
  *

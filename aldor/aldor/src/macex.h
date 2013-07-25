@@ -9,7 +9,7 @@
 #ifndef _MACEX_H_
 #define _MACEX_H_
 
-# include "axlobs.h"
+#include "axlobs.h"
 
 extern void 	macexInitFile	(void);
 extern void 	macexFiniFile	(void);

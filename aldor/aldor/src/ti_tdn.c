@@ -16,6 +16,12 @@
 #include "ti_tdn.h"
 #include "tinfer.h"
 #include "util.h"
+#include "lib.h"
+#include "tposs.h"
+#include "tfsat.h"
+#include "ablogic.h"
+#include "abpretty.h"
+#include "comsg.h"
 
 /*
  * To do:

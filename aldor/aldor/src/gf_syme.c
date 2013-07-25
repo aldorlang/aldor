@@ -3,6 +3,8 @@
 #include "gf_syme.h"
 #include "stab.h"
 #include "store.h"
+#include "sefo.h"
+#include "lib.h"
 
 static Length	gen0SymeTableC;
 static Syme	*gen0SymeTableV;

@@ -9,11 +9,11 @@
 #ifndef _BUFFER_H_
 #define _BUFFER_H_
 
-# include "axlport.h"
+#include "cport.h"
 
 #define BUF_INIT_SIZE	64
 
-typedef struct {
+typedef struct buffer {
 	Length		pos;		/* amount used == next position */
 	Length		argc;		/* amount available */
 	UByte		*argv;

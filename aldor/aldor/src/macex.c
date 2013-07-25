@@ -23,6 +23,10 @@
 #include "format.h"
 #include "phase.h"
 #include "store.h"
+#include "doc.h"
+#include "comsg.h"
+#include "symbol.h"
+#include "strops.h"
  
 # undef MacDeclArgs
 

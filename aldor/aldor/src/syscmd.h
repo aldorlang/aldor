@@ -9,7 +9,7 @@
 #ifndef _SYSCMD_H_
 #define _SYSCMD_H_
 
-# include "axlobs.h"
+#include "axlobs.h"
 
 /*
  * Top-level dispatchers.

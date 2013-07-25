@@ -9,7 +9,7 @@
 #ifndef _GENSSA_H_
 #define _GENSSA_H_
 
-# include "axlobs.h"
+#include "axlobs.h"
 
 /*
  * We keep a doubly-linked list of identifier uses. 

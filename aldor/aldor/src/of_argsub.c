@@ -9,6 +9,11 @@
 #include "debug.h"
 #include "of_argsub.h"
 #include "store.h"
+#include "util.h"
+#include "sefo.h"
+#include "lib.h"
+#include "symbol.h"
+#include "strops.h"
 
 /*
  * IMPORTANT: this is code "in progress" so don't link it in yet!
@@ -174,7 +179,7 @@ argsubUnit(Foam unit)
 	if (agsNumConsts)
 	{
 		agsDEBUG({(void)fprintf(dbOut, "(%d new constants)\n",
-				agsNumConsts);});
+				(int)agsNumConsts);});
 	}
 
 
@@ -642,7 +647,7 @@ agsDoOCall(Foam foam)
 	agsDEBUG({
 		for (i = 0; i < rargc; i++)
 		{
-			(void)fprintf(dbOut, "     [%d] = ", i);
+			(void)fprintf(dbOut, "     [%d] = ", (int)i);
 			foamPrintDb(sigma[i]);
 		}
 	});

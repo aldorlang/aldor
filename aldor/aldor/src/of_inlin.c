@@ -113,6 +113,15 @@
 #include "stab.h"
 #include "store.h"
 #include "util.h"
+#include "sefo.h"
+#include "lib.h"
+#include "tqual.h"
+#include "tfsat.h"
+#include "absub.h"
+#include "abpretty.h"
+#include "symbol.h"
+#include "strops.h"
+#include "fbox.h"
 
 
 /*****************************************************************************

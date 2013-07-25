@@ -436,7 +436,7 @@ struct HeapSeg {
 # define getDynStoreArea() ((struct DynStoreArea *) getRegister(13)) /* bound */
 # define getTaskCommArea() ((struct TaskCommArea *) getRegister(12))
 
-# include <setjmp.h>
+#include <setjmp.h>
 
 ULong
 getRegister(int n)

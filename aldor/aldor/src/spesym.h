@@ -9,7 +9,7 @@
 #ifndef _SPESYM_H_
 #define _SPESYM_H_
 
-# include "symbol.h"
+#include "symbol.h"
 
 extern void	ssymInit(void);
 

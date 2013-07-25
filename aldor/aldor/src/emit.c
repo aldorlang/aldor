@@ -16,6 +16,10 @@
 #include "opsys.h"
 #include "stab.h"
 #include "store.h"
+#include "lib.h"
+#include "comsg.h"
+#include "ccode.h"
+#include "sexpr.h"
 
 /****************************************************************************
  *

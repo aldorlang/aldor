@@ -13,6 +13,7 @@
 #include "of_util.h"
 #include "loops.h"
 #include "optfoam.h"
+#include "strops.h"
 
 Bool	inuProgDebug = false;
 

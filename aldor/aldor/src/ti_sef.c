@@ -15,6 +15,11 @@
 #include "tinfer.h"
 #include "terror.h"
 #include "util.h"
+#include "sefo.h"
+#include "lib.h"
+#include "tposs.h"
+#include "tfsat.h"
+#include "abpretty.h"
 
 /* see ti_tdn.c for definitions of following */
 

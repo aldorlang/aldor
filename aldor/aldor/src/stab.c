@@ -14,6 +14,17 @@
 #include "spesym.h"
 #include "stab.h"
 #include "store.h"
+#include "sefo.h"
+#include "lib.h"
+#include "tqual.h"
+#include "tposs.h"
+#include "tfsat.h"
+#include "ablogic.h"
+#include "abpretty.h"
+#include "doc.h"
+#include "comsg.h"
+#include "table.h"
+#include "strops.h"
 
 Bool	stabDebug		= false;
 Bool	stabImportDebug		= false;

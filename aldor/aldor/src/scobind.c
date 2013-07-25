@@ -15,6 +15,14 @@
 #include "store.h"
 #include "tfcond.h"
 #include "util.h"
+#include "lib.h"
+#include "tqual.h"
+#include "tposs.h"
+#include "abpretty.h"
+#include "doc.h"
+#include "comsg.h"
+#include "strops.h"
+#include "table.h"
 
 Bool	scoDebug		= false;
 Bool	scoStabDebug		= false;

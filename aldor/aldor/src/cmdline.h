@@ -9,7 +9,7 @@
 #ifndef _CMDLINE_H_
 #define _CMDLINE_H_
 
-# include "axlgen.h"
+#include "axlgen.h"
 
 extern int	cmdArguments(int argi0, int argc, String *argv);
 			/*

@@ -9,7 +9,7 @@
 #ifndef _OF_JFLOW_H_
 #define _OF_JFLOW_H_
 
-# include "axlobs.h"
+#include "axlobs.h"
 
 extern void     	jflowUnit    	(Foam, int);
 extern void     	jflowProg    	(Foam);

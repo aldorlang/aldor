@@ -45,15 +45,13 @@ fiBIntFrPlacev(int isNeg,unsigned long  placec,unsigned short * data)
 }
 
 FiBInt
-fiBIntFrInt(n)
-	long	n;
+fiBIntFrInt(long n)
 {
 	return (FiBInt) bintNew(n);
 }
 
 FiBInt
-fiBIntMake(b)
-	FiPtr	b;
+fiBIntMake(FiPtr b)
 {
 	return (FiBInt) b;
 }
@@ -71,141 +69,123 @@ fiBInt1(void)
 }
 
 FiBInt
-fiBIntNew(i)
-	long i;
+fiBIntNew(long i)
 {
 	return (FiBInt) bintNew(i);
 }
 
 FiBool
-fiBIntIsZero(b)
-	FiBInt b;
+fiBIntIsZero(FiBInt b)
 {
 	return (FiBool) bintIsZero((BInt) b);
 }
 
 FiBool
-fiBIntIsPos(b)
-	FiBInt b;
+fiBIntIsPos(FiBInt b)
 {
 	return (FiBool) bintIsPos((BInt) b);
 }
 
 FiBool
-fiBIntIsNeg(b)
-	FiBInt b;
+fiBIntIsNeg(FiBInt b)
 {
 	return (FiBool) bintIsNeg((BInt) b);
 }
 
 FiBool
-fiBIntIsSingle(b)
-	FiBInt b;
+fiBIntIsSingle(FiBInt b)
 {
 	/* '<' to allow space for sign bit */
 	return (FiBool) (bintLength((BInt) b) < bitsizeof(FiSInt));
 }
 
 FiBool
-fiBIntLE(a, b)
-	FiBInt a, b;
+fiBIntLE(FiBInt a, FiBInt b)
 {
 	return (FiBool) bintLE((BInt) a, (BInt) b);
 }
 
 FiBool
-fiBIntEQ(a, b)
-	FiBInt a, b;
+fiBIntEQ(FiBInt a, FiBInt b)
 {
 	return (FiBool) bintEQ((BInt) a, (BInt) b);
 }
 
 FiBool
-fiBIntLT(a, b)
-	FiBInt a, b;
+fiBIntLT(FiBInt a, FiBInt b)
 {
 	return (FiBool) bintLT((BInt) a, (BInt) b);
 }
 
 FiBool
-fiBIntNE(a, b)
-	FiBInt a, b;
+fiBIntNE(FiBInt a, FiBInt b)
 {
 	return (FiBool) bintNE((BInt) a, (BInt) b);
 }
 
 FiBInt
-fiBIntNegate(b)
-	FiBInt b;
+fiBIntNegate(FiBInt b)
 {
 	return (FiBInt) bintNegate((BInt) b);
 }
 
-FiBInt	
-fiBIntPlus(a, b)
-	FiBInt a, b;
+FiBInt
+fiBIntPlus(FiBInt a, FiBInt b)
 {
 	return (FiBInt) bintPlus((BInt) a, (BInt) b);
 }
 	
-FiBInt	
-fiBIntMinus(a, b)
-	FiBInt a, b;
+FiBInt
+fiBIntMinus(FiBInt a, FiBInt b)
 {
 	return (FiBInt) bintMinus((BInt) a, (BInt) b);
 }
 	
-FiBInt	
-fiBIntTimes(a, b)
-	FiBInt a, b;
+FiBInt
+fiBIntTimes(FiBInt a, FiBInt b)
 {
 	return (FiBInt) bintTimes((BInt) a, (BInt) b);
 }
 	
 FiBInt
-fiBIntTimesPlus(a, b, c)
-	FiBInt	a, b, c;
+fiBIntTimesPlus(FiBInt a, FiBInt b, FiBInt c)
 {
 	return (FiBInt) bintPlus(bintTimes((BInt) a, (BInt) b), (BInt) c);
 }
 
-FiSInt	
-fiBIntLength(b)
-	FiBInt b;
+FiSInt
+fiBIntLength(FiBInt b)
 {
 	return (FiSInt) bintLength((BInt) b);
 }
 	
-FiBInt	
+FiBInt
 fiBIntShiftUp(FiBInt b, FiSInt n)
 {
 	return (FiBInt) bintShift((BInt) b, n);
 }
 	
 	
-FiBInt	
-fiBIntShiftDn(FiBInt b,FiSInt n)
+FiBInt
+fiBIntShiftDn(FiBInt b, FiSInt n)
 {
 	return (FiBInt) bintShift((BInt) b, -n);
 }
 
-FiBInt	
-fiBIntShiftRem(FiBInt b,FiSInt n)
+FiBInt
+fiBIntShiftRem(FiBInt b, FiSInt n)
 {
 	return (FiBInt) bintShiftRem((BInt) b, n);
 }
 	
-FiBool	
-fiBIntBit(b, n)
-	FiBInt b;
-	FiSInt	n;
+FiBool
+fiBIntBit(FiBInt b, FiSInt n)
 {
 	return (FiBool) bintBit((BInt) b, (Length) n);
 }
 	
-FiBInt	
-fiBIntMod(a, b)
-	FiBInt a, b;
+FiBInt
+fiBIntMod(FiBInt a, FiBInt b)
 {
 	BInt	r;
 	if (bintIsZero((BInt) b)) {
@@ -216,9 +196,8 @@ fiBIntMod(a, b)
 	return (FiBInt) r;
 }
 
-FiBInt	
-fiBIntQuo(a, b)
-	FiBInt a, b;
+FiBInt
+fiBIntQuo(FiBInt a, FiBInt b)
 {
 	BInt	r;
 
@@ -229,9 +208,8 @@ fiBIntQuo(a, b)
 	return (FiBInt) bintDivide(&r, (BInt) a, (BInt) b);
 }
 
-FiBInt	
-fiBIntRem(a, b)
-	FiBInt a, b;
+FiBInt
+fiBIntRem(FiBInt a, FiBInt b)
 {
 	BInt	r;
 	if (bintIsZero((BInt) b)) {
@@ -243,9 +221,7 @@ fiBIntRem(a, b)
 }
 
 void
-fiBIntDivide(a, b, r0, r1)
-	FiBInt a, b;
-	FiBInt *r0, *r1;
+fiBIntDivide(FiBInt a, FiBInt b, FiBInt *r0, FiBInt *r1)
 {
 	BInt	rem;
 	if (bintIsZero((BInt) b)) {
@@ -261,9 +237,8 @@ fiBIntDivide(a, b, r0, r1)
  *!! Should get DHL to rewrite this.
  *!! Or at least use iintDivide.
  */
-FiBInt	
-fiBIntGcd(a, b)
-	FiBInt a, b;
+FiBInt
+fiBIntGcd(FiBInt a, FiBInt b)
 {
 	BInt	c, d, c0, d0, t, q;
 
@@ -286,10 +261,8 @@ fiBIntGcd(a, b)
 /*
  *!! Should use iint{Times,Plus}.
  */
-FiBInt	
-fiBIntSIPower(a0, b)
-	FiBInt a0;
-	FiSInt b;
+FiBInt
+fiBIntSIPower(FiBInt a0, FiSInt b)
 {
 	BInt	a, p, t;
 	int	i, l;
@@ -324,10 +297,8 @@ fiBIntSIPower(a0, b)
 /*
  *!! Should use iint{Times,Plus}.
  */
-FiBInt	
-fiBIntBIPower(a0, b0)
-	FiBInt a0;
-	FiBInt b0;
+FiBInt
+fiBIntBIPower(FiBInt a0, FiBInt b0)
 {
 	BInt	a, b, p, t;
 	int	i, l;
@@ -362,8 +333,7 @@ fiBIntBIPower(a0, b0)
 }
 
 FiBInt
-fiBIntPowerMod(a0, b0, c0)
-	FiBInt	a0, b0, c0;
+fiBIntPowerMod(FiBInt a0, FiBInt b0, FiBInt c0)
 {
 	BInt    reda;
 	BInt	a, b, c, p, t;
@@ -406,11 +376,7 @@ fiBIntPowerMod(a0, b0, c0)
 
 
 void
-fiScanBInt(s, i, r0, r1)
-	FiArr s;
-	FiSInt i;
-	FiBInt *r0;
-	FiSInt *r1;
+fiScanBInt(FiArr s, FiSInt i, FiBInt *r0, FiSInt *r1)
 {
 	String end;
 	*r0 = (FiBInt) bintScanFrString((String) s + i, &end);
@@ -419,10 +385,7 @@ fiScanBInt(s, i, r0, r1)
 }
 
 FiSInt
-fiFormatBInt(x, s, i)
-	FiBInt x;
-	FiArr s;
-	FiSInt i;
+fiFormatBInt(FiBInt x, FiArr s, FiSInt i)
 {
 	String	buf;
 	int	l;
@@ -438,22 +401,19 @@ fiFormatBInt(x, s, i)
 }
 
 char *
-fiBIntToString(x)
-	FiBInt x;
+fiBIntToString(FiBInt x)
 {
 	return bintToString((BInt)x);
 }
 
 FiBInt
-fiSIntToBInt(i)
-	FiSInt	i;
+fiSIntToBInt(FiSInt i)
 {
 	return (FiBInt) bintNew(i);
 }
 
 FiSInt
-fiBIntToSInt(b)
-	FiBInt	b;
+fiBIntToSInt(FiBInt b)
 {
 	if (bintIsSmall((BInt) b))
 		return (FiSInt) bintSmall((BInt) b);
@@ -473,16 +433,14 @@ fiBIntToSInt(b)
 }
 
 FiSFlo
-fiBIntToSFlo(b)
-	FiBInt	b;
+fiBIntToSFlo(FiBInt b)
 {
 	if (bintIsZero((BInt) b)) return 0.0;
 	return (FiSFlo) atof(bintToString((BInt) b));
 }
 
 FiDFlo
-fiBIntToDFlo(b)
-	FiBInt b;
+fiBIntToDFlo(FiBInt b)
 {
 	if (bintIsZero((BInt) b)) return 0.0;
 	return (FiDFlo) atof(bintToString((BInt) b));
@@ -490,15 +448,13 @@ fiBIntToDFlo(b)
 
 
 FiBInt
-fiArrToBInt(s)
-	FiArr s;
+fiArrToBInt(FiArr s)
 {
 	return (FiBInt) bintFrString((String) s);
 }
 
 void
-fiBIntFree(b)
-	FiBInt b;
+fiBIntFree(FiBInt b)
 {
 	bintFree((BInt) b);
 }

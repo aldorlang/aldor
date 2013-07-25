@@ -9,7 +9,7 @@
 #ifndef _ABPRETTY_H_
 #define _ABPRETTY_H_
 
-# include "axlobs.h"
+#include "axlobs.h"
 
 #define ABPP_UNCLIPPED	(200000L)
 #define ABPP_NOINDENT	(-1)

@@ -9,7 +9,7 @@
 #ifndef _USEDEF_H_
 #define _USEDEF_H_
 
-# include "axlobs.h"
+#include "axlobs.h"
 
 # define	udReachingDefs(foam)	((foam)->foamGen.hdr.info.defList)
 # define	udInfoDef(udinfo)	((udinfo)->foam)

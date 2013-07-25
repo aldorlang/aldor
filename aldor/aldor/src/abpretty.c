@@ -8,6 +8,13 @@
 
 #include "axlobs.h"
 #include "spesym.h"
+#include "syme.h"
+#include "lib.h"
+#include "tform.h"
+#include "abpretty.h"
+#include "doc.h"
+#include "comsg.h"
+#include "strops.h"
 
 
 #define CONTINUED	"..."
@@ -21,7 +28,7 @@
 
 local Bool	abPPClipped0(Buffer, AbSyn, long *pmaxchars);
 local Bool	abPPPutc(Buffer, int, long *pmaxchars);
-local Bool	abPPPuts(Buffer, String, long *pmaxchars);
+local Bool	abPPPuts(Buffer, CString, long *pmaxchars);
 
 local Bool	abPPSingleNewLine(Buffer buf, long *pmaxchars);
 local Bool	abPPIndent(Buffer buf, long *pmaxchars);
@@ -688,9 +695,9 @@ abPPPutc(Buffer buf, int c, long *pmaxchars)
 }
 
 local Bool
-abPPPuts(Buffer buf, String s, long *pmaxchars)
+abPPPuts(Buffer buf, CString s, long *pmaxchars)
 {
-	int	n = strlen(s);
+	int	n = strLength(s);
 
 	if (*pmaxchars >= n) {
 		/* String fits completely */
@@ -1069,7 +1076,7 @@ local Bool
 symeClipped0(Buffer buf, Syme syme, long *pmaxchars)
 {
 	Bool	f;		/* Fits? */
-	String	str;
+	CString	str;
 
 	assert(syme != 0);
 

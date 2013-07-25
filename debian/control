@@ -17,7 +17,7 @@ Vcs-Browser: https://github.com/pippijn/aldor
 Package: aldor
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
-Description: Aldor compiler and libraries
+Description: Compiler and libraries for the Aldor Programming Language
  The Aldor Programming Language is the successor of A# as the extension
  language of the Axiom computer algebra system.
  .

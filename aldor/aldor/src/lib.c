@@ -18,6 +18,14 @@
 #include "stab.h"
 #include "store.h"
 #include "util.h"
+#include "sefo.h"
+#include "archive.h"
+#include "lib.h"
+#include "tqual.h"
+#include "doc.h"
+#include "comsg.h"
+#include "strops.h"
+#include "table.h"
 
 Bool	libDebug 	= false;
 Bool	libLazyDebug 	= false;

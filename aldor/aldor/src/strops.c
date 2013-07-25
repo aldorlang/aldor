@@ -36,13 +36,13 @@ strResize(String s, Length n)
 }
 
 Length
-strLength(String s)
+strLength(CString s)
 {
 	return strlen(s);
 }
 
 Length
-strUntabLength(String s, Length tabstop)
+strUntabLength(CString s, Length tabstop)
 {
         int     l, r;
 

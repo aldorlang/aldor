@@ -18,6 +18,19 @@
 #include "ti_top.h"
 #include "tinfer.h"
 #include "util.h"
+#include "sefo.h"
+#include "archive.h"
+#include "lib.h"
+#include "tqual.h"
+#include "tconst.h"
+#include "tposs.h"
+#include "tfsat.h"
+#include "freevar.h"
+#include "absub.h"
+#include "ablogic.h"
+#include "abpretty.h"
+#include "comsg.h"
+#include "strops.h"
 
 Bool	tfDebug		= false;
 Bool	tfExprDebug	= false;

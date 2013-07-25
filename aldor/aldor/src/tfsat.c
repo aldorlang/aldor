@@ -13,6 +13,14 @@
 #include "stab.h"
 #include "terror.h"
 #include "ti_top.h"
+#include "sefo.h"
+#include "lib.h"
+#include "tconst.h"
+#include "tposs.h"
+#include "tfsat.h"
+#include "absub.h"
+#include "ablogic.h"
+#include "comsg.h"
 
 Bool			tfsDebug 		= false;
 Bool			tfsMultiDebug		= false;

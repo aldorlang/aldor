@@ -9,7 +9,7 @@
 #ifndef _CPORT_H_
 #define _CPORT_H_
 
-# include "stdc.h"
+#include "stdc.h"
 
 /****************************************************************************
  *

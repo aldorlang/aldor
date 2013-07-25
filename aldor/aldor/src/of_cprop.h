@@ -9,7 +9,7 @@
 #ifndef OF_CPROP_H
 #define OF_CPROP_H
 
-# include "axlobs.h"
+#include "axlobs.h"
 
 /****************************************************************************
  *

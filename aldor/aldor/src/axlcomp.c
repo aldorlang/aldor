@@ -40,6 +40,12 @@
 #include "tinfer.h"
 #include "util.h"
 #include "version.h"
+#include "archive.h"
+#include "lib.h"
+#include "ablogic.h"
+#include "abpretty.h"
+#include "srcline.h"
+#include "comsg.h"
 
 String 		compRootDir     = 0;
 Bool   		compIsDebug     = false;

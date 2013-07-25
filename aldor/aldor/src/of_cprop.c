@@ -71,6 +71,7 @@
 #include "optfoam.h"
 #include "opttools.h"
 #include "store.h"
+#include "bigint.h"
 
 /****************************************************************************
  * :: Macros

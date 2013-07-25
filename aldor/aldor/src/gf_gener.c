@@ -14,6 +14,8 @@
 #include "of_inlin.h"
 #include "of_util.h"
 #include "store.h"
+#include "tform.h"
+#include "comsg.h"
 
 #define GenerBetterGuesses
 

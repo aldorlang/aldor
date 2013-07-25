@@ -9,7 +9,7 @@
 #ifndef _GENLISP_H_
 #define _GENLISP_H_
 
-# include "axlobs.h"
+#include "axlobs.h"
 
 extern int	genLispOption(String);
 

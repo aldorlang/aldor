@@ -185,7 +185,7 @@ osDirSwap(String dest, String orgbuf, Length orgsiz)
 
 #ifdef CC_GNU
 # define  OS_UnixLike_Alloc
-# include "os_unix.c"
+#include "os_unix.c"
 # undef   OS_UnixLike_Alloc
 #endif /* CC_GNU */
 
@@ -225,7 +225,7 @@ osAllocShow(void)
 
 #ifdef CC_GNU
 # define  OS_UnixLike_MemMap
-# include "os_unix.c"
+#include "os_unix.c"
 # undef   OS_UnixLike_MemMap
 #endif /* CC_GNU */
 
@@ -233,8 +233,8 @@ osAllocShow(void)
 #if defined(__LARGE__)
 #define OS_Has_MemMap
 
-# include <dos.h>
-# include <alloc.h>
+#include <dos.h>
+#include <alloc.h>
 
 struct osMemMap *
 osMemMap(int mask)

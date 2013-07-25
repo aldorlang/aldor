@@ -17,15 +17,21 @@
 #define _AXLOBS_H_
 
 #include "axlgen.h"
-#include "ccode.h"
-#include "comsgdb.h"
 #include "list.h"
-#include "sexpr.h"
 
 /*
  * Forward declarations of the types
  */
+typedef union  SExprUnion *        SExpr;
+typedef union  ccode *             CCode;
 typedef struct srcLine *           SrcLine;
+typedef ULong			   SrcPos;
+typedef struct sposCell	*	   SrcPosCell;
+typedef union  sposStack           SrcPosStack;
+typedef struct symbol *            Symbol;
+typedef struct table *             Table;
+typedef struct fileName *          FileName;
+typedef struct bint *              BInt;
 typedef struct comsg *		   CoMsg;
 typedef struct token *             Token;
 typedef struct doc *		   Doc;
@@ -100,27 +106,8 @@ DECLARE_LIST(SymeList);
 /*
  * Include files which give meaning to the above declarations.
  */
-# include "comsg.h"
-# include "srcline.h"
-# include "token.h"
-# include "doc.h"
-# include "absyn.h"
-# include "abpretty.h"
-# include "ablogic.h"
-# include "absub.h"
-# include "freevar.h"
-# include "tform.h"
-# include "tfsat.h"
-# include "tposs.h"
-# include "tconst.h"
-# include "tqual.h"
-# include "foam.h"
-# include "lib.h"
-# include "archive.h"
-# include "syme.h"
-# include "sefo.h"
-# include "comsg.h"
-# include "fbox.h"
+#include "absyn.h"
+#include "foam.h"
 
 /*
  * Tags for labelled storage.  These continue where "axlgen.h" ends.

@@ -9,7 +9,7 @@
 #ifndef _GF_FORTRAN_H_
 #define _GF_FORTRAN_H_
 
-# include "axlobs.h"
+#include "axlobs.h"
 
 /* Aldor-calls-Fortran */
 extern Foam	gen0ModifyFortranCall	(Syme, Foam, AbSyn, Bool);

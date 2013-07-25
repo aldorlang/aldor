@@ -17,6 +17,13 @@
 #include "gf_util.h"
 #include "of_inlin.h"
 #include "store.h"
+#include "sefo.h"
+#include "lib.h"
+#include "tfsat.h"
+#include "tform.h"
+#include "symbol.h"
+#include "strops.h"
+#include "table.h"
 
 /*****************************************************************************
  *

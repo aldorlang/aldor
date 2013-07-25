@@ -15,6 +15,10 @@
 #include "testlib.h"
 #include "ti_sef.h"
 #include "tinfer.h"
+#include "sefo.h"
+#include "ablogic.h"
+#include "comsg.h"
+#include "sexpr.h"
 
 /* XXX: from test_tinfer.c */
 void init(void);

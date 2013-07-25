@@ -9,9 +9,9 @@
 #ifndef _SRCPOS_H_
 #define _SRCPOS_H_
 
-# include "axlport.h"
-# include "fname.h"
-# include "buffer.h"
+#include "cport.h"
+#include "fname.h"
+#include "buffer.h"
 
 typedef ULong			SrcPos;
 typedef struct sposCell	*	SrcPosCell;

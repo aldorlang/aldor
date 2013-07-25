@@ -14,6 +14,7 @@
 #include "optfoam.h"
 #include "opttools.h"
 #include "util.h"
+#include "sexpr.h"
 
 Bool	peepDebug	= false;
 #define peepDEBUG(s)	DEBUG_IF(peepDebug, s)

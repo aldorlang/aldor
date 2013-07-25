@@ -3,6 +3,7 @@
 
 #include "axlobs.h"
 #include "absyn.h"
+#include "path.h"
 
 #define ABQK_DECLARE0(name, abname) extern AbSyn name(void)
 #define ABQK_DEFINE0(name, abName) \
