@@ -12,12 +12,24 @@ DISTRIBUTION	:= precise
 # :: Variables
 ###########################################################
 
-CACHEDIR	:= /var/cache/pbuilder
-RESULTDIR	:= $(CACHEDIR)/result
-PACKAGE_NAME	:= $(shell head -n1 debian/changelog | awk '{print $$1}')
-PACKAGE_VERSION	:= $(shell head -n1 debian/changelog | sed -e 's/.*(\(.*\)).*/\1/')
-PACKAGE		:= $(PACKAGE_NAME)_$(PACKAGE_VERSION)
+ifeq ($(wildcard debian/changelog),)
+$(error No debian/changelog found.\
+	Make sure to run this script from the project root)
+endif
 
+CACHEDIR	= /var/cache/pbuilder
+RESULTDIR	= $(CACHEDIR)/result
+PACKAGE_NAME	= $(shell head -n1 debian/changelog | awk '{print $$1}')
+PACKAGE_VERSION	= $(shell head -n1 debian/changelog | sed -e 's/.*(\(.*\)).*/\1/')
+
+ifeq ($(PACKAGE_NAME),)
+$(error Unable to extract package name from debian/changelog)
+endif
+ifeq ($(PACKAGE_VERSION),)
+$(error Unable to extract package version from debian/changelog)
+endif
+
+PACKAGE		:= $(PACKAGE_NAME)_$(PACKAGE_VERSION)
 TARGETS		:= $(foreach A,$(ARCHITECTURES),$(RESULTDIR)/$(PACKAGE)_$A.deb)
 
 
