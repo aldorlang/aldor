@@ -81,6 +81,7 @@ AC_CONFIG_FILES([Makefile
 		 lib/aldor/src/test/Makefile
 		 lib/aldor/src/gmp/Makefile
 		 lib/algebra/Makefile
+		 lib/algebra/include/Makefile
 		 lib/algebra/src/Makefile
 		 lib/algebra/src/util/Makefile
 		 lib/algebra/src/numbers/Makefile
