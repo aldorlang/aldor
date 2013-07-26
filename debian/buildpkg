@@ -1,3 +1,5 @@
+#!/usr/bin/make -f
+
 ###########################################################
 # :: Architectures and distribution to build for
 ###########################################################
@@ -26,12 +28,13 @@ TARGETS		:= $(foreach A,$(ARCHITECTURES),$(RESULTDIR)/$(PACKAGE)_$A.deb)
 default: $(TARGETS)
 
 clean:
-	sudo rm -f $(TARGETS)
+	sudo rm -f $(RESULTDIR)/*
 	rm -f ../$(PACKAGE)*
 
 $(RESULTDIR)/$(PACKAGE)_%.deb: $(CACHEDIR)/$(DISTRIBUTION)-%.cow ../$(PACKAGE).dsc
 	sudo cowbuilder		\
 	  --build		\
+	  --debbuildopts "-j8"	\
 	  --basepath $+
 
 $(CACHEDIR)/$(DISTRIBUTION)-%.cow:
