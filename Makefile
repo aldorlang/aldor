@@ -1,60 +1,48 @@
-# Parallel build doesn't work, yet.
-.NOTPARALLEL:
+###########################################################
+# :: Architectures and distribution to build for
+###########################################################
 
-# Toolchain selection.
-include config.mk
+ARCHITECTURES	:= i386 amd64
+DISTRIBUTION	:= precise
 
-# Find lex/flex.
-LEX = $(shell which flex)
-ifeq ($(LEX),)
-LEX = $(shell which lex)
-endif
-ifeq ($(LEX),)
-$(error lex or flex are not installed; cannot build aldor)
-endif
 
-# Find bison/yacc.
-YACC = $(shell which bison)
-ifeq ($(YACC),)
-YACC = $(shell which byacc)
-endif
-ifeq ($(YACC),)
-YACC = $(shell which yacc)
-endif
-ifeq ($(LEX),)
-$(error bison, byacc or yacc are not installed; cannot build aldor)
-endif
+###########################################################
+# :: Variables
+###########################################################
 
-export ALDORROOT := build
+CACHEDIR	:= /var/cache/pbuilder
+RESULTDIR	:= $(CACHEDIR)/result
+PACKAGE_NAME	:= $(shell head -n1 debian/changelog | awk '{print $$1}')
+PACKAGE_VERSION	:= $(shell head -n1 debian/changelog | sed -e 's/.*(\(.*\)).*/\1/')
+PACKAGE		:= $(PACKAGE_NAME)_$(PACKAGE_VERSION)
 
-BINDIR = $(ALDORROOT)/bin
-INCDIR = $(ALDORROOT)/include
-LIBDIR = $(ALDORROOT)/lib
+TARGETS		:= $(foreach A,$(ARCHITECTURES),$(RESULTDIR)/$(PACKAGE)_$A.deb)
 
-export PATH := $(BINDIR):$(PATH)
 
-TARGETS =				\
-	$(BINDIR)/aldor$(EXEEXT)	\
-	$(LIBDIR)/libaldor$(LIBEXT)	\
-	$(LIBDIR)/libalgebra$(LIBEXT)	\
-	$(LIBDIR)/libaxllib$(LIBEXT)	\
-	$(LIBDIR)/libaxldem$(LIBEXT)	\
-	$(LIBDIR)/libfoam$(LIBEXT)	\
-	$(LIBDIR)/libfoamlib$(LIBEXT)	\
-	$(LIBDIR)/aldor_gloop.ao
+###########################################################
+# :: Rules
+###########################################################
 
-all: $(TARGETS)
+default: $(TARGETS)
 
-RLWRAP = $(shell which rlwrap)
+clean:
+	sudo rm -f $(TARGETS)
+	rm -f ../$(PACKAGE)*
 
-loop:
-	$(RLWRAP) $(BINDIR)/aldor -Y $(LIBDIR) -I $(INCDIR) -Gloop
+$(RESULTDIR)/$(PACKAGE)_%.deb: $(CACHEDIR)/$(DISTRIBUTION)-%.cow ../$(PACKAGE).dsc
+	sudo cowbuilder		\
+	  --build		\
+	  --basepath $+
 
-include aldor.mk
-include aldor/Rules.mk
+$(CACHEDIR)/$(DISTRIBUTION)-%.cow:
+	sudo cowbuilder			\
+	  --create			\
+	  --architecture $*		\
+	  --distribution $(DISTRIBUTION)\
+	  --basepath $@			\
+	  --debootstrapopts "--variant=buildd"
+	@test -f $@
 
--include init
-init: $(BINDIR) $(INCDIR) $(LIBDIR)
-$(BINDIR): ; mkdir -p $@
-$(INCDIR): ; mkdir -p $@
-$(LIBDIR): ; mkdir -p $@
+../$(PACKAGE).dsc:
+	debuild -S -us -uc
+	@test -f $@
