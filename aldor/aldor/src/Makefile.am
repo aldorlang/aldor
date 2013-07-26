@@ -42,7 +42,7 @@ aldor_SOURCES =		\
 	cmdline.c	\
 	main.c
 aldor_LDADD = libphase.a libstruct.a libgen.a libport.a -lm
-aldor_LDFLAGS =
+aldor_LDFLAGS = @build_id@
 aldor_CFLAGS  = -g
 
 aldortest_CFLAGS = -DTEST_STAND_ALONE -DTEST_ALL -save-temps

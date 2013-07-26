@@ -47,6 +47,17 @@ AC_SUBST([LIBTOOL_DEPS])
 # Enable extra warnings and -Werror if supported.
 ALDOR_ERROR_ON_WARN
 
+# Git SHA1 hash as ld build-id.
+AC_MSG_CHECKING([git build-id])
+if test -z "`git status --porcelain 2>&1`"; then
+   sha1=`git rev-parse HEAD`
+   build_id="-Wl,--build-id=0x$sha1"
+   AC_MSG_RESULT([$sha1])
+else
+   AC_MSG_RESULT([no git or tree not clean])
+fi
+AC_SUBST([build_id])
+
 # Generate Makefiles
 AC_CONFIG_FILES([Makefile
 		 aldor/Makefile
