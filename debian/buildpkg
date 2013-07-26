@@ -40,8 +40,10 @@ TARGETS		:= $(foreach A,$(ARCHITECTURES),$(RESULTDIR)/$(PACKAGE)_$A.deb)
 default: $(TARGETS)
 
 clean:
-	sudo rm -f $(RESULTDIR)/*
 	rm -f ../$(PACKAGE)*
+
+upload: ../$(PACKAGE)_source.changes
+	dput ppa:pippijn/ppa $<
 
 $(RESULTDIR)/$(PACKAGE)_%.deb: $(CACHEDIR)/$(DISTRIBUTION)-%.cow ../$(PACKAGE).dsc
 	sudo cowbuilder		\
@@ -58,6 +60,12 @@ $(CACHEDIR)/$(DISTRIBUTION)-%.cow:
 	  --debootstrapopts "--variant=buildd"
 	@test -f $@
 
+# Unsigned for local build.
 ../$(PACKAGE).dsc:
 	debuild -S -us -uc
+	@test -f $@
+
+# Signed for upload.
+../$(PACKAGE)_source.changes: clean
+	debuild -S
 	@test -f $@

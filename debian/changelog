@@ -1,3 +1,12 @@
+aldor (1.2.0+20130726) precise; urgency=low
+
+  * Remove old build system.
+  * Add cowbuilder script for building packages.
+  * When building from git, set aldor build-id to git commit hash.
+  * Add aldor --print-confvar querying.
+
+ -- Pippijn van Steenhoven <pippijn@xinutec.org>  Fri, 26 Jul 2013 04:26:34 +0200
+
 aldor (1.2.0+20130725.2) precise; urgency=low
 
   * The package also depends on libtool.
