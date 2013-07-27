@@ -449,8 +449,8 @@ tfInit(void)
 	fmtRegister("Ptr", ptrFormatter);
 	fmtRegister("PtrList", ptrListFormatter);
 
-	fmtRegister("Int", aintFormatter);
-	fmtRegister("IntList", aintListFormatter);
+	fmtRegister("AInt", aintFormatter);
+	fmtRegister("AIntList", aintListFormatter);
 
 	isInit = true;
 }
@@ -581,7 +581,7 @@ local int
 aintListFormatter(OStream ostream, Pointer p)
 {
 	AbSynList list = (AbSynList) p;
-	return listFormat(AbSyn)(ostream, "Int", list);
+	return listFormat(AbSyn)(ostream, "AInt", list);
 }
 
 
