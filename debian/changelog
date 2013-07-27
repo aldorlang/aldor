@@ -1,3 +1,10 @@
+aldor (1.2.0+20130727) precise; urgency=low
+
+  * Correct type of multi-return valued function
+  * Export datadir from aldor wrapper script.
+
+ -- Pippijn van Steenhoven <pippijn@xinutec.org>  Sat, 27 Jul 2013 12:27:23 +0200
+
 aldor (1.2.0+20130726) precise; urgency=low
 
   * Remove old build system.
