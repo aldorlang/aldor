@@ -39,6 +39,7 @@
 #include "symbol.h"
 #include "sexpr.h"
 #include "fbox.h"
+#include "foamsig.h"
 
 #define	 FOAM_NARY	(-1)	/* Identifies tags with N-ary data argument. */
 
@@ -65,6 +66,7 @@ static Bool	foamIsInit = false;
 
 local int foamListFormatter(OStream ostream, Pointer p);
 local int foamFormatter(OStream ostream, Pointer p);
+local int foamSigFormatter(OStream ostream, Pointer p);
 /*
  * Note: This implementation shares the foamTagVal field of symCoInfo so foam
  * instructions, builtins and protocols must not have overlapping names.
@@ -124,6 +126,7 @@ foamInit(void)
 
 	fmtRegister("Foam", foamFormatter);
 	fmtRegister("FoamList", foamListFormatter);
+	fmtRegister("FoamSig", foamSigFormatter);
 
 	foamIsInit = true;
 }
@@ -149,6 +152,40 @@ foamListFormatter(OStream ostream, Pointer p)
 	AbSynList list = (AbSynList) p;
 	return listFormat(AbSyn)(ostream, "Foam", list);
 }
+
+local int
+foamSigFormatter(OStream ostream, Pointer p)
+{
+	FoamSig sig = (FoamSig) p;
+	int nc = 0;
+	int i;
+	nc += ostreamPrintf(ostream, "{FoamSig (%pAIntList) --> %d %d",
+			    sig->inArgs, sig->nRets, sig->retType);
+	if (sig->nRets == 0) {
+		;
+	}
+	else {
+		String sep  = "";
+		ostreamWriteChar(ostream, '(');
+		nc++;
+		if (sig->rets == NULL) {
+			nc += ostreamPrintf(ostream, "Word * %d", sig->nRets);
+		}
+		else {
+			for (i=0; i<sig->nRets; i++) {
+				nc += ostreamPrintf(ostream, "%s%s", sep, foamStr(sig->rets[i]));
+				sep = ", ";
+			}
+		}
+		ostreamWriteChar(ostream, ')');
+		nc++;
+	}
+
+	ostreamWriteChar(ostream, '}');
+	nc++;
+	return nc;
+}
+
 Foam
 foamNewAlloc(FoamTag tag, Length argsize)
 {
