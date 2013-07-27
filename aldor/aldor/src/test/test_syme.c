@@ -55,7 +55,6 @@ testSymeSExpr()
 
 	Syme syme = car(symes);
 	SExpr sx = symeSExprAList(syme);
-	afprintf(dbOut, "%pSExpr", sx);
 	
 	finiFile();
 }

@@ -449,8 +449,8 @@ tfInit(void)
 	fmtRegister("Ptr", ptrFormatter);
 	fmtRegister("PtrList", ptrListFormatter);
 
-	fmtRegister("Int", aintFormatter);
-	fmtRegister("IntList", aintListFormatter);
+	fmtRegister("AInt", aintFormatter);
+	fmtRegister("AIntList", aintListFormatter);
 
 	isInit = true;
 }
@@ -581,7 +581,7 @@ local int
 aintListFormatter(OStream ostream, Pointer p)
 {
 	AbSynList list = (AbSynList) p;
-	return listFormat(AbSyn)(ostream, "Int", list);
+	return listFormat(AbSyn)(ostream, "AInt", list);
 }
 
 
@@ -3916,7 +3916,6 @@ tfGetDomExports(TForm tf)
 
 		assert(tfIsDefine(cat) ? (tfDefineVal(cat) != tf) : true);
 
-#if AXL_EDIT_1_1_12p6_06
 		exps = tfGetCatExports(cat);
 		if (tfIsDefine(cat))
 			val = tfDefineVal(cat);
@@ -3933,9 +3932,6 @@ tfGetDomExports(TForm tf)
 			exps = tfMangleSymes(tf, cat, exps, vexps);
 		}
 		tfAddDomExports(tf, exps);
-#else
-		tfAddDomExports(tf, tfGetCatExports(cat));
-#endif
 	}
 
 	/*

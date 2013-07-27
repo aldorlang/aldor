@@ -2644,7 +2644,7 @@ gj0FoamSigFrCCall(Foam ccall)
 	/* FIXME: Not sure how to get return types. */
 
 	inArgList = listNReverse(AInt)(inArgList);
-	if (gjContext->mfmt != 0) {
+	if (ccall->foamCCall.type == FOAM_NOp) {
 		Foam ddecl = gjContext->formats->foamDFmt.argv[gjContext->mfmt];
 		retVals   = gj0FoamSigRets(ddecl, &nRets);
 	}

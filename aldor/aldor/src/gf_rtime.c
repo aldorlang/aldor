@@ -817,9 +817,9 @@ gen0BuiltinCacheCheck(Foam cache, Foam value)
 
 	/* Static or dynamic cache? */
 	if (size >= 0)
-		call = gen0BuiltinCCall(FOAM_Word, rt1, rt0, 2, cache, value);
+		call = gen0BuiltinCCall(FOAM_NOp, rt1, rt0, 2, cache, value);
 	else
-		call = gen0BuiltinCCall(FOAM_Word, rt2, rt0, 2, cache, value);
+		call = gen0BuiltinCCall(FOAM_NOp, rt2, rt0, 2, cache, value);
 
 	return foamNewMFmt(gen0MakeCCheckFormat(), call);
 }

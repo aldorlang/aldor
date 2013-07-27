@@ -149,9 +149,6 @@
  * fixed by edit 1.0.-1(11).
  */
 #define AXL_EDIT_1_1_12p6_07 1	/* tibupComma more cautious creating defs */
-#define AXL_EDIT_1_1_12p6_06 1	/* inheritence/inlining bugs */
-#define AXL_EDIT_1_1_12p6_05 1	/* tiTfCategory1() fix for bug 1242 */
-
 
 #define AXL_EDIT_1_1_12p6_04 1	/* inlining limit now user-defined */
 	/* Edit 1.1.12p6(3): inliner/inherit bug fix  */
@@ -192,8 +189,6 @@ code computations were tried providing the same result.
 
 #define AXL_EDIT_1_1_13_34 1	/* changing "with" insertion to warning */
 				/* Breaks too many things */
-#define AXL_EDIT_1_1_13_20 1	/* partial fix for bug 1274 */
-				/* Enable when full fix is available */
 #define AXL_EDIT_1_1_12p6_15 1	/* Set hash code on correct closure value */
 				/* Replaced by 1.1.12p6_24 and 1.1.12p6_25 */
 #define AXL_EDIT_1_1_12p6_14 1	/* Deleted code in gen0RtSefoHashStdApply() */

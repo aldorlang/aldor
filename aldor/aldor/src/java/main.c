@@ -15,6 +15,7 @@ int main(int argc, char *argv[])
 	sposInit();
 	comsgInit();
 	dbInit();
+	tfInit();
 
 	if (getenv("GJ_DEBUG")) {
 		genJavaDebug=1;

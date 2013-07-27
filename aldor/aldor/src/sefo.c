@@ -2390,7 +2390,7 @@ local int
 sfvPrint(FILE *out)
 {
 	return afprintf(out,
-		       "(SFV: %d  %pIntList, %pSymeListList)\n",
+		       "(SFV: %d  %pAIntList, %pSymeListList)\n",
 		       sfvDepth, sfvBase, sfvTableList);
 }
 
@@ -2425,7 +2425,7 @@ sfvPopTable(Bool save)
 		Syme		syme = car(symes);
 		List(AInt)	elt = sfvGetDepths(syme);
 
-		sefoFreeDEBUG(afprintf(dbOut, " popTable: %pSyme %d %d %pIntList\n", syme, sfvHasDepth(elt, odepth), odepth, elt));
+		sefoFreeDEBUG(afprintf(dbOut, " popTable: %pSyme %d %d %pAIntList\n", syme, sfvHasDepth(elt, odepth), odepth, elt));
 
 		if (!sfvHasDepth(elt, odepth)) continue;
 
@@ -2459,7 +2459,7 @@ sfvAddSyme(Syme syme)
 		sfvSetDepths(syme, elt);
 		sfvConsTable(syme);
 	}
-	sefoFreeDEBUG(afprintf(dbOut, " Adding syme: %pSyme %pIntList\n", syme, sfvGetDepths(syme)));
+	sefoFreeDEBUG(afprintf(dbOut, " Adding syme: %pSyme %pAIntList\n", syme, sfvGetDepths(syme)));
 }
 
 local void
@@ -2478,7 +2478,7 @@ sfvDelSyme(Syme syme)
 		elt = listFreeCons(AInt)(elt);
 		sfvSetDepths(syme, elt);
 	}
-	sefoFreeDEBUG(afprintf(dbOut, " Del syme: %pSyme %pIntList\n", syme, sfvGetDepths(syme)));
+	sefoFreeDEBUG(afprintf(dbOut, " Del syme: %pSyme %pAIntList\n", syme, sfvGetDepths(syme)));
 }
 
 local void
