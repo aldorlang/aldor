@@ -59,13 +59,13 @@ get_fsr()
 {
         unsigned int res;
 
-        asm volatile ("st %%fsr, %0":"=m" (res));
+        __asm__ volatile ("st %%fsr, %0":"=m" (res));
         return res;
 }
 void
 set_fsr(unsigned int r)
 {
-        asm volatile ("ld %0, %%fsr":"=m" (r));
+        __asm__ volatile ("ld %0, %%fsr":"=m" (r));
 }
 
 FiWord
@@ -425,7 +425,7 @@ fiIeeeGetRoundingMode(void)
 {
 	unsigned short cw;
 
-	asm volatile ("fnstcw %0":"=m" (cw));
+	__asm__ volatile ("fnstcw %0":"=m" (cw));
 
 	switch (cw & IEEE_FP_ZERO) {
 	case IEEE_FP_NEAREST:	return fiRoundNearest();
@@ -443,7 +443,7 @@ fiIeeeSetRoundingMode(FiWord round)
 	unsigned short cw;
 	FiWord previous = 0;
 
-	asm volatile ("fnstcw %0":"=m" (cw));
+	__asm__ volatile ("fnstcw %0":"=m" (cw));
 	previous = cw & IEEE_FP_ZERO;
 
 	switch (round) {
@@ -461,7 +461,7 @@ fiIeeeSetRoundingMode(FiWord round)
 		break;
 	}
 
-	asm volatile ("fldcw %0"::"m" (cw));
+	__asm__ volatile ("fldcw %0"::"m" (cw));
 
 	switch(previous) {
 	case IEEE_FP_NEAREST:	return fiRoundNearest();
@@ -479,7 +479,7 @@ fiIeeeGetEnabledExceptions()
   unsigned short cw;
   FiWord result;
 
-  asm volatile ("fnstcw %0":"=m" (cw));
+  __asm__ volatile ("fnstcw %0":"=m" (cw));
   /* translate */
   result =  (cw & IEEE_FP_INVALID)   ? 0 :16;
   result |= (cw & IEEE_FP_OVERFLOW)  ? 0  :8;
@@ -495,7 +495,7 @@ fiIeeeSetEnabledExceptions(FiWord s)
   unsigned short cw,set=0;
   FiWord result;
   
-  asm volatile ("fnstcw %0":"=m" (cw));
+  __asm__ volatile ("fnstcw %0":"=m" (cw));
   /* translate result */
   result =  (cw & IEEE_FP_INVALID)   ? 0 :16;
   result |= (cw & IEEE_FP_OVERFLOW)  ? 0  :8;
@@ -513,8 +513,8 @@ fiIeeeSetEnabledExceptions(FiWord s)
 	    IEEE_FP_UNDERFLOW | IEEE_FP_DIVBYZERO | IEEE_FP_INEXACT);
   /* set them according to the set */
   cw |= set;
-  asm volatile ("fnclex");
-  asm volatile ("fldcw %0"::"m" (cw));
+  __asm__ volatile ("fnclex");
+  __asm__ volatile ("fldcw %0"::"m" (cw));
   return result;
 }
 
@@ -525,7 +525,7 @@ fiIeeeGetExceptionStatus()
   unsigned short sw;
   fenv_t env;
 
-  asm volatile ("fnstenv %0":"=m" (env));
+  __asm__ volatile ("fnstenv %0":"=m" (env));
   sw = env.status;
   result =  (sw & IEEE_FP_INVALID)   ? 16 :0;
   result |= (sw & IEEE_FP_OVERFLOW)  ? 8  :0;
@@ -548,7 +548,7 @@ fiIeeeSetExceptionStatus(FiWord s)
   set |= (s & 4)  ? IEEE_FP_UNDERFLOW :0;
   set |= (s & 2)  ? IEEE_FP_DIVBYZERO :0;
   set |= (s & 1)  ? IEEE_FP_INEXACT   :0;
-  asm volatile ("fnstenv %0":"=m" (env));
+  __asm__ volatile ("fnstenv %0":"=m" (env));
   sw = env.status;
   /* translate result */
   result =  (sw & IEEE_FP_INVALID)   ? 16 :0;
@@ -563,7 +563,7 @@ fiIeeeSetExceptionStatus(FiWord s)
   sw |= set;
   env.status = sw;
   /* load the environment */
-  asm volatile ("fldenv %0":"=m" (env));
+  __asm__ volatile ("fldenv %0":"=m" (env));
   return result;
 }
 
