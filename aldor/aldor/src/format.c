@@ -68,10 +68,20 @@ afprintf(FILE *fout, const char *fmt, ...)
 	return cc;
 }
 
+int aprintf(const char *fmt, ...)
+{
+	int cc;
+	va_list argp;
+	va_start(argp, fmt);
+	cc = avprintf(fmt, argp);
+	va_end(argp);
+	return cc;
+}
+
 int
 avprintf(const char *fmt, va_list argp)
 {
-	afvprintf(stdout, fmt, argp);
+	return afvprintf(stdout, fmt, argp);
 }
 
 int
