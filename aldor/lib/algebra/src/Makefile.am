@@ -200,17 +200,8 @@ libalgebra_a_SOURCES =	\
 	categories/sit_integer.c
 
 
-aldorsrcdir = $(abs_top_srcdir)/aldor/src
-
 datalibdir = $(datadir)/lib
 datalib_DATA = libalgebra.al
 
-AM_CFLAGS = -I$(aldorsrcdir)
-
-libalgebra.al: $(foreach i,$(SUBDIRS),$i/_sublib.al)
-	$(AM_V_AR)		\
-	for l in $+; do		\
-	   ar x $$l;		\
-	   ar cr $@ $$(ar t $$l);\
-	   rm $$(ar t $$l);	\
-	done
+libraryname = algebra
+include ../../buildlib.am
