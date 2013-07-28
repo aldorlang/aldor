@@ -8,6 +8,8 @@
 
 
 #define _ALL_SOURCE   /* For RS/6000 - should come before cport.h include. */
+#define _POSIX_SOURCE /* For Linux/BSD. */
+#define _BSD_SOURCE   /* sbrk */
 
 #include "cport.h"
 #include "editlevels.h"

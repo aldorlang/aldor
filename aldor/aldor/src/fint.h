@@ -27,7 +27,9 @@ extern void	fintDisplayTimings	(void);
 extern void	fintWhere		(int);
 extern void     fintRaiseException(char *, void *);
 
-//extern int      compGDebugger           (int, char **, FILE *, FILE *);
+#if 0
+extern int      compGDebugger           (int, char **, FILE *, FILE *);
+#endif
 extern int      compCmd                 (int, char**);
 extern void     compFini                (void);
 

@@ -139,8 +139,9 @@ typedef struct decl_info {
 DECLARE_LIST(DeclInfo);
 CREATE_LIST(DeclInfo);
 
-// A condition.  We keep the stab information so its depth can be compared
-// to the tform depth in tfFloat
+/* A condition.  We keep the stab information so its depth can be compared
+ * to the tform depth in tfFloat
+ */
 
 typedef struct ScoCondition {
 	Stab  stab;
@@ -3097,7 +3098,9 @@ local Bool
 defposEqual(DefnPos a, DefnPos b)
 {
 	Bool flg = listEqual(AInt)(a, b, defposEqInner);
-	//afprintf(dbOut, "DefPosEqual: %pAbSynList %pAbSynList = %d\n", defposToAbSyn(a), defposToAbSyn(b), flg);
+#if 0
+	afprintf(dbOut, "DefPosEqual: %pAbSynList %pAbSynList = %d\n", defposToAbSyn(a), defposToAbSyn(b), flg);
+#endif
 	return flg;
 }
 

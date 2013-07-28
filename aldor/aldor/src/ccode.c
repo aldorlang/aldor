@@ -328,7 +328,7 @@ ccoPr(CCode cco)
 		cc += ccoPrCBrace();
 		break;
 	case CCO_Decl:
-		BufferPos = 0; // start buffering the output
+		BufferPos = 0; /* start buffering the output */
 
 		cc += ccoPrMany(argv[0], ccoPr, "", "");
 		cc += ccoPuts(" ");
@@ -341,11 +341,13 @@ ccoPr(CCode cco)
 			ccoInFunDecl = old;
 		}
 
-                // dump the buffered output and stop the buffering
+                /* dump the buffered output and stop the buffering */
 
-//                cc += ccoPutsFileOnly("\n#if 0\n");
-//                cc += ccoPutsFileOnly(BufferOutput);
-//                cc += ccoPutsFileOnly("\n#endif\n");
+#if 0
+		cc += ccoPutsFileOnly("\n#if 0\n");
+		cc += ccoPutsFileOnly(BufferOutput);
+		cc += ccoPutsFileOnly("\n#endif\n");
+#endif
 #if 0
 		if (strcmp(BufferOutput,"extern FiWord fputc();\n") == 0)
 		{

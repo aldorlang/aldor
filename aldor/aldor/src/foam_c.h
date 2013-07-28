@@ -9,11 +9,11 @@
 #define FOAM_C_H
 
 /*
-//  2006/Dec/20
-//
-//  Including cconfig.h became necessary in order to be able to test
-//  CC_SF_is_double and typedef FiSFlo correctly
-*/
+ *  2006/Dec/20
+ *
+ *  Including cconfig.h became necessary in order to be able to test
+ *  CC_SF_is_double and typedef FiSFlo correctly
+ */
 #include "cconfig.h"
 
 /* modified by LDR  */

@@ -17,7 +17,6 @@
 #define _AXLOBS_H_
 
 #include "axlgen.h"
-#include "list.h"
 
 /*
  * Forward declarations of the types
@@ -25,12 +24,8 @@
 typedef union  SExprUnion *        SExpr;
 typedef union  ccode *             CCode;
 typedef struct srcLine *           SrcLine;
-typedef ULong			   SrcPos;
-typedef struct sposCell	*	   SrcPosCell;
-typedef union  sposStack           SrcPosStack;
 typedef struct symbol *            Symbol;
 typedef struct table *             Table;
-typedef struct fileName *          FileName;
 typedef struct bint *              BInt;
 typedef struct comsg *		   CoMsg;
 typedef struct token *             Token;
@@ -97,7 +92,6 @@ DECLARE_LIST(Table);
 DECLARE_LIST(Foam);
 DECLARE_LIST(AInt);
 DECLARE_LIST(CCode);
-DECLARE_LIST(FileName);
 DECLARE_LIST(UdInfo);
 DECLARE_LIST(DepDag);
 

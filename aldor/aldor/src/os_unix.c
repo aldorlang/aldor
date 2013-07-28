@@ -1213,6 +1213,7 @@ struct osMemMap **osMemMap(int mask)
   mm = mmv; i =0;
   /* print what we found */
   while (mm->use != OSMEM_END) {
+#if 0
 #if EDIT_1_0_n2_07
     const char *desc = "";
 #else
@@ -1220,7 +1221,6 @@ struct osMemMap **osMemMap(int mask)
 #endif
     if (mm->use == OSMEM_DDATA) desc = "Data";
     if (mm->use == OSMEM_STACK) desc = "Stack";
-#if 0
 #if EDIT_1_0_n1_07
     printf("%s: %lx --> %lx\n", desc, mm->lo, mm->hi);
 #else

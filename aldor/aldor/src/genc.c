@@ -6096,10 +6096,10 @@ gc0StompOffIncludeFile(String str, FoamProtoTag p)
 
 /* Decide whether the application of two casts has any useful effect */
 /*
-//  Pointers are *not* the same as words because the gcc compiler will
-//  generate a warning if you attempt to pass a word in a context where
-//  a pointer was expected. 
-*/
+ *  Pointers are *not* the same as words because the gcc compiler will
+ *  generate a warning if you attempt to pass a word in a context where
+ *  a pointer was expected. 
+ */
 local Bool
 gc0NeedBothCasts(FoamTag first, FoamTag second)
 {
