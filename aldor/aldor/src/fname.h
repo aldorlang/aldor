@@ -9,11 +9,11 @@
 #ifndef _FNAME_H_
 #define _FNAME_H_
 
-#include "cport.h"
+#include "axlgen.h"
 
-typedef struct fileName {
+struct fileName {
 	String	partv[NARY];
-} *FileName;
+};
 
 #define		FNAME_DIR			0
 #define		FNAME_NAME			1

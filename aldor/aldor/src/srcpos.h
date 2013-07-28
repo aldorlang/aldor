@@ -13,10 +13,6 @@
 #include "fname.h"
 #include "buffer.h"
 
-typedef ULong			SrcPos;
-typedef struct sposCell	*	SrcPosCell;
-typedef union sposStack		SrcPosStack;
-
 /*
  * :: SrcPos
  */
