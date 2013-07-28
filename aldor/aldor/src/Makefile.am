@@ -2,7 +2,7 @@
 
 libexec_PROGRAMS = aldor
 bin_PROGRAMS = javagen
-noinst_PROGRAMS = aldortest structtest gentest
+noinst_PROGRAMS = aldortest structtest gentest showexp
 
 dataincludedir = $(datadir)/include
 datainclude_DATA = aldor.conf 
@@ -38,6 +38,11 @@ javagen_SOURCES =	\
 javagen_LDADD = libphase.a libstruct.a libgen.a libport.a -lm
 javagen_LDFLAGS =
 javagen_CFLAGS = -g
+
+showexp_SOURCES = showexports.c
+showexp_LDADD = libphase.a libstruct.a libgen.a libport.a -lm
+showexp_LDFLAGS =
+showexp_CFLAGS = -g
 
 aldor_SOURCES =		\
 	axlcomp.c	\
