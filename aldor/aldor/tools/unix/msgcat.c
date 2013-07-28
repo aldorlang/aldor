@@ -554,7 +554,6 @@ passToDoC(basename)
 {
 	FILE		*cfile = 0;
 	char		*cname = 0;
-	int		prevset;
 	struct msg1msg	*m;
 
 	cname   = fileName(basename, "c");
@@ -588,7 +587,7 @@ passToDoC(basename)
 	fprintf(cfile, "struct msgInfo %s_msgs[] = {\n", basename);
 	fprintf(cfile, "#ifndef NO_MSG_TEXT\n");
 
-	for (prevset = 0, m = msg1all.next; m; prevset = m->setno, m = m->next)
+	for (m = msg1all.next; m; m = m->next)
 	{
 		fprintf  (cfile, "  {%2d, %3d, ", m->setno, m->msgno);
 		unscanMsg(cfile, m->msgname);
