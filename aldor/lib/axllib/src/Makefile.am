@@ -1,9 +1,5 @@
 SUBDIRS = al
 
-aldorsrcdir = $(abs_top_srcdir)/aldor/src
-
-AM_CFLAGS = -I$(aldorsrcdir) -ffloat-store
-
 lib_LIBRARIES = libaxllib.a
 
 libaxllib_a_SOURCES =	\
@@ -54,4 +50,9 @@ libaxllib_a_SOURCES =	\
 
 
 datalibdir = $(datadir)/lib
-datalib_DATA = al/libaxllib.al
+datalib_DATA = libaxllib.al
+
+libraryname = axllib
+include ../../buildlib.am
+
+AM_CFLAGS += -ffloat-store

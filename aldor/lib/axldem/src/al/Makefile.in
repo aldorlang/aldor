@@ -33,7 +33,7 @@ library =		\
 	vector
 
 axllibincdir	:= $(top_srcdir)/lib/axllib/include
-axlliblibdir	:= $(top_builddir)/lib/axllib/src/al
+axlliblibdir	:= $(top_builddir)/lib/axllib/src
 
 libraryname	:= axldem
 
