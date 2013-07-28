@@ -1185,7 +1185,9 @@ symeCheckHas(SymeCContext conditionContext, Sefo dom, Sefo cat)
 	/* D has C iff typeof(D) satisfies C. */
 	result = tfSat(tfSatBupMask(), tfdom, tfcat);
 
-	//symeCheckHasMemo(dom, cat, result);
+#if 0
+	symeCheckHasMemo(dom, cat, result);
+#endif
 
 	return tfSatPending(result) ? 1 : (tfSatSucceed(result) ? 2 : 0);
 }
@@ -1264,15 +1266,16 @@ symeCheckHasMemo(Sefo dom, Sefo cat, SatMask result)
 }
 
 
-// Result:
-// <undef> => no result
-// 0 => fail
-// 1 => Pending
-// 2 => Success
-// Return value:
-// 2 => pending value changed
-// 1 => found
-// 0 => not found
+/* Result:
+ * <undef> => no result
+ * 0 => fail
+ * 1 => Pending
+ * 2 => Success
+ * Return value:
+ * 2 => pending value changed
+ * 1 => found
+ * 0 => not found
+ */
 
 local int
 symeCheckHasResult(Sefo dom, Sefo cat, Bool *result)

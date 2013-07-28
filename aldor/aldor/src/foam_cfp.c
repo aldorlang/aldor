@@ -378,9 +378,9 @@ fiIeeeSetExceptionStatus(FiWord s)
 }
 
 /*
-//  2006/Dec/20 -- &&!defined(__ia64__) added by BDS to prevent this case from
-//                 being processed on ia64 architectures
-*/
+ *  2006/Dec/20 -- &&!defined(__ia64__) added by BDS to prevent this case from
+ *                 being processed on ia64 architectures
+ */
 #elif defined (__GNUC__) && defined(__linux__) && !defined(__alpha__) && !defined(__ia64__) /* && defined(__i386) */
 /* i386 LINUX GNU [or 486/586/686 if we comment out                         ^^^^^^^^ (mnd)] */
 /* Added !defined(__alpha__) SMW. */

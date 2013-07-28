@@ -33,7 +33,7 @@ extern String		strCopyIf	(CString);
 
 extern String           strConcat       (String, String);
 extern String           strlConcat      (String, ...);
-extern String           strNConcat      (String s1, String s2); // Frees 1st arg
+extern String           strNConcat      (String s1, String s2); /* Frees 1st arg */
 
 			/*
 			 * These functions allocate a new string

@@ -49,17 +49,23 @@ abInit(void)
 	sxiInit();
 	for (i = AB_START; i < AB_LIMIT; i++) {
 		sym = symInternConst(abInfo(i).str);
-		//printf("Here1 sym->val=%s, sym->info=%x, %p\n", symString(sym), symInfo(sym), symCoInfo(sym));fflush(stdout);
+#if 0
+		printf("Here1 sym->val=%s, sym->info=%x, %p\n", symString(sym), symInfo(sym), symCoInfo(sym));fflush(stdout);
+#endif
 
 #if EDIT_1_0_n2_07
 		if (symCoInfo(sym) == NULL) {
 #else
 		if (!symCoInfo(sym)) {
 #endif
-			//printf("Here1.5\n"); fflush(stdout);
+#if 0
+			printf("Here1.5\n"); fflush(stdout);
+#endif
 			symCoInfoInit(sym);
 		}
-		//printf("Here2\n"); fflush(stdout);
+#if 0
+		printf("Here2\n"); fflush(stdout);
+#endif
 		symCoInfo(sym)->abTagVal  = i;
 		abInfo(i).sxsym		  = sxiFrSymbol(sym);
 

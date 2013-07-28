@@ -1689,13 +1689,13 @@ FiWord
 fiSFloToWord(FiSFlo sf)
 {
 	/*
-	//  2006/Dec/20
-	//
-	//  BDS: On ia64 SMP machine silky.sharcnet.ca, the original cast
-	//  gives incorrect results in some instances.  It isn't clear
-	//  why a different result occurs, but returning the value as a
-	//  FiWord in this manner appears to work correctly.
-	*/
+	 *  2006/Dec/20
+	 *
+	 *  BDS: On ia64 SMP machine silky.sharcnet.ca, the original cast
+	 *  gives incorrect results in some instances.  It isn't clear
+	 *  why a different result occurs, but returning the value as a
+	 *  FiWord in this manner appears to work correctly.
+         */
 	union {
 		FiWord w;
 		FiSFlo f;
@@ -1705,23 +1705,23 @@ fiSFloToWord(FiSFlo sf)
 	return temp.w;
 
 	/*
-	//  Original code before the modification:
-	//
-	//	return *((FiWord *) &sf);
-	*/
+	 *  Original code before the modification:
+	 *
+	 *	return *((FiWord *) &sf);
+         */
 }
 
 FiSFlo
 fiWordToSFlo(FiWord i)
 {
 	/*
-	//  2006/Dec/20
-	//
-	//  BDS: On ia64 SMP machine silky.sharcnet.ca, the original cast
-	//  gives incorrect results in some instances.  It isn't clear
-	//  why a different result occurs, but returning the value as a
-	//  FiWord in this manner appears to work correctly.
-	*/
+	 *  2006/Dec/20
+	 *
+	 *  BDS: On ia64 SMP machine silky.sharcnet.ca, the original cast
+	 *  gives incorrect results in some instances.  It isn't clear
+	 *  why a different result occurs, but returning the value as a
+	 *  FiWord in this manner appears to work correctly.
+         */
 	union {
 		FiWord w;
 		FiSFlo f;
@@ -1732,10 +1732,10 @@ fiWordToSFlo(FiWord i)
 
 
 	/*
-	//  Original code before the modification:
-	//
-	//	return *((FiSFlo *) &i);
-	*/
+	 *  Original code before the modification:
+	 *
+	 *	return *((FiSFlo *) &i);
+         */
 }
 
 /******************************************************************************

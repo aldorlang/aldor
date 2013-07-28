@@ -11,17 +11,17 @@
 #include "xfloat.h"
 
 /*
-//  2006/Dec/20
-//
-//  Including cconfig.h to gain access to CC_SF_is_double
-*/
+ *  2006/Dec/20
+ *
+ *  Including cconfig.h to gain access to CC_SF_is_double
+ */
 #include "cconfig.h"
 /*
-//  Define a local macro for the C data type being used to represent
-//  a single float.  We cannot just go and include the normal definition
-//  because that becomes a tangle of conflicting definitions from all the
-//  other files that are included as a result.
-*/
+ *  Define a local macro for the C data type being used to represent
+ *  a single float.  We cannot just go and include the normal definition
+ *  because that becomes a tangle of conflicting definitions from all the
+ *  other files that are included as a result.
+ */
 #ifdef CC_SF_is_double
 #  define ALDOR_SF_TYPE double
 #else
