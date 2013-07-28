@@ -131,7 +131,7 @@ Syme
 uniqueMeaning(Stab stab, String s)
 {
 	SymeList symesForString = stabGetMeanings(stab, ablogTrue(), symIntern(s));
-        // FIXME: what is this supposed to do?
+        /* FIXME: what is this supposed to do? */
 #if 0
 	testNull("", cdr(symesForString));
 #endif

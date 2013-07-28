@@ -72,13 +72,14 @@ libaldor_a_SOURCES =	\
 	util/sal_util.c	\
 	util/sal_version.c
 
-aldorsrcdir = $(top_srcdir)/aldor/src
-aldorexedir = $(top_builddir)/aldor/src
+libraryname = aldor
+include ../../buildlib.am
 
 aldorincdir = $(srcdir)/../include
 
 datalibdir = $(datadir)/lib
 datalib_DATA = libaldor.al aldor_gloop.ao #aldor_gloopd.ao
+
 
 %d.ao: %.as $(aldorexedir)/aldor libaldor.al
 	$(aldorexedir)/aldor -DDEBUG	\
@@ -87,12 +88,3 @@ datalib_DATA = libaldor.al aldor_gloop.ao #aldor_gloopd.ao
 %.ao: %.as $(aldorexedir)/aldor libaldor.al
 	$(aldorexedir)/aldor	\
 	   -Nfile=$(aldorsrcdir)/aldor.conf -Y. -I$(aldorincdir) -Fao=$@ $<
-
-AM_CFLAGS = -I$(aldorsrcdir)
-
-libaldor.al: $(foreach i,$(SUBDIRS),$i/_sublib.al)
-	for l in $+; do		\
-	   ar x $$l;		\
-	   ar r $@ $$(ar t $$l);\
-	   rm $$(ar t $$l);	\
-	done

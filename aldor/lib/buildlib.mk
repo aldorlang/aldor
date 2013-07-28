@@ -62,7 +62,9 @@ $(addsuffix .c, $(library)): %.c: %.ao %.dep
 	$(AM_V_AO2C)	\
 	$(aldorexedir)/aldor -Nfile=$(aldorsrcdir)/aldor.conf -Fc=$(builddir)/$@ $<	
 
+ifndef Libraryname
 Libraryname := $(shell echo '$(libraryname)' | sed -e 's/^[a-z]/\u&/')
+endif
 aldor_args =					\
 	-Nfile=$(aldorsrcdir)/aldor.conf 	\
 	-Y.					\

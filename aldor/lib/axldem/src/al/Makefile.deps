@@ -1,0 +1,15 @@
+dirprod_deps := polycat
+gb_deps := polycat
+ibits_deps := 
+lmdict_deps := 
+matopdom_deps := matrix
+matrix_deps := 
+nni_deps := polycat
+poly3_deps := 
+poly_deps := polycat
+polycat_deps := 
+prime_deps := 
+quanc8_deps := 
+random_deps := 
+spf_deps := 
+vector_deps :=

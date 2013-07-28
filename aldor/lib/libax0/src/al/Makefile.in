@@ -9,7 +9,8 @@ builddir = @builddir@
 abs_top_srcdir = @abs_top_srcdir@
 top_srcdir = @top_srcdir@
 subdir = lib/libax0/src/al
-axllibdir = $(abs_top_srcdir)/lib/axllib/src
+axlincdir = $(abs_top_srcdir)/lib/axllib/include
+axllibdir = $(abs_top_srcdir)/lib/axllib/src/al
 
 UNIQ = perl $(top_srcdir)/aldor/tools/unix/uniq
 
@@ -87,6 +88,7 @@ aldorexedir=$(abs_top_builddir)/aldor/src
 
 aldoropt := -Q8 -Qinline-all
 define aldor_args
+	-I$(axlincdir) \
 	-I$(srcdir)/.. $(aldoropt) $(aldordebug_$*) \
 	-Nfile=$(aldorsrcdir)/aldor.conf 	\
 	-lAxiomLib=$(libname)_$* 		\
