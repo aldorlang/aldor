@@ -198,19 +198,19 @@ struct gjContext {
 	Foam formats;
 	Foam constants;
 	Foam defs;
-	// Mutable state (caches, etc)
+	/* Mutable state (caches, etc) */
 	int  lvl;
 	FoamSigList  ccallStubSigList;
 	JavaCodeList gloRegList;
 	IntSet       fmtSet;
-	// Per prog
+	/* Per prog */
 	Foam prog;
 	Foam progParams;
 	Foam progLocals;
 	Foam progLhs;
 	FoamSigList progSigList;
 	int multVarIdx;
-	// in codegen
+	/* in codegen */
 	AInt mfmt;
 	AInt afmt;
 };
@@ -1555,7 +1555,7 @@ gj0SeqSelect2(GjSeqStore store, Foam foam)
 local void
 gj0SeqIf(GjSeqStore store, Foam foam)
 {
-	// if (...) { label = .; break;}
+	/* if (...) { label = .; break;} */
 	JavaCode seq, block;
 	JavaCode s1, s2;
 
@@ -1572,12 +1572,13 @@ gj0SeqIf(GjSeqStore store, Foam foam)
 local void 
 gj0SeqSelectMulti(GjSeqStore store, Foam foam)
 {
-	// switch (xxx) {
-	//   case 0: target = 1; break;
-	//   case 1: target = 4;
-	//   case 2: target = 9;
-	// }
-	// continue
+	/* switch (xxx) {
+	 *   case 0: target = 1; break;
+	 *   case 1: target = 4;
+	 *   case 2: target = 9;
+	 * }
+	 * continue
+         */
 	JavaCodeList body;
 	JavaCode tst;
 	int i;
@@ -3049,11 +3050,12 @@ gj0ClassFields()
 local JavaCode
 gj0ClassConstructor(String className)
 {
-	// public foo(FoamContext ctxt) {
-	//     this.ctxt = ctxt;
-	//     <init_foo> = new Clos(null, CFX);
-	//     <init_*>   = ctxt.createLoadFn(ctxt)
-	// }
+	/* public foo(FoamContext ctxt) {
+	 *     this.ctxt = ctxt;
+	 *     <init_foo> = new Clos(null, CFX);
+	 *     <init_*>   = ctxt.createLoadFn(ctxt)
+	 * }
+         */
 	JavaCodeList args;
 	JavaCodeList body, inits;
 	JavaCode s1, declJ, rhs;
@@ -3094,11 +3096,12 @@ gj0ClassConstructor(String className)
 local JavaCode
 gj0ClassRunMethod(String className)
 {
-	// public void run() {
-	//    c0_langx(null)
-	//    Clos c = ctxt.getGlobal(basic)
-	//    c.getProg().ocall(c.getEnv());
-	// }
+	/* public void run() {
+	 *    c0_langx(null)
+	 *    Clos c = ctxt.getGlobal(basic)
+	 *    c.getProg().ocall(c.getEnv());
+	 * }
+         */
 	
 	JavaCode s1, s2;
 	Foam initDecl;

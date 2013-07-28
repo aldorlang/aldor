@@ -49,7 +49,9 @@ void finiFile();
 void tinferTest()
 {
 	init();
-	//TEST(testSimpleTInfer);
+#if 0
+	TEST(testSimpleTInfer);
+#endif
 
 	TEST(testSelfTInfer);
 	TEST(testConditionalTInfer);

@@ -1260,7 +1260,7 @@ jcBlockHdrIndent(JavaCode code)
 JavaCode
 jcFile(JavaCode pkg, JavaCode name, JavaCodeList imports, JavaCode body)
 {
-	// FIXME: Very temporary
+	/* FIXME: Very temporary */
 	listNConcat(JavaCode)(imports, listSingleton(JavaCode)(body));
 	return jcNLSeq(imports);
 }

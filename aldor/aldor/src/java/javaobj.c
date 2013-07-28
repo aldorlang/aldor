@@ -255,7 +255,7 @@ jcoSExpr(JavaCode code)
 Hash
 jcoHash(JavaCode c)
 {
-	// FIXME:
+	/* FIXME: */
 	if (c == 0)
 		return 20041;
 	if (jcoIsImport(c))
