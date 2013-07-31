@@ -56,15 +56,16 @@ AC_ARG_ENABLE([git-build-id],
               [git_build_id=`git status --porcelain 2>&1`])
 
 # Git SHA1 hash as ld build-id.
-AC_MSG_CHECKING([git build-id])
+AC_MSG_CHECKING([build id])
 if test -z "$git_build_id"; then
-   gitsha1=`git rev-parse HEAD`
-   build_id="-Wl,--build-id=0x$gitsha1"
-   AC_MSG_RESULT([$gitsha1])
+   VCSVERSION=`git rev-parse HEAD`
+   build_id="-Wl,--build-id=0x$VCSVERSION"
+   AC_MSG_RESULT([git: $VCSVERSION])
 else
-   AC_MSG_RESULT([no git or tree not clean])
+   VCSVERSION=`date +%Y%m%d`
+   AC_MSG_RESULT([date: $VCSVERSION])
 fi
-AC_SUBST([VCSVERSION],[$gitsha1])
+AC_SUBST([VCSVERSION])
 AC_SUBST([build_id])
 
 # Generate Makefiles
