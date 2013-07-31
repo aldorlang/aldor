@@ -16,6 +16,10 @@
  * The version of this program.
  */
 
+#ifndef VCSVERSION
+#define VCSVERSION __DATE__
+#endif
+
 CString	verName		= "Aldor";
 
 int	verMajorVersion	=  1;
