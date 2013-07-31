@@ -1397,7 +1397,7 @@ fiFormatSFlo(FiSFlo sf,FiArr s,FiSInt i)
 	char	buf[MAX_SFLO_TEXT];
 	unsigned long	l;
 
-	(void)sprintf(buf, "%.9g", sf);
+	(void)sprintf(buf, "%.*g", FLT_DIG, sf);
 	l   = strlen(buf);
 	if (l+i > strlen((String) s)) {
 		fiRaiseException((FiWord)"FormatSFlo: the array given is not big enough");
@@ -1414,7 +1414,7 @@ fiFormatDFlo(FiDFlo x,FiArr  s,FiSInt i)
 	char	buf[MAX_DFLO_TEXT];
 	unsigned long	l;
 
-	(void)sprintf(buf, "%.17g", x);
+	(void)sprintf(buf, "%.*g", DBL_DIG, x);
 	l   = strlen(buf);
 	if (l+i > strlen((String) s)) {
 		fiRaiseException((FiWord)"FormatDFlo: the array given is not big enough");
