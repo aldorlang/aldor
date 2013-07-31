@@ -85,14 +85,13 @@ compCmd(int argc, char **argv)
 
 	/* Display the version string in all its glory */
 	if (cmdHasVerboseOption(argc, argv)) {
-		fprintf(osStdout, "%s version %d.%d.%d%s",
-			axiomxlName,
-			axiomxlMajorVersion,
-			axiomxlMinorVersion,
-			axiomxlMinorFreeze,
-			axiomxlPatchLevel);
-		if (axiomxlEditNumber)
-			fprintf(osStdout, "(%d)", axiomxlEditNumber);
+		fprintf(osStdout, "%s version %d.%d.%d",
+			verName,
+			verMajorVersion,
+			verMinorVersion,
+			verMinorFreeze);
+		if (*verPatchLevel)
+			fprintf(osStdout, "(%s)", verPatchLevel);
 		fprintf(osStdout, " for %s %s\n", CONFIG, DEBUG_CONFIG);
 		if (echo) cmdEcho(osStdout, argc, argv);
 	}
@@ -210,9 +209,6 @@ compSEvalLoop(FILE *in, FILE *out)
 {
 	compInit();
 
-	if (verBannerWanted()) 
-		verPrint();
-
 	sxiReadEvalPrintLoop(in, out,
 		             compIsDebug ? SXRW_SrcPos : SXRW_NoSrcPos);
 	compFini();
@@ -233,9 +229,6 @@ compInteractiveLoop(int argc, char **argv, FILE *fin, FILE *fout)
 	FILE		* fin0 = fin;
 
 	compInit();
-
-	if (verBannerWanted()) 
-		verPrint();
 
 	iargc = cmdArguments(1, argc, argv);
  
@@ -428,15 +421,14 @@ compGLoopInit(int argc, char **argv, FILE *fout, FileName *pfn,
 	/* Helpful start-up banner ... */
 	fprintf(osStdout,"%s\n",comsgString(ALDOR_M_GloopBanner));
 	if (comsgOkRelease()) {
-		fprintf(osStdout, "%s: %s(%s) version %d.%d.%d%s",
+		fprintf(osStdout, "%s: %s(%s) version %d.%d.%d",
 			"Release",
-			axiomxlName, "C", /* C-language version */
-			axiomxlMajorVersion,
-			axiomxlMinorVersion,
-			axiomxlMinorFreeze,
-			axiomxlPatchLevel);
-		if (axiomxlEditNumber)
-			fprintf(osStdout, "(%d)", axiomxlEditNumber);
+			verName, "C", /* C-language version */
+			verMajorVersion,
+			verMinorVersion,
+			verMinorFreeze);
+		if (*verPatchLevel)
+			fprintf(osStdout, "(%s)", verPatchLevel);
 		fprintf(osStdout, " for %s %s\n", CONFIG, DEBUG_CONFIG);
 	}
 	(void)fputs("Type \"#int help\" for more details.\n",osStdout);
@@ -489,9 +481,6 @@ compFilesLoop(int argc, char **argv)
 	Bool		isSolo;
  
 	compInit();
-
-	if (verBannerWanted()) 
-		verPrint();
 
 	iargc = cmdArguments(1, argc, argv);
  
