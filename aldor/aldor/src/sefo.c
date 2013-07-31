@@ -1247,10 +1247,7 @@ symeOStreamPrint0(OStream ostream, Bool deep, Syme syme)
 	cc += ostreamPrintf(ostream, "%s", symeString(syme));
 
 	sefoPrintDEBUG({
-		cc += ostreamPrintf(ostream, " [cn:%ld,", symeConstNum(syme));
-		cc += ostreamPrintf(ostream, " dn:%d,", symeDefnNum(syme));
-		cc += ostreamPrintf(ostream, " ad:%p,", syme);
-		cc += ostreamPrintf(ostream, " mk:%ld]", symeMark(syme));
+			cc += ostreamPrintf(ostream, " [cn:%ld, dn:%d %ld],", symeConstNum(syme), symeDefnNum(syme), symeMark(syme));
 	});
 
 	if (deep) {
@@ -1688,10 +1685,7 @@ symeEqual0(SymeList mods, Syme syme1, Syme syme2)
 		return false;
 
 	sefoEqualDEBUG({
-	    fprintf(dbOut, "-> symeEqual[%d]:", (int) serial);
-		fnewline(dbOut);
-		symePrintDb(syme1);
-		symePrintDb(syme2);
+			afprintf(dbOut, "(symeEqual[%d]: %pSyme %pSyme\n", (int) serial, syme1, syme2);
 	});
 
 	if (symeIsArchive(syme1) && symeIsLibrary(syme2))
@@ -1718,10 +1712,10 @@ symeEqual0(SymeList mods, Syme syme1, Syme syme2)
 
 	else if (listMember(Syme)(mods, syme1, symeEq) &&
 		 listMember(Syme)(mods, syme2, symeEq))
-		return true;
+		result = true;
 
 	else if (symeIsSelf(syme1))
-		return false;
+		result = false;
 
 	else if (symeIsSelfSelf(syme1)) {
 		TForm	tf1;
@@ -1729,18 +1723,19 @@ symeEqual0(SymeList mods, Syme syme1, Syme syme2)
 
 		if (symeHash(syme1) && symeHash(syme2) &&
 		    symeHash(syme1) != symeHash(syme2))
-			return false;
+			result = false;
+		else {
+			tf1 = symeType(syme1);
+			tf2 = symeType(syme2);
 
-		tf1 = symeType(syme1);
-		tf2 = symeType(syme2);
+			tfFollow(tf1);
+			tfFollow(tf2);
 
-		tfFollow(tf1);
-		tfFollow(tf2);
-
-		assert (tfIsGeneral(tf1) && tfIsGeneral(tf2));
-		result = (sefoListEqual0(mods, symeCondition(syme1),
-					 symeCondition(syme2)) &&
-			  abEqualModDeclares(tfGetExpr(tf1), tfGetExpr(tf2)));
+			assert (tfIsGeneral(tf1) && tfIsGeneral(tf2));
+			result = (sefoListEqual0(mods, symeCondition(syme1),
+						 symeCondition(syme2)) &&
+				  abEqualModDeclares(tfGetExpr(tf1), tfGetExpr(tf2)));
+		}
 	}
 
 	else if (symeIsTwin(syme1, syme2)) {
@@ -1759,9 +1754,8 @@ symeEqual0(SymeList mods, Syme syme1, Syme syme2)
 	}
 
 	sefoEqualDEBUG({
-		fprintf(dbOut, "<- symeEqual[%d] = %s",
-			(int) serial, boolToString(result));
-		fnewline(dbOut);
+			afprintf(dbOut, "  symeEqual[%d] = %s)\n",
+				 (int) serial, boolToString(result));
 	});
 
 	return result;
@@ -3198,8 +3192,7 @@ tformSubst0(AbSub sigma, TForm tf)
 	if (final && (!tfIsSubstOf(tf, final) || lazy)) return final;
 
 	sefoSubstDEBUG({
-		fprintf(dbOut, "-> tformSubst[%ld]:\n", absSerial(sigma));
-		tformPrintDb(tf);
+			afprintf(dbOut, "(-> tformSubst[%ld]: %pTForm\n", absSerial(sigma), tf);
 	});
 
 	if (!lazy) tfFollow(tf);
@@ -3345,9 +3338,8 @@ tformSubst0(AbSub sigma, TForm tf)
 
 	if (!fresh) {
 		sefoSubstDEBUG({
-			fprintf(dbOut, "<- tformSubst[%ld]: ",
-				absSerial(sigma));
-			tformPrintDb(final);
+				afprintf(dbOut, " <- tformSubst[%ld]: %pTForm)\n",
+					 absSerial(sigma), final);
 		});
 		return final;
 	}
@@ -3380,8 +3372,7 @@ tformSubst0(AbSub sigma, TForm tf)
 	if (tfHasExpr(final)) tfSetNeedsSefo(final);
 
 	sefoSubstDEBUG({
-		fprintf(dbOut, "<- tformSubst[%ld]: ", absSerial(sigma));
-		tformPrintDb(final);
+			afprintf(dbOut, "<- tformSubst[%ld]: %pTForm)\n", absSerial(sigma), final);
 	});
 
 	return final;
