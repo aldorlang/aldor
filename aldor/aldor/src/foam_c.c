@@ -49,6 +49,9 @@ strLength(s)
 #define FiSFloBits	(int)bitsizeof(FiSFlo)
 #define FiDFloBits	(int)bitsizeof(FiDFlo)
 
+#define DFLO_DIG	DBL_DIG
+#define SFLO_DIG	FLT_DIG
+
 
 /*****************************************************************************
  *
@@ -1397,7 +1400,7 @@ fiFormatSFlo(FiSFlo sf,FiArr s,FiSInt i)
 	char	buf[MAX_SFLO_TEXT];
 	unsigned long	l;
 
-	(void)sprintf(buf, "%.*g", FLT_DIG, sf);
+	(void)sprintf(buf, "%.*g", SFLO_DIG, sf);
 	l   = strlen(buf);
 	if (l+i > strlen((String) s)) {
 		fiRaiseException((FiWord)"FormatSFlo: the array given is not big enough");
@@ -1414,7 +1417,7 @@ fiFormatDFlo(FiDFlo x,FiArr  s,FiSInt i)
 	char	buf[MAX_DFLO_TEXT];
 	unsigned long	l;
 
-	(void)sprintf(buf, "%.*g", DBL_DIG, x);
+	(void)sprintf(buf, "%.*g", DFLO_DIG, x);
 	l   = strlen(buf);
 	if (l+i > strlen((String) s)) {
 		fiRaiseException((FiWord)"FormatDFlo: the array given is not big enough");
