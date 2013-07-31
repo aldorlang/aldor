@@ -17,7 +17,7 @@
  */
 
 #ifndef VCSVERSION
-#define VCSVERSION __DATE__
+#define VCSVERSION ""
 #endif
 
 CString	verName		= "Aldor";
