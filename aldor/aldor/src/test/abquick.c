@@ -124,17 +124,13 @@ stdtypes()
 	return absyn;
 }
 
-/* XXX: from test_ostream.c */
-void testNull(void);
-
 Syme
 uniqueMeaning(Stab stab, String s)
 {
 	SymeList symesForString = stabGetMeanings(stab, ablogTrue(), symIntern(s));
-        /* FIXME: what is this supposed to do? */
-#if 0
-	testNull("", cdr(symesForString));
-#endif
+
+	testIsNull("", cdr(symesForString));
+
 	Syme d = car(symesForString);
 
 	return d;

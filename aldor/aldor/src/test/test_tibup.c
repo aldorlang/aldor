@@ -110,7 +110,6 @@ testTiBupCollect2()
 
 	TForm D = tiGetTForm(stab, id("D"));
 	TForm E = tiGetTForm(stab, id("E"));
-	Syme g = uniqueMeaning(stab, "g");
 
 	AbSyn collect = abqParse("local x: D := never; y := x for free x in g()");
 	scopeBind(stab, collect);
