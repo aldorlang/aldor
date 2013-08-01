@@ -9,9 +9,7 @@
 #include "debug.h"
 #include "opsys.h"
 #include "store.h"
-#if EDIT_1_0_n1_04
 #include "textcolour.h"
-#endif
 #include "util.h"
 #include "fint.h"
 #include "abpretty.h"
@@ -858,15 +856,10 @@ comsgVDo(CoMsgTag tag, AbSyn ab, Msg msg, va_list argp)
 	if (!comsgIsInit || !ab) {
 		SrcPos spos = ab ? abPos(ab) : sposNone;
 		comsgInit();
-#if EDIT_1_0_n1_04
 		fprintf(comsgStream, "%s", tcolPrefix(tag));
 		comsgPrintLead(comsgStream, ++nmessages, msg, tag, spos, int0);
 		comsgVFPrintf (comsgStream, msg, argp);
 		fprintf(comsgStream, "%s", tcolPostfix(tag));
-#else
-		comsgPrintLead(comsgStream, ++nmessages, msg, tag, spos, int0);
-		comsgVFPrintf (comsgStream, msg, argp);
-#endif
 	}
 	else {
 		String text  = comsgText(msg, argp);
@@ -963,7 +956,6 @@ comsgReportLine(FILE *fout, int comsgc, CoMsg *comsgv)
 	for ( ; comsgc-- > 0; comsgv++) {
 		CoMsg	co = *comsgv;
 		if (strcmp(lastText, co->text)) {
-#if EDIT_1_0_n1_04
 			fprintf(fout, "%s", tcolPrefix(co->tag));
 			comsgPrintLead(fout, co->serial, co->msg, co->tag,
 				       co->pos, co->notes.noteNumber);
@@ -972,15 +964,6 @@ comsgReportLine(FILE *fout, int comsgc, CoMsg *comsgv)
 				comsgPrintSeeNotes(fout, co->notes.noteList);
 			fprintf(fout, "%s\n", tcolPostfix(co->tag));
 			comsgPrintMacEx(fout, co->pos, co->node);
-#else
-			comsgPrintLead(fout, co->serial, co->msg, co->tag,
-				       co->pos, co->notes.noteNumber);
-			fprintf(fout, "%s", co->text);
-			if (co->notes.noteList && co->tag != COMSG_NOTE)
-				comsgPrintSeeNotes(fout, co->notes.noteList);
-			fprintf(fout, "\n");
-			comsgPrintMacEx(fout, co->pos, co->node);
-#endif
 		}
 		lastText = co->text;
 	}
