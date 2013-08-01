@@ -395,11 +395,7 @@ struct tok_info tokInfoTable[] = {
         {KW_Delay,      0,"delay",       0, 0,  0,  0,  0,  1,  1,  0,   0, 0},
         {KW_Do,         0,"do",          0, 0,  0,  0,  0,  1,  1,  0,   0, 0},
         {KW_Else,       0,"else",        0, 0,  0,  0,  1,  1,  1,  0,   0, 0},
-#if AXL_EDIT_1_1_13_06
         {KW_Except,     0,"except",      0, 0,  0,  0,  0,  1,  1,  1,   0, 0},
-#else
-        {KW_Except,     0,"except",      0, 0,  0,  0,  1,  1,  1,  0,   0, 0},
-#endif
         {KW_Export,     0,"export",      0, 0,  0,  0,  0,  1,  1,  0,   0, 0},
         {KW_Exquo,      0,"exquo",       0, 0,  0,  0,  0,  0,  1,  1, 125, 0},
         {KW_Extend,     0,"extend",      0, 0,  0,  0,  0,  1,  1,  0,   0, 0},
@@ -436,11 +432,7 @@ struct tok_info tokInfoTable[] = {
         {KW_Rule,       0,"rule",        0, 0,  0,  0,  0,  1,  1,  0,   0, 0},
         {KW_Select,     0,"select",      0, 0,  0,  0,  0,  1,  1,  0,   0, 0},
         {KW_Then,       0,"then",        0, 0,  0,  0,  1,  1,  1,  0,   0, 0},
-#if AXL_EDIT_1_1_13_06
         {KW_Throw,      0,"throw",       0, 0,  0,  0,  0,  1,  1,  1,   0, 0},
-#else
-        {KW_Throw,      0,"throw",       0, 0,  0,  0,  1,  1,  1,  0,   0, 0},
-#endif
         {KW_To,         0,"to",          0, 0,  0,  0,  1,  1,  1,  0,   0, 0},
         {KW_Try,        0,"try",         0, 0,  0,  0,  0,  1,  1,  0,   0, 0},
         {KW_Where,      0,"where",       0, 0,  0,  0,  1,  1,  1,  0,   0, 0},
