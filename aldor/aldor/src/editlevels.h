@@ -45,7 +45,6 @@
 
 #define EDIT_1_0_n2_06 1        /* fix bug 4 - disabled type cache in stab */
 
-#define EDIT_1_0_n1_10 1	/* improvements to gc0TryCast() */
 	/* Edit 1.0.-1(9): HP-UX port; added missing "local" etc */
 #define EDIT_1_0_n1_08 1	/* Alpha/OSF port; abReferTPoss etc */
 #define EDIT_1_0_n1_07 1	/* Clean up and Alpha port; *sizeof(long)  */
