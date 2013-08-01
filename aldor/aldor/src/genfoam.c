@@ -3912,7 +3912,6 @@ gen0MultiAssign(FoamTag set, AbSyn lhs, Foam rhsFoam)
 				    foamCopy(temps->foamValues.argv[i]),
 				    rhsFoam->foamValues.argv[i]), lhs);
 	}
-#if AXL_EDIT_1_1_13_33
 	/* Copy the temporary results into the targets */
 	for(i=0; i < argc; i++) {
 		AbSyn	lhsi = abArgv(lhs)[i];
@@ -3934,14 +3933,6 @@ gen0MultiAssign(FoamTag set, AbSyn lhs, Foam rhsFoam)
 
 		/* FIXME: deal with domains defs here (see gen0Define) */
 	}
-#else
-	for(i=0; i< argc; i++) {
-		AbSyn	lhsi = abArgv(lhs)[i];
-
-		gen0AddStmt(foamNew(set, 2, genId(abDefineeId(lhsi)),
-				    foamCopy(temps->foamValues.argv[i])), lhs);
-	}
-#endif
 	if (!gen0ValueMode) {
 		for(i = 0; i < argc; i++)
 			gen0FreeTemp(temps->foamValues.argv[i]);
