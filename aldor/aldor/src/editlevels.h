@@ -31,18 +31,6 @@
 /* ===================================================================== */
 /* ============================ Aldor Edits ============================ */
 /* ===================================================================== */
-#define EDIT_1_0_n2_15 1        /* (next available edit number) */
-
-#define EDIT_1_0_n2_14 1        /* (unused) */
-
-#define EDIT_1_0_n2_13 1        /* (unused) */
-
-#define EDIT_1_0_n2_12 1        /* (unused) */
-
-#define EDIT_1_0_n2_11 1        /* (unused) */
-
-#define EDIT_1_0_n2_10 1        /* (unused) */
-
 #define EDIT_1_0_n2_06 1        /* fix bug 4 - disabled type cache in stab */
 
 	/* Edit 1.0.-1(9): HP-UX port; added missing "local" etc */
@@ -54,7 +42,6 @@
 /* =========================== AxiomXL Edits =========================== */
 /* ===================================================================== */
 
-#define AXL_EDIT_1_1_13_37 1	/* fixed {aldor,axl}main.c clobbering */
 	/* Edit 1.1.13(36): renaming of $AXIOMXL* to $ALDOR* */
 	/* Edit 1.1.13(35): renaming of axiomxl to aldor */
 	/* Edit 1.1.13(34): currently disabled */

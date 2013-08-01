@@ -1272,7 +1272,6 @@ emitCleanup(int numFiles, EmitInfo *finfov)
 			    || !emitIsOutputNeeded(finfo, j))
 				continue;
 
-#ifdef AXL_EDIT_1_1_13_37
 			/*
 			 * Deal with aldormain.c when j==FTYPENO_AXLMAINC
 			 * and aldormain.o when j==FTYPENO_OBJECT.
@@ -1281,7 +1280,6 @@ emitCleanup(int numFiles, EmitInfo *finfov)
 			       (j != FTYPENO_AXLMAINC) &&
 			       (j != FTYPENO_OBJECT))
 				continue;
-#endif
 
 			fn   = emitInfoFname(finfo, j);
 			name = fnameUnparse(fn);
