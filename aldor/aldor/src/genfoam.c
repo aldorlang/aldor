@@ -4173,7 +4173,6 @@ gen0Extend(AbSyn absyn)
 		if (gen0IsDomainInit(val)) {
 			gen0AddInit(def);
 			result = NULL;
-#if AXL_EDIT_1_1_12p6_25
 			/* Stamp the extension with its hash code */
 			if (symeHashNum(extension) &&
 				(foamTag(val) == FOAM_Clos)) {
@@ -4182,7 +4181,6 @@ gen0Extend(AbSyn absyn)
 
 				gen0AddInit(gen0RtSetProgHash(ext, hash));
 			}
-#endif
 		}
 		else
 			result = gen0SetValue(def, absyn);
@@ -4217,11 +4215,7 @@ gen0MakeExtendLambda(Syme syme, TForm tf)
 	TForm		tfret;
 	Stab		stab;
 	RTCacheInfo	cache;
-#if AXL_EDIT_1_1_12p6_25
 	int		i;
-#else
-	int		hashCode, i;
-#endif
 	
 	assert(tfIsMap(tf));
 
@@ -4276,12 +4270,6 @@ gen0MakeExtendLambda(Syme syme, TForm tf)
 	else
 		gen0AddStmt(cache->init, cache->ab);
 	gen0CacheKill(cache);
-#if AXL_EDIT_1_1_12p6_25
-#else
-	hashCode = symeHashNum(syme);
-	if (hashCode)
-		gen0AddStmt(gen0RtSetProgHash(foamCopy(clos), hashCode), NULL);
-#endif
 
 	return clos;
 }
