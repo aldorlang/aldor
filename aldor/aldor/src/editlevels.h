@@ -51,8 +51,6 @@
 
 #define EDIT_1_0_n2_05 1        /* fix bug 859 */
 
-#define EDIT_1_0_n2_04 1        /* fix bug 1340 */
-
 #define EDIT_1_0_n2_03 1        /* Updated ALDOR_F_LibExportNotFound error message
                                    and allows AXL_ as well as ALDOR_ message prefixes
                                  */

@@ -3496,11 +3496,7 @@ struct foamBVal_info foamBValInfoTable[] = {
                            {FOAM_Bool,FOAM_SInt,FOAM_Word,FOAM_Word}},
  {FOAM_BVal_DFloAssemble,0,"DFloAssemble",
                        0,4,{FOAM_Bool,FOAM_SInt,FOAM_Word,FOAM_Word},
-#if EDIT_1_0_n2_04 
                                                              FOAM_DFlo, 1, {0}},
-#else
-                                                             FOAM_SFlo, 1, {0}},
-#endif
 
 
  {FOAM_BVal_Byte0,	 0,"Byte0",
