@@ -5732,10 +5732,8 @@ gen0VarsForeign(Syme syme)
 
 	if (type == FOAM_Rec)	
 		fmtSlot = gen0RecordFormatNumber(tf);
-#if AXL_EDIT_1_1_12p6_22
 	else if (tfIsMap(tf) && (forg->protocol == FOAM_Proto_C))
 	        fmtSlot = gen0CSigFormatNumber(tf);
-#endif
 	else if (forg->protocol == FOAM_Proto_Fortran)
 	        fmtSlot = gen0FortranSigFormatNumber(tf, true);
 	else if (tfIsPackedMap(tf))

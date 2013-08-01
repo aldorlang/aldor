@@ -61,8 +61,6 @@
 	/* Edit 1.1.13(13): use "throw" instead of "except" in errors */
 	/* Edit 1.1.13(12): -M base=<dir> support */
 
-#define AXL_EDIT_1_1_12p6_23 1	/* Array temporaries use pointer locals */
-#define AXL_EDIT_1_1_12p6_22 1	/* ANSI declarations on Foreign C imports */
 #define AXL_EDIT_1_1_12p6_21 1	/* titdn{Lambda,Generate,Reference} bugs */
 #define AXL_EDIT_1_1_12p6_20 1	/* bputBadArgType0 fix for bug 1210 */
 #define AXL_EDIT_1_1_12p6_19 1	/* FiByte now unsigned for bug 1237 */

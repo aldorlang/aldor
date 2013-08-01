@@ -5883,12 +5883,10 @@ gc0GloIdDecl(Foam decl, int idx)
 		gc0IdFortranDecl(decl, &ccName, &ccType);
 	else if (t != FOAM_Prog && t != FOAM_Clos)
 		ccType = gc0TypeId(t, fmt);
-#if AXL_EDIT_1_1_12p6_22
 	else if (imported && (p == FOAM_Proto_C)) {
 		ccName = gc0IdCDecl(decl, ccName);
 		ccType = gc0TypeId(decl->foamGDecl.rtype, emptyFormatSlot);
 	}
-#endif
 	else {
 		/*
 		 * We need to be able to do better than this, especially
