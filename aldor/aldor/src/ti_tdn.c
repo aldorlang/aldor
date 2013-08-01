@@ -1657,13 +1657,11 @@ titdnCollect(Stab stab, AbSyn absyn, TForm type)
 	titdn(stab, body, rtype);
 	abTUnique(absyn) = type;
 
-#if EDIT_1_0_n1_05
 	{
 		AbEmbed	embed = tfSatEmbedType(abTUnique(body), rtype);
 		if (!tfIsNone(rtype) && embed != AB_Embed_Identity) 
 			abAddTContext(body, embed);
 	}
-#endif
 
 	Return(true);
 }
