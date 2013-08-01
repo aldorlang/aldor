@@ -55,7 +55,6 @@
 	/* Edit 1.1.13(21): fixed gen0RtRand */
 	/* Edit 1.1.13(20): currently disabled */
 	/* Edit 1.1.13(18): currently disabled */
-#define AXL_EDIT_1_1_13_17 1	/* gencpp: uses compRootDir from axlcomp.c */
 	/* Edit 1.1.13(16): $ALDORARGS overrides $AXIOMXLARGS */
 	/* Edit 1.1.13(15): $ALDORROOT overrides $AXIOMXLROOT */
 	/* Edit 1.1.13(14): aldor.conf overrides axiomxl.conf */
