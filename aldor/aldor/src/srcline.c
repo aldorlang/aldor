@@ -47,15 +47,9 @@ slinePrint(FILE *fout, SrcLine sl)
 {
 	int     cc;
 	cc  = fprintf(fout, "[%d] %s, line %d: ",
-#if EDIT_1_0_n1_07
 		      (int) sposGlobalLine(sl->spos),
 		      fnameUnparseStatic(sposFile(sl->spos)),
 		      (int) sposLine(sl->spos));
-#else
-		      sposGlobalLine(sl->spos),
-		      fnameUnparseStatic(sposFile(sl->spos)),
-		      sposLine(sl->spos));
-#endif
 	cc += fprintf(fout, "%*s", sl->indentation, "");
 	cc += fprintf(fout, "%s",  sl->text);
 	return cc;

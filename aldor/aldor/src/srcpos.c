@@ -143,11 +143,7 @@ sposPrint(FILE *fout, SrcPos sp)
 	else
 		cc = fprintf(fout, "\"%s\", line %d char %d",
 			  fnameUnparseStatic(sposFile(sp)),
-#if EDIT_1_0_n1_07
 			  (int) sposLine(sp), (int) sposChar(sp));
-#else
-			  sposLine(sp), sposChar(sp));
-#endif
 	return cc;
 }
 
@@ -162,11 +158,7 @@ sposShow(void)
 	for (i = 0; i < gloArgc; i++)
 		fprintf(stderr, "\t%s [%d], %d\n",
 		       fnameUnparseStatic(gloLineTbl[i].fn),
-#if EDIT_1_0_n1_07
 		       (int) gloLineTbl[i].glno, (int) gloLineTbl[i].flno);
-#else
-		       gloLineTbl[i].glno, gloLineTbl[i].flno);
-#endif
 	fprintf(stderr, "End Show Global Line Table\n");
 	return;
 }

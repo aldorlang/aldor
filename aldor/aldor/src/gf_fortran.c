@@ -1593,10 +1593,8 @@ gen0FortranExportFn(TForm tf, FoamTag rtype, Foam op, String name, AbSyn absyn)
 		retvar = gen0TempLocal0(retType, retfmt);
 		tmpfoam = foamNewSet(retvar, foamCopy(tmpfoam));
 	}
-#if EDIT_1_0_n1_07
 	else
 		retvar = 0;
-#endif
 
 	/* Add the function call statement */
 	gen0AddStmt(tmpfoam, absyn);
@@ -2256,11 +2254,7 @@ gen0FortranArgName(Length i)
 {
 	char	num[40];
 
-#if EDIT_1_0_n1_07
 	(void)sprintf(num, "%s%d", "x", (int) i);
-#else
-	(void)sprintf(num, "%s%d", "x", i);
-#endif
 	return symIntern(num);
 }
 

@@ -2265,10 +2265,8 @@ void GenExportClass(AbSyn ab, int isTmpl, FILE *as, FILE *cc) {
     /* --- C++ extern --- */
     if (toOutputAS) 
       toOutputCC = GenCppFnSig(symeType(item),symString(symeId(item)),cl,1,BL_Exported);
-#if EDIT_1_0_n1_07
     else
       toOutputCC = 0;
-#endif
     
     if (toOutputAS && toOutputCC) {
       fprintf(as,"%s",toOutputAS); 
@@ -3982,11 +3980,7 @@ TForm tfFollowDefDecl(TForm tf) {
     if (tfIsSubst(tf)) tf = tfMakeSubst(tf);
     return tf;
   }
-#if EDIT_1_0_n1_07
   while (tfIsForward(tf)) tfFollow(tf);
-#else
-  while (tfIsForward(tf)) tf = tfFollow(tf);
-#endif
   if (tfIsSubst(tf)) tf = tfMakeSubst(tf);
   if (!tfIsDefine(tf)) {
     if (tfIsSubst(tf)) tf = tfMakeSubst(tf);
@@ -3994,11 +3988,7 @@ TForm tfFollowDefDecl(TForm tf) {
   }
   tf = tfDeclareType(tfDefineDecl(tf));
   if (tfIsSubst(tf)) tf = tfMakeSubst(tf);
-#if EDIT_1_0_n1_07
   while (tfIsForward(tf)) tfFollow(tf);
-#else
-  while (tfIsForward(tf)) tf = tfFollow(tf);
-#endif
   if (tfIsSubst(tf)) tf = tfMakeSubst(tf);
   return tf;
 }

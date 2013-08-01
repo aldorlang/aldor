@@ -4000,11 +4000,7 @@ scobindPrintDeclInfo(Length i, DeclInfo declInfo)
 	Length		c;
 
 	fnewline(dbOut);
-#if EDIT_1_0_n1_07
 	fprintf(dbOut, "        %-14s: [%d] ", " ", (int) i);
-#else
-	fprintf(dbOut, "        %-14s: [%d] ", " ", i);
-#endif
 
 	if (declInfo->type) {
 		fprintf(dbOut, "<");

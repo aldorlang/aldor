@@ -859,11 +859,7 @@ symeListExtend(SymeList symes, Syme syme)
 	
 
 	while (tmp) {
-#if EDIT_1_0_n1_07
 		printf("%p %s %s\n", car(tmp), 
-#else
-		printf("%x %s %s\n", car(tmp), 
-#endif
 		       car(tmp)->lib && car(tmp)->lib->name 
 		       ? car(tmp)->lib->name->partv[1] : "Local",
 		       car(tmp)->id->str);
@@ -879,11 +875,7 @@ symeListExtend(SymeList symes, Syme syme)
 			result = listCons(Syme)(car(symes), result);
 		else {
 #if 0
-#if EDIT_1_0_n1_07
 			printf("Deleted: %p %s %s\n",
-#else
-			printf("Deleted: %x %s %s\n",
-#endif
 			       car(symes), 
 			       car(symes)->lib && car(symes)->lib->name 
 			       ? car(symes)->lib->name->partv[1] : "Local",

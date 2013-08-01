@@ -2335,11 +2335,7 @@ foamPosBufPrint(FILE *file, Buffer buf)
 	size = sizeof(SrcPos);
 	step = buf->argc / size;
 
-#if EDIT_1_0_n1_07
 	fprintf(file, "Buffer length: %d, SrcPos size: %d\n", (int) buf->argc, size);
-#else
-	fprintf(file, "Buffer length: %d, SrcPos size: %d\n", buf->argc, size);
-#endif
 	fprintf(file, "Number of steps: %d\n", step);
 	for (i = 0, buf->pos = 0; buf->pos < buf->argc; i++) {
 		sp = bufRdULong(buf);

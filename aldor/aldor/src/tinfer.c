@@ -1165,11 +1165,7 @@ tiTfPrint(FILE *fout, Stab stab, String str, TFormUsesList tful0)
 
 	for (i = 0, tful = tful0; tful; i += 1, tful = cdr(tful)) {
 		fnewline(dbOut);
-#if EDIT_1_0_n1_07
 		fprintf(dbOut, "%d. ", (int) i);
-#else
-		fprintf(dbOut, "%d. ", i);
-#endif
 		tfuPrint(dbOut, car(tful));
 	}
 
@@ -2021,9 +2017,7 @@ tiTfImport1(Stab stab, TFormUses tfu)
 		Stab sstab = stab;
 		TForm cond;
 		assert(sstab); /* -- MND -- */
-#if EDIT_1_0_n1_07
 		self = NULL;   /* Avoid uninitialized msg */
-#endif
 		while ( sstab && (self = stabGetSelf(sstab)) == NULL)
 			sstab = cdr(sstab);
 		cond = tfIf(tfHas(self, tf), tf, tfNone());

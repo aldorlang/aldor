@@ -237,19 +237,11 @@ inclWrite(FILE *file, SrcLineList sll)
 			if ((curfile && fnameEqual(curfile, slfile)))
 				cc += fprintf(file, "%cline %d\n",
 					      DIRECTIVE_CHAR,
-#if EDIT_1_0_n1_07
 					      (int) slline);
-#else
-					      slline);
-#endif
 			else {
 				cc += fprintf(file, "%cline %d \"%s\"\n",
 					      DIRECTIVE_CHAR,
-#if EDIT_1_0_n1_07
 					      (int) slline,
-#else
-					      slline,
-#endif
 					      fnameUnparseStatic(slfile));
 				curfile = slfile;
 			}

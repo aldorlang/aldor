@@ -15,16 +15,12 @@ int
 main(int argc, String *argv)
 {
 	if (argc == 1) {
-#if EDIT_1_0_n1_07
 		osInit();
-#endif
 		sxiInit();
 		sxiReadEvalPrintLoop(osStdin, osStdout, SXRW_Default);
 	}
 	else {
-#if EDIT_1_0_n1_07
 		osInit();
-#endif
 		dbInit();
 		while (--argc) testSelf(*++argv);
 	}

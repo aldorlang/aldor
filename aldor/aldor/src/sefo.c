@@ -656,7 +656,6 @@ sstDone0(void)
 #define	sstSymeIsMarked(syme)	(symeMark(syme) & sstMarkMask)
 #define	sstTFormIsMarked(tf)	(tformMark(tf)  & sstMarkMask)
 
-#if EDIT_1_0_n1_07
 #define	sstMarkSyme(syme) \
 	{ if (!sstSymeIsMarked(syme)) { \
 		sstMarkDEBUG(fprintf(dbOut, "++ marking %p\n", syme)); \
@@ -681,33 +680,6 @@ sstDone0(void)
 		sstMarkCount--; \
 		tformSetMark((tf), tformMark(tf) & ~sstMarkMask); }}
 
-#else /* EDIT_1_0_n1_07 */
-
-#define	sstMarkSyme(syme) \
-	{ if (!sstSymeIsMarked(syme)) { \
-		sstMarkDEBUG(fprintf(dbOut, "++ marking %x\n", syme)); \
-		sstMarkCount++; \
-		symeSetMark((syme), symeMark(syme) | sstMarkMask); }}
-
-#define	sstMarkTForm(tf) \
-	{ if (!sstTFormIsMarked(tf)) { \
-		sstMarkDEBUG(fprintf(dbOut, "++ marking %x\n", tf)); \
-		sstMarkCount++; \
-		tformSetMark((tf), tformMark(tf) | sstMarkMask); }}
-
-#define	sstClearSyme(syme) \
-	{ if (sstSymeIsMarked(syme)) { \
-		sstMarkDEBUG(fprintf(dbOut, "-- clearing %x\n", syme)); \
-		sstMarkCount--; \
-		symeSetMark((syme), symeMark(syme) & ~sstMarkMask); }}
-
-#define	sstClearTForm(tf) \
-	{ if (sstTFormIsMarked(tf)) { \
-		sstMarkDEBUG(fprintf(dbOut, "-- clearing %x\n", tf)); \
-		sstMarkCount--; \
-		tformSetMark((tf), tformMark(tf) & ~sstMarkMask); }}
-
-#endif /* EDIT_1_0_n1_07 */
 
 #endif /* defined(MarkScheme2) */
 

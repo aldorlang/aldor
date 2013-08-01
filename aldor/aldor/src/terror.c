@@ -2469,11 +2469,7 @@ terrorAuditPoss1(Bool verbose, AbSyn absyn, Table counts)
 			/*
 			 * Stifle further messages.
 			 */
-#if EDIT_1_0_n1_07
 			tblSetElt(counts, tposs, ptrFrLong((long) tposs->refc));
-#else
-			tblSetElt(counts, tposs, ptrFrLong(tposs->refc));
-#endif
 		}
 	}
 

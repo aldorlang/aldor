@@ -1931,9 +1931,7 @@ gen0RtSefoHashExporter(Sefo sf)
 	  case AB_LitString:
 	  default:
 		comsgFatal((AbSyn)sf, ALDOR_F_Bug, "unexpected exporter");
-#if EDIT_1_0_n1_07
 		NotReached(hash = 0);
-#endif
 	}
 
 	return hash;
@@ -2127,9 +2125,7 @@ gen0RtSefoHash(Sefo sf, Sefo osf)
 	default:
 		msg = "gen0RtSefoHash got wierd type";
 		comsgFatal((AbSyn)sf, ALDOR_F_Bug, msg);
-#if EDIT_1_0_n1_07
 		NotReached(hash = 0);
-#endif
 	}
 
 	return hash;
@@ -3155,9 +3151,7 @@ gen0NameType(AbSyn ab, Bool atExporter, Bool isEnum)
 	  default:
 		msg = "gen0NameType found unhandled exporter type";
 		comsgFatal(ab, ALDOR_F_Bug, msg);
-#if EDIT_1_0_n1_07
 		NotReached(foam = 0);
-#endif
 #if 0
 		printf("unhandled exporter type");
 		abWrSExpr(dbOut, ab,int0);
@@ -3379,10 +3373,6 @@ gen0StringsFini()
 local void
 gen0StrRegister(int hash, String s)
 {
-#if EDIT_1_0_n1_07
 	tblSetElt(gen0StringTable, (TblKey) (long) hash, (TblElt) s);
-#else
-	tblSetElt(gen0StringTable, (TblKey) hash, (TblElt) s);
-#endif
 }
 

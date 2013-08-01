@@ -640,9 +640,7 @@ gen0MakeIterBound(AbSyn ab, Bool nestCheck)
 			bug("not an iterate");
 			new = NULL;
 #endif
-#if EDIT_1_0_n1_07
 			NotReached(new = NULL);
-#endif
 		}
 		return new;			
 	}

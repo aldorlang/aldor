@@ -1105,11 +1105,7 @@ comsgPrintLead(FILE *fout, Length serial, Msg msg, CoMsgTag tag,
 	}
 
 	if (comsgDoNumber)
-#if EDIT_1_0_n1_07
 		fprintf(fout, "#%d ", (int) serial);
-#else
-		fprintf(fout, "#%d ", serial);
-#endif
 
 	switch (tag) {
 	case COMSG_REMARK:  tagstring = remarkTag;  break;

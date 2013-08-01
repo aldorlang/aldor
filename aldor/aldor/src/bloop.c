@@ -513,15 +513,9 @@ bloopComsg(void)
 	lmin     = sposLine(spos);
 	cmin     = sposChar(spos);
 	sprintf(msg, "(getcomsg %d %d %c%s%c %d %d %c%s%c)\n",
-#if EDIT_1_0_n1_07
 		bloopCurrIx+1, (int)listLength(CoMsg)(notes),
 		SESCAPE, fileName, SESCAPE,
 		(int) lmin, (int) cmin, SESCAPE, text, SESCAPE);
-#else
-		bloopCurrIx+1, listLength(CoMsg)(notes),
-		SESCAPE, fileName, SESCAPE,
-		lmin, cmin, SESCAPE, text, SESCAPE);
-#endif
 	if (bloopInterface) {
 		fprintf(fout, "%s", msg);
 		fflush(fout);
@@ -700,11 +694,7 @@ bloopPosWhere(void)
 		if (lmax < lmin) lmax = lmin;
 		if (cmax < cmin) cmax = cmin;
 		sprintf(msg, "(pos \"%d\" \"%d\" \"%d\" \"%d\")\n",
-#if EDIT_1_0_n1_07
 			(int) lmin, (int) cmin, (int) lmax, (int) cmax);
-#else
-			lmin, cmin, lmax, cmax);
-#endif
 	}
 	if (bloopInterface) {
 		fprintf(fout, "%s", msg);
@@ -749,11 +739,7 @@ bloopWhere(void)
 
 	if (fileName)
 		sprintf(msg, "(where \"%s\" %d %d %d %d)\n",
-#if EDIT_1_0_n1_07
 			fileName, (int) lmin, (int) cmin, (int) lmax, (int) cmax);
-#else
-			fileName, lmin, cmin, lmax, cmax);
-#endif
 	else
 		sprintf(msg, "(where \"%s\" %d %d %d %d)\n",
 			fileName, -1, -1, -1, -1);

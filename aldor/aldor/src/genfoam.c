@@ -3240,11 +3240,7 @@ gen0CSigFormatNumber(TForm tf)
 
 
 		/* Create a suitable declaration */
-#if EDIT_1_0_n1_07
 		(void)sprintf(buffer, "P%d", (int) i);
-#else
-		(void)sprintf(buffer, "P%d", i);
-#endif
 		str = strCopy(buffer);
 		ddecl->foamDDecl.argv[i] = foamNewDecl(type, str, fmt);
 	}
@@ -3254,11 +3250,7 @@ gen0CSigFormatNumber(TForm tf)
 		char *str;
 		FoamTag rtype = FOAM_Ptr; /* Always a pointer */
 		AInt fmt = emptyFormatSlot;
-#if EDIT_1_0_n1_07
 		(void)sprintf(buffer, "R%d", (int) i);
-#else
-		(void)sprintf(buffer, "R%d", i);
-#endif
 		str = strCopy(buffer);
 		ddecl->foamDDecl.argv[argc + i] = foamNewDecl(rtype, str, fmt);
 	}
@@ -3340,11 +3332,7 @@ gen0CPackedSigFormatNumber(TForm tf)
 
 
 		/* Create a suitable declaration */
-#if EDIT_1_0_n1_07
 		(void)sprintf(buffer, "P%d", (int) i);
-#else
-		(void)sprintf(buffer, "P%d", i);
-#endif
 		str = strCopy(buffer);
 		ddecl->foamDDecl.argv[i] = foamNewDecl(type, str, fmt);
 	}
@@ -3354,11 +3342,7 @@ gen0CPackedSigFormatNumber(TForm tf)
 		char *str;
 		FoamTag rtype = FOAM_Ptr; /* Always a pointer */
 		AInt fmt = emptyFormatSlot;
-#if EDIT_1_0_n1_07
 		(void)sprintf(buffer, "R%d", (int) i);
-#else
-		(void)sprintf(buffer, "R%d", i);
-#endif
 		str = strCopy(buffer);
 		ddecl->foamDDecl.argv[argc + i] = foamNewDecl(rtype, str, fmt);
 	}
@@ -5381,9 +5365,7 @@ gen0Type(TForm tf, AInt *pfmt)
 	Bool	done = false;
 	AInt	fmt = emptyFormatSlot;
 
-#if EDIT_1_0_n1_07
 	tag = FOAM_Word; /* Default */
-#endif
 
 	for (pass = 0;(pass < 2) && !done; pass++)
 	{
@@ -5457,10 +5439,6 @@ gen0Type(TForm tf, AInt *pfmt)
 #endif
 	}
 
-#if EDIT_1_0_n1_07
-#else
-	if (!done) tag = FOAM_Word;
-#endif
 	if (pfmt) *pfmt = fmt;
 
 	return tag;

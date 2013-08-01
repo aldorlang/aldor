@@ -37,11 +37,7 @@ typedef enum
 {
    Garbage,			/* Hasn't been used at all yet */
    Uninitialised = 0xDead,	/* Used once and reset */
-#if EDIT_1_0_n1_07
    Initialised			/* Currently in use */
-#else
-   Initialised,			/* Currently in use */
-#endif
 } SStatus;
 
 

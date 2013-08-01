@@ -570,15 +570,9 @@ static int stoWatchCount = 0;
 int
 stoWatchReally(String title, Pointer p, ULong n, Bool audit)
 {
-#if EDIT_1_0_n1_07
 	const char *fmt = n ? "[[%4d %s: %p (%lu)]]\n" : "[[%4d %s: %p]]\n";
 
 	fprintf(osStderr, fmt, stoWatchCount, title, p, n);
-#else
-	const char *fmt = n ? "[[%4d %s: %#lx (%lu)]]\n" : "[[%4d %s: %#lx]]\n";
-
-	fprintf(osStderr, fmt, stoWatchCount, title, ptrToLong(p), n);
-#endif
 	fflush (osStderr);
 
 	if (audit) {
@@ -989,11 +983,7 @@ pagesGet(Length nMin)
 
 		if (gcTraceFile) {
 			fprintf(gcTraceFile, " [GC: %s enough, %d/%d -> %d/%d for " AINT_FMT "]\n",
-#if EDIT_1_0_n1_07
 				p ? "!!! Got" : "... Not", free0, tot, free1, tot, nMin);
-#else
-				p ? "!!! Got" : "... Not", free0, tot, free1, tot, nMin);
-#endif
 
 			if (addAnyway) {
 				fprintf(gcTraceFile, "\n [GC: Growing heap (not enough %s)]\n",
@@ -2330,11 +2320,7 @@ TailRecursion:
 			}
 		});
 
-#if EDIT_1_0_n1_07
 		n += stoGcMarkRange(plo, phi, (int) 0);
-#else
-		n += stoGcMarkRange(plo, phi, (int) 0);
-#endif
 
 		/* Pointer classification */
 		stoDEBUG(stoMarkArea = oldStoMarkArea);
@@ -3072,11 +3058,7 @@ stoShowMixedSizeSections(void)
 			if (!pc->isFirst)
 				fprintf(osStderr, "(%ld)\n",
 					pc->nbytesPrev/qmsize);
-#if EDIT_1_0_n1_07
 			fprintf(osStderr, "%p=(%d){", pc, nq);
-#else
-			fprintf(osStderr, "%lx=(%d){", ptrToLong(pc), nq);
-#endif
 			if (pc->isFree)
 				fprintf(osStderr, "F/");
 			else
@@ -4064,13 +4046,8 @@ stoShowDetail(int stoDetail)
 	/* Show the number of different pages in the store */
 	if (stoDetail & STO_SHOW_PAGES)
 	{
-#if EDIT_1_0_n1_07
 		fprintf(osStderr, "| %-11s %ld: %ld busy, %ld free, ",
 			"Pages:", (long) pgMapSize, (long) npgBusy, (long) npgFree);
-#else
-		fprintf(osStderr, "| %-11s %d: %ld busy, %ld free, ",
-			"Pages:", pgMapSize, npgBusy, npgFree);
-#endif
 		fprintf(osStderr, "%ld overhead, %ld foreign, %ld other\n",
 			npgStoMan, npgForeign, npgOther);
 	}
@@ -4140,11 +4117,7 @@ stoShowDetail(int stoDetail)
 	{
 		int	wrote = 0;
 
-#if EDIT_1_0_n1_07
 		fprintf(osStderr, "| %-11s %d\n", "FixedSizes:", (int) FixedSizeCount);
-#else
-		fprintf(osStderr, "| %-11s %d\n", "FixedSizes:", FixedSizeCount);
-#endif
 		fprintf(osStderr, "| Fixed-size free pieces:\n");
 		wrote = fprintf(osStderr, "|  ");
 		for (i = 0; i < FixedSizeCount; i++)
@@ -4152,11 +4125,7 @@ stoShowDetail(int stoDetail)
 			if (frN[i])
 			{
 				wrote += fprintf(osStderr, " %ldx%d",
-#if EDIT_1_0_n1_07
 						frN[i], (int) fixedSize[i]);
-#else
-						frN[i], fixedSize[i]);
-#endif
 				if (wrote > 70)
 				{
 					/* Wrap long lines */
@@ -4225,11 +4194,7 @@ stoShowDetail(int stoDetail)
 				headrm = 1.0;
 
 			(void)fprintf(osStderr, "|      ");
-#if EDIT_1_0_n1_07
 			(void)fprintf(osStderr, "%4ld: ", (long) fixedSize[i]);
-#else
-			(void)fprintf(osStderr, "%4d: ", fixedSize[i]);
-#endif
 			(void)fprintf(osStderr, "%8lu ", fxFree);
 			(void)fprintf(osStderr, "%8lu ", fxBusy);
 			(void)fprintf(osStderr, "%8lu ", fxSpare);
@@ -4282,13 +4247,8 @@ stoShowDetail(int stoDetail)
 	/* Display the whole store at page resolution */
 	if (stoDetail & STO_SHOW_PAGEMAP)
 	{
-#if EDIT_1_0_n1_07
 		fprintf(osStderr, "| %-11s [%ld pages]:",
 			"Page map:", (long) pgMapSize);
-#else
-		fprintf(osStderr, "| %-11s [%d pages]:",
-			"Page map:", pgMapSize);
-#endif
 		for (i = 0; i < pgMapSize; i++)
 		{
 			if (i % 64 == 0)
@@ -4360,7 +4320,6 @@ stoShowDetail(int stoDetail)
 	/* Display the memory map of this process */
 	if (stoDetail & STO_SHOW_MEMMAP)
 	{
-#if EDIT_1_0_n1_07
                 fprintf(osStderr, "| Heap....... [%p..%p) %ldK\n",
                         heapStart, heapEnd,
                         ptrDiff(heapEnd, heapStart)/1024);
@@ -4377,41 +4336,6 @@ stoShowDetail(int stoDetail)
                         fprintf(osStderr, "| Stack:      [%p..%p) %ldbytes\n",
                                 (*mm)->lo, (*mm)->hi,
                                 ptrDiff((*mm)->hi, (*mm)->lo));
-#else /* EDIT_1_0_n1_07 */
-		fprintf(osStderr, "| Heap....... [%#8lx..%#8lx) %ldK\n",
-			ptrToLong(heapStart), ptrToLong(heapEnd),
-			(ptrToLong(heapEnd) - ptrToLong(heapStart))/1024);
-
-	  	mm = osMemMap(OSMEM_DDATA);
-		while ((*mm)->use != OSMEM_END) {
-			ULong	lo = ptrToLong((*mm)->lo);
-			ULong	hi = ptrToLong((*mm)->hi);
-			ULong	mem = (hi - lo)/1024;
-			fprintf(osStderr, "| Dyn memory: [%#8lx..%#8lx) %ldK\n",
-				lo, hi, mem);
-			mm++;
-		}
-
-		mm = osMemMap(OSMEM_IDATA);
-		while ((*mm)->use != OSMEM_END) {
-			ULong	lo = ptrToLong((*mm)->lo);
-			ULong	hi = ptrToLong((*mm)->hi);
-			ULong	mem = (hi - lo)/1024;
-			fprintf(osStderr, "| Init data:  [%#8lx..%#8lx) %ldK\n",
-				lo, hi, mem);
-			mm++;
-		}
-
-		mm = osMemMap(OSMEM_STACK);
-		while ((*mm)->use != OSMEM_END) {
-			ULong	lo = ptrToLong((*mm)->lo);
-			ULong	hi = ptrToLong((*mm)->hi);
-			ULong	mem = hi - lo;
-			fprintf(osStderr, "| Stack:      [%#8lx..%#8lx) %ldbytes\n",
-				lo, hi, mem);
-			mm++;
-		}
-#endif /* EDIT_1_0_n1_07 */
 	}
 
 
@@ -4753,11 +4677,7 @@ stoMarkObject(Pointer p)
 
 
 	/* Count the number of children marked */
-#if EDIT_1_0_n1_07
 	n += stoGcMarkRange(plo, phi, (int) 0);
-#else
-	n += stoGcMarkRange(plo, phi, (int) 0);
-#endif
 
 
 	/* Pointer classification */

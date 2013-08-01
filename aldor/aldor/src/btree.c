@@ -517,11 +517,7 @@ btreePrint0(FILE *fout, BTree x, int level)
         if (x->isLeaf) {
                 cc += fprintf(fout, "%*s[", 2*level, " ");
                 for (i = 0; i < x->nKeys; i++)
-#if EDIT_1_0_n1_07
                         cc += fprintf(fout, i==0 ? "%d":" %d", (int) x->part[i].key);
-#else
-                        cc += fprintf(fout, i==0 ? "%d":" %d", x->part[i].key);
-#endif
                 cc += fprintf(fout, "]\n");
         }
         else {

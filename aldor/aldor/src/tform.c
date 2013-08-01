@@ -6028,11 +6028,7 @@ tfDefineeType1(TForm tf, Bool subst, Bool notAdd)
 		/* See if we can expand further */
 		if (tfIsAbSyn(tf))
 		{
-#if EDIT_1_0_n1_07
 			TForm	tfn	= (TForm) NULL;
-#else
-			TForm	tfn;
-#endif
 			Sefo	sefo	= tfGetExpr(tf);
 			TForm	cat	= abGetCategory(sefo);
 

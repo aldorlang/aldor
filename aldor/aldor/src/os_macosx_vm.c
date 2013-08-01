@@ -472,11 +472,7 @@ struct osMemMap **osMemMap(int mask)
         char *desc = "";
         if (mm->use == OSMEM_DDATA) desc = "Data";
         if (mm->use == OSMEM_STACK) desc = "Stack";
-#if EDIT_1_0_n1_07
         printf("%s: %lx --> %lx\n", desc, mm->lo, mm->hi);
-#else
-        printf("%s: %p --> %p\n", desc, mm->lo, mm->hi);
-#endif
 #endif
         mmvp[i]=mm;
         mm++;

@@ -350,11 +350,7 @@ flog0Clip1Block(Foam seq, Length *pix0)
 	extra = 0;
 
 	/* Scan to the end of the block. */
-#if EDIT_1_0_n1_07
 	flogDEBUG(fprintf(dbOut, "ixL = ix0 at loop start %d\n", (int) ix0));
-#else
-	flogDEBUG(fprintf(dbOut, "ixL = ix0 at loop start %d\n", ix0));
-#endif
 	for (ftag = 0, ixL = ix0; !ftag && ixL < argc; )
 		switch (foamTag(argv[ixL])) {
 		case FOAM_Label:
@@ -383,11 +379,7 @@ flog0Clip1Block(Foam seq, Length *pix0)
 			ixL++;
 			break;
 		}
-#if EDIT_1_0_n1_07
 	flogDEBUG(fprintf(dbOut, "ixL at loop end %d\n", (int) ixL));
-#else
-	flogDEBUG(fprintf(dbOut, "ixL at loop end %d\n", ixL));
-#endif
 	if (ftag == 0) {
 		/* Fell off end: Implied return. */
 		ftag = FOAM_Return;
@@ -395,11 +387,7 @@ flog0Clip1Block(Foam seq, Length *pix0)
 		if (argc > 0) foamPos(extra) = foamPos(argv[argc-1]);
 		ixL--;
 	}
-#if EDIT_1_0_n1_07
 	flogDEBUG(fprintf(dbOut, "ixL after loop end %d\n", (int) ixL));
-#else
-	flogDEBUG(fprintf(dbOut, "ixL after loop end %d\n", ixL));
-#endif
 
 	/* Extract code sequence.  */
 	n = ixL - ix0 + 1;

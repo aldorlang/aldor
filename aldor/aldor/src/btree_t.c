@@ -46,11 +46,7 @@ testBtree(void)
         /*
          * Check memory used.
          */
-#if EDIT_1_0_n1_07
         printf("The size of a BTree node is %d\n", (int) sizeof(*b));
-#else
-        printf("The size of a BTree node is %d\n", sizeof(*b));
-#endif
 
         /*
          * Test searching for best fit.

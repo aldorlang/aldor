@@ -985,11 +985,7 @@ osMemMap(int mask)
 	  if (mm->use == OSMEM_STACK) desc = "Stack";
 	  mmvp[i] = mm;
 #if 0
-#if EDIT_1_0_n1_07
           printf("%s: %p --> %p\n", desc, mm->lo, mm->hi);
-#else
-          printf("%s: %lx --> %lx\n", desc, mm->lo, mm->hi);
-#endif
 #endif
 	  mm++; i++;
 	}
@@ -1081,11 +1077,7 @@ struct osMemMap ** osMemMap(int mask)
     if (mm->use == OSMEM_STACK) desc = "Stack";
     mmvp[i] = mm;
 #if 0
-#if EDIT_1_0_n1_07
     printf("%s: %p --> %p\n", desc, mm->lo, mm->hi);
-#else
-    printf("%s: %lx --> %lx\n", desc, mm->lo, mm->hi);
-#endif
 #endif
     mm++; i++;
   }
@@ -1140,12 +1132,8 @@ struct osMemMap **osMemMap(int mask)
   static FILE *fp =0 ;
   char  line[1024];
   char  maps[100];
-#if EDIT_1_0_n1_07
   unsigned int i,read_only;
   unsigned long lo, hi;
-#else
-  unsigned int i,lo,hi,read_only;
-#endif
   char perm[4];
 
 
@@ -1159,11 +1147,7 @@ struct osMemMap **osMemMap(int mask)
 #if 0
     fputs(line,stdout);
 #endif
-#if EDIT_1_0_n1_07
     sscanf(line,"%lx-%lx %4c",&lo,&hi,perm);
-#else
-    sscanf(line,"%x-%x %4c",&lo,&hi,perm);
-#endif
     read_only = perm[1] == 'w' ? 0 :1;
     /* Ignore read-only segments (because they will never contain 
        any pointers to Aldor objects ) */
@@ -1183,23 +1167,13 @@ struct osMemMap **osMemMap(int mask)
     /* we ARE looking for data maps */
     /* check if the previous one was a data map and 
        if contiguous collapse them */
-#if EDIT_1_0_n1_07
     else if (mm[-1].use == OSMEM_DDATA && mm[-1].hi == (Pointer) lo)
       mm[-1].hi = (Pointer) hi;
-#else
-    else if (mm[-1].use == OSMEM_DDATA && mm[-1].hi == (Pointer)lo)
-      mm[-1].hi = (Pointer)hi;
-#endif
     /* "new" data map - record it */
     else {
       if (mask & OSMEM_DDATA) {
-#if EDIT_1_0_n1_07
 	mm->lo = (Pointer)lo;
 	mm->hi = (Pointer)hi;
-#else
-	mm->lo = (Pointer) (UAInt) lo;
-	mm->hi = (Pointer) (UAInt) hi;
-#endif
 	mm->use = OSMEM_DDATA;
 	mm++;
       }
@@ -1213,11 +1187,7 @@ struct osMemMap **osMemMap(int mask)
     const char *desc = "";
     if (mm->use == OSMEM_DDATA) desc = "Data";
     if (mm->use == OSMEM_STACK) desc = "Stack";
-#if EDIT_1_0_n1_07
     printf("%s: %lx --> %lx\n", desc, mm->lo, mm->hi);
-#else
-    printf("%s: %p --> %p\n", desc, mm->lo, mm->hi);
-#endif
 #endif
     mmvp[i]=mm;
     mm++;

@@ -1572,10 +1572,8 @@ gc0ExportToFortran(String name, Foam gdecl, Foam argsformat,
 		ftnrestype = FTN_Character;
 
 	/* Deal with return value. SEE gc0IdFortranDecl() ... */
-#if EDIT_1_0_n1_07
 	ccStringArgName = 0;
 	ccStringLenName = 0;
-#endif
 	switch (ftnrestype) {
 	  case FTN_Boolean:
 		/* Fall through */
@@ -2431,11 +2429,7 @@ gc0Param(Foam foam, Foam params)
 	    && foam->foamProg.format != emptyFormatSlot) {
 		Foam    ddecl;
 		int	n;
-#if EDIT_1_0_n1_07
 		DEBUG_DECL(int rn);
-#else
-		int rn;
-#endif
 		ddecl = gcvFmt->foamDFmt.argv[foam->foamProg.format];
 		n = foamDDeclArgc(ddecl);
 		assert( (rn = gc0NumVals(foam->foamProg.body)) == 0
@@ -3433,11 +3427,9 @@ gccFortranPCall(Foam *resultvar, int numresultvars, Foam foam, CCodeList *closnu
 
 
 	/* Just to silence the compiler... */
-#if EDIT_1_0_n1_07
 	ccType = NULL;
 	ccName = NULL;
 	ccChrTmp = NULL;
-#endif
 	ccArg = NULL;
 	ccLenArg = NULL;
 	resvartype = FOAM_Nil;

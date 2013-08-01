@@ -24,7 +24,6 @@ testBuffer(void)
 	int	i, n;
 	String	t, s = "The rain in Iberia falls mainly in the cafeteria. ";
 
-#if EDIT_1_0_n1_07
 	printf("bufNew: ");
 	b = bufNew();
 	printf("[%d/%d]\n\n", (int) bufPosition(b), (int) bufSize(b));
@@ -73,56 +72,6 @@ testBuffer(void)
 
 	printf("bufChars: ");
 	printf("\"%s\" [%d]\n\n", t, (int) strlen(t));
-#else
-	printf("bufNew: ");
-	b = bufNew();
-	printf("[%d/%d]\n\n", bufPosition(b), bufSize(b));
-	
-	printf("BUF_START / BUF_ADD1:\n");
-	BUF_START(b);
-	for (i = 0, n = strlen(s); i < n; i++)  BUF_ADD1(b, s[i]);
-	BUF_ADD1(b, char0);
-	t = bufChars(b);
-	printf("\"%s\" [%d]\n", t, n);
-	printf("[%d/%d]\n\n", bufPosition(b), bufSize(b));
-
-	printf("bufNeed(%d): ", BUF_INIT_SIZE + 5);
-	bufNeed(b, BUF_INIT_SIZE + 5);
-	printf("[%d/%d]\n", bufPosition(b), bufSize(b));
-	printf("bufChars: ");
-	printf("\"%s\" [%d]\n\n", bufChars(b), strlen(bufChars(b)));
-
-	printf("bufGrow(%d): ", 5);
-	b = bufGrow(b, 5);
-	printf("[%d/%d]\n", bufPosition(b), bufSize(b));
-	printf("bufChars: ");
-	printf("\"%s\" [%d]\n\n", bufChars(b), strlen(bufChars(b)));
-
-	printf("bufFree: ");
-	bufFree(b);
-	printf("OK\n\n");
-
-	printf("bufNew: ");
-	b = bufNew();
-	printf("[%d/%d]\n\n", bufPosition(b), bufSize(b));
-
-	printf("BUF_ADD1 across a boundary: \n");
-	n = bufSize(b);
-	BUF_START(b);
-	for (i = 0; i < n-5; i++)
-		BUF_ADD1(b, "1234567890"[i%10]);
-	for (i = 0; i < 10; i++) {
-		int c = "abcdefghij"[i%10];
-		BUF_ADD1(b, c);
-		printf(" %c: [%d/%d]", c, bufPosition(b), bufSize(b));
-	}
-	BUF_ADD1(b, char0);
-	t = bufChars(b);
-	printf("\n");
-
-	printf("bufChars: ");
-	printf("\"%s\" [%d]\n\n", t, strlen(t));
-#endif
 
 
 	printf("bufPrint: ");

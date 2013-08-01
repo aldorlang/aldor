@@ -1016,11 +1016,7 @@ cfoldBCall(Foam bcall)
 	  case FOAM_BVal_RawRepSize:
 	  {
 		Bool		fold = true;
-#if EDIT_1_0_n1_07
 		FoamBValTag	bvtag = FOAM_BVAL_LIMIT;
-#else
-		FoamBValTag	bvtag;
-#endif
 
 
 		/* Only do this when folding everything */
