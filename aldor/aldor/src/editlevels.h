@@ -61,7 +61,6 @@
 	/* Edit 1.1.13(13): use "throw" instead of "except" in errors */
 	/* Edit 1.1.13(12): -M base=<dir> support */
 
-#define AXL_EDIT_1_1_12p6_17 1	/* Passing symes in gen0Lambda recursion */
 	/* Edit 1.1.12p6(16): means no GC debug with -V; -ffold at -Q2 */
 	/* Edit 1.1.12p6(15): replaced by edits 24 and 25 */
 	/* Edit 1.1.12p6(14): replaced by edits 15, 24 and 25 */

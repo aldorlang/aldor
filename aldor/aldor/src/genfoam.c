@@ -4997,11 +4997,7 @@ gen0Lambda(AbSyn absyn, Syme syme, AbSyn defaults)
 		 *
 		 * See bugs 1072 and 892 for more details.
 		 */
-#if AXL_EDIT_1_1_12p6_17
 		val = gen0Lambda(fbody, (Syme)NULL, defaults);
-#else
-		val = gen0Lambda(fbody, syme, defaults);
-#endif
 		assert(foamTag(val) != FOAM_Nil);
 	}
 
