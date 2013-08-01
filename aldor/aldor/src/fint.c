@@ -3990,9 +3990,7 @@ fintEval_(DataObj retDataObj)
 			switch ((int)toType) {
 			case FOAM_Word:
 				retDataObj->fiWord = expr.fiSInt;
-#if AXL_EDIT_1_1_12p6_18
 				goto castDone;
-#endif
 			case FOAM_SFlo:
 				retDataObj->fiSFlo = fiWordToSFlo(expr.fiSInt);
 				goto castDone;
@@ -4005,9 +4003,7 @@ fintEval_(DataObj retDataObj)
 			switch ((int)toType) {
 			case FOAM_SInt:
 				retDataObj->fiSInt = expr.fiWord;
-#if AXL_EDIT_1_1_12p6_18
 				goto castDone;
-#endif
 			case FOAM_SFlo:
 				retDataObj->fiSFlo = fiWordToSFlo(expr.fiSInt);
 				goto castDone;
