@@ -47,8 +47,6 @@
 
 #define EDIT_1_0_n2_08 1        /* fix filename separator */
 
-#define EDIT_1_0_n2_07 1        /* fix to compile with gcc version 4 ISO C? */
-
 #define EDIT_1_0_n2_06 1        /* fix bug 4 - disabled type cache in stab */
 
 #define EDIT_1_0_n2_05 1        /* fix bug 859 */

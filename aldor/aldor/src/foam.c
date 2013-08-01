@@ -81,44 +81,28 @@ foamInit(void)
 
 	for (i = FOAM_START; i < FOAM_LIMIT; i++) {
 		sym = symInternConst(foamInfo(i).str);
-#if EDIT_1_0_n2_07
 		if (symCoInfo(sym) == NULL) symCoInfoInit(sym);
-#else
-		if (!symCoInfo(sym)) symCoInfoInit(sym);
-#endif
 
 		foamInfo(i).sxsym	   = sxiFrSymbol(sym);
 		symCoInfo(sym)->foamTagVal = i;
 	}
 	for (i = FOAM_BVAL_START; i < FOAM_BVAL_LIMIT; i++) {
 		sym = symInternConst(foamBValInfo(i).str);
-#if EDIT_1_0_n2_07
 		if (symCoInfo(sym) == NULL) symCoInfoInit(sym);
-#else
-		if (!symCoInfo(sym)) symCoInfoInit(sym);
-#endif
 
 		foamBValInfo(i).sxsym	   = sxiFrSymbol(sym);
 		symCoInfo(sym)->foamTagVal = i;
 	}
 	for (i = FOAM_PROTO_START; i < FOAM_PROTO_LIMIT; i++) {
 		sym = symInternConst(foamProtoInfo(i).str);
-#if EDIT_1_0_n2_07
 		if (symCoInfo(sym) == NULL) symCoInfoInit(sym);
-#else
-		if (!symCoInfo(sym)) symCoInfoInit(sym);
-#endif
 
 		foamProtoInfo(i).sxsym	    = sxiFrSymbol(sym);
 		symCoInfo(sym)->foamTagVal = i;
 	}
 	for (i = 0; i < FOAM_DDECL_LIMIT; i++) {
 		sym = symInternConst(foamDDeclInfo(i).str);
-#if EDIT_1_0_n2_07
 		if (symCoInfo(sym) == NULL) symCoInfoInit(sym);
-#else
-		if (!symCoInfo(sym)) symCoInfoInit(sym);
-#endif
 		
 		foamDDeclInfo(i).sxsym	= sxiFrSymbol(sym);
 		symCoInfo(sym)->foamTagVal = i;

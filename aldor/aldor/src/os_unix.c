@@ -1214,11 +1214,7 @@ struct osMemMap **osMemMap(int mask)
   /* print what we found */
   while (mm->use != OSMEM_END) {
 #if 0
-#if EDIT_1_0_n2_07
     const char *desc = "";
-#else
-    char *desc = "";
-#endif
     if (mm->use == OSMEM_DDATA) desc = "Data";
     if (mm->use == OSMEM_STACK) desc = "Stack";
 #if EDIT_1_0_n1_07

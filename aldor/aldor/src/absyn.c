@@ -53,11 +53,7 @@ abInit(void)
 		printf("Here1 sym->val=%s, sym->info=%x, %p\n", symString(sym), symInfo(sym), symCoInfo(sym));fflush(stdout);
 #endif
 
-#if EDIT_1_0_n2_07
 		if (symCoInfo(sym) == NULL) {
-#else
-		if (!symCoInfo(sym)) {
-#endif
 #if 0
 			printf("Here1.5\n"); fflush(stdout);
 #endif

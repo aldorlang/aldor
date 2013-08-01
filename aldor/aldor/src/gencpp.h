@@ -43,11 +43,7 @@ extern int tTS_size;
 extern String cppKeywords[];
 extern int CK_size;
 #if 0
-#if EDIT_1_0_n2_07 
 extern struct ccSpecCharId_info *ccSpecCharIdTable;
-#else
-extern struct ccSpecCharId_info ccSpecCharIdTable[];
-#endif
 #endif
 extern int globalFuncCounter;
 extern const int TabZero;

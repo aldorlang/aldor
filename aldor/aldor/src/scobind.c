@@ -1202,11 +1202,7 @@ scobindMatchParam(AbSyn arg, AbSyn par)
 {
 	AbSynTag aTag = abTag(arg);
 	AbSynTag pTag = abTag(par);
-#if EDIT_1_0_n2_07
 	const char *err = "parameter is not an identifier or a declaration";
-#else
-	char *err = "parameter is not an identifier or a declaration";
-#endif
 
 	/* Safety check */
 	assert(aTag == AB_Define || aTag == AB_Declare || aTag == AB_Id);

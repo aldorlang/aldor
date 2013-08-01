@@ -571,19 +571,11 @@ int
 stoWatchReally(String title, Pointer p, ULong n, Bool audit)
 {
 #if EDIT_1_0_n1_07
-#if EDIT_1_0_n2_07
 	const char *fmt = n ? "[[%4d %s: %p (%lu)]]\n" : "[[%4d %s: %p]]\n";
-#else
-	char *fmt = n ? "[[%4d %s: %p (%lu)]]\n" : "[[%4d %s: %p]]\n";
-#endif
 
 	fprintf(osStderr, fmt, stoWatchCount, title, p, n);
 #else
-#if EDIT_1_0_n2_07
 	const char *fmt = n ? "[[%4d %s: %#lx (%lu)]]\n" : "[[%4d %s: %#lx]]\n";
-#else
-	char *fmt = n ? "[[%4d %s: %#lx (%lu)]]\n" : "[[%4d %s: %#lx]]\n";
-#endif
 
 	fprintf(osStderr, fmt, stoWatchCount, title, ptrToLong(p), n);
 #endif
