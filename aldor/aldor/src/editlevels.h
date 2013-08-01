@@ -61,7 +61,6 @@
 	/* Edit 1.1.13(13): use "throw" instead of "except" in errors */
 	/* Edit 1.1.13(12): -M base=<dir> support */
 
-#define AXL_EDIT_1_1_12p6_24 1	/* Replacement for 1.1.12p6(15) lambdas */
 #define AXL_EDIT_1_1_12p6_23 1	/* Array temporaries use pointer locals */
 #define AXL_EDIT_1_1_12p6_22 1	/* ANSI declarations on Foreign C imports */
 #define AXL_EDIT_1_1_12p6_21 1	/* titdn{Lambda,Generate,Reference} bugs */

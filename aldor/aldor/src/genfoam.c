@@ -4050,7 +4050,6 @@ gen0Define(AbSyn absyn)
         if (gen0IsDomainInit(rhsFoam)) {
                 gen0AddInit(def);
 		res = NULL;
-#if AXL_EDIT_1_1_12p6_24
 		/* Stamp the domain with its hash code (if appropriate) */
 		if (symeHashNum(syme) && (foamTag(rhsFoam) == FOAM_Clos)) {
 			AInt	hash = symeHashNum(syme);
@@ -4059,7 +4058,6 @@ gen0Define(AbSyn absyn)
 			/* Don't use gen0AddStmt() ... */
 			gen0AddInit(gen0RtSetProgHash(dom, hash));
 		}
-#endif
 	}
 	else 
 		res = gen0SetValue(def, absyn);
@@ -5096,15 +5094,9 @@ gen0Lambda(AbSyn absyn, Syme syme, AbSyn defaults)
 	
 	isconst = gen0AbSynHasConstHash(fbody);
 	if (syme && isconst) {
-#if AXL_EDIT_1_1_12p6_24
 		AInt hashCode = strHash(symeString(syme));
 		symeSetHashNum(syme, hashCode);
 		/* DO NOT use gen0RtSetProgHash() here */
-#else
-		AInt hashCode = strHash(symeString(syme));
-		symeSetHashNum(syme, hashCode);
-		gen0AddStmt(gen0RtSetProgHash(foamCopy(clos), hashCode), NULL);
-#endif
 	}
 
 	/*

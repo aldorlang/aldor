@@ -135,7 +135,6 @@ hfoldExpr(Foam foam)
 			foamFree(foam);
 			return newFoam;
 		}
-#if AXL_EDIT_1_1_12p6_24
 		/* NEVER hfold PRef target */
 		/* ASSUME we never have a PRef in multi-lhs */
 		if (foamTag(foam->foamSet.lhs) == FOAM_PRef) {
@@ -148,7 +147,6 @@ hfoldExpr(Foam foam)
 			}
 			return foam;
 		}
-#endif
 	}
 
 	foamIter(foam, arg, { new = hfoldExpr(*arg);
