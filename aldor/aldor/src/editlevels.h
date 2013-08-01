@@ -45,7 +45,6 @@
 	/* Edit 1.1.13(36): renaming of $AXIOMXL* to $ALDOR* */
 	/* Edit 1.1.13(35): renaming of axiomxl to aldor */
 	/* Edit 1.1.13(34): currently disabled */
-#define AXL_EDIT_1_1_13_32 1	/* added tfCheckBug1318() hack */
 	/* Edit 1.1.13(31): added fiArrNew_* to foam_c.c */
 #define AXL_EDIT_1_1_13_30 1	/* bug 1316 fix (64 bit literals) */
 	/* Edit 1.1.13(29): uniar2 fix for UCB archives with stabs */
