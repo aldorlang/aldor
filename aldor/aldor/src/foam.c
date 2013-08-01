@@ -2163,22 +2163,7 @@ foamToBuffer(Buffer buf, Foam foam)
 	Offset	tmpPos, offPos = 0;
 	Offset	start = bufPosition(buf);
 
-#if AXL_EDIT_1_1_13_30
 	if (foamTag(foam) == FOAM_SInt) foam = foamSIntReduce(foam);
-#else
-	/* The '!=0' is wrong, but this should be fixed better anyways. */
-	if (foamTag(foam) == FOAM_SInt 
-	    && sizeof(foam->foamSInt.SIntData) > 4
-	    && (labs(foam->foamSInt.SIntData) >> 32) != 0) 
-	  	foam = foamNew(FOAM_BCall, 3,
-			       FOAM_BVal_SIntOr,
-			       foamNew(FOAM_BCall, 3,
-				       FOAM_BVal_SIntShiftUp, 
-				       foamNewSInt(foam->foamSInt.SIntData >> 32L),
-				       foamNewSInt(32)),
-			       foamNewSInt(foam->foamSInt.SIntData 
-					   & ((1L <<32L) - 1L)));
-#endif
 
 	tag    = foamTag(foam);
 
