@@ -6554,13 +6554,8 @@ tfMapMultiArgEmbed(TForm tf, Length argc)
 Length
 tfMapRetc(TForm tf)
 {
-#if AXL_EDIT_1_1_13_09
 	tfFollow(tf);
 	return tfAsMultiArgc(tfIgnoreExceptions(tfMapRet(tf)));
-#else
-	tfFollow(tf);
-	return tfAsMultiArgc(tfMapRet(tf));
-#endif
 }
 
 /* Return the type of the nth return value of a map of type tf. */

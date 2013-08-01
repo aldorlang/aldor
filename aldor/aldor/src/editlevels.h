@@ -60,7 +60,6 @@
 	/* Edit 1.1.13(14): aldor.conf overrides axiomxl.conf */
 	/* Edit 1.1.13(13): use "throw" instead of "except" in errors */
 	/* Edit 1.1.13(12): -M base=<dir> support */
-#define AXL_EDIT_1_1_13_09 1	/* tfMapRetc ignores exceptions */
 #define AXL_EDIT_1_1_13_08 1	/* fix for garbage collector bug under Win9x */
 
 #define AXL_EDIT_1_1_13_07 1	/* titdn missing tpossRefer */
