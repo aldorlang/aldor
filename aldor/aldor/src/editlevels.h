@@ -54,7 +54,6 @@
 	/* Edit 1.1.13(22): start-up banner for interpreter */
 	/* Edit 1.1.13(21): fixed gen0RtRand */
 	/* Edit 1.1.13(20): currently disabled */
-#define AXL_EDIT_1_1_13_19 1	/* rewrote scobindMatchParam for bug 1275 */
 	/* Edit 1.1.13(18): currently disabled */
 #define AXL_EDIT_1_1_13_17 1	/* gencpp: uses compRootDir from axlcomp.c */
 	/* Edit 1.1.13(16): $ALDORARGS overrides $AXIOMXLARGS */
