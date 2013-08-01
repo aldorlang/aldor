@@ -574,18 +574,12 @@ gen0TypeAddExportSlot(Syme syme)
 
 	/* Get the location which holds the value of the export */
 	lhs = gen0SymeInit(syme);
-#if AXL_EDIT_1_1_13_02
 	if (!lhs)
 	{
 		AbSyn	ab = (AbSyn)NULL;
 		String	etype = tfPretty(tf);
 		comsgFatal(ab, ALDOR_F_BugExportSymeNotInit, str, etype);
 	}
-#else
-	assert(lhs);
-
-	gen0SymeSetInit(syme, lhs);
-#endif
 
 
 	/*
