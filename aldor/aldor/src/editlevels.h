@@ -49,8 +49,6 @@
 
 #define EDIT_1_0_n2_06 1        /* fix bug 4 - disabled type cache in stab */
 
-#define EDIT_1_0_n2_05 1        /* fix bug 859 */
-
 #define EDIT_1_0_n2_03 1        /* Updated ALDOR_F_LibExportNotFound error message
                                    and allows AXL_ as well as ALDOR_ message prefixes
                                  */

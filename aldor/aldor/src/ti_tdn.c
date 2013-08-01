@@ -1121,7 +1121,6 @@ titdnLabel(Stab stab, AbSyn absyn, TForm type)
 local Bool
 titdnGoto(Stab stab, AbSyn absyn, TForm type)
 {
-#if EDIT_1_0_n2_05
 	AbSyn label = absyn->abGoto.label;
 
 	if (stabLabelExistsInThisStab(stab, abIdSym(label))) {
@@ -1148,11 +1147,6 @@ titdnGoto(Stab stab, AbSyn absyn, TForm type)
 		comsgError(absyn->abGoto.label, ALDOR_E_TinFarGoto);
 		return false;
 	}
-#else
-	/* Need to be more careful than this (see titdnAssert) */
-	abTUnique(absyn) = tfExit;
-	return true;
-#endif
 }
 
 /****************************************************************************
