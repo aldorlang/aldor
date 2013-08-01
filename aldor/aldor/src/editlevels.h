@@ -69,7 +69,6 @@
 	/* Edit 1.1.12p6(11): deada enables cse/jflow/cprop */
 	/* Edit 1.1.12p6(10): AIX, HP/UX and -cold changes */
 	/* Edit 1.1.12p6( 9): change to hash$Integer$libaxllib */
-#define AXL_EDIT_1_1_12p6_08 1	/* abCheckWithin now hates defs in withs */
 
 
 /*

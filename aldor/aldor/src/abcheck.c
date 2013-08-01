@@ -1013,11 +1013,7 @@ abCheckWithin(AbSyn ab, String str)
 		break;
 
 	default:
-#if AXL_EDIT_1_1_12p6_08
 		comsgError(ab, ALDOR_E_ChkBadForm, str); 
-#else
-		comsgWarning(ab, ALDOR_E_ChkBadForm, str); 
-#endif
 		break;
 	}
 }
