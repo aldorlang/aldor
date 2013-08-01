@@ -14,7 +14,7 @@
  * Work-in-progress: these are edits that have not been completed and thus
  * don't have an edit number yet. Use these for long term projects etc.
  */
-#define EDIT_1_0_n1_AB 1	/* (currently unused) */
+#define EDIT_1_0_n1_AB 1	/* SSA */
 #define EDIT_1_0_n1_AA 0	/* comex CEnvs */
 
 /*
