@@ -90,32 +90,6 @@
  * Dead edits: DON'T use unless you have a really good reason ...
  ************************************************************************/
 
-/*
-
-Edit level AXL_EDIT_1_1_13_18 has been returned to the list of active edits.
-It still causes problems for Basicmath DUP, but it solves the issue where maps
-and packed maps were being given the same hash value when the only difference
-in the maps was the position of the map symbol.  For example (I, I) -> (I, I)
-was getting the same hash code as (I) -> (I, I, I) and (I, I, I) -> (I).  
-
-The problem with Basicmath DUP can be seen when * is applied to acc and result
-in CantorZassenhausFactorizationPackage (located in
-$BMROOT/src/polypkg/factorczpkg.as).  When acc is ? and result is 1, (both acc
-and result being of type U), the multiply invoked is (r: R) * (x : %) : %
-rather than (x : %) * (y : %) : %.  This results in a large integer times ?
-being returned, rather than 1*?.
-
-Applying this edit appears to be revealing another bug in the compiler that 
-has yet to be isolated to a simple test case.  (The Basicmath DUP behaviour
-is illustrated by Basicmath test duptest19.as).  It does not appear to be a 
-result of a hash code collision under the new system as several alternative
-code computations were tried providing the same result.
-
-*/
-
-#define AXL_EDIT_1_1_13_18 1	/* changed type hash code algorithm */
-				/* Breaks Basicmath DUP etc */
-
 #if 0
 
 #define AXL_EDIT_1_1_13_34 1	/* changing "with" insertion to warning */
