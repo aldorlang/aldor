@@ -30,11 +30,7 @@
 #include "strops.h"
 #include "table.h"
 
-#if EDIT_1_0_n1_06
 local Foam         gen0AddBody1           (AbSyn, Stab, AbSyn);
-#else
-local Foam         gen0AddBody1           (AbSyn, AbSyn, Stab, AbSyn);
-#endif
 local void         gen0AddImportedDomain  (TForm, Foam, AInt);
 local Foam         gen0CombineHash        (Foam hash1, Foam hash2);
 local AbSyn        gen0FindDefaults       (AbSyn with);
@@ -95,7 +91,6 @@ Bool	gfaddDebug	= false;
 #define genfExportDEBUG(s)	DEBUG_IF(genfExportDebug, s)
 #define gfaddDEBUG(s)		DEBUG_IF(gfaddDebug, s)
 
-#if EDIT_1_0_n1_06
 local void
 gen0ClashCheck(AbSyn ab)
 {
@@ -138,7 +133,6 @@ gen0ClashCheck(AbSyn ab)
 			foamCopy(seentab));
 	gen0AddStmt(stmt, ab);
 }
-#endif
 
 
 /*
@@ -149,12 +143,7 @@ Foam
 genAdd(AbSyn absyn)
 {
         foamProgSetGetter(gen0State->program);
-#if EDIT_1_0_n1_06
         return gen0AddBody0(absyn, abStab(absyn), tfExpr(gen0AbType(absyn)));
-#else
-        return gen0AddBody0(absyn->abAdd.base, absyn->abAdd.capsule,
-			    abStab(absyn), tfExpr(gen0AbType(absyn)));
-#endif
 }
 
 /*
@@ -178,16 +167,10 @@ genAdd(AbSyn absyn)
  *
  */
 
-#if EDIT_1_0_n1_06
 Foam
 gen0AddBody0(AbSyn ab, Stab stab, AbSyn defaultsAb)
 {
 	AbSyn		body = ab->abAdd.capsule;
-#else
-Foam
-gen0AddBody0(AbSyn base, AbSyn body, Stab stab, AbSyn defaultsAb)
-{
-#endif
 	AInt		index;
         Foam            foam, clos;
 	Length		argc = 1;
@@ -228,11 +211,7 @@ gen0AddBody0(AbSyn base, AbSyn body, Stab stab, AbSyn defaultsAb)
 		stmt = gen0BuiltinCCall(FOAM_Word, "domainAddHash!", "runtime",
 					2, foamNewPar(int0), rtHashCode);
                 gen0AddStmt(stmt, NULL);
-#if EDIT_1_0_n1_06
 		stmt = foamNewReturn(gen0AddBody1(ab,stab,defaultsAb));
-#else
-		stmt = foamNewReturn(gen0AddBody1(base,body,stab,defaultsAb));
-#endif
                 gen0AddStmt(stmt, NULL);
         }
 
@@ -253,19 +232,12 @@ gen0AddBody0(AbSyn base, AbSyn body, Stab stab, AbSyn defaultsAb)
         return clos;
 }
 
-#if EDIT_1_0_n1_06
 Foam
 gen0AddBody1(AbSyn ab, Stab stab, AbSyn defaultsAb)
 {
 	Scope("gen0AddBody1");
 	AbSyn		base = ab->abAdd.base;
 	AbSyn		body = ab->abAdd.capsule;
-#else
-local Foam
-gen0AddBody1(AbSyn base, AbSyn body, Stab stab, AbSyn defaultsAb)
-{
-	Scope("gen0AddBody1");
-#endif
 	ExportState	fluid(gen0ExportState);
 	SymeList	symes = listNil(Syme);
 	Foam		clos, foam;
@@ -299,10 +271,8 @@ gen0AddBody1(AbSyn base, AbSyn body, Stab stab, AbSyn defaultsAb)
         /* generate code for add body. */
         gen0DefTypeSequence(body, gen0ExportState->domExportList);
 
-#if EDIT_1_0_n1_06
 	/* Generate code to check for export clashes */
 	if (genHashcheck()) gen0ClashCheck(ab);
-#endif
 
 	gen0TypeFini();
 

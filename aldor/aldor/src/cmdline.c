@@ -878,10 +878,8 @@ cmdDoOptDeveloper(String arg)
 		gencSetTraceFuns(true);
 	else if (strEqual("no-where", arg))
 		NoWhereHack = true;
-#if EDIT_1_0_n1_06
 	else if (strAEqual("runtime-hashcheck", arg))
 		genSetHashcheck();
-#endif
 	else if (strAIsPrefix("keyword", arg)) {
 		String darg = cmdDGetOptArg(arg, "keyword", NULL);
 		cmdDoKeywordStatus(darg, true);

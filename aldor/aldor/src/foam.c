@@ -3853,7 +3853,6 @@ struct foamBVal_info foamBValInfoTable[] = {
  {FOAM_BVal_ListCons, 0, "ListCons",
 			0, 2, {FOAM_Word, FOAM_Ptr},	     FOAM_Ptr, 1, {0}},
 
-#if EDIT_1_0_n1_06
   {FOAM_BVal_NewExportTable, 0, "NewExportTable",
                         0, 2, {FOAM_Word, FOAM_SInt}, FOAM_Word, 1, {0}},
   {FOAM_BVal_AddToExportTable, 0, "AddToExportTable",
@@ -3861,7 +3860,6 @@ struct foamBVal_info foamBValInfoTable[] = {
                                 FOAM_Arr}, FOAM_Values, 0, {0}},
   {FOAM_BVal_FreeExportTable, 0, "FreeExportTable",
                         1, 1, {FOAM_Word}, FOAM_Values, 0, {0}},
-#endif
 #if EDIT_1_0_n1_AB
   /*
    * Note that ssaPhi actually takes variable number of arguments

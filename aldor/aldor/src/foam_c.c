@@ -2512,7 +2512,6 @@ fiRawRepSize(FiSInt fmt) {
  *
  *****************************************************************************/
 
-#if EDIT_1_0_n1_06
 
 /*
  * This code is invoked during domain initialisation and is used to detect
@@ -2595,7 +2594,6 @@ fiFreeExportTable(ExpTable *t)
 	fiFree((FiPtr)(t->type));
 	fiFree((FiPtr)t);
 }
-#endif
 
 
 FiSInt fiCounter()

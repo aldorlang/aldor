@@ -15,11 +15,7 @@ extern Foam	genAdd			(AbSyn);
 extern Foam	genWith			(AbSyn);
 extern Foam	genHas			(AbSyn);
 
-#if EDIT_1_0_n1_06
 extern Foam	gen0AddBody0		(AbSyn, Stab, AbSyn);
-#else
-extern Foam	gen0AddBody0		(AbSyn, AbSyn, Stab, AbSyn);
-#endif
 extern Foam	gen0MakeDefaultPackage  (AbSyn, Stab, Bool, Syme);
 extern Bool	gen0HasDefaults	  	(AbSyn);
 extern Foam	gen0GetDomain		(TForm, int);

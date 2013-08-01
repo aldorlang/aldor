@@ -46,7 +46,6 @@
 #define EDIT_1_0_n2_06 1        /* fix bug 4 - disabled type cache in stab */
 
 	/* Edit 1.0.-1(9): HP-UX port; added missing "local" etc */
-#define EDIT_1_0_n1_06 1	/* runtime hash code collision detection */
 #define EDIT_1_0_n1_05 1	/* ti{bup,tdn}Collect multi/cross embed fix */
 #define EDIT_1_0_n1_04 1	/* coloured compiler messages */
 #define EDIT_1_0_n1_03 1	/* comsgFatal replaces 1.1.12p6(1) assert */

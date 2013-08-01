@@ -7355,11 +7355,9 @@ struct ccBVal_info ccBValInfoTable[] = {
  {FOAM_BVal_ListHead,      CCO_FCall,  0,"fiListHead",      "fiLIST_HEAD"},
  {FOAM_BVal_ListTail,      CCO_FCall,  0,"fiListTail",      "fiLIST_TAIL"},
  {FOAM_BVal_ListCons,      CCO_FCall,  0,"fiListCons",      0},
-#if EDIT_1_0_n1_06
  {FOAM_BVal_NewExportTable, CCO_FCall, 0, "fiNewExportTable", 0},
  {FOAM_BVal_AddToExportTable, CCO_FCall, 0, "fiAddToExportTable", 0},
  {FOAM_BVal_FreeExportTable, CCO_FCall, 0, "fiFreeExportTable", 0},
-#endif
 #if EDIT_1_0_n1_AB
  /* This BVal must NEVER be seen by genc ... */
  {FOAM_BVal_ssaPhi, CCO_FCall, 0, "fiNonExistentFunction", 0},

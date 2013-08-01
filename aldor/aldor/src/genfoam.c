@@ -1324,13 +1324,8 @@ genRestrict(AbSyn absyn)
 	AbSyn	expr = absyn->abRestrictTo.expr;
 
 	if (abTag(expr) == AB_Add) {
-#if EDIT_1_0_n1_06
 		return gen0AddBody0(expr, abStab(expr),
 				    absyn->abRestrictTo.type);
-#else
-		return gen0AddBody0(expr->abAdd.base, expr->abAdd.capsule, 
-				    abStab(expr), absyn->abRestrictTo.type);
-#endif
 	}
 	else
 		return genFoamVal(expr);
@@ -4180,13 +4175,7 @@ gen0DefineRhs(AbSyn id, AbSyn type, AbSyn rhs)
 		}
 		else {
 			oldex = gen0ProgPushExporter(id);
-#if EDIT_1_0_n1_06
 			rhsFoam = gen0AddBody0(rhs, stab, type);
-#else
-			rhsFoam = gen0AddBody0(rhs->abAdd.base,
-					       rhs->abAdd.capsule,
-					       stab, type);
-#endif
 			gen0ProgPopExporter(oldex);
 		}
 	}
@@ -5109,13 +5098,7 @@ gen0Lambda(AbSyn absyn, Syme syme, AbSyn defaults)
 			genFoamStmt(fbody->abAdd.capsule);
 		}
 		else {
-#if EDIT_1_0_n1_06
 			val = gen0AddBody0(fbody, abStab(fbody), defaults);
-#else
-			val = gen0AddBody0(fbody->abAdd.base,
-					   fbody->abAdd.capsule,
-					   abStab(fbody), defaults);
-#endif
 			assert(foamTag(val) != FOAM_Nil);
 		}
 	}

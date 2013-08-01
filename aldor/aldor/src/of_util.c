@@ -86,9 +86,7 @@ vpFreeVar(VarPool pool, int var)
  
 Bool                    gen0IsRuntime = false;
 Bool                    inl0AfterInline = false;
-#if EDIT_1_0_n1_06
 Bool                    gen0Hashcheck = false;
-#endif
  
 /*****************************************************************************
  *
