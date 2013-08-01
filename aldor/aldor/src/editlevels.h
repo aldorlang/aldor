@@ -61,7 +61,6 @@
 	/* Edit 1.1.13(13): use "throw" instead of "except" in errors */
 	/* Edit 1.1.13(12): -M base=<dir> support */
 
-#define AXL_EDIT_1_1_12p6_20 1	/* bputBadArgType0 fix for bug 1210 */
 #define AXL_EDIT_1_1_12p6_19 1	/* FiByte now unsigned for bug 1237 */
 #define AXL_EDIT_1_1_12p6_18 1	/* Added missing goto's for bug 1235 */
 #define AXL_EDIT_1_1_12p6_17 1	/* Passing symes in gen0Lambda recursion */
