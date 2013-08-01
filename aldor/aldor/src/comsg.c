@@ -415,7 +415,6 @@ comsgSelectByName(String name, Bool isOn)
 {
 	Msg	msg;
 	int	mno;
-#if EDIT_1_0_n2_03
 	String  s = (String)NULL;
  
 	/* Allow AXL_ as well as ALDOR_ */
@@ -424,14 +423,11 @@ comsgSelectByName(String name, Bool isOn)
 		comsgWarning(NULL, ALDOR_W_OldMsgPrefix);
 		name = s;
 	}
-#endif
 
 	comsgInitSelect();
 
 	msg = msgByAName(ALDOR_GROUP, name);
-#if EDIT_1_0_n2_03
 	if (s) strFree(s);
-#endif
 	if (msg == MSG_NOT_FOUND) return -1;
 
 	mno = msgNumber(ALDOR_GROUP, msg);
