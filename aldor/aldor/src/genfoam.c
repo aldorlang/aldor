@@ -6477,11 +6477,9 @@ gen0TempValueMode(TForm tf)
 		AInt fmt;
 		FoamTag type;
 		type = gen0Type(tf, &fmt);
-#if AXL_EDIT_1_1_12p6_23
 		if (type == FOAM_Arr) {
 		  return gen0TempLocal0(FOAM_Ptr,emptyFormatSlot) ;
 		    }
-#endif
 		return gen0TempLocal0(type, fmt);
 	}
 	vals = foamNewEmpty(FOAM_Values, tfMultiArgc(tf));
