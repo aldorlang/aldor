@@ -977,7 +977,6 @@ fiSFloMantissa(FiSFlo sf)
  *
  *****************************************************************************/
 
-#if AXL_EDIT_1_1_12p6_19
 FiByte
 fiByteMin(void)
 {
@@ -989,19 +988,6 @@ fiByteMax(void)
 {
 	return (FiByte)UCHAR_MAX; /*SCHAR_MAX;*/
 }
-#else
-FiByte
-fiByteMin(void)
-{
-	return (FiByte) SCHAR_MIN;
-}
-
-FiByte
-fiByteMax(void)
-{
-	return (FiByte) SCHAR_MAX;
-}
-#endif
 
 /*****************************************************************************
  *
