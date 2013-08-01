@@ -1201,17 +1201,11 @@ titdnLambda(Stab stab, AbSyn absyn, TForm type)
 		result = result ? tres : result;
 	}
 
-#if AXL_EDIT_1_1_12p6_21
 	/* Only allowed to set abTUnique if successful */
 	if (result) abTUnique(absyn) = rtype;
 
 	listFree(AbSyn)(abReturnsList);
 	Return(result);
-#else
-	listFree(AbSyn)(abReturnsList);
-	abTUnique(absyn) = rtype;
-	Return(result);
-#endif
 }
 
 local Bool
@@ -1428,7 +1422,6 @@ titdnGenerate(Stab stab, AbSyn absyn, TForm type)
 		terror(stab, body, type);
 	}
 
-#if AXL_EDIT_1_1_12p6_21
 	/* Were we successful? */
 	result = (abState(absyn) != AB_State_Error) ? true : false;
 
@@ -1437,12 +1430,6 @@ titdnGenerate(Stab stab, AbSyn absyn, TForm type)
 
 	listFree(AbSyn)(abYieldsList);
 	Return(result);
-#else
-	abTUnique(absyn) = tfGenerator(tuniYieldTForm);
-	listFree(AbSyn)(abYieldsList);
-
-	Return(abState(absyn) != AB_State_Error);
-#endif
 }
 
 /***************************************************************************
@@ -2408,7 +2395,6 @@ titdnReference(Stab stab, AbSyn absyn, TForm type)
 	titdn(stab, body, tfUnknown);
 
 
-#if AXL_EDIT_1_1_12p6_21
 	/* Return now if an error has occurred */
 	if (abState(absyn) == AB_State_Error) return false;
 
@@ -2416,11 +2402,6 @@ titdnReference(Stab stab, AbSyn absyn, TForm type)
 	/* Fix our type */
 	abTUnique(absyn) = tfReference(inner);
 	return true;
-#else
-	/* Fix our type */
-	abTUnique(absyn) = tfReference(inner);
-	return (abState(absyn) != AB_State_Error);
-#endif
 }
 
 /***************************************************************************
