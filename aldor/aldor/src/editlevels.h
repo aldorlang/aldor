@@ -61,7 +61,6 @@
 	/* Edit 1.1.13(13): use "throw" instead of "except" in errors */
 	/* Edit 1.1.13(12): -M base=<dir> support */
 
-#define AXL_EDIT_1_1_13_03 1	/* Introduced gc0TryCast() into genc */
 #define AXL_EDIT_1_1_13_02 1	/* Replaced an assert() by comsgFatal() */
 #define AXL_EDIT_1_1_13_01 1	/* Fix for multi-def-export bug 1261 */
 #define AXL_EDIT_1_1_13_00 1	/* More carefully generated C code */

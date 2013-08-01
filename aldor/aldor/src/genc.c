@@ -2915,18 +2915,8 @@ gccCmd(Foam foam)
 		cc = gcFiEEnsure(gccExpr(foam->foamEEnsure.env));
 		break;
 	  case FOAM_Free:
-#if AXL_EDIT_1_1_13_03
 		cc = gcFiFree(gc0TryCast(FOAM_Ptr, foam->foamFree.place));
 		break;
-#else
-		cc = gcFiFree(gc0Cast(FOAM_Ptr,foam->foamFree.place));
-		break;
-#if 0	/* PushEnv is a Value ! */
-	  case FOAM_PushEnv:
-		cc = gccPushEnv(foam);
-		break;
-#endif
-#endif
 	  case FOAM_PopEnv:
 		cc = ccoIdOf(";");
 		break;
@@ -5308,7 +5298,6 @@ gc0FCall(FoamBValTag tag, Foam foam)
 #endif
 		else {
 			ccArgs = ccoNewNode(CCO_Many, argc);
-#if AXL_EDIT_1_1_13_03
 			for (i = 0; i < argc; i++) {
 				FoamTag	type;
 				Foam	val;
@@ -5318,10 +5307,6 @@ gc0FCall(FoamBValTag tag, Foam foam)
 
 				ccoArgv(ccArgs)[i] = gc0TryCast(type, val);
 			}
-#else
-			for (i = 0; i < argc; i++)
-				ccoArgv(ccArgs)[i] = gc0Cast(foamBValInfoTable[tag].argTypes[i], foam->foamBCall.argv[i]);
-#endif
 		}
 	}
 	else {
@@ -5503,11 +5488,7 @@ gc0FunOCall0(Foam foam, int argc, int returnKind)
 		FoamTag	expect = pdecls->foamDDecl.argv[i]->foamDecl.type;
 		Foam	farg  = foam->foamOCall.argv[i];
 
-#if AXL_EDIT_1_1_13_03
 		gc0AddLine(code, gc0TryCast(expect, farg));
-#else
-		gc0AddLine(code, gc0Cast(expect, farg));
-#endif
 	}
 
 	code = listNReverse(CCode)(code);
