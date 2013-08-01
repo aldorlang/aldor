@@ -46,7 +46,6 @@
 #define EDIT_1_0_n2_06 1        /* fix bug 4 - disabled type cache in stab */
 
 	/* Edit 1.0.-1(9): HP-UX port; added missing "local" etc */
-#define EDIT_1_0_n1_03 1	/* comsgFatal replaces 1.1.12p6(1) assert */
 	/* Edit 1.0.-1(2): replaced AXL_ comsg tags with ALDOR_ everywhere */
 	/* Edit 1.0.-1(1): updates to comsgdb.msg, added -Fap and .ap */
 	/* Aldor 1.0.-1(0) is a freeze of AxiomXL 1.1.13(37) */

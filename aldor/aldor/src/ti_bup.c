@@ -544,7 +544,6 @@ tibup0DefaultBody(Stab stab, AbSyn absyn, Bool doDef)
 		if (abTag(argv[i]) == AB_If) {
 			AbLogic	saveCond;
 			SymeList sl1;
-#if EDIT_1_0_n1_03
 			/*
 			 * An unfixed compiler bug means that parts of Salli
 			 * programs (and thus libAldor) are tinfered with
@@ -554,7 +553,6 @@ tibup0DefaultBody(Stab stab, AbSyn absyn, Bool doDef)
 			 */
 			if (tfBoolean == tfUnknown)
 				comsgFatal(absyn, ALDOR_F_BugNoBoolean);
-#endif
 
 			/* !! need abExpandDefs() here */
 			typeInferAs(stab, argv[i]->abIf.test, tfBoolean);
@@ -2273,7 +2271,6 @@ tibupIf(Stab stab, AbSyn absyn, TForm type)
 	AbSyn	nTest;
 	AbLogic	saveCond;
 
-#if EDIT_1_0_n1_03
 	/*
 	 * An unfixed compiler bug means that parts of Salli
 	 * programs (and thus libAldor) are tinfered with
@@ -2282,7 +2279,6 @@ tibupIf(Stab stab, AbSyn absyn, TForm type)
 	 * scope that needs it before we get this far.
 	 */
 	if (tfBoolean == tfUnknown) comsgFatal(absyn, ALDOR_F_BugNoBoolean);
-#endif
 
 	/* Completely analyze the test on the spot. */
 	typeInferAs(stab, test, tfBoolean);
@@ -2390,7 +2386,6 @@ AbSyn tibupSelectArgf(AbSyn ab, Length i)
 local void
 tibupTest(Stab stab, AbSyn absyn, TForm type)
 {
-#if EDIT_1_0_n1_03
 	/*
 	 * An unfixed compiler bug means that parts of Salli
 	 * programs (and thus libAldor) are tinfered with
@@ -2399,7 +2394,6 @@ tibupTest(Stab stab, AbSyn absyn, TForm type)
 	 * scope that needs it before we get this far.
 	 */
 	if (tfBoolean == tfUnknown) comsgFatal(absyn, ALDOR_F_BugNoBoolean);
-#endif
 
 	if (tuniSelectObj != NULL) {
 		tibup0ApplySym(stab, absyn, 
@@ -2549,7 +2543,6 @@ tibupBreak(Stab stab, AbSyn absyn, TForm type)
 local void
 tibupWhile(Stab stab, AbSyn absyn, TForm type)
 {
-#if EDIT_1_0_n1_03
 	/*
 	 * An unfixed compiler bug means that parts of Salli
 	 * programs (and thus libAldor) are tinfered with
@@ -2558,7 +2551,6 @@ tibupWhile(Stab stab, AbSyn absyn, TForm type)
 	 * scope that needs it before we get this far.
 	 */
 	if (tfBoolean == tfUnknown) comsgFatal(absyn, ALDOR_F_BugNoBoolean);
-#endif
 	tibup0Generic(stab, absyn, tfBoolean);
 }
 
@@ -2598,7 +2590,6 @@ tibupFor(Stab stab, AbSyn absyn, TForm type)
 	tibup0InferLhs(stab, absyn, lhs, test, tparg); /* !! test */
 	tibup(stab, lhs,  tfUnknown);
 
-#if EDIT_1_0_n1_03
 	/*
 	 * An unfixed compiler bug means that parts of Salli
 	 * programs (and thus libAldor) are tinfered with
@@ -2608,7 +2599,6 @@ tibupFor(Stab stab, AbSyn absyn, TForm type)
 	 */
 	if (!abIsNothing(test) && tfBoolean == tfUnknown)
 		comsgFatal(absyn, ALDOR_F_BugNoBoolean);
-#endif
 	tibup(stab, test, abIsNothing(test) ? tfUnknown : tfBoolean);
 
 	lhs = abTag(absyn->abFor.lhs) == AB_Comma ? lhs : abDefineeId(lhs);
@@ -2821,7 +2811,6 @@ tibupPretendTo(Stab stab, AbSyn absyn, TForm type)
 local void
 tibupNot(Stab stab, AbSyn absyn, TForm type)
 {
-#if EDIT_1_0_n1_03
 	/*
 	 * An unfixed compiler bug means that parts of Salli
 	 * programs (and thus libAldor) are tinfered with
@@ -2830,7 +2819,6 @@ tibupNot(Stab stab, AbSyn absyn, TForm type)
 	 * scope that needs it before we get this far.
 	 */
 	if (tfBoolean == tfUnknown) comsgFatal(absyn, ALDOR_F_BugNoBoolean);
-#endif
 	tibup(stab, absyn->abNot.expr, tfBoolean);
 	abTPoss(absyn) = tpossSingleton(tfBoolean);
 }
@@ -2841,7 +2829,6 @@ tibupNot(Stab stab, AbSyn absyn, TForm type)
  *
  ***************************************************************************/
 
-#if EDIT_1_0_n1_03
 local void
 tibupAnd(Stab stab, AbSyn absyn, TForm type)
 {
@@ -2862,16 +2849,6 @@ tibupAnd(Stab stab, AbSyn absyn, TForm type)
 
 	abTPoss(absyn) = tpossSingleton(tfBoolean);
 }
-#else
-local void
-tibupAnd(Stab stab, AbSyn absyn, TForm type)
-{
-	int	i;
-	for (i = 0; i < abArgc(absyn); i++)
-		tibup(stab, abArgv(absyn)[i], tfBoolean);
-	abTPoss(absyn) = tpossSingleton(tfBoolean);
-}
-#endif
 
 /***************************************************************************
  *
@@ -2879,7 +2856,6 @@ tibupAnd(Stab stab, AbSyn absyn, TForm type)
  *
  ***************************************************************************/
 
-#if EDIT_1_0_n1_03
 local void
 tibupOr(Stab stab, AbSyn absyn, TForm type)
 {
@@ -2899,16 +2875,6 @@ tibupOr(Stab stab, AbSyn absyn, TForm type)
 
 	abTPoss(absyn) = tpossSingleton(tfBoolean);
 }
-#else
-local void
-tibupOr(Stab stab, AbSyn absyn, TForm type)
-{
-	int	i;
-	for (i = 0; i < abArgc(absyn); i++)
-		tibup(stab, abArgv(absyn)[i], tfBoolean);
-	abTPoss(absyn) = tpossSingleton(tfBoolean);
-}
-#endif
 
 /***************************************************************************
  *
@@ -2919,7 +2885,6 @@ tibupOr(Stab stab, AbSyn absyn, TForm type)
 local void
 tibupAssert(Stab stab, AbSyn absyn, TForm type)
 {
-#if EDIT_1_0_n1_03
 	/*
 	 * An unfixed compiler bug means that parts of Salli
 	 * programs (and thus libAldor) are tinfered with
@@ -2928,7 +2893,6 @@ tibupAssert(Stab stab, AbSyn absyn, TForm type)
 	 * scope that needs it before we get this far.
 	 */
 	if (tfBoolean == tfUnknown) comsgFatal(absyn, ALDOR_F_BugNoBoolean);
-#endif
 	tibup(stab, absyn->abAssert.test, tfBoolean);
 	abTPoss(absyn) = tpossSingleton(tfNone());
 }
@@ -3121,7 +3085,6 @@ tibupHas(Stab stab, AbSyn absyn, TForm type)
 	AbSyn	expr = absyn->abHas.expr;
 	AbSyn	prop = absyn->abHas.property;
 
-#if EDIT_1_0_n1_03
 	/*
 	 * An unfixed compiler bug means that parts of Salli
 	 * programs (and thus libAldor) are tinfered with
@@ -3133,11 +3096,6 @@ tibupHas(Stab stab, AbSyn absyn, TForm type)
 	tiGetTForm(stab, prop);
 	if (tfBoolean == tfUnknown) comsgFatal(absyn, ALDOR_F_BugNoBoolean);
 	tibup0Generic(stab, absyn, tfBoolean);
-#else
-	tiGetTForm(stab, expr);
-	tiGetTForm(stab, prop);
-	tibup0Generic(stab, absyn, tfBoolean);
-#endif
 
 	typeInferCheck(stab, expr, tfDomain);
 	typeInferCheck(stab, prop, tfCategory);
