@@ -4232,15 +4232,9 @@ tfHasDomExportMod(TForm tf, SymeList mods, Symbol sym, TForm type)
 
 	for (sl = tfGetDomExports(tf); sl; sl = cdr(sl)) {
 		Syme syme = car(sl);
-#if AXL_EDIT_1_1_13_05
 		if (symeId(syme) != sym) continue;
 		if (!tformEqualMod(mods, symeType(syme), type)) continue;
 		return syme;
-#else
-		if (symeId(syme) == sym &&
-		    tformEqualMod(mods, symeType(syme), type))
-			return syme;
-#endif
 	}
 	return NULL;
 }
@@ -8137,7 +8131,6 @@ tfImplicitExport(Stab stab, SymeList mods, Syme syme)
 	{
 		Syme xsyme = car(isymes);
 
-#if AXL_EDIT_1_1_13_05
 		if (symeId(xsyme) != sym) continue;
 		if (!tformEqualMod(mods, symeType(xsyme), tf)) continue;
 
@@ -8145,11 +8138,6 @@ tfImplicitExport(Stab stab, SymeList mods, Syme syme)
 		syme = stabDefExport(stab, sym, tf, (Doc)NULL);
 #endif
 		return syme; /* not xsyme ... */
-#else
-		if (symeId(xsyme) == sym &&
-		    tformEqualMod(mods, symeType(xsyme), tf))
-			return syme; /* not xsyme ... */
-#endif
 	}
 
 
