@@ -1858,13 +1858,8 @@ int sxiWrite(FILE *outf, SExpr s, ULong iomode)
 			sxiCurrentPos = sxiPos(s);
 			sxiCurrentFName = sposFile(sxiCurrentPos);
 			cc += fprintf(outf, ";line %d [%d]",
-#if EDIT_1_0_n1_07
 					(int) sxiCurrentLineNo,
 					(int) sposGlobalLine(sxiCurrentPos));
-#else
-			sxiCurrentLineNo,
-			sposGlobalLine(sxiCurrentPos));
-#endif
 			cc += fprintf(outf, " \"%s\"\n", fnameUnparseStatic(
 					sxiCurrentFName));
 		} else {
@@ -2042,13 +2037,8 @@ int sxiWrNewline(FILE *outf)
 			sxiCurrentFName = fnameCopy(fn);
 		if (ln != sxiCurrentLineNo)
 			sxiCurrentLineNo = ln;
-#if EDIT_1_0_n1_07
 		cc += fprintf(outf, "\n;line %d [%d] ", (int) sxiCurrentLineNo,
 				(int) sposGlobalLine(sxiCurrentPos));
-#else
-		cc += fprintf(outf, "\n;line %d [%d] ", sxiCurrentLineNo,
-				sposGlobalLine(sxiCurrentPos));
-#endif
 		if (!fnameEqual(sxiCurrentFName, fn)) {
 			sxiCurrentFName = fnameCopy(fn);
 			cc += fprintf(outf, " \"%s\"", fnameUnparseStatic(

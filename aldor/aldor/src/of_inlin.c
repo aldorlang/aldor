@@ -2589,11 +2589,7 @@ inlGetLocalConst(AInt n)
 local Foam
 inlGetConstLevels(AInt n)
 {
-#if EDIT_1_0_n1_07
 	Foam	code = (Foam) NULL, prog;
-#else
-	Foam	code, prog;
-#endif
 
 	/*
 	 * External constants that have been recently localised

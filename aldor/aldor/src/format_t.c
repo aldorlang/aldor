@@ -35,45 +35,25 @@ testFormat(void)
 	n = sprintf(buf0, "The rain in Spain\n");
 	printf("*** CC = %d\n", n);
 	buf1 = strPrintf("The rain in Spain\n");
-#if EDIT_1_0_n1_07
 	printf("*** CC = %d\n", (int) strLength(buf1));
-#else
-	printf("*** CC = %d\n", strLength(buf1));
-#endif
 	if (!strEqual(buf0, buf1))
 		printf("*** [DIFFERENT]:\n%s\n%s\n", buf0, buf1);
 
 	n = sprintf(buf0, "The rain in %spain\n", "my ");
 	printf("*** CC = %d\n", n);
 	buf1 = strPrintf("The rain in %spain\n", "my ");
-#if EDIT_1_0_n1_07
 	printf("*** CC = %d\n", (int) strLength(buf1));
-#else
-	printf("*** CC = %d\n", strLength(buf1));
-#endif
 	if (!strEqual(buf0, buf1))
 		printf("*** [DIFFERENT]:\n%s\n%s\n", buf0, buf1);
 
-#if EDIT_1_0_n1_07
 	n = sprintf(buf0, "The rain in %.*spain\n", -4, "my ");
-#else
-	n = sprintf(buf0, "The rain in %#.*spain\n", -4, "my ");
-#endif
 	printf("*** CC = %d\n", n);
 	buf1 = strPrintf("The rain in %#.*spain\n", -4, "my ");
-#if EDIT_1_0_n1_07
 	printf("*** CC = %d\n", (int) strLength(buf1));
-#else
-	printf("*** CC = %d\n", strLength(buf1));
-#endif
 	if (!strEqual(buf0, buf1))
 		printf("*** [DIFFERENT]:\n%s\n%s\n", buf0, buf1);
 
-#if EDIT_1_0_n1_07
 	n = sprintf(buf0, "The rain in %.*spain falls %+-6d times\n",-4,"my ",5);
-#else
-	n = sprintf(buf0, "The rain in %#.*spain falls %+-6d times\n",-4,"my ",5);
-#endif
 	printf("*** CC = %d\n", n);
 	buf1 = strPrintf("The rain in %#.*spain falls %+-6d times\n",-4,"my ",5);
 	printf("*** CC = " AINT_FMT "\n", strLength(buf1));
@@ -83,11 +63,7 @@ testFormat(void)
 	n = sprintf(buf0, "The rain in %#.*E pain\n", 200, d);
 	printf("*** CC = %d\n", n);
 	buf1 = strPrintf("The rain in %#.*E pain\n", 200, d);
-#if EDIT_1_0_n1_07
 	printf("*** CC = %d\n", (int) strLength(buf1));
-#else
-	printf("*** CC = %d\n", strLength(buf1));
-#endif
 	if (!strEqual(buf0, buf1))
 		printf("*** [DIFFERENT]:\n%s\n%s\n", buf0, buf1);
 
@@ -112,11 +88,7 @@ testFormat(void)
 	n = sprintf(buf0, "The rain in %lu pain\n", l);
 	printf("*** CC = %d\n", n);
 	buf1 = strPrintf("The rain in %lu pain\n", l);
-#if EDIT_1_0_n1_07
 	printf("*** CC = %d\n", (int) strLength(buf1));
-#else
-	printf("*** CC = %d\n", strLength(buf1));
-#endif
 	if (!strEqual(buf0, buf1))
 		printf("*** [DIFFERENT]:\n%s\n%s\n", buf0, buf1);
 }

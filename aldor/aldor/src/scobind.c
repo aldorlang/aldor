@@ -1191,7 +1191,6 @@ scobindMatchParams(AbSyn aparam, AbSyn lparam)
 	return result;
 }
 
-#if AXL_EDIT_1_1_13_19
 /*
  * Does a parameter from a map type declaration match the corresponding
  * parameter from the lambda definition? Accepts declaration, definition
@@ -1202,11 +1201,7 @@ scobindMatchParam(AbSyn arg, AbSyn par)
 {
 	AbSynTag aTag = abTag(arg);
 	AbSynTag pTag = abTag(par);
-#if EDIT_1_0_n2_07
 	const char *err = "parameter is not an identifier or a declaration";
-#else
-	char *err = "parameter is not an identifier or a declaration";
-#endif
 
 	/* Safety check */
 	assert(aTag == AB_Define || aTag == AB_Declare || aTag == AB_Id);
@@ -1259,39 +1254,6 @@ scobindMatchParam(AbSyn arg, AbSyn par)
 	/* Types are present: must be equal */
 	return abEqual(arg, par);
 }
-#else
-local Bool
-scobindMatchParam(AbSyn arg, AbSyn par)
-{
-	AbSyn tmp;
-	 
-	assert(abTag(arg) == AB_Define || abTag(arg) == AB_Declare || abTag(arg) == AB_Id);
-	assert(abTag(par) == AB_Define || abTag(par) == AB_Declare || abTag(par) == AB_Id);
-
-	if (abTag(arg) == AB_Define)
-		arg = arg->abDefine.lhs;
-
-	if (abTag(par) == AB_Define)
-		par = par->abDefine.lhs;
-
-	if (abTag(par) == AB_Id) {
-		tmp = par;
-		par = arg;
-		arg = tmp;
-	}
-	
-	if (abTag(par) == AB_Id) 
-		return abEqual(arg, par);
-
-	if (abTag(arg) == AB_Declare)
-		return abEqual(par->abDeclare.id, arg->abDeclare.id) &&
-			(abIsNothing(par->abDeclare.type) ||
-			 abIsNothing(arg->abDeclare.type) ||
-			 abEqual(par->abDeclare.type, arg->abDeclare.type));
-
-	return scobindMatchParam(arg->abDeclare.id, par);
-}
-#endif
 
 local void
 markOuterInstanceOfFree(AbSyn id, AbSyn type, DeclContext context)
@@ -4004,11 +3966,7 @@ scobindPrintDeclInfo(Length i, DeclInfo declInfo)
 	Length		c;
 
 	fnewline(dbOut);
-#if EDIT_1_0_n1_07
 	fprintf(dbOut, "        %-14s: [%d] ", " ", (int) i);
-#else
-	fprintf(dbOut, "        %-14s: [%d] ", " ", i);
-#endif
 
 	if (declInfo->type) {
 		fprintf(dbOut, "<");

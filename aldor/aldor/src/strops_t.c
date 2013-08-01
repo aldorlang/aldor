@@ -47,11 +47,7 @@ testString(void)
 	}
 	printf("strMatch:\n");
 	printf("The first %d characters of \"%s\" and \"%s\" match.\n",
-#if EDIT_1_0_n1_07
 	       	(int) strMatch(s2, s3),s2,s3);
-#else
-	       	strMatch(s2, s3),s2,s3);
-#endif
 
 	printf("strCopy:\n");
 	s0 = strCopy(s2);
@@ -69,11 +65,7 @@ testString(void)
 	printf("strConcat, strLength:\n");
 	printf("Concatenating \"%s\" and \"%s\" yields:\n",s1,s3);
 	s0 = strConcat(s1,s3);
-#if EDIT_1_0_n1_07
 	printf("\"%s\", of length %d.\n",s0, (int) strLength(s0));
-#else
-	printf("\"%s\", of length %d.\n",s0,strLength(s0));
-#endif
 	strFree(s0);
 
 	printf("strlConcat:\n");

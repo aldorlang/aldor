@@ -4232,15 +4232,9 @@ tfHasDomExportMod(TForm tf, SymeList mods, Symbol sym, TForm type)
 
 	for (sl = tfGetDomExports(tf); sl; sl = cdr(sl)) {
 		Syme syme = car(sl);
-#if AXL_EDIT_1_1_13_05
 		if (symeId(syme) != sym) continue;
 		if (!tformEqualMod(mods, symeType(syme), type)) continue;
 		return syme;
-#else
-		if (symeId(syme) == sym &&
-		    tformEqualMod(mods, symeType(syme), type))
-			return syme;
-#endif
 	}
 	return NULL;
 }
@@ -5029,7 +5023,6 @@ tfSymesFrEnum(Stab stab, TForm tf, Sefo sefo)
 	 * ~= : (me, me) -> Boolean
 	 */
 
-#if EDIT_1_0_n1_03
 	/*
 	 * An unfixed compiler bug means that parts of Salli programs
 	 * (and thus libAldor) are tinfered with (tfBoolean == tfUnknown).
@@ -5039,9 +5032,6 @@ tfSymesFrEnum(Stab stab, TForm tf, Sefo sefo)
 	tfm = tfMulti(2, me, me);
 	if (tfBoolean == tfUnknown) comsgFatal(sefo, ALDOR_F_BugNoBoolean);
 	tfm = tfMap(tfm, tfBoolean);
-#else
-	tfm = tfMap(tfMulti(2, me, me), tfBoolean);
-#endif
 
 	syme = tfNewRepSyme(stab, ssymEquals, tfm, code);
 	symes = listCons(Syme)(syme, symes);
@@ -5494,7 +5484,6 @@ tfSymesFrUnion(Stab stab, TForm tf, Sefo sefo)
 		tfe = tfEnum(stab, argi);
 		tfc = tfMulti(2, me, tfe);
 
-#if EDIT_1_0_n1_03
 		/*
 		 * An unfixed compiler bug means that parts of Salli
 		 * programs (and thus libAldor) are tinfered with
@@ -5504,7 +5493,6 @@ tfSymesFrUnion(Stab stab, TForm tf, Sefo sefo)
 		 */
 		if (tfBoolean == tfUnknown)
 			comsgFatal(sefo, ALDOR_F_BugNoBoolean);
-#endif
 		tfm = tfMap(tfc, tfBoolean);
 		syme = tfNewRepSyme(stab, ssymTheCase, tfm, code);
 		symes = listCons(Syme)(syme, symes);
@@ -5545,7 +5533,6 @@ tfSymesTestCompoundType(Stab stab, TForm tfi, Bool *ops)
 	 */
 
 	if (ops[TFC_HasEq]) {
-#if EDIT_1_0_n1_03
 		/*
 		 * An unfixed compiler bug means that parts of Salli
 		 * programs (and thus libAldor) are tinfered with
@@ -5559,15 +5546,11 @@ tfSymesTestCompoundType(Stab stab, TForm tfi, Bool *ops)
 			comsgFatal(ab, ALDOR_F_BugNoBoolean);
 		}
 		tfm = tfMap(tfm, tfBoolean);
-#else
-		tfm = tfMap(tfMulti(2, me, me), tfBoolean);
-#endif
 		if (!tfHasDomExportMod(tfi, mods, ssymEquals, tfm))
 			ops[TFC_HasEq] = false;
 	}
 
 	if (ops[TFC_HasNeq]) {
-#if EDIT_1_0_n1_03
 		if (!tfm) {
 			tfm = tfMulti(2, me, me);
 			if (tfBoolean == tfUnknown) {
@@ -5576,9 +5559,6 @@ tfSymesTestCompoundType(Stab stab, TForm tfi, Bool *ops)
 			}
 			tfm = tfMap(tfm, tfBoolean);
 		}
-#else
-		if (!tfm) tfm = tfMap(tfMulti(2, me, me), tfBoolean);
-#endif
 		if (!tfHasDomExportMod(tfi, mods, ssymNotEquals, tfm))
 			ops[TFC_HasNeq] = false;
 	}
@@ -5605,16 +5585,12 @@ tfSymesFrCompoundType(Stab stab, TForm me, Bool *ops, SymeList symes)
 	 * scope that needs it before we get this far.
 	 */
 	if (ops[TFC_HasEq]) {
-#if EDIT_1_0_n1_03
 		tfm = tfMulti(2, me, me);
 		if (tfBoolean == tfUnknown) {
 			AbSyn ab = tfGetExpr(me);
 			comsgFatal(ab, ALDOR_F_BugNoBoolean);
 		}
 		tfm = tfMap(tfm, tfBoolean);
-#else
-		tfm = tfMap(tfMulti(2, me, me), tfBoolean);
-#endif
 
 		sym = ssymEquals;
 		syme = symeNewExport(sym, tfm, car(stab));
@@ -5622,7 +5598,6 @@ tfSymesFrCompoundType(Stab stab, TForm me, Bool *ops, SymeList symes)
 	}
 
 	if (ops[TFC_HasNeq]) {
-#if EDIT_1_0_n1_03
 		if (!tfm) {
 			tfm = tfMulti(2, me, me);
 			if (tfBoolean == tfUnknown) {
@@ -5631,9 +5606,6 @@ tfSymesFrCompoundType(Stab stab, TForm me, Bool *ops, SymeList symes)
 			}
 			tfm = tfMap(tfm, tfBoolean);
 		}
-#else
-		if (!tfm) tfm = tfMap(tfMulti(2, me, me), tfBoolean);
-#endif
 
 		sym = ssymNotEquals;
 		syme = symeNewExport(sym, tfm, car(stab));
@@ -6028,11 +6000,7 @@ tfDefineeType1(TForm tf, Bool subst, Bool notAdd)
 		/* See if we can expand further */
 		if (tfIsAbSyn(tf))
 		{
-#if EDIT_1_0_n1_07
 			TForm	tfn	= (TForm) NULL;
-#else
-			TForm	tfn;
-#endif
 			Sefo	sefo	= tfGetExpr(tf);
 			TForm	cat	= abGetCategory(sefo);
 
@@ -6218,7 +6186,6 @@ tfIsCategoryMap(TForm tf)
 Bool
 tfIsBooleanFn(TForm tf)
 {
-#if EDIT_1_0_n1_03
 	/*
 	 * An unfixed compiler bug means that parts of Salli
 	 * programs (and thus libAldor) are tinfered with
@@ -6228,7 +6195,6 @@ tfIsBooleanFn(TForm tf)
 	 */
 	AbSyn ab = tfGetExpr(tf);
 	if (tfBoolean == tfUnknown) comsgFatal(ab, ALDOR_F_BugNoBoolean);
-#endif
 	return tfSatisfies(tf, tfBoolean);
 }
 
@@ -6582,13 +6548,8 @@ tfMapMultiArgEmbed(TForm tf, Length argc)
 Length
 tfMapRetc(TForm tf)
 {
-#if AXL_EDIT_1_1_13_09
 	tfFollow(tf);
 	return tfAsMultiArgc(tfIgnoreExceptions(tfMapRet(tf)));
-#else
-	tfFollow(tf);
-	return tfAsMultiArgc(tfMapRet(tf));
-#endif
 }
 
 /* Return the type of the nth return value of a map of type tf. */
@@ -8170,7 +8131,6 @@ tfImplicitExport(Stab stab, SymeList mods, Syme syme)
 	{
 		Syme xsyme = car(isymes);
 
-#if AXL_EDIT_1_1_13_05
 		if (symeId(xsyme) != sym) continue;
 		if (!tformEqualMod(mods, symeType(xsyme), tf)) continue;
 
@@ -8178,11 +8138,6 @@ tfImplicitExport(Stab stab, SymeList mods, Syme syme)
 		syme = stabDefExport(stab, sym, tf, (Doc)NULL);
 #endif
 		return syme; /* not xsyme ... */
-#else
-		if (symeId(xsyme) == sym &&
-		    tformEqualMod(mods, symeType(xsyme), tf))
-			return syme; /* not xsyme ... */
-#endif
 	}
 
 

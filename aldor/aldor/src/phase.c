@@ -340,41 +340,23 @@ phGrandTotals(Bool verboseFlag)
 /*
  * Convert Bytes to KiloBytes.
  */
-#if EDIT_1_0_n1_07
 #define BtoK(n) ((int) (((n) + 512)/1024))
-#else
-#define BtoK(n) ((int) (((n) + 512)/1024))
-#endif
 
 /*
  * Conversion to whole and tenth seconds.  t/100 =  wholeSec(t) + tenthSec(t)
  */
-#if EDIT_1_0_n1_07
 #define wholeSec(ms)	((int) ( (ms) / 1000))
 #define tenthSec(ms)	((int) (((ms) % 1000) / 100))
-#else
-#define wholeSec(ms)	( (ms) / 1000)
-#define tenthSec(ms)	(((ms) % 1000) / 100)
-#endif
 
 local void
 phPrintTime(Millisec time)
 {
-#if EDIT_1_0_n1_07
 	fprintf(osStdout, " Time%5d.%.1d s\n",
-#else
-	fprintf(osStdout, " Time%5ld.%.1ld s\n",
-#endif
 		wholeSec(time), tenthSec(time));
 }
 
-#if EDIT_1_0_n1_07
 #define PerCent(n,d)	((int) (((n)* 100 + (d)/2)/(d)))
 #define PerThou(n,d)	((int) (((n)*1000 + (d)/2)/(d)))
-#else
-#define PerCent(n,d)	(((n)* 100 + (d)/2)/(d))
-#define PerThou(n,d)	(((n)*1000 + (d)/2)/(d))
-#endif
 
 local void
 phPrintPercent(Length xi, Length xtot)
@@ -416,11 +398,7 @@ phPrintPhPercentages(
 	fprintf(osStdout, "\n");
 
 	/*** Time stats ***/
-#if EDIT_1_0_n1_07
 	fprintf(osStdout, " Time%5d.%.1d s",
-#else
-	fprintf(osStdout, " Time%5ld.%.1ld s",
-#endif
 		wholeSec(allCPU), tenthSec(allCPU));
 	for (i = 0; i < PH_LIMIT; i++)
 		phPrintPercent((Length)phInfo[i].time, (Length)allCPU);
@@ -453,19 +431,11 @@ phPrintLibStats(LibStats stats)
 	int	i;
 
 	if (stats) {
-#if EDIT_1_0_n1_07
 		fprintf(osStdout, " Lib%8d bytes, ", (int) stats->libSize);
-#else
-		fprintf(osStdout, " Lib%8d bytes, ", stats->libSize);
-#endif
 		for (i = LIB_NAME_START; i < LIB_NAME_LIMIT; i++)
 			if (stats->sectSize[i] != 0) {
 				fprintf(osStdout, " %d%s",
-#if EDIT_1_0_n1_07
 					(int) stats->sectSize[i],
-#else
-					stats->sectSize[i],
-#endif
 					libSectInfo(i).abbrev);
 			}
 		fprintf(osStdout, "\n");
@@ -478,11 +448,7 @@ phPrintSourceSummary(Length lines, Millisec time)
 	if (lines != 0 && time != 0) {
 		Length lpm = (lines * 60 * 1000) / time;
 		fprintf(osStdout, " Source%5d lines,  %d lines per minute\n",
-#if EDIT_1_0_n1_07
 			(int) lines, (int) lpm);
-#else
-			lines,lpm);
-#endif
 	}
 }
 
@@ -492,11 +458,7 @@ phPrintStoreSummary(Length pool, Length alloc, Length free, Length gc)
 	fprintf(osStdout, " Store%6d K pool", BtoK(pool));
 	if (alloc != 0) {
 		fprintf(osStdout,
-#if EDIT_1_0_n1_07
 			", %dK alloc - %dK free - %dK gc = %dK final",
-#else
-			", %dK alloc - %dK free - %dK gc = %ldK final",
-#endif
 			BtoK(alloc), BtoK(free), BtoK(gc),
 			BtoK((signed long) (alloc - free - gc)));
 	}

@@ -81,11 +81,7 @@ dnfAndCopy(DNF_And xx)
 	int	i;
 	DNF_And yy;
 
-#if EDIT_1_0_n1_07
 	dnfDEBUG(fprintf(dbOut, ">dnfAndCopy: %p[%d]\n", xx, (int) xx->argc));
-#else
-	dnfDEBUG(fprintf(dbOut, ">dnfAndCopy: %p[%d]\n", xx, xx->argc));
-#endif
 
 	yy = dnfAndNew(xx->argc);
 	for (i = 0; i < xx->argc; i += 1)
@@ -97,11 +93,7 @@ dnfAndCopy(DNF_And xx)
 local void
 dnfAndFree(DNF_And xx)
 {
-#if EDIT_1_0_n1_07
 	dnfDEBUG(fprintf(dbOut, ">dnfAndFree: %p[%d]\n", xx, (int) xx->argc));
-#else
-	dnfDEBUG(fprintf(dbOut, ">dnfAndFree: %p[%d]\n", xx, xx->argc));
-#endif
 	stoFree((Pointer) xx);
 }
 

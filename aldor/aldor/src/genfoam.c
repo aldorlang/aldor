@@ -1324,13 +1324,8 @@ genRestrict(AbSyn absyn)
 	AbSyn	expr = absyn->abRestrictTo.expr;
 
 	if (abTag(expr) == AB_Add) {
-#if EDIT_1_0_n1_06
 		return gen0AddBody0(expr, abStab(expr),
 				    absyn->abRestrictTo.type);
-#else
-		return gen0AddBody0(expr->abAdd.base, expr->abAdd.capsule, 
-				    abStab(expr), absyn->abRestrictTo.type);
-#endif
 	}
 	else
 		return genFoamVal(expr);
@@ -3206,17 +3201,12 @@ AInt
 gen0CSigFormatNumber(TForm tf)
 {
 	Foam		ddecl;
-#ifdef AXL_EDIT_1_1_13_27
 	Length		i, argc, retc;
-#else
-	Length		i, argc;
-#endif
 	char		buffer[120];
 
 	assert (tfIsMap(tf));
 	argc = tfMapArgc(tf);
 
-#ifdef AXL_EDIT_1_1_13_27
 	/* Generate the format. */
 	retc = tfMapRetc(tf);
 	if (retc == 1) retc = 0; /* Only want retc for multi-valued imports */
@@ -3240,11 +3230,7 @@ gen0CSigFormatNumber(TForm tf)
 
 
 		/* Create a suitable declaration */
-#if EDIT_1_0_n1_07
 		(void)sprintf(buffer, "P%d", (int) i);
-#else
-		(void)sprintf(buffer, "P%d", i);
-#endif
 		str = strCopy(buffer);
 		ddecl->foamDDecl.argv[i] = foamNewDecl(type, str, fmt);
 	}
@@ -3254,40 +3240,10 @@ gen0CSigFormatNumber(TForm tf)
 		char *str;
 		FoamTag rtype = FOAM_Ptr; /* Always a pointer */
 		AInt fmt = emptyFormatSlot;
-#if EDIT_1_0_n1_07
 		(void)sprintf(buffer, "R%d", (int) i);
-#else
-		(void)sprintf(buffer, "R%d", i);
-#endif
 		str = strCopy(buffer);
 		ddecl->foamDDecl.argv[argc + i] = foamNewDecl(rtype, str, fmt);
 	}
-#else
-	/* Generate the format */
-	ddecl = foamNewEmpty(FOAM_DDecl, argc + 2); /* Include return type */
-	ddecl->foamDDecl.usage = FOAM_DDecl_CSig;
-
-	for (i = 0; i < argc + 1; i++) {
-		AInt	fmt;
-		TForm	tfi;
-		FoamTag	type;
-
-		/* Generate a decl for the parameter or return type? */
-		tfi = (i == argc) ? tfMapRet(tf) : tfMapArgN(tf, i);
-
-
-		/* Skip any declaration */
-		if (tfIsDeclare(tfi)) tfi = tfDeclareType(tfi);
-
-
-		/* Get the foam type */
-		type = gen0Type(tfi, &fmt);
-
-
-		/* Create a suitable declaration */
-		ddecl->foamDDecl.argv[i] = foamNewDecl(type, strCopy(""), fmt);
-	}
-#endif
 
 	return gen0AddRealFormat(ddecl);
 }
@@ -3304,17 +3260,12 @@ AInt
 gen0CPackedSigFormatNumber(TForm tf)
 {
 	Foam		ddecl;
-#ifdef AXL_EDIT_1_1_13_27
 	Length		i, argc, retc;
-#else
-	Length		i, argc;
-#endif
 	char		buffer[120];
 
 	assert (tfIsPackedMap(tf));
 	argc = tfMapArgc(tf);
 
-#ifdef AXL_EDIT_1_1_13_27
 	/* Generate the format. */
 	retc = tfMapRetc(tf);
 	if (retc == 1) retc = 0; /* Only want retc for multi-valued imports */
@@ -3340,11 +3291,7 @@ gen0CPackedSigFormatNumber(TForm tf)
 
 
 		/* Create a suitable declaration */
-#if EDIT_1_0_n1_07
 		(void)sprintf(buffer, "P%d", (int) i);
-#else
-		(void)sprintf(buffer, "P%d", i);
-#endif
 		str = strCopy(buffer);
 		ddecl->foamDDecl.argv[i] = foamNewDecl(type, str, fmt);
 	}
@@ -3354,42 +3301,10 @@ gen0CPackedSigFormatNumber(TForm tf)
 		char *str;
 		FoamTag rtype = FOAM_Ptr; /* Always a pointer */
 		AInt fmt = emptyFormatSlot;
-#if EDIT_1_0_n1_07
 		(void)sprintf(buffer, "R%d", (int) i);
-#else
-		(void)sprintf(buffer, "R%d", i);
-#endif
 		str = strCopy(buffer);
 		ddecl->foamDDecl.argv[argc + i] = foamNewDecl(rtype, str, fmt);
 	}
-#else
-	/* Generate the format */
-	ddecl = foamNewEmpty(FOAM_DDecl, argc + 2); /* Include return type */
-	ddecl->foamDDecl.usage = FOAM_DDecl_CSig;
-
-	for (i = 0; i < argc + 1; i++) {
-		AInt	fmt;
-		TForm	tfi;
-		FoamTag	type;
-
-		/* Generate a decl for the parameter or return type? */
-		tfi = (i == argc) ? tfMapRet(tf) : tfMapArgN(tf, i);
-
-
-		/* Skip any declaration */
-		if (tfIsDeclare(tfi)) tfi = tfDeclareType(tfi);
-
-/*		printf("BDS: Getting Raw Type in gen0CPackedSigFormatNumber\n"); */
-		tfi = tfRawType(tfi);
-
-		/* Get the foam type */
-		type = gen0Type(tfi, &fmt);
-
-
-		/* Create a suitable declaration */
-		ddecl->foamDDecl.argv[i] = foamNewDecl(type, strCopy(""), fmt);
-	}
-#endif
 
 	return gen0AddRealFormat(ddecl);
 }
@@ -3933,7 +3848,6 @@ gen0MultiAssign(FoamTag set, AbSyn lhs, Foam rhsFoam)
 				    foamCopy(temps->foamValues.argv[i]),
 				    rhsFoam->foamValues.argv[i]), lhs);
 	}
-#if AXL_EDIT_1_1_13_33
 	/* Copy the temporary results into the targets */
 	for(i=0; i < argc; i++) {
 		AbSyn	lhsi = abArgv(lhs)[i];
@@ -3955,14 +3869,6 @@ gen0MultiAssign(FoamTag set, AbSyn lhs, Foam rhsFoam)
 
 		/* FIXME: deal with domains defs here (see gen0Define) */
 	}
-#else
-	for(i=0; i< argc; i++) {
-		AbSyn	lhsi = abArgv(lhs)[i];
-
-		gen0AddStmt(foamNew(set, 2, genId(abDefineeId(lhsi)),
-				    foamCopy(temps->foamValues.argv[i])), lhs);
-	}
-#endif
 	if (!gen0ValueMode) {
 		for(i = 0; i < argc; i++)
 			gen0FreeTemp(temps->foamValues.argv[i]);
@@ -4144,7 +4050,6 @@ gen0Define(AbSyn absyn)
         if (gen0IsDomainInit(rhsFoam)) {
                 gen0AddInit(def);
 		res = NULL;
-#if AXL_EDIT_1_1_12p6_24
 		/* Stamp the domain with its hash code (if appropriate) */
 		if (symeHashNum(syme) && (foamTag(rhsFoam) == FOAM_Clos)) {
 			AInt	hash = symeHashNum(syme);
@@ -4153,7 +4058,6 @@ gen0Define(AbSyn absyn)
 			/* Don't use gen0AddStmt() ... */
 			gen0AddInit(gen0RtSetProgHash(dom, hash));
 		}
-#endif
 	}
 	else 
 		res = gen0SetValue(def, absyn);
@@ -4196,13 +4100,7 @@ gen0DefineRhs(AbSyn id, AbSyn type, AbSyn rhs)
 		}
 		else {
 			oldex = gen0ProgPushExporter(id);
-#if EDIT_1_0_n1_06
 			rhsFoam = gen0AddBody0(rhs, stab, type);
-#else
-			rhsFoam = gen0AddBody0(rhs->abAdd.base,
-					       rhs->abAdd.capsule,
-					       stab, type);
-#endif
 			gen0ProgPopExporter(oldex);
 		}
 	}
@@ -4273,7 +4171,6 @@ gen0Extend(AbSyn absyn)
 		if (gen0IsDomainInit(val)) {
 			gen0AddInit(def);
 			result = NULL;
-#if AXL_EDIT_1_1_12p6_25
 			/* Stamp the extension with its hash code */
 			if (symeHashNum(extension) &&
 				(foamTag(val) == FOAM_Clos)) {
@@ -4282,7 +4179,6 @@ gen0Extend(AbSyn absyn)
 
 				gen0AddInit(gen0RtSetProgHash(ext, hash));
 			}
-#endif
 		}
 		else
 			result = gen0SetValue(def, absyn);
@@ -4317,11 +4213,7 @@ gen0MakeExtendLambda(Syme syme, TForm tf)
 	TForm		tfret;
 	Stab		stab;
 	RTCacheInfo	cache;
-#if AXL_EDIT_1_1_12p6_25
 	int		i;
-#else
-	int		hashCode, i;
-#endif
 	
 	assert(tfIsMap(tf));
 
@@ -4376,12 +4268,6 @@ gen0MakeExtendLambda(Syme syme, TForm tf)
 	else
 		gen0AddStmt(cache->init, cache->ab);
 	gen0CacheKill(cache);
-#if AXL_EDIT_1_1_12p6_25
-#else
-	hashCode = symeHashNum(syme);
-	if (hashCode)
-		gen0AddStmt(gen0RtSetProgHash(foamCopy(clos), hashCode), NULL);
-#endif
 
 	return clos;
 }
@@ -5111,11 +4997,7 @@ gen0Lambda(AbSyn absyn, Syme syme, AbSyn defaults)
 		 *
 		 * See bugs 1072 and 892 for more details.
 		 */
-#if AXL_EDIT_1_1_12p6_17
 		val = gen0Lambda(fbody, (Syme)NULL, defaults);
-#else
-		val = gen0Lambda(fbody, syme, defaults);
-#endif
 		assert(foamTag(val) != FOAM_Nil);
 	}
 
@@ -5125,13 +5007,7 @@ gen0Lambda(AbSyn absyn, Syme syme, AbSyn defaults)
 			genFoamStmt(fbody->abAdd.capsule);
 		}
 		else {
-#if EDIT_1_0_n1_06
 			val = gen0AddBody0(fbody, abStab(fbody), defaults);
-#else
-			val = gen0AddBody0(fbody->abAdd.base,
-					   fbody->abAdd.capsule,
-					   abStab(fbody), defaults);
-#endif
 			assert(foamTag(val) != FOAM_Nil);
 		}
 	}
@@ -5214,15 +5090,9 @@ gen0Lambda(AbSyn absyn, Syme syme, AbSyn defaults)
 	
 	isconst = gen0AbSynHasConstHash(fbody);
 	if (syme && isconst) {
-#if AXL_EDIT_1_1_12p6_24
 		AInt hashCode = strHash(symeString(syme));
 		symeSetHashNum(syme, hashCode);
 		/* DO NOT use gen0RtSetProgHash() here */
-#else
-		AInt hashCode = strHash(symeString(syme));
-		symeSetHashNum(syme, hashCode);
-		gen0AddStmt(gen0RtSetProgHash(foamCopy(clos), hashCode), NULL);
-#endif
 	}
 
 	/*
@@ -5381,9 +5251,7 @@ gen0Type(TForm tf, AInt *pfmt)
 	Bool	done = false;
 	AInt	fmt = emptyFormatSlot;
 
-#if EDIT_1_0_n1_07
 	tag = FOAM_Word; /* Default */
-#endif
 
 	for (pass = 0;(pass < 2) && !done; pass++)
 	{
@@ -5457,10 +5325,6 @@ gen0Type(TForm tf, AInt *pfmt)
 #endif
 	}
 
-#if EDIT_1_0_n1_07
-#else
-	if (!done) tag = FOAM_Word;
-#endif
 	if (pfmt) *pfmt = fmt;
 
 	return tag;
@@ -5864,10 +5728,8 @@ gen0VarsForeign(Syme syme)
 
 	if (type == FOAM_Rec)	
 		fmtSlot = gen0RecordFormatNumber(tf);
-#if AXL_EDIT_1_1_12p6_22
 	else if (tfIsMap(tf) && (forg->protocol == FOAM_Proto_C))
 	        fmtSlot = gen0CSigFormatNumber(tf);
-#endif
 	else if (forg->protocol == FOAM_Proto_Fortran)
 	        fmtSlot = gen0FortranSigFormatNumber(tf, true);
 	else if (tfIsPackedMap(tf))
@@ -6609,11 +6471,9 @@ gen0TempValueMode(TForm tf)
 		AInt fmt;
 		FoamTag type;
 		type = gen0Type(tf, &fmt);
-#if AXL_EDIT_1_1_12p6_23
 		if (type == FOAM_Arr) {
 		  return gen0TempLocal0(FOAM_Ptr,emptyFormatSlot) ;
 		    }
-#endif
 		return gen0TempLocal0(type, fmt);
 	}
 	vals = foamNewEmpty(FOAM_Values, tfMultiArgc(tf));

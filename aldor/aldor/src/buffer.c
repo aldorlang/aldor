@@ -194,11 +194,7 @@ bufPrint(FILE *fout, Buffer b)
 {
 	int	cc;
 
-#if EDIT_1_0_n1_07
 	cc  = fprintf(fout, "[%d/%d]", (int) b->pos, (int) b->argc);
-#else
-	cc  = fprintf(fout, "[%d/%d]", b->pos, b->argc);
-#endif
 	cc += strPrint(fout, (String) b->argv, '"', '"', '\\', "\\%#x");
 
 	return cc;

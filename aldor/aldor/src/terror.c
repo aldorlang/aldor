@@ -1375,17 +1375,10 @@ bputBadArgType(TRejectInfo trInfo, Buffer obuf, AbSyn ab, Length argc,
 		tr = trCurrent(trInfo);
 		abArgi = argf(ab, trArgN(tr));
 
-#if AXL_EDIT_1_1_12p6_20
 		opType = trType(tr);
 		tf = tfMapArg(opType);
 
 		bputTReject(obuf, tr, fmtOp);
-#else
-		bputTReject(obuf, tr, fmtOp);
-
-		opType = trType(tr);
-		tf = tfMapArg(opType);
-#endif
 
 		argc = tfMapHasDefaults(opType) ? tfMapArgc(opType) : argc;
 		parType = tfAsMultiArgN(tf, argc, trParN(tr));
@@ -1565,11 +1558,9 @@ bputBadArgType0(TRejectInfo trInfo, Stab stab, Buffer obuf, AbSyn ab, AbSyn op,
 		argc0   = tfMapHasDefaults(opType) ? tfMapArgc(opType) : argc;
 		argType = tfMapArg(opType);
 
-#if AXL_EDIT_1_1_12p6_20
 		/* We might be given a tfUnknown (bug 1210) */
 		defType = tfDefineeType(argType);
 		if (defType == tfUnknown) continue;
-#endif
 		sigma = absNew(stab);
 		for (j = 0; j < trArgN(tr); j += 1) {
 			Syme	syme;
@@ -2469,11 +2460,7 @@ terrorAuditPoss1(Bool verbose, AbSyn absyn, Table counts)
 			/*
 			 * Stifle further messages.
 			 */
-#if EDIT_1_0_n1_07
 			tblSetElt(counts, tposs, ptrFrLong((long) tposs->refc));
-#else
-			tblSetElt(counts, tposs, ptrFrLong(tposs->refc));
-#endif
 		}
 	}
 

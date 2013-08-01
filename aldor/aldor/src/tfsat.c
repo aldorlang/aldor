@@ -528,7 +528,6 @@ tfSatSubList(AbSyn ab)
  *
  *****************************************************************************/
 
-#if AXL_EDIT_1_1_13_32
 /*
  * Designed to pick up on x@T when typeOf(x) != T
  * but there exists an embedding typeOf(x) -> T. See
@@ -549,7 +548,6 @@ void tfCheckBug1318(AbSyn abi)
 		}
 	}
 }
-#endif
 
 SatMask
 tfSatMap(SatMask mask, Stab stab, TForm S, TForm T,
@@ -668,10 +666,8 @@ tfSatAsMulti(SatMask mask, AbSub sigma, TForm S, TForm TScope,
 			 */
 			tiTopFns()->tiTopDown(absStab(sigma), abi, tfi);
 
-#if AXL_EDIT_1_1_13_32
 			/* Gross hack */
 			tfCheckBug1318(abi);
-#endif
 
 			if (abUse(abi) != AB_Use_Type)
 				abAddTContext(abi, tfSatAbEmbed(maski));

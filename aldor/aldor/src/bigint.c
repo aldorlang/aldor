@@ -278,11 +278,7 @@ bintPrint16(FILE *fout, BInt b)
 
 	for (i = Placec(b) - 1; i >= 0; i--)
 		cc += fprintf(fout, "%0*x.",
-#if EDIT_1_0_n1_07
 			      (int) QUO_ROUND_UP(BINT_LG_RADIX,4),
-#else
-			      QUO_ROUND_UP(BINT_LG_RADIX,4),
-#endif
 			      Placev(b)[i]);
 
 	return cc;
@@ -306,11 +302,7 @@ bintPrint2(FILE *fout, BInt b)
 	if (IsImmed(b))
 		cc += fprintf(fout, "[0/0]");
 	else
-#if EDIT_1_0_n1_07
 		cc += fprintf(fout, "[%d/%d]", (int) Placec(b), (int) Placea(b));
-#else
-		cc += fprintf(fout, "[%d/%d]", Placec(b), Placea(b));
-#endif
 
 	n = bintLength(b);
 

@@ -1073,7 +1073,9 @@ gl0UseEnv(Foam foam)
 	}
 	
 	if (glvLexFormats == NULL) {
+#if 0
 		printf("Internal warning: Use Env called outside gl0Prog (glvLexFormats is NULL)\n");
+#endif
 		return;
 	}
 	if (glvActualLexFormats->foamDEnv.argv[level] == emptyFormatSlot

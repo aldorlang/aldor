@@ -239,11 +239,7 @@ fiDoubleHexPrintToString(f)
 FiWord
 fiDoubleHexPrintToString(FiWord f) 
 {
-#if EDIT_1_0_n2_01
   sprintf(double_hex_print_string,"%.8x %.8x",*(int *)f,*((int *)f+1));
-#else
-  sprintf(double_hex_print_string,"%0.8x %0.8x",*(int *)f,*((int *)f+1));
-#endif
   return (FiWord) double_hex_print_string;
 }
 
@@ -572,7 +568,6 @@ fiIeeeSetExceptionStatus(FiWord s)
 /* ALPHA OSF CC */
 #include <float.h>
 
-#if EDIT_1_0_n1_07
 /******************************************************************************
  * Here we do a certain amount of contortion to get a clean compile.
  * 1. We include the file as though we were in an assembler environment
@@ -585,11 +580,9 @@ fiIeeeSetExceptionStatus(FiWord s)
 # define __LANGUAGE_ASSEMBLER__
 # undef __LANGUAGE_C__
 #endif
-#endif /* EDIT_1_0_n1_07 */
 
 #include <machine/fpu.h>
 
-#if EDIT_1_0_n1_07
 extern long   ieee_get_fp_control(void);
 extern void   ieee_set_fp_control(long);
 
@@ -599,7 +592,6 @@ extern void   ieee_set_fp_control(long);
 # undef __SAVE_LANGUAGE_C__
 #endif
 /******************************************************************************/
-#endif /* EDIT_1_0_n1_07 */
 
 
 
@@ -1421,7 +1413,6 @@ fiIeeeSetEnabledExceptions(FiWord s)
 }
 #else
 
-#if EDIT_1_0_n1_07
 /* Unknown platform. */
 FiWord
 fiDoubleHexPrintToString(FiWord  f)
@@ -1471,9 +1462,6 @@ fiIeeeSetEnabledExceptions(FiWord s)
 {
         return 0;
 }
-#else  /* EDIT_1_0_n1_07 */
-#error  UNKNOWN platform in foam_cfp.c (see ieeecontrol.h?)
-#endif /* EDIT_1_0_n1_07 */
 
 #endif
 

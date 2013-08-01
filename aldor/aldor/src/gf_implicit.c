@@ -798,11 +798,7 @@ gen0ImplicitArgName(Length i)
 {
 	char	num[40];
 
-#if EDIT_1_0_n1_07
 	(void)sprintf(num, "%s%d", "x", (int) i);
-#else
-	(void)sprintf(num, "%s%d", "x", i);
-#endif
 	return symIntern(num);
 }
 

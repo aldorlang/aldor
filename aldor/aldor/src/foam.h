@@ -426,11 +426,9 @@ enum foamBValTag {
 		FOAM_BVal_ListTail,
 		FOAM_BVal_ListCons,
 
-#if EDIT_1_0_n1_06
 		FOAM_BVal_NewExportTable,
 		FOAM_BVal_AddToExportTable,
 		FOAM_BVal_FreeExportTable,
-#endif
 #if EDIT_1_0_n1_AB
 		FOAM_BVal_ssaPhi,
 #endif
@@ -1282,13 +1280,8 @@ struct foam_info {
 
 };
 
-#if EDIT_1_0_n1_06
 #define FOAM_BVAL_MAX_ARGC    5
 #define FOAM_BVAL_MAX_RETC    4
-#else
-#define FOAM_BVAL_MAX_ARGC    4
-#define FOAM_BVAL_MAX_RETC    4
-#endif
 
 struct foamBVal_info {
 	FoamBValTag           	tag;

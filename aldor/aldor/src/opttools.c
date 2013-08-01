@@ -524,11 +524,7 @@ otAddVarInfoToNotLocalVar(VarInfo varInfo, Foam var)
 {
 	NotLocalVarAssocList	assocl;
 	AssociationType		ass = (AssociationType) NULL;
-#if EDIT_1_0_n1_07
 	NotLocalVarAssoc	pair = (NotLocalVarAssoc) NULL;
-#else
-	NotLocalVarAssoc	pair;
-#endif
 
 	assocl = (foamTag(var) == FOAM_Lex ?
 			 otProgInfo.lexl : otProgInfo.glol);

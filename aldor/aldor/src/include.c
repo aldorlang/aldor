@@ -237,19 +237,11 @@ inclWrite(FILE *file, SrcLineList sll)
 			if ((curfile && fnameEqual(curfile, slfile)))
 				cc += fprintf(file, "%cline %d\n",
 					      DIRECTIVE_CHAR,
-#if EDIT_1_0_n1_07
 					      (int) slline);
-#else
-					      slline);
-#endif
 			else {
 				cc += fprintf(file, "%cline %d \"%s\"\n",
 					      DIRECTIVE_CHAR,
-#if EDIT_1_0_n1_07
 					      (int) slline,
-#else
-					      slline,
-#endif
 					      fnameUnparseStatic(slfile));
 				curfile = slfile;
 			}
@@ -702,7 +694,6 @@ inclHandleLine(int lno, String fname)
 
 		fileState.lineNumber = lno - 1; /* The next line is 'lno' */
 
-#if EDIT_1_0_n2_09
 		if (fname) { 
 		  fileState.curFile = fname;
 		  /* rhx: We trust the programmer of the #line statement
@@ -722,15 +713,6 @@ inclHandleLine(int lno, String fname)
 		}
 		  sposGrowGloLineTbl(fileState.curFname, fileState.lineNumber,
 				     inclSerialLineNo);
-#else
-		if (fname) { 
-		  fileState.curFile = fname;
-		  fileState.curFname = inclFind(fname, fileState.curDir);
-		}
-		else
-		  sposGrowGloLineTbl(fileState.curFname, fileState.lineNumber,
-				     inclSerialLineNo);
-#endif
 
 
 		return listNil(SrcLine);

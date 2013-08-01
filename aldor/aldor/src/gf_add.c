@@ -30,11 +30,7 @@
 #include "strops.h"
 #include "table.h"
 
-#if EDIT_1_0_n1_06
 local Foam         gen0AddBody1           (AbSyn, Stab, AbSyn);
-#else
-local Foam         gen0AddBody1           (AbSyn, AbSyn, Stab, AbSyn);
-#endif
 local void         gen0AddImportedDomain  (TForm, Foam, AInt);
 local Foam         gen0CombineHash        (Foam hash1, Foam hash2);
 local AbSyn        gen0FindDefaults       (AbSyn with);
@@ -95,7 +91,6 @@ Bool	gfaddDebug	= false;
 #define genfExportDEBUG(s)	DEBUG_IF(genfExportDebug, s)
 #define gfaddDEBUG(s)		DEBUG_IF(gfaddDebug, s)
 
-#if EDIT_1_0_n1_06
 local void
 gen0ClashCheck(AbSyn ab)
 {
@@ -138,7 +133,6 @@ gen0ClashCheck(AbSyn ab)
 			foamCopy(seentab));
 	gen0AddStmt(stmt, ab);
 }
-#endif
 
 
 /*
@@ -149,12 +143,7 @@ Foam
 genAdd(AbSyn absyn)
 {
         foamProgSetGetter(gen0State->program);
-#if EDIT_1_0_n1_06
         return gen0AddBody0(absyn, abStab(absyn), tfExpr(gen0AbType(absyn)));
-#else
-        return gen0AddBody0(absyn->abAdd.base, absyn->abAdd.capsule,
-			    abStab(absyn), tfExpr(gen0AbType(absyn)));
-#endif
 }
 
 /*
@@ -178,16 +167,10 @@ genAdd(AbSyn absyn)
  *
  */
 
-#if EDIT_1_0_n1_06
 Foam
 gen0AddBody0(AbSyn ab, Stab stab, AbSyn defaultsAb)
 {
 	AbSyn		body = ab->abAdd.capsule;
-#else
-Foam
-gen0AddBody0(AbSyn base, AbSyn body, Stab stab, AbSyn defaultsAb)
-{
-#endif
 	AInt		index;
         Foam            foam, clos;
 	Length		argc = 1;
@@ -228,11 +211,7 @@ gen0AddBody0(AbSyn base, AbSyn body, Stab stab, AbSyn defaultsAb)
 		stmt = gen0BuiltinCCall(FOAM_Word, "domainAddHash!", "runtime",
 					2, foamNewPar(int0), rtHashCode);
                 gen0AddStmt(stmt, NULL);
-#if EDIT_1_0_n1_06
 		stmt = foamNewReturn(gen0AddBody1(ab,stab,defaultsAb));
-#else
-		stmt = foamNewReturn(gen0AddBody1(base,body,stab,defaultsAb));
-#endif
                 gen0AddStmt(stmt, NULL);
         }
 
@@ -253,19 +232,12 @@ gen0AddBody0(AbSyn base, AbSyn body, Stab stab, AbSyn defaultsAb)
         return clos;
 }
 
-#if EDIT_1_0_n1_06
 Foam
 gen0AddBody1(AbSyn ab, Stab stab, AbSyn defaultsAb)
 {
 	Scope("gen0AddBody1");
 	AbSyn		base = ab->abAdd.base;
 	AbSyn		body = ab->abAdd.capsule;
-#else
-local Foam
-gen0AddBody1(AbSyn base, AbSyn body, Stab stab, AbSyn defaultsAb)
-{
-	Scope("gen0AddBody1");
-#endif
 	ExportState	fluid(gen0ExportState);
 	SymeList	symes = listNil(Syme);
 	Foam		clos, foam;
@@ -299,10 +271,8 @@ gen0AddBody1(AbSyn base, AbSyn body, Stab stab, AbSyn defaultsAb)
         /* generate code for add body. */
         gen0DefTypeSequence(body, gen0ExportState->domExportList);
 
-#if EDIT_1_0_n1_06
 	/* Generate code to check for export clashes */
 	if (genHashcheck()) gen0ClashCheck(ab);
-#endif
 
 	gen0TypeFini();
 
@@ -442,7 +412,8 @@ gen0MakeDefaultHash()
 		hashCode = gen0SefoHashExporter(exp);
 		return gen0BuiltinCCall(FOAM_Clos, "rtConstSIntFn", 
 					"runtime", 1, hashCode);
-	} else {
+	}
+	else {
 		GenFoamState saved;
 		Foam 	     foam, clos;
 		
@@ -604,18 +575,12 @@ gen0TypeAddExportSlot(Syme syme)
 
 	/* Get the location which holds the value of the export */
 	lhs = gen0SymeInit(syme);
-#if AXL_EDIT_1_1_13_02
 	if (!lhs)
 	{
 		AbSyn	ab = (AbSyn)NULL;
 		String	etype = tfPretty(tf);
 		comsgFatal(ab, ALDOR_F_BugExportSymeNotInit, str, etype);
 	}
-#else
-	assert(lhs);
-
-	gen0SymeSetInit(syme, lhs);
-#endif
 
 
 	/*
@@ -1572,7 +1537,6 @@ gen0RtSetProgHash(Foam clos, AInt hash)
 			  foamNewSInt(hash));
 }
 
-#if AXL_EDIT_1_1_13_18
 static unsigned long gen0RtArgHashSeed = 74755L;
 static unsigned long *gen0RtArgHashMask = (unsigned long *)NULL;
 
@@ -1616,7 +1580,6 @@ gen0RtInitHashMask(void)
 	/* Generate a hash mask for each tform type */
 	for (i = 0; i < TF_LIMIT; i++) gen0RtArgHashMask[i] = gen0RtRand();
 }
-#endif
 
 local Foam
 gen0RtTypeHash(TForm tf, TForm otf)
@@ -1624,11 +1587,9 @@ gen0RtTypeHash(TForm tf, TForm otf)
         TFormList       tfl = 0, otfl = 0, l, ol;
         Foam            hash = 0;
         int             code, i;
-#if AXL_EDIT_1_1_13_18
 	int		hashPoint = -1;
 	int		hashMask = (int)TF_START;
 	Foam		twist = (Foam)NULL;
-#endif
 
 	if (genIsRuntime())
 		return foamNewSInt(int0);
@@ -1656,11 +1617,11 @@ gen0RtTypeHash(TForm tf, TForm otf)
                         tfl  = listCons(TForm)(tfMapRetN(tf, i), tfl);
                         otfl = listCons(TForm)(tfMapRetN(otf, i), otfl);
                 }
-#if AXL_EDIT_1_1_13_18
-		hashMask = (int)tfTag(otf);
-		/* Between argument types and return types */
-		hashPoint = tfMapArgc(tf);
-#endif
+		if (genNewHashCodes()) {
+			hashMask = (int)tfTag(otf);
+			/* Between argument types and return types */
+			hashPoint = tfMapArgc(tf);
+		}
                 break;
           case TF_RawRecord:
                 assert(tfTag(tf) == tfTag(otf));
@@ -1739,36 +1700,37 @@ gen0RtTypeHash(TForm tf, TForm otf)
                 hash = foamNewSInt(code);
         tfl  = listNReverse(TForm)(tfl);
         otfl = listNReverse(TForm)(otfl);
-#if AXL_EDIT_1_1_13_18
-	/* Ensure that we have hash masks */
-	if (!gen0RtArgHashMask) gen0RtInitHashMask();
+	if (genNewHashCodes()) {
+		/* Ensure that we have hash masks */
+		if (!gen0RtArgHashMask) gen0RtInitHashMask();
 
-	/* Original hash combine with a twist of lime for maps */
-        for(i = 0, l = tfl, ol = otfl; l; i++, l = cdr(l), ol = cdr(ol)) {
-		/* Extra hash code merged in at the correct moment */
-		if (i == hashPoint) {
+		/* Original hash combine with a twist of lime for maps */
+		for(i = 0, l = tfl, ol = otfl; l; i++, l = cdr(l), ol = cdr(ol)) {
+			/* Extra hash code merged in at the correct moment */
+			if (i == hashPoint) {
+				twist = foamNewSInt(gen0RtArgHashMask[hashMask]);
+				foamPure(twist) = true;
+				hash = gen0CombineHash(twist, hash);
+				foamPure(hash) = true;
+			}
+			hash = gen0CombineHash(gen0RtTypeHash(car(l), car(ol)), hash);
+			foamPure(hash) = true;
+		}
+
+		/* Add the lime if not done so already */
+		if (!twist && (hashPoint >= 0)) {
 			twist = foamNewSInt(gen0RtArgHashMask[hashMask]);
 			foamPure(twist) = true;
 			hash = gen0CombineHash(twist, hash);
 			foamPure(hash) = true;
 		}
-                hash = gen0CombineHash(gen0RtTypeHash(car(l), car(ol)), hash);
-                foamPure(hash) = true;
-        }
-
-	/* Add the lime if not done so already */
-	if (!twist && (hashPoint >= 0)) {
-		twist = foamNewSInt(gen0RtArgHashMask[hashMask]);
-		foamPure(twist) = true;
-		hash = gen0CombineHash(twist, hash);
-		foamPure(hash) = true;
 	}
-#else
-        for(l = tfl, ol = otfl; l; l = cdr(l), ol = cdr(ol)) {
-                hash = gen0CombineHash(gen0RtTypeHash(car(l), car(ol)), hash);
-                foamPure(hash) = true;
-        }
-#endif
+	else {
+		for(l = tfl, ol = otfl; l; l = cdr(l), ol = cdr(ol)) {
+			hash = gen0CombineHash(gen0RtTypeHash(car(l), car(ol)), hash);
+			foamPure(hash) = true;
+		}
+	}
 
         return hash;
 }
@@ -1792,11 +1754,9 @@ gen0RtTypeHashAsGeneral(TForm tf)
 	TFormList	tfl = listNil(TForm);
 	Foam		hash = NULL;
 	int		code, i;
-#if AXL_EDIT_1_1_13_18
 	int		hashPoint = -1;
 	int		hashMask = (int)TF_START;
 	Foam		twist = (Foam)NULL;
-#endif
 
         code = gen0StrHash(tformSyntax(tfTag(tf)));
 
@@ -1810,11 +1770,11 @@ gen0RtTypeHashAsGeneral(TForm tf)
                         tfl  = listCons(TForm)(tfMapArgN(tf, i), tfl);
                 for(i = 0; i < tfMapRetc(tf); i += 1)
                         tfl  = listCons(TForm)(tfMapRetN(tf, i), tfl);
-#if AXL_EDIT_1_1_13_18
-		hashMask = (int)tfTag(tf);
-		/* Between argument types and return types */
-		hashPoint = tfMapArgc(tf);
-#endif
+		if (genNewHashCodes()) {
+			hashMask = (int)tfTag(tf);
+			/* Between argument types and return types */
+			hashPoint = tfMapArgc(tf);
+		}
                 break;
 	case TF_RawRecord:
 		for (i = 0; i < tfRawRecordArgc(tf); i += 1) {
@@ -1865,37 +1825,38 @@ gen0RtTypeHashAsGeneral(TForm tf)
 	tfl = listNReverse(TForm)(tfl);
 	if (hash == NULL)
 		hash = foamNewSInt(code);
-#if AXL_EDIT_1_1_13_18
-	/* Ensure that we have hash masks */
-	if (!gen0RtArgHashMask) gen0RtInitHashMask();
+	if (genNewHashCodes()) {
+		/* Ensure that we have hash masks */
+		if (!gen0RtArgHashMask) gen0RtInitHashMask();
 
-	/* Original hash combine plus a twist of lime */
-        for(i = 0; tfl; i++, tfl = cdr(tfl)) {
-		/* Extra hash code merged in at the correct moment */
-		if (i == hashPoint) {
-			twist = foamNewSInt(gen0RtArgHashMask[hashMask]);
-                	foamPure(twist) = true;
-                	hash = gen0CombineHash(twist, hash);
-                	foamPure(hash) = true;
+		/* Original hash combine plus a twist of lime */
+		for(i = 0; tfl; i++, tfl = cdr(tfl)) {
+			/* Extra hash code merged in at the correct moment */
+			if (i == hashPoint) {
+				twist = foamNewSInt(gen0RtArgHashMask[hashMask]);
+				foamPure(twist) = true;
+				hash = gen0CombineHash(twist, hash);
+				foamPure(hash) = true;
+			}
+			hash = gen0CombineHash(gen0RtTypeHash(car(tfl),car(tfl)),hash);
+			foamPure(hash) = true;
 		}
-		hash = gen0CombineHash(gen0RtTypeHash(car(tfl),car(tfl)),hash);
-		foamPure(hash) = true;
-        }
 
-	/* Add the lime if not done so already */
-	if (!twist && (hashPoint >= 0)) {
-		twist = foamNewSInt(gen0RtArgHashMask[hashMask]);
-               	foamPure(twist) = true;
-               	hash = gen0CombineHash(twist, hash);
-               	foamPure(hash) = true;
+		/* Add the lime if not done so already */
+		if (!twist && (hashPoint >= 0)) {
+			twist = foamNewSInt(gen0RtArgHashMask[hashMask]);
+			foamPure(twist) = true;
+			hash = gen0CombineHash(twist, hash);
+			foamPure(hash) = true;
+		}
 	}
-#else
-	while (tfl) {
-		hash = gen0CombineHash(gen0RtTypeHash(car(tfl),car(tfl)),hash);
-		foamPure(hash) = true;
-		tfl = cdr(tfl);
+	else {
+		while (tfl) {
+			hash = gen0CombineHash(gen0RtTypeHash(car(tfl),car(tfl)),hash);
+			foamPure(hash) = true;
+			tfl = cdr(tfl);
+		}
 	}
-#endif
 	return hash;
 }
 
@@ -1931,9 +1892,7 @@ gen0RtSefoHashExporter(Sefo sf)
 	  case AB_LitString:
 	  default:
 		comsgFatal((AbSyn)sf, ALDOR_F_Bug, "unexpected exporter");
-#if EDIT_1_0_n1_07
 		NotReached(hash = 0);
-#endif
 	}
 
 	return hash;
@@ -1958,7 +1917,6 @@ gen0RtSefoIsSpecialOp(AbSyn ab)
 		sym == ssymEnum;
 }
 
-#if AXL_EDIT_1_1_13_18
 /* Convert special operation into a tform tag */
 local int
 gen0RtSymSpecialTag(Symbol sym)
@@ -1975,7 +1933,6 @@ gen0RtSymSpecialTag(Symbol sym)
 	/* All other specials are ignored */
 	return (int)TF_START;
 }
-#endif
 
 /*
  * Generate this code:
@@ -2004,33 +1961,35 @@ gen0RtSefoHashSpecialExporter(Sefo sf, Sefo osf)
 	Foam 	Tn = gen0TempLocal(FOAM_SInt);
 	Foam 	Ti = gen0TempLocal(FOAM_SInt);
 	Foam 	Th = gen0TempLocal(FOAM_SInt);
-
-#if AXL_EDIT_1_1_13_18
 	int	i;
-	int	hashPoint = 0;
-	AbSyn	op = abApplyOp(sf);
-	Symbol	opsym = op->abId.sym;
-	Bool	inEnum = (opsym == ssymEnum);
-	int	hashMask = gen0RtSymSpecialTag(opsym);
-	Foam	twist = (Foam)NULL;
-
-	assert(abTag(sf) == AB_Apply && abTag(abApplyOp(sf)) == AB_Id);
-	/* I don't think we ought to ever see this ... */
-	if ((opsym == ssymArrow) || (opsym == ssymPackedArrow))
-		hashPoint = 1; /* Only insert hash mask for maps */
-
-	/* Ensure that we have hash masks */
-	if (!gen0RtArgHashMask) gen0RtInitHashMask();
-#else
 	AbSyn	op;
-	int	i;
 	Bool	inEnum;
 
-	assert(abTag(sf) == AB_Apply && abTag(abApplyOp(sf)) == AB_Id);
+	int	hashPoint = 0;
+	int	hashMask;
+	Symbol	opsym;
+	Foam	twist = (Foam)NULL;
 
-	op = abApplyOp(sf);
-	inEnum = (op->abId.sym == ssymEnum);
-#endif
+	if (genNewHashCodes()) {
+		op = abApplyOp(sf);
+		opsym = op->abId.sym;
+		inEnum = (opsym == ssymEnum);
+		hashMask = gen0RtSymSpecialTag(opsym);
+
+		assert(abTag(sf) == AB_Apply && abTag(abApplyOp(sf)) == AB_Id);
+		/* I don't think we ought to ever see this ... */
+		if ((opsym == ssymArrow) || (opsym == ssymPackedArrow))
+			hashPoint = 1; /* Only insert hash mask for maps */
+
+		/* Ensure that we have hash masks */
+		if (!gen0RtArgHashMask) gen0RtInitHashMask();
+	}
+	else {
+		assert(abTag(sf) == AB_Apply && abTag(abApplyOp(sf)) == AB_Id);
+
+		op = abApplyOp(sf);
+		inEnum = (op->abId.sym == ssymEnum);
+	}
 
 	GSTAT(GSET(Th,foamNewSInt(gen0StrHash(symString(op->abId.sym)))));
 
@@ -2049,13 +2008,13 @@ gen0RtSefoHashSpecialExporter(Sefo sf, Sefo osf)
 		GSTAT(foamNewLabel(TS));
 		GSTAT(foamNewIf(foamNew(FOAM_BCall, 3, FOAM_BVal_SIntEQ, 
 					foamCopy(Ti), foamCopy(Tn)), TE));
-#if AXL_EDIT_1_1_13_18
-		/* Extra hash code merged in at the correct moment */
-		if (hashPoint && (i == hashPoint)) {
-			twist = foamNewSInt(gen0RtArgHashMask[hashMask]);
-			GSTAT(GSET(Th, gen0CombineHash(twist, foamCopy(Th))));
+		if (genNewHashCodes()) {
+			/* Extra hash code merged in at the correct moment */
+			if (hashPoint && (i == hashPoint)) {
+				twist = foamNewSInt(gen0RtArgHashMask[hashMask]);
+				GSTAT(GSET(Th, gen0CombineHash(twist, foamCopy(Th))));
+			}
 		}
-#endif
 		val = foamNewAElt(FOAM_Word,
 				  foamCopy(Ti),
 				  gen0NewTupleValsRef(foamCopy(Tt)));
@@ -2071,13 +2030,13 @@ gen0RtSefoHashSpecialExporter(Sefo sf, Sefo osf)
 		GSTAT(foamNewLabel(TE));
 	}
 
-#if AXL_EDIT_1_1_13_18
-	/* Add a dash of lime if not done so already */
-	if (!twist && hashPoint) {
-		twist = foamNewSInt(gen0RtArgHashMask[hashMask]);
-		GSTAT(GSET(Th, gen0CombineHash(twist, foamCopy(Th))));
+	if (genNewHashCodes()) {
+		/* Add a dash of lime if not done so already */
+		if (!twist && hashPoint) {
+			twist = foamNewSInt(gen0RtArgHashMask[hashMask]);
+			GSTAT(GSET(Th, gen0CombineHash(twist, foamCopy(Th))));
+		}
 	}
-#endif
 
 	foamFree(Tt);
 	foamFree(Ti);
@@ -2127,9 +2086,7 @@ gen0RtSefoHash(Sefo sf, Sefo osf)
 	default:
 		msg = "gen0RtSefoHash got wierd type";
 		comsgFatal((AbSyn)sf, ALDOR_F_Bug, msg);
-#if EDIT_1_0_n1_07
 		NotReached(hash = 0);
-#endif
 	}
 
 	return hash;
@@ -2334,7 +2291,6 @@ gen0RtSefoHashStdApply(Sefo sf, Sefo osf)
 	return hash;
 }
 
-#if AXL_EDIT_1_1_13_18
 local Foam
 gen0RtSefoHashSpecialMap(Sefo sf)
 {
@@ -2402,13 +2358,28 @@ gen0RtSefoHashSpecialApply(Sefo sf)
 	int 	 argc = abApplyArgc(sf);
 	int 	 i;
 
-	if (abIsAnyMap(sf)) return gen0RtSefoHashSpecialMap(sf);
+	if (genNewHashCodes()) {
+		if (abIsAnyMap(sf))
+			return gen0RtSefoHashSpecialMap(sf);
 
-	for (i = 0; i < argc; i += 1)
-		sfl = listCons(Sefo)(abApplyArg(sf, i), sfl);
-	sfl = listNReverse(Sefo)(sfl);
+		for (i = 0; i < argc; i += 1)
+			sfl = listCons(Sefo)(abApplyArg(sf, i), sfl);
+		sfl = listNReverse(Sefo)(sfl);
 
-	if (sym == ssymEnum) return gen0RtSefoHashEnum(sf, sfl);
+		if (sym == ssymEnum)
+			return gen0RtSefoHashEnum(sf, sfl);
+	}
+	else {
+		for (i = 0; i < argc; i += 1)
+			sfl = listCons(Sefo)(abApplyArg(sf, i), sfl);
+		sfl = listNReverse(Sefo)(sfl);
+
+		if (sym == ssymEnum)
+			return gen0RtSefoHashEnum(sf, sfl);
+
+		if (abIsAnyMap(sf))
+			sfl = gen0RtSefoListUnComma(sfl);
+	}
 
 	gen0RtUseDeclares(sfl);
 
@@ -2417,34 +2388,6 @@ gen0RtSefoHashSpecialApply(Sefo sf)
 	listFree(Sefo)(sfl);
 	return hash;
 }
-#else
-local Foam
-gen0RtSefoHashSpecialApply(Sefo sf)
-{
-	SefoList sfl = listNil(Sefo);
-	AbSyn	 op  = abApplyOp(sf);
-	Symbol	 sym = abIdSym(op);
-	Foam	 hash;
-	int 	 argc = abApplyArgc(sf);
-	int 	 i;
-
-	for (i = 0; i < argc; i += 1)
-		sfl = listCons(Sefo)(abApplyArg(sf, i), sfl);
-	sfl = listNReverse(Sefo)(sfl);
-
-	if (sym == ssymEnum)
-		return gen0RtSefoHashEnum(sf, sfl);
-
-	if (abIsAnyMap(sf))
-		sfl = gen0RtSefoListUnComma(sfl);
-	gen0RtUseDeclares(sfl);
-
-	hash = foamNewSInt(gen0StrHash(symString(sym)));
-	hash = gen0RtSefoHashList(sfl, listNil(Sefo), hash);
-	listFree(Sefo)(sfl);
-	return hash;
-}
-#endif
 
 local Foam
 gen0RtSefoHashEnum(Sefo sf, SefoList sfl)
@@ -3155,9 +3098,7 @@ gen0NameType(AbSyn ab, Bool atExporter, Bool isEnum)
 	  default:
 		msg = "gen0NameType found unhandled exporter type";
 		comsgFatal(ab, ALDOR_F_Bug, msg);
-#if EDIT_1_0_n1_07
 		NotReached(foam = 0);
-#endif
 #if 0
 		printf("unhandled exporter type");
 		abWrSExpr(dbOut, ab,int0);
@@ -3379,10 +3320,6 @@ gen0StringsFini()
 local void
 gen0StrRegister(int hash, String s)
 {
-#if EDIT_1_0_n1_07
 	tblSetElt(gen0StringTable, (TblKey) (long) hash, (TblElt) s);
-#else
-	tblSetElt(gen0StringTable, (TblKey) hash, (TblElt) s);
-#endif
 }
 

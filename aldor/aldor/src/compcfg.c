@@ -26,17 +26,10 @@ local FILE *	     compCfgFindFile();
 local void 	     compCfgSetPath(String root);
 local ConfigItemList compCfgLoad(FILE *, String);
 
-#if EDIT_1_0_n2_07
 static char compCfgDefaultPath[] = ".%c%s/include%c%s/share/include";
 static char compCfgDefaultFile[] = "aldor.conf";
 static char compCfgOldDefaultFile[] = "axiomxl.conf";
 static char compCfgDefaultRoot[] = "/usr/local/lib/aldor";
-#else
-static char *compCfgDefaultPath = ".%c%s/include%c%s/share/include";
-static char *compCfgDefaultFile = "aldor.conf";
-static char *compCfgOldDefaultFile = "axiomxl.conf";
-static char *compCfgDefaultRoot = "/usr/local/lib/aldor";
-#endif
 
 String 		compCfgFileName;
 String 		compCfgSysName = CONFIGSYS;

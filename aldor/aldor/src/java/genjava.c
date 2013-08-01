@@ -3864,11 +3864,9 @@ struct gjBVal_info gjBValInfoTable[] = {
  {FOAM_BVal_ListHead,      GJB_FCall,  0,"fiListHead",      "fiLIST_HEAD"},
  {FOAM_BVal_ListTail,      GJB_FCall,  0,"fiListTail",      "fiLIST_TAIL"},
  {FOAM_BVal_ListCons,      GJB_FCall,  0,"fiListCons",      0},
-#if EDIT_1_0_n1_06
  {FOAM_BVal_NewExportTable, GJB_FCall, 0, "fiNewExportTable", 0},
  {FOAM_BVal_AddToExportTable, GJB_FCall, 0, "fiAddToExportTable", 0},
  {FOAM_BVal_FreeExportTable, GJB_FCall, 0, "fiFreeExportTable", 0},
-#endif
 #if EDIT_1_0_n1_AB
  /* This BVal must NEVER be seen by genc (or genjava) ... */
  {FOAM_BVal_ssaPhi, GJB_FCall, 0, "fiNonExistentFunction", 0},

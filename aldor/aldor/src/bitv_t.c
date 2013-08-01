@@ -36,11 +36,7 @@ testBitv(void)
 		sz = stoSize(a);
 		bitvFree(a);
 		bitvClassDestroy(bitvClass);
-#if EDIT_1_0_n1_07
 		printf("%d=>%d. ", (int) i, (int) sz);
-#else
-		printf("%d=>%d. ", i, sz);
-#endif
 	}
 	printf("\n");
 

@@ -136,11 +136,9 @@ genTry(AbSyn absyn)
 	}
 	else if (nret == 0)
 		val = foamNewNOp(); /* Unused */
-#if EDIT_1_0_n1_07
 	else {
 		NotReached(val = NULL);
 	}
-#endif
  
 	if (abIsNothing(id)) {
 		bugWarning("try: no identifier!");

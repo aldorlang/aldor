@@ -761,11 +761,9 @@ enum fintForeignTag {
 	FINT_FOREIGN_osFree,
 	FINT_FOREIGN_osMemMap,
 
-#if EDIT_1_0_n1_06
 	FINT_FOREIGN_fiNewExportTable,
 	FINT_FOREIGN_fiAddToExportTable,
 	FINT_FOREIGN_fiFreeExportTable,
-#endif
 
 	FINT_FOREIGN_END
 };
@@ -935,12 +933,10 @@ fintForeign	fintForeignTable [] = {
 	DECL_FOREIGN(osFree),
 	DECL_FOREIGN(osMemMap),
 
-#if EDIT_1_0_n1_06
 	/* Runtime hashcode checks */
 	DECL_FOREIGN(fiNewExportTable),
 	DECL_FOREIGN(fiAddToExportTable),
 	DECL_FOREIGN(fiFreeExportTable),
-#endif
 
 	{NULL, FINT_FOREIGN_END}	/* TERMINATE TABLE */
 };
@@ -3994,9 +3990,7 @@ fintEval_(DataObj retDataObj)
 			switch ((int)toType) {
 			case FOAM_Word:
 				retDataObj->fiWord = expr.fiSInt;
-#if AXL_EDIT_1_1_12p6_18
 				goto castDone;
-#endif
 			case FOAM_SFlo:
 				retDataObj->fiSFlo = fiWordToSFlo(expr.fiSInt);
 				goto castDone;
@@ -4009,9 +4003,7 @@ fintEval_(DataObj retDataObj)
 			switch ((int)toType) {
 			case FOAM_SInt:
 				retDataObj->fiSInt = expr.fiWord;
-#if AXL_EDIT_1_1_12p6_18
 				goto castDone;
-#endif
 			case FOAM_SFlo:
 				retDataObj->fiSFlo = fiWordToSFlo(expr.fiSInt);
 				goto castDone;

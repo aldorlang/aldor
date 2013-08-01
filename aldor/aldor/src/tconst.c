@@ -186,11 +186,7 @@ tcPrint(FILE *f, TConst tc)
 {
 	int	cc = 0;
 
-#if EDIT_1_0_n1_07
 	cc += fprintf(f, "(const[%d]:  ", (int) tcSerial(tc));
-#else
-	cc += fprintf(f, "(const[%d]:  ", tcSerial(tc));
-#endif
 
 	switch (tcTag(tc)) {
 	case TC_Satisfies:

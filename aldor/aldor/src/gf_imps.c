@@ -646,11 +646,7 @@ gen0BuildLazyFun1(FoamSig sig)
 	Foam 	     result, foam, clos, ccall, tmp;
 	AIntList     l;
 	AInt	     retType, retFmt;
-#if EDIT_1_0_n2_07 
 	static const char *letters = "abcdefghijklmnopqrstuvwxyz";
-#else
-	static char *letters = "abcdefghijklmnopqrstuvwxyz";
-#endif
 	char x[2];
 	int i, inArgc, callLabel;
 

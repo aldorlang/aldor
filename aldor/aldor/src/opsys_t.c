@@ -34,12 +34,7 @@ showMemMap(struct osMemMap **mm)
 			case OSMEM_STACK:	s = "stack"; 	break;
 			default:		s = "?????"; 	break;
 			}
-#if EDIT_1_0_n1_07
 			printf("    [%p, %p)  %s\n", (*mm)->lo, (*mm)->hi, s);
-#else
-			printf("    [%#10lx, %#10lx)  %s\n",
-				(long) (*mm)->lo, (long) (*mm)->hi, s);
-#endif
 		}
 	printf("\n");
 }

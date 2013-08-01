@@ -49,6 +49,9 @@ strLength(s)
 #define FiSFloBits	(int)bitsizeof(FiSFlo)
 #define FiDFloBits	(int)bitsizeof(FiDFlo)
 
+#define DFLO_DIG	DBL_DIG
+#define SFLO_DIG	FLT_DIG
+
 
 /*****************************************************************************
  *
@@ -974,7 +977,6 @@ fiSFloMantissa(FiSFlo sf)
  *
  *****************************************************************************/
 
-#if AXL_EDIT_1_1_12p6_19
 FiByte
 fiByteMin(void)
 {
@@ -986,19 +988,6 @@ fiByteMax(void)
 {
 	return (FiByte)UCHAR_MAX; /*SCHAR_MAX;*/
 }
-#else
-FiByte
-fiByteMin(void)
-{
-	return (FiByte) SCHAR_MIN;
-}
-
-FiByte
-fiByteMax(void)
-{
-	return (FiByte) SCHAR_MAX;
-}
-#endif
 
 /*****************************************************************************
  *
@@ -1397,7 +1386,7 @@ fiFormatSFlo(FiSFlo sf,FiArr s,FiSInt i)
 	char	buf[MAX_SFLO_TEXT];
 	unsigned long	l;
 
-	(void)sprintf(buf, "%.9g", sf);
+	(void)sprintf(buf, "%.*g", SFLO_DIG, sf);
 	l   = strlen(buf);
 	if (l+i > strlen((String) s)) {
 		fiRaiseException((FiWord)"FormatSFlo: the array given is not big enough");
@@ -1414,7 +1403,7 @@ fiFormatDFlo(FiDFlo x,FiArr  s,FiSInt i)
 	char	buf[MAX_DFLO_TEXT];
 	unsigned long	l;
 
-	(void)sprintf(buf, "%.17g", x);
+	(void)sprintf(buf, "%.*g", DFLO_DIG, x);
 	l   = strlen(buf);
 	if (l+i > strlen((String) s)) {
 		fiRaiseException((FiWord)"FormatDFlo: the array given is not big enough");
@@ -2509,7 +2498,6 @@ fiRawRepSize(FiSInt fmt) {
  *
  *****************************************************************************/
 
-#if EDIT_1_0_n1_06
 
 /*
  * This code is invoked during domain initialisation and is used to detect
@@ -2592,7 +2580,6 @@ fiFreeExportTable(ExpTable *t)
 	fiFree((FiPtr)(t->type));
 	fiFree((FiPtr)t);
 }
-#endif
 
 
 FiSInt fiCounter()

@@ -617,7 +617,6 @@ abPPClipped0(Buffer buf, AbSyn ab, long *pmaxchars)
 		else
 			str = keyString(tTag);
 
-#if AXL_EDIT_1_1_13_11
 		if (mInf && (abArgc(ab) == 2)) {
 			if (abHasTag(abArgv(ab)[0], AB_Comma))
 				f = f && abPPPutc(buf, '(', pmaxchars)
@@ -637,19 +636,6 @@ abPPClipped0(Buffer buf, AbSyn ab, long *pmaxchars)
 				f = f && abPPPutc(buf, ' ', pmaxchars)
 				      && abPPClipped0(buf, abArgv(ab)[1], pmaxchars);
 		}
-#else
-		if (mInf && (abArgc(ab) == 2)) {
-			if (abIsNotNothing(abArgv(ab)[0]))
-				f = f && abPPClipped0(buf, abArgv(ab)[0], pmaxchars)
-				      && abPPPuts(buf, " ", pmaxchars);
-
-			f = f && abPPPuts(buf, str, pmaxchars);
-
-			if (abIsNotNothing(abArgv(ab)[1]))
-				f = f && abPPPutc(buf, ' ', pmaxchars)
-				      && abPPClipped0(buf, abArgv(ab)[1], pmaxchars);
-		}
-#endif
 		else {
 			f = f && abPPPuts(buf, str, pmaxchars)
 			      && abPPPutc(buf, ' ', pmaxchars);

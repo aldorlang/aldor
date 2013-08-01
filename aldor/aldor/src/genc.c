@@ -1572,10 +1572,8 @@ gc0ExportToFortran(String name, Foam gdecl, Foam argsformat,
 		ftnrestype = FTN_Character;
 
 	/* Deal with return value. SEE gc0IdFortranDecl() ... */
-#if EDIT_1_0_n1_07
 	ccStringArgName = 0;
 	ccStringLenName = 0;
-#endif
 	switch (ftnrestype) {
 	  case FTN_Boolean:
 		/* Fall through */
@@ -2431,11 +2429,7 @@ gc0Param(Foam foam, Foam params)
 	    && foam->foamProg.format != emptyFormatSlot) {
 		Foam    ddecl;
 		int	n;
-#if EDIT_1_0_n1_07
 		DEBUG_DECL(int rn);
-#else
-		int rn;
-#endif
 		ddecl = gcvFmt->foamDFmt.argv[foam->foamProg.format];
 		n = foamDDeclArgc(ddecl);
 		assert( (rn = gc0NumVals(foam->foamProg.body)) == 0
@@ -2921,18 +2915,8 @@ gccCmd(Foam foam)
 		cc = gcFiEEnsure(gccExpr(foam->foamEEnsure.env));
 		break;
 	  case FOAM_Free:
-#if AXL_EDIT_1_1_13_03
 		cc = gcFiFree(gc0TryCast(FOAM_Ptr, foam->foamFree.place));
 		break;
-#else
-		cc = gcFiFree(gc0Cast(FOAM_Ptr,foam->foamFree.place));
-		break;
-#if 0	/* PushEnv is a Value ! */
-	  case FOAM_PushEnv:
-		cc = gccPushEnv(foam);
-		break;
-#endif
-#endif
 	  case FOAM_PopEnv:
 		cc = ccoIdOf(";");
 		break;
@@ -3433,11 +3417,9 @@ gccFortranPCall(Foam *resultvar, int numresultvars, Foam foam, CCodeList *closnu
 
 
 	/* Just to silence the compiler... */
-#if EDIT_1_0_n1_07
 	ccType = NULL;
 	ccName = NULL;
 	ccChrTmp = NULL;
-#endif
 	ccArg = NULL;
 	ccLenArg = NULL;
 	resvartype = FOAM_Nil;
@@ -5316,7 +5298,6 @@ gc0FCall(FoamBValTag tag, Foam foam)
 #endif
 		else {
 			ccArgs = ccoNewNode(CCO_Many, argc);
-#if AXL_EDIT_1_1_13_03
 			for (i = 0; i < argc; i++) {
 				FoamTag	type;
 				Foam	val;
@@ -5326,10 +5307,6 @@ gc0FCall(FoamBValTag tag, Foam foam)
 
 				ccoArgv(ccArgs)[i] = gc0TryCast(type, val);
 			}
-#else
-			for (i = 0; i < argc; i++)
-				ccoArgv(ccArgs)[i] = gc0Cast(foamBValInfoTable[tag].argTypes[i], foam->foamBCall.argv[i]);
-#endif
 		}
 	}
 	else {
@@ -5511,11 +5488,7 @@ gc0FunOCall0(Foam foam, int argc, int returnKind)
 		FoamTag	expect = pdecls->foamDDecl.argv[i]->foamDecl.type;
 		Foam	farg  = foam->foamOCall.argv[i];
 
-#if AXL_EDIT_1_1_13_03
 		gc0AddLine(code, gc0TryCast(expect, farg));
-#else
-		gc0AddLine(code, gc0Cast(expect, farg));
-#endif
 	}
 
 	code = listNReverse(CCode)(code);
@@ -5910,12 +5883,10 @@ gc0GloIdDecl(Foam decl, int idx)
 		gc0IdFortranDecl(decl, &ccName, &ccType);
 	else if (t != FOAM_Prog && t != FOAM_Clos)
 		ccType = gc0TypeId(t, fmt);
-#if AXL_EDIT_1_1_12p6_22
 	else if (imported && (p == FOAM_Proto_C)) {
 		ccName = gc0IdCDecl(decl, ccName);
 		ccType = gc0TypeId(decl->foamGDecl.rtype, emptyFormatSlot);
 	}
-#endif
 	else {
 		/*
 		 * We need to be able to do better than this, especially
@@ -5982,11 +5953,7 @@ gc0IdCDecl(Foam decl, CCode ccName)
 
 	/* Get the true declaration */
 	fndecl	= gcvFmt->foamDFmt.argv[fmt];
-#ifdef AXL_EDIT_1_1_13_27
 	argc	= foamArgc(fndecl) - 1; /* skip CSig */
-#else
-	argc	= foamArgc(fndecl) - 2; /* skip CSig and return type */
-#endif
 	ccArgs	= ccoNewNode(CCO_Many, argc);
 
 
@@ -5996,14 +5963,10 @@ gc0IdCDecl(Foam decl, CCode ccName)
 		Foam	arg = fndecl->foamDDecl.argv[i];
 		FoamTag type = arg->foamDecl.type;
 		AInt	fmt = arg->foamDecl.format;
-#ifdef AXL_EDIT_1_1_13_27
 		String	str = arg->foamDecl.id;
 		CCode	ccName = ccoIdOf(str);
 		CCode	ccDecl = gc0TypeId(type, fmt);
 		ccoArgv(ccArgs)[i] = ccoParam(ccName, ccDecl, ccoCopy(ccName));
-#else
-		ccoArgv(ccArgs)[i] = gc0TypeId(type, fmt);
-#endif
 	}
 
 	/* Return the full declaration */
@@ -7363,11 +7326,9 @@ struct ccBVal_info ccBValInfoTable[] = {
  {FOAM_BVal_ListHead,      CCO_FCall,  0,"fiListHead",      "fiLIST_HEAD"},
  {FOAM_BVal_ListTail,      CCO_FCall,  0,"fiListTail",      "fiLIST_TAIL"},
  {FOAM_BVal_ListCons,      CCO_FCall,  0,"fiListCons",      0},
-#if EDIT_1_0_n1_06
  {FOAM_BVal_NewExportTable, CCO_FCall, 0, "fiNewExportTable", 0},
  {FOAM_BVal_AddToExportTable, CCO_FCall, 0, "fiAddToExportTable", 0},
  {FOAM_BVal_FreeExportTable, CCO_FCall, 0, "fiFreeExportTable", 0},
-#endif
 #if EDIT_1_0_n1_AB
  /* This BVal must NEVER be seen by genc ... */
  {FOAM_BVal_ssaPhi, CCO_FCall, 0, "fiNonExistentFunction", 0},

@@ -53,11 +53,7 @@ abInit(void)
 		printf("Here1 sym->val=%s, sym->info=%x, %p\n", symString(sym), symInfo(sym), symCoInfo(sym));fflush(stdout);
 #endif
 
-#if EDIT_1_0_n2_07
 		if (symCoInfo(sym) == NULL) {
-#else
-		if (!symCoInfo(sym)) {
-#endif
 #if 0
 			printf("Here1.5\n"); fflush(stdout);
 #endif
@@ -1872,10 +1868,8 @@ abDefineeIdOrElse(AbSyn ab, AbSyn failed)
 		case AB_Comma:
 			if (abArgc(ab) < 1)
 				return failed;
-#if AXL_EDIT_1_1_13_04
 			if (abArgc(ab) > 1)
 				bugWarning("abDefineeId comma bug");
-#endif
 			ab = abArgv(ab)[0];
 			break;
 		case AB_Id:

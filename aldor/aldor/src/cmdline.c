@@ -137,11 +137,7 @@ cmdHasOptionPrefix(int opt0, String arg0, int argc, String *argv)
 {
 	int opt, i, j;
  
-#if EDIT_1_0_n2_07
 	cmdOptionArg = NULL;
-#else
-	cmdOptionArg = "";
-#endif
 
 	for (i = 1, j = 0; ; ) {
 		opt = cmdGetOption(argc, argv, &i, &j, &cmdOptionArg);
@@ -164,11 +160,7 @@ cmdHasOption(int opt0, String arg0, int argc, String *argv)
 {
 	int opt, i, j;
  
-#if EDIT_1_0_n2_07
 	cmdOptionArg = NULL;
-#else
-	cmdOptionArg = "";
-#endif
 
 	for (i = 1, j = 0; ; ) {
 		opt = cmdGetOption(argc, argv, &i, &j, &cmdOptionArg);
@@ -193,11 +185,7 @@ cmdGetOption(int argc, String *argv, int *i, int *j, String *parg)
 {
 	int	opt;
  
-#if EDIT_1_0_n2_07
 	*parg = NULL;
-#else
-	*parg = "";
-#endif
  
 	if (argc <= *i) return 0;
  
@@ -890,10 +878,10 @@ cmdDoOptDeveloper(String arg)
 		gencSetTraceFuns(true);
 	else if (strEqual("no-where", arg))
 		NoWhereHack = true;
-#if EDIT_1_0_n1_06
 	else if (strAEqual("runtime-hashcheck", arg))
 		genSetHashcheck();
-#endif
+	else if (strAEqual("old-hcodes", arg))
+		genResetNewHashCodes();
 	else if (strAIsPrefix("keyword", arg)) {
 		String darg = cmdDGetOptArg(arg, "keyword", NULL);
 		cmdDoKeywordStatus(darg, true);

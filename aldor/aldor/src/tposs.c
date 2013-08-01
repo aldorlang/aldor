@@ -215,7 +215,6 @@ debugflag = 0;
 int
 tpossPrint(FILE *fout, TPoss tp)
 {
-#if EDIT_1_0_n1_07
 	switch ((UAInt) tp)
 	{
 		case 0:
@@ -231,23 +230,6 @@ tpossPrint(FILE *fout, TPoss tp)
 		default:
 			return listPrint(TForm)(fout, tp->possl, tfPrint);
 	}
-#else
-	switch ((int)tp)
-	{
-		case 0:
-			return fprintf(fout, "[]");
-		case (int)tuniInappropriateTPoss:
-			return fprintf(fout, "(inappropriate)");
-		case (int)tuniNoValueTPoss:
-			return fprintf(fout, "(no value)");
-		case (int)tuniUnknownTPoss:
-			return fprintf(fout, "(unknown)");
-		case (int)tuniErrorTPoss:
-			return fprintf(fout, "(error)");
-		default:
-			return listPrint(TForm)(fout, tp->possl, tfPrint);
-	}
-#endif
 }
 
 int

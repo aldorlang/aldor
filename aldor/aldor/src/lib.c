@@ -1824,11 +1824,7 @@ libPutSymeDocs(Lib lib)
 			BUF_PUT_SINT(buf, pos);
 			if (pos == 0x7FFFFFFF)
 				bufWrChars(buf, l, s);
-#if EDIT_1_0_n1_07
 			tblSetElt(tbl, (TblKey) doc, (TblElt) (UAInt) i);
-#else
-			tblSetElt(tbl, (TblKey) doc, (TblElt) (int) i);
-#endif
 		}
 	}
 
@@ -2641,13 +2637,8 @@ lib1GetSymeExtensions(Lib lib)
 	for (i=0; i<lib->symec; i++) {
 		Syme syme = lib->symev[i];
 		Syme ext = symeExtension(syme);
-#if EDIT_1_0_n1_07
 		if ( ((UAInt) ext) & 1)
 			symeSetExtension(syme, lib->symev[ ((UAInt) ext) >> 1]);
-#else
-		if ( ((int) ext) & 1)
-			symeSetExtension(syme, lib->symev[ ((int) ext) >> 1]);
-#endif
 	}
 }
 
@@ -2784,11 +2775,7 @@ lib1FillTypeNumbers(Lib lib, int num)
 	 * in the type form argv by tformFrBuffer.
 	 */
 	for (i = 0; i < tfArgc(tf); i += 1) {
-#if EDIT_1_0_n1_07
 		Length	n = (Length) tfArgv(tf)[i];
-#else
-		int	n = (UAInt) tfArgv(tf)[i];
-#endif
 		assert(libCheckTypeNumber(lib, NULL, n));
 		tfArgv(tf)[i] = libGetSymeType(lib, (int) n);
 	}
@@ -2797,11 +2784,7 @@ lib1FillTypeNumbers(Lib lib, int num)
 	 * in the type form list by tformFrBuffer.
 	 */
 	for (l = tfQueries(tf); l; l = cdr(l)) {
-#if EDIT_1_0_n1_07
 		int	n = (UAInt) car(l);
-#else
-		int	n = (int) car(l);
-#endif
 		assert(libCheckTypeNumber(lib, NULL, n));
 		setcar(l, libGetSymeType(lib, n));
 	}
@@ -2811,19 +2794,11 @@ lib1FillTypeNumbers(Lib lib, int num)
 	 */
 	for (ql = tfCascades(tf); ql; ql = cdr(ql)) {
 		TQual	tq = car(ql);
-#if EDIT_1_0_n1_07
 		int	n = (UAInt) tqBase(tq);
-#else
-		int	n = (int) tqBase(tq);
-#endif
 		assert(libCheckTypeNumber(lib, NULL, n));
 		tqBase(tq) = libGetSymeType(lib, n);
 		for (l = tqQual(tq); l; l = cdr(l)) {
-#if EDIT_1_0_n1_07
 			n = (UAInt) car(l);
-#else
-			n = (int) car(l);
-#endif
 			assert(libCheckTypeNumber(lib, NULL, n));
 			setcar(l, libGetSymeType(lib, n));
 		}

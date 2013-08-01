@@ -137,7 +137,6 @@ kpSetCutOff(int n)
 void
 killPointers(Foam unit)
 {
-#if EDIT_1_0_n1_07
 	Foam ddef, def, rhs;
 	int  i;
 	Length conc;
@@ -145,13 +144,6 @@ killPointers(Foam unit)
 	DEBUG_DECL(Foam lhs);
 	DEBUG_DECL(int j);
 	DEBUG_DECL(String progName);
-#else
-	Foam ddef, def, lhs, rhs;
-	int  i, j;
-	Length conc;
-	Foam *conv;
-	String progName;
-#endif
 
 	conc = foamDDeclArgc(foamUnitConstants(unit));
 	conv = foamUnitConstants(unit)->foamDDecl.argv;

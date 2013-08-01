@@ -81,44 +81,28 @@ foamInit(void)
 
 	for (i = FOAM_START; i < FOAM_LIMIT; i++) {
 		sym = symInternConst(foamInfo(i).str);
-#if EDIT_1_0_n2_07
 		if (symCoInfo(sym) == NULL) symCoInfoInit(sym);
-#else
-		if (!symCoInfo(sym)) symCoInfoInit(sym);
-#endif
 
 		foamInfo(i).sxsym	   = sxiFrSymbol(sym);
 		symCoInfo(sym)->foamTagVal = i;
 	}
 	for (i = FOAM_BVAL_START; i < FOAM_BVAL_LIMIT; i++) {
 		sym = symInternConst(foamBValInfo(i).str);
-#if EDIT_1_0_n2_07
 		if (symCoInfo(sym) == NULL) symCoInfoInit(sym);
-#else
-		if (!symCoInfo(sym)) symCoInfoInit(sym);
-#endif
 
 		foamBValInfo(i).sxsym	   = sxiFrSymbol(sym);
 		symCoInfo(sym)->foamTagVal = i;
 	}
 	for (i = FOAM_PROTO_START; i < FOAM_PROTO_LIMIT; i++) {
 		sym = symInternConst(foamProtoInfo(i).str);
-#if EDIT_1_0_n2_07
 		if (symCoInfo(sym) == NULL) symCoInfoInit(sym);
-#else
-		if (!symCoInfo(sym)) symCoInfoInit(sym);
-#endif
 
 		foamProtoInfo(i).sxsym	    = sxiFrSymbol(sym);
 		symCoInfo(sym)->foamTagVal = i;
 	}
 	for (i = 0; i < FOAM_DDECL_LIMIT; i++) {
 		sym = symInternConst(foamDDeclInfo(i).str);
-#if EDIT_1_0_n2_07
 		if (symCoInfo(sym) == NULL) symCoInfoInit(sym);
-#else
-		if (!symCoInfo(sym)) symCoInfoInit(sym);
-#endif
 		
 		foamDDeclInfo(i).sxsym	= sxiFrSymbol(sym);
 		symCoInfo(sym)->foamTagVal = i;
@@ -2179,22 +2163,7 @@ foamToBuffer(Buffer buf, Foam foam)
 	Offset	tmpPos, offPos = 0;
 	Offset	start = bufPosition(buf);
 
-#if AXL_EDIT_1_1_13_30
 	if (foamTag(foam) == FOAM_SInt) foam = foamSIntReduce(foam);
-#else
-	/* The '!=0' is wrong, but this should be fixed better anyways. */
-	if (foamTag(foam) == FOAM_SInt 
-	    && sizeof(foam->foamSInt.SIntData) > 4
-	    && (labs(foam->foamSInt.SIntData) >> 32) != 0) 
-	  	foam = foamNew(FOAM_BCall, 3,
-			       FOAM_BVal_SIntOr,
-			       foamNew(FOAM_BCall, 3,
-				       FOAM_BVal_SIntShiftUp, 
-				       foamNewSInt(foam->foamSInt.SIntData >> 32L),
-				       foamNewSInt(32)),
-			       foamNewSInt(foam->foamSInt.SIntData 
-					   & ((1L <<32L) - 1L)));
-#endif
 
 	tag    = foamTag(foam);
 
@@ -2351,11 +2320,7 @@ foamPosBufPrint(FILE *file, Buffer buf)
 	size = sizeof(SrcPos);
 	step = buf->argc / size;
 
-#if EDIT_1_0_n1_07
 	fprintf(file, "Buffer length: %d, SrcPos size: %d\n", (int) buf->argc, size);
-#else
-	fprintf(file, "Buffer length: %d, SrcPos size: %d\n", buf->argc, size);
-#endif
 	fprintf(file, "Number of steps: %d\n", step);
 	for (i = 0, buf->pos = 0; buf->pos < buf->argc; i++) {
 		sp = bufRdULong(buf);
@@ -3512,11 +3477,7 @@ struct foamBVal_info foamBValInfoTable[] = {
                            {FOAM_Bool,FOAM_SInt,FOAM_Word,FOAM_Word}},
  {FOAM_BVal_DFloAssemble,0,"DFloAssemble",
                        0,4,{FOAM_Bool,FOAM_SInt,FOAM_Word,FOAM_Word},
-#if EDIT_1_0_n2_04 
                                                              FOAM_DFlo, 1, {0}},
-#else
-                                                             FOAM_SFlo, 1, {0}},
-#endif
 
 
  {FOAM_BVal_Byte0,	 0,"Byte0",
@@ -3877,7 +3838,6 @@ struct foamBVal_info foamBValInfoTable[] = {
  {FOAM_BVal_ListCons, 0, "ListCons",
 			0, 2, {FOAM_Word, FOAM_Ptr},	     FOAM_Ptr, 1, {0}},
 
-#if EDIT_1_0_n1_06
   {FOAM_BVal_NewExportTable, 0, "NewExportTable",
                         0, 2, {FOAM_Word, FOAM_SInt}, FOAM_Word, 1, {0}},
   {FOAM_BVal_AddToExportTable, 0, "AddToExportTable",
@@ -3885,7 +3845,6 @@ struct foamBVal_info foamBValInfoTable[] = {
                                 FOAM_Arr}, FOAM_Values, 0, {0}},
   {FOAM_BVal_FreeExportTable, 0, "FreeExportTable",
                         1, 1, {FOAM_Word}, FOAM_Values, 0, {0}},
-#endif
 #if EDIT_1_0_n1_AB
   /*
    * Note that ssaPhi actually takes variable number of arguments

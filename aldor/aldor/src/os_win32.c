@@ -1080,30 +1080,18 @@ osMemMap(int mask)
 			case MEM_MAPPED:
 					/* These pages might be okay. */
 					(void)fprintf(stderr, "      *** found mapped region ");
-#if EDIT_1_0_n1_07
 					(void)fprintf(stderr, "[%p, %p) ", ptr, next);
-#else
-					(void)fprintf(stderr, "[%08x, %08x)\n", ptr, next);
-#endif
 					break;
 			case MEM_PRIVATE:
 					/* These pages might be okay. */
 					(void)fprintf(stderr, "      *** found private region ");
-#if EDIT_1_0_n1_07
 					(void)fprintf(stderr, "[%p, %p) ", ptr, next);
-#else
-					(void)fprintf(stderr, "[%08x, %08x)\n", ptr, next);
-#endif
 					break;
 #if 0
 			default:
 					/* Unknown page type: might be okay. */
 					(void)fprintf(stderr, "      *** found unknown region ");
-#if EDIT_1_0_n1_07
 					(void)fprintf(stderr, "[%p, %p) ", ptr, next);
-#else
-					(void)fprintf(stderr, "[%08x, %08x) ", ptr, next);
-#endif
 					(void)fprintf(stderr, " (state = %08x)\n", vmem_info.State);
 					break;
 #endif
@@ -1134,11 +1122,7 @@ osMemMap(int mask)
 				/* Might contain pointers so add region to the root set. */
 				break;
 			default:
-#if EDIT_1_0_n1_07
 				(void)fprintf(stderr, "   (NASTY) [%p, %p) ", ptr, next);
-#else
-				(void)fprintf(stderr, "   (NASTY) [%08x, %08x) ", ptr, next);
-#endif
 				(void)fprintf(stderr, "(protect = %08x\n", (unsigned int)protection);
 				/* Ignore this region in case it is something nasty. */
 				continue;

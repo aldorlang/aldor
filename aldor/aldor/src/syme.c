@@ -623,12 +623,7 @@ symeTransferImplInfo(Syme to, Syme from)
 	symeSetConstInfo(to, symeConstInfo(from));
 	symeSetConstLib(to, symeConstLib(from));
 
-#if EDIT_1_0_n1_07
 	symeDEBUG(printf("Transfer: %p -> %p\n", to, from));
-#else
-	symeDEBUG(printf("Transfer: %x -> %x\n",
-			(unsigned int)to, (unsigned int)from));
-#endif
 
 	symeMergeImpl(to, symeImpl(from));
 }
@@ -693,12 +688,10 @@ symeMergeImpl(Syme syme, SImpl impl)
 		else if (implHasDefault(impl)) {
 			newImpl = impl;
 		}
-#if EDIT_1_0_n1_11
 		else if (implIsBranch(impl)) {
 			/* Probably wrong but keeps things running */
 			newImpl = impl;
 		}
-#endif
 		else
 			bug("%s: Unhandled Merge #1", "symeMergeImpl");
 	}
@@ -723,12 +716,10 @@ symeMergeImpl(Syme syme, SImpl impl)
 		else if (implIsInherit(impl)) {
 			newImpl = impl;
 		}
-#if EDIT_1_0_n1_11
 		else if (implIsBranch(impl)) {
 			/* Probably wrong but keeps things running */
 			newImpl = impl;
 		}
-#endif
 		else
 			bug("%s: Unhandled Merge #2", "symeMergeImpl");
 	}
@@ -1608,13 +1599,8 @@ symeShowFully(Syme s)
 		"lib level ..........", symeLibLevel(s),
 		"def level ..........", ((UShort)symeGetLocal(s, SYFI_DefLevel)));
 	printf("   %s %-9lx   %s %-9ld\n",
-#if EDIT_1_0_n1_07
 		"depths .............", (unsigned long) symeDepths(s),
 		"use depth ..........", (long) symeUsedDepth(s));
-#else
-		"depths .............", (int)symeDepths(s),
-		"use depth ..........", symeUsedDepth(s));
-#endif
 
 	printf("   %s %-9s   %s %s\n",
 		"foam kind ..........", (symeFoamKind(s) < FOAM_LIMIT) ?

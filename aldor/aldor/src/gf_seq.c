@@ -300,11 +300,9 @@ gen0FixDummy(Syme syme, AbSyn pos, FixInfo info)
 	Foam 	self = gen0Syme(syme);
 	Foam 	new;
 
-#if AXL_EDIT_1_1_13_01
 	/* Record the initialisation, if necessary */
 	if (symeIsExport(syme) && !gen0SymeInit(syme))
 		gen0SymeSetInit(syme, foamCopy(self));
-#endif
 
 	if (tfSatDom(tf)) {
 		new = gen0Temp(FOAM_Word);
@@ -326,18 +324,10 @@ gen0FixDummy(Syme syme, AbSyn pos, FixInfo info)
 			 info->finis);
 
 	} 	
-#if AXL_EDIT_1_1_13_01
 	else {
 		foamFree(self);
 		return;
 	}
-#else
-	else {
-		String	msg = strPrintf("bad syme (%s):(%s) passed to %s",
-				symePretty(syme), tfPretty(tf), "gen0FixDummy");
-		comsgFatal(pos, ALDOR_F_Bug, msg);
-	}
-#endif
 	info->inits = listCons(Foam)(foamNewDef(foamCopy(new), 
 						foamCopy(self)), info->inits);
 	info->finis = listCons(Foam)(foamNewSet(foamCopy(self),
@@ -689,7 +679,6 @@ dgAbGetUsedSymes(AbSyn ab, DefGroup dg)
 		return;
 
 	  case AB_Define:
-#if AXL_EDIT_1_1_13_01
 		/* Treat all definitions as a multi */
 		argc = abArgcAs(AB_Comma, ab->abDefine.lhs);
 		argv = abArgvAs(AB_Comma, ab->abDefine.lhs);
@@ -706,12 +695,6 @@ dgAbGetUsedSymes(AbSyn ab, DefGroup dg)
 		/* Now find all the symes used from the rhs */
 		dgAbGetUsedSymes(ab->abDefine.rhs, dg);
 		break;
-#else
-		syme = abSyme(abDefineeId(ab));
-		dg->defines = listCons(Syme)(syme, dg->defines);
-		dgAbGetUsedSymes(ab->abDefine.rhs, dg);
-		break;
-#endif
 
 	  case AB_LitInteger:
 	  case AB_LitString:

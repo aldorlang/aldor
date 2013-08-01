@@ -229,12 +229,8 @@ priqPrint(FILE *fout, PriQ pq)
 	int	cc = 0;
 
 	cc += fprintf(fout, "priority-queue");
-#if EDIT_1_0_n1_07
 	cc += fprintf(fout, "(argc = %d, size = %d):\n",
                       (int) pq->argc, (int) pq->size);
-#else
-	cc += fprintf(fout, "(argc = %d, size = %d):\n", pq->argc, pq->size);
-#endif
 	cc += heapPrint(fout, pq->argv, pq->argc);
 
 	return cc;

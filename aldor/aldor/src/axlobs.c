@@ -128,12 +128,7 @@ obPrint(FILE *fout, Pointer ob)
 
 	case OB_Lib:
 	case OB_Archive:
-#if EDIT_1_0_n1_07
 	default:	 return fprintf(fout, "%p->OB_%d", ob, obCode(ob));
-#else
-	default:	 return fprintf(fout, "%#x->OB_%d",
-					(unsigned int)ob, obCode(ob));
-#endif
 	}
 }
 

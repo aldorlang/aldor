@@ -106,12 +106,21 @@ extern Bool		inl0AfterInline;
  *
  ****************************************************************************/
 
-#if EDIT_1_0_n1_06
 extern Bool		gen0Hashcheck;
 
 #define			genHashcheck()			(gen0Hashcheck)
 #define			genSetHashcheck()		(gen0Hashcheck = true)
-#endif
+
+/*****************************************************************************
+ *
+ * :: Flags for -W new-hcodes
+ *
+ ****************************************************************************/
+
+extern Bool		gen0NewHashCodes;
+
+#define			genNewHashCodes()		(gen0NewHashCodes)
+#define			genResetNewHashCodes()		(gen0NewHashCodes = false)
 
 /*****************************************************************************
  *

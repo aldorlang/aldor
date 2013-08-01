@@ -88,13 +88,8 @@ ablogToAtom(Sefo sefo)
 	AInt	x = (AInt) tblElt(ablogToTable, (TblKey) sefo, (TblElt) 0);
 	if (!x) {
 		sefo = sefoCopy(sefo);
-#if EDIT_1_0_n1_07
 		tblSetElt(ablogToTable, (TblKey) sefo, (TblElt) (UAInt) ablogNextIx);
 		tblSetElt(ablogFrTable, (TblKey) (UAInt) ablogNextIx, (TblElt) sefo);
-#else
-		tblSetElt(ablogToTable, (TblKey) sefo, (TblElt) ablogNextIx);
-		tblSetElt(ablogFrTable, (TblKey) ablogNextIx, (TblElt) sefo);
-#endif
 		x    = ablogNextIx++;
 	}
 	return x;
@@ -107,11 +102,7 @@ ablogFrAtom(DNF_Atom lit)
 
 	if (lit < 0) lit = -lit;
 
-#if EDIT_1_0_n1_07
 	sefo = (Sefo) tblElt(ablogFrTable, (TblKey) (UAInt) lit, (TblElt) NULL);
-#else
-	sefo = (Sefo) tblElt(ablogFrTable, (TblKey) lit, (TblElt) NULL);
-#endif
 
 	return sefo;
 }
