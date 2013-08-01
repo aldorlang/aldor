@@ -45,8 +45,6 @@
 
 #define EDIT_1_0_n2_09 1        /* #line patch */
 
-#define EDIT_1_0_n2_08 1        /* fix filename separator */
-
 #define EDIT_1_0_n2_06 1        /* fix bug 4 - disabled type cache in stab */
 
 #define EDIT_1_0_n2_03 1        /* Updated ALDOR_F_LibExportNotFound error message

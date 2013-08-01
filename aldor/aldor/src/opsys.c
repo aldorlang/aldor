@@ -351,9 +351,7 @@ local Bool
 osFnameIsAbsolute(String fname)
 {
 	return (FDIRSEP && fname[0] == FDIRSEP)
-#if EDIT_1_0_n2_08
 	||     (FDIRSEPALT && fname[0] == FDIRSEPALT)
-#endif
 	||     (FDEVSEP && fname[1] == FDEVSEP);
 }
 
@@ -371,11 +369,7 @@ osFnameParse(String *partv, String sbuf, String fname, String relativeTo)
 
 	/* Find parts of fname. */
 	for (s = fname + strlen(fname)-1; s >= fname; s--) {
-#if EDIT_1_0_n2_08 
 		if (!name && (*s == FDEVSEP || *s == FDIRSEP || *s == FDIRSEPALT)) {
-#else
-		if (!name && (*s == FDEVSEP || *s == FDIRSEP)) {
-#endif
 			name = s+1;
 			break;
 		}
@@ -392,22 +386,13 @@ osFnameParse(String *partv, String sbuf, String fname, String relativeTo)
 	if ( relativeTo && *relativeTo && !osFnameIsAbsolute(fname)) {
 		for (s = relativeTo; *s; )
 			*b++ = *s++;
-#if EDIT_1_0_n2_08
 		if (b[-1] != FDEVSEP && (b[-1] != FDIRSEP || b[-1] != FDIRSEPALT))
-#else
-		if (b[-1] != FDEVSEP && b[-1] != FDIRSEP)
-#endif
 			*b++ = FDIRSEP;
 	}
-#if EDIT_1_0_n2_08
 	for (s = fname; s != name; b++, s++) {
 		*b = *s;
 		if (*b == FDIRSEPALT) *b = FDIRSEP;
 	}
-#else
-	for (s = fname; s != name; )
-		*b++ = *s++;
-#endif
 	if (b > sbuf+1)	    /* Zap last dir separator. (but not if it's the first!) */
 		b--;
 	*b++ = 0;
@@ -451,11 +436,7 @@ osFnameUnparse(String buf, String *partv, Bool full)
 	/* Only give the directory if it is not the current one. */
 	if ((dir && *dir) && (full || strcmp(dir, osCurDirName()))) {
 		for(s = dir; *s; ) *d++ = *s++;
-#if EDIT_1_0_n2_08
 		if (d[-1] != FDEVSEP && (d[-1] != FDIRSEP || d[-1] != FDIRSEPALT)) *d++ = FDIRSEP;
-#else
-		if (d[-1] != FDEVSEP && d[-1] != FDIRSEP) *d++ = FDIRSEP;
-#endif
 	}
 
 	for(s = name; *s; )	   *d++ = *s++;
@@ -501,11 +482,7 @@ osSubdir(String buffer, String relativeTo, String subdir)
 	/* Only give the directory if it is not the current one. */
 	if (*relativeTo && strcmp(relativeTo, osCurDirName())) {
 		for(s = relativeTo; *s; ) *d++ = *s++;
-#if EDIT_1_0_n2_08
 		if (d[-1] != FDEVSEP && (d[-1] != FDIRSEP || d[-1] != FDIRSEPALT)) *d++ = FDIRSEP;
-#else
-		if (d[-1] != FDEVSEP && d[-1] != FDIRSEP) *d++ = FDIRSEP;
-#endif
 	}
 
 	/* Only use subdir if it is not current. */
@@ -515,11 +492,7 @@ osSubdir(String buffer, String relativeTo, String subdir)
 	if (d == buffer) for (s = osCurDirName(); *s; ) *d++ = *s++;
 
 	/* Back up on trailing "/" (but not if buffer contains only "/"). */
-#if EDIT_1_0_n2_08
 	if (d != buffer && d != buffer + 1 && (d[-1] == FDIRSEP || d[-1] == FDIRSEPALT)) d--;
-#else
-	if (d != buffer && d != buffer + 1 && d[-1] == FDIRSEP) d--;
-#endif
 	d[0] = 0;
 }
 
@@ -534,19 +507,11 @@ osFnameDirEqual(String dir1, String dir2)
 	while (*dir1 == FCURDIR || *dir2 == FCURDIR) {
 		if (*dir1 == FCURDIR) {
 			dir1++;
-#if EDIT_1_0_n2_08
 			if (*dir1 == FDIRSEP || (FDIRSEPALT && *dir1 == FDIRSEPALT)) dir1++;
-#else
-			if (*dir1 == FDIRSEP) dir1++;
-#endif
 		}
 		if (*dir2 == FCURDIR) {
 			dir2++;
-#if EDIT_1_0_n2_08
 			if (*dir2 == FDIRSEP || (FDIRSEPALT && *dir2 == FDIRSEPALT)) dir2++;
-#else
-			if (*dir2 == FDIRSEP) dir2++;
-#endif
 		}
 	}
 	return !strcmp(dir1, dir2);
