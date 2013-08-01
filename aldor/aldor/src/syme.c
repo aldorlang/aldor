@@ -693,12 +693,10 @@ symeMergeImpl(Syme syme, SImpl impl)
 		else if (implHasDefault(impl)) {
 			newImpl = impl;
 		}
-#if EDIT_1_0_n1_11
 		else if (implIsBranch(impl)) {
 			/* Probably wrong but keeps things running */
 			newImpl = impl;
 		}
-#endif
 		else
 			bug("%s: Unhandled Merge #1", "symeMergeImpl");
 	}
@@ -723,12 +721,10 @@ symeMergeImpl(Syme syme, SImpl impl)
 		else if (implIsInherit(impl)) {
 			newImpl = impl;
 		}
-#if EDIT_1_0_n1_11
 		else if (implIsBranch(impl)) {
 			/* Probably wrong but keeps things running */
 			newImpl = impl;
 		}
-#endif
 		else
 			bug("%s: Unhandled Merge #2", "symeMergeImpl");
 	}
