@@ -2216,14 +2216,10 @@ titdnRaise(Stab stab, AbSyn absyn, TForm type)
 	TForm tf;
 	Sefo sef;
 	titdn(stab, absyn->abRaise.expr, tfDomain);
-#if AXL_EDIT_1_1_13_10
 	tf = tiGetTForm(stab, absyn->abRaise.expr);
 	sef = tfGetExpr(tf);
 	assert(sef);
 	tf = tfExcept(tfExit, abGetCategory(sef));
-#else
-	tf = tfExcept(tfExit, tiGetTForm(stab, absyn->abRaise.expr));
-#endif
 	if (!tfSatReturn(tf, type)) {
 		/* !!This is the _wrong_ routine to call */
 		terrorNotUniqueType(ALDOR_E_TinExprMeans, absyn, type, 
