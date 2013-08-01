@@ -85,7 +85,7 @@
 
 #ifdef STO_USE_BTREE
 
-#if defined(OS_WIN32) && defined(AXL_EDIT_1_1_13_08)
+#if defined(OS_WIN32)
 #include <windows.h>
 #endif
 
@@ -1901,7 +1901,7 @@ stoGcMark(void)
 
 			break;
 		case OSMEM_DDATA: {
-#if defined(OS_WIN32) && defined(AXL_EDIT_1_1_13_08)
+#if defined(OS_WIN32)
 			/*
 			 * We have to be careful - this segment may contain
 			 * just part of the heap.
@@ -2050,7 +2050,7 @@ stoGcMarkRange(Pointer *lo, Pointer *hi, int check)
 #ifdef STO_DEBUG_DISPLAY
 	int		oldStoMarkArea;
 #endif
-#if defined(OS_WIN32) && defined(AXL_EDIT_1_1_13_08)
+#if defined(OS_WIN32)
 	MEMORY_BASIC_INFORMATION minfo;
 	int access;
 #endif
@@ -2062,7 +2062,7 @@ stoGcMarkRange(Pointer *lo, Pointer *hi, int check)
 		canBlacklist = (osGetEnv("GC_BLACKLIST") != NULL);
 #endif
 
-#if defined(OS_WIN32) && defined(AXL_EDIT_1_1_13_08)
+#if defined(OS_WIN32)
 	/*
 	 * Under Win98 and probably Win95 too, pages that were accessible
 	 * during the call to osMemMap may now be inaccessible. Some pages
