@@ -202,12 +202,8 @@ titdn(Stab stab, AbSyn absyn, TForm type)
 	}
 
 	assert(abState(absyn) == AB_State_HasPoss);
-#if AXL_EDIT_1_1_13_07
 	/* MUST use tpossRefer() or abReferTPoss() */
 	abtposs	 = tpossRefer(abTPoss(absyn));
-#else
-	abtposs	 = abTPoss(absyn);
-#endif
 
 	if (tpossCount(abtposs) == 0) {
 		titdnError(stab, absyn, type);

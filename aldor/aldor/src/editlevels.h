@@ -61,7 +61,6 @@
 	/* Edit 1.1.13(13): use "throw" instead of "except" in errors */
 	/* Edit 1.1.13(12): -M base=<dir> support */
 
-#define AXL_EDIT_1_1_13_07 1	/* titdn missing tpossRefer */
 #define AXL_EDIT_1_1_13_06 1	/* except/throw not a follower, maybe infix */
 #define AXL_EDIT_1_1_13_05 1	/* tfHasDomExportMod tweak */
 #define AXL_EDIT_1_1_13_04 1	/* abDefineeIdOrElse watches for comma bug */
