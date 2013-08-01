@@ -50,7 +50,6 @@
 	/* Edit 1.1.13(28): added fiArrNew_Ptr to foam_c.c */
 	/* Edit 1.1.13(26): -M[no-]release */
 	/* Edit 1.1.13(25): GCC 2.96 fix in platform.h/axiomxl.conf */
-#define AXL_EDIT_1_1_13_24 1	/* fixes in archive.c */
 	/* Edit 1.1.13(23): AxlLib/format.as StoIsWritable fix */
 	/* Edit 1.1.13(22): start-up banner for interpreter */
 	/* Edit 1.1.13(21): fixed gen0RtRand */

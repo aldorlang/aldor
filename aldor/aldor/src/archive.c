@@ -452,7 +452,6 @@ arRdItemAIX(Archive ar)
 	Offset	align = arInfo(ar->format).align;
 
 	/* Read the item header. */
-#ifdef AXL_EDIT_1_1_13_24
 	arReadDecimal(ar, &size, 12);	cc += 12;
 	arReadDecimal(ar, &next, 12);	cc += 12;
 	arReadDecimal(ar, &prev, 12);	cc += 12;
@@ -465,21 +464,6 @@ arRdItemAIX(Archive ar)
 	/* Read the item name. */
 	s = strAlloc(nlen);
 	arReadText(ar, s, nlen);
-#else
-	/* BUG: fscanf eats leading whitespace ... */
-	fscanf(arFile(ar), "%12lu ", &size);	cc += 12;
-	fscanf(arFile(ar), "%12lu ", &next);	cc += 12;
-	fscanf(arFile(ar), "%12lu ", &prev);	cc += 12;
-	fscanf(arFile(ar), "%12lu ", &date);	cc += 12;
-	fscanf(arFile(ar), "%12lu ", &uid);	cc += 12;
-	fscanf(arFile(ar), "%12lu ", &gid);	cc += 12;
-	fscanf(arFile(ar), "%12lu ", &mode);	cc += 12;
-	fscanf(arFile(ar), "%04lu ", &nlen);	cc +=  4;
-
-	/* Read the item name. */
-	s = strAlloc(nlen);
-	FILE_GET_CHARS(arFile(ar), s, nlen);
-#endif
 	arItem(ar) = s;
 	cc += nlen + 2;
 
@@ -502,7 +486,6 @@ arRdItemAIX4(Archive ar)
 	Offset	align = arInfo(ar->format).align;
 
 	/* Read the item header. */
-#ifdef AXL_EDIT_1_1_13_24
 	arReadDecimal(ar, &size, 20);	cc += 20;
 	arReadDecimal(ar, &next, 20);	cc += 20;
 	arReadDecimal(ar, &prev, 20);	cc += 20;
@@ -515,21 +498,6 @@ arRdItemAIX4(Archive ar)
 	/* Read the item name. */
 	s = strAlloc(nlen);
 	arReadText(ar, s, nlen);
-#else
-	/* BUG: fscanf eats leading whitespace ... */
-	fscanf(arFile(ar), "%20lu ", &size);	cc += 20;
-	fscanf(arFile(ar), "%20lu ", &next);	cc += 20;
-	fscanf(arFile(ar), "%20lu ", &prev);	cc += 20;
-	fscanf(arFile(ar), "%12lu ", &date);	cc += 12;
-	fscanf(arFile(ar), "%12lu ", &uid);	cc += 12;
-	fscanf(arFile(ar), "%12lu ", &gid);	cc += 12;
-	fscanf(arFile(ar), "%12lu ", &mode);	cc += 12;
-	fscanf(arFile(ar), "%04lu ", &nlen);	cc +=  4;
-
-	/* Read the item name. */
-	s = strAlloc(nlen);
-	FILE_GET_CHARS(arFile(ar), s, nlen);
-#endif
 	arItem(ar) = s;
 	cc += nlen + 2;
 
@@ -663,7 +631,6 @@ arRdItemArch0(Archive ar)
 
 
 	/* Read the whole header */
-#ifdef AXL_EDIT_1_1_13_24
 	nlen = 16;
 	s = strAlloc(nlen);
 	arReadText(ar,    s,    nlen);
@@ -683,47 +650,6 @@ arRdItemArch0(Archive ar)
 	while(s[nlen] != 0 && s[nlen] != ' ' && s[nlen] != '/') nlen++;
 	s[nlen] = 0;
 	arItem(ar) = s;
-#else
-	/* Read the item name. */
-	nlen = 16;
-	s = strAlloc(nlen);
-	FILE_GET_CHARS(arFile(ar), s, nlen);
-
-
-	/*
-	 * Terminate the name: note that the directory name // will
-	 * turn into a NULL string with s[1] == '/' (see arRdItemArch).
-	 */
-	nlen = 0;
-	while(s[nlen] != 0 && s[nlen] != ' ' && s[nlen] != '/') nlen++;
-	s[nlen] = 0;
-	arItem(ar) = s;
-
-
-	/*
-	 * Skip the date, uid, gid and mode fields since we aren't
-	 * interested in them. These fields are 12, 6, 6 and 8 bytes
-	 * in length so we skip a total of 32 bytes.
-	 */
-	FILE_GET_CHARS(arFile(ar), buffer, 32);
-
-
-	/*
-	 * Read in the file size: DO NOT USE fscanf() for this!
-	 * It skips leading whitespace and we cannot guarantee
-	 * that this field will be left justified. After reading 
-	 * the 10 bytes for the field we drop in a terminator
-	 * (for safety) and then use sscanf().
-	 */
-	FILE_GET_CHARS(arFile(ar), buffer, 10);
-	buffer[10] = '\0';
-	sscanf(buffer, "%lu ", &size);
-
-
-	/* Finally read (and ignore) the 2-byte magic number. */
-	FILE_GET_CHARS(arFile(ar), buffer, 2);
-	/* assert((buffer[0] == 96) && (buffer[1] == 10)); */
-#endif
 
 
 	/* Debugging */
@@ -785,22 +711,12 @@ arRdItemCMS(Archive ar)
         }
 
 	/* Read the item header. */
-#ifdef AXL_EDIT_1_1_13_24
 	arReadDecimal(ar, &date,  12);	cc += 12;
 	arReadDecimal(ar, &uid,    6);	cc +=  6;
 	arReadDecimal(ar, &gid,    6);	cc +=  6;
 	arReadOctal(ar,   &mode,   8);	cc +=  8;
 	arReadOctal(ar,   &size,  10);	cc += 10;
 	arReadText(ar,    buffer,  2); 	cc +=  2; /* Magic number */
-#else
-	/* BUG: fscanf eats leading whitespace ... */
-	fscanf(arFile(ar), "%12lu ", &date);	cc += 12;
-	fscanf(arFile(ar), "%06lu ", &uid);	cc +=  6;
-	fscanf(arFile(ar), "%06lu ", &gid);	cc +=  6;
-	fscanf(arFile(ar), "%08lu ", &mode);	cc +=  8;
-	fscanf(arFile(ar), "%10lu ", &size);	cc += 10;
-	cc += 2;
-#endif
 
 	/* Find the item position. */
 	if (cc % align != 0) cc += align - (cc % align);
