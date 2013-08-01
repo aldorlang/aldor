@@ -45,8 +45,6 @@
 
 #define EDIT_1_0_n2_06 1        /* fix bug 4 - disabled type cache in stab */
 
-#define EDIT_1_0_n2_02 1        /* Clean Linux after other ports */
-
 #define EDIT_1_0_n2_01 1        /* Clean Sun Gcc warnings. */
 
 #define EDIT_1_0_n1_11 1	/* fixed symeMergeImpl() */

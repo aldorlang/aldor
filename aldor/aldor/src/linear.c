@@ -771,11 +771,7 @@ local void
 serrorUnbalanced(Token tok,Bool errorIfTrue)
 {
 	SrcPos   pos  = tok->pos;
-#if EDIT_1_0_n2_02
         TokenTag tag  = tokTag(tok), mate = tokTag(tok);
-#else
-        TokenTag tag  = tokTag(tok), mate;
-#endif
 
 	switch (tag) {
 	case DoPileStart:	mate = DoPileEnd; 	break;

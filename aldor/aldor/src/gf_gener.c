@@ -692,11 +692,7 @@ gen0MakeForBound(AbSyn absyn, Bool nestCheck)
 local AbSynList
 gen0FindIterVars(AbSyn ab)
 {
-#if EDIT_1_0_n2_02
 	AbSynList	lst = listNil(AbSyn);
-#else
-	AbSynList	lst;
-#endif
 	int		i;
 	String		msg;
 
