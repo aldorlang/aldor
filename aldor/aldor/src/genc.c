@@ -5974,11 +5974,7 @@ gc0IdCDecl(Foam decl, CCode ccName)
 
 	/* Get the true declaration */
 	fndecl	= gcvFmt->foamDFmt.argv[fmt];
-#ifdef AXL_EDIT_1_1_13_27
 	argc	= foamArgc(fndecl) - 1; /* skip CSig */
-#else
-	argc	= foamArgc(fndecl) - 2; /* skip CSig and return type */
-#endif
 	ccArgs	= ccoNewNode(CCO_Many, argc);
 
 
@@ -5988,14 +5984,10 @@ gc0IdCDecl(Foam decl, CCode ccName)
 		Foam	arg = fndecl->foamDDecl.argv[i];
 		FoamTag type = arg->foamDecl.type;
 		AInt	fmt = arg->foamDecl.format;
-#ifdef AXL_EDIT_1_1_13_27
 		String	str = arg->foamDecl.id;
 		CCode	ccName = ccoIdOf(str);
 		CCode	ccDecl = gc0TypeId(type, fmt);
 		ccoArgv(ccArgs)[i] = ccoParam(ccName, ccDecl, ccoCopy(ccName));
-#else
-		ccoArgv(ccArgs)[i] = gc0TypeId(type, fmt);
-#endif
 	}
 
 	/* Return the full declaration */

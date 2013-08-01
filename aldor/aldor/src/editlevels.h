@@ -48,7 +48,6 @@
 	/* Edit 1.1.13(31): added fiArrNew_* to foam_c.c */
 	/* Edit 1.1.13(29): uniar2 fix for UCB archives with stabs */
 	/* Edit 1.1.13(28): added fiArrNew_Ptr to foam_c.c */
-#define AXL_EDIT_1_1_13_27 1	/* fix for -Cold multi-value prototypes */
 	/* Edit 1.1.13(26): -M[no-]release */
 	/* Edit 1.1.13(25): GCC 2.96 fix in platform.h/axiomxl.conf */
 #define AXL_EDIT_1_1_13_24 1	/* fixes in archive.c */

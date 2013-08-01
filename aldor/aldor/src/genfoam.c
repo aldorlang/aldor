@@ -3201,17 +3201,12 @@ AInt
 gen0CSigFormatNumber(TForm tf)
 {
 	Foam		ddecl;
-#ifdef AXL_EDIT_1_1_13_27
 	Length		i, argc, retc;
-#else
-	Length		i, argc;
-#endif
 	char		buffer[120];
 
 	assert (tfIsMap(tf));
 	argc = tfMapArgc(tf);
 
-#ifdef AXL_EDIT_1_1_13_27
 	/* Generate the format. */
 	retc = tfMapRetc(tf);
 	if (retc == 1) retc = 0; /* Only want retc for multi-valued imports */
@@ -3249,32 +3244,6 @@ gen0CSigFormatNumber(TForm tf)
 		str = strCopy(buffer);
 		ddecl->foamDDecl.argv[argc + i] = foamNewDecl(rtype, str, fmt);
 	}
-#else
-	/* Generate the format */
-	ddecl = foamNewEmpty(FOAM_DDecl, argc + 2); /* Include return type */
-	ddecl->foamDDecl.usage = FOAM_DDecl_CSig;
-
-	for (i = 0; i < argc + 1; i++) {
-		AInt	fmt;
-		TForm	tfi;
-		FoamTag	type;
-
-		/* Generate a decl for the parameter or return type? */
-		tfi = (i == argc) ? tfMapRet(tf) : tfMapArgN(tf, i);
-
-
-		/* Skip any declaration */
-		if (tfIsDeclare(tfi)) tfi = tfDeclareType(tfi);
-
-
-		/* Get the foam type */
-		type = gen0Type(tfi, &fmt);
-
-
-		/* Create a suitable declaration */
-		ddecl->foamDDecl.argv[i] = foamNewDecl(type, strCopy(""), fmt);
-	}
-#endif
 
 	return gen0AddRealFormat(ddecl);
 }
@@ -3291,17 +3260,12 @@ AInt
 gen0CPackedSigFormatNumber(TForm tf)
 {
 	Foam		ddecl;
-#ifdef AXL_EDIT_1_1_13_27
 	Length		i, argc, retc;
-#else
-	Length		i, argc;
-#endif
 	char		buffer[120];
 
 	assert (tfIsPackedMap(tf));
 	argc = tfMapArgc(tf);
 
-#ifdef AXL_EDIT_1_1_13_27
 	/* Generate the format. */
 	retc = tfMapRetc(tf);
 	if (retc == 1) retc = 0; /* Only want retc for multi-valued imports */
@@ -3341,34 +3305,6 @@ gen0CPackedSigFormatNumber(TForm tf)
 		str = strCopy(buffer);
 		ddecl->foamDDecl.argv[argc + i] = foamNewDecl(rtype, str, fmt);
 	}
-#else
-	/* Generate the format */
-	ddecl = foamNewEmpty(FOAM_DDecl, argc + 2); /* Include return type */
-	ddecl->foamDDecl.usage = FOAM_DDecl_CSig;
-
-	for (i = 0; i < argc + 1; i++) {
-		AInt	fmt;
-		TForm	tfi;
-		FoamTag	type;
-
-		/* Generate a decl for the parameter or return type? */
-		tfi = (i == argc) ? tfMapRet(tf) : tfMapArgN(tf, i);
-
-
-		/* Skip any declaration */
-		if (tfIsDeclare(tfi)) tfi = tfDeclareType(tfi);
-
-/*		printf("BDS: Getting Raw Type in gen0CPackedSigFormatNumber\n"); */
-		tfi = tfRawType(tfi);
-
-		/* Get the foam type */
-		type = gen0Type(tfi, &fmt);
-
-
-		/* Create a suitable declaration */
-		ddecl->foamDDecl.argv[i] = foamNewDecl(type, strCopy(""), fmt);
-	}
-#endif
 
 	return gen0AddRealFormat(ddecl);
 }
