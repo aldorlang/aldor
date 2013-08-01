@@ -239,11 +239,7 @@ fiDoubleHexPrintToString(f)
 FiWord
 fiDoubleHexPrintToString(FiWord f) 
 {
-#if EDIT_1_0_n2_01
   sprintf(double_hex_print_string,"%.8x %.8x",*(int *)f,*((int *)f+1));
-#else
-  sprintf(double_hex_print_string,"%0.8x %0.8x",*(int *)f,*((int *)f+1));
-#endif
   return (FiWord) double_hex_print_string;
 }
 

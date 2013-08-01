@@ -1101,11 +1101,7 @@ procSysMap()
   int fd;
   int nm, ret;
 
-#if EDIT_1_0_n2_01
   sprintf(pid, "/proc/%d", (int) getpid());
-#else
-  sprintf(pid, "/proc/%d", getpid());
-#endif
   fd = open(pid, O_RDONLY);
   if (!fd) perror("Open");
 
