@@ -14,10 +14,6 @@
  * Work-in-progress: these are edits that have not been completed and thus
  * don't have an edit number yet. Use these for long term projects etc.
  */
-#define EDIT_1_0_n1_SSA 1	/* SSA */
-
-#define EDIT_1_0_n1_AD 1	/* (currently unused) */
-#define EDIT_1_0_n1_AC 1	/* (currently unused) */
 #define EDIT_1_0_n1_AB 1	/* (currently unused) */
 #define EDIT_1_0_n1_AA 0	/* comex CEnvs */
 
@@ -94,12 +90,8 @@
 
 #define AXL_EDIT_1_1_13_34 1	/* changing "with" insertion to warning */
 				/* Breaks too many things */
-#define AXL_EDIT_1_1_12p6_15 1	/* Set hash code on correct closure value */
-				/* Replaced by 1.1.12p6_24 and 1.1.12p6_25 */
 #define AXL_EDIT_1_1_12p6_14 1	/* Deleted code in gen0RtSefoHashStdApply() */
 				/* Edits 15, 24 and 25 put it back ... */
-#define AXL_EDIT_1_1_12p6_01 1	/* assert(tfBoolean != tfUnknown) */
-				/* Replaced by Aldor 1.0.-1(3) */
 #endif
 
 #endif /* !_EDITLEVELS_H_ */
