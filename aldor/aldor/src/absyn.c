@@ -1868,10 +1868,8 @@ abDefineeIdOrElse(AbSyn ab, AbSyn failed)
 		case AB_Comma:
 			if (abArgc(ab) < 1)
 				return failed;
-#if AXL_EDIT_1_1_13_04
 			if (abArgc(ab) > 1)
 				bugWarning("abDefineeId comma bug");
-#endif
 			ab = abArgv(ab)[0];
 			break;
 		case AB_Id:
