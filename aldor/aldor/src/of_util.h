@@ -120,7 +120,7 @@ extern Bool		gen0Hashcheck;
 extern Bool		gen0NewHashCodes;
 
 #define			genNewHashCodes()		(gen0NewHashCodes)
-#define			genSetNewHashCodes()		(gen0NewHashCodes = true)
+#define			genResetNewHashCodes()		(gen0NewHashCodes = false)
 
 /*****************************************************************************
  *
