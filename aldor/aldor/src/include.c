@@ -702,7 +702,6 @@ inclHandleLine(int lno, String fname)
 
 		fileState.lineNumber = lno - 1; /* The next line is 'lno' */
 
-#if EDIT_1_0_n2_09
 		if (fname) { 
 		  fileState.curFile = fname;
 		  /* rhx: We trust the programmer of the #line statement
@@ -722,15 +721,6 @@ inclHandleLine(int lno, String fname)
 		}
 		  sposGrowGloLineTbl(fileState.curFname, fileState.lineNumber,
 				     inclSerialLineNo);
-#else
-		if (fname) { 
-		  fileState.curFile = fname;
-		  fileState.curFname = inclFind(fname, fileState.curDir);
-		}
-		else
-		  sposGrowGloLineTbl(fileState.curFname, fileState.lineNumber,
-				     inclSerialLineNo);
-#endif
 
 
 		return listNil(SrcLine);
