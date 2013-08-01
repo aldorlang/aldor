@@ -3015,11 +3015,7 @@ tibupExcept(Stab stab, AbSyn absyn, TForm type)
 {
 	tibup(stab, absyn->abExcept.except, tfTuple(tfCategory));
 	tibup(stab, absyn->abExcept.type, type);
-#if EDIT_1_0_n1_08
 	abTPoss(absyn) = abReferTPoss(absyn->abExcept.type);
-#else
-	abTPoss(absyn) = tpossRefer(abTPoss(absyn->abExcept.type));
-#endif
 }
 
 /***************************************************************************
