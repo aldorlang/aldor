@@ -1,0 +1,40 @@
+@SET_MAKE@
+VPATH = @srcdir@
+
+# For AM_V_*
+AM_DEFAULT_VERBOSITY = @AM_DEFAULT_VERBOSITY@
+
+builddir	:= @builddir@
+abs_builddir	:= @abs_builddir@
+top_builddir	:= @top_builddir@
+abs_top_builddir:= @abs_top_builddir@
+srcdir		:= @srcdir@
+abs_srcdir	:= @abs_srcdir@
+top_srcdir	:= @top_srcdir@
+abs_top_srcdir	:= @abs_top_srcdir@
+subdir		:= $(subst $(abs_top_builddir)/,,$(abs_builddir))
+
+# Build starts here
+library = tst_test tst_assert $(tests)
+tests = tst_random tst_complex
+
+include $(abs_top_srcdir)/lib/algebra/src/common.mk
+
+AA=tst_complex
+check: $(addsuffix .test,$(tests))
+
+.PHONY: $(addsuffix .test,$(tests))
+
+$(addsuffix .test,$(tests)): %.test: %.ao
+	cp _sublib_libdep.al lib$(libraryname)_$*.al;			\
+	ar r lib$(libraryname)_$*.al $(addsuffix .ao, $(shell $(UNIQ) $*.dep));	\
+	$(DBG) $(aldorexedir)/aldor				\
+		-Nfile=$(aldorsrcdir)/aldor.conf 	\
+		-Y.					\
+		-Y$(aldorlibdir)/libfoam/al		\
+		-Y$(top_builddir)/lib/aldor/src		\
+		-I$(libraryincdir)			\
+		-laldor					\
+		-l$(Libraryname)Lib=$(libraryname)_$*	\
+		-DBuild$(Libraryname)Lib		\
+	        -ginterp $*.ao

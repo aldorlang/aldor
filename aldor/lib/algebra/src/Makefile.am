@@ -3,7 +3,7 @@ SUBDIRS = util numbers extree extree/operators extree/parser categories	\
 	  mat/modular/compbug mat/linalg multpoly/multpolydata		\
 	  multpoly/exponent univpoly/categories mat/linalg2 univpoly	\
 	  univpoly/gcd fraction series series/compbug mat/linalg3	\
-	  algext polyfactorp ffield
+	  algext polyfactorp ffield test
 
 # polyfactor0 multpoly/multpolycat	\
 #	  multpoly/multpolydom multpoly/multpolypkg			\

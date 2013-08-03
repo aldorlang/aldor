@@ -95,7 +95,6 @@ AC_CONFIG_FILES([Makefile
 		 lib/aldor/src/arith/Makefile
 		 lib/aldor/src/datastruc/Makefile
 		 lib/aldor/src/util/Makefile
-		 lib/aldor/src/test/Makefile
 		 lib/aldor/src/gmp/Makefile
 		 lib/algebra/Makefile
 		 lib/algebra/include/Makefile
@@ -131,6 +130,7 @@ AC_CONFIG_FILES([Makefile
 		 lib/algebra/src/multpoly/multpolydom/Makefile
 		 lib/algebra/src/multpoly/multpolypkg/Makefile
 		 lib/algebra/src/multpoly/multpolytest/Makefile
+		 lib/algebra/src/test/Makefile
 		 lib/axllib/Makefile
 		 lib/axllib/include/Makefile
 		 lib/axllib/src/Makefile
