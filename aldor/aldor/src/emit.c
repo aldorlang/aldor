@@ -1232,16 +1232,20 @@ void
 emitInterp(int argc1, String *argv1)
 {
 	FileName emitExecName;
-
+	Bool result;
 	if (!emitDoInterp) return;
 
 	/* If emitDoInterp, we are sure that emitExecFinfo != NULL. */
 	emitExecName = emitFileName(emitExecFinfo, FTYPENO_INTERMED);
 
-	fintFile(emitExecName);
+	result = fintFile(emitExecName);
 
 	if (!emitKeep[FTYPENO_INTERMED])
 		fileRemove(emitExecName);
+
+	if (!result) {
+	  exitFailure(result);
+	}
 }
 
 

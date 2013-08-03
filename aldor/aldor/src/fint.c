@@ -6185,7 +6185,6 @@ fintExecMainUnit(void)
 
 			  dexn.fiWord = exn;
 			  (void)fintDoCall1(&handler->dataObj, &ret, &dexn);
-			  ok = true;
 			}
 		}
 	}
@@ -6284,18 +6283,18 @@ so it is not possible to throw an exception.\n",
 	  arg1.fiWord = (FiWord) reason;
 	  arg2.fiWord = (FiWord) stuff;
 	  (void) fintDoCall(&exceptionThrower->dataObj, &ret, 2, &arg1, &arg2);
-	  exit(int0);
+	  exit(1);
 	  /* Won't get past here */
 	}
 }
 
 /* Assumes that the file exists */
-void
+Bool
 fintFile(FileName fname)
 {
 	FintUnit	u;
 	Lib		lib;
-
+	int             result;
 	fintInit();
 
 	lib = libGetHeader(libNew(fname, false, fileRbOpen(fname),
@@ -6325,7 +6324,7 @@ fintFile(FileName fname)
 
 	(void)loadOtherUnits();
 
- 	(void)fintExecMainUnit();
+ 	result = fintExecMainUnit();
 
 	/* !! We should close the archive files */
 	libClose(lib);
@@ -6334,6 +6333,7 @@ fintFile(FileName fname)
 
 	fintStoDEBUG(stoAudit(););
 
+	return result;
 }
 
 
@@ -6457,4 +6457,3 @@ fintGetEndInterpTime(void)
 
 	fintInterpTime = osCpuTime() - fintInterpTime;
 }
-
