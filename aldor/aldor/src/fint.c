@@ -1332,7 +1332,8 @@ loadUnit(String name, Buffer buf)
 
 	fintGetTagFmtArgc(tag, fmt, argc);
 
-	hardAssert(tag == FOAM_Unit && argc == 2);
+	hardAssert(tag == FOAM_Unit);
+	hardAssert(argc == 2);
 
 	/* allocates fintUnit */
 	unit = (FintUnit) fintAlloc(fintUnit,1);
@@ -1378,7 +1379,8 @@ readDef(FintUnit unit)
 	FiProgPos	oldIp;
 
 	fintGetTagFmtArgc(tag, fmt, argc);
-	hardAssert(tag == FOAM_Def && argc == 2);
+	hardAssert(tag == FOAM_Def);
+	hardAssert(argc == 2);
 
 	oldIp = ip;
 
@@ -3576,9 +3578,8 @@ fintEval_(DataObj retDataObj)
 		else if (tag == FOAM_CCall) {
 			fintGetByte(retType); 	/* return type */
 			type = fintEval(&expr);
-			hardAssert((type == FOAM_Clos ||
-			       type == FOAM_Word ) &&
-			       (expr.fiClos != (FiClos) 0));
+			hardAssert(type == FOAM_Clos || type == FOAM_Word);
+			hardAssert(expr.fiClos != NULL);
 			prog0 = (ProgInfo) expr.fiClos->prog;
 			env = expr.fiClos->env;
 			argc -= 2;
@@ -3684,8 +3685,8 @@ fintEval_(DataObj retDataObj)
 	case FOAM_Loc:
 		fintGetInt(fmt, n);
 
-		hardAssert(progInfoFmtLoc(prog) &&
-		       n < progInfoLocsCount(prog));
+		hardAssert(progInfoFmtLoc(prog));
+		hardAssert(n < progInfoLocsCount(prog));
 
 		fintSet(locType(n), retDataObj, locValue(n));
 
@@ -3696,8 +3697,8 @@ fintEval_(DataObj retDataObj)
 	case FOAM_Par:
 		fintGetInt(fmt, n);
 
-		hardAssert(progInfoFmtPar(prog) &&
-		       n < progInfoParsCount(prog));
+		hardAssert(progInfoFmtPar(prog));
+		hardAssert(n < progInfoParsCount(prog));
 
 		fintSet(parType(n), retDataObj, parValue(n));
 
@@ -4018,8 +4019,8 @@ fintEval_(DataObj retDataObj)
 		default:{
 			int frSize = 0, toSize = 0;
 
-			hardAssert(toType != FOAM_SFlo &&
-			       toType != FOAM_DFlo);
+			hardAssert(toType != FOAM_SFlo);
+			hardAssert(toType != FOAM_DFlo);
 			if (frType == FOAM_NOp && toType== FOAM_NOp) break;
 			fintGetTypeSize(frSize, frType);
 			fintGetTypeSize(toSize, toType);
@@ -4353,7 +4354,7 @@ fintEval_(DataObj retDataObj)
 		env = expr.fiEnv;
 		for (i = 0; i < lev; i++) {
 			env = env->next;
-			hardAssert(env);
+			hardAssert(env != NULL);
 		}
 
 		type = fmtType0(format, n);
@@ -4995,8 +4996,8 @@ fintGetReference(Ref pDataObj)
 
 		fintGetInt(fmt, n);
 
-		hardAssert(progInfoFmtLoc(prog) &&
-		       n < progInfoLocsCount(prog));
+		hardAssert(progInfoFmtLoc(prog));
+		hardAssert(n < progInfoLocsCount(prog));
 
 		*pDataObj = &(locValue(n));
 		myType = locType(n);
@@ -5006,8 +5007,8 @@ fintGetReference(Ref pDataObj)
 
 		fintGetInt(fmt, n);
 
-		hardAssert(progInfoFmtPar(prog) &&
-		       n < progInfoParsCount(prog));
+		hardAssert(progInfoFmtPar(prog));
+		hardAssert(n < progInfoParsCount(prog));
 
 		*pDataObj = &(parValue(n));
 		myType = parType(n);
