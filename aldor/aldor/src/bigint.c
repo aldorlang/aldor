@@ -1597,7 +1597,7 @@ xintImmedIfCan(BInt b)
 			       ? b : (BInt) ptrFrLong(MkImmed(u));
 	}
 
-#ifdef really_wide_pointers 
+
 	/* For cases where 2*sizeof(BIntS) < sizeof(BInt) 	*/
 	if (pb*BINT_LG_RADIX <= bitsizeof(IInt)) {
 		int 	i;
@@ -1610,7 +1610,7 @@ xintImmedIfCan(BInt b)
 		        return (u > INT_MAX_IMMED) ? b 
 				: (BInt) ptrFrLong(MkImmed(u));
 	}
-#endif
+
 	return b;
 }
 
