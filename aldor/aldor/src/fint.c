@@ -337,6 +337,7 @@ typedef struct fintUnit	fintUnit;
     case FOAM_SFlo: ((FiSFlo *)((ref)->fiArr))[(n)] = (expr).fiSFlo; break; \
     case FOAM_DFlo: ((FiDFlo *)((ref)->fiArr))[(n)] = (expr).fiDFlo; break; \
     case FOAM_Word: ((FiWord *)((ref)->fiArr))[(n)] = (expr).fiWord; break; \
+    case FOAM_BInt: ((FiBInt *)((ref)->fiArr))[(n)] = (expr).fiBint; break; \
     default: fintWhere(int0);bug("fintASetElem: type %d unimplemented.", type); \
     } \
 }
@@ -351,6 +352,7 @@ typedef struct fintUnit	fintUnit;
     case FOAM_SFlo: (pdata)->fiSFlo = ((FiSFlo *)((ref)->fiArr))[(n)]; break; \
     case FOAM_DFlo: (pdata)->fiDFlo = ((FiDFlo *)((ref)->fiArr))[(n)]; break; \
     case FOAM_Word: (pdata)->fiWord = ((FiWord *)((ref)->fiArr))[(n)]; break; \
+    case FOAM_BInt: (pdata)->fiBInt = ((FiBInt *)((ref)->fiArr))[(n)]; break; \
     default: fintWhere(int0);bug("fintAGetElem: type %d unimplemented.", type); \
     } \
 }
@@ -365,6 +367,7 @@ typedef struct fintUnit	fintUnit;
     case FOAM_SFlo:(pdata)=(DataObj)(((FiSFlo *)((ref)->fiArr)) + (n)); break;\
     case FOAM_DFlo:(pdata)=(DataObj)(((FiDFlo *)((ref)->fiArr)) + (n)); break;\
     case FOAM_Word:(pdata)=(DataObj)(((FiWord *)((ref)->fiArr)) + (n)); break;\
+    case FOAM_BInt:(pdata)=(DataObj)(((FiBInt *)((ref)->fiArr)) + (n)); break;\
     default: fintWhere(int0);bug("fintAGetElemRef: type %d unimplemented.", type); \
     } \
 }
@@ -554,7 +557,7 @@ typedef struct fintUnit	fintUnit;
  * Heap management
  *
  *************************************************************************/
-# define fintAlloc(type,n)	((DataObj) stoAlloc(OB_Other, sizeof(type) * (n)))
+# define fintAlloc(type,n)	((DataObj) memset(stoAlloc(OB_Other, sizeof(type) * (n)), 0, sizeof(type) * (n)))
 # define fintFree(p)		stoFree((p))
 # define fintFree0(p)		if (p) stoFree(p)
 
@@ -1331,7 +1334,8 @@ loadUnit(String name, Buffer buf)
 
 	fintGetTagFmtArgc(tag, fmt, argc);
 
-	hardAssert(tag == FOAM_Unit && argc == 2);
+	hardAssert(tag == FOAM_Unit);
+	hardAssert(argc == 2);
 
 	/* allocates fintUnit */
 	unit = (FintUnit) fintAlloc(fintUnit,1);
@@ -1377,7 +1381,8 @@ readDef(FintUnit unit)
 	FiProgPos	oldIp;
 
 	fintGetTagFmtArgc(tag, fmt, argc);
-	hardAssert(tag == FOAM_Def && argc == 2);
+	hardAssert(tag == FOAM_Def);
+	hardAssert(argc == 2);
 
 	oldIp = ip;
 
@@ -3575,9 +3580,8 @@ fintEval_(DataObj retDataObj)
 		else if (tag == FOAM_CCall) {
 			fintGetByte(retType); 	/* return type */
 			type = fintEval(&expr);
-			hardAssert((type == FOAM_Clos ||
-			       type == FOAM_Word ) &&
-			       (expr.fiClos != (FiClos) 0));
+			hardAssert(type == FOAM_Clos || type == FOAM_Word);
+			hardAssert(expr.fiClos != NULL);
 			prog0 = (ProgInfo) expr.fiClos->prog;
 			env = expr.fiClos->env;
 			argc -= 2;
@@ -3683,8 +3687,8 @@ fintEval_(DataObj retDataObj)
 	case FOAM_Loc:
 		fintGetInt(fmt, n);
 
-		hardAssert(progInfoFmtLoc(prog) &&
-		       n < progInfoLocsCount(prog));
+		hardAssert(progInfoFmtLoc(prog));
+		hardAssert(n < progInfoLocsCount(prog));
 
 		fintSet(locType(n), retDataObj, locValue(n));
 
@@ -3695,8 +3699,8 @@ fintEval_(DataObj retDataObj)
 	case FOAM_Par:
 		fintGetInt(fmt, n);
 
-		hardAssert(progInfoFmtPar(prog) &&
-		       n < progInfoParsCount(prog));
+		hardAssert(progInfoFmtPar(prog));
+		hardAssert(n < progInfoParsCount(prog));
 
 		fintSet(parType(n), retDataObj, parValue(n));
 
@@ -3798,6 +3802,7 @@ fintEval_(DataObj retDataObj)
 		union dataObj		clos;
 
 		fintTypedEval(&clos, FOAM_Clos);
+		hardAssert(clos.fiClos != NULL);
 		retDataObj->fiEnv = clos.fiClos->env;
 		myType = FOAM_Env;
 		break;
@@ -3807,6 +3812,7 @@ fintEval_(DataObj retDataObj)
 		union dataObj		clos;
 
 		fintTypedEval(&clos, FOAM_Clos);
+		hardAssert(clos.fiClos != NULL);
 		retDataObj->fiProgPos = (FiProgPos) clos.fiClos->prog;
 		myType = FOAM_Prog;
 		break;
@@ -3816,6 +3822,7 @@ fintEval_(DataObj retDataObj)
 		union dataObj		env;
 
 		fintTypedEval(&env, FOAM_Env);
+		hardAssert(env.fiEnv != NULL);
 		retDataObj->fiWord = (FiWord) (env.fiEnv->info);
 		myType = FOAM_Word;
 		break;
@@ -4017,8 +4024,8 @@ fintEval_(DataObj retDataObj)
 		default:{
 			int frSize = 0, toSize = 0;
 
-			hardAssert(toType != FOAM_SFlo &&
-			       toType != FOAM_DFlo);
+			hardAssert(toType != FOAM_SFlo);
+			hardAssert(toType != FOAM_DFlo);
 			if (frType == FOAM_NOp && toType== FOAM_NOp) break;
 			fintGetTypeSize(frSize, frType);
 			fintGetTypeSize(toSize, toType);
@@ -4150,9 +4157,6 @@ fintEval_(DataObj retDataObj)
 		case FOAM_Char:
 			retDataObj->fiArr = (Ptr) fiArrNew_Char(argc+1);
 			break;
-
-/* Now we create only array of chars */
-#ifdef FALSE
 		case FOAM_Bool:
 			retDataObj->fiArr = (Ptr) fiArrNew_Bool(argc+1);
 			break;
@@ -4173,9 +4177,11 @@ fintEval_(DataObj retDataObj)
 		case FOAM_Word:
 			retDataObj->fiArr = (Ptr) fiArrNew_Word(argc+1);
 			break;
-#endif
+		case FOAM_BInt:
+			retDataObj->fiArr = (Ptr) fiArrNew_BInt(argc+1);
+			break;
 		default:
-			bug("fintEval: array of type %d unimplemented", type);
+			bug("fintEval: array of type %s unimplemented for Arr", foamInfo(type).str);
 		}
 
 		for (n = 0; n < argc; n++) {
@@ -4218,8 +4224,11 @@ fintEval_(DataObj retDataObj)
 		case FOAM_Word:
 			retDataObj->fiArr = (Ptr) fiArrNew_Word(expr.fiSInt);
 			break;
+		case FOAM_BInt:
+			retDataObj->fiArr = (Ptr) fiArrNew_BInt(expr.fiSInt);
+			break;
 		default:
-			bug("fintEval: array of type %d unimplemented", type);
+			bug("fintEval: array of type %s unimplemented for ANew", foamInfo(type).str);
 		}
 
 		myType = FOAM_Arr;
@@ -4350,7 +4359,7 @@ fintEval_(DataObj retDataObj)
 		env = expr.fiEnv;
 		for (i = 0; i < lev; i++) {
 			env = env->next;
-			hardAssert(env);
+			hardAssert(env != NULL);
 		}
 
 		type = fmtType0(format, n);
@@ -4996,8 +5005,8 @@ fintGetReference(Ref pDataObj)
 
 		fintGetInt(fmt, n);
 
-		hardAssert(progInfoFmtLoc(prog) &&
-		       n < progInfoLocsCount(prog));
+		hardAssert(progInfoFmtLoc(prog));
+		hardAssert(n < progInfoLocsCount(prog));
 
 		*pDataObj = &(locValue(n));
 		myType = locType(n);
@@ -5007,8 +5016,8 @@ fintGetReference(Ref pDataObj)
 
 		fintGetInt(fmt, n);
 
-		hardAssert(progInfoFmtPar(prog) &&
-		       n < progInfoParsCount(prog));
+		hardAssert(progInfoFmtPar(prog));
+		hardAssert(n < progInfoParsCount(prog));
 
 		*pDataObj = &(parValue(n));
 		myType = parType(n);

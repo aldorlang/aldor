@@ -232,7 +232,7 @@ AldorDomainRep: Conditional with {
 		DEBUG(PRINT()<<"(Looking for "<<find nameCode
 			     <<" with code "  <<type<<NL());
 		rep(dom).ngets := rep(dom).ngets + 1;
-		if rep(dom).ngets > 10 then {
+		if rep(dom).ngets > 100 then {
 			--printDomain(PRINT(), name dom) << NL();
 			ERROR "Circular get broken";
 		}
