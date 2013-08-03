@@ -760,6 +760,7 @@ enum fintForeignTag {
 	FINT_FOREIGN_osAlloc,
 	FINT_FOREIGN_osFree,
 	FINT_FOREIGN_osMemMap,
+	FINT_FOREIGN_randomSeed,
 
 	FINT_FOREIGN_fiNewExportTable,
 	FINT_FOREIGN_fiAddToExportTable,
@@ -932,6 +933,7 @@ fintForeign	fintForeignTable [] = {
 	DECL_FOREIGN(osAlloc),
 	DECL_FOREIGN(osFree),
 	DECL_FOREIGN(osMemMap),
+	DECL_FOREIGN(randomSeed),
 
 	/* Runtime hashcode checks */
 	DECL_FOREIGN(fiNewExportTable),
@@ -4940,6 +4942,10 @@ fintEval_(DataObj retDataObj)
 		case FINT_FOREIGN_osMemMap: {
 			fintTypedEval(&expr1, FOAM_SInt);
 		        retDataObj->fiArr = (FiArr)osMemMap((int)expr1.fiSInt);
+			break;
+		        }
+		case FINT_FOREIGN_randomSeed: {
+			retDataObj->fiSInt = rand();
 			break;
 		        }
 		default: {
