@@ -557,7 +557,7 @@ typedef struct fintUnit	fintUnit;
  * Heap management
  *
  *************************************************************************/
-# define fintAlloc(type,n)	((DataObj) stoAlloc(OB_Other, sizeof(type) * (n)))
+# define fintAlloc(type,n)	((DataObj) memset(stoAlloc(OB_Other, sizeof(type) * (n)), 0, sizeof(type) * (n)))
 # define fintFree(p)		stoFree((p))
 # define fintFree0(p)		if (p) stoFree(p)
 
@@ -3800,6 +3800,7 @@ fintEval_(DataObj retDataObj)
 		union dataObj		clos;
 
 		fintTypedEval(&clos, FOAM_Clos);
+		hardAssert(clos.fiClos != NULL);
 		retDataObj->fiEnv = clos.fiClos->env;
 		myType = FOAM_Env;
 		break;
@@ -3809,6 +3810,7 @@ fintEval_(DataObj retDataObj)
 		union dataObj		clos;
 
 		fintTypedEval(&clos, FOAM_Clos);
+		hardAssert(clos.fiClos != NULL);
 		retDataObj->fiProgPos = (FiProgPos) clos.fiClos->prog;
 		myType = FOAM_Prog;
 		break;
@@ -3818,6 +3820,7 @@ fintEval_(DataObj retDataObj)
 		union dataObj		env;
 
 		fintTypedEval(&env, FOAM_Env);
+		hardAssert(env.fiEnv != NULL);
 		retDataObj->fiWord = (FiWord) (env.fiEnv->info);
 		myType = FOAM_Word;
 		break;
