@@ -12,7 +12,7 @@
 extern void	fintInit 		(void);
 extern void	fintFini 		(void);
 extern Bool     fint			(Foam);
-extern void	fintFile		(FileName);
+extern Bool	fintFile		(FileName);
 extern void	fintInitFile		(void);
 extern void     fintPrintType           (FILE *, AbSyn);
 

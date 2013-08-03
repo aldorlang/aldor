@@ -97,14 +97,35 @@ _sublib_libdep.al: $(foreach l,$(library_deps),$(librarylibdir)/$l/_sublib.al)
 	   rm $$(ar t $$l);		\
         done
 
-$(addsuffix .cmd, $(alldomains)): %.cmd: Makefile
-	echo "run $(aldor_args)" > $@
-
 $(addsuffix .fm,$(alldomains)): %.fm: %.ao
 	$(AM_V_AO2FM)				\
 	$(aldorexedir)/aldor			\
 	   -Nfile=$(aldorsrcdir)/aldor.conf	\
 	   -Ffm=$@ $<
+
+.PHONY: $(addsuffix .gloop, $(alldomains))
+$(addsuffix .gloop, $(alldomains)): %.gloop:
+	$(AM_V_ALDOR)set -e;							\
+	rm -f $*.c $*.ao;							\
+	cp _sublib_libdep.al lib$(libraryname)_$*.al;				\
+	ar r lib$(libraryname)_$*.al $(addsuffix .ao, $(shell $(UNIQ) $*.dep));	\
+	$(DBG) $(aldorexedir)/aldor  -gloop 			\
+		-Nfile=$(aldorsrcdir)/aldor.conf 	\
+		-Y.					\
+		-Y$(aldorlibdir)/libfoam/al		\
+		-I$(libraryincdir)			\
+		-l$(Libraryname)Lib=$(libraryname)_$*	\
+		-DBuild$(Libraryname)Lib		\
+		$(AXLFLAGS) $($*_AXLFLAGS)		\
+
+.PHONY: help
+help:
+	@echo 'additional targets:'
+	@echo '%.gloop	- run interpreter with environment of %.as'
+	@echo '%.fm	- generate foam file'
+	@echo ''
+	@echo 'useful variables:'
+	@echo '	DBG 	- set to \"gdb --args" for a debugger primed to run the aldor command'
 
 define dep_template
 $1.ao: $1.dep $(addsuffix .ao,$($1_deps))
