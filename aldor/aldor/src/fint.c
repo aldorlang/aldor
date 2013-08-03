@@ -337,6 +337,7 @@ typedef struct fintUnit	fintUnit;
     case FOAM_SFlo: ((FiSFlo *)((ref)->fiArr))[(n)] = (expr).fiSFlo; break; \
     case FOAM_DFlo: ((FiDFlo *)((ref)->fiArr))[(n)] = (expr).fiDFlo; break; \
     case FOAM_Word: ((FiWord *)((ref)->fiArr))[(n)] = (expr).fiWord; break; \
+    case FOAM_BInt: ((FiBInt *)((ref)->fiArr))[(n)] = (expr).fiBint; break; \
     default: fintWhere(int0);bug("fintASetElem: type %d unimplemented.", type); \
     } \
 }
@@ -351,6 +352,7 @@ typedef struct fintUnit	fintUnit;
     case FOAM_SFlo: (pdata)->fiSFlo = ((FiSFlo *)((ref)->fiArr))[(n)]; break; \
     case FOAM_DFlo: (pdata)->fiDFlo = ((FiDFlo *)((ref)->fiArr))[(n)]; break; \
     case FOAM_Word: (pdata)->fiWord = ((FiWord *)((ref)->fiArr))[(n)]; break; \
+    case FOAM_BInt: (pdata)->fiBInt = ((FiBInt *)((ref)->fiArr))[(n)]; break; \
     default: fintWhere(int0);bug("fintAGetElem: type %d unimplemented.", type); \
     } \
 }
@@ -365,6 +367,7 @@ typedef struct fintUnit	fintUnit;
     case FOAM_SFlo:(pdata)=(DataObj)(((FiSFlo *)((ref)->fiArr)) + (n)); break;\
     case FOAM_DFlo:(pdata)=(DataObj)(((FiDFlo *)((ref)->fiArr)) + (n)); break;\
     case FOAM_Word:(pdata)=(DataObj)(((FiWord *)((ref)->fiArr)) + (n)); break;\
+    case FOAM_BInt:(pdata)=(DataObj)(((FiBInt *)((ref)->fiArr)) + (n)); break;\
     default: fintWhere(int0);bug("fintAGetElemRef: type %d unimplemented.", type); \
     } \
 }
@@ -4148,9 +4151,6 @@ fintEval_(DataObj retDataObj)
 		case FOAM_Char:
 			retDataObj->fiArr = (Ptr) fiArrNew_Char(argc+1);
 			break;
-
-/* Now we create only array of chars */
-#ifdef FALSE
 		case FOAM_Bool:
 			retDataObj->fiArr = (Ptr) fiArrNew_Bool(argc+1);
 			break;
@@ -4171,9 +4171,11 @@ fintEval_(DataObj retDataObj)
 		case FOAM_Word:
 			retDataObj->fiArr = (Ptr) fiArrNew_Word(argc+1);
 			break;
-#endif
+		case FOAM_BInt:
+			retDataObj->fiArr = (Ptr) fiArrNew_BInt(argc+1);
+			break;
 		default:
-			bug("fintEval: array of type %d unimplemented", type);
+			bug("fintEval: array of type %s unimplemented for Arr", foamInfo(type).str);
 		}
 
 		for (n = 0; n < argc; n++) {
@@ -4216,8 +4218,11 @@ fintEval_(DataObj retDataObj)
 		case FOAM_Word:
 			retDataObj->fiArr = (Ptr) fiArrNew_Word(expr.fiSInt);
 			break;
+		case FOAM_BInt:
+			retDataObj->fiArr = (Ptr) fiArrNew_BInt(expr.fiSInt);
+			break;
 		default:
-			bug("fintEval: array of type %d unimplemented", type);
+			bug("fintEval: array of type %s unimplemented for ANew", foamInfo(type).str);
 		}
 
 		myType = FOAM_Arr;
