@@ -1,3 +1,10 @@
+aldor (1.2.0+20130803) precise; urgency=low
+
+  * Improve FOAM interpreter and runtime.
+  * Add flag: -Wold-hcodes for Axiom compatibility.
+
+ -- Pippijn van Steenhoven <pip88nl@gmail.com>  Sat, 03 Aug 2013 21:57:52 +0200
+
 aldor (1.2.0+20130727) precise; urgency=low
 
   * Correct type of multi-return valued function
