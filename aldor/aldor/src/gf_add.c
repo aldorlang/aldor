@@ -1290,9 +1290,14 @@ gen0EqualMods(Sefo sefo)
 			break;
 		}
 
+	/*
+	 * AB_Except is a bit of an oddity - in this case, the lhs won't be
+	 * simplified, which may mean this function doesn't quite work.
+	 */
 	assert(sefo == NULL ||
 	       abTag(sefo) == AB_Id ||
 	       abTag(sefo) == AB_Apply ||
+	       abTag(sefo) == AB_Except ||
 	       (abIsLeaf(sefo) && abSyme(sefo)));
 	return sefo;
 }
