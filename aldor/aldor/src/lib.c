@@ -2166,7 +2166,7 @@ lib0GetSymev(Lib lib)
 			assert(s < topc);
 			constLib = symeLibrary(lib->symev[s]);
 		}
-		else if (!symeConstLib(syme))
+		else if (!symeConstLib(syme) && !symeIsLibrary(syme))
 			constLib = lib;
 		else 
 			constLib = NULL;
@@ -2574,7 +2574,7 @@ lib1GetSymev(Lib lib)
 			assert(libCheckSymeNumber(lib, NULL, s));
 			constLib = symeLibrary(lib->symev[s]);
 		}
-		else if (!symeConstLib(syme))
+		else if (!symeConstLib(syme) && !symeIsLibrary(syme))
 			constLib = lib;
 		else
 			constLib = 0;
