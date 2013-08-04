@@ -8,6 +8,7 @@
 
 #include "stdc.h"
 int _dont_assert = 0;
+int _fatal_assert = 1;
 
 void
 _do_assert(char *str, char *file, int line)
@@ -16,7 +17,8 @@ _do_assert(char *str, char *file, int line)
 	fprintf(stderr,
 		"Assertion failed, file \"%s\" line %d: %s\n",
 		 file, line, str);
-	abort();
+	if (_fatal_assert)
+		abort();
 }
 
 

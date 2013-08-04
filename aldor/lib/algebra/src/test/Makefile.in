@@ -28,7 +28,7 @@ check: $(addsuffix .test,$(tests))
 $(addsuffix .test,$(tests)): %.test: %.ao
 	cp _sublib_libdep.al lib$(libraryname)_$*.al;			\
 	ar r lib$(libraryname)_$*.al $(addsuffix .ao, $(shell $(UNIQ) $*.dep));	\
-	$(DBG) $(aldorexedir)/aldor				\
+	$(DBG) $(aldorexedir)/aldor -Wcheck		\
 		-Nfile=$(aldorsrcdir)/aldor.conf 	\
 		-Y.					\
 		-Y$(aldorlibdir)/libfoam/al		\

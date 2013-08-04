@@ -30,6 +30,7 @@
 #endif
 
 extern int	_dont_assert;
+extern int	_fatal_assert;
 
 #if defined(NDEBUG)
 #  define assert(c)

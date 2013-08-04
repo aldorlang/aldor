@@ -13,6 +13,8 @@ UNIQ		:= perl $(top_srcdir)/aldor/tools/unix/uniq
 
 alldomains	:= $(internal) $(library)
 
+WCHECK		:= -Wcheck -Wno-fatal
+
 # Aldor
 AM_V_ALDOR = $(am__v_ALDOR_$(V))
 am__v_ALDOR_ = $(am__v_ALDOR_$(AM_DEFAULT_VERBOSITY))
@@ -60,7 +62,7 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 
 $(addsuffix .c, $(library)): %.c: %.ao %.dep
 	$(AM_V_AO2C)	\
-	$(aldorexedir)/aldor -Nfile=$(aldorsrcdir)/aldor.conf -Fc=$(builddir)/$@ $<	
+	$(aldorexedir)/aldor $(WCHECK) -Nfile=$(aldorsrcdir)/aldor.conf -Fc=$(builddir)/$@ $<	
 
 ifndef Libraryname
 Libraryname := $(shell echo '$(libraryname)' | sed -e 's/^[a-z]/\u&/')
@@ -81,7 +83,7 @@ $(addsuffix .ao, $(alldomains)): %.ao: _sublib_libdep.al
 	rm -f $*.c $*.ao;							\
 	cp _sublib_libdep.al lib$(libraryname)_$*.al;				\
 	ar r lib$(libraryname)_$*.al $(addsuffix .ao, $(shell $(UNIQ) $*.dep));	\
-	$(DBG) $(aldorexedir)/aldor $(aldor_args);				\
+	$(DBG) $(aldorexedir)/aldor $(WCHECK) $(aldor_args);			\
 	rm lib$(libraryname)_$*.al
 
 _sublib_libdep.al: $(foreach l,$(library_deps),$(librarylibdir)/$l/_sublib.al)
@@ -99,7 +101,7 @@ _sublib_libdep.al: $(foreach l,$(library_deps),$(librarylibdir)/$l/_sublib.al)
 
 $(addsuffix .fm,$(alldomains)): %.fm: %.ao
 	$(AM_V_AO2FM)				\
-	$(aldorexedir)/aldor			\
+	$(aldorexedir)/aldor $(WCHECK)		\
 	   -Nfile=$(aldorsrcdir)/aldor.conf	\
 	   -Ffm=$@ $<
 
@@ -109,7 +111,7 @@ $(addsuffix .gloop, $(alldomains)): %.gloop:
 	rm -f $*.c $*.ao;							\
 	cp _sublib_libdep.al lib$(libraryname)_$*.al;				\
 	ar r lib$(libraryname)_$*.al $(addsuffix .ao, $(shell $(UNIQ) $*.dep));	\
-	$(DBG) $(aldorexedir)/aldor  -gloop 			\
+	$(DBG) $(aldorexedir)/aldor $(WCHECK) -gloop 	\
 		-Nfile=$(aldorsrcdir)/aldor.conf 	\
 		-Y.					\
 		-Y$(aldorlibdir)/libfoam/al		\

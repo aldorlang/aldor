@@ -86,7 +86,8 @@ bug(String fmt, ...)
 	va_start(argp, fmt); vprintf(fmt, argp); va_end(argp);
 	printf("\n");
 
-	exitFailure();
+	if (_fatal_assert)
+		exitFailure();
 }
 
 /*****************************************************************************
