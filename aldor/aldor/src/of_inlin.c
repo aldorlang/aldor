@@ -1941,7 +1941,8 @@ inlInlineBody(Foam code, Foam call, Foam *argv, Foam env,
 			FoamTag type;
 			Foam	var;
 			AInt     fmt;
-			type = inlExprType(argv[i], &fmt);
+			type = code->foamProg.params->foamDDecl.argv[i]->foamDecl.type;
+			fmt = code->foamProg.params->foamDDecl.argv[i]->foamDecl.format;
 			var = inlAddTempLocal(type, fmt);
 			paramArgv[i] = var;
 			inlAddStmt(foamNewSet(foamCopy(paramArgv[i]),argv[i]));
