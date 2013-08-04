@@ -15,12 +15,11 @@ abs_top_srcdir	:= @abs_top_srcdir@
 subdir		:= $(subst $(abs_top_builddir)/,,$(abs_builddir))
 
 # Build starts here
-library = tst_test tst_assert $(tests)
+library = tst_test tst_assert
 tests = tst_random tst_complex
 
 include $(abs_top_srcdir)/lib/algebra/src/common.mk
 
-AA=tst_complex
 check: $(addsuffix .test,$(tests))
 
 .PHONY: $(addsuffix .test,$(tests))
