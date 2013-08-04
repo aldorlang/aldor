@@ -2046,7 +2046,7 @@ tfSyntaxConditions(Stab stab, TForm tf, TfCondElt conditions)
 			afprintf(dbOut, "Adding Condition: %pTForm - %pAbSynList %d\n", 
 				 tf, conditions->list,
 				 tfIsSyntax(tf) || tfIsMap(tf) || tfIsEmptyMulti(tf) || tfIsWith(tf)));
-	assert(tfIsSyntax(tf) || tfIsMap(tf) || tfIsEmptyMulti(tf) || tfIsWith(tf));
+	assert(tfIsSyntax(tf) || tfIsMap(tf) || tfIsMulti(tf) || tfIsWith(tf));
 	if (!tfIsMeaning(tf))
 		tfMergeConditions(tf, stab, conditions);
 
