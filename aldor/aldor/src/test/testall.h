@@ -16,9 +16,12 @@ void tinferTest(void);
 void stabTest(void);
 void scobindTest(void);
 void symeTest(void);
-void tibupTest(void);
-void tformTest(void);
 void srcposTest(void);
+void tformTest(void);
+void tfsatTest(void);
+void tibupTest(void);
+
+
 
 #endif
 

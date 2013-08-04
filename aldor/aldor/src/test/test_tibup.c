@@ -15,6 +15,7 @@
 local void testTiBupCollect1();
 local void testTiBupCollect2();
 local void testTiTdnPretend();
+local void testTiTdnMultiToCrossEmbed();
 
 /* XXX: from test_tinfer.c */
 void init(void);
@@ -29,6 +30,7 @@ tibupTest()
 	TEST(testTiBupCollect1);
 	TEST(testTiBupCollect2);
 	TEST(testTiTdnPretend);
+	TEST(testTiTdnMultiToCrossEmbed);
 	fini();
 }
 
@@ -175,3 +177,38 @@ f(): () ==
   a8 := (x, x)@Tuple(E)
 
 */
+
+local void
+testTiTdnMultiToCrossEmbed()
+{
+	String Boolean_imp = "import from Boolean";
+	String E_def = "E: with == add";
+	String f_def = "f(): (E, E) == never";
+	String g_def = "g(a: Cross(E,E)): () == never";
+
+	StringList lines = listList(String)(4, Boolean_imp, E_def, f_def, g_def);
+	AbSynList absynList = listCons(AbSyn)(stdtypes(), abqParseLines(lines));
+	AbSyn absyn = abNewSequenceL(sposNone, absynList);
+
+	initFile();
+	Stab stab = stabFile();
+
+	abPutUse(absyn, AB_Use_NoValue);
+	abPrintDb(absyn);
+	scopeBind(stab, absyn);
+	typeInfer(stab, absyn);
+
+	AbSyn fncall = abqParse("g(f())");
+	scopeBind(stab, fncall);
+	tiBottomUp(stab, fncall, tfUnknown);
+	tiTopDown(stab, fncall, tfUnknown);
+
+	testIntEqual("Unique", AB_State_HasUnique, abState(fncall));
+	testIntEqual("embed", AB_Embed_MultiToCross, fncall->abApply.argv[0]->abApply.hdr.seman->embed);
+
+	aprintf("Type of g: %pTForm\n", abTUnique(fncall->abApply.op));
+	aprintf("Type of f(): %pTForm\n", abTUnique(fncall->abApply.argv[0]));
+	aprintf("Embed of f(): %d\n", abEmbedApply(fncall->abApply.argv[0]));
+
+	finiFile();
+}

@@ -826,10 +826,11 @@ tfSat1(SatMask mask, AbSyn Sab, TForm S, TForm T)
 	T = tfFollowOnly(T);
 
 	/* If we can determine satisfaction w/o using tfFollow, do so. */
-	if (tfIsSubst(S))
-		if (tfSatBit(mask & ~TFS_Pending, tfSubstArg(S), T))
-			return tfSatTrue(mask);
-
+	if (tfIsSubst(S)) {
+		result = tfSat(mask & ~TFS_Pending, tfSubstArg(S), T);
+		if (tfSatSucceed(result))
+			return result;
+	}
 	S = tfDefineeType(S);
 	T = tfDefineeType(T);
 
