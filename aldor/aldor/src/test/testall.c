@@ -50,6 +50,7 @@ main(int argc, char *argv[])
 	if (testShouldRun("scobind")) scobindTest();
 	if (testShouldRun("syme")) symeTest();
 	if (testShouldRun("tibup")) tibupTest();
+	if (testShouldRun("tfsat")) tfsatTest();
 
 	testIntEqual("fluidlevel", 0, fluidLevel);
 

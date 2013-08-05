@@ -623,7 +623,8 @@ symeTransferImplInfo(Syme to, Syme from)
 	symeSetConstInfo(to, symeConstInfo(from));
 	symeSetConstLib(to, symeConstLib(from));
 
-	symeDEBUG(printf("Transfer: %p -> %p\n", to, from));
+	symeDEBUG(aprintf("Transfer: %d %d %d [%pSyme --> %pSyme]\n", symeHashNum(from), symeDefnNum(from),
+			  symeConstNum(from), from, to));
 
 	symeMergeImpl(to, symeImpl(from));
 }

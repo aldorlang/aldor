@@ -1373,7 +1373,7 @@ libPutSymes(Lib lib, SymeList symes, Foam foam)
 		while (tmp != listNil(Syme)) {
 			syme = tmp->first;
 			tmp  = tmp->rest;
-			printf("%d: %s %s %ld %s (%s %s . %ld)\n", 
+			aprintf("%d: %s %s %ld %s (%s %s . %ld)\n", 
 			       i,
 			       libSymeIsLocal(lib, syme) ? "O" : "Z",
 			       symeInfo[symeKind(syme)].str,
@@ -1393,9 +1393,7 @@ libPutSymes(Lib lib, SymeList symes, Foam foam)
 	libConstDEBUG({
 		int i;
 		for (i = 0; i<lib->typec; i++) {
-			printf("(%d: \n", i);
-			tfPrintDb(lib->typev[i]);
-			printf(")\n");
+			aprintf("(%d: %pTForm)\n", i, lib->typev[i]);
 		}
 		});
 	return symes;
@@ -2168,7 +2166,7 @@ lib0GetSymev(Lib lib)
 			assert(s < topc);
 			constLib = symeLibrary(lib->symev[s]);
 		}
-		else if (!symeConstLib(syme))
+		else if (!symeConstLib(syme) && !symeIsLibrary(syme))
 			constLib = lib;
 		else 
 			constLib = NULL;
@@ -2576,7 +2574,7 @@ lib1GetSymev(Lib lib)
 			assert(libCheckSymeNumber(lib, NULL, s));
 			constLib = symeLibrary(lib->symev[s]);
 		}
-		else if (!symeConstLib(syme))
+		else if (!symeConstLib(syme) && !symeIsLibrary(syme))
 			constLib = lib;
 		else
 			constLib = 0;

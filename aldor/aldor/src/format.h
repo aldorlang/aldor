@@ -37,6 +37,7 @@ extern String aStrPrintf(const char *fmt, ...);
 
 extern int afprintf(FILE *fout, const char *fmt, ...);
 extern int afvprintf(FILE *fout, const char *fmt, va_list argp);
+extern int aprintf(const char *fmt, ...);
 extern int avprintf(const char *fmt, va_list argp);
 
 extern int ostreamPrintf(OStream ostream, const char *fmt, ...);
