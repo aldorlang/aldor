@@ -11,7 +11,7 @@ librarylibdir	:= $(top_builddir)/lib/$(libraryname)/src
 
 UNIQ		:= perl $(top_srcdir)/aldor/tools/unix/uniq
 
-alldomains	:= $(internal) $(library)
+alldomains	:= $(internal) $(library) $(tests)
 
 # Aldor
 AM_V_ALDOR = $(am__v_ALDOR_$(V))
