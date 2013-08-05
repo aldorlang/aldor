@@ -6,20 +6,21 @@
  *
  ****************************************************************************/
 
+#include "ccode.h"
 #include "ccomp.h"
 #include "compcfg.h"
+#include "comsg.h"
 #include "emit.h"
 #include "file.h"
 #include "fint.h"
-#include "include.h"
 #include "genlisp.h"
+#include "include.h"
+#include "lib.h"
 #include "opsys.h"
+#include "sexpr.h"
 #include "stab.h"
 #include "store.h"
-#include "lib.h"
-#include "comsg.h"
-#include "ccode.h"
-#include "sexpr.h"
+#include "util.h"
 
 /****************************************************************************
  *
@@ -1244,7 +1245,7 @@ emitInterp(int argc1, String *argv1)
 		fileRemove(emitExecName);
 
 	if (!result) {
-	  exitFailure(result);
+		exitFailure();
 	}
 }
 
