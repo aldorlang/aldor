@@ -6,8 +6,8 @@
 #pile
 
 #include "axllib.as"
-#library ZeroLib "numeral0.ao"
-#library OneLib  "numeral1.ao"
+#library ZeroLib "../numeral0/numeral0.ao"
+#library OneLib  "../numeral1/numeral1.ao"
 
 import from ZeroLib
 import from OneLib

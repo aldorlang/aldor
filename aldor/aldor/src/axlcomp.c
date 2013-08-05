@@ -604,7 +604,8 @@ compInit(void)
 {
 	int	gclevel;
 
-	_dont_assert = true;		 /* Turn off assertions (cf -Wcheck).*/
+	_dont_assert = true;		/* Turn off assertions (cf -Wcheck).*/
+	_fatal_assert = true;		/* Make assertions fatal by default. */
 
 	gclevel = compDoGc     ? StoCtl_GcLevel_Automatic :
 		  compDoGcFile ? StoCtl_GcLevel_Demand    :

@@ -1,4 +1,4 @@
-#include "algebra"
+#include "aldor"
 
 TestCategory: Category == with {
     test: () -> ();	     
