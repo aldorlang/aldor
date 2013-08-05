@@ -3,7 +3,7 @@
 --> testrun -Q3 -l axllib
 
 #include "axllib"
-#include "packdefs"
+#include "../pack1/packdefs"
 
 macro {
 	SI == SingleInteger;
@@ -55,7 +55,9 @@ main () : () == {
 	inline from SI, DF;
 
 	v: Array_* DF == [1.2, 2.3, 3.4];
+	print << 2 << " = ";
 	print << find(v, apply(v,2)) << newline;
+	print << [2.4, 4.6, 6.8] << newline;
 	print << map(double, v) << newline;
 }
 

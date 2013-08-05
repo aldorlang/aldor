@@ -35,7 +35,7 @@
 ------------------------   mycat.as   -----------------------
 #include "axllib"
 
-#library lib "t1075a.ao"
+#library lib "../t1075a/t1075a.ao"
 import from lib;
 
 macro SI == SingleInteger;

@@ -8,7 +8,7 @@ macro {
 }
 
 import {
-	times:		(DF, DF) ->* DF;
+	dbltimes:		(DF, DF) ->* DF;
 } from Foreign C;
 
 extend DF : with {
@@ -33,7 +33,7 @@ main () : () == {
 	import from DF;
 	inline from DF;
 
-	print << times(2.1, 3.2) << newline;
+	print << dbltimes(2.1, 3.2) << newline;
 }
 
 main();

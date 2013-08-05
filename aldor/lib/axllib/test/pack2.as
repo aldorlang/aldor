@@ -4,7 +4,7 @@
 --> testrun -Q3 -l axllib
 
 #include "axllib"
-#include "packdefs"
+#include "../pack1/packdefs"
 
 macro {
 	DF == DoubleFloat;
