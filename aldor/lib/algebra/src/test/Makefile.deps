@@ -4,3 +4,4 @@ tst_assert_deps :=
 tst_test_deps := tst_assert
 tst_complex_deps := tst_assert tst_test
 tst_random_deps := tst_assert tst_test
+tst_mint_deps := tst_assert tst_test

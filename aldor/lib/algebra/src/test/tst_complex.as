@@ -17,7 +17,6 @@ TestComplex: TestCategory with == add
     sqrtMinusOne := complex(0, 1)
     assertEquals(minusOne, sqrtMinusOne * sqrtMinusOne)
     assertEquals(retract reciprocal(minusOne), -1)
-    x := randomGenerator(0$MachineInteger)$RandomNumberGenerator
     for i in 1..10 repeat
     	a: Complex Integer := random()
 	b: Complex Integer := random()
