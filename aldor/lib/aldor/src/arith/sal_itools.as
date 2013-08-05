@@ -85,12 +85,16 @@ IntegerTypeTools(T:IntegerType): with {
 		macro REC == Record(digit:Character, next:Pointer);
 		import from Boolean, Character, REC;
 		zero? x => p << char 48;
+		l:REC := nil;
 		if x < 0 then {
-			p := p << minus;
+			p << minus;
+			(x, r) := divide(x, base);
+			l := [digit(-r), l pretend Pointer];
 			x := -x;
 		}
-		l:REC := nil;
-		while x > 0 repeat {
+		assert(x >= 0);
+
+		while not zero? x repeat {
 			(x, r) := divide(x, base);
 			l := [digit r, l pretend Pointer];
 		}
