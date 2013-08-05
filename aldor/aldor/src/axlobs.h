@@ -21,12 +21,8 @@
 /*
  * Forward declarations of the types
  */
-typedef union  SExprUnion *        SExpr;
-typedef union  ccode *             CCode;
 typedef struct srcLine *           SrcLine;
 typedef struct symbol *            Symbol;
-typedef struct table *             Table;
-typedef struct bint *              BInt;
 typedef struct comsg *		   CoMsg;
 typedef struct token *             Token;
 typedef struct doc *		   Doc;

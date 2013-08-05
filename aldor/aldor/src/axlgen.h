@@ -41,6 +41,10 @@ typedef struct fileName *          FileName;
 typedef ULong			   SrcPos;
 typedef struct sposCell	*	   SrcPosCell;
 typedef union  sposStack           SrcPosStack;
+typedef union  SExprUnion *        SExpr;
+typedef struct table *             Table;
+typedef struct bint *              BInt;
+typedef union  ccode *             CCode;
 
 /* Lists of general library types. */
 DECLARE_LIST(FileName);

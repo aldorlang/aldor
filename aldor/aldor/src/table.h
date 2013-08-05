@@ -9,7 +9,7 @@
 #ifndef _TABLE_H_
 #define _TABLE_H_
 
-#include "cport.h"
+#include "axlgen.h"
 
 typedef Pointer         TblKey;
 typedef Pointer         TblElt;
@@ -30,14 +30,14 @@ struct TblSlot {
 	struct TblSlot  *next;
 };
 
-typedef struct table {
+struct table {
 	TblHashFun      hashFun;
 	TblEqFun        eqFun;
 	Pointer         info;           /* Use-specific extra info. */
 	Length          count;
 	Length          buckc;
 	struct TblSlot  **buckv;
-} *Table;
+};
 
 typedef struct {
 	struct TblSlot  **curr;

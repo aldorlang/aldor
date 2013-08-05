@@ -25,15 +25,13 @@
 #ifndef _SEXPR_H_
 #define _SEXPR_H_
 
-#include "cport.h"
+#include "axlgen.h"
 
 #include "bigint.h"
 #include "strops.h"
 #include "symbol.h"
 #include "table.h"
 #include "srcpos.h"
-
-typedef union SExprUnion	*SExpr;
 
 typedef enum {
 	SX_Nil,
