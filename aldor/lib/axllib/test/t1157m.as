@@ -1,7 +1,7 @@
 ------------------------  optbug.as --------------------------
 #include "axllib"
 
-#library foo "t1157s.ao"
+#library foo "../t1157s/t1157s.ao"
 import from foo;
 inline from foo;
 
