@@ -6,7 +6,8 @@ SUBDIRS =	\
 	bug1340	\
 	intfact	\
 	issue2	\
-	issue38
+	issue38	\
+	.
 
 TESTS =			\
 	bug1332/bug1332	\
