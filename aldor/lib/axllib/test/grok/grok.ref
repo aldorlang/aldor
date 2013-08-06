@@ -1,0 +1,4 @@
+Begin test...
+aa : A 17 == coerce 7 = 7@A(17)
+fa : A 17 == f aa = 10@A(17)
+...End test.

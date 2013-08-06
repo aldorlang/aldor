@@ -1,0 +1,12 @@
+Checking the Extended Euclidean Algorithm:
+k = 1: true
+k = 2: true
+k = 3: true
+k = 4: true
+k = 5: true
+Checking the Extended Binary Gcd:
+k = 1: true
+k = 2: true
+k = 3: true
+k = 4: true
+k = 5: true

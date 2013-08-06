@@ -1,0 +1,2 @@
+# Fails at -Q6
+ALDOROPT = -Q5

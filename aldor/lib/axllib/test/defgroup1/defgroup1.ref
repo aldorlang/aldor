@@ -1,0 +1,14 @@
+Testing explicit dependency checking:
+   A = 0
+   B = 0
+   C = 1
+   D = 10
+
+
+Testing implicit dependency checking:
+   A = 11
+   B = 0
+   C = 1
+   D = 10
+
+

@@ -1,0 +1,3 @@
+foo() = 42, bar() = 21
+FooDom([42, 21]) has FooCat([42, 21]) = true
+FooDom([42, 21]) has FooCat([52, 93]) = true

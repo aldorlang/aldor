@@ -1,0 +1,10 @@
+Outer lexical variable z = 2
+Inner lexical variable z = 200
+Outer lexical constant u = 2
+Inner lexical variable u = 200
+Inner lexical variable q = 700
+Parameter q = 7
+[Outer z = 100] [Inner z = 10001] 
+[Outer z = 10000] [Inner z = 100000001] 
+Outer z + u = 4
+Inner z + u = 500

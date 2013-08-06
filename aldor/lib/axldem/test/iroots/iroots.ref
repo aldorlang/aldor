@@ -1,0 +1,5 @@
+approxSqrt 88 is 9
+approxSqrt 45678 is 214
+
+approxNthRoot(45678,3) is 35
+approxNthRoot(4567,3) is 16

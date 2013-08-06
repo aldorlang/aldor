@@ -1,0 +1,8 @@
+Main initializes ...
+The variables: CalixTerms
+BEGIN init
+var: 1
+var: 2
+var: 3
+END init
+list(x, y, z)

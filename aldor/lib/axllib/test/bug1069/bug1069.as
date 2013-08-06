@@ -1,0 +1,101 @@
+--* Received: from mailer.scri.fsu.edu by nags2.nag.co.uk (4.1/UK-2.1)
+--* 	id AA09997; Wed, 24 Apr 96 00:33:10 BST
+--* Received: from ibm4.scri.fsu.edu (ibm4.scri.fsu.edu [144.174.131.4]) by mailer.scri.fsu.edu (8.6.12/8.6.12) with SMTP id TAA22939; Tue, 23 Apr 1996 19:29:39 -0400
+--* From: Tony Kennedy <adk@scri.fsu.edu>
+--* Received: by ibm4.scri.fsu.edu (5.67b) id AA36772; Tue, 23 Apr 1996 19:27:57 -0400
+--* Date: Tue, 23 Apr 1996 19:27:57 -0400
+--* Message-Id: <199604232327.AA36772@ibm4.scri.fsu.edu>
+--* To: adk@scri.fsu.edu, ax-bugs, edwards@scri.fsu.edu
+--* Subject: [2] Type problems and #library
+
+--@ Fixed  by: <Who> <Date>
+--@ Tested by: <Name of new or existing file in test directory>
+--@ Summary:   <Description of real problem and the fix>
+
+-- Command line: bug-library.ksh
+-- Version: AXIOM-XL version 1.1.5 for AIX RS/6000
+-- Original bug file name: /dev/null
+
+--+ begin 664 bug-library.tar.gz
+--+ M'XL(".1F?3$``V)U9RUL:6)R87)Y+G1A<@#M6NMOV\@15]I#6Q/]T`_]<"A:
+--+ M8&(G,)5(BDB];"')P4XN@9I[%%'0"W#(U:2XDAA3I(ZD8JL?#BA0]/VG]H_H
+--+ M;W:7$BE+CN^:QUTKFK+$W=G9V7GMS')J=]S9J!KX;NS$\^H@FH6IXP:BYB2E
+--+ M-W99]7J[W:12O=YJ=VS^KM<;;?5=KUN=3K-!];;5Z-AM_%E4MUI6O5.B^ILC
+--+ M8?,U2U(G!BF.=WHYG'TY'K486GS_0*X]/QP$,T_0KG,>0`T@^%UC;^H'PC#Z
+--+ M/;IW[S[U_7`4B%Z8BI&(T?A97S;_-O)#LY^*Z905ID(:X+/9Q!5Q?YZD8E(V
+--+ MC-NW;]/)@TRM]FD:1Z]\3R3D4!2*:AI5\4439SK%+)1&E(Y%AHH4+E+(J%>1
+--+ MV)S0`]`L86!@\V8#`60C$8K82:.83IP@V*>SL3\8DPAG$VX6)`(Q$6%*T1`(
+--+ MYA*1%TT</R17!%$X6LSN)S3`@%$4SVO$<!+V:):.H[A+1P^?R.>'C/-!+/#E
+--+ M=<EN5X]^][1J'1ZVR.IT6\UNJU&KUR7DIY'G#WV@]*,PZ<HF(BN#;Y-UT,7=
+--+ M.`0\F4!?IJ-P3NE\*O0:F*",?S2!NI*3:C277H%P`.LR<Q*1DGER["3^X!D0
+--+ M[Y=K]`P+O0J6B7!"L'KLI'1RC[IDWJS<+%/U/AU'$68(]^EJ>$8S)W8@5N$Q
+--+ MF\6YGZ0UP_#$T(?X%_IA]KK$"E;NT@,M!.@:+2BG,S\=&T11#*[?9#)Z.SL[
+--+ MF+T7>N)<]D*BF=3!<<"^<H(N]1CVIH+]>-G-ZK!D+M@$>*@/EBG7^'BA5#=Y
+--+ MX/)Q1;L2.;2HZ_->B+7YZ7?3>8EKH??_M<YKPYE_?W7>\Z`94`=G%J0DU<*7
+--+ MHVG(RX,,]YD)5]&T$RC'?HT^BT"MU%O<RA:8ZQ"X8M95L<FII=G!E,3Y-/`'
+--+ M?AK,%8V@&>1!?(FX"K)UZSOS@X"2V7`(V?M:9:Z"*Q:#69RP#K/64QA!D2?L
+--+ MMZNI/X&A.'$(^5ZTL85>;K"UA2W"9K2U:;(-GA:\,S$B9QD89"B2_,DTBE,:
+--+ MQI%4VKX82?7KZ6ZMKD**U&>;A"9:5*MA+5-H%<U]$7ALK^0;<@Q^F@Q8[FZ:
+--+ M9G4.1NTP-%!+4F7+RXN3&1D??;I'+PG[62S268Q1NB<4KV"&\@$*93+2,J.Y
+--+ M,AGNE<C8<3"_FYO_97'^HD]Y](8\"E/!('#)(Z'H&3BQ]WI'(UV,1)5S?L6]
+--+ M]4WZF$[.QS2Z]<.MC_EA^)A'W]+#L/)UL[W\`1[\T`G\=,ZL5.IDO`L_Q&1\
+--+ M+YV1B&.,W`4)-U9XW*5H)BU/FO+N>W18FD;,_5H:I5-[Z$.]TM]))Y/N9]Z&
+--+ M79IV((OPESV5)Z$UE$26GD4242%^2VIO*7RQ&SG7TNBV#KJM^M*U//+/F300
+--+ M,4F4K9P,(A$/Q+YA%-:9F42%CKIY0ZC0<>$9DI.F(7GK#^F(QDZR:E\0#OOK
+--+ MX_5]6BQ@7KAFH`B2-3$!1LEA:NX=M09$PT>@KZQ#:,GR,$EC+">*<U`R'G\0
+--+ M1TFBX!G2$P588OMW/$_-\E1,^?DI8*"P0S].4HBK`CEB$&1T7-;KSRDNQE0R
+--+ M*I6.0QU-5RF[SDD8J0EU)4=V\B]7HS*G77HFSM,O8JPV+M/=NY19RK)Y:3)3
+--+ M!M@M2G"7VX#3=,HU2;.$J>2;U0)D>UF;I/9P2]35*LOUY@:Y2JD!Q(M$$NZG
+--+ M=!;%I]>O7\\L^3LIA$(*>8&4&T=T2])TXS@S7U8(S"AWZF0<S0*/)QX[KP1O
+--+ MX-B8QB(63,-.U;K,S031`$X3?B*8CAW5(R&U1!3/RL:.*])UW8IW98ULTS+A
+--+ M?B1^NDV+Y9B,D:ID98,W\0&#):@>>\QC%38>K,9F41CWA;?1^O4L(AM#%.`9
+--+ M,X-"3?^"%DV!K?C#(NY_':=0"1KYKX3R9($3CP1O]=B1X=]D^.#><NDN+$.-
+--+ M4QS40]6.L\&-]PH\=S4Y"`/CZ)R'+Z/9*"73=*M6^9;\3W?A9Z'[[FW9@O\P
+--+ ME?O&CG;B<NX;!;WO9C%<R+C&F$.$NQJ["RZY!)%(UC(7LXX%(Y8T,3?4UI$4
+--+ M>"#I^LK.4_:5G6=('L7E7*FLG%DI$#.D[CV$:>$(_AE$W"<+#IQ73;(GE#)N
+--+ MXC'AQQP7D[$_Q*05JMI8:5C.0%1[4E%->C\T30N:D+"J2(2)UIUR05:F6Z$H
+--+ M\.0B@,E4J*R*IL(N5Y9ZC(T0>X)+W]SC(8N->(%#(I"SNHM973UKA5U?01@<
+--+ MQS@7XACFN<7BRX4:*_(O;N*OM4^3IG"E7\KIM'E86!4_:^NSRB^P"FU+IO8'
+--+ M%<H<1YEUV?,YT3&E:5:TK9?I"A9^Q>GUY-F<%=)D;)K\>#EY$7\.=_F%7I.Q
+--+ MDWD(4YOSP2U&UBDS1M(B*KI*!^9RP>\4O"4VAH7#T0:BMF`6*[9/EW=.)5Q%
+--+ M(Q37?:$`$V<R#83N5*.@>[+Q!N^\ZE>V\2[1LH_/;>UR206'7J%5!ZZBO&/(
+--+ MAM,N;8KKXCSHE*]ZL?',?!4!R=B<#_5@R.KT2F:Z'O*.D#,2]@=Q[,SY)%,0
+--+ MI.2H2-%1*=@(H2"Y/#=<UE@,3CD/!4Z):A@+L4C>.+1,4C\<R/-`L/E,")4<
+--+ M#V>J,5'IGMQ:9:HFD9A^"!E#W3SE='*'W&4%JB-`N13&-W`2H14CB,[8FJVW
+--+ M$*T:FN.:X<N`$W-*!1_[H[$R__4AHT[)EO)?GK3RX>G$%9['W(R&,EU`;-!;
+--+ M`>\M(\6G(HV=07;4VE/P-W4@V).A((_4D6!OLY*"^M5`2JX$ML#,A#6OC4D6
+--+ M<>`*V&5.D+,V;`XR&2PZQ")KUWM$MCB339/GD\'(&E.2I$G*5GLSBBA'$F/2
+--+ M1,DE+XE2XZY,EZ.-<F&,,!E$O4):*`0S<4YA2ZD^NN&6G%9_ES.;5K=I=RU[
+--+ MDZJJN6E!]YI\1)]A21$5M>5^UGE1\(M!>1YG(E>=>0>9L:40-+P5YE`SET5:
+--+ MW2;NP]<PIT#4.A85`-8SJA@-K;)K%<$:IA5`UK%.>9"^2"7;%JX].\!RY_HM
+--+ M%+02V2"P)>H5E,XT)!)^514JEB?:89SDWM7P^PWMF?4I5*S<_-`_%][UJZIG
+--+ M/H]O=IL'7<M:*P'#6*S)3!.DAS/X).I+XM?XSGXOE[!GCE!!2V]8[)`.5?5N
+--+ M2(K[O0NI;[^7]X#RY6P6S::)L?E4;.7`ZY+3+I:H?U$_5KV5/@GKKQZ%9=[3
+--+ M7^\]%_S<[*#\-1L`MUL[.SM((K[@[1W)KT).]8]>?PX`LFM\8L7?[K<[`U#9
+--+ MO]/M+@6UZL>U@`&KS\"A*A7%JJ+?3[I+U<FQ[.()H99'`I(7,V\^$-3^/\=9
+--+ M95TRWP-.F-RN<>G[_UJ^_N.-5GTLK\OK/]!J68OZCY9E4]UJ6%9K6__Q+JX]
+--+ MF-,GO6-C?1V(U@O"-^UN*!2*LGJ1M>4B>0>&P<8>GS/E9MM4?02DV/W\H6&D
+--+ M(DG9J9EE93<K+I'HL?1/*V%OOU>Q*TU.U9ZK_N(A'KIQ/^XQP-!\OLZ?9U,B
+--+ M8T'42KN?/_E&'G@,S<4P_J'I@Y7]NU2Z]J?2+TL?)*X?EDH?_`;/X/"UOY0^
+--+ M+/TL':93-XI2]/\$;3_'YZ^E7Y1^+$%+US[$YV_\#%[PLXG/WQG7+/3/\?M`
+--+ M?_Z!MI\R'BR&X1[B\T^,NS8KE4[P^SD^_^+Y_#!)_S!-AWCF\5/0\VO&YR66
+--+ M)><J7?MSJ?2C7Q7M_S09OP4=@_UW.JW+[+^^L/]FL\GVWZAO[?^=7'O7[T`%
+--+ M[T#PQIZQ1[T@`$-DL.#P7B+?#^LW&_J%3#3@EX(J&,N_9'20URK;U"DQT#D$
+--+ M_X``#9&3*3.8&O)VK6SE"KD(`WBGR@*[N40R<;SL?4\PKX&LR2F>**>GQL`K
+--+ M/#KG?C0Y#ZCZ>ZH^PH2UVL:JQ@+L8SYWB*<K\)N@J@_A*-?`@IA:K?0_8?]!
+--+ M-'H+.O::_=]N-%N9_3?LAJ7LW]K:_[NXCI[W/O^T^OP3>B74FWZK9M5:,C`]
+--+ MZCVGI_T[;5[.X@VUOI`L<'@YH(2#`YHZL%IR7!J<4N)2ZM-HR`'^U*5I0-,!
+--+ M39$_^P8]X[(!(JM>LQ'B4IUJ3<)LZC]G)3;5++[)IG:#J,.WU6%(=0.24ZE^
+--+ M-.-#(6JVVI@^%`BZR6X?V.I!I@P3/YREPJ!/$+H0D-GM-M+05():5KW93N:@
+--+ M!8&FU1A&SH3:]>90-MFM3CMT\*-EMT]]9.`M0+`'LPXZS<#YXQSD(TJ5%9I6
+--+ MTP\#:M7KZ1D,CIH'R!^HT6EWO&@`@GRDX7VD8:"TU;'K]`1\B`+C_?`<DRB>
+--+ M,Y^;N?\9V_$;/**VY'E+MM0U?('GV,H7/&^U&IMYWFP<-O,\;W<4SVVK<:AX
+--+ MWFAG/#^P-,\[&WG>;KV>YU:>YVW+/LAX_OD3OJ_*^=W:G0M^?K<B5\KGK[0,
+--+ M_VJXOC*^_`1*^J#U@O8L,C_FW*Q,1_%H)FLL+'F2,=S'GN;)[6[BI-A'N51J
+--+ M&B6)S\?=4R?&\CGOY#76I.CY8#L6+[$-\@$4+]U/Z*,UL6P^X%YY]55!=%Q6
+--+ MZ#X^G^90K9;J%$]X:L:;53ZR:X?:X!M\D_IOR?]UW7[86MIY_LXKGUVW%\K7
+--+ MM!KM-<JGA6];5CL3_K8V:V/]Y_O>?[;7]MI>[^_:UO]MZ_^V]7_;^K]M_=^V
+--+ M_F];_[>M_]O6_VWK_[;U?]OZ/UK*?UO_MZW_V];_;>O_MO5_V_J_;?W?MO[O
+--+ =6U_;^K_O[[6M_]O6_VWK__Y_[?\_6/A:9@!0``#_
+--+ `
+--+ end

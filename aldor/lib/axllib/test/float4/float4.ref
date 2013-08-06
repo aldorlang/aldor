@@ -1,0 +1,3611 @@
+---------- Testing SingleFloat ------------- 
+Original: 0
+integer 0 = 0
+fraction 0 = 0
+round 0 = 0
+round(0,nearest) = 0
+round(0,up) = 0
+round(0,down) = 0
+round(0,zero) = 0
+round(0,any) = 0
+Original: 0.1
+integer 0.1 = 0
+fraction 0.1 = 0.1
+round 0.1 = 0
+round(0.1,nearest) = 0
+round(0.1,up) = 1
+round(0.1,down) = 0
+round(0.1,zero) = 0
+round(0.1,any) = 0
+Original: 0.4
+integer 0.4 = 0
+fraction 0.4 = 0.4
+round 0.4 = 0
+round(0.4,nearest) = 0
+round(0.4,up) = 1
+round(0.4,down) = 0
+round(0.4,zero) = 0
+round(0.4,any) = 0
+Original: 0.8
+integer 0.8 = 0
+fraction 0.8 = 0.8
+round 0.8 = 1
+round(0.8,nearest) = 1
+round(0.8,up) = 1
+round(0.8,down) = 0
+round(0.8,zero) = 0
+round(0.8,any) = 0
+Original: 1
+integer 1 = 1
+fraction 1 = 0
+round 1 = 1
+round(1,nearest) = 1
+round(1,up) = 1
+round(1,down) = 1
+round(1,zero) = 1
+round(1,any) = 1
+Original: 1.1
+integer 1.1 = 1
+fraction 1.1 = 0.1
+round 1.1 = 1
+round(1.1,nearest) = 1
+round(1.1,up) = 2
+round(1.1,down) = 1
+round(1.1,zero) = 1
+round(1.1,any) = 1
+Original: 1.4
+integer 1.4 = 1
+fraction 1.4 = 0.4
+round 1.4 = 1
+round(1.4,nearest) = 1
+round(1.4,up) = 2
+round(1.4,down) = 1
+round(1.4,zero) = 1
+round(1.4,any) = 1
+Original: 1.8
+integer 1.8 = 1
+fraction 1.8 = 0.8
+round 1.8 = 2
+round(1.8,nearest) = 2
+round(1.8,up) = 2
+round(1.8,down) = 1
+round(1.8,zero) = 1
+round(1.8,any) = 1
+Original: 2
+integer 2 = 2
+fraction 2 = 0
+round 2 = 2
+round(2,nearest) = 2
+round(2,up) = 2
+round(2,down) = 2
+round(2,zero) = 2
+round(2,any) = 2
+Original: 2.4
+integer 2.4 = 2
+fraction 2.4 = 0.4
+round 2.4 = 2
+round(2.4,nearest) = 2
+round(2.4,up) = 3
+round(2.4,down) = 2
+round(2.4,zero) = 2
+round(2.4,any) = 2
+Original: 2.7
+integer 2.7 = 2
+fraction 2.7 = 0.7
+round 2.7 = 3
+round(2.7,nearest) = 3
+round(2.7,up) = 3
+round(2.7,down) = 2
+round(2.7,zero) = 2
+round(2.7,any) = 2
+Original: 10
+integer 10 = 10
+fraction 10 = 0
+round 10 = 10
+round(10,nearest) = 10
+round(10,up) = 10
+round(10,down) = 10
+round(10,zero) = 10
+round(10,any) = 10
+Original: 10.001
+integer 10.001 = 10
+fraction 10.001 = 0.001
+round 10.001 = 10
+round(10.001,nearest) = 10
+round(10.001,up) = 11
+round(10.001,down) = 10
+round(10.001,zero) = 10
+round(10.001,any) = 10
+Original: 10
+integer 10 = 10
+fraction 10 = 2e-06
+round 10 = 10
+round(10,nearest) = 10
+round(10,up) = 11
+round(10,down) = 10
+round(10,zero) = 10
+round(10,any) = 10
+Original: 30.2
+integer 30.2 = 30
+fraction 30.2 = 0.2
+round 30.2 = 30
+round(30.2,nearest) = 30
+round(30.2,up) = 31
+round(30.2,down) = 30
+round(30.2,zero) = 30
+round(30.2,any) = 30
+Original: 200.323
+integer 200.323 = 200
+fraction 200.323 = 0.32344
+round 200.323 = 200
+round(200.323,nearest) = 200
+round(200.323,up) = 201
+round(200.323,down) = 200
+round(200.323,zero) = 200
+round(200.323,any) = 200
+Original: 4e+10
+integer 4e+10 = 40000000000
+fraction 4e+10 = 0
+round 4e+10 = 40000000000
+round(4e+10,nearest) = 40000000000
+round(4e+10,up) = 40000000000
+round(4e+10,down) = 40000000000
+round(4e+10,zero) = 40000000000
+round(4e+10,any) = 40000000000
+Original: 4e+20
+integer 4e+20 = 400000000000000000000
+fraction 4e+20 = 0
+round 4e+20 = 400000000000000000000
+round(4e+20,nearest) = 400000000000000000000
+round(4e+20,up) = 400000000000000000000
+round(4e+20,down) = 400000000000000000000
+round(4e+20,zero) = 400000000000000000000
+round(4e+20,any) = 400000000000000000000
+Original: 4e+30
+integer 4e+30 = 4000000000000000079538499354624
+fraction 4e+30 = 0
+round 4e+30 = 4000000000000000079538499354624
+round(4e+30,nearest) = 4000000000000000079538499354624
+round(4e+30,up) = 4000000000000000079538499354624
+round(4e+30,down) = 4000000000000000079538499354624
+round(4e+30,zero) = 4000000000000000079538499354624
+round(4e+30,any) = 4000000000000000079538499354624
+Original: 8.88889e+08
+integer 8.88889e+08 = 888888889
+fraction 8.88889e+08 = 0
+round 8.88889e+08 = 888888889
+round(8.88889e+08,nearest) = 888888889
+round(8.88889e+08,up) = 888888889
+round(8.88889e+08,down) = 888888889
+round(8.88889e+08,zero) = 888888889
+round(8.88889e+08,any) = 888888889
+Original: -0
+integer -0 = 0
+fraction -0 = 0
+round -0 = 0
+round(-0,nearest) = 0
+round(-0,up) = 0
+round(-0,down) = 0
+round(-0,zero) = 0
+round(-0,any) = 0
+Original: -0.1
+integer -0.1 = 0
+fraction -0.1 = -0.1
+round -0.1 = 0
+round(-0.1,nearest) = 0
+round(-0.1,up) = 0
+round(-0.1,down) = -1
+round(-0.1,zero) = 0
+round(-0.1,any) = 0
+Original: -0.4
+integer -0.4 = 0
+fraction -0.4 = -0.4
+round -0.4 = 0
+round(-0.4,nearest) = 0
+round(-0.4,up) = 0
+round(-0.4,down) = -1
+round(-0.4,zero) = 0
+round(-0.4,any) = 0
+Original: -0.8
+integer -0.8 = 0
+fraction -0.8 = -0.8
+round -0.8 = -1
+round(-0.8,nearest) = -1
+round(-0.8,up) = 0
+round(-0.8,down) = -1
+round(-0.8,zero) = 0
+round(-0.8,any) = 0
+Original: -1
+integer -1 = -1
+fraction -1 = 0
+round -1 = -1
+round(-1,nearest) = -1
+round(-1,up) = -1
+round(-1,down) = -1
+round(-1,zero) = -1
+round(-1,any) = -1
+Original: -1.1
+integer -1.1 = -1
+fraction -1.1 = -0.1
+round -1.1 = -1
+round(-1.1,nearest) = -1
+round(-1.1,up) = -1
+round(-1.1,down) = -2
+round(-1.1,zero) = -1
+round(-1.1,any) = -1
+Original: -1.4
+integer -1.4 = -1
+fraction -1.4 = -0.4
+round -1.4 = -1
+round(-1.4,nearest) = -1
+round(-1.4,up) = -1
+round(-1.4,down) = -2
+round(-1.4,zero) = -1
+round(-1.4,any) = -1
+Original: -1.8
+integer -1.8 = -1
+fraction -1.8 = -0.8
+round -1.8 = -2
+round(-1.8,nearest) = -2
+round(-1.8,up) = -1
+round(-1.8,down) = -2
+round(-1.8,zero) = -1
+round(-1.8,any) = -1
+Original: -2
+integer -2 = -2
+fraction -2 = 0
+round -2 = -2
+round(-2,nearest) = -2
+round(-2,up) = -2
+round(-2,down) = -2
+round(-2,zero) = -2
+round(-2,any) = -2
+Original: -2.4
+integer -2.4 = -2
+fraction -2.4 = -0.4
+round -2.4 = -2
+round(-2.4,nearest) = -2
+round(-2.4,up) = -2
+round(-2.4,down) = -3
+round(-2.4,zero) = -2
+round(-2.4,any) = -2
+Original: -2.7
+integer -2.7 = -2
+fraction -2.7 = -0.7
+round -2.7 = -3
+round(-2.7,nearest) = -3
+round(-2.7,up) = -2
+round(-2.7,down) = -3
+round(-2.7,zero) = -2
+round(-2.7,any) = -2
+Original: -10
+integer -10 = -10
+fraction -10 = 0
+round -10 = -10
+round(-10,nearest) = -10
+round(-10,up) = -10
+round(-10,down) = -10
+round(-10,zero) = -10
+round(-10,any) = -10
+Original: -10.001
+integer -10.001 = -10
+fraction -10.001 = -0.001
+round -10.001 = -10
+round(-10.001,nearest) = -10
+round(-10.001,up) = -10
+round(-10.001,down) = -11
+round(-10.001,zero) = -10
+round(-10.001,any) = -10
+Original: -10
+integer -10 = -10
+fraction -10 = -2e-06
+round -10 = -10
+round(-10,nearest) = -10
+round(-10,up) = -10
+round(-10,down) = -11
+round(-10,zero) = -10
+round(-10,any) = -10
+Original: -30.2
+integer -30.2 = -30
+fraction -30.2 = -0.2
+round -30.2 = -30
+round(-30.2,nearest) = -30
+round(-30.2,up) = -30
+round(-30.2,down) = -31
+round(-30.2,zero) = -30
+round(-30.2,any) = -30
+Original: -200.323
+integer -200.323 = -200
+fraction -200.323 = -0.32344
+round -200.323 = -200
+round(-200.323,nearest) = -200
+round(-200.323,up) = -200
+round(-200.323,down) = -201
+round(-200.323,zero) = -200
+round(-200.323,any) = -200
+Original: -4e+10
+integer -4e+10 = -40000000000
+fraction -4e+10 = 0
+round -4e+10 = -40000000000
+round(-4e+10,nearest) = -40000000000
+round(-4e+10,up) = -40000000000
+round(-4e+10,down) = -40000000000
+round(-4e+10,zero) = -40000000000
+round(-4e+10,any) = -40000000000
+Original: -4e+20
+integer -4e+20 = -400000000000000000000
+fraction -4e+20 = 0
+round -4e+20 = -400000000000000000000
+round(-4e+20,nearest) = -400000000000000000000
+round(-4e+20,up) = -400000000000000000000
+round(-4e+20,down) = -400000000000000000000
+round(-4e+20,zero) = -400000000000000000000
+round(-4e+20,any) = -400000000000000000000
+Original: -4e+30
+integer -4e+30 = -4000000000000000079538499354624
+fraction -4e+30 = 0
+round -4e+30 = -4000000000000000079538499354624
+round(-4e+30,nearest) = -4000000000000000079538499354624
+round(-4e+30,up) = -4000000000000000079538499354624
+round(-4e+30,down) = -4000000000000000079538499354624
+round(-4e+30,zero) = -4000000000000000079538499354624
+round(-4e+30,any) = -4000000000000000079538499354624
+Original: -8.88889e+08
+integer -8.88889e+08 = -888888889
+fraction -8.88889e+08 = 0
+round -8.88889e+08 = -888888889
+round(-8.88889e+08,nearest) = -888888889
+round(-8.88889e+08,up) = -888888889
+round(-8.88889e+08,down) = -888888889
+round(-8.88889e+08,zero) = -888888889
+round(-8.88889e+08,any) = -888888889
+---------- Testing DoubleFloat ------------- 
+Original: 0
+integer 0 = 0
+fraction 0 = 0
+round 0 = 0
+round(0,nearest) = 0
+round(0,up) = 0
+round(0,down) = 0
+round(0,zero) = 0
+round(0,any) = 0
+Original: 0.1
+integer 0.1 = 0
+fraction 0.1 = 0.1
+round 0.1 = 0
+round(0.1,nearest) = 0
+round(0.1,up) = 1
+round(0.1,down) = 0
+round(0.1,zero) = 0
+round(0.1,any) = 0
+Original: 0.4
+integer 0.4 = 0
+fraction 0.4 = 0.4
+round 0.4 = 0
+round(0.4,nearest) = 0
+round(0.4,up) = 1
+round(0.4,down) = 0
+round(0.4,zero) = 0
+round(0.4,any) = 0
+Original: 0.8
+integer 0.8 = 0
+fraction 0.8 = 0.8
+round 0.8 = 1
+round(0.8,nearest) = 1
+round(0.8,up) = 1
+round(0.8,down) = 0
+round(0.8,zero) = 0
+round(0.8,any) = 0
+Original: 1
+integer 1 = 1
+fraction 1 = 0
+round 1 = 1
+round(1,nearest) = 1
+round(1,up) = 1
+round(1,down) = 1
+round(1,zero) = 1
+round(1,any) = 1
+Original: 1.1
+integer 1.1 = 1
+fraction 1.1 = 0.1
+round 1.1 = 1
+round(1.1,nearest) = 1
+round(1.1,up) = 2
+round(1.1,down) = 1
+round(1.1,zero) = 1
+round(1.1,any) = 1
+Original: 1.4
+integer 1.4 = 1
+fraction 1.4 = 0.4
+round 1.4 = 1
+round(1.4,nearest) = 1
+round(1.4,up) = 2
+round(1.4,down) = 1
+round(1.4,zero) = 1
+round(1.4,any) = 1
+Original: 1.8
+integer 1.8 = 1
+fraction 1.8 = 0.8
+round 1.8 = 2
+round(1.8,nearest) = 2
+round(1.8,up) = 2
+round(1.8,down) = 1
+round(1.8,zero) = 1
+round(1.8,any) = 1
+Original: 2
+integer 2 = 2
+fraction 2 = 0
+round 2 = 2
+round(2,nearest) = 2
+round(2,up) = 2
+round(2,down) = 2
+round(2,zero) = 2
+round(2,any) = 2
+Original: 2.4
+integer 2.4 = 2
+fraction 2.4 = 0.4
+round 2.4 = 2
+round(2.4,nearest) = 2
+round(2.4,up) = 3
+round(2.4,down) = 2
+round(2.4,zero) = 2
+round(2.4,any) = 2
+Original: 2.7
+integer 2.7 = 2
+fraction 2.7 = 0.7
+round 2.7 = 3
+round(2.7,nearest) = 3
+round(2.7,up) = 3
+round(2.7,down) = 2
+round(2.7,zero) = 2
+round(2.7,any) = 2
+Original: 10
+integer 10 = 10
+fraction 10 = 0
+round 10 = 10
+round(10,nearest) = 10
+round(10,up) = 10
+round(10,down) = 10
+round(10,zero) = 10
+round(10,any) = 10
+Original: 10.001
+integer 10.001 = 10
+fraction 10.001 = 0.000999999999999446
+round 10.001 = 10
+round(10.001,nearest) = 10
+round(10.001,up) = 11
+round(10.001,down) = 10
+round(10.001,zero) = 10
+round(10.001,any) = 10
+Original: 10.000002
+integer 10.000002 = 10
+fraction 10.000002 = 2.00000000027956e-06
+round 10.000002 = 10
+round(10.000002,nearest) = 10
+round(10.000002,up) = 11
+round(10.000002,down) = 10
+round(10.000002,zero) = 10
+round(10.000002,any) = 10
+Original: 30.2
+integer 30.2 = 30
+fraction 30.2 = 0.199999999999999
+round 30.2 = 30
+round(30.2,nearest) = 30
+round(30.2,up) = 31
+round(30.2,down) = 30
+round(30.2,zero) = 30
+round(30.2,any) = 30
+Original: 200.32344
+integer 200.32344 = 200
+fraction 200.32344 = 0.323440000000005
+round 200.32344 = 200
+round(200.32344,nearest) = 200
+round(200.32344,up) = 201
+round(200.32344,down) = 200
+round(200.32344,zero) = 200
+round(200.32344,any) = 200
+Original: 40000000000
+integer 40000000000 = 40000000000
+fraction 40000000000 = 0
+round 40000000000 = 40000000000
+round(40000000000,nearest) = 40000000000
+round(40000000000,up) = 40000000000
+round(40000000000,down) = 40000000000
+round(40000000000,zero) = 40000000000
+round(40000000000,any) = 40000000000
+Original: 4e+20
+integer 4e+20 = 400000000000000000000
+fraction 4e+20 = 0
+round 4e+20 = 400000000000000000000
+round(4e+20,nearest) = 400000000000000000000
+round(4e+20,up) = 400000000000000000000
+round(4e+20,down) = 400000000000000000000
+round(4e+20,zero) = 400000000000000000000
+round(4e+20,any) = 400000000000000000000
+Original: 4e+30
+integer 4e+30 = 4000000000000000079538499354624
+fraction 4e+30 = 0
+round 4e+30 = 4000000000000000079538499354624
+round(4e+30,nearest) = 4000000000000000079538499354624
+round(4e+30,up) = 4000000000000000079538499354624
+round(4e+30,down) = 4000000000000000079538499354624
+round(4e+30,zero) = 4000000000000000079538499354624
+round(4e+30,any) = 4000000000000000079538499354624
+Original: 888888889
+integer 888888889 = 888888889
+fraction 888888889 = 0
+round 888888889 = 888888889
+round(888888889,nearest) = 888888889
+round(888888889,up) = 888888889
+round(888888889,down) = 888888889
+round(888888889,zero) = 888888889
+round(888888889,any) = 888888889
+Original: -0
+integer -0 = 0
+fraction -0 = 0
+round -0 = 0
+round(-0,nearest) = 0
+round(-0,up) = 0
+round(-0,down) = 0
+round(-0,zero) = 0
+round(-0,any) = 0
+Original: -0.1
+integer -0.1 = 0
+fraction -0.1 = -0.1
+round -0.1 = 0
+round(-0.1,nearest) = 0
+round(-0.1,up) = 0
+round(-0.1,down) = -1
+round(-0.1,zero) = 0
+round(-0.1,any) = 0
+Original: -0.4
+integer -0.4 = 0
+fraction -0.4 = -0.4
+round -0.4 = 0
+round(-0.4,nearest) = 0
+round(-0.4,up) = 0
+round(-0.4,down) = -1
+round(-0.4,zero) = 0
+round(-0.4,any) = 0
+Original: -0.8
+integer -0.8 = 0
+fraction -0.8 = -0.8
+round -0.8 = -1
+round(-0.8,nearest) = -1
+round(-0.8,up) = 0
+round(-0.8,down) = -1
+round(-0.8,zero) = 0
+round(-0.8,any) = 0
+Original: -1
+integer -1 = -1
+fraction -1 = 0
+round -1 = -1
+round(-1,nearest) = -1
+round(-1,up) = -1
+round(-1,down) = -1
+round(-1,zero) = -1
+round(-1,any) = -1
+Original: -1.1
+integer -1.1 = -1
+fraction -1.1 = -0.1
+round -1.1 = -1
+round(-1.1,nearest) = -1
+round(-1.1,up) = -1
+round(-1.1,down) = -2
+round(-1.1,zero) = -1
+round(-1.1,any) = -1
+Original: -1.4
+integer -1.4 = -1
+fraction -1.4 = -0.4
+round -1.4 = -1
+round(-1.4,nearest) = -1
+round(-1.4,up) = -1
+round(-1.4,down) = -2
+round(-1.4,zero) = -1
+round(-1.4,any) = -1
+Original: -1.8
+integer -1.8 = -1
+fraction -1.8 = -0.8
+round -1.8 = -2
+round(-1.8,nearest) = -2
+round(-1.8,up) = -1
+round(-1.8,down) = -2
+round(-1.8,zero) = -1
+round(-1.8,any) = -1
+Original: -2
+integer -2 = -2
+fraction -2 = 0
+round -2 = -2
+round(-2,nearest) = -2
+round(-2,up) = -2
+round(-2,down) = -2
+round(-2,zero) = -2
+round(-2,any) = -2
+Original: -2.4
+integer -2.4 = -2
+fraction -2.4 = -0.4
+round -2.4 = -2
+round(-2.4,nearest) = -2
+round(-2.4,up) = -2
+round(-2.4,down) = -3
+round(-2.4,zero) = -2
+round(-2.4,any) = -2
+Original: -2.7
+integer -2.7 = -2
+fraction -2.7 = -0.7
+round -2.7 = -3
+round(-2.7,nearest) = -3
+round(-2.7,up) = -2
+round(-2.7,down) = -3
+round(-2.7,zero) = -2
+round(-2.7,any) = -2
+Original: -10
+integer -10 = -10
+fraction -10 = 0
+round -10 = -10
+round(-10,nearest) = -10
+round(-10,up) = -10
+round(-10,down) = -10
+round(-10,zero) = -10
+round(-10,any) = -10
+Original: -10.001
+integer -10.001 = -10
+fraction -10.001 = -0.000999999999999446
+round -10.001 = -10
+round(-10.001,nearest) = -10
+round(-10.001,up) = -10
+round(-10.001,down) = -11
+round(-10.001,zero) = -10
+round(-10.001,any) = -10
+Original: -10.000002
+integer -10.000002 = -10
+fraction -10.000002 = -2.00000000027956e-06
+round -10.000002 = -10
+round(-10.000002,nearest) = -10
+round(-10.000002,up) = -10
+round(-10.000002,down) = -11
+round(-10.000002,zero) = -10
+round(-10.000002,any) = -10
+Original: -30.2
+integer -30.2 = -30
+fraction -30.2 = -0.199999999999999
+round -30.2 = -30
+round(-30.2,nearest) = -30
+round(-30.2,up) = -30
+round(-30.2,down) = -31
+round(-30.2,zero) = -30
+round(-30.2,any) = -30
+Original: -200.32344
+integer -200.32344 = -200
+fraction -200.32344 = -0.323440000000005
+round -200.32344 = -200
+round(-200.32344,nearest) = -200
+round(-200.32344,up) = -200
+round(-200.32344,down) = -201
+round(-200.32344,zero) = -200
+round(-200.32344,any) = -200
+Original: -40000000000
+integer -40000000000 = -40000000000
+fraction -40000000000 = 0
+round -40000000000 = -40000000000
+round(-40000000000,nearest) = -40000000000
+round(-40000000000,up) = -40000000000
+round(-40000000000,down) = -40000000000
+round(-40000000000,zero) = -40000000000
+round(-40000000000,any) = -40000000000
+Original: -4e+20
+integer -4e+20 = -400000000000000000000
+fraction -4e+20 = 0
+round -4e+20 = -400000000000000000000
+round(-4e+20,nearest) = -400000000000000000000
+round(-4e+20,up) = -400000000000000000000
+round(-4e+20,down) = -400000000000000000000
+round(-4e+20,zero) = -400000000000000000000
+round(-4e+20,any) = -400000000000000000000
+Original: -4e+30
+integer -4e+30 = -4000000000000000079538499354624
+fraction -4e+30 = 0
+round -4e+30 = -4000000000000000079538499354624
+round(-4e+30,nearest) = -4000000000000000079538499354624
+round(-4e+30,up) = -4000000000000000079538499354624
+round(-4e+30,down) = -4000000000000000079538499354624
+round(-4e+30,zero) = -4000000000000000079538499354624
+round(-4e+30,any) = -4000000000000000079538499354624
+Original: -888888889
+integer -888888889 = -888888889
+fraction -888888889 = 0
+round -888888889 = -888888889
+round(-888888889,nearest) = -888888889
+round(-888888889,up) = -888888889
+round(-888888889,down) = -888888889
+round(-888888889,zero) = -888888889
+round(-888888889,any) = -888888889
+---------- Testing Float ------------- 
+Original: 0.0
+integer 0.0 = 0
+fraction 0.0 = 0.0
+round 0.0 = 0
+round(0.0,nearest) = 0
+round(0.0,up) = 0
+round(0.0,down) = 0
+round(0.0,zero) = 0
+round(0.0,any) = 0
+Original: 0.1
+integer 0.1 = 0
+fraction 0.1 = 0.1
+round 0.1 = 0
+round(0.1,nearest) = 0
+round(0.1,up) = 1
+round(0.1,down) = 0
+round(0.1,zero) = 0
+round(0.1,any) = 0
+Original: 0.4
+integer 0.4 = 0
+fraction 0.4 = 0.4
+round 0.4 = 0
+round(0.4,nearest) = 0
+round(0.4,up) = 1
+round(0.4,down) = 0
+round(0.4,zero) = 0
+round(0.4,any) = 0
+Original: 0.8
+integer 0.8 = 0
+fraction 0.8 = 0.8
+round 0.8 = 1
+round(0.8,nearest) = 1
+round(0.8,up) = 1
+round(0.8,down) = 0
+round(0.8,zero) = 0
+round(0.8,any) = 0
+Original: 1.0
+integer 1.0 = 1
+fraction 1.0 = 0.0
+round 1.0 = 1
+round(1.0,nearest) = 1
+round(1.0,up) = 1
+round(1.0,down) = 1
+round(1.0,zero) = 1
+round(1.0,any) = 1
+Original: 1.1
+integer 1.1 = 1
+fraction 1.1 = 0.1
+round 1.1 = 1
+round(1.1,nearest) = 1
+round(1.1,up) = 2
+round(1.1,down) = 1
+round(1.1,zero) = 1
+round(1.1,any) = 1
+Original: 1.4
+integer 1.4 = 1
+fraction 1.4 = 0.4
+round 1.4 = 1
+round(1.4,nearest) = 1
+round(1.4,up) = 2
+round(1.4,down) = 1
+round(1.4,zero) = 1
+round(1.4,any) = 1
+Original: 1.8
+integer 1.8 = 1
+fraction 1.8 = 0.8
+round 1.8 = 2
+round(1.8,nearest) = 2
+round(1.8,up) = 2
+round(1.8,down) = 1
+round(1.8,zero) = 1
+round(1.8,any) = 1
+Original: 2.0
+integer 2.0 = 2
+fraction 2.0 = 0.0
+round 2.0 = 2
+round(2.0,nearest) = 2
+round(2.0,up) = 2
+round(2.0,down) = 2
+round(2.0,zero) = 2
+round(2.0,any) = 2
+Original: 2.4
+integer 2.4 = 2
+fraction 2.4 = 0.4
+round 2.4 = 2
+round(2.4,nearest) = 2
+round(2.4,up) = 3
+round(2.4,down) = 2
+round(2.4,zero) = 2
+round(2.4,any) = 2
+Original: 2.7
+integer 2.7 = 2
+fraction 2.7 = 0.7
+round 2.7 = 3
+round(2.7,nearest) = 3
+round(2.7,up) = 3
+round(2.7,down) = 2
+round(2.7,zero) = 2
+round(2.7,any) = 2
+Original: 10.0
+integer 10.0 = 10
+fraction 10.0 = 0.0
+round 10.0 = 10
+round(10.0,nearest) = 10
+round(10.0,up) = 10
+round(10.0,down) = 10
+round(10.0,zero) = 10
+round(10.0,any) = 10
+Original: 10.001
+integer 10.001 = 10
+fraction 10.001 = 0.001
+round 10.001 = 10
+round(10.001,nearest) = 10
+round(10.001,up) = 11
+round(10.001,down) = 10
+round(10.001,zero) = 10
+round(10.001,any) = 10
+Original: 10.000002
+integer 10.000002 = 10
+fraction 10.000002 = 0.000002
+round 10.000002 = 10
+round(10.000002,nearest) = 10
+round(10.000002,up) = 11
+round(10.000002,down) = 10
+round(10.000002,zero) = 10
+round(10.000002,any) = 10
+Original: 30.2
+integer 30.2 = 30
+fraction 30.2 = 0.2
+round 30.2 = 30
+round(30.2,nearest) = 30
+round(30.2,up) = 31
+round(30.2,down) = 30
+round(30.2,zero) = 30
+round(30.2,any) = 30
+Original: 200.32344
+integer 200.32344 = 200
+fraction 200.32344 = 0.32344
+round 200.32344 = 200
+round(200.32344,nearest) = 200
+round(200.32344,up) = 201
+round(200.32344,down) = 200
+round(200.32344,zero) = 200
+round(200.32344,any) = 200
+Original:  40000000000.0
+integer  40000000000.0 = 40000000000
+fraction  40000000000.0 = 0.0
+round  40000000000.0 = 40000000000
+round( 40000000000.0,nearest) = 40000000000
+round( 40000000000.0,up) = 40000000000
+round( 40000000000.0,down) = 40000000000
+round( 40000000000.0,zero) = 40000000000
+round( 40000000000.0,any) = 40000000000
+Original: 0.4 E 21
+integer 0.4 E 21 = 400000000000000000000
+fraction 0.4 E 21 = 0.0
+round 0.4 E 21 = 400000000000000000000
+round(0.4 E 21,nearest) = 400000000000000000000
+round(0.4 E 21,up) = 400000000000000000000
+round(0.4 E 21,down) = 400000000000000000000
+round(0.4 E 21,zero) = 400000000000000000000
+round(0.4 E 21,any) = 400000000000000000000
+Original: 0.4 E 31
+integer 0.4 E 31 = 3999999999999999999995705032704
+fraction 0.4 E 31 = 0.0
+round 0.4 E 31 = 3999999999999999999995705032704
+round(0.4 E 31,nearest) = 3999999999999999999995705032704
+round(0.4 E 31,up) = 3999999999999999999995705032704
+round(0.4 E 31,down) = 3999999999999999999995705032704
+round(0.4 E 31,zero) = 3999999999999999999995705032704
+round(0.4 E 31,any) = 3999999999999999999995705032704
+Original: 888888888.9999999999 9
+integer 888888888.9999999999 9 = 888888888
+fraction 888888888.9999999999 9 = 0.9999999999 9
+round 888888888.9999999999 9 = 888888889
+round(888888888.9999999999 9,nearest) = 888888889
+round(888888888.9999999999 9,up) = 888888889
+round(888888888.9999999999 9,down) = 888888888
+round(888888888.9999999999 9,zero) = 888888888
+round(888888888.9999999999 9,any) = 888888888
+Original: 0.0
+integer 0.0 = 0
+fraction 0.0 = 0.0
+round 0.0 = 0
+round(0.0,nearest) = 0
+round(0.0,up) = 0
+round(0.0,down) = 0
+round(0.0,zero) = 0
+round(0.0,any) = 0
+Original: -0.1
+integer -0.1 = 0
+fraction -0.1 = -0.1
+round -0.1 = 0
+round(-0.1,nearest) = 0
+round(-0.1,up) = 0
+round(-0.1,down) = -1
+round(-0.1,zero) = 0
+round(-0.1,any) = 0
+Original: -0.4
+integer -0.4 = 0
+fraction -0.4 = -0.4
+round -0.4 = 0
+round(-0.4,nearest) = 0
+round(-0.4,up) = 0
+round(-0.4,down) = -1
+round(-0.4,zero) = 0
+round(-0.4,any) = 0
+Original: -0.8
+integer -0.8 = 0
+fraction -0.8 = -0.8
+round -0.8 = -1
+round(-0.8,nearest) = -1
+round(-0.8,up) = 0
+round(-0.8,down) = -1
+round(-0.8,zero) = 0
+round(-0.8,any) = 0
+Original: -1.0
+integer -1.0 = -1
+fraction -1.0 = 0.0
+round -1.0 = -1
+round(-1.0,nearest) = -1
+round(-1.0,up) = -1
+round(-1.0,down) = -1
+round(-1.0,zero) = -1
+round(-1.0,any) = -1
+Original: -1.1
+integer -1.1 = -1
+fraction -1.1 = -0.1
+round -1.1 = -1
+round(-1.1,nearest) = -1
+round(-1.1,up) = -1
+round(-1.1,down) = -2
+round(-1.1,zero) = -1
+round(-1.1,any) = -1
+Original: -1.4
+integer -1.4 = -1
+fraction -1.4 = -0.4
+round -1.4 = -1
+round(-1.4,nearest) = -1
+round(-1.4,up) = -1
+round(-1.4,down) = -2
+round(-1.4,zero) = -1
+round(-1.4,any) = -1
+Original: -1.8
+integer -1.8 = -1
+fraction -1.8 = -0.8
+round -1.8 = -2
+round(-1.8,nearest) = -2
+round(-1.8,up) = -1
+round(-1.8,down) = -2
+round(-1.8,zero) = -1
+round(-1.8,any) = -1
+Original: -2.0
+integer -2.0 = -2
+fraction -2.0 = 0.0
+round -2.0 = -2
+round(-2.0,nearest) = -2
+round(-2.0,up) = -2
+round(-2.0,down) = -2
+round(-2.0,zero) = -2
+round(-2.0,any) = -2
+Original: -2.4
+integer -2.4 = -2
+fraction -2.4 = -0.4
+round -2.4 = -2
+round(-2.4,nearest) = -2
+round(-2.4,up) = -2
+round(-2.4,down) = -3
+round(-2.4,zero) = -2
+round(-2.4,any) = -2
+Original: -2.7
+integer -2.7 = -2
+fraction -2.7 = -0.7
+round -2.7 = -3
+round(-2.7,nearest) = -3
+round(-2.7,up) = -2
+round(-2.7,down) = -3
+round(-2.7,zero) = -2
+round(-2.7,any) = -2
+Original: -10.0
+integer -10.0 = -10
+fraction -10.0 = 0.0
+round -10.0 = -10
+round(-10.0,nearest) = -10
+round(-10.0,up) = -10
+round(-10.0,down) = -10
+round(-10.0,zero) = -10
+round(-10.0,any) = -10
+Original: -10.001
+integer -10.001 = -10
+fraction -10.001 = -0.001
+round -10.001 = -10
+round(-10.001,nearest) = -10
+round(-10.001,up) = -10
+round(-10.001,down) = -11
+round(-10.001,zero) = -10
+round(-10.001,any) = -10
+Original: -10.000002
+integer -10.000002 = -10
+fraction -10.000002 = -0.000002
+round -10.000002 = -10
+round(-10.000002,nearest) = -10
+round(-10.000002,up) = -10
+round(-10.000002,down) = -11
+round(-10.000002,zero) = -10
+round(-10.000002,any) = -10
+Original: -30.2
+integer -30.2 = -30
+fraction -30.2 = -0.2
+round -30.2 = -30
+round(-30.2,nearest) = -30
+round(-30.2,up) = -30
+round(-30.2,down) = -31
+round(-30.2,zero) = -30
+round(-30.2,any) = -30
+Original: -200.32344
+integer -200.32344 = -200
+fraction -200.32344 = -0.32344
+round -200.32344 = -200
+round(-200.32344,nearest) = -200
+round(-200.32344,up) = -200
+round(-200.32344,down) = -201
+round(-200.32344,zero) = -200
+round(-200.32344,any) = -200
+Original:  -40000000000.0
+integer  -40000000000.0 = -40000000000
+fraction  -40000000000.0 = 0.0
+round  -40000000000.0 = -40000000000
+round( -40000000000.0,nearest) = -40000000000
+round( -40000000000.0,up) = -40000000000
+round( -40000000000.0,down) = -40000000000
+round( -40000000000.0,zero) = -40000000000
+round( -40000000000.0,any) = -40000000000
+Original: -0.4 E 21
+integer -0.4 E 21 = -400000000000000000000
+fraction -0.4 E 21 = 0.0
+round -0.4 E 21 = -400000000000000000000
+round(-0.4 E 21,nearest) = -400000000000000000000
+round(-0.4 E 21,up) = -400000000000000000000
+round(-0.4 E 21,down) = -400000000000000000000
+round(-0.4 E 21,zero) = -400000000000000000000
+round(-0.4 E 21,any) = -400000000000000000000
+Original: -0.4 E 31
+integer -0.4 E 31 = -3999999999999999999995705032704
+fraction -0.4 E 31 = 0.0
+round -0.4 E 31 = -3999999999999999999995705032704
+round(-0.4 E 31,nearest) = -3999999999999999999995705032704
+round(-0.4 E 31,up) = -3999999999999999999995705032704
+round(-0.4 E 31,down) = -3999999999999999999995705032704
+round(-0.4 E 31,zero) = -3999999999999999999995705032704
+round(-0.4 E 31,any) = -3999999999999999999995705032704
+Original: -888888888.9999999999 9
+integer -888888888.9999999999 9 = -888888888
+fraction -888888888.9999999999 9 = -0.9999999999 9
+round -888888888.9999999999 9 = -888888889
+round(-888888888.9999999999 9,nearest) = -888888889
+round(-888888888.9999999999 9,up) = -888888888
+round(-888888888.9999999999 9,down) = -888888889
+round(-888888888.9999999999 9,zero) = -888888888
+round(-888888888.9999999999 9,any) = -888888888
+---------- Testing Float (fixed) ------------- 
+Original: 0.0
+integer 0.0 = 0
+fraction 0.0 = 0.0
+round 0.0 = 0
+round(0.0,nearest) = 0
+round(0.0,up) = 0
+round(0.0,down) = 0
+round(0.0,zero) = 0
+round(0.0,any) = 0
+Original: 0.1
+integer 0.1 = 0
+fraction 0.1 = 0.1
+round 0.1 = 0
+round(0.1,nearest) = 0
+round(0.1,up) = 1
+round(0.1,down) = 0
+round(0.1,zero) = 0
+round(0.1,any) = 0
+Original: 0.4
+integer 0.4 = 0
+fraction 0.4 = 0.4
+round 0.4 = 0
+round(0.4,nearest) = 0
+round(0.4,up) = 1
+round(0.4,down) = 0
+round(0.4,zero) = 0
+round(0.4,any) = 0
+Original: 0.8
+integer 0.8 = 0
+fraction 0.8 = 0.8
+round 0.8 = 1
+round(0.8,nearest) = 1
+round(0.8,up) = 1
+round(0.8,down) = 0
+round(0.8,zero) = 0
+round(0.8,any) = 0
+Original: 1.0
+integer 1.0 = 1
+fraction 1.0 = 0.0
+round 1.0 = 1
+round(1.0,nearest) = 1
+round(1.0,up) = 1
+round(1.0,down) = 1
+round(1.0,zero) = 1
+round(1.0,any) = 1
+Original: 1.1
+integer 1.1 = 1
+fraction 1.1 = 0.1
+round 1.1 = 1
+round(1.1,nearest) = 1
+round(1.1,up) = 2
+round(1.1,down) = 1
+round(1.1,zero) = 1
+round(1.1,any) = 1
+Original: 1.4
+integer 1.4 = 1
+fraction 1.4 = 0.4
+round 1.4 = 1
+round(1.4,nearest) = 1
+round(1.4,up) = 2
+round(1.4,down) = 1
+round(1.4,zero) = 1
+round(1.4,any) = 1
+Original: 1.8
+integer 1.8 = 1
+fraction 1.8 = 0.8
+round 1.8 = 2
+round(1.8,nearest) = 2
+round(1.8,up) = 2
+round(1.8,down) = 1
+round(1.8,zero) = 1
+round(1.8,any) = 1
+Original: 2.0
+integer 2.0 = 2
+fraction 2.0 = 0.0
+round 2.0 = 2
+round(2.0,nearest) = 2
+round(2.0,up) = 2
+round(2.0,down) = 2
+round(2.0,zero) = 2
+round(2.0,any) = 2
+Original: 2.4
+integer 2.4 = 2
+fraction 2.4 = 0.4
+round 2.4 = 2
+round(2.4,nearest) = 2
+round(2.4,up) = 3
+round(2.4,down) = 2
+round(2.4,zero) = 2
+round(2.4,any) = 2
+Original: 2.7
+integer 2.7 = 2
+fraction 2.7 = 0.7
+round 2.7 = 3
+round(2.7,nearest) = 3
+round(2.7,up) = 3
+round(2.7,down) = 2
+round(2.7,zero) = 2
+round(2.7,any) = 2
+Original: 10.0
+integer 10.0 = 10
+fraction 10.0 = 0.0
+round 10.0 = 10
+round(10.0,nearest) = 10
+round(10.0,up) = 10
+round(10.0,down) = 10
+round(10.0,zero) = 10
+round(10.0,any) = 10
+Original: 10.001
+integer 10.001 = 10
+fraction 10.001 = 0.001
+round 10.001 = 10
+round(10.001,nearest) = 10
+round(10.001,up) = 11
+round(10.001,down) = 10
+round(10.001,zero) = 10
+round(10.001,any) = 10
+Original: 10.000002
+integer 10.000002 = 10
+fraction 10.000002 = 0.000002
+round 10.000002 = 10
+round(10.000002,nearest) = 10
+round(10.000002,up) = 11
+round(10.000002,down) = 10
+round(10.000002,zero) = 10
+round(10.000002,any) = 10
+Original: 30.2
+integer 30.2 = 30
+fraction 30.2 = 0.2
+round 30.2 = 30
+round(30.2,nearest) = 30
+round(30.2,up) = 31
+round(30.2,down) = 30
+round(30.2,zero) = 30
+round(30.2,any) = 30
+Original: 200.32344
+integer 200.32344 = 200
+fraction 200.32344 = 0.32344
+round 200.32344 = 200
+round(200.32344,nearest) = 200
+round(200.32344,up) = 201
+round(200.32344,down) = 200
+round(200.32344,zero) = 200
+round(200.32344,any) = 200
+Original:  40000000000.0
+integer  40000000000.0 = 40000000000
+fraction  40000000000.0 = 0.0
+round  40000000000.0 = 40000000000
+round( 40000000000.0,nearest) = 40000000000
+round( 40000000000.0,up) = 40000000000
+round( 40000000000.0,down) = 40000000000
+round( 40000000000.0,zero) = 40000000000
+round( 40000000000.0,any) = 40000000000
+Original:   400000000000000000000.0
+integer   400000000000000000000.0 = 400000000000000000000
+fraction   400000000000000000000.0 = 0.0
+round   400000000000000000000.0 = 400000000000000000000
+round(  400000000000000000000.0,nearest) = 400000000000000000000
+round(  400000000000000000000.0,up) = 400000000000000000000
+round(  400000000000000000000.0,down) = 400000000000000000000
+round(  400000000000000000000.0,zero) = 400000000000000000000
+round(  400000000000000000000.0,any) = 400000000000000000000
+Original:    4000000000000000000000000000000.0
+integer    4000000000000000000000000000000.0 = 3999999999999999999995705032704
+fraction    4000000000000000000000000000000.0 = 0.0
+round    4000000000000000000000000000000.0 = 3999999999999999999995705032704
+round(   4000000000000000000000000000000.0,nearest) = 3999999999999999999995705032704
+round(   4000000000000000000000000000000.0,up) = 3999999999999999999995705032704
+round(   4000000000000000000000000000000.0,down) = 3999999999999999999995705032704
+round(   4000000000000000000000000000000.0,zero) = 3999999999999999999995705032704
+round(   4000000000000000000000000000000.0,any) = 3999999999999999999995705032704
+Original: 888888888.9999999999 9
+integer 888888888.9999999999 9 = 888888888
+fraction 888888888.9999999999 9 = 0.9999999999 9
+round 888888888.9999999999 9 = 888888889
+round(888888888.9999999999 9,nearest) = 888888889
+round(888888888.9999999999 9,up) = 888888889
+round(888888888.9999999999 9,down) = 888888888
+round(888888888.9999999999 9,zero) = 888888888
+round(888888888.9999999999 9,any) = 888888888
+Original: 0.0
+integer 0.0 = 0
+fraction 0.0 = 0.0
+round 0.0 = 0
+round(0.0,nearest) = 0
+round(0.0,up) = 0
+round(0.0,down) = 0
+round(0.0,zero) = 0
+round(0.0,any) = 0
+Original: -0.1
+integer -0.1 = 0
+fraction -0.1 = -0.1
+round -0.1 = 0
+round(-0.1,nearest) = 0
+round(-0.1,up) = 0
+round(-0.1,down) = -1
+round(-0.1,zero) = 0
+round(-0.1,any) = 0
+Original: -0.4
+integer -0.4 = 0
+fraction -0.4 = -0.4
+round -0.4 = 0
+round(-0.4,nearest) = 0
+round(-0.4,up) = 0
+round(-0.4,down) = -1
+round(-0.4,zero) = 0
+round(-0.4,any) = 0
+Original: -0.8
+integer -0.8 = 0
+fraction -0.8 = -0.8
+round -0.8 = -1
+round(-0.8,nearest) = -1
+round(-0.8,up) = 0
+round(-0.8,down) = -1
+round(-0.8,zero) = 0
+round(-0.8,any) = 0
+Original: -1.0
+integer -1.0 = -1
+fraction -1.0 = 0.0
+round -1.0 = -1
+round(-1.0,nearest) = -1
+round(-1.0,up) = -1
+round(-1.0,down) = -1
+round(-1.0,zero) = -1
+round(-1.0,any) = -1
+Original: -1.1
+integer -1.1 = -1
+fraction -1.1 = -0.1
+round -1.1 = -1
+round(-1.1,nearest) = -1
+round(-1.1,up) = -1
+round(-1.1,down) = -2
+round(-1.1,zero) = -1
+round(-1.1,any) = -1
+Original: -1.4
+integer -1.4 = -1
+fraction -1.4 = -0.4
+round -1.4 = -1
+round(-1.4,nearest) = -1
+round(-1.4,up) = -1
+round(-1.4,down) = -2
+round(-1.4,zero) = -1
+round(-1.4,any) = -1
+Original: -1.8
+integer -1.8 = -1
+fraction -1.8 = -0.8
+round -1.8 = -2
+round(-1.8,nearest) = -2
+round(-1.8,up) = -1
+round(-1.8,down) = -2
+round(-1.8,zero) = -1
+round(-1.8,any) = -1
+Original: -2.0
+integer -2.0 = -2
+fraction -2.0 = 0.0
+round -2.0 = -2
+round(-2.0,nearest) = -2
+round(-2.0,up) = -2
+round(-2.0,down) = -2
+round(-2.0,zero) = -2
+round(-2.0,any) = -2
+Original: -2.4
+integer -2.4 = -2
+fraction -2.4 = -0.4
+round -2.4 = -2
+round(-2.4,nearest) = -2
+round(-2.4,up) = -2
+round(-2.4,down) = -3
+round(-2.4,zero) = -2
+round(-2.4,any) = -2
+Original: -2.7
+integer -2.7 = -2
+fraction -2.7 = -0.7
+round -2.7 = -3
+round(-2.7,nearest) = -3
+round(-2.7,up) = -2
+round(-2.7,down) = -3
+round(-2.7,zero) = -2
+round(-2.7,any) = -2
+Original: -10.0
+integer -10.0 = -10
+fraction -10.0 = 0.0
+round -10.0 = -10
+round(-10.0,nearest) = -10
+round(-10.0,up) = -10
+round(-10.0,down) = -10
+round(-10.0,zero) = -10
+round(-10.0,any) = -10
+Original: -10.001
+integer -10.001 = -10
+fraction -10.001 = -0.001
+round -10.001 = -10
+round(-10.001,nearest) = -10
+round(-10.001,up) = -10
+round(-10.001,down) = -11
+round(-10.001,zero) = -10
+round(-10.001,any) = -10
+Original: -10.000002
+integer -10.000002 = -10
+fraction -10.000002 = -0.000002
+round -10.000002 = -10
+round(-10.000002,nearest) = -10
+round(-10.000002,up) = -10
+round(-10.000002,down) = -11
+round(-10.000002,zero) = -10
+round(-10.000002,any) = -10
+Original: -30.2
+integer -30.2 = -30
+fraction -30.2 = -0.2
+round -30.2 = -30
+round(-30.2,nearest) = -30
+round(-30.2,up) = -30
+round(-30.2,down) = -31
+round(-30.2,zero) = -30
+round(-30.2,any) = -30
+Original: -200.32344
+integer -200.32344 = -200
+fraction -200.32344 = -0.32344
+round -200.32344 = -200
+round(-200.32344,nearest) = -200
+round(-200.32344,up) = -200
+round(-200.32344,down) = -201
+round(-200.32344,zero) = -200
+round(-200.32344,any) = -200
+Original:  -40000000000.0
+integer  -40000000000.0 = -40000000000
+fraction  -40000000000.0 = 0.0
+round  -40000000000.0 = -40000000000
+round( -40000000000.0,nearest) = -40000000000
+round( -40000000000.0,up) = -40000000000
+round( -40000000000.0,down) = -40000000000
+round( -40000000000.0,zero) = -40000000000
+round( -40000000000.0,any) = -40000000000
+Original:   -400000000000000000000.0
+integer   -400000000000000000000.0 = -400000000000000000000
+fraction   -400000000000000000000.0 = 0.0
+round   -400000000000000000000.0 = -400000000000000000000
+round(  -400000000000000000000.0,nearest) = -400000000000000000000
+round(  -400000000000000000000.0,up) = -400000000000000000000
+round(  -400000000000000000000.0,down) = -400000000000000000000
+round(  -400000000000000000000.0,zero) = -400000000000000000000
+round(  -400000000000000000000.0,any) = -400000000000000000000
+Original:    -4000000000000000000000000000000.0
+integer    -4000000000000000000000000000000.0 = -3999999999999999999995705032704
+fraction    -4000000000000000000000000000000.0 = 0.0
+round    -4000000000000000000000000000000.0 = -3999999999999999999995705032704
+round(   -4000000000000000000000000000000.0,nearest) = -3999999999999999999995705032704
+round(   -4000000000000000000000000000000.0,up) = -3999999999999999999995705032704
+round(   -4000000000000000000000000000000.0,down) = -3999999999999999999995705032704
+round(   -4000000000000000000000000000000.0,zero) = -3999999999999999999995705032704
+round(   -4000000000000000000000000000000.0,any) = -3999999999999999999995705032704
+Original: -888888888.9999999999 9
+integer -888888888.9999999999 9 = -888888888
+fraction -888888888.9999999999 9 = -0.9999999999 9
+round -888888888.9999999999 9 = -888888889
+round(-888888888.9999999999 9,nearest) = -888888889
+round(-888888888.9999999999 9,up) = -888888888
+round(-888888888.9999999999 9,down) = -888888889
+round(-888888888.9999999999 9,zero) = -888888888
+round(-888888888.9999999999 9,any) = -888888888
+---------- Testing Float (float) ------------- 
+Original: 0.0 E 0
+integer 0.0 E 0 = 0
+fraction 0.0 E 0 = 0.0 E 0
+round 0.0 E 0 = 0
+round(0.0 E 0,nearest) = 0
+round(0.0 E 0,up) = 0
+round(0.0 E 0,down) = 0
+round(0.0 E 0,zero) = 0
+round(0.0 E 0,any) = 0
+Original: 0.1000000000 0000000000 E 0
+integer 0.1000000000 0000000000 E 0 = 0
+fraction 0.1000000000 0000000000 E 0 = 0.1000000000 0000000000 E 0
+round 0.1000000000 0000000000 E 0 = 0
+round(0.1000000000 0000000000 E 0,nearest) = 0
+round(0.1000000000 0000000000 E 0,up) = 1
+round(0.1000000000 0000000000 E 0,down) = 0
+round(0.1000000000 0000000000 E 0,zero) = 0
+round(0.1000000000 0000000000 E 0,any) = 0
+Original: 0.4000000000 0000000000 E 0
+integer 0.4000000000 0000000000 E 0 = 0
+fraction 0.4000000000 0000000000 E 0 = 0.4000000000 0000000000 E 0
+round 0.4000000000 0000000000 E 0 = 0
+round(0.4000000000 0000000000 E 0,nearest) = 0
+round(0.4000000000 0000000000 E 0,up) = 1
+round(0.4000000000 0000000000 E 0,down) = 0
+round(0.4000000000 0000000000 E 0,zero) = 0
+round(0.4000000000 0000000000 E 0,any) = 0
+Original: 0.8000000000 0000000000 E 0
+integer 0.8000000000 0000000000 E 0 = 0
+fraction 0.8000000000 0000000000 E 0 = 0.8000000000 0000000000 E 0
+round 0.8000000000 0000000000 E 0 = 1
+round(0.8000000000 0000000000 E 0,nearest) = 1
+round(0.8000000000 0000000000 E 0,up) = 1
+round(0.8000000000 0000000000 E 0,down) = 0
+round(0.8000000000 0000000000 E 0,zero) = 0
+round(0.8000000000 0000000000 E 0,any) = 0
+Original: 0.1000000000 0000000000 E 1
+integer 0.1000000000 0000000000 E 1 = 1
+fraction 0.1000000000 0000000000 E 1 = 0.0 E 0
+round 0.1000000000 0000000000 E 1 = 1
+round(0.1000000000 0000000000 E 1,nearest) = 1
+round(0.1000000000 0000000000 E 1,up) = 1
+round(0.1000000000 0000000000 E 1,down) = 1
+round(0.1000000000 0000000000 E 1,zero) = 1
+round(0.1000000000 0000000000 E 1,any) = 1
+Original: 0.1100000000 0000000000 E 1
+integer 0.1100000000 0000000000 E 1 = 1
+fraction 0.1100000000 0000000000 E 1 = 0.1000000000 00000000 E 0
+round 0.1100000000 0000000000 E 1 = 1
+round(0.1100000000 0000000000 E 1,nearest) = 1
+round(0.1100000000 0000000000 E 1,up) = 2
+round(0.1100000000 0000000000 E 1,down) = 1
+round(0.1100000000 0000000000 E 1,zero) = 1
+round(0.1100000000 0000000000 E 1,any) = 1
+Original: 0.1400000000 0000000000 E 1
+integer 0.1400000000 0000000000 E 1 = 1
+fraction 0.1400000000 0000000000 E 1 = 0.4000000000 000000000 E 0
+round 0.1400000000 0000000000 E 1 = 1
+round(0.1400000000 0000000000 E 1,nearest) = 1
+round(0.1400000000 0000000000 E 1,up) = 2
+round(0.1400000000 0000000000 E 1,down) = 1
+round(0.1400000000 0000000000 E 1,zero) = 1
+round(0.1400000000 0000000000 E 1,any) = 1
+Original: 0.1800000000 0000000000 E 1
+integer 0.1800000000 0000000000 E 1 = 1
+fraction 0.1800000000 0000000000 E 1 = 0.8000000000 000000000 E 0
+round 0.1800000000 0000000000 E 1 = 2
+round(0.1800000000 0000000000 E 1,nearest) = 2
+round(0.1800000000 0000000000 E 1,up) = 2
+round(0.1800000000 0000000000 E 1,down) = 1
+round(0.1800000000 0000000000 E 1,zero) = 1
+round(0.1800000000 0000000000 E 1,any) = 1
+Original: 0.2000000000 0000000000 E 1
+integer 0.2000000000 0000000000 E 1 = 2
+fraction 0.2000000000 0000000000 E 1 = 0.0 E 0
+round 0.2000000000 0000000000 E 1 = 2
+round(0.2000000000 0000000000 E 1,nearest) = 2
+round(0.2000000000 0000000000 E 1,up) = 2
+round(0.2000000000 0000000000 E 1,down) = 2
+round(0.2000000000 0000000000 E 1,zero) = 2
+round(0.2000000000 0000000000 E 1,any) = 2
+Original: 0.2400000000 0000000000 E 1
+integer 0.2400000000 0000000000 E 1 = 2
+fraction 0.2400000000 0000000000 E 1 = 0.4000000000 000000000 E 0
+round 0.2400000000 0000000000 E 1 = 2
+round(0.2400000000 0000000000 E 1,nearest) = 2
+round(0.2400000000 0000000000 E 1,up) = 3
+round(0.2400000000 0000000000 E 1,down) = 2
+round(0.2400000000 0000000000 E 1,zero) = 2
+round(0.2400000000 0000000000 E 1,any) = 2
+Original: 0.2700000000 0000000000 E 1
+integer 0.2700000000 0000000000 E 1 = 2
+fraction 0.2700000000 0000000000 E 1 = 0.7000000000 000000000 E 0
+round 0.2700000000 0000000000 E 1 = 3
+round(0.2700000000 0000000000 E 1,nearest) = 3
+round(0.2700000000 0000000000 E 1,up) = 3
+round(0.2700000000 0000000000 E 1,down) = 2
+round(0.2700000000 0000000000 E 1,zero) = 2
+round(0.2700000000 0000000000 E 1,any) = 2
+Original: 0.1000000000 0000000000 E 2
+integer 0.1000000000 0000000000 E 2 = 10
+fraction 0.1000000000 0000000000 E 2 = 0.0 E 0
+round 0.1000000000 0000000000 E 2 = 10
+round(0.1000000000 0000000000 E 2,nearest) = 10
+round(0.1000000000 0000000000 E 2,up) = 10
+round(0.1000000000 0000000000 E 2,down) = 10
+round(0.1000000000 0000000000 E 2,zero) = 10
+round(0.1000000000 0000000000 E 2,any) = 10
+Original: 0.1000100000 0000000000 E 2
+integer 0.1000100000 0000000000 E 2 = 10
+fraction 0.1000100000 0000000000 E 2 = 0.1000000000 0000000 E -2
+round 0.1000100000 0000000000 E 2 = 10
+round(0.1000100000 0000000000 E 2,nearest) = 10
+round(0.1000100000 0000000000 E 2,up) = 11
+round(0.1000100000 0000000000 E 2,down) = 10
+round(0.1000100000 0000000000 E 2,zero) = 10
+round(0.1000100000 0000000000 E 2,any) = 10
+Original: 0.1000000200 0000000000 E 2
+integer 0.1000000200 0000000000 E 2 = 10
+fraction 0.1000000200 0000000000 E 2 = 0.2000000000 000 E -5
+round 0.1000000200 0000000000 E 2 = 10
+round(0.1000000200 0000000000 E 2,nearest) = 10
+round(0.1000000200 0000000000 E 2,up) = 11
+round(0.1000000200 0000000000 E 2,down) = 10
+round(0.1000000200 0000000000 E 2,zero) = 10
+round(0.1000000200 0000000000 E 2,any) = 10
+Original: 0.3020000000 0000000000 E 2
+integer 0.3020000000 0000000000 E 2 = 30
+fraction 0.3020000000 0000000000 E 2 = 0.2000000000 00000000 E 0
+round 0.3020000000 0000000000 E 2 = 30
+round(0.3020000000 0000000000 E 2,nearest) = 30
+round(0.3020000000 0000000000 E 2,up) = 31
+round(0.3020000000 0000000000 E 2,down) = 30
+round(0.3020000000 0000000000 E 2,zero) = 30
+round(0.3020000000 0000000000 E 2,any) = 30
+Original: 0.2003234400 0000000000 E 3
+integer 0.2003234400 0000000000 E 3 = 200
+fraction 0.2003234400 0000000000 E 3 = 0.3234400000 0000000 E 0
+round 0.2003234400 0000000000 E 3 = 200
+round(0.2003234400 0000000000 E 3,nearest) = 200
+round(0.2003234400 0000000000 E 3,up) = 201
+round(0.2003234400 0000000000 E 3,down) = 200
+round(0.2003234400 0000000000 E 3,zero) = 200
+round(0.2003234400 0000000000 E 3,any) = 200
+Original: 0.4000000000 0 E 11
+integer 0.4000000000 0 E 11 = 40000000000
+fraction 0.4000000000 0 E 11 = 0.0 E 0
+round 0.4000000000 0 E 11 = 40000000000
+round(0.4000000000 0 E 11,nearest) = 40000000000
+round(0.4000000000 0 E 11,up) = 40000000000
+round(0.4000000000 0 E 11,down) = 40000000000
+round(0.4000000000 0 E 11,zero) = 40000000000
+round(0.4000000000 0 E 11,any) = 40000000000
+Original: 0.4000000000 0000000000 E 21
+integer 0.4000000000 0000000000 E 21 = 400000000000000000000
+fraction 0.4000000000 0000000000 E 21 = 0.0 E 0
+round 0.4000000000 0000000000 E 21 = 400000000000000000000
+round(0.4000000000 0000000000 E 21,nearest) = 400000000000000000000
+round(0.4000000000 0000000000 E 21,up) = 400000000000000000000
+round(0.4000000000 0000000000 E 21,down) = 400000000000000000000
+round(0.4000000000 0000000000 E 21,zero) = 400000000000000000000
+round(0.4000000000 0000000000 E 21,any) = 400000000000000000000
+Original: 0.4000000000 0000000000 E 31
+integer 0.4000000000 0000000000 E 31 = 3999999999999999999995705032704
+fraction 0.4000000000 0000000000 E 31 = 0.0 E 0
+round 0.4000000000 0000000000 E 31 = 3999999999999999999995705032704
+round(0.4000000000 0000000000 E 31,nearest) = 3999999999999999999995705032704
+round(0.4000000000 0000000000 E 31,up) = 3999999999999999999995705032704
+round(0.4000000000 0000000000 E 31,down) = 3999999999999999999995705032704
+round(0.4000000000 0000000000 E 31,zero) = 3999999999999999999995705032704
+round(0.4000000000 0000000000 E 31,any) = 3999999999999999999995705032704
+Original: 0.8888888889 9999999999 E 9
+integer 0.8888888889 9999999999 E 9 = 888888888
+fraction 0.8888888889 9999999999 E 9 = 0.9999999999 9 E 0
+round 0.8888888889 9999999999 E 9 = 888888889
+round(0.8888888889 9999999999 E 9,nearest) = 888888889
+round(0.8888888889 9999999999 E 9,up) = 888888889
+round(0.8888888889 9999999999 E 9,down) = 888888888
+round(0.8888888889 9999999999 E 9,zero) = 888888888
+round(0.8888888889 9999999999 E 9,any) = 888888888
+Original: 0.0 E 0
+integer 0.0 E 0 = 0
+fraction 0.0 E 0 = 0.0 E 0
+round 0.0 E 0 = 0
+round(0.0 E 0,nearest) = 0
+round(0.0 E 0,up) = 0
+round(0.0 E 0,down) = 0
+round(0.0 E 0,zero) = 0
+round(0.0 E 0,any) = 0
+Original: -0.1000000000 0000000000 E 0
+integer -0.1000000000 0000000000 E 0 = 0
+fraction -0.1000000000 0000000000 E 0 = -0.1000000000 0000000000 E 0
+round -0.1000000000 0000000000 E 0 = 0
+round(-0.1000000000 0000000000 E 0,nearest) = 0
+round(-0.1000000000 0000000000 E 0,up) = 0
+round(-0.1000000000 0000000000 E 0,down) = -1
+round(-0.1000000000 0000000000 E 0,zero) = 0
+round(-0.1000000000 0000000000 E 0,any) = 0
+Original: -0.4000000000 0000000000 E 0
+integer -0.4000000000 0000000000 E 0 = 0
+fraction -0.4000000000 0000000000 E 0 = -0.4000000000 0000000000 E 0
+round -0.4000000000 0000000000 E 0 = 0
+round(-0.4000000000 0000000000 E 0,nearest) = 0
+round(-0.4000000000 0000000000 E 0,up) = 0
+round(-0.4000000000 0000000000 E 0,down) = -1
+round(-0.4000000000 0000000000 E 0,zero) = 0
+round(-0.4000000000 0000000000 E 0,any) = 0
+Original: -0.8000000000 0000000000 E 0
+integer -0.8000000000 0000000000 E 0 = 0
+fraction -0.8000000000 0000000000 E 0 = -0.8000000000 0000000000 E 0
+round -0.8000000000 0000000000 E 0 = -1
+round(-0.8000000000 0000000000 E 0,nearest) = -1
+round(-0.8000000000 0000000000 E 0,up) = 0
+round(-0.8000000000 0000000000 E 0,down) = -1
+round(-0.8000000000 0000000000 E 0,zero) = 0
+round(-0.8000000000 0000000000 E 0,any) = 0
+Original: -0.1000000000 0000000000 E 1
+integer -0.1000000000 0000000000 E 1 = -1
+fraction -0.1000000000 0000000000 E 1 = 0.0 E 0
+round -0.1000000000 0000000000 E 1 = -1
+round(-0.1000000000 0000000000 E 1,nearest) = -1
+round(-0.1000000000 0000000000 E 1,up) = -1
+round(-0.1000000000 0000000000 E 1,down) = -1
+round(-0.1000000000 0000000000 E 1,zero) = -1
+round(-0.1000000000 0000000000 E 1,any) = -1
+Original: -0.1100000000 0000000000 E 1
+integer -0.1100000000 0000000000 E 1 = -1
+fraction -0.1100000000 0000000000 E 1 = -0.1000000000 00000000 E 0
+round -0.1100000000 0000000000 E 1 = -1
+round(-0.1100000000 0000000000 E 1,nearest) = -1
+round(-0.1100000000 0000000000 E 1,up) = -1
+round(-0.1100000000 0000000000 E 1,down) = -2
+round(-0.1100000000 0000000000 E 1,zero) = -1
+round(-0.1100000000 0000000000 E 1,any) = -1
+Original: -0.1400000000 0000000000 E 1
+integer -0.1400000000 0000000000 E 1 = -1
+fraction -0.1400000000 0000000000 E 1 = -0.4000000000 000000000 E 0
+round -0.1400000000 0000000000 E 1 = -1
+round(-0.1400000000 0000000000 E 1,nearest) = -1
+round(-0.1400000000 0000000000 E 1,up) = -1
+round(-0.1400000000 0000000000 E 1,down) = -2
+round(-0.1400000000 0000000000 E 1,zero) = -1
+round(-0.1400000000 0000000000 E 1,any) = -1
+Original: -0.1800000000 0000000000 E 1
+integer -0.1800000000 0000000000 E 1 = -1
+fraction -0.1800000000 0000000000 E 1 = -0.8000000000 000000000 E 0
+round -0.1800000000 0000000000 E 1 = -2
+round(-0.1800000000 0000000000 E 1,nearest) = -2
+round(-0.1800000000 0000000000 E 1,up) = -1
+round(-0.1800000000 0000000000 E 1,down) = -2
+round(-0.1800000000 0000000000 E 1,zero) = -1
+round(-0.1800000000 0000000000 E 1,any) = -1
+Original: -0.2000000000 0000000000 E 1
+integer -0.2000000000 0000000000 E 1 = -2
+fraction -0.2000000000 0000000000 E 1 = 0.0 E 0
+round -0.2000000000 0000000000 E 1 = -2
+round(-0.2000000000 0000000000 E 1,nearest) = -2
+round(-0.2000000000 0000000000 E 1,up) = -2
+round(-0.2000000000 0000000000 E 1,down) = -2
+round(-0.2000000000 0000000000 E 1,zero) = -2
+round(-0.2000000000 0000000000 E 1,any) = -2
+Original: -0.2400000000 0000000000 E 1
+integer -0.2400000000 0000000000 E 1 = -2
+fraction -0.2400000000 0000000000 E 1 = -0.4000000000 000000000 E 0
+round -0.2400000000 0000000000 E 1 = -2
+round(-0.2400000000 0000000000 E 1,nearest) = -2
+round(-0.2400000000 0000000000 E 1,up) = -2
+round(-0.2400000000 0000000000 E 1,down) = -3
+round(-0.2400000000 0000000000 E 1,zero) = -2
+round(-0.2400000000 0000000000 E 1,any) = -2
+Original: -0.2700000000 0000000000 E 1
+integer -0.2700000000 0000000000 E 1 = -2
+fraction -0.2700000000 0000000000 E 1 = -0.7000000000 000000000 E 0
+round -0.2700000000 0000000000 E 1 = -3
+round(-0.2700000000 0000000000 E 1,nearest) = -3
+round(-0.2700000000 0000000000 E 1,up) = -2
+round(-0.2700000000 0000000000 E 1,down) = -3
+round(-0.2700000000 0000000000 E 1,zero) = -2
+round(-0.2700000000 0000000000 E 1,any) = -2
+Original: -0.1000000000 0000000000 E 2
+integer -0.1000000000 0000000000 E 2 = -10
+fraction -0.1000000000 0000000000 E 2 = 0.0 E 0
+round -0.1000000000 0000000000 E 2 = -10
+round(-0.1000000000 0000000000 E 2,nearest) = -10
+round(-0.1000000000 0000000000 E 2,up) = -10
+round(-0.1000000000 0000000000 E 2,down) = -10
+round(-0.1000000000 0000000000 E 2,zero) = -10
+round(-0.1000000000 0000000000 E 2,any) = -10
+Original: -0.1000100000 0000000000 E 2
+integer -0.1000100000 0000000000 E 2 = -10
+fraction -0.1000100000 0000000000 E 2 = -0.1000000000 0000000 E -2
+round -0.1000100000 0000000000 E 2 = -10
+round(-0.1000100000 0000000000 E 2,nearest) = -10
+round(-0.1000100000 0000000000 E 2,up) = -10
+round(-0.1000100000 0000000000 E 2,down) = -11
+round(-0.1000100000 0000000000 E 2,zero) = -10
+round(-0.1000100000 0000000000 E 2,any) = -10
+Original: -0.1000000200 0000000000 E 2
+integer -0.1000000200 0000000000 E 2 = -10
+fraction -0.1000000200 0000000000 E 2 = -0.2000000000 000 E -5
+round -0.1000000200 0000000000 E 2 = -10
+round(-0.1000000200 0000000000 E 2,nearest) = -10
+round(-0.1000000200 0000000000 E 2,up) = -10
+round(-0.1000000200 0000000000 E 2,down) = -11
+round(-0.1000000200 0000000000 E 2,zero) = -10
+round(-0.1000000200 0000000000 E 2,any) = -10
+Original: -0.3020000000 0000000000 E 2
+integer -0.3020000000 0000000000 E 2 = -30
+fraction -0.3020000000 0000000000 E 2 = -0.2000000000 00000000 E 0
+round -0.3020000000 0000000000 E 2 = -30
+round(-0.3020000000 0000000000 E 2,nearest) = -30
+round(-0.3020000000 0000000000 E 2,up) = -30
+round(-0.3020000000 0000000000 E 2,down) = -31
+round(-0.3020000000 0000000000 E 2,zero) = -30
+round(-0.3020000000 0000000000 E 2,any) = -30
+Original: -0.2003234400 0000000000 E 3
+integer -0.2003234400 0000000000 E 3 = -200
+fraction -0.2003234400 0000000000 E 3 = -0.3234400000 0000000 E 0
+round -0.2003234400 0000000000 E 3 = -200
+round(-0.2003234400 0000000000 E 3,nearest) = -200
+round(-0.2003234400 0000000000 E 3,up) = -200
+round(-0.2003234400 0000000000 E 3,down) = -201
+round(-0.2003234400 0000000000 E 3,zero) = -200
+round(-0.2003234400 0000000000 E 3,any) = -200
+Original: -0.4000000000 0 E 11
+integer -0.4000000000 0 E 11 = -40000000000
+fraction -0.4000000000 0 E 11 = 0.0 E 0
+round -0.4000000000 0 E 11 = -40000000000
+round(-0.4000000000 0 E 11,nearest) = -40000000000
+round(-0.4000000000 0 E 11,up) = -40000000000
+round(-0.4000000000 0 E 11,down) = -40000000000
+round(-0.4000000000 0 E 11,zero) = -40000000000
+round(-0.4000000000 0 E 11,any) = -40000000000
+Original: -0.4000000000 0000000000 E 21
+integer -0.4000000000 0000000000 E 21 = -400000000000000000000
+fraction -0.4000000000 0000000000 E 21 = 0.0 E 0
+round -0.4000000000 0000000000 E 21 = -400000000000000000000
+round(-0.4000000000 0000000000 E 21,nearest) = -400000000000000000000
+round(-0.4000000000 0000000000 E 21,up) = -400000000000000000000
+round(-0.4000000000 0000000000 E 21,down) = -400000000000000000000
+round(-0.4000000000 0000000000 E 21,zero) = -400000000000000000000
+round(-0.4000000000 0000000000 E 21,any) = -400000000000000000000
+Original: -0.4000000000 0000000000 E 31
+integer -0.4000000000 0000000000 E 31 = -3999999999999999999995705032704
+fraction -0.4000000000 0000000000 E 31 = 0.0 E 0
+round -0.4000000000 0000000000 E 31 = -3999999999999999999995705032704
+round(-0.4000000000 0000000000 E 31,nearest) = -3999999999999999999995705032704
+round(-0.4000000000 0000000000 E 31,up) = -3999999999999999999995705032704
+round(-0.4000000000 0000000000 E 31,down) = -3999999999999999999995705032704
+round(-0.4000000000 0000000000 E 31,zero) = -3999999999999999999995705032704
+round(-0.4000000000 0000000000 E 31,any) = -3999999999999999999995705032704
+Original: -0.8888888889 9999999999 E 9
+integer -0.8888888889 9999999999 E 9 = -888888888
+fraction -0.8888888889 9999999999 E 9 = -0.9999999999 9 E 0
+round -0.8888888889 9999999999 E 9 = -888888889
+round(-0.8888888889 9999999999 E 9,nearest) = -888888889
+round(-0.8888888889 9999999999 E 9,up) = -888888888
+round(-0.8888888889 9999999999 E 9,down) = -888888889
+round(-0.8888888889 9999999999 E 9,zero) = -888888888
+round(-0.8888888889 9999999999 E 9,any) = -888888888
+---------- Testing Float (general 7) ------------- 
+Original: 0.0
+integer 0.0 = 0
+fraction 0.0 = 0.0
+round 0.0 = 0
+round(0.0,nearest) = 0
+round(0.0,up) = 0
+round(0.0,down) = 0
+round(0.0,zero) = 0
+round(0.0,any) = 0
+Original: 0.1
+integer 0.1 = 0
+fraction 0.1 = 0.1
+round 0.1 = 0
+round(0.1,nearest) = 0
+round(0.1,up) = 1
+round(0.1,down) = 0
+round(0.1,zero) = 0
+round(0.1,any) = 0
+Original: 0.4
+integer 0.4 = 0
+fraction 0.4 = 0.4
+round 0.4 = 0
+round(0.4,nearest) = 0
+round(0.4,up) = 1
+round(0.4,down) = 0
+round(0.4,zero) = 0
+round(0.4,any) = 0
+Original: 0.8
+integer 0.8 = 0
+fraction 0.8 = 0.8
+round 0.8 = 1
+round(0.8,nearest) = 1
+round(0.8,up) = 1
+round(0.8,down) = 0
+round(0.8,zero) = 0
+round(0.8,any) = 0
+Original: 1.0
+integer 1.0 = 1
+fraction 1.0 = 0.0
+round 1.0 = 1
+round(1.0,nearest) = 1
+round(1.0,up) = 1
+round(1.0,down) = 1
+round(1.0,zero) = 1
+round(1.0,any) = 1
+Original: 1.1
+integer 1.1 = 1
+fraction 1.1 = 0.1
+round 1.1 = 1
+round(1.1,nearest) = 1
+round(1.1,up) = 2
+round(1.1,down) = 1
+round(1.1,zero) = 1
+round(1.1,any) = 1
+Original: 1.4
+integer 1.4 = 1
+fraction 1.4 = 0.4
+round 1.4 = 1
+round(1.4,nearest) = 1
+round(1.4,up) = 2
+round(1.4,down) = 1
+round(1.4,zero) = 1
+round(1.4,any) = 1
+Original: 1.8
+integer 1.8 = 1
+fraction 1.8 = 0.8
+round 1.8 = 2
+round(1.8,nearest) = 2
+round(1.8,up) = 2
+round(1.8,down) = 1
+round(1.8,zero) = 1
+round(1.8,any) = 1
+Original: 2.0
+integer 2.0 = 2
+fraction 2.0 = 0.0
+round 2.0 = 2
+round(2.0,nearest) = 2
+round(2.0,up) = 2
+round(2.0,down) = 2
+round(2.0,zero) = 2
+round(2.0,any) = 2
+Original: 2.4
+integer 2.4 = 2
+fraction 2.4 = 0.4
+round 2.4 = 2
+round(2.4,nearest) = 2
+round(2.4,up) = 3
+round(2.4,down) = 2
+round(2.4,zero) = 2
+round(2.4,any) = 2
+Original: 2.7
+integer 2.7 = 2
+fraction 2.7 = 0.7
+round 2.7 = 3
+round(2.7,nearest) = 3
+round(2.7,up) = 3
+round(2.7,down) = 2
+round(2.7,zero) = 2
+round(2.7,any) = 2
+Original: 10.0
+integer 10.0 = 10
+fraction 10.0 = 0.0
+round 10.0 = 10
+round(10.0,nearest) = 10
+round(10.0,up) = 10
+round(10.0,down) = 10
+round(10.0,zero) = 10
+round(10.0,any) = 10
+Original: 10.001
+integer 10.001 = 10
+fraction 10.001 = 0.001
+round 10.001 = 10
+round(10.001,nearest) = 10
+round(10.001,up) = 11
+round(10.001,down) = 10
+round(10.001,zero) = 10
+round(10.001,any) = 10
+Original: 10.0
+integer 10.0 = 10
+fraction 10.0 = 0.000002
+round 10.0 = 10
+round(10.0,nearest) = 10
+round(10.0,up) = 11
+round(10.0,down) = 10
+round(10.0,zero) = 10
+round(10.0,any) = 10
+Original: 30.2
+integer 30.2 = 30
+fraction 30.2 = 0.2
+round 30.2 = 30
+round(30.2,nearest) = 30
+round(30.2,up) = 31
+round(30.2,down) = 30
+round(30.2,zero) = 30
+round(30.2,any) = 30
+Original: 200.3234
+integer 200.3234 = 200
+fraction 200.3234 = 0.32344
+round 200.3234 = 200
+round(200.3234,nearest) = 200
+round(200.3234,up) = 201
+round(200.3234,down) = 200
+round(200.3234,zero) = 200
+round(200.3234,any) = 200
+Original: 0.4000000000 0 E 11
+integer 0.4000000000 0 E 11 = 40000000000
+fraction 0.4000000000 0 E 11 = 0.0
+round 0.4000000000 0 E 11 = 40000000000
+round(0.4000000000 0 E 11,nearest) = 40000000000
+round(0.4000000000 0 E 11,up) = 40000000000
+round(0.4000000000 0 E 11,down) = 40000000000
+round(0.4000000000 0 E 11,zero) = 40000000000
+round(0.4000000000 0 E 11,any) = 40000000000
+Original: 0.4 E 21
+integer 0.4 E 21 = 400000000000000000000
+fraction 0.4 E 21 = 0.0
+round 0.4 E 21 = 400000000000000000000
+round(0.4 E 21,nearest) = 400000000000000000000
+round(0.4 E 21,up) = 400000000000000000000
+round(0.4 E 21,down) = 400000000000000000000
+round(0.4 E 21,zero) = 400000000000000000000
+round(0.4 E 21,any) = 400000000000000000000
+Original: 0.4 E 31
+integer 0.4 E 31 = 3999999999999999999995705032704
+fraction 0.4 E 31 = 0.0
+round 0.4 E 31 = 3999999999999999999995705032704
+round(0.4 E 31,nearest) = 3999999999999999999995705032704
+round(0.4 E 31,up) = 3999999999999999999995705032704
+round(0.4 E 31,down) = 3999999999999999999995705032704
+round(0.4 E 31,zero) = 3999999999999999999995705032704
+round(0.4 E 31,any) = 3999999999999999999995705032704
+Original: 0.8888889 E 9
+integer 0.8888889 E 9 = 888888888
+fraction 0.8888889 E 9 = 1.0
+round 0.8888889 E 9 = 888888889
+round(0.8888889 E 9,nearest) = 888888889
+round(0.8888889 E 9,up) = 888888889
+round(0.8888889 E 9,down) = 888888888
+round(0.8888889 E 9,zero) = 888888888
+round(0.8888889 E 9,any) = 888888888
+Original: 0.0
+integer 0.0 = 0
+fraction 0.0 = 0.0
+round 0.0 = 0
+round(0.0,nearest) = 0
+round(0.0,up) = 0
+round(0.0,down) = 0
+round(0.0,zero) = 0
+round(0.0,any) = 0
+Original: -0.1
+integer -0.1 = 0
+fraction -0.1 = -0.1
+round -0.1 = 0
+round(-0.1,nearest) = 0
+round(-0.1,up) = 0
+round(-0.1,down) = -1
+round(-0.1,zero) = 0
+round(-0.1,any) = 0
+Original: -0.4
+integer -0.4 = 0
+fraction -0.4 = -0.4
+round -0.4 = 0
+round(-0.4,nearest) = 0
+round(-0.4,up) = 0
+round(-0.4,down) = -1
+round(-0.4,zero) = 0
+round(-0.4,any) = 0
+Original: -0.8
+integer -0.8 = 0
+fraction -0.8 = -0.8
+round -0.8 = -1
+round(-0.8,nearest) = -1
+round(-0.8,up) = 0
+round(-0.8,down) = -1
+round(-0.8,zero) = 0
+round(-0.8,any) = 0
+Original: -1.0
+integer -1.0 = -1
+fraction -1.0 = 0.0
+round -1.0 = -1
+round(-1.0,nearest) = -1
+round(-1.0,up) = -1
+round(-1.0,down) = -1
+round(-1.0,zero) = -1
+round(-1.0,any) = -1
+Original: -1.1
+integer -1.1 = -1
+fraction -1.1 = -0.1
+round -1.1 = -1
+round(-1.1,nearest) = -1
+round(-1.1,up) = -1
+round(-1.1,down) = -2
+round(-1.1,zero) = -1
+round(-1.1,any) = -1
+Original: -1.4
+integer -1.4 = -1
+fraction -1.4 = -0.4
+round -1.4 = -1
+round(-1.4,nearest) = -1
+round(-1.4,up) = -1
+round(-1.4,down) = -2
+round(-1.4,zero) = -1
+round(-1.4,any) = -1
+Original: -1.8
+integer -1.8 = -1
+fraction -1.8 = -0.8
+round -1.8 = -2
+round(-1.8,nearest) = -2
+round(-1.8,up) = -1
+round(-1.8,down) = -2
+round(-1.8,zero) = -1
+round(-1.8,any) = -1
+Original: -2.0
+integer -2.0 = -2
+fraction -2.0 = 0.0
+round -2.0 = -2
+round(-2.0,nearest) = -2
+round(-2.0,up) = -2
+round(-2.0,down) = -2
+round(-2.0,zero) = -2
+round(-2.0,any) = -2
+Original: -2.4
+integer -2.4 = -2
+fraction -2.4 = -0.4
+round -2.4 = -2
+round(-2.4,nearest) = -2
+round(-2.4,up) = -2
+round(-2.4,down) = -3
+round(-2.4,zero) = -2
+round(-2.4,any) = -2
+Original: -2.7
+integer -2.7 = -2
+fraction -2.7 = -0.7
+round -2.7 = -3
+round(-2.7,nearest) = -3
+round(-2.7,up) = -2
+round(-2.7,down) = -3
+round(-2.7,zero) = -2
+round(-2.7,any) = -2
+Original: -10.0
+integer -10.0 = -10
+fraction -10.0 = 0.0
+round -10.0 = -10
+round(-10.0,nearest) = -10
+round(-10.0,up) = -10
+round(-10.0,down) = -10
+round(-10.0,zero) = -10
+round(-10.0,any) = -10
+Original: -10.001
+integer -10.001 = -10
+fraction -10.001 = -0.001
+round -10.001 = -10
+round(-10.001,nearest) = -10
+round(-10.001,up) = -10
+round(-10.001,down) = -11
+round(-10.001,zero) = -10
+round(-10.001,any) = -10
+Original: -10.0
+integer -10.0 = -10
+fraction -10.0 = -0.000002
+round -10.0 = -10
+round(-10.0,nearest) = -10
+round(-10.0,up) = -10
+round(-10.0,down) = -11
+round(-10.0,zero) = -10
+round(-10.0,any) = -10
+Original: -30.2
+integer -30.2 = -30
+fraction -30.2 = -0.2
+round -30.2 = -30
+round(-30.2,nearest) = -30
+round(-30.2,up) = -30
+round(-30.2,down) = -31
+round(-30.2,zero) = -30
+round(-30.2,any) = -30
+Original: -200.3234
+integer -200.3234 = -200
+fraction -200.3234 = -0.32344
+round -200.3234 = -200
+round(-200.3234,nearest) = -200
+round(-200.3234,up) = -200
+round(-200.3234,down) = -201
+round(-200.3234,zero) = -200
+round(-200.3234,any) = -200
+Original: -0.4000000000 0 E 11
+integer -0.4000000000 0 E 11 = -40000000000
+fraction -0.4000000000 0 E 11 = 0.0
+round -0.4000000000 0 E 11 = -40000000000
+round(-0.4000000000 0 E 11,nearest) = -40000000000
+round(-0.4000000000 0 E 11,up) = -40000000000
+round(-0.4000000000 0 E 11,down) = -40000000000
+round(-0.4000000000 0 E 11,zero) = -40000000000
+round(-0.4000000000 0 E 11,any) = -40000000000
+Original: -0.4 E 21
+integer -0.4 E 21 = -400000000000000000000
+fraction -0.4 E 21 = 0.0
+round -0.4 E 21 = -400000000000000000000
+round(-0.4 E 21,nearest) = -400000000000000000000
+round(-0.4 E 21,up) = -400000000000000000000
+round(-0.4 E 21,down) = -400000000000000000000
+round(-0.4 E 21,zero) = -400000000000000000000
+round(-0.4 E 21,any) = -400000000000000000000
+Original: -0.4 E 31
+integer -0.4 E 31 = -3999999999999999999995705032704
+fraction -0.4 E 31 = 0.0
+round -0.4 E 31 = -3999999999999999999995705032704
+round(-0.4 E 31,nearest) = -3999999999999999999995705032704
+round(-0.4 E 31,up) = -3999999999999999999995705032704
+round(-0.4 E 31,down) = -3999999999999999999995705032704
+round(-0.4 E 31,zero) = -3999999999999999999995705032704
+round(-0.4 E 31,any) = -3999999999999999999995705032704
+Original: -0.8888889 E 9
+integer -0.8888889 E 9 = -888888888
+fraction -0.8888889 E 9 = -1.0
+round -0.8888889 E 9 = -888888889
+round(-0.8888889 E 9,nearest) = -888888889
+round(-0.8888889 E 9,up) = -888888888
+round(-0.8888889 E 9,down) = -888888889
+round(-0.8888889 E 9,zero) = -888888888
+round(-0.8888889 E 9,any) = -888888888
+---------- Testing Float (fixed 7) ------------- 
+Original: 0.0000000
+integer 0.0000000 = 0
+fraction 0.0000000 = 0.0000000
+round 0.0000000 = 0
+round(0.0000000,nearest) = 0
+round(0.0000000,up) = 0
+round(0.0000000,down) = 0
+round(0.0000000,zero) = 0
+round(0.0000000,any) = 0
+Original: 0.1000000
+integer 0.1000000 = 0
+fraction 0.1000000 = 0.1000000
+round 0.1000000 = 0
+round(0.1000000,nearest) = 0
+round(0.1000000,up) = 1
+round(0.1000000,down) = 0
+round(0.1000000,zero) = 0
+round(0.1000000,any) = 0
+Original: 0.4000000
+integer 0.4000000 = 0
+fraction 0.4000000 = 0.4000000
+round 0.4000000 = 0
+round(0.4000000,nearest) = 0
+round(0.4000000,up) = 1
+round(0.4000000,down) = 0
+round(0.4000000,zero) = 0
+round(0.4000000,any) = 0
+Original: 0.8000000
+integer 0.8000000 = 0
+fraction 0.8000000 = 0.8000000
+round 0.8000000 = 1
+round(0.8000000,nearest) = 1
+round(0.8000000,up) = 1
+round(0.8000000,down) = 0
+round(0.8000000,zero) = 0
+round(0.8000000,any) = 0
+Original: 1.0000000
+integer 1.0000000 = 1
+fraction 1.0000000 = 0.0000000
+round 1.0000000 = 1
+round(1.0000000,nearest) = 1
+round(1.0000000,up) = 1
+round(1.0000000,down) = 1
+round(1.0000000,zero) = 1
+round(1.0000000,any) = 1
+Original: 1.1000000
+integer 1.1000000 = 1
+fraction 1.1000000 = 0.1000000
+round 1.1000000 = 1
+round(1.1000000,nearest) = 1
+round(1.1000000,up) = 2
+round(1.1000000,down) = 1
+round(1.1000000,zero) = 1
+round(1.1000000,any) = 1
+Original: 1.4000000
+integer 1.4000000 = 1
+fraction 1.4000000 = 0.4000000
+round 1.4000000 = 1
+round(1.4000000,nearest) = 1
+round(1.4000000,up) = 2
+round(1.4000000,down) = 1
+round(1.4000000,zero) = 1
+round(1.4000000,any) = 1
+Original: 1.8000000
+integer 1.8000000 = 1
+fraction 1.8000000 = 0.8000000
+round 1.8000000 = 2
+round(1.8000000,nearest) = 2
+round(1.8000000,up) = 2
+round(1.8000000,down) = 1
+round(1.8000000,zero) = 1
+round(1.8000000,any) = 1
+Original: 2.0000000
+integer 2.0000000 = 2
+fraction 2.0000000 = 0.0000000
+round 2.0000000 = 2
+round(2.0000000,nearest) = 2
+round(2.0000000,up) = 2
+round(2.0000000,down) = 2
+round(2.0000000,zero) = 2
+round(2.0000000,any) = 2
+Original: 2.4000000
+integer 2.4000000 = 2
+fraction 2.4000000 = 0.4000000
+round 2.4000000 = 2
+round(2.4000000,nearest) = 2
+round(2.4000000,up) = 3
+round(2.4000000,down) = 2
+round(2.4000000,zero) = 2
+round(2.4000000,any) = 2
+Original: 2.7000000
+integer 2.7000000 = 2
+fraction 2.7000000 = 0.7000000
+round 2.7000000 = 3
+round(2.7000000,nearest) = 3
+round(2.7000000,up) = 3
+round(2.7000000,down) = 2
+round(2.7000000,zero) = 2
+round(2.7000000,any) = 2
+Original: 10.0000000
+integer 10.0000000 = 10
+fraction 10.0000000 = 0.0000000
+round 10.0000000 = 10
+round(10.0000000,nearest) = 10
+round(10.0000000,up) = 10
+round(10.0000000,down) = 10
+round(10.0000000,zero) = 10
+round(10.0000000,any) = 10
+Original: 10.0010000
+integer 10.0010000 = 10
+fraction 10.0010000 = 0.0010000
+round 10.0010000 = 10
+round(10.0010000,nearest) = 10
+round(10.0010000,up) = 11
+round(10.0010000,down) = 10
+round(10.0010000,zero) = 10
+round(10.0010000,any) = 10
+Original: 10.0000020
+integer 10.0000020 = 10
+fraction 10.0000020 = 0.0000020
+round 10.0000020 = 10
+round(10.0000020,nearest) = 10
+round(10.0000020,up) = 11
+round(10.0000020,down) = 10
+round(10.0000020,zero) = 10
+round(10.0000020,any) = 10
+Original: 30.2000000
+integer 30.2000000 = 30
+fraction 30.2000000 = 0.2000000
+round 30.2000000 = 30
+round(30.2000000,nearest) = 30
+round(30.2000000,up) = 31
+round(30.2000000,down) = 30
+round(30.2000000,zero) = 30
+round(30.2000000,any) = 30
+Original: 200.3234400
+integer 200.3234400 = 200
+fraction 200.3234400 = 0.3234400
+round 200.3234400 = 200
+round(200.3234400,nearest) = 200
+round(200.3234400,up) = 201
+round(200.3234400,down) = 200
+round(200.3234400,zero) = 200
+round(200.3234400,any) = 200
+Original:  40000000000.0000000
+integer  40000000000.0000000 = 40000000000
+fraction  40000000000.0000000 = 0.0000000
+round  40000000000.0000000 = 40000000000
+round( 40000000000.0000000,nearest) = 40000000000
+round( 40000000000.0000000,up) = 40000000000
+round( 40000000000.0000000,down) = 40000000000
+round( 40000000000.0000000,zero) = 40000000000
+round( 40000000000.0000000,any) = 40000000000
+Original:   400000000000000000000.0000000
+integer   400000000000000000000.0000000 = 400000000000000000000
+fraction   400000000000000000000.0000000 = 0.0000000
+round   400000000000000000000.0000000 = 400000000000000000000
+round(  400000000000000000000.0000000,nearest) = 400000000000000000000
+round(  400000000000000000000.0000000,up) = 400000000000000000000
+round(  400000000000000000000.0000000,down) = 400000000000000000000
+round(  400000000000000000000.0000000,zero) = 400000000000000000000
+round(  400000000000000000000.0000000,any) = 400000000000000000000
+Original:    4000000000000000000000000000000.0000000
+integer    4000000000000000000000000000000.0000000 = 3999999999999999999995705032704
+fraction    4000000000000000000000000000000.0000000 = 0.0000000
+round    4000000000000000000000000000000.0000000 = 3999999999999999999995705032704
+round(   4000000000000000000000000000000.0000000,nearest) = 3999999999999999999995705032704
+round(   4000000000000000000000000000000.0000000,up) = 3999999999999999999995705032704
+round(   4000000000000000000000000000000.0000000,down) = 3999999999999999999995705032704
+round(   4000000000000000000000000000000.0000000,zero) = 3999999999999999999995705032704
+round(   4000000000000000000000000000000.0000000,any) = 3999999999999999999995705032704
+Original: 888888889.0000000
+integer 888888889.0000000 = 888888888
+fraction 888888889.0000000 = 1.0000000
+round 888888889.0000000 = 888888889
+round(888888889.0000000,nearest) = 888888889
+round(888888889.0000000,up) = 888888889
+round(888888889.0000000,down) = 888888888
+round(888888889.0000000,zero) = 888888888
+round(888888889.0000000,any) = 888888888
+Original: 0.0000000
+integer 0.0000000 = 0
+fraction 0.0000000 = 0.0000000
+round 0.0000000 = 0
+round(0.0000000,nearest) = 0
+round(0.0000000,up) = 0
+round(0.0000000,down) = 0
+round(0.0000000,zero) = 0
+round(0.0000000,any) = 0
+Original: -0.1000000
+integer -0.1000000 = 0
+fraction -0.1000000 = -0.1000000
+round -0.1000000 = 0
+round(-0.1000000,nearest) = 0
+round(-0.1000000,up) = 0
+round(-0.1000000,down) = -1
+round(-0.1000000,zero) = 0
+round(-0.1000000,any) = 0
+Original: -0.4000000
+integer -0.4000000 = 0
+fraction -0.4000000 = -0.4000000
+round -0.4000000 = 0
+round(-0.4000000,nearest) = 0
+round(-0.4000000,up) = 0
+round(-0.4000000,down) = -1
+round(-0.4000000,zero) = 0
+round(-0.4000000,any) = 0
+Original: -0.8000000
+integer -0.8000000 = 0
+fraction -0.8000000 = -0.8000000
+round -0.8000000 = -1
+round(-0.8000000,nearest) = -1
+round(-0.8000000,up) = 0
+round(-0.8000000,down) = -1
+round(-0.8000000,zero) = 0
+round(-0.8000000,any) = 0
+Original: -1.0000000
+integer -1.0000000 = -1
+fraction -1.0000000 = 0.0000000
+round -1.0000000 = -1
+round(-1.0000000,nearest) = -1
+round(-1.0000000,up) = -1
+round(-1.0000000,down) = -1
+round(-1.0000000,zero) = -1
+round(-1.0000000,any) = -1
+Original: -1.1000000
+integer -1.1000000 = -1
+fraction -1.1000000 = -0.1000000
+round -1.1000000 = -1
+round(-1.1000000,nearest) = -1
+round(-1.1000000,up) = -1
+round(-1.1000000,down) = -2
+round(-1.1000000,zero) = -1
+round(-1.1000000,any) = -1
+Original: -1.4000000
+integer -1.4000000 = -1
+fraction -1.4000000 = -0.4000000
+round -1.4000000 = -1
+round(-1.4000000,nearest) = -1
+round(-1.4000000,up) = -1
+round(-1.4000000,down) = -2
+round(-1.4000000,zero) = -1
+round(-1.4000000,any) = -1
+Original: -1.8000000
+integer -1.8000000 = -1
+fraction -1.8000000 = -0.8000000
+round -1.8000000 = -2
+round(-1.8000000,nearest) = -2
+round(-1.8000000,up) = -1
+round(-1.8000000,down) = -2
+round(-1.8000000,zero) = -1
+round(-1.8000000,any) = -1
+Original: -2.0000000
+integer -2.0000000 = -2
+fraction -2.0000000 = 0.0000000
+round -2.0000000 = -2
+round(-2.0000000,nearest) = -2
+round(-2.0000000,up) = -2
+round(-2.0000000,down) = -2
+round(-2.0000000,zero) = -2
+round(-2.0000000,any) = -2
+Original: -2.4000000
+integer -2.4000000 = -2
+fraction -2.4000000 = -0.4000000
+round -2.4000000 = -2
+round(-2.4000000,nearest) = -2
+round(-2.4000000,up) = -2
+round(-2.4000000,down) = -3
+round(-2.4000000,zero) = -2
+round(-2.4000000,any) = -2
+Original: -2.7000000
+integer -2.7000000 = -2
+fraction -2.7000000 = -0.7000000
+round -2.7000000 = -3
+round(-2.7000000,nearest) = -3
+round(-2.7000000,up) = -2
+round(-2.7000000,down) = -3
+round(-2.7000000,zero) = -2
+round(-2.7000000,any) = -2
+Original: -10.0000000
+integer -10.0000000 = -10
+fraction -10.0000000 = 0.0000000
+round -10.0000000 = -10
+round(-10.0000000,nearest) = -10
+round(-10.0000000,up) = -10
+round(-10.0000000,down) = -10
+round(-10.0000000,zero) = -10
+round(-10.0000000,any) = -10
+Original: -10.0010000
+integer -10.0010000 = -10
+fraction -10.0010000 = -0.0010000
+round -10.0010000 = -10
+round(-10.0010000,nearest) = -10
+round(-10.0010000,up) = -10
+round(-10.0010000,down) = -11
+round(-10.0010000,zero) = -10
+round(-10.0010000,any) = -10
+Original: -10.0000020
+integer -10.0000020 = -10
+fraction -10.0000020 = -0.0000020
+round -10.0000020 = -10
+round(-10.0000020,nearest) = -10
+round(-10.0000020,up) = -10
+round(-10.0000020,down) = -11
+round(-10.0000020,zero) = -10
+round(-10.0000020,any) = -10
+Original: -30.2000000
+integer -30.2000000 = -30
+fraction -30.2000000 = -0.2000000
+round -30.2000000 = -30
+round(-30.2000000,nearest) = -30
+round(-30.2000000,up) = -30
+round(-30.2000000,down) = -31
+round(-30.2000000,zero) = -30
+round(-30.2000000,any) = -30
+Original: -200.3234400
+integer -200.3234400 = -200
+fraction -200.3234400 = -0.3234400
+round -200.3234400 = -200
+round(-200.3234400,nearest) = -200
+round(-200.3234400,up) = -200
+round(-200.3234400,down) = -201
+round(-200.3234400,zero) = -200
+round(-200.3234400,any) = -200
+Original:  -40000000000.0000000
+integer  -40000000000.0000000 = -40000000000
+fraction  -40000000000.0000000 = 0.0000000
+round  -40000000000.0000000 = -40000000000
+round( -40000000000.0000000,nearest) = -40000000000
+round( -40000000000.0000000,up) = -40000000000
+round( -40000000000.0000000,down) = -40000000000
+round( -40000000000.0000000,zero) = -40000000000
+round( -40000000000.0000000,any) = -40000000000
+Original:   -400000000000000000000.0000000
+integer   -400000000000000000000.0000000 = -400000000000000000000
+fraction   -400000000000000000000.0000000 = 0.0000000
+round   -400000000000000000000.0000000 = -400000000000000000000
+round(  -400000000000000000000.0000000,nearest) = -400000000000000000000
+round(  -400000000000000000000.0000000,up) = -400000000000000000000
+round(  -400000000000000000000.0000000,down) = -400000000000000000000
+round(  -400000000000000000000.0000000,zero) = -400000000000000000000
+round(  -400000000000000000000.0000000,any) = -400000000000000000000
+Original:    -4000000000000000000000000000000.0000000
+integer    -4000000000000000000000000000000.0000000 = -3999999999999999999995705032704
+fraction    -4000000000000000000000000000000.0000000 = 0.0000000
+round    -4000000000000000000000000000000.0000000 = -3999999999999999999995705032704
+round(   -4000000000000000000000000000000.0000000,nearest) = -3999999999999999999995705032704
+round(   -4000000000000000000000000000000.0000000,up) = -3999999999999999999995705032704
+round(   -4000000000000000000000000000000.0000000,down) = -3999999999999999999995705032704
+round(   -4000000000000000000000000000000.0000000,zero) = -3999999999999999999995705032704
+round(   -4000000000000000000000000000000.0000000,any) = -3999999999999999999995705032704
+Original: -888888889.0000000
+integer -888888889.0000000 = -888888888
+fraction -888888889.0000000 = -1.0000000
+round -888888889.0000000 = -888888889
+round(-888888889.0000000,nearest) = -888888889
+round(-888888889.0000000,up) = -888888888
+round(-888888889.0000000,down) = -888888889
+round(-888888889.0000000,zero) = -888888888
+round(-888888889.0000000,any) = -888888888
+---------- Testing Float (float 7) ------------- 
+Original: 0.0 E 0
+integer 0.0 E 0 = 0
+fraction 0.0 E 0 = 0.0 E 0
+round 0.0 E 0 = 0
+round(0.0 E 0,nearest) = 0
+round(0.0 E 0,up) = 0
+round(0.0 E 0,down) = 0
+round(0.0 E 0,zero) = 0
+round(0.0 E 0,any) = 0
+Original: 0.1000000 E 0
+integer 0.1000000 E 0 = 0
+fraction 0.1000000 E 0 = 0.1000000 E 0
+round 0.1000000 E 0 = 0
+round(0.1000000 E 0,nearest) = 0
+round(0.1000000 E 0,up) = 1
+round(0.1000000 E 0,down) = 0
+round(0.1000000 E 0,zero) = 0
+round(0.1000000 E 0,any) = 0
+Original: 0.4000000 E 0
+integer 0.4000000 E 0 = 0
+fraction 0.4000000 E 0 = 0.4000000 E 0
+round 0.4000000 E 0 = 0
+round(0.4000000 E 0,nearest) = 0
+round(0.4000000 E 0,up) = 1
+round(0.4000000 E 0,down) = 0
+round(0.4000000 E 0,zero) = 0
+round(0.4000000 E 0,any) = 0
+Original: 0.8000000 E 0
+integer 0.8000000 E 0 = 0
+fraction 0.8000000 E 0 = 0.8000000 E 0
+round 0.8000000 E 0 = 1
+round(0.8000000 E 0,nearest) = 1
+round(0.8000000 E 0,up) = 1
+round(0.8000000 E 0,down) = 0
+round(0.8000000 E 0,zero) = 0
+round(0.8000000 E 0,any) = 0
+Original: 0.1000000 E 1
+integer 0.1000000 E 1 = 1
+fraction 0.1000000 E 1 = 0.0 E 0
+round 0.1000000 E 1 = 1
+round(0.1000000 E 1,nearest) = 1
+round(0.1000000 E 1,up) = 1
+round(0.1000000 E 1,down) = 1
+round(0.1000000 E 1,zero) = 1
+round(0.1000000 E 1,any) = 1
+Original: 0.1100000 E 1
+integer 0.1100000 E 1 = 1
+fraction 0.1100000 E 1 = 0.1000000 E 0
+round 0.1100000 E 1 = 1
+round(0.1100000 E 1,nearest) = 1
+round(0.1100000 E 1,up) = 2
+round(0.1100000 E 1,down) = 1
+round(0.1100000 E 1,zero) = 1
+round(0.1100000 E 1,any) = 1
+Original: 0.1400000 E 1
+integer 0.1400000 E 1 = 1
+fraction 0.1400000 E 1 = 0.4000000 E 0
+round 0.1400000 E 1 = 1
+round(0.1400000 E 1,nearest) = 1
+round(0.1400000 E 1,up) = 2
+round(0.1400000 E 1,down) = 1
+round(0.1400000 E 1,zero) = 1
+round(0.1400000 E 1,any) = 1
+Original: 0.1800000 E 1
+integer 0.1800000 E 1 = 1
+fraction 0.1800000 E 1 = 0.8000000 E 0
+round 0.1800000 E 1 = 2
+round(0.1800000 E 1,nearest) = 2
+round(0.1800000 E 1,up) = 2
+round(0.1800000 E 1,down) = 1
+round(0.1800000 E 1,zero) = 1
+round(0.1800000 E 1,any) = 1
+Original: 0.2000000 E 1
+integer 0.2000000 E 1 = 2
+fraction 0.2000000 E 1 = 0.0 E 0
+round 0.2000000 E 1 = 2
+round(0.2000000 E 1,nearest) = 2
+round(0.2000000 E 1,up) = 2
+round(0.2000000 E 1,down) = 2
+round(0.2000000 E 1,zero) = 2
+round(0.2000000 E 1,any) = 2
+Original: 0.2400000 E 1
+integer 0.2400000 E 1 = 2
+fraction 0.2400000 E 1 = 0.4000000 E 0
+round 0.2400000 E 1 = 2
+round(0.2400000 E 1,nearest) = 2
+round(0.2400000 E 1,up) = 3
+round(0.2400000 E 1,down) = 2
+round(0.2400000 E 1,zero) = 2
+round(0.2400000 E 1,any) = 2
+Original: 0.2700000 E 1
+integer 0.2700000 E 1 = 2
+fraction 0.2700000 E 1 = 0.7000000 E 0
+round 0.2700000 E 1 = 3
+round(0.2700000 E 1,nearest) = 3
+round(0.2700000 E 1,up) = 3
+round(0.2700000 E 1,down) = 2
+round(0.2700000 E 1,zero) = 2
+round(0.2700000 E 1,any) = 2
+Original: 0.1000000 E 2
+integer 0.1000000 E 2 = 10
+fraction 0.1000000 E 2 = 0.0 E 0
+round 0.1000000 E 2 = 10
+round(0.1000000 E 2,nearest) = 10
+round(0.1000000 E 2,up) = 10
+round(0.1000000 E 2,down) = 10
+round(0.1000000 E 2,zero) = 10
+round(0.1000000 E 2,any) = 10
+Original: 0.1000100 E 2
+integer 0.1000100 E 2 = 10
+fraction 0.1000100 E 2 = 0.1000000 E -2
+round 0.1000100 E 2 = 10
+round(0.1000100 E 2,nearest) = 10
+round(0.1000100 E 2,up) = 11
+round(0.1000100 E 2,down) = 10
+round(0.1000100 E 2,zero) = 10
+round(0.1000100 E 2,any) = 10
+Original: 0.1000000 E 2
+integer 0.1000000 E 2 = 10
+fraction 0.1000000 E 2 = 0.2000000 E -5
+round 0.1000000 E 2 = 10
+round(0.1000000 E 2,nearest) = 10
+round(0.1000000 E 2,up) = 11
+round(0.1000000 E 2,down) = 10
+round(0.1000000 E 2,zero) = 10
+round(0.1000000 E 2,any) = 10
+Original: 0.3020000 E 2
+integer 0.3020000 E 2 = 30
+fraction 0.3020000 E 2 = 0.2000000 E 0
+round 0.3020000 E 2 = 30
+round(0.3020000 E 2,nearest) = 30
+round(0.3020000 E 2,up) = 31
+round(0.3020000 E 2,down) = 30
+round(0.3020000 E 2,zero) = 30
+round(0.3020000 E 2,any) = 30
+Original: 0.2003234 E 3
+integer 0.2003234 E 3 = 200
+fraction 0.2003234 E 3 = 0.3234400 E 0
+round 0.2003234 E 3 = 200
+round(0.2003234 E 3,nearest) = 200
+round(0.2003234 E 3,up) = 201
+round(0.2003234 E 3,down) = 200
+round(0.2003234 E 3,zero) = 200
+round(0.2003234 E 3,any) = 200
+Original: 0.4000000000 0 E 11
+integer 0.4000000000 0 E 11 = 40000000000
+fraction 0.4000000000 0 E 11 = 0.0 E 0
+round 0.4000000000 0 E 11 = 40000000000
+round(0.4000000000 0 E 11,nearest) = 40000000000
+round(0.4000000000 0 E 11,up) = 40000000000
+round(0.4000000000 0 E 11,down) = 40000000000
+round(0.4000000000 0 E 11,zero) = 40000000000
+round(0.4000000000 0 E 11,any) = 40000000000
+Original: 0.4000000 E 21
+integer 0.4000000 E 21 = 400000000000000000000
+fraction 0.4000000 E 21 = 0.0 E 0
+round 0.4000000 E 21 = 400000000000000000000
+round(0.4000000 E 21,nearest) = 400000000000000000000
+round(0.4000000 E 21,up) = 400000000000000000000
+round(0.4000000 E 21,down) = 400000000000000000000
+round(0.4000000 E 21,zero) = 400000000000000000000
+round(0.4000000 E 21,any) = 400000000000000000000
+Original: 0.4000000 E 31
+integer 0.4000000 E 31 = 3999999999999999999995705032704
+fraction 0.4000000 E 31 = 0.0 E 0
+round 0.4000000 E 31 = 3999999999999999999995705032704
+round(0.4000000 E 31,nearest) = 3999999999999999999995705032704
+round(0.4000000 E 31,up) = 3999999999999999999995705032704
+round(0.4000000 E 31,down) = 3999999999999999999995705032704
+round(0.4000000 E 31,zero) = 3999999999999999999995705032704
+round(0.4000000 E 31,any) = 3999999999999999999995705032704
+Original: 0.8888889 E 9
+integer 0.8888889 E 9 = 888888888
+fraction 0.8888889 E 9 = 0.1 E 1
+round 0.8888889 E 9 = 888888889
+round(0.8888889 E 9,nearest) = 888888889
+round(0.8888889 E 9,up) = 888888889
+round(0.8888889 E 9,down) = 888888888
+round(0.8888889 E 9,zero) = 888888888
+round(0.8888889 E 9,any) = 888888888
+Original: 0.0 E 0
+integer 0.0 E 0 = 0
+fraction 0.0 E 0 = 0.0 E 0
+round 0.0 E 0 = 0
+round(0.0 E 0,nearest) = 0
+round(0.0 E 0,up) = 0
+round(0.0 E 0,down) = 0
+round(0.0 E 0,zero) = 0
+round(0.0 E 0,any) = 0
+Original: -0.1000000 E 0
+integer -0.1000000 E 0 = 0
+fraction -0.1000000 E 0 = -0.1000000 E 0
+round -0.1000000 E 0 = 0
+round(-0.1000000 E 0,nearest) = 0
+round(-0.1000000 E 0,up) = 0
+round(-0.1000000 E 0,down) = -1
+round(-0.1000000 E 0,zero) = 0
+round(-0.1000000 E 0,any) = 0
+Original: -0.4000000 E 0
+integer -0.4000000 E 0 = 0
+fraction -0.4000000 E 0 = -0.4000000 E 0
+round -0.4000000 E 0 = 0
+round(-0.4000000 E 0,nearest) = 0
+round(-0.4000000 E 0,up) = 0
+round(-0.4000000 E 0,down) = -1
+round(-0.4000000 E 0,zero) = 0
+round(-0.4000000 E 0,any) = 0
+Original: -0.8000000 E 0
+integer -0.8000000 E 0 = 0
+fraction -0.8000000 E 0 = -0.8000000 E 0
+round -0.8000000 E 0 = -1
+round(-0.8000000 E 0,nearest) = -1
+round(-0.8000000 E 0,up) = 0
+round(-0.8000000 E 0,down) = -1
+round(-0.8000000 E 0,zero) = 0
+round(-0.8000000 E 0,any) = 0
+Original: -0.1000000 E 1
+integer -0.1000000 E 1 = -1
+fraction -0.1000000 E 1 = 0.0 E 0
+round -0.1000000 E 1 = -1
+round(-0.1000000 E 1,nearest) = -1
+round(-0.1000000 E 1,up) = -1
+round(-0.1000000 E 1,down) = -1
+round(-0.1000000 E 1,zero) = -1
+round(-0.1000000 E 1,any) = -1
+Original: -0.1100000 E 1
+integer -0.1100000 E 1 = -1
+fraction -0.1100000 E 1 = -0.1000000 E 0
+round -0.1100000 E 1 = -1
+round(-0.1100000 E 1,nearest) = -1
+round(-0.1100000 E 1,up) = -1
+round(-0.1100000 E 1,down) = -2
+round(-0.1100000 E 1,zero) = -1
+round(-0.1100000 E 1,any) = -1
+Original: -0.1400000 E 1
+integer -0.1400000 E 1 = -1
+fraction -0.1400000 E 1 = -0.4000000 E 0
+round -0.1400000 E 1 = -1
+round(-0.1400000 E 1,nearest) = -1
+round(-0.1400000 E 1,up) = -1
+round(-0.1400000 E 1,down) = -2
+round(-0.1400000 E 1,zero) = -1
+round(-0.1400000 E 1,any) = -1
+Original: -0.1800000 E 1
+integer -0.1800000 E 1 = -1
+fraction -0.1800000 E 1 = -0.8000000 E 0
+round -0.1800000 E 1 = -2
+round(-0.1800000 E 1,nearest) = -2
+round(-0.1800000 E 1,up) = -1
+round(-0.1800000 E 1,down) = -2
+round(-0.1800000 E 1,zero) = -1
+round(-0.1800000 E 1,any) = -1
+Original: -0.2000000 E 1
+integer -0.2000000 E 1 = -2
+fraction -0.2000000 E 1 = 0.0 E 0
+round -0.2000000 E 1 = -2
+round(-0.2000000 E 1,nearest) = -2
+round(-0.2000000 E 1,up) = -2
+round(-0.2000000 E 1,down) = -2
+round(-0.2000000 E 1,zero) = -2
+round(-0.2000000 E 1,any) = -2
+Original: -0.2400000 E 1
+integer -0.2400000 E 1 = -2
+fraction -0.2400000 E 1 = -0.4000000 E 0
+round -0.2400000 E 1 = -2
+round(-0.2400000 E 1,nearest) = -2
+round(-0.2400000 E 1,up) = -2
+round(-0.2400000 E 1,down) = -3
+round(-0.2400000 E 1,zero) = -2
+round(-0.2400000 E 1,any) = -2
+Original: -0.2700000 E 1
+integer -0.2700000 E 1 = -2
+fraction -0.2700000 E 1 = -0.7000000 E 0
+round -0.2700000 E 1 = -3
+round(-0.2700000 E 1,nearest) = -3
+round(-0.2700000 E 1,up) = -2
+round(-0.2700000 E 1,down) = -3
+round(-0.2700000 E 1,zero) = -2
+round(-0.2700000 E 1,any) = -2
+Original: -0.1000000 E 2
+integer -0.1000000 E 2 = -10
+fraction -0.1000000 E 2 = 0.0 E 0
+round -0.1000000 E 2 = -10
+round(-0.1000000 E 2,nearest) = -10
+round(-0.1000000 E 2,up) = -10
+round(-0.1000000 E 2,down) = -10
+round(-0.1000000 E 2,zero) = -10
+round(-0.1000000 E 2,any) = -10
+Original: -0.1000100 E 2
+integer -0.1000100 E 2 = -10
+fraction -0.1000100 E 2 = -0.1000000 E -2
+round -0.1000100 E 2 = -10
+round(-0.1000100 E 2,nearest) = -10
+round(-0.1000100 E 2,up) = -10
+round(-0.1000100 E 2,down) = -11
+round(-0.1000100 E 2,zero) = -10
+round(-0.1000100 E 2,any) = -10
+Original: -0.1000000 E 2
+integer -0.1000000 E 2 = -10
+fraction -0.1000000 E 2 = -0.2000000 E -5
+round -0.1000000 E 2 = -10
+round(-0.1000000 E 2,nearest) = -10
+round(-0.1000000 E 2,up) = -10
+round(-0.1000000 E 2,down) = -11
+round(-0.1000000 E 2,zero) = -10
+round(-0.1000000 E 2,any) = -10
+Original: -0.3020000 E 2
+integer -0.3020000 E 2 = -30
+fraction -0.3020000 E 2 = -0.2000000 E 0
+round -0.3020000 E 2 = -30
+round(-0.3020000 E 2,nearest) = -30
+round(-0.3020000 E 2,up) = -30
+round(-0.3020000 E 2,down) = -31
+round(-0.3020000 E 2,zero) = -30
+round(-0.3020000 E 2,any) = -30
+Original: -0.2003234 E 3
+integer -0.2003234 E 3 = -200
+fraction -0.2003234 E 3 = -0.3234400 E 0
+round -0.2003234 E 3 = -200
+round(-0.2003234 E 3,nearest) = -200
+round(-0.2003234 E 3,up) = -200
+round(-0.2003234 E 3,down) = -201
+round(-0.2003234 E 3,zero) = -200
+round(-0.2003234 E 3,any) = -200
+Original: -0.4000000000 0 E 11
+integer -0.4000000000 0 E 11 = -40000000000
+fraction -0.4000000000 0 E 11 = 0.0 E 0
+round -0.4000000000 0 E 11 = -40000000000
+round(-0.4000000000 0 E 11,nearest) = -40000000000
+round(-0.4000000000 0 E 11,up) = -40000000000
+round(-0.4000000000 0 E 11,down) = -40000000000
+round(-0.4000000000 0 E 11,zero) = -40000000000
+round(-0.4000000000 0 E 11,any) = -40000000000
+Original: -0.4000000 E 21
+integer -0.4000000 E 21 = -400000000000000000000
+fraction -0.4000000 E 21 = 0.0 E 0
+round -0.4000000 E 21 = -400000000000000000000
+round(-0.4000000 E 21,nearest) = -400000000000000000000
+round(-0.4000000 E 21,up) = -400000000000000000000
+round(-0.4000000 E 21,down) = -400000000000000000000
+round(-0.4000000 E 21,zero) = -400000000000000000000
+round(-0.4000000 E 21,any) = -400000000000000000000
+Original: -0.4000000 E 31
+integer -0.4000000 E 31 = -3999999999999999999995705032704
+fraction -0.4000000 E 31 = 0.0 E 0
+round -0.4000000 E 31 = -3999999999999999999995705032704
+round(-0.4000000 E 31,nearest) = -3999999999999999999995705032704
+round(-0.4000000 E 31,up) = -3999999999999999999995705032704
+round(-0.4000000 E 31,down) = -3999999999999999999995705032704
+round(-0.4000000 E 31,zero) = -3999999999999999999995705032704
+round(-0.4000000 E 31,any) = -3999999999999999999995705032704
+Original: -0.8888889 E 9
+integer -0.8888889 E 9 = -888888888
+fraction -0.8888889 E 9 = -0.1 E 1
+round -0.8888889 E 9 = -888888889
+round(-0.8888889 E 9,nearest) = -888888889
+round(-0.8888889 E 9,up) = -888888888
+round(-0.8888889 E 9,down) = -888888889
+round(-0.8888889 E 9,zero) = -888888888
+round(-0.8888889 E 9,any) = -888888888
+---------- Testing PFloat 20 ------------- 
+Original: 0.0
+integer 0.0 = 0
+fraction 0.0 = 0.0
+round 0.0 = 0
+round(0.0,nearest) = 0
+round(0.0,up) = 0
+round(0.0,down) = 0
+round(0.0,zero) = 0
+round(0.0,any) = 0
+Original: 0.1
+integer 0.1 = 0
+fraction 0.1 = 0.1
+round 0.1 = 0
+round(0.1,nearest) = 0
+round(0.1,up) = 1
+round(0.1,down) = 0
+round(0.1,zero) = 0
+round(0.1,any) = 0
+Original: 0.4
+integer 0.4 = 0
+fraction 0.4 = 0.4
+round 0.4 = 0
+round(0.4,nearest) = 0
+round(0.4,up) = 1
+round(0.4,down) = 0
+round(0.4,zero) = 0
+round(0.4,any) = 0
+Original: 0.8
+integer 0.8 = 0
+fraction 0.8 = 0.8
+round 0.8 = 1
+round(0.8,nearest) = 1
+round(0.8,up) = 1
+round(0.8,down) = 0
+round(0.8,zero) = 0
+round(0.8,any) = 0
+Original: 1.0
+integer 1.0 = 1
+fraction 1.0 = 0.0
+round 1.0 = 1
+round(1.0,nearest) = 1
+round(1.0,up) = 1
+round(1.0,down) = 1
+round(1.0,zero) = 1
+round(1.0,any) = 1
+Original: 1.1
+integer 1.1 = 1
+fraction 1.1 = 0.1
+round 1.1 = 1
+round(1.1,nearest) = 1
+round(1.1,up) = 2
+round(1.1,down) = 1
+round(1.1,zero) = 1
+round(1.1,any) = 1
+Original: 1.4
+integer 1.4 = 1
+fraction 1.4 = 0.4
+round 1.4 = 1
+round(1.4,nearest) = 1
+round(1.4,up) = 2
+round(1.4,down) = 1
+round(1.4,zero) = 1
+round(1.4,any) = 1
+Original: 1.8
+integer 1.8 = 1
+fraction 1.8 = 0.8
+round 1.8 = 2
+round(1.8,nearest) = 2
+round(1.8,up) = 2
+round(1.8,down) = 1
+round(1.8,zero) = 1
+round(1.8,any) = 1
+Original: 2.0
+integer 2.0 = 2
+fraction 2.0 = 0.0
+round 2.0 = 2
+round(2.0,nearest) = 2
+round(2.0,up) = 2
+round(2.0,down) = 2
+round(2.0,zero) = 2
+round(2.0,any) = 2
+Original: 2.4
+integer 2.4 = 2
+fraction 2.4 = 0.4
+round 2.4 = 2
+round(2.4,nearest) = 2
+round(2.4,up) = 3
+round(2.4,down) = 2
+round(2.4,zero) = 2
+round(2.4,any) = 2
+Original: 2.7
+integer 2.7 = 2
+fraction 2.7 = 0.7
+round 2.7 = 3
+round(2.7,nearest) = 3
+round(2.7,up) = 3
+round(2.7,down) = 2
+round(2.7,zero) = 2
+round(2.7,any) = 2
+Original: 10.0
+integer 10.0 = 10
+fraction 10.0 = 0.0
+round 10.0 = 10
+round(10.0,nearest) = 10
+round(10.0,up) = 10
+round(10.0,down) = 10
+round(10.0,zero) = 10
+round(10.0,any) = 10
+Original: 10.001
+integer 10.001 = 10
+fraction 10.001 = 0.00099182
+round 10.001 = 10
+round(10.001,nearest) = 10
+round(10.001,up) = 11
+round(10.001,down) = 10
+round(10.001,zero) = 10
+round(10.001,any) = 10
+Original: 10.0
+integer 10.0 = 10
+fraction 10.0 = 0.0
+round 10.0 = 10
+round(10.0,nearest) = 10
+round(10.0,up) = 10
+round(10.0,down) = 10
+round(10.0,zero) = 10
+round(10.0,any) = 10
+Original: 30.2
+integer 30.2 = 30
+fraction 30.2 = 0.19998
+round 30.2 = 30
+round(30.2,nearest) = 30
+round(30.2,up) = 31
+round(30.2,down) = 30
+round(30.2,zero) = 30
+round(30.2,any) = 30
+Original: 200.32
+integer 200.32 = 200
+fraction 200.32 = 0.32324
+round 200.32 = 200
+round(200.32,nearest) = 200
+round(200.32,up) = 201
+round(200.32,down) = 200
+round(200.32,zero) = 200
+round(200.32,any) = 200
+Original: 0.4e11
+integer 0.4e11 = 40000028672
+fraction 0.4e11 = 0.0
+round 0.4e11 = 40000028672
+round(0.4e11,nearest) = 40000028672
+round(0.4e11,up) = 40000028672
+round(0.4e11,down) = 40000028672
+round(0.4e11,zero) = 40000028672
+round(0.4e11,any) = 40000028672
+Original: 0.4e21
+integer 0.4e21 = 400000148753839292416
+fraction 0.4e21 = 0.0
+round 0.4e21 = 400000148753839292416
+round(0.4e21,nearest) = 400000148753839292416
+round(0.4e21,up) = 400000148753839292416
+round(0.4e21,down) = 400000148753839292416
+round(0.4e21,zero) = 400000148753839292416
+round(0.4e21,any) = 400000148753839292416
+Original: 0.4e31
+integer 0.4e31 = 4000001873578594301450517479424
+fraction 0.4e31 = 0.0
+round 0.4e31 = 4000001873578594301450517479424
+round(0.4e31,nearest) = 4000001873578594301450517479424
+round(0.4e31,up) = 4000001873578594301450517479424
+round(0.4e31,down) = 4000001873578594301450517479424
+round(0.4e31,zero) = 4000001873578594301450517479424
+round(0.4e31,any) = 4000001873578594301450517479424
+Original: 0.88889e9
+integer 0.88889e9 = 888888320
+fraction 0.88889e9 = 0.0
+round 0.88889e9 = 888888320
+round(0.88889e9,nearest) = 888888320
+round(0.88889e9,up) = 888888320
+round(0.88889e9,down) = 888888320
+round(0.88889e9,zero) = 888888320
+round(0.88889e9,any) = 888888320
+Original: 0.0
+integer 0.0 = 0
+fraction 0.0 = 0.0
+round 0.0 = 0
+round(0.0,nearest) = 0
+round(0.0,up) = 0
+round(0.0,down) = 0
+round(0.0,zero) = 0
+round(0.0,any) = 0
+Original: -0.1
+integer -0.1 = 0
+fraction -0.1 = -0.1
+round -0.1 = 0
+round(-0.1,nearest) = 0
+round(-0.1,up) = 0
+round(-0.1,down) = 0
+round(-0.1,zero) = 0
+round(-0.1,any) = 0
+Original: -0.4
+integer -0.4 = 0
+fraction -0.4 = -0.4
+round -0.4 = 0
+round(-0.4,nearest) = 0
+round(-0.4,up) = 0
+round(-0.4,down) = 0
+round(-0.4,zero) = 0
+round(-0.4,any) = 0
+Original: -0.8
+integer -0.8 = 0
+fraction -0.8 = -0.8
+round -0.8 = -1
+round(-0.8,nearest) = -1
+round(-0.8,up) = 0
+round(-0.8,down) = 0
+round(-0.8,zero) = 0
+round(-0.8,any) = 0
+Original: -1.0
+integer -1.0 = -1
+fraction -1.0 = 0.0
+round -1.0 = -1
+round(-1.0,nearest) = -1
+round(-1.0,up) = -1
+round(-1.0,down) = -2
+round(-1.0,zero) = -1
+round(-1.0,any) = -1
+Original: -1.1
+integer -1.1 = -1
+fraction -1.1 = -0.1
+round -1.1 = -1
+round(-1.1,nearest) = -1
+round(-1.1,up) = -1
+round(-1.1,down) = -1
+round(-1.1,zero) = -1
+round(-1.1,any) = -1
+Original: -1.4
+integer -1.4 = -1
+fraction -1.4 = -0.4
+round -1.4 = -1
+round(-1.4,nearest) = -1
+round(-1.4,up) = -1
+round(-1.4,down) = -1
+round(-1.4,zero) = -1
+round(-1.4,any) = -1
+Original: -1.8
+integer -1.8 = -1
+fraction -1.8 = -0.8
+round -1.8 = -2
+round(-1.8,nearest) = -2
+round(-1.8,up) = -1
+round(-1.8,down) = -1
+round(-1.8,zero) = -1
+round(-1.8,any) = -1
+Original: -2.0
+integer -2.0 = -2
+fraction -2.0 = 0.0
+round -2.0 = -2
+round(-2.0,nearest) = -2
+round(-2.0,up) = -2
+round(-2.0,down) = -3
+round(-2.0,zero) = -2
+round(-2.0,any) = -2
+Original: -2.4
+integer -2.4 = -2
+fraction -2.4 = -0.4
+round -2.4 = -2
+round(-2.4,nearest) = -2
+round(-2.4,up) = -2
+round(-2.4,down) = -2
+round(-2.4,zero) = -2
+round(-2.4,any) = -2
+Original: -2.7
+integer -2.7 = -2
+fraction -2.7 = -0.7
+round -2.7 = -3
+round(-2.7,nearest) = -3
+round(-2.7,up) = -2
+round(-2.7,down) = -2
+round(-2.7,zero) = -2
+round(-2.7,any) = -2
+Original: -10.0
+integer -10.0 = -10
+fraction -10.0 = 0.0
+round -10.0 = -10
+round(-10.0,nearest) = -10
+round(-10.0,up) = -10
+round(-10.0,down) = -11
+round(-10.0,zero) = -10
+round(-10.0,any) = -10
+Original: -10.001
+integer -10.001 = -10
+fraction -10.001 = -0.00099182
+round -10.001 = -10
+round(-10.001,nearest) = -10
+round(-10.001,up) = -10
+round(-10.001,down) = -10
+round(-10.001,zero) = -10
+round(-10.001,any) = -10
+Original: -10.0
+integer -10.0 = -10
+fraction -10.0 = 0.0
+round -10.0 = -10
+round(-10.0,nearest) = -10
+round(-10.0,up) = -10
+round(-10.0,down) = -11
+round(-10.0,zero) = -10
+round(-10.0,any) = -10
+Original: -30.2
+integer -30.2 = -30
+fraction -30.2 = -0.19998
+round -30.2 = -30
+round(-30.2,nearest) = -30
+round(-30.2,up) = -30
+round(-30.2,down) = -30
+round(-30.2,zero) = -30
+round(-30.2,any) = -30
+Original: -200.32
+integer -200.32 = -200
+fraction -200.32 = -0.32324
+round -200.32 = -200
+round(-200.32,nearest) = -200
+round(-200.32,up) = -200
+round(-200.32,down) = -200
+round(-200.32,zero) = -200
+round(-200.32,any) = -200
+Original: -0.4e11
+integer -0.4e11 = -40000028672
+fraction -0.4e11 = 0.0
+round -0.4e11 = -40000028672
+round(-0.4e11,nearest) = -40000028672
+round(-0.4e11,up) = -40000028672
+round(-0.4e11,down) = -40000028672
+round(-0.4e11,zero) = -40000028672
+round(-0.4e11,any) = -40000028672
+Original: -0.4e21
+integer -0.4e21 = -400000148753839292416
+fraction -0.4e21 = 0.0
+round -0.4e21 = -400000148753839292416
+round(-0.4e21,nearest) = -400000148753839292416
+round(-0.4e21,up) = -400000148753839292416
+round(-0.4e21,down) = -400000148753839292416
+round(-0.4e21,zero) = -400000148753839292416
+round(-0.4e21,any) = -400000148753839292416
+Original: -0.4e31
+integer -0.4e31 = -4000001873578594301450517479424
+fraction -0.4e31 = 0.0
+round -0.4e31 = -4000001873578594301450517479424
+round(-0.4e31,nearest) = -4000001873578594301450517479424
+round(-0.4e31,up) = -4000001873578594301450517479424
+round(-0.4e31,down) = -4000001873578594301450517479424
+round(-0.4e31,zero) = -4000001873578594301450517479424
+round(-0.4e31,any) = -4000001873578594301450517479424
+Original: -0.88889e9
+integer -0.88889e9 = -888888320
+fraction -0.88889e9 = 0.0
+round -0.88889e9 = -888888320
+round(-0.88889e9,nearest) = -888888320
+round(-0.88889e9,up) = -888888320
+round(-0.88889e9,down) = -888888320
+round(-0.88889e9,zero) = -888888320
+round(-0.88889e9,any) = -888888320
+---------- Testing PFloat 60 ------------- 
+Original: 0.0
+integer 0.0 = 0
+fraction 0.0 = 0.0
+round 0.0 = 0
+round(0.0,nearest) = 0
+round(0.0,up) = 0
+round(0.0,down) = 0
+round(0.0,zero) = 0
+round(0.0,any) = 0
+Original: 0.1
+integer 0.1 = 0
+fraction 0.1 = 0.1
+round 0.1 = 0
+round(0.1,nearest) = 0
+round(0.1,up) = 1
+round(0.1,down) = 0
+round(0.1,zero) = 0
+round(0.1,any) = 0
+Original: 0.4
+integer 0.4 = 0
+fraction 0.4 = 0.4
+round 0.4 = 0
+round(0.4,nearest) = 0
+round(0.4,up) = 1
+round(0.4,down) = 0
+round(0.4,zero) = 0
+round(0.4,any) = 0
+Original: 0.8
+integer 0.8 = 0
+fraction 0.8 = 0.8
+round 0.8 = 1
+round(0.8,nearest) = 1
+round(0.8,up) = 1
+round(0.8,down) = 0
+round(0.8,zero) = 0
+round(0.8,any) = 0
+Original: 1.0
+integer 1.0 = 1
+fraction 1.0 = 0.0
+round 1.0 = 1
+round(1.0,nearest) = 1
+round(1.0,up) = 1
+round(1.0,down) = 1
+round(1.0,zero) = 1
+round(1.0,any) = 1
+Original: 1.1
+integer 1.1 = 1
+fraction 1.1 = 0.1
+round 1.1 = 1
+round(1.1,nearest) = 1
+round(1.1,up) = 2
+round(1.1,down) = 1
+round(1.1,zero) = 1
+round(1.1,any) = 1
+Original: 1.4
+integer 1.4 = 1
+fraction 1.4 = 0.4
+round 1.4 = 1
+round(1.4,nearest) = 1
+round(1.4,up) = 2
+round(1.4,down) = 1
+round(1.4,zero) = 1
+round(1.4,any) = 1
+Original: 1.8
+integer 1.8 = 1
+fraction 1.8 = 0.8
+round 1.8 = 2
+round(1.8,nearest) = 2
+round(1.8,up) = 2
+round(1.8,down) = 1
+round(1.8,zero) = 1
+round(1.8,any) = 1
+Original: 2.0
+integer 2.0 = 2
+fraction 2.0 = 0.0
+round 2.0 = 2
+round(2.0,nearest) = 2
+round(2.0,up) = 2
+round(2.0,down) = 2
+round(2.0,zero) = 2
+round(2.0,any) = 2
+Original: 2.4
+integer 2.4 = 2
+fraction 2.4 = 0.4
+round 2.4 = 2
+round(2.4,nearest) = 2
+round(2.4,up) = 3
+round(2.4,down) = 2
+round(2.4,zero) = 2
+round(2.4,any) = 2
+Original: 2.7
+integer 2.7 = 2
+fraction 2.7 = 0.7
+round 2.7 = 3
+round(2.7,nearest) = 3
+round(2.7,up) = 3
+round(2.7,down) = 2
+round(2.7,zero) = 2
+round(2.7,any) = 2
+Original: 10.0
+integer 10.0 = 10
+fraction 10.0 = 0.0
+round 10.0 = 10
+round(10.0,nearest) = 10
+round(10.0,up) = 10
+round(10.0,down) = 10
+round(10.0,zero) = 10
+round(10.0,any) = 10
+Original: 10.001
+integer 10.001 = 10
+fraction 10.001 = 0.0010000000000000009
+round 10.001 = 10
+round(10.001,nearest) = 10
+round(10.001,up) = 11
+round(10.001,down) = 10
+round(10.001,zero) = 10
+round(10.001,any) = 10
+Original: 10.000002
+integer 10.000002 = 10
+fraction 10.000002 = 0.0000019999999999881224
+round 10.000002 = 10
+round(10.000002,nearest) = 10
+round(10.000002,up) = 11
+round(10.000002,down) = 10
+round(10.000002,zero) = 10
+round(10.000002,any) = 10
+Original: 30.2
+integer 30.2 = 30
+fraction 30.2 = 0.19999999999999998
+round 30.2 = 30
+round(30.2,nearest) = 30
+round(30.2,up) = 31
+round(30.2,down) = 30
+round(30.2,zero) = 30
+round(30.2,any) = 30
+Original: 200.32344
+integer 200.32344 = 200
+fraction 200.32344 = 0.32343999999999995
+round 200.32344 = 200
+round(200.32344,nearest) = 200
+round(200.32344,up) = 201
+round(200.32344,down) = 200
+round(200.32344,zero) = 200
+round(200.32344,any) = 200
+Original: 40000000000.0
+integer 40000000000.0 = 40000000000
+fraction 40000000000.0 = 0.0
+round 40000000000.0 = 40000000000
+round(40000000000.0,nearest) = 40000000000
+round(40000000000.0,up) = 40000000000
+round(40000000000.0,down) = 40000000000
+round(40000000000.0,zero) = 40000000000
+round(40000000000.0,any) = 40000000000
+Original: 0.4e21
+integer 0.4e21 = 400000000000000000000
+fraction 0.4e21 = 0.0
+round 0.4e21 = 400000000000000000000
+round(0.4e21,nearest) = 400000000000000000000
+round(0.4e21,up) = 400000000000000000000
+round(0.4e21,down) = 400000000000000000000
+round(0.4e21,zero) = 400000000000000000000
+round(0.4e21,any) = 400000000000000000000
+Original: 0.4e31
+integer 0.4e31 = 4000000000000000000373662154752
+fraction 0.4e31 = 0.0
+round 0.4e31 = 4000000000000000000373662154752
+round(0.4e31,nearest) = 4000000000000000000373662154752
+round(0.4e31,up) = 4000000000000000000373662154752
+round(0.4e31,down) = 4000000000000000000373662154752
+round(0.4e31,zero) = 4000000000000000000373662154752
+round(0.4e31,any) = 4000000000000000000373662154752
+Original: 888888889.0
+integer 888888889.0 = 888888888
+fraction 888888889.0 = 0.99999999906867743
+round 888888889.0 = 888888889
+round(888888889.0,nearest) = 888888889
+round(888888889.0,up) = 888888889
+round(888888889.0,down) = 888888888
+round(888888889.0,zero) = 888888888
+round(888888889.0,any) = 888888888
+Original: 0.0
+integer 0.0 = 0
+fraction 0.0 = 0.0
+round 0.0 = 0
+round(0.0,nearest) = 0
+round(0.0,up) = 0
+round(0.0,down) = 0
+round(0.0,zero) = 0
+round(0.0,any) = 0
+Original: -0.1
+integer -0.1 = 0
+fraction -0.1 = -0.1
+round -0.1 = 0
+round(-0.1,nearest) = 0
+round(-0.1,up) = 0
+round(-0.1,down) = 0
+round(-0.1,zero) = 0
+round(-0.1,any) = 0
+Original: -0.4
+integer -0.4 = 0
+fraction -0.4 = -0.4
+round -0.4 = 0
+round(-0.4,nearest) = 0
+round(-0.4,up) = 0
+round(-0.4,down) = 0
+round(-0.4,zero) = 0
+round(-0.4,any) = 0
+Original: -0.8
+integer -0.8 = 0
+fraction -0.8 = -0.8
+round -0.8 = -1
+round(-0.8,nearest) = -1
+round(-0.8,up) = 0
+round(-0.8,down) = 0
+round(-0.8,zero) = 0
+round(-0.8,any) = 0
+Original: -1.0
+integer -1.0 = -1
+fraction -1.0 = 0.0
+round -1.0 = -1
+round(-1.0,nearest) = -1
+round(-1.0,up) = -1
+round(-1.0,down) = -2
+round(-1.0,zero) = -1
+round(-1.0,any) = -1
+Original: -1.1
+integer -1.1 = -1
+fraction -1.1 = -0.1
+round -1.1 = -1
+round(-1.1,nearest) = -1
+round(-1.1,up) = -1
+round(-1.1,down) = -1
+round(-1.1,zero) = -1
+round(-1.1,any) = -1
+Original: -1.4
+integer -1.4 = -1
+fraction -1.4 = -0.4
+round -1.4 = -1
+round(-1.4,nearest) = -1
+round(-1.4,up) = -1
+round(-1.4,down) = -1
+round(-1.4,zero) = -1
+round(-1.4,any) = -1
+Original: -1.8
+integer -1.8 = -1
+fraction -1.8 = -0.8
+round -1.8 = -2
+round(-1.8,nearest) = -2
+round(-1.8,up) = -1
+round(-1.8,down) = -1
+round(-1.8,zero) = -1
+round(-1.8,any) = -1
+Original: -2.0
+integer -2.0 = -2
+fraction -2.0 = 0.0
+round -2.0 = -2
+round(-2.0,nearest) = -2
+round(-2.0,up) = -2
+round(-2.0,down) = -3
+round(-2.0,zero) = -2
+round(-2.0,any) = -2
+Original: -2.4
+integer -2.4 = -2
+fraction -2.4 = -0.4
+round -2.4 = -2
+round(-2.4,nearest) = -2
+round(-2.4,up) = -2
+round(-2.4,down) = -2
+round(-2.4,zero) = -2
+round(-2.4,any) = -2
+Original: -2.7
+integer -2.7 = -2
+fraction -2.7 = -0.7
+round -2.7 = -3
+round(-2.7,nearest) = -3
+round(-2.7,up) = -2
+round(-2.7,down) = -2
+round(-2.7,zero) = -2
+round(-2.7,any) = -2
+Original: -10.0
+integer -10.0 = -10
+fraction -10.0 = 0.0
+round -10.0 = -10
+round(-10.0,nearest) = -10
+round(-10.0,up) = -10
+round(-10.0,down) = -11
+round(-10.0,zero) = -10
+round(-10.0,any) = -10
+Original: -10.001
+integer -10.001 = -10
+fraction -10.001 = -0.0010000000000000009
+round -10.001 = -10
+round(-10.001,nearest) = -10
+round(-10.001,up) = -10
+round(-10.001,down) = -10
+round(-10.001,zero) = -10
+round(-10.001,any) = -10
+Original: -10.000002
+integer -10.000002 = -10
+fraction -10.000002 = -0.0000019999999999881224
+round -10.000002 = -10
+round(-10.000002,nearest) = -10
+round(-10.000002,up) = -10
+round(-10.000002,down) = -10
+round(-10.000002,zero) = -10
+round(-10.000002,any) = -10
+Original: -30.2
+integer -30.2 = -30
+fraction -30.2 = -0.19999999999999998
+round -30.2 = -30
+round(-30.2,nearest) = -30
+round(-30.2,up) = -30
+round(-30.2,down) = -30
+round(-30.2,zero) = -30
+round(-30.2,any) = -30
+Original: -200.32344
+integer -200.32344 = -200
+fraction -200.32344 = -0.32343999999999995
+round -200.32344 = -200
+round(-200.32344,nearest) = -200
+round(-200.32344,up) = -200
+round(-200.32344,down) = -200
+round(-200.32344,zero) = -200
+round(-200.32344,any) = -200
+Original: -40000000000.0
+integer -40000000000.0 = -40000000000
+fraction -40000000000.0 = 0.0
+round -40000000000.0 = -40000000000
+round(-40000000000.0,nearest) = -40000000000
+round(-40000000000.0,up) = -40000000000
+round(-40000000000.0,down) = -40000000001
+round(-40000000000.0,zero) = -40000000000
+round(-40000000000.0,any) = -40000000000
+Original: -0.4e21
+integer -0.4e21 = -400000000000000000000
+fraction -0.4e21 = 0.0
+round -0.4e21 = -400000000000000000000
+round(-0.4e21,nearest) = -400000000000000000000
+round(-0.4e21,up) = -400000000000000000000
+round(-0.4e21,down) = -400000000000000000000
+round(-0.4e21,zero) = -400000000000000000000
+round(-0.4e21,any) = -400000000000000000000
+Original: -0.4e31
+integer -0.4e31 = -4000000000000000000373662154752
+fraction -0.4e31 = 0.0
+round -0.4e31 = -4000000000000000000373662154752
+round(-0.4e31,nearest) = -4000000000000000000373662154752
+round(-0.4e31,up) = -4000000000000000000373662154752
+round(-0.4e31,down) = -4000000000000000000373662154752
+round(-0.4e31,zero) = -4000000000000000000373662154752
+round(-0.4e31,any) = -4000000000000000000373662154752
+Original: -888888889.0
+integer -888888889.0 = -888888888
+fraction -888888889.0 = -0.99999999906867743
+round -888888889.0 = -888888889
+round(-888888889.0,nearest) = -888888889
+round(-888888889.0,up) = -888888888
+round(-888888889.0,down) = -888888888
+round(-888888889.0,zero) = -888888888
+round(-888888889.0,any) = -888888888
+---------- All tests OK ----------

@@ -1,0 +1,20 @@
+try0: 23/7 = 3 r 2
+*** Caught exception: division by zero
+try0: 23/0 = 23 r 0
+
+
+try1: 23/7 = 3 r 2
+*** Caught exception: division by zero
+try1: 23/0 = 23 r 0
+
+
+try2: 23/7 = 3 r 2
+*** Caught exception: division by zero
+try2: 23/0 = 23 r 0
+
+
+try3: 23/7 = 3 r 2
+*** Caught exception: division by zero
+try3: 23/0 = 23 r 0
+
+

@@ -1,0 +1,32 @@
+Robot
+DirectProduct  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+The DP-ZERO.
+Creation of E
+ll =list(1, 1, 0, 0, 0)
+CalixTerms !!!!!!!!!!!!!!!!!!!!!!!!!
+This is DirectProduct  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+The DP-ZERO.
+DP
+(0,0,0,0,0)Null
+coerce DP
+(0,0,0,0,0)
+degreeList
+DirectProduct  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+The DP-ZERO.
+DOT DP
+(1,1,1,0,0) and DP
+(0,0,0,0,0)
+DOT DP
+(0,0,0,1,1) and DP
+(0,0,0,0,0)
+COERCE-LN: list(1, 1, 0, 0, 0)
+coerce DP
+(1,1,0,0,0)
+degreeList
+DOT DP
+(1,1,1,0,0) and DP
+(1,1,0,0,0)
+DOT DP
+(0,0,0,1,1) and DP
+(1,1,0,0,0)
+S1*S2 = 1$E
