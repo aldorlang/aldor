@@ -152,9 +152,6 @@ AC_CONFIG_FILES(
    lib/algebra/test/bug1335/Makefile
    lib/algebra/test/bug1341/Makefile
    lib/algebra/test/bug1342/Makefile
-   lib/algebra/test/complex/Makefile
-   lib/algebra/test/mint/Makefile
-   lib/algebra/test/random/Makefile
 
    dnl AxiomXL base library.
    lib/axllib/Makefile

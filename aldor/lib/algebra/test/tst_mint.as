@@ -1,0 +1,1 @@
+../src/test/tst_mint.as
