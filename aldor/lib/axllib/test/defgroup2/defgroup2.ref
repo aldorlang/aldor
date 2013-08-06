@@ -1,0 +1,8 @@
+Testing cyclic dependency checking:
+   A = 5
+   B = 3
+   C = 1
+   D = 4
+   E = 10
+
+

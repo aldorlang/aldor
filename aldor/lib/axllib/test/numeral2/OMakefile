@@ -1,0 +1,3 @@
+EXTRADEP[] =
+  ../numeral0/numeral0.ao
+  ../numeral1/numeral1.ao

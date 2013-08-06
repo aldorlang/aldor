@@ -1,0 +1,8 @@
+Start test...
+Constructing domain FunctionMap
+FunctionMap: coerce:Rep -> %
+FunctionMap: coerce:Rep -> %
+f(13) = Constructing domain BoundedInteger(1,4)
+BoundedInteger: ord of coerce out of range
+Unhandled Exception: RuntimeError(??)
+(Aldor error) Halt

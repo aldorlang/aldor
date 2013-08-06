@@ -1,0 +1,6 @@
+#<d1:>
+#<d2:>
+hello
+there
+1
+#<d1: #<d2: hello> #<d2: there> #<d2: #<d2: 1>>>

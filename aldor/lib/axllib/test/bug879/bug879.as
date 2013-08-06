@@ -1,0 +1,67 @@
+--* From SMWATT%WATSON.vnet.ibm.com@yktvmv.watson.ibm.com  Thu Oct  6 22:47:37 1994
+--* Received: from yktvmv-ob.watson.ibm.com by watson.ibm.com (AIX 3.2/UCB 5.64/930311)
+--*           id AA18943; Thu, 6 Oct 1994 22:47:37 -0400
+--* Received: from watson.vnet.ibm.com by yktvmv.watson.ibm.com (IBM VM SMTP V2R3)
+--*    with BSMTP id 1251; Thu, 06 Oct 94 22:47:43 EDT
+--* Received: from YKTVMV by watson.vnet.ibm.com with "VAGENT.V1.0"
+--*           id <A.SMWATT.NOTE.VAGENT2.0251.Oct.06.22:47:42.-0400>
+--*           for asbugs@watson; Thu, 06 Oct 94 22:47:43 -0400
+--* Received: from YKTVMV by watson.vnet.ibm.com with "VAGENT.V1.0"
+--*           id 0245; Thu, 6 Oct 1994 22:47:42 EDT
+--* Received: from watson.ibm.com by yktvmv.watson.ibm.com
+--*    (IBM VM SMTP V2R3) with TCP; Thu, 06 Oct 94 22:47:42 EDT
+--* Received: by watson.ibm.com (AIX 3.2/UCB 5.64/900524)
+--*           id AA12240; Thu, 6 Oct 1994 22:49:04 -0400
+--* Date: Thu, 6 Oct 1994 22:49:04 -0400
+--* From: smwatt@watson.ibm.com (Stephen Watt)
+--* X-External-Networks: yes
+--* Message-Id: <9410070249.AA12240@watson.ibm.com>
+--* To: asbugs@watson.ibm.com
+--* Subject: [3] varibles do not cover up exports of imported types
+
+--@ Fixed  by: <Who> <Date>
+--@ Tested by: <Name of new or existing file in test directory>
+--@ Summary:   <Description of real problem and the fix>
+
+
+-- Command line: asharp
+-- Version: 0.37.0
+-- Original bug file name: /dev/null
+
+--+ From root Thu Oct  6 04:55:27 1994
+--+ Received: from yktvmv-ob.watson.ibm.com by watson.ibm.com (AIX 3.2/UCB 5.64/900524)
+--+           id AA13183; Thu, 6 Oct 1994 04:55:27 -0400
+--+ X-External-Networks: yes
+--+ Received: from watson.vnet.ibm.com by yktvmv.watson.ibm.com (IBM VM SMTP V2R3)
+--+    with BSMTP id 7011; Thu, 06 Oct 94 04:54:05 EDT
+--+ Received: from YKTVMV by watson.vnet.ibm.com with "VAGENT.V1.0"
+--+           id <A.MIKER.NOTE.YKTVMV.3845.Oct.06.04:54:04.-0400>
+--+           for smwatt@watson; Thu, 06 Oct 94 04:54:05 -0400
+--+ Received: from ben.britain.eu.net by watson.ibm.com (IBM VM SMTP V2R3) with TCP;
+--+    Thu, 06 Oct 94 04:54:02 EDT
+--+ Received: from iec.co.uk by ben.britain.eu.net via JANET with NIFTP (PP)
+--+           id <sg.09327-1@ben.britain.eu.net>; Thu, 6 Oct 1994 09:53:37 +0100
+--+ From: Mike Richardson <miker@num-alg-grp.co.uk>
+--+ Message-Id: <3780.9410060844@nags2.nag.co.uk>
+--+ Received: by nags2.nag.co.uk (4.1/UK-2.1) id AA03780; Thu, 6 Oct 94 09:44:20 BST
+--+ Subject: Shadowing of names
+--+ To: smwatt@watson.ibm.com (Stephen Watt)
+--+ Date: Thu, 6 Oct 94 9:44:19 BST
+--+ Cc: dooley@watson.ibm.com (Sam Dooley),
+--+         miker@num-alg-grp.co.uk (Michael Gerard Richardson)
+--+ Stephen:
+--+ Status: RO
+--+
+--+ The shadowing of "+" described in section 2.7.6 doesn't happen.  For
+--+ example, the following program:
+--+
+--+    #include "axllib"
+--+    import from Integer;
+--+    +: Integer := 3;
+--+    x := 2+2;
+--+    print << x << newline
+--+
+--+ simply prints "4".
+--+
+--+ Mike
+--+

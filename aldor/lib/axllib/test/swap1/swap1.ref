@@ -1,0 +1,5 @@
+This is an array of lists: 
+array(list(1, 2, 3), list(2, 3, 4), list(3, 4, 5))
+
+This is a list of arrays: 
+list(array(1, 2, 3), array(2, 3, 4), array(3, 4, 5))

@@ -1,0 +1,2 @@
+foo(42) = 84
+foo("very bad bug") = "very bad bug"

@@ -69,80 +69,108 @@ AC_SUBST([VCSVERSION])
 AC_SUBST([build_id])
 
 # Generate Makefiles
-AC_CONFIG_FILES([Makefile
-		 aldor/Makefile
-		 aldor/subcmd/Makefile
-		 aldor/subcmd/unitools/Makefile
-		 aldor/subcmd/testaldor/Makefile
-		 aldor/src/Makefile
-		 aldor/lib/Makefile
-		 aldor/lib/libfoamlib/Makefile
-		 aldor/lib/libfoamlib/al/Makefile
-		 aldor/lib/libfoam/Makefile
-		 aldor/lib/libfoam/al/Makefile
-		 aldor/lib/java/Makefile
-		 aldor/lib/java/src/Makefile
-		 aldor/test/Makefile
-		 aldor/tools/Makefile
-		 aldor/tools/unix/Makefile
-		 aldor/tools/unix/aldor
-		 lib/Makefile
-		 lib/aldor/Makefile
-		 lib/aldor/include/Makefile
-		 lib/aldor/src/Makefile
-		 lib/aldor/src/lang/Makefile
-		 lib/aldor/src/base/Makefile
-		 lib/aldor/src/arith/Makefile
-		 lib/aldor/src/datastruc/Makefile
-		 lib/aldor/src/util/Makefile
-		 lib/aldor/src/gmp/Makefile
-		 lib/algebra/Makefile
-		 lib/algebra/include/Makefile
-		 lib/algebra/src/Makefile
-		 lib/algebra/src/util/Makefile
-		 lib/algebra/src/numbers/Makefile
-		 lib/algebra/src/extree/Makefile
-		 lib/algebra/src/extree/operators/Makefile
-		 lib/algebra/src/extree/parser/Makefile
-		 lib/algebra/src/categories/Makefile
-		 lib/algebra/src/basic/Makefile
-		 lib/algebra/src/basic/compbug/Makefile
-		 lib/algebra/src/mat/Makefile
-		 lib/algebra/src/mat/gauss/Makefile
-		 lib/algebra/src/mat/modular/Makefile
-		 lib/algebra/src/mat/modular/compbug/Makefile
-		 lib/algebra/src/mat/linalg/Makefile
-		 lib/algebra/src/multpoly/multpolydata/Makefile
-		 lib/algebra/src/multpoly/exponent/Makefile
-		 lib/algebra/src/univpoly/categories/Makefile
-		 lib/algebra/src/mat/linalg2/Makefile
-		 lib/algebra/src/univpoly/Makefile
-		 lib/algebra/src/univpoly/gcd/Makefile
-		 lib/algebra/src/fraction/Makefile
-		 lib/algebra/src/series/Makefile
-		 lib/algebra/src/series/compbug/Makefile
-		 lib/algebra/src/mat/linalg3/Makefile
-		 lib/algebra/src/algext/Makefile
-		 lib/algebra/src/polyfactorp/Makefile
-		 lib/algebra/src/ffield/Makefile
-		 lib/algebra/src/polyfactor0/Makefile
-		 lib/algebra/src/multpoly/multpolycat/Makefile
-		 lib/algebra/src/multpoly/multpolydom/Makefile
-		 lib/algebra/src/multpoly/multpolypkg/Makefile
-		 lib/algebra/src/multpoly/multpolytest/Makefile
-		 lib/algebra/src/test/Makefile
-		 lib/axllib/Makefile
-		 lib/axllib/include/Makefile
-		 lib/axllib/src/Makefile
-		 lib/axllib/src/al/Makefile
-		 lib/axllib/test/Makefile
-		 lib/axldem/Makefile
-		 lib/axldem/include/Makefile
-		 lib/axldem/src/Makefile
-		 lib/axldem/src/al/Makefile
-		 lib/axldem/test/Makefile
-		 lib/libax0/Makefile
-		 lib/libax0/src/Makefile
-		 lib/libax0/src/al/Makefile
-		 lib/libax0/test/Makefile])
+AC_CONFIG_FILES(
+   Makefile
+   aldor/Makefile
+   aldor/subcmd/Makefile
+   aldor/subcmd/unitools/Makefile
+   aldor/subcmd/testaldor/Makefile
+   aldor/src/Makefile
+   aldor/lib/Makefile
+   aldor/lib/libfoamlib/Makefile
+   aldor/lib/libfoamlib/al/Makefile
+   aldor/lib/libfoam/Makefile
+   aldor/lib/libfoam/al/Makefile
+   aldor/lib/java/Makefile
+   aldor/lib/java/src/Makefile
+   aldor/test/Makefile
+   aldor/tools/Makefile
+   aldor/tools/unix/Makefile
+   aldor/tools/unix/aldor
+   lib/Makefile
+
+   dnl Aldor base library.
+   lib/aldor/Makefile
+   lib/aldor/include/Makefile
+   lib/aldor/src/Makefile
+   lib/aldor/src/lang/Makefile
+   lib/aldor/src/base/Makefile
+   lib/aldor/src/arith/Makefile
+   lib/aldor/src/datastruc/Makefile
+   lib/aldor/src/util/Makefile
+   lib/aldor/src/gmp/Makefile
+
+   lib/aldor/test/Makefile
+   lib/aldor/test/bug1332/Makefile
+   lib/aldor/test/bug1333/Makefile
+   lib/aldor/test/bug1334/Makefile
+   lib/aldor/test/bug1337/Makefile
+   lib/aldor/test/bug1340/Makefile
+   lib/aldor/test/intfact/Makefile
+   lib/aldor/test/issue2/Makefile
+   lib/aldor/test/issue38/Makefile
+
+   dnl Mathematical library.
+   lib/algebra/Makefile
+   lib/algebra/include/Makefile
+   lib/algebra/src/Makefile
+   lib/algebra/src/util/Makefile
+   lib/algebra/src/numbers/Makefile
+   lib/algebra/src/extree/Makefile
+   lib/algebra/src/extree/operators/Makefile
+   lib/algebra/src/extree/parser/Makefile
+   lib/algebra/src/categories/Makefile
+   lib/algebra/src/basic/Makefile
+   lib/algebra/src/basic/compbug/Makefile
+   lib/algebra/src/mat/Makefile
+   lib/algebra/src/mat/gauss/Makefile
+   lib/algebra/src/mat/modular/Makefile
+   lib/algebra/src/mat/modular/compbug/Makefile
+   lib/algebra/src/mat/linalg/Makefile
+   lib/algebra/src/multpoly/multpolydata/Makefile
+   lib/algebra/src/multpoly/exponent/Makefile
+   lib/algebra/src/univpoly/categories/Makefile
+   lib/algebra/src/mat/linalg2/Makefile
+   lib/algebra/src/univpoly/Makefile
+   lib/algebra/src/univpoly/gcd/Makefile
+   lib/algebra/src/fraction/Makefile
+   lib/algebra/src/series/Makefile
+   lib/algebra/src/series/compbug/Makefile
+   lib/algebra/src/mat/linalg3/Makefile
+   lib/algebra/src/algext/Makefile
+   lib/algebra/src/polyfactorp/Makefile
+   lib/algebra/src/ffield/Makefile
+   lib/algebra/src/polyfactor0/Makefile
+   lib/algebra/src/multpoly/multpolycat/Makefile
+   lib/algebra/src/multpoly/multpolydom/Makefile
+   lib/algebra/src/multpoly/multpolypkg/Makefile
+   lib/algebra/src/multpoly/multpolytest/Makefile
+   lib/algebra/src/test/Makefile
+
+   lib/algebra/test/Makefile
+   lib/algebra/test/Trandom/Makefile
+   lib/algebra/test/bug1335/Makefile
+   lib/algebra/test/bug1341/Makefile
+   lib/algebra/test/bug1342/Makefile
+
+   dnl AxiomXL base library.
+   lib/axllib/Makefile
+   lib/axllib/include/Makefile
+   lib/axllib/src/Makefile
+   lib/axllib/src/al/Makefile
+   lib/axllib/test/Makefile
+
+   dnl AxiomXL demo library.
+   lib/axldem/Makefile
+   lib/axldem/include/Makefile
+   lib/axldem/src/Makefile
+   lib/axldem/src/al/Makefile
+   lib/axldem/test/Makefile
+
+   dnl Axiom bridge.
+   lib/libax0/Makefile
+   lib/libax0/src/Makefile
+   lib/libax0/src/al/Makefile
+   lib/libax0/test/Makefile
+)
 AC_OUTPUT

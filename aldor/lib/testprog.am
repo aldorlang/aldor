@@ -1,0 +1,31 @@
+aldorsrcdir	:= $(top_srcdir)/aldor/src
+aldorexedir	:= $(top_builddir)/aldor/src
+aldorlibdir	:= $(top_builddir)/aldor/lib
+
+libraryincdirs	:= $(foreach L,$(libraries),$(top_srcdir)/lib/$L/include)
+librarylibdirs	:= $(foreach L,$(libraries),$(top_builddir)/lib/$L/src)
+
+foamlibdir	:= $(top_builddir)/aldor/lib/libfoam
+
+ALDOR		:= $(aldorexedir)/aldor$(EXEEXT)
+ALDORFLAGS	:=				\
+	-Nfile=$(aldorsrcdir)/aldor.conf	\
+	$(addprefix -I,$(libraryincdirs))	\
+	$(addprefix -Y,$(librarylibdirs))	\
+	$(ALFLAGS)
+
+# Aldor silent-rules
+AM_V_ALDOR = $(am__v_ALDOR_$(V))
+am__v_ALDOR_ = $(am__v_ALDOR_$(AM_DEFAULT_VERBOSITY))
+am__v_ALDOR_0 = @echo "  ALDOR " $@;
+
+
+%.c: %.as $(ALDOR)
+	$(AM_V_ALDOR)$(ALDOR) $(ALDORFLAGS) -Fc=$@ $<
+
+%main.c: %.as $(ALDOR)
+	$(AM_V_ALDOR)$(ALDOR) $(ALDORFLAGS) -Fmain $<
+	@mv aldormain.c $@
+
+AM_CPPFLAGS = -I$(aldorsrcdir)
+AM_LDFLAGS = -L$(foamlibdir) $(addprefix -L,$(librarylibdirs)) $(addprefix -l,$(libraries)) -lfoam -lm

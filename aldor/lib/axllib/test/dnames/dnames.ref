@@ -1,0 +1,11 @@
+Complex(Float)
+Integer
+SingleIntegerMod(??)
+Ring
+FiniteAggregate(Integer)
+Aggregate(List(Integer))
+Record((Integer))
+Record((Integer, DoubleFloat))
+Enumeration((a))
+S(DoubleFloat)(Float)
+X(??)

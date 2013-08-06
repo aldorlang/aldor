@@ -1,0 +1,4 @@
+c = (list(8, 4, 4)<->list(6, 3))
+content:    4 <-> 3
+content c = 1
+primitivePart c = (list(8, 4, 4)<->list(6, 3))

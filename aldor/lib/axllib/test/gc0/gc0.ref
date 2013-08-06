@@ -1,0 +1,18 @@
+
+Possible values are a space or comma separated list of:
+        all: select all options (except pagekey and show)
+     census: display object counts/sizes by type
+      fixed: classification and count of free fixed-size pages
+     memmap: display the stack, heap, idata and ddata limits
+     memory: amount of store allocated, owned etc
+      mixed: classification and count of free mixed-size pages
+   overhead: memory overhead of the storage manager
+    pagekey: display the symbols used in the pagemap display
+    pagemap: tabular display of the page map (see also pagekey)
+      pages: classification and count of store pages
+   reserved: amount of free memory in reserve
+       show: display this message
+      usage: fixed-sized pages free/busy usage
+
+x(15) = {151413121110987654321}
+x(15) = {151413121110987654321}

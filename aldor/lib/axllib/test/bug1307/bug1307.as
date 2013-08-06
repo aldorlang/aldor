@@ -1,0 +1,42 @@
+--* From adk@ph.ed.ac.uk  Thu Apr  5 18:28:18 2001
+--* Received: from server-24.tower-4.starlabs.net (mail.london-1.starlabs.net [212.125.75.12])
+--* 	by nag.co.uk (8.9.3/8.9.3) with SMTP id SAA24545
+--* 	for <ax-bugs@nag.co.uk>; Thu, 5 Apr 2001 18:28:18 +0100 (BST)
+--* X-VirusChecked: Checked
+--* Received: (qmail 8166 invoked from network); 5 Apr 2001 17:27:45 -0000
+--* Received: from sloth.ph.ed.ac.uk (129.215.72.230)
+--*   by server-24.tower-4.starlabs.net with SMTP; 5 Apr 2001 17:27:45 -0000
+--* Received: from ukqcd2.ph.ed.ac.uk (ukqcd2.ph.ed.ac.uk [129.215.73.54])
+--* 	by sloth.ph.ed.ac.uk (8.9.3/8.9.3) with ESMTP id SAA26343;
+--* 	Thu, 5 Apr 2001 18:27:39 +0100 (BST)
+--* From: Tony Kennedy <adk@ph.ed.ac.uk>
+--* Received: (adk@localhost) by ukqcd2.ph.ed.ac.uk (8.6.12/8.6.12) id SAA27630; Thu, 5 Apr 2001 18:27:39 +0100
+--* Date: Thu, 5 Apr 2001 18:27:39 +0100
+--* Message-Id: <200104051727.SAA27630@ukqcd2.ph.ed.ac.uk>
+--* To: adk@ph.ed.ac.uk, ax-bugs@nag.co.uk
+--* Subject: [9] Self coercion
+
+--@ Fixed  by: <Who> <Date>
+--@ Tested by: <Name of new or existing file in test directory>
+--@ Summary:   <Description of real problem and the fix>
+
+-- Command line: none
+-- Version: any
+-- Original bug file name: /dev/null
+
+--+ It would be useful to introduce a function
+--+ 
+--+   coerce : % -> %
+--+ 
+--+   default
+--+     coerce(x : %) : % == x
+--+ 
+--+ into BasicType, as it should always be possible to coerce a value into
+--+ itself (such a coercion is an isomorphism (automorphism) of every
+--+ category). The use of this is that if I have a domain D parameterised by
+--+ a domain D', and D has its Rep == D'', then I often want to coerce an
+--+ element of D' into D''. As it is always possible to do this in the
+--+ case where D' == D'' it would be nice be able to do so effortlessly.
+--+ 
+--+ Oh, and yes, I do know about extend...
+

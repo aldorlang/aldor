@@ -1,0 +1,36 @@
+--* Received: from mailer.scri.fsu.edu by nags2.nag.co.uk (4.1/UK-2.1)
+--* 	id AA02276; Wed, 1 May 96 05:30:35 BST
+--* Received: from ibm4.scri.fsu.edu (ibm4.scri.fsu.edu [144.174.131.4]) by mailer.scri.fsu.edu (8.6.12/8.6.12) with SMTP id AAA03129; Wed, 1 May 1996 00:26:55 -0400
+--* From: Tony Kennedy <adk@scri.fsu.edu>
+--* Received: by ibm4.scri.fsu.edu (5.67b) id AA38306; Wed, 1 May 1996 00:25:09 -0400
+--* Date: Wed, 1 May 1996 00:25:09 -0400
+--* Message-Id: <199605010425.AA38306@ibm4.scri.fsu.edu>
+--* To: adk@scri.fsu.edu, ax-bugs, edwards@scri.fsu.edu
+--* Subject: [3] bug (and fix) in power$BinaryPowering
+
+--@ Fixed  by: <Who> <Date>
+--@ Tested by: <Name of new or existing file in test directory>
+--@ Summary:   <Description of real problem and the fix>
+
+-- Command line: none
+-- Version: 1.1.5
+-- Original bug file name: /dev/null
+
+--+ The following code fragment occurs in `bpower.as' in `libaxllib' for
+--+ AXIOM-XL version 1.1.5:
+--+ 
+--+ 	power(u: T, x: T, n: E): T == {
+--+ 		(n < 0) =>
+--+ 			if T has with { inv: % -> % } then
+--+ 				inv power(u, x, -n)
+--+ 			else
+--+ 				error "power:  negative exponent";
+--+ 
+--+ Now,  u * x^n = u * inv(x)^(-n) ~= inv(u * x^(-n)), so the fourth line
+--+ should be
+--+ 
+--+ 				power(u, inv x, -n)
+--+ 
+--+ rather than
+--+ 
+--+ 				inv power(u, x, -n)

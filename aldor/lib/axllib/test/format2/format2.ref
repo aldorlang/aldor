@@ -1,0 +1,26 @@
+DoubleFloat 34.0: 34
+DoubleFloat " 34.0": 34
+DoubleFloat "34.0": 34
+DoubleFloat "34.3": 34.3
+DoubleFloat - 34.0: -34
+DoubleFloat "- 34.0": 0
+DoubleFloat " - 34.0": 0
+Float 34.0: 34.0
+Float " 34.0": 34.0
+Float "34.0": 34.0
+Float "34.3": 34.3
+Float - 34.0: -34.0
+Float "- 34": 0.0
+Float " - 34": 0.0
+SingleInteger 24: 24
+SingleInteger " 24": 24
+SingleInteger "24 ": 24
+SingleInteger - 34: -34
+SingleInteger "- 34": 0
+SingleInteger " - 34": 0
+Integer 24: 24
+Integer " 24": 24
+Integer "24 ": 24
+Integer - 34: -34
+Integer "- 34": 0
+Integer " - 34": 0

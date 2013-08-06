@@ -1,0 +1,119 @@
+--* From youssef@mailer.scri.fsu.edu  Tue Jul 29 23:38:16 1997
+--* Received: from nagmx1.nag.co.uk by red.nag.co.uk via SMTP (920330.SGI/920502.SGI)
+--* 	for /home/red5/axiom/support/recvbug id AA11575; Tue, 29 Jul 97 23:38:16 +0100
+--* Received: from mailer.scri.fsu.edu (mailer.scri.fsu.edu [144.174.112.142])
+--*           by nagmx1.nag.co.uk (8.8.4/8.8.4) with ESMTP
+--* 	  id XAA02032 for <ax-bugs@nag.co.uk>; Tue, 29 Jul 1997 23:38:08 +0100 (BST)
+--* Received: from sp2-4.scri.fsu.edu (sp2-4.scri.fsu.edu [144.174.128.94]) by mailer.scri.fsu.edu (8.8.5/8.7.5) with SMTP id SAA32518; Tue, 29 Jul 1997 18:36:32 -0400 (EDT)
+--* From: Saul Youssef <youssef@scri.fsu.edu>
+--* Received: by sp2-4.scri.fsu.edu (5.67b) id AA16518; Tue, 29 Jul 1997 18:36:31 -0400
+--* Date: Tue, 29 Jul 1997 18:36:31 -0400
+--* Message-Id: <199707292236.AA16518@sp2-4.scri.fsu.edu>
+--* To: adk@scri.fsu.edu, ax-bugs@nag.co.uk, edwards@scri.fsu.edu,
+--*         youssef@scri.fsu.edu
+--* Subject: [2] Source code reveals internal compiler bug
+
+--@ Fixed  by: <Who> <Date>
+--@ Tested by: <Name of new or existing file in test directory>
+--@ Summary:   <Description of real problem and the fix>
+
+-- Command line: axiomxl -g interp data.as
+-- Version: 1.1.9a for AIX RS/6000
+-- Original bug file name: data.txt
+
+--+ --
+--+ --  Compiling this with
+--+ --     % axiomxl -g interp data.as
+--+ --
+--+ --   results in the error message
+--+ --
+--+ --  Compiler bug...Bug: gen0Syme:  syme unallocated by gen0Vars
+--+ --
+--+ --   Saul Youssef, July, 1997
+--+ --
+--+ #include "axllib"
+--+ #pile
+--+ 
+--+ SI ==> SingleInteger
+--+ import from SI
+--+ 
+--+ define PartialOrder:Category == BasicType with
+--+   <=: (%,%)          -> Boolean
+--+   >=: (%,%)          -> Boolean
+--+   <:  (%,%)          -> Boolean
+--+   >:  (%,%)          -> Boolean
+--+   
+--+   default (a:%)<(b:%):Boolean == a<=b and a~=b
+--+   default (a:%)>(b:%):Boolean == a>=b and a~=b
+--+ 
+--+ define AttributeCategory(S:BasicType):Category == PartialOrder with
+--+   bracket:   (String,S)     -> %
+--+   apply:     (%,'name')     -> String
+--+   apply:     (%,'value')    -> S
+--+   =:         (%,%)          -> Boolean
+--+   <<:        (TextWriter,%) -> TextWriter
+--+   
+--+ define AttributesCategory(S:BasicType,A:AttributeCategory(S)):Category == BasicType with
+--+   bracket:       Tuple A -> %
+--+   atts:                % -> Generator A
+--+   append:          (%,%) -> %
+--+   attnames:            % -> Array String  ++ attribute names
+--+   subatts:         (%,%) -> Boolean       ++ are the attributes of the first argument contained in the second?
+--+   apply:      (%,String) -> Boolean       ++ test for attribute
+--+   apply:      (%,String) -> A             ++ returns an attribute
+--+   #:                   % -> SI            ++ number of attributes
+--+ 
+--+ define DataCategory(S:BasicType,A:AttributeCategory(S),As:AttributesCategory(S,A)):Category == AttributesCategory(S,A) with
+--+   union:                     Tuple % -> %
+--+   bracket:                   Tuple % -> %
+--+   subsets:                         % -> Generator %
+--+   attributes:                      % -> As
+--+   allnames:                        % -> Array String  ++ Names of all attributes recursively in alphabetical order
+--+   apply:            (%,Array String) -> %
+--+   apply:       (%,Array String,%->%) -> %
+--+   apply: (%,Array String,%->Boolean) -> %
+--+   primitive?:                      % -> Boolean
+--+   null?:                           % -> Boolean
+--+   null:                           () -> %
+--+   sample:                         () -> % 
+--+   #:                               % -> SI
+--+ 
+--+ Attribute: AttributeCategory(V:SI) == add
+--+   Rep ==> Record(name: String, value: SI)
+--+   import from Rep
+--+   
+--+   bracket(s:String,v:SI):% == per [s,v]
+--+   apply(a:%,x:'name'):String == rep(a).name
+--+   apply(a:%,x:'value'):SI    == rep(a).value
+--+   (a:%)=(b:%):Boolean ==
+--+     hash(a) ~= hash(b) => false
+--+     a.name  ~= b.name  => false
+--+     a.value ~= b.value => false
+--+     true
+--+   <<(t:TextWriter,a:%):TextWriter == t << a.name << ":" << a.value
+--+   sample:SI == 0
+--+   <=(a:%,b:%):Boolean ==
+--+     rep(a).name ~= rep(b).name => false
+--+     rep(a).value <= rep(b).value
+--+   >=(a:%,b:%):Boolean ==
+--+     rep(a).name ~= rep(b).name => false
+--+     rep(a).value >= rep(b).value
+--+   sample:% == per ["sample",sample$SI]
+--+   
+--+   
+--+     
+--+     
+--+   
+--+     
+--+   
+--+   
+--
+--  Compiling this with
+--     % axiomxl -g interp data.as
+--
+--   results in the error message
+--
+--  Compiler bug...Bug: gen0Syme:  syme unallocated by gen0Vars
+--
+--   Saul Youssef, July, 1997
+--

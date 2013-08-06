@@ -1,0 +1,8 @@
+Start with some small numbers ...
+1000 base 2 =  8 (ought to be  8)
+F base 16   = 15 (ought to be 15)
+Z base 36   = 35 (ought to be 35)
+
+Now some really big numbers ...
+110011101011100111110001111010111000111 base  2 = 443941451207
+                     MARYHADALITTLELAMB base 36 = 6389026947067787160118459139
