@@ -1,4 +1,4 @@
-libraryname = aldor
+libraries = aldor
 
 check_PROGRAMS = bug1333
 

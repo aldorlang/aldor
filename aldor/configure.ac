@@ -103,6 +103,12 @@ AC_CONFIG_FILES(
    lib/aldor/test/Makefile
    lib/aldor/test/bug1332/Makefile
    lib/aldor/test/bug1333/Makefile
+   lib/aldor/test/bug1334/Makefile
+   lib/aldor/test/bug1337/Makefile
+   lib/aldor/test/bug1340/Makefile
+   lib/aldor/test/intfact/Makefile
+   lib/aldor/test/issue2/Makefile
+   lib/aldor/test/issue38/Makefile
 
    dnl Mathematical library.
    lib/algebra/Makefile
@@ -140,7 +146,15 @@ AC_CONFIG_FILES(
    lib/algebra/src/multpoly/multpolypkg/Makefile
    lib/algebra/src/multpoly/multpolytest/Makefile
    lib/algebra/src/test/Makefile
+
    lib/algebra/test/Makefile
+   lib/algebra/test/Trandom/Makefile
+   lib/algebra/test/bug1335/Makefile
+   lib/algebra/test/bug1341/Makefile
+   lib/algebra/test/bug1342/Makefile
+   lib/algebra/test/complex/Makefile
+   lib/algebra/test/mint/Makefile
+   lib/algebra/test/random/Makefile
 
    dnl AxiomXL base library.
    lib/axllib/Makefile

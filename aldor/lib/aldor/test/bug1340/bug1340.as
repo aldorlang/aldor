@@ -45,8 +45,6 @@
 import from DoubleFloat;
 
 main():()=={
-	stdout << 1.0;
+	stdout << 1.0 << newline;
 }
 main();
-
-
