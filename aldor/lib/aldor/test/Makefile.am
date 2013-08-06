@@ -6,8 +6,7 @@ SUBDIRS =	\
 	bug1340	\
 	intfact	\
 	issue2	\
-	issue38	\
-	.
+	issue38
 
 TESTS =			\
 	bug1332/bug1332	\
@@ -21,14 +20,3 @@ TESTS =			\
 
 XFAIL_TESTS =		\
 	issue2/issue2
-
-check: $(TESTS:=.out)
-	@for T in $(TESTS); do					\
-	  if ! diff $$T.out $(srcdir)/$$T.ref > $$T.diff; then	\
-	    echo "DIFF: $$T";					\
-	  fi;							\
-	done
-
-# Cut off first three lines.
-%.out: %.log
-	tail -n`expr \`wc -l < $<\` - 3` $< > $@

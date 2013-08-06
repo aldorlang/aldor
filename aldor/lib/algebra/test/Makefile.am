@@ -4,8 +4,7 @@ SUBDIRS =		\
 	bug1342		\
 	complex		\
 	mint		\
-	random		\
-	.
+	random
 
 TESTS =				\
 	Trandom/Trandom		\
