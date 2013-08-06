@@ -6,18 +6,18 @@
  *
  ****************************************************************************/
 
+#include "archive.h"
 #include "axlobs.h"
+#include "comsg.h"
 #include "debug.h"
 #include "file.h"
+#include "lib.h"
 #include "opsys.h"
 #include "store.h"
-#include "util.h"
-#include "syme.h"
-#include "archive.h"
-#include "lib.h"
-#include "comsg.h"
 #include "strops.h"
+#include "syme.h"
 #include "table.h"
+#include "util.h"
 
 Bool	arDebug		= false;
 #define arDEBUG(s)	DEBUG_IF(arDebug, s)

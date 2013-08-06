@@ -8172,7 +8172,7 @@ extern TfCond tfFloatConditions(Stab stab, TForm tf)
 extern 
 TfCond tfConditions(TForm tf)
 {
-	tf = tfFollow(tf);
+	tfFollow(tf);
 	return tf->conditions;
 }
 

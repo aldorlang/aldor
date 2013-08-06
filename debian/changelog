@@ -1,3 +1,10 @@
+aldor (1.2.0+20130806) precise; urgency=low
+
+  * Build libraries with -Wcheck.
+  * Fix min$MachineInteger.
+
+ -- Pippijn van Steenhoven <pip88nl@gmail.com>  Tue, 06 Aug 2013 02:14:08 +0200
+
 aldor (1.2.0+20130803) precise; urgency=low
 
   * Improve FOAM interpreter and runtime.

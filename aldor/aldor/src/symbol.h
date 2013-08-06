@@ -19,14 +19,12 @@
 #ifndef _SYMBOL_H_
 #define _SYMBOL_H_
 
-#include "cport.h"
+#include "axlobs.h"
 
 struct symbol {
 	MostAlignedType *info;	  /* Used as desired, initialized to 0 */
 	String	str;
 };
-
-typedef struct symbol	*Symbol;
 
 # define	SYM_LOOK	0
 # define	SYM_ALLOC	1	/* Alloc if not there. Else 0. */

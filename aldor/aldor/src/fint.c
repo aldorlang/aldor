@@ -6,6 +6,7 @@
  *
  ****************************************************************************/
 
+#define _POSIX_SOURCE /* fileno */
 
 #include "axlobs.h"
 #include "cmdline.h"

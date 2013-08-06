@@ -9,17 +9,17 @@
 #ifndef _BIGINT_H_
 #define _BIGINT_H_
 
-#include "cport.h"
+#include "axlgen.h"
 
 typedef UNotAsLong 	BIntS;	/* Unsigned integer type for BInt digits. */
 				/* s/b the second largest integer type. */
 
-typedef struct bint {
+struct bint {
 	Bool	isNeg;  	/* Sign of number. Is it negative?   */
 	Length	placea;	     	/* No. of slots allocated for placev */
 	Length	placec;	     	/* No. of slots used in placev       */
 	BIntS	placev[NARY];	/* Digits in radix representation    */
-} *BInt;
+};
 
 /*
  * Error handling

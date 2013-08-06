@@ -51,6 +51,8 @@
  * penalty of a 48K table in static data.
  */
 
+#define _BSD_SOURCE /* strncasecmp */
+
 #include "opsys.h"
 #include "store.h"
 

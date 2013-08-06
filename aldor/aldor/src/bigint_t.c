@@ -85,7 +85,10 @@ testBI_Bullet(int ix)
 {
 	long	l = testBI[ix].n;
 
-	printf((l == ReallyBig) ? " long: " : " %ld: ", l);
+	if (l == ReallyBig)
+		printf(" long: ");
+	else
+		printf(" %ld: ", l);
 }
 
 void

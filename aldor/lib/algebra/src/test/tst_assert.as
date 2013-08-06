@@ -70,3 +70,6 @@ Assert(T: with): with {
     }
 
 }
+
+import from MachineInteger, RandomNumberGenerator;
+seed(randomGenerator(0), 1);

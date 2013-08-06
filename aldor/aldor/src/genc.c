@@ -2351,7 +2351,6 @@ gc0Prog(Foam ref, Foam foam)
 	gcvLvl	   = gcvLvl+1;
 	gcvPar	   = params;
 	gcvLoc	   = locals;
-	gcvLexStk  = gcvLexStk;
 	gcvLocFluids = fluids;
 	gcvLFmtStk = foam->foamProg.levels;
 	gcvLexStk  = listCons(Foam)(lexicals, gcvLexStk);

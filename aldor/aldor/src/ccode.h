@@ -9,7 +9,7 @@
 #ifndef _CCODE_H_
 #define _CCODE_H_
 
-#include "cport.h"
+#include "axlgen.h"
 
 #include "srcpos.h"
 #include "strops.h"
@@ -597,8 +597,6 @@ typedef Enum(ccodeTag) CCodeTag;
  * :: Structure Declarations
  *
  *****************************************************************************/
-
-typedef union ccode     *CCode;
 
 struct ccoHdr {
         BPack(CCodeTag) tag;

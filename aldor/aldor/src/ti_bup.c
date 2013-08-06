@@ -2446,7 +2446,7 @@ tibupCollect(Stab stab, AbSyn absyn, TForm type)
 		TForm	t = tpossELT(tit);
 		TForm   retType;
 		SatMask result;
-		t = tfFollow(t);
+		tfFollow(t);
 		if (tfIsMulti(t)) t = tfCrossFrMulti(t);
 		retType = tfGenerator(t);
 		result = tfSat(tfSatBupMask(), retType, type);
