@@ -1,0 +1,33 @@
+aldorsrcdir	:= $(top_srcdir)/aldor/src
+aldorexedir	:= $(top_builddir)/aldor/src
+aldorlibdir	:= $(top_builddir)/aldor/lib
+
+libraryincdir	:= $(top_srcdir)/lib/$(libraryname)/include
+librarylibdir	:= $(top_builddir)/lib/$(libraryname)/src
+
+foamlibdir	:= $(top_builddir)/aldor/lib/libfoam
+
+ALDOR		:= $(aldorexedir)/aldor$(EXEEXT)
+
+.as.c:
+%.c: %.as $(ALDOR)
+	$(ALDOR)				\
+	  -Nfile=$(aldorsrcdir)/aldor.conf	\
+	  -I $(libraryincdir)			\
+	  -Y $(librarylibdir)			\
+	  $(ALFLAGS)				\
+	  -Fc=$@				\
+	  $<
+
+%main.c: %.as $(ALDOR)
+	$(ALDOR)				\
+	  -Nfile=$(aldorsrcdir)/aldor.conf	\
+	  -I $(libraryincdir)			\
+	  -Y $(librarylibdir)			\
+	  $(ALFLAGS)				\
+	  -Fmain				\
+	  $<
+	mv aldormain.c $@
+
+AM_CPPFLAGS = -I$(aldorsrcdir)
+LDADD = -L$(foamlibdir) -L$(librarylibdir) -l$(libraryname) -lfoam -lm
