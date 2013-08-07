@@ -86,7 +86,7 @@ axextend_deps := lang stub basecliq minimach symbol seg integer vector \
 
 aldorexedir=$(abs_top_builddir)/aldor/src
 
-aldoropt := -Q8 -Qinline-all
+aldoropt := -Q8 -Qinline-all -Wcheck -Wno-fatal
 define aldor_args
 	-I$(axlincdir) \
 	-I$(srcdir)/.. $(aldoropt) $(aldordebug_$*) \
