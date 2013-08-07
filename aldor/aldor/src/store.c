@@ -7,7 +7,11 @@
  ****************************************************************************/
 
 #if __APPLE__
-#define STO_USE_ONCE 1
+# define STO_USE_ONCE 1
+#endif
+
+#ifndef FOAM_RTS
+# define STO_USE_MALLOC
 #endif
 
 /*
@@ -4891,14 +4895,14 @@ stoIsPointer(Pointer p)
 
 void stoGc			(void)		{ }
 void stoTune			(void)		{ }
-int  stoShowArgs		(char *detail)	{ }
+int  stoShowArgs		(char *detail)	{ return 0; }
 void stoShow			(void)		{ }
 void stoShowDetail		(int x)		{ }
 void stoAudit			(void)		{ }
 void stoRegister		(StoInfo info)	{ }
 void stoSetAldorTracer		(int code, Pointer clos) {}
 void stoSetTracer		(int code, Pointer fun) {}
-int  stoMarkObject		(Pointer p)	{ }
+int  stoMarkObject		(Pointer p)	{ return 0; }
 int  stoWritablePointer		(Pointer p)	{ return POINTER_IS_UNKNOWN; }
 int  stoCtl			(int cmd, ...)	{ return 0; }
 
