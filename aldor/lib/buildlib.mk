@@ -165,7 +165,8 @@ all: Makefile _sublib.al		\
 
 ifneq ($(javalibrary),)
 $(addsuffix .java, $(javalibrary)): %.java: %.fm $(aldorexedir)/javagen
-	$(AM_V_FOAMJ)$(aldorexedir)/javagen $< > $@
+	$(AM_V_FOAMJ)$(DBG)	\
+	$(aldorexedir)/javagen $< > $@
 
 $(addsuffix .class, $(javalibrary)): %.class: $(libraryname).classlib
 $(libraryname).classlib: $(addsuffix .java, $(javalibrary))
