@@ -164,6 +164,7 @@ JavaCodePContext
 jcoPContextNew(OStream stream, Bool closeStream) 
 {
 	JavaCodePContext ctxt = (JavaCodePContext) stoAlloc(OB_JCode, sizeof(*ctxt));
+	ctxt->cpos = 0;
 	ctxt->line = 0;
 	ctxt->indent = 0;
 	ctxt->stream = stream;
