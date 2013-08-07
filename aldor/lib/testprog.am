@@ -24,11 +24,11 @@ am__v_ALDOR_0 = @echo "  ALDOR " $@;
 	$(AM_V_ALDOR)$(ALDOR) $(ALDORFLAGS) -Fc=$@ $<
 
 %main.c: %.as $(ALDOR)
-	$(AM_V_ALDOR)set -e;			\
-	mkdir $*_tmp;				\
-	(cd $*_tmp;				\
-	$(ALDOR) $(ALDORFLAGS) -Fmain $<);	\
-	mv $*_tmp/aldormain.c $@;		\
+	$(AM_V_ALDOR)set -e;				\
+	mkdir $*_tmp;					\
+	(cd $*_tmp;					\
+	$(ALDOR) $(ALDORFLAGS) -Fmain $(abspath $<));	\
+	mv $*_tmp/aldormain.c $@;			\
 	rmdir $*_tmp
 
 AM_CPPFLAGS = -I$(aldorsrcdir)
