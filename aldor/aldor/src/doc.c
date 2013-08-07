@@ -74,7 +74,7 @@ docNewFrList(TokenList tl)
 	doc->hash	= strHash(doc->corpus);
 
 	DEBUG({
-		printf("docNewFrList:  cc = %d; strlen = %d\n",
+		fprintf(dbOut, "docNewFrList:  cc = %d; strlen = %d\n",
 		       (int) cc, (int) strLength(doc->corpus));
 	});
 

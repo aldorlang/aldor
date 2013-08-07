@@ -119,40 +119,40 @@ ftnTypeFrCatTForm(AbSyn sefo, TForm tf)
 
 	/* Some debugging information. */
 	fortranTypesDEBUG({
-		(void)printf("- ftnTypeFrCatTForm: %s\n", abPretty(sefo));
+		(void)fprintf(dbOut, "- ftnTypeFrCatTForm: %s\n", abPretty(sefo));
 
 		if (XtfIsValid(tfFtnBool) && tfSatisfies(tf,tfFtnBool))
-			(void)printf("     has %s\n", symString(ssymFtnBool));
+			(void)fprintf(dbOut, "     has %s\n", symString(ssymFtnBool));
 
 		if (XtfIsValid(tfFtnChar) && tfSatisfies(tf,tfFtnChar))
-			(void)printf("     has %s\n", symString(ssymFtnChar));
+			(void)fprintf(dbOut, "     has %s\n", symString(ssymFtnChar));
 
 		if (XtfIsValid(tfFtnXStr) && tfSatisfies(tf,tfFtnXStr))
-			(void)printf("     has %s\n", symString(ssymFtnXStr));
+			(void)fprintf(dbOut, "     has %s\n", symString(ssymFtnXStr));
 
 		if (XtfIsValid(tfFtnFSA) && tfSatisfies(tf,tfFtnFSA))
-			(void)printf("     has %s\n", symString(ssymFtnFSA));
+			(void)fprintf(dbOut, "     has %s\n", symString(ssymFtnFSA));
 
 		if (XtfIsValid(tfFtnFStr) && tfSatisfies(tf,tfFtnFStr))
-			(void)printf("     has %s\n", symString(ssymFtnFStr));
+			(void)fprintf(dbOut, "     has %s\n", symString(ssymFtnFStr));
 
 		if (XtfIsValid(tfFtnSInt) && tfSatisfies(tf,tfFtnSInt))
-			(void)printf("     has %s\n", symString(ssymFtnSInt));
+			(void)fprintf(dbOut, "     has %s\n", symString(ssymFtnSInt));
 
 		if (XtfIsValid(tfFtnSFlo) && tfSatisfies(tf,tfFtnSFlo))
-			(void)printf("     has %s\n", symString(ssymFtnSFlo));
+			(void)fprintf(dbOut, "     has %s\n", symString(ssymFtnSFlo));
 
 		if (XtfIsValid(tfFtnDFlo) && tfSatisfies(tf,tfFtnDFlo))
-			(void)printf("     has %s\n", symString(ssymFtnDFlo));
+			(void)fprintf(dbOut, "     has %s\n", symString(ssymFtnDFlo));
 
 		if (XtfIsValid(tfFtnSCpx) && tfSatisfies(tf,tfFtnSCpx))
-			(void)printf("     has %s\n", symString(ssymFtnSCpx));
+			(void)fprintf(dbOut, "     has %s\n", symString(ssymFtnSCpx));
 
 		if (XtfIsValid(tfFtnDCpx) && tfSatisfies(tf,tfFtnDCpx))
-			(void)printf("     has %s\n", symString(ssymFtnDCpx));
+			(void)fprintf(dbOut, "     has %s\n", symString(ssymFtnDCpx));
 
 		if (XtfIsValid(tfFtnArry) && tfSatisfies(tf,tfFtnArry))
-			(void)printf("     has %s\n", symString(ssymFtnArry));
+			(void)fprintf(dbOut, "     has %s\n", symString(ssymFtnArry));
 
 		fnewline(dbOut);
 	});

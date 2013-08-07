@@ -1566,44 +1566,44 @@ void
 symeShowFully(Syme s)
 {
 	symePrintDb(s);
-	printf("   %s %-3s         %s %-3s\n",
+	fprintf(dbOut, "   %s %-3s         %s %-3s\n",
 		"lazy ...............", symeIsLazy(s) ? "yes" : "no",
 		"special ............", symeIsSpecial(s) ? "yes" : "no");
-	printf("   %s %-3s         %s %-3s\n",
+	fprintf(dbOut, "   %s %-3s         %s %-3s\n",
 		"used ...............", symeUsed(s) ? "yes" : "no",
 		"deeply .............", symeUsedDeeply(s) ? "yes" : "no");
-	printf("   %s %-3s         %s %-3s\n",
+	fprintf(dbOut, "   %s %-3s         %s %-3s\n",
 		"init ...............", symeImportInit(s) ? "yes" : "no",
 		"trigger ............", symeHasTrigger(s) ? "yes" : "no");
-	printf("   %s %-3s         %s %-3s\n",
+	fprintf(dbOut, "   %s %-3s         %s %-3s\n",
 		"unconditional ......", symeUnconditional(s) ? "yes" : "no",
 		"lazy cond ..........", symeCondIsLazy(s) ? "yes" : "no");
-	printf("   %s %-3s         %s %-3s\n",
+	fprintf(dbOut, "   %s %-3s         %s %-3s\n",
 		"inlinable ..........", symeInlinable(s) ? "yes" : "no",
 		"has defaults .......", symeHasDefault(s) ? "yes" : "no");
-	printf("   %s %-3s         %s %-3s\n",
+	fprintf(dbOut, "   %s %-3s         %s %-3s\n",
 		"marked .............", symeMarkBit(s) ? "yes" : "no",
 		"const lib ..........", symeConstLib(s) ? "yes" : "no");
-	printf("   %s %-3s         %s %-3s\n",
+	fprintf(dbOut, "   %s %-3s         %s %-3s\n",
 		"top-level ..........", symeIsTop(s) ? "yes" : "no",
 		"pop-conds ..........", symePopConds(s) ? "yes" : "no");
-	printf("   %s %-3s         %s %-3s\n",
+	fprintf(dbOut, "   %s %-3s         %s %-3s\n",
 		"full twins .........", symeFullTwin(s) ? "yes" : "no",
 		"same libs ..........", symeSameLibs(s) ? "yes" : "no");
-	printf("   %s %-5d       %s %-5ld\n",
+	fprintf(dbOut, "   %s %-5d       %s %-5ld\n",
 		"var index ..........", symeVarIndex(s),
 		"const num ..........", symeConstNum(s));
-	printf("   %s %-9d   %s %-9d\n",
+	fprintf(dbOut, "   %s %-9d   %s %-9d\n",
 		"defn num ...........", symeDefnNum(s),
 		"hash num ...........", symeHashNum(s));
-	printf("   %s %-5d       %s %-5d\n",
+	fprintf(dbOut, "   %s %-5d       %s %-5d\n",
 		"lib level ..........", symeLibLevel(s),
 		"def level ..........", ((UShort)symeGetLocal(s, SYFI_DefLevel)));
-	printf("   %s %-9lx   %s %-9ld\n",
+	fprintf(dbOut, "   %s %-9lx   %s %-9ld\n",
 		"depths .............", (unsigned long) symeDepths(s),
 		"use depth ..........", (long) symeUsedDepth(s));
 
-	printf("   %s %-9s   %s %s\n",
+	fprintf(dbOut, "   %s %-9s   %s %s\n",
 		"foam kind ..........", (symeFoamKind(s) < FOAM_LIMIT) ?
 			foamInfo(symeFoamKind(s)).str : "(unset)",
 		"extension ..........", symeExtension(s) ? "yes" : "no");

@@ -3827,16 +3827,16 @@ scobindReconcileDecl(Stab stab, AbSynTag context, Symbol sym, IdInfo idInfo,
 		else
 			tf = scobindTfSyntaxFrAbSyn(stab,declInfo->type);
 
-		scoFluidDEBUG(printf("Adding fluid: %s", symString(sym)));
+		scoFluidDEBUG(fprintf(dbOut, "Adding fluid: %s", symString(sym)));
 		scoFluidDEBUG(tfPrintDb(tf));
 
 		if (!scobindCheckOuterUseOfFluid(declInfo->id, declInfo->type)) {
-			scoFluidDEBUG(printf(" New\n"));
+			scoFluidDEBUG(fprintf(dbOut, " New\n"));
 			scobindAddMeaning(declInfo->id, sym, stab, SYME_Fluid, 
 					  tf, (AInt) NULL);
 		}
 		else
-			scoFluidDEBUG(printf(" See'd it before.\n"));
+			scoFluidDEBUG(fprintf(dbOut, " See'd it before.\n"));
 		return;
 	}
 

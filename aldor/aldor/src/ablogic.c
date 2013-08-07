@@ -471,7 +471,7 @@ ablogTestImplies(void *clos, DNF_Atom a, DNF_Atom b)
 	know = ablogFrAtom(a);
 	test = ablogFrAtom(b);
 
-	ablogDEBUG(printf("Implies test\n");
+	ablogDEBUG(fprintf(dbOut, "Implies test\n");
 		   abPrintDb(know);
 		   abPrintDb(test);
 		   );

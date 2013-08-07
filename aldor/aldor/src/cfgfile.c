@@ -69,7 +69,7 @@ cfgLookupList(char *string, ConfigItemList lst)
 {
 	ConfigItemList	result = listNil(ConfigItem);
 
-	cfgDEBUG(printf("Getting key list: %s\n", string));
+	cfgDEBUG(fprintf(dbOut, "Getting key list: %s\n", string));
 
 	while (lst != listNil(ConfigItem)) {
 		if (strEqual(string, cfgName(car(lst))))
@@ -82,7 +82,7 @@ cfgLookupList(char *string, ConfigItemList lst)
 ConfigItem
 cfgLookup(char *string, ConfigItemList lst)
 {
-	cfgDEBUG(printf("Getting key: %s\n", string));
+	cfgDEBUG(fprintf(dbOut, "Getting key: %s\n", string));
 
 	while (lst != listNil(ConfigItem)) {
 		if (strEqual(string, cfgName(car(lst))))
