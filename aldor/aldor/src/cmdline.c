@@ -1187,6 +1187,12 @@ cmdDDebug(String dbName, Bool sense)
 		return 0;
 	}
 
+	if (strAEqual(dbName, "all")) {
+		for (i = 0; dbVarInfo[i].name; i++)
+			*dbVarInfo[i].pvar = sense;
+		return 0;
+	}
+
 	for (i = 0; dbVarInfo[i].name; i++) {
 		if (strAEqual(dbName, dbVarInfo[i].name)) {
 			*(dbVarInfo[i].pvar) = sense;
