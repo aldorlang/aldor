@@ -6,4 +6,4 @@ aldorug.pdf:
 
 clean:
 	-rm aldorug.aux aldorug.idx aldorug.ilg aldorug.ind aldorug.lof
-	-rm aldorug.out aldorug.pdf aldorug.toc
+	-rm aldorug.out aldorug.pdf aldorug.toc aldorug.dvi
