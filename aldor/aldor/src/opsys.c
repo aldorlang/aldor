@@ -672,9 +672,9 @@ FILE * osStderr;
 void
 osSetStreams(FILE * sstdin, FILE * sstdout, FILE * sstderr)
 {
-	osStdout = stdout;
-	osStdin  = stdin;
-	osStderr = stderr;
+	osStdout = sstdout;
+	osStdin  = sstdin;
+	osStderr = sstderr;
 }
 
 int  
