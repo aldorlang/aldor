@@ -1,11 +1,11 @@
-aldorsrcdir	:= $(top_srcdir)/aldor/src
-aldorexedir	:= $(top_builddir)/aldor/src
-aldorlibdir	:= $(top_builddir)/aldor/lib
+aldorsrcdir	:= $(abs_top_srcdir)/aldor/src
+aldorexedir	:= $(abs_top_builddir)/aldor/src
+aldorlibdir	:= $(abs_top_builddir)/aldor/lib
 
-libraryincdirs	:= $(foreach L,$(libraries),$(top_srcdir)/lib/$L/include)
-librarylibdirs	:= $(foreach L,$(libraries),$(top_builddir)/lib/$L/src)
+libraryincdirs	:= $(foreach L,$(libraries),$(abs_top_srcdir)/lib/$L/include)
+librarylibdirs	:= $(foreach L,$(libraries),$(abs_top_builddir)/lib/$L/src)
 
-foamlibdir	:= $(top_builddir)/aldor/lib/libfoam
+foamlibdir	:= $(abs_top_builddir)/aldor/lib/libfoam
 
 ALDOR		:= $(aldorexedir)/aldor$(EXEEXT)
 ALDORFLAGS	:=				\
