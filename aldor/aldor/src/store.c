@@ -10,7 +10,7 @@
 # define STO_USE_ONCE 1
 #endif
 
-#ifndef FOAM_RTS
+#if 0 && !defined(FOAM_RTS)
 # define STO_USE_MALLOC
 #endif
 
