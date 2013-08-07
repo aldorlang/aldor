@@ -18,7 +18,6 @@
 #   define DEBUG_IF(v,e)                Nothing
 #   define DEBUG_CONFIG			""
 #   define DEBUG_DECL(s)		Nothing
-#   define debugStream			stdout
 
 #else
     extern Bool dbFlag;
@@ -28,8 +27,6 @@
 #   define DEBUG_IF(v,e)                Statement(if (v) {e;})
 #   define DEBUG_CONFIG			"(debug version)"
 #   define DEBUG_DECL(s)		s
-#   define debugStream			dbOut
-
 
 #endif
 
