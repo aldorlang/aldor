@@ -198,7 +198,7 @@ emMergeDefs(Foam defs)
 /* #if 0*/ /* enable this if you want to see in-out foam when debugging */
 		emergeDEBUG({  
 			if(emDefNo==emDebugDefNo) {
-				printf("Prog--index%d--count%d<<\n",emDefNo,emCount); 
+				fprintf(dbOut, "Prog--index%d--count%d<<\n",emDefNo,emCount); 
 				foamWrSExpr(dbOut, def,SXRW_Default);
 			}
 		});
@@ -211,7 +211,7 @@ emMergeDefs(Foam defs)
 /* #if 0*/ /* enable this if you want to see in-out foam when debugging */
 		emergeDEBUG({
 			if(emDefNo==emDebugDefNo) {
-				printf("Prog--index%d--count%d>>\n",emDefNo,emCount); 
+				fprintf(dbOut, "Prog--index%d--count%d>>\n",emDefNo,emCount); 
 				foamWrSExpr(dbOut, def,SXRW_Default);
 			}
 		});
@@ -252,7 +252,7 @@ emMergeProg(Foam prog)
 
 #if 0 /* enable this if you want to see in-out sets when debugging */
         emergeDEBUG({
-		fprintf(stderr,"Pass:%2d Prog:%2d #locals:(%3d -> %3d)\n",
+		fprintf(dbOut, "Pass:%2d Prog:%2d #locals:(%3d -> %3d)\n",
 			emCount, emDefNo,emOrigNumLocals, emNumLocals);
 	})
 #endif 
@@ -1297,9 +1297,9 @@ emSetParent(Foam child, Foam parent)
 	/* Strip aliases out where poss */
 	if (parent != newParent) {
 	        emergeDEBUG({
-			printf("child:"); foamWrSExpr(dbOut, child,SXRW_Default);
-			printf("parent:"); foamWrSExpr(dbOut, parent,SXRW_Default);
-			printf("newParent:"); foamWrSExpr(dbOut, newParent,SXRW_Default);
+			fprintf(dbOut, "child:"); foamWrSExpr(dbOut, child,SXRW_Default);
+			fprintf(dbOut, "parent:"); foamWrSExpr(dbOut, parent,SXRW_Default);
+			fprintf(dbOut, "newParent:"); foamWrSExpr(dbOut, newParent,SXRW_Default);
 		});
 		emChanged = true;
 	}
@@ -1368,7 +1368,7 @@ local void
 emNormaliseUsage()
 { 
 	int i;
-        emergeDEBUG({ fprintf(stderr,"--------------------\n");})
+        emergeDEBUG({ fprintf(dbOut, "--------------------\n");})
 		for (i = 0 ; i < emOrigNumLocals ;i++){
 			EmUsage use = emUsageFromLocalIndex((long)i);
 				
@@ -1382,7 +1382,7 @@ emNormaliseUsage()
 					use->used = EM_AliasNonEsc;
 					assert(use->remap);
 					emergeDEBUG ({
-						fprintf(stderr, "%3ld is aliased to %3ld\n",
+						fprintf(dbOut, "%3ld is aliased to %3ld\n",
 							emIndexFromUsage(use), emIndexFromUsage(use->link));
 					})
 						}
@@ -1410,7 +1410,7 @@ emUsedTagsChanged(EmUsageState *arr)
 	for (i = 0 ; i < (emOrigNumLocals + 1) ;i++){
 		if (arr[i] != emLocalUsage[i].used) {
 			emergeDEBUG({
-				fprintf(stderr,"emLocalUsage[%3d].used has changed!\n",i);
+				fprintf(dbOut, "emLocalUsage[%3d].used has changed!\n",i);
 			})
 			return true;
 		}

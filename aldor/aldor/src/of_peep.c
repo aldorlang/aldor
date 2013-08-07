@@ -153,7 +153,7 @@ peepAux(Foam *arg)
 		peepDEBUG(if (subChanged) {
 			sxiWrite(dbOut, s, SXRW_MixedCase);
 			foamWrSExpr(dbOut, newArg, SXRW_MixedCase);
-			printf("=====\n");
+			fprintf(dbOut, "=====\n");
 			sxiFree(s);			
 		});	
 		*arg = newArg;

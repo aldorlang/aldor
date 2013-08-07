@@ -623,8 +623,8 @@ symeTransferImplInfo(Syme to, Syme from)
 	symeSetConstInfo(to, symeConstInfo(from));
 	symeSetConstLib(to, symeConstLib(from));
 
-	symeDEBUG(aprintf("Transfer: %d %d %d [%pSyme --> %pSyme]\n", symeHashNum(from), symeDefnNum(from),
-			  symeConstNum(from), from, to));
+	symeDEBUG(afprintf(dbOut, "Transfer: %d %d %d [%pSyme --> %pSyme]\n", symeHashNum(from), symeDefnNum(from),
+			   symeConstNum(from), from, to));
 
 	symeMergeImpl(to, symeImpl(from));
 }
@@ -650,7 +650,7 @@ symeMergeImpl(Syme syme, SImpl impl)
 	if (oimpl == NULL && impl == NULL)
 		return impl;
 	
-	symeDEBUG(printf("(Merging:\n");
+	symeDEBUG(fprintf(dbOut, "(Merging:\n");
 		  implPrintDb(oimpl);
 		  implPrintDb(impl);
 		  );
@@ -731,7 +731,7 @@ symeMergeImpl(Syme syme, SImpl impl)
 	if (!newImpl)
 		bug("%s: Unhandled Merge #3", "symeMergeImpl");
 	
-	symeDEBUG(implPrintDb(newImpl); printf(")\n"););
+	symeDEBUG(implPrintDb(newImpl); fprintf(dbOut, ")\n"););
 	if (newImpl != oimpl)
 		symeSetImpl(syme, newImpl);
 	return impl;
@@ -744,8 +744,8 @@ symeImplAddConst(Syme syme, AbLogic condition, int defn)
 	SImpl impl;
 	
 	symeDEBUG(
-		  printf("(Adding implementation (%d) for: %s\n", 
-			 defn, symeString(syme));
+		  fprintf(dbOut, "(Adding implementation (%d) for: %s\n", 
+			  defn, symeString(syme));
 		  tfPrintDb(symeType(syme));
 		  ablogPrint(dbOut, condition);
 		  );
@@ -759,7 +759,7 @@ symeImplAddConst(Syme syme, AbLogic condition, int defn)
 
 	implFree(impl);
 
-	symeDEBUG(printf(")\n");
+	symeDEBUG(fprintf(dbOut, ")\n");
 		  );
 }
 
@@ -779,14 +779,14 @@ symeImplAddInherit(Syme syme, TForm tf, Syme parent)
 	 */
 	if (tfIsNone(tf)) return;
 	
-	symeDEBUG(printf("(Adding inherited implementation for: %s", symeString(syme));
+	symeDEBUG(fprintf(dbOut, "(Adding inherited implementation for: %s", symeString(syme));
 		  tfPrintDb(symeType(syme));
 		  tfPrintDb(tf);
 		  );
 	impl = implNewInherit(tf);
 
 	symeMergeImpl(syme, impl);
-	symeDEBUG(printf(")\n"););
+	symeDEBUG(fprintf(dbOut, ")\n"););
 	
 }
 

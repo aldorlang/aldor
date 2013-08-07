@@ -223,7 +223,7 @@ kpProg(Foam prog)
 	int 	  nbits;
 	
 	kpDEBUG({
-		printf("--> Before:\n");
+		fprintf(dbOut, "--> Before:\n");
 		foamWrSExpr(dbOut, prog,int0);
 	});
 
@@ -243,7 +243,7 @@ kpProg(Foam prog)
 	kpPostprocessProg(ret);
 
 	kpDEBUG({
-		printf("<-- After:\n");
+		fprintf(dbOut, "<-- After:\n");
 		foamWrSExpr(dbOut, ret,int0);
 		fnewline(dbOut);
 	});

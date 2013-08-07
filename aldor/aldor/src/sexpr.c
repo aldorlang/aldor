@@ -1877,10 +1877,12 @@ int sxiWrite0(FILE *outf, SExpr s)
 {
 	int cc = 0;
 
+#if 0 /* This breaks the format of sexprs. */
 	sexprDEBUG( {
 				SrcPos spos = sxiPos(s);
 				fprintf(outf,"{%d.%d}", (int) sposLine(spos), (int) sposChar(spos));
 			});
+#endif
 
 	/*
 	 * Things which are not displayed using #nn#, even if shared.

@@ -4569,12 +4569,13 @@ gen0SymeGeneric(Syme syme)
 	}
 
 	genfDEBUG({
-		printf("GenSyme: %s \t\tstablev: %lu stabLamLev:%lu symeDefLev: %lu symeDefLamLev: %lu ",
-		symeString(syme),
-		stabLevelNo(gen0State->stab), 
-		stabLambdaLevelNo(gen0State->stab), 
-		symeDefLevelNo(syme),
-		symeDefLambdaLevelNo(syme));});
+		fprintf(dbOut, "GenSyme: %s \t\tstablev: %lu stabLamLev:%lu symeDefLev: %lu symeDefLamLev: %lu ",
+			symeString(syme),
+			!gen0State->stab ? 0 : stabLevelNo(gen0State->stab), 
+			!gen0State->stab ? 0 : stabLambdaLevelNo(gen0State->stab), 
+			symeDefLevelNo(syme),
+			symeDefLambdaLevelNo(syme));
+	});
 
 	if (!gen0State->stab)
 		level = 0;
@@ -4582,13 +4583,13 @@ gen0SymeGeneric(Syme syme)
 		level = stabLambdaLevelNo(gen0State->stab) -
 			symeDefLambdaLevelNo(syme);
 		if (gen0IsInnerVar(syme, level)) {
-			genfDEBUG({printf("Inner\n");});
+			genfDEBUG({fprintf(dbOut, "Inner\n");});
 			return gen0InnerSyme(syme, level);
 		}
 	}
 
 	level = gen0FoamLevel(symeDefLevelNo(syme));
-	genfDEBUG({printf("std: Lev:%d\n", (int)level);});
+	genfDEBUG({fprintf(dbOut, "std: Lev:%d\n", (int)level);});
 	gen0UseStackedFormat(level);
 	return foamNewLex(level, gen0VarIndex(syme));
 }

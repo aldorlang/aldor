@@ -1531,10 +1531,12 @@ foamToSExpr0(Foam foam)
 	 * Cons the subexpressions into a list.
 	 */
 	sx    = sxNil;
+#if 0 /* This breaks the format of FOAM sexprs. */
 	foamSposDEBUG(
 		if (foamPos(foam) != sposNone)
 			sx = sxCons(sxiFrInteger(sposLine(foamPos(foam))), sx);
 	);
+#endif
 	argf  = foamInfo(foamTag(foam)).argf;
 	sx    = sxCons(foamSExpr(foamTag(foam)), sx);
 

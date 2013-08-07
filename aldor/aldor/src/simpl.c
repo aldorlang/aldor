@@ -219,7 +219,7 @@ implEvaluate(SImpl impl, AbLogic cond)
 	if (!impl)
 		return impl;
 
-	implDEBUG(printf("(ImplEvaluate:\n");
+	implDEBUG(fprintf(dbOut, "(ImplEvaluate:\n");
 		  implPrintDb(impl);
 		  ablogPrintDb(cond);
 		  );
@@ -252,7 +252,7 @@ implEvaluate(SImpl impl, AbLogic cond)
 	}
 	implDEBUG(
 		  implPrintDb(newImpl);
-		  printf(")\n");
+		  fprintf(dbOut, ")\n");
 		  );
 	return newImpl;
 }
@@ -311,10 +311,10 @@ implPrint(FILE *file, SImpl impl)
 	  case SIMPL_Import:
 		break;
 	  default:
-		printf("Aaarghh: %d", implTag(impl));
+		fprintf(file, "Aaarghh: %d", implTag(impl));
 		break;
 	}
-	cc += printf(")");
+	cc += fprintf(file, ")");
 	return cc;
 }
 

@@ -163,7 +163,7 @@ local void
 retRetypeProg(Foam prog)
 {
 	assert(foamTag(prog) == FOAM_Prog);
-	retDEBUG(printf("Retype..\n"); foamPrintDb(prog));
+	retDEBUG(fprintf(dbOut, "Retype..\n"); foamPrintDb(prog));
 	if (!retDDeclInit(prog->foamProg.locals))
 		return;
 

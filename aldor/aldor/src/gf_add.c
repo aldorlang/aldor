@@ -772,7 +772,7 @@ gen0TypeAddDefaultSelfSlot()
 	Foam  rtHash;
 	int i;
 
-	DEBUG(printf("Make slot: exporter is:\n");
+	DEBUG(fprintf(dbOut, "Make slot: exporter is:\n");
 	      abWrSExpr(dbOut, abType,int0));
 
 	assert(gen0ExportState->self);
@@ -2122,7 +2122,7 @@ gen0RtSefoHashId(Sefo sf, Sefo osf)
 		 */
 		hash = gen0RtDomainHash(foamCopy(gen0Syme(syme)));
 		genfHashDEBUG({
-			(void)printf("!!! Warning: inventing hash for %%: ");
+			(void)fprintf(dbOut, "!!! Warning: inventing hash for %%: ");
 			symePrintDb(syme);
 		});
 	}
@@ -2136,7 +2136,7 @@ gen0RtSefoHashId(Sefo sf, Sefo osf)
 	else if (symeIsExport(syme) || symeIsExtend(syme)) {
 		if (kind == FOAM_LIMIT && !symeLib(syme)) {
 			genfHashDEBUG({
-				printf("Ugh: Found unhackable syme: ");
+				fprintf(dbOut, "Ugh: Found unhackable syme: ");
 				symePrintDb(syme);
 			});
 			return foamNewSInt(gen0StrHash(symeString(syme)));
@@ -2146,7 +2146,7 @@ gen0RtSefoHashId(Sefo sf, Sefo osf)
 
 	else if (kind == FOAM_LIMIT) {
 		genfHashDEBUG({
-			printf("Ugh: Found weird syme: ");
+			fprintf(dbOut, "Ugh: Found weird syme: ");
 			symePrintDb(syme);
 		});
 		hash = foamNewSInt(int0);
@@ -2944,7 +2944,7 @@ gen0HasCat(Foam dom, AbSyn cat)
 {
 	Foam foam;
 	genfDEBUG({
-		printf("Hash:\n");
+		fprintf(dbOut, "Hash:\n");
 		sefoPrintDb(cat);
 		tfPrintDb(abTForm(cat));});
 	foam = gen0BuiltinCCall(FOAM_Bool,"domainTestExport!",

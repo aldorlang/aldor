@@ -93,7 +93,7 @@ local void      optInitFormatters();
 
 local  void	optSetAllTo		(Bool);
 local  void	optSetLevel		(int);
-extern void 	optPrintOpts		(void);
+local  void 	optPrintOpts		(FILE *fout);
 local  void	optSetJFlowLimit	(void);
 local  void	optOptimizationsInit	(void);
 
@@ -174,13 +174,13 @@ optSetLevel(int lev)
 #endif
 }
 
-void 
-optPrintOpts(void)
+local void 
+optPrintOpts(FILE *fout)
 {
 	int i;
-	printf("Optimizations selected:\n");
+	fprintf(fout, "Optimizations selected:\n");
 	for (i = 0; optControl[i].name; i++)
-		printf("%15s %d\n", optControl[i].name, *optControl[i].pvar);
+		fprintf(fout, "%15s %d\n", optControl[i].name, *optControl[i].pvar);
 }
 
 void
@@ -260,7 +260,7 @@ optimizeFoam(Foam foam)
 {
 	Bool	newConsts = false;
 	int	i, iters;
-	optfDEBUG(optPrintOpts());
+	optfDEBUG(optPrintOpts(dbOut));
 
 	optOptimizationsInit();
 

@@ -1313,7 +1313,7 @@ jflowDummyTestsRemove(JFInfo jfinfo, FlowGraph flog)
 	jflowDfDEBUG({
 		fprintf(dbOut, n == 0 ? "Converged" : "Did not converge");
 		fprintf(dbOut, " after %d iterations\n", k);
-		flogPrint(stdout, flog, true);
+		flogPrint(dbOut, flog, true);
 	});
 
 	flogClearMarks(flog);

@@ -1046,20 +1046,20 @@ local SatMask tfSatCAT0(SatMask mask, TForm S);
 local SatMask
 tfSatDOM(SatMask mask, TForm S)
 {
-	printf("(SatDom: ");
+	fprintf(dbOut, "(SatDom: ");
 	tfPrintDb(S);
 	mask = tfSatDOM0(mask, S);
-	printf(")");
+	fprintf(dbOut, ")");
 	return mask;
 }
 
 local SatMask
 tfSatCAT(SatMask mask, TForm S)
 {
-	printf("(SatCat: ");
+	fprintf(dbOut, "(SatCat: ");
 	tfPrintDb(S);
 	mask = tfSatCAT0(mask, S);
-	printf(")");
+	fprintf(dbOut, ")");
 	return mask;
 }
 #endif
@@ -1549,7 +1549,7 @@ tfSatCatExports(SatMask mask, AbSyn Sab, TForm S, TForm T)
 		 */
 		if (Tsymes == listNil(Syme)) {
 			tfsExportDEBUG({
-			     printf("tfSatCatExports: 'T' has no exports\n");
+			     fprintf(dbOut, "tfSatCatExports: 'T' has no exports\n");
 			     tfPrintDb(T);
 		        });
 			return tfSatTrue(mask);

@@ -1643,7 +1643,7 @@ fintStmt(DataObj retDataObj)
 		break;
 	case FOAM_Label:
 		fintGetInt(fmt, n);
-	        fintDEBUG((void)printf("(Label %d)\n", n));
+	        fintDEBUG((void)fprintf(dbOut, "(Label %d)\n", n));
 		break;
 	case FOAM_Nil:
 	case FOAM_Lex: /* we get things like that when we -q0 (deadvar
@@ -3669,7 +3669,7 @@ fintEval_(DataObj retDataObj)
 
 		stackFrameFree();
 		fintDEBUG(fintCheckCallStack());
-		fintDEBUG(printf(" call returns %p)", (char*) retDataObj->fiSInt));
+		fintDEBUG(fprintf(dbOut, " call returns %p)", (char*) retDataObj->fiSInt));
 
 		return retType;
 	}
@@ -3715,7 +3715,7 @@ fintEval_(DataObj retDataObj)
 
 		fintGetInt(fmt, lev);
 		fintGetInt(fmt, n);
-		fintDEBUG(printf("(Lex %d %d)", (int) lev, (int) n));
+		fintDEBUG(fprintf(dbOut, "(Lex %d %d)", (int) lev, (int) n));
 		switch (lev) {
 			case 0: type = lexType(lev, n);
 				fintSet(type, retDataObj, lev0[n]);
@@ -5590,7 +5590,7 @@ shDataObjAdd(AInt type, String id, int protocol, int globNum, FintUnit curUnit)
 		    fintLinkDEBUG((void)fprintf(dbOut, "(Resolved foreign %s)\n",
 			                fintForeignTable[n].string););
 		} else {
-		  	fintLinkDEBUG({printf("Could not resolve: %s\n", id);});
+		  	fintLinkDEBUG({fprintf(dbOut, "Could not resolve: %s\n", id);});
 		}
 	}
 

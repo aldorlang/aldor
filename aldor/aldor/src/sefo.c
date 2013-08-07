@@ -3612,7 +3612,7 @@ symeListClosure(Lib lib, SymeList symes)
 	SymeList	sl0, sl;
 
 	sefoCloseDEBUG({
-		printf("symeListClosure: %d symes", (int) listLength(Syme)(symes));
+		fprintf(dbOut, "symeListClosure: %d symes", (int) listLength(Syme)(symes));
 		fnewline(dbOut);
 		symeListPrintDb(symes);
 	});
@@ -3640,7 +3640,7 @@ symeListClosure(Lib lib, SymeList symes)
 	lib->types = listNReverse(TForm)(lib->types);
 
 	sefoCloseDEBUG({
-		printf(" -> %d symes\n", (int) listLength(Syme)(lib->symes));
+		fprintf(dbOut, " -> %d symes\n", (int) listLength(Syme)(lib->symes));
 	});
 }
 

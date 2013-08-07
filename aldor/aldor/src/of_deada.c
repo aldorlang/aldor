@@ -184,7 +184,7 @@ daProg(Foam prog)
 	int 	  nbits;
 	
 	daDEBUG({
-		printf("(Before:\n");
+		fprintf(dbOut, "(Before:\n");
 		foamWrSExpr(dbOut, prog,int0);
 	});
 	locals = prog->foamProg.locals;
@@ -202,7 +202,7 @@ daProg(Foam prog)
 	ret = flogToProg(flog);
 	daDEBUG({
 		foamWrSExpr(dbOut, ret,int0);
-		printf("After)\n");
+		fprintf(dbOut, "After)\n");
 	});
 	daBitvClass = NULL;
 

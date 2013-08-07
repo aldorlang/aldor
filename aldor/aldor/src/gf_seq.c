@@ -133,11 +133,11 @@ gen0DefTypeSequence(AbSyn ab, SymeList exports)
 	while (lst) {
 		DefGroup dg = car(lst);
 		genfExportDEBUG({
-			  printf("looking at:\n");
+			  fprintf(dbOut, "looking at:\n");
 			  abWrSExpr(dbOut, dgStmt(dg),int0);
-			  printf("defines:\n");
+			  fprintf(dbOut, "defines:\n");
 			  symeListPrintDb(dg->defines);
-			  printf("uses:\n");
+			  fprintf(dbOut, "uses:\n");
 			  symeListPrintDb(dgUses(dg));
 			  });
 		gen0EnsureUsedSymes(set, dg);

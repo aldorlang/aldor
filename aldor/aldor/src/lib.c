@@ -1373,7 +1373,7 @@ libPutSymes(Lib lib, SymeList symes, Foam foam)
 		while (tmp != listNil(Syme)) {
 			syme = tmp->first;
 			tmp  = tmp->rest;
-			aprintf("%d: %s %s %ld %s (%s %s . %ld)\n", 
+			afprintf(dbOut, "%d: %s %s %ld %s (%s %s . %ld)\n", 
 			       i,
 			       libSymeIsLocal(lib, syme) ? "O" : "Z",
 			       symeInfo[symeKind(syme)].str,
@@ -1393,7 +1393,7 @@ libPutSymes(Lib lib, SymeList symes, Foam foam)
 	libConstDEBUG({
 		int i;
 		for (i = 0; i<lib->typec; i++) {
-			aprintf("(%d: %pTForm)\n", i, lib->typev[i]);
+			afprintf(dbOut, "(%d: %pTForm)\n", i, lib->typev[i]);
 		}
 		});
 	return symes;
@@ -1749,12 +1749,12 @@ libPutSymeTwins(Lib lib)
 			BUF_PUT_HINT(buf, i);
 			symeListToBuffer(lib, buf, symes);
 			libConstDEBUG({
-				printf("(%d:", i); 
+				fprintf(dbOut, "(%d:", i); 
 				while (symes) {
-					printf(" %d", symeLibNum(car(symes)));
+					fprintf(dbOut, " %d", symeLibNum(car(symes)));
 					symes = cdr(symes);
 				}
-				printf(")\n");
+				fprintf(dbOut, ")\n");
 			})
 		}
 	}
@@ -2399,7 +2399,7 @@ lib1GetSymes(Lib lib)
 
 		for (i=0; i< lib->symec; i++) {
 			syme = lib->symev[i];
-			printf("%d: %s %s %ld %s (%s %s . %ld)\n", 
+			fprintf(dbOut, "%d: %s %s %ld %s (%s %s . %ld)\n", 
 			       i,
 			       libSymeIsLocal(lib, syme) ? "O" : "Z",
 			       symeInfo[symeKind(syme)].str,

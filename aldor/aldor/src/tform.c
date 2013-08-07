@@ -2483,7 +2483,7 @@ handle_id:
 		}
 		tfFloatDEBUG(Buffer buf = bufNew();
 			     bufPrintf(buf, "AbSyn: %s [%pAbSyn] %d\n", symString(sym), ab, depth);
-			     printf("%s", bufLiberate(buf)));
+			     fprintf(dbOut, "%s", bufLiberate(buf)));
 		break;
 	}
 	case AB_PretendTo:

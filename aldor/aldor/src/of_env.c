@@ -64,7 +64,7 @@ oeUnit(Foam unit)
 	oeRenewEnvs(unit);
 
 	stoFree(oeProgInfo);
-	oeDEBUG(printf("hello\n");foamPrintDb(unit));
+	oeDEBUG(fprintf(dbOut, "hello\n");foamPrintDb(unit));
 	oeProgInfo = NULL;
 }
 
@@ -79,13 +79,13 @@ oeFindEnvs(Foam unit)
 	for(i=0; i<1/*foamArgc(defs)*/; i++) {
 		Foam	def = defs->foamDDef.argv[i];
 		Foam	prog;
-oeDEBUG(printf("Prog<<\n"));
+oeDEBUG(fprintf(dbOut, "Prog<<\n"));
 oeDEBUG(foamWrSExpr(dbOut, def,SXRW_Default));
 		assert(foamTag(def) == FOAM_Def);
 		prog = def->foamDef.rhs;
 		if (foamTag(prog) == FOAM_Prog)
 			oeCheckEnv(prog, i);
-oeDEBUG(printf("Prog>>\n"));
+oeDEBUG(fprintf(dbOut, "Prog>>\n"));
 oeDEBUG(foamWrSExpr(dbOut, prog,SXRW_Default));
 	}
 }
@@ -225,9 +225,9 @@ oeRenewEnvs(Foam unit)
 		if (foamTag(prog) == FOAM_Prog
 		    && oeProgInfo[i].origin == ProgLocal) {
 			oeDEBUG({
-				printf("Old %d:\n", i);
+				fprintf(dbOut, "Old %d:\n", i);
 				foamPrintDb(oeOldEnv(i));
-				printf("New %d:\n", i);
+				fprintf(dbOut, "New %d:\n", i);
 				foamPrintDb(oeNewEnv(i));
 				if (!foamEqual(oeOldEnv(i), oeNewEnv(i)))
 					foamPrintDb(prog);

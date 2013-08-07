@@ -507,12 +507,12 @@ agsTryArgSub(Foam *ptr, String fun)
 		/* Yes - modify the FOAM */
 		/* Show what happened */
 		agsDEBUG({
-			(void)printf("** %s substitution\n", fun);
-			(void)printf(">>\n");
+			(void)fprintf(dbOut, "** %s substitution\n", fun);
+			(void)fprintf(dbOut, ">>\n");
 			foamPrintDb(elt);
-			(void)printf("<<\n");
+			(void)fprintf(dbOut, "<<\n");
 			foamPrintDb(new);
-			(void)printf("\n");
+			(void)fprintf(dbOut, "\n");
 		});
 
 		foamFreeNode(elt);
