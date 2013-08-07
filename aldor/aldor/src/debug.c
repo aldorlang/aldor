@@ -12,11 +12,10 @@
 
 Bool    dbFlag  = false;
 
-FILE	*dbIn, *dbOut;
+FILE	*dbOut;
 
 void
 dbInit(void)
 {
-	dbIn  = osStdin;
 	dbOut = osStdout;
 }

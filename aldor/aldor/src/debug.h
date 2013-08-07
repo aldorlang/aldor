@@ -33,7 +33,7 @@
 
 #endif
 
-extern	FILE	*dbIn, *dbOut;
+extern	FILE	*dbOut;
 
 extern	void	dbInit	(void);
 
