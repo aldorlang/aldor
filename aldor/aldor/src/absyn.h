@@ -1122,4 +1122,76 @@ extern AbSyn	abNewDocTextOfList	(TokenList);
 		 * Construct a document text node from a list of doc tokens.
 		 */
 
+
+#define AB_SWITCH(ab, fun, args)				\
+	switch (abTag(ab)) {					\
+	case AB_Id:		fun##Id		args; break;	\
+	case AB_IdSy:		fun##IdSy	args; break;	\
+	case AB_Blank:		fun##Blank	args; break;	\
+	case AB_LitInteger:	fun##LitInteger args; break;	\
+	case AB_LitFloat:	fun##LitFloat	args; break;	\
+	case AB_LitString:	fun##LitString	args; break;	\
+	case AB_Add:		fun##Add	args; break;	\
+	case AB_And:		fun##And	args; break;	\
+	case AB_Apply:		fun##Apply	args; break;	\
+	case AB_Assert:		fun##Assert	args; break;	\
+	case AB_Assign:		fun##Assign	args; break;	\
+	case AB_Break:		fun##Break	args; break;	\
+	case AB_Builtin:	fun##Builtin	args; break;	\
+	case AB_CoerceTo:	fun##CoerceTo	args; break;	\
+	case AB_Collect:	fun##Collect	args; break;	\
+	case AB_Comma:		fun##Comma	args; break;	\
+	case AB_Declare:	fun##Declare	args; break;	\
+	case AB_Default:	fun##Default	args; break;	\
+	case AB_Define:		fun##Define	args; break;	\
+	case AB_Delay:		fun##Delay	args; break;	\
+	case AB_Do:		fun##Do		args; break;	\
+	case AB_Except:		fun##Except	args; break;	\
+	case AB_Raise:		fun##Raise	args; break;	\
+	case AB_Exit:		fun##Exit	args; break;	\
+	case AB_Export:		fun##Export	args; break;	\
+	case AB_Extend:		fun##Extend	args; break;	\
+	case AB_Fix:		fun##Fix	args; break;	\
+	case AB_Fluid:		fun##Fluid	args; break;	\
+	case AB_For:		fun##For	args; break;	\
+	case AB_Foreign:	fun##Foreign	args; break;	\
+	case AB_Free:		fun##Free	args; break;	\
+	case AB_Generate:	fun##Generate	args; break;	\
+	case AB_Goto:		fun##Goto	args; break;	\
+	case AB_Has:		fun##Has	args; break;	\
+	case AB_Hide:		fun##Hide	args; break;	\
+	case AB_If:		fun##If		args; break;	\
+	case AB_Import:		fun##Import	args; break;	\
+	case AB_Inline:		fun##Inline	args; break;	\
+	case AB_Iterate:	fun##Iterate	args; break;	\
+	case AB_Label:		fun##Label	args; break;	\
+	case AB_Lambda:		fun##Lambda	args; break;	\
+	case AB_Let:		fun##Let	args; break;	\
+	case AB_Local:		fun##Local	args; break;	\
+	case AB_Macro:		fun##Macro	args; break;	\
+	case AB_MLambda:	fun##MLambda    args; break;	\
+	case AB_Never:		fun##Never	args; break;	\
+	case AB_Not:		fun##Not	args; break;	\
+	case AB_Nothing:	fun##Nothing	args; break;	\
+	case AB_Or:		fun##Or		args; break;	\
+	case AB_PLambda:	fun##Lambda	args; break;	\
+	case AB_PretendTo:	fun##PretendTo	args; break;	\
+	case AB_Qualify:	fun##Qualify	args; break;	\
+	case AB_Quote:		fun##Quote	args; break;	\
+	case AB_Reference:	fun##Reference	args; break;	\
+	case AB_Repeat:		fun##Repeat	args; break;	\
+	case AB_RestrictTo:	fun##RestrictTo args; break;	\
+	case AB_Return:		fun##Return	args; break;	\
+	case AB_Select:		fun##Select	args; break;	\
+	case AB_Sequence:	fun##Sequence	args; break;	\
+	case AB_Test:		fun##Test	args; break;	\
+	case AB_Try:		fun##Try	args; break;	\
+	case AB_Where:		fun##Where	args; break;	\
+	case AB_While:		fun##While	args; break;	\
+	case AB_With:		fun##With	args; break;	\
+	case AB_Yield:		fun##Yield	args; break;	\
+	default:		bugBadCase	(abTag(ab));	\
+	}
+
+
 #endif /* !_ABSYN_H_ */
