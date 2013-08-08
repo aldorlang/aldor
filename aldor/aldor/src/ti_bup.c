@@ -36,7 +36,7 @@
  ****************************************************************************/
 
 Bool	tipBupDebug		= false;
-#define tipBupDEBUG(s)		DEBUG_IF(tipBupDebug, s)
+#define tipBupDEBUG		DEBUG_IF(tipBupDebug)
 
 /*****************************************************************************
  *
@@ -231,11 +231,11 @@ tibup(Stab stab, AbSyn absyn, TForm type)
 	serialNo += 1;
 	depthNo	 += 1;
 	serialThis = serialNo;
-	tipBupDEBUG({
+	tipBupDEBUG {
 		fprintf(dbOut,"->Bup: %*s %d= ", depthNo, "", serialThis);
 		abPrettyPrint(dbOut, absyn);
 		fnewline(dbOut);
-	});
+	}
 	
 	switch (abTag(absyn)) {
 	case AB_Id:	     tibupId	     (stab, absyn, type); break;
@@ -336,7 +336,7 @@ tibup(Stab stab, AbSyn absyn, TForm type)
 		abTPoss(absyn) = tpossEmpty();
 	}
 
-	tipBupDEBUG({
+	tipBupDEBUG {
 		TPoss	abtposs = abReferTPoss(absyn);
 		fprintf(dbOut, "<-Bup: %*s %d= ", depthNo, "", serialThis);
 		abPrettyPrint(dbOut, absyn);
@@ -344,7 +344,7 @@ tibup(Stab stab, AbSyn absyn, TForm type)
 		tpossPrint(dbOut, abtposs);
 		fnewline(dbOut);
 		tpossFree(abtposs);
-	});
+	}
 	depthNo -= 1;
 }
 
@@ -814,28 +814,28 @@ tibup0FarValue(Stab stab, AbSyn absyn, TForm type,
 		tp1 = abReferTPoss(farValue);
 
 		if (tuniIsUnknown(*pFarTPoss)) {
-			tipFarDEBUG({
+			tipFarDEBUG {
 				fprintf(dbOut, "Setting ");
 				tpossPrint(dbOut, tp1);
 				fnewline(dbOut);
-			});
+			}
 			*pFarTPoss = tpossRefer(tp1);
 		}
 		else if (tpossCount(tp1) != 0) {
-			tipFarDEBUG({
+			tipFarDEBUG {
 				fprintf(dbOut, " with ");
 				tpossPrint(dbOut, *pFarTPoss);
-			});
+			}
 			tp0 = tpossIntersect(tp1, *pFarTPoss);
 
 			tpossFree(*pFarTPoss);
 			*pFarTPoss = tp0;
 			
-			tipFarDEBUG({
+			tipFarDEBUG {
 				fprintf(dbOut, " to get ");
 				tpossPrint(dbOut, *pFarTPoss);
 				fnewline(dbOut);
-			});
+			}
 		}
 		tpossFree(tp1);
 	}
@@ -1011,11 +1011,11 @@ tibup0Literal(Symbol sym, Stab stab, AbSyn absyn, TForm type)
 		litTypes = tpossEmpty();
 		opTypes	 = stabGetTypes(stab, abCondKnown, sym);
 
-		tipLitDEBUG({
+		tipLitDEBUG {
 			fprintf(dbOut, "tibup0Literal:\n");
 			tpossPrint(dbOut, opTypes);
 			fnewline(dbOut);
-		});
+		}
 
 		for (tpossITER(tit,opTypes) ; tpossMORE(tit); tpossSTEP(tit)) {
 			TForm opType = tpossELT(tit);
@@ -1310,7 +1310,7 @@ tibupDefine(Stab stab, AbSyn absyn, TForm type)
 		abTPoss(absyn) = abReferTPoss(rhs);
 
 
-	tipDefineDEBUG({
+	tipDefineDEBUG {
 		TPoss	abtposs = abReferTPoss(absyn);
 		fprintf(dbOut,"Bup: Define of ");
 		abPrint(dbOut, lhs);
@@ -1318,7 +1318,7 @@ tibupDefine(Stab stab, AbSyn absyn, TForm type)
 		tpossPrint(dbOut, abtposs);
 		fnewline(dbOut);
 		tpossFree(abtposs);
-	});
+	}
 }
 
 /****************************************************************************
@@ -1513,14 +1513,14 @@ tibupAssign(Stab stab, AbSyn absyn, TForm type)
 	tpossFree(tplhs);
 	tpossFree(tprhs);
 
-	tipAssignDEBUG({
+	tipAssignDEBUG {
 		TPoss tposs = abTPoss(absyn);
 		fprintf(dbOut,"Bup: Assignment to ");
 		abPrint(dbOut, lhs);
 		fprintf(dbOut,"has %d types ", tpossCount(tposs));
 		tpossPrint(dbOut, tposs);
 		fnewline(dbOut);
-	});
+	}
 }
 
 
@@ -1559,14 +1559,14 @@ tibupDeclare(Stab stab, AbSyn absyn, TForm type)
 
 	abTPoss(absyn) = tp;
 
-	tipDeclareDEBUG({
+	tipDeclareDEBUG {
 		TPoss tposs = abGoodTPoss(absyn);
 		fprintf(dbOut,"Bup: Declare of ");
 		abPrint(dbOut, id);
 		fprintf(dbOut," has %d types ", tpossCount(tposs));
 		tpossPrint(dbOut, tposs);
 		fnewline(dbOut);
-	});
+	}
 }
 
 /****************************************************************************

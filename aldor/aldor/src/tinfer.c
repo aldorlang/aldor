@@ -56,14 +56,14 @@ Bool	abExpandDebug		= false;
 
 extern Bool symeRefreshDebug;
 
-#define titfDEBUG(s)		DEBUG_IF(titfDebug, s)
-#define titfOneDEBUG(s)		DEBUG_IF(titfOneDebug, s)
-#define titfStabDEBUG(s)	DEBUG_IF(titfStabDebug, s)
-#define abExpandDEBUG(s)	DEBUG_IF(abExpandDebug, s)
-#define symeRefreshDEBUG(s)	DEBUG_IF(symeRefreshDebug, s)
+#define titfDEBUG		DEBUG_IF(titfDebug)
+#define titfOneDEBUG		DEBUG_IF(titfOneDebug)
+#define titfStabDEBUG		DEBUG_IF(titfStabDebug)
+#define abExpandDEBUG		DEBUG_IF(abExpandDebug)
+#define symeRefreshDEBUG	DEBUG_IF(symeRefreshDebug)
 
-extern Bool	tipExtendDebug;
-#define tipExtendDEBUG(s)	DEBUG_IF(tipExtendDebug, s)
+extern Bool tipExtendDebug;
+#define tipExtendDEBUG		DEBUG_IF(tipExtendDebug)
 
 void
 tiReportStore(String s)
@@ -317,7 +317,7 @@ tiWithSymes(Stab stab, TForm context)
 	SymeList	csymes = listNil(Syme);
 	Stab		wstab = stab;
 	while (wstab && stabGetSelf(wstab) == NULL) wstab = cdr(wstab);
-	tipAddDEBUG(fprintf(dbOut, ">>tiWithSymes:\n"));
+	tipAddDEBUG{fprintf(dbOut, ">>tiWithSymes:\n");}
 
 	mods = listNConcat(Syme)(tfGetSelfFrStab(wstab),
 				 listCopy(Syme)(tfGetCatSelf(context)));
@@ -329,19 +329,19 @@ tiWithSymes(Stab stab, TForm context)
 		Symbol		sym  = symeId(syme);
 		TForm		tf   = symeType(syme);
 
-		tipAddDEBUG({
+		tipAddDEBUG {
 			fprintf(dbOut, "  looking for: ");
 			symePrint(dbOut, syme);
 			fnewline(dbOut);
-		});
+		}
 
 		/* Look for syme in the capsule. */
 		if ((xsyme = stabGetExportMod(wstab, mods, sym, tf)) != NULL) {
-			tipAddDEBUG(fprintf(dbOut, "  [export]\n"));
+			tipAddDEBUG{fprintf(dbOut, "  [export]\n");}
 		}
 
 		else {
-			tipAddDEBUG(fprintf(dbOut, "  [category]\n"));
+			tipAddDEBUG{fprintf(dbOut, "  [category]\n");}
 			csymes = listCons(Syme)(syme, csymes);
 		}
 	}
@@ -357,7 +357,7 @@ tiWithSymes(Stab stab, TForm context)
 	listFree(Syme)(symes);
 	listFree(Syme)(csymes);
 
-	tipAddDEBUG(fprintf(dbOut, "<<tiWithSymes:\n"));
+	tipAddDEBUG{fprintf(dbOut, "<<tiWithSymes:\n");}
 }
 
 /* FIXME: */
@@ -413,7 +413,7 @@ tiAddSymes(Stab astab, AbSyn capsule, TForm base, TForm context, SymeList *p)
 	SymeList	aself  = tfGetSelfFrStab(astab);
 	Syme		asyme  = (aself ? car(aself) : NULL);
 
-	tipAddDEBUG(fprintf(dbOut, "(tiAddSymes:\n"));
+	tipAddDEBUG{fprintf(dbOut, "(tiAddSymes:\n");}
 
 
 	/*
@@ -442,32 +442,32 @@ tiAddSymes(Stab astab, AbSyn capsule, TForm base, TForm context, SymeList *p)
 		Symbol		sym  = symeId(syme);
 		TForm		tf   = symeType(syme);
 
-		tipAddDEBUG(afprintf(dbOut, "  looking for: %pSyme %pAbSynList ", syme, symeCondition(syme)));
+		tipAddDEBUG{afprintf(dbOut, "  looking for: %pSyme %pAbSynList ", syme, symeCondition(syme));}
 		
 		/* Look for syme in the capsule. */
 		if ((xsyme = stabGetExportMod(astab, mods, sym, tf)) != NULL) {
-			tipAddDEBUG(fprintf(dbOut, "  [export]\n"));
+			tipAddDEBUG{fprintf(dbOut, "  [export]\n");}
 			symeImplAddInherit(xsyme, base, syme);
 		}
 
 		/* Look for syme in the base. */
 		else if ((xsyme = tfHasDomExportMod(base, mods, sym, tf))
 			 != NULL) {
-			tipAddDEBUG(fprintf(dbOut, "  [add chain]\n"));
+			tipAddDEBUG{fprintf(dbOut, "  [add chain]\n");}
 			/*!! if (!symeIsSelfSelf(xsyme)) */
 				asymes = listCons(Syme)(xsyme, asymes);
 		}
 
 		/* Look for syme in the defaults. */
 		else if (symeHasDefault(syme)) {
-			tipAddDEBUG(fprintf(dbOut, "  [default]\n"));
+			tipAddDEBUG{fprintf(dbOut, "  [default]\n");}
 			/*!! if (!symeIsSelfSelf(syme)) */
 				csymes = listCons(Syme)(syme, csymes);
 		}
 
 		/* Look for syme in the conditional symes. */
 		else if (symeCondition(syme)) {
-			tipAddDEBUG(fprintf(dbOut, "  [conditional]\n"));
+			tipAddDEBUG{fprintf(dbOut, "  [conditional]\n");}
 			/*!! if (!symeIsSelfSelf(syme)) */
 				usymes = listCons(Syme)(syme, usymes);
 		}
@@ -475,13 +475,13 @@ tiAddSymes(Stab astab, AbSyn capsule, TForm base, TForm context, SymeList *p)
 		/* Look for the syme in the implicits */
 		else if (hasImplicit &&
 			((xsyme = tfImplicitExport(astab,mods,syme))!=NULL)) {
-			tipAddDEBUG(fprintf(dbOut, "  [implicit]\n"));
+			tipAddDEBUG{fprintf(dbOut, "  [implicit]\n");}
 			isymes = listCons(Syme)(xsyme, isymes);
 		}
 
 		/* The add doesn't satisfy its context. */
 		else {
-			tipAddDEBUG(fprintf(dbOut, "  [missing]\n"));
+			tipAddDEBUG{fprintf(dbOut, "  [missing]\n");}
 			dsymes = listCons(Syme)(syme, dsymes);
 		}
 	}
@@ -532,7 +532,7 @@ tiAddSymes(Stab astab, AbSyn capsule, TForm base, TForm context, SymeList *p)
 	listFree(Syme)(asymes);
 	/*!! listFree(Syme)(isymes); */
 
-	tipAddDEBUG(afprintf(dbOut, "tiAddSymes %pSymeList)\n", dsymes));
+	tipAddDEBUG{afprintf(dbOut, "tiAddSymes %pSymeList)\n", dsymes);}
 
 	dsymes = listNReverse(Syme)(dsymes);
 	return dsymes;
@@ -852,11 +852,11 @@ typeInferTForms(Stab stab)
 	depthNo  += 1;
 	serialThis = serialNo;
 	if (serialMax == 0) serialMax = stabMaxSerialNo();
-	titfDEBUG(tiTfPrint(dbOut, stab, ">>typeInferTForms:", tful0));
-	titfStabDEBUG({
+	titfDEBUG{tiTfPrint(dbOut, stab, ">>typeInferTForms:", tful0);}
+	titfStabDEBUG {
 		fprintf(dbOut, "->Titf: %*s%ld/%ld\n", (int)depthNo, "",
 			serialThis, serialMax);
-	});
+	}
 
 	for (tful = tful0; tful; tful = tful1) {
 		DefaultState	wasDoingDefaults = tiTfDoingDefault;
@@ -885,11 +885,11 @@ typeInferTForms(Stab stab)
 		tiTfDoingDefault = wasDoingDefaults;
 	}
 
-	titfStabDEBUG({
+	titfStabDEBUG {
 		fprintf(dbOut, "<-Titf: %*s%ld/%ld\n", (int)depthNo, "",
 			serialThis, serialMax);
-	});
-	titfDEBUG(tiTfPrint(dbOut, stab, "<<typeInferTForms:", tful0));
+	}
+	titfDEBUG{tiTfPrint(dbOut, stab, "<<typeInferTForms:", tful0);}
 	depthNo -=1;
 
 	listFree(TFormUses)(tful0);
@@ -903,10 +903,10 @@ tiTfSort(Stab stab, TFormUsesList tful0)
 #ifndef NDEBUG
 	Bool		allBefore = false;
 #endif
-	titfStabDEBUG({
+	titfStabDEBUG {
 		fprintf(dbOut, "[sorting %d tfus]\n",
 			(int) listLength(TFormUses)(tful0));
-	});
+	}
 
 	/* Collect the type forms used to declare each symbol. */
 	tbl = tiTfGetDeclareeTable(tful0);
@@ -927,38 +927,38 @@ tiTfSort(Stab stab, TFormUsesList tful0)
 	after  = tiTopReverse	(tful0);
 	cycle  = tiTopCycle	(tful0);
 
-	titfDEBUG({
+	titfDEBUG {
 		tiTfPrint(dbOut, stab, ">>tiTfSort[before]:", before);
 		tiTfPrint(dbOut, stab, ">>tiTfSort[after ]:", after);
 		tiTfPrint(dbOut, stab, ">>tiTfSort[cycle ]:", cycle);
-	});
-	titfStabDEBUG({
+	}
+	titfStabDEBUG {
 		allBefore = (!cycle && !after);
 		if (allBefore) fprintf(dbOut, "[all before]\n");
-	});
+	}
 
 	/* Process the type forms in before. */
-	titfStabDEBUG({
+	titfStabDEBUG {
 		if (!allBefore)
 			fprintf(dbOut, "[%d before]",
 				(int) listLength(TFormUses)(before));
-	});
+	}
 	for (tful = before; tful; tful = cdr(tful)) {
-		titfStabDEBUG(if (!allBefore) fprintf(dbOut, "."));
+		titfStabDEBUG{if (!allBefore) fprintf(dbOut, ".");}
 		tiTfOne(stab, car(tful), car(tful)->tf);
 	}
-	titfStabDEBUG(if (!allBefore) fnewline(dbOut));
+	titfStabDEBUG{if (!allBefore) fnewline(dbOut);}
 
 	/* Process the type forms in cycle. */
 	if (cycle) {
 		TFormUsesList	clique = tiTopClique(cycle);
-		titfStabDEBUG({
+		titfStabDEBUG {
 			fprintf(dbOut, "[%d cliques]\n",
 				(int) listLength(TFormUses)(clique));
-		});
+		}
 		for (tful = clique; tful; tful = cdr(tful)) {
 			TFormUsesList	clq = car(tful)->cdependents;
-			titfStabDEBUG(fprintf(dbOut, "[clique]\n"));
+			titfStabDEBUG{fprintf(dbOut, "[clique]\n");}
 			tiTfCycle(stab, clq);
 		}
 		tiTfFreeCDependees(clique);
@@ -966,16 +966,16 @@ tiTfSort(Stab stab, TFormUsesList tful0)
 	}
 
 	/* Process the type forms in after. */
-	titfStabDEBUG({
+	titfStabDEBUG {
 		if (!allBefore)
 			fprintf(dbOut, "[%d after]",
 				(int) listLength(TFormUses)(after));
-	});
+	}
 	for (tful = after; tful; tful = cdr(tful)) {
-		titfStabDEBUG(fprintf(dbOut, "."));
+		titfStabDEBUG{fprintf(dbOut, ".");}
 		tiTfOne(stab, car(tful), car(tful)->tf);
 	}
-	titfStabDEBUG(if (!allBefore) fnewline(dbOut));
+	titfStabDEBUG{if (!allBefore) fnewline(dbOut);}
 
 	/* Free the lists of dependencies between type forms. */
 	tiTfFreeDependees(tful0);
@@ -988,7 +988,7 @@ tiTfSort(Stab stab, TFormUsesList tful0)
 local void
 tiTfOne(Stab stab, TFormUses tfu, TForm tf)
 {
-	titfDEBUG(tiTfEnter(dbOut, "tiTfOne", tfu, tf));
+	titfDEBUG{tiTfEnter(dbOut, "tiTfOne", tfu, tf);}
 
 	/* tfu == NULL just means that typeInferTForm doesn't have a tfu. */
 
@@ -1010,7 +1010,7 @@ tiTfOne(Stab stab, TFormUses tfu, TForm tf)
 		tiTfCascades1(stab, tfu);
 	}
 
-	titfDEBUG(tiTfExit(dbOut, "tiTfOne", tfu, tf));
+	titfDEBUG{tiTfExit(dbOut, "tiTfOne", tfu, tf);}
 }
 
 local void
@@ -1018,46 +1018,46 @@ tiTfCycle(Stab stab, TFormUsesList tful)
 {
 	TFormUsesList	tful0, tfl;
 
-	titfDEBUG(tiTfPrint(dbOut, stab, ">>tiTfCycle:", tful));
+	titfDEBUG{tiTfPrint(dbOut, stab, ">>tiTfCycle:", tful);}
 
-	titfStabDEBUG(fprintf(dbOut, "[syntax]\n"));
+	titfStabDEBUG{fprintf(dbOut, "[syntax]\n");}
 	tful  = tiTfSyntax	(stab, tful);
 
-	titfStabDEBUG(fprintf(dbOut, "[select]\n"));
+	titfStabDEBUG{fprintf(dbOut, "[select]\n");}
 	tful0 = tiTfSelect	(stab, tful);
 
-	titfStabDEBUG(fprintf(dbOut, "[pending]\n"));
+	titfStabDEBUG{fprintf(dbOut, "[pending]\n");}
 	for (tfl=tful0; tfl; tfl=cdr(tfl))
 		tiTfPending1(stab, car(tfl)->tf);
 
-	titfStabDEBUG(fprintf(dbOut, "[bottom up]\n"));
+	titfStabDEBUG{fprintf(dbOut, "[bottom up]\n");}
 	for (tfl=tful0; tfl; tfl=cdr(tfl))
 		tiTfBottomUp1(stab, car(tfl), car(tfl)->tf);
 
-	titfStabDEBUG(fprintf(dbOut, "[audit]\n"));
+	titfStabDEBUG{fprintf(dbOut, "[audit]\n");}
 	for (tfl=tful0; tfl; tfl=cdr(tfl))
 		tiTfAudit1(stab, car(tfl)->tf);
 
-	titfStabDEBUG(fprintf(dbOut, "[top down]\n"));
+	titfStabDEBUG{fprintf(dbOut, "[top down]\n");}
 	for (tfl=tful0; tfl; tfl=cdr(tfl))
 		tiTfTopDown1(stab, car(tfl)->tf);
 
-	titfStabDEBUG(fprintf(dbOut, "[meaning]\n"));
+	titfStabDEBUG{fprintf(dbOut, "[meaning]\n");}
 	for (tfl=tful0; tfl; tfl=cdr(tfl))
 		tiTfMeaning1(stab, car(tfl)->tf);
 
-	titfStabDEBUG(fprintf(dbOut, "[extend]\n"));
+	titfStabDEBUG{fprintf(dbOut, "[extend]\n");}
 	for (tfl=tful;  tfl; tfl=cdr(tfl))
 		tiTfExtend1(stab, car(tfl));
 
-	titfStabDEBUG(fprintf(dbOut, "[import]\n"));
+	titfStabDEBUG{fprintf(dbOut, "[import]\n");}
 	for (tfl=tful;  tfl; tfl=cdr(tfl))
 		tiTfImport1(stab, car(tfl));
 
 	for (tfl=tful;  tfl; tfl=cdr(tfl))
 		tiTfCascades1(stab, car(tfl));
 
-	titfDEBUG(tiTfPrint(dbOut, stab, "<<titfCycle:", tful));
+	titfDEBUG{tiTfPrint(dbOut, stab, "<<titfCycle:", tful);}
 
 	listFree(TFormUses)(tful0);
 }
@@ -1353,7 +1353,7 @@ tiTfSelect(Stab stab, TFormUsesList tful)
 {
 	TFormUsesList	tful0 = listNil(TFormUses);
 
-	titfDEBUG(tiTfPrint(dbOut, stab, ">>tiTfSelect:", tful));
+	titfDEBUG{tiTfPrint(dbOut, stab, ">>tiTfSelect:", tful);}
 
 	for (; tful; tful = cdr(tful)) {
 		TFormUses	tfu = car(tful);
@@ -1364,7 +1364,7 @@ tiTfSelect(Stab stab, TFormUsesList tful)
 
 	tful0 = listNReverse(TFormUses)(tful0);
 
-	titfDEBUG(tiTfPrint(dbOut, stab, "<<tiTfSelect:", tful0));
+	titfDEBUG{tiTfPrint(dbOut, stab, "<<tiTfSelect:", tful0);}
 
 	return tful0;
 }
@@ -1402,12 +1402,12 @@ tiTfFloat1(Stab stab, TForm tf)
 	if (nstab == NULL)
 		return false;
 
-	titfOneDEBUG(tiTfEnter(dbOut, "tiTfFloat1", NULL, tf));
+	titfOneDEBUG{tiTfEnter(dbOut, "tiTfFloat1", NULL, tf);}
 
 	ntf = typeInferTForm(nstab, tf);
 	tfTransferSemantics(ntf, tf);
 
-	titfOneDEBUG(tiTfExit(dbOut, "tiTfFloat1", NULL, tf));
+	titfOneDEBUG{tiTfExit(dbOut, "tiTfFloat1", NULL, tf);}
 
 	return true;
 }
@@ -1421,7 +1421,7 @@ tiTfMap1(Stab stab, TFormUses tfu, TForm tf, AbSynList params)
 	TForm	tfret = tfMapRet(tf);
 	Length	i;
 
-	titfOneDEBUG(tiTfEnter(dbOut, "tiTfMap1", NULL, tf));
+	titfOneDEBUG{tiTfEnter(dbOut, "tiTfMap1", NULL, tf);}
 
 	if (nstab != stab) {
 		stabSeeOuterImports(nstab);
@@ -1444,7 +1444,7 @@ tiTfMap1(Stab stab, TFormUses tfu, TForm tf, AbSynList params)
 	tiTfTopDown1	(stab, tf);
 	tiTfMeaning1	(stab, tf);
 
-	titfOneDEBUG(tiTfExit(dbOut, "tiTfMap1", NULL, tf));
+	titfOneDEBUG{tiTfExit(dbOut, "tiTfMap1", NULL, tf);}
 }
 
 local Bool
@@ -1482,7 +1482,7 @@ tiTfThird1(Stab stab, TFormUses tfu, TForm tf, AbSynList params)
 	Symbol	sym = tiTfUsesSymbol(tfu);
 	AbSyn	ab, abc, abw;
 
-	titfOneDEBUG(tiTfEnter(dbOut, "tiTfThird1", tfu, tf));
+	titfOneDEBUG{tiTfEnter(dbOut, "tiTfThird1", tfu, tf);}
 
 	tiTfPushDefinee0(sym);
 
@@ -1540,7 +1540,7 @@ tiTfThird1(Stab stab, TFormUses tfu, TForm tf, AbSynList params)
 	tfCheckConsts(tf);
 	tiTfMeaning1(stab, tf);
 
-	titfOneDEBUG(tiTfExit(dbOut, "tiTfThird1", tfu, tf));
+	titfOneDEBUG{tiTfExit(dbOut, "tiTfThird1", tfu, tf);}
 }
 
 /*
@@ -1586,11 +1586,11 @@ tiAppendSymes(TForm tf, SymeList symes)
 
 
 	/* Debugging */
-	symeRefreshDEBUG({
+	symeRefreshDEBUG {
 		(void)fprintf(dbOut, "-----------> (extra)\n");
 		symeListPrintDb(additions);
 		(void)fprintf(dbOut, "\n\n");
-	});
+	}
 
 
 	/* Append onto tfSymes(tf) */
@@ -1611,7 +1611,7 @@ tiTfCategory1(Stab stab, TFormUses tfu, TForm tf, AbSynList params)
 	AbSyn	ab, abw, aba, abt = NULL;
 	Stab	nstab;
 
-	titfOneDEBUG(tiTfEnter(dbOut, "tiTfCategory1", NULL, tf));
+	titfOneDEBUG{tiTfEnter(dbOut, "tiTfCategory1", NULL, tf);}
 
 	tiTfPushDefinee0(sym);
 
@@ -1747,7 +1747,7 @@ tiTfCategory1(Stab stab, TFormUses tfu, TForm tf, AbSynList params)
 	tiTfMeaning1(stab, tfDefineDecl(tf));
 	tiTfMeaning1(stab, tf);
 	
-	titfOneDEBUG(tiTfExit(dbOut, "tiTfCategory1", NULL, tf));
+	titfOneDEBUG{tiTfExit(dbOut, "tiTfCategory1", NULL, tf);}
 }
 
 local void
@@ -1758,7 +1758,7 @@ tiTfUnknown1(Stab stab, TFormUses tfu, TForm tf, AbSynList params)
 	Symbol	sym = tiTfUsesSymbol(tfu);
 	AbSyn	ab, abl, abr;
 
-	titfOneDEBUG(tiTfEnter(dbOut, "tiTfUnknown1", NULL, tf));
+	titfOneDEBUG{tiTfEnter(dbOut, "tiTfUnknown1", NULL, tf);}
 
 	tiTfPushDefinee0(sym);
 
@@ -1790,16 +1790,16 @@ tiTfUnknown1(Stab stab, TFormUses tfu, TForm tf, AbSynList params)
 	}
 	tiTfMeaning1(stab, tf);
 
-	titfOneDEBUG(tiTfExit(dbOut, "tiTfUnknown1", NULL, tf));
+	titfOneDEBUG{tiTfExit(dbOut, "tiTfUnknown1", NULL, tf);}
 }
 
 /* Convert syntax tforms to pending tforms. */
 local void
 tiTfPending1(Stab stab, TForm tf)
 {
-	titfOneDEBUG(tiTfEnter(dbOut, "tiTfPending1", NULL, tf));
+	titfOneDEBUG{tiTfEnter(dbOut, "tiTfPending1", NULL, tf);}
 	tfPendingFrSyntax(stab, tfGetExpr(tf), tf);
-	titfOneDEBUG(tiTfExit(dbOut, "tiTfPending1", NULL, tf));
+	titfOneDEBUG{tiTfExit(dbOut, "tiTfPending1", NULL, tf);}
 }
 
 local AbLogic tiTfCondition(Stab stab, TForm tf);
@@ -1820,11 +1820,11 @@ tiTfBottomUp1(Stab stab, TFormUses tfu, TForm tf)
 	else if (abUse(absyn) == AB_Use_Except)
 		type = tfTuple(tfCategory);
 
-	titfOneDEBUG(tiTfEnter(dbOut, "tiTfBottomUp1", tfu, tf));
+	titfOneDEBUG{tiTfEnter(dbOut, "tiTfBottomUp1", tfu, tf);}
 	ol = tiTfPushDeclarees(tiTfGetDeclarees(tfu));
 	tiBottomUp(stab, absyn, type);
 	tiTfPopDeclarees(ol);
-	titfOneDEBUG(tiTfExit(dbOut, "tiTfBottomUp1", tfu, tf));
+	titfOneDEBUG{tiTfExit(dbOut, "tiTfBottomUp1", tfu, tf);}
 
 	Return(Nothing);
 }
@@ -1841,7 +1841,7 @@ tiTfCondition(Stab stab, TForm tf)
 		AbSyn ab = car(condition);
 
 		assert(cstab != NULL);
-		titfDEBUG(fprintf(dbOut, "Condition: "); abPrintDb(car(condition)));
+		titfDEBUG{fprintf(dbOut, "Condition: "); abPrintDb(car(condition));}
 		if (abContains(ab, absyn)) {
 			condition = cdr(condition);
 			continue;
@@ -1858,9 +1858,9 @@ tiTfCondition(Stab stab, TForm tf)
 local void
 tiTfAudit1(Stab stab, TForm tf)
 {
-	titfOneDEBUG(tiTfEnter(dbOut, "tiTfAudit1", NULL, tf));
+	titfOneDEBUG{tiTfEnter(dbOut, "tiTfAudit1", NULL, tf);}
 	typeInferAudit(stab, tfGetExpr(tf));
-	titfOneDEBUG(tiTfExit(dbOut, "tiTfAudit1", NULL, tf));
+	titfOneDEBUG{tiTfExit(dbOut, "tiTfAudit1", NULL, tf);}
 }
 
 /* Perform top-down analysis to generate semantics for each AbSyn. */
@@ -1879,9 +1879,9 @@ tiTfTopDown1(Stab stab, TForm tf)
 	else if (abUse(absyn) == AB_Use_Except)
 		type = tfTuple(tfCategory);
 
-	titfOneDEBUG(tiTfEnter(dbOut, "tiTfTopDown1", NULL, tf));
+	titfOneDEBUG{tiTfEnter(dbOut, "tiTfTopDown1", NULL, tf);}
 	tiTopDown(stab, absyn, type);
-	titfOneDEBUG(tiTfExit(dbOut, "tiTfTopDown1", NULL, tf));
+	titfOneDEBUG{tiTfExit(dbOut, "tiTfTopDown1", NULL, tf);}
 
 	Return(Nothing);
 }
@@ -1890,9 +1890,9 @@ tiTfTopDown1(Stab stab, TForm tf)
 local void
 tiTfMeaning1(Stab stab, TForm tf)
 {
-	titfOneDEBUG(tiTfEnter(dbOut, "tiTfMeaning1", NULL, tf));
+	titfOneDEBUG{tiTfEnter(dbOut, "tiTfMeaning1", NULL, tf);}
 	tfMeaning(stab, tfGetExpr(tf), tf);
-	titfOneDEBUG(tiTfExit(dbOut, "tiTfMeaning1", NULL, tf));
+	titfOneDEBUG{tiTfExit(dbOut, "tiTfMeaning1", NULL, tf);}
 }
 
 /* Fill the extension type using the type form as the type of an extendee. */
@@ -1901,7 +1901,7 @@ tiTfExtend1(Stab stab, TFormUses tfu)
 {
 	AbSynList	alist;
 
-	titfOneDEBUG(tiTfEnter(dbOut, "tiTfExtend1", tfu, tfu->tf));
+	titfOneDEBUG{tiTfEnter(dbOut, "tiTfExtend1", tfu, tfu->tf);}
 
 	for (alist = tfu->extendees; alist; alist = cdr(alist)) {
 		AbSyn	ab = car(alist), abt;
@@ -1910,7 +1910,7 @@ tiTfExtend1(Stab stab, TFormUses tfu)
 		TForm	tf = symeType(extension);
 		TFormUses tu0;
 		
-		titfOneDEBUG(afprintf(dbOut, "Syme: %pSyme TForm: %pTForm\n", syme, tf));
+		titfOneDEBUG{afprintf(dbOut, "Syme: %pSyme TForm: %pTForm\n", syme, tf);}
 
 		assert(ab && abHasTag(ab, AB_Id));
 		assert(syme && symeIsExport(syme));
@@ -1947,18 +1947,18 @@ tiTfExtend1(Stab stab, TFormUses tfu)
 		symeSetExtension(syme, extension);
 
 		if (tfExtendDone(tf)) {
-			tipExtendDEBUG({
+			tipExtendDEBUG {
 				fprintf(dbOut, "titfExtend1:\n");
 				symePrint(dbOut, extension);
 				fnewline(dbOut);
-			});
+			}
 			tfExtendSubst(stab, tf);
 			tfExtendFinish(tf);
 			stabExtendMeanings(stab, extension);
 		}
 	}
 		
-	titfOneDEBUG(tiTfExit(dbOut, "tiTfExtend1", tfu, tfu->tf));
+	titfOneDEBUG{tiTfExit(dbOut, "tiTfExtend1", tfu, tfu->tf);}
 }
 
 local void
@@ -1988,7 +1988,7 @@ tiTfImport1(Stab stab, TFormUses tfu)
 	TForm	tf = tfFollow(tfu->tf);
 	abCondKnown = tiTfCondition(stab, tf);
 
-	titfOneDEBUG(tiTfEnter(dbOut, "tiTfImport1", tfu, tf));
+	titfOneDEBUG{tiTfEnter(dbOut, "tiTfImport1", tfu, tf);}
 
 	if (tiTfDoingDefault == DEF_State_NotYet )
 		Return(Nothing);
@@ -2030,7 +2030,7 @@ tiTfImport1(Stab stab, TFormUses tfu)
 		strFree(s);
 	}
 
-	titfOneDEBUG(tiTfExit(dbOut, "tiTfImport1", tfu, tf));
+	titfOneDEBUG{tiTfExit(dbOut, "tiTfImport1", tfu, tf);}
 	Return(Nothing);
 }
 
@@ -2113,12 +2113,12 @@ tiTfGetDeclareeTable(TFormUsesList tful0)
 		}
 	}
 
-	titfDEBUG({
+	titfDEBUG {
 		fprintf(dbOut, ">>tiTfGetDeclareeTable:\n");
 		tblPrint(dbOut, tbl, (TblPrKeyFun) symPrint,
 			 (TblPrEltFun) tfulPrint);
 		fnewline(dbOut);
-	});
+	}
 
 	return tbl;
 }
@@ -2387,7 +2387,7 @@ tiTopClique(TFormUsesList tful0)
 {
 	TFormUsesList	tful, tfl, graph, result;
 
-	titfDEBUG(tiTfPrint(dbOut, NULL, ">>tiTopClique:", tful0));
+	titfDEBUG{tiTfPrint(dbOut, NULL, ">>tiTopClique:", tful0);}
 
 	/* Mark the nodes in the clique graph without adding their edges. */
 	tiTopCliqueMark(tful0, true);
@@ -2439,7 +2439,7 @@ tiTopClique(TFormUsesList tful0)
 	}
 	tiTopCliqueMark(tful0, false);
 
-	titfDEBUG(tiTfPrint(dbOut, NULL, "<<tiTopClique:", result));
+	titfDEBUG{tiTfPrint(dbOut, NULL, "<<tiTopClique:", result);}
 
 	return result;
 }
@@ -2722,15 +2722,13 @@ abExpandDefs(Stab stab, AbSyn ab)
 
 
 		/* A little bit of debugging info */
-		abExpandDEBUG({
-			(void)fprintf(
-				dbOut,
-				"abExpand: %s --> %s",
-				abPretty(newAb),
-				abPretty(def)
-			);
+		abExpandDEBUG {
+			(void)fprintf(dbOut,
+				      "abExpand: %s --> %s",
+				      abPretty(newAb),
+				      abPretty(def));
 			fnewline(dbOut);
-		});
+		}
 
 
 		/* I really hope this can't loop */

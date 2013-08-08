@@ -226,8 +226,8 @@ static struct gjArgs *gjArgs = &gjArgs0;
 
 /* DEBUG */
 
-Bool genJavaDebug = false;
-#define gjDEBUG(s)	DEBUG_IF(genJavaDebug, s)
+Bool	genJavaDebug	= false;
+#define gjDEBUG		DEBUG_IF(genJavaDebug)
 
 /* Functions... */
 
@@ -587,7 +587,7 @@ gj0ProgMain(Foam f)
 	modifiers = gj0ProgModifiers();
 	methodName = gj0ProgMethodName(gjContext->progLhs);
 
-	gjDEBUG(printf("(Entering prog: %s\n", methodName););
+	gjDEBUG{printf("(Entering prog: %s\n", methodName);;}
 
 	args = gj0ProgCollectArgs(f);
 
@@ -613,7 +613,7 @@ gj0ProgMain(Foam f)
 	r->retnType = gj0ProgRetnType(f);
 	r->id = jcId(methodName);
 
-	gjDEBUG(printf(" Completed prog: %s)\n", methodName););
+	gjDEBUG{printf(" Completed prog: %s)\n", methodName);;}
 	
 	return r;
 }
@@ -705,7 +705,7 @@ gj0ProgDeclarations(Foam ddecl, Foam body)
 	
 
 	gj0ProgInitVars(initted, body);
-	gjDEBUG(printf("InitVars: %s\n", intSetToString(initted)););
+	gjDEBUG{printf("InitVars: %s\n", intSetToString(initted));;}
 
 	foamIter(ddecl, pdecl, {
 			JavaCode type = gj0Type(*pdecl);

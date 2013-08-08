@@ -88,8 +88,8 @@ static Foam		gen0HasSelf;
 Bool	genfExportDebug = false;
 Bool	gfaddDebug	= false;
 
-#define genfExportDEBUG(s)	DEBUG_IF(genfExportDebug, s)
-#define gfaddDEBUG(s)		DEBUG_IF(gfaddDebug, s)
+#define genfExportDEBUG		DEBUG_IF(genfExportDebug)
+#define gfaddDEBUG		DEBUG_IF(gfaddDebug)
 
 local void
 gen0ClashCheck(AbSyn ab)
@@ -772,8 +772,8 @@ gen0TypeAddDefaultSelfSlot()
 	Foam  rtHash;
 	int i;
 
-	DEBUG(fprintf(dbOut, "Make slot: exporter is:\n");
-	      abWrSExpr(dbOut, abType,int0));
+	DEBUG{fprintf(dbOut, "Make slot: exporter is:\n");
+	      abWrSExpr(dbOut, abType,int0);}
 
 	assert(gen0ExportState->self);
 	rtHash = gen0SefoHashExporter(abType);
@@ -2121,10 +2121,10 @@ gen0RtSefoHashId(Sefo sf, Sefo osf)
 		 * gen0ExportState properly leaving it NULL.
 		 */
 		hash = gen0RtDomainHash(foamCopy(gen0Syme(syme)));
-		genfHashDEBUG({
+		genfHashDEBUG {
 			(void)fprintf(dbOut, "!!! Warning: inventing hash for %%: ");
 			symePrintDb(syme);
-		});
+		}
 	}
 
 
@@ -2135,20 +2135,20 @@ gen0RtSefoHashId(Sefo sf, Sefo osf)
 
 	else if (symeIsExport(syme) || symeIsExtend(syme)) {
 		if (kind == FOAM_LIMIT && !symeLib(syme)) {
-			genfHashDEBUG({
+			genfHashDEBUG {
 				fprintf(dbOut, "Ugh: Found unhackable syme: ");
 				symePrintDb(syme);
-			});
+			}
 			return foamNewSInt(gen0StrHash(symeString(syme)));
 		}
 		hash = gen0RtDomainHash(genFoamType(sf));
 	}
 
 	else if (kind == FOAM_LIMIT) {
-		genfHashDEBUG({
+		genfHashDEBUG {
 			fprintf(dbOut, "Ugh: Found weird syme: ");
 			symePrintDb(syme);
-		});
+		}
 		hash = foamNewSInt(int0);
 	}
 
@@ -2660,13 +2660,13 @@ gen0AllSymesAllocated(AbSyn ab)
 		/* Unallocated symes normally cause false return value. */
 		result = !(syme && gen0FoamKind(syme) == FOAM_LIMIT);
 
-		gfaddDEBUG({
+		gfaddDEBUG {
 			fprintf(dbOut, "syme [%c]: ", result ? ' ' :
 				symeLib(syme) &&
 				(symeIsExport(syme) || symeIsExtend(syme)) ?
 				'-' : '?');
 			symePrintDb(syme);
-		});
+		}
 
 		if (syme && symeLib(syme) &&
 		    (symeIsExport(syme) || symeIsExtend(syme)))
@@ -2943,10 +2943,11 @@ local Foam
 gen0HasCat(Foam dom, AbSyn cat)
 {
 	Foam foam;
-	genfDEBUG({
+	genfDEBUG {
 		fprintf(dbOut, "Hash:\n");
 		sefoPrintDb(cat);
-		tfPrintDb(abTForm(cat));});
+		tfPrintDb(abTForm(cat));
+	}
 	foam = gen0BuiltinCCall(FOAM_Bool,"domainTestExport!",
 				"runtime", 3,
 				foamCopy(dom),

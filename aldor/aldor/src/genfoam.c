@@ -67,7 +67,7 @@ Bool	genfoamHashDebug	= false;
 Bool	genfoamConstDebug	= false;
 
 extern Bool genfExportDebug;	/* (from gf_add.c) */
-#define genfExportDEBUG(s)	DEBUG_IF(genfExportDebug, s)
+#define genfExportDEBUG		DEBUG_IF(genfExportDebug)
 
 CREATE_LIST (DomainCache);
 CREATE_LIST (VarPool);
@@ -686,12 +686,12 @@ genFoam(AbSyn absyn)
 
 	genDepth += 1;
 
-	genfDEBUG({
+	genfDEBUG {
 		fprintf(dbOut, "%*sGenerating %s from ",
 			genDepth, "", abInfo(tag).str);
 		sposPrint(dbOut, abPos(absyn));
 		fprintf(dbOut, "\n");
-	});
+	}
 
 	switch (tag) {
 	case AB_Apply:
@@ -4568,14 +4568,14 @@ gen0SymeGeneric(Syme syme)
 		return foamNew(kind, 1, (AInt) gen0VarIndex(syme));
 	}
 
-	genfDEBUG({
+	genfDEBUG {
 		fprintf(dbOut, "GenSyme: %s \t\tstablev: %lu stabLamLev:%lu symeDefLev: %lu symeDefLamLev: %lu ",
 			symeString(syme),
 			!gen0State->stab ? 0 : stabLevelNo(gen0State->stab), 
 			!gen0State->stab ? 0 : stabLambdaLevelNo(gen0State->stab), 
 			symeDefLevelNo(syme),
 			symeDefLambdaLevelNo(syme));
-	});
+	}
 
 	if (!gen0State->stab)
 		level = 0;
@@ -4583,13 +4583,13 @@ gen0SymeGeneric(Syme syme)
 		level = stabLambdaLevelNo(gen0State->stab) -
 			symeDefLambdaLevelNo(syme);
 		if (gen0IsInnerVar(syme, level)) {
-			genfDEBUG({fprintf(dbOut, "Inner\n");});
+			genfDEBUG{fprintf(dbOut, "Inner\n");}
 			return gen0InnerSyme(syme, level);
 		}
 	}
 
 	level = gen0FoamLevel(symeDefLevelNo(syme));
-	genfDEBUG({fprintf(dbOut, "std: Lev:%d\n", (int)level);});
+	genfDEBUG{fprintf(dbOut, "std: Lev:%d\n", (int)level);}
 	gen0UseStackedFormat(level);
 	return foamNewLex(level, gen0VarIndex(syme));
 }
@@ -7639,7 +7639,7 @@ gen0MakeBuiltinExports()
 			val = foamNewClos(foamNewEnv(int0), foamNewConst(progId));
 		def = foamNewDef(foamNewGlo(glId), val);
 		gen0ProgList = listCons(Foam)(def, gen0ProgList);
-		genfConstDEBUG(genfNumProg(gen0NumProgs, "builtin"));
+		genfConstDEBUG{genfNumProg(gen0NumProgs, "builtin");}
 		gen0NumProgs++;
 	}
 }

@@ -21,9 +21,9 @@
  *
  *****************************************************************************/
 
-Bool      retDebug 	  = false;
+Bool	retDebug	= false;
 
-# define   retDEBUG(s)    DEBUG_IF(retDebug,  s)
+#define retDEBUG	DEBUG_IF(retDebug)
 
 /******************************************************************************
  *
@@ -163,7 +163,10 @@ local void
 retRetypeProg(Foam prog)
 {
 	assert(foamTag(prog) == FOAM_Prog);
-	retDEBUG(fprintf(dbOut, "Retype..\n"); foamPrintDb(prog));
+	retDEBUG {
+		fprintf(dbOut, "Retype..\n");
+		foamPrintDb(prog);
+	}
 	if (!retDDeclInit(prog->foamProg.locals))
 		return;
 
@@ -625,8 +628,10 @@ retWTOSDef(Foam foam)
 	/* foamCopy not needed for foam */
 	newSet = foamNewSet(newLoc, foam);
 
-	retDEBUG({fprintf(dbOut, "Generating:");
-		  foamPrintDb(newSet);});
+	retDEBUG {
+		fprintf(dbOut, "Generating:");
+		foamPrintDb(newSet);
+	}
 
 	listPush(Foam, newSet, retProgInfo.newSets);
 	       
@@ -675,8 +680,10 @@ retSTOWDef(Foam foam)
 	/* foamCopy not needed for foam */
 	newSet = foamNewSet(newLoc, foam);
 
-	retDEBUG({fprintf(dbOut, "Generating:");
-		  foamPrintDb(newSet);});
+	retDEBUG {
+		fprintf(dbOut, "Generating:");
+		foamPrintDb(newSet);
+	}
 
 	listPush(Foam, newSet, retProgInfo.newSets);
 
@@ -771,8 +778,10 @@ retInsertNewSets(Foam stmt, FoamList newSets)
 
 	retProgInfo.addedNewSets = true;
 
-	retDEBUG({fprintf(dbOut, "InsertNewSeq: ");
-		  foamPrintDb(newSeq);});
+	retDEBUG {
+		fprintf(dbOut, "InsertNewSeq: ");
+		foamPrintDb(newSeq);
+	}
 
 	return newSeq;
 }

@@ -16,7 +16,7 @@
 
 Bool	cfgDebug		= false;
 
-#define cfgDEBUG(s)		DEBUG_IF(cfgDebug, s)
+#define cfgDEBUG		DEBUG_IF(cfgDebug)
 
 static String cfgGetLine(FILE *file, Bool *atEof);
 static Bool   cfgIsSection(char *line, char *name);
@@ -69,7 +69,7 @@ cfgLookupList(char *string, ConfigItemList lst)
 {
 	ConfigItemList	result = listNil(ConfigItem);
 
-	cfgDEBUG(fprintf(dbOut, "Getting key list: %s\n", string));
+	cfgDEBUG{fprintf(dbOut, "Getting key list: %s\n", string);}
 
 	while (lst != listNil(ConfigItem)) {
 		if (strEqual(string, cfgName(car(lst))))
@@ -82,7 +82,7 @@ cfgLookupList(char *string, ConfigItemList lst)
 ConfigItem
 cfgLookup(char *string, ConfigItemList lst)
 {
-	cfgDEBUG(fprintf(dbOut, "Getting key: %s\n", string));
+	cfgDEBUG{fprintf(dbOut, "Getting key: %s\n", string);}
 
 	while (lst != listNil(ConfigItem)) {
 		if (strEqual(string, cfgName(car(lst))))

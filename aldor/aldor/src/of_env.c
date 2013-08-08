@@ -14,8 +14,8 @@
 /*
  * ToDo: Consider splitting environments, deleting "empty" environments, etc.
  */
-Bool	oeDebug	= false;
-#define oeDEBUG(s)	DEBUG_IF(oeDebug, s)
+Bool	oeDebug		= false;
+#define oeDEBUG		DEBUG_IF(oeDebug)
 
 typedef enum { ProgUnknown, ProgForeign, ProgLocal } OeProgOrigin;
 typedef struct oeProgInfo {
@@ -51,7 +51,7 @@ oeUnit(Foam unit)
 	defs = unit->foamUnit.defs;
 	oeProgInfo = (OeProgInfo*) stoAlloc(OB_Other, foamArgc(defs) * sizeof(OeProgInfo));
 	oeWholeUnit = unit;
-	oeDEBUG(foamPrintDb(unit));
+	oeDEBUG{foamPrintDb(unit);}
 	for (i=0; i<foamArgc(defs); i++) {
 		oeProgInfo[i].done    = false;
 		oeProgInfo[i].origin  = ProgUnknown;
@@ -64,7 +64,7 @@ oeUnit(Foam unit)
 	oeRenewEnvs(unit);
 
 	stoFree(oeProgInfo);
-	oeDEBUG(fprintf(dbOut, "hello\n");foamPrintDb(unit));
+	oeDEBUG{fprintf(dbOut, "hello\n");foamPrintDb(unit);}
 	oeProgInfo = NULL;
 }
 
@@ -79,14 +79,18 @@ oeFindEnvs(Foam unit)
 	for(i=0; i<1/*foamArgc(defs)*/; i++) {
 		Foam	def = defs->foamDDef.argv[i];
 		Foam	prog;
-oeDEBUG(fprintf(dbOut, "Prog<<\n"));
-oeDEBUG(foamWrSExpr(dbOut, def,SXRW_Default));
+		oeDEBUG {
+			fprintf(dbOut, "Prog<<\n");
+			foamWrSExpr(dbOut, def,SXRW_Default);
+		}
 		assert(foamTag(def) == FOAM_Def);
 		prog = def->foamDef.rhs;
 		if (foamTag(prog) == FOAM_Prog)
 			oeCheckEnv(prog, i);
-oeDEBUG(fprintf(dbOut, "Prog>>\n"));
-oeDEBUG(foamWrSExpr(dbOut, prog,SXRW_Default));
+		oeDEBUG {
+			fprintf(dbOut, "Prog>>\n");
+			foamWrSExpr(dbOut, prog,SXRW_Default);
+		}
 	}
 }
 
@@ -224,14 +228,14 @@ oeRenewEnvs(Foam unit)
 		prog = def->foamDef.rhs;
 		if (foamTag(prog) == FOAM_Prog
 		    && oeProgInfo[i].origin == ProgLocal) {
-			oeDEBUG({
+			oeDEBUG {
 				fprintf(dbOut, "Old %d:\n", i);
 				foamPrintDb(oeOldEnv(i));
 				fprintf(dbOut, "New %d:\n", i);
 				foamPrintDb(oeNewEnv(i));
 				if (!foamEqual(oeOldEnv(i), oeNewEnv(i)))
 					foamPrintDb(prog);
-			});
+			}
 			foamFree(prog->foamProg.levels);
 			prog->foamProg.levels = oeNewEnv(i);
 		}

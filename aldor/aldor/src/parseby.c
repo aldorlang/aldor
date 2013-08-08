@@ -27,7 +27,7 @@ parse(TokenList *prest)
 	AbSyn		absyn;
 
 	yydebug = 0;
-	DEBUG(yydebug = 1);
+	DEBUG yydebug = 1;
 
 	yyerrcount = 0;
 	yytoklist  = *prest;

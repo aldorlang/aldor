@@ -17,7 +17,7 @@
 #include "sexpr.h"
 
 Bool	peepDebug	= false;
-#define peepDEBUG(s)	DEBUG_IF(peepDebug, s)
+#define peepDEBUG	DEBUG_IF(peepDebug)
 
 
 /*****************************************************************************
@@ -63,11 +63,11 @@ peepUnit(Foam unit,Bool foldfloats)
 
 	assert (foamTag(unit) == FOAM_Unit);
 
-	peepDEBUG({
+	peepDEBUG {
 		fprintf(dbOut, ">>peepUnit:\n");
 		if (!_dont_assert) foamPrint(dbOut, unit);
 		fnewline(dbOut);
-	});
+	}
 
 	defs = unit->foamUnit.defs;
 
@@ -81,11 +81,11 @@ peepUnit(Foam unit,Bool foldfloats)
 
 	assert(foamAudit(unit));
 
-	peepDEBUG({
+	peepDEBUG {
 		fprintf(dbOut, "<<peepUnit:\n");
 		if (!_dont_assert) foamPrint(dbOut, unit);
 		fnewline(dbOut);
-	});
+	}
 
 	return unit;
 }
@@ -148,14 +148,16 @@ peepAux(Foam *arg)
 
 	do {    
 		subChanged = false;
-		peepDEBUG(s = foamToSExpr(*arg));
+		peepDEBUG{s = foamToSExpr(*arg);}
 		newArg = peepExpr(*arg, &subChanged);
-		peepDEBUG(if (subChanged) {
-			sxiWrite(dbOut, s, SXRW_MixedCase);
-			foamWrSExpr(dbOut, newArg, SXRW_MixedCase);
-			fprintf(dbOut, "=====\n");
-			sxiFree(s);			
-		});	
+		peepDEBUG {
+			if (subChanged) {
+				sxiWrite(dbOut, s, SXRW_MixedCase);
+				foamWrSExpr(dbOut, newArg, SXRW_MixedCase);
+				fprintf(dbOut, "=====\n");
+				sxiFree(s);			
+			}
+		}
 		*arg = newArg;
 	} while (subChanged);
 }

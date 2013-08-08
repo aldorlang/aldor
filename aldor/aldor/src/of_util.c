@@ -320,9 +320,11 @@ fpMarkFormat(Foam * pRef, AInt *pFormat, FoamTag tag)
 		 * weak in unifying formats
 		 */
 
-		DEBUG(if (decl->foamDecl.type == FOAM_Rec)
-		         fprintf(dbOut,
-				 "Record with wrong format number found..."););
+		DEBUG {
+			if (decl->foamDecl.type == FOAM_Rec)
+				fprintf(dbOut,
+					"Record with wrong format number found...");
+		}
 
 #ifdef NOWAY
                 decl->foamDecl.format = *pFormat;

@@ -47,9 +47,9 @@
  * Define BIGINT_DO_DEBUG to display debug info.
  */
 #ifdef BIGINT_DO_DEBUG
-# define BIGINT_DEBUG(a)	if (true) Statement(a) else { }
+# define BIGINT_DEBUG	if (true)
 #else
-# define BIGINT_DEBUG(a)	if (false) Statement(a) else { }
+# define BIGINT_DEBUG	if (false)
 #endif
 
 #ifdef FOAM_RTS
@@ -2019,7 +2019,7 @@ iintDivide(BInt q, BInt r, BInt u, BInt v)
 	 */
 	v1= Placev(v)[KtoI(1)];
 	if (v1 >= BINT_RADIX/2) {
-		BIGINT_DEBUG(fprintf(dbOut, "**** d = 1 ****\n"));
+		BIGINT_DEBUG{fprintf(dbOut, "**** d = 1 ****\n");}
 		d = 1;
 	}
 	else {
@@ -2047,7 +2047,7 @@ iintDivide(BInt q, BInt r, BInt u, BInt v)
 		uj2 = Placev(u)[KtoJu(kj+2)];
 
 		if (uj0 == v1) {
-			BIGINT_DEBUG(fprintf(dbOut, "**** uj0 == v1 ****\n"));
+			BIGINT_DEBUG{fprintf(dbOut, "**** uj0 == v1 ****\n");}
 			qhat = BINT_RADIX_MINUS_1;
 			rhat = uj1;
 			PlusStep(k, rhat, rhat, v1, int0);
@@ -2062,7 +2062,7 @@ iintDivide(BInt q, BInt r, BInt u, BInt v)
 			Bool	isGT;
 			for (i = 1; ; i++) {
 				/* Loop shd be evaluated no more than twice. */
-				BIGINT_DEBUG(if(i==2)fprintf(dbOut, "**** 2 ****\n"););
+				BIGINT_DEBUG{if(i==2)fprintf(dbOut, "**** 2 ****\n");}
 				assert(i <= 2);
 				/*
 				 * This test could be speeded up by doing
@@ -2081,7 +2081,7 @@ iintDivide(BInt q, BInt r, BInt u, BInt v)
 				if (k) break;
 			}
 		}
-		BIGINT_DEBUG(if (k) fprintf(dbOut, "**** rhat ov ****\n"););
+		BIGINT_DEBUG{if (k) fprintf(dbOut, "**** rhat ov ****\n");}
 
 		/*
 		 * D4. Multiply and subtract: u[kj..kj+n] -= qhat * (0,v[1..n])
@@ -2114,7 +2114,7 @@ iintDivide(BInt q, BInt r, BInt u, BInt v)
 			/*
 			 * D6. Add back: u[kj..kj+n] += (0,v[1..n])
 			 */
-			BIGINT_DEBUG(fprintf(dbOut, "**** Add Back %d ****\n", k));
+			BIGINT_DEBUG{fprintf(dbOut, "**** Add Back %d ****\n", k);}
 			Placev(q)[KtoJq(kj)]--;
 			k = 0;
 

@@ -20,7 +20,7 @@
 #include "table.h"
 
 Bool	ablogDebug		= false;
-#define ablogDEBUG(s)		DEBUG_IF(ablogDebug, s)
+#define ablogDEBUG		DEBUG_IF(ablogDebug)
 
 
 /*****************************************************************************
@@ -274,11 +274,11 @@ ablogAndPush(AbLogic *glo, AbLogic *save, Sefo cond, Bool sense)
 	*glo = ablogAnd(*save, thisCond);
 	ablogFree(thisCond);
 
-	ablogDEBUG({
-                fprintf(dbOut, ">> Changed condition to ");
-                ablogPrint(dbOut, *glo);
-                fnewline(dbOut);
-        });
+	ablogDEBUG {
+		fprintf(dbOut, ">> Changed condition to ");
+		ablogPrint(dbOut, *glo);
+		fnewline(dbOut);
+	}
 }
 
 void
@@ -287,9 +287,9 @@ ablogAndPop(AbLogic *glo, AbLogic *save)
 	ablogFree(*glo);
 	*glo = *save;
 
-	ablogDEBUG({
-                fprintf(dbOut, "<< Changed back\n");
-	});
+	ablogDEBUG {
+		fprintf(dbOut, "<< Changed back\n");
+	}
 }
 
 
@@ -471,10 +471,11 @@ ablogTestImplies(void *clos, DNF_Atom a, DNF_Atom b)
 	know = ablogFrAtom(a);
 	test = ablogFrAtom(b);
 
-	ablogDEBUG(fprintf(dbOut, "Implies test\n");
-		   abPrintDb(know);
-		   abPrintDb(test);
-		   );
+	ablogDEBUG {
+		fprintf(dbOut, "Implies test\n");
+		abPrintDb(know);
+		abPrintDb(test);
+	}
 	if (abTag(test) != AB_Has || abTag(know) != AB_Has)
 		return false;
 
@@ -634,11 +635,11 @@ ablogTestProperties(Sefo test, Sefo know)
 	tfknown = abTForm(know) ?
 		abTForm(know) : (tiTopFns()->tiGetTopLevelTForm)(NULL, know);
 
-	ablogDEBUG({
+	ablogDEBUG{
 		fprintf(dbOut, "Checking: \n");
 		tfPrintDb(tftest);
 		tfPrintDb(tfknown);
-	});
+	}
 
 	result = tfSatBit(tfSatHasMask(), tfknown, tftest);
 	return result;

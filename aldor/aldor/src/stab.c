@@ -30,9 +30,9 @@ Bool	stabDebug		= false;
 Bool	stabImportDebug		= false;
 Bool	stabConstDebug		= false;
 
-#define	stabDEBUG(s)		DEBUG_IF(stabDebug, s)
-#define	stabImportDEBUG(s)	DEBUG_IF(stabImportDebug, s)
-#define	stabConstDEBUG(s)	DEBUG_IF(stabConstDebug, s)
+#define stabDEBUG		DEBUG_IF(stabDebug)
+#define stabImportDEBUG		DEBUG_IF(stabImportDebug)
+#define stabConstDEBUG		DEBUG_IF(stabConstDebug)
 
 /****************************************************************************
  *
@@ -351,13 +351,13 @@ stabEntryAddSyme(StabEntry stent, Syme syme)
 
 	if (symeIsCheckCondIncomplete(syme)) {
 		stent->pending = listCons(Syme)(syme, stent->pending);
-		stabDEBUG(afprintf(dbOut, "Pending condition: %pSyme %pAbSynList\n",
-				   syme, symeCondition(syme)));
+		stabDEBUG{afprintf(dbOut, "Pending condition: %pSyme %pAbSynList\n",
+				   syme, symeCondition(syme));}
 	}
 	if (!symeIsCondChecked(syme) && symeCondition(syme)) {
 		stent->pending = listCons(Syme)(syme, stent->pending);
-		stabDEBUG(afprintf(dbOut, "Pending condition [unchecked]: %pSyme %pAbSynList\n",
-				   syme, symeCondition(syme)));
+		stabDEBUG{afprintf(dbOut, "Pending condition [unchecked]: %pSyme %pAbSynList\n",
+				   syme, symeCondition(syme));}
 	}
 	if (symeCondIsLazy(syme)) {
 		stabEntryPutSyme(stent, int0, syme);
@@ -434,9 +434,9 @@ stabEntryCheckConditions(StabEntry stent)
 		Syme psyme = car(psymes);
 		symeCheckCondition(psyme);
 
-		stabDEBUG(afprintf(dbOut, "Checked: %pSyme - complete: %d condition: %pAbSynList\n",
+		stabDEBUG{afprintf(dbOut, "Checked: %pSyme - complete: %d condition: %pAbSynList\n",
 				   psyme, symeIsCheckCondIncomplete(psyme),
-				   symeCondition(psyme)));
+				   symeCondition(psyme));}
 
 		if (symeCondition(psyme) == listNil(Sefo)) {
 			stabEntryPutSyme(stent, int0, psyme);
@@ -625,16 +625,16 @@ stabGetEntry(Stab stab0, Symbol id, Bool recurse)
 	StabEntry stent;
 	Bool	first = true;
 
-	stabDEBUG(fprintf(dbOut, "Searching for symbol %s", symString(id)));
+	stabDEBUG{fprintf(dbOut, "Searching for symbol %s", symString(id));}
 
 	stab = stab0;
 	stent = 0;
 	while (stab && !stent) {
-		stabDEBUG({
+		stabDEBUG {
 			fprintf(dbOut,
 				(first ? " looking in level %lu" : ", %lu"),
 				stabLevelNo(stab));
-		});
+		}
 		first = false;
 		stent = (StabEntry) tblElt(car(stab)->tbl, id, NULL);
 		if (! recurse)
@@ -646,20 +646,20 @@ stabGetEntry(Stab stab0, Symbol id, Bool recurse)
 	if (!stent) {
 		stent = stabEntryNew();
 		tblSetElt(car(stab0)->tbl, id, stent);
-		stabDEBUG(fprintf(dbOut, " ... manufacturing"));
+		stabDEBUG{fprintf(dbOut, " ... manufacturing");}
 	}
 	else if (stab != stab0) {
 		stent = stabEntryCopy(stent);
 		tblSetElt(car(stab0)->tbl, id, stent);
-		stabDEBUG(fprintf(dbOut, " ... copying"));
+		stabDEBUG{fprintf(dbOut, " ... copying");}
 	}
 
 /*LDR*/
 #if 1 && EDIT_1_0_n2_06
-	stabDEBUG({fnewline(dbOut);});
+	stabDEBUG{fnewline(dbOut);}
 	stabEntryGetTypes(stent, ablogFalse());
 #endif
-	stabDEBUG({
+	stabDEBUG {
 		SymeList sl = stabEntryAllSymes(stent);
 		TPoss tp = stabEntryAllTypes(stent);
 		int i;
@@ -700,7 +700,7 @@ stabGetEntry(Stab stab0, Symbol id, Bool recurse)
 			findent -= 3;
 		}
 		fnewline(dbOut);
-	});
+	}
 
 	return stent;
 }
@@ -1110,12 +1110,12 @@ stabUseMeaning(Stab stab, Syme syme)
 {
 	UShort	d = stabLevelNo(stab) - symeDefLevelNo(syme);
 
-	stabDEBUG({
+	stabDEBUG {
 		fprintf(dbOut, "Using %s (.%ld) of depth %d at %d",
 			symeString(syme), symeConstNum(syme), 
 			symeUsedDepth(syme), d);
 		fnewline(dbOut);
-	});
+	}
 
 	if (symeUnused(syme) || symeUsedDepth(syme) < d)
 		symeSetUsedDepth(syme, d);
@@ -1188,8 +1188,8 @@ stabAddMeaning(Stab stab, Syme syme)
 	}
 
 	car(stab)->boundSymes = listCons(Syme)(syme, car(stab)->boundSymes);
-	stabDEBUG(afprintf(dbOut, "Adding stab entry %d %pSyme %pAbSynList\n", car(stab)->lexicalLevel, 
-			   syme, symeCondition(syme)));
+	stabDEBUG{afprintf(dbOut, "Adding stab entry %d %pSyme %pAbSynList\n", car(stab)->lexicalLevel, 
+			   syme, symeCondition(syme));}
 	stabEntryAddSyme(stent, syme);
 
 	return syme;
@@ -1223,11 +1223,11 @@ stabDefLexConst(Stab stab, Symbol id, TForm tform)
 	Syme	syme = symeNewLexConst(id, tform, car(stab));
 	symeSetDefnNum(syme, (int) ++stabDefinitionCounter);
 
-	stabConstDEBUG({
+	stabConstDEBUG {
 		fprintf(dbOut, "defnNum[%d]:  ", symeDefnNum(syme));
 		symePrint(dbOut, syme);
 		fnewline(dbOut);
-	});
+	}
 
 	syme = stabAddMeaning(stab, syme);
 	return syme;
@@ -1241,11 +1241,11 @@ stabDefLexVar(Stab stab, Symbol id, TForm tform)
 	syme = stabAddMeaning(stab, syme);
 	symeSetDefnNum(syme, (int) ++stabDefinitionCounter);
 
-	stabConstDEBUG({
+	stabConstDEBUG {
 		fprintf(dbOut, "defnNum[%d]:  ", symeDefnNum(syme));
 		symePrint(dbOut, syme);
 		fnewline(dbOut);
-	});
+	}
 
 	return syme;
 }
@@ -1273,22 +1273,22 @@ stabDefExport(Stab stab, Symbol id, TForm tform, Doc doc)
 {
 	Syme	syme = symeNewExport(id, tform, car(stab));
 
-	stabDEBUG({
+	stabDEBUG {
 		fprintf(dbOut, "Defining export %s with comment ",
 			symString(id));
 		docPrint(dbOut, doc);
 		fnewline(dbOut);
-	});
+	}
 
 	symeSetComment(syme, doc);
 	syme = stabAddMeaning(stab, syme);
 	symeSetDefnNum(syme, (int) ++stabDefinitionCounter);
 
-	stabConstDEBUG({
+	stabConstDEBUG {
 		fprintf(dbOut, "defnNum[%d]:  ", symeDefnNum(syme));
 		symePrint(dbOut, syme);
 		fnewline(dbOut);
-	});
+	}
 
 	return syme;
 }
@@ -1704,14 +1704,14 @@ stabImportFrom(Stab stab, TQual tq)
 	if (stabIsImportedTForm(stab, origin))
 		return listNil(TQual);
 
-	stabImportDEBUG({
+	stabImportDEBUG {
 		fprintf(dbOut, "Importing %s from ",
 			tqIsForeign(tq) ? " foreign exports" :
 			tqIsBuiltin(tq) ? " builtin exports" :
 			tqIsQualified(tq) ? " explicit exports" : "");
 		tfPrint(dbOut, origin);
 		fnewline(dbOut);
-	});
+	}
 
 	stabImportRemark(stab, tqQual(tq), origin);
 
@@ -1754,9 +1754,9 @@ stabImportFrom(Stab stab, TQual tq)
 
 	stabPutMeanings(stab, dsymes);
 
-	stabImportDEBUG({
-			afprintf(dbOut, "... imported: %pSymeCList\n", dsymes);
-	});
+	stabImportDEBUG {
+		afprintf(dbOut, "... imported: %pSymeCList\n", dsymes);
+	}
 
 	if (!tqIsQualified(tq))
 		return tfGetDomCascades(origin);

@@ -18,9 +18,9 @@ void testXFloat(void) { }
 #include "xfloat.h"
 
 #ifdef XFLOAT_DEBUG
-# define xfloatDEBUG(x)	x
+# define xfloatDEBUG	if (true)
 #else
-# define xfloatDEBUG(x)
+# define xfloatDEBUG	if (false)
 #endif
 
 /******************************************************************************
@@ -172,9 +172,9 @@ testDFloatRoundTrip(void)
 	DFloat	dbuf;
 	XDFloat	xbuf;
 
-  	xfloatDEBUG(int 	expon;)
-  	xfloatDEBUG(Bool	sign;)
-  	xfloatDEBUG(UByte	pb[sizeof(XDFloat)];)
+	int	expon;
+	Bool	sign;
+	UByte	pb[sizeof(XDFloat)];
 
 	unsigned int i, j;
 
@@ -191,33 +191,33 @@ testDFloatRoundTrip(void)
 			ubPrintDF(test);
 			printf(") -> ");
 
-			xfloatDEBUG({
-			  dfDissemble(&test, &sign,&expon,pb,NULL);
-			  printf("=%d%c",expon,sign?'-':'+');
-			  for (j=0;j<sizeof(double);j++) printf("%02x.",pb[j]);
-			  fflush(osStdout);
-			});
+			xfloatDEBUG {
+				dfDissemble(&test, &sign,&expon,pb,NULL);
+				printf("=%d%c",expon,sign?'-':'+');
+				for (j=0;j<sizeof(double);j++) printf("%02x.",pb[j]);
+				fflush(osStdout);
+			}
 
 			ubPrint(xbuf);
 			printf(" -> ");
 
-			xfloatDEBUG({
-			  fflush(osStdout);
-			  xdfDissemble(&xbuf, &sign,&expon,pb);
-			  printf("=%d%c",expon,sign?'-':'+');
-			  for (j=0;j<sizeof(double);j++) printf("%02x.",pb[j]);
-			  fflush(osStdout);
-			});
+			xfloatDEBUG {
+				fflush(osStdout);
+				xdfDissemble(&xbuf, &sign,&expon,pb);
+				printf("=%d%c",expon,sign?'-':'+');
+				for (j=0;j<sizeof(double);j++) printf("%02x.",pb[j]);
+				fflush(osStdout);
+			}
 
 			ubPrintDF(dbuf);
 
-			xfloatDEBUG({
-			  fflush(osStdout);
-			  dfDissemble(&dbuf, &sign,&expon,pb,NULL);
-			  printf("=%d%c",expon,sign?'-':'+');
-			  for (j=0;j<sizeof(double);j++) printf("%02x.",pb[j]);
-			  fflush(osStdout);
-			});
+			xfloatDEBUG {
+				fflush(osStdout);
+				dfDissemble(&dbuf, &sign,&expon,pb,NULL);
+				printf("=%d%c",expon,sign?'-':'+');
+				for (j=0;j<sizeof(double);j++) printf("%02x.",pb[j]);
+				fflush(osStdout);
+			}
 
 		}
 		else {
@@ -226,7 +226,7 @@ testDFloatRoundTrip(void)
 			printf(")");
 		}
 
-		xfloatDEBUG(fflush(osStdout));
+		xfloatDEBUG fflush(osStdout);
 	}
 	printf("\n");
 }
@@ -400,17 +400,17 @@ testOneSFloat(SFloat *test)
 		ubPrintSF(*test);
 		printf(") -> ");
 
-		xfloatDEBUG(testOneSFloatDebug(test));
+		xfloatDEBUG testOneSFloatDebug(test);
 
 		ubPrint(xbuf);
 		printf(" -> ");
 
-		xfloatDEBUG(testOneXSFloatDebug(&xbuf));
+		xfloatDEBUG testOneXSFloatDebug(&xbuf);
 
 		ubPrintSF(sbuf);
 		printf("(%e,%e)\n", *test, sbuf);
 
-		xfloatDEBUG(testOneSFloatDebug(&sbuf));
+		xfloatDEBUG testOneSFloatDebug(&sbuf);
 	}
 }
 
@@ -428,17 +428,17 @@ testOneDFloat(DFloat *test)
 		ubPrintDF(*test);
 		printf(") -> ");
 
-		xfloatDEBUG(testOneDFloatDebug(test));
+		xfloatDEBUG testOneDFloatDebug(test);
 
 		ubPrint(xbuf);
 		printf(" -> ");
 
-		xfloatDEBUG(testOneXDFloatDebug(&xbuf));
+		xfloatDEBUG testOneXDFloatDebug(&xbuf);
 
 		ubPrintDF(dbuf);
 		printf("(%e,%e)\n", *test, dbuf);
 
-		xfloatDEBUG(testOneDFloatDebug(&dbuf));
+		xfloatDEBUG testOneDFloatDebug(&dbuf);
 	}
 }
 

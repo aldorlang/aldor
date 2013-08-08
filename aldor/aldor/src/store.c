@@ -374,9 +374,9 @@ static Bool	stoMustTag      = true;
 static Bool     markingStats    = false;
 
 #ifdef STO_DEBUG_DISPLAY
-#   define stoDEBUG(e)		Statement(e)
+# define stoDEBUG		if (true)
 #else
-#   define stoDEBUG(e)		Nothing
+# define stoDEBUG		if (false)
 #endif
 
 /*****************************************************************************
@@ -1776,7 +1776,6 @@ stoGcMarkAndSweep(void)
 }
 
 
-#ifdef STO_DEBUG_DISPLAY
 /* Pointer classification: DO NOT change the order of these defines! */
 #define MEM_HEAP  0
 #define MEM_IDATA 1
@@ -1834,7 +1833,6 @@ stoMarkCountTest(int i)
 	   default            : return "????";
 	}
 }
-#endif
 
 /*
  * Mark the pieces currently in use.
@@ -1847,16 +1845,14 @@ stoGcMark(void)
 {
 	struct osMemMap **mm;
 	int	n;
-#ifdef STO_DEBUG_DISPLAY
 	int i, j;
 	static int doClassify = -1;
-#endif
 
 	mm = osMemMap(OSMEM_STACK | OSMEM_IDATA | OSMEM_DDATA);
 	if (!mm) return 0;
 
 	/* Pointer classification only available in debug version */
-	stoDEBUG({
+	stoDEBUG {
 		if (doClassify == -1)
 			doClassify = (osGetEnv("GC_CLASSIFY") != NULL);
 
@@ -1867,24 +1863,24 @@ stoGcMark(void)
 				for (j = 0;j < PTR_MAX_TYPE;j++)
 					stoMarkCount[i][j] = 0;
 		}
-	});
+	}
 
 	stoGcMarkedFree = 0;
 	n  = 0;
 
 	for ( ; (*mm)->use != OSMEM_END; mm++) {
-		stoDEBUG({
+		stoDEBUG {
 			/* Memory type being traced (for classification) */
 			stoMarkArea	= MEM_HEAP;
 			stoMarkChildren = 0;
-		});
+		}
 
 		switch ((*mm)->use) {
 		case OSMEM_STACK:
-			stoDEBUG(stoMarkArea++);
+			stoDEBUG{stoMarkArea++;}
 			/* Fall through */
 		case OSMEM_IDATA:
-			stoDEBUG(stoMarkArea++);
+			stoDEBUG{stoMarkArea++;}
 			/*
 			 * Top-level call to stoGcMarkRange requires
 			 * page check under Win98.
@@ -1915,7 +1911,7 @@ stoGcMark(void)
 			char *p;
 			int  i, inbottom = 0, intop = 0;
 
-			stoDEBUG(stoMarkArea = MEM_DDATA);
+			stoDEBUG{stoMarkArea = MEM_DDATA;}
 
 			/* Scan from (*mm)->lo to heapStart? */
 			if ((Pointer)heapStart >= (*mm)->lo &&
@@ -1963,7 +1959,7 @@ stoGcMark(void)
 			int  i;
 			char *p;
 
-			stoDEBUG(stoMarkArea = MEM_DDATA);
+			stoDEBUG{stoMarkArea = MEM_DDATA;}
 			if ( (Pointer) heapStart >= (*mm)->lo &&
 				(Pointer) heapStart < (*mm)-> hi)
 			{
@@ -2014,7 +2010,7 @@ stoGcMark(void)
 	}
 
 	/* Emit pointer classification table? */
-	stoDEBUG({
+	stoDEBUG {
 		if (doClassify)
 		{
 			/* Column headings */
@@ -2039,7 +2035,7 @@ stoGcMark(void)
 			/* Leave a gap below the table */
 			fprintf(osStderr, "\n\n");
 		}
-	});
+	}
 
 	return n;
 }
@@ -2053,9 +2049,7 @@ stoGcMarkRange(Pointer *lo, Pointer *hi, int check)
 	static QmInfo	qmtag;
 	static Section *sect;
 	int		n = 0;
-#ifdef STO_DEBUG_DISPLAY
 	int		oldStoMarkArea;
-#endif
 #if defined(OS_WIN32)
 	MEMORY_BASIC_INFORMATION minfo;
 	int access;
@@ -2156,7 +2150,7 @@ PagesOkay: {}
 #endif
 
 	/* Pointer classification */
-	stoDEBUG(oldStoMarkArea = stoMarkArea);
+	stoDEBUG{oldStoMarkArea = stoMarkArea;}
 
 	stoWatchMarkFrom(lo);
 	stoWatchMarkTo  (hi);
@@ -2171,15 +2165,17 @@ TailRecursion:
 
 		/* Verify pointer is into heap. */
 		if (!isInHeap(p)) continue;
-		stoDEBUG(stoMarkCount[stoMarkArea][PTR_INTO_HEAP]++);
+		stoDEBUG{stoMarkCount[stoMarkArea][PTR_INTO_HEAP]++;}
 
 
 		/* Verify pointer is to busy page. */
 		pgno  = pgNo(p);
 		pgtag = pgMap[pgno];
 		if (pgtag != PgBusyFirst && pgtag != PgBusyFollow) continue;
-		stoDEBUG(stoMarkCount[stoMarkArea][PTR_INTO_HEAP]--);
-		stoDEBUG(stoMarkCount[stoMarkArea][PTR_INTO_BUSY]++);
+		stoDEBUG {
+			stoMarkCount[stoMarkArea][PTR_INTO_HEAP]--;
+			stoMarkCount[stoMarkArea][PTR_INTO_BUSY]++;
+		}
 
 
 		/* Grab section header. */
@@ -2188,8 +2184,10 @@ TailRecursion:
 
 		/* Verify pointed-to quantum. */
 		if (ptrLT(p, sect->data)) continue;
-		stoDEBUG(stoMarkCount[stoMarkArea][PTR_INTO_BUSY]--);
-		stoDEBUG(stoMarkCount[stoMarkArea][PTR_INTO_DATA]++);
+		stoDEBUG {
+			stoMarkCount[stoMarkArea][PTR_INTO_BUSY]--;
+			stoMarkCount[stoMarkArea][PTR_INTO_DATA]++;
+		}
 
 
 #ifdef STO_DIVISION_BY_LOOKUP
@@ -2227,8 +2225,10 @@ TailRecursion:
 		/* Verify not already marked. */
 		qmtag = sect->info[qmno];
 		if (QmInfoMark(qmtag)) continue;
-		stoDEBUG(stoMarkCount[stoMarkArea][PTR_INTO_DATA]--);
-		stoDEBUG(stoMarkCount[stoMarkArea][PTR_INTO_NEW]++);
+		stoDEBUG {
+			stoMarkCount[stoMarkArea][PTR_INTO_DATA]--;
+			stoMarkCount[stoMarkArea][PTR_INTO_NEW]++;
+		}
 
 
 		/* Add mark bits quanta in piece.  Determine data bounds. */
@@ -2259,8 +2259,10 @@ TailRecursion:
 
 		/* Verify piece is in use. */
 		if (QmInfoKind(qmtag) == QmFreeFirst) {
-			stoDEBUG(stoMarkCount[stoMarkArea][PTR_INTO_NEW]--);
-			stoDEBUG(stoMarkCount[stoMarkArea][PTR_INTO_FREE]++);
+			stoDEBUG {
+				stoMarkCount[stoMarkArea][PTR_INTO_NEW]--;
+				stoMarkCount[stoMarkArea][PTR_INTO_FREE]++;
+			}
 			stoGcMarkedFree++;
 
 #ifdef STO_CAN_BLACKLIST
@@ -2304,13 +2306,13 @@ TailRecursion:
 
 		/* Mark descendants. */
 		if (ptrEQ(pp, hi-1)) {
-			stoDEBUG({
+			stoDEBUG {
 				if (stoMarkArea < MEM_MAX_TYPE) {
 					/* Now marking within heap */
 					oldStoMarkArea = stoMarkArea;
 					stoMarkArea += MEM_MAX_TYPE;
 				}
-			});
+			}
 
 			lo = plo;
 			hi = phi;
@@ -2318,22 +2320,22 @@ TailRecursion:
 		}
 
 		/* Pointer classification */
-		stoDEBUG({
+		stoDEBUG {
 			if (stoMarkArea < MEM_MAX_TYPE) {
 				/* Now marking within heap */
 				oldStoMarkArea = stoMarkArea;
 				stoMarkArea += MEM_MAX_TYPE;
 			}
-		});
+		}
 
 		n += stoGcMarkRange(plo, phi, (int) 0);
 
 		/* Pointer classification */
-		stoDEBUG(stoMarkArea = oldStoMarkArea);
+		stoDEBUG{stoMarkArea = oldStoMarkArea;}
 	}
 
 	/* Pointer classification */
-	stoDEBUG(stoMarkArea = oldStoMarkArea);
+	stoDEBUG{stoMarkArea = oldStoMarkArea;}
 	return n;
 }
 
@@ -3655,17 +3657,15 @@ stoShowArgs(char *detail)
 void
 stoGc(void)
 {
-#ifdef STO_DEBUG_DISPLAY
 	static int doShow = -1;
 
 	if (doShow == -1)
 		doShow = stoShowArgs(osGetEnv("GC_DETAIL"));
-#endif
 	if (stoMustTag) {
 		static Bool inGc = false;
 		if (inGc) return;
 		tmStart(gcTimer());
-		stoDEBUG({
+		stoDEBUG {
 			if (doShow) {
 				/* Census taking is special */
 				if (doShow & STO_SHOW_CENSUS)
@@ -3675,11 +3675,11 @@ stoGc(void)
 				/* Some things not shown before GC */
 				stoShowDetail(doShow & STO_SHOW_BEFORE_MASK);
 			}
-		});
+		}
 		inGc = true;
 		stoGcMarkAndSweep();
 		inGc = false;
-		stoDEBUG({
+		stoDEBUG {
 			if (doShow) {
 				/* Census taking is special */
 				if (doShow & STO_SHOW_CENSUS)
@@ -3689,7 +3689,7 @@ stoGc(void)
 				/* Allowed to show census this time */
 				stoShowDetail(doShow);
 			}
-		});
+		}
 		tmStop(gcTimer());
 	}
 }
@@ -4540,22 +4540,22 @@ stoMarkObject(Pointer p)
 	static QmInfo	qmtag;
 	static Section *sect;
 	int		n = 0;
-#ifdef STO_DEBUG_DISPLAY
 	int		oldStoMarkArea = stoMarkArea;
-#endif
 
 
 	/* Verify pointer is into heap. */
 	if (!isInHeap(p)) return 0;
-	stoDEBUG(stoMarkCount[stoMarkArea][PTR_INTO_HEAP]++);
+	stoDEBUG{stoMarkCount[stoMarkArea][PTR_INTO_HEAP]++;}
 
 
 	/* Verify pointer is to busy page. */
 	pgno  = pgNo(p);
 	pgtag = pgMap[pgno];
 	if (pgtag != PgBusyFirst && pgtag != PgBusyFollow) return 0;
-	stoDEBUG(stoMarkCount[stoMarkArea][PTR_INTO_HEAP]--);
-	stoDEBUG(stoMarkCount[stoMarkArea][PTR_INTO_BUSY]++);
+	stoDEBUG {
+		stoMarkCount[stoMarkArea][PTR_INTO_HEAP]--;
+		stoMarkCount[stoMarkArea][PTR_INTO_BUSY]++;
+	}
 
 
 	/* Grab section header. */
@@ -4565,8 +4565,10 @@ stoMarkObject(Pointer p)
 
 	/* Verify pointed-to quantum. */
 	if (ptrLT(p, sect->data)) return 0;
-	stoDEBUG(stoMarkCount[stoMarkArea][PTR_INTO_BUSY]--);
-	stoDEBUG(stoMarkCount[stoMarkArea][PTR_INTO_DATA]++);
+	stoDEBUG {
+		stoMarkCount[stoMarkArea][PTR_INTO_BUSY]--;
+		stoMarkCount[stoMarkArea][PTR_INTO_DATA]++;
+	}
 
 		
 #ifdef STO_DIVISION_BY_LOOKUP
@@ -4602,8 +4604,10 @@ stoMarkObject(Pointer p)
 	/* Verify not already marked. */
 	qmtag = sect->info[qmno];
 	if (QmInfoMark(qmtag)) return 0;
-	stoDEBUG(stoMarkCount[stoMarkArea][PTR_INTO_DATA]--);
-	stoDEBUG(stoMarkCount[stoMarkArea][PTR_INTO_NEW]++);
+	stoDEBUG {
+		stoMarkCount[stoMarkArea][PTR_INTO_DATA]--;
+		stoMarkCount[stoMarkArea][PTR_INTO_NEW]++;
+	}
 
 
 	/* Add mark bits quanta in piece.  Determine data bounds. */
@@ -4635,8 +4639,10 @@ stoMarkObject(Pointer p)
 
 	/* Verify piece is in use. */
 	if (QmInfoKind(qmtag) == QmFreeFirst) {
-		stoDEBUG(stoMarkCount[stoMarkArea][PTR_INTO_NEW]--);
-		stoDEBUG(stoMarkCount[stoMarkArea][PTR_INTO_FREE]++);
+		stoDEBUG {
+			stoMarkCount[stoMarkArea][PTR_INTO_NEW]--;
+			stoMarkCount[stoMarkArea][PTR_INTO_FREE]++;
+		}
 		stoGcMarkedFree++;
 		return 0;
 	}
@@ -4673,13 +4679,13 @@ stoMarkObject(Pointer p)
 
 
 	/* Pointer classification */
-	stoDEBUG({
+	stoDEBUG {
 		if (stoMarkArea < MEM_MAX_TYPE) {
 			/* Now marking within heap */
 			oldStoMarkArea = stoMarkArea;
 			stoMarkArea += MEM_MAX_TYPE;
 		}
-	});
+	}
 
 
 	/* Count the number of children marked */
@@ -4687,7 +4693,7 @@ stoMarkObject(Pointer p)
 
 
 	/* Pointer classification */
-	stoDEBUG(stoMarkArea = oldStoMarkArea);
+	stoDEBUG{stoMarkArea = oldStoMarkArea;}
 
 	return n;
 }

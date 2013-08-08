@@ -107,11 +107,11 @@
  * :: Debug
  ****************************************************************************/
 
-Bool      cpDfDebug 	  = false;
-Bool      cpDebug 	  = false;
+Bool	cpDfDebug	= false;
+Bool	cpDebug		= false;
 
-# define   cpDfDEBUG(s) DEBUG_IF(cpDfDebug,  s)
-# define   cpDEBUG(s) 	DEBUG_IF(cpDebug, s)
+#define cpDfDEBUG	DEBUG_IF(cpDfDebug)
+#define cpDEBUG		DEBUG_IF(cpDebug)
 
 /****************************************************************************
  * :: Global Data Structures
@@ -199,12 +199,14 @@ cpropUnit(Foam foam, Bool isFirst)
 		if (foamTag(def->foamDef.rhs) != FOAM_Prog)
 			continue;
 
-		 def->foamDef.rhs = cpProg(def->foamDef.rhs);
+		def->foamDef.rhs = cpProg(def->foamDef.rhs);
 
-		cpDfDEBUG(if (cpInfo.nCopies) {
+		cpDfDEBUG {
+			if (cpInfo.nCopies) {
 				fprintf(dbOut, "------ New prog: -----\n");
-			     	foamPrintDb(def->foamDef.rhs);
-		     });
+				foamPrintDb(def->foamDef.rhs);
+			}
+		}
 
 		/* flogFree(flog); !! no flogFree, write it */
         }
@@ -316,11 +318,11 @@ cpFlog0(FlowGraph flog)
 
 	i = dflowFwdIterate(flog, DFLOW_Intersection, cpDF_CUTOFF, &k, NULL);
 
-	cpDfDEBUG({
+	cpDfDEBUG {
 		fprintf(dbOut, i == 0 ? "Converged" : "Did not converge");
 		fprintf(dbOut, " after %d iterations\n", k);
 		flogPrint(dbOut, flog, true);
-	});
+	}
 
 	if (i != 0) return;
 
@@ -357,7 +359,7 @@ cpVarCopiesVectBuild(Foam seq)
 	        }
 	}
 
-	cpDfDEBUG( cpVarCopiesVectPrint(); );
+	cpDfDEBUG{cpVarCopiesVectPrint();}
 
 	return;
 }
@@ -707,7 +709,7 @@ cpCopyPropagate(FlowGraph flog)
 
 		bb->code = cpCopyPropagate0(bb->code, dfFwdIn(bb), CP_Rhs);
 		
-		cpDfDEBUG(foamPrintDb(bb->code));
+		cpDfDEBUG{foamPrintDb(bb->code);}
 	}
 }
 
@@ -817,7 +819,7 @@ cpCopyPropagate0(Foam foam, Bitv dfin, CpFlagState cpState)
 			newFoam = foamCopy(copy->foamDef.rhs);
 			cpInfo.nPropagated += 1;
 
-			cpDEBUG(fprintf(dbOut, "CPROP>> Copy propagated ---\n"););
+			cpDEBUG{fprintf(dbOut, "CPROP>> Copy propagated ---\n");}
 
 			foam = rhsVar; /* Will be NULL if rhs is IMMEDIATE */
 		}

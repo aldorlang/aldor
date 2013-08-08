@@ -20,7 +20,7 @@
 #include "fbox.h"
 
 Bool	cfoldDebug	= false;
-#define cfoldDEBUG(s)	DEBUG_IF(cfoldDebug, s)
+#define cfoldDEBUG	DEBUG_IF(cfoldDebug)
 
 /*****************************************************************************
  *
@@ -57,11 +57,11 @@ cfoldUnit(Foam unit, Bool foldAll, Bool foldFloat)
 {
 	assert (foamTag(unit) == FOAM_Unit);
 
-	cfoldDEBUG({
+	cfoldDEBUG {
 		fprintf(dbOut, ">>cfoldUnit:\n");
 		foamPrint(dbOut, unit);
 		fnewline(dbOut);
-	});
+	}
 
 	cfoldFoldFloat = foldFloat;
 	cfoldFoldAll   = foldAll;
@@ -71,11 +71,11 @@ cfoldUnit(Foam unit, Bool foldAll, Bool foldFloat)
 	cfoldMoveConstExports(unit);
 	assert(foamAudit(unit));
 
-	cfoldDEBUG({
+	cfoldDEBUG {
 		fprintf(dbOut, "<<cfoldUnit:\n");
 		foamPrint(dbOut, unit);
 		fnewline(dbOut);
-	});
+	}
 
 	return cfoldMovedConsts;
 }

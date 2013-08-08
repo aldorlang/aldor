@@ -32,7 +32,7 @@ extern TForm tuniYieldTForm, tuniReturnTForm, tuniExitTForm;
  ****************************************************************************/
 
 Bool	tipSefDebug		= false;
-#define tipSefDEBUG(s)		DEBUG_IF(tipSefDebug, s)
+#define tipSefDEBUG		DEBUG_IF(tipSefDebug)
 
 /*****************************************************************************
  *
@@ -216,11 +216,11 @@ tisef(Stab stab, Sefo sefo)
 	serialNo += 1;
 	depthNo	 += 1;
 	serialThis = serialNo;
-	tipSefDEBUG({
+	tipSefDEBUG {
 		fprintf(dbOut,"->Sef: %*s%d= ", depthNo, "", serialThis);
 		abPrettyPrint(dbOut, sefo);
 		fnewline(dbOut);
-	});
+	}
 
 	abState(sefo) = AB_State_HasUnique;
 	abTUnique(sefo) = tfUnknown;
@@ -294,13 +294,13 @@ tisef(Stab stab, Sefo sefo)
 	default:		bugBadCase	(abTag(sefo));
 	}
 
-	tipSefDEBUG({
+	tipSefDEBUG {
 		fprintf(dbOut, "<-Sef: %*s%d= ", depthNo, "", serialThis);
 		abPrettyPrint(dbOut, sefo);
 		fprintf(dbOut, " @ ");
 		tfPrint(dbOut, abTUnique(sefo));
 		fnewline(dbOut);
-	});
+	}
 	depthNo -= 1;
 }
 
@@ -627,7 +627,7 @@ tisefApply(Stab stab, Sefo sefo)
 	Sefo		op;
 	TForm		tf;
 
-	tipApplyDEBUG(fprintf(dbOut, "Entering tisefApply\n"));
+	tipApplyDEBUG{fprintf(dbOut, "Entering tisefApply\n");}
 
 	tisef0ApplySpecialSyme(stab, sefo);
 

@@ -36,8 +36,8 @@
 
 Bool	condApplyDebug		= false;
 Bool	tipTdnDebug		= false;
-#define condApplyDEBUG(s)	DEBUG_IF(condApplyDebug, s)
-#define tipTdnDEBUG(s)		DEBUG_IF(tipTdnDebug, s)
+#define condApplyDEBUG		DEBUG_IF(condApplyDebug)
+#define tipTdnDEBUG		DEBUG_IF(tipTdnDebug)
 
 /*****************************************************************************
  *
@@ -228,13 +228,13 @@ titdn(Stab stab, AbSyn absyn, TForm type)
 	serialNo += 1;
 	depthNo	 += 1;
 	serialThis = serialNo;
-	tipTdnDEBUG({
+	tipTdnDEBUG {
 		fprintf(dbOut,"->Tdn: %*s%d= ", depthNo, "", serialThis);
 		abPrettyPrint(dbOut, absyn);
 		fprintf(dbOut," @ ");
 		tfPrint(dbOut, type);
 		fnewline(dbOut);
-	});
+	}
 
 	switch (abTag(absyn)) {
 	case AB_Id:	     s = titdnId	 (stab, absyn, type); break;
@@ -323,7 +323,7 @@ titdn(Stab stab, AbSyn absyn, TForm type)
 		assert(abTPoss(absyn) == abtposs);
 	}
 
-	tipTdnDEBUG({
+	tipTdnDEBUG {
 		fprintf(dbOut, "<-Tdn: %*s%d= ", depthNo, "", serialThis);
 		abPrettyPrint(dbOut, absyn);
 		fprintf(dbOut, " @ ");
@@ -332,7 +332,7 @@ titdn(Stab stab, AbSyn absyn, TForm type)
 		else
 			tfPrint(dbOut, type);
 		fnewline(dbOut);
-	});
+	}
 	depthNo -= 1;
 	return s;
 }
@@ -532,11 +532,11 @@ titdn0FarValue(Stab stab,AbSyn absyn,TForm type,AbSyn farValue,TForm *pFarType,
 	       AbSynList *pFarAbSynList)
 {
 	AbEmbed embed;
-	tipFarDEBUG({
+	tipFarDEBUG {
 		fprintf(dbOut, "Computing far value as a ");
 		tfPrint(dbOut, *pFarType);
 		fnewline(dbOut);
-	});
+	}
 	titdn(stab, farValue, *pFarType);
 
 	if (abState(farValue) != AB_State_HasUnique)
@@ -561,11 +561,11 @@ titdn0FarValue(Stab stab,AbSyn absyn,TForm type,AbSyn farValue,TForm *pFarType,
 	*pFarAbSynList = listCons(AbSyn)(farValue, *pFarAbSynList);
 	if (tfIsUnknown(*pFarType)) {
 		*pFarType = abTUnique(farValue);
-		tipFarDEBUG({
+		tipFarDEBUG {
 			fprintf(dbOut, "Converting far value to a ");
 			tfPrint(dbOut, *pFarType);
 			fnewline(dbOut);
-		});
+		}
 	}
 
 	if (abTUnique(farValue)) {
@@ -626,7 +626,7 @@ titdnId(Stab stab, AbSyn absyn, TForm type)
 {
 	Syme	syme = abSyme(absyn);
 
-	tipIdDEBUG(fprintf(dbOut,"Entering titdnId\n"));
+	tipIdDEBUG{fprintf(dbOut,"Entering titdnId\n");}
 
 
 	/* If no meaning yet, find one */
@@ -900,7 +900,7 @@ titdnApply(Stab stab, AbSyn absyn, TForm type)
 	AbSyn		op = abApplyOp(absyn);
 	TPoss		tp;
 
-	tipApplyDEBUG(fprintf(dbOut, "Entering titdnApply\n"));
+	tipApplyDEBUG{fprintf(dbOut, "Entering titdnApply\n");}
 
 	if (abState(op) == AB_State_Error)
 		return false;
@@ -953,11 +953,11 @@ titdnDefine(Stab stab, AbSyn absyn, TForm type)
 			ltype = rtype;
 	}
 
-	tipDefineDEBUG({
+	tipDefineDEBUG {
 		fprintf(dbOut, "************** Defining: ");
 		abPrettyPrint(dbOut, lhs);
 		fnewline(dbOut);
-	});
+	}
 
 	titdn(stab, lhs, ltype);
 	titdn(stab, rhs, rtype);
@@ -974,13 +974,13 @@ titdnDefine(Stab stab, AbSyn absyn, TForm type)
 	
 	abTUnique(absyn) = rtype;
 	
-	tipDefineDEBUG({
+	tipDefineDEBUG {
 		fprintf(dbOut,"Tdn: Define of ");
 		abPrint(dbOut, lhs);
 		fprintf(dbOut," has type ");
 		tfPrint(dbOut, rtype);
 		fnewline(dbOut);
-	});
+	}
 	return true;
 }
 
@@ -1021,13 +1021,13 @@ titdnAssign(Stab stab, AbSyn absyn, TForm type)
 		abAddTContext(rhs, embed);
 
 
-	tipAssignDEBUG({
+	tipAssignDEBUG {
 		fprintf(dbOut,"Tdn: Assignment to ");
 		abPrint(dbOut, lhs);
 		fprintf(dbOut," has type ");
 		tfPrint(dbOut, rtype);
 		fnewline(dbOut);
-	});
+	}
 	return true;
 }
 
@@ -1045,7 +1045,7 @@ titdnDeclare(Stab stab, AbSyn absyn, TForm type)
 	TForm tf, rtype;
 	Syme  syme;
 
-	tipDeclareDEBUG({
+	tipDeclareDEBUG {
 		fprintf(dbOut, "In the declaration ");
 		abPrettyPrint(dbOut, absyn);
 		fprintf(dbOut, ", the semantics field is ");
@@ -1054,7 +1054,7 @@ titdnDeclare(Stab stab, AbSyn absyn, TForm type)
 		else
 			fprintf(dbOut, "_");
 		fnewline(dbOut);
-	});
+	}
 
 	if (abUse(absyn) == AB_Use_Define || abUse(absyn) == AB_Use_Assign)
 		tf = (tfIsUnknown(type) ? tiGetTForm(stab, idtype) : type);
@@ -1079,13 +1079,13 @@ titdnDeclare(Stab stab, AbSyn absyn, TForm type)
 	if (!rtype) rtype = tfUnknown;
 	abTUnique(absyn) = rtype;
 
-	tipDeclareDEBUG({
+	tipDeclareDEBUG {
 		fprintf(dbOut,"Tdn: Declare of ");
 		abPrint(dbOut, id);
 		fprintf(dbOut," has type ");
 		tfPrint(dbOut, rtype);
 		fnewline(dbOut);
-	});
+	}
 	return true;
 }
 

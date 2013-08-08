@@ -15,7 +15,7 @@
 #include "xfloat.h"
 
 Bool	fileDebug	= false;
-#define fileDEBUG(s)	DEBUG_IF(fileDebug, s)
+#define fileDEBUG	DEBUG_IF(fileDebug)
 
 local FILE *
 fileDefaultHandler(FileName fn, IOMode mode)
@@ -53,8 +53,10 @@ fileTryOpen(FileName fn, IOMode mode)
 	FILE  *file = 0;
 
 	if (!isdir) file = fopen(name, mode);
-	fileDEBUG(fprintf(dbOut, "Trying to open \"%s\" (mode \"%s\"):  %s\n",
-			  name, mode, file == NULL ? "NO" : "Yes!"));
+	fileDEBUG {
+		fprintf(dbOut, "Trying to open \"%s\" (mode \"%s\"):  %s\n",
+			name, mode, file == NULL ? "NO" : "Yes!");
+	}
 	return file;
 }
 
@@ -85,8 +87,10 @@ fileIsThere(FileName fn)
 	String name = fnameUnparseStatic(fn);
 	Bool   isit = osFileIsThere(name);
 
-	fileDEBUG(fprintf(dbOut, "Trying to find \"%s\" (is it there?): %s\n",
-			  name, isit ? "Yes!" : "NO"));
+	fileDEBUG {
+		fprintf(dbOut, "Trying to find \"%s\" (is it there?): %s\n",
+			name, isit ? "Yes!" : "NO");
+	}
 	return isit;
 }
 

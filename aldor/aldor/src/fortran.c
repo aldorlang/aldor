@@ -20,7 +20,7 @@
 #include "strops.h"
 
 Bool    fortranTypesDebug       = false;
-#define fortranTypesDEBUG(s)    DEBUG_IF(fortranTypesDebug, s)
+#define fortranTypesDEBUG	DEBUG_IF(fortranTypesDebug)
 
 
 /* This is a local macro just to make the if tests more readable */
@@ -118,7 +118,7 @@ ftnTypeFrCatTForm(AbSyn sefo, TForm tf)
 
 
 	/* Some debugging information. */
-	fortranTypesDEBUG({
+	fortranTypesDEBUG {
 		(void)fprintf(dbOut, "- ftnTypeFrCatTForm: %s\n", abPretty(sefo));
 
 		if (XtfIsValid(tfFtnBool) && tfSatisfies(tf,tfFtnBool))
@@ -155,7 +155,7 @@ ftnTypeFrCatTForm(AbSyn sefo, TForm tf)
 			(void)fprintf(dbOut, "     has %s\n", symString(ssymFtnArry));
 
 		fnewline(dbOut);
-	});
+	}
 
 
 	/*

@@ -18,7 +18,7 @@
 
 Bool	tcDebug		= false;
 
-#define	tcDEBUG(s)		DEBUG_IF(tcDebug, s)
+#define tcDEBUG		DEBUG_IF(tcDebug)
 
 /*
  * Type form constraints:
@@ -61,13 +61,13 @@ tcInit(void)
 	tcCount  = 0;
 	tcSerialNum = 0;
 	tcStack  = listNil(TConst);
-	tcDEBUG(tcList = listNil(TConst));
+	tcDEBUG{tcList = listNil(TConst);}
 }
 
 void
 tcFini(void)
 {
-	tcDEBUG(listPrint(TConst)(dbOut, tcList, tcPrint));
+	tcDEBUG{listPrint(TConst)(dbOut, tcList, tcPrint);}
 	if (tcCount != 0)
 		bug("%d constraints not checked", tcCount);
 }
@@ -121,7 +121,7 @@ tcAlloc(TConstTag tag, TForm owner, Length argc, va_list argp)
 	if (owner == NULL)
 		tcParents = listCons(TConst)(tc, tcParents);
 	else {
-		tcDEBUG(listPush(TConst, tc, tcList));
+		tcDEBUG{listPush(TConst, tc, tcList);}
 		tcCount += 1;
 	}
 
@@ -132,9 +132,11 @@ void
 tcFree(TConst tc)
 {
 	int l0 = 0;
-	tcDEBUG(l0 = listLength(TConst)(tcList);
+	tcDEBUG {
+		l0 = listLength(TConst)(tcList);
 		listPop(TConst, tc, tcList, tcEq);
-		assert(l0 - 1 == listLength(TConst)(tcList)););
+		assert(l0 - 1 == listLength(TConst)(tcList));
+	}
 
 	tcCount -= 1;
 	stoFree((Pointer) tc);
@@ -288,10 +290,10 @@ tcCheck(TConst tc)
 	listPop(TConst, tc, tcStack, tcEq);
 
 	if (!result) {
-		tcDEBUG({
+		tcDEBUG {
 			tcPrint(dbOut, tc);
 			fnewline(dbOut);
-		});
+		}
 		tiTopFns()->terrorTypeConstFailed(tc);
 	}
 }

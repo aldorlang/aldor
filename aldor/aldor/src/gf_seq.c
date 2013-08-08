@@ -29,8 +29,8 @@
 extern	Bool genfExportDebug;	/* gf_add.c */
 Bool	genfImplicitDebug	= false;
 
-#define genfExportDEBUG(s)	DEBUG_IF(genfExportDebug, s)
-#define genfImplicitDEBUG(s)	DEBUG_IF(genfImplicitDebug, s)
+#define genfExportDEBUG		DEBUG_IF(genfExportDebug)
+#define genfImplicitDEBUG	DEBUG_IF(genfImplicitDebug)
 
 typedef enum {
 	DG_Const,
@@ -106,7 +106,7 @@ gen0DefTypeSequence(AbSyn ab, SymeList exports)
 	DefGroupList	lst;
 	SymeList 	symes, isymes;
 
-	genfImplicitDEBUG({
+	genfImplicitDEBUG {
 		(void)fprintf(dbOut, "gen0DefTypeSequence():");
 		fnewline(dbOut);
 		for (symes = exports;symes;symes = cdr(symes)) {
@@ -118,7 +118,7 @@ gen0DefTypeSequence(AbSyn ab, SymeList exports)
 			fnewline(dbOut);
 		}
 		fnewline(dbOut);
-	});
+	}
 
 
 	if (abTag(ab) == AB_Nothing)
@@ -132,14 +132,14 @@ gen0DefTypeSequence(AbSyn ab, SymeList exports)
 
 	while (lst) {
 		DefGroup dg = car(lst);
-		genfExportDEBUG({
-			  fprintf(dbOut, "looking at:\n");
-			  abWrSExpr(dbOut, dgStmt(dg),int0);
-			  fprintf(dbOut, "defines:\n");
-			  symeListPrintDb(dg->defines);
-			  fprintf(dbOut, "uses:\n");
-			  symeListPrintDb(dgUses(dg));
-			  });
+		genfExportDEBUG {
+			fprintf(dbOut, "looking at:\n");
+			abWrSExpr(dbOut, dgStmt(dg),int0);
+			fprintf(dbOut, "defines:\n");
+			symeListPrintDb(dg->defines);
+			fprintf(dbOut, "uses:\n");
+			symeListPrintDb(dgUses(dg));
+		}
 		gen0EnsureUsedSymes(set, dg);
 
 		switch (dg->tag) {

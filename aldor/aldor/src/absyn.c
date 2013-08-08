@@ -20,7 +20,7 @@
 #include "sexpr.h"
 
 Bool	abDebug		= false;
-#define abDEBUG(s)	DEBUG_IF(abDebug, s)
+#define abDEBUG		DEBUG_IF(abDebug)
 
 local int       abFormatter     (OStream stream, Pointer p);
 local int       abFormatterList (OStream ostream, Pointer p);
@@ -1604,7 +1604,7 @@ abTransferSemantics(AbSyn from, AbSyn to)
 		to   = abEqualMods(to);
 	}
 
-	abDEBUG({
+	abDEBUG {
 		if (abTag(from) != abTag(to)) {
 			fprintf(dbOut,"'from' absyn = ");
 			abPrint(dbOut, from);
@@ -1613,7 +1613,7 @@ abTransferSemantics(AbSyn from, AbSyn to)
 			abPrint(dbOut, to);
 			fnewline(dbOut);
 		}
-	});
+	}
 
 	abUse(to) = abUse(from);
 
@@ -1840,11 +1840,11 @@ abDefineeId(AbSyn ab)
 AbSyn
 abDefineeIdOrElse(AbSyn ab, AbSyn failed)
 {
-	abDEBUG({
+	abDEBUG {
 		fprintf(dbOut, "abDefineeIdOrElse: ");
 		abPrint(dbOut, ab);
 		fnewline(dbOut);
-	});
+	}
 	while (abTag(ab) != AB_Id)
 		switch (abTag(ab)) {
 		case AB_Assign:
@@ -1901,11 +1901,11 @@ abDefineeType(AbSyn ab)
 AbSyn
 abDefineeTypeOrElse(AbSyn ab, AbSyn failed)
 {
-	abDEBUG({
+	abDEBUG {
 		fprintf(dbOut, "abDefineeTypeOrElse: ");
 		abPrint(dbOut, ab);
 		fnewline(dbOut);
-	});
+	}
 	while (abTag(ab) != AB_Declare)
 		switch (abTag(ab)) {
 		case AB_Assign:

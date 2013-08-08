@@ -15,9 +15,9 @@
 
 extern Bool genfoamDebug, genfoamHashDebug, genfoamConstDebug;
 
-#define genfDEBUG(s)            DEBUG_IF(genfoamDebug, s)
-#define genfHashDEBUG(s)        DEBUG_IF(genfoamHashDebug, s)
-#define genfConstDEBUG(s)       DEBUG(if (genfoamConstDebug) {s;})
+#define genfDEBUG		DEBUG_IF(genfoamDebug)
+#define genfHashDEBUG		DEBUG_IF(genfoamHashDebug)
+#define genfConstDEBUG		DEBUG_IF(genfoamConstDebug)
 
 #define genfNumProg(_d,_s)	fprintf(dbOut, "numProgs[%d] = %s\n", (_d), (_s))
 

@@ -13,20 +13,20 @@
 
 #if defined(NDEBUG)
 
-#   define DEBUG_MODE(flag)             Nothing
-#   define DEBUG(e)                     Nothing
-#   define DEBUG_IF(v,e)                Nothing
-#   define DEBUG_CONFIG			""
-#   define DEBUG_DECL(s)		Nothing
+# define DEBUG_MODE(flag)	Nothing
+# define DEBUG(e)		Nothing
+# define DEBUG_IF(v)		if (false)
+# define DEBUG_CONFIG		""
+# define DEBUG_DECL(s)		s
 
 #else
-    extern Bool dbFlag;
+extern Bool dbFlag;
 
-#   define DEBUG_MODE(flag)             (dbFlag = (flag))
-#   define DEBUG(e)                     Statement(if (dbFlag) {e;})
-#   define DEBUG_IF(v,e)                Statement(if (v) {e;})
-#   define DEBUG_CONFIG			"(debug version)"
-#   define DEBUG_DECL(s)		s
+# define DEBUG_MODE(flag)	(dbFlag = (flag))
+# define DEBUG			if (dbFlag)
+# define DEBUG_IF(v)		if (v)
+# define DEBUG_CONFIG		"(debug version)"
+# define DEBUG_DECL(s)		s
 
 #endif
 

@@ -16,8 +16,8 @@
 #include "util.h"
 
 
-Bool	    flogDebug 		= false;
-#define	    flogDEBUG(s)	DEBUG_IF(flogDebug, s)
+Bool	flogDebug	= false;
+#define flogDEBUG	DEBUG_IF(flogDebug)
 
 #define	    BLOCK_LABEL_NONE	(-1)
 
@@ -302,12 +302,12 @@ flog0ClipBlocks(FlowGraph flog, Foam seq, int nLabels)
 			bb->isblock0 = true;
 			flog->block0 = bb;
 		}
-		flogDEBUG({
+		flogDEBUG {
 			fprintf(dbOut, "Clipped block %d\n", bb->label);
 			if (bb->kind == FOAM_If)
 				fprintf(dbOut, "... else is %d\n", nextfall);
 			foamPrint(dbOut, subseq);
-		});
+		}
 	}
 }
 
@@ -350,7 +350,7 @@ flog0Clip1Block(Foam seq, Length *pix0)
 	extra = 0;
 
 	/* Scan to the end of the block. */
-	flogDEBUG(fprintf(dbOut, "ixL = ix0 at loop start %d\n", (int) ix0));
+	flogDEBUG{fprintf(dbOut, "ixL = ix0 at loop start %d\n", (int) ix0);}
 	for (ftag = 0, ixL = ix0; !ftag && ixL < argc; )
 		switch (foamTag(argv[ixL])) {
 		case FOAM_Label:
@@ -379,7 +379,7 @@ flog0Clip1Block(Foam seq, Length *pix0)
 			ixL++;
 			break;
 		}
-	flogDEBUG(fprintf(dbOut, "ixL at loop end %d\n", (int) ixL));
+	flogDEBUG{fprintf(dbOut, "ixL at loop end %d\n", (int) ixL);}
 	if (ftag == 0) {
 		/* Fell off end: Implied return. */
 		ftag = FOAM_Return;
@@ -387,7 +387,7 @@ flog0Clip1Block(Foam seq, Length *pix0)
 		if (argc > 0) foamPos(extra) = foamPos(argv[argc-1]);
 		ixL--;
 	}
-	flogDEBUG(fprintf(dbOut, "ixL after loop end %d\n", (int) ixL));
+	flogDEBUG{fprintf(dbOut, "ixL after loop end %d\n", (int) ixL);}
 
 	/* Extract code sequence.  */
 	n = ixL - ix0 + 1;
@@ -1272,15 +1272,15 @@ bbufSetBlockFn(BlockBuf bf, BlockLabel lab, BBlock bb)
 local void
 flogFreeFoamNode(Foam foam)
 {
-	flogDEBUG(fprintf(dbOut, "Freeing foam node %s[%d]\n",
-			  foamInfo(foamTag(foam)).str, (int) foamArgc(foam)));
+	flogDEBUG{fprintf(dbOut, "Freeing foam node %s[%d]\n",
+			  foamInfo(foamTag(foam)).str, (int) foamArgc(foam));}
 	foamFreeNode(foam);
 }
 
 local void
 flogFreeFoam(Foam foam)
 {
-	flogDEBUG(fprintf(dbOut, "Freeing foam tree %s[%d]\n",
-			  foamInfo(foamTag(foam)).str, (int) foamArgc(foam)));
+	flogDEBUG{fprintf(dbOut, "Freeing foam tree %s[%d]\n",
+			  foamInfo(foamTag(foam)).str, (int) foamArgc(foam));}
 	foamFree(foam);
 }
