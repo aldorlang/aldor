@@ -1127,7 +1127,7 @@ linIndentation(TokenList tl)
 		? sposChar(car(tl)->pos)
 		: MootIndentation;
 
-	DEBUG fprintf(dbOut, " line indented to: %d\n", ind);
+	DEBUG{fprintf(dbOut, " line indented to: %d\n", ind);}
 
 	return ind;
 }
@@ -1220,14 +1220,14 @@ lin2DRulesPile0(LNodeTree context, LNodeTree lnt, int *piS, int *piE)
 	LNodeTree	lnt0;
 	LNodeTreeList	sofar;
 
-	DEBUG fprintf(dbOut," ==== Linearizing parts %d to %d \n", *piS, *piE);
+	DEBUG{fprintf(dbOut," ==== Linearizing parts %d to %d \n", *piS, *piE);}
 
 	if (iS > iE) return lntNewEmpty(LN_NNodes, int0);
 
 	indentS = lnt->argv[iS].lnode->indent;
 	sofar	= 0;
 
-	DEBUG fprintf(dbOut,"indentS = %d\n", indentS);
+	DEBUG{fprintf(dbOut,"indentS = %d\n", indentS);}
 	while (iS <= iE) {
 		lnt0	= lnt->argv[iS].lnode;
 		indent0 = lnt0->indent;
@@ -1242,12 +1242,12 @@ lin2DRulesPile0(LNodeTree context, LNodeTree lnt, int *piS, int *piE)
 
 		if (linIsBlank(lnt0) || indent0 == MootIndentation) {
 			iS++;
-			DEBUG fprintf(dbOut,"Ah.... a blank line _________\n");
+			DEBUG{fprintf(dbOut,"Ah.... a blank line _________\n");}
 			sofar  = listCons(LNodeTree)(lnt0, sofar);
 			continue;
 		}
 
-		DEBUG fprintf(dbOut,"%d :: %d\n", indent0, indentS);
+		DEBUG{fprintf(dbOut,"%d :: %d\n", indent0, indentS);}
 		if (indent0 < indentS)
 			break;
 
@@ -1335,12 +1335,12 @@ isPileRequired(LNodeTree context, LNodeTree lnt)
 	/*ARGSUSED*/
 	Token	tok = lntLastTokLessNL(context);
 
-	DEBUG fprintf(dbOut,"In isPileRequired %s",
-		      tok? "with token: " : "NO TOK\n");
+	DEBUG{fprintf(dbOut,"In isPileRequired %s",
+		      tok? "with token: " : "NO TOK\n");}
 
 	if (!tok) return false;
 
-	DEBUG tokPrint(dbOut, tok);
+	DEBUG{tokPrint(dbOut, tok);}
 
 	return	tokIs(tok, KW_Then)    || tokIs(tok, KW_Else)    ||
 		tokIs(tok, KW_With)    || tokIs(tok, KW_Add)     ||

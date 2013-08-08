@@ -38,7 +38,7 @@ Bool	sefoUnionDebug		= false;
 Bool	sefoInterDebug		= false;
 Bool	sefoCloseDebug		= false;
 
-#define sstDEBUG 		DEBUG_IF(sstDebug)
+#define sstDEBUG		DEBUG_IF(sstDebug)
 #define sstMarkDEBUG		DEBUG_IF(sstMarkDebug)
 
 #define sefoPrintDEBUG		DEBUG_IF(sefoPrintDebug)
@@ -49,8 +49,8 @@ Bool	sefoCloseDebug		= false;
 #define sefoInterDEBUG		DEBUG_IF(sefoInterDebug)
 #define sefoCloseDEBUG		DEBUG_IF(sefoCloseDebug)
 
-#define	SefoSubstTUnique
-#undef	SefoSubstShare
+#define SefoSubstTUnique
+#undef  SefoSubstShare
 #define MarkScheme3
 
 #ifndef NDEBUG

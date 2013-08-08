@@ -864,7 +864,7 @@ comsgVDo(CoMsgTag tag, AbSyn ab, Msg msg, va_list argp)
 	else {
 		String text  = comsgText(msg, argp);
 		Bool   debug = false;
-		DEBUG  debug = true;
+		DEBUG {debug = true;}
 
 		if (ab) abSetPos(abMaxPos,
 			         sposMax(abPos(abMaxPos), abPos(ab)));

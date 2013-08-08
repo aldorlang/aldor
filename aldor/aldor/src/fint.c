@@ -1507,7 +1507,7 @@ fintStmt(DataObj retDataObj)
 	dataType 	myType;
  readEvalLoop:
 
-	fintStoDEBUG stoAudit();
+	fintStoDEBUG{stoAudit();}
 #ifndef NDEBUG
 	if (instrCounter++ == instrBreak) {
 		/* stoAudit()*/;	/* SET BREAKPOINT HERE */

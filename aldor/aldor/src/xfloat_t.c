@@ -226,7 +226,7 @@ testDFloatRoundTrip(void)
 			printf(")");
 		}
 
-		xfloatDEBUG fflush(osStdout);
+		xfloatDEBUG{fflush(osStdout);}
 	}
 	printf("\n");
 }
@@ -400,17 +400,17 @@ testOneSFloat(SFloat *test)
 		ubPrintSF(*test);
 		printf(") -> ");
 
-		xfloatDEBUG testOneSFloatDebug(test);
+		xfloatDEBUG{testOneSFloatDebug(test);}
 
 		ubPrint(xbuf);
 		printf(" -> ");
 
-		xfloatDEBUG testOneXSFloatDebug(&xbuf);
+		xfloatDEBUG{testOneXSFloatDebug(&xbuf);}
 
 		ubPrintSF(sbuf);
 		printf("(%e,%e)\n", *test, sbuf);
 
-		xfloatDEBUG testOneSFloatDebug(&sbuf);
+		xfloatDEBUG{testOneSFloatDebug(&sbuf);}
 	}
 }
 
@@ -428,17 +428,17 @@ testOneDFloat(DFloat *test)
 		ubPrintDF(*test);
 		printf(") -> ");
 
-		xfloatDEBUG testOneDFloatDebug(test);
+		xfloatDEBUG{testOneDFloatDebug(test);}
 
 		ubPrint(xbuf);
 		printf(" -> ");
 
-		xfloatDEBUG testOneXDFloatDebug(&xbuf);
+		xfloatDEBUG{testOneXDFloatDebug(&xbuf);}
 
 		ubPrintDF(dbuf);
 		printf("(%e,%e)\n", *test, dbuf);
 
-		xfloatDEBUG testOneDFloatDebug(&dbuf);
+		xfloatDEBUG{testOneDFloatDebug(&dbuf);}
 	}
 }
 
