@@ -3973,8 +3973,6 @@ TForm tfMakeSubst(TForm tf) {
 
 TForm tfFollowDefDecl(TForm tf) {
   assert(tf != NULL);
-  if (tf == NULL)
-    return tf;
   if (tfIsSubst(tf)) tf = tfMakeSubst(tf);
   if (!tfIsDefine(tf) && !tfIsForward(tf)) {
     if (tfIsSubst(tf)) tf = tfMakeSubst(tf);
