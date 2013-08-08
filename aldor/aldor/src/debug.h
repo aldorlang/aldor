@@ -14,7 +14,7 @@
 #if defined(NDEBUG)
 
 # define DEBUG_MODE(flag)	Nothing
-# define DEBUG(e)		Nothing
+# define DEBUG			if (false)
 # define DEBUG_IF(v)		if (false)
 # define DEBUG_CONFIG		""
 # define DEBUG_DECL(s)		s
