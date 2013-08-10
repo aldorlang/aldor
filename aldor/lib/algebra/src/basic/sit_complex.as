@@ -91,6 +91,16 @@ extend Complex(R:Join(ArithmeticType, ExpressionType)):
 		}
 	}
 
+	if R has CommutativeRing then {
+		-- this definition ought to work, but triggers an inliner bug.
+	        reciprocal(a: %): Partial % == {
+			import from Partial R;
+		        l: Partial R := reciprocal(real(a) * real(a) + imag(a) * imag(a));
+			failed? l => failed;
+			[ retract(l) * complex(real a, -imag(a))]
+		}
+	}
+
 	if R has IntegralDomain then {
 		quotient(a:%, b:%):% == {
 			import from Boolean;
