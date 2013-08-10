@@ -1847,18 +1847,15 @@ tfSatParents(SatMask mask, SymeList mods, AbSyn Sab, SymeList S, SymeList T)
 	/* Collect all of the missing exports. */
 	mask |= TFS_Missing;
 
-	if (DEBUG(tfsParent)) {
-		fprintf(dbOut, "->tfpSyme: %*s= source list: ",
-			tfsDepthNo, "");
-		listPrint(Syme)(dbOut, S, symePrint);
-		fnewline(dbOut);
-	}
+	tfsParentDEBUG(dbOut, "(->tfpSyme: %*s= source list: %pSymeList\n",
+		       tfsDepthNo, "", S);
 
 	while (newS || queue) {
 		T = tfSatExportsMissing(mask, mods, Sab, newS, T);
-		if (T == listNil(Syme))
+		if (T == listNil(Syme)) {
+			tfsParentDEBUG(afprintf(dbOut, " ->tfpSyme: %*s= No parents)\n", tfsDepthNo, ""));
 			return tfSatTrue(mask);
-
+		}
 		newS = tfSatParentsFilter(oldS, newS);
 		oldS = listNConcat(Syme)(oldS, newS);
 		queue = listNConcat(Syme)(queue, listCopy(Syme)(newS));
@@ -1870,26 +1867,20 @@ tfSatParents(SatMask mask, SymeList mods, AbSyn Sab, SymeList S, SymeList T)
 			tfsSerialNo += 1;
 			serialThis = tfsSerialNo;
 
-			if (DEBUG(tfsParent)) {
-				fprintf(dbOut, "->tfpSyme: %*s%d= expanding: ",
-					tfsDepthNo, "", serialThis);
-				symePrint(dbOut, oldSyme);
-				fnewline(dbOut);
-			}
+			tfsParentDEBUG(dbOut, " ->tfpSyme: %*s%d= expanding: %pSyme\n",
+						tfsDepthNo, "", serialThis, oldSyme);
 
 			newS = tfGetCatParents(symeType(oldSyme), true);
 			queue = cdr(queue);
 
-			if (DEBUG(tfsParent)) {
-				fprintf(dbOut, "->tfpSyme: %*s%d= into: ",
-					tfsDepthNo, "", serialThis);
-				symeListPrint(dbOut, newS);
-				fnewline(dbOut);
-			}
+			tfsParentDEBUG(dbOut, " ->tfpSyme: %*s%d= into: %pSymeList",
+						tfsDepthNo, "", serialThis, newS);
 		}
 		else
 			newS = listNil(Syme);
 	}
+	tfsParentDEBUG(afprintf(dbOut, " ->tfpSyme: %*s= Left: %pSymeList)",
+				tfsDepthNo, "", T));
 	if (T == listNil(Syme))
 		return tfSatTrue(mask);
 
