@@ -66,7 +66,10 @@ oeUnit(Foam unit)
 	oeRenewEnvs(unit);
 
 	stoFree(oeProgInfo);
-	oeDEBUG(dbOut, "hello\n");foamPrintDb(unit);
+	oeDEBUG(dbOut, "hello\n");
+	if (DEBUG(oe)) {
+		foamPrintDb(unit);
+	}
 	oeProgInfo = NULL;
 }
 
