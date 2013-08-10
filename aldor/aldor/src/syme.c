@@ -34,11 +34,11 @@ Bool	symeHasDebug		= false;
 Bool	symeLibDebug		= false;
 extern Bool tfHashDebug;
 
-#define symeDEBUG		DEBUG_IF(symeDebug)
-#define symeFillDEBUG		DEBUG_IF(symeFillDebug)
-#define symeHasDEBUG		DEBUG_IF(symeHasDebug)
-#define symeLibDEBUG		DEBUG_IF(symeLibDebug)
-#define tfHashDEBUG		DEBUG_IF(tfHashDebug)
+#define symeDEBUG		if (DEBUG(syme))
+#define symeFillDEBUG		if (DEBUG(symeFill))
+#define symeHasDEBUG		if (DEBUG(symeHas))
+#define symeLibDEBUG		if (DEBUG(symeLib))
+#define tfHashDEBUG		if (DEBUG(tfHash))
 
 /******************************************************************************
  *

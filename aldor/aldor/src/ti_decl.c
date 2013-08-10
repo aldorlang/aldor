@@ -40,7 +40,7 @@ static PendingDeclList pdPending = NULL;
  ****************************************************************************/
 
 Bool	tipDeclDebug		= false;
-#define tipDeclDEBUG		DEBUG_IF(tipDeclDebug)
+#define tipDeclDEBUG		if (DEBUG(tipDecl))
 
 /*****************************************************************************
  *

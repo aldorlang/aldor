@@ -29,10 +29,10 @@ Bool	scoStabDebug		= false;
 Bool	scoFluidDebug		= false;
 Bool	scoUndoDebug		= false;
 
-#define scoDEBUG		DEBUG_IF(scoDebug)
-#define scoStabDEBUG		DEBUG_IF(scoStabDebug)
-#define scoFluidDEBUG		DEBUG_IF(scoFluidDebug)
-#define scoUndoDEBUG		DEBUG_IF(scoUndoDebug)
+#define scoDEBUG		if (DEBUG(sco))
+#define scoStabDEBUG		if (DEBUG(scoStab))
+#define scoFluidDEBUG		if (DEBUG(scoFluid))
+#define scoUndoDEBUG		if (DEBUG(scoUndo))
 
 /******************************************************************************
  *

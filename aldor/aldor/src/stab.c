@@ -30,9 +30,9 @@ Bool	stabDebug		= false;
 Bool	stabImportDebug		= false;
 Bool	stabConstDebug		= false;
 
-#define stabDEBUG		DEBUG_IF(stabDebug)
-#define stabImportDEBUG		DEBUG_IF(stabImportDebug)
-#define stabConstDEBUG		DEBUG_IF(stabConstDebug)
+#define stabDEBUG		if (DEBUG(stab))
+#define stabImportDEBUG		if (DEBUG(stabImport))
+#define stabConstDEBUG		if (DEBUG(stabConst))
 
 /****************************************************************************
  *

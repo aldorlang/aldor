@@ -23,7 +23,7 @@
 
 Bool	retDebug	= false;
 
-#define retDEBUG	DEBUG_IF(retDebug)
+#define retDEBUG	if (DEBUG(ret))
 
 /******************************************************************************
  *

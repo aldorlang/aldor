@@ -56,14 +56,14 @@ Bool	abExpandDebug		= false;
 
 extern Bool symeRefreshDebug;
 
-#define titfDEBUG		DEBUG_IF(titfDebug)
-#define titfOneDEBUG		DEBUG_IF(titfOneDebug)
-#define titfStabDEBUG		DEBUG_IF(titfStabDebug)
-#define abExpandDEBUG		DEBUG_IF(abExpandDebug)
-#define symeRefreshDEBUG	DEBUG_IF(symeRefreshDebug)
+#define titfDEBUG		if (DEBUG(titf))
+#define titfOneDEBUG		if (DEBUG(titfOne))
+#define titfStabDEBUG		if (DEBUG(titfStab))
+#define abExpandDEBUG		if (DEBUG(abExpand))
+#define symeRefreshDEBUG	if (DEBUG(symeRefresh))
 
 extern Bool tipExtendDebug;
-#define tipExtendDEBUG		DEBUG_IF(tipExtendDebug)
+#define tipExtendDEBUG		if (DEBUG(tipExtend))
 
 void
 tiReportStore(String s)

@@ -103,14 +103,14 @@ extern Bool	tipIdDebug;
 extern Bool	tipLitDebug;
 extern Bool	tipEmbedDebug;
 
-#define tipAddDEBUG		DEBUG_IF(tipAddDebug)
-#define tipApplyDEBUG		DEBUG_IF(tipApplyDebug)
-#define tipAssignDEBUG		DEBUG_IF(tipAssignDebug)
-#define tipDeclareDEBUG		DEBUG_IF(tipDeclareDebug)
-#define tipDefineDEBUG		DEBUG_IF(tipDefineDebug)
-#define tipFarDEBUG		DEBUG_IF(tipFarDebug)
-#define tipIdDEBUG		DEBUG_IF(tipIdDebug)
-#define tipLitDEBUG		DEBUG_IF(tipLitDebug)
-#define tipEmbedDEBUG		DEBUG_IF(tipEmbedDebug)
+#define tipAddDEBUG		if (DEBUG(tipAdd))
+#define tipApplyDEBUG		if (DEBUG(tipApply))
+#define tipAssignDEBUG		if (DEBUG(tipAssign))
+#define tipDeclareDEBUG		if (DEBUG(tipDeclare))
+#define tipDefineDEBUG		if (DEBUG(tipDefine))
+#define tipFarDEBUG		if (DEBUG(tipFar))
+#define tipIdDEBUG		if (DEBUG(tipId))
+#define tipLitDEBUG		if (DEBUG(tipLit))
+#define tipEmbedDEBUG		if (DEBUG(tipEmbed))
 
 #endif /* !_TINFER_H_ */

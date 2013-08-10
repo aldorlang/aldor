@@ -47,20 +47,20 @@ Bool	tfCascadeDebug	= false;
 Bool	tfParentDebug	= false;
 Bool	symeRefreshDebug = false;
 
-#define tfDEBUG			DEBUG_IF(tfDebug)
-#define tfExprDEBUG		DEBUG_IF(tfExprDebug)
-#define tfCrossDEBUG		DEBUG_IF(tfCrossDebug)
-#define tfFloatDEBUG		DEBUG_IF(tfFloatDebug)
-#define tfHasDEBUG		DEBUG_IF(tfHasDebug)
-#define tfHashDEBUG		DEBUG_IF(tfHashDebug)
-#define tfImportDEBUG		DEBUG_IF(tfImportDebug)
-#define tfMapDEBUG		DEBUG_IF(tfMapDebug)
-#define tfMultiDEBUG		DEBUG_IF(tfMultiDebug)
-#define tfCatDEBUG		DEBUG_IF(tfCatDebug)
-#define tfWithDEBUG		DEBUG_IF(tfWithDebug)
-#define tfCascadeDEBUG		DEBUG_IF(tfCascadeDebug)
-#define tfParentDEBUG		DEBUG_IF(tfParentDebug)
-#define symeRefreshDEBUG	DEBUG_IF(symeRefreshDebug)
+#define tfDEBUG			if (DEBUG(tf))
+#define tfExprDEBUG		if (DEBUG(tfExpr))
+#define tfCrossDEBUG		if (DEBUG(tfCross))
+#define tfFloatDEBUG		if (DEBUG(tfFloat))
+#define tfHasDEBUG		if (DEBUG(tfHas))
+#define tfHashDEBUG		if (DEBUG(tfHash))
+#define tfImportDEBUG		if (DEBUG(tfImport))
+#define tfMapDEBUG		if (DEBUG(tfMap))
+#define tfMultiDEBUG		if (DEBUG(tfMulti))
+#define tfCatDEBUG		if (DEBUG(tfCat))
+#define tfWithDEBUG		if (DEBUG(tfWith))
+#define tfCascadeDEBUG		if (DEBUG(tfCascade))
+#define tfParentDEBUG		if (DEBUG(tfParent))
+#define symeRefreshDEBUG	if (DEBUG(symeRefresh))
 
 #define	TFormBuiltinSefo
 #undef	UseTypeVariables

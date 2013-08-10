@@ -227,7 +227,7 @@ static struct gjArgs *gjArgs = &gjArgs0;
 /* DEBUG */
 
 Bool	genJavaDebug	= false;
-#define gjDEBUG		DEBUG_IF(genJavaDebug)
+#define gjDEBUG		if (DEBUG(genJava))
 
 /* Functions... */
 

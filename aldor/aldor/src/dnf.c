@@ -12,7 +12,7 @@
 #include "store.h"
 
 Bool	dnfDebug	= false;
-#define dnfDEBUG	DEBUG_IF(dnfDebug)
+#define dnfDEBUG	if (DEBUG(dnf))
 
 /*****************************************************************************
  *

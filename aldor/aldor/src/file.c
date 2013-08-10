@@ -15,7 +15,7 @@
 #include "xfloat.h"
 
 Bool	fileDebug	= false;
-#define fileDEBUG	DEBUG_IF(fileDebug)
+#define fileDEBUG	if (DEBUG(file))
 
 local FILE *
 fileDefaultHandler(FileName fn, IOMode mode)

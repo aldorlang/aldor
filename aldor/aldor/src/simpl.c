@@ -20,7 +20,7 @@
 
 Bool	implDebug	= false;
 
-#define implDEBUG	DEBUG_IF(implDebug)
+#define implDEBUG	if (DEBUG(impl))
 
 struct SImplInfo {
 	SImplTag tag;

@@ -55,7 +55,7 @@ CREATE_LIST(Loop);
 
 Bool	lpDebug		= false;
 
-#define lpDEBUG		DEBUG_IF(lpDebug)
+#define lpDEBUG		if (DEBUG(lp))
 
 /****************************************************************************
  *

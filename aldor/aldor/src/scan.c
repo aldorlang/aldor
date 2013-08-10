@@ -298,7 +298,7 @@ scStartLine(void)
 	}
 	if (!scSrcLines) {
 		scLine = 0;
-		DEBUG{fprintf(dbOut, "Scan ended.\n");}
+		phaseDEBUG{fprintf(dbOut, "Scan ended.\n");}
 	}
 	else {
 		SrcLine sl;
@@ -313,7 +313,7 @@ scStartLine(void)
 		scFloatState  = AnyFloat;
 		scIsInComment = false;
 		scIsEscaped   = false;
-		DEBUG{fprintf(dbOut, "Scanning line:%s", scLine);}
+		phaseDEBUG{fprintf(dbOut, "Scanning line:%s", scLine);}
 	}
 }
 
@@ -393,7 +393,7 @@ scanToken(void)
 	Token tk     = scanTokenCases();
 	scFloatState = floatCanFollow(tk);
 
-	DEBUG {
+	phaseDEBUG {
 		fprintf(dbOut, "Scanned: ");
 		tokPrint(dbOut, tk);
 		fnewline(dbOut);
@@ -692,7 +692,7 @@ scanSysCommand(void)
 	int	c;
 	String	s;
 
-	DEBUG{fprintf(dbOut, "Scanning system command.\n");}
+	phaseDEBUG{fprintf(dbOut, "Scanning system command.\n");}
 
 	spos = scStartTok();
 	while ((c = scPeekChar()) != '\n' && c != scEndChar) {

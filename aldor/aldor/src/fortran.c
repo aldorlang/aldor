@@ -20,7 +20,7 @@
 #include "strops.h"
 
 Bool    fortranTypesDebug       = false;
-#define fortranTypesDEBUG	DEBUG_IF(fortranTypesDebug)
+#define fortranTypesDEBUG	if (DEBUG(fortranTypes))
 
 
 /* This is a local macro just to make the if tests more readable */

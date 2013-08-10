@@ -110,8 +110,8 @@
 Bool	cpDfDebug	= false;
 Bool	cpDebug		= false;
 
-#define cpDfDEBUG	DEBUG_IF(cpDfDebug)
-#define cpDEBUG		DEBUG_IF(cpDebug)
+#define cpDfDEBUG	if (DEBUG(cpDf))
+#define cpDEBUG		if (DEBUG(cp))
 
 /****************************************************************************
  * :: Global Data Structures

@@ -8,7 +8,7 @@
 CREATE_LIST(TfCondElt);
 
 extern	Bool		tfDebug;
-#define tfCondDEBUG	DEBUG_IF(tfDebug)
+#define tfCondDEBUG	if (DEBUG(tf))
 
 TfCond
 tfCondNew()

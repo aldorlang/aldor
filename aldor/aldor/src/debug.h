@@ -14,21 +14,22 @@
 #if defined(NDEBUG)
 
 # define DEBUG_MODE(flag)	Nothing
-# define DEBUG			if (false)
-# define DEBUG_IF(v)		if (false)
+# define DEBUG(cond)		false
 # define DEBUG_CONFIG		""
-# define DEBUG_DECL(s)		s
 
 #else
-extern Bool dbFlag;
 
-# define DEBUG_MODE(flag)	(dbFlag = (flag))
-# define DEBUG			if (dbFlag)
-# define DEBUG_IF(v)		if (v)
+# define DEBUG_MODE(flag)	(phaseDebug = (flag))
+# define DEBUG(cond)		cond##Debug
 # define DEBUG_CONFIG		"(debug version)"
-# define DEBUG_DECL(s)		s
 
 #endif
+
+/* Generic debug flag, enabled per-phase with -WTd+phase. */
+extern Bool phaseDebug;
+
+#define phaseDEBUG		if (DEBUG(phase))
+#define DEBUG_DECL(s)		s
 
 extern	FILE	*dbOut;
 

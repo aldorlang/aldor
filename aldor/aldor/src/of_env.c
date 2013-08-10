@@ -15,7 +15,7 @@
  * ToDo: Consider splitting environments, deleting "empty" environments, etc.
  */
 Bool	oeDebug		= false;
-#define oeDEBUG		DEBUG_IF(oeDebug)
+#define oeDEBUG		if (DEBUG(oe))
 
 typedef enum { ProgUnknown, ProgForeign, ProgLocal } OeProgOrigin;
 typedef struct oeProgInfo {

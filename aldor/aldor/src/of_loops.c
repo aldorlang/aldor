@@ -41,7 +41,7 @@
 
 static Bool	loopDebug	= false;
 
-#define loopDEBUG		DEBUG_IF(loopDebug)
+#define loopDEBUG		if (DEBUG(loop))
 
 /****************************************************************************
  *

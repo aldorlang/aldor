@@ -16,7 +16,7 @@
 
 Bool	cfgDebug		= false;
 
-#define cfgDEBUG		DEBUG_IF(cfgDebug)
+#define cfgDEBUG		if (DEBUG(cfg))
 
 static String cfgGetLine(FILE *file, Bool *atEof);
 static Bool   cfgIsSection(char *line, char *name);

@@ -32,7 +32,7 @@ extern TForm tuniYieldTForm, tuniReturnTForm, tuniExitTForm;
  ****************************************************************************/
 
 Bool	tipSefDebug		= false;
-#define tipSefDEBUG		DEBUG_IF(tipSefDebug)
+#define tipSefDEBUG		if (DEBUG(tipSef))
 
 /*****************************************************************************
  *

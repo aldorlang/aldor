@@ -263,18 +263,19 @@ Bool	inlExtendDebug	= false;
 
 local Bool	inlInlineGenerators = false;
 
-#define inlineDEBUG		DEBUG_IF(inlineDebug)
-#define inlUnitDEBUG		DEBUG_IF(inlUnitDebug)
-#define inlProgDEBUG		DEBUG_IF(inlProgDebug)
-#define inlExprDEBUG		DEBUG_IF(inlExprDebug)
-#define inlCallDEBUG		DEBUG_IF(inlCallDebug)
-#define inlTransDEBUG		DEBUG_IF(inlTransDebug)
-#define inlExportDEBUG		DEBUG_IF(inlExportDebug)
-#define inlExtendDEBUG		DEBUG_IF(inlExtendDebug)
+#define inlineDEBUG		if (DEBUG(inline))
+#define inlUnitDEBUG		if (DEBUG(inlUnit))
+#define inlProgDEBUG		if (DEBUG(inlProg))
+#define inlExprDEBUG		if (DEBUG(inlExpr))
+#define inlCallDEBUG		if (DEBUG(inlCall))
+#define inlTransDEBUG		if (DEBUG(inlTrans))
+#define inlExportDEBUG		if (DEBUG(inlExport))
+#define inlExtendDEBUG		if (DEBUG(inlExtend))
 
-#define inlCallInfoDEBUG	DEBUG_IF(inlCallInfoDebug &&			\
-					 (inlConstTrace == -1 ||		\
-					 inlConstTrace == inlProg->constNum))
+#define inlCallInfoDebug	(inlCallInfoDebug &&			\
+				 (inlConstTrace == -1 ||		\
+				  inlConstTrace == inlProg->constNum))
+#define inlCallInfoDEBUG	if (DEBUG(inlCallInfo))
 
 /*****************************************************************************
  *

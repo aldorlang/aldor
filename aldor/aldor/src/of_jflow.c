@@ -23,11 +23,11 @@ Bool	jflowGoDebug	= false;
 Bool	jflowDfiDebug	= false;
 Bool	jflowDmDebug	= false;
 
-#define jflowCatDEBUG	DEBUG_IF(jflowCatDebug)
-#define jflowDfDEBUG	DEBUG_IF(jflowDfDebug)
-#define jflowDfiDEBUG	DEBUG_IF(jflowDfiDebug)
-#define jflowGoDEBUG	DEBUG_IF(jflowGoDebug)
-#define jflowDmDEBUG	DEBUG_IF(jflowDmDebug)
+#define jflowCatDEBUG	if (DEBUG(jflowCat))
+#define jflowDfDEBUG	if (DEBUG(jflowDf))
+#define jflowDfiDEBUG	if (DEBUG(jflowDfi))
+#define jflowGoDEBUG	if (DEBUG(jflowGo))
+#define jflowDmDEBUG	if (DEBUG(jflowDm))
 
 /*****************************************************************************
  *

@@ -20,7 +20,7 @@
 #include "util.h"
 
 Bool	arDebug		= false;
-#define arDEBUG		DEBUG_IF(arDebug)
+#define arDEBUG		if (DEBUG(ar))
 
 #define AR_SEEK(ar,pos)	fseek((ar)->file, pos, SEEK_SET)
 

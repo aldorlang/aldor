@@ -17,7 +17,7 @@
 
 Bool	inuProgDebug	= false;
 
-#define inuProgDEBUG	DEBUG_IF(inuProgDebug)
+#define inuProgDEBUG	if (DEBUG(inuProg))
 
 /*****************************************************************************
  *

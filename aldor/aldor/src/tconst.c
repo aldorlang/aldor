@@ -18,7 +18,7 @@
 
 Bool	tcDebug		= false;
 
-#define tcDEBUG		DEBUG_IF(tcDebug)
+#define tcDEBUG		if (DEBUG(tc))
 
 /*
  * Type form constraints:

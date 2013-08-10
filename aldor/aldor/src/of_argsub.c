@@ -83,7 +83,7 @@ static Length	agsNumConsts  = 0;
 
 /* Debugging flags */
 Bool	agsDebug	= false;
-#define	agsDEBUG	DEBUG_IF(agsDebug);
+#define agsDEBUG	if (DEBUG(ags))
 
 
 /*****************************************************************************

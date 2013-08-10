@@ -20,7 +20,7 @@
 
 Bool	tqDebug		= false;
 
-#define tqDEBUG		DEBUG_IF(tqDebug)
+#define tqDEBUG		if (DEBUG(tq))
 
 /******************************************************************************
  *

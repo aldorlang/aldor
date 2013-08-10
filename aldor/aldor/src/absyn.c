@@ -20,7 +20,7 @@
 #include "sexpr.h"
 
 Bool	abDebug		= false;
-#define abDEBUG		DEBUG_IF(abDebug)
+#define abDEBUG		if (DEBUG(ab))
 
 local int       abFormatter     (OStream stream, Pointer p);
 local int       abFormatterList (OStream ostream, Pointer p);

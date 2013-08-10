@@ -24,7 +24,7 @@
 #include "comsg.h"
 
 Bool	linDebug	= false;
-#define linDEBUG	DEBUG_IF(linDebug)
+#define linDEBUG	if (DEBUG(lin))
 
 /****************************************************************************
  *
@@ -1127,7 +1127,7 @@ linIndentation(TokenList tl)
 		? sposChar(car(tl)->pos)
 		: MootIndentation;
 
-	DEBUG{fprintf(dbOut, " line indented to: %d\n", ind);}
+	phaseDEBUG{fprintf(dbOut, " line indented to: %d\n", ind);}
 
 	return ind;
 }
@@ -1220,19 +1220,19 @@ lin2DRulesPile0(LNodeTree context, LNodeTree lnt, int *piS, int *piE)
 	LNodeTree	lnt0;
 	LNodeTreeList	sofar;
 
-	DEBUG{fprintf(dbOut," ==== Linearizing parts %d to %d \n", *piS, *piE);}
+	phaseDEBUG{fprintf(dbOut," ==== Linearizing parts %d to %d \n", *piS, *piE);}
 
 	if (iS > iE) return lntNewEmpty(LN_NNodes, int0);
 
 	indentS = lnt->argv[iS].lnode->indent;
 	sofar	= 0;
 
-	DEBUG{fprintf(dbOut,"indentS = %d\n", indentS);}
+	phaseDEBUG{fprintf(dbOut,"indentS = %d\n", indentS);}
 	while (iS <= iE) {
 		lnt0	= lnt->argv[iS].lnode;
 		indent0 = lnt0->indent;
 
-		DEBUG {
+		phaseDEBUG {
 			fprintf(dbOut,"%d/%d/%d. indent0 = %d (argc = %d)\n",
 				iS, iE, (int) lnt->argc,
 				indent0, (int) lnt0->argc);
@@ -1242,19 +1242,19 @@ lin2DRulesPile0(LNodeTree context, LNodeTree lnt, int *piS, int *piE)
 
 		if (linIsBlank(lnt0) || indent0 == MootIndentation) {
 			iS++;
-			DEBUG{fprintf(dbOut,"Ah.... a blank line _________\n");}
+			phaseDEBUG{fprintf(dbOut,"Ah.... a blank line _________\n");}
 			sofar  = listCons(LNodeTree)(lnt0, sofar);
 			continue;
 		}
 
-		DEBUG{fprintf(dbOut,"%d :: %d\n", indent0, indentS);}
+		phaseDEBUG{fprintf(dbOut,"%d :: %d\n", indent0, indentS);}
 		if (indent0 < indentS)
 			break;
 
 		if (indent0 == indentS) {
 			iS++;
 			sofar  = listCons(LNodeTree)(lnt0, sofar);
-			DEBUG {
+			phaseDEBUG {
 				fprintf(dbOut,"Adding one more +++++++++++++ ");
 				listPrint(LNodeTree)(dbOut, sofar, lntPrint);
 				fnewline(dbOut);
@@ -1263,7 +1263,7 @@ lin2DRulesPile0(LNodeTree context, LNodeTree lnt, int *piS, int *piE)
 		/* (indent0 > indentS) */
 		else {
 			setcar(sofar, lin2DRulesPile0(car(sofar),lnt,&iS,&iE));
-			DEBUG {
+			phaseDEBUG {
 				fprintf(dbOut,"Joining indentee >>>>>>>>>>>> ");
 				listPrint(LNodeTree)(dbOut, sofar, lntPrint);
 				fnewline(dbOut);
@@ -1273,7 +1273,7 @@ lin2DRulesPile0(LNodeTree context, LNodeTree lnt, int *piS, int *piE)
 	sofar = listNReverse(LNodeTree)(sofar);
 	lnt0  = lntConcat(context, joinUp(context, sofar));
 
-	DEBUG {
+	phaseDEBUG {
 		fprintf(dbOut,"Result of joinUp is !!!!!!!!!!!!! ");
 		lntPrint(dbOut, lnt0);
 		fnewline(dbOut);
@@ -1335,12 +1335,12 @@ isPileRequired(LNodeTree context, LNodeTree lnt)
 	/*ARGSUSED*/
 	Token	tok = lntLastTokLessNL(context);
 
-	DEBUG{fprintf(dbOut,"In isPileRequired %s",
+	phaseDEBUG{fprintf(dbOut,"In isPileRequired %s",
 		      tok? "with token: " : "NO TOK\n");}
 
 	if (!tok) return false;
 
-	DEBUG{tokPrint(dbOut, tok);}
+	phaseDEBUG{tokPrint(dbOut, tok);}
 
 	return	tokIs(tok, KW_Then)    || tokIs(tok, KW_Else)    ||
 		tokIs(tok, KW_With)    || tokIs(tok, KW_Add)     ||
@@ -1386,7 +1386,7 @@ isBackSetRequired(LNodeTree context, LNodeTree lnt1, LNodeTree lnt2)
 	Token	tok1 = lntLastTokLessNL (lnt1);
 	Token	tok2 = lntFirstTok	(lnt2);
 
-	DEBUG {
+	phaseDEBUG {
 		fprintf(dbOut,"In isBackSetRequrired ");
 		fprintf(dbOut,"First tree ");
 		lntPrint(dbOut, lnt1);

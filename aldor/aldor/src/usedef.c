@@ -123,8 +123,8 @@
 Bool	udDfDebug	= false;
 Bool	udDfiDebug	= false;
 
-#define udDfDEBUG	DEBUG_IF(udDfDebug)
-#define udDfiDEBUG	DEBUG_IF(udDfiDebug)
+#define udDfDEBUG	if (DEBUG(udDf))
+#define udDfiDEBUG	if (DEBUG(udDfi))
 
 /*****************************************************************************
  *

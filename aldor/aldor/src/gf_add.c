@@ -88,8 +88,8 @@ static Foam		gen0HasSelf;
 Bool	genfExportDebug = false;
 Bool	gfaddDebug	= false;
 
-#define genfExportDEBUG		DEBUG_IF(genfExportDebug)
-#define gfaddDEBUG		DEBUG_IF(gfaddDebug)
+#define genfExportDEBUG		if (DEBUG(genfExport))
+#define gfaddDEBUG		if (DEBUG(gfadd))
 
 local void
 gen0ClashCheck(AbSyn ab)
@@ -772,8 +772,10 @@ gen0TypeAddDefaultSelfSlot()
 	Foam  rtHash;
 	int i;
 
-	DEBUG{fprintf(dbOut, "Make slot: exporter is:\n");
-	      abWrSExpr(dbOut, abType,int0);}
+	phaseDEBUG {
+		fprintf(dbOut, "Make slot: exporter is:\n");
+		abWrSExpr(dbOut, abType,int0);
+	}
 
 	assert(gen0ExportState->self);
 	rtHash = gen0SefoHashExporter(abType);

@@ -36,8 +36,8 @@
 
 Bool	condApplyDebug		= false;
 Bool	tipTdnDebug		= false;
-#define condApplyDEBUG		DEBUG_IF(condApplyDebug)
-#define tipTdnDEBUG		DEBUG_IF(tipTdnDebug)
+#define condApplyDEBUG		if (DEBUG(condApply))
+#define tipTdnDEBUG		if (DEBUG(tipTdn))
 
 /*****************************************************************************
  *

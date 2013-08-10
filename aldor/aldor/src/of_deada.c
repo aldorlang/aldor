@@ -44,8 +44,8 @@
 
 Bool	daDebug;
 
-#define daDEBUG		DEBUG_IF(daDebug)
-#define trDEBUG		DEBUG_IF(daDebug)
+#define daDEBUG		if (DEBUG(da))
+#define trDEBUG		if (DEBUG(da))
 
 /****************************************************************************
  *

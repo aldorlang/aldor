@@ -67,7 +67,7 @@ Bool	genfoamHashDebug	= false;
 Bool	genfoamConstDebug	= false;
 
 extern Bool genfExportDebug;	/* (from gf_add.c) */
-#define genfExportDEBUG		DEBUG_IF(genfExportDebug)
+#define genfExportDEBUG		if (DEBUG(genfExport))
 
 CREATE_LIST (DomainCache);
 CREATE_LIST (VarPool);

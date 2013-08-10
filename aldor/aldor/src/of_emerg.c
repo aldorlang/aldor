@@ -54,7 +54,7 @@
 #include "sexpr.h"
 
 Bool	emergeDebug	= false;
-#define emergeDEBUG	DEBUG_IF(emergeDebug)
+#define emergeDEBUG	if (DEBUG(emerge))
 
 typedef enum emUsageState {
         EM_DontKnow,            /* what we start with */

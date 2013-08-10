@@ -60,7 +60,7 @@
 
 Bool	kpDebug		= false;
 
-#define kpDEBUG		DEBUG_IF(kpDebug)
+#define kpDEBUG		if (DEBUG(kp))
 
 /****************************************************************************
  *

@@ -17,7 +17,7 @@
 
 
 Bool	flogDebug	= false;
-#define flogDEBUG	DEBUG_IF(flogDebug)
+#define flogDEBUG	if (DEBUG(flog))
 
 #define	    BLOCK_LABEL_NONE	(-1)
 

@@ -29,8 +29,8 @@
 extern	Bool genfExportDebug;	/* gf_add.c */
 Bool	genfImplicitDebug	= false;
 
-#define genfExportDEBUG		DEBUG_IF(genfExportDebug)
-#define genfImplicitDEBUG	DEBUG_IF(genfImplicitDebug)
+#define genfExportDEBUG		if (DEBUG(genfExport))
+#define genfImplicitDEBUG	if (DEBUG(genfImplicit))
 
 typedef enum {
 	DG_Const,

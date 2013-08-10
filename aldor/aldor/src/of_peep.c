@@ -17,7 +17,7 @@
 #include "sexpr.h"
 
 Bool	peepDebug	= false;
-#define peepDEBUG	DEBUG_IF(peepDebug)
+#define peepDEBUG	if (DEBUG(peep))
 
 
 /*****************************************************************************

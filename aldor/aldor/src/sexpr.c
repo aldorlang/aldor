@@ -78,7 +78,7 @@
 #include "util.h"
 
 Bool sexprDebug = false;
-#define sexprDEBUG	DEBUG_IF(sexprDebug)
+#define sexprDEBUG	if (DEBUG(sexpr))
 
 #define RUBOUT		0177
 

@@ -24,7 +24,7 @@
 #include "strops.h"
 
 Bool	hfoldDebug	= false;
-#define hfoldDEBUG	DEBUG_IF(cfoldDebug)
+#define hfoldDEBUG	if (DEBUG(hfold))
 
 /*****************************************************************************
  *

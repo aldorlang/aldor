@@ -39,7 +39,7 @@
 
 Bool	dvDebug		= false;
 
-#define dvDEBUG		DEBUG_IF(dvDebug)
+#define dvDEBUG		if (DEBUG(dv))
 
 typedef DvUsage *DvUsagePtr;
 

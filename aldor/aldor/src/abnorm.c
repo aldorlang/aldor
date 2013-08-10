@@ -111,10 +111,10 @@ Bool abnDefineDebug	= false;
 Bool abnWhereDebug	= false;
 Bool abnWithMergeDebug	= false;
 
-#define abnormDEBUG		DEBUG_IF(abnormDebug)
-#define abnDefineDEBUG		DEBUG_IF(abnDefineDebug)
-#define abnWhereDEBUG		DEBUG_IF(abnWhereDebug)
-#define abnWithMergeDEBUG	DEBUG_IF(abnWithMergeDebug)
+#define abnormDEBUG		if (DEBUG(abnorm))
+#define abnDefineDEBUG		if (DEBUG(abnDefine))
+#define abnWhereDEBUG		if (DEBUG(abnWhere))
+#define abnWithMergeDEBUG	if (DEBUG(abnWithMerge))
 
 /*
  * Sometimes we really care if we have finished the macro expansion

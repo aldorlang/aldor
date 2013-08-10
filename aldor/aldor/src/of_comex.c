@@ -181,9 +181,9 @@ Bool	cseDebug	= false;
 Bool	cseDfDebug	= false;
 Bool	cseDfiDebug	= false;
 
-#define cseDEBUG	DEBUG_IF(cseDebug)
-#define cseDfDEBUG	DEBUG_IF(cseDfDebug)
-#define cseDfiDEBUG	DEBUG_IF(cseDfiDebug)
+#define cseDEBUG	if (DEBUG(cse))
+#define cseDfDEBUG	if (DEBUG(cseDf))
+#define cseDfiDEBUG	if (DEBUG(cseDfi))
 
 /****************************************************************************
  *

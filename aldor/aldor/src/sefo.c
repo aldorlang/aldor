@@ -38,16 +38,16 @@ Bool	sefoUnionDebug		= false;
 Bool	sefoInterDebug		= false;
 Bool	sefoCloseDebug		= false;
 
-#define sstDEBUG		DEBUG_IF(sstDebug)
-#define sstMarkDEBUG		DEBUG_IF(sstMarkDebug)
+#define sstDEBUG		if (DEBUG(sst))
+#define sstMarkDEBUG		if (DEBUG(sstMark))
 
-#define sefoPrintDEBUG		DEBUG_IF(sefoPrintDebug)
-#define sefoEqualDEBUG		DEBUG_IF(sefoEqualDebug)
-#define sefoFreeDEBUG		DEBUG_IF(sefoFreeDebug)
-#define sefoSubstDEBUG		DEBUG_IF(sefoSubstDebug)
-#define sefoUnionDEBUG		DEBUG_IF(sefoUnionDebug)
-#define sefoInterDEBUG		DEBUG_IF(sefoInterDebug)
-#define sefoCloseDEBUG		DEBUG_IF(sefoCloseDebug)
+#define sefoPrintDEBUG		if (DEBUG(sefoPrint))
+#define sefoEqualDEBUG		if (DEBUG(sefoEqual))
+#define sefoFreeDEBUG		if (DEBUG(sefoFree))
+#define sefoSubstDEBUG		if (DEBUG(sefoSubst))
+#define sefoUnionDEBUG		if (DEBUG(sefoUnion))
+#define sefoInterDEBUG		if (DEBUG(sefoInter))
+#define sefoCloseDEBUG		if (DEBUG(sefoClose))
 
 #define SefoSubstTUnique
 #undef  SefoSubstShare

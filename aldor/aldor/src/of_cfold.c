@@ -20,7 +20,7 @@
 #include "fbox.h"
 
 Bool	cfoldDebug	= false;
-#define cfoldDEBUG	DEBUG_IF(cfoldDebug)
+#define cfoldDEBUG	if (DEBUG(cfold))
 
 /*****************************************************************************
  *

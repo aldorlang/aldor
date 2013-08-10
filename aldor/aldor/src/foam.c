@@ -51,9 +51,9 @@ Bool	foamDebug		= false;
 Bool	foamConstDebug		= false;
 Bool	foamSposDebug		= false;
 
-#define foamDEBUG		DEBUG_IF(foamDebug)
-#define foamConstDEBUG		DEBUG_IF(foamConstDebug)
-#define foamSposDEBUG		DEBUG_IF(foamSposDebug)
+#define foamDEBUG		if (DEBUG(foam))
+#define foamConstDEBUG		if (DEBUG(foamConst))
+#define foamSposDEBUG		if (DEBUG(foamSpos))
 
 /*****************************************************************************
  *
@@ -763,7 +763,10 @@ foamAudit0(Foam foam)
 	faNumGlobals = foamDDeclArgc(foamUnitGlobals(foam));
 	faNumFluids  = foamDDeclArgc(foamUnitFluids(foam));
 	ok = foamAuditExpr(foam->foamUnit.defs);
-	DEBUG{if (ok) fprintf(dbOut, "Foam OK\n");}
+	phaseDEBUG {
+		if (ok)
+			fprintf(dbOut, "Foam OK\n");
+	}
 	foamAuditUnmark(foam);
 	return ok;
 }
@@ -1555,12 +1558,12 @@ foamToSExpr0(Foam foam)
 		case 'i':
 			li = isDecl && argf[fi] == 'w' ? -1 :
 				(long) foamArgv(foam)[si].data;
-			DEBUG {
+			phaseDEBUG {
 				li  = (long) foamArgv(foam)[si].data;
 			}
 			sxi = sxiFrInteger(li);
 #ifdef NEW_FORMATS
-			DEBUG {
+			phaseDEBUG {
 				if (foamTag(foam) == FOAM_Prog
 				    && si > 4) {
 					assert(li < fexFmtc);

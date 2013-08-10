@@ -27,10 +27,10 @@ Bool	tfsMultiDebug	= false;
 Bool	tfsExportDebug	= false;
 Bool	tfsParentDebug	= false;
 
-#define tfsDEBUG	DEBUG_IF(tfsDebug)
-#define tfsMultiDEBUG	DEBUG_IF(tfsMultiDebug)
-#define tfsExportDEBUG	DEBUG_IF(tfsExportDebug)
-#define tfsParentDEBUG	DEBUG_IF(tfsParentDebug)
+#define tfsDEBUG	if (DEBUG(tfs))
+#define tfsMultiDEBUG	if (DEBUG(tfsMulti))
+#define tfsExportDEBUG	if (DEBUG(tfsExport))
+#define tfsParentDEBUG	if (DEBUG(tfsParent))
 
 static int		tfsDepthNo;
 static int		tfsSerialNo;

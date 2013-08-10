@@ -33,11 +33,11 @@ Bool	libVerboseDebug	= false;
 Bool	libConstDebug	= false;
 Bool	libRepDebug	= false;
 
-#define libDEBUG		DEBUG_IF(libDebug)
-#define libLazyDEBUG		DEBUG_IF(libLazyDebug)
-#define libVerboseDEBUG		DEBUG_IF(libVerboseDebug)
-#define libConstDEBUG		DEBUG_IF(libConstDebug)
-#define libRepDEBUG		DEBUG_IF(libRepDebug)
+#define libDEBUG		if (DEBUG(lib))
+#define libLazyDEBUG		if (DEBUG(libLazy))
+#define libVerboseDEBUG		if (DEBUG(libVerbose))
+#define libConstDEBUG		if (DEBUG(libConst))
+#define libRepDEBUG		if (DEBUG(libRep))
 
 #define libError(lib,tag)		\
 	comsgError(NULL, tag, libToStringStatic(lib))

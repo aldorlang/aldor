@@ -20,7 +20,7 @@
 #include "table.h"
 
 Bool	ablogDebug		= false;
-#define ablogDEBUG		DEBUG_IF(ablogDebug)
+#define ablogDEBUG		if (DEBUG(ablog))
 
 
 /*****************************************************************************

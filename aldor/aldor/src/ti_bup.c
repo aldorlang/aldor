@@ -36,7 +36,7 @@
  ****************************************************************************/
 
 Bool	tipBupDebug		= false;
-#define tipBupDEBUG		DEBUG_IF(tipBupDebug)
+#define tipBupDEBUG		if (DEBUG(tipBup))
 
 /*****************************************************************************
  *

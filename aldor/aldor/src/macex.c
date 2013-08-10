@@ -31,7 +31,7 @@
 #undef MacDeclArgs
 
 Bool	macDebug		= false;
-#define macDEBUG		DEBUG_IF(macDebug)
+#define macDEBUG		if (DEBUG(mac))
 
 /*****************************************************************************
  *

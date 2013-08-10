@@ -44,7 +44,7 @@
  ****************************************************************************/
 
 Bool	rrfmtDebug	= false;
-#define rrfmtDEBUG	DEBUG_IF(rrfmtDebug)
+#define rrfmtDEBUG	if (DEBUG(rrfmt))
 
 /*****************************************************************************
  *
