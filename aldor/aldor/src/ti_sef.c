@@ -31,8 +31,8 @@ extern TForm tuniYieldTForm, tuniReturnTForm, tuniExitTForm;
  *
  ****************************************************************************/
 
-Bool	tipSefDebug		= false;
-#define tipSefDEBUG		if (DEBUG(tipSef))
+Bool	tipSefDebug	= false;
+#define tipSefDEBUG	DEBUG_IF(tipSef)	afprintf
 
 /*****************************************************************************
  *
@@ -216,7 +216,7 @@ tisef(Stab stab, Sefo sefo)
 	serialNo += 1;
 	depthNo	 += 1;
 	serialThis = serialNo;
-	tipSefDEBUG {
+	if (DEBUG(tipSef)) {
 		fprintf(dbOut,"->Sef: %*s%d= ", depthNo, "", serialThis);
 		abPrettyPrint(dbOut, sefo);
 		fnewline(dbOut);
@@ -227,7 +227,7 @@ tisef(Stab stab, Sefo sefo)
 
 	AB_SWITCH(sefo, tisef, (stab, sefo));
 
-	tipSefDEBUG {
+	if (DEBUG(tipSef)) {
 		fprintf(dbOut, "<-Sef: %*s%d= ", depthNo, "", serialThis);
 		abPrettyPrint(dbOut, sefo);
 		fprintf(dbOut, " @ ");
@@ -560,7 +560,7 @@ tisefApply(Stab stab, Sefo sefo)
 	Sefo		op;
 	TForm		tf;
 
-	tipApplyDEBUG{fprintf(dbOut, "Entering tisefApply\n");}
+	tipApplyDEBUG(dbOut, "Entering tisefApply\n");
 
 	tisef0ApplySpecialSyme(stab, sefo);
 

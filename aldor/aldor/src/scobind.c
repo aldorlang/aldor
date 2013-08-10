@@ -24,15 +24,15 @@
 #include "strops.h"
 #include "table.h"
 
-Bool	scoDebug		= false;
-Bool	scoStabDebug		= false;
-Bool	scoFluidDebug		= false;
-Bool	scoUndoDebug		= false;
+Bool	scoDebug	= false;
+Bool	scoStabDebug	= false;
+Bool	scoFluidDebug	= false;
+Bool	scoUndoDebug	= false;
 
-#define scoDEBUG		if (DEBUG(sco))
-#define scoStabDEBUG		if (DEBUG(scoStab))
-#define scoFluidDEBUG		if (DEBUG(scoFluid))
-#define scoUndoDEBUG		if (DEBUG(scoUndo))
+#define scoDEBUG	DEBUG_IF(sco)		afprintf
+#define scoStabDEBUG	DEBUG_IF(scoStab)	afprintf
+#define scoFluidDEBUG	DEBUG_IF(scoFluid)	afprintf
+#define scoUndoDEBUG	DEBUG_IF(scoUndo)	afprintf
 
 /******************************************************************************
  *
@@ -543,7 +543,7 @@ scopeBind(Stab stab, AbSyn absyn)
 	scoDefineList	= listNil(AbSyn);
 	scoLambdaList	= listNil(LambdaInfo);
 
-	scoDEBUG {
+	if (DEBUG(sco)) {
 		fprintf(dbOut, "Top-level Scope Begin");
 		findent += 2;
 		fnewline(dbOut);
@@ -557,11 +557,13 @@ scopeBind(Stab stab, AbSyn absyn)
 
 	scobindSave();
 
-	scoDEBUG {
+	if (DEBUG(sco)) {
 		findent -= 2;
 		fnewline(dbOut);
 		scobindPrint(scoStab);
-		scoStabDEBUG{stabPrint(dbOut, scoStab);}
+		if (DEBUG(scoStab)) {
+			stabPrint(dbOut, scoStab);
+		}
 		fnewline(dbOut);
 		fprintf(dbOut, "Top-level Scope End\n\n");
 		fnewline(dbOut);
@@ -846,7 +848,7 @@ scobindLevel(AbSyn absyn, ScoBindFun fun, ULong flags)
 	scobindSetStab(absyn, flags);
 	scoStab = abStab(absyn);
 	
-	scoDEBUG {
+	if (DEBUG(sco)) {
 		fprintf(dbOut, "%s Scope Begin (# %lu)",
 			abInfo(abTag(absyn)).str, car(scoStab)->serialNo);
 		findent += 2;
@@ -857,9 +859,11 @@ scobindLevel(AbSyn absyn, ScoBindFun fun, ULong flags)
 	scobindLambdaList();
 	scobindReconcile(scoStab, abTag(absyn));
 
-	scoDEBUG {
+	if (DEBUG(sco)) {
 		scobindPrint(scoStab);
-		scoStabDEBUG{stabPrintTo(dbOut, scoStab, -1);}
+		if (DEBUG(scoStab)) {
+			stabPrintTo(dbOut, scoStab, -1);
+		}
 		findent -= 2;
 		fnewline(dbOut);
 		fprintf(dbOut, "%s Scope End (# %lu)",
@@ -3410,8 +3414,8 @@ scobindCheckCondition(DeclInfo declInfo, ScoConditionList conditionList)
 {
 	DefnPos defnPos = scoConditionToDefnPos(conditionList);
 	Bool check = scobindCheckDefnPos(declInfo, defnPos);
-	scoDEBUG{afprintf(dbOut, "scobindCheckCondition: %pAbSynList %d\n", 
-			  scoConditionToAbSyn(conditionList), check);}
+	scoDEBUG(dbOut, "scobindCheckCondition: %pAbSynList %d\n", 
+		 scoConditionToAbSyn(conditionList), check);
 	defposFree(defnPos);
 
 	return check;
@@ -3827,16 +3831,18 @@ scobindReconcileDecl(Stab stab, AbSynTag context, Symbol sym, IdInfo idInfo,
 		else
 			tf = scobindTfSyntaxFrAbSyn(stab,declInfo->type);
 
-		scoFluidDEBUG{fprintf(dbOut, "Adding fluid: %s", symString(sym));}
-		scoFluidDEBUG{tfPrintDb(tf);}
+		scoFluidDEBUG(dbOut, "Adding fluid: %s", symString(sym));
+		if (DEBUG(scoFluid)) {
+			tfPrintDb(tf);
+		}
 
 		if (!scobindCheckOuterUseOfFluid(declInfo->id, declInfo->type)) {
-			scoFluidDEBUG{fprintf(dbOut, " New\n");}
+			scoFluidDEBUG(dbOut, " New\n");
 			scobindAddMeaning(declInfo->id, sym, stab, SYME_Fluid, 
 					  tf, (AInt) NULL);
 		}
 		else
-			scoFluidDEBUG{fprintf(dbOut, " See'd it before.\n");}
+			scoFluidDEBUG(dbOut, " See'd it before.\n");
 		return;
 	}
 

@@ -332,10 +332,8 @@ gen0GetDomImport(Syme syme, Foam dom)
 	type = gen0TypeHash(tf, otf, str);
 
 #if 0
-	genfExportDEBUG {
-		(void)fprintf(dbOut, "---LazGet:      %9d (%s from %s)\n",
-			      type, str, "???");
-	}
+	genfExportDEBUG(dbOut, "---LazGet:      %9d (%s from %s)\n",
+			type, str, "???");
 #endif
 
 	if (tfIsAnyMap(tf)) {

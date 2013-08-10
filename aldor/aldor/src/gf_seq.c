@@ -29,8 +29,8 @@
 extern	Bool genfExportDebug;	/* gf_add.c */
 Bool	genfImplicitDebug	= false;
 
-#define genfExportDEBUG		if (DEBUG(genfExport))
-#define genfImplicitDEBUG	if (DEBUG(genfImplicit))
+#define genfExportDEBUG		DEBUG_IF(genfExport)	afprintf
+#define genfImplicitDEBUG	DEBUG_IF(genfImplicit)	afprintf
 
 typedef enum {
 	DG_Const,
@@ -106,7 +106,7 @@ gen0DefTypeSequence(AbSyn ab, SymeList exports)
 	DefGroupList	lst;
 	SymeList 	symes, isymes;
 
-	genfImplicitDEBUG {
+	if (DEBUG(genfImplicit)) {
 		(void)fprintf(dbOut, "gen0DefTypeSequence():");
 		fnewline(dbOut);
 		for (symes = exports;symes;symes = cdr(symes)) {
@@ -132,7 +132,7 @@ gen0DefTypeSequence(AbSyn ab, SymeList exports)
 
 	while (lst) {
 		DefGroup dg = car(lst);
-		genfExportDEBUG {
+		if (DEBUG(genfExport)) {
 			fprintf(dbOut, "looking at:\n");
 			abWrSExpr(dbOut, dgStmt(dg),int0);
 			fprintf(dbOut, "defines:\n");

@@ -19,8 +19,8 @@
 #include "abpretty.h"
 #include "strops.h"
 
-Bool    fortranTypesDebug       = false;
-#define fortranTypesDEBUG	if (DEBUG(fortranTypes))
+Bool	fortranTypesDebug	= false;
+#define fortranTypesDEBUG	DEBUG_IF(fortranTypes)	afprintf
 
 
 /* This is a local macro just to make the if tests more readable */
@@ -118,7 +118,7 @@ ftnTypeFrCatTForm(AbSyn sefo, TForm tf)
 
 
 	/* Some debugging information. */
-	fortranTypesDEBUG {
+	if (DEBUG(fortranTypes)) {
 		(void)fprintf(dbOut, "- ftnTypeFrCatTForm: %s\n", abPretty(sefo));
 
 		if (XtfIsValid(tfFtnBool) && tfSatisfies(tf,tfFtnBool))

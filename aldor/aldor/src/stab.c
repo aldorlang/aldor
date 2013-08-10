@@ -26,13 +26,13 @@
 #include "table.h"
 #include "strops.h"
 
-Bool	stabDebug		= false;
-Bool	stabImportDebug		= false;
-Bool	stabConstDebug		= false;
+Bool	stabDebug	= false;
+Bool	stabImportDebug	= false;
+Bool	stabConstDebug	= false;
 
-#define stabDEBUG		if (DEBUG(stab))
-#define stabImportDEBUG		if (DEBUG(stabImport))
-#define stabConstDEBUG		if (DEBUG(stabConst))
+#define stabDEBUG	DEBUG_IF(stab)		afprintf
+#define stabImportDEBUG	DEBUG_IF(stabImport)	afprintf
+#define stabConstDEBUG	DEBUG_IF(stabConst)	afprintf
 
 /****************************************************************************
  *
@@ -55,9 +55,7 @@ local SymeList		stabEntryAllSymes	(StabEntry);
 local SymeList		stabEntryGetSymes	(StabEntry, AbLogic);
 local SymeList		stabEntryCacheSymes	(StabEntry, AbLogic);
 
-#ifndef NDEBUG
 local TPoss		stabEntryAllTypes	(StabEntry);
-#endif
 local TPoss		stabEntryGetTypes	(StabEntry, AbLogic);
 local TPoss		stabEntryCacheTypes	(StabEntry, Length);
 
@@ -351,13 +349,13 @@ stabEntryAddSyme(StabEntry stent, Syme syme)
 
 	if (symeIsCheckCondIncomplete(syme)) {
 		stent->pending = listCons(Syme)(syme, stent->pending);
-		stabDEBUG{afprintf(dbOut, "Pending condition: %pSyme %pAbSynList\n",
-				   syme, symeCondition(syme));}
+		stabDEBUG(dbOut, "Pending condition: %pSyme %pAbSynList\n",
+			  syme, symeCondition(syme));
 	}
 	if (!symeIsCondChecked(syme) && symeCondition(syme)) {
 		stent->pending = listCons(Syme)(syme, stent->pending);
-		stabDEBUG{afprintf(dbOut, "Pending condition [unchecked]: %pSyme %pAbSynList\n",
-				   syme, symeCondition(syme));}
+		stabDEBUG(dbOut, "Pending condition [unchecked]: %pSyme %pAbSynList\n",
+			  syme, symeCondition(syme));
 	}
 	if (symeCondIsLazy(syme)) {
 		stabEntryPutSyme(stent, int0, syme);
@@ -434,9 +432,9 @@ stabEntryCheckConditions(StabEntry stent)
 		Syme psyme = car(psymes);
 		symeCheckCondition(psyme);
 
-		stabDEBUG{afprintf(dbOut, "Checked: %pSyme - complete: %d condition: %pAbSynList\n",
-				   psyme, symeIsCheckCondIncomplete(psyme),
-				   symeCondition(psyme));}
+		stabDEBUG(dbOut, "Checked: %pSyme - complete: %d condition: %pAbSynList\n",
+			  psyme, symeIsCheckCondIncomplete(psyme),
+			  symeCondition(psyme));
 
 		if (symeCondition(psyme) == listNil(Sefo)) {
 			stabEntryPutSyme(stent, int0, psyme);
@@ -468,13 +466,11 @@ stabEntryCacheSymes(StabEntry stent, AbLogic abl)
 	return nsymes;
 }
 
-#ifndef NDEBUG
 local TPoss
 stabEntryAllTypes(StabEntry stent)
 {
 	return stabEntryGetTypes(stent, ablogFalse());
 }
-#endif
 
 local TPoss
 stabEntryGetTypes(StabEntry stent, AbLogic abl)
@@ -625,16 +621,14 @@ stabGetEntry(Stab stab0, Symbol id, Bool recurse)
 	StabEntry stent;
 	Bool	first = true;
 
-	stabDEBUG{fprintf(dbOut, "Searching for symbol %s", symString(id));}
+	stabDEBUG(dbOut, "Searching for symbol %s", symString(id));
 
 	stab = stab0;
 	stent = 0;
 	while (stab && !stent) {
-		stabDEBUG {
-			fprintf(dbOut,
-				(first ? " looking in level %lu" : ", %lu"),
-				stabLevelNo(stab));
-		}
+		stabDEBUG(dbOut,
+			  (first ? " looking in level %lu" : ", %lu"),
+			  stabLevelNo(stab));
 		first = false;
 		stent = (StabEntry) tblElt(car(stab)->tbl, id, NULL);
 		if (! recurse)
@@ -646,20 +640,22 @@ stabGetEntry(Stab stab0, Symbol id, Bool recurse)
 	if (!stent) {
 		stent = stabEntryNew();
 		tblSetElt(car(stab0)->tbl, id, stent);
-		stabDEBUG{fprintf(dbOut, " ... manufacturing");}
+		stabDEBUG(dbOut, " ... manufacturing");
 	}
 	else if (stab != stab0) {
 		stent = stabEntryCopy(stent);
 		tblSetElt(car(stab0)->tbl, id, stent);
-		stabDEBUG{fprintf(dbOut, " ... copying");}
+		stabDEBUG(dbOut, " ... copying");
 	}
 
 /*LDR*/
 #if 1 && EDIT_1_0_n2_06
-	stabDEBUG{fnewline(dbOut);}
+	if (DEBUG(stab)) {
+		fnewline(dbOut);
+	}
 	stabEntryGetTypes(stent, ablogFalse());
 #endif
-	stabDEBUG {
+	if (DEBUG(stab)) {
 		SymeList sl = stabEntryAllSymes(stent);
 		TPoss tp = stabEntryAllTypes(stent);
 		int i;
@@ -1110,7 +1106,7 @@ stabUseMeaning(Stab stab, Syme syme)
 {
 	UShort	d = stabLevelNo(stab) - symeDefLevelNo(syme);
 
-	stabDEBUG {
+	if (DEBUG(stab)) {
 		fprintf(dbOut, "Using %s (.%ld) of depth %d at %d",
 			symeString(syme), symeConstNum(syme), 
 			symeUsedDepth(syme), d);
@@ -1188,8 +1184,8 @@ stabAddMeaning(Stab stab, Syme syme)
 	}
 
 	car(stab)->boundSymes = listCons(Syme)(syme, car(stab)->boundSymes);
-	stabDEBUG{afprintf(dbOut, "Adding stab entry %d %pSyme %pAbSynList\n", car(stab)->lexicalLevel, 
-			   syme, symeCondition(syme));}
+	stabDEBUG(dbOut, "Adding stab entry %d %pSyme %pAbSynList\n", car(stab)->lexicalLevel, 
+		  syme, symeCondition(syme));
 	stabEntryAddSyme(stent, syme);
 
 	return syme;
@@ -1223,7 +1219,7 @@ stabDefLexConst(Stab stab, Symbol id, TForm tform)
 	Syme	syme = symeNewLexConst(id, tform, car(stab));
 	symeSetDefnNum(syme, (int) ++stabDefinitionCounter);
 
-	stabConstDEBUG {
+	if (DEBUG(stabConst)) {
 		fprintf(dbOut, "defnNum[%d]:  ", symeDefnNum(syme));
 		symePrint(dbOut, syme);
 		fnewline(dbOut);
@@ -1241,7 +1237,7 @@ stabDefLexVar(Stab stab, Symbol id, TForm tform)
 	syme = stabAddMeaning(stab, syme);
 	symeSetDefnNum(syme, (int) ++stabDefinitionCounter);
 
-	stabConstDEBUG {
+	if (DEBUG(stabConst)) {
 		fprintf(dbOut, "defnNum[%d]:  ", symeDefnNum(syme));
 		symePrint(dbOut, syme);
 		fnewline(dbOut);
@@ -1273,7 +1269,7 @@ stabDefExport(Stab stab, Symbol id, TForm tform, Doc doc)
 {
 	Syme	syme = symeNewExport(id, tform, car(stab));
 
-	stabDEBUG {
+	if (DEBUG(stab)) {
 		fprintf(dbOut, "Defining export %s with comment ",
 			symString(id));
 		docPrint(dbOut, doc);
@@ -1284,7 +1280,7 @@ stabDefExport(Stab stab, Symbol id, TForm tform, Doc doc)
 	syme = stabAddMeaning(stab, syme);
 	symeSetDefnNum(syme, (int) ++stabDefinitionCounter);
 
-	stabConstDEBUG {
+	if (DEBUG(stabConst)) {
 		fprintf(dbOut, "defnNum[%d]:  ", symeDefnNum(syme));
 		symePrint(dbOut, syme);
 		fnewline(dbOut);
@@ -1704,7 +1700,7 @@ stabImportFrom(Stab stab, TQual tq)
 	if (stabIsImportedTForm(stab, origin))
 		return listNil(TQual);
 
-	stabImportDEBUG {
+	if (DEBUG(stabImport)) {
 		fprintf(dbOut, "Importing %s from ",
 			tqIsForeign(tq) ? " foreign exports" :
 			tqIsBuiltin(tq) ? " builtin exports" :
@@ -1754,9 +1750,7 @@ stabImportFrom(Stab stab, TQual tq)
 
 	stabPutMeanings(stab, dsymes);
 
-	stabImportDEBUG {
-		afprintf(dbOut, "... imported: %pSymeCList\n", dsymes);
-	}
+	stabImportDEBUG(dbOut, "... imported: %pSymeCList\n", dsymes);
 
 	if (!tqIsQualified(tq))
 		return tfGetDomCascades(origin);

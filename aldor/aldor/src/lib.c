@@ -33,11 +33,11 @@ Bool	libVerboseDebug	= false;
 Bool	libConstDebug	= false;
 Bool	libRepDebug	= false;
 
-#define libDEBUG		if (DEBUG(lib))
-#define libLazyDEBUG		if (DEBUG(libLazy))
-#define libVerboseDEBUG		if (DEBUG(libVerbose))
-#define libConstDEBUG		if (DEBUG(libConst))
-#define libRepDEBUG		if (DEBUG(libRep))
+#define libDEBUG	DEBUG_IF(lib)		afprintf
+#define libLazyDEBUG	DEBUG_IF(libLazy)	afprintf
+#define libVerboseDEBUG	DEBUG_IF(libVerbose)	afprintf
+#define libConstDEBUG	DEBUG_IF(libConst)	afprintf
+#define libRepDEBUG	DEBUG_IF(libRep)	afprintf
 
 #define libError(lib,tag)		\
 	comsgError(NULL, tag, libToStringStatic(lib))
@@ -403,7 +403,7 @@ libFrString(String name)
 	Lib		lib;
 	FileName	fn;
 
-	libDEBUG{fprintf(dbOut, "Looking for library \"%s\"\n", name);}
+	libDEBUG(dbOut, "Looking for library \"%s\"\n", name);
 
 	if ((lib = libGetRegistered(name)) != NULL)
 		return lib;
@@ -833,10 +833,8 @@ libAddSection(Lib lib, LibSectName name)
 			 : libIndexSect(lib, i-1).offset +
 			   libIndexSect(lib, i-1).length;
 
-	libVerboseDEBUG {
-		fprintf(dbOut, "Putting %s section \"%s\":\t", FTYPE_INTERMED,
+	libVerboseDEBUG(dbOut, "Putting %s section \"%s\":\t", FTYPE_INTERMED,
 			libSectInfo(name).str);
-	}
 
 	return bufNew();
 }
@@ -852,7 +850,7 @@ libPutSection(Lib lib, LibSectName name, Buffer buf)
 	libSectLength(lib, name) = cc;
 	bufFree(buf);
 
-	libVerboseDEBUG{fprintf(dbOut, "%12d bytes\n", cc);}
+	libVerboseDEBUG(dbOut, "%12d bytes\n", cc);
 }
 
 static Buffer	LibStaticSectBuffer = 0;
@@ -866,15 +864,15 @@ libGetSection(Lib lib, LibSectName name, Bool stat)
 
 	if (!libHasSection(lib, name)) return 0;
 
-	libVerboseDEBUG{fprintf(dbOut, "Getting %s section \"%s\":\t", 
-				FTYPE_INTERMED, libSectInfo(name).str);}
+	libVerboseDEBUG(dbOut, "Getting %s section \"%s\":\t", 
+			FTYPE_INTERMED, libSectInfo(name).str);
 
 	/* Seek to the beginning of the section. */
 	LIB_SEEK(lib, libSectOffset(lib, name));
 
 	/* Read the number of bytes in the section. */
 	cc = libSectLength(lib, name);
-	libVerboseDEBUG{fprintf(dbOut, "%12ld bytes\n", cc);}
+	libVerboseDEBUG(dbOut, "%12ld bytes\n", cc);
 
 	if (stat) {
 		if (LibStaticSectBuffer == 0)
@@ -1306,7 +1304,7 @@ extern void	libCheckSymes		(Lib);
 SymeList
 libPutSymes(Lib lib, SymeList symes, Foam foam)
 {
-	libDEBUG {
+	if (DEBUG(lib)) {
 		SymeList l = symes;
 		fprintf(dbOut, "libPutSymes:");
 		fnewline(dbOut);
@@ -1361,9 +1359,11 @@ libPutSymes(Lib lib, SymeList symes, Foam foam)
 	assert(libValidateSymes(lib->symes));
 	assert(libValidateSymes(tfType->symes));
 
-	libRepDEBUG{libRepSymes(dbOut, lib, false);}
+	if (DEBUG(libRep)) {
+		libRepSymes(dbOut, lib, false);
+	}
 
-	libConstDEBUG {
+	if (DEBUG(libConst)) {
 		SymeList tmp = lib->symes;
 		Syme     syme;
 
@@ -1388,7 +1388,7 @@ libPutSymes(Lib lib, SymeList symes, Foam foam)
 		}
 	}
 
-	libConstDEBUG {
+	if (DEBUG(libConst)) {
 		int i;
 		for (i = 0; i<lib->typec; i++) {
 			afprintf(dbOut, "(%d: %pTForm)\n", i, lib->typev[i]);
@@ -1631,9 +1631,11 @@ libPutSymev(Lib lib)
 
 	libPutSection(lib, LIB_Syme, buf);
 
-	libLazyDEBUG{libCheckSymes(lib);}
+	if (DEBUG(libLazy)) {
+		libCheckSymes(lib);
+	}
 
-	libVerboseDEBUG {
+	if (DEBUG(libVerbose)) {
 		fprintf(dbOut, "Number of symbols:\t\t%12d symes\n", i);
 		for (i = 0; i < SYME_LIMIT; i += 1)
 			fprintf(dbOut, "\t%s:\t\t%12d symes\n",
@@ -1746,7 +1748,7 @@ libPutSymeTwins(Lib lib)
 		if (symes) {
 			BUF_PUT_HINT(buf, i);
 			symeListToBuffer(lib, buf, symes);
-			libConstDEBUG {
+			if (DEBUG(libConst)) {
 				fprintf(dbOut, "(%d:", i); 
 				while (symes) {
 					fprintf(dbOut, " %d", symeLibNum(car(symes)));
@@ -1927,13 +1929,15 @@ lib0GetSymes(Lib lib)
 	/* This pass fills in lib->symes. */
 	lib0FiniSymev(lib);
 
-	libDEBUG {
+	if (DEBUG(lib)) {
 		fprintf(dbOut, "lib0GetSymes: %s", fnameUnparse(lib->name));
 		fnewline(dbOut);
 		listPrint(Syme)(dbOut, lib->symes, symePrint);
 	}
 
-	libRepDEBUG{libRepSymes(dbOut, lib, true);}
+	if (DEBUG(libRep)) {
+		libRepSymes(dbOut, lib, true);
+	}
 
 	return lib->symes;
 }
@@ -2386,12 +2390,12 @@ lib1GetSymes(Lib lib)
 	/* This pass fills in symeComment(lib->symev[i]). */
 	lib1GetSymeDocs(lib);
 
-	libDEBUG {
+	if (DEBUG(lib)) {
 		fprintf(dbOut, "lib1GetSymes: %s", fnameUnparse(lib->name));
 		fnewline(dbOut);
 	}
 
-	libConstDEBUG {
+	if (DEBUG(libConst)) {
 		int	i;
 		Syme	syme;
 

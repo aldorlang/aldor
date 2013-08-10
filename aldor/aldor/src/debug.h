@@ -9,7 +9,7 @@
 #ifndef _DEBUG_H_
 #define _DEBUG_H_
 
-#include "cport.h"
+#include "format.h"
 
 #if defined(NDEBUG)
 
@@ -28,8 +28,13 @@
 /* Generic debug flag, enabled per-phase with -WTd+phase. */
 extern Bool phaseDebug;
 
-#define phaseDEBUG		if (DEBUG(phase))
+/* For explicitly marking declarations as "required for debug" code. */
 #define DEBUG_DECL(s)		s
+
+/* Make sure that xyzDEBUG behaves like a function call. */
+#define DEBUG_IF(cond)		if (!DEBUG(cond)) { } else
+
+#define phaseDEBUG		DEBUG_IF(phase) afprintf
 
 extern	FILE	*dbOut;
 

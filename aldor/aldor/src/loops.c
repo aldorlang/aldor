@@ -55,7 +55,7 @@ CREATE_LIST(Loop);
 
 Bool	lpDebug		= false;
 
-#define lpDEBUG		if (DEBUG(lp))
+#define lpDEBUG		DEBUG_IF(lp)	afprintf
 
 /****************************************************************************
  *
@@ -155,11 +155,13 @@ lpNaturalLoopsFrFlog(FlowGraph flog, Dominators * pDoms)
 
 	doms = lpDominatorsFrFlog(flog);
 
-	lpDEBUG{lpDominatorsPrintDb(doms);}
+	if (DEBUG(lp)) {
+		lpDominatorsPrintDb(doms);
+	}
 
 	backEdges = lpBackEdgesFrDominators(doms);
 
-	lpDEBUG {
+	if (DEBUG(lp)) {
 		fprintf(dbOut,"Back Edges: \n");
 		lpEdgeListPrintDb(backEdges);
 	}
@@ -171,7 +173,9 @@ lpNaturalLoopsFrFlog(FlowGraph flog, Dominators * pDoms)
 
 	loops = lpNaturalLoopsFrBackEdges(backEdges, flog);
 
-	lpDEBUG{lpLoopListPrintDb(loops);}
+	if (DEBUG(lp)) {
+		lpLoopListPrintDb(loops);
+	}
 
 	listFreeDeeply(Edge)(backEdges, lpEdgeFree);
 	
@@ -280,10 +284,8 @@ lpUnifyCommonHeaders(LoopList loops)
 
 	if (!loops) return loops;
 
-	lpDEBUG {
-		fprintf(dbOut, "lpUnifyCommonHeaders << %d loops ...",
-			(int) listLength(Loop)(loops));
-	}
+	lpDEBUG(dbOut, "lpUnifyCommonHeaders << %d loops ...",
+		(int) listLength(Loop)(loops));
 
 	class = car(loops)->bitvClass;
 
@@ -338,11 +340,9 @@ lpUnifyCommonHeaders(LoopList loops)
 
 	listFreeDeeply(Loop)(unifiables, lpLoopFree);
 
-	lpDEBUG {
-		fprintf(dbOut, ">> %d loops.\n",
-			(int) listLength(Loop)(notUnifiables) +
-			(int) listLength(Loop)(unified));
-	}
+	lpDEBUG(dbOut, ">> %d loops.\n",
+		(int) listLength(Loop)(notUnifiables) +
+		(int) listLength(Loop)(unified));
 
 
 	return listNConcat(Loop)(notUnifiables, unified);

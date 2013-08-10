@@ -14,9 +14,9 @@
 #include "store.h"
 #include "strops.h"
 
-Bool	cfgDebug		= false;
+Bool	cfgDebug	= false;
 
-#define cfgDEBUG		if (DEBUG(cfg))
+#define cfgDEBUG	DEBUG_IF(cfg)	afprintf
 
 static String cfgGetLine(FILE *file, Bool *atEof);
 static Bool   cfgIsSection(char *line, char *name);
@@ -69,7 +69,7 @@ cfgLookupList(char *string, ConfigItemList lst)
 {
 	ConfigItemList	result = listNil(ConfigItem);
 
-	cfgDEBUG{fprintf(dbOut, "Getting key list: %s\n", string);}
+	cfgDEBUG(dbOut, "Getting key list: %s\n", string);
 
 	while (lst != listNil(ConfigItem)) {
 		if (strEqual(string, cfgName(car(lst))))
@@ -82,7 +82,7 @@ cfgLookupList(char *string, ConfigItemList lst)
 ConfigItem
 cfgLookup(char *string, ConfigItemList lst)
 {
-	cfgDEBUG{fprintf(dbOut, "Getting key: %s\n", string);}
+	cfgDEBUG(dbOut, "Getting key: %s\n", string);
 
 	while (lst != listNil(ConfigItem)) {
 		if (strEqual(string, cfgName(car(lst))))

@@ -34,10 +34,10 @@
  *
  ****************************************************************************/
 
-Bool	condApplyDebug		= false;
-Bool	tipTdnDebug		= false;
-#define condApplyDEBUG		if (DEBUG(condApply))
-#define tipTdnDEBUG		if (DEBUG(tipTdn))
+Bool	condApplyDebug	= false;
+Bool	tipTdnDebug	= false;
+#define condApplyDEBUG	DEBUG_IF(condApply)	afprintf
+#define tipTdnDEBUG	DEBUG_IF(tipTdn)	afprintf
 
 /*****************************************************************************
  *
@@ -228,7 +228,7 @@ titdn(Stab stab, AbSyn absyn, TForm type)
 	serialNo += 1;
 	depthNo	 += 1;
 	serialThis = serialNo;
-	tipTdnDEBUG {
+	if (DEBUG(tipTdn)) {
 		fprintf(dbOut,"->Tdn: %*s%d= ", depthNo, "", serialThis);
 		abPrettyPrint(dbOut, absyn);
 		fprintf(dbOut," @ ");
@@ -256,7 +256,7 @@ titdn(Stab stab, AbSyn absyn, TForm type)
 		assert(abTPoss(absyn) == abtposs);
 	}
 
-	tipTdnDEBUG {
+	if (DEBUG(tipTdn)) {
 		fprintf(dbOut, "<-Tdn: %*s%d= ", depthNo, "", serialThis);
 		abPrettyPrint(dbOut, absyn);
 		fprintf(dbOut, " @ ");
@@ -465,7 +465,7 @@ titdn0FarValue(Stab stab,AbSyn absyn,TForm type,AbSyn farValue,TForm *pFarType,
 	       AbSynList *pFarAbSynList)
 {
 	AbEmbed embed;
-	tipFarDEBUG {
+	if (DEBUG(tipFar)) {
 		fprintf(dbOut, "Computing far value as a ");
 		tfPrint(dbOut, *pFarType);
 		fnewline(dbOut);
@@ -494,7 +494,7 @@ titdn0FarValue(Stab stab,AbSyn absyn,TForm type,AbSyn farValue,TForm *pFarType,
 	*pFarAbSynList = listCons(AbSyn)(farValue, *pFarAbSynList);
 	if (tfIsUnknown(*pFarType)) {
 		*pFarType = abTUnique(farValue);
-		tipFarDEBUG {
+		if (DEBUG(tipFar)) {
 			fprintf(dbOut, "Converting far value to a ");
 			tfPrint(dbOut, *pFarType);
 			fnewline(dbOut);
@@ -559,7 +559,7 @@ titdnId(Stab stab, AbSyn absyn, TForm type)
 {
 	Syme	syme = abSyme(absyn);
 
-	tipIdDEBUG{fprintf(dbOut,"Entering titdnId\n");}
+	tipIdDEBUG(dbOut,"Entering titdnId\n");
 
 
 	/* If no meaning yet, find one */
@@ -833,7 +833,7 @@ titdnApply(Stab stab, AbSyn absyn, TForm type)
 	AbSyn		op = abApplyOp(absyn);
 	TPoss		tp;
 
-	tipApplyDEBUG{fprintf(dbOut, "Entering titdnApply\n");}
+	tipApplyDEBUG(dbOut, "Entering titdnApply\n");
 
 	if (abState(op) == AB_State_Error)
 		return false;
@@ -886,7 +886,7 @@ titdnDefine(Stab stab, AbSyn absyn, TForm type)
 			ltype = rtype;
 	}
 
-	tipDefineDEBUG {
+	if (DEBUG(tipDefine)) {
 		fprintf(dbOut, "************** Defining: ");
 		abPrettyPrint(dbOut, lhs);
 		fnewline(dbOut);
@@ -907,7 +907,7 @@ titdnDefine(Stab stab, AbSyn absyn, TForm type)
 	
 	abTUnique(absyn) = rtype;
 	
-	tipDefineDEBUG {
+	if (DEBUG(tipDefine)) {
 		fprintf(dbOut,"Tdn: Define of ");
 		abPrint(dbOut, lhs);
 		fprintf(dbOut," has type ");
@@ -954,7 +954,7 @@ titdnAssign(Stab stab, AbSyn absyn, TForm type)
 		abAddTContext(rhs, embed);
 
 
-	tipAssignDEBUG {
+	if (DEBUG(tipAssign)) {
 		fprintf(dbOut,"Tdn: Assignment to ");
 		abPrint(dbOut, lhs);
 		fprintf(dbOut," has type ");
@@ -978,7 +978,7 @@ titdnDeclare(Stab stab, AbSyn absyn, TForm type)
 	TForm tf, rtype;
 	Syme  syme;
 
-	tipDeclareDEBUG {
+	if (DEBUG(tipDeclare)) {
 		fprintf(dbOut, "In the declaration ");
 		abPrettyPrint(dbOut, absyn);
 		fprintf(dbOut, ", the semantics field is ");
@@ -1012,7 +1012,7 @@ titdnDeclare(Stab stab, AbSyn absyn, TForm type)
 	if (!rtype) rtype = tfUnknown;
 	abTUnique(absyn) = rtype;
 
-	tipDeclareDEBUG {
+	if (DEBUG(tipDeclare)) {
 		fprintf(dbOut,"Tdn: Declare of ");
 		abPrint(dbOut, id);
 		fprintf(dbOut," has type ");

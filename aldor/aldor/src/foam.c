@@ -41,19 +41,19 @@
 #include "fbox.h"
 #include "foamsig.h"
 
-#define FOAM_NARY		(-1)	/* Identifies tags with N-ary data argument. */
+#define FOAM_NARY	(-1)	/* Identifies tags with N-ary data argument. */
 
 /* Used for foam sharing audit */
-#define FOAM_MARKED		0x01
-#define FOAM_UNMARKED		0x00
+#define FOAM_MARKED	0x01
+#define FOAM_UNMARKED	0x00
 
-Bool	foamDebug		= false;
-Bool	foamConstDebug		= false;
-Bool	foamSposDebug		= false;
+Bool	foamDebug	= false;
+Bool	foamConstDebug	= false;
+Bool	foamSposDebug	= false;
 
-#define foamDEBUG		if (DEBUG(foam))
-#define foamConstDEBUG		if (DEBUG(foamConst))
-#define foamSposDEBUG		if (DEBUG(foamSpos))
+#define foamDEBUG	DEBUG_IF(foam)		afprintf
+#define foamConstDEBUG	DEBUG_IF(foamConst)	afprintf
+#define foamSposDEBUG	DEBUG_IF(foamSpos)	afprintf
 
 /*****************************************************************************
  *
@@ -763,9 +763,8 @@ foamAudit0(Foam foam)
 	faNumGlobals = foamDDeclArgc(foamUnitGlobals(foam));
 	faNumFluids  = foamDDeclArgc(foamUnitFluids(foam));
 	ok = foamAuditExpr(foam->foamUnit.defs);
-	phaseDEBUG {
-		if (ok)
-			fprintf(dbOut, "Foam OK\n");
+	if (ok) {
+		phaseDEBUG(dbOut, "Foam OK\n");
 	}
 	foamAuditUnmark(foam);
 	return ok;
@@ -1189,7 +1188,7 @@ local void
 foamAuditBadRef(Foam foam)
 {
 	foamPrint(stderr, foam);
-	foamDEBUG{foamPrint(dbOut, faUnit);}
+	if (DEBUG(foam)){foamPrint(dbOut, faUnit);}
 	bug("\nBad foam reference in const %d:\n", faConstNum);
 }
 
@@ -1197,7 +1196,7 @@ local void
 foamAuditBadSharing(Foam foam)
 {
 	foamPrint(stderr, foam);
-	foamDEBUG{foamPrint(dbOut, faUnit);}
+	if (DEBUG(foam)){foamPrint(dbOut, faUnit);}
 	bug("\nBad foam sharing in const %d:\n", faConstNum);
 }
 
@@ -1205,7 +1204,7 @@ local void
 foamAuditBadCast(Foam foam)
 {
 	foamPrint(stderr, foam);
-	foamDEBUG{foamPrint(dbOut, faUnit);}
+	if (DEBUG(foam)){foamPrint(dbOut, faUnit);}
 	bug("\nBad foam cast %d:\n", faConstNum);
 }
 
@@ -1213,7 +1212,7 @@ local void
 foamAuditBadRuntime(Foam foam)
 {
 	foamPrint(stderr, foam);
-	foamDEBUG{foamPrint(dbOut, faUnit);}
+	if (DEBUG(foam)){foamPrint(dbOut, faUnit);}
 	fprintf(dbOut, "\nBad runtime call to domainGetExport in const %d:\n",
 		faConstNum);
 }
@@ -1535,7 +1534,7 @@ foamToSExpr0(Foam foam)
 	 */
 	sx    = sxNil;
 #if 0 /* This breaks the format of FOAM sexprs. */
-	foamSposDEBUG {
+	if (DEBUG(foamSpos)) {
 		if (foamPos(foam) != sposNone)
 			sx = sxCons(sxiFrInteger(sposLine(foamPos(foam))), sx);
 	}
@@ -1556,14 +1555,17 @@ foamToSExpr0(Foam foam)
 		case 'h':
 		case 'w':
 		case 'i':
-			li = isDecl && argf[fi] == 'w' ? -1 :
-				(long) foamArgv(foam)[si].data;
-			phaseDEBUG {
-				li  = (long) foamArgv(foam)[si].data;
+			if (isDecl && argf[fi] == 'w') {
+				li = -1;
+			} else {
+				li = (long) foamArgv(foam)[si].data;
+			}
+			if (DEBUG(phase)) {
+				li = (long) foamArgv(foam)[si].data;
 			}
 			sxi = sxiFrInteger(li);
 #ifdef NEW_FORMATS
-			phaseDEBUG {
+			if (DEBUG(phase)) {
 				if (foamTag(foam) == FOAM_Prog
 				    && si > 4) {
 					assert(li < fexFmtc);

@@ -35,8 +35,8 @@
  *
  ****************************************************************************/
 
-Bool	tipBupDebug		= false;
-#define tipBupDEBUG		if (DEBUG(tipBup))
+Bool	tipBupDebug	= false;
+#define tipBupDEBUG	DEBUG_IF(tipBup)	afprintf
 
 /*****************************************************************************
  *
@@ -231,7 +231,7 @@ tibup(Stab stab, AbSyn absyn, TForm type)
 	serialNo += 1;
 	depthNo	 += 1;
 	serialThis = serialNo;
-	tipBupDEBUG {
+	if (DEBUG(tipBup)) {
 		fprintf(dbOut,"->Bup: %*s %d= ", depthNo, "", serialThis);
 		abPrettyPrint(dbOut, absyn);
 		fnewline(dbOut);
@@ -269,7 +269,7 @@ tibup(Stab stab, AbSyn absyn, TForm type)
 		abTPoss(absyn) = tpossEmpty();
 	}
 
-	tipBupDEBUG {
+	if (DEBUG(tipBup)) {
 		TPoss	abtposs = abReferTPoss(absyn);
 		fprintf(dbOut, "<-Bup: %*s %d= ", depthNo, "", serialThis);
 		abPrettyPrint(dbOut, absyn);
@@ -747,7 +747,7 @@ tibup0FarValue(Stab stab, AbSyn absyn, TForm type,
 		tp1 = abReferTPoss(farValue);
 
 		if (tuniIsUnknown(*pFarTPoss)) {
-			tipFarDEBUG {
+			if (DEBUG(tipFar)) {
 				fprintf(dbOut, "Setting ");
 				tpossPrint(dbOut, tp1);
 				fnewline(dbOut);
@@ -755,7 +755,7 @@ tibup0FarValue(Stab stab, AbSyn absyn, TForm type,
 			*pFarTPoss = tpossRefer(tp1);
 		}
 		else if (tpossCount(tp1) != 0) {
-			tipFarDEBUG {
+			if (DEBUG(tipFar)) {
 				fprintf(dbOut, " with ");
 				tpossPrint(dbOut, *pFarTPoss);
 			}
@@ -764,7 +764,7 @@ tibup0FarValue(Stab stab, AbSyn absyn, TForm type,
 			tpossFree(*pFarTPoss);
 			*pFarTPoss = tp0;
 			
-			tipFarDEBUG {
+			if (DEBUG(tipFar)) {
 				fprintf(dbOut, " to get ");
 				tpossPrint(dbOut, *pFarTPoss);
 				fnewline(dbOut);
@@ -944,7 +944,7 @@ tibup0Literal(Symbol sym, Stab stab, AbSyn absyn, TForm type)
 		litTypes = tpossEmpty();
 		opTypes	 = stabGetTypes(stab, abCondKnown, sym);
 
-		tipLitDEBUG {
+		if (DEBUG(tipLit)) {
 			fprintf(dbOut, "tibup0Literal:\n");
 			tpossPrint(dbOut, opTypes);
 			fnewline(dbOut);
@@ -1243,7 +1243,7 @@ tibupDefine(Stab stab, AbSyn absyn, TForm type)
 		abTPoss(absyn) = abReferTPoss(rhs);
 
 
-	tipDefineDEBUG {
+	if (DEBUG(tipDefine)) {
 		TPoss	abtposs = abReferTPoss(absyn);
 		fprintf(dbOut,"Bup: Define of ");
 		abPrint(dbOut, lhs);
@@ -1446,7 +1446,7 @@ tibupAssign(Stab stab, AbSyn absyn, TForm type)
 	tpossFree(tplhs);
 	tpossFree(tprhs);
 
-	tipAssignDEBUG {
+	if (DEBUG(tipAssign)) {
 		TPoss tposs = abTPoss(absyn);
 		fprintf(dbOut,"Bup: Assignment to ");
 		abPrint(dbOut, lhs);
@@ -1492,7 +1492,7 @@ tibupDeclare(Stab stab, AbSyn absyn, TForm type)
 
 	abTPoss(absyn) = tp;
 
-	tipDeclareDEBUG {
+	if (DEBUG(tipDeclare)) {
 		TPoss tposs = abGoodTPoss(absyn);
 		fprintf(dbOut,"Bup: Declare of ");
 		abPrint(dbOut, id);

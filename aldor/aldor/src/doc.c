@@ -73,10 +73,8 @@ docNewFrList(TokenList tl)
 	}
 	doc->hash	= strHash(doc->corpus);
 
-	phaseDEBUG {
-		fprintf(dbOut, "docNewFrList:  cc = %d; strlen = %d\n",
-			(int) cc, (int) strLength(doc->corpus));
-	}
+	phaseDEBUG(dbOut, "docNewFrList:  cc = %d; strlen = %d\n",
+		   (int) cc, (int) strLength(doc->corpus));
 
 	return doc;
 }

@@ -34,7 +34,7 @@
 
 Bool	optfDebug = false;
 
-#define optfDEBUG	if (DEBUG(optf))
+#define optfDEBUG	DEBUG_IF(optf)	afprintf
 
 static int optInline;
 static int optInlineAll;
@@ -260,64 +260,64 @@ optimizeFoam(Foam foam)
 {
 	Bool	newConsts = false;
 	int	i, iters;
-	optfDEBUG{optPrintOpts(dbOut);}
+	if (DEBUG(optf)){optPrintOpts(dbOut);}
 
 	optOptimizationsInit();
 
 	if (optDeadVar)   {
-		optfDEBUG{fprintf(dbOut, "Starting deadvar...\n");}
+		optfDEBUG(dbOut, "Starting deadvar...\n");
 		dvElim(foam);
-		phaseDEBUG{stoAudit();}
+		if (DEBUG(phase)){stoAudit();}
 	}
 	if (optInline) 	  {
-		optfDEBUG{fprintf(dbOut, "Starting inline...\n");}
+		optfDEBUG(dbOut, "Starting inline...\n");
 		inlineUnit(foam, optInlineAll, optInlineLimit, true);
-		phaseDEBUG{stoAudit();}
+		if (DEBUG(phase)){stoAudit();}
 	}
 	/* Maybe we ought to cprop before cfold? */
 	if (optConstFold || optFloatFold) {
-		optfDEBUG{fprintf(dbOut, "Starting cfold...\n");}
+		optfDEBUG(dbOut, "Starting cfold...\n");
 		newConsts = cfoldUnit(foam, optConstFold, optFloatFold);
-		phaseDEBUG{stoAudit();}
+		if (DEBUG(phase)){stoAudit();}
 	}
 	while (newConsts && optInline) {
-		optfDEBUG{fprintf(dbOut, "Starting expr inline...\n");}
+		optfDEBUG(dbOut, "Starting expr inline...\n");
 		/* If const folding made new constants, inline them. */
 		inlineUnit(foam, optInlineAll, optInlineLimit, false);
 		newConsts = cfoldUnit(foam, optConstFold, optFloatFold);
-		phaseDEBUG{stoAudit();}
+		if (DEBUG(phase)){stoAudit();}
 	}
 	if (optHashFold) {
-		optfDEBUG{fprintf(dbOut, "Starting hfold...\n");}
+		optfDEBUG(dbOut, "Starting hfold...\n");
 		hfoldUnit(foam);
 		cpropUnit(foam, false);
 		cfoldUnit(foam, optConstFold, optFloatFold);
-		phaseDEBUG{stoAudit();}
+		if (DEBUG(phase)){stoAudit();}
 	}
 	if (optEmergeRRFmt)  {
-		optfDEBUG{fprintf(dbOut, "Starting emerge-rr...\n");}
+		optfDEBUG(dbOut, "Starting emerge-rr...\n");
 		rrUnitEmerge(foam);
-		phaseDEBUG{stoAudit();}
+		if (DEBUG(phase)){stoAudit();}
 	}
 	if (optEnvMerge)  {
-		optfDEBUG{fprintf(dbOut, "Starting emerge...\n");}
+		optfDEBUG(dbOut, "Starting emerge...\n");
 		emMergeUnit(foam);
-		phaseDEBUG{stoAudit();}
+		if (DEBUG(phase)){stoAudit();}
 	}
 	if (optDeadVar)   {
-		optfDEBUG{fprintf(dbOut, "Starting deadvar...\n");}
+		optfDEBUG(dbOut, "Starting deadvar...\n");
 		dvElim(foam);
-		phaseDEBUG{stoAudit();}
+		if (DEBUG(phase)){stoAudit();}
 	}
 	if (optEnvOpts) {
-		optfDEBUG{fprintf(dbOut, "Starting env. opts...\n");}
+		optfDEBUG(dbOut, "Starting env. opts...\n");
 		oeUnit(foam);
-		phaseDEBUG{stoAudit();}
+		if (DEBUG(phase)){stoAudit();}
 	}
 	if (optCast) {
-		optfDEBUG{fprintf(dbOut, "Starting retype...\n");}
+		optfDEBUG(dbOut, "Starting retype...\n");
 		retypeUnit(foam);
-		phaseDEBUG{stoAudit();}
+		if (DEBUG(phase)){stoAudit();}
 	}
 
 	if (optLevel > 5)
@@ -328,90 +328,90 @@ optimizeFoam(Foam foam)
 		iters = optLevel;
 
 	for (i=0; i<iters; i++) {
-	optfDEBUG{fprintf(dbOut, "STARTING LOOP (%d)\n", i);}
+	optfDEBUG(dbOut, "STARTING LOOP (%d)\n", i);
 
-		optfDEBUG{foamWrSExpr(dbOut, foam, int0);}
+		if (DEBUG(optf)){foamWrSExpr(dbOut, foam, int0);}
 #if 0
 		if (optInline) 	  {
-			optfDEBUG{fprintf(dbOut, "Starting inline...\n");}
+			optfDEBUG(dbOut, "Starting inline...\n");
 			inlineUnit(foam, optInlineAll, optInlineLimit, true);
-			phaseDEBUG{stoAudit();}
+			if (DEBUG(phase)){stoAudit();}
 		}
 #endif
 		if (optCopyProp)  {
-			optfDEBUG{fprintf(dbOut, "Starting cprop...\n");}
+			optfDEBUG(dbOut, "Starting cprop...\n");
 			cpropUnit(foam, i == 0);
-			phaseDEBUG{stoAudit();}
+			if (DEBUG(phase)){stoAudit();}
 		}
 		if (optPeepHole)  {
-			optfDEBUG{fprintf(dbOut, "Starting peep...\n");}
+			optfDEBUG(dbOut, "Starting peep...\n");
 			peepUnit(foam,optFloatFold);
-			phaseDEBUG{stoAudit();}
+			if (DEBUG(phase)){stoAudit();}
 		}
 		if (optConstFold || optFloatFold) {
-			optfDEBUG{fprintf(dbOut, "Starting cfold...\n");}
+			optfDEBUG(dbOut, "Starting cfold...\n");
 			newConsts = cfoldUnit(foam, optConstFold,optFloatFold);
-			phaseDEBUG{stoAudit();}
+			if (DEBUG(phase)){stoAudit();}
 		}
 		if (optCommExp)  {
-			optfDEBUG{fprintf(dbOut, "Starting cse...\n");}
+			optfDEBUG(dbOut, "Starting cse...\n");
 			cseUnit(foam);
-			phaseDEBUG{stoAudit();}
+			if (DEBUG(phase)){stoAudit();}
 		}
 #if 0
 		while (newConsts && optInline) {
-			optfDEBUG{fprintf(dbOut, "Starting expr inline...\n");}
+			optfDEBUG(dbOut, "Starting expr inline...\n");
 			/* If const folding made new constants, inline them. */
 			inlineUnit(foam, optInlineAll, optInlineLimit, false);
 			newConsts = cfoldUnit(foam, optConstFold, optFloatFold);
-			phaseDEBUG{stoAudit();}
+			if (DEBUG(phase)){stoAudit();}
 		}
 #endif
 #if 0
 		if (optArgSub)  {
-			optfDEBUG{fprintf(dbOut, "Starting argsub...\n");}
+			optfDEBUG(dbOut, "Starting argsub...\n");
 			argsubUnit(foam);
-			phaseDEBUG{stoAudit();}
+			if (DEBUG(phase)){stoAudit();}
 		}
 #endif
 		if (optJumpFlow)  {
-			optfDEBUG{fprintf(dbOut, "Starting jflow...\n");}
+			optfDEBUG(dbOut, "Starting jflow...\n");
 	       		jflowUnit(foam, optJFlowLimit);
-			phaseDEBUG{stoAudit();}
+			if (DEBUG(phase)){stoAudit();}
 		}
 		if (optDeadAssign) {
-			optfDEBUG{fprintf(dbOut, "Starting dead assign...\n");}
+			optfDEBUG(dbOut, "Starting dead assign...\n");
 			deadAssign(foam);
-			phaseDEBUG{stoAudit();}
+			if (DEBUG(phase)){stoAudit();}
 		}
 	
 		if (optDeadVar)   {
-			optfDEBUG{fprintf(dbOut, "Starting deadvar...\n");}
+			optfDEBUG(dbOut, "Starting deadvar...\n");
 			dvElim(foam);
-			phaseDEBUG{stoAudit();}
+			if (DEBUG(phase)){stoAudit();}
 		}
 #if 0
 		if (optEnvMerge)  {
-			optfDEBUG{fprintf(dbOut, "Starting emerge...\n");}
+			optfDEBUG(dbOut, "Starting emerge...\n");
 			emMergeUnit(foam);
-			phaseDEBUG{stoAudit();}
+			if (DEBUG(phase)){stoAudit();}
 		}
 #endif
 	}
 
 	if (optEnvOpts) {
-		optfDEBUG{fprintf(dbOut, "Starting env. opts...\n");}
+		optfDEBUG(dbOut, "Starting env. opts...\n");
 		oeUnit(foam);
-		phaseDEBUG{stoAudit();}
+		if (DEBUG(phase)){stoAudit();}
 	}
 
 	if (optPeepHole)  {
-		optfDEBUG{fprintf(dbOut, "Starting peep...\n");}
+		optfDEBUG(dbOut, "Starting peep...\n");
 		peepUnit(foam,optFloatFold);
-		phaseDEBUG{stoAudit();}
+		if (DEBUG(phase)){stoAudit();}
 	}
 
-	optfDEBUG{fprintf(dbOut, "(Starting patchUnit...)\n");}
+	optfDEBUG(dbOut, "(Starting patchUnit...)\n");
 
 	fpPatchUnit(foam);
 
@@ -422,14 +422,14 @@ optimizeFoam(Foam foam)
 	inlSetAfterInline();
 
 	if (optInline) {
-		optfDEBUG{fprintf(dbOut, "(Starting unitInfoRefresh...)\n");}
+		optfDEBUG(dbOut, "(Starting unitInfoRefresh...)\n");
 		inuUnitInfoRefresh(foam);
 	}
 
 	/* Remove any nested CCalls, etc */
 	/*flattenUnit(foam);*/
 
-	optfDEBUG{fprintf(dbOut, "Optimizations finished.\n");}
+	optfDEBUG(dbOut, "Optimizations finished.\n");
 
 	foamAuditAll(foam, 0xffff);
 

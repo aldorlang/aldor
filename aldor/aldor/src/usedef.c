@@ -123,8 +123,8 @@
 Bool	udDfDebug	= false;
 Bool	udDfiDebug	= false;
 
-#define udDfDEBUG	if (DEBUG(udDf))
-#define udDfiDEBUG	if (DEBUG(udDfi))
+#define udDfDEBUG	DEBUG_IF(udDf)	afprintf
+#define udDfiDEBUG	DEBUG_IF(udDfi)	afprintf
 
 /*****************************************************************************
  *
@@ -268,7 +268,7 @@ usedefChainsFrFlog(FlowGraph flog, UdOutputKind outputType)
 
 	i = dflowFwdIterate(flog, DFLOW_Union, udFlogCutOff, &k, NULL);
 
-	udDfDEBUG {
+	if (DEBUG(udDf)) {
 		fprintf(dbOut, i == 0 ? "Converged" : "Did not converge");
 		fprintf(dbOut, " after %d iterations\n", k);
 		flogPrint(dbOut, flog, true);
@@ -375,7 +375,9 @@ udVarDefsVectBuild(FlowGraph flog)
 		}
 	});
 
-	udDfDEBUG{udVarDefsVectPrint();}
+	if (DEBUG(udDf)) {
+		udVarDefsVectPrint();
+	}
 
 	return nDefs;
 }
@@ -433,7 +435,7 @@ udFillGenKill(FlowGraph flog, BBlock bb)
 	int		defNo, i;
 	BitvClass	class = udProgInfo.bitvClass;
 
-	udDfiDEBUG{fprintf(dbOut, "Filling Gen/Kill for %d\n", bb->label);}
+	udDfiDEBUG(dbOut, "Filling Gen/Kill for %d\n", bb->label);
 
 	/*
 	 * Clear the vectors.

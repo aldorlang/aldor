@@ -20,7 +20,7 @@
 #include "sexpr.h"
 
 Bool	abDebug		= false;
-#define abDEBUG		if (DEBUG(ab))
+#define abDEBUG		DEBUG_IF(ab)	afprintf
 
 local int       abFormatter     (OStream stream, Pointer p);
 local int       abFormatterList (OStream ostream, Pointer p);
@@ -1604,7 +1604,7 @@ abTransferSemantics(AbSyn from, AbSyn to)
 		to   = abEqualMods(to);
 	}
 
-	abDEBUG {
+	if (DEBUG(ab)) {
 		if (abTag(from) != abTag(to)) {
 			fprintf(dbOut,"'from' absyn = ");
 			abPrint(dbOut, from);
@@ -1840,7 +1840,7 @@ abDefineeId(AbSyn ab)
 AbSyn
 abDefineeIdOrElse(AbSyn ab, AbSyn failed)
 {
-	abDEBUG {
+	if (DEBUG(ab)) {
 		fprintf(dbOut, "abDefineeIdOrElse: ");
 		abPrint(dbOut, ab);
 		fnewline(dbOut);
@@ -1901,7 +1901,7 @@ abDefineeType(AbSyn ab)
 AbSyn
 abDefineeTypeOrElse(AbSyn ab, AbSyn failed)
 {
-	abDEBUG {
+	if (DEBUG(ab)) {
 		fprintf(dbOut, "abDefineeTypeOrElse: ");
 		abPrint(dbOut, ab);
 		fnewline(dbOut);

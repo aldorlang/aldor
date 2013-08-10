@@ -23,7 +23,7 @@
 
 Bool	retDebug	= false;
 
-#define retDEBUG	if (DEBUG(ret))
+#define retDEBUG	DEBUG_IF(ret)	afprintf
 
 /******************************************************************************
  *
@@ -163,7 +163,7 @@ local void
 retRetypeProg(Foam prog)
 {
 	assert(foamTag(prog) == FOAM_Prog);
-	retDEBUG {
+	if (DEBUG(ret)) {
 		fprintf(dbOut, "Retype..\n");
 		foamPrintDb(prog);
 	}
@@ -628,7 +628,7 @@ retWTOSDef(Foam foam)
 	/* foamCopy not needed for foam */
 	newSet = foamNewSet(newLoc, foam);
 
-	retDEBUG {
+	if (DEBUG(ret)) {
 		fprintf(dbOut, "Generating:");
 		foamPrintDb(newSet);
 	}
@@ -680,7 +680,7 @@ retSTOWDef(Foam foam)
 	/* foamCopy not needed for foam */
 	newSet = foamNewSet(newLoc, foam);
 
-	retDEBUG {
+	if (DEBUG(ret)) {
 		fprintf(dbOut, "Generating:");
 		foamPrintDb(newSet);
 	}
@@ -778,7 +778,7 @@ retInsertNewSets(Foam stmt, FoamList newSets)
 
 	retProgInfo.addedNewSets = true;
 
-	retDEBUG {
+	if (DEBUG(ret)) {
 		fprintf(dbOut, "InsertNewSeq: ");
 		foamPrintDb(newSeq);
 	}

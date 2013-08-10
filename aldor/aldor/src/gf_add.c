@@ -88,8 +88,8 @@ static Foam		gen0HasSelf;
 Bool	genfExportDebug = false;
 Bool	gfaddDebug	= false;
 
-#define genfExportDEBUG		if (DEBUG(genfExport))
-#define gfaddDEBUG		if (DEBUG(gfadd))
+#define genfExportDEBUG		DEBUG_IF(genfExport)	afprintf
+#define gfaddDEBUG		DEBUG_IF(gfadd)		afprintf
 
 local void
 gen0ClashCheck(AbSyn ab)
@@ -772,7 +772,7 @@ gen0TypeAddDefaultSelfSlot()
 	Foam  rtHash;
 	int i;
 
-	phaseDEBUG {
+	if (DEBUG(phase)) {
 		fprintf(dbOut, "Make slot: exporter is:\n");
 		abWrSExpr(dbOut, abType,int0);
 	}
@@ -2123,7 +2123,7 @@ gen0RtSefoHashId(Sefo sf, Sefo osf)
 		 * gen0ExportState properly leaving it NULL.
 		 */
 		hash = gen0RtDomainHash(foamCopy(gen0Syme(syme)));
-		genfHashDEBUG {
+		if (DEBUG(genfHash)) {
 			(void)fprintf(dbOut, "!!! Warning: inventing hash for %%: ");
 			symePrintDb(syme);
 		}
@@ -2137,7 +2137,7 @@ gen0RtSefoHashId(Sefo sf, Sefo osf)
 
 	else if (symeIsExport(syme) || symeIsExtend(syme)) {
 		if (kind == FOAM_LIMIT && !symeLib(syme)) {
-			genfHashDEBUG {
+			if (DEBUG(genfHash)) {
 				fprintf(dbOut, "Ugh: Found unhackable syme: ");
 				symePrintDb(syme);
 			}
@@ -2147,7 +2147,7 @@ gen0RtSefoHashId(Sefo sf, Sefo osf)
 	}
 
 	else if (kind == FOAM_LIMIT) {
-		genfHashDEBUG {
+		if (DEBUG(genfHash)) {
 			fprintf(dbOut, "Ugh: Found weird syme: ");
 			symePrintDb(syme);
 		}
@@ -2662,7 +2662,7 @@ gen0AllSymesAllocated(AbSyn ab)
 		/* Unallocated symes normally cause false return value. */
 		result = !(syme && gen0FoamKind(syme) == FOAM_LIMIT);
 
-		gfaddDEBUG {
+		if (DEBUG(gfadd)) {
 			fprintf(dbOut, "syme [%c]: ", result ? ' ' :
 				symeLib(syme) &&
 				(symeIsExport(syme) || symeIsExtend(syme)) ?
@@ -2945,7 +2945,7 @@ local Foam
 gen0HasCat(Foam dom, AbSyn cat)
 {
 	Foam foam;
-	genfDEBUG {
+	if (DEBUG(genf)) {
 		fprintf(dbOut, "Hash:\n");
 		sefoPrintDb(cat);
 		tfPrintDb(abTForm(cat));

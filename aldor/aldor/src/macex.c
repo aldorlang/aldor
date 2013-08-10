@@ -30,8 +30,8 @@
  
 #undef MacDeclArgs
 
-Bool	macDebug		= false;
-#define macDEBUG		if (DEBUG(mac))
+Bool	macDebug	= false;
+#define macDEBUG	DEBUG_IF(mac)	afprintf
 
 /*****************************************************************************
  *
@@ -183,7 +183,7 @@ pushMacDef(Symbol name, enum macKind kind, AbSyn abtree)
 	if (! symInfo(name) || ! symCoInfo(name))
 		symCoInfoInit(name);
  
-	macDEBUG {
+	if (DEBUG(mac)) {
 		fprintf(dbOut, "  Pushing %s with definition ",
 			symString(name));
 		if (! abtree)
@@ -402,7 +402,7 @@ macEx(AbSyn ab)
 	if (!ab)
 		return ab;
  
-	macDEBUG {
+	if (DEBUG(mac)) {
 		findent += 2;
 		fprintf(dbOut, "  In Macro expansion for: ");
 		abPrint(dbOut, ab);
@@ -446,7 +446,7 @@ macEx(AbSyn ab)
 		break;
 	}
  
-	macDEBUG {
+	if (DEBUG(mac)) {
 		fprintf(dbOut, "Returning: ");
 		abPrint(dbOut, ab);
 		findent -= 2;

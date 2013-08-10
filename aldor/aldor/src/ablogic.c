@@ -19,8 +19,8 @@
 #include "abpretty.h"
 #include "table.h"
 
-Bool	ablogDebug		= false;
-#define ablogDEBUG		if (DEBUG(ablog))
+Bool	ablogDebug	= false;
+#define ablogDEBUG	DEBUG_IF(ablog)	afprintf
 
 
 /*****************************************************************************
@@ -274,7 +274,7 @@ ablogAndPush(AbLogic *glo, AbLogic *save, Sefo cond, Bool sense)
 	*glo = ablogAnd(*save, thisCond);
 	ablogFree(thisCond);
 
-	ablogDEBUG {
+	if (DEBUG(ablog)) {
 		fprintf(dbOut, ">> Changed condition to ");
 		ablogPrint(dbOut, *glo);
 		fnewline(dbOut);
@@ -287,7 +287,7 @@ ablogAndPop(AbLogic *glo, AbLogic *save)
 	ablogFree(*glo);
 	*glo = *save;
 
-	ablogDEBUG {
+	if (DEBUG(ablog)) {
 		fprintf(dbOut, "<< Changed back\n");
 	}
 }
@@ -471,7 +471,7 @@ ablogTestImplies(void *clos, DNF_Atom a, DNF_Atom b)
 	know = ablogFrAtom(a);
 	test = ablogFrAtom(b);
 
-	ablogDEBUG {
+	if (DEBUG(ablog)) {
 		fprintf(dbOut, "Implies test\n");
 		abPrintDb(know);
 		abPrintDb(test);
@@ -635,7 +635,7 @@ ablogTestProperties(Sefo test, Sefo know)
 	tfknown = abTForm(know) ?
 		abTForm(know) : (tiTopFns()->tiGetTopLevelTForm)(NULL, know);
 
-	ablogDEBUG{
+	if (DEBUG(ablog)){
 		fprintf(dbOut, "Checking: \n");
 		tfPrintDb(tftest);
 		tfPrintDb(tfknown);

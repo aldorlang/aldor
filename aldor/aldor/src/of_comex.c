@@ -181,9 +181,9 @@ Bool	cseDebug	= false;
 Bool	cseDfDebug	= false;
 Bool	cseDfiDebug	= false;
 
-#define cseDEBUG	if (DEBUG(cse))
-#define cseDfDEBUG	if (DEBUG(cseDf))
-#define cseDfiDEBUG	if (DEBUG(cseDfi))
+#define cseDEBUG	DEBUG_IF(cse)		afprintf
+#define cseDfDEBUG	DEBUG_IF(cseDf)		afprintf
+#define cseDfiDEBUG	DEBUG_IF(cseDfi)	afprintf
 
 /****************************************************************************
  *
@@ -437,7 +437,7 @@ cseFlog0(FlowGraph flog)
 	i = dflowFwdIterate(flog, DFLOW_Union, cseDF_CUTOFF, &k,
 			    (DFlowInitFun) cseInitBlock0);
 
-	cseDfDEBUG {
+	if (DEBUG(cseDf)) {
 		fprintf(dbOut, i == 0 ? "Converged" : "Did not converge");
 		fprintf(dbOut, " after %d iterations\n", k);
 		flogPrint(dbOut, flog, true);
@@ -715,7 +715,7 @@ cseFillGenKill(FlowGraph flog, BBlock bb)
 
 	assert(class && class == bbBitvClass(bb));
 
-	cseDfiDEBUG{fprintf(dbOut, "Filling Gen/Kill for %d\n", bb->label);}
+	cseDfiDEBUG(dbOut, "Filling Gen/Kill for %d\n", bb->label);
 
 	/*
 	 * Clear the vectors.
@@ -1093,7 +1093,7 @@ cseRebuildCode(FlowGraph flog)
 
 		bb->code = cseRebuildSeq(bb->code);
 #if 0
-		cseDEBUG {
+		if (DEBUG(cse)) {
 			if (cseProgInfo.blockChanged)
 				foamPrintDb(bb->code);
 		}
@@ -1152,7 +1152,7 @@ cseRebuildExp(Foam foam)
 	if (cseExpInfo(foam)->newLoc != CSE_UndefinedLocal) {
  		cseProgInfo.blockChanged = true;
 
-		cseDEBUG {
+		if (DEBUG(cse)) {
 			if (!cseExpInfo(foam)->evaluated) {
 				fprintf(dbOut, "CSE>> ------- Removed redundant evaluation of: ------- \n");
 				foamPrintDb(foam);

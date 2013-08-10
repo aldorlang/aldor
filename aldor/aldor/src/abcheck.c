@@ -73,7 +73,7 @@ abCheck(AbSyn absyn)
 	if (!absyn)
 		bug("Encountered zero abstract syntax tree in abCheck.");
 
-	phaseDEBUG {
+	if (DEBUG(phase)) {
 		fnewline(dbOut);
 		fprintf(dbOut, "abCheck for ");
 		abPrint(dbOut, absyn);
@@ -88,7 +88,7 @@ abCheck(AbSyn absyn)
 			abCheck(argv[i]);
 	}
 
-	phaseDEBUG {
+	if (DEBUG(phase)) {
 		findent -= 2;
 	}
 

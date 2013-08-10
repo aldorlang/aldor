@@ -862,9 +862,11 @@ comsgVDo(CoMsgTag tag, AbSyn ab, Msg msg, va_list argp)
 		fprintf(comsgStream, "%s", tcolPostfix(tag));
 	}
 	else {
-		String text  = comsgText(msg, argp);
-		Bool   debug = false;
-		phaseDEBUG {debug = true;}
+		String	text  = comsgText(msg, argp);
+		Bool	debug = false;
+		if (DEBUG(phase)) {
+			debug = true;
+		}
 
 		if (ab) abSetPos(abMaxPos,
 			         sposMax(abPos(abMaxPos), abPos(ab)));

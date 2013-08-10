@@ -20,7 +20,7 @@
 #include "table.h"
 
 Bool	absDebug	= false;
-#define absDEBUG	if (DEBUG(abs))
+#define absDEBUG	DEBUG_IF(abs)	afprintf
 
 /******************************************************************************
  *

@@ -34,7 +34,7 @@
 /*
  * The following symbols are used to conditionalize code in this file:
  *
- * BIGINT_DO_DEBUG	  -- Turns on the BIGINT_DEBUG macro.
+ * BIGINT_DO_DEBUG	  -- Turns on DEBUG(bint) blocks.
  * BIGINT_DEBUG_IMMED	  -- Turns on (bad) code for generalized ImmedIfCan.
  * BIGINT_SHORT_IMMED	  -- Defines IInt as "short" rather than "int".
  * BIGINT_USE_WHOLE_WORDS -- Turns on (incomplete) code for long bint digits.
@@ -47,10 +47,12 @@
  * Define BIGINT_DO_DEBUG to display debug info.
  */
 #ifdef BIGINT_DO_DEBUG
-# define BIGINT_DEBUG	if (true)
+# define bintDebug	true
 #else
-# define BIGINT_DEBUG	if (false)
+# define bintDebug	false
 #endif
+
+#define bintDEBUG	DEBUG_IF(bint)	fprintf
 
 #ifdef FOAM_RTS
 # define dbOut stdout
@@ -2019,7 +2021,7 @@ iintDivide(BInt q, BInt r, BInt u, BInt v)
 	 */
 	v1= Placev(v)[KtoI(1)];
 	if (v1 >= BINT_RADIX/2) {
-		BIGINT_DEBUG{fprintf(dbOut, "**** d = 1 ****\n");}
+		bintDEBUG(dbOut, "**** d = 1 ****\n");
 		d = 1;
 	}
 	else {
@@ -2047,7 +2049,7 @@ iintDivide(BInt q, BInt r, BInt u, BInt v)
 		uj2 = Placev(u)[KtoJu(kj+2)];
 
 		if (uj0 == v1) {
-			BIGINT_DEBUG{fprintf(dbOut, "**** uj0 == v1 ****\n");}
+			bintDEBUG(dbOut, "**** uj0 == v1 ****\n");
 			qhat = BINT_RADIX_MINUS_1;
 			rhat = uj1;
 			PlusStep(k, rhat, rhat, v1, int0);
@@ -2062,7 +2064,10 @@ iintDivide(BInt q, BInt r, BInt u, BInt v)
 			Bool	isGT;
 			for (i = 1; ; i++) {
 				/* Loop shd be evaluated no more than twice. */
-				BIGINT_DEBUG{if(i==2)fprintf(dbOut, "**** 2 ****\n");}
+				if (DEBUG(bint)) {
+					if (i == 2)
+						fprintf(dbOut, "**** 2 ****\n");
+				}
 				assert(i <= 2);
 				/*
 				 * This test could be speeded up by doing
@@ -2081,7 +2086,10 @@ iintDivide(BInt q, BInt r, BInt u, BInt v)
 				if (k) break;
 			}
 		}
-		BIGINT_DEBUG{if (k) fprintf(dbOut, "**** rhat ov ****\n");}
+		if (DEBUG(bint)) {
+			if (k)
+				fprintf(dbOut, "**** rhat ov ****\n");
+		}
 
 		/*
 		 * D4. Multiply and subtract: u[kj..kj+n] -= qhat * (0,v[1..n])
@@ -2114,7 +2122,7 @@ iintDivide(BInt q, BInt r, BInt u, BInt v)
 			/*
 			 * D6. Add back: u[kj..kj+n] += (0,v[1..n])
 			 */
-			BIGINT_DEBUG{fprintf(dbOut, "**** Add Back %d ****\n", k);}
+			bintDEBUG(dbOut, "**** Add Back %d ****\n", k);
 			Placev(q)[KtoJq(kj)]--;
 			k = 0;
 

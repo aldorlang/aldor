@@ -39,8 +39,8 @@ static PendingDeclList pdPending = NULL;
  *
  ****************************************************************************/
 
-Bool	tipDeclDebug		= false;
-#define tipDeclDEBUG		if (DEBUG(tipDecl))
+Bool	tipDeclDebug	= false;
+#define tipDeclDEBUG	DEBUG_IF(tipDecl)	afprintf
 
 /*****************************************************************************
  *
@@ -117,9 +117,7 @@ tiDeclarations(Stab stab, AbSyn absyn, TForm type)
 		passNo++;
 
 		/* Debugging */
-		tipDeclDEBUG {
-			(void)fprintf(dbOut,"------>Decl: pass %d\n", passNo);
-		}
+		tipDeclDEBUG(dbOut,"------>Decl: pass %d\n", passNo);
 
 		/* Process each node in the to-do list */
 		for (; pds; pds = listFreeCons(PendingDecl)(pds)) {
@@ -130,9 +128,7 @@ tiDeclarations(Stab stab, AbSyn absyn, TForm type)
 		}
 
 		/* Debugging */
-		tipDeclDEBUG {
-			(void)fprintf(dbOut,"<------Decl: pass %d\n", passNo);
-		}
+		tipDeclDEBUG(dbOut,"<------Decl: pass %d\n", passNo);
 	}
 
 	/* Clean up and return */
@@ -210,7 +206,7 @@ local void
 tideclDeclare(Stab stab, AbSyn absyn, TForm type)
 {
 	/* Debugging */
-	tipDeclDEBUG {
+	if (DEBUG(tipDecl)) {
 		(void)fprintf(dbOut,"    -->Decl: ");
 		abPrettyPrint(dbOut, absyn);
 		fnewline(dbOut);

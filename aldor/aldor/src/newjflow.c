@@ -16,11 +16,11 @@ Bool	jflowGoDebug	= false;
 Bool	jflowDfiDebug	= false;
 Bool	jflowDmDebug	= false;
 
-#define jflowCatDEBUG	if (DEBUG(jflowCat))
-#define jflowDfDEBUG	if (DEBUG(jflowDf))
-#define jflowDfiDEBUG	if (DEBUG(jflowDfi))
-#define jflowGoDEBUG	if (DEBUG(jflowGo))
-#define jflowDmDEBUG	if (DEBUG(jflowDm))
+#define jflowCatDEBUG	DEBUG_IF(jflowCat)	afprintf
+#define jflowDfDEBUG	DEBUG_IF(jflowDf)	afprintf
+#define jflowDfiDEBUG	DEBUG_IF(jflowDfi)	afprintf
+#define jflowGoDEBUG	DEBUG_IF(jflowGo)	afprintf
+#define jflowDmDEBUG	DEBUG_IF(jflowDm)	afprintf
 
 
 /*****************************************************************************
@@ -181,7 +181,7 @@ jflowProg(Foam prog)
 	optResetJFlowPending(prog);
 
 	flog = flogFrProg(prog, FLOG_MultipleExits);
-	jflowDfDEBUG {
+	if (DEBUG(jflowDf)) {
 		fprintf  (dbOut, "--> Enter jflowProg: The flow graph is:\n");
 		flogPrint(dbOut, flog, true);
 		fprintf  (dbOut, "\n");
@@ -225,7 +225,7 @@ jflowProg(Foam prog)
 		optSetDeadvPending(prog);
 	}
 
-	jflowDfDEBUG {
+	if (DEBUG(jflowDf)) {
 		fprintf  (dbOut, "<-- Exit jflowProg: The foam is:\n");
 		foamPrint(dbOut, prog);
 		fprintf  (dbOut, "\n");
@@ -305,14 +305,14 @@ jflowUltimateGotos(FlowGraph flog)
 	int		i, j, n, L, nsaved, *whereTo;
 	BBlock	bb;
 
-	jflowGoDEBUG{fprintf(dbOut, ">> Enter jflowUltimateGotos\n");}
+	jflowGoDEBUG(dbOut, ">> Enter jflowUltimateGotos\n");
 
 	/* Use an array to hold the ultimate labels for blocks. */
 	n = flogBlockC(flog);
 	whereTo = (int *) stoAlloc(OB_Other, n * sizeof(int));
 	for (i = 0; i < n; i++) whereTo[i] = -1;
 	for (i = 0; i < n; i++) {
-		jflowGoDEBUG{fprintf(dbOut, ".. Following block %d\n", i);}
+		jflowGoDEBUG(dbOut, ".. Following block %d\n", i);
 		jflowFindEndOfLine(flog, i, whereTo);
 	}
 
@@ -321,7 +321,7 @@ jflowUltimateGotos(FlowGraph flog)
 	for (i = 0; i < n; i++) {
 		bb = flogBlock(flog, i);
 		if (!bb) continue;
-		jflowGoDEBUG{fprintf(dbOut, "== Resetting block %d\n", i);}
+		jflowGoDEBUG(dbOut, "== Resetting block %d\n", i);
 		for (j = 0; j < bbExitC(bb); j++) {
 			L  = bbExit(bb, j)->label;
 			if (whereTo[L] != L) {
@@ -337,10 +337,8 @@ jflowUltimateGotos(FlowGraph flog)
 	stoFree((Pointer) whereTo);
 	flogCollect(flog);
 
-	jflowGoDEBUG {
-		fprintf(dbOut, "<< Exit  jflowUltimateGotos: saved %d\n",
-			nsaved);
-	}
+	jflowGoDEBUG(dbOut, "<< Exit  jflowUltimateGotos: saved %d\n",
+		     nsaved);
 
 	return nsaved;
 }
@@ -348,7 +346,7 @@ jflowUltimateGotos(FlowGraph flog)
 local int
 jflowFindEndOfLine(FlowGraph flog, int lab, int *whereTo)
 {
-	jflowGoDEBUG {
+	if (DEBUG(jflowGo)) {
 		/*static int	odo = 0;
 		if (odo++ > 10000)*/ {
 			BBlock bb = flogBlock(flog, lab);
@@ -368,7 +366,7 @@ jflowFindEndOfLine(FlowGraph flog, int lab, int *whereTo)
 		}
 	}
 
-	jflowGoDEBUG{fprintf(dbOut, "*** Returning %d\n", whereTo[lab]);}
+	jflowGoDEBUG(dbOut, "*** Returning %d\n", whereTo[lab]);
 
 	return whereTo[lab];
 }
@@ -417,10 +415,10 @@ jflowConcat(FlowGraph flog)
 	for (nrounds = 0; nm > 0; nrounds++) {
 		nm = 0;
 
-		jflowCatDEBUG{fprintf(dbOut,"+++ jflowConcat [%d]\n",nrounds);}
+		jflowCatDEBUG(dbOut,"+++ jflowConcat [%d]\n",nrounds);
 
 		for (i = 0; i < flogBlockC(flog); i++) {
-			jflowCatDEBUG{fprintf(dbOut, "++ %d.\n", i);}
+			jflowCatDEBUG(dbOut, "++ %d.\n", i);
 
 			bb = flogBlock(flog, i);
 			if (!bb || bb->kind != FOAM_Goto) continue;
@@ -428,7 +426,7 @@ jflowConcat(FlowGraph flog)
 			dd = bbExit(bb, int0);
 			if (dd->mark) continue;	 /* Marked non-mergeable. */
 
-			jflowCatDEBUG {
+			if (DEBUG(jflowCat)) {
 				fprintf(dbOut, "++ Concatenating the nodes\n");
 				bbPrint(dbOut, bb, true);
 				fprintf(dbOut, "++ and\n");
@@ -442,7 +440,7 @@ jflowConcat(FlowGraph flog)
 			flogSetBlock (flog, lbb, bb);
 			flogKillBlock(flog, ldd);
 
-			jflowCatDEBUG {
+			if (DEBUG(jflowCat)) {
 				fprintf(dbOut, "++ to get\n");
 				bbPrint(dbOut, bb, true);
 			}
@@ -451,10 +449,8 @@ jflowConcat(FlowGraph flog)
 		}
 	}
 			
-	jflowCatDEBUG {
-		fprintf(dbOut, "+++ Save %d catenating [%d]\n",
-			nsaved, nrounds);
-	}
+	jflowCatDEBUG(dbOut, "+++ Save %d catenating [%d]\n",
+		      nsaved, nrounds);
 
 	return nsaved;
 }
@@ -520,7 +516,7 @@ jflowInfoNew(FlowGraph flog)
 
 	jflowInfoRefresh(jfinfo);
 
-	jflowDfDEBUG {
+	if (DEBUG(jflowDf)) {
 		fprintf(dbOut, "The flow graph with dataflow structures:\n");
 		flogPrint(dbOut, flog, true);
 	}
@@ -679,7 +675,7 @@ jflowFillControlVar(JFInfo jfinfo, BBlock bb)
 
 	if (jvIsControl(jfinfo, ix)) {
 		bbControlData(bb) = jflowLocIndex(cv);
-		jflowDfiDEBUG {
+		if (DEBUG(jflowDfi)) {
 			fprintf(dbOut, "Filled c.v. for block %d ", bb->label);
 			foamPrint(dbOut, cv);
 		}
@@ -707,7 +703,7 @@ jflowAssignDFIndices(JFInfo jfinfo)
 
 	jfinfo->bitCount =  front;
 
-	jflowDfDEBUG {
+	if (DEBUG(jflowDf)) {
 		int	i;
 		fprintf(dbOut, "Have %d dataflow bits.\n", jfinfo->bitCount);
 		fprintf(dbOut, "The control variables are:\n");
@@ -741,7 +737,7 @@ jflowFillDFGenKill(FlowGraph flog, BBlock bb)
 
 	assert(jfinfo->bitvClass == class);
 
-	jflowDfiDEBUG{fprintf(dbOut, "Filling Gen/Kill for %d\n", bb->label);}
+	jflowDfiDEBUG(dbOut, "Filling Gen/Kill for %d\n", bb->label);
 
 	/*
 	 * Clear the vectors.
@@ -815,7 +811,7 @@ jflowFillDFGenKill(FlowGraph flog, BBlock bb)
 	for (i = 0; i < bbExitC(bb); i++)
 		jflowSetKillAllBut(jfinfo, dfFwdKill(bb,i), n, i);
 
-	jflowDfiDEBUG {
+	if (DEBUG(jflowDfi)) {
 		fprintf(dbOut, "Filled Gen/Kill for block:\n");
 		bbPrint(dbOut, bb, true);
 	}
@@ -880,14 +876,14 @@ jflowSpecializeByAsst(JFInfo jfinfo, FlowGraph flog)
 		eix = jflowHowIsBitvDominating(jfinfo,dfFwdGen(bb),bb);
 		if (eix == -1) continue;
 
-		jflowDfDEBUG {
+		if (DEBUG(jflowDf)) {
 			fprintf(dbOut, ":= := := Specializing the block\n");
 			bbPrint(dbOut, bb, true);
 		}
 
 		bbSpecializeExit(bb, eix);
 
-		jflowDfDEBUG {
+		if (DEBUG(jflowDf)) {
 			fprintf(dbOut, ":= := := Got\n");
 			bbPrint(dbOut, bb, true);
 		}
@@ -916,7 +912,7 @@ jflowSpecializeByExit(JFInfo jfinfo, FlowGraph flog)
 
 	/* 1. Compute the possible values of the control vars on each exit. */
 	n = dflowFwdIterate(flog, DFLOW_Union, jflowDF_CUTOFF, &k, NULL);
-	jflowDfDEBUG {
+	if (DEBUG(jflowDf)) {
 		fprintf(dbOut, n == 0 ? "Converged" : "Did not converge");
 		fprintf(dbOut, " after %d iterations\n", k);
 		flogPrint(dbOut, flog, true);
@@ -963,10 +959,10 @@ jflowSpecializeByExitBB(JFInfo jfinfo, FlowGraph flog, BBlock bb)
 		if (jflowIsVarAssignedInBlock(ddN, dd))
 			continue;
 
-		jflowDfDEBUG{fprintf(dbOut, "------------ Ahem!\n");}
+		jflowDfDEBUG(dbOut, "------------ Ahem!\n");
 
 		if (foamArgc(dd->code) > jflowMaxClone) {
-			jflowDfDEBUG{fprintf(dbOut, "----------- TOO BIG!\n");}
+			jflowDfDEBUG(dbOut, "----------- TOO BIG!\n");
 			continue;
 		}
 
@@ -979,7 +975,7 @@ jflowSpecializeByExitBB(JFInfo jfinfo, FlowGraph flog, BBlock bb)
 		/* Replace the if with a goto */
 		bbSpecializeExit(cc, eix);
 
-		jflowDfDEBUG {
+		if (DEBUG(jflowDf)) {
 			fprintf(dbOut, "------------ Changed the old block\n");
 			bbPrint(dbOut, bb, true);
 			fprintf(dbOut, "------------ .. point to the block\n");
@@ -1194,7 +1190,7 @@ jflowBlocksCloneIfCan(JFInfo jfinfo, Loop loop, BBlock bb, Dominators doms)
 	/* Too big ? */
 	if (size > jflowMaxClone) {
 		listFree(BBlock)(clones);
-		jflowDmDEBUG{fprintf(dbOut, "---dummy test: TOO BIG!\n");}
+		jflowDmDEBUG(dbOut, "---dummy test: TOO BIG!\n");
 		return false;
 	}
 
@@ -1314,7 +1310,7 @@ jflowDummyTestsRemove(JFInfo jfinfo, FlowGraph flog)
 
 	n = dflowFwdIterate(flog, DFLOW_Union, jflowDF_CUTOFF, &k, NULL);
 
-	jflowDfDEBUG {
+	if (DEBUG(jflowDf)) {
 		fprintf(dbOut, n == 0 ? "Converged" : "Did not converge");
 		fprintf(dbOut, " after %d iterations\n", k);
 		flogPrint(dbOut, flog, true);

@@ -8,7 +8,7 @@
 CREATE_LIST(TfCondElt);
 
 extern	Bool		tfDebug;
-#define tfCondDEBUG	if (DEBUG(tf))
+#define tfCondDEBUG	DEBUG_IF(tf)	afprintf
 
 TfCond
 tfCondNew()
@@ -56,7 +56,7 @@ tfCondFloat(Stab stab, TfCond tfcond)
 
 	TfCondEltList filteredConditions = listNil(TfCondElt);
 	
-	tfCondDEBUG{afprintf(dbOut, "tform depth: %d\n", floatDepth);}
+	tfCondDEBUG(dbOut, "tform depth: %d\n", floatDepth);
 	while (conditionElts != listNil(TfCondElt) && !containsEmpty) {
 		TfCondElt elt = car(conditionElts);
 		AbSynList filteredCondition = listNil(AbSyn);
@@ -64,18 +64,18 @@ tfCondFloat(Stab stab, TfCond tfcond)
 
 		while (condition != listNil(AbSyn)) {
 			ULong idepth = abOuterDepth(elt->stab, car(condition));
-			tfCondDEBUG{afprintf(dbOut, "ConditionDepth: %pAbSyn %d/%d\n", 
-					     car(condition), idepth, floatDepth);}
+			tfCondDEBUG(dbOut, "ConditionDepth: %pAbSyn %d/%d\n",
+				    car(condition), idepth, floatDepth);
 			if (floatDepth >= idepth) {
-				tfCondDEBUG{afprintf(dbOut, "Keeping %pAbSyn\n", car(condition));}
+				tfCondDEBUG(dbOut, "Keeping %pAbSyn\n", car(condition));
 				filteredCondition = listCons(AbSyn)(car(condition), 
 								    filteredCondition);
 			}
 			condition = cdr(condition);
 
 		}
-		tfCondDEBUG{afprintf(dbOut, "Floating conditions - filtered: %pAbSynList\n", 
-				     filteredCondition);}
+		tfCondDEBUG(dbOut, "Floating conditions - filtered: %pAbSynList\n", 
+			    filteredCondition);
 		if (filteredCondition == listNil(AbSyn)) {
 			containsEmpty = true;
 		}
@@ -83,8 +83,8 @@ tfCondFloat(Stab stab, TfCond tfcond)
 			TfCondElt filteredConditionElt = tfCondEltNew(stab, filteredCondition);
 			filteredConditions = listCons(TfCondElt)(filteredConditionElt, filteredConditions);
 		}
-		tfCondDEBUG{afprintf(dbOut, "Floating conditions: %pAbSynList\n", 
-				    car(conditionElts)->list);}
+		tfCondDEBUG(dbOut, "Floating conditions: %pAbSynList\n", 
+			    car(conditionElts)->list);
 		conditionElts = cdr(conditionElts);
 	}
 

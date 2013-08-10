@@ -24,7 +24,7 @@
 #include "strops.h"
 
 Bool	hfoldDebug	= false;
-#define hfoldDEBUG	if (DEBUG(hfold))
+#define hfoldDEBUG	DEBUG_IF(hfold)	afprintf
 
 /*****************************************************************************
  *

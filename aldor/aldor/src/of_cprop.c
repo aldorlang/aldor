@@ -110,8 +110,8 @@
 Bool	cpDfDebug	= false;
 Bool	cpDebug		= false;
 
-#define cpDfDEBUG	if (DEBUG(cpDf))
-#define cpDEBUG		if (DEBUG(cp))
+#define cpDfDEBUG	DEBUG_IF(cpDf)	afprintf
+#define cpDEBUG		DEBUG_IF(cp)	afprintf
 
 /****************************************************************************
  * :: Global Data Structures
@@ -201,7 +201,7 @@ cpropUnit(Foam foam, Bool isFirst)
 
 		def->foamDef.rhs = cpProg(def->foamDef.rhs);
 
-		cpDfDEBUG {
+		if (DEBUG(cpDf)) {
 			if (cpInfo.nCopies) {
 				fprintf(dbOut, "------ New prog: -----\n");
 				foamPrintDb(def->foamDef.rhs);
@@ -318,7 +318,7 @@ cpFlog0(FlowGraph flog)
 
 	i = dflowFwdIterate(flog, DFLOW_Intersection, cpDF_CUTOFF, &k, NULL);
 
-	cpDfDEBUG {
+	if (DEBUG(cpDf)) {
 		fprintf(dbOut, i == 0 ? "Converged" : "Did not converge");
 		fprintf(dbOut, " after %d iterations\n", k);
 		flogPrint(dbOut, flog, true);
@@ -359,7 +359,9 @@ cpVarCopiesVectBuild(Foam seq)
 	        }
 	}
 
-	cpDfDEBUG{cpVarCopiesVectPrint();}
+	if (DEBUG(cpDf)) {
+		cpVarCopiesVectPrint();
+	}
 
 	return;
 }
@@ -709,7 +711,9 @@ cpCopyPropagate(FlowGraph flog)
 
 		bb->code = cpCopyPropagate0(bb->code, dfFwdIn(bb), CP_Rhs);
 		
-		cpDfDEBUG{foamPrintDb(bb->code);}
+		if (DEBUG(cpDf)) {
+			foamPrintDb(bb->code);
+		}
 	}
 }
 
@@ -819,7 +823,7 @@ cpCopyPropagate0(Foam foam, Bitv dfin, CpFlagState cpState)
 			newFoam = foamCopy(copy->foamDef.rhs);
 			cpInfo.nPropagated += 1;
 
-			cpDEBUG{fprintf(dbOut, "CPROP>> Copy propagated ---\n");}
+			cpDEBUG(dbOut, "CPROP>> Copy propagated ---\n");
 
 			foam = rhsVar; /* Will be NULL if rhs is IMMEDIATE */
 		}

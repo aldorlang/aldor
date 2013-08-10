@@ -20,7 +20,7 @@
 
 Bool	implDebug	= false;
 
-#define implDEBUG	if (DEBUG(impl))
+#define implDEBUG	DEBUG_IF(impl)	afprintf
 
 struct SImplInfo {
 	SImplTag tag;
@@ -219,7 +219,7 @@ implEvaluate(SImpl impl, AbLogic cond)
 	if (!impl)
 		return impl;
 
-	implDEBUG {
+	if (DEBUG(impl)) {
 		fprintf(dbOut, "(ImplEvaluate:\n");
 		implPrintDb(impl);
 		ablogPrintDb(cond);
@@ -251,7 +251,7 @@ implEvaluate(SImpl impl, AbLogic cond)
 		bug("implEvaluate: not good");
 		return impl;
 	}
-	implDEBUG {
+	if (DEBUG(impl)) {
 		implPrintDb(newImpl);
 		fprintf(dbOut, ")\n");
 	}

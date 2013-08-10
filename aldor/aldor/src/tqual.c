@@ -20,7 +20,7 @@
 
 Bool	tqDebug		= false;
 
-#define tqDEBUG		if (DEBUG(tq))
+#define tqDEBUG		DEBUG_IF(tq)	afprintf
 
 /******************************************************************************
  *
