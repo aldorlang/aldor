@@ -28,17 +28,17 @@
 #include "table.h"
 #include "sexpr.h"
 
-Bool	symeDebug		= false;
-Bool	symeFillDebug		= false;
-Bool	symeHasDebug		= false;
-Bool	symeLibDebug		= false;
+Bool	symeDebug	= false;
+Bool	symeFillDebug	= false;
+Bool	symeHasDebug	= false;
+Bool	symeLibDebug	= false;
 extern Bool tfHashDebug;
 
-#define symeDEBUG(s)		DEBUG_IF(symeDebug, s)
-#define symeFillDEBUG(s)	DEBUG_IF(symeFillDebug, s)
-#define symeHasDEBUG(s)		DEBUG_IF(symeHasDebug, s)
-#define symeLibDEBUG(s)		DEBUG_IF(symeLibDebug, s)
-#define tfHashDEBUG(s)		DEBUG_IF(tfHashDebug, s)
+#define symeDEBUG	DEBUG_IF(syme)		afprintf
+#define symeFillDEBUG	DEBUG_IF(symeFill)	afprintf
+#define symeHasDEBUG	DEBUG_IF(symeHas)	afprintf
+#define symeLibDEBUG	DEBUG_IF(symeLib)	afprintf
+#define tfHashDEBUG	DEBUG_IF(tfHash)	afprintf
 
 /******************************************************************************
  *
@@ -447,7 +447,8 @@ symeTypeCode(Syme syme)
 
 	h = symeHash(syme);
 	if (h) return h;
-	tfHashDEBUG(afprintf(dbOut, "Hash: %s %pSyme %pTForm\n", symeString(syme), syme, symeType(syme)));
+	tfHashDEBUG(dbOut, "Hash: %s %pSyme %pTForm\n",
+		    symeString(syme), syme, symeType(syme));
 	if (symeIsExport(syme) || symeIsParam(syme) || symeIsSelf(syme)) {
 		h = tfHash(symeType(syme));
 		symeHashArg(h, (Hash) symeKind(syme));
@@ -464,7 +465,8 @@ symeTypeCode(Syme syme)
 		symeHashArg(h, symeDefLevel(syme)->hash);
 	}
 
-	tfHashDEBUG(afprintf(dbOut, "Hash: %s %pSyme = %d\n", symeString(syme), syme, h));
+	tfHashDEBUG(dbOut, "Hash: %s %pSyme = %d\n",
+		    symeString(syme), syme, h);
 	return symeSetHash(syme, h);
 }
 
@@ -623,8 +625,9 @@ symeTransferImplInfo(Syme to, Syme from)
 	symeSetConstInfo(to, symeConstInfo(from));
 	symeSetConstLib(to, symeConstLib(from));
 
-	symeDEBUG(afprintf(dbOut, "Transfer: %d %d %d [%pSyme --> %pSyme]\n", symeHashNum(from), symeDefnNum(from),
-			   symeConstNum(from), from, to));
+	symeDEBUG(dbOut, "Transfer: %d %d %d [%pSyme --> %pSyme]\n",
+		  symeHashNum(from), symeDefnNum(from),
+		  symeConstNum(from), from, to);
 
 	symeMergeImpl(to, symeImpl(from));
 }
@@ -650,10 +653,11 @@ symeMergeImpl(Syme syme, SImpl impl)
 	if (oimpl == NULL && impl == NULL)
 		return impl;
 	
-	symeDEBUG(fprintf(dbOut, "(Merging:\n");
-		  implPrintDb(oimpl);
-		  implPrintDb(impl);
-		  );
+	if (DEBUG(syme)) {
+		fprintf(dbOut, "(Merging:\n");
+		implPrintDb(oimpl);
+		implPrintDb(impl);
+	}
 	/* No existing implementation */
 	if (oimpl == NULL)
 		newImpl = impl;
@@ -731,7 +735,9 @@ symeMergeImpl(Syme syme, SImpl impl)
 	if (!newImpl)
 		bug("%s: Unhandled Merge #3", "symeMergeImpl");
 	
-	symeDEBUG(implPrintDb(newImpl); fprintf(dbOut, ")\n"););
+	if (DEBUG(syme)) {
+		implPrintDb(newImpl); fprintf(dbOut, ")\n");
+	}
 	if (newImpl != oimpl)
 		symeSetImpl(syme, newImpl);
 	return impl;
@@ -743,12 +749,12 @@ symeImplAddConst(Syme syme, AbLogic condition, int defn)
 {
 	SImpl impl;
 	
-	symeDEBUG(
-		  fprintf(dbOut, "(Adding implementation (%d) for: %s\n", 
-			  defn, symeString(syme));
-		  tfPrintDb(symeType(syme));
-		  ablogPrint(dbOut, condition);
-		  );
+	if (DEBUG(syme)) {
+		fprintf(dbOut, "(Adding implementation (%d) for: %s\n", 
+			defn, symeString(syme));
+		tfPrintDb(symeType(syme));
+		ablogPrint(dbOut, condition);
+	}
 
 	impl = implNewLocal(symeHasDefault(syme), defn);
 
@@ -759,8 +765,7 @@ symeImplAddConst(Syme syme, AbLogic condition, int defn)
 
 	implFree(impl);
 
-	symeDEBUG(fprintf(dbOut, ")\n");
-		  );
+	symeDEBUG(dbOut, ")\n");
 }
 
 void
@@ -779,14 +784,15 @@ symeImplAddInherit(Syme syme, TForm tf, Syme parent)
 	 */
 	if (tfIsNone(tf)) return;
 	
-	symeDEBUG(fprintf(dbOut, "(Adding inherited implementation for: %s", symeString(syme));
-		  tfPrintDb(symeType(syme));
-		  tfPrintDb(tf);
-		  );
+	if (DEBUG(syme)) {
+		fprintf(dbOut, "(Adding inherited implementation for: %s", symeString(syme));
+		tfPrintDb(symeType(syme));
+		tfPrintDb(tf);
+	}
 	impl = implNewInherit(tf);
 
 	symeMergeImpl(syme, impl);
-	symeDEBUG(fprintf(dbOut, ")\n"););
+	symeDEBUG(dbOut, ")\n");
 	
 }
 
@@ -901,13 +907,11 @@ symeFillType(Syme syme)
 	assert(symeIsExport(syme) || symeIsImport(syme) ||
 	       symeIsParam(syme) || symeIsSelf(syme));
 
-	symeFillDEBUG({
-		fprintf(dbOut, ">>[%s]\t name: %25s  hash: %12ld  lib: %s\n",
-			symeTagToStr(symeKind(syme)),
-			symeString(syme),
-			symeTypeCode(syme),
-			libToStringStatic(symeLib(syme)));
-	});
+	symeFillDEBUG(dbOut, ">>[%s]\t name: %25s  hash: %12ld  lib: %s\n",
+		      symeTagToStr(symeKind(syme)),
+		      symeString(syme),
+		      symeTypeCode(syme),
+		      libToStringStatic(symeLib(syme)));
 
 	/* Lazy exports know which library they came from. */
 	if (symeIsExport(syme) || symeIsParam(syme) || symeIsSelf(syme))
@@ -923,13 +927,11 @@ symeFillType(Syme syme)
 			symeFillFrExporter(syme, exporter);
 	}
 
-	symeFillDEBUG({
-		fprintf(dbOut, "<<[%s]\t name: %25s  hash: %12ld  lib: %s\n",
-			symeTagToStr(symeKind(syme)),
-			symeString(syme),
-			symeTypeCode(syme),
-			libToStringStatic(symeLib(syme)));
-	});
+	symeFillDEBUG(dbOut, "<<[%s]\t name: %25s  hash: %12ld  lib: %s\n",
+		      symeTagToStr(symeKind(syme)),
+		      symeString(syme),
+		      symeTypeCode(syme),
+		      libToStringStatic(symeLib(syme)));
 
 	assert(!symeIsLazy(syme));
 	return symeType(syme);
@@ -1110,9 +1112,9 @@ symeCheckCondition(Syme syme)
 
 		dom = cond->abHas.expr;
 		cat = cond->abHas.property;
-		symeHasDEBUG(afprintf(dbOut, "(symeCheckCondition: %pSymeC...", syme));
+		symeHasDEBUG(dbOut, "(symeCheckCondition: %pSymeC...", syme);
 		result = symeCheckHas(symeConditionContext(syme), dom, cat);
-		symeHasDEBUG(afprintf(dbOut, " ... %d)\n", result));
+		symeHasDEBUG(dbOut, " ... %d)\n", result);
 
 		if (result == 1) {
 			symeSetCheckCondIncomplete(syme);
@@ -1531,8 +1533,11 @@ symeListToSExpr(SymeList symes, Bool top)
 		Bool		this;
 
 		this = symeTop(syme);
-		if (!top) this = true;
-		symeLibDEBUG(this = true);
+		if (!top)
+			this = true;
+		if (DEBUG(symeLib)) {
+			this = true;
+		}
 		if (this) sx = sxCons(symeToSExpr(syme), sx);
 	}
 

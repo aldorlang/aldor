@@ -13,11 +13,11 @@
 #include "foamsig.h"
 #include "of_util.h"
 
-extern Bool genfoamDebug, genfoamHashDebug, genfoamConstDebug;
+extern Bool genfDebug, genfHashDebug, genfConstDebug;
 
-#define genfDEBUG(s)            DEBUG_IF(genfoamDebug, s)
-#define genfHashDEBUG(s)        DEBUG_IF(genfoamHashDebug, s)
-#define genfConstDEBUG(s)       DEBUG(if (genfoamConstDebug) {s;})
+#define genfDEBUG		if (DEBUG(genf))	afprintf
+#define genfHashDEBUG		if (DEBUG(genfHash))	afprintf
+#define genfConstDEBUG		if (DEBUG(genfConst))	afprintf
 
 #define genfNumProg(_d,_s)	fprintf(dbOut, "numProgs[%d] = %s\n", (_d), (_s))
 

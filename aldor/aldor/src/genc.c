@@ -2331,7 +2331,9 @@ gc0Prog(Foam ref, Foam foam)
 	{
 		foam = foamCopy(foam);
 		killProgPointers(foam);
-		DEBUG(stoAudit());
+		if (DEBUG(phase)) {
+			stoAudit();
+		}
 	}
 
 	progFmt	 = foamProgIndex(foam);

@@ -27,33 +27,32 @@
 #include "strops.h"
 #include "table.h"
 
-Bool	sstDebug            	= false;
-Bool	sstMarkDebug		= false;
+Bool	sstDebug	= false;
+Bool	sstMarkDebug	= false;
 
-Bool	sefoPrintDebug		= false;
-Bool	sefoEqualDebug		= false;
-Bool	sefoFreeDebug		= false;
-Bool	sefoSubstDebug		= false;
-Bool	sefoUnionDebug		= false;
-Bool	sefoInterDebug		= false;
-Bool	sefoCloseDebug		= false;
+Bool	sefoPrintDebug	= false;
+Bool	sefoEqualDebug	= false;
+Bool	sefoFreeDebug	= false;
+Bool	sefoSubstDebug	= false;
+Bool	sefoUnionDebug	= false;
+Bool	sefoInterDebug	= false;
+Bool	sefoCloseDebug	= false;
 
-#define sstDEBUG(s) 		DEBUG_IF(sstDebug,       s)
-#define sstMarkDEBUG(s)		DEBUG_IF(sstMarkDebug,   s)
+#define sstDEBUG	DEBUG_IF(sst)		afprintf
+#define sstMarkDEBUG	DEBUG_IF(sstMark)	afprintf
 
-#define sefoPrintDEBUG(s)	DEBUG_IF(sefoPrintDebug, s)
-#define sefoEqualDEBUG(s)	DEBUG_IF(sefoEqualDebug, s)
-#define sefoFreeDEBUG(s)	DEBUG_IF(sefoFreeDebug,  s)
-#define sefoSubstDEBUG(s)	DEBUG_IF(sefoSubstDebug, s)
-#define sefoUnionDEBUG(s)	DEBUG_IF(sefoUnionDebug, s)
-#define sefoInterDEBUG(s)	DEBUG_IF(sefoInterDebug, s)
-#define sefoCloseDEBUG(s)	DEBUG_IF(sefoCloseDebug, s)
+#define sefoPrintDEBUG	DEBUG_IF(sefoPrint)	afprintf
+#define sefoEqualDEBUG	DEBUG_IF(sefoEqual)	afprintf
+#define sefoFreeDEBUG	DEBUG_IF(sefoFree)	afprintf
+#define sefoSubstDEBUG	DEBUG_IF(sefoSubst)	afprintf
+#define sefoUnionDEBUG	DEBUG_IF(sefoUnion)	afprintf
+#define sefoInterDEBUG	DEBUG_IF(sefoInter)	afprintf
+#define sefoCloseDEBUG	DEBUG_IF(sefoClose)	afprintf
 
-#define	SefoSubstTUnique
-#undef	SefoSubstShare
+#define SefoSubstTUnique
+#undef  SefoSubstShare
 #define MarkScheme3
 
-#ifndef NDEBUG
 static ULong * SubstDebugTable = NULL;
 
 void
@@ -74,7 +73,6 @@ substDebugReport(void)
 		fprintf(dbOut, "\t%12s:\t\t%12ld\n",
 			tformStr(i), SubstDebugTable[i]);
 }
-#endif
 
 /*****************************************************************************
  *
@@ -471,15 +469,23 @@ sstPrLib(FILE *fout, int n, Lib lib)
 
 static int	sstSerialDebug	= 0;	/* debugging counter */
 
-#define	sstNext(wh,a1,a2) \
-	{ sstDEBUG(sstNextDB(wh, (Pointer)(a1), (Pointer)(a2))); sstNext0(); }
-#define	sstDone() \
-	{ sstDone0(); sstDEBUG(sstDoneDB()); }
+#define	sstNext(wh,a1,a2) {					\
+	if (DEBUG(sst)) {					\
+		sstNextDB(wh, (Pointer)(a1), (Pointer)(a2));	\
+	}							\
+	sstNext0();						\
+}
+#define	sstDone() {		\
+	sstDone0();		\
+	if (DEBUG(sst)) {	\
+		sstDoneDB();	\
+	}			\
+}
 
 #define sstDoneSefo(sefo)	{ sefoClear(sefo); sstDone(); }
 #define sstDoneSyme(syme)	{ symeClear(syme); sstDone(); }
 #define sstDoneTForm(tform)	{ tformClear(tform); sstDone(); }
-#define	sstDoneAbSub(sigma)	{ abSubClear(sigma); sstDone(); }
+#define sstDoneAbSub(sigma)	{ abSubClear(sigma); sstDone(); }
 #define sstDoneSefoList(sl)	{ sefoListClear(sl); sstDone(); }
 #define sstDoneSymeList(sl)	{ symeListClear(sl); sstDone(); }
 #define sstDoneTFormList(tl)	{ tformListClear(tl); sstDone(); }
@@ -612,8 +618,8 @@ sstNext0(void)
 	/* Save state. */
 	if (sstMarkBitNo >= 0) {
 		sstMarkCountSave[sstMarkBitNo] = sstMarkCount;
-	        sstMarkDEBUG(fprintf(dbOut, "sstNext: saving count %d\n",
-			             sstMarkCount));
+	        sstMarkDEBUG(dbOut, "sstNext: saving count %d\n",
+			     sstMarkCount);
 	}
 
 	/* Increment level. */
@@ -627,14 +633,14 @@ sstNext0(void)
 	sstMarkMask = 1L << sstMarkBitNo;
 	sstMarkCount = sstMarkCountSave[sstMarkBitNo] = 0;
 
-	sstMarkDEBUG(fprintf(dbOut, "sstNext: BitNo = %d\n", sstMarkBitNo));
+	sstMarkDEBUG(dbOut, "sstNext: BitNo = %d\n", sstMarkBitNo);
 }
 
 local void
 sstDone0(void)
 {
 	/* Verify current state. */
-	sstMarkDEBUG(fprintf(dbOut, "sstDone: BitNo = %d\n", sstMarkBitNo));
+	sstMarkDEBUG(dbOut, "sstDone: BitNo = %d\n", sstMarkBitNo);
 	assert(sstMarkBitNo >= 0);
 	if (sstMarkCount != 0) {
 		sstStackPrint(stderr);
@@ -648,8 +654,8 @@ sstDone0(void)
 	if (sstMarkBitNo >= 0) {
 		sstMarkMask  = 1L << sstMarkBitNo;
 		sstMarkCount = sstMarkCountSave[sstMarkBitNo];
-	        sstMarkDEBUG(fprintf(dbOut, "sstDone: restoring count %d\n",
-			             sstMarkCount));
+	        sstMarkDEBUG(dbOut, "sstDone: restoring count %d\n",
+			     sstMarkCount);
 	}
 }
 
@@ -658,25 +664,25 @@ sstDone0(void)
 
 #define	sstMarkSyme(syme) \
 	{ if (!sstSymeIsMarked(syme)) { \
-		sstMarkDEBUG(fprintf(dbOut, "++ marking %p\n", syme)); \
+		sstMarkDEBUG(dbOut, "++ marking %p\n", syme); \
 		sstMarkCount++; \
 		symeSetMark((syme), symeMark(syme) | sstMarkMask); }}
 
 #define	sstMarkTForm(tf) \
 	{ if (!sstTFormIsMarked(tf)) { \
-		sstMarkDEBUG(fprintf(dbOut, "++ marking %p\n", tf)); \
+		sstMarkDEBUG(dbOut, "++ marking %p\n", tf); \
 		sstMarkCount++; \
 		tformSetMark((tf), tformMark(tf) | sstMarkMask); }}
 
 #define	sstClearSyme(syme) \
 	{ if (sstSymeIsMarked(syme)) { \
-		sstMarkDEBUG(fprintf(dbOut, "-- clearing %p\n", syme)); \
+		sstMarkDEBUG(dbOut, "-- clearing %p\n", syme); \
 		sstMarkCount--; \
 		symeSetMark((syme), symeMark(syme) & ~sstMarkMask); }}
 
 #define	sstClearTForm(tf) \
 	{ if (sstTFormIsMarked(tf)) { \
-		sstMarkDEBUG(fprintf(dbOut, "-- clearing %p\n", tf)); \
+		sstMarkDEBUG(dbOut, "-- clearing %p\n", tf); \
 		sstMarkCount--; \
 		tformSetMark((tf), tformMark(tf) & ~sstMarkMask); }}
 
@@ -692,9 +698,7 @@ sstDone0(void)
 
 #if defined(MarkScheme3)
 
-#ifndef	NDEBUG
 static ULong	 sstMarkMask    =  0;	/* For the generic debug fns. */
-#endif
 
 /*
  * Not Traversing:        sstMarkDepth=0; sstMarkTable=0; sstMarkStack=0;
@@ -957,8 +961,6 @@ tqualListClear(TQualList tquals)
  *
  ****************************************************************************/
 
-#ifndef NDEBUG
-
 void
 sstNextDB(String where, Pointer arg1, Pointer arg2)
 {
@@ -994,8 +996,6 @@ sstDoneDB(void)
 		fprintf(dbOut, (sstMarkMask & (1<<i)) ? "1" : "0");
 	fprintf(dbOut, "\n");
 }
-
-#endif /* !defined(NDEBUG) */
 
 /*****************************************************************************
  *
@@ -1212,12 +1212,12 @@ sefoOStreamPrint0(OStream ostream, Bool deep, Sefo sefo)
 	if (abIsLeaf(sefo)) {
 		cc += ostreamPrintf(ostream, " ");
 		cc += abOStreamPrint(ostream, sefo);
-		sefoPrintDEBUG({
+		if (DEBUG(sefoPrint)) {
 			if (abSyme(sefo)) {
 				cc += ostreamPrintf(ostream, " ");
 				cc += symeOStreamPrint0(ostream, false, abSyme(sefo));
 			}
-		});
+		}
 	}
 
 	else {
@@ -1246,9 +1246,9 @@ symeOStreamPrint0(OStream ostream, Bool deep, Syme syme)
 
 	cc += ostreamPrintf(ostream, "%s", symeString(syme));
 
-	sefoPrintDEBUG({
-			cc += ostreamPrintf(ostream, " [cn:%ld, dn:%d %ld],", symeConstNum(syme), symeDefnNum(syme), symeMark(syme));
-	});
+	if (DEBUG(sefoPrint)) {
+		cc += ostreamPrintf(ostream, " [cn:%ld, dn:%d %ld],", symeConstNum(syme), symeDefnNum(syme), symeMark(syme));
+	}
 
 	if (deep) {
 		cc += ostreamPrintf(ostream, " : ");
@@ -1619,12 +1619,12 @@ sefoEqual0(SymeList mods, Sefo sefo1, Sefo sefo2)
 	sefo1 = sefoEqualMods(sefo1);
 	sefo2 = sefoEqualMods(sefo2);
 
-	sefoEqualDEBUG({
+	if (DEBUG(sefoEqual)) {
 		fprintf(dbOut, "-> sefoEqual[%d]:", (int) serial);
 		fnewline(dbOut);
 		sefoPrintDb(sefo1);
 		sefoPrintDb(sefo2);
-	});
+	}
 
 	if (sefo1 == sefo2)
 		result = true;
@@ -1660,11 +1660,11 @@ sefoEqual0(SymeList mods, Sefo sefo1, Sefo sefo2)
 			result = sefoEqual0(mods, sefo1, sefoDefinedVal(sefo2));
 	}
 
-	sefoEqualDEBUG({
+	if (DEBUG(sefoEqual)) {
 		fprintf(dbOut, "<- sefoEqual[%d] = %s",
 			(int) serial, boolToString(result));
 		fnewline(dbOut);
-	});
+	}
 
 	return result;
 }
@@ -1684,9 +1684,8 @@ symeEqual0(SymeList mods, Syme syme1, Syme syme2)
 	else if (!syme1 || !syme2)
 		return false;
 
-	sefoEqualDEBUG({
-			afprintf(dbOut, "(symeEqual[%d]: %pSyme %pSyme\n", (int) serial, syme1, syme2);
-	});
+	sefoEqualDEBUG(dbOut, "(symeEqual[%d]: %pSyme %pSyme\n",
+		       (int) serial, syme1, syme2);
 
 	if (symeIsArchive(syme1) && symeIsLibrary(syme2))
 		result = arLibraryIsMember(symeArchive(syme1),
@@ -1753,10 +1752,8 @@ symeEqual0(SymeList mods, Syme syme1, Syme syme2)
 			  symeTypeEqual0(mods, syme1, syme2));
 	}
 
-	sefoEqualDEBUG({
-			afprintf(dbOut, "  symeEqual[%d] = %s)\n",
-				 (int) serial, boolToString(result));
-	});
+	sefoEqualDEBUG(dbOut, "  symeEqual[%d] = %s)\n",
+		       (int) serial, boolToString(result));
 
 	return result;
 }
@@ -1818,12 +1815,12 @@ tformEqual0(SymeList mods, TForm tf1, TForm tf2)
 	sstSerialDebug += 1;
 	serial = sstSerialDebug;
 
-	sefoEqualDEBUG({
+	if (DEBUG(sefoEqual)) {
 		fprintf(dbOut, "-> tformEqual[%d]:", (int) serial);
 		fnewline(dbOut);
 		tformPrintDb(tf1);
 		tformPrintDb(tf2);
-	});
+	}
 
 	if (tf1 == tf2)
 		result = true;
@@ -1885,11 +1882,11 @@ tformEqual0(SymeList mods, TForm tf1, TForm tf2)
 			result = tformEqual0(mods, tf1, tfDefinedVal(tf2));
 	}
 
-	sefoEqualDEBUG({
+	if (DEBUG(sefoEqual)) {
 		fprintf(dbOut, "<- tformEqual[%d] = %s",
 			(int) serial, boolToString(result));
 		fnewline(dbOut);
-	});
+	}
 #if CheckSimilar
 	if (result && !similar)
 		bug("tformEqual, dissimilar, but the same!");
@@ -2062,12 +2059,12 @@ symeOriginEqual0(SymeList mods, Syme syme1, Syme syme2)
 	sstSerialDebug += 1;
 	serial = sstSerialDebug;
 
-	sefoEqualDEBUG({
+	if (DEBUG(sefoEqual)) {
 		fprintf(dbOut, "-> symeOriginEqual[%d]:", (int) serial);
 		fnewline(dbOut);
 		symePrintDb(syme1);
 		symePrintDb(syme2);
-	});
+	}
 
 	if (symeKind(syme1) != symeKind(syme2))
 		result = false;
@@ -2100,11 +2097,11 @@ symeOriginEqual0(SymeList mods, Syme syme1, Syme syme2)
 		bugBadCase(symeKind(syme1));
 	}
 
-	sefoEqualDEBUG({
+	if (DEBUG(sefoEqual)) {
 		fprintf(dbOut, "<- symeOriginEqual[%d] = %s",
 			(int) serial, boolToString(result));
 		fnewline(dbOut);
-	});
+	}
 
 	return result;
 }
@@ -2266,8 +2263,10 @@ tformFreeVars(TForm tf)
 	sfvFiniTable();
 
 	tfSetFVars(tf, fv);
-	sefoFreeDEBUG(afprintf(dbOut, "FV(final) %pTForm = %pFreeVar\n", tf, tf->fv));
-	sefoFreeDEBUG(sfvPrint(dbOut));
+	sefoFreeDEBUG(dbOut, "FV(final) %pTForm = %pFreeVar\n", tf, tf->fv);
+	if (DEBUG(sefoFree)) {
+		sfvPrint(dbOut);
+	}
 }
 
 void
@@ -2391,7 +2390,8 @@ sfvPopTable(Bool save)
 		Syme		syme = car(symes);
 		List(AInt)	elt = sfvGetDepths(syme);
 
-		sefoFreeDEBUG(afprintf(dbOut, " popTable: %pSyme %d %d %pAIntList\n", syme, sfvHasDepth(elt, odepth), odepth, elt));
+		sefoFreeDEBUG(dbOut, " popTable: %pSyme %d %d %pAIntList\n",
+			      syme, sfvHasDepth(elt, odepth), odepth, elt);
 
 		if (!sfvHasDepth(elt, odepth)) continue;
 
@@ -2425,7 +2425,8 @@ sfvAddSyme(Syme syme)
 		sfvSetDepths(syme, elt);
 		sfvConsTable(syme);
 	}
-	sefoFreeDEBUG(afprintf(dbOut, " Adding syme: %pSyme %pAIntList\n", syme, sfvGetDepths(syme)));
+	sefoFreeDEBUG(dbOut, " Adding syme: %pSyme %pAIntList\n",
+		      syme, sfvGetDepths(syme));
 }
 
 local void
@@ -2444,7 +2445,8 @@ sfvDelSyme(Syme syme)
 		elt = listFreeCons(AInt)(elt);
 		sfvSetDepths(syme, elt);
 	}
-	sefoFreeDEBUG(afprintf(dbOut, " Del syme: %pSyme %pAIntList\n", syme, sfvGetDepths(syme)));
+	sefoFreeDEBUG(dbOut, " Del syme: %pSyme %pAIntList\n",
+		      syme, sfvGetDepths(syme));
 }
 
 local void
@@ -2494,10 +2496,10 @@ sefoFreeVars0(TForm *pa, TForm parent, Sefo sefo)
 	sstSerialDebug += 1;
 	serial = sstSerialDebug;
 
-	sefoFreeDEBUG({
-			afprintf(dbOut, "(sefoFree[%d]: %pAbSyn\n", (int) serial, sefo);
-			sfvPrint(dbOut);
-	});
+	if (DEBUG(sefoFree)) {
+		afprintf(dbOut, "(sefoFree[%d]: %pAbSyn\n", (int) serial, sefo);
+		sfvPrint(dbOut);
+	}
 
 	if (abIsLeaf(sefo)) {
 		Syme	syme = abSyme(sefo);
@@ -2518,10 +2520,10 @@ sefoFreeVars0(TForm *pa, TForm parent, Sefo sefo)
 			tformUnboundVars0(pa, parent, abTUnique(sefo));
 	}
 
-	sefoFreeDEBUG({
-			sfvPrint(dbOut);
-			fprintf(dbOut, " sefoFree[%d]: %p)\n", (int) serial, *pa);
-	});
+	if (DEBUG(sefoFree)) {
+		sfvPrint(dbOut);
+		fprintf(dbOut, " sefoFree[%d]: %p)\n", (int) serial, *pa);
+	}
 }
 
 local void
@@ -2532,15 +2534,14 @@ symeFreeVars0(TForm *pa, TForm parent, Syme syme)
 	sstSerialDebug += 1;
 	serial = sstSerialDebug;
 
-	sefoFreeDEBUG({
-			afprintf(dbOut, "(symeFree[%d]: %pSyme\n", (int) serial, syme);
-			sfvPrint(dbOut);
-	});
+	if (DEBUG(sefoFree)) {
+		afprintf(dbOut, "(symeFree[%d]: %pSyme\n", (int) serial, syme);
+		sfvPrint(dbOut);
+	}
 
-	sefoFreeDEBUG({
-			afprintf(dbOut, " symeFree[%d]: Self: %d Substable: %d\n",
-				 (int) serial, symeIsSelf(syme), (int) symeDefLevelIsSubstable(syme));
-	});
+	sefoFreeDEBUG(dbOut, " symeFree[%d]: Self: %d Substable: %d\n",
+		      (int) serial, symeIsSelf(syme),
+		      (int) symeDefLevelIsSubstable(syme));
 	if (symeIsImport(syme))
 		tformUnboundVars0(pa, parent, symeExporter(syme));
 	else if (!symeIsSelf(syme) &&
@@ -2550,10 +2551,10 @@ symeFreeVars0(TForm *pa, TForm parent, Syme syme)
 	if (symeCondition(syme))
 		sefoListUnboundVars0(pa, parent, symeCondition(syme));
 
-	sefoFreeDEBUG({
-			sfvPrint(dbOut);
-			afprintf(dbOut, " symeFree[%d]: %pTForm)\n", (int) serial, *pa);
-	});
+	if (DEBUG(sefoFree)) {
+		sfvPrint(dbOut);
+		afprintf(dbOut, " symeFree[%d]: %pTForm)\n", (int) serial, *pa);
+	}
 }
 
 local void
@@ -2577,7 +2578,8 @@ tformFreeVars0(TForm *pa, TForm parent, TForm tf)
 		}
 		tformFreeVars(arg);
 		tfSetFVars(tf, freeVarSubst0(tfSubstSigma(tf), tfFVars(arg)));
-		sefoFreeDEBUG(afprintf(dbOut, "FV(subst) %pTForm = %pFreeVar\n", tf, tf->fv));
+		sefoFreeDEBUG(dbOut, "FV(subst) %pTForm = %pFreeVar\n",
+			      tf, tf->fv);
 	}
 
 	if (tfFVars(tf)) {
@@ -2594,9 +2596,7 @@ tformFreeVars0(TForm *pa, TForm parent, TForm tf)
 	sstSerialDebug += 1;
 	serial = sstSerialDebug;
 
-	sefoFreeDEBUG({
-			afprintf(dbOut, "(tformFree[%d]: %pTForm\n", (int) serial, tf);
-	});
+	sefoFreeDEBUG(dbOut, "(tformFree[%d]: %pTForm\n", (int) serial, tf);
 
 	sfvPushTable();
 
@@ -2651,16 +2651,15 @@ tformFreeVars0(TForm *pa, TForm parent, TForm tf)
 
 	if (ancestor == tf && tfIsMeaning(tf)) {
 		tfSetFVars(tf, sfvPopTable(true));
-		sefoFreeDEBUG(afprintf(dbOut, "FV %pTForm = %pFreeVar\n", tf, tf->fv));
+		sefoFreeDEBUG(dbOut, "FV %pTForm = %pFreeVar\n", tf, tf->fv);
 	}
 	else {
 		sfvPopTable(false);
 		*pa = ancestor;
 	}
 
-	sefoFreeDEBUG({
-			afprintf(dbOut, " tformFree[%d]: %d %pTForm)\n", (int) serial, tfIsMeaning(tf), *pa);
-	});
+	sefoFreeDEBUG(dbOut, " tformFree[%d]: %d %pTForm)\n",
+		      (int) serial, tfIsMeaning(tf), *pa);
 }
 
 local void
@@ -3008,10 +3007,10 @@ sefoSubst0(AbSub sigma, Sefo sefo)
 
 	assert(sefo);
 
-	sefoSubstDEBUG({
+	if (DEBUG(sefoSubst)) {
 		fprintf(dbOut, "-> sefoSubst[%ld]:\n", absSerial(sigma));
 		sefoPrintDb(sefo);
-	});
+	}
 
 	if (abIsLeaf(sefo)) {
 		Syme	syme = abSyme(sefo);
@@ -3065,10 +3064,10 @@ sefoSubst0(AbSub sigma, Sefo sefo)
 #endif
 	}
 
-	sefoSubstDEBUG({
+	if (DEBUG(sefoSubst)) {
 		fprintf(dbOut, "<- sefoSubst[%ld]:\n", absSerial(sigma));
 		sefoPrintDb(final);
-	});
+	}
 
 	return final;
 }
@@ -3137,10 +3136,10 @@ symeSubst0(AbSub sigma, Syme syme)
 	final = absSetSyme(sigma, syme, symeCopy(syme));
 	absSetStab(sigma, final);
 
-	sefoSubstDEBUG({
+	if (DEBUG(sefoSubst)) {
 		fprintf(dbOut, "-> symeSubst[%ld]:\n", absSerial(sigma));
 		symePrintDb(syme);
-	});
+	}
 
 	if (symeIsImport(syme)) {
 		symeSetExporter(final, tformSubst0(sigma, symeExporter(syme)));
@@ -3162,10 +3161,10 @@ symeSubst0(AbSub sigma, Syme syme)
 		symeSetCondition(final,
 				 condListSubst0(sigma, symeCondition(syme)));
 
-	sefoSubstDEBUG({
+	if (DEBUG(sefoSubst)) {
 		fprintf(dbOut, "<- symeSubst[%ld]: ", absSerial(sigma));
 		symePrintDb(final);
-	});
+	}
 
 	return final;
 }
@@ -3191,9 +3190,8 @@ tformSubst0(AbSub sigma, TForm tf)
 	final = absGetTForm(sigma, tf);
 	if (final && (!tfIsSubstOf(tf, final) || lazy)) return final;
 
-	sefoSubstDEBUG({
-			afprintf(dbOut, "(-> tformSubst[%ld]: %pTForm\n", absSerial(sigma), tf);
-	});
+	sefoSubstDEBUG(dbOut, "(-> tformSubst[%ld]: %pTForm\n",
+		       absSerial(sigma), tf);
 
 	if (!lazy) tfFollow(tf);
 
@@ -3337,10 +3335,8 @@ tformSubst0(AbSub sigma, TForm tf)
 	}
 
 	if (!fresh) {
-		sefoSubstDEBUG({
-				afprintf(dbOut, " <- tformSubst[%ld]: %pTForm)\n",
-					 absSerial(sigma), final);
-		});
+		sefoSubstDEBUG(dbOut, " <- tformSubst[%ld]: %pTForm)\n",
+			       absSerial(sigma), final);
 		return final;
 	}
 
@@ -3367,13 +3363,13 @@ tformSubst0(AbSub sigma, TForm tf)
 	}
 	if (tfFVars(tf)) {
 		tfSetFVars(final, freeVarSubst0(sigma, tfFVars(tf)));
-		sefoFreeDEBUG(afprintf(dbOut, "FV(subst) %pTForm = %pFreeVar\n", final, final->fv));
+		sefoFreeDEBUG(dbOut, "FV(subst) %pTForm = %pFreeVar\n",
+			      final, final->fv);
 	}
 	if (tfHasExpr(final)) tfSetNeedsSefo(final);
 
-	sefoSubstDEBUG({
-			afprintf(dbOut, "<- tformSubst[%ld]: %pTForm)\n", absSerial(sigma), final);
-	});
+	sefoSubstDEBUG(dbOut, "<- tformSubst[%ld]: %pTForm)\n",
+		       absSerial(sigma), final);
 
 	return final;
 }
@@ -3611,11 +3607,11 @@ symeListClosure(Lib lib, SymeList symes)
 {
 	SymeList	sl0, sl;
 
-	sefoCloseDEBUG({
+	if (DEBUG(sefoClose)) {
 		fprintf(dbOut, "symeListClosure: %d symes", (int) listLength(Syme)(symes));
 		fnewline(dbOut);
 		symeListPrintDb(symes);
-	});
+	}
 
 	lib->topc  = 0;
 	lib->symec = 0;
@@ -3639,9 +3635,8 @@ symeListClosure(Lib lib, SymeList symes)
 	lib->symes = listNReverse(Syme)(lib->symes);
 	lib->types = listNReverse(TForm)(lib->types);
 
-	sefoCloseDEBUG({
-		fprintf(dbOut, " -> %d symes\n", (int) listLength(Syme)(lib->symes));
-	});
+	sefoCloseDEBUG(dbOut, " -> %d symes\n",
+		       (int) listLength(Syme)(lib->symes));
 }
 
 /*
@@ -3659,11 +3654,11 @@ slcAddSyme(Lib lib, Syme syme)
 	lib->symec += 1;
 	if (libSymeIsTop(lib, syme)) lib->topc += 1;
 
-	sefoCloseDEBUG({
+	if (DEBUG(sefoClose)) {
 		fprintf(dbOut, "+syme:");
 		fnewline(dbOut);
 		symePrintDb(syme);
-	});
+	}
 }
 
 local void
@@ -3672,11 +3667,11 @@ slcAddType(Lib lib, TForm tf)
 	lib->types = listCons(TForm)(tf, lib->types);
 	lib->typec += 1;
 
-	sefoCloseDEBUG({
+	if (DEBUG(sefoClose)) {
 		fprintf(dbOut, "+type:");
 		fnewline(dbOut);
 		tformPrintDb(tf);
-	});
+	}
 }
 
 local void
@@ -3689,10 +3684,10 @@ sefoClosure0(Lib lib, Sefo sefo)
 	sstSerialDebug += 1;
 	serial = sstSerialDebug;
 
-	sefoCloseDEBUG({
+	if (DEBUG(sefoClose)) {
 		fprintf(dbOut, "(S ");
 		sefoPrintDb(sefo);
-	});
+	}
 
 	if (abIsLeaf(sefo)) {
 		if (abSyme(sefo))
@@ -3712,10 +3707,10 @@ sefoClosure0(Lib lib, Sefo sefo)
 		}
 	}
 
-	sefoCloseDEBUG({
+	if (DEBUG(sefoClose)) {
 		fprintf(dbOut, " S)");
 		sefoPrintDb(sefo);
-	});
+	}
 }
 
 local void
@@ -3751,11 +3746,12 @@ symeClosure1(Lib lib, Syme syme)
 	sstSerialDebug += 1;
 	serial = sstSerialDebug;
 
-	sefoCloseDEBUG({
+	if (DEBUG(sefoClose)) {
 		fprintf(dbOut, "([%d]:\t", (int) serial);
 		symePrintDb(syme);
-		if (sstSerialDebug % 25 == 0) fprintf(dbOut, "\n");
-	});
+		if (sstSerialDebug % 25 == 0)
+			fprintf(dbOut, "\n");
+	}
 
 	assert(syme);
 	if (symeIsExtend(syme)) {
@@ -3811,10 +3807,10 @@ symeClosure1(Lib lib, Syme syme)
 
 	symeListSetExtension(extendee, extension);
 
-	sefoCloseDEBUG({
+	if (DEBUG(sefoClose)) {
 		fprintf(dbOut, " [%d])", (int) serial);
 		symePrintDb(syme);
-	});
+	}
 
 	return;
 }
@@ -3836,10 +3832,10 @@ tformClosure0(Lib lib, TForm tf)
 	sstSerialDebug += 1;
 	serial = sstSerialDebug;
 
-	sefoCloseDEBUG({
+	if (DEBUG(sefoClose)) {
 		fprintf(dbOut, "(T ");
 		tformPrintDb(tf);
-	});
+	}
 
 	if (tfFVars(tf) == NULL)
 		tformFreeVars(tf);
@@ -3894,10 +3890,10 @@ tformClosure0(Lib lib, TForm tf)
 	if (!cascade && tfCascades(tf))
 		tqualListClosure0(lib, tfCascades(tf));
 
-	sefoCloseDEBUG({
+	if (DEBUG(sefoClose)) {
 		fprintf(dbOut, " T)");
 		tformPrintDb(tf);
-	});
+	}
 }
 
 local void
@@ -3973,13 +3969,13 @@ symeListUnion(SymeList symes1, SymeList symes2, SymeEqFun eq)
 {
 	SymeList	result = listNil(Syme);
 
-	sefoUnionDEBUG({
+	if (DEBUG(sefoUnion)) {
 		fprintf(dbOut, "symeListUnion: \n");
 		fprintf(dbOut, "    symes1: ");
 		symeListPrintDb(symes1);
 		fprintf(dbOut, "    symes2: ");
 		symeListPrintDb(symes2);
-	});
+	}
 
 	for (; symes1; symes1 = cdr(symes1))
 		if (!symeListMember(car(symes1), symes2, eq))
@@ -3988,10 +3984,10 @@ symeListUnion(SymeList symes1, SymeList symes2, SymeEqFun eq)
 	result = listNConcat(Syme)(listNReverse(Syme)(result),
 				   listCopy(Syme)(symes2));
 
-	sefoUnionDEBUG({
+	if (DEBUG(sefoUnion)) {
 		fprintf(dbOut, "symeListUnion result: ");
 		symeListPrintDb(result);
-	});
+	}
 
 	return result;
 }
@@ -4001,13 +3997,13 @@ symeListIntersect(SymeList symes1, SymeList symes2, SymeEqFun eq)
 {
 	SymeList	result = listNil(Syme);
 
-	sefoInterDEBUG({
+	if (DEBUG(sefoInter)) {
 		fprintf(dbOut, "symeListIntersect: \n");
 		fprintf(dbOut, "    symes1: ");
 		symeListPrintDb(symes1);
 		fprintf(dbOut, "    symes2: ");
 		symeListPrintDb(symes2);
-	});
+	}
 
 	for (; symes1; symes1 = cdr(symes1))
 		if (symeListMember(car(symes1), symes2, eq))
@@ -4015,10 +4011,10 @@ symeListIntersect(SymeList symes1, SymeList symes2, SymeEqFun eq)
 
 	result = listNReverse(Syme)(result);
 
-	sefoInterDEBUG({
+	if (DEBUG(sefoInter)) {
 		fprintf(dbOut, "symeListIntersect result: ");
 		symeListPrintDb(result);
-	});
+	}
 
 	return result;
 }

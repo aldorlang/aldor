@@ -77,10 +77,10 @@
 #include "store.h"
 #include "util.h"
 
-Bool sexprDebug = false;
-#define sexprDEBUG(s)	DEBUG_IF(sexprDebug, s)
+Bool	sexprDebug	= false;
+#define sexprDEBUG	DEBUG_IF(sexpr)	afprintf
 
-# define RUBOUT		0177
+#define RUBOUT		0177
 
 local int sxiIoIsNeedingEscape(String);
 
@@ -1195,10 +1195,10 @@ void sxiCommentChk(void)
 	sxiCommentBufStart();
 	str = sxiCommentBufChars();
 	if (!strIsPrefix("line", str))
-		return; sexprDEBUG( {
+		return; if (DEBUG(sexpr)) {
 				if (strIsPrefix("line", str))
-				fprintf(dbOut, "!!! %s\n", str);
-			});
+					fprintf(dbOut, "!!! %s\n", str);
+			}
 	blno = bufNew();
 	bglno = bufNew();
 	bfn = bufNew();
@@ -1232,11 +1232,11 @@ void sxiCommentChk(void)
 	BUF_ADD1(blno, char0);
 	BUF_ADD1(bglno, char0);
 	BUF_ADD1(bfn, char0);
-	sexprDEBUG( {
-				fprintf(dbOut, "\n!!! %d, %d ", sxiRdLineNo, sxiRdGLineNo);
-				if (sxiRdFName)
-				fprintf(dbOut, "%s\n", fnameUnparseStatic(sxiRdFName));
-			});
+	if (DEBUG(sexpr)) {
+		fprintf(dbOut, "\n!!! %d, %d ", sxiRdLineNo, sxiRdGLineNo);
+		if (sxiRdFName)
+			fprintf(dbOut, "%s\n", fnameUnparseStatic(sxiRdFName));
+	}
 	lno = atol(bufChars(blno));
 	glno = atol(bufChars(bglno));
 	sxiRdGLineNo = glno;
@@ -1249,11 +1249,11 @@ void sxiCommentChk(void)
 			sxiRdFName = fnameCopy(fn);
 	}
 	sxiRdPos = sposNew(sxiRdFName, sxiRdLineNo, sxiRdGLineNo, sxiRdCharNo);
-	sexprDEBUG( {
-				fprintf(dbOut, "\n!!! %d, %d ", sxiRdLineNo, sxiRdGLineNo);
-				fprintf(dbOut, "%s\n", fnameUnparseStatic(sxiRdFName));
-				fprintf(dbOut, "%ld\n", sxiRdPos);
-			});
+	if (DEBUG(sexpr)) {
+		fprintf(dbOut, "\n!!! %d, %d ", sxiRdLineNo, sxiRdGLineNo);
+		fprintf(dbOut, "%s\n", fnameUnparseStatic(sxiRdFName));
+		fprintf(dbOut, "%ld\n", sxiRdPos);
+	}
 	bufFree(blno);
 	bufFree(bglno);
 	bufFree(bfn);
@@ -1878,10 +1878,10 @@ int sxiWrite0(FILE *outf, SExpr s)
 	int cc = 0;
 
 #if 0 /* This breaks the format of sexprs. */
-	sexprDEBUG( {
-				SrcPos spos = sxiPos(s);
-				fprintf(outf,"{%d.%d}", (int) sposLine(spos), (int) sposChar(spos));
-			});
+	if (DEBUG(sexpr)) {
+		SrcPos spos = sxiPos(s);
+		fprintf(outf,"{%d.%d}", (int) sposLine(spos), (int) sposChar(spos));
+	}
 #endif
 
 	/*

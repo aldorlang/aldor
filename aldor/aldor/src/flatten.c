@@ -20,7 +20,7 @@
  *****************************************************************************/
 Bool	flatDebug = true;
 
-# define flatDEBUG(s)	DEBUG_IF(flatDebug, s)
+#define flatDEBUG	DEBUG_IF(flat)	afprintf
 
 /******************************************************************************
  *
@@ -94,10 +94,10 @@ flattenUnit(Foam foam)
 		if (foamTag(def->foamDef.lhs) != FOAM_Const) continue;
 		if (foamTag(def->foamDef.rhs) != FOAM_Prog) continue;
 
-		flatDEBUG(fprintf(dbOut, "(Start: %d nlocals: %d\n", i,
-				  (int) foamDDeclArgc(def->foamDef.rhs->foamProg.locals)));
+		flatDEBUG(dbOut, "(Start: %d nlocals: %d\n", i,
+			  (int) foamDDeclArgc(def->foamDef.rhs->foamProg.locals));
 		flatProg(def->foamDef.rhs);
-		flatDEBUG(fprintf(dbOut, "Done)\n"));
+		flatDEBUG(dbOut, "Done)\n");
 	}
 }
 
@@ -202,7 +202,7 @@ flatCall(Foam call)
 	foamIter(call, arg, *arg = flatExpr(*arg, true));
 	
 	while (flatUsed != prevUsed) {
-		flatDEBUG(fprintf(dbOut, "Freeing: %d\n", car(flatUsed)->locNo));
+		flatDEBUG(dbOut, "Freeing: %d\n", car(flatUsed)->locNo);
 		flatFree = listCons(Var)(car(flatUsed), flatFree);
 		flatUsed = cdr(flatUsed);
 	}
@@ -251,7 +251,7 @@ flatNewLocal(FoamTag tag, AInt fmt)
 			var   = car(*plst);
 			*plst = cdr(*plst);
 			listFreeCons(Var)(tmp);
-			flatDEBUG(fprintf(dbOut, "Re-using: %d\n", var->locNo));
+			flatDEBUG(dbOut, "Re-using: %d\n", var->locNo);
 			break;
 		}
 		plst = &cdr(*plst);
@@ -262,7 +262,7 @@ flatNewLocal(FoamTag tag, AInt fmt)
 		int idx = flatNLocals++;
 		decl = foamNewDecl(tag, strCopy("tmp"), fmt);
 		var = flatNewVar(decl, idx);
-		flatDEBUG(fprintf(dbOut, "New Var: %d\n", var->locNo));
+		flatDEBUG(dbOut, "New Var: %d\n", var->locNo);
 	}
 
 	flatUsed = listCons(Var)(var, flatUsed);

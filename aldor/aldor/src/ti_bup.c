@@ -35,8 +35,8 @@
  *
  ****************************************************************************/
 
-Bool	tipBupDebug		= false;
-#define tipBupDEBUG(s)		DEBUG_IF(tipBupDebug, s)
+Bool	tipBupDebug	= false;
+#define tipBupDEBUG	DEBUG_IF(tipBup)	afprintf
 
 /*****************************************************************************
  *
@@ -231,80 +231,13 @@ tibup(Stab stab, AbSyn absyn, TForm type)
 	serialNo += 1;
 	depthNo	 += 1;
 	serialThis = serialNo;
-	tipBupDEBUG({
+	if (DEBUG(tipBup)) {
 		fprintf(dbOut,"->Bup: %*s %d= ", depthNo, "", serialThis);
 		abPrettyPrint(dbOut, absyn);
 		fnewline(dbOut);
-	});
-	
-	switch (abTag(absyn)) {
-	case AB_Id:	     tibupId	     (stab, absyn, type); break;
-	case AB_IdSy:	     tibupIdSy	     (stab, absyn, type); break;
-	case AB_Blank:	     tibupBlank	     (stab, absyn, type); break;
-	case AB_LitInteger:  tibupLitInteger (stab, absyn, type); break;
-	case AB_LitFloat:    tibupLitFloat   (stab, absyn, type); break;
-	case AB_LitString:   tibupLitString  (stab, absyn, type); break;
-	case AB_Add:	     tibupAdd	     (stab, absyn, type); break;
-	case AB_And:	     tibupAnd	     (stab, absyn, type); break;
-	case AB_Apply:	     tibupApply	     (stab, absyn, type); break;
-	case AB_Assert:	     tibupAssert     (stab, absyn, type); break;
-	case AB_Assign:	     tibupAssign     (stab, absyn, type); break;
-	case AB_Break:	     tibupBreak	     (stab, absyn, type); break;
-	case AB_Builtin:     tibupBuiltin    (stab, absyn, type); break;
-	case AB_CoerceTo:    tibupCoerceTo   (stab, absyn, type); break;
-	case AB_Collect:     tibupCollect    (stab, absyn, type); break;
-	case AB_Comma:	     tibupComma	     (stab, absyn, type); break;
-	case AB_Declare:     tibupDeclare    (stab, absyn, type); break;
-	case AB_Default:     tibupDefault    (stab, absyn, type); break;
-	case AB_Define:	     tibupDefine     (stab, absyn, type); break;
-	case AB_Delay:	     tibupDelay	     (stab, absyn, type); break;
-	case AB_Do:	     tibupDo	     (stab, absyn, type); break;
-	case AB_Except:	     tibupExcept     (stab, absyn, type); break;
-	case AB_Raise:	     tibupRaise	     (stab, absyn, type); break;
-	case AB_Exit:	     tibupExit	     (stab, absyn, type); break;
-	case AB_Export:	     tibupExport     (stab, absyn, type); break;
-	case AB_Extend:	     tibupExtend     (stab, absyn, type); break;
-	case AB_Fix:	     tibupFix	     (stab, absyn, type); break;
-	case AB_Fluid:	     tibupFluid	     (stab, absyn, type); break;
-	case AB_For:	     tibupFor	     (stab, absyn, type); break;
-	case AB_Foreign:     tibupForeign    (stab, absyn, type); break;
-	case AB_Free:	     tibupFree	     (stab, absyn, type); break;
-	case AB_Generate:    tibupGenerate   (stab, absyn, type); break;
-	case AB_Reference:   tibupReference  (stab, absyn, type); break;
-	case AB_Goto:	     tibupGoto	     (stab, absyn, type); break;
-	case AB_Has:	     tibupHas	     (stab, absyn, type); break;
-	case AB_Hide:	     tibupHide	     (stab, absyn, type); break;
-	case AB_If:	     tibupIf	     (stab, absyn, type); break;
-	case AB_Import:	     tibupImport     (stab, absyn, type); break;
-	case AB_Inline:	     tibupInline     (stab, absyn, type); break;
-	case AB_Iterate:     tibupIterate    (stab, absyn, type); break;
-	case AB_Label:	     tibupLabel	     (stab, absyn, type); break;
-	case AB_Lambda:	     tibupLambda     (stab, absyn, type); break;
-	case AB_Let:	     tibupLet	     (stab, absyn, type); break;
-	case AB_Local:	     tibupLocal	     (stab, absyn, type); break;
-	case AB_Macro:	     tibupMacro	     (stab, absyn, type); break;
-	case AB_MLambda:     tibupMLambda    (stab, absyn, type); break;
-	case AB_Never:	     tibupNever	     (stab, absyn, type); break;
-	case AB_Not:	     tibupNot	     (stab, absyn, type); break;
-	case AB_Nothing:     tibupNothing    (stab, absyn, type); break;
-	case AB_Or:	     tibupOr	     (stab, absyn, type); break;
-	case AB_PLambda:     tibupLambda     (stab, absyn, type); break;
-	case AB_PretendTo:   tibupPretendTo  (stab, absyn, type); break;
-	case AB_Qualify:     tibupQualify    (stab, absyn, type); break;
-	case AB_Quote:	     tibupQuote	     (stab, absyn, type); break;
-	case AB_Repeat:	     tibupRepeat     (stab, absyn, type); break;
-	case AB_RestrictTo:  tibupRestrictTo (stab, absyn, type); break;
-	case AB_Return:	     tibupReturn     (stab, absyn, type); break;
-	case AB_Select:	     tibupSelect     (stab, absyn, type); break;
-	case AB_Sequence:    tibupSequence   (stab, absyn, type); break;
-	case AB_Test:	     tibupTest	     (stab, absyn, type); break;
-	case AB_Try:	     tibupTry	     (stab, absyn, type); break;
-	case AB_Where:	     tibupWhere	     (stab, absyn, type); break;
-	case AB_While:	     tibupWhile	     (stab, absyn, type); break;
-	case AB_With:	     tibupWith	     (stab, absyn, type); break;
-	case AB_Yield:	     tibupYield	     (stab, absyn, type); break;
-	default:	     bugBadCase	     (abTag(absyn));
 	}
+	
+	AB_SWITCH(absyn, tibup, (stab, absyn, type));
 
 	if (abState(absyn) == AB_State_AbSyn)
 		abState(absyn) = AB_State_HasPoss;
@@ -336,7 +269,7 @@ tibup(Stab stab, AbSyn absyn, TForm type)
 		abTPoss(absyn) = tpossEmpty();
 	}
 
-	tipBupDEBUG({
+	if (DEBUG(tipBup)) {
 		TPoss	abtposs = abReferTPoss(absyn);
 		fprintf(dbOut, "<-Bup: %*s %d= ", depthNo, "", serialThis);
 		abPrettyPrint(dbOut, absyn);
@@ -344,7 +277,7 @@ tibup(Stab stab, AbSyn absyn, TForm type)
 		tpossPrint(dbOut, abtposs);
 		fnewline(dbOut);
 		tpossFree(abtposs);
-	});
+	}
 	depthNo -= 1;
 }
 
@@ -814,28 +747,28 @@ tibup0FarValue(Stab stab, AbSyn absyn, TForm type,
 		tp1 = abReferTPoss(farValue);
 
 		if (tuniIsUnknown(*pFarTPoss)) {
-			tipFarDEBUG({
+			if (DEBUG(tipFar)) {
 				fprintf(dbOut, "Setting ");
 				tpossPrint(dbOut, tp1);
 				fnewline(dbOut);
-			});
+			}
 			*pFarTPoss = tpossRefer(tp1);
 		}
 		else if (tpossCount(tp1) != 0) {
-			tipFarDEBUG({
+			if (DEBUG(tipFar)) {
 				fprintf(dbOut, " with ");
 				tpossPrint(dbOut, *pFarTPoss);
-			});
+			}
 			tp0 = tpossIntersect(tp1, *pFarTPoss);
 
 			tpossFree(*pFarTPoss);
 			*pFarTPoss = tp0;
 			
-			tipFarDEBUG({
+			if (DEBUG(tipFar)) {
 				fprintf(dbOut, " to get ");
 				tpossPrint(dbOut, *pFarTPoss);
 				fnewline(dbOut);
-			});
+			}
 		}
 		tpossFree(tp1);
 	}
@@ -1011,11 +944,11 @@ tibup0Literal(Symbol sym, Stab stab, AbSyn absyn, TForm type)
 		litTypes = tpossEmpty();
 		opTypes	 = stabGetTypes(stab, abCondKnown, sym);
 
-		tipLitDEBUG({
+		if (DEBUG(tipLit)) {
 			fprintf(dbOut, "tibup0Literal:\n");
 			tpossPrint(dbOut, opTypes);
 			fnewline(dbOut);
-		});
+		}
 
 		for (tpossITER(tit,opTypes) ; tpossMORE(tit); tpossSTEP(tit)) {
 			TForm opType = tpossELT(tit);
@@ -1310,7 +1243,7 @@ tibupDefine(Stab stab, AbSyn absyn, TForm type)
 		abTPoss(absyn) = abReferTPoss(rhs);
 
 
-	tipDefineDEBUG({
+	if (DEBUG(tipDefine)) {
 		TPoss	abtposs = abReferTPoss(absyn);
 		fprintf(dbOut,"Bup: Define of ");
 		abPrint(dbOut, lhs);
@@ -1318,7 +1251,7 @@ tibupDefine(Stab stab, AbSyn absyn, TForm type)
 		tpossPrint(dbOut, abtposs);
 		fnewline(dbOut);
 		tpossFree(abtposs);
-	});
+	}
 }
 
 /****************************************************************************
@@ -1513,14 +1446,14 @@ tibupAssign(Stab stab, AbSyn absyn, TForm type)
 	tpossFree(tplhs);
 	tpossFree(tprhs);
 
-	tipAssignDEBUG({
+	if (DEBUG(tipAssign)) {
 		TPoss tposs = abTPoss(absyn);
 		fprintf(dbOut,"Bup: Assignment to ");
 		abPrint(dbOut, lhs);
 		fprintf(dbOut,"has %d types ", tpossCount(tposs));
 		tpossPrint(dbOut, tposs);
 		fnewline(dbOut);
-	});
+	}
 }
 
 
@@ -1559,14 +1492,14 @@ tibupDeclare(Stab stab, AbSyn absyn, TForm type)
 
 	abTPoss(absyn) = tp;
 
-	tipDeclareDEBUG({
+	if (DEBUG(tipDeclare)) {
 		TPoss tposs = abGoodTPoss(absyn);
 		fprintf(dbOut,"Bup: Declare of ");
 		abPrint(dbOut, id);
 		fprintf(dbOut," has %d types ", tpossCount(tposs));
 		tpossPrint(dbOut, tposs);
 		fnewline(dbOut);
-	});
+	}
 }
 
 /****************************************************************************

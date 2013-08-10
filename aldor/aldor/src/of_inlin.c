@@ -263,19 +263,19 @@ Bool	inlExtendDebug	= false;
 
 local Bool	inlInlineGenerators = false;
 
-#define inlineDEBUG(s)		DEBUG_IF(inlineDebug, s)
-#define	inlUnitDEBUG(s)		DEBUG_IF(inlUnitDebug, s)
-#define	inlProgDEBUG(s)		DEBUG_IF(inlProgDebug, s)
-#define	inlExprDEBUG(s)		DEBUG_IF(inlExprDebug, s)
-#define	inlCallDEBUG(s)		DEBUG_IF(inlCallDebug, s)
-#define	inlTransDEBUG(s)	DEBUG_IF(inlTransDebug, s)
-#define inlExportDEBUG(s)	DEBUG_IF(inlExportDebug, s)
-#define inlExtendDEBUG(s)	DEBUG_IF(inlExtendDebug, s)
+#define inlineDEBUG		DEBUG_IF(inline)	afprintf
+#define inlUnitDEBUG		DEBUG_IF(inlUnit)	afprintf
+#define inlProgDEBUG		DEBUG_IF(inlProg)	afprintf
+#define inlExprDEBUG		DEBUG_IF(inlExpr)	afprintf
+#define inlCallDEBUG		DEBUG_IF(inlCall)	afprintf
+#define inlTransDEBUG		DEBUG_IF(inlTrans)	afprintf
+#define inlExportDEBUG		DEBUG_IF(inlExport)	afprintf
+#define inlExtendDEBUG		DEBUG_IF(inlExtend)	afprintf
 
-#define	inlCallInfoDEBUG(s)	DEBUG_IF(inlCallInfoDebug &&		     \
-					 (inlConstTrace == -1 ||	     \
-					 inlConstTrace == inlProg->constNum),\
-					 s)
+#define inlCallInfoDebug	(inlCallInfoDebug &&			\
+				 (inlConstTrace == -1 ||		\
+				  inlConstTrace == inlProg->constNum))
+#define inlCallInfoDEBUG	DEBUG_IF(inlCallInfo)	afprintf
 
 /*****************************************************************************
  *
@@ -536,7 +536,9 @@ extern int optInlineRoof;
    	        
 	}
 
-	inlCallInfoDEBUG({inlPrintUninlinedCalls(priCall, priority);});
+	if (DEBUG(inlCallInfo)) {
+		inlPrintUninlinedCalls(priCall, priority);
+	}
 
 	flogIter(inlProg->flog, bb, {
 		bb->code = inlSets(bb->code);
@@ -558,11 +560,11 @@ inlineUnit(Foam unit, Bool inlineAll, int inlineLimit, Bool inlineProgs)
 {
 	assert (foamTag(unit) == FOAM_Unit);
 
-	inlUnitDEBUG({
+	if (DEBUG(inlUnit)) {
 		fprintf(dbOut, ">>inlUnit:\n");
 		foamPrintDb(unit);
 		fnewline(dbOut);
-	});
+	}
 
 	inlInlineAll	       = inlineAll;
 	inlSizeLimit           = inlineLimit;
@@ -595,11 +597,11 @@ inlineUnit(Foam unit, Bool inlineAll, int inlineLimit, Bool inlineProgs)
 
 	inuUnitFini(unit);
 
-	inlUnitDEBUG({
+	if (DEBUG(inlUnit)) {
 		fprintf(dbOut, "<<inlUnit:\n");
 		foamPrintDb(unit);
 		fnewline(dbOut);
-	});
+	}
 
 	assert(foamAudit(unit));
 	stoFree(inlUnit->constv);
@@ -687,11 +689,11 @@ inlProgram(Foam prog, int n)
 
 		priqFreeDeeply(inlProg->priq, (PriQEltFreeFun) inlPriCallFree);
 
-		inlProgDEBUG({
+		if (DEBUG(inlProg)) {
 			if ((inlConstTrace == inlProg->constNum ||
 			     inlConstTrace == -1)) {
 				if (inlProg->changed) {
-			    
+
 					fprintf(dbOut, "<<inlProg[prog:%d][step:%d]:\n", n, count);
 					flogPrint(dbOut, inlProg->flog, 1);
 					fnewline(dbOut);
@@ -699,7 +701,7 @@ inlProgram(Foam prog, int n)
 				else
 					fprintf(dbOut, "<<inlProg [step:%d] (UNCHANGED)\n", count);
 			}
-		});
+		}
 	}
 
 	inlProg->inlState = INL_Inlined;
@@ -916,7 +918,7 @@ inlPriqGetCallInfo(Foam call, Bool * pIsLocal)
 		}
 	}
 
- 	inlCallInfoDEBUG({
+	if (DEBUG(inlCallInfo)) {
 		fprintf(dbOut, "CallInfo (prog: %d, serial: %d) - syme: ",
 			inlProg->constNum, serialDebug);
 		if (syme) {
@@ -929,7 +931,7 @@ inlPriqGetCallInfo(Foam call, Bool * pIsLocal)
 		foamPrintDb(call);
 		if (syme && inlRejectInfo == INL_REJ_NoPermission)
 			fprintf(dbOut, "No permission to inline.\n");
-	});
+	}
 
 	if (progInfo)
 		;
@@ -1075,7 +1077,7 @@ inlPriqGetPriority(int depth, Foam call, int * psize, Foam * pinfo)
 	}
 
 	if (foamProgIsCalledOnce(progInfo)) {
-		inlCallInfoDEBUG(fprintf(dbOut,"(^Unique call^)\n"););
+		inlCallInfoDEBUG(dbOut,"(^Unique call^)\n");
 		spaceFactor = InlCalledOnceFactor;
 	}
 
@@ -1180,7 +1182,7 @@ inlAddCallToPriq(Foam call, Foam * stmtp, int depth, BBlock bb)
 	else
 		string = "<unknown>";
 
-	inlCallInfoDEBUG({
+	if (DEBUG(inlCallInfo)) {
 		if (priority!= -1) {
 			fprintf(dbOut, "++++ %s (serial: %d, depth: %d, size: %d, mask: %x) ",
 				string,
@@ -1189,10 +1191,12 @@ inlAddCallToPriq(Foam call, Foam * stmtp, int depth, BBlock bb)
 			fprintf(dbOut, "Added to Queue ++++ (priority=%f)\n",
 				priority);
 		}
-		else	
+		else
 			inlPrintRejectCause(string);
-	});
-	inlCallInfoDEBUG(inlPrintPriq());
+	}
+	if (DEBUG(inlCallInfo)) {
+		inlPrintPriq();
+	}
 }
 
 local void
@@ -1347,10 +1351,10 @@ inlInlinePriCall(InlPriCall priCall, PriQKey priority)
 	callPtr = inlPriCallStmtReset(priCall);
 
 	if (!callPtr) {
-		inlCallInfoDEBUG({
+		if (DEBUG(inlCallInfo)) {
 			fprintf(dbOut, "(Already inlined: [%f] ", priority);
 			foamPrintDb(priCall->call);
-		});
+		}
 		return true;
 	}
 
@@ -1373,12 +1377,12 @@ inlInlinePriCall(InlPriCall priCall, PriQKey priority)
 		npars = foamArgc(*callPtr) - 3;
 	}
 
-	inlCallInfoDEBUG({
-			fprintf(dbOut, "(Inlining:");
-			if (syme) fprintf(dbOut,"%s ", symePretty(syme));
-			fprintf(dbOut, "[%f] ", priority);
-			foamPrintDb(*callPtr);
-		  });
+	if (DEBUG(inlCallInfo)) {
+		fprintf(dbOut, "(Inlining:");
+		if (syme) fprintf(dbOut,"%s ", symePretty(syme));
+		fprintf(dbOut, "[%f] ", priority);
+		foamPrintDb(*callPtr);
+	}
 
 	inlinedCall = inlCall(*callPtr, stmtPtr != callPtr);
 	
@@ -1401,10 +1405,11 @@ inlInlinePriCall(InlPriCall priCall, PriQKey priority)
 
 	
 
-	inlCallInfoDEBUG({
-		if (syme) symePrintDb2(syme);
+	if (DEBUG(inlCallInfo)) {
+		if (syme)
+			symePrintDb2(syme);
 		fprintf(dbOut, " Inlined)\n");
-	});
+	}
 
 	inlAddNewCallsToPriq(stmtPtr, parv, npars, 
 			     priCall->block->iextra, priCall->block);
@@ -1554,12 +1559,12 @@ inlExpr(Foam foam, Bool isDefLhs)
 	depthNo  += 1;
 	serialThis = serialNo;
 
-	inlExprDEBUG({
+	if (DEBUG(inlExpr)) {
 		fprintf(dbOut, ">>(inlExpr %d.%d :\n",
 			depthNo-serialThis, serialThis);
 		foamPrint(dbOut, foam);
 		fnewline(dbOut);
-	});
+	}
 
 	/* don't recurse into forces */
 	if (tag == FOAM_CCall && inlIsForcer(foam->foamCCall.op))
@@ -1595,11 +1600,11 @@ inlExpr(Foam foam, Bool isDefLhs)
 	}
 	/*!! Free stuff ! */
 
-	inlExprDEBUG({
+	if (DEBUG(inlExpr)) {
 		fprintf(dbOut, "<<inlExpr: (%d.%d) :\n", depthNo-serialThis, serialThis);
 		foamPrint(dbOut, foam);
 		fprintf(dbOut, "expr)\n");
-	});
+	}
 
 	return foam;
 }
@@ -1702,16 +1707,16 @@ inlCall(Foam call, Bool valueMode)
 	else if (foamTag(op) == FOAM_Clos)
 		ncall = inlInlineConstCall(call, argv, env, op, valueMode);
 
-	inlCallDEBUG({
-		  if (inlConstTrace == -1 ||
-		      inlConstTrace == inlProg->constNum) {
-				fprintf(dbOut, "<<inlCall:  ");
-				foamPrint(dbOut, call); 	
-				fprintf(dbOut, "\n  ->\n");	
-				foamPrint(dbOut, ncall);	
-				fnewline(dbOut);
+	if (DEBUG(inlCall)) {
+		if (inlConstTrace == -1 ||
+		    inlConstTrace == inlProg->constNum) {
+			fprintf(dbOut, "<<inlCall:  ");
+			foamPrint(dbOut, call); 	
+			fprintf(dbOut, "\n  ->\n");	
+			foamPrint(dbOut, ncall);	
+			fnewline(dbOut);
 		}
-	});
+	}
 	
 	if (!valueMode && !foamHasSideEffect(ncall)) {
 		foamFree(ncall);
@@ -2131,12 +2136,13 @@ inlInlineProg(Foam code, Foam *paramArgv, Foam *localArgv, Bool valueMode)
 		listFree(Foam)(lv);
 	}
 
-	inlProgDEBUG(
-	   if (inlConstTrace == inlProg->constNum ||
-	       inlConstTrace == -1) {
-		   fprintf(dbOut, "<== Producing prog value:\n");
+	if (DEBUG(inlProg)) {
+		if (inlConstTrace == inlProg->constNum ||
+		    inlConstTrace == -1) {
+			fprintf(dbOut, "<== Producing prog value:\n");
 			foamPrint(dbOut, retVal);
-	});
+		}
+	}
 	return retVal;
 }
 
@@ -2772,11 +2778,11 @@ inlGetFoam(Syme syme)
 local Foam
 inlGetLocalFoam(Syme syme)
 {
-	inlineDEBUG({
+	if (DEBUG(inline)) {
 		fprintf(dbOut, "inlGetLocalFoam:  ");
 		symePrint(dbOut, syme);
 		fnewline(dbOut);
-	});
+	}
 
 	if (genHasConstNum(syme)) {
 		int	constNum = genGetConstNum(syme);
@@ -2799,18 +2805,16 @@ inlGetExternalFoam(Syme syme)
 	Foam ret;
 	Lib  origin = symeConstLib(syme);
 
-	inlineDEBUG({
-		fprintf(dbOut, "(inlGetExternalFoam: %s (%s.%ld)",
-			symeString(syme), libGetFileId(origin),
-			symeConstNum(syme));
-	});
+	inlineDEBUG(dbOut, "(inlGetExternalFoam: %s (%s.%ld)",
+		    symeString(syme), libGetFileId(origin),
+		    symeConstNum(syme));
 
 	if (genHasConstNum(syme))
 		ret = libGetFoamConstant(origin, genGetConstNum(syme));
 	else
 		ret = NULL;
 
-	inlineDEBUG(fprintf(dbOut, "%s)\n", ret ? "OK" : "Fail"));
+	inlineDEBUG(dbOut, "%s)\n", ret ? "OK" : "Fail");
 
 	return ret;
 }
@@ -2847,11 +2851,9 @@ inlGetExternalProgHdr(Syme syme)
 {
 	Lib origin = symeConstLib(syme);
 
-	inlineDEBUG({
-		fprintf(dbOut, "(inlGetExternalProgHdr: %s (%s.%ld)",
-			symeString(syme), libGetFileId(origin),
-			symeConstNum(syme));
-	});
+	inlineDEBUG(dbOut, "(inlGetExternalProgHdr: %s (%s.%ld)",
+		    symeString(syme), libGetFileId(origin),
+		    symeConstNum(syme));
 
 	/* !!Speedo fix to aviod inlining categories in libaxiom */
 	if (strEqual(libGetFileId(origin), "axiom"))
@@ -2860,11 +2862,11 @@ inlGetExternalProgHdr(Syme syme)
 	if (genHasConstNum(syme)) {
 		ProgInfo res = libGetProgHdr(origin, genGetConstNum(syme));
 		if (!res) inlRejectInfo = INL_REJ_ExternalProgHdrFail;
-		inlineDEBUG(fprintf(dbOut, "%s)\n", res ? "OK" : "Fail"));
+		inlineDEBUG(dbOut, "%s)\n", res ? "OK" : "Fail");
 		return res;
 	}
 	else {
-		inlineDEBUG(fprintf(dbOut, "Not const: Fail)\n"));
+		inlineDEBUG(dbOut, "Not const: Fail)\n");
 		inlRejectInfo = INL_REJ_ExternalProgHdrFail;
 		return NULL;
 	}
@@ -3127,10 +3129,8 @@ inlTransformExpr(Foam expr, Foam *paramArgv, Foam *localArgv)
 	serialNo += 1;
 	depthNo  += 1;
 	serialThis = serialNo;
-	inlTransDEBUG({
-		fprintf(dbOut, "{inlTrans[%d][%d]\n",
-			depthNo, serialThis);
-	});
+	inlTransDEBUG(dbOut, "{inlTrans[%d][%d]\n",
+		      depthNo, serialThis);
 
 	/*
 	 * We miss out on some environment merging and inlining with
@@ -3287,13 +3287,13 @@ inlTransformExpr(Foam expr, Foam *paramArgv, Foam *localArgv)
 		break;
 	}
 
-	inlTransDEBUG({
+	if (DEBUG(inlTrans)) {
 		fprintf(dbOut, "inlTrans: %d%d= ", depthNo, serialThis);
 		foamPrint(dbOut, expr);
 		fprintf(dbOut, "-->");
 		foamPrint(dbOut, nexpr);
 		fprintf(dbOut, "[%d][%d]Done}\n", depthNo, serialThis);
-	});
+	}
 
 	return nexpr;
 }
@@ -3533,12 +3533,13 @@ inlFoamEnvElt(Foam lex)
 local void
 inlAddStmt(Foam stmt)
 {
-	inlProgDEBUG(
-	   if (inlConstTrace == inlProg->constNum ||
-	       inlConstTrace == -1) {
-		 	fprintf(dbOut, "... adding statement ");
+	if (DEBUG(inlProg)) {
+		if (inlConstTrace == inlProg->constNum ||
+		    inlConstTrace == -1) {
+			fprintf(dbOut, "... adding statement ");
 			foamPrint(dbOut, stmt);
-	});
+		}
+	}
 	inlProg->seqBody = listCons(Foam)(stmt, inlProg->seqBody);
 }
 
@@ -3852,7 +3853,7 @@ inlSubstitutedSyme(Syme syme)
 	if (!symeIsImport(syme))
 		return NULL;
 
-	inlExportDEBUG({
+	if (DEBUG(inlExport)) {
 		fprintf(dbOut, ">>inlSubstitutedSyme:\n");
 		fprintf(dbOut, "    syme:\n");
 		symeType(syme);
@@ -3861,7 +3862,7 @@ inlSubstitutedSyme(Syme syme)
 		fprintf(dbOut, "    sigma:\n");
 		absPrint(dbOut, inlInlinee->sigma);
 		fnewline(dbOut);
-	});
+	}
 
 	oldExporter = symeExporter(syme);
 	/* Bail if we don't know where this came from */
@@ -3876,12 +3877,12 @@ inlSubstitutedSyme(Syme syme)
 
 	nsyme = tfHasDomImport(newExporter, symeId(syme), newType);
 
-	inlExportDEBUG({
+	if (DEBUG(inlExport)) {
 		fprintf(dbOut, "<<inlSubstitutedSyme:\n");
 		fprintf(dbOut, "    syme:\n");
 		symePrint(dbOut, nsyme);
 		fnewline(dbOut);
-	});
+	}
 
 	return nsyme;
 }

@@ -82,8 +82,8 @@ static Length	agsNumConsts  = 0;
 
 
 /* Debugging flags */
-Bool	agsDebug = false;
-#define	agsDEBUG(s)	DEBUG_IF(agsDebug, s);
+Bool	agsDebug	= false;
+#define agsDEBUG	DEBUG_IF(ags)	afprintf
 
 
 /*****************************************************************************
@@ -139,7 +139,7 @@ argsubUnit(Foam unit)
 {
 	Length	c;
 
-	agsDEBUG({(void)fprintf(dbOut, "-> argsubUnit\n");});
+	agsDEBUG(dbOut, "-> argsubUnit\n");
 
 
 	/* First note which unit we have ... */
@@ -178,14 +178,14 @@ argsubUnit(Foam unit)
 	/* Do we have to add constants to this unit? */
 	if (agsNumConsts)
 	{
-		agsDEBUG({(void)fprintf(dbOut, "(%d new constants)\n",
-				(int)agsNumConsts);});
+		agsDEBUG(dbOut, "(%d new constants)\n",
+			 (int)agsNumConsts);
 	}
 
 
 	/* Clear up after ourselves */
 	stoFree(agsUnit->constv);
-	agsDEBUG({(void)fprintf(dbOut, "<- argsubUnit\n\n");});
+	agsDEBUG(dbOut, "<- argsubUnit\n\n");
 }
 
 /*****************************************************************************
@@ -223,19 +223,19 @@ local void
 agsProgram(Foam prog, Length n)
 {
 	/* Check for unexpected recursion */
-	agsDEBUG({
+	if (DEBUG(ags)) {
 		switch (agsProg->status)
 		{
-		   case Uninitialised:
+		case Uninitialised:
 			break;
-		   case Initialised:
+		case Initialised:
 			fprintf(dbOut, "*** agsProg already initialised\n");
 			break;
-		   default:
+		default:
 			fprintf(dbOut, "*** agsProg is garbage\n");
 			break;
 		}
-	});
+	}
 
 
 	/* First note which prog we have ... */
@@ -272,7 +272,9 @@ agsProgram(Foam prog, Length n)
 
 
 	/* Our structure is now initialised */
-	agsDEBUG({agsProg->status = Initialised;});
+	if (DEBUG(ags)) {
+		agsProg->status = Initialised;
+	}
 
 
 	/* Now walk over the Prog body */
@@ -280,7 +282,9 @@ agsProgram(Foam prog, Length n)
 
 
 	/* Mark our structure as uninitialised */
-	agsDEBUG({agsProg->status = Uninitialised;});
+	if (DEBUG(ags)) {
+		agsProg->status = Uninitialised;
+	}
 }
 
 
@@ -506,14 +510,14 @@ agsTryArgSub(Foam *ptr, String fun)
 	{
 		/* Yes - modify the FOAM */
 		/* Show what happened */
-		agsDEBUG({
+		if (DEBUG(ags)) {
 			(void)fprintf(dbOut, "** %s substitution\n", fun);
 			(void)fprintf(dbOut, ">>\n");
 			foamPrintDb(elt);
 			(void)fprintf(dbOut, "<<\n");
 			foamPrintDb(new);
 			(void)fprintf(dbOut, "\n");
-		});
+		}
 
 		foamFreeNode(elt);
 		*ptr = new;
@@ -582,9 +586,9 @@ agsDoOCall(Foam foam)
 
 
 	/* Display what we've got here */
-	agsDEBUG({
+	if (DEBUG(ags)) {
 		(void)fprintf(dbOut,"** agsDoOCall: ");
-        	(void)symePrintDb(opSyme);
+		(void)symePrintDb(opSyme);
 
 		for (i = 3;i < argc;i++)
 		{
@@ -598,7 +602,7 @@ agsDoOCall(Foam foam)
 				(void)foamPrintDb(arg);
 		}
 		(void)fprintf(dbOut,"\n");
-	});
+	}
 
 
 	/* How many arguments are we giving this function? */
@@ -644,13 +648,13 @@ agsDoOCall(Foam foam)
 		nargc++;
 	}
 
-	agsDEBUG({
+	if (DEBUG(ags)) {
 		for (i = 0; i < rargc; i++)
 		{
 			(void)fprintf(dbOut, "     [%d] = ", (int)i);
 			foamPrintDb(sigma[i]);
 		}
-	});
+	}
 
 
 	/*

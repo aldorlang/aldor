@@ -12,7 +12,7 @@
 #include "store.h"
 
 Bool	dnfDebug	= false;
-#define dnfDEBUG(s)	DEBUG_IF(dnfDebug, s)
+#define dnfDEBUG	DEBUG_IF(dnf)	afprintf
 
 /*****************************************************************************
  *
@@ -70,7 +70,7 @@ dnfAndNew(int argc)
 	for (i = 0; i < argc; i += 1)
 		xx->argv[i] = 0;
 
-	dnfDEBUG(fprintf(dbOut, ">dnfAndNew: %p[%d]\n", xx, argc));
+	dnfDEBUG(dbOut, ">dnfAndNew: %p[%d]\n", xx, argc);
 
 	return xx;
 }
@@ -81,7 +81,7 @@ dnfAndCopy(DNF_And xx)
 	int	i;
 	DNF_And yy;
 
-	dnfDEBUG(fprintf(dbOut, ">dnfAndCopy: %p[%d]\n", xx, (int) xx->argc));
+	dnfDEBUG(dbOut, ">dnfAndCopy: %p[%d]\n", xx, (int) xx->argc);
 
 	yy = dnfAndNew(xx->argc);
 	for (i = 0; i < xx->argc; i += 1)
@@ -93,7 +93,7 @@ dnfAndCopy(DNF_And xx)
 local void
 dnfAndFree(DNF_And xx)
 {
-	dnfDEBUG(fprintf(dbOut, ">dnfAndFree: %p[%d]\n", xx, (int) xx->argc));
+	dnfDEBUG(dbOut, ">dnfAndFree: %p[%d]\n", xx, (int) xx->argc);
 	stoFree((Pointer) xx);
 }
 
@@ -214,7 +214,7 @@ dnfOrNew(int argc)
 	for (i = 0; i < argc; i += 1)
 		xx->argv[i] = 0;
 
-	dnfDEBUG(fprintf(dbOut, ">dnfOrNew: %p[%d]\n", xx, argc));
+	dnfDEBUG(dbOut, ">dnfOrNew: %p[%d]\n", xx, argc);
 
 	return xx;
 }
@@ -225,7 +225,7 @@ dnfOrCopy(DNF xx)
 	int	i;
 	DNF	yy;
 
-	dnfDEBUG(fprintf(dbOut, ">dnfOrCopy: %p[%d]\n", xx, xx->argc));
+	dnfDEBUG(dbOut, ">dnfOrCopy: %p[%d]\n", xx, xx->argc);
 
 	yy = dnfOrNew(xx->argc);
 	for (i = 0; i < xx->argc; i += 1)
@@ -239,7 +239,7 @@ dnfOrFree(DNF xx)
 {
 	int	i;
 
-	dnfDEBUG(fprintf(dbOut, ">dnfOrFree: %p[%d]\n", xx, xx->argc));
+	dnfDEBUG(dbOut, ">dnfOrFree: %p[%d]\n", xx, xx->argc);
 
 	for (i = 0; i < xx->argc; i += 1)
 		dnfAndFree(xx->argv[i]);
@@ -261,7 +261,7 @@ dnfOrMerge(DNF xx)
 {
 	int	i, j;
 
-	dnfDEBUG(fprintf(dbOut, ">dnfOrMerge: %p[%d]\n", xx, xx->argc));
+	dnfDEBUG(dbOut, ">dnfOrMerge: %p[%d]\n", xx, xx->argc);
 
 	/* As we work, terms are merged by replacing them with NULL. */
 	for (i = 0; i < xx->argc; i += 1) {
@@ -281,7 +281,7 @@ dnfOrMerge(DNF xx)
 			xx->argv[i++] = xx->argv[j];
 	xx->argc = i;
 
-	dnfDEBUG(fprintf(dbOut, "<dnfOrMerge: %p[%d]\n", xx, xx->argc));
+	dnfDEBUG(dbOut, "<dnfOrMerge: %p[%d]\n", xx, xx->argc);
 }
 
 
@@ -335,7 +335,7 @@ dnfAtom(DNF_Atom atom)
 {
 	DNF     xx;
 
-	dnfDEBUG(fprintf(dbOut, ">dnfAtom: %d\n", atom));
+	dnfDEBUG(dbOut, ">dnfAtom: %d\n", atom);
 
 	xx  = dnfOrNew(1);
 	xx->argv[0] = dnfAndNew(1);
@@ -371,8 +371,8 @@ dnfOr(DNF xx, DNF yy)
 	if (dnfIsFalse(yy))
 		return dnfCopy(xx);
 
-	dnfDEBUG(fprintf(dbOut, ">dnfOr: %p[%d] %p[%d]\n",
-			 xx, xx->argc, yy, yy->argc));
+	dnfDEBUG(dbOut, ">dnfOr: %p[%d] %p[%d]\n",
+		 xx, xx->argc, yy, yy->argc);
 
 	rr  = dnfOrNew(xx->argc + yy->argc);
 	rri = 0;
@@ -384,7 +384,7 @@ dnfOr(DNF xx, DNF yy)
 
 	dnfOrMerge(rr);
 
-	dnfDEBUG(fprintf(dbOut, "<dnfOr: %p[%d]\n", rr, rr->argc));
+	dnfDEBUG(dbOut, "<dnfOr: %p[%d]\n", rr, rr->argc);
 
 	return rr;
 }
@@ -410,8 +410,8 @@ dnfAnd(DNF xx, DNF yy)
 	if (dnfIsTrue(yy))
 		return dnfCopy(xx);
 
-	dnfDEBUG(fprintf(dbOut, ">dnfAnd: %p[%d] %p[%d]\n",
-			 xx, xx->argc, yy, yy->argc));
+	dnfDEBUG(dbOut, ">dnfAnd: %p[%d] %p[%d]\n",
+		 xx, xx->argc, yy, yy->argc);
 
 	rr  = dnfOrNew(xx->argc * yy->argc);
 	rri = 0;
@@ -422,7 +422,7 @@ dnfAnd(DNF xx, DNF yy)
 
 	dnfOrMerge(rr);
 
-	dnfDEBUG(fprintf(dbOut, "<dnfAnd: %p[%d]\n", rr, rr->argc));
+	dnfDEBUG(dbOut, "<dnfAnd: %p[%d]\n", rr, rr->argc);
 
 	return rr;
 }
@@ -445,7 +445,7 @@ dnfNot(DNF xx)
 	if (dnfIsTrue(xx))
 		return dnfFalse();
 
-	dnfDEBUG(fprintf(dbOut, ">dnfNot: %p[%d]\n", xx, xx->argc));
+	dnfDEBUG(dbOut, ">dnfNot: %p[%d]\n", xx, xx->argc);
 
 	rr = dnfTrue();
 	for (i = 0; i < xx->argc; i += 1) {
@@ -457,7 +457,7 @@ dnfNot(DNF xx)
 		dnfFree(bb);
 	}
 
-	dnfDEBUG(fprintf(dbOut, "<dnfNot: %p[%d]\n", rr, rr->argc));
+	dnfDEBUG(dbOut, "<dnfNot: %p[%d]\n", rr, rr->argc);
 
 	return rr;
 }

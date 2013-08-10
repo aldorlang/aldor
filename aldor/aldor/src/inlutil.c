@@ -15,9 +15,9 @@
 #include "optfoam.h"
 #include "strops.h"
 
-Bool	inuProgDebug = false;
+Bool	inuProgDebug	= false;
 
-#define inuProgDEBUG(s)	DEBUG_IF(inuProgDebug, s)
+#define inuProgDEBUG	DEBUG_IF(inuProg)	afprintf
 
 /*****************************************************************************
  *

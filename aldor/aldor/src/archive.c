@@ -20,7 +20,7 @@
 #include "util.h"
 
 Bool	arDebug		= false;
-#define arDEBUG(s)	DEBUG_IF(arDebug, s)
+#define arDEBUG		DEBUG_IF(ar) afprintf
 
 #define AR_SEEK(ar,pos)	fseek((ar)->file, pos, SEEK_SET)
 
@@ -187,20 +187,20 @@ arFindEntry(Archive ar, String name)
 {
 	ArEntryList	alist;
 
-	arDEBUG(fprintf(dbOut, "Looking for \"%s\"", name));
+	arDEBUG(dbOut, "Looking for \"%s\"", name);
 
 	name = arEntryKey(name);
-	arDEBUG(fprintf(dbOut, " as archive key \"%s\"", name));
+	arDEBUG(dbOut, " as archive key \"%s\"", name);
 
 	for (alist = ar->members; alist; alist = cdr(alist)) {
 		ArEntry		arent = car(alist);
 		if (strAEqual(name, arent->name)) {
-			arDEBUG(fprintf(dbOut, " at offset %ld\n",arent->pos));
+			arDEBUG(dbOut, " at offset %ld\n",arent->pos);
 			return arent;
 		}
 	}
 
-	arDEBUG(fprintf(dbOut, " not found.\n"));
+	arDEBUG(dbOut, " not found.\n");
 	return NULL;
 }
 
@@ -286,7 +286,7 @@ arRdTable(Archive ar)
 {
 	ArEntryList	members = listNil(ArEntry);
 	String		name;
-	arDEBUG(fprintf(dbOut, "arRdTable:\n"));
+	arDEBUG(dbOut, "arRdTable:\n");
 
 	for (name = arFirst(ar); !arEndp(ar); name = arNext(ar)) {
 		if (arItemIsIntermed(name)) {
@@ -294,7 +294,7 @@ arRdTable(Archive ar)
 			ArEntry		arent = arAllocEntry(name, ar, pos);
 			members = listCons(ArEntry)(arent, members);
 			ar->hasIntermed = true;
-			arDEBUG(fprintf(dbOut, "    %s(%ld)\n", name, pos));
+			arDEBUG(dbOut, "    %s(%ld)\n", name, pos);
 		}
 	}
 
@@ -352,19 +352,19 @@ arFirstPos(Archive ar)
 
 	switch(ar->format) {
 	case AR_AIX:
-		arDEBUG(fprintf(dbOut, "AIX-style archive\n"));
+		arDEBUG(dbOut, "AIX-style archive\n");
 		pos = arFirstPosAIX(ar);
 		break;
 	case AR_AIX4:
-		arDEBUG(fprintf(dbOut, "AIXBIG-style archive\n"));
+		arDEBUG(dbOut, "AIXBIG-style archive\n");
 		pos = arFirstPosAIX4(ar);
 		break;
 	case AR_Arch:
-		arDEBUG(fprintf(dbOut, "ARCH-style archive\n"));
+		arDEBUG(dbOut, "ARCH-style archive\n");
 		pos = arFirstPosArch(ar);
 		break;
 	case AR_CMS:
-		arDEBUG(fprintf(dbOut, "CMS-style archive\n"));
+		arDEBUG(dbOut, "CMS-style archive\n");
 		pos = arFirstPosArch(ar);
 		break;
 	default:
@@ -538,10 +538,8 @@ arRdItemArch(Archive ar)
 
 
 	/* Debugging */
-	arDEBUG({
-		(void)fprintf(dbOut, ">>> Reading offset #%lu (out of %lu)\n",
-			idx, (ULong)strLength(ar->names));
-	});
+	arDEBUG(dbOut, ">>> Reading offset #%lu (out of %lu)\n",
+		idx, (ULong)strLength(ar->names));
 
 
 	/* Start a new character buffer */
@@ -562,9 +560,7 @@ arRdItemArch(Archive ar)
 
 
 	/* Debugging */
-	arDEBUG({
-		(void)fprintf(dbOut, ">>> [%s]\n", name);
-	});
+	arDEBUG(dbOut, ">>> [%s]\n", name);
 
 
 	/* Return the name from the directory table */
@@ -653,10 +649,8 @@ arRdItemArch0(Archive ar)
 
 
 	/* Debugging */
-	arDEBUG({
-		(void)fprintf(dbOut, "[%s: size = %lu bytes]\n",
-			*s ? s : "//", size);
-	});
+	arDEBUG(dbOut, "[%s: size = %lu bytes]\n",
+		*s ? s : "//", size);
 
 
 	/*
@@ -768,8 +762,8 @@ arRead(FileName fname)
 {
 	Archive		ar = arNew(fname, fileRbOpen(fname));
 
-	arDEBUG(fprintf(dbOut, "Opening archive \"%s\" for reading.\n",
-			fnameUnparseStatic(fname)));
+	arDEBUG(dbOut, "Opening archive \"%s\" for reading.\n",
+		fnameUnparseStatic(fname));
 	arRdFormat(ar);
 	arRdTable(ar);
 
@@ -800,7 +794,7 @@ arFrString(String name)
 	Archive		ar;
 	FileName	fn;
 
-	arDEBUG(fprintf(dbOut, "Looking for archive \"%s\"\n", name));
+	arDEBUG(dbOut, "Looking for archive \"%s\"\n", name);
 	
 	if (tbl == 0)
 		tbl = tblNew((TblHashFun) strAHash, (TblEqFun) strAEqual);
@@ -825,10 +819,10 @@ arFind(PathList path, String name)
 	Archive		ar;
 	ArEntry		arent;
 
-	arDEBUG(fprintf(dbOut, "Looking for '%s' in the archives\n", name));
+	arDEBUG(dbOut, "Looking for '%s' in the archives\n", name);
 	
 	for (; path != 0; path = cdr(path)) {
-		arDEBUG(fprintf(dbOut, ">> Checking archive %s\n", car(path)));
+		arDEBUG(dbOut, ">> Checking archive %s\n", car(path));
 
 		ar = arFrString(car(path));
 		if (!ar) continue;
@@ -970,7 +964,7 @@ arFilter(Archive ar)
 	if (!strEqual(tmp, arCurrentFileId))
 		return;
 
-	arDEBUG(fprintf(dbOut, "arFilter:\n"));
+	arDEBUG(dbOut, "arFilter:\n");
 	comsgWarning(NULL, ALDOR_W_OverRideLibraryFile, arToString(ar));
 
 	arent0->mark = false;
@@ -997,7 +991,7 @@ arFilterScanMember(Archive ar, ArEntry arent0)
 	ArEntryList	alist;
 	Bool		marked = true;
 
-	arDEBUG(fprintf(dbOut, "    scanning %s\n", arent0->name));
+	arDEBUG(dbOut, "    scanning %s\n", arent0->name);
 
 	libs0 = libGetLibrarySymes(arEntryLib(ar, arent0));
 
@@ -1029,7 +1023,7 @@ arFilterMarkMember(Archive ar, ArEntry arent)
 {
 	SymeList	libs = libGetLibrarySymes(arEntryLib(ar, arent));
 
-	arDEBUG(fprintf(dbOut, "    marking %s\n", arent->name));
+	arDEBUG(dbOut, "    marking %s\n", arent->name);
 
 	for (; libs; libs = cdr(libs)) {
 		Lib	lib = symeLibrary(car(libs));
@@ -1051,8 +1045,8 @@ arFilterMarkExpanded(Archive ar, ArEntry arent)
 		Lib	lib = symeLibrary(car(libs));
 		ArEntry	narent = arFindLibEntry(ar, lib);
 		if (narent && !narent->mark) {
-			arDEBUG(fprintf(dbOut, "    unmarking %s\n",
-					arent->name));
+			arDEBUG(dbOut, "    unmarking %s\n",
+				arent->name);
 			arent->mark = false;
 			return;
 		}

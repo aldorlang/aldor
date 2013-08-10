@@ -14,6 +14,7 @@
  * The include of "foam_c.h" must come last.
  */
 #include "axlgen.h"
+#include "debug.h"
 #include "dword.h"
 #include "foam_c.h"
 #include "opsys.h"
@@ -2262,7 +2263,8 @@ localStrHash(register String s)
  *
  *****************************************************************************/
 
-#define linkDEBUG(x)	 			/* x */
+#define linkDebug	false
+#define linkDEBUG	DEBUG_IF(link)	fprintf
 
 
 /* FiLinkList is a local lists implementation. We need some basic operations on
@@ -2311,7 +2313,7 @@ fiExportGlobalFun(String name, Ptr p, int size)
 {
 	GlobalLinkInfo		glInfo;
 
-	linkDEBUG(printf("Exporting %s %d %d\n", name, p, size);)
+	linkDEBUG(stdout, "Exporting %s %p %d\n", name, p, size);
 
 	tblGlobalsInit();
 
@@ -2330,7 +2332,7 @@ fiExportGlobalFun(String name, Ptr p, int size)
 		}
 	}
 	else {
-		linkDEBUG(printf("WARNING: %s already exported!\n", name);)
+		linkDEBUG(stdout, "WARNING: %s already exported!\n", name);
 		assert(p == glInfo->data);
 		return;
 	}
@@ -2345,7 +2347,7 @@ fiImportGlobalFun(String name, Ptr * p)
 {
 	GlobalLinkInfo		glInfo;
 
-	linkDEBUG(printf("Importing %s: ", name);)
+	linkDEBUG(stdout, "Importing %s: ", name);
 
 	tblGlobalsInit();
 
@@ -2354,7 +2356,7 @@ fiImportGlobalFun(String name, Ptr * p)
 		glInfo = (GlobalLinkInfo) FI_ALLOC(sizeof(*glInfo), CENSUS_GlobalInfo);
 		(void) tblSetElt(tblGlobals, (TblKey) name, (TblElt) glInfo);
 
-		linkDEBUG(printf("unresolved (first time)\n");)
+		linkDEBUG(stdout, "unresolved (first time)\n");
 
 		glInfo->data = NULL;
 		glInfo->size = -1;
@@ -2365,11 +2367,11 @@ fiImportGlobalFun(String name, Ptr * p)
 	}
 	else if (glInfo->size > -1)   {  /* already exported */ 
 		*p = glInfo->data;
-		linkDEBUG(printf("resolved with (%d) %d\n", glInfo, glInfo->data);)
+		linkDEBUG(stdout, "resolved with (%p) %p\n", glInfo, glInfo->data);
 	}
 	else {
 		FiLinkList	l = (FiLinkList) FI_ALLOC(sizeof(fiConsCell), CENSUS_GlobalInfo);
-		linkDEBUG(printf("unresolved (NOT first time)\n");)
+		linkDEBUG(stdout, "unresolved (NOT first time)\n");
 		
 		l->next = glInfo->unresolved;
 		l->import = p;

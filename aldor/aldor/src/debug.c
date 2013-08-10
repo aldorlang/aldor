@@ -6,11 +6,10 @@
  *
  ****************************************************************************/
 
-#include "axlgen0.h"
-#include "cport.h"
+#include "debug.h"
 #include "opsys.h"
 
-Bool    dbFlag  = false;
+Bool	phaseDebug	= false;
 
 FILE	*dbOut;
 

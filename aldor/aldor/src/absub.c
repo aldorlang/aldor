@@ -19,8 +19,8 @@
 #include "bigint.h"
 #include "table.h"
 
-Bool	absDebug 	= false;
-#define absDEBUG(s)	DEBUG_IF(absDebug, s)
+Bool	absDebug	= false;
+#define absDEBUG	DEBUG_IF(abs)	afprintf
 
 /******************************************************************************
  *

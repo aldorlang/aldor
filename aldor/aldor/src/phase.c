@@ -210,6 +210,8 @@ phStartAll(Bool verboseFlag)
 void
 phStart(PhTag phno)
 {
+	FILE *out = osStdout;
+
 	thisPhaseStartCPU   = osCpuTime();
 	thisPhaseStartAlloc = stoBytesAlloc;
 	thisPhaseStartFree  = stoBytesFree;
@@ -219,8 +221,14 @@ phStart(PhTag phno)
 
 	DEBUG_MODE(phCurrent->flags & PHX_Debug);
 
+	/* If the only trace flag is -WTd, we print to dbOut,
+	 * otherwise to osStdout. */
+	if (phCurrent->flags == PHX_Debug) {
+		out = dbOut;
+	}
+
 	if (phCurrent->flags & (PHX_Announce|PHX_Print|PHX_Report|PHX_Debug))
-		fprintf(osStdout, "*** Starting \"%s\" phase...\n", phCurrent->name);
+		fprintf(out, "*** Starting \"%s\" phase...\n", phCurrent->name);
 }
 
 void

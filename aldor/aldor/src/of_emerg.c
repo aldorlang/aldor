@@ -54,7 +54,7 @@
 #include "sexpr.h"
 
 Bool	emergeDebug	= false;
-#define emergeDEBUG(s)	DEBUG_IF(emergeDebug, s)
+#define emergeDEBUG	DEBUG_IF(emerge)	afprintf
 
 typedef enum emUsageState {
         EM_DontKnow,            /* what we start with */
@@ -109,9 +109,7 @@ local EmUsage	emUsageAliasing 	(Foam loc);
 local EmUsage	emUsage 		(Foam foam);
 local EmUsage	emUsageFromLocalIndexAliasing	(long index);
 local EmUsage	emUsageFromLocalIndex(long index);
-#ifndef NDEBUG
 local long      emIndexFromUsage        (EmUsage u);
-#endif
 
 local void      emCopyUsedTagsTo        (EmUsageState *arr);
 local Bool      emUsedTagsChanged       (EmUsageState *arr);
@@ -196,12 +194,12 @@ emMergeDefs(Foam defs)
 		Foam	prog;
 
 /* #if 0*/ /* enable this if you want to see in-out foam when debugging */
-		emergeDEBUG({  
-			if(emDefNo==emDebugDefNo) {
+		if (DEBUG(emerge)) {  
+			if (emDefNo == emDebugDefNo) {
 				fprintf(dbOut, "Prog--index%d--count%d<<\n",emDefNo,emCount); 
 				foamWrSExpr(dbOut, def,SXRW_Default);
 			}
-		});
+		}
 /* #endif */
 		assert(foamTag(def) == FOAM_Def);
 		prog = def->foamDef.rhs;
@@ -209,12 +207,12 @@ emMergeDefs(Foam defs)
 			emMergeProg(prog);
 
 /* #if 0*/ /* enable this if you want to see in-out foam when debugging */
-		emergeDEBUG({
-			if(emDefNo==emDebugDefNo) {
+		if (DEBUG(emerge)) {
+			if (emDefNo == emDebugDefNo) {
 				fprintf(dbOut, "Prog--index%d--count%d>>\n",emDefNo,emCount); 
 				foamWrSExpr(dbOut, def,SXRW_Default);
 			}
-		});
+		}
 /* #endif */
 	}
 }
@@ -251,10 +249,8 @@ emMergeProg(Foam prog)
 	emComputeRemap(prog);
 
 #if 0 /* enable this if you want to see in-out sets when debugging */
-        emergeDEBUG({
-		fprintf(dbOut, "Pass:%2d Prog:%2d #locals:(%3d -> %3d)\n",
-			emCount, emDefNo,emOrigNumLocals, emNumLocals);
-	})
+	emergeDEBUG(dbOut, "Pass:%2d Prog:%2d #locals:(%3d -> %3d)\n",
+		    emCount, emDefNo,emOrigNumLocals, emNumLocals);
 #endif 
 	if (!emChanged) return;
 
@@ -1257,13 +1253,11 @@ emUsageFromLocalIndex(long index)
 	return &(emLocalUsage[index + 1]);
 }
 
-#ifndef NDEBUG
 local long
 emIndexFromUsage(EmUsage u)
 {
         return (u - &emLocalUsage[1]);
 }
-#endif
 
 Table emParentTable;
 
@@ -1296,11 +1290,11 @@ emSetParent(Foam child, Foam parent)
 	
 	/* Strip aliases out where poss */
 	if (parent != newParent) {
-	        emergeDEBUG({
+		if (DEBUG(emerge)) {
 			fprintf(dbOut, "child:"); foamWrSExpr(dbOut, child,SXRW_Default);
 			fprintf(dbOut, "parent:"); foamWrSExpr(dbOut, parent,SXRW_Default);
 			fprintf(dbOut, "newParent:"); foamWrSExpr(dbOut, newParent,SXRW_Default);
-		});
+		}
 		emChanged = true;
 	}
 	
@@ -1368,28 +1362,26 @@ local void
 emNormaliseUsage()
 { 
 	int i;
-        emergeDEBUG({ fprintf(dbOut, "--------------------\n");})
-		for (i = 0 ; i < emOrigNumLocals ;i++){
-			EmUsage use = emUsageFromLocalIndex((long)i);
-				
-			/* If non-escaping and not root link ... */
-			if (use->link) {
-				if (use->link->used != EM_NonEscapingEnv) {
-					/* assert(use->link->link == 0); */
-					use->link   = 0; /* MUST clobber this */
-				}
-				else {
-					use->used = EM_AliasNonEsc;
-					assert(use->remap);
-					emergeDEBUG ({
-						fprintf(dbOut, "%3ld is aliased to %3ld\n",
-							emIndexFromUsage(use), emIndexFromUsage(use->link));
-					})
-						}
-					
+	emergeDEBUG(dbOut, "--------------------\n");
+	for (i = 0 ; i < emOrigNumLocals ;i++){
+		EmUsage use = emUsageFromLocalIndex((long)i);
+
+		/* If non-escaping and not root link ... */
+		if (use->link) {
+			if (use->link->used != EM_NonEscapingEnv) {
+				/* assert(use->link->link == 0); */
+				use->link   = 0; /* MUST clobber this */
 			}
+			else {
+				use->used = EM_AliasNonEsc;
+				assert(use->remap);
+				emergeDEBUG(dbOut, "%3ld is aliased to %3ld\n",
+					    emIndexFromUsage(use), emIndexFromUsage(use->link));
+			}
+
 		}
-		
+	}
+
 }
 
 
@@ -1409,9 +1401,7 @@ emUsedTagsChanged(EmUsageState *arr)
 	int i;
 	for (i = 0 ; i < (emOrigNumLocals + 1) ;i++){
 		if (arr[i] != emLocalUsage[i].used) {
-			emergeDEBUG({
-				fprintf(dbOut, "emLocalUsage[%3d].used has changed!\n",i);
-			})
+			emergeDEBUG(dbOut, "emLocalUsage[%3d].used has changed!\n", i);
 			return true;
 		}
 	}

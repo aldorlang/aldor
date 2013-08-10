@@ -18,9 +18,9 @@
 #include "tform.h"
 #include "ablogic.h"
 
-Bool implDebug = false;
+Bool	implDebug	= false;
 
-#define implDEBUG(s)		DEBUG_IF(implDebug, s)
+#define implDEBUG	DEBUG_IF(impl)	afprintf
 
 struct SImplInfo {
 	SImplTag tag;
@@ -219,10 +219,11 @@ implEvaluate(SImpl impl, AbLogic cond)
 	if (!impl)
 		return impl;
 
-	implDEBUG(fprintf(dbOut, "(ImplEvaluate:\n");
-		  implPrintDb(impl);
-		  ablogPrintDb(cond);
-		  );
+	if (DEBUG(impl)) {
+		fprintf(dbOut, "(ImplEvaluate:\n");
+		implPrintDb(impl);
+		ablogPrintDb(cond);
+	}
 
 	switch (implTag(impl)) {
 	  case SIMPL_Local:
@@ -250,10 +251,10 @@ implEvaluate(SImpl impl, AbLogic cond)
 		bug("implEvaluate: not good");
 		return impl;
 	}
-	implDEBUG(
-		  implPrintDb(newImpl);
-		  fprintf(dbOut, ")\n");
-		  );
+	if (DEBUG(impl)) {
+		implPrintDb(newImpl);
+		fprintf(dbOut, ")\n");
+	}
 	return newImpl;
 }
 

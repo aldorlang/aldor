@@ -111,10 +111,10 @@ Bool abnDefineDebug	= false;
 Bool abnWhereDebug	= false;
 Bool abnWithMergeDebug	= false;
 
-#define abnormDEBUG(s)		DEBUG_IF(abnormDebug, s)
-#define abnDefineDEBUG(s)	DEBUG_IF(abnDefineDebug, s)
-#define abnWhereDEBUG(s)	DEBUG_IF(abnWhereDebug, s)
-#define abnWithMergeDEBUG(s)	DEBUG_IF(abnWithMergeDebug, s)
+#define abnormDEBUG		DEBUG_IF(abnorm)	afprintf
+#define abnDefineDEBUG		DEBUG_IF(abnDefine)	afprintf
+#define abnWhereDEBUG		DEBUG_IF(abnWhere)	afprintf
+#define abnWithMergeDEBUG	DEBUG_IF(abnWithMerge)	afprintf
 
 /*
  * Sometimes we really care if we have finished the macro expansion
@@ -187,9 +187,7 @@ abNormal(AbSyn ab, Bool afterMacex)
 	return result;
 }
 
-#ifndef NDEBUG
 static int	level = 0;
-#endif
 
 local AbSyn
 abnorm(AbSyn ab)
@@ -199,12 +197,12 @@ abnorm(AbSyn ab)
 	if (abIsNothing(ab))
 		return ab;
 
-	abnormDEBUG({
+	if (DEBUG(abnorm)) {
 		fprintf(dbOut, "%*s -> Enter abnorm with ", level++, "");
 		abPrint(dbOut, ab);
 		fnewline(dbOut);
 		fflush(dbOut);
-	});
+	}
 
 
 	/*
@@ -270,12 +268,12 @@ abnorm(AbSyn ab)
 		break;
 	}
 
-	abnormDEBUG({
+	if (DEBUG(abnorm)) {
 		fprintf(dbOut, "%*s <- Exit  abnorm with ", --level, "");
 		abPrint(dbOut, ab);
 		fnewline(dbOut);
 		fflush(dbOut);
-	});
+	}
 
 	return ab;
 }
@@ -505,38 +503,38 @@ abnDefine(AbSyn ab)
 			if (!strEqual(t1, t2)) {
 				AbSyn	nowt = abNewNothing(where);
 
-				abnDefineDEBUG({
+				if (DEBUG(abnDefine)) {
 					fprintf(dbOut, "-- abnDefine: ");
 					fprintf(dbOut, "changing ");
 					fprintf(dbOut, "`%s'", abPretty(type));
-				});
+				}
 
 				type = abNewWith(where, type, nowt);
 
-				abnDefineDEBUG({
+				if (DEBUG(abnDefine)) {
 					fprintf(dbOut, " into ");
 					fprintf(dbOut, "`%s'", abPretty(type));
 					fprintf(dbOut, "\n");
-				});
+				}
 			}
 		}
 		else if (abHasTag(type, AB_Apply)) {
 			SrcPos	where	= abPos(lhs);
 			AbSyn	nowt = abNewNothing(where);
 
-			abnDefineDEBUG({
+			if (DEBUG(abnDefine)) {
 				fprintf(dbOut, "-- abnDefine: ");
 				fprintf(dbOut, "changing ");
 				fprintf(dbOut, "`%s'", abPretty(type));
-			});
+			}
 
 			type = abNewWith(where, type, nowt);
 
-			abnDefineDEBUG({
+			if (DEBUG(abnDefine)) {
 				fprintf(dbOut, " into ");
 				fprintf(dbOut, "`%s'", abPretty(type));
 				fprintf(dbOut, "\n");
-			});
+			}
 		}
 	}
 #endif 
@@ -1646,7 +1644,7 @@ abnWhere(AbSyn ab)
 	/* Anything to remove? */
 	if (freeExpr)
 	{
-		abnWhereDEBUG({
+		if (DEBUG(abnWhere)) {
 			fprintf(dbOut, ">> abnWhere():");
 			fnewline(dbOut);
 			abPrint(dbOut, ab);
@@ -1655,7 +1653,7 @@ abnWhere(AbSyn ab)
 			fnewline(dbOut);
 			abPrint(dbOut, expr);
 			fnewline(dbOut);
-		});
+		}
 		abFree(context);
 		abFreeNode(ab);
 		return expr;
@@ -1676,12 +1674,12 @@ abnWhere(AbSyn ab)
 		AbSyn defrhs = expr->abDefine.rhs;
 
 		/* Debugging output: before */
-		abnWhereDEBUG({
+		if (DEBUG(abnWhere)) {
 			fprintf(dbOut, ">> abnWhere():");
 			fnewline(dbOut);
 			abPrint(dbOut, ab);
 			fnewline(dbOut);
-		});
+		}
 
 
 		/* Are we defining a lambda? */
@@ -1704,12 +1702,12 @@ abnWhere(AbSyn ab)
 
 
 		/* Debugging output: after */
-		abnWhereDEBUG({
+		if (DEBUG(abnWhere)) {
 			fprintf(dbOut, "<< abnWhere():");
 			fnewline(dbOut);
 			abPrint(dbOut, ab);
 			fnewline(dbOut);
-		});
+		}
 	}
 
 	return ab;
@@ -1733,11 +1731,11 @@ abnWith(AbSyn ab)
 {
 	AbSyn	base, within;
 
-	abnormDEBUG({
+	if (DEBUG(abnorm)) {
 		fprintf(dbOut, ">> Entering abnWith with ");
 		abPrint(dbOut, ab);
 		fprintf(dbOut, "\n");
-	});
+	}
 
 
 	/* Get the flattened components of `base with within' */
@@ -1927,11 +1925,11 @@ abnWith(AbSyn ab)
 	ab->abWith.base	  = base;
 	ab->abWith.within = within;
 
-	abnormDEBUG({
+	if (DEBUG(abnorm)) {
 		fprintf(dbOut, "<< Leaving abnWith with ");
 		abPrint(dbOut, ab);
 		fprintf(dbOut, "\n");
-	});
+	}
 	return ab;
 }
 
@@ -1947,11 +1945,11 @@ abn0WithFlatten(AbSyn ab)
 
 	if (abTag(ab) != AB_Sequence) return ab;
 
-	abnormDEBUG({
+	if (DEBUG(abnorm)) {
 		fprintf(dbOut, ">> Entering abn0WithFlatten with ");
 		abPrint(dbOut, ab);
 		fprintf(dbOut, "\n");
-	});
+	}
 
 	for (i = 0; i < abArgc(ab); i++) {
 		AbSyn arg = abArgv(ab)[i];
@@ -1993,11 +1991,11 @@ abn0WithFlatten(AbSyn ab)
 	abFreeNode(ab);
 
 done:
-	abnormDEBUG({
+	if (DEBUG(abnorm)) {
 		fprintf(dbOut, "<< Leaving abn0WithFlatten with ");
 		abPrint(dbOut, newSeq);
 		fprintf(dbOut, "\n");
-	});
+	}
 	return newSeq;
 }
 
@@ -2176,13 +2174,13 @@ abn0SeqConcat(AbSyn s1, AbSyn s2)
 	AbSyn	*vs1, *vs2, s3;
 	int	ns1, ns2, i;
 
-	abnormDEBUG({
+	if (DEBUG(abnorm)) {
 		fprintf(dbOut, ">> Entering abn0SeqConcat with ");
 		abPrint(dbOut, s1);
 		fprintf(dbOut, " and ");
 		abPrint(dbOut, s2);
 		fprintf(dbOut, "\n");
-	});
+	}
 
 	if (abTag(s1) == AB_Sequence) {
 		vs1 = abArgv(s1);
@@ -2206,11 +2204,11 @@ abn0SeqConcat(AbSyn s1, AbSyn s2)
 	if (abTag(s1) == AB_Sequence) abFreeNode(s1);
 	if (abTag(s2) == AB_Sequence) abFreeNode(s2);
 
-	abnormDEBUG({
+	if (DEBUG(abnorm)) {
 		fprintf(dbOut, "<< Leaving abn0SeqConcat with ");
 		abPrint(dbOut, s3);
 		fprintf(dbOut, "\n");
-	});
+	}
 	return s3;
 }
 
@@ -2225,11 +2223,11 @@ abn0WithRemoveDups(AbSyn ab)
 
 	if (! abHasTag(ab, AB_Sequence)) return;
 
-	abnormDEBUG({
+	if (DEBUG(abnorm)) {
 		fprintf(dbOut, ">> Entering abn0WithRemoveDups with ");
 		abPrint(dbOut, ab);
 		fprintf(dbOut, "\n");
-	});
+	}
 
 	n = abArgc(ab);
 	v = abArgv(ab);
@@ -2251,11 +2249,11 @@ abn0WithRemoveDups(AbSyn ab)
 			}
 		}
 	}
-	abnormDEBUG({
+	if (DEBUG(abnorm)) {
 		fprintf(dbOut, "<< Leaving abn0WithRemoveDups with ");
 		abPrint(dbOut, ab);
 		fprintf(dbOut, "\n");
-	});
+	}
 }
 
 
@@ -2360,11 +2358,11 @@ abn0WithMergeDefaults(AbSyn ab)
 
 
 	/* A little debugging won't hurt us */
-	abnWithMergeDEBUG({
+	if (DEBUG(abnWithMerge)) {
 		fprintf(dbOut, ">> Entering abn0WithMergeDefaults with ");
 		abPrint(dbOut, ab);
 		fprintf(dbOut, "\n");
-	});
+	}
 
 
 	/* Start with two empty lists */
@@ -2474,10 +2472,10 @@ abn0WithMergeDefaults(AbSyn ab)
 
 
 	/* I've started so I'll finish ... */
-	abnWithMergeDEBUG({
+	if (DEBUG(abnWithMerge)) {
 		fprintf(dbOut, "<< Leaving abn0WithMergeDefaults with ");
 		abPrint(dbOut, result);
 		fprintf(dbOut, "\n");
-	});
+	}
 	return result;
 }

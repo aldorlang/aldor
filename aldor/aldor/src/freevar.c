@@ -14,7 +14,7 @@
 #include "table.h"
 
 Bool	fvDebug		= false;
-#define fvDEBUG(s)	DEBUG_IF(fvDebug, s)
+#define fvDEBUG		DEBUG_IF(fv)	afprintf
 
 /******************************************************************************
  *

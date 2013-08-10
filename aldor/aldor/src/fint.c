@@ -617,13 +617,10 @@ static JmpBuf	fintJmpBuf;
  *****************************************************************************/
 #ifdef NDEBUG
 
-#define fintDEBUG(x)
-#define fintLinkDEBUG(x)
 #undef  assert
 #define assert(x)
 #define softAssert(x)
 #define hardAssert(x)
-#define fintStoDEBUG(x)
 
 #define		fintTypedEval(pExpr,t)		fintEval(pExpr)
 #define		fintGetTypedReference(pExpr,t)	fintGetReference(pExpr)
@@ -632,9 +629,6 @@ static JmpBuf	fintJmpBuf;
 local Bool	fintSoftAssertIsOn = false;
 local long	instrBreak = -1;
 
-#define fintDEBUG(x)			if (fintDebug) x
-#define fintLinkDEBUG(x)		if (fintLinkDebug) x
-#define fintStoDEBUG(x)			if (fintStoDebug ) x
 #define softAssert(x)			if (!fintSoftAssertIsOn || x) ; else fintSoftAssert(Enstring(x), __FILE__, __LINE__)
 #define hardAssert(x)			if (x) ; else fintHardAssert(Enstring(x), __FILE__, __LINE__)
 
@@ -648,6 +642,10 @@ local long	instrBreak = -1;
 	assert(type == t); \
 }
 #endif /* NDEBUG */
+
+#define fintDEBUG	DEBUG_IF(fint)		afprintf
+#define fintLinkDEBUG	DEBUG_IF(fintLink)	afprintf
+#define fintStoDEBUG	DEBUG_IF(fintSto)	afprintf
 
 /**************************************************************************
  * Foreign function data structures
@@ -1161,7 +1159,7 @@ lazyLibGet(String name)
 	Lib		lib;
 	char		aoFile[80];
 
-	fintLinkDEBUG((void)fprintf(dbOut,"LazyGet of %s...\n", name));
+	fintLinkDEBUG(dbOut,"LazyGet of %s...\n", name);
 
 	if (name[0] == '-' && name[1] == 0) return;
 
@@ -1312,7 +1310,7 @@ loadUnitFrLib(Lib lib)
 
 	name = libToStringShort(lib);
 
-	fintLinkDEBUG((void)fprintf(dbOut, "----------------- Loading unit %s -----------------\n", name););
+	fintLinkDEBUG(dbOut, "----------------- Loading unit %s -----------------\n", name);
 
 	hardAssert(lib);
 
@@ -1507,7 +1505,7 @@ fintStmt(DataObj retDataObj)
 	dataType 	myType;
  readEvalLoop:
 
-	fintStoDEBUG(stoAudit(););
+	if (DEBUG(fintSto)) {stoAudit();}
 #ifndef NDEBUG
 	if (instrCounter++ == instrBreak) {
 		/* stoAudit()*/;	/* SET BREAKPOINT HERE */
@@ -1520,7 +1518,8 @@ fintStmt(DataObj retDataObj)
 
 	fintGetTagFmt(tag, fmt);
 
-	fintDEBUG((void)fprintf(dbOut, ">> %s (<%s> in [%s])\n", foamInfo(tag).str, prog->name, prog->unit->name););
+	fintDEBUG(dbOut, ">> %s (<%s> in [%s])\n",
+		  foamInfo(tag).str, prog->name, prog->unit->name);
 
 	switch (tag) {
 	case FOAM_Def:
@@ -1557,7 +1556,7 @@ fintStmt(DataObj retDataObj)
 	case FOAM_Goto:
 		fintGetInt(labelFmt, n);
 		ip = labels[n];
-		fintDEBUG((void)fprintf(dbOut, "(Goto %d)\n", n););
+		fintDEBUG(dbOut, "(Goto %d)\n", n);
 		break;
 
 	case FOAM_If: {
@@ -1568,13 +1567,14 @@ fintStmt(DataObj retDataObj)
 
 		if ((type == FOAM_Word ? expr.fiWord : expr.fiBool)) {
 			ip = labels[n];
-			fintDEBUG((void)fprintf(dbOut, "(if causes jump to label %d)\n", n));
+			fintDEBUG(dbOut, "(if causes jump to label %d)\n", n);
 		}
 		break;
 	}
 	case FOAM_Return:
 		myType = fintEval(retDataObj);
-		fintDEBUG((void)fprintf(dbOut, "returning from %s in %s\n", prog->name, prog->unit->name));
+		fintDEBUG(dbOut, "returning from %s in %s\n",
+			  prog->name, prog->unit->name);
 		return myType;   /* Unique exit for a stmt sequence */
 
 	case FOAM_Seq:   /* Ignore... */
@@ -1597,10 +1597,10 @@ fintStmt(DataObj retDataObj)
 		for (i = 0; i < expr.fiSInt; i++)
 			fintGetInt(labelFmt, n);
 
-		fintDEBUG({
+		if (DEBUG(fint)) {
 			if (i >= argc)
 				(void)fprintf(dbOut, "Select: read too many labels\n");
-		});
+		}
 		ip = labels[n];
 
 		break;
@@ -1643,7 +1643,7 @@ fintStmt(DataObj retDataObj)
 		break;
 	case FOAM_Label:
 		fintGetInt(fmt, n);
-	        fintDEBUG((void)fprintf(dbOut, "(Label %d)\n", n));
+		fintDEBUG(dbOut, "(Label %d)\n", n);
 		break;
 	case FOAM_Nil:
 	case FOAM_Lex: /* we get things like that when we -q0 (deadvar
@@ -1674,8 +1674,8 @@ fintEvalBCall(DataObj retDataObj)
 #endif
 	call += FOAM_BVAL_START;
 
-	fintDEBUG((void)fprintf(dbOut,
-		  "fintBCall: %s\n", foamBValInfo(call).str););
+	fintDEBUG(dbOut,
+		  "fintBCall: %s\n", foamBValInfo(call).str);
 
 	switch (call) {
 
@@ -3529,9 +3529,9 @@ local dataType
 fintEval(DataObj retDataObj)
 {
 	dataType d;
-	fintDEBUG(fprintf(dbOut, "(fintEval:\n"));
+	fintDEBUG(dbOut, "(fintEval:\n");
 	d = fintEval_(retDataObj);
-	fintDEBUG(fprintf(dbOut, " fintEval)"));
+	fintDEBUG(dbOut, " fintEval)");
 
 	return d;
 }
@@ -3547,7 +3547,7 @@ fintEval_(DataObj retDataObj)
 
 	fintGetTagFmtArgc(tag, fmt, argc);
 
-	fintDEBUG(fprintf(dbOut, "fintEval: %s\n", foamInfo(tag).str););
+	fintDEBUG(dbOut, "fintEval: %s\n", foamInfo(tag).str);
 
 	switch (tag) {
 
@@ -3602,7 +3602,9 @@ fintEval_(DataObj retDataObj)
 		stackAlloc(sp0, argc + PAR_OFFSET);
 		oldStack = stack;
 
-		fintDEBUG(fintCheckCallStack());
+		if (DEBUG(fint)) {
+			fintCheckCallStack();
+		}
 
 		for (n = 0; n < argc; n++) {
 			type = fintEval(&par);
@@ -3616,18 +3618,19 @@ fintEval_(DataObj retDataObj)
 
 		hardAssert(sp < stack + STACK_SIZE + 1);
 
-		fintDEBUG({int k;
-			  if (tag == FOAM_CCall)
-			  	(void)fprintf(dbOut, "((CCall ");
-			  else
-			  	(void)fprintf(dbOut, "((OCall ");
-			   (void)fprintf(dbOut, "to %s in %s with par: ",
-				   prog0->name,
-				   prog0->unit->name);
-			   for (k = 0; k < argc; k++)
-			   	(void)fprintf(dbOut, "%p ", parValue(k).fiPtr);
-			   (void)fprintf(dbOut, ")\n");
-		   })
+		if (DEBUG(fint)) {
+			int k;
+			if (tag == FOAM_CCall)
+				(void)fprintf(dbOut, "((CCall ");
+			else
+				(void)fprintf(dbOut, "((OCall ");
+			(void)fprintf(dbOut, "to %s in %s with par: ",
+				      prog0->name,
+				      prog0->unit->name);
+			for (k = 0; k < argc; k++)
+				(void)fprintf(dbOut, "%p ", parValue(k).fiPtr);
+			(void)fprintf(dbOut, ")\n");
+		}
 
 		stackFrameIp(bp) = ip;
 
@@ -3661,15 +3664,19 @@ fintEval_(DataObj retDataObj)
 		(void)fintStmt(retDataObj);
 		softAssert(retType == progInfoRetType(prog));
 
-		fintDEBUG(fintCheckCallStack());
+		if (DEBUG(fint)) {
+			fintCheckCallStack();
+		}
 
 		if (nFluids)
 			fiGlobalFluidStack =
 				(FiFluidStack) fluidValue(nFluids);
 
 		stackFrameFree();
-		fintDEBUG(fintCheckCallStack());
-		fintDEBUG(fprintf(dbOut, " call returns %p)", (char*) retDataObj->fiSInt));
+		if (DEBUG(fint)) {
+			fintCheckCallStack();
+		}
+		fintDEBUG(dbOut, " call returns %p)", (char*) retDataObj->fiSInt);
 
 		return retType;
 	}
@@ -3715,7 +3722,7 @@ fintEval_(DataObj retDataObj)
 
 		fintGetInt(fmt, lev);
 		fintGetInt(fmt, n);
-		fintDEBUG(fprintf(dbOut, "(Lex %d %d)", (int) lev, (int) n));
+		fintDEBUG(dbOut, "(Lex %d %d)", (int) lev, (int) n);
 		switch (lev) {
 			case 0: type = lexType(lev, n);
 				fintSet(type, retDataObj, lev0[n]);
@@ -5541,7 +5548,7 @@ shDataObjAdd(AInt type, String id, int protocol, int globNum, FintUnit curUnit)
 	}
 
 	if (new != NULL) {
-		fintLinkDEBUG((void)fprintf(dbOut, "(linked glob %s)\n", id););
+		fintLinkDEBUG(dbOut, "(linked glob %s)\n", id);
 		return new;
 	}
 
@@ -5586,11 +5593,11 @@ shDataObjAdd(AInt type, String id, int protocol, int globNum, FintUnit curUnit)
 			}
 
 		if (found) {
-		    fintInitForeignGlobValue(&(new->dataObj), n);
-		    fintLinkDEBUG((void)fprintf(dbOut, "(Resolved foreign %s)\n",
-			                fintForeignTable[n].string););
+			fintInitForeignGlobValue(&(new->dataObj), n);
+			fintLinkDEBUG(dbOut, "(Resolved foreign %s)\n",
+				      fintForeignTable[n].string);
 		} else {
-		  	fintLinkDEBUG({fprintf(dbOut, "Could not resolve: %s\n", id);});
+			fintLinkDEBUG(dbOut, "Could not resolve: %s\n", id);
 		}
 	}
 
@@ -5664,10 +5671,8 @@ stackChain(int num)
 	if (!stack[STACK_SIZE].ptr) {
 		DataObj newStack = fintAlloc(union dataObj, STACK_SIZE + 1);
 
-		fintLinkDEBUG(
-		  (void)fprintf(dbOut,"Allocating a new stack of size %d\n",
-			  STACK_SIZE);
-		  );
+		fintLinkDEBUG(dbOut,"Allocating a new stack of size %d\n",
+			      STACK_SIZE);
 
 		newStack[STACK_SIZE].ptr = 0;
 		stack[STACK_SIZE].ptr = newStack;
@@ -5675,11 +5680,11 @@ stackChain(int num)
 		newStack[1].ptr = sp;
 		sp = newStack + 2;
 		stack = newStack;
-        }
-        else {
+	}
+	else {
 		stack = stack[STACK_SIZE].ptr;
 		stack[1].ptr = sp;
-	    	sp = stack + 2;
+		sp = stack + 2;
 	}
 
 	return;
@@ -5748,7 +5753,7 @@ fintLoadGlobalsFmt(FintUnit unit)
 	n = fintReadFmt(&fintUnitGlobs(unit));
 	fintUnitGlobsCount(unit) = n;
 
-	fintLinkDEBUG((void)fprintf(dbOut, "Read globals: %d\n", n););
+	fintLinkDEBUG(dbOut, "Read globals: %d\n", n);
 
 	fintUnitGlobValues(unit) = (ShDataObj *)
 		fintAlloc(ShDataObj, n);
@@ -5769,7 +5774,7 @@ fintLoadConstantsFmt(FintUnit unit)
 	fintUnitConstValues(unit) = (DataObj)
 		stoAlloc(OB_Other, sizeof(*(unit->constValues)) * n);
 
-	fintLinkDEBUG((void)fprintf(dbOut, "Read constants: %d\n", n););
+	fintLinkDEBUG(dbOut, "Read constants: %d\n", n);
 
 }
 
@@ -5782,7 +5787,7 @@ fintLoadFluidsFmt(FintUnit unit)
 	n = fintReadFmt(&fintUnitFluids(unit));
 	fintUnitFluidsCount(unit) = n;
 
-	fintLinkDEBUG((void)fprintf(dbOut, "Read fluids: %d\n", n););
+	fintLinkDEBUG(dbOut, "Read fluids: %d\n", n);
 }
 
 local void
@@ -5807,7 +5812,7 @@ fintLoadLexLevels(FintUnit unit, int nLexLevels)
 		n = fintReadFmt(pFmt);
 		lexLevels[j].fmtLexsCount = n;
 
-		fintLinkDEBUG((void)fprintf(dbOut, "Level: %d, read %d lexicals\n", j, n););
+		fintLinkDEBUG(dbOut, "Level: %d, read %d lexicals\n", j, n);
 	}
 }
 
@@ -6135,7 +6140,7 @@ fintExecMainUnit(void)
 
 	fintCurrentFormat = emptyFormatSlot;
 
-	fintDEBUG((void)fprintf(dbOut, "Starting with bp = %p, sp = %p\n", bp,  sp););
+	fintDEBUG(dbOut, "Starting with bp = %p, sp = %p\n", bp,  sp);
 
 	unit = mainUnit;
 
@@ -6205,9 +6210,10 @@ fintExecMainUnit(void)
 
 	stackFrameFree(); /* This used to cause grief on suns... */
 
-	fintDEBUG((void)fprintf(dbOut, "Finished with bp = %p, sp = %p\n", bp, sp));
+	fintDEBUG(dbOut, "Finished with bp = %p, sp = %p\n", bp, sp);
 
-	fintDEBUG((void)fprintf(dbOut, "Program returned with value %ld of type %ld\n\n", expr.fiSInt, type));
+	fintDEBUG(dbOut, "Program returned with value %ld of type %ld\n\n",
+		  expr.fiSInt, type);
 
 	if (fintMode == FINT_LOOP) {
 		(void)osSetBreakHandler(oldCompFintBreakHandler);
@@ -6249,7 +6255,7 @@ fint(Foam foam)
 
 	/* !! We should close the archive files */
 
-	fintStoDEBUG(stoAudit(););
+	if (DEBUG(fintSto)) {stoAudit();}
 
 	fintGetEndInterpTime();
 	return (Bool) ok;
@@ -6341,7 +6347,7 @@ fintFile(FileName fname)
 
 	fintFini();
 
-	fintStoDEBUG(stoAudit(););
+	if (DEBUG(fintSto)) {stoAudit();}
 
 	return result;
 }

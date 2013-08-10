@@ -42,10 +42,9 @@
 #include "store.h"
 #include "table.h"
 
-Bool      daDebug;
+Bool	daDebug		= false;
 
-# define   daDEBUG(s)    DEBUG_IF(daDebug, s)
-# define   trDEBUG(s)	 DEBUG_IF(daDebug, s)
+#define daDEBUG		DEBUG_IF(da)	afprintf
 
 /****************************************************************************
  *
@@ -183,10 +182,10 @@ daProg(Foam prog)
 	Foam 	  locals, ret;
 	int 	  nbits;
 	
-	daDEBUG({
+	if (DEBUG(da)) {
 		fprintf(dbOut, "(Before:\n");
 		foamWrSExpr(dbOut, prog,int0);
-	});
+	}
 	locals = prog->foamProg.locals;
 
 	nbits  = daBitvSize(prog);
@@ -200,10 +199,10 @@ daProg(Foam prog)
 	daFlog0(nbits, flog);
 
 	ret = flogToProg(flog);
-	daDEBUG({
+	if (DEBUG(da)) {
 		foamWrSExpr(dbOut, ret,int0);
 		fprintf(dbOut, "After)\n");
-	});
+	}
 	daBitvClass = NULL;
 
 	return ret;
@@ -334,14 +333,14 @@ daFixBBlock(BBlock bb)
 	/* Do dataflow by hand backwards through the BB */
 	/* Start with the 'out' set and work upwards    */
 	/* when complete, out will be a subset of "in" */
-	daDEBUG({
+	if (DEBUG(da)) {
 		fprintf(dbOut, "(Fixing: Out\n");
 		bitvPrint(dbOut, daBitvClass, dfRevOut(bb));
 		fprintf(dbOut, "\nIn\n");
 		bitvPrint(dbOut, daBitvClass, dfRevIn(bb));
 		fprintf(dbOut, "\nFoam\n");
 		foamWrSExpr(dbOut, seq, int0);
-	});
+	}
 	bitv = bitvNew(daBitvClass);
 	bitvCopy(daBitvClass, bitv, dfRevOut(bb));
 	
@@ -368,10 +367,10 @@ daFixBBlock(BBlock bb)
 #if 0
 	daReduceTemps(bb);
 #endif
-	daDEBUG({
+	if (DEBUG(da)) {
 		bitvPrint(dbOut, daBitvClass, bitv);
 		fprintf(dbOut, "\nDone fix)\n");
-	});
+	}
 
 }
 
@@ -538,12 +537,12 @@ trRenameExpr(int stmtId, Foam expr)
 		
 		liveAfter = bitvTest(daBitvClass, trOut, id);
 		
-		trDEBUG(fprintf(dbOut,
+		daDEBUG(dbOut,
 			"Checking %d var: %d next use: %d next kill: %d  used later: %s\n", 
-				stmtId, id,
-				uses ? (int)car(uses): 999999, 
-				kills ? (int)car(kills): 999999, 
-				liveAfter ? "Yes" : "No"));
+			stmtId, id,
+			uses ? (int)car(uses): 999999, 
+			kills ? (int)car(kills): 999999, 
+			liveAfter ? "Yes" : "No");
 
 		if (uses == listNil(AInt)) {
 			if (!liveAfter)
@@ -621,7 +620,7 @@ trAddTemporary(FreeTempSet set, int stmt, AInt id)
 
 	set->vars = listCons(AInt)(id, set->vars);
 
-	trDEBUG(fprintf(dbOut, "Stmt: %d free: %d\n", stmt, (int)id));
+	daDEBUG(dbOut, "Stmt: %d free: %d\n", stmt, (int)id);
 }
 
 local AInt
@@ -630,7 +629,7 @@ trAllocateTemporary(int stmtId, AInt oldId)
 	AIntList *vars = &trFreeTemps->vars;
 	AInt	  actual, id = -1;
 
-	trDEBUG({
+	if (DEBUG(da)) {
 		AIntList lst;
 		lst = trFreeTemps->vars;
 		fprintf(dbOut, "Before: [");
@@ -640,7 +639,7 @@ trAllocateTemporary(int stmtId, AInt oldId)
 			if (lst) fprintf(dbOut, " ");
 		}
 		fprintf(dbOut, "]\n");
-	});
+	}
 	actual = trGetName(oldId);
 	
 	while (*vars != listNil(AInt)) {
@@ -672,8 +671,8 @@ trAllocateTemporary(int stmtId, AInt oldId)
 	assert(*vars);
 	/* Remove this element from the list [memleak!]*/
 	*vars = cdr(*vars);
-	trDEBUG(fprintf(dbOut, "Rename: %d -> %d, ", (int)oldId, (int)id));
-	trDEBUG({
+	daDEBUG(dbOut, "Rename: %d -> %d, ", (int)oldId, (int)id);
+	if (DEBUG(da)) {
 		AIntList lst;
 		lst = trFreeTemps->vars;
 		fprintf(dbOut, "[");
@@ -683,7 +682,7 @@ trAllocateTemporary(int stmtId, AInt oldId)
 			if (lst) fprintf(dbOut, " ");
 		}
 		fprintf(dbOut, "]\n");
-	});
+	}
 
 	trSetName(oldId, id);
 	return id;

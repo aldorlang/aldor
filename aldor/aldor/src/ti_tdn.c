@@ -34,10 +34,10 @@
  *
  ****************************************************************************/
 
-Bool	condApplyDebug		= false;
-Bool	tipTdnDebug		= false;
-#define condApplyDEBUG(s)	DEBUG_IF(condApplyDebug, s)
-#define tipTdnDEBUG(s)		DEBUG_IF(tipTdnDebug, s)
+Bool	condApplyDebug	= false;
+Bool	tipTdnDebug	= false;
+#define condApplyDEBUG	DEBUG_IF(condApply)	afprintf
+#define tipTdnDEBUG	DEBUG_IF(tipTdn)	afprintf
 
 /*****************************************************************************
  *
@@ -228,82 +228,15 @@ titdn(Stab stab, AbSyn absyn, TForm type)
 	serialNo += 1;
 	depthNo	 += 1;
 	serialThis = serialNo;
-	tipTdnDEBUG({
+	if (DEBUG(tipTdn)) {
 		fprintf(dbOut,"->Tdn: %*s%d= ", depthNo, "", serialThis);
 		abPrettyPrint(dbOut, absyn);
 		fprintf(dbOut," @ ");
 		tfPrint(dbOut, type);
 		fnewline(dbOut);
-	});
-
-	switch (abTag(absyn)) {
-	case AB_Id:	     s = titdnId	 (stab, absyn, type); break;
-	case AB_IdSy:	     s = titdnIdSy	 (stab, absyn, type); break;
-	case AB_Blank:	     s = titdnBlank	 (stab, absyn, type); break;
-	case AB_LitInteger:  s = titdnLitInteger (stab, absyn, type); break;
-	case AB_LitFloat:    s = titdnLitFloat	 (stab, absyn, type); break;
-	case AB_LitString:   s = titdnLitString	 (stab, absyn, type); break;
-	case AB_Add:	     s = titdnAdd	 (stab, absyn, type); break;
-	case AB_And:	     s = titdnAnd	 (stab, absyn, type); break;
-	case AB_Apply:	     s = titdnApply	 (stab, absyn, type); break;
-	case AB_Assert:	     s = titdnAssert	 (stab, absyn, type); break;
-	case AB_Assign:	     s = titdnAssign	 (stab, absyn, type); break;
-	case AB_Break:	     s = titdnBreak	 (stab, absyn, type); break;
-	case AB_Builtin:     s = titdnBuiltin	 (stab, absyn, type); break;
-	case AB_CoerceTo:    s = titdnCoerceTo	 (stab, absyn, type); break;
-	case AB_Collect:     s = titdnCollect	 (stab, absyn, type); break;
-	case AB_Comma:	     s = titdnComma	 (stab, absyn, type); break;
-	case AB_Declare:     s = titdnDeclare	 (stab, absyn, type); break;
-	case AB_Default:     s = titdnDefault	 (stab, absyn, type); break;
-	case AB_Define:	     s = titdnDefine	 (stab, absyn, type); break;
-	case AB_Delay:	     s = titdnDelay	 (stab, absyn, type); break;
-	case AB_Do:	     s = titdnDo	 (stab, absyn, type); break;
-	case AB_Except:	     s = titdnExcept	 (stab, absyn, type); break;
-	case AB_Raise:	     s = titdnRaise	 (stab, absyn, type); break;
-	case AB_Exit:	     s = titdnExit	 (stab, absyn, type); break;
-	case AB_Export:	     s = titdnExport	 (stab, absyn, type); break;
-	case AB_Extend:	     s = titdnExtend	 (stab, absyn, type); break;
-	case AB_Fix:	     s = titdnFix	 (stab, absyn, type); break;
-	case AB_Fluid:	     s = titdnFluid	 (stab, absyn, type); break;
-	case AB_For:	     s = titdnFor	 (stab, absyn, type); break;
-	case AB_Foreign:     s = titdnForeign	 (stab, absyn, type); break;
-	case AB_Free:	     s = titdnFree	 (stab, absyn, type); break;
-	case AB_Generate:    s = titdnGenerate	 (stab, absyn, type); break;
-	case AB_Goto:	     s = titdnGoto	 (stab, absyn, type); break;
-	case AB_Has:	     s = titdnHas	 (stab, absyn, type); break;
-	case AB_Hide:	     s = titdnHide	 (stab, absyn, type); break;
-	case AB_If:	     s = titdnIf	 (stab, absyn, type); break;
-	case AB_Import:	     s = titdnImport	 (stab, absyn, type); break;
-	case AB_Inline:	     s = titdnInline	 (stab, absyn, type); break;
-	case AB_Iterate:     s = titdnIterate	 (stab, absyn, type); break;
-	case AB_Label:	     s = titdnLabel	 (stab, absyn, type); break;
-	case AB_Lambda:	     s = titdnLambda	 (stab, absyn, type); break;
-	case AB_Let:	     s = titdnLet	 (stab, absyn, type); break;
-	case AB_Local:	     s = titdnLocal	 (stab, absyn, type); break;
-	case AB_Macro:	     s = titdnMacro	 (stab, absyn, type); break;
-	case AB_MLambda:     s = titdnMLambda    (stab, absyn, type); break;
-	case AB_Never:	     s = titdnNever	 (stab, absyn, type); break;
-	case AB_Not:	     s = titdnNot	 (stab, absyn, type); break;
-	case AB_Nothing:     s = titdnNothing	 (stab, absyn, type); break;
-	case AB_Or:	     s = titdnOr	 (stab, absyn, type); break;
-	case AB_PLambda:     s = titdnLambda	 (stab, absyn, type); break;
-	case AB_PretendTo:   s = titdnPretendTo	 (stab, absyn, type); break;
-	case AB_Qualify:     s = titdnQualify	 (stab, absyn, type); break;
-	case AB_Quote:	     s = titdnQuote	 (stab, absyn, type); break;
-	case AB_Reference:   s = titdnReference	 (stab, absyn, type); break;
-	case AB_Repeat:	     s = titdnRepeat	 (stab, absyn, type); break;
-	case AB_RestrictTo:  s = titdnRestrictTo (stab, absyn, type); break;
-	case AB_Return:	     s = titdnReturn	 (stab, absyn, type); break;
-	case AB_Select:	     s = titdnSelect	 (stab, absyn, type); break;
-	case AB_Sequence:    s = titdnSequence	 (stab, absyn, type); break;
-	case AB_Test:	     s = titdnTest	 (stab, absyn, type); break;
-	case AB_Try:	     s = titdnTry	 (stab, absyn, type); break;
-	case AB_Where:	     s = titdnWhere	 (stab, absyn, type); break;
-	case AB_While:	     s = titdnWhile	 (stab, absyn, type); break;
-	case AB_With:	     s = titdnWith	 (stab, absyn, type); break;
-	case AB_Yield:	     s = titdnYield	 (stab, absyn, type); break;
-	default:	     bugBadCase(abTag(absyn)); NotReached(s = 0);
 	}
+
+	AB_SWITCH(absyn, s = titdn, (stab, absyn, type));
 
 	if (s) {
 		/* The callee should have set abTUnique(absyn). */
@@ -323,7 +256,7 @@ titdn(Stab stab, AbSyn absyn, TForm type)
 		assert(abTPoss(absyn) == abtposs);
 	}
 
-	tipTdnDEBUG({
+	if (DEBUG(tipTdn)) {
 		fprintf(dbOut, "<-Tdn: %*s%d= ", depthNo, "", serialThis);
 		abPrettyPrint(dbOut, absyn);
 		fprintf(dbOut, " @ ");
@@ -332,7 +265,7 @@ titdn(Stab stab, AbSyn absyn, TForm type)
 		else
 			tfPrint(dbOut, type);
 		fnewline(dbOut);
-	});
+	}
 	depthNo -= 1;
 	return s;
 }
@@ -532,11 +465,11 @@ titdn0FarValue(Stab stab,AbSyn absyn,TForm type,AbSyn farValue,TForm *pFarType,
 	       AbSynList *pFarAbSynList)
 {
 	AbEmbed embed;
-	tipFarDEBUG({
+	if (DEBUG(tipFar)) {
 		fprintf(dbOut, "Computing far value as a ");
 		tfPrint(dbOut, *pFarType);
 		fnewline(dbOut);
-	});
+	}
 	titdn(stab, farValue, *pFarType);
 
 	if (abState(farValue) != AB_State_HasUnique)
@@ -561,11 +494,11 @@ titdn0FarValue(Stab stab,AbSyn absyn,TForm type,AbSyn farValue,TForm *pFarType,
 	*pFarAbSynList = listCons(AbSyn)(farValue, *pFarAbSynList);
 	if (tfIsUnknown(*pFarType)) {
 		*pFarType = abTUnique(farValue);
-		tipFarDEBUG({
+		if (DEBUG(tipFar)) {
 			fprintf(dbOut, "Converting far value to a ");
 			tfPrint(dbOut, *pFarType);
 			fnewline(dbOut);
-		});
+		}
 	}
 
 	if (abTUnique(farValue)) {
@@ -626,7 +559,7 @@ titdnId(Stab stab, AbSyn absyn, TForm type)
 {
 	Syme	syme = abSyme(absyn);
 
-	tipIdDEBUG(fprintf(dbOut,"Entering titdnId\n"));
+	tipIdDEBUG(dbOut,"Entering titdnId\n");
 
 
 	/* If no meaning yet, find one */
@@ -900,7 +833,7 @@ titdnApply(Stab stab, AbSyn absyn, TForm type)
 	AbSyn		op = abApplyOp(absyn);
 	TPoss		tp;
 
-	tipApplyDEBUG(fprintf(dbOut, "Entering titdnApply\n"));
+	tipApplyDEBUG(dbOut, "Entering titdnApply\n");
 
 	if (abState(op) == AB_State_Error)
 		return false;
@@ -953,11 +886,11 @@ titdnDefine(Stab stab, AbSyn absyn, TForm type)
 			ltype = rtype;
 	}
 
-	tipDefineDEBUG({
+	if (DEBUG(tipDefine)) {
 		fprintf(dbOut, "************** Defining: ");
 		abPrettyPrint(dbOut, lhs);
 		fnewline(dbOut);
-	});
+	}
 
 	titdn(stab, lhs, ltype);
 	titdn(stab, rhs, rtype);
@@ -974,13 +907,13 @@ titdnDefine(Stab stab, AbSyn absyn, TForm type)
 	
 	abTUnique(absyn) = rtype;
 	
-	tipDefineDEBUG({
+	if (DEBUG(tipDefine)) {
 		fprintf(dbOut,"Tdn: Define of ");
 		abPrint(dbOut, lhs);
 		fprintf(dbOut," has type ");
 		tfPrint(dbOut, rtype);
 		fnewline(dbOut);
-	});
+	}
 	return true;
 }
 
@@ -1021,13 +954,13 @@ titdnAssign(Stab stab, AbSyn absyn, TForm type)
 		abAddTContext(rhs, embed);
 
 
-	tipAssignDEBUG({
+	if (DEBUG(tipAssign)) {
 		fprintf(dbOut,"Tdn: Assignment to ");
 		abPrint(dbOut, lhs);
 		fprintf(dbOut," has type ");
 		tfPrint(dbOut, rtype);
 		fnewline(dbOut);
-	});
+	}
 	return true;
 }
 
@@ -1045,7 +978,7 @@ titdnDeclare(Stab stab, AbSyn absyn, TForm type)
 	TForm tf, rtype;
 	Syme  syme;
 
-	tipDeclareDEBUG({
+	if (DEBUG(tipDeclare)) {
 		fprintf(dbOut, "In the declaration ");
 		abPrettyPrint(dbOut, absyn);
 		fprintf(dbOut, ", the semantics field is ");
@@ -1054,7 +987,7 @@ titdnDeclare(Stab stab, AbSyn absyn, TForm type)
 		else
 			fprintf(dbOut, "_");
 		fnewline(dbOut);
-	});
+	}
 
 	if (abUse(absyn) == AB_Use_Define || abUse(absyn) == AB_Use_Assign)
 		tf = (tfIsUnknown(type) ? tiGetTForm(stab, idtype) : type);
@@ -1079,13 +1012,13 @@ titdnDeclare(Stab stab, AbSyn absyn, TForm type)
 	if (!rtype) rtype = tfUnknown;
 	abTUnique(absyn) = rtype;
 
-	tipDeclareDEBUG({
+	if (DEBUG(tipDeclare)) {
 		fprintf(dbOut,"Tdn: Declare of ");
 		abPrint(dbOut, id);
 		fprintf(dbOut," has type ");
 		tfPrint(dbOut, rtype);
 		fnewline(dbOut);
-	});
+	}
 	return true;
 }
 

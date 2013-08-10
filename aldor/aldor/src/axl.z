@@ -7,23 +7,29 @@
  */
 
 %{
+#include "debug.h"
 #include "parseby.h"
 #include "spesym.h"
 
-# define yyerror(s)	yyerrorfn(s)
+#define yyerror(s)	yyerrorfn(s)
 #define UNUSED_LABELS
 
 #ifdef NDEBUG
-#  undef  YYDEBUG
+# undef  YYDEBUG
 #else
-#  define YYDEBUG 1
+# define YYDEBUG 1
 #endif
 
-# define TPOS(t)((t)->pos)
-# define TEND(t)((t)->end-1)
-# define APOS(a) abPos(a)
-# define TEST(a) abNewTest(abPos(a),(a))
-# define abZip	 abNewNothing(sposNone)
+#define TPOS(t)	((t)->pos)
+#define TEND(t)	((t)->end-1)
+#define APOS(a)	abPos(a)
+#define TEST(a)	abNewTest(abPos(a),(a))
+#define abZip	abNewNothing(sposNone)
+
+#ifdef stderr
+# undef stderr
+#endif
+#define stderr dbOut
 %}
 
 %include-enum       "token.h"  tokenTag

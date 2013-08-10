@@ -31,8 +31,8 @@ extern TForm tuniYieldTForm, tuniReturnTForm, tuniExitTForm;
  *
  ****************************************************************************/
 
-Bool	tipSefDebug		= false;
-#define tipSefDEBUG(s)		DEBUG_IF(tipSefDebug, s)
+Bool	tipSefDebug	= false;
+#define tipSefDEBUG	DEBUG_IF(tipSef)	afprintf
 
 /*****************************************************************************
  *
@@ -216,91 +216,24 @@ tisef(Stab stab, Sefo sefo)
 	serialNo += 1;
 	depthNo	 += 1;
 	serialThis = serialNo;
-	tipSefDEBUG({
+	if (DEBUG(tipSef)) {
 		fprintf(dbOut,"->Sef: %*s%d= ", depthNo, "", serialThis);
 		abPrettyPrint(dbOut, sefo);
 		fnewline(dbOut);
-	});
+	}
 
 	abState(sefo) = AB_State_HasUnique;
 	abTUnique(sefo) = tfUnknown;
 
-	switch (abTag(sefo)) {
-	case AB_Id:		tisefId		(stab, sefo); break;
-	case AB_IdSy:		tisefIdSy	(stab, sefo); break;
-	case AB_Blank:		tisefBlank	(stab, sefo); break;
-	case AB_LitInteger:	tisefLitInteger (stab, sefo); break;
-	case AB_LitFloat:	tisefLitFloat	(stab, sefo); break;
-	case AB_LitString:	tisefLitString	(stab, sefo); break;
-	case AB_Add:		tisefAdd	(stab, sefo); break;
-	case AB_And:		tisefAnd	(stab, sefo); break;
-	case AB_Apply:		tisefApply	(stab, sefo); break;
-	case AB_Assert:		tisefAssert	(stab, sefo); break;
-	case AB_Assign:		tisefAssign	(stab, sefo); break;
-	case AB_Break:		tisefBreak	(stab, sefo); break;
-	case AB_Builtin:	tisefBuiltin	(stab, sefo); break;
-	case AB_CoerceTo:	tisefCoerceTo	(stab, sefo); break;
-	case AB_Collect:	tisefCollect	(stab, sefo); break;
-	case AB_Comma:		tisefComma	(stab, sefo); break;
-	case AB_Declare:	tisefDeclare	(stab, sefo); break;
-	case AB_Default:	tisefDefault	(stab, sefo); break;
-	case AB_Define:		tisefDefine	(stab, sefo); break;
-	case AB_Delay:		tisefDelay	(stab, sefo); break;
-	case AB_Do:		tisefDo		(stab, sefo); break;
-	case AB_Except:		tisefExcept	(stab, sefo); break;
-	case AB_Raise:		tisefRaise	(stab, sefo); break;
-	case AB_Exit:		tisefExit	(stab, sefo); break;
-	case AB_Export:		tisefExport	(stab, sefo); break;
-	case AB_Extend:		tisefExtend	(stab, sefo); break;
-	case AB_Fix:		tisefFix	(stab, sefo); break;
-	case AB_Fluid:		tisefFluid	(stab, sefo); break;
-	case AB_For:		tisefFor	(stab, sefo); break;
-	case AB_Foreign:	tisefForeign	(stab, sefo); break;
-	case AB_Free:		tisefFree	(stab, sefo); break;
-	case AB_Generate:	tisefGenerate	(stab, sefo); break;
-	case AB_Reference:	tisefReference	(stab, sefo); break;
-	case AB_Goto:		tisefGoto	(stab, sefo); break;
-	case AB_Has:		tisefHas	(stab, sefo); break;
-	case AB_Hide:		tisefHide	(stab, sefo); break;
-	case AB_If:		tisefIf		(stab, sefo); break;
-	case AB_Import:		tisefImport	(stab, sefo); break;
-	case AB_Inline:		tisefInline	(stab, sefo); break;
-	case AB_Iterate:	tisefIterate	(stab, sefo); break;
-	case AB_Label:		tisefLabel	(stab, sefo); break;
-	case AB_Lambda:		tisefLambda	(stab, sefo); break;
-	case AB_Let:		tisefLet	(stab, sefo); break;
-	case AB_Local:		tisefLocal	(stab, sefo); break;
-	case AB_Macro:		tisefMacro	(stab, sefo); break;
-	case AB_MLambda:	tisefMLambda    (stab, sefo); break;
-	case AB_Never:		tisefNever	(stab, sefo); break;
-	case AB_Not:		tisefNot	(stab, sefo); break;
-	case AB_Nothing:	tisefNothing	(stab, sefo); break;
-	case AB_Or:		tisefOr		(stab, sefo); break;
-	case AB_PLambda:	tisefLambda	(stab, sefo); break;
-	case AB_PretendTo:	tisefPretendTo	(stab, sefo); break;
-	case AB_Qualify:	tisefQualify	(stab, sefo); break;
-	case AB_Quote:		tisefQuote	(stab, sefo); break;
-	case AB_Repeat:		tisefRepeat	(stab, sefo); break;
-	case AB_RestrictTo:	tisefRestrictTo (stab, sefo); break;
-	case AB_Return:		tisefReturn	(stab, sefo); break;
-	case AB_Select:		tisefSelect	(stab, sefo); break;
-	case AB_Sequence:	tisefSequence	(stab, sefo); break;
-	case AB_Test:		tisefTest	(stab, sefo); break;
-	case AB_Try:		tisefTry	(stab, sefo); break;
-	case AB_Where:		tisefWhere	(stab, sefo); break;
-	case AB_While:		tisefWhile	(stab, sefo); break;
-	case AB_With:		tisefWith	(stab, sefo); break;
-	case AB_Yield:		tisefYield	(stab, sefo); break;
-	default:		bugBadCase	(abTag(sefo));
-	}
+	AB_SWITCH(sefo, tisef, (stab, sefo));
 
-	tipSefDEBUG({
+	if (DEBUG(tipSef)) {
 		fprintf(dbOut, "<-Sef: %*s%d= ", depthNo, "", serialThis);
 		abPrettyPrint(dbOut, sefo);
 		fprintf(dbOut, " @ ");
 		tfPrint(dbOut, abTUnique(sefo));
 		fnewline(dbOut);
-	});
+	}
 	depthNo -= 1;
 }
 
@@ -627,7 +560,7 @@ tisefApply(Stab stab, Sefo sefo)
 	Sefo		op;
 	TForm		tf;
 
-	tipApplyDEBUG(fprintf(dbOut, "Entering tisefApply\n"));
+	tipApplyDEBUG(dbOut, "Entering tisefApply\n");
 
 	tisef0ApplySpecialSyme(stab, sefo);
 

@@ -58,9 +58,9 @@
 #include "table.h"
 #include "strops.h"
 
-Bool      kpDebug;
+Bool	kpDebug		= false;
 
-#define   kpDEBUG(s)    DEBUG_IF(kpDebug, s)
+#define kpDEBUG		DEBUG_IF(kp)	afprintf
 
 /****************************************************************************
  *
@@ -157,7 +157,7 @@ killPointers(Foam unit)
 		def = ddef->foamDDef.argv[i];
 		assert(foamTag(def) == FOAM_Def);
 
-		kpDEBUG({
+		if (DEBUG(kp)) {
 			lhs = def->foamDef.lhs;
 			j = lhs->foamConst.index;
 			if (j < conc)
@@ -165,7 +165,7 @@ killPointers(Foam unit)
 			else
 				progName = "???";
 			fprintf(dbOut, "Function: %s\n", progName);
-		});
+		}
 
 		rhs = def->foamDef.rhs;
 		if (foamTag(rhs) == FOAM_Prog) 
@@ -178,7 +178,7 @@ void
 killProgPointers(Foam prog)
 {
 	assert(foamTag(prog) == FOAM_Prog);
-	kpDEBUG(fprintf(dbOut, "Function: %s\n", "<unknown>"););
+	kpDEBUG(dbOut, "Function: %s\n", "<unknown>");
 	kpProg(prog);
 }
 
@@ -222,10 +222,10 @@ kpProg(Foam prog)
 	Foam 	  locals, ret;
 	int 	  nbits;
 	
-	kpDEBUG({
+	if (DEBUG(kp)) {
 		fprintf(dbOut, "--> Before:\n");
 		foamWrSExpr(dbOut, prog,int0);
-	});
+	}
 
 	kpPreprocessProg(prog);
 
@@ -242,11 +242,11 @@ kpProg(Foam prog)
 	ret = flogToProg(flog);
 	kpPostprocessProg(ret);
 
-	kpDEBUG({
+	if (DEBUG(kp)) {
 		fprintf(dbOut, "<-- After:\n");
 		foamWrSExpr(dbOut, ret,int0);
 		fnewline(dbOut);
-	});
+	}
 	kpBitvClass = NULL;
 	return ret;
 }
@@ -357,14 +357,14 @@ kpFixBBlock(BBlock bb)
 	/* Do dataflow by hand backwards through the BB */
 	/* Start with the 'out' set and work upwards    */
 	/* when complete, out will be a subset of "in" */
-	kpDEBUG({
+	if (DEBUG(kp)) {
 		fprintf(dbOut, "(Fixing: Out\n");
 		bitvPrint(dbOut, kpBitvClass, dfRevOut(bb));
 		fprintf(dbOut, "\nIn\n");
 		bitvPrint(dbOut, kpBitvClass, dfRevIn(bb));
 		fprintf(dbOut, "\nFoam\n");
 		foamWrSExpr(dbOut, seq, int0);
-	});
+	}
 	bitv = bitvNew(kpBitvClass);
 	bitvCopy(kpBitvClass, bitv, dfRevOut(bb));
 	
@@ -384,10 +384,10 @@ kpFixBBlock(BBlock bb)
 	 */
 	kpKillBBlock(bb);
 
-	kpDEBUG({
+	if (DEBUG(kp)) {
 		bitvPrint(dbOut, kpBitvClass, bitv);
 		fprintf(dbOut, "\nDone fix)\n");
-	});
+	}
 
 }
 
@@ -501,12 +501,12 @@ kpProcessExpr(int stmtId, Foam expr)
 		
 		liveAfter = bitvTest(kpBitvClass, kpOut, id);
 		
-		kpDEBUG(fprintf(dbOut,
-				"Checking %d var: %d next use: %d next kill: %d  used later: %s\n", 
-				stmtId, id,
-				uses ? (int)car(uses): 999999, 
-				kills ? (int)car(kills): 999999, 
-				liveAfter ? "Yes" : "No"));
+		kpDEBUG(dbOut,
+			"Checking %d var: %d next use: %d next kill: %d  used later: %s\n", 
+			stmtId, id,
+			uses ? (int)car(uses): 999999, 
+			kills ? (int)car(kills): 999999, 
+			liveAfter ? "Yes" : "No");
 
 		if (!uses && !liveAfter)
 			kpMarkAsDead(expr, id);
@@ -539,10 +539,10 @@ kpMarkAsDead(Foam foam, int id)
 {
 	foamDvMark(foam) = 1;
 	bitvClear(kpBitvClass, kpLive, id);
-	kpDEBUG({
+	if (DEBUG(kp)) {
 		fprintf(dbOut, "   Killable:  ");
 		foamPrintDb(foam);
-	});
+	}
 }
 
 local AIntList
@@ -636,11 +636,11 @@ kpPreprocessProg(Foam prog)
 	seqbody = listNil(Foam);
 
 
-	kpDEBUG({
+	if (DEBUG(kp)) {
 		fprintf(dbOut, "------------------------ (before flattening) --------------------\n");
 		foamPrintDb(foam);
 		fprintf(dbOut, "-----------------------------------------------------------------\n\n");
-	});
+	}
 
 	/* Construct a new sequence based on the original */
 	for (i = 0;i < foamArgc(foam); i++)
@@ -697,11 +697,11 @@ kpPreprocessProg(Foam prog)
 	foam = foamNewOfList(FOAM_Seq, seqbody);
 
 
-	kpDEBUG({
+	if (DEBUG(kp)) {
 		fprintf(dbOut, "----------------------- (after flattening) ----------------------\n");
 		foamPrintDb(foam);
 		fprintf(dbOut, "-----------------------------------------------------------------\n\n");
-	});
+	}
 
 
 	/* Release our temporary storage */
@@ -988,11 +988,11 @@ kpPostprocessProg(Foam prog)
 	foam = foamNewOfList(FOAM_Seq, seqbody);
 
 
-	kpDEBUG({
+	if (DEBUG(kp)) {
 		fprintf(dbOut, "-------------------------- (after kills) ------------------------\n");
 		foamPrintDb(foam);
 		fprintf(dbOut, "-----------------------------------------------------------------\n\n");
-	});
+	}
 
 
 	/* Release our temporary storage */

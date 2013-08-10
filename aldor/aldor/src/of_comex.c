@@ -177,13 +177,13 @@
  * :: Debug
  ****************************************************************************/
 
-Bool      cseDebug 	  = false;
-Bool      cseDfDebug 	  = false;
-Bool      cseDfiDebug 	  = false;
+Bool	cseDebug	= false;
+Bool	cseDfDebug	= false;
+Bool	cseDfiDebug	= false;
 
-# define   cseDEBUG(s)    DEBUG_IF(cseDebug,  s)
-# define   cseDfDEBUG(s)  DEBUG_IF(cseDfDebug,  s)
-# define   cseDfiDEBUG(s) DEBUG_IF(cseDfiDebug, s)
+#define cseDEBUG	DEBUG_IF(cse)		afprintf
+#define cseDfDEBUG	DEBUG_IF(cseDf)		afprintf
+#define cseDfiDEBUG	DEBUG_IF(cseDfi)	afprintf
 
 /****************************************************************************
  *
@@ -437,11 +437,11 @@ cseFlog0(FlowGraph flog)
 	i = dflowFwdIterate(flog, DFLOW_Union, cseDF_CUTOFF, &k,
 			    (DFlowInitFun) cseInitBlock0);
 
-	cseDfDEBUG({
+	if (DEBUG(cseDf)) {
 		fprintf(dbOut, i == 0 ? "Converged" : "Did not converge");
 		fprintf(dbOut, " after %d iterations\n", k);
 		flogPrint(dbOut, flog, true);
-	});
+	}
 
 	if (i != 0) return false;
 
@@ -715,7 +715,7 @@ cseFillGenKill(FlowGraph flog, BBlock bb)
 
 	assert(class && class == bbBitvClass(bb));
 
-	cseDfiDEBUG(fprintf(dbOut, "Filling Gen/Kill for %d\n", bb->label));
+	cseDfiDEBUG(dbOut, "Filling Gen/Kill for %d\n", bb->label);
 
 	/*
 	 * Clear the vectors.
@@ -1092,9 +1092,12 @@ cseRebuildCode(FlowGraph flog)
 		if (!bb) continue;
 
 		bb->code = cseRebuildSeq(bb->code);
-		/* cseDEBUG(if (cseProgInfo.blockChanged)
-		 *	    	foamPrintDb(bb->code););
-		 */
+#if 0
+		if (DEBUG(cse)) {
+			if (cseProgInfo.blockChanged)
+				foamPrintDb(bb->code);
+		}
+#endif
 	}
 
 	/* Create a new locals section */
@@ -1149,10 +1152,12 @@ cseRebuildExp(Foam foam)
 	if (cseExpInfo(foam)->newLoc != CSE_UndefinedLocal) {
  		cseProgInfo.blockChanged = true;
 
-		cseDEBUG(if (!cseExpInfo(foam)->evaluated) {
-			 fprintf(dbOut, "CSE>> ------- Removed redundant evaluation of: ------- \n");
-			 foamPrintDb(foam);
-		 });
+		if (DEBUG(cse)) {
+			if (!cseExpInfo(foam)->evaluated) {
+				fprintf(dbOut, "CSE>> ------- Removed redundant evaluation of: ------- \n");
+				foamPrintDb(foam);
+			}
+		}
 
 		return foamNewLoc(cseExpInfo(foam)->newLoc);
 	}

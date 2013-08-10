@@ -43,8 +43,8 @@
  *
  ****************************************************************************/
 
-Bool    rrfmtDebug       = false;
-#define rrfmtDEBUG(s)    DEBUG_IF(rrfmtDebug, s)
+Bool	rrfmtDebug	= false;
+#define rrfmtDEBUG	DEBUG_IF(rrfmt)	afprintf
 
 /*****************************************************************************
  *
@@ -282,7 +282,7 @@ rrFlogEmerge(FlowGraph flog, Foam prog)
 
 
 	/* Display the numbers of non-escaping raw records */
-	rrfmtDEBUG({
+	if (DEBUG(rrfmt)) {
 		(void)fprintf(dbOut, "Non-escapes: [ ");
 		for (i = 0; i < ndefs; i++)
 		{
@@ -300,7 +300,7 @@ rrFlogEmerge(FlowGraph flog, Foam prog)
 			(void)fprintf(dbOut, "<%d> ", (int)i);
 		}
 		(void)fprintf(dbOut, "]\n");
-	});
+	}
 
 
 	/* Walk the prog replacing raw records */

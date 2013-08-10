@@ -30,10 +30,12 @@
 #endif
 
 #ifdef XFLOAT_DO_DEBUG
-# define xfloatDEBUG(x)		if (true) Statement(x) else { }
+# define xfloatDebug	true
 #else
-# define xfloatDEBUG(x)		if (false) Statement(x) else { }
+# define xfloatDebug	false
 #endif
+
+#define xfloatDEBUG	DEBUG_IF(xfloat)	fprintf
 
 #define USHORT_BIT	((int) bitsizeof(UShort))
 
@@ -411,7 +413,7 @@ xsfToNative(XSFloat *pxsf, ALDOR_SF_TYPE *psf)
 		if (!hasNANs)
 			for (i = 0; i < sizeof(SFloat); i++) pb[i] = 0xff;
 		sfAssemble(psf, sign, SF_ExponNAN, pb);
-		xfloatDEBUG(fprintf(dbOut, "<A>"));
+		xfloatDEBUG(dbOut, "<A>");
 		return;
 	}
 	/* Was normal, becomes INF. */
@@ -422,23 +424,23 @@ xsfToNative(XSFloat *pxsf, ALDOR_SF_TYPE *psf)
 		for (i = 0; i < pbTot; i++)  pb[i] = fillMask;
 
 		sfAssemble(psf, sign, SF_ExponNAN, pb);
-		xfloatDEBUG(fprintf(dbOut, "<B>"));
+		xfloatDEBUG(dbOut, "<B>");
 		return;
 	}
 
 	/* Was zero, becomes zero. */
 	if (expon == XSF_ExponMin && !hasFrac) {
 		sfAssemble(psf, sign, SF_ExponMin, pb);
-		xfloatDEBUG(fprintf(dbOut, "<E>"));
+		xfloatDEBUG(dbOut, "<E>");
 		return;
 	}
 
-	xfloatDEBUG(fprintf(dbOut, "Origin exp: %d\n", expon));
+	xfloatDEBUG(dbOut, "Origin exp: %d\n", expon);
 
 	if (XSF_HasNorm1 && !hasNorm1) {
 		bfShiftDn(pbTot, pb, 1, pb, int0, 1);
 		expon++;
-		xfloatDEBUG(fprintf(dbOut, "<I1:%x>", pb[0]));
+		xfloatDEBUG(dbOut, "<I1:%x>", pb[0]);
 	}
 
 	exponMod = expon % SF_LgBase;
@@ -447,7 +449,7 @@ xsfToNative(XSFloat *pxsf, ALDOR_SF_TYPE *psf)
 		int p = ROUND_UP0(expon, SF_LgBase);
 		bfShiftDn(pbTot, pb, -expon + p, pb, int0, int0);
 		
-		xfloatDEBUG(fprintf(dbOut, "<R%d:%d>", expon-p, pb[0]));
+		xfloatDEBUG(dbOut, "<R%d:%d>", expon-p, pb[0]);
 		expon = p;
 	}
 
@@ -466,13 +468,13 @@ xsfToNative(XSFloat *pxsf, ALDOR_SF_TYPE *psf)
 		if (hasFrac && !b)  expon = SF_ExponMin;
 
 		sfAssemble(psf, sign, expon, pb);
-		xfloatDEBUG(fprintf(dbOut, "<C>"));
+		xfloatDEBUG(dbOut, "<C>");
 		return;
 	}
 
 	/* Was normal, becomes normal. */
 	sfAssemble(psf, sign, expon, pb);
-	xfloatDEBUG(fprintf(dbOut, "<D>"));
+	xfloatDEBUG(dbOut, "<D>");
 }
 
 
@@ -494,7 +496,7 @@ xdfToNative(XDFloat *pxdf, double *pdf)
 		if (!hasNANs)
 			for (i = 0; i < sizeof(DFloat); i++) pb[i] = 0xff;
 		dfAssemble(pdf, sign, DF_ExponNAN, pb);
-		xfloatDEBUG(fprintf(dbOut, "<A>"));
+		xfloatDEBUG(dbOut, "<A>");
 		return;
 	}
 	/* Was normal, becomes INF. */
@@ -505,23 +507,23 @@ xdfToNative(XDFloat *pxdf, double *pdf)
 		for (i = 0; i < pbTot; i++)  pb[i] = fillMask;
 
 		dfAssemble(pdf, sign, DF_ExponNAN, pb);
-		xfloatDEBUG(fprintf(dbOut, "<B>"));
+		xfloatDEBUG(dbOut, "<B>");
 		return;
 	}
 
 	/* Was zero, becomes zero. */
 	if (expon == XDF_ExponMin && !hasFrac) {
 		dfAssemble(pdf, sign, DF_ExponMin, pb);
-		xfloatDEBUG(fprintf(dbOut, "<E>"));
+		xfloatDEBUG(dbOut, "<E>");
 		return;
 	}
 
-	xfloatDEBUG(fprintf(dbOut, "Origin exp: %d\n", expon));
+	xfloatDEBUG(dbOut, "Origin exp: %d\n", expon);
 
 	if (XDF_HasNorm1 && !hasNorm1) {
 		bfShiftDn(pbTot, pb, 1, pb, int0, 1);
 		expon++;
-		xfloatDEBUG(fprintf(dbOut, "<I1:%x>", pb[0]));
+		xfloatDEBUG(dbOut, "<I1:%x>", pb[0]);
 	}
 
 	exponMod = expon % DF_LgBase;
@@ -530,7 +532,7 @@ xdfToNative(XDFloat *pxdf, double *pdf)
 		int p = ROUND_UP0(expon, DF_LgBase);
 		bfShiftDn(pbTot, pb, -expon + p, pb, int0, int0);
 		
-		xfloatDEBUG(fprintf(dbOut, "<R%d:%d>", expon-p, pb[0]));
+		xfloatDEBUG(dbOut, "<R%d:%d>", expon-p, pb[0]);
 		expon = p;
 	}
 
@@ -549,13 +551,13 @@ xdfToNative(XDFloat *pxdf, double *pdf)
 		if (hasFrac && !b)  expon = DF_ExponMin;
 
 		dfAssemble(pdf, sign, expon, pb);
-		xfloatDEBUG(fprintf(dbOut, "<C>"));
+		xfloatDEBUG(dbOut, "<C>");
 		return;
 	}
 
 	/* Was normal, becomes normal. */
 	dfAssemble(pdf, sign, expon, pb);
-	xfloatDEBUG(fprintf(dbOut, "<D>"));
+	xfloatDEBUG(dbOut, "<D>");
 }
 
 
@@ -584,14 +586,14 @@ xsfFrNative(XSFloat *pxsf, ALDOR_SF_TYPE *psf)
 	/* Was NAN or INF. */
 	if (hasnans && expon == SF_ExponNAN) {
 		xsfAssemble(pxsf, sign, XSF_ExponNAN, pb);
-		xfloatDEBUG(fprintf(dbOut, "<A>"));
+		xfloatDEBUG(dbOut, "<A>");
 		return;
 	}
 
 	/* Was zero becomes zero. */
 	if (expon == SF_ExponMin && !hasFrac) {
 		xsfAssemble(pxsf, sign, XSF_ExponMin, pb);
-		xfloatDEBUG(fprintf(dbOut, "<E>"));
+		xfloatDEBUG(dbOut, "<E>");
 		return;
 	}
 
@@ -600,7 +602,7 @@ xsfFrNative(XSFloat *pxsf, ALDOR_SF_TYPE *psf)
 		expon = expon * SF_LgBase;
 		fracNormalize(&expon, pbTot, pb);
 		xsfAssemble(pxsf, sign, expon, pb);
-		xfloatDEBUG(fprintf(dbOut, "<B>"));
+		xfloatDEBUG(dbOut, "<B>");
 		return;
 	}
 
@@ -609,18 +611,18 @@ xsfFrNative(XSFloat *pxsf, ALDOR_SF_TYPE *psf)
 	if (XSF_HasNorm1 && !hasNorm1) {
 		if (hasFrac) {
 			fracNormalize(&expon, pbTot, pb);
-			xfloatDEBUG(fprintf(dbOut, "<Dn>"));
+			xfloatDEBUG(dbOut, "<Dn>");
 		}
 		else {  /* Becomes zero */
 			xsfAssemble(pxsf, sign, XSF_ExponMin, pb);
-			xfloatDEBUG(fprintf(dbOut, "<Z>"));
+			xfloatDEBUG(dbOut, "<Z>");
 			return;
 		}
 	}
 
 	/* Was normal, becomes normal. */
 	xsfAssemble(pxsf, sign, expon, pb);
-	xfloatDEBUG(fprintf(dbOut, "<C>"));
+	xfloatDEBUG(dbOut, "<C>");
 }
 
 
@@ -643,14 +645,14 @@ xdfFrNative(XDFloat *pxdf, double *pdf)
 	/* Was NAN or INF. */
 	if (hasnans && expon == DF_ExponNAN) {
 		xdfAssemble(pxdf, sign, XDF_ExponNAN, pb);
-		xfloatDEBUG(fprintf(dbOut, "<A>"));
+		xfloatDEBUG(dbOut, "<A>");
 		return;
 	}
 
 	/* Was zero becomes zero. */
 	if (expon == DF_ExponMin && !hasFrac) {
 		xdfAssemble(pxdf, sign, XDF_ExponMin, pb);
-		xfloatDEBUG(fprintf(dbOut, "<E>"));
+		xfloatDEBUG(dbOut, "<E>");
 		return;
 	}
 
@@ -659,7 +661,7 @@ xdfFrNative(XDFloat *pxdf, double *pdf)
 		expon = expon * DF_LgBase;
 		fracNormalize(&expon, pbTot, pb);
 		xdfAssemble(pxdf, sign, expon, pb);
-		xfloatDEBUG(fprintf(dbOut, "<B>"));
+		xfloatDEBUG(dbOut, "<B>");
 		return;
 	}
 
@@ -668,18 +670,18 @@ xdfFrNative(XDFloat *pxdf, double *pdf)
 	if (XDF_HasNorm1 && !hasNorm1) {
 		if (hasFrac) {
 			fracNormalize(&expon, pbTot, pb);
-			xfloatDEBUG(fprintf(dbOut, "<Dn>"));
+			xfloatDEBUG(dbOut, "<Dn>");
 		}
 		else {  /* Becomes zero */
 			xdfAssemble(pxdf, sign, XDF_ExponMin, pb);
-			xfloatDEBUG(fprintf(dbOut, "<Z>"));
+			xfloatDEBUG(dbOut, "<Z>");
 			return;
 		}
 	}
 
 	/* Was normal, becomes normal. */
 	xdfAssemble(pxdf, sign, expon, pb);
-	xfloatDEBUG(fprintf(dbOut, "<C>"));
+	xfloatDEBUG(dbOut, "<C>");
 }
 
 #endif  /* FOAM_RTS */

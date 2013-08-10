@@ -39,7 +39,7 @@
 
 Bool	dvDebug		= false;
 
-#define	dvDEBUG(s)	DEBUG_IF(dvDebug, s)
+#define dvDEBUG		DEBUG_IF(dv)	afprintf
 
 typedef DvUsage *DvUsagePtr;
 
@@ -131,11 +131,11 @@ dvElim(Foam unit)
 		dvElimUnused(unit);
 		count++;
 
-		dvDEBUG({
+		if (DEBUG(dv)) {
 			fprintf(dbOut, "<<dvUnit[%d]:\n", count);
 			foamPrint(dbOut, unit);
 			fnewline(dbOut);
-		});
+		}
 	}  while (dvChanged && count < DvMaxPasses);
 
 	dvRemoveNops(unit);

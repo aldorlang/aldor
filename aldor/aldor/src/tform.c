@@ -32,35 +32,35 @@
 #include "comsg.h"
 #include "strops.h"
 
-Bool	tfDebug		= false;
-Bool	tfExprDebug	= false;
-Bool	tfCrossDebug	= false;
-Bool	tfFloatDebug	= false;
-Bool	tfHasDebug	= false;
-Bool	tfHashDebug	= false;
-Bool	tfImportDebug	= false;
-Bool	tfMapDebug	= false;
-Bool	tfMultiDebug	= false;
-Bool	tfCatDebug	= false;
-Bool	tfWithDebug	= false;
-Bool	tfCascadeDebug	= false;
-Bool	tfParentDebug	= false;
-Bool	symeRefreshDebug = false;
+Bool	tfDebug			= false;
+Bool	tfExprDebug		= false;
+Bool	tfCrossDebug		= false;
+Bool	tfFloatDebug		= false;
+Bool	tfHasDebug		= false;
+Bool	tfHashDebug		= false;
+Bool	tfImportDebug		= false;
+Bool	tfMapDebug		= false;
+Bool	tfMultiDebug		= false;
+Bool	tfCatDebug		= false;
+Bool	tfWithDebug		= false;
+Bool	tfCascadeDebug		= false;
+Bool	tfParentDebug		= false;
+Bool	symeRefreshDebug	= false;
 
-#define	tfDEBUG(s)		DEBUG_IF(tfDebug, s)
-#define	tfExprDEBUG(s)		DEBUG_IF(tfExprDebug, s)
-#define	tfCrossDEBUG(s)		DEBUG_IF(tfCrossDebug, s)
-#define	tfFloatDEBUG(s)		DEBUG_IF(tfFloatDebug, s)
-#define	tfHasDEBUG(s)		DEBUG_IF(tfHasDebug, s)
-#define	tfHashDEBUG(s)		DEBUG_IF(tfHashDebug, s)
-#define	tfImportDEBUG(s)	DEBUG_IF(tfImportDebug, s)
-#define	tfMapDEBUG(s)		DEBUG_IF(tfMapDebug, s)
-#define	tfMultiDEBUG(s)		DEBUG_IF(tfMultiDebug, s)
-#define	tfCatDEBUG(s)		DEBUG_IF(tfCatDebug, s)
-#define	tfWithDEBUG(s)		DEBUG_IF(tfWithDebug, s)
-#define	tfCascadeDEBUG(s)	DEBUG_IF(tfCascadeDebug, s)
-#define	tfParentDEBUG(s)	DEBUG_IF(tfParentDebug, s)
-#define symeRefreshDEBUG(s)	DEBUG_IF(symeRefreshDebug, s)
+#define tfDEBUG			DEBUG_IF(tf)		afprintf
+#define tfExprDEBUG		DEBUG_IF(tfExpr)	afprintf
+#define tfCrossDEBUG		DEBUG_IF(tfCross)	afprintf
+#define tfFloatDEBUG		DEBUG_IF(tfFloat)	afprintf
+#define tfHasDEBUG		DEBUG_IF(tfHas)		afprintf
+#define tfHashDEBUG		DEBUG_IF(tfHash)	afprintf
+#define tfImportDEBUG		DEBUG_IF(tfImport)	afprintf
+#define tfMapDEBUG		DEBUG_IF(tfMap)		afprintf
+#define tfMultiDEBUG		DEBUG_IF(tfMulti)	afprintf
+#define tfCatDEBUG		DEBUG_IF(tfCat)		afprintf
+#define tfWithDEBUG		DEBUG_IF(tfWith)	afprintf
+#define tfCascadeDEBUG		DEBUG_IF(tfCascade)	afprintf
+#define tfParentDEBUG		DEBUG_IF(tfParent)	afprintf
+#define symeRefreshDEBUG	DEBUG_IF(symeRefresh)	afprintf
 
 #define	TFormBuiltinSefo
 #undef	UseTypeVariables
@@ -635,7 +635,7 @@ tfHash(TForm tf)
 	int this = serial++;
 
 	tfFollow(tf);
-	tfHashDEBUG(afprintf(dbOut, "(hash %d %pTForm\n", this, tf));
+	tfHashDEBUG(dbOut, "(hash %d %pTForm\n", this, tf);
 	if (!tfIsDefine(tf))
 		tf = tfDefineeType(tf);
 
@@ -663,7 +663,7 @@ tfHash(TForm tf)
 
 	h += tformInfo(tfTag(tf)).hash + 200063;
 	h &= 0x3FFFFFFF;
-	tfHashDEBUG(afprintf(dbOut, " hash %d = %d)\n", this, h));
+	tfHashDEBUG(dbOut, " hash %d = %d)\n", this, h);
 	return h;
 }
 
@@ -724,9 +724,8 @@ tfPending(Stab stab, AbSyn ab)
 	serialNo += 1;
 	depthNo	 += 1;
 	serialThis = serialNo;
-	tfExprDEBUG({
-			afprintf(dbOut, "%*s(tfPending %d= %pAbSyn\n", depthNo, "", serialThis, ab);
-	});
+	tfExprDEBUG(dbOut, "%*s(tfPending %d= %pAbSyn\n",
+		    depthNo, "", serialThis, ab);
 
 
 	/* The stab is used to look up meanings for ids without them. */
@@ -750,9 +749,7 @@ tfPending(Stab stab, AbSyn ab)
 	default:		tf = tfp0General(stab, ab); break;
 	}
 
-	tfExprDEBUG({
-			afprintf(dbOut, "%*s %d %pTForm)\n", depthNo, "", serialThis, tf);
-	});
+	tfExprDEBUG(dbOut, "%*s %d %pTForm)\n", depthNo, "", serialThis, tf);
 	depthNo -= 1;
 
 	tfSetExpr(tf, ab);
@@ -1307,11 +1304,11 @@ tfMeaning(Stab stab, AbSyn ab, TForm tf)
 	serialNo += 1;
 	depthNo	 += 1;
 	serialThis = serialNo;
-	tfExprDEBUG({
+	if (DEBUG(tfExpr)) {
 		fprintf(dbOut, "->tfm: %*s%d= ", depthNo, "", serialThis);
 		abPrettyPrint(dbOut, ab);
 		fnewline(dbOut);
-	});
+	}
 
 	/* The stab is used to look up meanings for ids without them. */
 	if (abStab(ab))
@@ -1336,11 +1333,11 @@ tfMeaning(Stab stab, AbSyn ab, TForm tf)
 	tfCheckConsts(tf);
 	tfm0FoamType(tf);
 
-	tfExprDEBUG({
+	if (DEBUG(tfExpr)) {
 		fprintf(dbOut, "<-tfm: %*s%d= ", depthNo, "", serialThis);
 		tfPrint(dbOut, tf);
 		fnewline(dbOut);
-	});
+	}
 	depthNo -= 1;
 
 	return tf;
@@ -1682,11 +1679,11 @@ tfToAbSyn0(TForm tf, Bool pretty)
 	if (tfHasExpr(tf) && !pretty)
 		return tfGetExpr(tf);
 
-	tfExprDEBUG({
+	if (DEBUG(tfExpr)) {
 		fprintf(dbOut, "tfToAbSyn -> ");
 		tfPrint(dbOut, tf);
 		fnewline(dbOut);
-	});
+	}
 
 	switch (tfTag(tf)) {
 	case TF_Unknown:
@@ -1871,11 +1868,11 @@ tfToAbSyn0(TForm tf, Bool pretty)
 		NotReached(ab = abNewNothing(sposNone));
 	}
 
-	tfExprDEBUG({
+	if (DEBUG(tfExpr)) {
 		fprintf(dbOut, "tfToAbSyn <- ");
 		abPrettyPrintClippedIn(dbOut, ab, 65, 1);
 		fnewline(dbOut);
-	});
+	}
 
 	if (!pretty) {
 		tfSetExpr(tf, ab);
@@ -1938,13 +1935,13 @@ tfDisownExpr(TForm tf, Bool pretty)
 {
 	AbSyn	ab = tfToAbSyn0(tf, pretty);
 
-	tfExprDEBUG({
+	if (DEBUG(tfExpr)) {
 		fprintf(dbOut, "tfDisownExpr -> ");
 		tfPrint(dbOut, tf);
 		fnewline(dbOut);
 		abPrettyPrintClippedIn(dbOut, ab, 65, 1);
 		fnewline(dbOut);
-	});
+	}
 
 	if (!pretty) {
 		if (!tfOwnsExpr(tf)) ab = sefoCopy(ab);
@@ -2042,10 +2039,12 @@ void
 tfSyntaxConditions(Stab stab, TForm tf, TfCondElt conditions)
 {
 	int i;
-	tfDEBUG(if (conditions != NULL)
+	if (DEBUG(tf)) {
+		if (conditions != NULL)
 			afprintf(dbOut, "Adding Condition: %pTForm - %pAbSynList %d\n", 
 				 tf, conditions->list,
-				 tfIsSyntax(tf) || tfIsMap(tf) || tfIsEmptyMulti(tf) || tfIsWith(tf)));
+				 tfIsSyntax(tf) || tfIsMap(tf) || tfIsEmptyMulti(tf) || tfIsWith(tf));
+	}
 	assert(tfIsSyntax(tf) || tfIsMap(tf) || tfIsMulti(tf) || tfIsWith(tf));
 	if (!tfIsMeaning(tf))
 		tfMergeConditions(tf, stab, conditions);
@@ -2357,7 +2356,7 @@ tfFloat(Stab stab, TForm tf)
 	if (tf == outerTf)
 		return NULL;
 
-	tfFloatDEBUG({
+	if (DEBUG(tfFloat)) {
 		fprintf(dbOut, "Floating from stab level %lu to level %lu.",
 			odepth, ndepth);
 		findent += 2;
@@ -2369,7 +2368,7 @@ tfFloat(Stab stab, TForm tf)
 		tfPrint(dbOut, outerTf);
 		findent -= 2;
 		fnewline(dbOut);
-	});
+	}
 	outerTf = tfFollowOnly(outerTf);
 	tf = tfForwardFrSyntax(tf, outerTf);
 	tf->conditions = NULL;
@@ -2481,9 +2480,11 @@ handle_id:
 					depth = d;
 			}
 		}
-		tfFloatDEBUG(Buffer buf = bufNew();
-			     bufPrintf(buf, "AbSyn: %s [%pAbSyn] %d\n", symString(sym), ab, depth);
-			     fprintf(dbOut, "%s", bufLiberate(buf)));
+		if (DEBUG(tfFloat)) {
+			Buffer buf = bufNew();
+			bufPrintf(buf, "AbSyn: %s [%pAbSyn] %d\n", symString(sym), ab, depth);
+			fprintf(dbOut, "%s", bufLiberate(buf));
+		}
 		break;
 	}
 	case AB_PretendTo:
@@ -2556,7 +2557,7 @@ tfCopyQueries(TForm to, TForm from)
 TForm
 tfAddQuery(TForm tf, TForm cat)
 {
-	tfDEBUG(afprintf(dbOut, "Adding query %pTForm %pTForm\n", tf, cat));
+	tfDEBUG(dbOut, "Adding query %pTForm %pTForm\n", tf, cat);
 	tfSetQueries(tf, listCons(TForm)(cat, tfQueries(tf)));
 	return cat;
 }
@@ -2802,11 +2803,11 @@ tfGetDomSelf(TForm tf)
 	if (!tfIsAdd(tf) && !tfHasCatExports(cat))
 		return tfSelf(tf);
 	
-	tfImportDEBUG({
+	if (DEBUG(tfImport)) {
 		fprintf(dbOut, "(tfGetDomSelf:  from ");
 		tfPrint(dbOut, tf);
 		fnewline(dbOut);
-	});
+	}
 	
 	if (tfIsArchive(tf) || tfIsLibrary(tf))
 		tfAddSelf(tf, listNil(Syme));
@@ -2818,9 +2819,7 @@ tfGetDomSelf(TForm tf)
 	for (hl = tfQueries(tf); hl; hl = cdr(hl))
 		tfAddSelf(tf, tfGetCatSelf(car(hl)));
 
-	tfImportDEBUG({
-		fprintf(dbOut, ")\n");
-	});
+	tfImportDEBUG(dbOut, ")\n");
 
 	tfHasSelf(tf) = true;
 	return tfSelf(tf);
@@ -2856,11 +2855,11 @@ tfGetCatSelf(TForm cat)
 	if (tfIsUnknown(cat) || tfIsNone(cat))
 		return tfSelf(cat);
 
-	tfCatDEBUG({
+	if (DEBUG(tfCat)) {
 		fprintf(dbOut, "(tfGetCatSelf:  from ");
 		tfPrint(dbOut, cat);
 		fnewline(dbOut);
-	});
+	}
 
 	if (tfIsWith(cat)) {
 		TForm		tfb = tfWithBase(cat);
@@ -2901,10 +2900,10 @@ tfGetCatSelf(TForm cat)
 	else
 		tfAddSelf(cat, tfGetThdSelf(tfGetCategory(cat)));
 
-	tfCatDEBUG({
+	if (DEBUG(tfCat)) {
 		fprintf(dbOut, ")\n");
 		fnewline(dbOut);
-	});
+	}
 
 	tfHasSelf(cat) = true;
 	return tfSelf(cat);
@@ -3346,11 +3345,11 @@ tfAuditExportList(SymeList symes)
 local void
 tfGetExportError(TForm tf, String order)
 {
-	tfDEBUG({
+	if (DEBUG(tf)) {
 		fprintf(dbOut, "No semantics for %s:  ", order);
 		tfPrint(dbOut, tf);
 		fnewline(dbOut);
-	});
+	}
 	/* "Implementation restriction:
 	   import from %s before its exports could be determined." */
 	/* comsgWarning(tfExpr(tf), ALDOR_W_TinEarlyImport, order); */
@@ -3836,15 +3835,12 @@ tfMangleSymes(TForm tf, TForm cat, SymeList esymes, SymeList symes)
 
 
 			/* DEBUGGING */
-			symeRefreshDEBUG({
-				char *fmt = "\t* %d --> %d, %d --> %d [%s]\n";
-				(void)fprintf(dbOut, fmt,
-					symeDefnNum(syme),
-					symeDefnNum(csyme),
-					symeConstNum(syme),
-					symeConstNum(csyme),
-					symePretty(syme));
-			});
+			symeRefreshDEBUG(dbOut, "\t* %d --> %d, %d --> %d [%s]\n",
+					 symeDefnNum(syme),
+					 symeDefnNum(csyme),
+					 symeConstNum(syme),
+					 symeConstNum(csyme),
+					 symePretty(syme));
 
 
 			/* Transfer implementation details */
@@ -3879,11 +3875,11 @@ tfGetDomExports(TForm tf)
 		return tfDomExports(tf);
 	}
 
-	tfImportDEBUG({
+	if (DEBUG(tfImport)) {
 		fprintf(dbOut, "(tfGetDomExports:  from ");
 		tfPrint(dbOut, tf);
 		fnewline(dbOut);
-	});
+	}
 
 	/*
 	 * Collect the domain exports from the type form.
@@ -3920,12 +3916,12 @@ tfGetDomExports(TForm tf)
 		if (tfIsDefine(cat))
 			val = tfDefineVal(cat);
 
-		symeRefreshDEBUG({
+		if (DEBUG(symeRefresh)) {
 			if (val && !tfIsAdd(val)) {
 				(void)fprintf(dbOut, "\n-------- (not add)\n");
 				(void)tfPrintDb(val);
 			}
-		});
+		}
 
 		if (val && tfIsAdd(val)) {
 			vexps = tfGetDomExports(val);
@@ -3940,9 +3936,7 @@ tfGetDomExports(TForm tf)
 	for (hl = tfQueries(tf); hl; hl = cdr(hl))
 		tfAddHasExports(tf, car(hl));
 
-	tfImportDEBUG({
-		fprintf(dbOut, ")\n");
-	});
+	tfImportDEBUG(dbOut, ")\n");
 
 	tfAuditExportList(tfDomExports(tf));
 	return tfDomExports(tf);
@@ -3970,10 +3964,10 @@ tfGetCatExports(TForm cat)
 		return tfCatExports(cat);
 	}
 
-	tfCatDEBUG({
+	if (DEBUG(tfCat)) {
 		fprintf(dbOut, "(tfGetCatExports:  from ");
 		tfPrint(dbOut, cat);
-	});
+	}
 
 	tfGetCatSelf(cat);
 	tfGetCatCascades(cat);
@@ -3996,9 +3990,7 @@ tfGetCatExports(TForm cat)
 	else
 		tfAddCatExports(cat, tfGetThdExports(tfGetCategory(cat)));
 
-	tfCatDEBUG({
-		fprintf(dbOut, ")\n");
-	});
+	tfCatDEBUG(dbOut, ")\n");
 
 	tfAuditExportList(tfCatExports(cat));
 	return tfCatExports(cat);
@@ -4022,11 +4014,11 @@ tfGetThdExports(TForm thd)
 		return tfThdExports(thd);
 	}
 
-	tfCatDEBUG({
+	if (DEBUG(tfCat)) {
 		fprintf(dbOut, "(tfGetThdExports:  from ");
 		tfPrint(dbOut, thd);
 		fnewline(dbOut);
-	});
+	}
 
 	tfGetThdSelf(thd);
 	tfGetThdCascades(thd);
@@ -4041,9 +4033,7 @@ tfGetThdExports(TForm thd)
 		tfAddThdExports(thd,tfSymes(thd));
 	}
 
-	tfCatDEBUG({
-		fprintf(dbOut, ")\n");
-	});
+	tfCatDEBUG(dbOut, ")\n");
 
 	tfAuditExportList(tfThdExports(thd));
 	return tfThdExports(thd);
@@ -4072,21 +4062,21 @@ tfGetCatExportsFrParents(SymeList symes)
 
 		if (!symeIsSelfSelf(syme)) continue;
 
-		tfParentDEBUG({
+		if (DEBUG(tfParent)) {
 			fprintf(dbOut, "tfCatExports:  %p= expanding: ", syme);
 			symePrint(dbOut, syme);
 			fnewline(dbOut);
-		});
+		}
 
 		nsymes = tfGetCatParents(symeType(syme), true);
 		cond = symeCondition(syme);
 		if (cond) nsymes = tfGetCatExportsCond(nsymes, cond, true);
 
-		tfParentDEBUG({
+		if (DEBUG(tfParent)) {
 			fprintf(dbOut, "tfCatExports:  %p= into: ", syme);
 			symeListPrint(dbOut, nsymes);
 			fnewline(dbOut);
-		});
+		}
 
 		nsymes = tfGetCatExportsFilter(osymes, nsymes);
 		osymes = listNConcat(Syme)(osymes, nsymes);
@@ -4285,11 +4275,11 @@ tfStabGetDomImports(Stab stab, TForm tf)
 	if (tfDomImports(tf))
 		return tfDomImports(tf);
 
-	tfImportDEBUG({
+	if (DEBUG(tfImport)) {
 		fprintf(dbOut, "(tfStabGetDomImports:  from ");
 		tfPrint(dbOut, tf);
 		fnewline(dbOut);
-	});
+	}
 
 	xsymes = tfGetDomExports(tf);
 
@@ -4301,8 +4291,8 @@ tfStabGetDomImports(Stab stab, TForm tf)
 		while (sl != listNil(Syme)) {
 			Syme syme = car(sl);
 			TForm symeTf = symeType(syme);
-			tfDEBUG(afprintf(dbOut, "Setting imported condition %s %pTForm\n", 
-					 symeString(syme), symeTf));
+			tfDEBUG(dbOut, "Setting imported condition %s %pTForm\n", 
+				symeString(syme), symeTf);
 			tfSetConditions(symeTf, tfConditions(tf));
 			symeSetConditionContext(syme, tfConditionalAbSyn(tf));
 			sl = cdr(sl);
@@ -4317,12 +4307,12 @@ tfStabGetDomImports(Stab stab, TForm tf)
 	if (tfIsBasicLib(tf))
 		tfInitBasicTypes(tf);
 
-	tfImportDEBUG({
-	    symeListPrintDb(symes);
+	if (DEBUG(tfImport)) {
+		symeListPrintDb(symes);
 		fprintf(dbOut, ")\n");
 		tfPrint(dbOut, tf);
 		fnewline(dbOut);
-	});
+	}
 
 	return symes;
 }
@@ -4605,12 +4595,12 @@ tfGetDomCascades(TForm tf)
 	if (!tfHasCatExports(cat))
 		return listNil(TQual);
 
-	tfCascadeDEBUG({
+	if (DEBUG(tfCascade)) {
 		fprintf(dbOut, "tfGetDomCascades:  from ");
 		tfPrint(dbOut, tf);
 		findent += 2;
 		fnewline(dbOut);
-	});
+	}
 
 	/*
 	 * Collect the domain cascades from the type form.
@@ -4631,13 +4621,13 @@ tfGetDomCascades(TForm tf)
 	else
 		ql = listCopy(TQual)(tfGetCatCascades(tfGetCategory(tf)));
 
-	tfCascadeDEBUG({
+	if (DEBUG(tfCascade)) {
 		fprintf(dbOut, "domain cascades:");
 		fnewline(dbOut);
 		listPrint(TQual)(dbOut, ql, tqPrint);
 		findent -= 2;
 		fnewline(dbOut);
-	});
+	}
 
 	tfHasCascades(tf) = true;
 	tfSetCascades(tf, ql);
@@ -4686,11 +4676,11 @@ tfGetCatCascades(TForm cat)
 		return listNil(TQual);
 	}
 
-	tfCatDEBUG({
+	if (DEBUG(tfCat)) {
 		fprintf(dbOut, "(tfGetCatCascades:  from ");
 		tfPrint(dbOut, cat);
 		fnewline(dbOut);
-	});
+	}
 
 	if (tfIsWith(cat))
 		ql = tfGetCatCascadesFrWith(cat);
@@ -4717,9 +4707,7 @@ tfGetCatCascades(TForm cat)
 	else
 		ql = listCopy(TQual)(tfGetThdCascades(tfGetCategory(cat)));
 
-	tfCatDEBUG({
-		fprintf(dbOut, ")\n");
-	});
+	tfCatDEBUG(dbOut, ")\n");
 
 	tfHasCascades(cat) = true;
 	tfSetCascades(cat, ql);
@@ -4743,11 +4731,11 @@ tfGetThdCascades(TForm thd)
 	if (tfIsUnknown(thd) || tfIsNone(thd))
 		return listNil(TQual);
 
-	tfCatDEBUG({
+	if (DEBUG(tfCat)) {
 		fprintf(dbOut, "(tfGetThdCascades:  from ");
 		tfPrint(dbOut, thd);
 		fnewline(dbOut);
-	});
+	}
 
 	if (tfIsThird(thd)) {
 		ql = tfGetCatCascades(tfThirdRestrictions(thd));
@@ -4757,9 +4745,7 @@ tfGetThdCascades(TForm thd)
 	else
 		ql = listNil(TQual);
 
-	tfCatDEBUG({
-		fprintf(dbOut, ")\n");
-	});
+	tfCatDEBUG(dbOut, ")\n");
 
 	tfHasCascades(thd) = true;
 	tfSetCascades(thd, ql);
@@ -4873,13 +4859,13 @@ tfSymeInducesDependency(Syme syme, TForm tf)
 	if (stab && symeDefLevel(syme) == car(stab))
 		result = !symeUnused(syme) || tfIsCategoryMap(tf);
 
-	tfMapDEBUG(afprintf(dbOut, "tformSymeInducesDependency: %s %pSyme %pTForm\n", boolToString(result),
-			    syme, tf));
-	tfMapDEBUG(afprintf(dbOut, "tformSymeInducesDependency: %pSyme Lvl %s unused: %s catMap %s\n", 
-			    syme,
-			    boolToString(stab && symeDefLevel(syme) == car(stab)),
-			    boolToString(symeUnused(syme)),
-			    boolToString(tfIsCategoryMap(tf))));
+	tfMapDEBUG(dbOut, "tformSymeInducesDependency: %s %pSyme %pTForm\n", boolToString(result),
+		   syme, tf);
+	tfMapDEBUG(dbOut, "tformSymeInducesDependency: %pSyme Lvl %s unused: %s catMap %s\n", 
+		   syme,
+		   boolToString(stab && symeDefLevel(syme) == car(stab)),
+		   boolToString(symeUnused(syme)),
+		   boolToString(tfIsCategoryMap(tf)));
 
 	return result;
 }
@@ -4915,13 +4901,13 @@ tfSymesFrCross(TForm tf)
 	SymeList	symes = listNil(Syme);
 	Length		i, argc = tfArgc(tf);
 
-	tfCrossDEBUG({
+	if (DEBUG(tfCross)) {
 		fprintf(dbOut, "tfSymesFrCross:");
 		fnewline(dbOut);
 		fprintf(dbOut, "  tf:");
 		tfPrint(dbOut, tf);
 		fnewline(dbOut);
-	});
+	}
 
 	for (i = 0; i < argc; i += 1) {
 		TForm	tfi = tfCrossArgN(tf, i);
@@ -4932,12 +4918,12 @@ tfSymesFrCross(TForm tf)
 	}
 	symes = listNReverse(Syme)(symes);
 
-	tfCrossDEBUG({
+	if (DEBUG(tfCross)) {
 		fprintf(dbOut, "  symes:");
 		fnewline(dbOut);
 		listPrint(Syme)(dbOut, symes, symePrint);
 		fnewline(dbOut);
-	});
+	}
 
 	return symes;
 }
@@ -4948,13 +4934,13 @@ tfSymesFrMulti(TForm tf)
 	SymeList	symes = listNil(Syme);
 	Length		i, argc = tfArgc(tf);
 
-	tfMultiDEBUG({
+	if (DEBUG(tfMulti)) {
 		fprintf(dbOut, "tfSymesFrMulti:");
 		fnewline(dbOut);
 		fprintf(dbOut, "  tf:");
 		tfPrint(dbOut, tf);
 		fnewline(dbOut);
-	});
+	}
 
 	for (i = 0; i < argc; i += 1) {
 		TForm	tfi = tfMultiArgN(tf, i);
@@ -4965,12 +4951,12 @@ tfSymesFrMulti(TForm tf)
 	}
 	symes = listNReverse(Syme)(symes);
 
-	tfMultiDEBUG({
+	if (DEBUG(tfMulti)) {
 		fprintf(dbOut, "  symes:");
 		fnewline(dbOut);
 		listPrint(Syme)(dbOut, symes, symePrint);
 		fnewline(dbOut);
-	});
+	}
 
 	return symes;
 }
@@ -4981,13 +4967,13 @@ tfSymesFrMap(TForm tf)
 	SymeList	symes = listNil(Syme);
 	Length		i, argc = tfMapArgc(tf);
 
-	tfMapDEBUG({
+	if (DEBUG(tfMap)) {
 		fprintf(dbOut, "tfSymesFrMap:");
 		fnewline(dbOut);
 		fprintf(dbOut, "  tf:");
 		tfPrint(dbOut, tf);
 		fnewline(dbOut);
-	});
+	}
 
 	for (i = 0; i < argc; i += 1) {
 		TForm	tfi = tfMapArgN(tf, i);
@@ -4998,12 +4984,12 @@ tfSymesFrMap(TForm tf)
 	}
 	symes = listNReverse(Syme)(symes);
 
-	tfMapDEBUG({
+	if (DEBUG(tfMap)) {
 		fprintf(dbOut, "  symes:");
 		fnewline(dbOut);
 		listPrint(Syme)(dbOut, symes, symePrint);
 		fnewline(dbOut);
-	});
+	}
 
 	return symes;
 }
@@ -6483,12 +6469,12 @@ tfIsDependentMap(TForm tf)
 
 	result = tfIsAnyMap(tf) && tfSymes(tf) != listNil(Syme);
 
-	tfMapDEBUG({
+	if (DEBUG(tfMap)) {
 		fprintf(dbOut, "tfIsDependentMap:  %s\n  tf:",
 			boolToString(result));
 		tfPrint(dbOut, tf);
 		fnewline(dbOut);
-	});
+	}
 
 	return result;
 }
@@ -6631,12 +6617,12 @@ tfIsDependentCross(TForm tf)
 
 	result = tfIsCross(tf) && tfSymes(tf) != listNil(Syme);
 
-	tfCrossDEBUG({
+	if (DEBUG(tfCross)) {
 		fprintf(dbOut, "tfIsDependentCross:  %s\n  tf:",
 			boolToString(result));
 		tfPrint(dbOut, tf);
 		fnewline(dbOut);
-	});
+	}
 
 	return result;
 }
@@ -6690,12 +6676,12 @@ tfIsDependentMulti(TForm tf)
 
 	result = tfIsMulti(tf) && tfSymes(tf) != listNil(Syme);
 
-	tfMultiDEBUG({
+	if (DEBUG(tfMulti)) {
 		fprintf(dbOut, "tfIsDependentMulti:  %s\n  tf:",
 			boolToString(result));
 		tfPrint(dbOut, tf);
 		fnewline(dbOut);
-	});
+	}
 
 	return result;
 }
@@ -7160,8 +7146,8 @@ tfSubstPush(TForm tf)
 		absFree(sigma);
 	}
 	if (tfConditions(tf) != NULL) {
-		tfDEBUG(afprintf(dbOut, "SubstPushCond: %pTForm %pAbSynList\n",
-				 tf->argv[0], tfConditionalAbSyn(tf)));
+		tfDEBUG(dbOut, "SubstPushCond: %pTForm %pAbSynList\n",
+			tf->argv[0], tfConditionalAbSyn(tf));
 		tfSetConditions(tf->argv[0], tfConditions(tf));
 	}
 
@@ -8153,9 +8139,11 @@ tfImplicitExport(Stab stab, SymeList mods, Syme syme)
 extern void   
 tfMergeConditions(TForm tf, Stab stab, TfCondElt conditions)
 {
-	tfDEBUG(if (conditions != NULL)
+	if (DEBUG(tf)) {
+		if (conditions != NULL)
 			afprintf(dbOut, "Merge condition %pAbSynList to %pTForm\n", 
-				 conditions->list, tf));
+				 conditions->list, tf);
+	}
 	tfSetConditions(tf, tfCondMerge(tfConditions(tf), stab, conditions));
 }
 
@@ -8185,13 +8173,14 @@ tfConditionalAbSyn(TForm tf)
 	if (tfConditions(tf)->containsEmpty) 
 		return listNil(AbSyn);
 
-	tfDEBUG(
+	if (DEBUG(tf)) {
 		TfCondEltList list;
 		list = tfConditions(tf)->conditions;
 		while (list != listNil(TfCondElt)) {
 			afprintf(dbOut, "Condition: %pTForm %pAbSynList\n", tf, car(list)->list);
 			list = cdr(list);
-		});
+		};
+	}
 	return tfConditions(tf)->conditions->first->list;
 }
 

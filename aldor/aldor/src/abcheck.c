@@ -73,12 +73,12 @@ abCheck(AbSyn absyn)
 	if (!absyn)
 		bug("Encountered zero abstract syntax tree in abCheck.");
 
-	DEBUG({
+	if (DEBUG(phase)) {
 		fnewline(dbOut);
 		fprintf(dbOut, "abCheck for ");
 		abPrint(dbOut, absyn);
 		findent += 2;
-	});
+	}
 
 	if (!abIsLeaf(absyn)) {
 		argc = abArgc(absyn);
@@ -88,9 +88,9 @@ abCheck(AbSyn absyn)
 			abCheck(argv[i]);
 	}
 
-	DEBUG({
+	if (DEBUG(phase)) {
 		findent -= 2;
-	});
+	}
 
 	switch (abTag(absyn)) {
 	case AB_Nothing:

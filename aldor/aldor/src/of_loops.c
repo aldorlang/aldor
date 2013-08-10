@@ -39,9 +39,9 @@
  *
  ****************************************************************************/
 
-static Bool	loopDebug = false;
+static Bool loopDebug	= false;
 
-# define   loopDEBUG(s)    DEBUG_IF(loopDebug,  s)
+#define loopDEBUG	DEBUG_IF(loop)	afprintf
 
 /****************************************************************************
  *
@@ -597,7 +597,7 @@ loopFilterExp(Foam foam)
 
 		loopInfo.numInv--;
 		
-		loopDEBUG(fprintf(dbOut,"* Invariant rejected by loopFilterExp *\n"););
+		loopDEBUG(dbOut,"* Invariant rejected by loopFilterExp *\n");
 
 		removed = true;
 
@@ -638,7 +638,7 @@ loopFilterDependencies(Foam foam)
 
 			loopInfo.numInv--;
 		
-			loopDEBUG(fprintf(dbOut,"* Invariant rejected by loopFilterDependencies *\n"););
+			loopDEBUG(dbOut,"* Invariant rejected by loopFilterDependencies *\n");
 
 			changed = true;
 		}
@@ -771,10 +771,10 @@ loopPreHeaderCodeCreate(Loop loop)
 	/* Add: (Goto the header block) */
 	preHeader->foamSeq.argv[j] = foamNewGoto(loop->header->label);
 
-	loopDEBUG({
+	if (DEBUG(loop)) {
 		fprintf(dbOut, "New preheader: \n");
 		foamPrintDb(preHeader);
-	   });
+	}
 
 	return preHeader;
 
