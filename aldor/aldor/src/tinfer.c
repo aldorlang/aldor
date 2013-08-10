@@ -1838,7 +1838,10 @@ tiTfCondition(Stab stab, TForm tf)
 		AbSyn ab = car(condition);
 
 		assert(cstab != NULL);
-		titfDEBUG(dbOut, "Condition: "); abPrintDb(car(condition));
+		if (DEBUG(titf)) {
+			afprintf(dbOut, "Condition: ");
+			abPrintDb(car(condition));
+		}
 		if (abContains(ab, absyn)) {
 			condition = cdr(condition);
 			continue;
