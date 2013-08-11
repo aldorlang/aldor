@@ -1853,7 +1853,7 @@ tfSatParents(SatMask mask, SymeList mods, AbSyn Sab, SymeList S, SymeList T)
 	while (newS || queue) {
 		T = tfSatExportsMissing(mask, mods, Sab, newS, T);
 		if (T == listNil(Syme)) {
-			tfsParentDEBUG(afprintf(dbOut, " ->tfpSyme: %*s= No parents)\n", tfsDepthNo, ""));
+		  tfsParentDEBUG(dbOut, " ->tfpSyme: %*s= No parents)\n", tfsDepthNo, "");
 			return tfSatTrue(mask);
 		}
 		newS = tfSatParentsFilter(oldS, newS);
@@ -1879,8 +1879,8 @@ tfSatParents(SatMask mask, SymeList mods, AbSyn Sab, SymeList S, SymeList T)
 		else
 			newS = listNil(Syme);
 	}
-	tfsParentDEBUG(afprintf(dbOut, " ->tfpSyme: %*s= Left: %pSymeList)",
-				tfsDepthNo, "", T));
+	tfsParentDEBUG(dbOut, " ->tfpSyme: %*s= Left: %pSymeList)",
+				tfsDepthNo, "", T);
 	if (T == listNil(Syme))
 		return tfSatTrue(mask);
 
