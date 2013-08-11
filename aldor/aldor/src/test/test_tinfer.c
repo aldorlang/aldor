@@ -35,7 +35,6 @@ void testConditionalAdd();
 void testTinfer3();
 void testTinfer5();
 void testTinfer9();
-void testTinferMutualReference();
 
 local AbSynList parseLines(StringList lines);
 
@@ -63,7 +62,6 @@ void tinferTest()
 	TEST(testConditionalAdd);
 	TEST(testTinfer5);
 	TEST(testTinfer9);
-	TEST(testTinferMutualReference);
 	fini();
 }
 
@@ -448,30 +446,6 @@ testTinfer9()
 	
 	testTrue("Declare is sefo", abIsSefo(absyn));
 	testIntEqual("Error Count", 2, comsgErrorCount());
-	
-	finiFile();
-}
-
-
-void
-testTinferMutualReference()
-{
-	String Foo_def = "Foo(F: with): with { f: () -> %;} == add { f(): % == (f()$Bar(F)) pretend %; }";
-	String Bar_def = "Bar(B: with): with { f: () -> %;} == add { f(): % == (f()$Foo(B)) pretend % }";
-
-	initFile();
-	StringList lines = listList(String)(2, Foo_def, Bar_def);
-
-	AbSynList code = listCons(AbSyn)(stdtypes(), parseLines(lines));
-	AbSyn absyn = abNewSequenceL(sposNone, code);
-	Stab stab = stabFile();
-
-	abPutUse(absyn, AB_Use_NoValue);
-	scopeBind(stab, absyn);
-	typeInfer(stab, absyn);
-	
-	testTrue("Declare is sefo", abIsSefo(absyn));
-	testIntEqual("Error Count", 0, comsgErrorCount());
 	
 	finiFile();
 }
