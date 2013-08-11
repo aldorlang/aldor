@@ -157,6 +157,7 @@ extern TPoss		stabGetTypes		(Stab, AbLogic, Symbol);
 
 extern Syme		stabGetSelf		(Stab);
 extern Syme		stabGetExportMod	(Stab, SymeList,Symbol,TForm);
+extern Syme		stabGetDomainExportMod	(Stab, SymeList,Symbol,TForm);
 extern Bool		stabGetLex		(Stab, Symbol);
 extern Syme		stabGetLibrary		(Symbol);
 extern Syme		stabGetArchive		(Symbol);

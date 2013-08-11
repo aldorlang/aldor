@@ -1041,6 +1041,40 @@ stabGetExportMod(Stab stab, SymeList mods, Symbol id, TForm tf)
 	return NULL;
 }
 
+
+/*
+ * This function is a bit of a hack; it replaces stabGetExportMod,
+ * iterating over only symbols in the local stab instead of doing
+ * a recursive search.
+ *
+ * stabGetExportMod's remaining use is in tiWithSymes, and in those
+ * contexts a recursive search seems to be necessary.
+ *
+ * Ideally, we'd replace both with a single function, but better to
+ * commit this and gather test cases.
+ */
+
+Syme
+stabGetDomainExportMod(Stab astab, SymeList mods, Symbol sym, TForm tf)
+{
+	SymeList exports = stabGetExportedSymes(astab);
+	Syme syme;
+	while (exports != listNil(Syme)) {
+		Syme syme = car(exports);
+		exports = cdr(exports);
+		if (symeId(syme) != sym)
+			continue;
+		assert(symeIsExport(syme));
+		if (tfIsCategory(tf) && tfSatCat(symeType(syme)))
+			return syme;
+		if (tformEqualMod(mods, tf, symeType(syme)))
+			return syme;
+	}
+	return NULL;
+}
+
+
+
 /*
  *
  */
