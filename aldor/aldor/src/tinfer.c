@@ -364,9 +364,6 @@ tiWithSymes(Stab stab, TForm context)
 	tipAddDEBUG(dbOut, "<<tiWithSymes:\n");
 }
 
-/* FIXME: */
-extern void symeImplAddInherit(Syme, TForm, Syme);
-
 local SymeList
 symeListSetImplicit(Stab stab, SymeList symes)
 {
