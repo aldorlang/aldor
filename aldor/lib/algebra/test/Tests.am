@@ -1,0 +1,9 @@
+check_PROGRAMS += Trandom/Trandom
+Trandom_Trandom_SOURCES = Trandom/Trandommain.c Trandom/Trandom.c
+CLEANFILES += Trandom/Trandommain.c Trandom/Trandom.c Trandom/Trandom.ao
+check_PROGRAMS += bug1335/bug1335
+bug1335_bug1335_SOURCES = bug1335/bug1335main.c bug1335/bug1335.c
+CLEANFILES += bug1335/bug1335main.c bug1335/bug1335.c bug1335/bug1335.ao
+check_PROGRAMS += bug1342/bug1342
+bug1342_bug1342_SOURCES = bug1342/bug1342main.c bug1342/bug1342.c
+CLEANFILES += bug1342/bug1342main.c bug1342/bug1342.c bug1342/bug1342.ao

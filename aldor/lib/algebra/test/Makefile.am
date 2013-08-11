@@ -1,21 +1,27 @@
 libraries = algebra aldor
 
-SUBDIRS =		\
-	Trandom		\
-	bug1335		\
-	bug1342
-# Not working?
-#	bug1341	\
-#
+AXLTESTS =	\
+	Trandom	\
+	bug1335	\
+	bug1342	\
+	#
 
-check_PROGRAMS = # to be filled, later
+BROKEN =	\
+	bug1341	\
+	#
 
-TESTS =				\
-	Trandom/Trandom		\
-	bug1335/bug1335		\
-	bug1342/bug1342		\
-	$(check_PROGRAMS)
+check_PROGRAMS = # filled by Tests.am
+CLEANFILES = # filled by Tests.am
+TESTS = $(check_PROGRAMS)
 
+include Tests.am
+$(srcdir)/Tests.am: Makefile.am
+	truncate -s0 $@
+	for test in $(AXLTESTS); do			\
+	  echo "check_PROGRAMS += $$test/$$test" >> $@;	\
+	  echo "$${test}_$${test}_SOURCES = $$test/$${test}main.c $$test/$${test}.c" >> $@;	\
+	  echo "CLEANFILES += $$test/$${test}main.c $$test/$${test}.c $$test/$${test}.ao" >> $@;	\
+	done
 
 check_PROGRAMS += tst_complex
 tst_complex_SOURCES =		\
