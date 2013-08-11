@@ -8,7 +8,7 @@ AC_CONFIG_SRCDIR([aldor/src/main.c])
 AC_CONFIG_AUX_DIR([amaux])
 
 # Automake
-AM_INIT_AUTOMAKE([foreign silent-rules parallel-tests])
+AM_INIT_AUTOMAKE([foreign silent-rules parallel-tests color-tests])
 AM_SILENT_RULES([yes])
 
 # Checks for programs

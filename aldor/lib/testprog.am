@@ -21,15 +21,16 @@ am__v_ALDOR_0 = @echo "  ALDOR " $@;
 
 
 %.c: %.as $(ALDOR)
-	$(AM_V_ALDOR)$(ALDOR) $(ALDORFLAGS) -Fc=$@ $<
+	$(AM_V_ALDOR)$(ALDOR) $(ALDORFLAGS) -Y$(@D) -Fao=$(@:.c=.ao) -Fc=$@ $<
 
 %main.c: %.as $(ALDOR)
 	$(AM_V_ALDOR)set -e;				\
-	mkdir $*_tmp;					\
-	(cd $*_tmp;					\
+	mkdir $(notdir $*_tmp);				\
+	(cd $(notdir $*_tmp);				\
 	$(ALDOR) $(ALDORFLAGS) -Fmain $(abspath $<));	\
-	mv $*_tmp/aldormain.c $@;			\
-	rmdir $*_tmp
+	mkdir -p $(@D);					\
+	mv $(notdir $*_tmp)/aldormain.c $@;		\
+	rmdir $(notdir $*_tmp)
 
 AM_CPPFLAGS = -I$(aldorsrcdir)
 AM_LDFLAGS = -L$(foamlibdir) $(addprefix -L,$(librarylibdirs)) $(addprefix -l,$(libraries)) -lfoam -lm
