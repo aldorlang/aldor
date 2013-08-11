@@ -368,8 +368,6 @@ AXLTESTS =	\
 	ovload1	\
 	ovload2	\
 	pack0	\
-	pack1	\
-	pack2	\
 	pack3	\
 	parse0	\
 	pretend1	\
@@ -483,6 +481,8 @@ BROKEN =	\
 	bug1190	\
 	fix1	\
 	opt1	\
+	pack1	\
+	pack2	\
 	t1088	\
 	#
 
