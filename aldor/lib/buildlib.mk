@@ -75,8 +75,8 @@ aldor_args =					\
 	-DBuild$(Libraryname)Lib		\
 	$(AXLFLAGS) $($*_AXLFLAGS)		\
 	-Fao=$*.ao				\
-	$(filter %.as,$^)			\
-	$(filter %.ax,$^)
+	$(filter %$*.as,$^)			\
+	$(filter %$*.ax,$^)
 
 $(addsuffix .dep,$(asdomains)): %.dep: Makefile %.as Makefile.deps
 $(addsuffix .dep,$(axdomains)): %.dep: Makefile %.ax Makefile.deps
