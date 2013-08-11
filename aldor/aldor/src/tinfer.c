@@ -333,11 +333,7 @@ tiWithSymes(Stab stab, TForm context)
 		Symbol		sym  = symeId(syme);
 		TForm		tf   = symeType(syme);
 
-		if (DEBUG(tipAdd)) {
-			fprintf(dbOut, "  looking for: ");
-			symePrint(dbOut, syme);
-			fnewline(dbOut);
-		}
+		tipAddDEBUG(dbOut, "  looking for: %pSyme", syme);
 
 		/* Look for syme in the capsule. */
 		if ((xsyme = stabGetExportMod(wstab, mods, sym, tf)) != NULL) {
@@ -363,9 +359,6 @@ tiWithSymes(Stab stab, TForm context)
 
 	tipAddDEBUG(dbOut, "<<tiWithSymes:\n");
 }
-
-/* FIXME: */
-extern void symeImplAddInherit(Syme, TForm, Syme);
 
 local SymeList
 symeListSetImplicit(Stab stab, SymeList symes)
@@ -397,6 +390,8 @@ symeListSetImplicit(Stab stab, SymeList symes)
 
 	return result;
 }
+
+Syme tiGetExportMod(Stab astab, SymeList mods, Symbol sym, TForm tf);
 
 /*
  * Make sure that the category exports of context are visible in capsule.
@@ -447,9 +442,8 @@ tiAddSymes(Stab astab, AbSyn capsule, TForm base, TForm context, SymeList *p)
 		TForm		tf   = symeType(syme);
 
 		tipAddDEBUG(dbOut, "  looking for: %pSyme %pAbSynList ", syme, symeCondition(syme));
-		
 		/* Look for syme in the capsule. */
-		if ((xsyme = stabGetExportMod(astab, mods, sym, tf)) != NULL) {
+		if ((xsyme = tiGetExportMod(astab, mods, sym, tf)) != NULL) {
 			tipAddDEBUG(dbOut, "  [export]\n");
 			symeImplAddInherit(xsyme, base, syme);
 		}
@@ -541,6 +535,39 @@ tiAddSymes(Stab astab, AbSyn capsule, TForm base, TForm context, SymeList *p)
 	dsymes = listNReverse(Syme)(dsymes);
 	return dsymes;
 }
+
+
+/*
+ * This function is a bit of a hack; it replaces stabGetExportMod,
+ * iterating over only symbols in the local stab instead of doing
+ * a recursive search.
+ *
+ * stabGetExportMod's remaining use is in tiWithSymes, and in those
+ * contexts a recursive search seems to be necessary.
+ *
+ * Ideally, we'd replace both with a single function, but better to
+ * commit this and gather test cases.
+ */
+
+Syme
+tiGetExportMod(Stab astab, SymeList mods, Symbol sym, TForm tf)
+{
+	SymeList exports = stabGetExportedSymes(astab);
+	Syme syme;
+	while (exports != listNil(Syme)) {
+		Syme syme = car(exports);
+		exports = cdr(exports);
+		if (symeId(syme) != sym)
+			continue;
+		assert(symeIsExport(syme));
+		if (tfIsCategory(tf) && tfSatCat(symeType(syme)))
+			return syme;
+		if (tformEqualMod(mods, tf, symeType(syme)))
+			return syme;
+	}
+	return NULL;
+}
+
 
 TForm tiGetTFormContext(Stab stab, SymeCContext context, AbSyn type);
 
@@ -1548,7 +1575,7 @@ tiTfThird1(Stab stab, TFormUses tfu, TForm tf, AbSynList params)
  * won't be invoked too many times (just once for each add in
  * a program) so its O(N^2) cost won't hurt too much.
  */
-local void
+void
 tiAppendSymes(TForm tf, SymeList symes)
 {
 	SymeList originals = tfSymes(tf);
@@ -1674,12 +1701,9 @@ tiTfCategory1(Stab stab, TFormUses tfu, TForm tf, AbSynList params)
 
 	if (nstab != stab) {
 		/*!! Try to fill the types for parameterized add symes. */
-		if (params) typeInferTForms(nstab);
 		tfSetSymes(tfa, stabGetExportedSymes(nstab));
 		tfGetSelf(nstab, tfa);
 	}
-	tfSetMeaning(tfa);
-	tfCheckConsts(tfa);
 
 	tfSetMeaning(tf);
 	tfCheckConsts(tf);
@@ -1688,7 +1712,6 @@ tiTfCategory1(Stab stab, TFormUses tfu, TForm tf, AbSynList params)
 		AbSyn		base    = aba->abAdd.base;
 		AbSyn		capsule = aba->abAdd.capsule;
 		AbSynList	extl = tfu ? tfu->extension : NULL;
-		SymeList	extras;
 
 		tiGetTForm(nstab, base);
 		for (; extl; extl = cdr(extl)) {
@@ -1711,7 +1734,6 @@ tiTfCategory1(Stab stab, TFormUses tfu, TForm tf, AbSynList params)
 				tiWithSymes(nstab, otf);
 			}
 		}
-		tiAddSymes(nstab, capsule, abTForm(base), tfw, &extras);
 
 		/* When is tfu allowed to be NULL? */
 		if (tfu) {
@@ -1719,8 +1741,6 @@ tiTfCategory1(Stab stab, TFormUses tfu, TForm tf, AbSynList params)
 			tfu->extension = NULL;
 		}
 
-		/* Add the new symes to tfSymes for the add */
-		tiAppendSymes(tfa, extras);
 	}
 	if (abt && tfu)
 		tfu->extension = listCons(AbSyn)(abt, listNil(AbSyn));

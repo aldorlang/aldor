@@ -186,11 +186,14 @@ endif
 #
 mostlyclean: 
 	rm -f _sublib_libdep.al
+	rm -f _sublib.dep
 	rm -f lib$(libraryname).al
+	rm -f lib$(libraryname)*.al
 	rm -f $(libraryname).classlib
 	rm -f $(libraryname).jar
-	rm -f $(addsuffix .c,$(alldomains))
+	rm -f $(addsuffix .dep,$(alldomains))
 	rm -f $(addsuffix .ao,$(alldomains))
+	rm -f $(addsuffix .c,$(alldomains))
 	rm -f $(addsuffix .fm,$(alldomains))
 	rm -f $(addsuffix .java,$(javalibrary))
 	rm -f $(addsuffix *.class,$(javalibrary))

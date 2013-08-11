@@ -78,6 +78,7 @@ extern Bool		tiUnaryToRaw		(Stab, AbSyn, TForm);
 extern Bool		tiRawToUnary		(Stab, AbSyn, TForm);
 extern TForm		tiDefineFilter		(AbSyn, TForm);
 extern TPoss		tiDefineTPoss		(AbSyn);
+extern void 		tiAppendSymes		(TForm tf, SymeList symes);
 
 extern void		tiSetSoftMissing	(Bool);
 extern Bool		tiIsSoftMissing		(void);
@@ -103,14 +104,14 @@ extern Bool	tipIdDebug;
 extern Bool	tipLitDebug;
 extern Bool	tipEmbedDebug;
 
-#define tipAddDEBUG		if (DEBUG(tipAdd))
-#define tipApplyDEBUG		if (DEBUG(tipApply))
-#define tipAssignDEBUG		if (DEBUG(tipAssign))
-#define tipDeclareDEBUG		if (DEBUG(tipDeclare))
-#define tipDefineDEBUG		if (DEBUG(tipDefine))
-#define tipFarDEBUG		if (DEBUG(tipFar))
-#define tipIdDEBUG		if (DEBUG(tipId))
-#define tipLitDEBUG		if (DEBUG(tipLit))
-#define tipEmbedDEBUG		if (DEBUG(tipEmbed))
+#define tipAddDEBUG		DEBUG_IF(tipAdd)     afprintf
+#define tipApplyDEBUG		DEBUG_IF(tipApply)   afprintf
+#define tipAssignDEBUG		DEBUG_IF(tipAssign)  afprintf
+#define tipDeclareDEBUG		DEBUG_IF(tipDeclare) afprintf
+#define tipDefineDEBUG		DEBUG_IF(tipDefine)  afprintf
+#define tipFarDEBUG		DEBUG_IF(tipFar)     afprintf
+#define tipIdDEBUG		DEBUG_IF(tipId)      afprintf
+#define tipLitDEBUG		DEBUG_IF(tipLit)     afprintf
+#define tipEmbedDEBUG		DEBUG_IF(tipEmbed)   afprintf
 
 #endif /* !_TINFER_H_ */

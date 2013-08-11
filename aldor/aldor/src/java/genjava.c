@@ -1916,6 +1916,18 @@ gj0TypeAbbrev(FoamTag tag)
 		return "C";
 	case FOAM_Bool:
 		return "B";
+	case FOAM_Byte:
+		return "Y";
+	case FOAM_BInt:
+		return "N";
+	case FOAM_Char:
+		return "L";
+	case FOAM_Ptr:
+		return "P";
+	case FOAM_SFlo:
+		return "S";
+	case FOAM_DFlo:
+		return "D";
 	default:
 		return "?";
 	}

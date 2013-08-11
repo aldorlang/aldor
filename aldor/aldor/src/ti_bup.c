@@ -2099,14 +2099,18 @@ tibupAdd(Stab stab, AbSyn absyn, TForm type)
 	SymbolList	fluid(terrorIdComplaints);
 	AbSyn		base	= absyn->abAdd.base;
 	AbSyn		capsule = absyn->abAdd.capsule;
-	SymeList	symes;
-	TForm		tfw;
+	SymeList	symes, extras;
+	TForm		tfw, tfa;
 
 	terrorIdComplaints = listNil(Symbol);
 
 	tiGetTForm(stab, base);
 	typeInferCheck(stab, base, tfDomain);
-	symes = tiAddSymes(stab, capsule, abTForm(base), type, (SymeList*)NULL);
+	tfa = abTForm(absyn);
+	symes = tiAddSymes(stab, capsule, abTForm(base), type, &extras);
+	if (tfa != NULL) {
+		tiAppendSymes(tfa, extras);
+	}
 
 	typeInferAs(stab, capsule, tfUnknown);
 
