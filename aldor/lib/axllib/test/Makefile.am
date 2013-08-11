@@ -322,6 +322,7 @@ AXLTESTS =				\
 	hilbert	\
 	if0	\
 	if2	\
+	if4	\
 	if5	\
 	ifcross0	\
 	imod0	\
@@ -481,7 +482,6 @@ BROKEN =	\
 	bug1190	\
 	bug1253	\
 	fix1	\
-	if4	\
 	opt1	\
 	t1088	\
 	#
