@@ -35,6 +35,9 @@ void testConditionalAdd();
 void testTinfer3();
 void testTinfer5();
 void testTinfer9();
+void testTinferMutualReference();
+void testTinferValueConditional();
+void testTinferValueConditionalAliased();
 
 local AbSynList parseLines(StringList lines);
 
@@ -49,9 +52,8 @@ void finiFile();
 void tinferTest()
 {
 	init();
-#if 0
+
 	TEST(testSimpleTInfer);
-#endif
 
 	TEST(testSelfTInfer);
 	TEST(testConditionalTInfer);
@@ -62,6 +64,10 @@ void tinferTest()
 	TEST(testConditionalAdd);
 	TEST(testTinfer5);
 	TEST(testTinfer9);
+	TEST(testTinferMutualReference);
+
+	TEST(testTinferValueConditional);
+	/*TEST(testTinferValueConditionalAliased);*/
 	fini();
 }
 
@@ -443,16 +449,88 @@ testTinfer9()
 	abPutUse(absyn, AB_Use_NoValue);
 	scopeBind(stab, absyn);
 	typeInfer(stab, absyn);
-	
+
 	testTrue("Declare is sefo", abIsSefo(absyn));
 	testIntEqual("Error Count", 2, comsgErrorCount());
-	
+
 	finiFile();
 }
 
 
-local 
-AbSynList parseLines(StringList lines) 
+void
+testTinferMutualReference()
+{
+	String Foo_def = "Foo(F: with): with { f: () -> %;} == add { f(): % == (f()$Bar(F)) pretend %; }";
+	String Bar_def = "Bar(B: with): with { f: () -> %;} == add { f(): % == (f()$Foo(B)) pretend % }";
+
+	initFile();
+	StringList lines = listList(String)(2, Foo_def, Bar_def);
+
+	AbSynList code = listCons(AbSyn)(stdtypes(), parseLines(lines));
+	AbSyn absyn = abNewSequenceL(sposNone, code);
+	Stab stab = stabFile();
+
+	abPutUse(absyn, AB_Use_NoValue);
+	scopeBind(stab, absyn);
+	typeInfer(stab, absyn);
+
+	testTrue("Declare is sefo", abIsSefo(absyn));
+	testIntEqual("Error Count", 0, comsgErrorCount());
+
+	finiFile();
+}
+
+void
+testTinferValueConditionalAliased()
+{
+	String I_def = "I: with { zero?: % -> Boolean } == add { zero?(t: %): Boolean == never }";
+	String C_def =
+		"C(i: I): with { if zero? i then { foo: % -> () } } == "
+		"    add { if zero? i then foo(i: %): () == never };";
+
+	initFile();
+	StringList lines = listList(String)(2, I_def, C_def);
+
+	AbSynList code = listCons(AbSyn)(stdtypes(), parseLines(lines));
+	AbSyn absyn = abNewSequenceL(sposNone, code);
+	Stab stab = stabFile();
+
+	abPutUse(absyn, AB_Use_NoValue);
+	scopeBind(stab, absyn);
+	typeInfer(stab, absyn);
+
+	testTrue("Declare is sefo", abIsSefo(absyn));
+	testIntEqual("Error Count", 0, comsgErrorCount());
+
+	finiFile();
+}
+
+void testTinferValueConditional()
+{
+	String I_def = "I: with { zero?: % -> Boolean } == add { zero?(t: %): Boolean == never }";
+	String C_def =
+		"C(i: I): with { if zero? i then { foo: % -> () } } == "
+		"    add { import from I; if zero? i then foo(n: %): () == never };";
+
+	initFile();
+	StringList lines = listList(String)(2, I_def, C_def);
+
+	AbSynList code = listCons(AbSyn)(stdtypes(), parseLines(lines));
+	AbSyn absyn = abNewSequenceL(sposNone, code);
+	Stab stab = stabFile();
+	tfImportDebug = 1;
+	abPutUse(absyn, AB_Use_NoValue);
+	scopeBind(stab, absyn);
+	typeInfer(stab, absyn);
+
+	testTrue("Declare is sefo", abIsSefo(absyn));
+	testIntEqual("Error Count", 0, comsgErrorCount());
+
+	finiFile();
+}
+
+local
+AbSynList parseLines(StringList lines)
 {
 	AbSynList result = listNil(AbSyn);
 	while (lines != listNil(String)) {

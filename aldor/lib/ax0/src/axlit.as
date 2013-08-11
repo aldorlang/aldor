@@ -11,6 +11,7 @@
 
 import from AxiomLib;
 inline from AxiomLib;
+import from Boolean;
 
 macro {
         rep x == x @ % pretend Rep;

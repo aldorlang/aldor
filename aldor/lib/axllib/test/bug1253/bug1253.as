@@ -147,5 +147,6 @@ define Functor(Obj:Type,Mc:(Obj,Obj)->Category,Md:(A:Obj,B:Obj)->Mc(A,B)):Catego
 --
 functor(A:Rng,B:Rng,f:Mor(A,B)):(FA:Rng,FB:Rng,Mor(FA,FB)) == (Fo A,Fo B,Fm(A,B,f))
     
-RngFunctor:Functor(Rng,RngMorphism,Mor) == add -- picks up the "functor" function above
+RngFunctor:Functor(Rng,RngMorphism,Mor) == add 
+   functor(A: Rng, B: Rng, f: Mor(A, B)): (FA:Rng,FB:Rng,Mor(FA,FB)) == never;
 

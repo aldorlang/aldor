@@ -446,7 +446,7 @@ tiAddSymes(Stab astab, AbSyn capsule, TForm base, TForm context, SymeList *p)
 		tipAddDEBUG(dbOut, "  looking for: %pSyme %pAbSynList ", syme, symeCondition(syme));
 		
 		/* Look for syme in the capsule. */
-		if ((xsyme = stabGetExportMod(astab, mods, sym, tf)) != NULL) {
+		if ((xsyme = stabGetDomainExportMod(astab, mods, sym, tf)) != NULL) {
 			tipAddDEBUG(dbOut, "  [export]\n");
 			symeImplAddInherit(xsyme, base, syme);
 		}
