@@ -613,8 +613,14 @@ genFoamStmt(AbSyn absyn)
 		gen1DbgFnStep(absyn);
 
 	foam = genFoam(absyn);
-
-	if (foam) gen0AddStmt(foam, absyn);
+	if (foam) {
+		while (foamTag(foam) == FOAM_Cast) {
+			Foam tmp = foam;
+			foam = foam->foamCast.expr;
+			foamFreeNode(tmp);
+		}
+		gen0AddStmt(foam, absyn);
+	}
 
 	if (gen0FortranActualArgTmps) gen0FreeFortranActualArgTmps();		
 

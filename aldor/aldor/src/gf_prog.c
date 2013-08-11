@@ -462,6 +462,8 @@ gen0AddStmt(Foam foam, AbSyn absyn)
 	}
 	
 	for (i=0; i<argc; i++) {
+		assert(foamTag(foam) != FOAM_Cast);
+
 		if (absyn) foamPos(argv[i]) = abPos(absyn);
 		state->lines = listCons(Foam)(argv[i], state->lines);
 	}
