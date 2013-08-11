@@ -33,5 +33,14 @@ am__v_ALDOR_0 = @echo "  ALDOR " $@;
 	mv $(notdir $*_tmp)/aldormain.c $@;		\
 	rmdir $(notdir $*_tmp)
 
+include Tests.am
+$(srcdir)/Tests.am: Makefile.am
+	truncate -s0 $@
+	for test in $(AXLTESTS); do			\
+	  echo "check_PROGRAMS += $$test/$$test" >> $@;	\
+	  echo "$${test}_$${test}_SOURCES = $$test/$${test}main.c $$test/$${test}.c" >> $@;	\
+	  echo "CLEANFILES += $$test/$${test}main.c $$test/$${test}.c $$test/$${test}.ao" >> $@;	\
+	done
+
 AM_CPPFLAGS = -I$(aldorsrcdir)
 AM_LDFLAGS = -L$(foamlibdir) $(addprefix -L,$(librarylibdirs)) $(addprefix -l,$(libraries)) -lfoam -lm

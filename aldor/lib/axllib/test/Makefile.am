@@ -507,14 +507,7 @@ check_PROGRAMS = # filled by Tests.am
 CLEANFILES = # filled by Tests.am
 TESTS = $(check_PROGRAMS)
 
-include Tests.am
-$(srcdir)/Tests.am: Makefile.am
-	truncate -s0 $@
-	for test in $(AXLTESTS); do			\
-	  echo "check_PROGRAMS += $$test/$$test" >> $@;	\
-	  echo "$${test}_$${test}_SOURCES = $$test/$${test}main.c $$test/$${test}.c" >> $@;	\
-	  echo "CLEANFILES += $$test/$${test}main.c $$test/$${test}.c $$test/$${test}.ao" >> $@;	\
-	done
+include ../../testprog.am
 
 pack0_pack0_SOURCES += pack0/packfns.c
 t1075b_t1075b_SOURCES += t1075a/t1075a.c
@@ -525,5 +518,3 @@ t1157m/t1157m.c: t1157s/t1157s.c
 numeral1/numeral1.c: numeral0/numeral0.c
 numeral2/numeral2.c: numeral0/numeral0.c
 numeral2/numeral2.c: numeral1/numeral1.c
-
-include ../../testprog.am

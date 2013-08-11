@@ -14,15 +14,6 @@ check_PROGRAMS = # filled by Tests.am
 CLEANFILES = # filled by Tests.am
 TESTS = $(check_PROGRAMS)
 
-include Tests.am
-$(srcdir)/Tests.am: Makefile.am
-	truncate -s0 $@
-	for test in $(AXLTESTS); do			\
-	  echo "check_PROGRAMS += $$test/$$test" >> $@;	\
-	  echo "$${test}_$${test}_SOURCES = $$test/$${test}main.c $$test/$${test}.c" >> $@;	\
-	  echo "CLEANFILES += $$test/$${test}main.c $$test/$${test}.c $$test/$${test}.ao" >> $@;	\
-	done
-
 check_PROGRAMS += tst_complex
 tst_complex_SOURCES =		\
 	tst_complexmain.c	\
