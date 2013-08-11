@@ -18,8 +18,8 @@ BROKEN =	\
 	#
 
 XFAIL_TESTS =	\
-	bug1089	\
-	type6	\
+	bug1089/bug1089	\
+	type6/type6	\
 	#
 
 check_PROGRAMS = # filled by Tests.am
