@@ -3,4 +3,4 @@ SUBDIRS =	\
 	algebra	\
 	axllib	\
 	axldem	\
-	libax0
+	ax0

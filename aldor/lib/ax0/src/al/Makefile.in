@@ -1,0 +1,78 @@
+@SET_MAKE@
+VPATH = @srcdir@
+
+# For AM_V_*
+AM_DEFAULT_VERBOSITY = @AM_DEFAULT_VERBOSITY@
+
+builddir	:= @builddir@
+abs_builddir	:= @abs_builddir@
+top_builddir	:= @top_builddir@
+abs_top_builddir:= @abs_top_builddir@
+srcdir		:= @srcdir@
+abs_srcdir	:= @abs_srcdir@
+top_srcdir	:= @top_srcdir@
+abs_top_srcdir	:= @abs_top_srcdir@
+subdir		:= $(subst $(abs_top_builddir)/,,$(abs_builddir))
+
+VPATH		:= $(VPATH):$(top_srcdir)/lib/axllib/src/al
+VPATH		:= $(VPATH):$(srcdir)/..
+VPATH		:= $(VPATH):$(srcdir)/../ax
+
+# Build starts here
+library =	\
+	attrib	\
+	axextend	\
+	axlit	\
+	lang	\
+	minimach	\
+	stub	\
+	#
+
+axlibrary =		\
+	basecliq	\
+	aggcat	\
+	any	\
+	array1	\
+	array2	\
+	float	\
+	fr	\
+	fraction	\
+	fspace	\
+	indexedp	\
+	integer	\
+	kl	\
+	list	\
+	matcat	\
+	matrix	\
+	misc	\
+	mkfunc	\
+	multpoly	\
+	op	\
+	patmatch1	\
+	patmatch2	\
+	pattern	\
+	poly	\
+	polycat	\
+	seg	\
+	sex	\
+	sf	\
+	si	\
+	stream	\
+	symbol	\
+	variable	\
+	vector	\
+	equation1	\
+	equation2	\
+	#
+
+axllibincdir	:= $(top_srcdir)/lib/axllib/include
+
+libraryname	:= ax0
+Libraryname	:= Axiom
+
+AXLFLAGS	:= -Q8 -Qinline-all -Wcheck -Wno-fatal
+AXLFLAGS	+= -I $(axllibincdir)
+
+bytecode_only	:= true
+
+include $(top_srcdir)/lib/buildlib.mk
