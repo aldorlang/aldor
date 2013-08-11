@@ -1,21 +1,18 @@
 libraries = algebra aldor
 
-SUBDIRS =		\
-	Trandom		\
-	bug1335		\
-	bug1342
-# Not working?
-#	bug1341	\
-#
+AXLTESTS =	\
+	Trandom	\
+	bug1335	\
+	bug1342	\
+	#
 
-check_PROGRAMS = # to be filled, later
+BROKEN =	\
+	bug1341	\
+	#
 
-TESTS =				\
-	Trandom/Trandom		\
-	bug1335/bug1335		\
-	bug1342/bug1342		\
-	$(check_PROGRAMS)
-
+check_PROGRAMS = # filled by Tests.am
+CLEANFILES = # filled by Tests.am
+TESTS = $(check_PROGRAMS)
 
 check_PROGRAMS += tst_complex
 tst_complex_SOURCES =		\

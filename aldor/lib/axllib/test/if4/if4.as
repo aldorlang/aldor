@@ -16,12 +16,12 @@ Foo(n: Integer): with
 
 == add
 	if n > 0 then
-		aaa(n: Integer): Integer == n + 1
-		aa(n: Integer): Integer == n + 1
+		aaa(m: Integer): Integer == m + 1
+		aa(m: Integer): Integer == m + 1
 	else
-		bbb(n: Integer): Integer == n - 1
-		bb(n: Integer): Integer == n - 1
-	ccc(n: Integer): Integer == n
+		bbb(m: Integer): Integer == m - 1
+		bb(m: Integer): Integer == m - 1
+	ccc(m: Integer): Integer == m
 
 Bar(n: Integer): Integer ==
 	import from Foo(n)
