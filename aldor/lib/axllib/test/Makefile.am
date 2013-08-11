@@ -111,6 +111,7 @@ AXLTESTS =	\
 	bug1114	\
 	bug1115	\
 	bug1119	\
+	bug1121	\
 	bug1123	\
 	bug1127	\
 	bug1129	\
@@ -166,6 +167,7 @@ AXLTESTS =	\
 	bug1248	\
 	bug1250	\
 	bug1252	\
+	bug1253	\
 	bug1260	\
 	bug1261	\
 	bug1263	\
@@ -477,10 +479,8 @@ AXLTESTS =	\
 	#
 
 BROKEN =	\
-	bug1121	\
 	bug1125	\
 	bug1190	\
-	bug1253	\
 	fix1	\
 	opt1	\
 	t1088	\
@@ -491,7 +491,6 @@ XFAIL_TESTS =	\
 	bug944/bug944	\
 	bug965/bug965	\
 	bug1023/bug1023	\
-	bug1044/bug1044	\
 	bug1054/bug1054	\
 	bug1087/bug1087	\
 	bug1113/bug1113	\
