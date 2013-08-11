@@ -34,9 +34,7 @@ TestMachineInteger: TestCategory with == add
         testSerial(n: MachineInteger): Boolean ==
 		buf: StringBuffer := new();
 		coerce(buf) << n
-		stdout << "conv " << n << " " << string(buf) << newline
 		m: MachineInteger := << coerce(buf)
-		stdout << "blah " << n << " " << string(buf) << " " << m << newline
 		m = n
 
 	string(n: MachineInteger): String == 
