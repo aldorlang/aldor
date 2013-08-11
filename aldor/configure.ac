@@ -154,9 +154,10 @@ AC_CONFIG_FILES(
    lib/axldem/test/Makefile
 
    dnl Axiom bridge.
-   lib/libax0/Makefile
-   lib/libax0/src/Makefile
-   lib/libax0/src/al/Makefile
-   lib/libax0/test/Makefile
+   lib/ax0/Makefile
+   lib/ax0/include/Makefile
+   lib/ax0/src/Makefile
+   lib/ax0/src/al/Makefile
+   lib/ax0/test/Makefile
 )
 AC_OUTPUT

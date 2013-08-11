@@ -11,7 +11,9 @@ librarylibdir	:= $(top_builddir)/lib/$(libraryname)/src
 
 UNIQ		:= perl $(top_srcdir)/aldor/tools/unix/uniq
 
-alldomains	:= $(internal) $(library) $(tests)
+asdomains	:= $(internal) $(library) $(tests)
+axdomains	:= $(axlibrary)
+alldomains	:= $(asdomains) $(axdomains)
 
 # Aldor
 AM_V_ALDOR = $(am__v_ALDOR_$(V))
@@ -72,10 +74,15 @@ aldor_args =					\
 	-l$(Libraryname)Lib=$(libraryname)_$*	\
 	-DBuild$(Libraryname)Lib		\
 	$(AXLFLAGS) $($*_AXLFLAGS)		\
-	-Fao=$*.ao $(srcdir)/$*.as
+	-Fao=$*.ao				\
+	$(filter %$*.as,$^)			\
+	$(filter %$*.ax,$^)
 
-$(addsuffix .dep,$(alldomains)): %.dep: Makefile $(srcdir)/%.as Makefile.deps
-$(addsuffix .ao, $(alldomains)): %.ao: $(srcdir)/%.as
+$(addsuffix .dep,$(asdomains)): %.dep: Makefile %.as Makefile.deps
+$(addsuffix .dep,$(axdomains)): %.dep: Makefile %.ax Makefile.deps
+$(addsuffix .ao, $(asdomains)): %.ao: %.as
+$(addsuffix .ao, $(axdomains)): %.ao: %.ax
+
 $(addsuffix .ao, $(alldomains)): %.ao: _sublib_libdep.al
 	$(AM_V_ALDOR)set -e;							\
 	rm -f $*.c $*.ao;							\
@@ -159,9 +166,11 @@ _sublib.al:
 	rm -f $@;							\
 	ar cr $@ $(addsuffix .ao, $(shell $(UNIQ) $(@:.al=.dep)))
 
-all: Makefile _sublib.al		\
-	$(addsuffix .c,$(library))	\
-	$(addsuffix .fm,$(library))
+all: Makefile _sublib.al
+all: $(addsuffix .fm,$(library))
+ifeq ($(bytecode_only),)
+all: $(addsuffix .c,$(library))
+endif
 
 ifneq ($(javalibrary),)
 $(addsuffix .java, $(javalibrary)): %.java: %.fm $(aldorexedir)/javagen
