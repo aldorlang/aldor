@@ -26,10 +26,23 @@ BROKEN =		\
 	supcat3.ao	\
 	#
 
+TESTS = $(check_DATA)
+
+XFAIL_TESTS =	\
+	coerce1.ao	\
+	coerce2.ao	\
+	coerce3.ao	\
+	coerce4.ao	\
+	intcat1.ao	\
+	vector0.ao	\
+	#
+
 
 aldorsrcdir	:= $(abs_top_srcdir)/aldor/src
 aldorexedir	:= $(abs_top_builddir)/aldor/src
 aldorlibdir	:= $(abs_top_builddir)/aldor/lib
+
+foamlibdir	:= $(abs_top_builddir)/aldor/lib/libfoam
 
 libraryincdirs	:= $(foreach L,$(libraries),$(abs_top_srcdir)/lib/$L/include)
 librarylibdirs	:= $(foreach L,$(libraries),$(abs_top_builddir)/lib/$L/src)
@@ -51,8 +64,5 @@ am__v_ALDOR_0 = @echo "  ALDOR " $@;
 	$(AM_V_ALDOR)$(ALDOR) $(ALDORFLAGS) -Y$(@D) -Fao=$@ $<
 
 
-if FALSE
-TESTS = $(check_DATA)
-endif
 TEST_EXTENSIONS = .ao
-AO_LOG_COMPILER = $(ALDOR) $(ALDORFLAGS) -ginterp
+AO_LOG_COMPILER = $(ALDOR) $(ALDORFLAGS) -Y$(foamlibdir)/al -lax0 -ginterp
