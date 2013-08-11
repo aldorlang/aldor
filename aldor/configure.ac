@@ -8,7 +8,7 @@ AC_CONFIG_SRCDIR([aldor/src/main.c])
 AC_CONFIG_AUX_DIR([amaux])
 
 # Automake
-AM_INIT_AUTOMAKE([foreign silent-rules parallel-tests])
+AM_INIT_AUTOMAKE([foreign silent-rules parallel-tests color-tests])
 AM_SILENT_RULES([yes])
 
 # Checks for programs
@@ -99,16 +99,7 @@ AC_CONFIG_FILES(
    lib/aldor/src/datastruc/Makefile
    lib/aldor/src/util/Makefile
    lib/aldor/src/gmp/Makefile
-
    lib/aldor/test/Makefile
-   lib/aldor/test/bug1332/Makefile
-   lib/aldor/test/bug1333/Makefile
-   lib/aldor/test/bug1334/Makefile
-   lib/aldor/test/bug1337/Makefile
-   lib/aldor/test/bug1340/Makefile
-   lib/aldor/test/intfact/Makefile
-   lib/aldor/test/issue2/Makefile
-   lib/aldor/test/issue38/Makefile
 
    dnl Mathematical library.
    lib/algebra/Makefile
@@ -146,12 +137,7 @@ AC_CONFIG_FILES(
    lib/algebra/src/multpoly/multpolypkg/Makefile
    lib/algebra/src/multpoly/multpolytest/Makefile
    lib/algebra/src/test/Makefile
-
    lib/algebra/test/Makefile
-   lib/algebra/test/Trandom/Makefile
-   lib/algebra/test/bug1335/Makefile
-   lib/algebra/test/bug1341/Makefile
-   lib/algebra/test/bug1342/Makefile
 
    dnl AxiomXL base library.
    lib/axllib/Makefile
