@@ -78,6 +78,7 @@ extern Bool		tiUnaryToRaw		(Stab, AbSyn, TForm);
 extern Bool		tiRawToUnary		(Stab, AbSyn, TForm);
 extern TForm		tiDefineFilter		(AbSyn, TForm);
 extern TPoss		tiDefineTPoss		(AbSyn);
+extern void 		tiAppendSymes		(TForm tf, SymeList symes);
 
 extern void		tiSetSoftMissing	(Bool);
 extern Bool		tiIsSoftMissing		(void);
