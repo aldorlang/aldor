@@ -22,5 +22,3 @@ library = ald_symbol ald_symtab sal_array sal_barray sal_bdata		\
 	  sal_table
 
 include $(abs_top_srcdir)/lib/aldor/src/common.mk
-
-AXLFLAGS	+= -Q2

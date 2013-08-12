@@ -18,5 +18,3 @@ subdir		:= $(subst $(abs_top_builddir)/,,$(abs_builddir))
 library = sal_fltgmp sal_gmptls sal_intgmp
 
 include $(abs_top_srcdir)/lib/aldor/src/common.mk
-
-AXLFLAGS	+= -Q2
