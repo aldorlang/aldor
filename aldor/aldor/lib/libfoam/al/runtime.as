@@ -603,3 +603,16 @@ import {
 } from Foreign;
 
 stringHash(s: String): SingleInteger == fiStrHash s;
+
+
+--
+-- :: Print assertion message
+--
+
+export {
+	rtAssertMessage: (String, SingleInteger, String) -> ();
+} from Foreign Builtin;
+
+rtAssertMessage(file: String, line: SingleInteger, msg: String): () == {
+	PRINT() << "Assertion failed at " << file << ":" << line << ": " << msg << NL();
+}
