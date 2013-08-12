@@ -12,6 +12,7 @@ ALDORFLAGS	:=				\
 	-Nfile=$(aldorsrcdir)/aldor.conf	\
 	$(addprefix -I,$(libraryincdirs))	\
 	$(addprefix -Y,$(librarylibdirs))	\
+	-Wcheck -Wno-fatal			\
 	$(ALFLAGS)
 
 # Aldor silent-rules
