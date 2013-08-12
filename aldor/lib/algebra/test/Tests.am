@@ -7,3 +7,6 @@ CLEANFILES += bug1335/bug1335main.c bug1335/bug1335.c bug1335/bug1335.ao
 check_PROGRAMS += bug1342/bug1342
 bug1342_bug1342_SOURCES = bug1342/bug1342main.c bug1342/bug1342.c
 CLEANFILES += bug1342/bug1342main.c bug1342/bug1342.c bug1342/bug1342.ao
+check_PROGRAMS += issue56/issue56
+issue56_issue56_SOURCES = issue56/issue56main.c issue56/issue56.c
+CLEANFILES += issue56/issue56main.c issue56/issue56.c issue56/issue56.ao

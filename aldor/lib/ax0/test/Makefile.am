@@ -38,6 +38,9 @@ XFAIL_TESTS =	\
 	#
 
 
+intcat1.ao: intcat0.ao
+
+
 aldorsrcdir	:= $(abs_top_srcdir)/aldor/src
 aldorexedir	:= $(abs_top_builddir)/aldor/src
 aldorlibdir	:= $(abs_top_builddir)/aldor/lib
