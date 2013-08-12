@@ -8,3 +8,4 @@ install:
 branches:
    only:
       - master
+      - /.*\/staging/
