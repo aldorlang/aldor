@@ -6,12 +6,49 @@ AXLTESTS =	\
 	bug1334	\
 	bug1337	\
 	bug1340	\
+	bugExtend1	\
+	bugFree	\
+	bugReturn	\
+	bugreport_1	\
+	bugreport_5	\
+	bugreport_7	\
+	bugreport_13	\
+	bugreport_14	\
+	bugreport_21	\
+	bugreport_25	\
+	bugreport_1351	\
+	bugreport_1356	\
+	bugreport_1362	\
+	expt	\
 	intfact	\
 	issue2	\
 	issue38	\
+	localcoerce	\
+	removebug	\
+	removebug2	\
+	testargs	\
+	type-constant	\
+	#
+
+BROKEN =	\
+	RepRecordError	\
+	avl-set	\
+	avl-set2	\
+	bugCklst	\
+	bugreport_1a	\
+	bugreport_15	\
+	bugreport_1347	\
+	bugreport_1363	\
+	hang	\
+	has-bug1	\
+	poly-type-expt	\
+	testbug	\
 	#
 
 XFAIL_TESTS =		\
+	bugExtend1/bugExtend1	\
+	bugFree/bugFree	\
+	bugreport_5/bugreport_5	\
 	issue2/issue2	\
 	#
 

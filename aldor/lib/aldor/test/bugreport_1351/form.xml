@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<form>
+<bugnb>
+1351
+</bugnb>
+<subject>
+Wrong optimisation with -Q2
+</subject>
+<description>
+See attached file. The compiler removes code which is actually needed for the function to work correctly.
+</description>
+<workaround>
+yes
+</workaround>
+<wadescr>
+Rearrange the variables to fool the optimiser.
+
+If the bugfix takes longer, such a hint should appear on a public bughints list.
+</wadescr>
+<priority>
+1
+</priority>
+<bugfile>
+/aldor.org/website/bugs/bugreport_1351/xxx.as
+</bugfile>
+<cmdline>
+aldor -V -I $ALDORROOT/include -Y$ALDORROOT/lib -Q2 -laldor -fc xxx.as
+</cmdline>
+<version>
+1.0.1
+</version>
+<email>
+ralf@hemmecke.de
+</email>
+<inform>
+yes
+</inform>
+<design>
+dk
+</design>
+<typeinf>
+dk
+</typeinf>
+<parsing>
+dk
+</parsing>
+<memory>
+dk
+</memory>
+<optimlvl>
+Q2
+</optimlvl>
+<libaldor>
+dk
+</libaldor>
+<algebra>
+dk
+</algebra>
+</form>

@@ -1,0 +1,21 @@
+Copyright (C) 2003 Ralf Hemmecke
+Before copyN
+Entering copyN where n is
+3
+copyN create y
+copyN starting for loop
+copyN for loop: i is
+0
+copyN for loop end iteration i is
+0
+copyN for loop: i is
+1
+copyN for loop end iteration i is
+1
+copyN for loop: i is
+2
+copyN for loop end iteration i is
+2
+leaving copyN!
+After copyN
+End Program

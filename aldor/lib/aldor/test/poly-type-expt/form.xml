@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<form>
+<bugnb>
+1374
+</bugnb>
+<subject>
+Polymorphic recursion doesn't work
+</subject>
+<description>
+Use of polymorphic recursion doesn't work; even in the presence of explicit imports of the different types.
+</description>
+<workaround>
+no
+</workaround>
+<wadescr>
+
+</wadescr>
+<priority>
+1
+</priority>
+<bugfile>
+/aldor.org/website/bugs/bugreport_1374/poly-type-expt.as
+</bugfile>
+<cmdline>
+aldor -Q2
+</cmdline>
+<version>
+1.0.2
+</version>
+<email>
+
+</email>
+<inform>
+yes
+</inform>
+<design>
+dk
+</design>
+<typeinf>
+dk
+</typeinf>
+<parsing>
+dk
+</parsing>
+<memory>
+no
+</memory>
+<optimlvl>
+dk
+</optimlvl>
+<libaldor>
+no
+</libaldor>
+<algebra>
+no
+</algebra>
+</form>

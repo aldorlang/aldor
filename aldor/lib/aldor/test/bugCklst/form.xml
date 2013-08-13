@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<form>
+<bugnb>
+1364
+</bugnb>
+<subject>
+CheckingList performs no bound checking with apply
+</subject>
+<description>
+The apply function of CheckingList segfaults when the MachineInteger argument of which element to extract is out of bounds.
+</description>
+<workaround>
+dk
+</workaround>
+<wadescr>
+
+</wadescr>
+<priority>
+2
+</priority>
+<bugfile>
+/aldor.org/website/bugs/bugreport_1364/bugCklst.as
+</bugfile>
+<cmdline>
+aldor -ginterp bugCklst.as
+</cmdline>
+<version>
+1.0.1
+</version>
+<email>
+christian.aistleitner@gmx.at
+</email>
+<inform>
+yes
+</inform>
+<design>
+no
+</design>
+<typeinf>
+no
+</typeinf>
+<parsing>
+no
+</parsing>
+<memory>
+no
+</memory>
+<optimlvl>
+Q0
+</optimlvl>
+<libaldor>
+yes
+</libaldor>
+<algebra>
+no
+</algebra>
+</form>

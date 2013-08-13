@@ -1,0 +1,5 @@
+var1              : y1
+var2              : y2
+var1 < var2       : T
+var1 > var2       : F
+max( var1, var2 ) : y1

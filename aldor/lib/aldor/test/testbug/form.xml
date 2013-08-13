@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<form>
+<bugnb>
+1359
+</bugnb>
+<subject>
+cannot name a type 'Test'
+</subject>
+<description>
+The type name 'Test' seems reserved by the compiler.
+Although a type named 'Test' compiles ok, it is not usable afterwards.
+
+</description>
+<workaround>
+yes
+</workaround>
+<wadescr>
+Do not name a type 'Test'
+</wadescr>
+<priority>
+3
+</priority>
+<bugfile>
+/aldor.org/website/bugs/bugreport_1359/testbug.as
+</bugfile>
+<cmdline>
+aldor testbug.as
+</cmdline>
+<version>
+1.0.1
+</version>
+<email>
+Manuel.Bronstein@acm.org
+</email>
+<inform>
+yes
+</inform>
+<design>
+dk
+</design>
+<typeinf>
+dk
+</typeinf>
+<parsing>
+no
+</parsing>
+<memory>
+no
+</memory>
+<optimlvl>
+dk
+</optimlvl>
+<libaldor>
+no
+</libaldor>
+<algebra>
+no
+</algebra>
+</form>

@@ -1,0 +1,65 @@
+<?xml version="1.0"?>
+<form>
+<bugnb>
+9
+</bugnb>
+<subject>
+PrimeFieldCategory gives wrong modulo p for p >=32 bits in Z[x]
+</subject>
+<description>
+For the polynomial U in Zp[x], when p >= 2^32 (i.e more than one machine word), the coerce function: n::U (to convert a Zp to Zp[x]) yields an incorrect result.  Result is however correct if p < 32 bits
+
+(INCORRECT) [p > MachineWord case] k-> 290 pol x - k::K::U -> x+18446744073692774111
+ [p < MachineWord Case] k-> 290 pol x-k::K::U -> x+224
+
+
+I will attempt a fix because I need it eventually for my work but if any of you come up with a fix soon enough, let me know.
+
+Aldor version is 1.0.3 (this option is not on this form
+</description>
+<workaround>
+no
+</workaround>
+<wadescr>
+
+</wadescr>
+<priority>
+1
+</priority>
+<bugfile>
+/aldor.org/website/bugs/bugreport_9/pftest.as
+</bugfile>
+<cmdline>
+aldor -ginterp pftest.as
+</cmdline>
+<version>
+1.0.2
+</version>
+<email>
+afilatei@scl.csd.uwo.ca
+</email>
+<inform>
+yes
+</inform>
+<design>
+dk
+</design>
+<typeinf>
+dk
+</typeinf>
+<parsing>
+dk
+</parsing>
+<memory>
+dk
+</memory>
+<optimlvl>
+dk
+</optimlvl>
+<libaldor>
+yes
+</libaldor>
+<algebra>
+yes
+</algebra>
+</form>

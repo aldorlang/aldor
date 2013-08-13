@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<form>
+<bugnb>
+1369
+</bugnb>
+<subject>
+wrong arithmetic for distributed multivariate polynomials with degree anticompatible orderings
+</subject>
+<description>
+The Algebra reference only states that orderings for exponent vectors have to be compatible with the monoid operation. This is reasonable and allows for non-noetherian orderings (which I desperately need). But the Type 'DistributedMultivariatePolynomial{0|1}' implements some shortcuts for faster arithmetic that assume that '1' is the smallest exponent possible. I found two such shortcuts: In '*' of 'DistributedMultivariatePolynomial1' and in 'ground?' of 'DistributedMultivariatePolynomial0'. But probably there are more places, that would have to be changed. (Because I recompiled the library with those two places modified and afterwards I got different arithmetic errors.) The bug can only be observed when linking to the debug-libraries, otherwise one even gets a segmentation fault at execution time. I marked the bug as critical, because it is critical for me: I'm preparing a presentation for the Aldor workshop in Santander and I cannot go on without this bug beeing fixed. Please help soon.
+</description>
+<workaround>
+dk
+</workaround>
+<wadescr>
+
+</wadescr>
+<priority>
+1
+</priority>
+<bugfile>
+/aldor.org/website/bugs/bugreport_1369/bug.as
+</bugfile>
+<cmdline>
+aldor -dDEBUG -Fx -lalgebrad -laldord bug.as
+</cmdline>
+<version>
+1.0.2
+</version>
+<email>
+Tobias.Beck@risc.uni-linz.ac.at
+</email>
+<inform>
+yes
+</inform>
+<design>
+dk
+</design>
+<typeinf>
+no
+</typeinf>
+<parsing>
+no
+</parsing>
+<memory>
+no
+</memory>
+<optimlvl>
+dk
+</optimlvl>
+<libaldor>
+no
+</libaldor>
+<algebra>
+yes
+</algebra>
+</form>

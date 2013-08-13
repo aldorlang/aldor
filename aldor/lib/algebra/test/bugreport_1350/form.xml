@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<form>
+<bugnb>
+1350
+</bugnb>
+<subject>
+libaldor vs. libalgebra crash
+</subject>
+<description>
+See the attached file xxx.as.
+</description>
+<workaround>
+yes
+</workaround>
+<wadescr>
+Use rep(x) as described in the file. But I guess the problem should be solved by recompiling algebra*.al, in particular the non-debug versions.
+</wadescr>
+<priority>
+1
+</priority>
+<bugfile>
+/aldor.org/website/bugs/bugreport_1350/xxx.as
+</bugfile>
+<cmdline>
+aldor -V -Y$ALGEBRAROOT/lib -I $ALGEBRAROOT/include -Y/home/hemmecke/local/lib -Q5 -Csmax=0 -Fx -lalgebra-gmp -laldor -DGMP -Cruntime=foam-gmp,gmp4,m -fc -DC1 -DALG xxx.as
+</cmdline>
+<version>
+1.0.1
+</version>
+<email>
+ralf@hemmecke.de
+</email>
+<inform>
+yes
+</inform>
+<design>
+dk
+</design>
+<typeinf>
+dk
+</typeinf>
+<parsing>
+dk
+</parsing>
+<memory>
+dk
+</memory>
+<optimlvl>
+Q2
+</optimlvl>
+<libaldor>
+dk
+</libaldor>
+<algebra>
+yes
+</algebra>
+</form>

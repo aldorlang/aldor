@@ -38,8 +38,9 @@ include Tests.am
 $(srcdir)/Tests.am: Makefile.am
 	truncate -s0 $@
 	for test in $(AXLTESTS); do			\
+	  ctest=`echo $$test | sed -e 's/-/_/g'`;	\
 	  echo "check_PROGRAMS += $$test/$$test" >> $@;	\
-	  echo "$${test}_$${test}_SOURCES = $$test/$${test}main.c $$test/$${test}.c" >> $@;	\
+	  echo "$${ctest}_$${ctest}_SOURCES = $$test/$${test}main.c $$test/$${test}.c" >> $@;	\
 	  echo "CLEANFILES += $$test/$${test}main.c $$test/$${test}.c $$test/$${test}.ao" >> $@;	\
 	done
 

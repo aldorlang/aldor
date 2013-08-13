@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+<form>
+<bugnb>
+1347
+</bugnb>
+<subject>
+array assignment -> segmentation fault
+</subject>
+<description>
+assigning to an array element leads to segmentation fault
+
+</description>
+<workaround>
+yes
+</workaround>
+<wadescr>
+use interpreter 
+aldor -g interp test1.as
+
+use debug
+aldor -Ddebug -laldord -fx test1.as
+</wadescr>
+<priority>
+1
+</priority>
+<bugfile>
+/aldor.org/website/bugs/bugreport_1347/test1.as
+</bugfile>
+<cmdline>
+aldor -fx -laldor test1.as
+</cmdline>
+<version>
+1.0.1
+</version>
+<email>
+
+</email>
+<inform>
+yes
+</inform>
+<design>
+no
+</design>
+<typeinf>
+no
+</typeinf>
+<parsing>
+no
+</parsing>
+<memory>
+dk
+</memory>
+<optimlvl>
+dk
+</optimlvl>
+<libaldor>
+dk
+</libaldor>
+<algebra>
+no
+</algebra>
+</form>
