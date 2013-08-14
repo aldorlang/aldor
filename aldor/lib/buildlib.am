@@ -10,3 +10,5 @@ lib$(libraryname).al: $(foreach i,$(SUBDIRS),$i/_sublib.al)
 	   ar cr $@ $$(ar t $$l);\
 	   rm $$(ar t $$l);	\
 	done
+
+CLEANFILES = lib$(libraryname).al

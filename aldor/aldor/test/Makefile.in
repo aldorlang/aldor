@@ -130,6 +130,7 @@ really-all: \
 #
 mostlyclean: 
 	rm -rf $(builddir)/out
+	rm -f $(patsubst %,%.o,$(otests))
 
 clean: mostlyclean
 distclean: clean 

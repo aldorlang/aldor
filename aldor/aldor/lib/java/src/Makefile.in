@@ -22,13 +22,16 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 
 buildfiles := $(shell cd $(srcdir); find foamj -name \*.java)
 
-# Build directly to a .jar file (easier than tracking .class files)
-$(abs_builddir)/foamj.jar: $(buildfiles)
-	mkdir -p $(abs_builddir)/classes
-	(cd $(srcdir); javac -d $(abs_builddir)/classes $(buildfiles))
-	(wd=$$(pwd); cd $(abs_builddir)/classes; jar cf $(abs_builddir)/foamj.jar .)
+outdir := $(abs_builddir)/classes
+jarfile := $(abs_builddir)/foamj.jar
 
-all: $(abs_builddir)/foamj.jar
+# Build directly to a .jar file (easier than tracking .class files)
+$(jarfile): $(buildfiles)
+	mkdir -p $(outdir)
+	(cd $(srcdir); javac -d $(outdir) $(buildfiles))
+	(wd=$$(pwd); cd $(outdir); jar cf $@ .)
+
+all: $(jarfile)
 	echo $<
 
 # 
@@ -36,8 +39,10 @@ all: $(abs_builddir)/foamj.jar
 #
 mostlyclean: 
 	rm -rf $(outdir)
+	rm -f $(jarfile)
 
 clean: mostlyclean
+
 distclean: clean 
 	rm Makefile
 maintainer-clean: distclean

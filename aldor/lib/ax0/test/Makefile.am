@@ -37,6 +37,7 @@ XFAIL_TESTS =	\
 	vector0.ao	\
 	#
 
+CLEANFILES = $(check_DATA)
 
 intcat1.ao: intcat0.ao
 
