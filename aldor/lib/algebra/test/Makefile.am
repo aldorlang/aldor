@@ -53,6 +53,7 @@ include ../../testprog.am
 
 tstSprsUniPol_tstSprsUniPol_SOURCES += tstSprsUniPol/support.c
 tstSprsUniPol/tstSprsUniPol.c: tstSprsUniPol/support.c
+CLEANFILES += tstSprsUniPol/support.c tstSprsUniPol/support.ao
 
 progs: Makefile.am $(check_PROGRAMS)
 	touch $<

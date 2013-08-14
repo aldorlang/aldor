@@ -3,10 +3,12 @@ aldorexedir = $(top_builddir)/aldor/src
 
 AM_CFLAGS = -I$(aldorsrcdir)
 
-lib$(libraryname).al: $(foreach i,$(SUBDIRS),$i/_sublib.al)
+lib$(libraryname).al: $(foreach i,$(SUBDIRS),$i/_sublib_$(libraryname).al)
 	$(AM_V_AR)		\
 	for l in $+; do		\
 	   ar x $$l;		\
 	   ar cr $@ $$(ar t $$l);\
 	   rm $$(ar t $$l);	\
 	done
+
+CLEANFILES = lib$(libraryname).al

@@ -59,16 +59,23 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	    cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ ;; \
 	esac;
 
+aldor_common_args :=				\
+	-Nfile=$(aldorsrcdir)/aldor.conf 	\
+	-Mno-ALDOR_W_WillObsolete		\
+	-Wcheck
+
 
 $(addsuffix .c, $(library)): %.c: %.ao %.dep
-	$(AM_V_AO2C)	\
-	$(aldorexedir)/aldor -Wcheck -Nfile=$(aldorsrcdir)/aldor.conf -Fc=$(builddir)/$@ $<	
+	$(AM_V_AO2C)				\
+	$(aldorexedir)/aldor			\
+	  $(aldor_common_args)			\
+	  -Fc=$(builddir)/$@			\
+	  $<	
 
 ifndef Libraryname
 Libraryname := $(shell echo '$(libraryname)' | sed -e 's/^[a-z]/\u&/')
 endif
-aldor_args =					\
-	-Nfile=$(aldorsrcdir)/aldor.conf 	\
+aldor_args = $(aldor_common_args)		\
 	-Y.					\
 	-I$(libraryincdir)			\
 	-l$(Libraryname)Lib=$(libraryname)_$*	\
@@ -78,20 +85,23 @@ aldor_args =					\
 	$(filter %$*.as,$^)			\
 	$(filter %$*.ax,$^)
 
-$(addsuffix .dep,$(asdomains)): %.dep: Makefile %.as Makefile.deps
-$(addsuffix .dep,$(axdomains)): %.dep: Makefile %.ax Makefile.deps
+$(addsuffix .dep,$(asdomains)): %.dep: %.as Makefile.in Makefile.deps
+$(addsuffix .dep,$(axdomains)): %.dep: %.ax Makefile.in Makefile.deps
 $(addsuffix .ao, $(asdomains)): %.ao: %.as
 $(addsuffix .ao, $(axdomains)): %.ao: %.ax
 
-$(addsuffix .ao, $(alldomains)): %.ao: _sublib_libdep.al
+SUBLIB		:= _sublib_$(libraryname)
+SUBLIB_DEPEND	:= _sublib_depend_$(libraryname)
+
+$(addsuffix .ao, $(alldomains)): %.ao: $(SUBLIB_DEPEND).al
 	$(AM_V_ALDOR)set -e;							\
 	rm -f $*.c $*.ao;							\
-	cp _sublib_libdep.al lib$(libraryname)_$*.al;				\
+	cp $(SUBLIB_DEPEND).al lib$(libraryname)_$*.al;				\
 	ar r lib$(libraryname)_$*.al $(addsuffix .ao, $(shell $(UNIQ) $*.dep));	\
-	$(DBG) $(aldorexedir)/aldor -Wcheck $(aldor_args);			\
+	$(DBG) $(aldorexedir)/aldor $(aldor_args);				\
 	rm lib$(libraryname)_$*.al
 
-_sublib_libdep.al: $(foreach l,$(library_deps),$(librarylibdir)/$l/_sublib.al)
+$(SUBLIB_DEPEND).al: $(foreach l,$(library_deps),$(librarylibdir)/$l/$(SUBLIB).al)
 	$(AM_V_AR)set -e;		\
 	ar cr $@;			\
 	for l in $+; do 		\
@@ -106,24 +116,24 @@ _sublib_libdep.al: $(foreach l,$(library_deps),$(librarylibdir)/$l/_sublib.al)
 
 $(addsuffix .fm,$(alldomains)): %.fm: %.ao
 	$(AM_V_AO2FM)				\
-	$(aldorexedir)/aldor -Wcheck		\
-	   -Nfile=$(aldorsrcdir)/aldor.conf	\
-	   -Ffm=$@ $<
+	$(aldorexedir)/aldor			\
+	  $(aldor_common_args)			\
+	  -Ffm=$@ $<
 
 .PHONY: $(addsuffix .gloop, $(alldomains))
 $(addsuffix .gloop, $(alldomains)): %.gloop:
 	$(AM_V_ALDOR)set -e;							\
 	rm -f $*.c $*.ao;							\
-	cp _sublib_libdep.al lib$(libraryname)_$*.al;				\
+	cp $(SUBLIB_DEPEND).al lib$(libraryname)_$*.al;				\
 	ar r lib$(libraryname)_$*.al $(addsuffix .ao, $(shell $(UNIQ) $*.dep));	\
-	$(DBG) $(aldorexedir)/aldor -Wcheck -gloop 	\
-		-Nfile=$(aldorsrcdir)/aldor.conf 	\
-		-Y.					\
-		-Y$(aldorlibdir)/libfoam/al		\
-		-I$(libraryincdir)			\
-		-l$(Libraryname)Lib=$(libraryname)_$*	\
-		-DBuild$(Libraryname)Lib		\
-		$(AXLFLAGS) $($*_AXLFLAGS)		\
+	$(DBG) $(aldorexedir)/aldor -gloop 	\
+	  $(aldor_common_args) 			\
+	  -Y.					\
+	  -Y$(aldorlibdir)/libfoam/al		\
+	  -I$(libraryincdir)			\
+	  -l$(Libraryname)Lib=$(libraryname)_$*	\
+	  -DBuild$(Libraryname)Lib		\
+	  $(AXLFLAGS) $($*_AXLFLAGS)		\
 
 .PHONY: help
 help:
@@ -139,7 +149,7 @@ $1.ao: $1.dep $(addsuffix .ao,$($1_deps))
 $1.dep: $(addsuffix .dep,$($1_deps))
 endef
 
-$(addsuffix .dep,$(alldomains) _sublib): 
+$(addsuffix .dep,$(alldomains) $(SUBLIB)): 
 	$(AM_V_DEP)set -e;					\
 	truncate --size 0 $@_tmp;				\
 	for i in $(filter %.dep, $^); do			\
@@ -156,17 +166,17 @@ $(addsuffix .dep,$(alldomains) _sublib):
 
 $(foreach l,$(alldomains), $(eval $(call dep_template,$(l))))
 
-_sublib.dep: $(addsuffix .dep,$(library))
-_sublib.dep: Makefile.deps
+$(SUBLIB).dep: $(addsuffix .dep,$(library))
+$(SUBLIB).dep: Makefile.deps
 
-_sublib.al: _sublib.dep
-_sublib.al: $(addsuffix .ao,$(library))
-_sublib.al:
+$(SUBLIB).al: $(SUBLIB).dep
+$(SUBLIB).al: $(addsuffix .ao,$(library))
+$(SUBLIB).al:
 	$(AM_V_AR)							\
 	rm -f $@;							\
 	ar cr $@ $(addsuffix .ao, $(shell $(UNIQ) $(@:.al=.dep)))
 
-all: Makefile _sublib.al
+all: Makefile $(SUBLIB).al
 all: $(addsuffix .fm,$(library))
 ifeq ($(bytecode_only),)
 all: $(addsuffix .c,$(library))
@@ -194,8 +204,8 @@ endif
 # :: Automake requires this little lot
 #
 mostlyclean: 
-	rm -f _sublib_libdep.al
-	rm -f _sublib.dep
+	rm -f $(SUBLIB_DEPEND).al
+	rm -f $(SUBLIB).dep
 	rm -f lib$(libraryname).al
 	rm -f lib$(libraryname)*.al
 	rm -f $(libraryname).classlib
@@ -208,7 +218,7 @@ mostlyclean:
 	rm -f $(addsuffix *.class,$(javalibrary))
 
 clean: mostlyclean
-	rm -f _sublib.al
+	rm -f $(SUBLIB).al
 
 distclean: clean 
 	rm -f $(addsuffix .dep,$(alldomains))

@@ -1,8 +1,3 @@
-/Makefile
 *.c
 *.cmd
-*.fm
 *.java
-*.class
-*.dep
-*.dep.tmp

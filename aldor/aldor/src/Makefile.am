@@ -326,9 +326,9 @@ comsgdb.c: $(srcdir)/comsgdb.msg $(tmpdir)
 		mv $(tmpdir)/comsgdb.c . ; \
 	fi
 
-local-clean:
+clean-local:
+	rm -f $(addsuffix .i,$(notdir $(testall_SOURCES))) $(addsuffix .s,$(notdir $(testall_SOURCES)))
 	rm -f *.i
-	rm -f *.s
 	rm -f *.o
 
 comsgpig.cat: $(srcdir)/comsgdb.msg
