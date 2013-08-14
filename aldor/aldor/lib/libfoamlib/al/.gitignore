@@ -1,6 +1,5 @@
-/Makefile
+/foamlib.classlib
+/foamlib.jar
 *.c
 *.cmd
-*.fm
 *.java
-*.class

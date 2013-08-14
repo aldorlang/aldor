@@ -1,9 +1,8 @@
 /runtime.c
-/Makefile
 /runtime-gets.txt
+/foam.jar
+/foam.classlib
 /*.c
-/*.fm
 /*.txt
 /*.java
-/*.class
 /*.cmd

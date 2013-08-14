@@ -1,4 +1,3 @@
-platform
-unicl
 /Makefile.in
-/Makefile
+/platform
+/unicl

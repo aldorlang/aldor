@@ -1,8 +1,8 @@
-zacc
-msgcat
-zaccgram.c
-zaccgram.h
-zaccscan.c
-atinlay
 /Makefile.in
-/Makefile
+/aldor
+/atinlay
+/msgcat
+/zacc
+/zaccgram.c
+/zaccgram.h
+/zaccscan.c

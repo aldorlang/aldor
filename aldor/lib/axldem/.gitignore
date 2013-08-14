@@ -1,8 +1,4 @@
 /Makefile.in
-/Makefile
-*.ao
 *.c
-*.fm
 *.java
 *.lsp
-*.o
