@@ -25,15 +25,15 @@ check: $(addsuffix .test,$(tests))
 .PHONY: $(addsuffix .test,$(tests))
 
 $(addsuffix .test,$(tests)): %.test: %.ao
-	cp _sublib_libdep.al lib$(libraryname)_$*.al;			\
+	cp $(SUBLIB_DEPEND).al lib$(libraryname)_$*.al;				\
 	ar r lib$(libraryname)_$*.al $(addsuffix .ao, $(shell $(UNIQ) $*.dep));	\
-	$(DBG) $(aldorexedir)/aldor -Wcheck		\
-		-Nfile=$(aldorsrcdir)/aldor.conf 	\
-		-Y.					\
-		-Y$(aldorlibdir)/libfoam/al		\
-		-Y$(top_builddir)/lib/aldor/src		\
-		-I$(libraryincdir)			\
-		-laldor					\
-		-l$(Libraryname)Lib=$(libraryname)_$*	\
-		-DBuild$(Libraryname)Lib		\
-	        -ginterp $*.ao
+	$(DBG) $(aldorexedir)/aldor -Wcheck	\
+	  -Nfile=$(aldorsrcdir)/aldor.conf 	\
+	  -Y.					\
+	  -Y$(aldorlibdir)/libfoam/al		\
+	  -Y$(top_builddir)/lib/aldor/src	\
+	  -I$(libraryincdir)			\
+	  -laldor				\
+	  -l$(Libraryname)Lib=$(libraryname)_$*	\
+	  -DBuild$(Libraryname)Lib		\
+	  -ginterp $*.ao

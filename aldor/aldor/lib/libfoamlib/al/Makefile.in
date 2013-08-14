@@ -54,5 +54,5 @@ include $(top_srcdir)/lib/buildlib.mk
 Libraryname	:= Axl
 
 all: libfoamlib.al
-libfoamlib.al: _sublib.al
+libfoamlib.al: $(SUBLIB).al
 	cp $< $@
