@@ -80,7 +80,7 @@ aldorincdir = $(srcdir)/../include
 datalibdir = $(datadir)/lib
 datalib_DATA = libaldor.al aldor_gloop.ao #aldor_gloopd.ao
 
-CLEANFILES = $(datalib_DATA)
+CLEANFILES += $(datalib_DATA)
 
 
 %d.ao: %.as $(aldorexedir)/aldor libaldor.al
