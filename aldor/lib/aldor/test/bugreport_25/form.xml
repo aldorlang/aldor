@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<form>
+<bugnb>
+25
+</bugnb>
+<subject>
+Exception declaration in function signature
+</subject>
+<description>
+See file.
+</description>
+<workaround>
+dk
+</workaround>
+<wadescr>
+
+</wadescr>
+<priority>
+2
+</priority>
+<bugfile>
+/aldor.org/website/bugs/bugreport_25/aaa.as
+</bugfile>
+<cmdline>
+aldor -DC1 -DC2 aaa.as
+</cmdline>
+<version>
+1.0.2
+</version>
+<email>
+ralf@hemmecke.de
+</email>
+<inform>
+yes
+</inform>
+<design>
+dk
+</design>
+<typeinf>
+dk
+</typeinf>
+<parsing>
+yes
+</parsing>
+<memory>
+dk
+</memory>
+<optimlvl>
+dk
+</optimlvl>
+<libaldor>
+dk
+</libaldor>
+<algebra>
+dk
+</algebra>
+</form>

@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<form>
+<bugnb>
+1360
+</bugnb>
+<subject>
+yet another optimized segfault
+</subject>
+<description>
+code seg-faults whenever critical section is compiled at -q2 or higher
+Works ok, but slow at -q1
+
+</description>
+<workaround>
+no
+</workaround>
+<wadescr>
+
+</wadescr>
+<priority>
+1
+</priority>
+<bugfile>
+/aldor.org/website/bugs/bugreport_1360/modpbug.as
+</bugfile>
+<cmdline>
+aldor -q1 -fx -lalgebra -laldor modpbug.as
+</cmdline>
+<version>
+1.0.1
+</version>
+<email>
+Manuel.Bronstein@sophia.inria.fr
+</email>
+<inform>
+yes
+</inform>
+<design>
+no
+</design>
+<typeinf>
+no
+</typeinf>
+<parsing>
+no
+</parsing>
+<memory>
+dk
+</memory>
+<optimlvl>
+Q2
+</optimlvl>
+<libaldor>
+no
+</libaldor>
+<algebra>
+yes
+</algebra>
+</form>

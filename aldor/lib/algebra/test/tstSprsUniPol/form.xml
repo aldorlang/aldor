@@ -1,0 +1,108 @@
+<?xml version="1.0"?>
+<form>
+<bugnb>
+27
+</bugnb>
+<subject>
+problem with extending SparseUnivariatePolynomial0
+</subject>
+<description>
+Hi,
+
+I find that I have problems with extending the domains 
+SparseUnivariatePolynomial0 and UnivariateMonomial.
+If I compile a file tst.as containing:
+
+--------------------------------------
+#include "algebra"
+
+extend SparseUnivariatePolynomial0(R:Join(ArithmeticType, ExpressionType),
+        var:Symbol == new()):with {
+  foo : String -> String
+} == add {
+  foo(s:String):String == s
+}
+---------------------------------------
+
+with: 
+
+aldor -Fo -Fao tst.as
+
+(the function foo is just dummy, in fact I get the same behaviour if I 
+leave it out -- effectively doing a null extension!)
+
+now I try to create a SparseUnivariatePolynomial0 object, first compile 
+the file use.as:
+
+--------------------------------------
+#include "algebra"
+#include "aldorio"
+#library SUP "tst.ao"
+import from SUP;
+import from Symbol,Integer;
+macro x== -"x";
+import from SparseUnivariatePolynomial0(Integer,x);
+stdout<<" blah"<<newline;
+monomial 2
+--------------------------------------
+
+with:
+
+aldor -Fao -Fo use.as
+aldor -Fx -lalgebra -laldor use.o tst.o
+
+now I go:
+
+>./use
+> blah
+>Segmentation fault
+
+
+N.B. this is with version aldor 1.0.3
+</description>
+<workaround>
+dk
+</workaround>
+<wadescr>
+
+</wadescr>
+<priority>
+2
+</priority>
+<bugfile>
+/aldor.org/website/bugs/bugreport_27/tst.tar.gz
+</bugfile>
+<cmdline>
+aldor -Fao -Fo tstSprsUniPol.as;aldor -Fao -Fo tstSprsUniPol2.as;aldor -Fx -lalgebra -laldor tstSprsUniPol2.o tstSprsUniPol.o
+</cmdline>
+<version>
+1.0.2
+</version>
+<email>
+wn@cs.bath.ac.uk
+</email>
+<inform>
+yes
+</inform>
+<design>
+dk
+</design>
+<typeinf>
+dk
+</typeinf>
+<parsing>
+dk
+</parsing>
+<memory>
+dk
+</memory>
+<optimlvl>
+Q0
+</optimlvl>
+<libaldor>
+dk
+</libaldor>
+<algebra>
+dk
+</algebra>
+</form>

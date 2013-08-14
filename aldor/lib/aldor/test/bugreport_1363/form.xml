@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<form>
+<bugnb>
+1363
+</bugnb>
+<subject>
+missing add
+</subject>
+<description>
+see file
+</description>
+<workaround>
+dk
+</workaround>
+<wadescr>
+
+</wadescr>
+<priority>
+2
+</priority>
+<bugfile>
+/aldor.org/website/bugs/bugreport_1363/xxx.as
+</bugfile>
+<cmdline>
+aldor -v xxx.as
+</cmdline>
+<version>
+1.0.1
+</version>
+<email>
+ralf@hemmecke.de
+</email>
+<inform>
+yes
+</inform>
+<design>
+dk
+</design>
+<typeinf>
+dk
+</typeinf>
+<parsing>
+yes
+</parsing>
+<memory>
+dk
+</memory>
+<optimlvl>
+dk
+</optimlvl>
+<libaldor>
+dk
+</libaldor>
+<algebra>
+dk
+</algebra>
+</form>

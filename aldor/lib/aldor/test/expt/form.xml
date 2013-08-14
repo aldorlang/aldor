@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<form>
+<bugnb>
+1371
+</bugnb>
+<subject>
+Incorrect recursive definition warning
+</subject>
+<description>
+Defining a domain constant in terms of an identically named and typed constant from another domain results in a warning about an illegal recursive definition.
+</description>
+<workaround>
+yes
+</workaround>
+<wadescr>
+see attached file.  Indirect definition through a variable quiets the compiler, but may? disable use of constant in type expression.
+</wadescr>
+<priority>
+2
+</priority>
+<bugfile>
+/aldor.org/website/bugs/bugreport_1371/expt.as
+</bugfile>
+<cmdline>
+aldor -Q2 -Lalgebra -Laldor -Fx=expt expt.as
+</cmdline>
+<version>
+1.0.2
+</version>
+<email>
+casper@unbc.ca
+</email>
+<inform>
+yes
+</inform>
+<design>
+dk
+</design>
+<typeinf>
+dk
+</typeinf>
+<parsing>
+no
+</parsing>
+<memory>
+no
+</memory>
+<optimlvl>
+dk
+</optimlvl>
+<libaldor>
+no
+</libaldor>
+<algebra>
+no
+</algebra>
+</form>

@@ -1,0 +1,75 @@
+<?xml version="1.0"?>
+<form>
+<bugnb>
+1365
+</bugnb>
+<subject>
+Declaration fulfills type but does not give proper value
+</subject>
+<description>
+If the last line of a function is a declaration of the type which is returned by the function, then the function compiles.
+
+This gives the idea, that a declaration returns a value.
+If it would return a value, then a declaration by the keyword "free" should give the value of the variable.
+
+But generally speaking I guess (due to what the interactive version of aldor prints on declaring a value) that a declaration should not produce any value. But then in turn, a function ending in a declaration should not compile (if the return type is not the empty type).
+
+So no matter in which case the compiler is meant to read the code, it does not work, because it compiles the file without any problem (so the declaration does return a type), but the returned value is not the one of the declared variable.
+</description>
+<workaround>
+yes
+</workaround>
+<wadescr>
+never let a function end with a declaration.
+
+foo():SOMETYPE == {
+  free someVariable:SOMETYPE;
+}
+
+shall be replaced by 
+
+foo():SOMETYPE == {
+  free someVariable:SOMETYPE;
+  someVariable;
+}
+</wadescr>
+<priority>
+2
+</priority>
+<bugfile>
+/aldor.org/website/bugs/bugreport_1365/bugFree.as
+</bugfile>
+<cmdline>
+aldor -ginterp bugFree.as
+</cmdline>
+<version>
+1.0.1
+</version>
+<email>
+christian.aistleitner@gmx.at
+</email>
+<inform>
+yes
+</inform>
+<design>
+dk
+</design>
+<typeinf>
+dk
+</typeinf>
+<parsing>
+dk
+</parsing>
+<memory>
+dk
+</memory>
+<optimlvl>
+Q0
+</optimlvl>
+<libaldor>
+no
+</libaldor>
+<algebra>
+no
+</algebra>
+</form>

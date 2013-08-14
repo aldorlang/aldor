@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+<form>
+<bugnb>
+1348
+</bugnb>
+<subject>
+CommandLine gives segmentation fault in interp mode
+</subject>
+<description>
+A program that uses `arguments' from `CommandLine' works when compiled, but results in a segmentation fault when run in interpreter mode.
+
+A warning would be appropriate and it would be even better if `arguments' worked in interpreter mode as well.
+
+ 
+</description>
+<workaround>
+yes
+</workaround>
+<wadescr>
+compile instead of interpret
+aldor -fx -laldor testargs.as
+./testargs
+
+</wadescr>
+<priority>
+2
+</priority>
+<bugfile>
+/aldor.org/website/bugs/bugreport_1348/testargs.as
+</bugfile>
+<cmdline>
+aldor -g interp testargs.as
+</cmdline>
+<version>
+1.0.1
+</version>
+<email>
+jan.vanlent@cs.kuleuven.ac.be
+</email>
+<inform>
+yes
+</inform>
+<design>
+dk
+</design>
+<typeinf>
+no
+</typeinf>
+<parsing>
+no
+</parsing>
+<memory>
+dk
+</memory>
+<optimlvl>
+dk
+</optimlvl>
+<libaldor>
+yes
+</libaldor>
+<algebra>
+dk
+</algebra>
+</form>
