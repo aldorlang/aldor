@@ -122,6 +122,20 @@ fnameSetDir(FileName fn, String dir)
 }
 
 void
+fnameSetName(FileName fn, String dir)
+{
+	if (fnameDir(fn)) strFree(fnameName(fn));
+	fnameName(fn) = strCopy(dir);
+}
+
+void
+fnameSetType(FileName fn, String dir)
+{
+	if (fnameType(fn)) strFree(fnameType(fn));
+	fnameDir(fn) = strCopy(dir);
+}
+
+void
 fnameFree(FileName fn)
 {
 	int	i;
