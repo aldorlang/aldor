@@ -25,23 +25,18 @@ am__v_ALDOR_0 = @echo "  ALDOR " $@;
 	@$(MKDIR_P) $(@D)
 	$(AM_V_ALDOR)$(ALDOR) $(ALDORFLAGS) -Y$(@D) -Fao=$(@:.c=.ao) -Fc=$@ $<
 
-%main.c: %.as $(ALDOR)
-	@$(MKDIR_P) $(@D)
-	$(AM_V_ALDOR)set -e;				\
-	mkdir $(notdir $*_tmp);				\
-	(cd $(notdir $*_tmp);				\
-	$(ALDOR) $(ALDORFLAGS) -Fmain $(abspath $<));	\
-	mv $(notdir $*_tmp)/aldormain.c $@;		\
-	rmdir $(notdir $*_tmp)
+%-aldormain.c: %.as $(ALDOR)
+	mkdir -p $(dir $@)
+	$(ALDOR) $(ALDORFLAGS) -Fmain -R $(dir $@) $(abspath $<)
 
 include Tests.am
-$(srcdir)/Tests.am: Makefile.am
+$(srcdir)/Tests.am: Makefile.am $(abs_top_srcdir)/lib/testprog.am
 	truncate -s0 $@
 	for test in $(AXLTESTS); do			\
 	  ctest=`echo $$test | sed -e 's/-/_/g'`;	\
 	  echo "check_PROGRAMS += $$test/$$test" >> $@;	\
-	  echo "$${ctest}_$${ctest}_SOURCES = $$test/$${test}main.c $$test/$${test}.c" >> $@;	\
-	  echo "CLEANFILES += $$test/$${test}main.c $$test/$${test}.c $$test/$${test}.ao" >> $@;	\
+	  echo "$${ctest}_$${ctest}_SOURCES = $$test/$${test}-aldormain.c $$test/$${test}.c" >> $@;	\
+	  echo "CLEANFILES += $$test/$${test}-aldormain.c $$test/$${test}.c $$test/$${test}.ao" >> $@;	\
 	done
 
 AM_CPPFLAGS = -I$(aldorsrcdir)

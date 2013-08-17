@@ -33,6 +33,10 @@ aptests := exquo
 fmtests := rectest enumtest clos strtable1 
 ctests  := rectest enumtest
 otests  := enumtest
+xtests := enumtest
+
+x_extra := rtexns
+
 @BUILD_JAVA_TRUE@jtests  := simple_j enumtest run_j
 
 simple_j_AXLFLAGS=-Q2
@@ -51,10 +55,11 @@ _ctests  := $(sort $(ctests)  $(otests))
 
 _jruntests := $(sort $(jruntests))
 _jtests  := $(sort $(jtests) $(_jruntests))
+_xtests  := $(sort $(xtests))
 _fmtests := $(sort $(fmtests) $(_jtests))
-_otests  := $(sort $(otests))
+_otests  := $(sort $(otests) $(x_extra))
 _ctests  := $(sort $(ctests)  $(_otests))
-_aotests := $(sort $(_fmtests) $(_ctests))
+_aotests := $(sort $(_fmtests) $(_ctests) $(_xtests))
 
 nfile := -Nfile=$(aldorsrcdir)/aldor.conf
 
@@ -113,6 +118,18 @@ $(patsubst %, out/ao/%.cmd, $(_aotests)): out/ao/%.cmd: %.as
 	mkdir -p $$(dirname $@)
 	echo run '$(aldor_args)' > $@
 
+$(patsubst %, %.exe, $(_xtests)): %.exe: %.o rtexns.o
+	rm -f $@
+	$(DBG) $(aldorexedir)/aldor $(nfile) 		\
+		      -Ccc=$(aldortooldir)/unicl	\
+		      -Y$(foamdir)			\
+		      -Y$(foamlibdir)			\
+		      -Lfoamlib				\
+		      -Cargs="-Wconfig=$(aldorsrcdir)/aldor.conf -I$(aldorsrcdir) -Wv=2" \
+		      -Fx=$@ out/ao/$*.ao rtexns.o
+
+#		      -Fmain=bobthebuilder.c		\
+
 really-all: \
      $(patsubst %,out/ap/%.ap,$(_aptests)) \
      $(patsubst %,out/ao/%.cmd,$(_aotests)) \
@@ -121,7 +138,9 @@ really-all: \
      $(patsubst %,out/java/%.java,$(jtests)) \
      $(patsubst %,out/java/%.class,$(jtests)) \
      $(patsubst %,out/java/%.class,$(jruntests)) \
-     $(patsubst %,%.o,$(otests))      
+     $(patsubst %,%.o,$(otests))  \
+     $(patsubst %,%.exe,$(xtests))
+
 
 .PHONY: all
 

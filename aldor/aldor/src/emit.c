@@ -353,8 +353,10 @@ emitInfoNew(FileName srcfn)
 EmitInfo
 emitInfoNewAXLmain(void)
 {
-	FileName srcfn = fnameNew(emitOutputDir, "aldormain", FTYPE_SRC);
+	String axlmainName = strConcat(emitEntryFile, "-aldormain");
+	FileName srcfn = fnameNew(emitOutputDir, axlmainName, ".c");
 	EmitInfo finfo = emitInfoNew(srcfn);
+	strFree(axlmainName);
 
 	emitInfoIsAXLmain(finfo) = true;
 
