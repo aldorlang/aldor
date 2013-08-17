@@ -385,6 +385,34 @@ comsgOkRelease(void)
 
 /*****************************************************************************
  *
+ * :: The message list
+ *
+ ****************************************************************************/
+
+CoMsgList
+comsgMessages()
+{
+	return messages;
+}
+
+CoMsgList
+comsgMessagesForMsg(Msg msg)
+{
+	CoMsgList selected = listNil(CoMsg);
+	CoMsgList iter = messages;
+	while (iter != listNil(CoMsg)) {
+		CoMsg message = car(iter);
+		iter = cdr(iter);
+		if (message->msg == msg)
+			selected = listCons(CoMsg)(message, selected);
+	}
+	return listNReverse(CoMsg)(selected);
+}
+
+
+
+/*****************************************************************************
+ *
  * :: Message Filter
  *
  ****************************************************************************/
