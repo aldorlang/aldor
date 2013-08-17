@@ -18,7 +18,6 @@ AXLTESTS =	\
 	bug778	\
 	bug798	\
 	bug813	\
-	bug814	\
 	bug818	\
 	bug821	\
 	bug822	\
@@ -502,6 +501,9 @@ XFAIL_TESTS =	\
 	pack1/pack1	\
 	pack2/pack2	\
 	#
+
+RESOLVED = \
+	bug814
 
 check_PROGRAMS = # filled by Tests.am
 CLEANFILES = # filled by Tests.am

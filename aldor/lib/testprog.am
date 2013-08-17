@@ -23,7 +23,7 @@ am__v_ALDOR_0 = @echo "  ALDOR " $@;
 
 %.c: %.as $(ALDOR)
 	@$(MKDIR_P) $(@D)
-	$(AM_V_ALDOR)$(ALDOR) $(ALDORFLAGS) -Y$(@D) -Fao=$(@:.c=.ao) -Fc=$@ $<
+	$(AM_V_ALDOR)$(DBG) $(ALDOR) $(ALDORFLAGS) -Y$(@D) -Fao=$(@:.c=.ao) -Fc=$@ $<
 
 %-aldormain.c: %.as $(ALDOR)
 	mkdir -p $(dir $@)

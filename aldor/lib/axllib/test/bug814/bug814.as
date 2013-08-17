@@ -1,3 +1,6 @@
+-- Resolved, and moved to a test case (test_abcheck)
+-- It should raise an error.
+
 --* From postmaster%watson.vnet.ibm.com@yktvmv.watson.ibm.com  Mon Aug 22 16:33:59 1994
 --* Received: from yktvmv-ob.watson.ibm.com by watson.ibm.com (AIX 3.2/UCB 5.64/930311)
 --*           id AA22257; Mon, 22 Aug 1994 16:33:59 -0400
