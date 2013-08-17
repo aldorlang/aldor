@@ -127,3 +127,48 @@ testAllPassed()
 {
 	return failed == 0;
 }
+
+void
+initFile()
+{
+	macexInitFile();
+	comsgInit();
+	scobindInitFile();
+	stabInitFile();
+}
+
+void
+finiFile()
+{
+	scobindFiniFile();
+	stabFiniFile();
+	comsgFini();
+	macexFiniFile();
+
+	cmdDebugReset();
+}
+
+void
+init()
+{
+	osInit();
+	sxiInit();
+	keyInit();
+	ssymInit();
+	dbInit();
+	stabInitGlobal();
+	tfInit();
+	foamInit();
+	optInit();
+	tinferInit();
+
+	sposInit();
+	ablogInit();
+	comsgInit();
+}
+
+void
+fini()
+{
+	saveAndEmptyAllPhaseSymbolData();
+}

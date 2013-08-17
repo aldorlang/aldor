@@ -4,8 +4,6 @@
 #include "testlib.h"
 #include "strops.h"
 
-local void init(void);
-local void fini(void);
 local void testAbSynFormat();
 local void testAbSynFormatList();
 local void testAbParse();
@@ -23,18 +21,6 @@ absynTest()
 	TEST(testExquo);
 	TEST(testAbContains);
 	fini();
-}
-
-local void
-init()
-{
-
-}
-
-local void
-fini()
-{
-
 }
 
 local void
