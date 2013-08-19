@@ -54,6 +54,9 @@ extern Bool	comsgOkRemark	  (Msg);  /* Is this remark OK?          */
 extern Bool	comsgOkWarning	  (Msg);  /* Is this warning OK?         */
 extern Bool	comsgOkRelease    (void); /* Show "Release: Aldor(... " */
 
+extern CoMsgList comsgMessages(void);     /* Read-only list */
+extern CoMsgList comsgMessagesForMsg(Msg); /* Newly created list */
+
 /*
  * :: Functions to access message database.
  */

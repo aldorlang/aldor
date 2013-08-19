@@ -45,6 +45,7 @@ main(int argc, char *argv[])
 	if (testShouldRun("stab")) stabTest();
 	if (testShouldRun("srcpos")) srcposTest();
 	if (testShouldRun("absyn")) absynTest();
+	if (testShouldRun("abcheck")) abcheckTest();
 	if (testShouldRun("ablog")) ablogTest();
 	if (testShouldRun("tform")) tformTest();
 	if (testShouldRun("scobind")) scobindTest();

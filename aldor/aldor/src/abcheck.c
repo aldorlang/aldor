@@ -57,6 +57,7 @@ typedef void	(*AbCheckFn)		(AbSyn, String);
 local void	abCheckOneOrMoreForms	(AbSyn, String, AbCheckFn);
 local void	abCheckOneDefine	(AbSyn, String);
 local void	abCheckWithin		(AbSyn, String);
+local void      abCheckWithinDeclare(AbSyn ab, String str);
 
 /*****************************************************************************
  *
@@ -995,6 +996,7 @@ abCheckWithin(AbSyn ab, String str)
 	switch (abTag(ab)) {
 	case AB_Id:
 	case AB_Declare:
+		abCheckWithinDeclare(ab, str);
 	case AB_Default:
 	case AB_Import:
 	case AB_Export:
@@ -1015,5 +1017,16 @@ abCheckWithin(AbSyn ab, String str)
 	default:
 		comsgError(ab, ALDOR_E_ChkBadForm, str); 
 		break;
+	}
+}
+
+local void
+abCheckWithinDeclare(AbSyn ab, String str)
+{
+	AbSyn id = ab->abDeclare.id;
+	AbSyn type = ab->abDeclare.type;
+
+	if (abTag(id) != AB_Id) {
+		comsgError(ab, ALDOR_E_ChkBadForm, str);
 	}
 }

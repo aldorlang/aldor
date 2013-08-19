@@ -33,19 +33,19 @@ TESTS = $(check_PROGRAMS)
 
 check_PROGRAMS += tst_complex
 tst_complex_SOURCES =		\
-	tst_complexmain.c	\
+	tst_complex-aldormain.c	\
 	tst_complex.c
 CLEANFILES += $(tst_complex_SOURCES) tst_complex.ao
 
 check_PROGRAMS += tst_mint
 tst_mint_SOURCES =		\
-	tst_mintmain.c		\
+	tst_mint-aldormain.c		\
 	tst_mint.c
 CLEANFILES += $(tst_mint_SOURCES) tst_mint.ao
 
 check_PROGRAMS += tst_random
 tst_random_SOURCES =		\
-	tst_randommain.c	\
+	tst_random-aldormain.c	\
 	tst_random.c
 CLEANFILES += $(tst_random_SOURCES) tst_random.ao
 

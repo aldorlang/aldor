@@ -1,6 +1,7 @@
 #ifndef _TESTALL_H_
 #define _TESTALL_H_
 
+void abcheckTest(void);
 void ablogTest(void);
 void absynTest(void);
 void bitvTestSuite(void);

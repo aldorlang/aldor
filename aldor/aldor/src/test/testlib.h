@@ -19,6 +19,11 @@ int testAllPassed();
 
 void showTest(char *name, void (*fn)(void));
 
+void init(void);
+void fini(void);
+void initFile(void);
+void finiFile(void);
+
 #define TEST(x) showTest(Enstring(x), x)
 
 #endif
