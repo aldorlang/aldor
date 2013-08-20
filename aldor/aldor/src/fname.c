@@ -132,7 +132,7 @@ void
 fnameSetType(FileName fn, String type)
 {
 	if (fnameType(fn)) strFree(fnameType(fn));
-	fnameDir(fn) = strCopy(type);
+	fnameType(fn) = strCopy(type);
 }
 
 void
