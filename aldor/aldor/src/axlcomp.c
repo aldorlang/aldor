@@ -1181,6 +1181,7 @@ compPhasePutAXLmainC(EmitInfo finfo)
 		/* ?? Should do what emitGetFileIdName does */
 		CCode	  mainc  = genAXLmainC(strCopy(emitGetEntryFile()));
 		CCodeList ccodel = listCons(CCode)(mainc, listNil(CCode));
+		emitSetDone(FTYPENO_AXLMAINC);
 
 		emitTheC(finfo, ccodel);
 

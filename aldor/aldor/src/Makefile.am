@@ -251,6 +251,7 @@ libphase_a_SOURCES =	\
 check_PROGRAMS = testall
 TESTS = testall
 testsuite =			\
+	test/test_abcheck.c	\
 	test/test_ablogic.c 	\
 	test/test_absyn.c 	\
 	test/test_bitv.c 	\

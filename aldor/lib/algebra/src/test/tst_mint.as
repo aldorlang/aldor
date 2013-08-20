@@ -13,7 +13,6 @@ TestMachineInteger: TestCategory with == add
 	test(): () == 
 		import from Assert MachineInteger
     		import from MachineInteger
-		import from GeneralAssert
 
     		assertTrue(zero? 0)
 		assertFalse(zero? 1)

@@ -11,3 +11,5 @@ foo(): X == {
 bar(): X == BAD;
 
 bad?(x: X): Boolean == (x = BAD);
+
+print << "hello" << newline
