@@ -649,6 +649,7 @@ local void	foamAuditBadRef		(Foam foam);
 local void	foamAuditBadSharing	(Foam foam);
 local void	foamAuditBadRuntime	(Foam foam);
 local void	foamAuditBadCast  	(Foam foam);
+local void	foamAuditBadDecl  	(Foam foam);
 
 Foam	faUnit;
 Foam	faProg;
@@ -867,6 +868,9 @@ foamAuditExpr(Foam foam)
 		  /* There was a check for runtime constraint breakage
 		   * here - removed as a layering violation... */
 		break;
+	case FOAM_Decl:
+		foamAuditDecl(foam);
+		break;
 	  default:
 		break;
 	}
@@ -875,6 +879,27 @@ foamAuditExpr(Foam foam)
 		result = foamAuditTypeCheck(foam);
 
 	return result;
+}
+
+void
+foamAuditDecl(Foam decl)
+{
+	FoamTag type = decl->foamDecl.type;
+	AInt fmt = decl->foamDecl.format;
+	switch (type) {
+	case FOAM_Arr:
+		if (fmt >= FOAM_DATA_LIMIT)
+			foamAuditBadDecl(decl);
+		break;
+	case FOAM_Rec:
+		if (fmt == emptyFormatSlot)
+			foamAuditBadDecl(decl);
+		break;
+	default:
+		if (fmt != emptyFormatSlot && fmt != 0)
+			foamAuditBadDecl(decl);
+		break;
+	}
 }
 
 /**************************************************************************
@@ -1206,6 +1231,14 @@ foamAuditBadCast(Foam foam)
 	foamPrint(stderr, foam);
 	if (DEBUG(foam)){foamPrint(dbOut, faUnit);}
 	bug("\nBad foam cast %d:\n", faConstNum);
+}
+
+local void
+foamAuditBadDecl(Foam foam)
+{
+	foamPrint(stderr, foam);
+	if (DEBUG(foam)){foamPrint(dbOut, faUnit);}
+	bug("\nBad foam decl\n", faConstNum);
 }
 
 local void
