@@ -62,7 +62,7 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 aldor_common_args :=				\
 	-Nfile=$(aldorsrcdir)/aldor.conf 	\
 	-Mno-ALDOR_W_WillObsolete		\
-	-Wcheck
+	-Wcheck -Waudit
 
 
 $(addsuffix .c, $(library)): %.c: %.ao %.dep
