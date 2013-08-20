@@ -1109,18 +1109,21 @@ local Foam
 genMulti(AbSyn absyn)
 {
 	Foam 	values, var, val;
+	AInt    type, fmt;
 	int	i;
 
 	if (gen0ValueMode) {
 		values = foamNewEmpty(FOAM_Values, abArgc(absyn));
 		for (i = 0; i < abArgc(absyn); i++) {
+			TForm tfi = abTUnique(abArgv(absyn)[i]);
 			val = genFoamVal(abArgv(absyn)[i]);
+			type = gen0Type(tfi, &fmt);
 #ifdef MultiUseLocals
 			/*!! We would rather generate locals here, but
 			 *!! gen0TempLocal isn't working as expected. */
-			var = gen0TempLocal(gen0FoamType(val));
+			var = gen0TempLocal0(type, fmt);
 #else
-			var = gen0TempLex(gen0FoamType(val));
+			var = gen0TempLex0(type, fmt);
 #endif
 
 			values->foamValues.argv[i] = var;
