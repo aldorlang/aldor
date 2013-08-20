@@ -888,7 +888,7 @@ foamAuditDecl(Foam decl)
 	AInt fmt = decl->foamDecl.format;
 	switch (type) {
 	case FOAM_Arr:
-		if (fmt >= FOAM_DATA_LIMIT)
+		if (fmt >= FOAM_DATA_LIMIT && fmt != FOAM_BInt)
 			foamAuditBadDecl(decl);
 		break;
 	case FOAM_Rec:
