@@ -2603,7 +2603,9 @@ tformFreeVars0(TForm *pa, TForm parent, TForm tf)
 	tf->parent = parent;
 	ancestor = parent = tf;
 
-	if (tfIsSym(tf) || tfIsSyntax(tf))
+	if (tfIsSyntax(tf))
+		;
+	else if (tfIsSym(tf))
 		;
 	else if (tfIsLibrary(tf) || tfIsArchive(tf))
 		;
