@@ -3,9 +3,10 @@
 #include "abquick.h"
 #include "stab.h"
 #include "tfsat.h"
-#include "absub.h"
+#include "sefo.h"
 
 local void testTfSatEmbed();
+local void testTfSatRec();
 
 /* XXX: from test_tinfer.c */
 void init(void);
@@ -18,6 +19,7 @@ tfsatTest()
 {
 	init();
 	TEST(testTfSatEmbed);
+	TEST(testTfSatRec);
 	fini();
 }
 
@@ -69,6 +71,40 @@ testTfSatEmbed()
 	result = tfSat(mask, tfSubst(sigma, tf1), tf2);
 	testTrue("", tfSatSucceed(result));
 	testIntEqual("", AB_Embed_CrossToMulti, tfSatAbEmbed(result));
+
+	finiFile();
+}
+
+
+void
+testTfSatRec()
+{
+	String T_def = "T: with == add";
+	String R_def = "R == Record(t: T)";
+	String r_def = "local r: R";
+	String s_def = "local s: Record(t: T)";
+
+	initFile();
+	StringList lines = listList(String)(4, T_def, R_def, r_def, s_def);
+
+	AbSynList code = listCons(AbSyn)(stdtypes(), abqParseLines(lines));
+	AbSyn absyn = abNewSequenceL(sposNone, code);
+	Stab stab = stabFile();
+
+	abPutUse(absyn, AB_Use_NoValue);
+	scopeBind(stab, absyn);
+	typeInfer(stab, absyn);
+
+	testTrue("Declare is sefo", abIsSefo(absyn));
+	testIntEqual("Error Count", 0, comsgErrorCount());
+
+	Syme r = uniqueMeaning(stab, "r");
+	TForm rtf = symeType(r);
+	Syme s = uniqueMeaning(stab, "s");
+	TForm stf = symeType(s);
+	aprintf("R: %pTForm S: %pTForm\n", rtf, stf);
+
+	testTrue("def eq", tfSatisfies(rtf, stf));
 
 	finiFile();
 }
