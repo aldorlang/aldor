@@ -6439,7 +6439,7 @@ gc0Decl(Foam decl, CCode name)
 		 * put format information into OCall statements, so the
 		 * foamExprType can predict the type properly.
 		 */
-		assert(fmt && fmt != emptyFormatSlot);
+		/*assert(fmt && fmt != emptyFormatSlot);*/
 		if (!fmt || fmt == emptyFormatSlot) {
 			ccType = gc0TypeId(FOAM_Word, emptyFormatSlot);
 			ccDecl = ccoDecl(ccType, name);

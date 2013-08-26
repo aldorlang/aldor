@@ -3076,7 +3076,9 @@ gen0RecordFormatNumber(TForm tf)
 	Length		i, argc;
 	AInt		fmt0 = emptyFormatSlot;
 
-	assert (tfIsRecord(tf));
+	if (!tfIsRecord(tf)) {
+		return emptyFormatSlot;
+	}
 	argc = tfRecordArgc(tf);
 
 	/* Generate the format. */
@@ -4257,7 +4259,11 @@ gen0MakeExtendLambda(Syme syme, TForm tf)
 
 	paramv = (Foam*) stoAlloc(OB_Other, sizeof(Foam)*tfMapArgc(tf));
 	for (i=0; i<tfMapArgc(tf); i++) {
-		paramv[i] = genFoamVal(abDefineeId(tfExpr(tfMapArgN(tf, i))));
+		TForm ntf = tfMapArgN(tf, i);
+		paramv[i] = genFoamVal(abDefineeId(tfExpr(ntf)));
+		if (gen0Type(ntf, NULL) != FOAM_Word) {
+			paramv[i] = foamNewCast(FOAM_Word, paramv[i]);
+		}
 	}
 	gen0CacheCheck(cache, tfMapArgc(symeType(syme)), paramv);
 
@@ -4985,8 +4991,13 @@ gen0Lambda(AbSyn absyn, Syme syme, AbSyn defaults)
 	if (cache) {
 		int  i;
 		Foam *paramv = (Foam*)stoAlloc(OB_Other, abArgc(params)*sizeof(Foam));
-		for (i=0; i<abArgc(params); i++) 
+		for (i=0; i<abArgc(params); i++) {
+			TForm ntf = tfMapArgN(tf, i);
 			paramv[i] = genFoamVal(abDefineeId(params->abComma.argv[i]));
+			if (gen0Type(ntf, NULL) != FOAM_Word) {
+				paramv[i] = foamNewCast(FOAM_Word, paramv[i]);
+			}
+		}
 		gen0CacheCheck(cache, abArgc(params), paramv);
 		stoFree(paramv);
 	}
@@ -5151,11 +5162,9 @@ genReturn(AbSyn ab)
 	else {
 		ret = genFoamVal(val);
 
-
 		/* Old style debugger hook */
 		if (gen0DebugWanted) 
 			ret = gen0DbgFnReturn(ab, ret);
-
 
 		/* New style debugger hook */
 		if (gen0DebuggerWanted) 
@@ -5263,6 +5272,9 @@ gen0Type(TForm tf, AInt *pfmt)
 
 	tag = FOAM_Word; /* Default */
 
+	if (tfIsDefinedType(tf)) {
+		tf = tfDefinedVal(tf);
+	}
 	for (pass = 0;(pass < 2) && !done; pass++)
 	{
 		tf = pass ? tfDefineeBaseType(tf) : tfDefineeType(tf);
@@ -5286,11 +5298,11 @@ gen0Type(TForm tf, AInt *pfmt)
 		}
 		else if (tfIsEnum(tf)) {
 			tag = FOAM_SInt;
- 		}
+		}
 		else if (tfIsUnknown(tf))	tag = FOAM_Word;
- 		else if ((sym = gen0MachineType(tf)) == NULL)
+ 		else if ((sym = gen0MachineType(tf)) == NULL) {
 			tag = FOAM_Word;
-	
+		}
 		else if (sym == ssymBool)	tag = FOAM_Bool;
 		else if (sym == ssymByte)	tag = FOAM_Byte;
 		else if (sym == ssymHInt)	tag = FOAM_HInt;
