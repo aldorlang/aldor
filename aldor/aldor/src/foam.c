@@ -649,6 +649,7 @@ local void	foamAuditBadRef		(Foam foam);
 local void	foamAuditBadSharing	(Foam foam);
 local void	foamAuditBadRuntime	(Foam foam);
 local void	foamAuditBadCast  	(Foam foam);
+local void	foamAuditBadDecl  	(Foam foam);
 
 Foam	faUnit;
 Foam	faProg;
@@ -719,9 +720,10 @@ foamAuditAll(Foam foam, UShort tests)
 	Bool	   fluid(foamAuditTypeChecking);
 	Bool		result;
 
-	if (!faAll) Return(true);
-
-	foamAuditTypeChecking 	= true;
+	/* Type checking disabled - there's a very large number
+	 * of edge cases that need to be cleared up before it
+	 * can work */
+	foamAuditTypeChecking 	= false;
 
 	foamAuditRecords 	= (tests & FOAM_AUDIT_Records);
 	foamAuditEnvs 		= (tests & FOAM_AUDIT_Envs);
@@ -739,9 +741,7 @@ foamAuditAll(Foam foam, UShort tests)
 Bool
 foamAudit(Foam foam)
 {
-	foamAuditTypeChecking = false;
-
-	return foamAudit0(foam);
+	return foamAuditAll(foam, 0xFFFF);
 }
 
 /* Check variable references and formats for consistency. */
@@ -867,6 +867,9 @@ foamAuditExpr(Foam foam)
 		  /* There was a check for runtime constraint breakage
 		   * here - removed as a layering violation... */
 		break;
+	case FOAM_Decl:
+		foamAuditDecl(foam);
+		break;
 	  default:
 		break;
 	}
@@ -875,6 +878,31 @@ foamAuditExpr(Foam foam)
 		result = foamAuditTypeCheck(foam);
 
 	return result;
+}
+
+void
+foamAuditDecl(Foam decl)
+{
+	FoamTag type = decl->foamDecl.type;
+	AInt fmt = decl->foamDecl.format;
+	switch (type) {
+	case FOAM_Arr:
+		if (fmt >= FOAM_DATA_LIMIT && fmt != FOAM_BInt)
+			foamAuditBadDecl(decl);
+		break;
+	case FOAM_Rec:
+		/*
+		  TODO: Fix implicit exports so that they don't
+		  have argument types of FOAM_Rec.
+		if (fmt == emptyFormatSlot)
+			foamAuditBadDecl(decl);
+		*/
+		break;
+	default:
+		if (fmt != emptyFormatSlot && fmt != 0)
+			foamAuditBadDecl(decl);
+		break;
+	}
 }
 
 /**************************************************************************
@@ -933,6 +961,12 @@ foamAuditTypeCheck(Foam foam)
 					    NULL, NULL, &fmtLhs);
 			typeRhs = foamExprType(rhs, faProg, faFormats,
 					    NULL, NULL, &fmtRhs);
+			if (typeLhs == FOAM_Nil && typeRhs == FOAM_Ptr)
+				return true;
+			if (typeRhs == FOAM_Nil && typeLhs == FOAM_Ptr)
+				return true;
+			if (typeRhs == FOAM_Nil && typeLhs == FOAM_Word)
+				return true;
 
 			if (typeLhs != typeRhs) {
 				faTypeCheckingFailure(foam,
@@ -940,12 +974,16 @@ foamAuditTypeCheck(Foam foam)
 				return false;
 			}
 
-			if (typeLhs == FOAM_Rec && fmtLhs != fmtRhs) {
+			if (typeLhs == FOAM_Rec && fmtLhs != fmtRhs
+			    && fmtLhs != emptyFormatSlot && fmtRhs != emptyFormatSlot) {
 				faTypeCheckingFailure(foam,
 					"assignment between records with different formats");
 				return false;
 			}
-			if (typeLhs == FOAM_Arr && fmtLhs != fmtRhs) {
+			if (typeLhs == FOAM_Arr && fmtLhs != fmtRhs
+			    && fmtLhs != 0 && fmtRhs != 0
+			    /* FIXME: The emptyFormatSlot clauses are wrong */
+				&& fmtLhs != emptyFormatSlot && fmtRhs != emptyFormatSlot) {
 				faTypeCheckingFailure(foam,
 					"assignment between array with different base type (%s - %s)", foamInfo(fmtLhs).str, foamInfo(fmtRhs).str);
 				return false;
@@ -989,14 +1027,16 @@ foamAuditTypeCheck(Foam foam)
 				    NULL, NULL, &fmt);
 
 		if (type != faProg->foamProg.retType) {
-		      faTypeCheckingFailure(foam,
+			AInt typeLhs = faProg->foamProg.retType;
+			AInt typeRhs = type;
+			if (typeLhs == FOAM_Nil && typeRhs == FOAM_Ptr)
+				return true;
+			if (typeRhs == FOAM_Nil && typeLhs == FOAM_Ptr)
+				return true;
+			if (typeRhs == FOAM_Nil && typeLhs == FOAM_Word)
+				return true;
+			faTypeCheckingFailure(foam,
 				"Return value type doesn't match Prog return type");
-			return false;
-		}
-
-		if (type == FOAM_Rec || type == FOAM_Arr) {
-		      faTypeCheckingFailure(foam,
-				"returning a Record or an Array");
 			return false;
 		}
 
@@ -1009,11 +1049,6 @@ foamAuditTypeCheck(Foam foam)
 		type = foamExprType(foam->foamCast.expr, faProg, faFormats,
 				    NULL, NULL, NULL);
 
-		if (type == foam->foamCast.type) {
-		      	faTypeCheckingFailure(foam,
-				"cast to the same type");
-			return false;
-		}
 		return true;
 
       /* ---------------- Envs ------------------------------- */
@@ -1171,7 +1206,6 @@ faTypeCheckingFailure(Foam foam, String msg, ...)
 	fprintf(dbOut, "\nThe foam expression that caused the failure is:\n");
 
 	foamWrSExpr(dbOut, foam, SXRW_AsIs);
-
 	va_end(argp);
 }
 
@@ -1206,6 +1240,14 @@ foamAuditBadCast(Foam foam)
 	foamPrint(stderr, foam);
 	if (DEBUG(foam)){foamPrint(dbOut, faUnit);}
 	bug("\nBad foam cast %d:\n", faConstNum);
+}
+
+local void
+foamAuditBadDecl(Foam foam)
+{
+	foamPrint(stderr, foam);
+	if (DEBUG(foam)){foamPrint(dbOut, faUnit);}
+	bug("\nBad foam decl\n", faConstNum);
 }
 
 local void
@@ -2776,6 +2818,8 @@ foamExprTypeCB(Foam expr, AInt *extra, FoamExprTypeCallback callback, void *arg)
 	  case FOAM_CEnv:
 		return FOAM_Env;
 	  case FOAM_Cast:
+		  if (expr->foamCast.type == FOAM_Arr)
+			  *extra = 0;
 		return expr->foamCast.type;
 	  case FOAM_ANew:
 		if (extra) *extra = expr->foamANew.eltType;
@@ -2916,6 +2960,10 @@ foamExprTypeCB(Foam expr, AInt *extra, FoamExprTypeCallback callback, void *arg)
 	case FOAM_EInfo:
 		return FOAM_Word;
 	case FOAM_PushEnv:
+		return FOAM_Env;
+	case FOAM_Values:
+		return FOAM_NOp;
+	case FOAM_EEnv:
 		return FOAM_Env;
 	default:
 		bugWarning("foamExprType0: type %s unhandled. Returning 0", foamInfo(foamTag(expr)).str);

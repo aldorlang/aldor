@@ -64,10 +64,10 @@ aldor_common_args :=				\
 	-Mno-ALDOR_W_WillObsolete		\
 	-Wcheck -Waudit
 
-
+DBG := $(if $(filter 1,$(DBG)), gdb --args, $(DBG))
 $(addsuffix .c, $(library)): %.c: %.ao %.dep
 	$(AM_V_AO2C)				\
-	$(aldorexedir)/aldor			\
+	$(DBG) $(aldorexedir)/aldor			\
 	  $(aldor_common_args)			\
 	  -Fc=$(builddir)/$@			\
 	  $<	
@@ -142,7 +142,8 @@ help:
 	@echo '%.fm	- generate foam file'
 	@echo ''
 	@echo 'useful variables:'
-	@echo '	DBG 	- set to \"gdb --args" for a debugger primed to run the aldor command'
+	@echo '	DBG 	- prefix for any aldor invocations'
+	@echo '	DBG=1 	- shortcut for DBG="gdb --args"'
 
 define dep_template
 $1.ao: $1.dep $(addsuffix .ao,$($1_deps))

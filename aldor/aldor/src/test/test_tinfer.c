@@ -39,8 +39,6 @@ void testTinferMutualReference();
 void testTinferValueConditional();
 void testTinferValueConditionalAliased();
 
-local AbSynList parseLines(StringList lines);
-
 AbSyn stdtypes();
 
 void init(void);
@@ -231,7 +229,7 @@ testConditionalTInfer2()
 
 
 	StringList lines = listList(String)(4, Boolean_imp, AdditiveType_txt, Evalable_txt, Obj_txt);
-	AbSynList code = listCons(AbSyn)(stdtypes(), parseLines(lines));
+	AbSynList code = listCons(AbSyn)(stdtypes(), abqParseLines(lines));
 	AbSyn absyn = abNewSequenceL(sposNone, code);
 
 	initFile();
@@ -265,7 +263,7 @@ testTinfer3()
 
 	StringList lines = listList(String)(5, Boolean_imp, AdditiveType_txt, 
 					    Evalable_txt, Obj_txt, AnAdditive_txt);
-	AbSynList code = listCons(AbSyn)(stdtypes(), parseLines(lines));
+	AbSynList code = listCons(AbSyn)(stdtypes(), abqParseLines(lines));
 	AbSyn absyn = abNewSequenceL(sposNone, code);
 
 	initFile();
@@ -332,7 +330,7 @@ testConditionalTInfer4()
 					    AdditiveType1_txt, 
 					    AdditiveType2_txt, 
 					    Evalable_txt, Obj_txt);
-	AbSynList code = listCons(AbSyn)(stdtypes(), parseLines(lines));
+	AbSynList code = listCons(AbSyn)(stdtypes(), abqParseLines(lines));
 	AbSyn absyn = abNewSequenceL(sposNone, code);
 	initFile();
 	tfImportDebug = 0;
@@ -370,7 +368,7 @@ testConditionalAdd()
 					    Obj_def);
 
 					    
-	AbSynList code = listCons(AbSyn)(stdtypes(), parseLines(lines));
+	AbSynList code = listCons(AbSyn)(stdtypes(), abqParseLines(lines));
 	AbSyn absyn = abNewSequenceL(sposNone, code);
 
 	initFile();
@@ -419,7 +417,7 @@ testTinfer5()
 
 	StringList lines = listList(String)(4, Boolean_imp, R_def, M_def, V_def);
 
-	AbSynList code = listCons(AbSyn)(stdtypes(), parseLines(lines));
+	AbSynList code = listCons(AbSyn)(stdtypes(), abqParseLines(lines));
 	AbSyn absyn = abNewSequenceL(sposNone, code);
 	Stab stab = stabFile();
 	
@@ -441,7 +439,7 @@ testTinfer9()
 	initFile();
 	StringList lines = listList(String)(1, Bar_def);
 
-	AbSynList code = listCons(AbSyn)(stdtypes(), parseLines(lines));
+	AbSynList code = listCons(AbSyn)(stdtypes(), abqParseLines(lines));
 	AbSyn absyn = abNewSequenceL(sposNone, code);
 	Stab stab = stabFile();
 	tipLitDebug = 1;
@@ -466,7 +464,7 @@ testTinferMutualReference()
 	initFile();
 	StringList lines = listList(String)(2, Foo_def, Bar_def);
 
-	AbSynList code = listCons(AbSyn)(stdtypes(), parseLines(lines));
+	AbSynList code = listCons(AbSyn)(stdtypes(), abqParseLines(lines));
 	AbSyn absyn = abNewSequenceL(sposNone, code);
 	Stab stab = stabFile();
 
@@ -491,7 +489,7 @@ testTinferValueConditionalAliased()
 	initFile();
 	StringList lines = listList(String)(2, I_def, C_def);
 
-	AbSynList code = listCons(AbSyn)(stdtypes(), parseLines(lines));
+	AbSynList code = listCons(AbSyn)(stdtypes(), abqParseLines(lines));
 	AbSyn absyn = abNewSequenceL(sposNone, code);
 	Stab stab = stabFile();
 
@@ -515,7 +513,7 @@ void testTinferValueConditional()
 	initFile();
 	StringList lines = listList(String)(2, I_def, C_def);
 
-	AbSynList code = listCons(AbSyn)(stdtypes(), parseLines(lines));
+	AbSynList code = listCons(AbSyn)(stdtypes(), abqParseLines(lines));
 	AbSyn absyn = abNewSequenceL(sposNone, code);
 	Stab stab = stabFile();
 	tfImportDebug = 1;
@@ -528,15 +526,3 @@ void testTinferValueConditional()
 
 	finiFile();
 }
-
-local
-AbSynList parseLines(StringList lines)
-{
-	AbSynList result = listNil(AbSyn);
-	while (lines != listNil(String)) {
-		result = listCons(AbSyn)(abqParse(car(lines)), result);
-		lines = listFreeCons(String)(lines);
-	}
-	return listNReverse(AbSyn)(result);
-}
-

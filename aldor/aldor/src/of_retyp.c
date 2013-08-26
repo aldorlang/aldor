@@ -493,11 +493,15 @@ retPromoteTo(Foam var, AInt type, AInt format)
 	else if (retIsCandidateType(oldType)) {
 		FoamTag newType = retGetNextType(oldType, type);
 		retSetCandidateDeclTypeTo(decl, newType);
-		decl->foamDecl.format = format;
+		if (retTypeNeedsFmt(decl->foamDecl.type)) {
+			decl->foamDecl.format = format;
+		}
+		else {
+			decl->foamDecl.format = emptyFormatSlot;
+		}
 	}
 
 	else retSetDefinedDeclTypeTo(decl, FOAM_Word);
-
 }
 /******************************************************************************
  *

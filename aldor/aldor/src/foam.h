@@ -1490,6 +1490,7 @@ extern Foam              foamCopyNode   (Foam);
 
 extern Bool		 foamAuditAll	(Foam, UShort);
 extern Bool		 foamAudit	(Foam);
+extern void              foamAuditDecl	(Foam);
 extern void		 foamAuditSetAll(void);
 extern int		 foamTagLimit   (void);
 extern int		 foamTagSpanLength(void);
