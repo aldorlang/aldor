@@ -72,6 +72,7 @@ emitSelect(String arg)
 	static Bool	isInit = false;
 	int		ftn, rc;
 	String		argbuf, ft, fn;
+	Bool		fileNameSupplied = false;
 
 	if (!isInit) {
 		int i;
@@ -88,8 +89,13 @@ emitSelect(String arg)
 	for (fn = ft = argbuf; *fn; fn++)
 		if (*fn == '=' || *fn == ':') {
 			*fn++ = 0;
+			fileNameSupplied = true;
 			break;
 		}
+
+	if (fileNameSupplied && strLength(fn) == 0) {
+		comsgFatal(NULL, ALDOR_F_EmitNoFileSupplied, ft);
+	}
 
 	if	(ftypeIs(ft,FTYPENO_INCLUDED)) ftn = FTYPENO_INCLUDED;
 	else if (ftypeIs(ft,FTYPENO_ABSYN))    ftn = FTYPENO_ABSYN;
