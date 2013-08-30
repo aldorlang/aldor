@@ -14,7 +14,7 @@ macro Z == MachineInteger;
 extend MachineInteger: with {} == add {
 	random():% == randomInteger()$RandomNumberGenerator;
 	-- TEMPORARY: BUG1220, random(n) bound early to never!
-	random(n:Z):% == random();
+	random(n:Z):% == random() mod n;
 }
 
 #if ALDOC
