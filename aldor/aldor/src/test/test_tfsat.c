@@ -1,6 +1,7 @@
 #include "testlib.h"
 
 #include "abquick.h"
+#include "absub.h"
 #include "stab.h"
 #include "tfsat.h"
 #include "sefo.h"
