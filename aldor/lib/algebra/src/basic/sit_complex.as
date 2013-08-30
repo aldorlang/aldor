@@ -97,7 +97,8 @@ extend Complex(R:Join(ArithmeticType, ExpressionType)):
 			import from Partial R;
 		        l: Partial R := reciprocal(real(a) * real(a) + imag(a) * imag(a));
 			failed? l => failed;
-			[ retract(l) * complex(real a, -imag(a))]
+			tmp := retract l;
+			[ complex(tmp * real a, tmp * (-imag(a)))]
 		}
 	}
 

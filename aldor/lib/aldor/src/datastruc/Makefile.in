@@ -19,6 +19,6 @@ library = ald_symbol ald_symtab sal_array sal_barray sal_bdata		\
 	  sal_bstruc sal_data sal_ddata sal_fstruc sal_hash sal_kntry	\
 	  sal_list sal_lstruc sal_memblk sal_parray sal_pkarray		\
 	  sal_set sal_slist sal_sortas sal_sset sal_stream sal_string	\
-	  sal_table
+	  sal_table sal_fold
 
 include $(abs_top_srcdir)/lib/aldor/src/common.mk

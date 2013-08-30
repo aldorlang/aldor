@@ -30,3 +30,5 @@ sal_stream_deps := sal_list sal_parray sal_lstruc sal_string
 
 ald_symbol_deps := sal_hash
 ald_symtab_deps := ald_symbol sal_hash
+
+sal_fold_deps := sal_list
