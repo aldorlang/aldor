@@ -15,8 +15,8 @@ abs_top_srcdir	:= @abs_top_srcdir@
 subdir		:= $(subst $(abs_top_builddir)/,,$(abs_builddir))
 
 # Build starts here
-library = tst_test tst_assert
-tests = tst_random tst_complex tst_mint
+library = tst_test tst_assert tst_ring
+tests = tst_random tst_complex tst_mint tst_int
 
 include $(abs_top_srcdir)/lib/algebra/src/common.mk
 

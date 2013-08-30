@@ -185,6 +185,7 @@ libalgebra_a_SOURCES =				\
 	numbers/sit_primgen.c			\
 	numbers/sit_prmroot.c			\
 	numbers/sit_prmtabl.c			\
+	numbers/sit_prmword.c			\
 	polyfactorp/sit_upfactp.c		\
 	series/alg_serpoly.c			\
 	series/compbug/sit_duts.c		\
@@ -192,6 +193,7 @@ libalgebra_a_SOURCES =				\
 	series/sit_sercat.c			\
 	test/tst_assert.c			\
 	test/tst_test.c				\
+	test/tst_ring.c				\
 	univpoly/alg_sup0.c			\
 	univpoly/alg_sup1.c			\
 	univpoly/alg_sup.c			\

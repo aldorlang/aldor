@@ -262,11 +262,10 @@ or \failed~if no such $a,b$ exist.}
 
 		prime?(p:%):Partial Boolean == {
 			import from MachineInteger;
-			p >= (maxPrime$HalfWordSizePrimes)::% => failed;
-			primeInCollection?(q := machine p)$HalfWordSizePrimes =>
-									[true];
-			q > nextPrime(0)$HalfWordSizePrimes => [false];
-			failed;
+			import from WordSizedPrimes;
+			if p < 0 then p := -p;
+			p < (max$MachineInteger)::% => [prime?(machine p)];
+			failed
 		}
 
 		getPrime():Partial % == {

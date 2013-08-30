@@ -1,7 +1,6 @@
 libraryname := algebra
-library = sit_primes sit_primgen sit_prmroot sit_prmtabl 
 sit_primes_deps := sit_prmtabl
 sit_primgen_deps := sit_prmtabl sit_primes
 sit_prmroot_deps := sit_primes  sit_primgen
-
+sit_prmword_deps := sit_prmtabl sit_primgen
 library_deps = util
