@@ -4297,11 +4297,14 @@ gccAElt(Foam foam)
 {
 	CCode	arrExpr;
 	Foam	lhs;
+	Bool    wasCast = false;
 
 	lhs = foam->foamAElt.expr;
-	if (foamTag(lhs) == FOAM_Cast)
+	if (foamTag(lhs) == FOAM_Cast) {
+		assert(lhs->foamCast.type == FOAM_Arr);
 		lhs = lhs->foamCast.expr;
-
+		wasCast = true;
+	}
 	arrExpr = gccExpr(lhs);
 	if (gc0IsDecl(lhs)) {
 		Foam	decl = gc0GetDecl(lhs);
@@ -4314,6 +4317,10 @@ gccAElt(Foam foam)
 	else if (foamTag(lhs) == FOAM_AElt)
 		arrExpr = gc0SubExpr(lhs, ccoPostStar(gc0TypeId(
 					    foam->foamAElt.baseType, emptyFormatSlot)));
+	else if (wasCast)
+		arrExpr = gc0SubExpr(lhs, ccoPostStar(gc0TypeId(
+					    foam->foamAElt.baseType, emptyFormatSlot)));
+
 	return ccoARef(arrExpr, gccExpr(foam->foamAElt.index));
 }
 
