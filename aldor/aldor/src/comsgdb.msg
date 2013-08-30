@@ -345,6 +345,7 @@ ALDOR_W_NoFiles           "No files!  Type `%s -help' for help."
 ALDOR_F_NoConfig		"Could not find aldor.conf"
 ALDOR_W_CfgError		"%s"
 
+
 ALDOR_F_NoFNameProperty   "Fortran naming scheme field (%s) is not specified in \
 aldor.conf"
 ALDOR_F_BadFNameValue     "Unrecognised Fortran naming scheme (%s) specified in \
@@ -353,6 +354,8 @@ ALDOR_F_NoFCmplxProperty  "Fortran complex functions field (%s) is not specified
 in aldor.conf"
 ALDOR_F_BadFCmplxValue    "Unrecognised Fortran complex functions field value (%s) \
 specified in aldor.conf"
+
+ALDOR_F_EmitNoFileSupplied "No file name supplied for `%s' argument"
 
 ALDOR_M_BreakEnter          "\
 Aldor compiler break ------------------------------------------------------"

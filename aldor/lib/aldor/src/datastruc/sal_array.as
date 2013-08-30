@@ -338,8 +338,7 @@ function of $T$ is taken.}
 			sort!(a:%):% == sort!(a, <$T);
 
 			binarySearch(t:T, a:%):(Boolean, Z) == {
-				import from BinarySearch(Z, _
-						T pretend TotallyOrderedType);
+				import from BinarySearch(Z, T);
 				p := data a;	-- optimizes code generation
 				binarySearch(t, (i:Z):T +-> p.i, 0, prev(#a));
 			}

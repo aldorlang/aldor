@@ -24,7 +24,6 @@ BROKEN =	\
 	#
 
 XFAIL_TESTS =	\
-	primetest/primetest	\
 	#
 
 check_PROGRAMS = # filled by Tests.am
