@@ -37,7 +37,7 @@ axlliblibdir	:= $(top_builddir)/lib/axllib/src
 
 libraryname	:= axldem
 
-AXLFLAGS	:= -Q8 -Qinline-all
+AXLFLAGS	:= -Q8
 AXLFLAGS	+= -Y $(axlliblibdir) -I $(axllibincdir) -laxllib
 
 include $(top_srcdir)/lib/buildlib.mk
