@@ -9,12 +9,6 @@
 local void testTfSatEmbed();
 local void testTfSatRec();
 
-/* XXX: from test_tinfer.c */
-void init(void);
-void fini(void);
-void initFile(void);
-void finiFile(void);
-
 void
 tfsatTest()
 {
@@ -29,10 +23,9 @@ testTfSatEmbed()
 {
 	String Boolean_imp = "import from Boolean";
 	String E_def = "E: with == add";
-	String f_def = "f(): (E, E) == never";
 	String g_def = "g: E == never";
 
-	StringList lines = listList(String)(4, Boolean_imp, E_def, f_def, g_def);
+	StringList lines = listList(String)(3, Boolean_imp, E_def, g_def);
 	AbSynList absynList = listCons(AbSyn)(stdtypes(), abqParseLines(lines));
 	AbSyn absyn = abNewSequenceL(sposNone, absynList);
 
@@ -75,7 +68,6 @@ testTfSatEmbed()
 
 	finiFile();
 }
-
 
 void
 testTfSatRec()
