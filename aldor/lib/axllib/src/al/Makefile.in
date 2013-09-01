@@ -76,6 +76,6 @@ noclass =	\
 libraryname	:= axllib
 Libraryname	:= Axl
 
-AXLFLAGS	:= -Q8 -Qinline-all
+AXLFLAGS	:= -Q8
 
 include $(top_srcdir)/lib/buildlib.mk

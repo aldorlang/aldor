@@ -70,7 +70,7 @@ axllibincdir	:= $(top_srcdir)/lib/axllib/include
 libraryname	:= ax0
 Libraryname	:= Axiom
 
-AXLFLAGS	:= -Q8 -Qinline-all -Wcheck -Wno-fatal
+AXLFLAGS	:= -Q8 -Wcheck -Wno-fatal
 AXLFLAGS	+= -I $(axllibincdir)
 
 bytecode_only	:= true

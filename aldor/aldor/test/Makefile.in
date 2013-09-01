@@ -45,8 +45,8 @@ badtests := opt1
 # opt1 fails because the optimise decides to inline the recursive call
 # (it shouldn't, but spotting the call is a bit tricky).
 
-opt1_AXLFLAGS=-Y$(foamdir)/al -I $(foamsrcdir)/al -lRuntimeLib=foam -Q9 -Qinline-all
-strtable1_AXLFLAGS=-Y$(foamdir)/al -I $(foamsrcdir)/al -lRuntimeLib=foam -Q9 -Qinline-all
+opt1_AXLFLAGS=-Y$(foamdir)/al -I $(foamsrcdir)/al -lRuntimeLib=foam -Q9
+strtable1_AXLFLAGS=-Y$(foamdir)/al -I $(foamsrcdir)/al -lRuntimeLib=foam -Q9
 
 clos_AXLFLAGS := -Q2
 
