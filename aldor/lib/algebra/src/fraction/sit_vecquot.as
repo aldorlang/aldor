@@ -29,7 +29,7 @@ vectors with integral and rational coefficients.}
 
 VectorOverFraction(R:IntegralDomain, Q:FractionCategory R):
 	LinearCombinationFraction(R, V R, Q, V Q) == add {
-	local gcd?:Boolean == R has GcdDomain;
+	macro gcd? == R has GcdDomain;
 
 	-- Most of those functions use the fact that IntegralDomain's are
         -- commutative (if fractions of noncommutative domains are used
@@ -74,19 +74,18 @@ VectorOverFraction(R:IntegralDomain, Q:FractionCategory R):
 		import from I, R, Q, List R;
 		v:V R := zero(n := #w);
 		l:List R := [denominator(w.i) for i in 1..n];
-		d := { gcd? => lcm(l)$(R pretend GcdDomain); prod l; }
+		d := { gcd? => lcm(l); prod l; }
 		for i in 1..n repeat v.i := numerator(d * w.i);
 		(d, v);
 	}
 
 	if Q has FractionByCategory0 R then {
-		macro QQ == (Q pretend FractionByCategory0 R);
 		makeIntegralBy(w:V Q):(Integer, V R) == {
 			import from I, Boolean, Q;
 			v:V R := zero(n := #w);
 			mu:Integer := 0;
 			for j in 1..n | ~zero?(b := w.j) repeat {
-				m:Integer := order(b)$QQ;
+				m:Integer := order(b);
 				if m < mu then mu := m;
 			}
 			assert(mu <= 0);

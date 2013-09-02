@@ -92,20 +92,18 @@ define FractionCategory(R: IntegralDomain): Category ==
 		}
 
 		if R has Specializable then {
-			macro IID == (Image pretend IntegralDomain);
 
 			specialization(Image:CommutativeRing):_
 				PartialFunction(%,Image) == {
 				import from PartialFunction(R, Image);
 				import from Image, Partial Image;
-				intdom? := Image has IntegralDomain;
 				f := partialMapping(specialization(Image)$R);
-				intdom? =>
+				Image has IntegralDomain =>
 					partialFunction((x:%):Partial(Image)+->{
 						failed?(n := f numerator x) or
 						failed?(d := f denominator x) or
 						zero?(r := retract d) => failed;
-						exactQuotient(retract n, r)$IID;
+						exactQuotient(retract n, r);
 					});
 				partialFunction((x:%):Partial(Image)+->{
 					failed?(n := f numerator x) or

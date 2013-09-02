@@ -68,7 +68,7 @@ UnivariateFreeRingOverFraction(R:IntegralDomain,
 		}
 	}
 
-	local gcd?:Boolean		== R has GcdDomain;
+	macro gcd? == R has GcdDomain;
 	local denom(c:Q, n:Integer):R	== denominator c;
 
 	local prod(l:List R):R == {
@@ -83,7 +83,7 @@ UnivariateFreeRingOverFraction(R:IntegralDomain,
 	makeIntegral(p:PQ):(R, PR) == {
 		import from R, Q, List R, List Q;
 		denoms := [denom term for term in p];
-		d := { gcd? => lcm(denoms)$(R pretend GcdDomain); prod denoms; }
+		d := { gcd? => lcm(denoms)$R; prod denoms; }
 		q:PR := 0;
 		for term in p repeat {
 			(c, n) := term;

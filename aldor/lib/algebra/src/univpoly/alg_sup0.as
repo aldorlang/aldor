@@ -179,7 +179,6 @@ SparseUnivariatePolynomial0(R:Join(ArithmeticType, ExpressionType),
            }
         }
         if (R has HashType) then {
-           import from R pretend HashType;
            hash(x: %): MachineInteger == {
                h: MachineInteger := 0;
                xx: Rep := rep x;
@@ -192,7 +191,6 @@ SparseUnivariatePolynomial0(R:Join(ArithmeticType, ExpressionType),
            }
         }
         if (R has SerializableType) then {
-           import from R pretend SerializableType;
                         (port:BinaryWriter) << (p:%):BinaryWriter == {
                                 -- g: Generator Cross(R, Z) := terms(p); SHOULD BE BETTER ??
                                 g: Generator Cross(R, Z) := generator(p);

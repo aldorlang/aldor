@@ -328,8 +328,7 @@ extend AldorInteger: IntegerCategory == add {
 extend SingleFloat:Join(Parsable, ExpressionType) == add {
 	extree(x:%):ExpressionTree == {
 		import from ExpressionTreeLeaf;
-		extree leaf(x pretend SingleFloat);
-		-- extree leaf x;
+		extree leaf(x);
 	}
 
 	eval(t:ExpressionTreeLeaf):Partial % == {
@@ -346,7 +345,7 @@ extend SingleFloat:Join(Parsable, ExpressionType) == add {
 extend DoubleFloat:Join(Parsable, ExpressionType) == add {
 	extree(x:%):ExpressionTree == {
 		import from ExpressionTreeLeaf;
-		extree leaf(x pretend DoubleFloat);
+		extree leaf(x);
 		-- extree leaf x;
 	}
 
@@ -365,8 +364,7 @@ extend DoubleFloat:Join(Parsable, ExpressionType) == add {
 extend GMPFloat:Join(Parsable, ExpressionType) == add {
 	extree(x:%):ExpressionTree == {
 		import from ExpressionTreeLeaf;
-		extree leaf(x pretend GMPFloat);
-		-- extree leaf x;
+		extree leaf(x);
 	}
 
 	eval(t:ExpressionTreeLeaf):Partial % == {

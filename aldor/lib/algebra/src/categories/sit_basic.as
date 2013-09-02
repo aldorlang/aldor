@@ -70,8 +70,7 @@ elimination.}
 extend Boolean: Join(Parsable, ExpressionType) == add {
 	extree(x:%):TREE == {
 		import from LEAF;
-		extree leaf(x pretend Boolean);
-		-- extree leaf x;
+		extree leaf(x);
 	}
 
 	eval(t:LEAF):Partial % == {
@@ -113,8 +112,7 @@ extend String: Join(Parsable, ExpressionType) == add {
 
 	extree(x:%):TREE == {
 		import from LEAF;
-		extree leaf(x pretend String);
-		-- extree leaf x;
+		extree leaf(x);
 	}
 
 	eval(t:LEAF):Partial % == {
@@ -141,8 +139,7 @@ extend String: Join(Parsable, ExpressionType) == add {
 extend Symbol: Join(Parsable, ExpressionType) == add {
 	extree(x:%):TREE == {
 		import from LEAF;
-		extree leaf(x pretend Symbol);
-		-- extree leaf x;
+		extree leaf(x);
 	}
 
 	eval(t:LEAF):Partial % == {

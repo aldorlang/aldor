@@ -2,7 +2,7 @@
 
 macro {
 	SingleInteger == MachineInteger;
-	CRT == ChineseRemaindering(% pretend EuclideanDomain);
+	CRT == ChineseRemaindering %;
 }
 
 ModularComputation: Category == CanonicalSimplification with {

@@ -74,7 +74,7 @@ with other elements. Some functions are not necessarily copying their
 arguments and can thus create memory aliases.}
 #endif
 	default {
-		local copy?:Boolean	== % has CopyableType;
+		macro copy?	== % has CopyableType;
 		one?(a:%):Boolean	== a = 1;
 
 		times!(a:%, b:%):% == {

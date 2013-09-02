@@ -13,10 +13,10 @@ macro {
 	UPC0 == UnivariatePolynomialAlgebra0 %;
 	FR == FractionalRoot;
 	RR == FR Z;
-	RES == Resultant(R pretend IntegralDomain, %);
+	RES == Resultant(R, %);
 	RESP == Resultant(% pretend GcdDomain, P);
 	GN == Generator;
-	FRR==FR(R pretend CommutativeRing);
+	FRR==FR(R);
 	REC == Record(sigmaexp:Z, exponent:Z);
 	MAT == MatrixCategory;
 	V == Vector %;
@@ -274,7 +274,7 @@ must be a factor of $u = \prod_{i=1}^n \prod_{j=0}^{e_i} p_i(x-j)$.}
 
 		if R has CommutativeRing then {
 		    residueClassRing(p: %): ResidueClassRing(%, p) == {
-			UnivariatePolynomialResidueClassRing(R pretend CommutativeRing,%,p);
+			UnivariatePolynomialResidueClassRing(R,%,p);
 		    }
 		}
 		if R has IntegralDomain then {
@@ -316,22 +316,21 @@ must be a factor of $u = \prod_{i=1}^n \prod_{j=0}^{e_i} p_i(x-j)$.}
 		}
 
 		if R has FiniteField then {
-			macro RFF == R pretend FiniteField;
-			determinant(M:MAT %):M->% == determinant$FLA(RFF,%,M);
-			inverse(M:MAT %):M -> (M, V)	== inverse$FLA(RFF,%,M);
-			kernel(M:MAT %):M -> M		== kernel$FLA(RFF,%,M);
-			rank(M:MAT %):M -> I		== rank$FLA(RFF,%,M);
-			solve(M:MAT %):(M,M) -> (M,M,V)	== solve$FLA(RFF,%,M);
-			span(M:MAT %):M -> AI		== span$FLA(RFF,%,M);
+			determinant(M:MAT %):M->% == determinant$FLA(R,%,M);
+			inverse(M:MAT %):M -> (M, V)	== inverse$FLA(R,%,M);
+			kernel(M:MAT %):M -> M		== kernel$FLA(R,%,M);
+			rank(M:MAT %):M -> I		== rank$FLA(R,%,M);
+			solve(M:MAT %):(M,M) -> (M,M,V)	== solve$FLA(R,%,M);
+			span(M:MAT %):M -> AI		== span$FLA(R,%,M);
 
 			linearDependence(g:Generator V, n:I):V ==
-				linearDependence(g, n)$FLA(RFF,%,DenseMatrix %);
+				linearDependence(g, n)$FLA(R,%,DenseMatrix %);
 
 			particularSolution(M:MAT %):(M, M) -> (M, V) ==
-				particularSolution$FLA(RFF, %, M);
+				particularSolution$FLA(R, %, M);
 
 			maxInvertibleSubmatrix(M:MAT %):M -> (AI, AI) ==
-				maxInvertibleSubmatrix$FLA(RFF, %, M);
+				maxInvertibleSubmatrix$FLA(R, %, M);
 		}
 
 		if R has GcdDomain then {
@@ -347,13 +346,13 @@ must be a factor of $u = \prod_{i=1}^n \prod_{j=0}^{e_i} p_i(x-j)$.}
 -- TEMPORARY: WHEN algebraic extensions have good gcd algorithms
 #if MULTIGCD
 			gcd(l:List %):% == {
-				import from MultiGcd(R pretend GcdDomain, %);
+				import from MultiGcd(R, %);
 				(g, lq) := multiGcd l;
 				g;
 			}
 
 			gcdquo(l:List %):(%, List %) == {
-				import from MultiGcd(R pretend GcdDomain, %);
+				import from MultiGcd(R, %);
 				multiGcd l;
 			}
 #endif
@@ -378,14 +377,12 @@ must be a factor of $u = \prod_{i=1}^n \prod_{j=0}^{e_i} p_i(x-j)$.}
 
 			squareFree(p:%):(R, Product %) == {
 				import from Integer,
-					UnivariatePolynomialSquareFree(R
-						 pretend GcdDomain, %);
+					UnivariatePolynomialSquareFree(R, %);
 				infCharp? => musser p;
 				yun p;
 			}
 
 			if R has UnivariateGcdRing then {
-				import from R pretend UnivariateGcdRing;
 				local ugGcd(p:%, q:%):% == {
 					(gcdUP$R)(%)(p, q);
 				}

@@ -2767,7 +2767,7 @@ tibupAnd(Stab stab, AbSyn absyn, TForm type)
 {
 	int	i;
 	int	argc = abArgc(absyn);
-
+	AbLogic *saveCond = (AbLogic*) stoAlloc(OB_Other, sizeof(AbLogic) * argc);
 	/*
 	 * An unfixed compiler bug means that parts of Salli
 	 * programs (and thus libAldor) are tinfered with
@@ -2777,10 +2777,17 @@ tibupAnd(Stab stab, AbSyn absyn, TForm type)
 	 */
 	if (tfBoolean == tfUnknown) comsgFatal(absyn, ALDOR_F_BugNoBoolean);
 
-	for (i = 0; i < argc; i++)
+	for (i = 0; i < argc; i++) {
 		tibup(stab, abArgv(absyn)[i], tfBoolean);
+		ablogAndPush(&abCondKnown, &saveCond[i], abArgv(absyn)[i], true);
+	}
+	for (i = 0; i < argc; i++) {
+		ablogAndPop(&abCondKnown, &saveCond[argc-i-1]);
+	}
 
 	abTPoss(absyn) = tpossSingleton(tfBoolean);
+
+	stoFree(saveCond);
 }
 
 /***************************************************************************

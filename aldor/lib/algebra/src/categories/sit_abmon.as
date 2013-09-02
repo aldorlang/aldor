@@ -73,11 +73,10 @@ arguments and can thus create memory aliases.}
 \Retval{Returns the result of $x = 0$ using the semantics of $=$ of the monoid.}
 #endif
 	default {
-		local copy?:Boolean	== % has CopyableType;
 		zero?(x:%):Boolean	== x = 0;
 
 		add!(a:%, b:%):% == {
-			zero? a => { copy?=>copy(b)$(% pretend CopyableType);b }
+			zero? a => { % has CopyableType =>copy(b);b }
 			a + b;
 		}
 	}

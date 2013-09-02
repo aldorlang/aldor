@@ -143,8 +143,8 @@ UnivariatePolynomialMod(R:CommutativeRing,
 
 	-- conditions on which fast reduction via multiplication can be done
 	local fftred?:Boolean ==
-		R has FFTRing and fftCutoff$(R pretend FFTRing) > 0
-			and N > fftCutoff$(R pretend FFTRing);
+		R has FFTRing and fftCutoff$(R) > 0
+			and N > fftCutoff$(R);
 
 	-- for fast division: a rem modulus = a - q modulus
 	-- where q = (a modbar) quo x^{degext + degree(modbar)}
@@ -250,7 +250,7 @@ UnivariatePolynomialMod(R:CommutativeRing,
 
 		-- returns z s.t. a z = b mod(modulus)
 		local resdiophant(a:Dx, b:Dx):Partial Dx == {
-			import from Resultant(R pretend IntegralDomain, Dx);
+			import from Resultant(R, Dx);
 			assert(~zero? a); assert(~zero? b);
 			assert(degree a <= degree densemod);
 			-- r = s modulus + t a, so  a (t b / r) = b (mod c)

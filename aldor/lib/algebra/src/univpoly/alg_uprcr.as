@@ -137,7 +137,7 @@ UnivariatePolynomialResidueClassRing(R: CommutativeRing,
 
 	    if U has SourceOfPrimes then {
 		local ok: Boolean == {
-		    assert(prime?(p)$(U pretend SourceOfPrimes));
+		    assert(prime?(p));
 		    true;
 		}
 		inv(x: %): % == {

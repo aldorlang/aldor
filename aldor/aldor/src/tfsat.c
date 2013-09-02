@@ -352,6 +352,8 @@ tfSatEmbedType(TForm tf1, TForm tf2)
 	/* Deal with delta-equality */
 	tf1 = tfDefineeMaybeType(tf1);
 	tf2 = tfDefineeMaybeType(tf2);
+	/* Ignore exceptions for the purposes of embedding as well */
+	tf2 = tfIgnoreExceptions(tf2);
 
 	t1 = tfTag(tf1);
 	t2 = tfTag(tf2);
@@ -1481,27 +1483,30 @@ tfSatExcept(SatMask mask, TForm S, TForm T)
 	 * it yet.  Plus we'd need bigtime changes to the libraries
 	 * to force 'except ()' where necessary.
 	 */
-	if (!se)
-		return tfSatTrue(mask);
 
 	res = tfSat(mask, si, ti);
+	if (!se)
+		return res;
 	if (tfSatSucceed(res)) {
 		TForm sei, tej;
 		int i, j, sc, tc;
+		SatMask eres;
+
 		sc  = tfAsMultiArgc(se);
 		tc  = tfAsMultiArgc(te);
-		res = tfSatTrue(mask);
-		for (i=0; i < sc && tfSatSucceed(res); i++) {
+		eres = tfSatTrue(mask);
+		for (i=0; i < sc && tfSatSucceed(eres); i++) {
 			sei = tfAsMultiArgN(se, sc, i);
 			for (j=0; j < tc; j++) {
-				res = tfSatFalse(mask);
+				eres = tfSatFalse(mask);
 				tej = tfAsMultiArgN(te, tc, j);
 				if (tfSatSucceed(tfSat(mask, sei, tej))) {
-					res = tfSatTrue(mask);
+					eres = tfSatTrue(mask);
 					break;
 				}
 			}
 		}
+		res = tfSatSucceed(eres) ? res : tfSatFalse(mask);
 	}
 	return res;
 }

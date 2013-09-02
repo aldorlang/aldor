@@ -14,8 +14,7 @@ define ResidueClassRing(R: CommutativeRing, p: R): Category == CommutativeRing w
 		symmetricPreImage: % -> R;
 		++ see Kaltofen Monagan ISSAC 1999
 		if R has SourceOfPrimes then {
-			import from R pretend SourceOfPrimes;
-			if prime?(p) then {
+			if prime?(p)$R then {
 				Field;
 			}
 				

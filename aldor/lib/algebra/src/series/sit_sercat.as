@@ -433,7 +433,6 @@ where $s = \sum_{n \ge 0} a_n x^n$.}
 	}
 
 	if R has IntegralDomain then {
-		macro RID == R pretend IntegralDomain;
 
 		dot(v:V RXX, m:M R):V RXX == {
 			import from RXX;
@@ -447,7 +446,7 @@ where $s = \sum_{n \ge 0} a_n x^n$.}
 		-- otherwise make the series 0 from x^degbound+1 to x^limit
 		polynomials(s:V RXX, degbound:Z, limit:Z):(V RX, M R) == {
 			import from I, R, RXX;
-			import from LinearAlgebra(RID, M(RID));
+			import from LinearAlgebra(R, M(R));
 			assert(degbound >= -1);
 			assert(limit < 0 or limit >= degbound);
 			c := #s;

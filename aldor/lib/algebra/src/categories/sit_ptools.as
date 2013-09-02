@@ -63,8 +63,8 @@ as well as $/$ when {\em R} has \altype{CommutativeRing} or \altype{FloatType}.}
 integer--valued leaf, \failed otherwise.}
 #endif
 } == add {
-	local intdom?:Boolean	== R has IntegralDomain;
-	local float?:Boolean	== R has FloatType;
+	macro intdom?	== R has IntegralDomain;
+	macro float?	== R has FloatType;
 	local maxint:Integer	== (max$MachineInteger)::Integer;
 
 	evalInt(t:TREE):Partial Integer == {
@@ -119,14 +119,14 @@ integer--valued leaf, \failed otherwise.}
 			failed?(u := eval(first l)$R)
 				or failed?(v := eval(first rest l)$R) => failed;
 			zero?(vv := retract v) => throw SyntaxException;
-			exactQuotient(retract u, vv)$(R pretend IntegralDomain);
+			exactQuotient(retract u, vv)$R;
 		}
 		float? and op = UID__DIVIDE => {
 			assert(#l = 2);
 			failed?(u := eval(first l)$R)
 				or failed?(v := eval(first rest l)$R) => failed;
 			zero?(vv := retract v) => throw SyntaxException;
-			[retract(u) /$(R pretend FloatType) vv];
+			[retract(u) / vv];
 		}
 		failed;
 	}
