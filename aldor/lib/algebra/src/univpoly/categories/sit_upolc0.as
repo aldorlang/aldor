@@ -100,9 +100,7 @@ where $p = \sum_{i=0}^n a_i x^i$.}
 \Retval{\name(p) returns $\int p(x) dx$,
 while integrate(s, n) returns $\int \dots \int s(x) dx^n$.}
 #endif
-		-- TEMPORARY: pretend SHOULD NOT BE NEEDED
-		-- lift: (Derivation R, %) -> Derivation %;
-		lift: (Derivation(R pretend Ring), %) -> Derivation %;
+		lift: (Derivation R, %) -> Derivation %;
 #if ALDOC
 \alpage{lift}
 \Usage{\name(D, x')}
@@ -435,8 +433,6 @@ that repeated Horner evaluation.}
 			}
 		}
 
-		-- TEMPORARY: IF R has RING SHOULD NOT BE NEEDED (COMRING!)
-		if R has Ring then {
 		if R has CommutativeRing then {
 			if R has RittRing then {
 				integrate(p:%):% == {
@@ -522,13 +518,13 @@ that repeated Horner evaluation.}
 
 			-- TEMPORARY: pretend SHOULD NOT BE NEEDED
 			-- lift(D:Derivation R, xp:%):Derivation % ==
-			lift(D:Derivation(R pretend Ring),xp:%):Derivation % =={
+			lift(D:Derivation R,xp:%):Derivation % =={
 				derivation((p:%):% +-> diff(p, D, xp));
 			}
 
 			-- TEMPORARY: pretend SHOULD NOT BE NEEDED
 			-- local diff(p:%, D:Derivation R, xp:%):% ==
-			local diff(p:%,D:Derivation(R pretend Ring),xp:%):% == {
+			local diff(p:%,D:Derivation(R),xp:%):% == {
 				import from Z, R;
 				h:% := 0;
 				for term in p repeat {
@@ -758,17 +754,12 @@ that repeated Horner evaluation.}
 			    field? => recipMod__Field(a,b);
 			    recipMod__NonField(a,b);
 			}
-		}}
+		}
 
-		if R has Ring then {
-		if R has CommutativeRing then {
 		if R has EuclideanDomain then {
 		    symmetricMod(a: %, b: %): % == a mod b;
-		}}}
+		}
 
-		-- TEMPORARY: R has RING/COMRING SHOULD NOT BE NEEDED
-		if R has Ring then {
-		if R has CommutativeRing then {
 		if R has IntegralDomain then {
 			pseudoDivide(a:%,b:%):(%,%) == pseudoDivide!(copy a, b);
 			pseudoRemainder(a:%,b:%):%==pseudoRemainder!(copy a,b);
@@ -1070,11 +1061,8 @@ that repeated Horner evaluation.}
 				}
 				(n, q);
 			}
-		} } }
+		}
 
-		-- TEMPORARY: R has RING/COMRING SHOULD NOT BE NEEDED
-		if R has Ring then {
-		if R has CommutativeRing then {
 		if R has GcdDomain then {
 			provablyIrreducible?(a:%):Boolean == {
 				import from Z;
@@ -1097,12 +1085,8 @@ that repeated Horner evaluation.}
 					gcdquo(a,differentiate a)$(%@GcdDomain);
 				aa;
 			}
-		} } }
+		}
 
-		-- TEMPORARY: R has RING/COMRING/INTDOM SHOULD NOT BE NEEDED
-		if R has Ring then {
-		if R has CommutativeRing then {
-		if R has IntegralDomain then {
 		if R has Field then {
 			-- TEMPORARY: THOSE DEFAULTS CANNOT BE IN sit_euclid.as
 			-- AS LONG AS THE COMPILER DOES EARLY-BINDING
@@ -1153,7 +1137,7 @@ that repeated Horner evaluation.}
 					rationalReconstruction(r, m, b, b);
 
 			}
-		} } } }
+		}
 
 		if R has Specializable then {
 			specialization(Image:CommutativeRing):_
