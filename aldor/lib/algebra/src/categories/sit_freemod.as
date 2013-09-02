@@ -50,7 +50,7 @@ Its elements are assumed to have finite support.}
 
 define FreeModule(R:Join(ArithmeticType, ExpressionType)): Category ==
 	FreeLinearCombinationType R with {
-	if R has Ring then Module(R pretend Ring);
+	if R has Ring then Module R;
         if R has GcdDomain then {
                 content: % -> R;
                 primitive: % -> (R, %);

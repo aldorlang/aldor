@@ -303,10 +303,9 @@ and generate the full kernel if $ker?$ is \true.}
 	local special?:Boolean	== R has Specializable;
 
 	local elim:LinearEliminationCategory(R, M) == {
-		R has Field => OrdinaryGaussElimination(R pretend Field, M);
+		R has Field => OrdinaryGaussElimination(R, M);
 		R has IntegralDomain =>
-			TwoStepFractionFreeGaussElimination(_
-					R pretend IntegralDomain, M);
+			TwoStepFractionFreeGaussElimination(R, M);
 		DivisionFreeGaussElimination(R, M);
 	}
 
@@ -327,7 +326,6 @@ and generate the full kernel if $ker?$ is \true.}
 	}
 
 	if R has IntegralDomain then {
-		macro RID == R pretend IntegralDomain;
 
 		cycle(a:M, v:V R):(V R, M) == cycle((w:V R):V R +-> a * w, v);
 
@@ -383,7 +381,7 @@ and generate the full kernel if $ker?$ is \true.}
 		}
 
 		kernel(m:M):M == {
-			import from I, OverdeterminedLinearSystemSolver(RID, M);
+			import from I, OverdeterminedLinearSystemSolver(R, M);
 			(r, c) := dimensions m;
 			zero? c => zero(0, 0);
 			if zero? r then m := zero(1, c);
@@ -455,19 +453,19 @@ and generate the full kernel if $ker?$ is \true.}
 		}
 
 		local generaldep(a:M, p:I->I, st:ARR I, c:I, r:I, d:R):V R == {
-			import from Backsolve(RID, M);
+			import from Backsolve(R, M);
 			backsolve(a,p,st,c,r,d);
 		}
 
 		local invgeneral!(a:M):(M, V R) == {
-			import from Backsolve(RID, M);
+			import from Backsolve(R, M);
 			(p,r,st,d,w) := extendedRowEchelon!(a)$elim;
 			det := deter(a,p,r,d)$elim;
 			backsolve(a,p,st,r,w,det);
 		}
 
 		local nullgeneral!(a:M, p:I->I, r:I, st:ARR I):M == {
-			import from ARR R, Backsolve(RID, M);
+			import from ARR R, Backsolve(R, M);
 			zero? r => one numberOfColumns a;
 			den := denominators(a,p,r,st)$elim;
 			k:List V R := empty;
@@ -485,7 +483,7 @@ and generate the full kernel if $ker?$ is \true.}
 		}
 
 		local solvegeneral!(a:M, b:M):(M, M, V R) == {
-			import from Backsolve(RID, M);
+			import from Backsolve(R, M);
 			(p,r,st,d) := rowEchelon!(a, b)$elim;
 			det := deter(a,p,r,d)$elim;
 			(psol, den) := backsolve(a,p,st,r,b,det);
@@ -493,7 +491,7 @@ and generate the full kernel if $ker?$ is \true.}
 		}
 
 		local psolgeneral!(a:M, b:M):(M, V R) == {
-			import from Backsolve(RID, M);
+			import from Backsolve(R, M);
 			(p,r,st,d) := rowEchelon!(a, b)$elim;
 			det := deter(a,p,r,d)$elim;
 			backsolve(a,p,st,r,b,det);
@@ -501,21 +499,20 @@ and generate the full kernel if $ker?$ is \true.}
 	}
 
 	if R has GcdDomain then {
-		macro RGD == R pretend GcdDomain;
 
 		local gcddep(a:M, p:I->I, st:ARR I, c:I, r:I):V R == {
-			import from Backsolve(RGD, M);
+			import from Backsolve(R, M);
 			backsolve(a,p,st,c,r);
 		}
 
 		local invgcddomain!(a:M):(M, V R) == {
-			import from Backsolve(RGD, M);
+			import from Backsolve(R, M);
 			(p,r,st,d,w) := extendedRowEchelon!(a)$elim;
 			backsolve(a,p,st,r,w);
 		}
 
 		local nullgcddomain!(a:M, p:I->I, r:I, st:ARR I):M == {
-			import from Backsolve(RGD, M);
+			import from Backsolve(R, M);
 			zero? r => one numberOfColumns a;
 			k:List V R := empty;
 			(n, m) := dimensions a;
@@ -530,24 +527,22 @@ and generate the full kernel if $ker?$ is \true.}
 		}
 
 		local solvegcddomain!(a:M, b:M):(M, M, V R) == {
-			import from Backsolve(RGD, M);
+			import from Backsolve(R, M);
 			(p,r,st,d) := rowEchelon!(a, b)$elim;
 			(psol, den) := backsolve(a,p,st,r,b);
 			(nullgcddomain!(a, p, r, st), psol, den);
 		}
 
 		local psolgcddomain!(a:M, b:M):(M, V R) == {
-			import from Backsolve(RGD, M);
+			import from Backsolve(R, M);
 			(p,r,st,d) := rowEchelon!(a, b)$elim;
 			backsolve(a,p,st,r,b);
 		}
 	}
 
 	if R has Specializable then {
-		macro RSPEC == R pretend Join(CommutativeRing, Specializable);
-
 		speclbrank(m:M):Partial Cross(B, I) ==
-			rankLowerBound(m)$SpecializationLinearAlgebra(RSPEC, M);
+			rankLowerBound(m)$SpecializationLinearAlgebra(R, M);
 	}
 
 	if R has LinearAlgebraRing then {

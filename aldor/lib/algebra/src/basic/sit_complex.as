@@ -66,7 +66,7 @@ extend Complex(R:Join(ArithmeticType, ExpressionType)):
 --	LATER WHEN (AND IF) NEEDED
 --	if R has NonCommutativeIntegralDomain then NonCommutativeIntegralDomain;
 	if R has Parsable then Parsable;
-	if R has Ring then Algebra(R pretend Ring);
+	if R has Ring then Algebra R;
 	if R has RittRing then RittRing;
 } == add {
 	macro TREE == ExpressionTree;
@@ -209,7 +209,7 @@ extend Complex(R:Join(ArithmeticType, ExpressionType)):
 									failed;
 				[complex(retract u, retract v)];
 			}
-			float? and op = UID__DIVIDE => {
+			R has FloatType and op = UID__DIVIDE => {
 				assert(#args = 2);
 				failed?(a := eval(first args)$PC) or
 					failed?(b := eval(first rest args)$PC)=>
@@ -218,8 +218,7 @@ extend Complex(R:Join(ArithmeticType, ExpressionType)):
 				zero?(aa := retract a) or one? bb => a;
 				(r, i, d) := floatdiv(aa, bb);
 				one? d => [complex(r, i)];
-				[complex(r /$(R pretend FloatType) d,
-					i /$(R pretend FloatType) d)];
+				[complex(r / d,	i / d)];
 			}
 			failed?(u := eval(op, args)$R) => failed;
 			[retract(u)::%];

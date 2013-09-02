@@ -99,9 +99,7 @@ define SimpleAlgebraicExtensionCategory(R:IntegralDomain,
 
 		if R has Join(Field,FactorizationRing,CharacteristicZero) then {
 			factor(P:UPC0)(p:P):(%, Product P) == {
-				factor(p)$InternalAlgebraicFactorizer(_
-					R pretend Join(FactorizationRing,
-							CharacteristicZero),
+				factor(p)$InternalAlgebraicFactorizer(R,
 					Rx, %, P);
 			}
 		}

@@ -175,7 +175,7 @@ Fraction(R:GcdDomain): FractionFieldCategory R == add {
 		canon(s1, v1 * t1 * d1);
 	}
 
-	lift(D:Derivation R):Derivation(% pretend Ring) == {
+	lift(D:Derivation R):Derivation(%) == {
 		derivation {(f:%):% +-> {
 			(n, d) := numden f;
 			dn := D n;

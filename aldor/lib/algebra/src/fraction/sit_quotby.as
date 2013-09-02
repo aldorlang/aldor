@@ -213,14 +213,14 @@ FractionBy(R: IntegralDomain, p:R, irr?:Boolean): FractionByCategory R == {
 		mkquot(a, n + m);
 	}
 
-	local liftPconstant(D:Derivation R):Derivation(% pretend Ring) == {
+	local liftPconstant(D:Derivation R):Derivation(%) == {
 		derivation {(f:%):% +-> {
 			(a, n) := numord f;
 			canon(D a, n);
 		}}
 	}
 
-	lift(D:Derivation R):Derivation(% pretend Ring) == {
+	lift(D:Derivation R):Derivation(%) == {
 		zero?(dp := D p) => liftPconstant D;
 		-- p'/p = dppa p^dppn
 		(dppa, dppn) := numord canon(dp, -1);

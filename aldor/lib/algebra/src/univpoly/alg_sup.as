@@ -73,9 +73,8 @@ SparseUnivariatePolynomial(R:Join(ArithmeticType, ExpressionType),
                         -- dispersion: % -> AldorInteger
                         -- dispersion: (%, %) -> AldorInteger
 
-			macro RR == R pretend Join(RationalRootRing, GcdDomain);
 			macro RXY == SparseUnivariatePolynomial %;
-			macro SPREAD == UnivariatePolynomialSpread(RR, %, RXY);
+			macro SPREAD == UnivariatePolynomialSpread(R, %, RXY);
 
 			integerDistances(p:%):List Z ==
 				integerDistances(p)$SPREAD;

@@ -516,14 +516,10 @@ that repeated Horner evaluation.}
 				h;
 			}
 
-			-- TEMPORARY: pretend SHOULD NOT BE NEEDED
-			-- lift(D:Derivation R, xp:%):Derivation % ==
 			lift(D:Derivation R,xp:%):Derivation % =={
 				derivation((p:%):% +-> diff(p, D, xp));
 			}
 
-			-- TEMPORARY: pretend SHOULD NOT BE NEEDED
-			-- local diff(p:%, D:Derivation R, xp:%):% ==
 			local diff(p:%,D:Derivation(R),xp:%):% == {
 				import from Z, R;
 				h:% := 0;
@@ -707,15 +703,15 @@ that repeated Horner evaluation.}
 			    u: R := retract(u?);
 			    monicRemainder(a, u*b);
 			}
-			local field?: Boolean == R has Field;
+			macro field? == R has Field;
 
 			local recipMod__Field(a: %, b: %):  Partial(%) == {
+			        assert(field?);
                                 (g: %, u:%, v:% ) := extendedEuclidean(a, b)$(% pretend EuclideanDomain);
                                 import from Integer; 
                                 degree(g) > 0 => failed;
-                                import from R pretend Field;
                                 lcg: R := leadingCoefficient(g);
-				u := inv(lcg) * u;
+				u := if field? then inv(lcg) * u else never;
 				assert(one?((u * a) mod b)); -- COMMENT ME LATER
                                 [u];
 			}
@@ -1107,9 +1103,7 @@ that repeated Horner evaluation.}
 			}
 
 			sparseMultiple(p:%, N:Z):% == {
-				-- TEMPORARY: pretend SHOULD NOT BE NEEDED
-				-- import from I, LinearAlgebra(R, M R);
-				import from I, LinearAlgebra(R pretend Field, M R);
+				import from I, LinearAlgebra(R, M R);
 				assert(N > 0);
 				zero? p or zero?(d := degree p) or one? N => p;
 				m := machine d;

@@ -178,8 +178,7 @@ with other elements. Some functions are not necessarily copying their
 arguments and can thus create memory aliases.}
 #endif
 	default {
-		macro PCC			== (% pretend CopyableType);
-		local copy?:Boolean		== % has CopyableType;
+		macro copy? == % has CopyableType;
 		divide(a:%, b:%):(%, %)		== (a quo b, a rem b);
 		euclid!(p:%, q:%):%		== euclid!(p, q, remainder!);
 		local div(p:%, q:%, r:%):(%, %)	== divide(p, q);
@@ -191,19 +190,19 @@ arguments and can thus create memory aliases.}
 
 		-- uses in-place only when % has CopyableType;
 		euclid(p:%, q:%):% == {
-			copy? => euclid!(copy(p)$PCC, copy(q)$PCC, remainder!);
+			copy? => euclid!(copy(p), copy(q), remainder!);
 			euclid!(p, q, rem);
 		}
 
 		-- uses in-place only when % has CopyableType;
 		local halfEuclid0(p:%, q:%):(%, %) == {
-			copy? => halfEuclid!(p, copy(q)$PCC, divide!);
+			copy? => halfEuclid!(p, copy(q), divide!);
 			halfEuclid!(p, q, div);
 		}
 
 		-- uses in-place only when % has CopyableType;
 		local halfEuclid(p:%, q:%):(%, %) == {
-			copy? => halfEuclid!(copy(p)$PCC, copy(q)$PCC, divide!);
+			copy? => halfEuclid!(copy(p), copy(q), divide!);
 			halfEuclid!(p, q, div);
 		}
 
@@ -283,7 +282,7 @@ arguments and can thus create memory aliases.}
 		}
 
 		rationalReconstruction(u:%,m:%,n:Z,d:Z):Partial Cross(%,%) == {
-			copy? => ratRecon!(copy(u)$PCC,copy(m)$PCC,n,d,divide!);
+			copy? => ratRecon!(copy(u),copy(m),n,d,divide!);
 			ratRecon!(u, m, n, d, div);
 		}
 

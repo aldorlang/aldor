@@ -412,7 +412,6 @@ SparseMultivariatePolynomial(_
       }
 
       if R has CommutativeRing then {
-         import from R pretend CommutativeRing;
          import from Partial(%);
          import from Partial(R);
          import from Partial(U);
@@ -484,7 +483,6 @@ SparseMultivariatePolynomial(_
          }
       }
       if R has FiniteCharacteristic then {
-         import from R pretend FiniteCharacteristic; 
          pthPower(p:%):% == {
            ground?(p) => (pthPower(base(p))$R)::%;
            import from U pretend FiniteCharacteristic; 

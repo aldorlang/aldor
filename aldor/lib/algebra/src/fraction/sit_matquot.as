@@ -107,7 +107,7 @@ shifted by $v.j$.}
 #endif
 		}
 } == add {
-	local gcd?:Boolean == R has GcdDomain;
+	macro gcd? == R has GcdDomain;
 
 	makeRowIntegral(B:MQ, r:I):(R, V R) == {
 		import from VectorOverFraction(R, Q);
@@ -166,7 +166,7 @@ shifted by $v.j$.}
 	local coldenom(B:MQ, c:I):R == {
 		import from Q, List R;
 		denoms := [denominator(B(i, c)) for i in 1..numberOfRows B];
-		gcd? => lcm(denoms)$(R pretend GcdDomain);
+		gcd? => lcm(denoms);
 		prod denoms;
 	}
 
@@ -174,7 +174,7 @@ shifted by $v.j$.}
 	local rowdenom(B:MQ, r:I):R == {
 		import from Q, List R;
 		denoms := [denominator(B(r, j)) for j in 1..numberOfColumns B];
-		gcd? => lcm(denoms)$(R pretend GcdDomain);
+		gcd? => lcm(denoms);
 		prod denoms;
 	}
 
@@ -182,7 +182,7 @@ shifted by $v.j$.}
 		import from I, R, Q, List R;
 		(r, c) := dimensions B;
 		denoms := [rowdenom(B, i) for i in 1..r];
-		d := { gcd? => lcm(denoms)$(R pretend GcdDomain); prod denoms; }
+		d := { gcd? => lcm(denoms); prod denoms; }
 		A:MR := zero(r, c);
 		for i in 1..r repeat for j in 1..c repeat
 			A(i,j) := numerator(d * B(i,j));

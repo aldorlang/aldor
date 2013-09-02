@@ -60,9 +60,9 @@ of the call, as in {\tt x := pthPower!~x}.}
 		-- if size is p^d, then (x^(p^(d-1)))^p = x
 		pthRoot(x:%):% == {
 			import from Integer;
-			copy? => {
+			% has CopyableType => {
 				one? degree => x;
-				pthRoot!(copy(x)$(% pretend CopyableType));
+				pthRoot!(copy(x));
 			}
 			for i in 1..prev(degree) repeat x := pthPower! x;
 			x;

@@ -40,7 +40,7 @@ Its elements are assumed to have finite support.}
 
 define FreeRRing(R:Join(ArithmeticType, ExpressionType)):
 	Category == Join(FreeModule R, FreeLinearArithmeticType R) with {
-	if R has Ring then RRing(R pretend Ring);
+	if R has Ring then RRing R;
 	if R has CharacteristicZero then CharacteristicZero;
 	if R has FiniteCharacteristic then FiniteCharacteristic;
 	if R has RittRing then RittRing;

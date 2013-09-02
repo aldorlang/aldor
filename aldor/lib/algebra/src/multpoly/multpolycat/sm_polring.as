@@ -22,7 +22,7 @@ macro {
         UPR == IndexedFreeAlgebra(R,NNI);
         UPP == IndexedFreeAlgebra(%,NNI);
         SUP == SparseUnivariatePolynomial;
-        ECATV == ExponentCategory(V pretend VariableType);
+        ECATV == ExponentCategory(V);
         FAMR == FiniteAbelianMonoidRing0;
 }
 
@@ -82,10 +82,10 @@ define PolynomialRing(R:Join(ArithmeticType, ExpressionType),
              ++ `differentiate(differentiate(p,lv.1,ln.1),rest lv, rest ln)'.
         }
         if V has VariableType then {
-           expand: (E: ECATV) -> ((P: FAMR(R, V pretend VariableType, E)) ->  (% -> P));
+           expand: (E: ECATV) -> ((P: FAMR(R, V, E)) ->  (% -> P));
              ++ `expand(E)(P)(p)' converts the multivariate polynomial
              ++ `p' into a distributed polynomial of the domain `P'.
-           combine: (E:ECATV) -> ((P: FAMR(R, V pretend VariableType, E)) ->  (P -> %));
+           combine: (E:ECATV) -> ((P: FAMR(R, V, E)) ->  (P -> %));
              ++ `combine(E)(P)(p)' converts the distributed polynomial
              ++ `p' into a multivariate polynomial in `%'.
         }
@@ -182,8 +182,7 @@ define PolynomialRing(R:Join(ArithmeticType, ExpressionType),
               }
            }
            if V has VariableType then {
-              import from V pretend VariableType;
-              expand (E:ECATV) (P:FAMR(R, V pretend VariableType, E)) (p:%) : P == {
+              expand (E:ECATV) (P:FAMR(R, V, E)) (p:%) : P == {
                  import from E, P;
                  dmp: P := 0;
                  for pair in support(p) repeat {
@@ -192,7 +191,7 @@ define PolynomialRing(R:Join(ArithmeticType, ExpressionType),
                  }
                  dmp;
               }
-              combine (E:ECATV) (P:FAMR(R, V pretend VariableType, E)) (dmp:P) : % == {
+              combine (E:ECATV) (P:FAMR(R, V, E)) (dmp:P) : % == {
                  import from E, P;
                  p: % := 0;
                  for cross in terms(dmp)@Generator(Cross(R,E)) repeat {
@@ -203,8 +202,7 @@ define PolynomialRing(R:Join(ArithmeticType, ExpressionType),
               }
            }
 	   if R has GcdDomain then {
-	        macro gcdpack == MultivariatePolynomialGcdPackage(R pretend
-                                  GcdDomain, V, %);
+	        macro gcdpack == MultivariatePolynomialGcdPackage(R, V, %);
 --              import from Generator %;		
 --		gcd(gen: Generator %) : % =={
 --                    g:%:=0;
@@ -220,7 +218,6 @@ define PolynomialRing(R:Join(ArithmeticType, ExpressionType),
                     gcd(a,b)$gcdpack;}
            }
            if R has FiniteCharacteristic then {
-               import from R pretend FiniteCharacteristic;
                pthPower(x: %): % == {
                   ground? x => pthPower(leadingCoefficient(x)) ::%;
                   import from SUP(%) pretend FiniteCharacteristic;

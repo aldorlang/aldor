@@ -94,8 +94,7 @@ extend MachineInteger: Join(Parsable, GeneralExponentCategory) == add {
 
 	extree(x:%):ExpressionTree == {
 		import from ExpressionTreeLeaf;
-		extree leaf(x pretend MachineInteger);
-		-- extree leaf x;
+		extree leaf(x);
 	}
 
 	eval(t:ExpressionTreeLeaf):Partial % == {
