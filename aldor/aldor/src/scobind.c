@@ -259,6 +259,7 @@ local void		scobindReference	(AbSyn);
 local void		scobindParam		(AbSyn);
 local void		scobindTry		(AbSyn);
 local void		scobindIf		(AbSyn);
+local void		scobindAnd		(AbSyn);
 
 local void		scobindApplySelf	(AbSyn);
 local Bool		scobindApplyNeedsSelf	(AbSyn);
@@ -700,6 +701,10 @@ scobindValue(AbSyn absyn)
 
 	case AB_If:
 		scobindIf(absyn);
+		break;
+
+	case AB_And:
+		scobindAnd(absyn);
 		break;
 
 	default:
@@ -2995,6 +3000,20 @@ scobindIf(AbSyn ab)
 	scoCondPush(scoStab, test, true);
 	scobindValue(ab->abIf.elseAlt);
 	scoCondPop();
+}
+
+local void
+scobindAnd(AbSyn ab)
+{
+	int i;
+	for (i=0; i<abArgc(ab); i++) {
+		AbSyn cond = ab->abAnd.argv[i];
+		scobindValue(cond);
+		scoCondPush(scoStab, cond, false);
+	}
+	for (i=0; i<abArgc(ab); i++) {
+		scoCondPop();
+	}
 }
 
 

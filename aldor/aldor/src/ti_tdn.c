@@ -8,6 +8,7 @@
 
 #include "debug.h"
 #include "fluid.h"
+#include "store.h"
 #include "format.h"
 #include "simpl.h"
 #include "spesym.h"
@@ -1956,6 +1957,8 @@ local Bool
 titdnAnd(Stab stab, AbSyn absyn, TForm type)
 {
 	int	i;
+	int	argc = abArgc(absyn);
+	AbLogic *saveCond = (AbLogic*) stoAlloc(OB_Other, sizeof(AbLogic) * argc);
 
 	/*
 	 * An unfixed compiler bug means that parts of Salli programs
@@ -1970,9 +1973,15 @@ titdnAnd(Stab stab, AbSyn absyn, TForm type)
 		return false;
 	}
 
-	for (i = 0; i < abArgc(absyn); i++)
+	for (i = 0; i < argc; i++) {
 		titdn(stab, abArgv(absyn)[i], tfBoolean);
+		ablogAndPush(&abCondKnown, &saveCond[i], abArgv(absyn)[i], true);
+	}
+	for (i = 0; i < argc; i++) {
+		ablogAndPop(&abCondKnown, &saveCond[argc-i-1]);
+	}
 	abTUnique(absyn) = tfBoolean;
+	stoFree(saveCond);
 	return true;
 }
 
