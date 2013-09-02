@@ -115,11 +115,11 @@ DenseUnivariatePolynomial(R:Join(ArithmeticType, ExpressionType),
 
 	local kara?:Boolean ==
 		R has CommutativeRing and
-		    (cutoff(CUTOFF__KARAMULT)$(R pretend CommutativeRing) >= 0);
+		    (cutoff(CUTOFF__KARAMULT)$R >= 0);
 
 	-- local fft?:Boolean ==
 		-- R has FFTRing and
-			-- (cutoff(CUTOFF__FFTMULT)$(R pretend FFTRing) >= 0);
+			-- (cutoff(CUTOFF__FFTMULT)$R >= 0);
 
 	(p:%) * (q:%):% == {
 		import from R;
@@ -153,9 +153,8 @@ DenseUnivariatePolynomial(R:Join(ArithmeticType, ExpressionType),
 
 	if R has RationalRootRing then {
 		if R has GcdDomain then {
-			macro RR == R pretend Join(RationalRootRing, GcdDomain);
 			macro RXY == SparseUnivariatePolynomial %;
-			macro SPREAD == UnivariatePolynomialSpread(RR, %, RXY);
+			macro SPREAD == UnivariatePolynomialSpread(R, %, RXY);
 
 			integerDistances(p:%):List Z ==
 				integerDistances(p)$SPREAD;
@@ -166,7 +165,6 @@ DenseUnivariatePolynomial(R:Join(ArithmeticType, ExpressionType),
 	}
 
 	if R has CommutativeRing then {
-		macro RCR		== R pretend CommutativeRing;
 		local karaCutoff:I	== cutoff(CUTOFF__KARAMULT)$R;
 		local nokara?:Boolean	== zero? karaCutoff;
 		local kara(p:%, q:%):%	== karatsuba(p, q, karaCutoff);
@@ -192,7 +190,7 @@ DenseUnivariatePolynomial(R:Join(ArithmeticType, ExpressionType),
 		-- EXPORT THIS FUNCTION FOR THE PURPOSE OF TUNING THE
 		-- KARATSUBA CUTOFFs FOR VARIOUS COEFF RINGS
 		local karatsuba(p:%, q:%, cut:I):% == {
-			import from UnivariatePolynomialKaratsuba(RCR);
+			import from UnivariatePolynomialKaratsuba(R);
 			assert(~zero? p); assert(~zero? q);
 			assert(~one? p); assert(~one? q);
 			assert(cut > 0);
@@ -253,7 +251,6 @@ DenseUnivariatePolynomial(R:Join(ArithmeticType, ExpressionType),
 		-- divisible by q.
 		-- trailingDegree(q) 0-coefficients of pp are not included in p.
 		local quotlow!(p:%, q:%, d:Z):% == {
-			import from RCR;
 			zero? p => 0;
 			(tcoeff, tdeg) := trailingTerm q;
 			div := quotientBy tcoeff;
@@ -283,7 +280,6 @@ DenseUnivariatePolynomial(R:Join(ArithmeticType, ExpressionType),
 		-- is divisible by q.
 		-- computes the high-part of pp / q, destroying p, but not q.
 		local quothigh!(p:%, q:%):% == {
-			import from RCR;
 			zero? p => 0;
 			tdeg := trailingDegree q;
 			lcoeff := leadingCoefficient q;

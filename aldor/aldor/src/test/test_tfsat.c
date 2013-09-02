@@ -7,19 +7,16 @@
 #include "sefo.h"
 
 local void testTfSatEmbed();
+local void testTfSatEmbedExcept();
 local void testTfSatRec();
-
-/* XXX: from test_tinfer.c */
-void init(void);
-void fini(void);
-void initFile(void);
-void finiFile(void);
+extern int tfsDebug;
 
 void
 tfsatTest()
 {
 	init();
 	TEST(testTfSatEmbed);
+	TEST(testTfSatEmbedExcept);
 	TEST(testTfSatRec);
 	fini();
 }
@@ -29,10 +26,9 @@ testTfSatEmbed()
 {
 	String Boolean_imp = "import from Boolean";
 	String E_def = "E: with == add";
-	String f_def = "f(): (E, E) == never";
 	String g_def = "g: E == never";
 
-	StringList lines = listList(String)(4, Boolean_imp, E_def, f_def, g_def);
+	StringList lines = listList(String)(3, Boolean_imp, E_def, g_def);
 	AbSynList absynList = listCons(AbSyn)(stdtypes(), abqParseLines(lines));
 	AbSyn absyn = abNewSequenceL(sposNone, absynList);
 
@@ -76,6 +72,64 @@ testTfSatEmbed()
 	finiFile();
 }
 
+local void
+testTfSatEmbedExcept()
+{
+	String Boolean_imp = "import from Boolean";
+	String E_def = "E: Category == with";
+	String T_def = "T: with == add";
+	String e_def = "e: E == never";
+	String t_def = "t: T == never";
+
+	StringList lines = listList(String)(5, Boolean_imp, E_def, e_def, T_def, t_def);
+	AbSynList absynList = listCons(AbSyn)(stdtypes(), abqParseLines(lines));
+	AbSyn absyn = abNewSequenceL(sposNone, absynList);
+
+	initFile();
+	Stab stab = stabFile();
+
+	abPutUse(absyn, AB_Use_NoValue);
+	abPrintDb(absyn);
+	scopeBind(stab, absyn);
+	typeInfer(stab, absyn);
+
+	int mask;
+	SatMask result;
+
+	TForm T = symeType(uniqueMeaning(stab, "t"));
+	TForm E = symeType(uniqueMeaning(stab, "e"));
+	TForm TExceptE = tfExcept(T, T);
+	
+	mask = tfSatTdnMask();
+	/* T satisfies T */
+	result = tfSat(mask, T, T);
+	testTrue("", tfSatSucceed(result));
+	testIntEqual("", 0, tfSatAbEmbed(result));
+
+	/* T satisfies "T except E" */
+	result = tfSat(mask, T, TExceptE);
+	testTrue("", tfSatSucceed(result));
+	testIntEqual("", 0, tfSatAbEmbed(result));
+
+	/* (T) satisfies "(T) except E" */
+	TForm MultiT = tfMulti(1, T);
+	TForm MultiTExceptE = tfExcept(tfMulti(1, T), E);
+	result = tfSat(mask, MultiT, MultiTExceptE);
+	testTrue("", tfSatSucceed(result));
+	testIntEqual("", 0, tfSatAbEmbed(result));
+
+	/* (T) satisfies "T except E" */
+	result = tfSat(mask, MultiT, TExceptE);
+	testTrue("", tfSatSucceed(result));
+	testIntEqual("", AB_Embed_MultiToUnary, tfSatAbEmbed(result));
+
+	/* T satisfies "(T)" */
+	result = tfSat(mask, MultiT, T);
+	testTrue("", tfSatSucceed(result));
+	testIntEqual("", AB_Embed_MultiToUnary, tfSatAbEmbed(result));
+
+	finiFile();
+}
 
 void
 testTfSatRec()
