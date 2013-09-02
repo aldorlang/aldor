@@ -26,8 +26,8 @@ am__v_ALDOR_0 = @echo "  ALDOR " $@;
 	$(AM_V_ALDOR)$(DBG) $(ALDOR) $(ALDORFLAGS) -Y$(@D) -Fao=$(@:.c=.ao) -Fc=$@ $<
 
 %-aldormain.c: %.as $(ALDOR)
-	mkdir -p $(dir $@)
-	$(ALDOR) $(ALDORFLAGS) -Fmain -R $(dir $@) $(abspath $<)
+	@$(MKDIR_P) $(@D)
+	$(AM_V_ALDOR)$(ALDOR) $(ALDORFLAGS) -Fmain -R $(dir $@) $(abspath $<)
 
 include Tests.am
 $(srcdir)/Tests.am: Makefile.am $(abs_top_srcdir)/lib/testprog.am
