@@ -687,7 +687,7 @@ abnDocumented(AbSyn ab)
 	odoc = ab->abDocumented.doc;
 	assert(abTag(odoc) == AB_DocText);
 
-	pre = odoc->abDocText.doc;
+	post = odoc->abDocText.doc;
 	ab  = ab->abDocumented.expr;
 	opos = abPos(ab);
 	abFreeNode(odoc);
@@ -697,20 +697,20 @@ abnDocumented(AbSyn ab)
 	abid = abDefineeIdOrElse(abinner, NULL);
 
 	if (abid) {
-		post = abComment(abid);
+		pre = abComment(abid);
 		abSetComment(abid, NULL);
 	}
 
 	/* Merge the pre-doc and the post-doc. */
 
-	if (post == 0) {
-		abSetComment(ab, pre);
-		doc = pre;
+	if (pre == 0) {
+		abSetComment(ab, post);
+		doc = post;
 	}
 	else {
 		doc = docMerge(pre, post);
-		docFree(pre);
 		docFree(post);
+		docFree(pre);
 		abSetComment(ab, doc);
 	}
 

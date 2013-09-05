@@ -253,6 +253,7 @@ TESTS = testall
 testsuite =			\
 	test/test_abcheck.c	\
 	test/test_ablogic.c 	\
+	test/test_abnorm.c	\
 	test/test_absyn.c 	\
 	test/test_bitv.c 	\
 	test/test_flog.c	\

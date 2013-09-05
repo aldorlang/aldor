@@ -3,6 +3,7 @@
 
 void abcheckTest(void);
 void ablogTest(void);
+void abnormTest(void);
 void absynTest(void);
 void bitvTestSuite(void);
 void listTestSuite(void);
