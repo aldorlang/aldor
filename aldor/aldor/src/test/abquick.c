@@ -8,6 +8,9 @@
 #include "ablogic.h"
 #include "srcline.h"
 #include "symbol.h"
+#include "strops.h"
+
+local AbSyn abqParseSrcLines(SrcLineList sll);
 
 ABQK_DEFINE0(sequence0, abNewSequence0);
 ABQK_DEFINE1(sequence1, abNewSequence1);
@@ -74,12 +77,17 @@ defineUnary(String name, AbSyn param, AbSyn retType, AbSyn rhs)
 AbSyn
 abqParse(String txt)
 {
-	AbSyn ab;
-	TokenList tl;
-	SrcLineList sll;
 	SrcLine srcLine = slineNew(sposNone, 0, txt);
 
-	sll = listList(SrcLine)(1, srcLine);
+	return abqParseSrcLines(listList(SrcLine)(1, srcLine));
+}
+
+local AbSyn
+abqParseSrcLines(SrcLineList sll)
+{
+	AbSyn ab;
+	TokenList tl;
+
 	tl = scan(sll);
 	tl = linearize(tl);
 	ab = parse(&tl);
@@ -90,8 +98,28 @@ abqParse(String txt)
 	return ab;
 }
 
-AbSynList 
-abqParseLines(StringList lines) 
+AbSyn
+abqParseLinesAsSeq(StringList lines)
+{
+	SrcLineList sll = listNil(SrcLine);
+
+	while (lines != listNil(String))
+	{
+		char *p = car(lines);
+		lines = cdr(lines);
+		int indent;
+		while (*p == ' ') { p++; indent++; }
+		String tmp = strConcat(p, "\n");
+		SrcLine line = slineNew(sposNone, indent, tmp);
+		strFree(tmp);
+		sll = listCons(SrcLine)(line, sll);
+	}
+
+	return abqParseSrcLines(listNReverse(SrcLine)(sll));
+}
+
+AbSynList
+abqParseLines(StringList lines)
 {
 	AbSynList result = listNil(AbSyn);
 	while (lines != listNil(String)) {

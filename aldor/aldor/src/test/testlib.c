@@ -41,6 +41,16 @@ testIntEqual(String testName, int i1, int i2)
 }
 
 void
+testAIntEqual(String testName, AInt i1, AInt i2)
+{
+	count++;
+	if (i1 == i2) {
+		return;
+	}
+	testFail(testName, "failed; expected %pAInt, got %pAInt", i1, i2);
+}
+
+void
 testIntIsNotZero(String testName, int i1)
 {
 	count++;
@@ -109,7 +119,7 @@ testFail(String testName, String fmt, ...)
 
 	printf("[%s]:", testName);
 	va_start(argp, fmt);
-	vprintf(fmt, argp);
+	avprintf(fmt, argp);
 	printf("\n");
 	va_end(argp);
 
