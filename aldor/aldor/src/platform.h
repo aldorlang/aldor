@@ -182,7 +182,10 @@
 #   endif
 # else
 #  include <features.h>
-#  if defined(__GLIBC__) && __GLIBC__ == 2
+#  if defined(__clang__)
+#    define CONFIG "LINUX(clang)"
+#    define CONFIGSYS "linuxclang"
+#  elif defined(__GLIBC__) && __GLIBC__ == 2
 #    if defined (__GLIBC_MINOR__) && __GLIBC_MINOR__ == 0 
 #      define	CONFIG "LINUX(glibc2.0)"
 #      define	CONFIGSYS "linuxglibc"
