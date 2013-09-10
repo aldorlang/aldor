@@ -4946,7 +4946,7 @@ gen0Lambda(AbSyn absyn, Syme syme, AbSyn defaults)
 	tf = gen0AbType(absyn);
 	assert(tfIsAnyMap(tf));
 
-	tfret = tfMapRet(tf);
+	tfret = tfIgnoreExceptions(tfMapRet(tf));
 /*	printf("BDS: entered gen0Lambda\n"); */
 	if (packed && !tfIsMulti(tfret)) tfret = tfRawType(tfret);
 /*	printf("BDS: done in gen0Lambda\n"); */
@@ -5275,6 +5275,8 @@ gen0Type(TForm tf, AInt *pfmt)
 	if (tfIsDefinedType(tf)) {
 		tf = tfDefinedVal(tf);
 	}
+	tf = tfIgnoreExceptions(tf);
+
 	for (pass = 0;(pass < 2) && !done; pass++)
 	{
 		tf = pass ? tfDefineeBaseType(tf) : tfDefineeType(tf);

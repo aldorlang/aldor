@@ -153,6 +153,7 @@ jcoCopy(JavaCode code)
 		return jcoNewFrList(jcoClass(code), l);
 	}
 	assert(false);
+	return NULL;
 }
 
 /*
@@ -275,6 +276,7 @@ jcoHash(JavaCode c)
 		return h;
 	}
 	assert(false);
+	return 0;
 }
 
 Bool 
@@ -305,6 +307,7 @@ jcoEqual(JavaCode c1, JavaCode c2)
 		}
 		return true;
 	}
+	return false;
 }
 
 SExpr 

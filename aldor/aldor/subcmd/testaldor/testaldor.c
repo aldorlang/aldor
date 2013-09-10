@@ -849,7 +849,7 @@ testAldorFilter(buf)
 
 int
 main(argc, argv)
-	Length	argc;
+	int	argc;
 	String	*argv;
 {
 	Length	i;

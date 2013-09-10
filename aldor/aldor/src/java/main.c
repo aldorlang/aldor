@@ -6,6 +6,7 @@
 #include "ostream.h"
 #include "path.h"
 #include "comsg.h"
+#include "tform.h"
 
 local void generate(String name);
 

@@ -1242,6 +1242,7 @@ gj0TypeObjToValue(JavaCode val, FoamTag type, AInt fmt)
 		return val;
 	default:
 		assert(false);
+		return NULL;
 	}
 
 }
@@ -1288,8 +1289,7 @@ gj0SetGenRhs(Foam foam, Foam decl)
 {
 	if (foamTag(foam) == FOAM_Cast) {
 		assert(decl->foamDecl.type == foam->foamCast.type);
-		gj0CastFmt(foam, 
-			   decl->foamDecl.format);
+		return gj0CastFmt(foam, decl->foamDecl.format);
 	}
 	else 
 		return gj0Gen(foam);
@@ -2034,6 +2034,7 @@ gj0ValuesDDeclCopy(Foam foam)
 		
 	}
 	assert(false);
+	return NULL;
 }
 
 local JavaCode
@@ -2879,10 +2880,10 @@ gj0CastFmt(Foam foam, AInt cfmt)
 	}
 	else if (iType == type)
 		return jc;
-	else 
-		gj0Default(foam, 
+	else  {
+		return gj0Default(foam,
 			   strPrintf("No cast: %s, %s", foamStr(type), foamStr(iType)));
-	
+	}
 }
 
 /*
