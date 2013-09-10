@@ -274,6 +274,7 @@ jcMethod(int modifiers, String comment,
 					     id, listNil(JavaCode), 
 					     jcParens(jcCommaSeq(args)), exns),
 			       body);
+	return meth;
 }
 
 JavaCode 
@@ -290,6 +291,7 @@ jcConstructor(int modifiers, String comment,
 					     id, listNil(JavaCode), 
 					     jcParens(jcCommaSeq(args)), exns),
 			       body);
+	return meth;
 }
 
 local void 
@@ -901,7 +903,7 @@ jcBinOp(JcOperation op, JavaCode e1, JavaCode e2)
 	if (inf->builder == 0)
 		return jcBinaryOp(jc0ClassObj(inf->clsId), e1, e2);
 	else
-		inf->builder(listList(JavaCode)(2, e1, e2));
+		return inf->builder(listList(JavaCode)(2, e1, e2));
 }
 
 
@@ -1211,20 +1213,20 @@ jcThrow(JavaCode arg)
 JavaCode 
 jcIf(JavaCode test, JavaCode stmt)
 {
-	jcoNew(jc0ClassObj(JCO_CLSS_If), 2, test, stmt);
+	return jcoNew(jc0ClassObj(JCO_CLSS_If), 2, test, stmt);
 }
 
 JavaCode 
 jcSwitch(JavaCode test, JavaCodeList bodyList)
 {
 	JavaCode block = jcBraces(jcNLSeq(bodyList));
-	jcoNew(jc0ClassObj(JCO_CLSS_Switch), 2, test, block);
+	return jcoNew(jc0ClassObj(JCO_CLSS_Switch), 2, test, block);
 }
 
 JavaCode 
 jcWhile(JavaCode test, JavaCode stmt)
 {
-	jcoNew(jc0ClassObj(JCO_CLSS_While), 2, test, stmt);
+	return jcoNew(jc0ClassObj(JCO_CLSS_While), 2, test, stmt);
 }
 
 local void
