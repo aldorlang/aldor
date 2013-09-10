@@ -835,7 +835,8 @@ _1_endProlog()
 void
 _1_wholeEpilog()
 {
-	while (yylex() != 0) ;
+	while (yylex() != 0)
+		;
 
 	phraseClosure();
 }
