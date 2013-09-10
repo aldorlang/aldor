@@ -3916,6 +3916,9 @@ gj0NameInit()
 	struct gjSpecCharId_info *p = &gjSpecCharIdTable[0];
 
 	while (p->c != '\0') {
+		/* Identifiers must never contain UTF-8 encoded unicode
+		 * characters or extended ASCII. */
+		assert(p->c >= 0 && p->c < CHAR_MAX);
 		gjCharIds[p->c] = p->s;
 		p++;
 	}
@@ -3950,6 +3953,7 @@ gj0NameFrString(String fmName)
 	flg = false;
 	p = fmName;
 	while (*p != 0) {
+		assert(*p >= 0 && *p < CHAR_MAX);
 		char *repl = gjCharIds[*p];
 		if (repl != 0)
 			flg = true;
@@ -3961,6 +3965,7 @@ gj0NameFrString(String fmName)
 	p = fmName;
 	buf = bufNeed(buf, strlen(fmName));
 	while (*p != 0) {
+		assert(*p >= 0 && *p < CHAR_MAX);
 		char *repl = gjCharIds[*p];
 		if (!repl) {
 			bufAdd1(buf, *p);
