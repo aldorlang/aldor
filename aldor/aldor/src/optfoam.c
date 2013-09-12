@@ -58,7 +58,6 @@ static int optArgSub;
 static int optCcFnonstd;
 static int optIgnoreAsserts;
 static int optKillPointers;
-static int optCleanStack;
 static int optEmergeRRFmt;
 
 #define OPT_Negate		"no-"
@@ -126,7 +125,6 @@ struct optControl	optControl[] = {
 {"cc-fnonstd",  OPT_FLAG,  &optCcFnonstd,     { 0,  0,    0,    0,    0}},
 /* The next three are experimental or future-work */
 {"killp",  	OPT_FLAG,  &optKillPointers,  { 0,  0,    0,    0,    0}},
-{"cstack",  	OPT_FLAG,  &optCleanStack,    { 0,  0,    0,    0,    0}},
 {"argsub",  	OPT_FLAG,  &optArgSub,        { 0,  0,    0,    0,    0}},
 { 0 }
 };
@@ -482,12 +480,6 @@ Bool
 optIsKillPointersWanted(void)
 {
 	return optKillPointers;
-}
-
-Bool
-optIsCleanStackWanted(void)
-{
-	return optCleanStack;
 }
 
 Bool
