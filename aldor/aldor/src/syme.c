@@ -83,7 +83,8 @@ symeAlloc(SymeTag kind)
 	syme->kind		= kind;
 	syme->bits		= 0;
 
-	syme->mask		= 0;
+	syme->locmask		= 0;
+	syme->hasmask		= 0;
 	syme->full		= NULL;
 	syme->fieldv		= NULL;
 	syme->lib		= NULL;
@@ -97,7 +98,7 @@ symeAllocCopy(Syme osyme)
 	Syme	syme = symeAlloc(symeKind(osyme));
 
 	symeBits(syme) = symeBits(osyme) & SYME_COPY_BITS;
-	symeMask(syme) = symeMask(osyme) & SYME_MOD_BITS;
+	symeHasMask(syme) = symeHasMask(osyme);
 	symeFull(syme) = osyme;
 
 	return syme;
