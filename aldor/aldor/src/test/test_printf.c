@@ -21,7 +21,7 @@ arrWrite(const char *s, int n)
 	if (n == -1) {
 		char * r = strcpy(arrptr, s);
 		int c = strlen(s);
-		strlen(s);
+
 		arrptr += c;
 		return c;
 	}
