@@ -10,7 +10,8 @@ local void testFormat4();
 local void testFormat5();
 local void testFormat6();
 
-void formatTest()
+void
+formatTest()
 {
 	TEST(testFormat1);
 	TEST(testFormat2);
@@ -20,14 +21,16 @@ void formatTest()
 	TEST(testFormat6);
 }
 
-int displayInt(OStream ostream, int n)
+int
+displayInt(OStream ostream, int n)
 {
-  ostreamPrintf(ostream, "[%d]", n);
+	return ostreamPrintf(ostream, "[%d]", n);
 }
 
-int displayPtr(OStream ostream, Pointer p)
+int
+displayPtr(OStream ostream, Pointer p)
 {
-	ostreamPrintf(ostream, "[%x]", p);
+	return ostreamPrintf(ostream, "[%x]", p);
 }
 
 local void 

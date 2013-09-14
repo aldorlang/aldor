@@ -5,6 +5,11 @@
 #include "stab.h"
 #include "tfsat.h"
 #include "sefo.h"
+#include "abuse.h"
+#include "scobind.h"
+#include "tinfer.h"
+#include "comsg.h"
+#include "format.h"
 
 local void testTfSatEmbed();
 local void testTfSatEmbedExcept();

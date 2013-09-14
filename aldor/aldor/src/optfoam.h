@@ -25,7 +25,6 @@ extern Bool	optIsDeadVarWanted	(void);
 extern Bool	optIsMaxLevel		(void);
 extern Bool 	optIsIgnoreAssertsWanted(void);
 extern Bool	optIsKillPointersWanted	(void);
-extern Bool	optIsCleanStackWanted	(void);
 
 extern Foam     optimizeFoam    	(Foam);
 

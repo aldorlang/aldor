@@ -2676,7 +2676,6 @@ gc0IsReturn(CCode cc)
  *
  ****************************************************************************/
 
-local CCodeList gc0CleanStackFrame(CCode, int, CCodeList);
 local CCodeList gc0DirtyStackFrame(CCode, int, CCodeList);
 
 local CCode
@@ -2717,11 +2716,7 @@ gc0Compress(CCode cc)
 	}
 	gc0NewLocals(cc);
 
-	/* We have to leave the stack frame cleaning until now */
-	if (optIsCleanStackWanted())
-		code = gc0CleanStackFrame(cc, num, code);
-	else
-		code = gc0DirtyStackFrame(cc, num, code);
+	code = gc0DirtyStackFrame(cc, num, code);
 
 	code = listNReverse(CCode)(code);
 	newCmpd = gc0ListOf(CCO_Many, code);
@@ -2736,138 +2731,6 @@ gc0DirtyStackFrame(CCode cc, int num, CCodeList code)
 
 	for (i = 0; i < num; i++)
 		if (ccoArgv(cc)[i] != 0) gc0AddLine(code, ccoArgv(cc)[i]);
-
-	return code;
-}
-
-local CCodeList
-gc0CleanStackFrame(CCode cc, int num, CCodeList code)
-{
-	int		i;
-	Bool		killed;
-	CCode		firstId, lastId, lastDecl, killer;
-
-	firstId  = (CCode)0;
-	lastId   = (CCode)0;
-	lastDecl = (CCode)0;
-	killer   = (CCode)0;
-
-	/* Get the first identifier (if any) */
-	i = 0;
-	while (i < num)
-	{
-		CCode decl = ccoArgv(cc)[i];
-
-		/* Check if this is a statement */
-		if (!decl)
-		{
-			i++;
-			continue;
-		}
-
-
-		/* Is is a declaration? */
-		if (ccoTag(decl) != CCO_Decl)
-			break;
-
-
-		/* Get the first local declared */
-		if (!firstId)
-		{
-			CCode darg = ccoArgv(decl)[1];
-
-			/* We may need to peek inside a multi */
-			if (ccoTag(darg) == CCO_Many)
-				darg = ccoArgv(darg)[0];
-
-
-			/* Get the first identifier */
-		 	/*
-			 * !!! This is a test not an assert cos
-			 * !!! some of axllib won't compile
-			 */
-			if (ccoTag(darg) == CCO_Id)
-				firstId = darg;
-		}
-
-		/* Note this incase it is the last declaration */
-		lastDecl = decl;
-		i++;
-	}
-
-	/* Try and get the last identifier (if any) */
-	if (firstId && lastDecl)
-	{
-		/* Get the last local declared */
-		CCode darg = ccoArgv(lastDecl)[1];
-
-
-		/* We may need to peek inside a multi */
-		if (ccoTag(darg) == CCO_Many)
-		{
-			if (ccoArgc(darg) > 1);
-				darg = ccoArgv(darg)[ccoArgc(darg)-1];
-		}
-
-
-		/* Get the last identifier */
-		/*
-		 * !!! This is a test not an assert cos lang.as
-		 * !!! won't compile otherwise. That's not just
-		 * !!! because we may have darg == CCO_Many from
-		 * !!! the lines above either ...
-		 */
-		if (ccoTag(darg) == CCO_Id)
-			lastId = darg;
-	}
-
-	/*
-	 * If we got two (different) identifiers then we
-	 * create a single statement to clear the stack frame
-	 * immediately on procedure entry.
-	 */
-	if (firstId && lastId && (firstId != lastId))
-	{
-		CCode lo, hi, ptr, siz;
-		CCode fn = ccoIdOf("memset");
-
-		/* Copy the CCode to prevent bad sharing */
-		firstId = ccoCopy(firstId);
-		lastId  = ccoCopy(lastId);
-
-
-		/* Take their addresses */
-		firstId = ccoPreAnd(firstId);
-		lastId  = ccoPreAnd(lastId);
-
-
-		/* Compute the difference */
-		hi  = ccoCast(ccoPostStar(ccoChar()), ccoCopy(firstId));
-		lo  = ccoCast(ccoPostStar(ccoChar()), ccoCopy(lastId));
-		siz = ccoMinus(ccoCopy(hi), ccoCopy(lo));
-
-
-		/* Generate the call */
-		ptr = ccoCast(ccoPostStar(ccoVoid()), ccoCopy(lo));
-		killer = ccoMany3(ptr, ccoIdOf("0"), siz);
-		killer = ccoFCall(fn, killer);
-		killer = ccoStat(killer);
-	}
-
-	killed = killer ? false : true;
-	for (i = 0; i < num; i++)
-	{
-		if (ccoArgv(cc)[i] != 0)
-		{
-			if (!killed && ccoTag(ccoArgv(cc)[i]) != CCO_Decl)
-			{
-				killed = true;
-				gc0AddLine(code, killer);
-			}
-
-			gc0AddLine(code, ccoArgv(cc)[i]);
-		}
-	}
 
 	return code;
 }

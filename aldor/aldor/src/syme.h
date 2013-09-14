@@ -211,7 +211,8 @@ struct syme {
 	Hash			hash;		/* Hash code for lazy info */
 	TForm			type;		/* The type of the symbol */
 
-	ULong			mask;		/* Fields found in fieldv */
+	unsigned int		locmask;	/* Fields found in fieldv */
+	unsigned int		hasmask;	/* Fields found in fieldv */
 	Syme			full;		/* Syme for other fields */
 	AInt *			fieldv;		/* Field values */
 };
@@ -228,21 +229,22 @@ struct syme {
 #define			SYME_LOC_BITS		((1 << SYME_FIELD_LIMIT) - 1)
 #define			SYME_MOD_BITS		(~SYME_LOC_BITS)
 
-#define			symeMask(syme)		(symeTrigger(syme)->mask)
+#define			symeLocMask(syme)	(symeTrigger(syme)->locmask)
+#define			symeHasMask(syme)	(symeTrigger(syme)->hasmask)
 #define			symeFull(syme)		((syme)->full)
 
 #define			symeLocalFieldc(syme)	((syme)->fieldc)
 #define			symeLocalFieldv(syme)	((syme)->fieldv)
 
 #define			symeLocBit(f)		(1 << (f))
-#define			symeHasLocal(s,f)	(symeMask(s) & symeLocBit(f))
-#define			symeSetLocalBit(s,f)	(symeMask(s) |= symeLocBit(f))
+#define			symeHasLocal(s,f)	(symeLocMask(s) & symeLocBit(f))
+#define			symeSetLocalBit(s,f)	(symeLocMask(s) |= symeLocBit(f))
 #define			symeClrLocalBit(s,f)	(symeMask(s) &= ~symeLocBit(f))
 
-#define			symeModBit(f)		((1 << (f)) <<SYME_FIELD_LIMIT)
-#define			symeHasField(s,f)	(symeMask(s) & symeModBit(f))
-#define			symeSetFieldBit(s,f)	(symeMask(s) |= symeModBit(f))
-#define			symeClrFieldBit(s,f)	(symeMask(s) &= ~symeModBit(f))
+#define			symeModBit(f)		(1 << (f))
+#define			symeHasField(s,f)	(symeHasMask(s) & symeModBit(f))
+#define			symeSetFieldBit(s,f)	(symeHasMask(s) |= symeModBit(f))
+#define			symeClrFieldBit(s,f)	(symeHasMask(s) &= ~symeModBit(f))
 
 #define			symeTriggerField(f)	\
 	((f) == SYFI_Origin || (f) == SYFI_Twins || (f) == SYFI_Inlined)

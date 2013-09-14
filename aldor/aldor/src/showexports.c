@@ -18,6 +18,16 @@
 #include "symbol.h"
 #include "syme.h"
 #include "abpretty.h"
+#include "format.h"
+#include "comsg.h"
+#include "scobind.h"
+#include "abuse.h"
+#include "opsys.h"
+#include "ablogic.h"
+#include "sexpr.h"
+#include "spesym.h"
+#include "debug.h"
+#include "optfoam.h"
 
 local AbSyn shexpParse(String);
 

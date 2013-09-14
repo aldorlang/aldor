@@ -2222,7 +2222,8 @@ lib0GetSymeTriggers(Lib lib)
 		tsyme->kind	= syme->kind;
 		tsyme->bits	= syme->bits;
 		tsyme->type	= syme->type;
-		tsyme->mask	= syme->mask;
+		tsyme->hasmask	= syme->hasmask;
+		tsyme->locmask	= syme->locmask;
 		tsyme->fieldc	= syme->fieldc;
 		tsyme->fieldv	= syme->fieldv;
 
@@ -2618,7 +2619,8 @@ lib1GetSymeTriggers(Lib lib)
 		tsyme->kind	= syme->kind;
 		tsyme->bits	= syme->bits;
 		tsyme->type	= syme->type;
-		tsyme->mask	= syme->mask;
+		tsyme->locmask	= syme->locmask;
+		tsyme->hasmask	= syme->hasmask;
 		tsyme->fieldc	= syme->fieldc;
 		tsyme->fieldv	= syme->fieldv;
 
