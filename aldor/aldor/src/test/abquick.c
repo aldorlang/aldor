@@ -9,6 +9,8 @@
 #include "srcline.h"
 #include "symbol.h"
 #include "strops.h"
+#include "testlib.h"
+#include "format.h"
 
 local AbSyn abqParseSrcLines(SrcLineList sll);
 
