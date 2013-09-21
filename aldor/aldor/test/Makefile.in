@@ -112,7 +112,7 @@ $(patsubst %, out/ap/%.ap, $(_aotests)): out/ap/%.ap: %.as
 
 $(patsubst %, out/ao/%.ao, $(_aotests)): out/ao/%.ao: %.as
 	mkdir -p $$(dirname $@)
-	$(aldorexedir)/aldor $($*_opts) $(aldor_args)
+	$(DBG) $(aldorexedir)/aldor $($*_opts) $(aldor_args)
 
 $(patsubst %, out/ao/%.cmd, $(_aotests)): out/ao/%.cmd: %.as
 	mkdir -p $$(dirname $@)
