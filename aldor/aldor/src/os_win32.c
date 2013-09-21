@@ -146,8 +146,8 @@ osGetc(FILE * f)
     signed char c;
     int x;
     if (f == osStdin && osStdinBuf) {
-          c = (signed char) BUF_GET1(osStdinBuf);
-		if (c == EOF) BUF_BACK1(osStdinBuf);
+          c = (signed char) bufGet1(osStdinBuf);
+		if (c == EOF) bufBack1(osStdinBuf);
           return (int) c;
 	}
     else {
@@ -192,7 +192,7 @@ int
 osFEof(FILE * f)
 {
     if (f == osStdin && osStdinBuf)
-        return BUF_NEXT1(osStdinBuf) == (char) EOF;
+        return bufNext1(osStdinBuf) == (char) EOF;
     else
         return feof(f);
 }
