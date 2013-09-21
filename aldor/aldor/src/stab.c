@@ -1808,8 +1808,8 @@ stabImportRemark(Stab stab, TFormList what, TForm origin)
 
 		for (tmpList = what; tmpList; tmpList = cdr(tmpList)) {
 			String pp = abPretty(tfExpr(car(tmpList)));
-			BUF_ADD1(buf, '\n');
-			BUF_ADD1(buf, '\t');
+			bufAdd1(buf, '\n');
+			bufAdd1(buf, '\t');
 			bufPuts(buf, pp);
 			strFree(pp);
 		}

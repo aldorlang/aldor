@@ -134,8 +134,8 @@ ostreamBufferWriteString(OStream os, const char *s, int n)
 	}
 	else {
 		bufAddn(b, s, n);
-		BUF_ADD1(b,char0);
-		BUF_BACK1(b);
+		bufAdd1(b,char0);
+		bufBack1(b);
 	}
 	return n;
 }

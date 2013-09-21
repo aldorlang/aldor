@@ -27,22 +27,22 @@ extern Buffer	bufCapture	(String, Length);
 extern String	bufLiberate	(Buffer);
 	/* Free buffer but keep chars. */
 
-#define		bufChars(s)	((String) ((s)->argv))
-#define		bufSize(s)	((s)->argc)
-#define		bufPosition(s)	((s)->pos)
-#define		bufSkip(s,n)	(bufPosition(s) += (n))
+extern String	bufChars	(Buffer s);
+extern Length	bufSize		(Buffer s);
+extern Length	bufPosition	(Buffer s);
+extern void	bufSetPosition	(Buffer s, Length n);
+extern void	bufSkip		(Buffer s, Length n);
 
-extern Buffer	bufNeed		(Buffer, Length n);
+extern void	bufNeed		(Buffer, Length n);
 	/* Indicate the available size must be at least n. */
 
-extern Buffer	bufGrow		(Buffer, Length inc);
+extern void	bufGrow		(Buffer, Length inc);
 	/* Change the available size by inc. */
 
-extern Buffer	bufAdd1		(Buffer, int c);
-extern int	bufAdd1Char	(Buffer, int c);
+extern int	bufAdd1		(Buffer b, int c);
 	/* Add the character 'c' at the end of the buffer. */
 
-extern Buffer	bufAddn		(Buffer, const char *s, Length n);
+extern void	bufAddn		(Buffer, const char *s, Length n);
 	/* Add the first n characters of s to the end of the buffer. */
 
 extern String	bufGetn		(Buffer, Length n);
@@ -71,62 +71,49 @@ extern int	bufPrint	(FILE *, Buffer);
 	/* Print buffer in readable form. */
 
 /*
- * Macros for growing a buffer one character at a time.
- *
- * The names are capitalized since some of these evaluate args more than once.
+ * Functions for growing a buffer one character at a time.
  */
-#define	BUF_START(b)  ((b)->pos = 0)
-#define	BUF_ADD1(b,c) ((b)->pos < (b)->argc \
-			? (b)->argv[(b)->pos++] = (c) : bufAdd1Char(b,c))
-#define BUF_GET1(b)   ((b)->argv[(b)->pos++]) 
-#define BUF_BACK1(b)  ((b)->pos--)
-#define BUF_NEXT1(b)  ((b)->argv[(b)->pos])
+
+extern void	bufStart	(Buffer b);
+extern UByte	bufGet1		(Buffer b);
+extern void	bufBack1	(Buffer b);
+extern UByte	bufNext1	(Buffer b);
 
 	/*
 	 * To put the null-terminated string "hi" into a buffer do:
-	 *   BUF_START(b);
-	 *   BUF_ADD1(b,'h'); BUF_ADD1(b,'i'); BUF_ADD1(0);
+	 *   bufStart(b);
+	 *   bufAdd1(b,'h'); bufAdd1(b,'i'); bufAdd1(0);
 	 * To concatenate "lo":
-	 *   BUF_BACK1(b);
-	 *   BUF_ADD1(b,'l'); BUF_ADD1(b,'o'); BUF_ADD1(b,0);
+	 *   bufBack1(b);
+	 *   bufAdd1(b,'l'); bufAdd1(b,'o'); bufAdd1(b,0);
 	 */
 
 /*
- * Macros for putting and getting characters to a buffer.
+ * Functions for putting and getting characters to a buffer.
  */
 
-#define BUF_PUT_CHARS(buf, s, cc)			\
-	bufAddn(buf, s, cc)
-
-#define BUF_GET_CHARS(buf, s, cc)			\
-	strncpy(s, bufGetn(buf, cc), cc)
+extern void	bufPutChars	(Buffer buf, char const *s, Length cc);
+extern void	bufGetChars	(Buffer buf, char *s, Length cc);
 
 /*
- * Macros for putting and getting integers as byte sequences.
+ * Functions for putting and getting integers as byte sequences.
  */
 
-#define BUF_PUT_BYTE(b,c)				\
-	(BUF_ADD1(b,UNBYTE1(c)))
+extern void	bufPutByte	(Buffer b, UByte c);
+extern void	bufPutHInt	(Buffer b, UShort c);
+extern void	bufPutSInt	(Buffer b, ULong c);
 
-#define BUF_PUT_HINT(b,h)				\
-	(BUF_ADD1(b,HBYTE0(h)),BUF_ADD1(b,HBYTE1(h)))
-
-#define BUF_PUT_SINT(b,i)				\
-	(BUF_ADD1(b,BYTE0(i)), BUF_ADD1(b,BYTE1(i)), 	\
-	 BUF_ADD1(b,BYTE2(i)), BUF_ADD1(b,BYTE3(i)))
-
+extern UByte	bufGetByte	(Buffer b);
 #define BUF_GET_BYTE(b, i)				\
-	((i) = BUF_GET1(b))
+	((i) = bufGetByte(b))
 
-#define BUF_GET_HINT(b, i) {				\
-	String	_s = bufGetn(b, HINT_BYTES);		\
-	(i) = UNBYTE2(_s[0],_s[1]);			\
-}
+extern UShort	bufGetHInt	(Buffer b);
+#define BUF_GET_HINT(b, i)				\
+	((i) = bufGetHInt(b))
 
-#define BUF_GET_SINT(b, i) {				\
-	String	_s = bufGetn(b, SINT_BYTES);		\
-	(i) = UNBYTE4(_s[0],_s[1],_s[2],_s[3]);	\
-}
+extern ULong	bufGetSInt	(Buffer b);
+#define BUF_GET_SINT(b, i)				\
+	((i) = bufGetSInt(b))
 
 /* Save integers in standard byte order. */
 extern UByte	bufRdUByte	(Buffer buf);

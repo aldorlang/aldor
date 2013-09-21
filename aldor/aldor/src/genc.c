@@ -6274,7 +6274,7 @@ gc0VarId(String str, int id)
 	if (!gcvVarIdBuf) gcvVarIdBuf = bufNew();
 	buf = gcvVarIdBuf;
  
-	BUF_START(buf);
+	bufStart(buf);
 	gc0ValidIdInBuf(buf, str);
 	bufPuti(buf, id);
  
@@ -6289,29 +6289,29 @@ gc0MultVarId(String strA, int id, String strB)
 	if (!gcvVarIdBuf) gcvVarIdBuf = bufNew();
 	buf = gcvVarIdBuf;
  
-	BUF_START(buf);
+	bufStart(buf);
  
 	if ((strA[0] == 'G' && strA[1] == 0) ||
 	    (strA[0] == 'p' && strA[1] == 'G' && strA[2] == 0)) {
 		bufAddn(buf, strA, strLength(strA));
-		BUF_ADD1(buf, '_');
+		bufAdd1(buf, '_');
 		if (gcvIdHash) {
 			gc0IdHashInBuf(buf, strB);
-			BUF_ADD1(buf,'_');
+			bufAdd1(buf,'_');
 		}
 		gc0ValidIdInBuf(buf, strB);
 	}
 	else {
 		if (isalpha(strA[0]) && strA[1] == 0)
-			BUF_ADD1(buf, strA[0]);
+			bufAdd1(buf, strA[0]);
 		else {
 			if (isdigit(strA[0]))
-				BUF_ADD1(buf, '_');
+				bufAdd1(buf, '_');
 			gc0ValidIdInBuf(buf, strA);
 		}
 		bufPuti(buf, id);
 		if (strcmp(strB, "")) {
-			BUF_ADD1(buf, '_');
+			bufAdd1(buf, '_');
 			gc0ValidIdInBuf(buf, strB);
 		}
 	}
@@ -6567,12 +6567,12 @@ gc0ValidIdInBuf(Buffer buf, String s)
 	for ( ; *s && gc0UnderIdLen(buf, (int)*s); s++) {
 		int k = gcvIdChars[(int)*s];
 		if (k == NOT_CHANGED)
-			BUF_ADD1(buf, *s);
+			bufAdd1(buf, *s);
 		else if (k != NOT_PRINTABLE)
 			bufPuts(buf, ccIdStr(k));
 	}
-	BUF_ADD1(buf, char0);
-	BUF_BACK1(buf);
+	bufAdd1(buf, char0);
+	bufBack1(buf);
 	return bufPosition(buf) - pos0;
 }
  
@@ -6598,10 +6598,10 @@ gc0IdHashInBuf(Buffer buf, String s)
 			c = '0' + alphnum[ndig];
 		else
 			c = 'A' + (alphnum[ndig] - 10);
-		BUF_ADD1(buf, c);
+		bufAdd1(buf, c);
 	}
-	BUF_ADD1(buf, char0);
-	BUF_BACK1(buf);
+	bufAdd1(buf, char0);
+	bufBack1(buf);
 	return bufPosition(buf) - pos0;
 }
  

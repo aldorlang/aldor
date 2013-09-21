@@ -1234,7 +1234,7 @@ loadMainUnit(Foam foam)
 
 	fintUnitList = listCons(FintUnit)(progUnit, fintUnitList);
 
-	bufPosition(evalBuf) = 0;
+	bufStart(evalBuf);
 
 	(void)foamToBuffer(evalBuf, foamUnitFormats(foam)); /* Reads ddecl */
 
@@ -1266,7 +1266,7 @@ loadMainUnit(Foam foam)
 
 	/******** Reads (Const 0) in mainUnit *********/
 
-	bufPosition(evalBuf) = 0;
+	bufStart(evalBuf);
 
 	(void)foamToBuffer(evalBuf, foamArgv(foam->foamUnit.defs)[0].code);
 

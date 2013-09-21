@@ -268,8 +268,8 @@ floatCanFollow(Token tk)
 #define scTokPos()	sposOffset(scLinePos, scLineChar-(scIsEscaped?1:0))
 #define scTokText()	bufChars(scTokBuf)
 
-#define scStartTok()   	(BUF_START(scTokBuf),   scTokPos())
-#define scEndTok()     	(BUF_ADD1(scTokBuf, 0), scTokPos())
+#define scStartTok()   	(bufStart(scTokBuf),   scTokPos())
+#define scEndTok()     	(bufAdd1(scTokBuf, 0), scTokPos())
 
 static Buffer	scTokBuf;
 local void
@@ -317,7 +317,7 @@ scStartLine(void)
 	}
 }
 
-# define scAddChar(c) BUF_ADD1(scTokBuf, (c))
+# define scAddChar(c) bufAdd1(scTokBuf, (c))
 
 # define scAdvance0()	{						\
 	if (!scLine) {							\

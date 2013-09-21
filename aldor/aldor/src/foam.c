@@ -1832,8 +1832,8 @@ foamFrString(String s)
 
 #define FOAM_PUT_INT(format, buf, i) { \
 	switch (format) {				\
-	case 0:	 BUF_PUT_SINT(buf, i); break;		\
-	case 1:	 BUF_PUT_BYTE(buf, i); break;		\
+	case 0:	 bufPutSInt(buf, i); break;		\
+	case 1:	 bufPutByte(buf, i); break;		\
 	default: break; /* Included in tag. */		\
 	}						\
 }
@@ -2224,7 +2224,7 @@ foamToBuffer(Buffer buf, Foam foam)
 	format = foamTagFormat(foam);
 	tag    = FOAM_FORMAT_PUT(tag, format);
 
-	BUF_PUT_BYTE(buf, tag);
+	bufPutByte(buf, tag);
 	if (isNary) FOAM_PUT_INT(format, buf, argc);
 	for (fi = si = 0; si < argc; fi++, si++) {
 		int	n, af = argf[fi];
@@ -2233,29 +2233,29 @@ foamToBuffer(Buffer buf, Foam foam)
 		switch (af) {
 		case 't':
 			n = foamArgv(foam)[si].data - FOAM_START;
-			BUF_PUT_BYTE(buf, n);
+			bufPutByte(buf, n);
 			break;
 		case 'o':
 			n = foamArgv(foam)[si].data - FOAM_BVAL_START;
 #if SMALL_BVAL_TAGS
-			BUF_PUT_BYTE(buf, n);
+			bufPutByte(buf, n);
 #else
-			BUF_PUT_HINT(buf, n);
+			bufPutHInt(buf, n);
 #endif
 			break;
 		case 'p':
 			n = foamArgv(foam)[si].data - FOAM_PROTO_START;
-			BUF_PUT_BYTE(buf, n);
+			bufPutByte(buf, n);
 			break;
 		case 'D':
 		        n = foamArgv(foam)[si].data;
-			BUF_PUT_BYTE(buf, n);
+			bufPutByte(buf, n);
 			break;
 		case 'b':
-			BUF_PUT_BYTE(buf, foamArgv(foam)[si].data);
+			bufPutByte(buf, foamArgv(foam)[si].data);
 			break;
 		case 'h':
-			BUF_PUT_HINT(buf, foamArgv(foam)[si].data);
+			bufPutHInt(buf, foamArgv(foam)[si].data);
 			break;
 		case 'w':
 			n = foamArgv(foam)[si].data;
@@ -2263,7 +2263,7 @@ foamToBuffer(Buffer buf, Foam foam)
 				if (foam->foamArr.baseType == FOAM_Char)
 					n = charToAscii(n);
 			}
-			BUF_PUT_SINT(buf, n);
+			bufPutSInt(buf, n);
 			break;
 		case 'X':
 			offPos = bufPosition(buf);
@@ -2300,11 +2300,11 @@ foamToBuffer(Buffer buf, Foam foam)
 			U16    *data;
 			/*!! Should not store here. */
 			bint=xintStore(bintCopy(foamArgv(foam)[si].bint));
-			BUF_PUT_BYTE(buf,bint->isNeg);
+			bufPutByte(buf,bint->isNeg);
 			bintToPlacevS(bint, &slen, &data);
 			FOAM_PUT_INT(format,buf,slen);
 			for (bi = 0; bi < slen; bi++)
-				BUF_PUT_HINT(buf,data[bi]);
+				bufPutHInt(buf,data[bi]);
 			bintFree(bint);
 			bintReleasePlacevS(data);
 			break;
@@ -2319,9 +2319,10 @@ foamToBuffer(Buffer buf, Foam foam)
 
 	if (foamTag(foam) == FOAM_Prog) {
 		tmpPos = bufPosition(buf);
-		bufPosition(buf) = offPos;
+		bufSetPosition(buf, offPos);
 		FOAM_PUT_INT(int0, buf, tmpPos - offPos);
-		if (tmpPos != 0) bufPosition(buf) = tmpPos;
+		if (tmpPos != 0)
+			bufSetPosition(buf, tmpPos);
 	}
 
 	return bufPosition(buf) - start;
@@ -2483,7 +2484,7 @@ foamFrBuffer0(Buffer buf)
 Foam
 foamFormatsFrBuffer(Buffer buf)
 {
-	BUF_START(buf);
+	bufStart(buf);
 
 	/* Read the foam unit tag. */
 	foamTagFrBuffer0(buf);
@@ -2498,7 +2499,7 @@ foamFormatsFrBuffer(Buffer buf)
 Foam
 foamConstFrBuffer(Buffer buf, int pos)
 {
-	bufPosition(buf) = pos;
+	bufSetPosition(buf, pos);
 	return foamFrBuffer(buf);
 }
 
@@ -2510,7 +2511,7 @@ foamConstcFrBuffer(Buffer buf)
 {
 	Length	i, argc, format;
 
-	BUF_START(buf);
+	bufStart(buf);
 
 	/* Read the foam unit tag. */
 	foamTagFrBuffer0(buf);
@@ -2547,7 +2548,7 @@ foamConstvFrBuffer(Buffer buf, Length posc, int *posv)
 	for (i = 0; i < posc; i += 1)
 		posv[i] = 0;
 
-	BUF_START(buf);
+	bufStart(buf);
 
 	/* Read the foam unit tag. */
 	foamTagFrBuffer0(buf);
@@ -2622,7 +2623,7 @@ Foam
 foamGetProgHdrFrBuffer(Buffer buf, int pos)
 {
 	Foam prog;
-	bufPosition(buf) = pos;
+	bufSetPosition(buf, pos);
 	prog = foamProgHdrFrBuffer(buf);
 
 	if (prog) {

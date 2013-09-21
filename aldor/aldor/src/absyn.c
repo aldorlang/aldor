@@ -1368,7 +1368,7 @@ abToBuffer(Buffer buf, AbSyn ab)
 	AbSynTag	tag = abTag(ab);
 	UShort		i, argc;
 
-	BUF_PUT_BYTE(buf, tag);
+	bufPutByte(buf, tag);
 
 	switch (tag) {
 	case AB_Nothing:
@@ -1388,7 +1388,7 @@ abToBuffer(Buffer buf, AbSyn ab)
 
 	default:
 		argc = abArgc(ab);
-		BUF_PUT_HINT(buf, argc);
+		bufPutHInt(buf, argc);
 		for (i = 0; i < argc; i += 1)
 			abToBuffer(buf, abArgv(ab)[i]);
 	}

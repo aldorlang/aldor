@@ -49,55 +49,78 @@ bufLiberate(Buffer b)
 {
 	String s = (String) b->argv;
 	if ((b->pos  == 0) && b->argc)
-	    s[0] = '\0';
+		s[0] = '\0';
 	stoFree((Pointer) (b));
 	return s;
 }
 
-Buffer
+String
+bufChars(Buffer s)
+{
+	return (String) s->argv;
+}
+
+Length
+bufSize(Buffer s)
+{
+	return s->argc;
+}
+
+Length
+bufPosition(Buffer s)
+{
+	return s->pos;
+}
+
+void
+bufSetPosition(Buffer s, Length n)
+{
+	assert(n <= s->argc);
+	s->pos = n;
+}
+
+void
+bufSkip(Buffer s, Length n)
+{
+	bufSetPosition(s, bufPosition(s) + n);
+}
+
+void
 bufNeed(Buffer b, Length n)
 {
 	if (b->argc < n) {
-		b->argv = (unsigned char *) stoResize(b->argv, n);
+		b->argv = (UByte *) stoResize(b->argv, n);
 		b->argc = stoSize(b->argv);
 	}
-	return b;
 }
 
-Buffer
+void
 bufGrow(Buffer b, Length inc)
 {
 	b->argv = (UByte *) stoResize(b->argv, b->argc + inc);
 	b->argc = stoSize(b->argv);
-	return b;
 }
 
 int
-bufAdd1Char(Buffer b, int c)
+bufAdd1(Buffer b, int c)
 {
-	if (b->pos == b->argc) bufGrow(b, b->argc/2);
+	if (b->pos == b->argc)
+		bufGrow(b, b->argc / 2);
 	return b->argv[b->pos++] = c;
 }
 
-Buffer
-bufAdd1(Buffer b, int c)
-{
-	bufAdd1Char(b, c);
-	return b;
-}
-
-Buffer
+void
 bufAddn(Buffer b, const char *s, Length n)
 {
 	bufNeed(b, b->pos + n);
 	memmove(b->argv + b->pos, (char *) s, n);
 	bufSkip(b, n);
-	return b;
 }
 
 String
 bufGetn(Buffer b, Length n)
 {
+	assert(b->pos + n <= b->argc);
 	UByte	*s = b->argv + b->pos;
 	bufSkip(b, n);
 	return (String) s;
@@ -107,7 +130,7 @@ String
 bufGets(Buffer b)
 {
 	UByte	*s = b->argv + b->pos;
-	int	cc = strlen((String) s);
+	int	cc = strLength((String) s);
 	bufSkip(b, cc + 1);
 	return (String) s;
 }
@@ -115,19 +138,19 @@ bufGets(Buffer b)
 int
 bufPuts(Buffer b, const char *s)
 {
-	int	cc = strlen(s);
+	int	cc = strLength(s);
 	bufAddn(b, s, cc);
-	BUF_ADD1(b,char0);
-	BUF_BACK1(b);
+	bufAdd1(b,char0);
+	bufBack1(b);
 	return cc;
 }
 
 int
 bufPutc(Buffer b, int c)
 {
-	BUF_ADD1(b, (char) c);
-	BUF_ADD1(b, char0);
-	BUF_BACK1(b);
+	bufAdd1(b, (char) c);
+	bufAdd1(b, char0);
+	bufBack1(b);
 	return c;
 }
 
@@ -149,20 +172,20 @@ bufPuti(Buffer buf, int i)
 	pos0 = bufPosition(buf);
 
 	if (i == 0) {
-		BUF_ADD1(buf, '0');
+		bufAdd1(buf, '0');
 	}
 	else {
 		if (i < 0) {
-			BUF_ADD1(buf, '-');
+			bufAdd1(buf, '-');
 			i = - i;
 		}
 		for (ndig = 0; i; i /= 10, ndig++)
 			digits[ndig] = i % 10;
 		while (ndig--)
-			BUF_ADD1(buf, '0' + (char) digits[ndig]);
+			bufAdd1(buf, '0' + (char) digits[ndig]);
 	}
-	BUF_ADD1(buf, char0);
-	BUF_BACK1(buf);
+	bufAdd1(buf, char0);
+	bufBack1(buf);
 	return bufPosition(buf) - pos0;
 }
 
@@ -199,6 +222,103 @@ bufPrint(FILE *fout, Buffer b)
 
 	return cc;
 }
+
+/*****************************************************************************
+ *
+ * Functions for growing a buffer one character at a time.
+ *
+ ****************************************************************************/
+
+void
+bufStart(Buffer b)
+{
+	b->pos = 0;
+}
+
+UByte
+bufGet1(Buffer b)
+{
+	assert(b->pos < b->argc);
+	return b->argv[b->pos++];
+}
+
+void
+bufBack1(Buffer b)
+{
+	assert(b->pos > 0);
+	b->pos--;
+}
+
+UByte
+bufNext1(Buffer b)
+{
+	return b->argv[b->pos];
+}
+
+
+/*
+ * Functions for putting and getting characters to a buffer.
+ */
+
+void
+bufPutChars(Buffer buf, char const *s, Length cc)
+{
+	bufAddn(buf, s, cc);
+}
+
+void
+bufGetChars(Buffer buf, char *s, Length cc)
+{
+	strncpy(s, bufGetn(buf, cc), cc);
+}
+
+
+/*
+ * Functions for putting and getting integers as byte sequences.
+ */
+
+void
+bufPutByte(Buffer b, UByte c)
+{
+	bufAdd1(b, UNBYTE1(c));
+}
+
+void
+bufPutHInt(Buffer b, UShort h)
+{
+	bufAdd1(b, HBYTE0(h));
+	bufAdd1(b, HBYTE1(h));
+}
+
+void
+bufPutSInt(Buffer b, ULong i)
+{
+	bufAdd1(b, BYTE0(i));
+	bufAdd1(b, BYTE1(i));
+	bufAdd1(b, BYTE2(i));
+	bufAdd1(b, BYTE3(i));
+}
+
+UByte
+bufGetByte(Buffer b)
+{
+	return bufGet1(b);
+}
+
+UShort
+bufGetHInt(Buffer b)
+{
+	String	s = bufGetn(b, HINT_BYTES);
+	return UNBYTE2(s[0], s[1]);
+}
+
+ULong
+bufGetSInt(Buffer b)
+{
+	String	s = bufGetn(b, SINT_BYTES);
+	return UNBYTE4(s[0], s[1], s[2], s[3]);
+}
+
 
 /*****************************************************************************
  *
@@ -239,7 +359,7 @@ bufRdULong(Buffer buf)
 int
 bufWrUByte(Buffer buf, UByte b)
 {
-	BUF_PUT_BYTE(buf, b);
+	bufPutByte(buf, b);
 
 	return BYTE_BYTES;
 }
@@ -247,7 +367,7 @@ bufWrUByte(Buffer buf, UByte b)
 int
 bufWrUShort(Buffer buf, UShort s)
 {
-	BUF_PUT_HINT(buf, s);
+	bufPutHInt(buf, s);
 
 	return HINT_BYTES;
 }
@@ -255,7 +375,7 @@ bufWrUShort(Buffer buf, UShort s)
 int
 bufWrULong(Buffer buf, ULong l)
 {
-	BUF_PUT_SINT(buf, l);
+	bufPutSInt(buf, l);
 
 	return SINT_BYTES;
 }
@@ -328,7 +448,7 @@ bufRdChars(Buffer buf, int cc)
 	String	s;
 
 	s = strAlloc(cc);
-	BUF_GET_CHARS(buf, s, cc);
+	bufGetChars(buf, s, cc);
 	s = strnFrAscii(s,cc);
 
 	return s;
@@ -337,7 +457,7 @@ bufRdChars(Buffer buf, int cc)
 int
 bufWrChars(Buffer buf, int cc, String s)
 {
-	BUF_PUT_CHARS(buf, strnToAsciiStatic(s,cc), cc);
+	bufPutChars(buf, strnToAsciiStatic(s,cc), cc);
 
 	return cc;
 }
@@ -357,7 +477,7 @@ bufRdString(Buffer buf)
 
 	BUF_GET_SINT(buf, cc);
 	s = strAlloc(cc);
-	BUF_GET_CHARS(buf, s, cc);
+	bufGetChars(buf, s, cc);
 	s = strnFrAscii(s,cc);
 
 	return s;
@@ -368,8 +488,8 @@ bufWrString(Buffer buf, String s)
 {
 	int cc = strLength(s) + 1;
 
-	BUF_PUT_SINT(buf, cc);
-	BUF_PUT_CHARS(buf, strnToAsciiStatic(s,cc), cc);
+	bufPutSInt(buf, cc);
+	bufPutChars(buf, strnToAsciiStatic(s,cc), cc);
 
 	return SINT_BYTES + cc;
 }
@@ -396,7 +516,7 @@ bufRdBuffer(Buffer buf)
 
 	BUF_GET_SINT(buf, cc);
 	s = strAlloc(cc);
-	BUF_GET_CHARS(buf, s, cc);
+	bufGetChars(buf, s, cc);
 
 	return bufCapture(s, cc);
 }
@@ -406,8 +526,8 @@ bufWrBuffer(Buffer buf, Buffer b)
 {
 	int cc = bufPosition(b);
 
-	BUF_PUT_SINT(buf, cc);
-	BUF_PUT_CHARS(buf, bufChars(b), cc);
+	bufPutSInt(buf, cc);
+	bufPutChars(buf, bufChars(b), cc);
 
 	return SINT_BYTES + cc;
 }

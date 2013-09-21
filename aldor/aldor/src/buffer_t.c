@@ -28,10 +28,10 @@ testBuffer(void)
 	b = bufNew();
 	printf("[%d/%d]\n\n", (int) bufPosition(b), (int) bufSize(b));
 	
-	printf("BUF_START / BUF_ADD1:\n");
-	BUF_START(b);
-	for (i = 0, n = strlen(s); i < n; i++)  BUF_ADD1(b, s[i]);
-	BUF_ADD1(b, char0);
+	printf("bufStart / bufAdd1:\n");
+	bufStart(b);
+	for (i = 0, n = strlen(s); i < n; i++)  bufAdd1(b, s[i]);
+	bufAdd1(b, char0);
 	t = bufChars(b);
 	printf("\"%s\" [%d]\n", t, n);
 	printf("[%d/%d]\n\n", (int) bufPosition(b), (int) bufSize(b));
@@ -43,7 +43,7 @@ testBuffer(void)
 	printf("\"%s\" [%d]\n\n", bufChars(b), (int) strlen(bufChars(b)));
 
 	printf("bufGrow(%d): ", 5);
-	b = bufGrow(b, 5);
+	bufGrow(b, 5);
 	printf("[%d/%d]\n", (int) bufPosition(b), (int) bufSize(b));
 	printf("bufChars: ");
 	printf("\"%s\" [%d]\n\n", bufChars(b), (int) strlen(bufChars(b)));
@@ -56,17 +56,17 @@ testBuffer(void)
 	b = bufNew();
 	printf("[%d/%d]\n\n", (int) bufPosition(b), (int) bufSize(b));
 
-	printf("BUF_ADD1 across a boundary: \n");
+	printf("bufAdd1 across a boundary: \n");
 	n = bufSize(b);
-	BUF_START(b);
+	bufStart(b);
 	for (i = 0; i < n-5; i++)
-		BUF_ADD1(b, "1234567890"[i%10]);
+		bufAdd1(b, "1234567890"[i%10]);
 	for (i = 0; i < 10; i++) {
 		int c = "abcdefghij"[i%10];
-		BUF_ADD1(b, c);
+		bufAdd1(b, c);
 		printf(" %c: [%d/%d]", c, (int) bufPosition(b), (int) bufSize(b));
 	}
-	BUF_ADD1(b, char0);
+	bufAdd1(b, char0);
 	t = bufChars(b);
 	printf("\n");
 
