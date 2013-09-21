@@ -554,9 +554,7 @@ extern FiPtr	fiListCons	_of_((FiWord, FiPtr));
 #define fiLIST_HEAD(r,t,l)	     ((r) = (t) (((FiList *)l)->data))
 #define fiLIST_TAIL(r,t,l)	     ((r) = (t) ((((FiList *)l)->next)))
 
-#define fiSIntHashCombine(h1, h2)					\
-	(((h1) ^ ((h1) << 8)) + ((h2) + 200041) & 0x3FFFFFFF)
-
+FiSInt fiSIntHashCombine(FiSInt h1, FiSInt h2);
 
 /******************************************************************************
  *

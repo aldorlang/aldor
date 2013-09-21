@@ -2589,3 +2589,8 @@ FiSInt fiCounter()
 	static int counter = 0;
 	return counter++;
 }
+
+FiSInt fiSIntHashCombine(FiSInt h1, FiSInt h2)
+{
+	return hashCombine(h1, h2);
+}
