@@ -18,6 +18,7 @@
 #include "strops.h"
 #include "symbol.h"
 #include "fbox.h"
+#include "util.h"
 
 Bool	cfoldDebug	= false;
 #define cfoldDEBUG	DEBUG_IF(cfold)	afprintf
@@ -723,6 +724,14 @@ cfoldBCall(Foam bcall)
 				   argv[1]->foamSInt.SIntData);
 		break;
 		
+	  case FOAM_BVal_SIntHashCombine:
+		if (!cfoldFoldAll) break;
+		assert(foamTag(argv[0]) == FOAM_SInt);
+		assert(foamTag(argv[1]) == FOAM_SInt);
+		foam = foamNewSInt(hashCombine(argv[0]->foamSInt.SIntData,
+					       argv[1]->foamSInt.SIntData));
+		break;
+
 	  case FOAM_BVal_BInt0:
 		if (!cfoldFoldAll) break;
 		foam = foamNewBInt(bint0);

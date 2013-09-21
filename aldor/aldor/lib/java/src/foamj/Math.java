@@ -30,10 +30,14 @@ public class Math {
 	public static int length(int i1) {
 		throw new RuntimeException();
 	}
-	
+
 	public static MultiRecord divide(int i1, int i2) {
 		throw new RuntimeException();
 	}
+
+    public static int hashCombine(int h1, int h2) {
+	return ((h1 ^ (h1 << 8)) + (h2 + 20041) & 0x3FFFFFFF);
+    }
 
 	public static boolean isZero(BigInteger b)  {
 		return b.compareTo(BigInteger.ZERO) == 0;

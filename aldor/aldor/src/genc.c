@@ -7043,6 +7043,7 @@ struct ccBVal_info ccBValInfoTable[] = {
  {FOAM_BVal_SIntAnd,      CCO_And,     0,0,                0},
  {FOAM_BVal_SIntOr,       CCO_Or,      0,0,                0},
  {FOAM_BVal_SIntXOr,      CCO_Xor,     0,0,                0},
+ {FOAM_BVal_SIntHashCombine, CCO_FCall,0,"fiSIntHashCombine",  "fiSINT_HASHCOMBINE"},
 
  {FOAM_BVal_WordTimesDouble, CCO_FCall,0,"fiWordTimesDouble",  0},
  {FOAM_BVal_WordDivideDouble,CCO_FCall,0,"fiWordDivideDouble", 0},

@@ -2701,6 +2701,13 @@ fintEvalBCall(DataObj retDataObj)
 		myType = FOAM_SInt;
 		break;
 
+	case FOAM_BVal_SIntHashCombine:
+		(void)fintEval(&expr1);
+		(void)fintEval(&expr2);
+		retDataObj->fiSInt = hashCombine(expr1.fiSInt, expr2.fiSInt);
+		myType = FOAM_SInt;
+		break;
+
 	/* -------------------- Operations on BInt ------------- */
 
 	case FOAM_BVal_BInt0:
