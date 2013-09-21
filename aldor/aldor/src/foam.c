@@ -1840,8 +1840,8 @@ foamFrString(String s)
 
 #define FOAM_GET_INT(format, buf, i) {			\
 	switch (format) {				\
-	case 0:	 BUF_GET_SINT(buf, i); break;		\
-	case 1:	 BUF_GET_BYTE(buf, i); break;		\
+	case 0:	 (i) = bufGetSInt(buf); break;		\
+	case 1:	 (i) = bufGetByte(buf); break;		\
 	default: (i) = (format) - STD_FORMS; break;	\
 	}						\
 }
@@ -1878,7 +1878,7 @@ foamFrBuffer(Buffer buf)
 	Bool	neg;
 	BInt	bint;
 
-	BUF_GET_BYTE(buf, tag);
+	tag = bufGetByte(buf);
 	format = FOAM_FORMAT_GET(tag);
 	tag    = FOAM_FORMAT_REMOVE(tag, format);
 
@@ -1901,35 +1901,35 @@ foamFrBuffer(Buffer buf)
 		if (af == '*') af = argf[--fi];
 		switch (argf[fi]) {
 		case 't':
-			BUF_GET_BYTE(buf, n);
+			n = bufGetByte(buf);
 			foamArgv(foam)[si].data = FOAM_START + n;
 			break;
 		case 'o':
 #if SMALL_BVAL_TAGS
-			BUF_GET_BYTE(buf, n);
+			n = bufGetByte(buf);
 #else
-			BUF_GET_HINT(buf, n);
+			n = bufGetHInt(buf);
 #endif
 			foamArgv(foam)[si].data = FOAM_BVAL_START + n;
 			break;
 		case 'p':
-			BUF_GET_BYTE(buf, n);
+			n = bufGetByte(buf);
 			foamArgv(foam)[si].data = FOAM_PROTO_START + n;
 			break;
 		case 'D':
-			BUF_GET_BYTE(buf, n);
+			n = bufGetByte(buf);
 			foamArgv(foam)[si].data = n;
 			break;
 		case 'b':
-			BUF_GET_BYTE(buf, n);
+			n = bufGetByte(buf);
 			foamArgv(foam)[si].data = n;
 			break;
 		case 'h':
-			BUF_GET_HINT(buf, n);
+			n = bufGetHInt(buf);
 			foamArgv(foam)[si].data = n;
 			break;
 		case 'w':
-			BUF_GET_SINT(buf, n);
+			n = bufGetSInt(buf);
 			if (isArr) {
 				if (foam->foamArr.baseType == FOAM_Char)
 					n = charFrAscii(n);
@@ -1969,12 +1969,12 @@ foamFrBuffer(Buffer buf)
 			break;
 		case 'n': {
 			BInt b;
-			BUF_GET_BYTE(buf, neg);
+			neg = bufGetByte(buf);
 			FOAM_GET_INT(format, buf, slen);
 			bint = bintAllocPlaces(slen);
 			bint->isNeg = neg;
 			for (bi = 0; bi < slen; bi++) {
-				BUF_GET_HINT(buf, n);
+				n = bufGetHInt(buf);
 				bint->placev[bi] = n;
 			}
 			b = xintImmedIfCan(bint);
@@ -2011,7 +2011,7 @@ foamProgHdrFrBuffer(Buffer buf)
 	String	argf;
 	Bool	neg;
 
-	BUF_GET_BYTE(buf, tag);
+	tag = bufGetByte(buf);
 	format = FOAM_FORMAT_GET(tag);
 	tag    = FOAM_FORMAT_REMOVE(tag, format);
 
@@ -2034,31 +2034,31 @@ foamProgHdrFrBuffer(Buffer buf)
 		if (af == '*') af = argf[--fi];
 		switch (argf[fi]) {
 		case 't':
-			BUF_GET_BYTE(buf, n);
+			n = bufGetByte(buf);
 			foamArgv(foam)[si].data = FOAM_START + n;
 			break;
 		case 'o':
 #if SMALL_BVAL_TAGS
-			BUF_GET_BYTE(buf, n);
+			n = bufGetByte(buf);
 #else
-			BUF_GET_HINT(buf, n);
+			n = bufGetHInt(buf);
 #endif
 			foamArgv(foam)[si].data = FOAM_BVAL_START + n;
 			break;
 		case 'p':
-			BUF_GET_BYTE(buf, n);
+			n = bufGetByte(buf);
 			foamArgv(foam)[si].data = FOAM_PROTO_START + n;
 			break;
 		case 'b':
-			BUF_GET_BYTE(buf, n);
+			n = bufGetByte(buf);
 			foamArgv(foam)[si].data = n;
 			break;
 		case 'h':
-			BUF_GET_HINT(buf, n);
+			n = bufGetHInt(buf);
 			foamArgv(foam)[si].data = n;
 			break;
 		case 'w':
-			BUF_GET_SINT(buf, n);
+			n = bufGetSInt(buf);
 			if (isArr) {
 				if (foam->foamArr.baseType == FOAM_Char)
 					n = charFrAscii(n);
@@ -2099,11 +2099,11 @@ foamProgHdrFrBuffer(Buffer buf)
 		case 'n': {
 			BInt b;
 			U16 *data;
-			BUF_GET_BYTE(buf, neg);
+			neg = bufGetByte(buf);
 			FOAM_GET_INT(format, buf, slen);
 			data = (U16*) stoAlloc(OB_Other, slen*sizeof(U16));
 			for (bi = 0; bi < slen; bi++) {
-				BUF_GET_HINT(buf, n);
+				n = bufGetHInt(buf);
 				data[bi] = n;
 			}
 			b = bintFrPlacevS(neg, slen, data);
@@ -2368,11 +2368,11 @@ foamPosBufPrint(FILE *file, Buffer buf)
 	SrcPos	sp;
 
 	size = sizeof(SrcPos);
-	step = buf->argc / size;
+	step = bufSize(buf) / size;
 
-	fprintf(file, "Buffer length: %d, SrcPos size: %d\n", (int) buf->argc, size);
+	fprintf(file, "Buffer length: %d, SrcPos size: %d\n", (int) bufSize(buf), size);
 	fprintf(file, "Number of steps: %d\n", step);
-	for (i = 0, buf->pos = 0; buf->pos < buf->argc; i++) {
+	for (i = 0, bufStart(buf); bufPosition(buf) < bufSize(buf); i++) {
 		sp = bufRdULong(buf);
 		if (sposLine(sp) != 0) {
 			fprintf(file, "[%d]. ", i);
@@ -2392,7 +2392,7 @@ local int
 foamTagFrBuffer0(Buffer buf)
 {
 	FoamTag tag;
-	BUF_GET_BYTE(buf, tag);
+	tag = bufGetByte(buf);
 	return FOAM_FORMAT_GET(tag);
 }
 
@@ -2406,7 +2406,7 @@ foamFrBuffer0(Buffer buf)
 	Bool	isNary;
 	String	argf;
 
-	BUF_GET_BYTE(buf, tag);
+	tag = bufGetByte(buf);
 	format = FOAM_FORMAT_GET(tag);
 	tag    = FOAM_FORMAT_REMOVE(tag, format);
 
@@ -2570,7 +2570,7 @@ foamConstvFrBuffer(Buffer buf, Length posc, int *posv)
 		foamTagFrBuffer0(buf);
 
 		/* Read the foam const/global tag. */
-		BUF_GET_BYTE(buf, tag);
+		tag = bufGetByte(buf);
 		format = FOAM_FORMAT_GET(tag);
 		tag    = FOAM_FORMAT_REMOVE(tag, format);
 

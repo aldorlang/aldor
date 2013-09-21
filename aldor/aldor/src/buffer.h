@@ -13,11 +13,7 @@
 
 #define BUF_INIT_SIZE	64
 
-typedef struct buffer {
-	Length		pos;		/* amount used == next position */
-	Length		argc;		/* amount available */
-	UByte		*argv;
-} *Buffer;
+typedef struct buffer *Buffer;
 
 extern Buffer	bufNew		(void);
 extern void	bufFree		(Buffer);
@@ -27,6 +23,7 @@ extern Buffer	bufCapture	(String, Length);
 extern String	bufLiberate	(Buffer);
 	/* Free buffer but keep chars. */
 
+extern UByte *	bufData		(Buffer s);
 extern String	bufChars	(Buffer s);
 extern Length	bufSize		(Buffer s);
 extern Length	bufPosition	(Buffer s);
@@ -104,16 +101,8 @@ extern void	bufPutHInt	(Buffer b, UShort c);
 extern void	bufPutSInt	(Buffer b, ULong c);
 
 extern UByte	bufGetByte	(Buffer b);
-#define BUF_GET_BYTE(b, i)				\
-	((i) = bufGetByte(b))
-
 extern UShort	bufGetHInt	(Buffer b);
-#define BUF_GET_HINT(b, i)				\
-	((i) = bufGetHInt(b))
-
 extern ULong	bufGetSInt	(Buffer b);
-#define BUF_GET_SINT(b, i)				\
-	((i) = bufGetSInt(b))
 
 /* Save integers in standard byte order. */
 extern UByte	bufRdUByte	(Buffer buf);

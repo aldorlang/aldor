@@ -1402,7 +1402,7 @@ abFrBuffer(Buffer buf)
 	AbSyn	 ab;
 	AbSynTag tag;
 	int	 i, argc;
-	BUF_GET_BYTE(buf, tag);
+	tag = bufGetByte(buf);
 	switch (tag) {
 	case AB_Nothing:
 		ab = abNewNothing(sposNone);
@@ -1424,7 +1424,7 @@ abFrBuffer(Buffer buf)
 		ab = abNewLitFloat(sposNone, bufRdString(buf));
 		break;
 	default:
-		BUF_GET_HINT(buf, argc);
+		argc = bufGetHInt(buf);
 		ab = abNewEmpty(tag, argc);
 		for (i = 0; i < argc; i += 1)
 			abArgv(ab)[i] = abFrBuffer(buf);

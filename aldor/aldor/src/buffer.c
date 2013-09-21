@@ -12,6 +12,12 @@
 #include "strops.h"
 #include "xfloat.h"
 
+struct buffer {
+	Length		pos;		/* amount used == next position */
+	Length		argc;		/* amount available */
+	UByte		*argv;
+};
+
 Buffer
 bufNew(void)
 {
@@ -54,10 +60,16 @@ bufLiberate(Buffer b)
 	return s;
 }
 
+UByte *
+bufData(Buffer s)
+{
+	return s->argv;
+}
+
 String
 bufChars(Buffer s)
 {
-	return (String) s->argv;
+	return (String) bufData(s);
 }
 
 Length
@@ -331,7 +343,7 @@ bufRdUByte(Buffer buf)
 {
 	UByte result;
 
-	BUF_GET_BYTE(buf, result);
+	result = bufGetByte(buf);
 
 	return result;
 }
@@ -341,7 +353,7 @@ bufRdUShort(Buffer buf)
 {
 	UShort result;
 
-	BUF_GET_HINT(buf, result);
+	result = bufGetHInt(buf);
 
 	return result;
 }
@@ -351,7 +363,7 @@ bufRdULong(Buffer buf)
 {
 	ULong result;
 
-	BUF_GET_SINT(buf, result);
+	result = bufGetSInt(buf);
 
 	return result;
 }
@@ -475,7 +487,7 @@ bufRdString(Buffer buf)
 	String	s;
 	int	cc;
 
-	BUF_GET_SINT(buf, cc);
+	cc = bufGetSInt(buf);
 	s = strAlloc(cc);
 	bufGetChars(buf, s, cc);
 	s = strnFrAscii(s,cc);
@@ -514,7 +526,7 @@ bufRdBuffer(Buffer buf)
 	String	s;
 	int	cc;
 
-	BUF_GET_SINT(buf, cc);
+	cc = bufGetSInt(buf);
 	s = strAlloc(cc);
 	bufGetChars(buf, s, cc);
 

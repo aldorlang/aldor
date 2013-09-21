@@ -46,13 +46,13 @@ typedef Length		FiProgPos;     /* position in the buffer */
 
 struct fmt {
 	int			type;
-	String          	id;
+	String			id;
 	int			protocol;
 	int			format;
 	int			offset;    /* used for lex vars */
 };
 
-typedef struct fmt 	* Fmt;
+typedef struct fmt	* Fmt;
 typedef struct fintUnit * FintUnit;
 
 struct progInfo {
@@ -114,7 +114,7 @@ union  dataObj {
 };
 
 struct mFmt {
-	int 	fmt;
+	int	fmt;
 	DataObj	values;
 
 };		/* for multiple values */
@@ -128,7 +128,7 @@ struct shDataObj {
 
 typedef DataObj		* Ref;
 typedef AInt		dataType;
-typedef dataType    	* DataType;
+typedef dataType	* DataType;
 typedef AInt		FintLabel;
 
 /****************************************************************************
@@ -504,9 +504,9 @@ typedef struct fintUnit	fintUnit;
 	 if (sp + PAR_OFFSET + nParam >= stack + STACK_SIZE -10)  stackChain(nParam+PAR_OFFSET); \
 	 sp->ptr = bp; \
 	 bp = sp; \
- 	 sp += 2; \
- 	 (sp++)->labels = labels;   \
- 	 (sp++)->fiChar = (char) labelFmt; \
+	 sp += 2; \
+	 (sp++)->labels = labels;   \
+	 (sp++)->fiChar = (char) labelFmt; \
          (sp++)->ptr = locValues;\
 	 (sp++)->fiEnv = lexEnv; \
 	 (sp++)->progInfo = prog; \
@@ -773,7 +773,7 @@ enum fintForeignTag {
 
 typedef struct {
 	String			string;
-	enum fintForeignTag 	funct;
+	enum fintForeignTag	funct;
 	Bool			isConst;
 } fintForeign;
 
@@ -808,7 +808,7 @@ struct mainInfo {
 
 local Buffer	evalBuf;
 
-local UByte 	* tape;		/* interpreted string */
+local UByte	* tape;		/* interpreted string */
 local FiProgPos ip;
 local DataObj	headStack;	/* first stack allocated */
 local DataObj	stack;		/* current stack */
@@ -816,14 +816,14 @@ local DataObj	sp;		/* First free cell on the top of the stack. */
 local DataObj	bp;		/* Bottom of the current frame; refers to a
 				 * dataObj containing the old bp.
 				 */
-local DataObj	locValues; 	/* local values in the current stack frame */
-local DataObj	fluidValues; 	/* fluid values in the current stack frame */
+local DataObj	locValues;	/* local values in the current stack frame */
+local DataObj	fluidValues;	/* fluid values in the current stack frame */
 local FiEnv	lexEnv;		/* current lexical environment */
 local DataObj	lev0;		/* lexEnv->level, used to speed up lex(0,n) */
 local ProgInfo	prog;		/* progInfo for the current program */
 local FiProgPos	* labels;
 local DataObj   stackBase;
-local int 	labelFmt;
+local int	labelFmt;
 
 fintForeign	fintForeignTable [] = {
 	DECL_FOREIGN(fputs),
@@ -969,10 +969,10 @@ UShort	intStepNo = 0;	   /* current step in the interpreter */
  *
  *************************************************************************/
 
-Bool 	fintConfirm = true;
+Bool	fintConfirm = true;
 Bool	fintTimings = true; /* Display timings in loop mode? */
-long 	fintMsgLimit = ABPP_UNCLIPPED;    /* Default no msg limit */
-long      fintExntraceMode = 0;    /* Default: no trace */
+long	fintMsgLimit = ABPP_UNCLIPPED;    /* Default no msg limit */
+long	fintExntraceMode = 0;    /* Default: no trace */
 
 /**************************************************************************
  *
@@ -980,18 +980,18 @@ long      fintExntraceMode = 0;    /* Default: no trace */
  *
  *************************************************************************/
 
-local void 	loadUnitFrLib		(Lib);
+local void	loadUnitFrLib		(Lib);
 local Bool	loadOtherUnits		(void);
 local void	unloadOtherUnits	(void);
-local Bool 	loadMainUnit 		(Foam);
+local Bool	loadMainUnit		(Foam);
 local void	loadUnit		(String, Buffer);
 
 local void	readDefs		(FintUnit);
 local void	readDef			(FintUnit);
 
-local void	unitFree 		(FintUnit);
+local void	unitFree		(FintUnit);
 local Fmt	fmtAlloc		(int);
-local void 	fmtFree			(Fmt);
+local void	fmtFree			(Fmt);
 local void	fmtGlobalsFree		(FintUnit);
 local void	fmtConstantsFree	(FintUnit);
 local void	fmtFluidsFree		(FintUnit);
@@ -1004,7 +1004,7 @@ local void	stackChain		(int);
 
 
 local dataType	fintStmt		(DataObj);
-local dataType 	fintEval		(DataObj);
+local dataType	fintEval		(DataObj);
 local dataType	fintGetReference	(Ref);
 local void	fintSetMFmt		(DataObj, DataObj);
 
@@ -1068,7 +1068,7 @@ fintInit(void)
 	headStack[0].ptr = (DataObj) NULL;
 
 	/* create a progInfo so that it can process (Clos (Env 0) ...) when
- 	 * reads defs
+	 * reads defs
 	 */
 	prog = (ProgInfo) fintAlloc(struct progInfo, 1);
 	progInfoDEnv(prog) = (UByte *) fintAlloc(UByte, 1);
@@ -1081,7 +1081,7 @@ fintInit(void)
 	mainUnit = (FintUnit) fintAlloc(fintUnit,1);
 
 	fintUnitId(mainUnit) = unitId++;
-	fintUnitTape(mainUnit) = evalBuf->argv;
+	fintUnitTape(mainUnit) = bufData(evalBuf);
 	fintUnitName(mainUnit) = "main";
 	fintUnitBuffer(mainUnit) = evalBuf;
 }
@@ -1220,7 +1220,7 @@ unloadOtherUnits(void)
 local Bool
 loadMainUnit(Foam foam)
 {
-	int 		tag, fmt, argc, i, j, n;
+	int		tag, fmt, argc, i, j, n;
 	Buffer		buf;
 	FintUnit	progUnit;
 	FiProgPos	constPos;
@@ -1238,7 +1238,7 @@ loadMainUnit(Foam foam)
 
 	(void)foamToBuffer(evalBuf, foamUnitFormats(foam)); /* Reads ddecl */
 
-	tape = evalBuf->argv;
+	tape = bufData(evalBuf);
 	ip = 0;
 
 	fintGetTagFmtArgc(tag, fmt, argc);
@@ -1270,7 +1270,7 @@ loadMainUnit(Foam foam)
 
 	(void)foamToBuffer(evalBuf, foamArgv(foam->foamUnit.defs)[0].code);
 
-	tape = evalBuf->argv;
+	tape = bufData(evalBuf);
 	ip = 0;
 
 	readDef(mainUnit);
@@ -1289,14 +1289,14 @@ loadMainUnit(Foam foam)
 		(void)foamToBuffer(buf, foam0);
 		j++;
 
-		tape = buf->argv;  /* here, because may change */
+		tape = bufData(buf);  /* here, because may change */
 		ip = constPos;
 		constPos = bufPosition(buf);
 		readDef(progUnit);
 	}
 
-	fintUnitTape(mainUnit) = evalBuf->argv;
-	fintUnitTape(progUnit) = fintUnitBuffer(progUnit)->argv;
+	fintUnitTape(mainUnit) = bufData(evalBuf);
+	fintUnitTape(progUnit) = bufData(fintUnitBuffer(progUnit));
 
 	return false;
 }
@@ -1317,7 +1317,7 @@ loadUnitFrLib(Lib lib)
 	libGetUnitBuffer(lib);
 	buf = lib->unitb;
 
-	tape = buf->argv;
+	tape = bufData(buf);
 	ip = 0;
 
 	loadUnit(name, buf);
@@ -1329,7 +1329,7 @@ loadUnitFrLib(Lib lib)
 local void
 loadUnit(String name, Buffer buf)
 {
-	int 		tag, fmt, argc;
+	int		tag, fmt, argc;
 
 	fintGetTagFmtArgc(tag, fmt, argc);
 
@@ -1373,7 +1373,7 @@ readDefs(FintUnit unit)
 local void
 readDef(FintUnit unit)
 {
-	int 		tag, fmt, argc, num = 0;
+	int		tag, fmt, argc, num = 0;
 	DataObj		ref;
 	union dataObj	expr;
 	dataType	type;
@@ -1393,7 +1393,7 @@ readDef(FintUnit unit)
 	}
 
 	if (tag == FOAM_Const && constType(num) == FOAM_Prog) {
-		int 		nLabels, labelsCount, n;
+		int		nLabels, labelsCount, n;
 		ProgInfo	p;
 		FiProgPos       * pLabels;
 
@@ -1414,7 +1414,7 @@ readDef(FintUnit unit)
 		p->_progInfo = 0;
 
 		if (nLabels)
-		   	progInfoLabels(p) = (FiProgPos *)
+			progInfoLabels(p) = (FiProgPos *)
 			      stoAlloc(OB_Other,sizeof(FiProgPos) * nLabels);
 		else
 			progInfoLabels(p) = (FiProgPos *) NULL;
@@ -1498,11 +1498,11 @@ readDef(FintUnit unit)
 local dataType
 fintStmt(DataObj retDataObj)
 {
-	int 		fmt, tag, argc;
-	int 		n;
-	union dataObj 	expr;
+	int		fmt, tag, argc;
+	int		n;
+	union dataObj	expr;
 	FiProgPos	stmtPos;
-	dataType 	myType;
+	dataType	myType;
  readEvalLoop:
 
 	if (DEBUG(fintSto)) {stoAudit();}
@@ -1524,7 +1524,7 @@ fintStmt(DataObj retDataObj)
 	switch (tag) {
 	case FOAM_Def:
 	case FOAM_Set: {
-		DataObj 	ref;
+		DataObj		ref;
 		dataType	type;
 
 
@@ -2101,7 +2101,7 @@ fintEvalBCall(DataObj retDataObj)
 
 		retDataObj->fiSFlo = fiSFloAssemble((FiBool)expr1.fiBool,
 						    expr2.fiSInt,
-			       			    expr3.fiWord);
+						    expr3.fiWord);
 
 		myType = FOAM_SFlo;
 		break;
@@ -2331,7 +2331,7 @@ fintEvalBCall(DataObj retDataObj)
 
 		retDataObj->fiDFlo = fiDFloAssemble((FiBool)expr1.fiBool,
 						    expr2.fiSInt,
-			       			    expr3.fiWord,
+						    expr3.fiWord,
 						    expr4.fiWord);
 		myType = FOAM_DFlo;
 		break;
@@ -3539,10 +3539,10 @@ fintEval(DataObj retDataObj)
 local dataType
 fintEval_(DataObj retDataObj)
 {
-        extern int isatty(int);
-	int 		fmt, tag, argc;
-	long 		n;
-	union dataObj 	expr;
+	extern int isatty(int);
+	int		fmt, tag, argc;
+	long		n;
+	union dataObj	expr;
 	dataType	type, myType = FOAM_NOp;
 
 	fintGetTagFmtArgc(tag, fmt, argc);
@@ -3579,7 +3579,7 @@ fintEval_(DataObj retDataObj)
 			argc  = 0;
 		}
 		else if (tag == FOAM_CCall) {
-			fintGetByte(retType); 	/* return type */
+			fintGetByte(retType);	/* return type */
 			type = fintEval(&expr);
 			hardAssert(type == FOAM_Clos || type == FOAM_Word);
 			hardAssert(expr.fiClos != NULL);
@@ -3588,7 +3588,7 @@ fintEval_(DataObj retDataObj)
 			argc -= 2;
 		}
 		else {
-			fintGetByte(retType); 	/* return type */
+			fintGetByte(retType);	/* return type */
 			fintTypedEval(&expr, FOAM_Prog);
 			prog0 = expr.progInfo;
 			fintTypedEval(&expr, FOAM_Env);
@@ -3659,7 +3659,7 @@ fintEval_(DataObj retDataObj)
 		else
 		      lev0 = NULL;
 
-        	fintEnvPush(lexEnv, lev0, env);
+		fintEnvPush(lexEnv, lev0, env);
 
 		(void)fintStmt(retDataObj);
 		softAssert(retType == progInfoRetType(prog));
@@ -3852,7 +3852,7 @@ fintEval_(DataObj retDataObj)
 	}
 
 	case FOAM_PRef: {
-		int 		n;
+		int		n;
 		union dataObj		expr;
 		/* Luckily, fiProgGetInfo does not look too carefully at its arg */
 		fintGetInt(fmt, n);
@@ -3902,7 +3902,7 @@ fintEval_(DataObj retDataObj)
 		union dataObj	clos;
 		union dataObj	nuffin;
 		union dataObj  *rets;
-		FiBool 		ok;
+		FiBool		ok;
 		FiWord		val, exn = 0;
 
 
@@ -4459,19 +4459,19 @@ fintEval_(DataObj retDataObj)
 			break;
 		case FINT_FOREIGN_formatSInt:
 			fintTypedEval(&expr1, FOAM_SInt);
- 			retDataObj->fiWord =(FiWord)formatSInt(expr1.fiSInt);
+			retDataObj->fiWord =(FiWord)formatSInt(expr1.fiSInt);
 			break;
 		case FINT_FOREIGN_formatBInt:
 			fintTypedEval(&expr1, FOAM_BInt);
- 			retDataObj->fiWord =(FiWord)formatBInt(expr1.fiBInt);
+			retDataObj->fiWord =(FiWord)formatBInt(expr1.fiBInt);
 			break;
 		case FINT_FOREIGN_formatSFloat:
 			fintTypedEval(&expr1, FOAM_SFlo);
- 			retDataObj->fiWord =(FiWord)formatSFloat(expr1.fiSFlo);
+			retDataObj->fiWord =(FiWord)formatSFloat(expr1.fiSFlo);
 			break;
 		case FINT_FOREIGN_formatDFloat:
 			fintTypedEval(&expr1, FOAM_DFlo);
- 			retDataObj->fiWord =(FiWord)formatDFloat(expr1.fiDFlo);
+			retDataObj->fiWord =(FiWord)formatDFloat(expr1.fiDFlo);
 			break;
 
 		/* Old debugging system */
@@ -4791,7 +4791,7 @@ fintEval_(DataObj retDataObj)
 			fintTypedEval(&expr1, FOAM_Arr);
 			fintTypedEval(&expr2, FOAM_Arr);
 			fintTypedEval(&expr3, FOAM_Arr);
-		    	osSubdir((String) expr1.fiArr,
+			osSubdir((String) expr1.fiArr,
 				 (String) expr2.fiArr,
 				 (String) expr3.fiArr);
 			break;
@@ -4809,7 +4809,7 @@ fintEval_(DataObj retDataObj)
 			fintTypedEval(&expr2, FOAM_Arr);
 			fintTypedEval(&expr3, FOAM_Arr);
 			fintTypedEval(&expr4, FOAM_Arr);
-		    	osFnameParse((String *) expr1.fiArr,
+			osFnameParse((String *) expr1.fiArr,
 				     (String) expr2.fiArr,
 				     (String) expr3.fiArr,
 				     (String) expr4.fiArr);
@@ -4933,8 +4933,8 @@ fintEval_(DataObj retDataObj)
 				    (String) expr3.fiArr);
 			break;
 		case FINT_FOREIGN_gcTimer: {
-		  	extern void *gcTimer(void);
-		  	retDataObj->fiWord = (FiWord) gcTimer();
+			extern void *gcTimer(void);
+			retDataObj->fiWord = (FiWord) gcTimer();
 			break;
 			}
 		case FINT_FOREIGN_fiRaiseException: {
@@ -5115,8 +5115,8 @@ fintGetReference(Ref pDataObj)
 	}
 
 	case FOAM_RElt: {
-		int 		slot;
-		union dataObj		expr;
+		int		slot;
+		union dataObj	expr;
 
 		fintGetInt(fmt, n);
 		fintTypedEval(&expr, FOAM_Rec);
@@ -5131,8 +5131,8 @@ fintGetReference(Ref pDataObj)
 	}
 
 	case FOAM_IRElt: {
-		int 		slot;
-		union dataObj		expr;
+		int		slot;
+		union dataObj	expr;
 
 		fintGetInt(fmt, n);
 		fintTypedEval(&expr, FOAM_TR);
@@ -5147,9 +5147,9 @@ fintGetReference(Ref pDataObj)
 		break;
 	}
 	case FOAM_TRElt: {
-		long 		slot;
+		long		slot;
 		union dataObj	expr, idx;
-		int 		isz, asz, sz;
+		int		isz, asz, sz;
 
 		fintGetInt(fmt, n);
 		fintTypedEval(&expr, FOAM_TR);
@@ -5222,8 +5222,8 @@ fintGetReference(Ref pDataObj)
 		break;
 	}
 	case FOAM_PRef: {
-		union dataObj		expr;
-		int 		n;
+		union dataObj	expr;
+		int		n;
 
 		fintGetInt(fmt, n);
 		assert(n==0);
@@ -5341,12 +5341,12 @@ fintDoCallN(DataObj clos, DataObj retDataObj, int argc, DataObj *argv)
 	stackFrameIp(bp) = ip;
 
 	/* set globals and env for the call */
-	prog 	= prog0;
-	unit 	= prog->unit;
-	tape 	= fintUnitTape(unit);
-	labels 	= progInfoLabels(prog);
+	prog	= prog0;
+	unit	= prog->unit;
+	tape	= fintUnitTape(unit);
+	labels	= progInfoLabels(prog);
 	labelFmt = progInfoLabelFmt(prog);
-	ip 	= progInfoSeq(prog);
+	ip	= progInfoSeq(prog);
 
 	if (progInfoLocsCount(prog))
 		stackAlloc(locValues, progInfoLocsCount(prog));
@@ -5416,7 +5416,7 @@ fmtGlobalsFree(FintUnit unit)
 {
 	ShDataObj	* globValues = fintUnitGlobValues(unit);
 	int		globCount = fintUnitGlobsCount(unit);
-	int 		n;
+	int		n;
 
 	for (n = 0; n < globCount; n++)
 		shDataObjFree(globValues[n]);
@@ -5457,7 +5457,7 @@ local void
 lexLevelsFree(FintUnit unit)
 {
 	LexLevels	l = fintUnitLexLevels(unit);
-	int 		levCount = fintUnitLexLevelsCount(unit);
+	int		levCount = fintUnitLexLevelsCount(unit);
 	int		n;
 
 	for (n = 0; n < levCount ; n++)
@@ -5523,11 +5523,11 @@ fintInitForeignGlobValue(DataObj retDataObj, int n)
 local ShDataObj
 shDataObjAdd(AInt type, String id, int protocol, int globNum, FintUnit curUnit)
 {
-	int 		n = 0;
-	ShDataObj 	new;
-	Bool 		found = false;
+	int		n = 0;
+	ShDataObj	new;
+	Bool		found = false;
 	FintUnit	u = NULL;
-	String 		id_orig = NULL;
+	String		id_orig = NULL;
 	new = shDataObjFind(type, id, protocol);
 
 	/* !! Hack: resolving globals we look also in the current unit.
@@ -5574,9 +5574,9 @@ shDataObjAdd(AInt type, String id, int protocol, int globNum, FintUnit curUnit)
 
 	/* Handle mangled names if necessary */
 	if (protocol == FOAM_Proto_C) {
-	  	String tmp = strchr(id, '-');
+		String tmp = strchr(id, '-');
 		if (tmp) {
-		  	id_orig = id;
+			id_orig = id;
 			id = strCopy(id);
 			id[tmp - id_orig] = '\0';
 		}
@@ -5612,11 +5612,11 @@ shDataObjFind(AInt type, String id, int protocol)
 {
 	ShDataObj obj = NULL;
 	FintUnitList	ul;
-	FintUnit 	u;
+	FintUnit	u;
 	int m, n;
 
 	/* NB: Should worry about protocol and check type */
- 	for (ul = cdr(fintUnitList); ul; ul = cdr(ul)) {
+	for (ul = cdr(fintUnitList); ul; ul = cdr(ul)) {
 		u = car(ul);
 		m = fintUnitGlobsCount(u);
 		for (n = 0; n < m ; n++) {
@@ -5635,14 +5635,14 @@ shDataObjFindBis(AInt type, String id, int protocol)
 {
 	ShDataObj obj = NULL;
 	FintUnitList	ul;
-	FintUnit 	u;
+	FintUnit	u;
 	int m, n;
 
 	/* NB: Should worry about protocol and check type */
 	/* this one looks in the current one too
 	 * see hack 03450
 	 */
- 	for (ul = fintUnitList; ul; ul = cdr(ul)) {
+	for (ul = fintUnitList; ul; ul = cdr(ul)) {
 		u = car(ul);
 		m = fintUnitGlobsCount(u);
 		for (n = 0; n < m ; n++) {
@@ -5793,7 +5793,7 @@ fintLoadFluidsFmt(FintUnit unit)
 local void
 fintLoadLexLevels(FintUnit unit, int nLexLevels)
 {
-	int 		n, j;
+	int		n, j;
 	LexLevels	lexLevels;
 	Fmt		* pFmt;
 
@@ -5830,7 +5830,7 @@ skipProg(FiProgPos * pLabels, int * pLabelsCount)
 	int	fi, si, tag, argc, format, bi;
 	String	argf;
 	Bool	neg;
-	Bool 	isNary;
+	Bool	isNary;
 
 	fintGetByte(tag);
 	format = FOAM_FORMAT_GET(tag);
@@ -6044,7 +6044,7 @@ fintWhere(int level)
 
 	if (prog)
 		(void)fprintf(dbOut, "#%d %8p in <%s> at unit [%s]\n", int0,
-		       	 bp, prog->name, prog->unit->name);
+			      bp, prog->name, prog->unit->name);
 	else
 		(void)fprintf(dbOut, "(Unknown current prog)\n");
 
@@ -6122,14 +6122,14 @@ fintExecMainUnit(void)
 	extern void compFintFaultHandler(int);
 
 	if (fintMode == FINT_LOOP) {
-    		oldCompFintBreakHandler = defaultBreakHandler;
+		oldCompFintBreakHandler = defaultBreakHandler;
 		oldCompFintFaultHandler = defaultFaultHandler;
 	}
 
 	/* This group of statements is needed because might be the case
 	 * that the previous execution has been interrupted from the user
 	 * (Ctrl-C, in example), therefore stack, bp and sp have the values
- 	 * that they had when the interrupt occurred.
+	 * that they had when the interrupt occurred.
 	 */
 
 	stack = headStack;
@@ -6147,7 +6147,7 @@ fintExecMainUnit(void)
 	fintEnvPush(lexEnv, NULL, NULL);
 	stackFrameAlloc(int0);
 
-   	tape = fintUnitTape(unit);
+	tape = fintUnitTape(unit);
 	prog = constValue(int0).progInfo;
 	ip = progInfoSeq(prog);
 	labels = progInfoLabels(prog);
@@ -6161,7 +6161,7 @@ fintExecMainUnit(void)
 	else
 	      lev0 = NULL;
 
-       	fintEnvPush(lexEnv, lev0, NULL);
+	fintEnvPush(lexEnv, lev0, NULL);
 
 	if (progInfoLocsCount(prog))
 		stackAlloc(locValues, progInfoLocsCount(prog));
@@ -6174,7 +6174,7 @@ fintExecMainUnit(void)
 
 	/* **************************** */
 
- 	{
+	{
 		FiWord	exn = 0;
 
 		fintBlock(ok, type, exn, fintStmt(&expr));
@@ -6340,7 +6340,7 @@ fintFile(FileName fname)
 
 	(void)loadOtherUnits();
 
- 	result = fintExecMainUnit();
+	result = fintExecMainUnit();
 
 	/* !! We should close the archive files */
 	libClose(lib);
@@ -6362,42 +6362,42 @@ fintFile(FileName fname)
 typedef struct {
 	Buffer	evalBuf;
 
-	UByte 	* tape;		/* interpreted string */
+	UByte	* tape;		/* interpreted string */
 	FiProgPos ip;
 	DataObj	stack;		/* current stack */
 	DataObj	sp;		/* First free cell on the top of the stack. */
 	DataObj	bp;		/* Bottom of the current frame; refers to a
 				 * dataObj containing the old bp.
 				 */
-	DataObj	locValues; 	/* local values in the current stack frame */
-	DataObj	fluidValues; 	/* fluid values in the current stack frame */
+	DataObj	locValues;	/* local values in the current stack frame */
+	DataObj	fluidValues;	/* fluid values in the current stack frame */
 	FiEnv	lexEnv;		/* current lexical environment */
 	DataObj	lev0;		/* lexEnv->level, used to speed up lex(0,n) */
 	ProgInfo	prog;		/* progInfo for the current program */
 	FiProgPos	* labels;
 
-	int 	labelFmt;
+	int	labelFmt;
 	FintUnit unit;
 } fintState;
 
 local void *
 fintSaveState(void)
 {
-	fintState *state 	= (fintState*) stoAlloc(OB_Other, sizeof(*state));
-	state->evalBuf 		= evalBuf;
-	state->tape    		= tape;
-	state->ip      		= ip;
-	state->stack   		= stack;
-	state->sp      		= sp;
-	state->bp      		= bp;
-	state->locValues 	= locValues;
-	state->fluidValues 	= fluidValues;
+	fintState *state	= (fintState*) stoAlloc(OB_Other, sizeof(*state));
+	state->evalBuf		= evalBuf;
+	state->tape		= tape;
+	state->ip		= ip;
+	state->stack		= stack;
+	state->sp		= sp;
+	state->bp		= bp;
+	state->locValues	= locValues;
+	state->fluidValues	= fluidValues;
 	state->lexEnv		= lexEnv;
 	state->lev0		= lev0;
-	state->prog     	= prog;
-	state->labels   	= labels;
-	state->labelFmt 	= labelFmt;
-	state->unit     	= unit;
+	state->prog		= prog;
+	state->labels		= labels;
+	state->labelFmt		= labelFmt;
+	state->unit		= unit;
 
 	return state;
 }
@@ -6407,20 +6407,20 @@ fintRestoreState(void *s0)
 {
 	fintState *state = (fintState *) s0;
 
-	evalBuf 	= state-> evalBuf;
-	tape    	= state-> tape;
-	ip      	= state-> ip;
-	stack   	= state-> stack;
-	sp      	= state-> sp;
-	bp      	= state-> bp;
-	locValues 	= state-> locValues;
-	fluidValues 	= state-> fluidValues;
+	evalBuf		= state-> evalBuf;
+	tape		= state-> tape;
+	ip		= state-> ip;
+	stack		= state-> stack;
+	sp		= state-> sp;
+	bp		= state-> bp;
+	locValues	= state-> locValues;
+	fluidValues	= state-> fluidValues;
 	lexEnv		= state-> lexEnv;
 	lev0		= state-> lev0;
-	prog     	= state-> prog;
-	labels   	= state-> labels;
-	labelFmt 	= state-> labelFmt;
-	unit     	= state-> unit;
+	prog		= state-> prog;
+	labels		= state-> labels;
+	labelFmt	= state-> labelFmt;
+	unit		= state-> unit;
 
 	stoFree(state);
 }
