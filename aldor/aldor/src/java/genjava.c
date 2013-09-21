@@ -3963,7 +3963,7 @@ gj0NameFrString(String fmName)
 		return fmName;
 
 	p = fmName;
-	buf = bufNeed(buf, strlen(fmName));
+	bufNeed(buf, strlen(fmName));
 	while (*p != 0) {
 		assert(*p >= 0 && *p < CHAR_MAX);
 		char *repl = gjCharIds[*p];
