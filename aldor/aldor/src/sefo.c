@@ -4034,7 +4034,7 @@ sefoToBuffer(Lib lib, Buffer buf, Sefo sefo)
 	AbSynTag	tag = abTag(sefo);
 	UShort		i, argc;
 
-	BUF_PUT_BYTE(buf, tag);
+	bufPutByte(buf, tag);
 
 	switch (tag) {
 	case AB_Nothing:
@@ -4064,7 +4064,7 @@ sefoToBuffer(Lib lib, Buffer buf, Sefo sefo)
 		break;
 	default:
 		argc = abArgc(sefo);
-		BUF_PUT_HINT(buf, argc);
+		bufPutHInt(buf, argc);
 		for (i = 0; i < argc; i += 1)
 			sefoToBuffer(lib, buf, abArgv(sefo)[i]);
 	}
@@ -4078,7 +4078,7 @@ symeToBuffer(Lib lib, Buffer buf, Syme syme)
 	UShort	n = symeLibNum(syme);
 
 	assert(libCheckSymeNumber(lib, syme, n));
-	BUF_PUT_HINT(buf, n);
+	bufPutHInt(buf, n);
 
 	return HINT_BYTES;
 }
@@ -4089,7 +4089,7 @@ tformToBuffer1(Lib lib, Buffer buf, TForm tf)
 	ULong	n = tf->libNum;
 
 	assert(libCheckTypeNumber(lib, tf, n));
-	BUF_PUT_SINT(buf, n);
+	bufPutSInt(buf, n);
 
 	return SINT_BYTES;
 }
@@ -4103,7 +4103,7 @@ tformToBuffer(Lib lib, Buffer buf, TForm tf)
 
 	if (tfHasSelf(tf))	tag |= 0x80;
 	if (tfHasCascades(tf))	tag |= 0x40;
-	BUF_PUT_BYTE(buf, tag);
+	bufPutByte(buf, tag);
 	tag &= 0x3f;
 
 	if (tfIsSymTag(tag))
@@ -4114,7 +4114,7 @@ tformToBuffer(Lib lib, Buffer buf, TForm tf)
 
 	else if (tfIsNodeTag(tag)) {
 		argc = tfArgc(tf);
-		BUF_PUT_HINT(buf, argc);
+		bufPutHInt(buf, argc);
 		for (i = 0; i < argc; i += 1)
 			tformToBuffer1(lib, buf, tfArgv(tf)[i]);
 	}
@@ -4135,7 +4135,7 @@ tformToBuffer(Lib lib, Buffer buf, TForm tf)
 			SymeList l;
 			symeListToBuffer(lib, buf, tfGetCatExports(tf));
 			l = tfGetCatExports(tf);
-			BUF_PUT_HINT(buf, listLength(Syme)(l));
+			bufPutHInt(buf, listLength(Syme)(l));
 			while (l != listNil(Syme)) {
 				if (symeIsSelfSelf(car(l)))
 					sefoListToBuffer(lib, buf, listNil(Sefo));
@@ -4146,7 +4146,7 @@ tformToBuffer(Lib lib, Buffer buf, TForm tf)
 			
 		}
 		else {
-			BUF_PUT_HINT(buf, 0);
+			bufPutHInt(buf, 0);
 			symeListToBuffer(lib, buf, listNil(Syme));
 		}
 	}
@@ -4186,7 +4186,7 @@ sefoListToBuffer(Lib lib, Buffer buf, SefoList sefos)
 	Length		start = bufPosition(buf);
 	UShort		sefoc = listLength(Sefo)(sefos);
 
-	BUF_PUT_HINT(buf, sefoc);
+	bufPutHInt(buf, sefoc);
 
 	for (; sefos; sefos = cdr(sefos))
 		sefoToBuffer(lib, buf, car(sefos));
@@ -4200,7 +4200,7 @@ symeListToBuffer(Lib lib, Buffer buf, SymeList symes)
 	Length		start = bufPosition(buf);
 	UShort		symec = listLength(Syme)(symes);
 
-	BUF_PUT_HINT(buf, symec);
+	bufPutHInt(buf, symec);
 
 	for (; symes; symes = cdr(symes))
 		symeToBuffer(lib, buf, car(symes));
@@ -4214,7 +4214,7 @@ tformListToBuffer(Lib lib, Buffer buf, TFormList tforms)
 	Length		start = bufPosition(buf);
 	UShort		tformc = listLength(TForm)(tforms);
 
-	BUF_PUT_HINT(buf, tformc);
+	bufPutHInt(buf, tformc);
 
 	for (; tforms; tforms = cdr(tforms))
 		tformToBuffer1(lib, buf, car(tforms));
@@ -4228,7 +4228,7 @@ tqualListToBuffer(Lib lib, Buffer buf, TQualList tquals)
 	Length		start = bufPosition(buf);
 	UShort		tqualc = listLength(TQual)(tquals);
 
-	BUF_PUT_HINT(buf, tqualc);
+	bufPutHInt(buf, tqualc);
 	for (; tquals; tquals = cdr(tquals))
 		tqualToBuffer(lib, buf, car(tquals));
 
@@ -4250,7 +4250,7 @@ freeVarToBuffer(Lib lib, Buffer buf, FreeVar fv)
 			symec += 1;
 	}
 
-	BUF_PUT_HINT(buf, symec);
+	bufPutHInt(buf, symec);
 
 	for (symes = fvSymes(fv); symes; symes = cdr(symes)) {
 		if (skipParams && symeIsParam(car(symes))) continue;
@@ -4275,7 +4275,7 @@ sefoFrBuffer(Lib lib, Buffer buf)
 	AbSynTag	tag;
 	UShort		i, argc;
 
-	BUF_GET_BYTE(buf, tag);
+	tag = bufGetByte(buf);
 
 	switch (tag) {
 	case AB_Nothing:
@@ -4318,7 +4318,7 @@ sefoFrBuffer(Lib lib, Buffer buf)
 		}
 		break;
 	default:
-		BUF_GET_HINT(buf, argc);
+		argc = bufGetHInt(buf);
 		sefo = abNewEmpty(tag, argc);
 		for (i = 0; i < argc; i += 1)
 			abArgv(sefo)[i] = sefoFrBuffer(lib, buf);
@@ -4332,7 +4332,7 @@ symeFrBuffer(Lib lib, Buffer buf)
 {
 	UShort	n;
 
-	BUF_GET_HINT(buf, n);
+	n = bufGetHInt(buf);
 	assert(libCheckSymeNumber(lib, NULL, n));
 
 	return lib->symev[n];
@@ -4343,7 +4343,7 @@ tformFrBuffer1(Lib lib, Buffer buf)
 {
 	ULong	n;
 
-	BUF_GET_SINT(buf, n);
+	n = bufGetSInt(buf);
 	assert(libCheckTypeNumber(lib, NULL, n));
 
 	/* The type forms are filled in later. */
@@ -4358,7 +4358,7 @@ tformFrBuffer(Lib lib, Buffer buf)
 	UShort		i, argc;
 	Bool		hasSelf = false, hasCascades = false;
 
-	BUF_GET_BYTE(buf, tag);
+	tag = bufGetByte(buf);
 	if (tag & 0x80) hasSelf = true;
 	if (tag & 0x40) hasCascades = true;
 	tag &= 0x3f;
@@ -4406,7 +4406,7 @@ tformFrBuffer(Lib lib, Buffer buf)
 	}
 
 	else if (tfIsNodeTag(tag)) {
-		BUF_GET_HINT(buf, argc);
+		argc = bufGetHInt(buf);
 		tf = tfNewEmpty(tag, argc);
 		tf->intStepNo = 0;
 		for (i = 0; i < argc; i += 1)
@@ -4433,7 +4433,7 @@ tformFrBuffer(Lib lib, Buffer buf)
 		SymeList symes;
 		int n;
 		tfCatExports(tf) = symeListFrBuffer(lib, buf);
-		BUF_GET_HINT(buf, n);
+		n = bufGetHInt(buf);
 		symes = tfCatExports(tf);
 		if (n != listLength(Syme)(symes)) {
 			bug("incorrect number of exports");
@@ -4467,7 +4467,7 @@ sefoListFrBuffer(Lib lib, Buffer buf)
 	SefoList	sefos = listNil(Sefo);
 	UShort		i, sefoc;
 
-	BUF_GET_HINT(buf, sefoc);
+	sefoc = bufGetHInt(buf);
 
 	for (i = 0; i < sefoc; i += 1) {
 		Sefo sefo = sefoFrBuffer(lib, buf);
@@ -4482,7 +4482,7 @@ symeListFrBuffer(Lib lib, Buffer buf)
 	SymeList	symes = listNil(Syme);
 	UShort		i, symec;
 
-	BUF_GET_HINT(buf, symec);
+	symec = bufGetHInt(buf);
 
 	for (i = 0; i < symec; i += 1)
 		symes = listCons(Syme)(symeFrBuffer(lib, buf), symes);
@@ -4496,7 +4496,7 @@ tformListFrBuffer(Lib lib, Buffer buf)
 	TFormList	tforms = listNil(TForm);
 	UShort		i, tformc;
 
-	BUF_GET_HINT(buf, tformc);
+	tformc = bufGetHInt(buf);
 
 	for (i = 0; i < tformc; i += 1)
 		tforms = listCons(TForm)(tformFrBuffer1(lib, buf), tforms);
@@ -4511,7 +4511,7 @@ tqualListFrBuffer(Lib lib, Buffer buf)
 	TQualList	tquals = listNil(TQual);
 	UShort		i, tqualc;
 
-	BUF_GET_HINT(buf, tqualc);
+	tqualc = bufGetHInt(buf);
 
 	for (i = 0; i < tqualc; i += 1)
 		tquals = listCons(TQual)(tqualFrBuffer(lib, buf), tquals);
@@ -4534,8 +4534,8 @@ tformTypecFrBuffer(Buffer buf)
 {
 	ULong	argc;
 
-	BUF_START(buf);
-	BUF_GET_SINT(buf, argc);
+	bufStart(buf);
+	argc = bufGetSInt(buf);
 
 	return argc;
 }
@@ -4567,7 +4567,7 @@ sefoFrBuffer0(Buffer buf)
 	UShort		i, argc;
 	ULong		cc;
 
-	BUF_GET_BYTE(buf, tag);
+	tag = bufGetByte(buf);
 
 	switch (tag) {
 	case AB_Nothing:
@@ -4583,7 +4583,7 @@ sefoFrBuffer0(Buffer buf)
 	case AB_LitString:
 	case AB_LitFloat:
 		symeFrBuffer0(buf);
-		BUF_GET_SINT(buf, cc);
+		cc = bufGetSInt(buf);
 		bufSkip(buf, cc);
 		break;
 
@@ -4593,7 +4593,7 @@ sefoFrBuffer0(Buffer buf)
 		break;
 
 	default:
-		BUF_GET_HINT(buf, argc);
+		argc = bufGetHInt(buf);
 		for (i = 0; i < argc; i += 1)
 			sefoFrBuffer0(buf);
 		break;
@@ -4611,7 +4611,7 @@ tformFrBuffer0(Buffer buf)
 {
 	TFormTag	tag;
 
-	BUF_GET_BYTE(buf, tag);
+	tag = bufGetByte(buf);
 	tag &= 0x3f;
 
 	if (tfIsSymTag(tag))
@@ -4634,7 +4634,7 @@ tformFrBuffer0(Buffer buf)
 	if (tag == TF_With) {
 		UShort n, i;
 		symeListFrBuffer0(buf);	/* tfCatExports(tf) */
-		BUF_GET_HINT(buf, n);
+		n = bufGetHInt(buf);
 		for (i=0; i<n; i++) {
 			sefoListFrBuffer0(buf);
 		}
@@ -4658,7 +4658,7 @@ sefoListFrBuffer0(Buffer buf)
 	SefoList	sefos = listNil(Sefo);
 	UShort		i, sefoc;
 
-	BUF_GET_HINT(buf, sefoc);
+	sefoc = bufGetHInt(buf);
 
 	for (i = 0; i < sefoc; i += 1) {
 		sefoFrBuffer0(buf);
@@ -4671,7 +4671,7 @@ symeListFrBuffer0(Buffer buf)
 {
 	UShort		symec;
 
-	BUF_GET_HINT(buf, symec);
+	symec = bufGetHInt(buf);
 	bufSkip(buf, symec * HINT_BYTES);
 }
 
@@ -4680,7 +4680,7 @@ tformListFrBuffer0(Buffer buf)
 {
 	UShort		tformc;
 
-	BUF_GET_HINT(buf, tformc);
+	tformc = bufGetHInt(buf);
 	bufSkip(buf, tformc * SINT_BYTES);
 }
 
@@ -4689,7 +4689,7 @@ tqualListFrBuffer0(Buffer buf)
 {
 	UShort		i, tqualc;
 
-	BUF_GET_HINT(buf, tqualc);
+	tqualc = bufGetHInt(buf);
 
 	for (i = 0; i < tqualc; i += 1)
 		tqualFrBuffer0(buf);

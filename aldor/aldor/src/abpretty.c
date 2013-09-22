@@ -669,9 +669,9 @@ abPPPutc(Buffer buf, int c, long *pmaxchars)
 {
 	if (*pmaxchars >= 1) {
 		/* Character fits */
-		BUF_ADD1(buf, (char) c);
-		BUF_ADD1(buf, char0);
-		BUF_BACK1(buf);
+		bufAdd1(buf, (char) c);
+		bufAdd1(buf, char0);
+		bufBack1(buf);
 		*pmaxchars -= 1;
 		return true;
 	}

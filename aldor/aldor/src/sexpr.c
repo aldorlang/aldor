@@ -989,15 +989,15 @@ local int sxiIoIsNeedingEscape(String s)
  *
  ****************************************************************************/
 
-#define sxiIoBufStart()	     BUF_START(sxiIoBuf)
-#define sxiIoBufEnd()	     BUF_ADD1(sxiIoBuf, 0)
-#define sxiIoBufAdd(c)	     BUF_ADD1(sxiIoBuf, (c))
+#define sxiIoBufStart()	     bufStart(sxiIoBuf)
+#define sxiIoBufEnd()	     bufAdd1(sxiIoBuf, 0)
+#define sxiIoBufAdd(c)	     bufAdd1(sxiIoBuf, (c))
 #define sxiIoBufPuts(s)	     bufPuts(sxiIoBuf, (s))
 #define sxiIoBufChars()	     bufChars(sxiIoBuf)
 
-#define sxiCommentBufStart() BUF_START(sxiCommentBuf)
-#define sxiCommentBufEnd()   BUF_ADD1(sxiCommentBuf, 0)
-#define sxiCommentBufAdd(c)  BUF_ADD1(sxiCommentBuf, (c))
+#define sxiCommentBufStart() bufStart(sxiCommentBuf)
+#define sxiCommentBufEnd()   bufAdd1(sxiCommentBuf, 0)
+#define sxiCommentBufAdd(c)  bufAdd1(sxiCommentBuf, (c))
 #define sxiCommentBufPuts(s) bufPuts(sxiCommentBuf, (s))
 #define sxiCommentBufChars() bufChars(sxiCommentBuf)
 
@@ -1202,9 +1202,9 @@ void sxiCommentChk(void)
 	blno = bufNew();
 	bglno = bufNew();
 	bfn = bufNew();
-	BUF_START(blno);
-	BUF_START(bglno);
-	BUF_START(bfn);
+	bufStart(blno);
+	bufStart(bglno);
+	bufStart(bfn);
 	for (i = 0; i < bufSize(sxiCommentBuf); i++) {
 		if (str[i] == ' ') {
 			lflag = !lflag;
@@ -1223,15 +1223,15 @@ void sxiCommentChk(void)
 			i++;
 		}
 		if (lflag)
-			BUF_ADD1(blno, str[i]);
+			bufAdd1(blno, str[i]);
 		if (glflag)
-			BUF_ADD1(bglno, str[i]);
+			bufAdd1(bglno, str[i]);
 		if (fnflag && str[i] != '\n')
-			BUF_ADD1(bfn, str[i]);
+			bufAdd1(bfn, str[i]);
 	}
-	BUF_ADD1(blno, char0);
-	BUF_ADD1(bglno, char0);
-	BUF_ADD1(bfn, char0);
+	bufAdd1(blno, char0);
+	bufAdd1(bglno, char0);
+	bufAdd1(bfn, char0);
 	if (DEBUG(sexpr)) {
 		fprintf(dbOut, "\n!!! %d, %d ", sxiRdLineNo, sxiRdGLineNo);
 		if (sxiRdFName)

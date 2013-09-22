@@ -63,9 +63,9 @@ test: all
 trace: all
 	sudo strace -f perl eval/bin/evaluator
 
-upload: all
+install: all
 	sh perms.rt
-	rsync -avP eval/ ra:public_html/eval
+	rsync -avP eval/ ~/public_html/eval
 
 memcheck: all
 	sudo valgrind --num-callers=20 --leak-check=full --leak-resolution=high perl evaluator
@@ -74,16 +74,20 @@ src/syscalls$(ARCH).C: src/getsyscalls
 	sh $< > $@
 
 eval/bin/Evaluator.so: Evaluator.o syscalls$(ARCH).o
+	@mkdir -p $(@D)
 	echo "  LD  $@"
 	${CXX} -shared ${CXXFLAGS} $+ -o $@ ${PERLLIB}
 
 eval/bin/evaluator: src/evaluator
+	@mkdir -p $(@D)
 	cp $< $@
 
 eval/bin/showlog: src/showlog
+	@mkdir -p $(@D)
 	cp $< $@
 
 eval/bin/Evaluator.pm: src/Evaluator.pm
+	@mkdir -p $(@D)
 	cp $< $@
 
 %.C: %.xs src/typemap
