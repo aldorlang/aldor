@@ -214,14 +214,14 @@ void
 testConditionalTInfer2()
 {
 	/*
-	 AdditiveType: Category == with; 
+	 AdditiveType: Category == with;
          Evalable(T: AdditiveType): Category == with { eval: % -> T; }
 	 Obj(R: with): Category == with { x: %; if R has AdditiveType then if R has Evalable(R) then Evalable(R) }
 	*/
 	String Boolean_imp      = "import from Boolean";
 	String AdditiveType_txt = "AdditiveType: Category == with";
 	String Evalable_txt     = "Evalable(T: AdditiveType): Category == with { eval: % -> T; }";
-	String Obj_txt          = 
+	String Obj_txt          =
 		"Obj(R: with): Category == with { "
 		"   x: %; "
 		"   if R has AdditiveType then if R has Evalable(R) then Evalable(R) }";
@@ -237,31 +237,31 @@ testConditionalTInfer2()
 	tipBupDebug = 0;
 	titfDebug = 0;
 	Stab stab = stabFile();
-	
+
 	abPutUse(absyn, AB_Use_NoValue);
 
 	scopeBind(stab, absyn);
 	typeInfer(stab, absyn);
-	
+
 	testTrue("Declare is sefo", abIsSefo(absyn));
 	testIntEqual("Error Count", 0, comsgErrorCount());
 	finiFile();
 }
 
-void 
+void
 testTinfer3()
 {
 	String Boolean_imp = "import from Boolean";
 	String AdditiveType_txt = "AdditiveType: Category == with;";
 	String Evalable_txt = "Evalable(T: AdditiveType): Category == with { eval: % -> T; }";
-	String Obj_txt = 
+	String Obj_txt =
 		"Obj(R: with): Category == AdditiveType with { x: %;"
 		"	if R has AdditiveType then {"
 		"            Evalable(R);"
 		"            foo: () -> Evalable(R)}}";
 	String AnAdditive_txt = "AnAdditive: AdditiveType == add;";
 
-	StringList lines = listList(String)(5, Boolean_imp, AdditiveType_txt, 
+	StringList lines = listList(String)(5, Boolean_imp, AdditiveType_txt,
 					    Evalable_txt, Obj_txt, AnAdditive_txt);
 	AbSynList code = listCons(AbSyn)(stdtypes(), abqParseLines(lines));
 	AbSyn absyn = abNewSequenceL(sposNone, code);
@@ -272,12 +272,12 @@ testTinfer3()
 	titfDebug = 0;
 	tfDebug = 0;
 	Stab stab = stabFile();
-	
+
 	abPutUse(absyn, AB_Use_NoValue);
 
 	scopeBind(stab, absyn);
 	typeInfer(stab, absyn);
-	
+
 	testTrue("Declare is sefo", abIsSefo(absyn));
 	testIntEqual("Error Count", 0, comsgErrorCount());
 
@@ -301,16 +301,16 @@ testTinfer3()
 	symes = tfGetDomImports(tf);
 	symeListPrintDb(symes);
 	finiFile();
-	
+
 }
 
 void
 testConditionalTInfer4()
 {
 	/*
-	 AdditiveType: Category == with; 
-	 AdditiveType1: Category == AdditiveType with; 
-	 AdditiveType2: Category == AdditiveType with; 
+	 AdditiveType: Category == with;
+	 AdditiveType1: Category == AdditiveType with;
+	 AdditiveType2: Category == AdditiveType with;
          Evalable(T: AdditiveType): Category == with { eval: % -> T; }
 	 Obj(R: with): Category == with { x: %; if R has AdditiveType then if R has Evalable(R) then Evalable(R) }
 	*/
@@ -319,16 +319,16 @@ testConditionalTInfer4()
 	String AdditiveType1_txt = "AdditiveType1: Category == AdditiveType with";
 	String AdditiveType2_txt = "AdditiveType2: Category == AdditiveType with";
 	String Evalable_txt     = "Evalable(T: AdditiveType): Category == with { eval: % -> T; }";
-	String Obj_txt          = 
+	String Obj_txt          =
 		"Obj(R: with): Category == with { "
 		"   x: %; "
 		"   if R has AdditiveType1 then if R has Evalable(R) then Evalable(R);"
 		"   if R has AdditiveType2 then if R has Evalable(R) then Evalable(R); }";
 
-	StringList lines = listList(String)(6, Boolean_imp, 
-					    AdditiveType_txt, 
-					    AdditiveType1_txt, 
-					    AdditiveType2_txt, 
+	StringList lines = listList(String)(6, Boolean_imp,
+					    AdditiveType_txt,
+					    AdditiveType1_txt,
+					    AdditiveType2_txt,
 					    Evalable_txt, Obj_txt);
 	AbSynList code = listCons(AbSyn)(stdtypes(), abqParseLines(lines));
 	AbSyn absyn = abNewSequenceL(sposNone, code);
@@ -340,12 +340,12 @@ testConditionalTInfer4()
 	tfDebug = 0;
 
 	Stab stab = stabFile();
-	
+
 	abPutUse(absyn, AB_Use_NoValue);
 
 	scopeBind(stab, absyn);
 	typeInfer(stab, absyn);
-	
+
 	testTrue("Declare is sefo", abIsSefo(absyn));
 	testIntEqual("Error Count", 0, comsgErrorCount());
 
@@ -361,13 +361,13 @@ testConditionalAdd()
 	String IndexedObject_def   = "IndexedObject(S: with): with IndexedCategory(S) == add { if S has AdditiveGroup then 0: % == 0$S pretend %}";
 	String Obj_def             = "Obj: AdditiveGroup with == add { 0: % == never }";
 
-	StringList lines = listList(String)(5, Boolean_imp, 
+	StringList lines = listList(String)(5, Boolean_imp,
 					    AdditiveGroup_def,
 					    IndexedCategory_def,
-					    IndexedObject_def, 
+					    IndexedObject_def,
 					    Obj_def);
 
-					    
+
 	AbSynList code = listCons(AbSyn)(stdtypes(), abqParseLines(lines));
 	AbSyn absyn = abNewSequenceL(sposNone, code);
 
@@ -383,19 +383,19 @@ testConditionalAdd()
 	tfImportDebug = 0;
 
 	Stab stab = stabFile();
-	
+
 	abPutUse(absyn, AB_Use_NoValue);
 
 	scopeBind(stab, absyn);
 	typeInfer(stab, absyn);
-	
+
 
 	testTrue("Declare is sefo", abIsSefo(absyn));
 	testIntEqual("Error Count", 0, comsgErrorCount());
 #if 0
 	String B_def = "B: IndexedCategory(Obj) with { foo: () -> % } == IndexedObject(Obj) add { foo(x: %): % == 0 }";
 	AbSyn B_ab = abqParse(B_def);
-	
+
 	abPutUse(B_ab, AB_Use_NoValue);
 	scopeBind(stab, B_ab);
 	typeInfer(stab, B_ab);
@@ -420,14 +420,14 @@ testTinfer5()
 	AbSynList code = listCons(AbSyn)(stdtypes(), abqParseLines(lines));
 	AbSyn absyn = abNewSequenceL(sposNone, code);
 	Stab stab = stabFile();
-	
+
 	abPutUse(absyn, AB_Use_NoValue);
 	scopeBind(stab, absyn);
 	typeInfer(stab, absyn);
-	
+
 	testTrue("Declare is sefo", abIsSefo(absyn));
 	testIntEqual("Error Count", 0, comsgErrorCount());
-	
+
 	finiFile();
 }
 
@@ -503,7 +503,8 @@ testTinferValueConditionalAliased()
 	finiFile();
 }
 
-void testTinferValueConditional()
+void
+testTinferValueConditional()
 {
 	String I_def = "I: with { zero?: % -> Boolean } == add { zero?(t: %): Boolean == never }";
 	String C_def =
