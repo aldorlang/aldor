@@ -535,6 +535,8 @@ extern FiPtr	fiListCons	_of_((FiWord, FiPtr));
 #define	fiPTR_TO_SINT(r,t,l)	     ((r) = (t) fiPtrToSInt(l))
 #define	fiSINT_TO_PTR(r,t,l)	     ((r) = (t) fiSIntToPtr(l))
 
+#define fiSINT_HASHCOMBINE(r, t, a, b) ((r) = (t) fiSIntHashCombine(a, b))
+
 #define fiFORMAT_SFLO(r,t,s,w,si)    ((r) = (t) fiFormatSFlo(s,(FiArr)w,si))
 #define fiFORMAT_DFLO(r,t,d,w,si)    ((r) = (t) fiFormatDFlo(d,(FiArr)w,si))
 #define fiFORMAT_SINT(r,t,a,w,b)     ((r) = (t) fiFormatSInt(a,(FiArr)w,b))
@@ -551,6 +553,8 @@ extern FiPtr	fiListCons	_of_((FiWord, FiPtr));
 #define fiLIST_EMPTYP(r,t,l)	     ((r) = (t) (l))
 #define fiLIST_HEAD(r,t,l)	     ((r) = (t) (((FiList *)l)->data))
 #define fiLIST_TAIL(r,t,l)	     ((r) = (t) ((((FiList *)l)->next)))
+
+FiSInt fiSIntHashCombine(FiSInt h1, FiSInt h2);
 
 /******************************************************************************
  *

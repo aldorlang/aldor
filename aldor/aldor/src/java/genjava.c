@@ -3720,6 +3720,7 @@ struct gjBVal_info gjBValInfoTable[] = {
 	{FOAM_BVal_SIntAnd,      GJ_Op,     JCO_OP_And},
 	{FOAM_BVal_SIntOr,       GJ_Op,     JCO_OP_Or},
 	{FOAM_BVal_SIntXOr,      GJ_Op,     JCO_OP_XOr},
+	{FOAM_BVal_SIntHashCombine,GJ_Apply,0, "foamj.Math", "hashCombine"},
 
 	{FOAM_BVal_WordTimesDouble, GJ_NotImpl},
 	{FOAM_BVal_WordDivideDouble,GJ_NotImpl},

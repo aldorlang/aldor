@@ -11,6 +11,7 @@
 
 #include "axlobs.h"
 #include "comsgdb.h"
+#include "msg.h"
 
 enum comsgTag {
 	COMSG_REMARK,

@@ -3630,6 +3630,9 @@ struct foamBVal_info foamBValInfoTable[] = {
 			 0,2,{FOAM_SInt,FOAM_SInt},	     FOAM_SInt, 1, {0}},
  {FOAM_BVal_SIntXOr,	 0,"SIntXOr",
 			 0,2,{FOAM_SInt,FOAM_SInt},	     FOAM_SInt, 1, {0}},
+ {FOAM_BVal_SIntHashCombine,
+			 0,"SIntHashCombine",
+			 0,2,{FOAM_SInt,FOAM_SInt},	     FOAM_SInt, 1, {0}},
 
  {FOAM_BVal_WordTimesDouble,0,"WordTimesDouble",
                          0,2,{FOAM_Word,FOAM_Word},          FOAM_NOp,  2,

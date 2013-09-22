@@ -270,6 +270,7 @@ enum foamBValTag {
 		FOAM_BVal_SIntAnd,
 		FOAM_BVal_SIntOr,
 		FOAM_BVal_SIntXOr,
+		FOAM_BVal_SIntHashCombine,
 
 		FOAM_BVal_WordTimesDouble,
 		FOAM_BVal_WordDivideDouble,

@@ -12,6 +12,7 @@
 #include "spesym.h"
 #include "util.h"
 #include "comsg.h"
+#include "comsgdb.h"
 
 /*****************************************************************************
  *
