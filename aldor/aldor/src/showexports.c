@@ -70,19 +70,32 @@ main(int argc, char *argv[])
 	Stab stab = stabFile();
 	Syme syme = stabGetArchive(symInternConst("LIB"));
 	AbSyn arAbSyn = abNewId(sposNone, symInternConst("LIB"));
+	AbSyn boolean = abNewId(sposNone, symInternConst("Boolean"));
 
 	stabImportTForm(stab, tiGetTForm(stab, arAbSyn));
+	stabImportTForm(stab, tiGetTForm(stab, boolean));
 	abPutUse(ab, AB_Use_Value);
 	scopeBind(stab, ab);
 	typeInfer(stab, ab);
 	TForm tf = tiGetTForm(stab, ab);
+	aprintf("Type: %s Cat: %d\n", tfPretty(tf), tfSatCat(tf));
+	if (tfSatDom(tf)) {
+		SymeList list = tfGetCatExports(tf);
+		aprintf("Category\n");
+		for (; list != listNil(Syme); list = cdr(list)) {
+			Syme syme = car(list);
+			aprintf("%5s %3d %s\n", symeString(syme), symeHasDefault(syme),
+				tfPretty(symeType(syme)));
+		}
+	}
+	else {
+		SymeList list = tfStabGetDomImports(stab, tf);
 
-	SymeList list = tfStabGetDomImports(stab, tf);
-
-	for (; list != listNil(Syme); list = cdr(list)) {
-		Syme syme = car(list);
-		aprintf("%s %d %d %s\n", symeString(syme),
-			symeDefnNum(syme), symeConstNum(syme), tfPretty(symeType(syme)));
+		for (; list != listNil(Syme); list = cdr(list)) {
+			Syme syme = car(list);
+			aprintf("%s %d %d %s\n", symeString(syme),
+				symeDefnNum(syme), symeConstNum(syme), tfPretty(symeType(syme)));
+		}
 	}
 
 	scobindFiniFile();
