@@ -769,12 +769,12 @@ inclGetLine(FILE *file)
 	int     c;
 	String	s;
 
-	BUF_START(inclBuffer);
+	bufStart(inclBuffer);
 	while ((c = osGetc(file)) != EOF) {
-		BUF_ADD1(inclBuffer, c);
+		bufAdd1(inclBuffer, c);
 		if (c == '\n') break;
 	}
-	BUF_ADD1(inclBuffer, char0);
+	bufAdd1(inclBuffer, char0);
 
 	s = bufChars(inclBuffer);
 	if (c == EOF && *s == 0) return 0;

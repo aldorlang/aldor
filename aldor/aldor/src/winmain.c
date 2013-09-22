@@ -218,7 +218,7 @@ wglEvalLines(int editBox, int fromLine, int toLine)
     }
 
     bufPutc(evalBuf, EOF);    
-    BUF_START(evalBuf);
+    bufStart(evalBuf);
     osSetStdinBuffer(evalBuf);
     
     compGLoopEval(osStdin, osStdout, finfo);

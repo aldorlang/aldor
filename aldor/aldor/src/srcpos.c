@@ -241,15 +241,15 @@ sposTableToBuffer(Buffer buf)
 		bufWrULong(buf, gloLineTbl[i].flno);
 		s   = fnameDir(gloLineTbl[i].fn);
 		len = strlen(s);
-		BUF_PUT_SINT(buf, len);
+		bufPutSInt(buf, len);
 		bufWrChars(buf, len, s);
 		s   = fnameName(gloLineTbl[i].fn);
 		len = strlen(s);
-		BUF_PUT_SINT(buf, len);
+		bufPutSInt(buf, len);
 		bufWrChars(buf, len, s);
 		s   = fnameType(gloLineTbl[i].fn);
 		len = strlen(s);
-		BUF_PUT_SINT(buf, len);
+		bufPutSInt(buf, len);
 		bufWrChars(buf, len, s);		
 	}
 }
@@ -268,16 +268,20 @@ sposTableFrBuffer(Buffer buf)
 					 sizeof(GLine)*(gloArgc));
 	for (i = 0; i < gloArgc; i++) {
 		String	dir, name, type;
-		int	len;
+		ULong	len;
 
 		gloLineTbl[i].glno = bufRdULong(buf);
 		gloLineTbl[i].flno = bufRdULong(buf);
-		BUF_GET_SINT(buf, len);
+
+		len  = bufGetSInt(buf);
 		dir  = bufRdChars(buf, len);
-		BUF_GET_SINT(buf, len);
+
+		len  = bufGetSInt(buf);
 		name = bufRdChars(buf, len);
-		BUF_GET_SINT(buf, len);
+
+		len  = bufGetSInt(buf);
 		type = bufRdChars(buf, len);
+
 		gloLineTbl[i].fn   = fnameNew(dir, name, type);
 	}
 }
@@ -422,8 +426,8 @@ sposLineText(Buffer buf, SrcPos spos)
 	lno   = sposLine(spos);
 
 	/* Add null in case of errors. */
-	BUF_ADD1(buf, char0);
-	BUF_BACK1(buf);
+	bufAdd1(buf, char0);
+	bufBack1(buf);
 
 	if (fnameIsStdin(fname))
 		return -1;
@@ -448,9 +452,9 @@ sposLineText(Buffer buf, SrcPos spos)
 		do {
 			c = getc(f);
 			if (c == EOF) break;
-			BUF_ADD1(buf, c);
+			bufAdd1(buf, c);
 		} while (c != '\n');
-		BUF_ADD1(buf, char0);
+		bufAdd1(buf, char0);
 		rc = bufSize(buf);
 	}
 

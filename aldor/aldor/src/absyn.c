@@ -1368,7 +1368,7 @@ abToBuffer(Buffer buf, AbSyn ab)
 	AbSynTag	tag = abTag(ab);
 	UShort		i, argc;
 
-	BUF_PUT_BYTE(buf, tag);
+	bufPutByte(buf, tag);
 
 	switch (tag) {
 	case AB_Nothing:
@@ -1388,7 +1388,7 @@ abToBuffer(Buffer buf, AbSyn ab)
 
 	default:
 		argc = abArgc(ab);
-		BUF_PUT_HINT(buf, argc);
+		bufPutHInt(buf, argc);
 		for (i = 0; i < argc; i += 1)
 			abToBuffer(buf, abArgv(ab)[i]);
 	}
@@ -1402,7 +1402,7 @@ abFrBuffer(Buffer buf)
 	AbSyn	 ab;
 	AbSynTag tag;
 	int	 i, argc;
-	BUF_GET_BYTE(buf, tag);
+	tag = bufGetByte(buf);
 	switch (tag) {
 	case AB_Nothing:
 		ab = abNewNothing(sposNone);
@@ -1424,7 +1424,7 @@ abFrBuffer(Buffer buf)
 		ab = abNewLitFloat(sposNone, bufRdString(buf));
 		break;
 	default:
-		BUF_GET_HINT(buf, argc);
+		argc = bufGetHInt(buf);
 		ab = abNewEmpty(tag, argc);
 		for (i = 0; i < argc; i += 1)
 			abArgv(ab)[i] = abFrBuffer(buf);

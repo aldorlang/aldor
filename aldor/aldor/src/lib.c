@@ -740,15 +740,15 @@ libPutHeader(Lib lib)
 	if (libChkHeader(lib) == 0)
 		bug("bad header given to libPutHeader");
 
-	BUF_PUT_HINT(buf, lib->hdr.magic);
-	BUF_PUT_SINT(buf, lib->hdr.verMajor);
-	BUF_PUT_SINT(buf, lib->hdr.verMinor);
-	BUF_PUT_HINT(buf, lib->hdr.numSect);
+	bufPutHInt(buf, lib->hdr.magic);
+	bufPutSInt(buf, lib->hdr.verMajor);
+	bufPutSInt(buf, lib->hdr.verMinor);
+	bufPutHInt(buf, lib->hdr.numSect);
 
 	for( i = LIB_INDEX_START; i < LIB_INDEX_LIMIT; i += 1 ) {
-		BUF_PUT_BYTE(buf, libIndexSect(lib,i).name);
-		BUF_PUT_SINT(buf, libIndexSect(lib,i).offset);
-		BUF_PUT_SINT(buf, libIndexSect(lib,i).length);
+		bufPutByte(buf, libIndexSect(lib,i).name);
+		bufPutSInt(buf, libIndexSect(lib,i).offset);
+		bufPutSInt(buf, libIndexSect(lib,i).length);
 	}
 
 	LIB_SEEK(lib, long0);
@@ -772,17 +772,17 @@ libGetHeader(Lib lib)
 	FILE_GET_CHARS(lib->file, s, cc);
 	buf = bufCapture(s, cc);
 
-	BUF_GET_HINT(buf, lib->hdr.magic);
+	lib->hdr.magic = bufGetHInt(buf);
 
-	BUF_GET_SINT(buf, lib->hdr.verMajor);
-	BUF_GET_SINT(buf, lib->hdr.verMinor);
+	lib->hdr.verMajor = bufGetSInt(buf);
+	lib->hdr.verMinor = bufGetSInt(buf);
 
-	BUF_GET_HINT(buf, lib->hdr.numSect);
+	lib->hdr.numSect = bufGetHInt(buf);
 
 	for( i = LIB_INDEX_START; i < LIB_INDEX_LIMIT; i += 1 ) {
-		BUF_GET_BYTE(buf, libIndexSect(lib,i).name);
-		BUF_GET_SINT(buf, libIndexSect(lib,i).offset);
-		BUF_GET_SINT(buf, libIndexSect(lib,i).length);
+		libIndexSect(lib,i).name = bufGetByte(buf);
+		libIndexSect(lib,i).offset = bufGetSInt(buf);
+		libIndexSect(lib,i).length = bufGetSInt(buf);
 	}
 
 	/* Set up the section indices. */
@@ -888,7 +888,7 @@ libGetSection(Lib lib, LibSectName name, Bool stat)
 	}
 
 	FILE_GET_CHARS(lib->file, s, cc);
-	bufPosition(buf) = 0;
+	bufStart(buf);
 	return buf;
 }
 
@@ -1438,8 +1438,8 @@ libPutSymeNames(Lib lib)
 
 	if (!buf) return;
 
-	BUF_PUT_HINT(buf, symec);
-	BUF_PUT_HINT(buf, topc);
+	bufPutHInt(buf, symec);
+	bufPutHInt(buf, topc);
 
 	/* Write the syme name positions. */
 
@@ -1454,12 +1454,12 @@ libPutSymeNames(Lib lib)
 			tblSetElt(tbl, sym, (TblElt) (ULong) i);
 		else {
 			assert(pos < i);
-			BUF_PUT_HINT(buf, i);
-			BUF_PUT_HINT(buf, pos);
+			bufPutHInt(buf, i);
+			bufPutHInt(buf, pos);
 		}
 	}
 
-	BUF_PUT_HINT(buf, symec);
+	bufPutHInt(buf, symec);
 
 	/* Write the symbol names. */
 
@@ -1495,7 +1495,7 @@ libPutSymeKinds(Lib lib)
 		if (libSymeIsLocal(lib, syme))
 			kind = (UByte) symeKind(syme);
 
-		BUF_PUT_BYTE(buf, kind);
+		bufPutByte(buf, kind);
 	}
 
 	libPutSection(lib, LIB_Kind, buf);
@@ -1523,12 +1523,12 @@ libPutSymeFiles(Lib lib)
 			s = arToStringStatic(symeArchive(syme));
 
 		l = strLength(s) + 1;
-		BUF_PUT_HINT(buf, i);
-		BUF_PUT_BYTE(buf, kind);
+		bufPutHInt(buf, i);
+		bufPutByte(buf, kind);
 		bufWrChars(buf, l, s);
 	}
 
-	BUF_PUT_HINT(buf, symec);
+	bufPutHInt(buf, symec);
 
 	libPutSection(lib, LIB_File, buf);
 }
@@ -1554,12 +1554,12 @@ libPutSymeLazys(Lib lib)
 
 		assert(libCheckSymeNumber(lib, lsyme, n));
 
-		BUF_PUT_HINT(buf, i);
-		BUF_PUT_HINT(buf, n);
-		BUF_PUT_SINT(buf, hash);
+		bufPutHInt(buf, i);
+		bufPutHInt(buf, n);
+		bufPutSInt(buf, hash);
 	}
 
-	BUF_PUT_HINT(buf, symec);
+	bufPutHInt(buf, symec);
 
 	libPutSection(lib, LIB_Lazy, buf);
 }
@@ -1592,22 +1592,22 @@ libPutSymev(Lib lib)
 		if (symeIsSpecial(syme)) b |= LIB_SPECIAL_MASK;
 		if (symeHasDefault(symeOriginal(syme))) b |= LIB_DEF_MASK;
 		if (symeTop(syme)) b |= LIB_TOP_MASK;
-		BUF_PUT_BYTE(buf, b);
+		bufPutByte(buf, b);
 
 		l = symeTypeCode(syme);
-		BUF_PUT_SINT(buf, l);
+		bufPutSInt(buf, l);
 
 		l = lib->symep[i];
-		BUF_PUT_SINT(buf, l);
+		bufPutSInt(buf, l);
 
 		s = lib->codev[i];
-		BUF_PUT_HINT(buf, s);
+		bufPutHInt(buf, s);
 		
 		l = (ULong) symeConstInfo(syme);
-		BUF_PUT_SINT(buf, l);
+		bufPutSInt(buf, l);
 
 		l = symeHashNum(syme);
-		BUF_PUT_SINT(buf, l);
+		bufPutSInt(buf, l);
 
 		if (symeConstLib(syme)) {
 			Syme	lsyme = libLibrarySyme(symeConstLib(syme));
@@ -1616,7 +1616,7 @@ libPutSymev(Lib lib)
 		}
 		else
 			s = SYME_NUMBER_UNASSIGNED;
-		BUF_PUT_HINT(buf, s);
+		bufPutHInt(buf, s);
 
 		if (libSymeIsLocal(lib, syme) && symeExtension(syme)) {
 			Syme	xsyme = symeExtension(syme);
@@ -1626,7 +1626,7 @@ libPutSymev(Lib lib)
 		}
 		else
 			s = SYME_NUMBER_UNASSIGNED;
-		BUF_PUT_HINT(buf, s);
+		bufPutHInt(buf, s);
 	}
 
 	libPutSection(lib, LIB_Syme, buf);
@@ -1674,7 +1674,7 @@ libPutSymeTypes(Lib lib)
 
 	if (!buf) return;
 
-	BUF_PUT_SINT(buf, lib->typec);
+	bufPutSInt(buf, lib->typec);
 
 	for (symec = 0; symec < lib->symec; symec += 1) {
 		Syme	syme = lib->symev[symec];
@@ -1720,12 +1720,12 @@ libPutSymeSymes(Lib lib)
 		if (!libSymeIsLocal(lib, syme)) continue;
 
 		if (symes) {
-			BUF_PUT_HINT(buf, i);
+			bufPutHInt(buf, i);
 			symeListToBuffer(lib, buf, symes);
 		}
 	}
 
-	BUF_PUT_HINT(buf, symec);
+	bufPutHInt(buf, symec);
 
 	libPutSection(lib, LIB_Inline, buf);
 }
@@ -1746,7 +1746,7 @@ libPutSymeTwins(Lib lib)
 		if (!libSymeIsLocal(lib, syme)) continue;
 
 		if (symes) {
-			BUF_PUT_HINT(buf, i);
+			bufPutHInt(buf, i);
 			symeListToBuffer(lib, buf, symes);
 			if (DEBUG(libConst)) {
 				fprintf(dbOut, "(%d:", i); 
@@ -1759,7 +1759,7 @@ libPutSymeTwins(Lib lib)
 		}
 	}
 
-	BUF_PUT_HINT(buf, symec);
+	bufPutHInt(buf, symec);
 
 	libPutSection(lib, LIB_Twins, buf);
 }
@@ -1782,12 +1782,12 @@ libPutSymeExts(Lib lib)
 
 		symes = symeExtendee(syme);
 		if (symes) {
-			BUF_PUT_HINT(buf, i);
+			bufPutHInt(buf, i);
 			symeListToBuffer(lib, buf, symes);
 		}
 	}
 
-	BUF_PUT_HINT(buf, symec);
+	bufPutHInt(buf, symec);
 
 	libPutSection(lib, LIB_Extend, buf);
 }
@@ -1816,17 +1816,17 @@ libPutSymeDocs(Lib lib)
 			Length	l = docLength(doc);
 			Length  pos;
 			
-			BUF_PUT_HINT(buf, i);
+			bufPutHInt(buf, i);
 			pos = (Length) tblElt(tbl, (TblKey) doc,
 					      (TblElt) 0x7FFFFFFF);
-			BUF_PUT_SINT(buf, pos);
+			bufPutSInt(buf, pos);
 			if (pos == 0x7FFFFFFF)
 				bufWrChars(buf, l, s);
 			tblSetElt(tbl, (TblKey) doc, (TblElt) (UAInt) i);
 		}
 	}
 
-	BUF_PUT_HINT(buf, symec);
+	bufPutHInt(buf, symec);
 	tblFree(tbl);
 
 	libPutSection(lib, LIB_Doc, buf);
@@ -1950,8 +1950,8 @@ lib0GetSymeNames(Lib lib)
 
 	/* Allocate the short lib syme vector. */
 
-	BUF_GET_HINT(buf, symec);
-	BUF_GET_HINT(buf, topc);
+	symec = bufGetHInt(buf);
+	topc = bufGetHInt(buf);
 	lib->topc  = topc;
 	lib->symec = symec;
 	lib->symev = (Syme *) stoAlloc(OB_Other, topc * sizeof(Syme)); 
@@ -1964,7 +1964,7 @@ lib0GetSymeNames(Lib lib)
 	for (libGetSymeIndex(buf, i); i < topc; libGetSymeIndex(buf, i)) {
 		UShort	pos;
 
-		BUF_GET_HINT(buf, pos);
+		pos = bufGetHInt(buf);
 		assert(pos < i);
 		lib->symev[i] = (Syme) (ULong) pos;
 	}
@@ -2000,7 +2000,7 @@ lib0GetSymeKinds(Lib lib)
 		UByte	kind;
 		Syme	syme;
 
-		BUF_GET_BYTE(buf, kind);
+		kind = bufGetByte(buf);
 		if (kind == (UByte) SYME_LIMIT) continue;
 
 		syme = symeNewLib(kind, sym, tfUnknown, lib);
@@ -2021,7 +2021,7 @@ lib0GetSymeFiles(Lib lib, Bool wash)
 		Symbol	sym = (Symbol) lib->symev[i];
 		UByte	kind;
 
-		BUF_GET_BYTE(buf, kind);
+		kind = bufGetByte(buf);
 
 		/* Library symes on the next pass. */
 		if (kind == (UByte) SYME_Library)
@@ -2040,7 +2040,7 @@ lib0GetSymeFiles(Lib lib, Bool wash)
 	}
 	al = listNReverse(AInt)(al);
 
-	bufPosition(buf) = 0;
+	bufStart(buf);
 	j = wash ? 0 : topc;
 	for (libGetSymeIndex(buf, i); i < topc; libGetSymeIndex(buf, i)) {
 		Symbol	sym = (Symbol) lib->symev[i];
@@ -2049,7 +2049,7 @@ lib0GetSymeFiles(Lib lib, Bool wash)
 		for (; j <= i; j += 1)
 			lib->symev[j] = NULL;
 
-		BUF_GET_BYTE(buf, kind);
+		kind = bufGetByte(buf);
 
 		if (kind == (UByte) SYME_Library) {
 			String	name = bufGetString(buf);
@@ -2099,8 +2099,8 @@ lib0GetSymeLazys(Lib lib)
 		Hash	hash;
 		Lib	olib;
 
-		BUF_GET_HINT(buf, n);
-		BUF_GET_SINT(buf, hash);
+		n = bufGetHInt(buf);
+		hash = bufGetSInt(buf);
 
 		olib = symeLibrary(lib->symev[n]);
 		lib->symev[i] = libSymeSyme(lib, olib, sym, hash);
@@ -2123,23 +2123,23 @@ lib0GetSymev(Lib lib)
 		if (syme->kind == SYME_Trigger) {
 			bufSkip(buf, BYTE_BYTES);
 
-			BUF_GET_SINT(buf, l);
+			l = bufGetSInt(buf);
 			assert(symeHash(syme) == l);
 
 			bufSkip(buf, 3*SINT_BYTES + 3*HINT_BYTES);
 			continue;
 		}
 
-		BUF_GET_BYTE(buf, b);
+		b = bufGetByte(buf);
 		if (b & LIB_SPECIAL_MASK) symeSetSpecial(syme);
 		if (b & LIB_DEF_MASK) symeSetDefault(syme);
 		if (b & LIB_TOP_MASK) symeSetTop(syme);
 		assert((UByte) symeKind(syme) == (b & ~LIB_BITS_MASK));
 
-		BUF_GET_SINT(buf, l);
+		l = bufGetSInt(buf);
 		symeSetHash(syme, l);
 
-		BUF_GET_SINT(buf, l);
+		l = bufGetSInt(buf);
 		if (l == TYPE_NUMBER_UNASSIGNED)
 			/* Do nothing */;
 		else if (symeIsImport(syme)) {
@@ -2156,13 +2156,13 @@ lib0GetSymev(Lib lib)
 		/* Skip lib->codev[i]. */
 		bufSkip(buf, HINT_BYTES);
 
-		BUF_GET_SINT(buf, l);
+		l = bufGetSInt(buf);
 		constInfo = l;
 
-		BUF_GET_SINT(buf, l);
+		l = bufGetSInt(buf);
 		symeSetHashNum(syme, l);
 
-		BUF_GET_HINT(buf, s);
+		s = bufGetHInt(buf);
 		if (s != SYME_NUMBER_UNASSIGNED) {
 			assert(libCheckSymeNumber(lib, NULL, s));
 			assert(s < topc);
@@ -2173,7 +2173,7 @@ lib0GetSymev(Lib lib)
 		else 
 			constLib = NULL;
 
-		BUF_GET_HINT(buf, s);
+		s = bufGetHInt(buf);
 		if (s != SYME_NUMBER_UNASSIGNED) {
 			assert(libCheckSymeNumber(lib, NULL, s));
 			assert(s < topc);
@@ -2302,7 +2302,7 @@ lib0GetSymeDocs(Lib lib)
 		Syme	syme = lib->symev[i];
 		int 	dummy;
 		symeSetFieldTrigger(syme, SYFI_Comment);
-		BUF_GET_SINT(buf, dummy);
+		dummy = bufGetSInt(buf);
 		if (dummy == 0x7FFFFFFF)
 			bufGets(buf);
 	}
@@ -2430,8 +2430,8 @@ lib1GetSymeNames(Lib lib)
 
 	/* Allocate the syme vectors. */
 
-	BUF_GET_HINT(buf, symec);
-	BUF_GET_HINT(buf, topc);
+	symec = bufGetHInt(buf);
+	topc = bufGetHInt(buf);
 	lib->topc  = topc;
 	lib->symec = symec;
 	lib->symev = (Syme   *) stoAlloc(OB_Other, symec * sizeof(Syme)); 
@@ -2449,7 +2449,7 @@ lib1GetSymeNames(Lib lib)
 	for (libGetSymeIndex(buf, i); i < symec; libGetSymeIndex(buf, i)) {
 		UShort	pos;
 
-		BUF_GET_HINT(buf, pos);
+		pos = bufGetHInt(buf);
 		assert(pos < i);
 		lib->symev[i] = (Syme) (ULong) pos;
 	}
@@ -2489,7 +2489,7 @@ lib1GetSymeKinds(Lib lib)
 		UByte	kind;
 		Syme	syme;
 
-		BUF_GET_BYTE(buf, kind);
+		kind = bufGetByte(buf);
 		if (kind == (UByte) SYME_LIMIT) continue;
 
 		syme = symeNewLib(kind, sym, tfUnknown, lib);
@@ -2514,8 +2514,8 @@ lib1GetSymeLazys(Lib lib)
 			continue;
 		}
 
-		BUF_GET_HINT(buf, n);
-		BUF_GET_SINT(buf, hash);
+		n = bufGetHInt(buf);
+		hash = bufGetSInt(buf);
 
 		olib = symeLibrary(lib->symev[n]);
 		lib->symev[i] = libSymeSyme(lib, olib, sym, hash);
@@ -2538,41 +2538,41 @@ lib1GetSymev(Lib lib)
 		if (syme->kind == SYME_Trigger) {
 			bufSkip(buf, BYTE_BYTES);
 
-			BUF_GET_SINT(buf, l);
+			l = bufGetSInt(buf);
 			assert(symeHash(syme) == l);
 
-			BUF_GET_SINT(buf, l);
+			l = bufGetSInt(buf);
 			lib->symep[i] = l;
 
-			BUF_GET_HINT(buf, s);
+			s = bufGetHInt(buf);
 			lib->codev[i] = s;
 
 			bufSkip(buf, 2*SINT_BYTES + 2*HINT_BYTES);
 			continue;
 		}
 
-		BUF_GET_BYTE(buf, b);
+		b = bufGetByte(buf);
 		if (b & LIB_SPECIAL_MASK) symeSetSpecial(syme);
 		if (b & LIB_DEF_MASK) symeSetDefault(syme);
 		if (b & LIB_TOP_MASK) symeSetTop(syme);
 		assert((UByte) symeKind(syme) == (b & ~LIB_BITS_MASK));
 
-		BUF_GET_SINT(buf, l);
+		l = bufGetSInt(buf);
 		symeSetHash(syme, l);
 
-		BUF_GET_SINT(buf, l);
+		l = bufGetSInt(buf);
 		lib->symep[i] = l;
 
-		BUF_GET_HINT(buf, s);
+		s = bufGetHInt(buf);
 		lib->codev[i] = s;
 
-		BUF_GET_SINT(buf, l);
+		l = bufGetSInt(buf);
 		constInfo = l;
 
-		BUF_GET_SINT(buf, l);
+		l = bufGetSInt(buf);
 		symeSetHashNum(syme, l);
 
-		BUF_GET_HINT(buf, s);
+		s = bufGetHInt(buf);
 		if (s != SYME_NUMBER_UNASSIGNED) {
 			assert(libCheckSymeNumber(lib, NULL, s));
 			constLib = symeLibrary(lib->symev[s]);
@@ -2581,7 +2581,7 @@ lib1GetSymev(Lib lib)
 			constLib = lib;
 		else
 			constLib = 0;
-		BUF_GET_HINT(buf, s);
+		s = bufGetHInt(buf);
 		if (s != SYME_NUMBER_UNASSIGNED) {
 			assert(libCheckSymeNumber(lib, NULL, s));
 			symeSetExtension(syme, (s << 1) | 1 );
@@ -2733,7 +2733,7 @@ lib1GetSymeDocs(Lib lib)
 		Doc	doc;
 		int	pos;
 
-		BUF_GET_SINT(buf, pos);
+		pos = bufGetSInt(buf);
 		assert(pos < i || pos == 0x7FFFFFFF);
 		if (pos == 0x7FFFFFFF)
 			doc = docNewFrString(bufGetString(buf));
@@ -2854,7 +2854,7 @@ libGetSymeType(Lib lib, int num)
 	if (!(0 <= num && num < lib->typec))
 		return 0;
 
-	bufPosition(lib->typeb) = lib->typep[num];
+	bufSetPosition(lib->typeb, lib->typep[num]);
 	lib->typev[num] = tformFrBuffer(lib, lib->typeb);
 	lib1FillTypeNumbers(lib, num);
 
@@ -2995,7 +2995,7 @@ libPutFoamSymes(Lib lib, Foam foam)
 			assert(foamIsDecl(decl));
 			syme = foamSyme(decl);
 			n = syme ? symeLibNum(syme) : SYME_NUMBER_UNASSIGNED;
-			BUF_PUT_HINT(buf, n);
+			bufPutHInt(buf, n);
 		}
 	}
 
@@ -3071,7 +3071,7 @@ libGetFoamSymes(Lib lib)
 		for (j = 0; j < declc; j += 1) {
 			decl = declv[j];
 			assert(foamIsDecl(decl));
-			BUF_GET_HINT(buf, n);
+			n = bufGetHInt(buf);
 			if (n != SYME_NUMBER_UNASSIGNED)
 				foamSyme(decl) = lib->symev[n];
 		}
