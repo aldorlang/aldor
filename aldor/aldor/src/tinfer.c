@@ -334,9 +334,7 @@ tiWithSymes(Stab stab, TForm context)
 		TForm		tf   = symeType(syme);
 
 		if (DEBUG(tipAdd)) {
-			fprintf(dbOut, "  looking for: ");
-			symePrint(dbOut, syme);
-			fnewline(dbOut);
+			afprintf(dbOut, "  looking for: %pSyme\n", syme);
 		}
 
 		/* Look for syme in the capsule. */
