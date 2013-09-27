@@ -1,0 +1,51 @@
+pre.code-dark {
+	background-color: #2e2e2e;
+	color: #fff;
+	font: 90% DejaVu Sans Mono, monospace;
+	white-space: pre;
+}
+
+pre, code {
+	font: 90% DejaVu Sans Mono, monospace;
+}
+
+pre {
+	white-space: pre-wrap;
+}
+
+div#code0
+,div#code1
+,div#code2
+,div#code3
+,div#code4
+,div#code5
+,div#code6
+,div#code7
+{
+	display: none;
+}
+
+pre.verbatim {
+	margin-left: 18px;
+}
+
+pre.code-block {
+	margin: 0 15px 18px 10px;
+	padding: 1em;
+	color: #ffffff;
+	background-color: #262626;
+	white-space: pre-wrap;
+}
+
+.Comment { color: #af5f00; font-style: italic; }
+.Conceal { color: #00afff; }
+.Constant { color: #ffaf5f; }
+.Identifier { color: #af5f5f; }
+.Include { color: #00af00; }
+.Number { color: #ff5f5f; }
+.PreProc { color: #00af5f; }
+.SpecialChar { color: #af5fff; background-color: #262626; padding-bottom: 1px; }
+.Special { color: #af5fff; }
+.Statement { color: #00afff; }
+.String { color: #ffaf5f; background-color: #262626; padding-bottom: 1px; }
+.Type { color: #ff5fff; }

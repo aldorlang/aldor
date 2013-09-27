@@ -46,7 +46,7 @@ a img {
 }
 
 p {
-	margin: 0 15px 18px 10px;
+	margin: 0 15px 0.5em 10px;
 }
 
 h1 {
@@ -91,7 +91,6 @@ h4 {
 
 blockquote {
 	font-size: 0.9em;
-   background-color: #f3f3f3;
 	border: 1px solid #dadada;
 	margin: 20px 10px;
 	padding: 8px;
@@ -303,6 +302,8 @@ td.release {
 
 ul {
 	padding-left: 2.0em;
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
 }
 
 .centered-image {
