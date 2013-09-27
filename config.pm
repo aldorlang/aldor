@@ -6,6 +6,7 @@
 
 	menubar => [
 		["Home"],
+		[contact => "Contact"],
 	],
 }
 
