@@ -6,6 +6,7 @@
 
 	menubar => [
 		["Home"],
+		[eval => "Try Online"],
 		[contact => "Contact"],
 	],
 }
