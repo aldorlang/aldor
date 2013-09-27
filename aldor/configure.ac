@@ -26,19 +26,21 @@ AC_ARG_ENABLE([libraries],
                               [Do not build Aldor libraries])],
               [AM_CONDITIONAL(BUILD_LIBS, false)],
               [AM_CONDITIONAL(BUILD_LIBS, true)])
-
+ 
+AC_CHECK_PROGS([JAVAC], [javac], [no])
 AC_ARG_ENABLE([java],
               [AS_HELP_STRING([--disable-java],
                               [Do not build Aldor Java libraries])],
-              [AM_CONDITIONAL(BUILD_JAVA, false)],
-              [AM_CONDITIONAL(BUILD_JAVA, true)])
+              [BUILD_JAVA=false],
+              [BUILD_JAVA=true])
+
+AM_CONDITIONAL(BUILD_JAVA, test $JAVAC != no -a $BUILD_JAVA = true)
 
 AC_ARG_WITH([boehm-gc],
             [AS_HELP_STRING([--with-boehm-gc],
                             [Use Boehm Garbage Collector instead of built-in])],
             [CFLAGS="$CFLAGS -DSTO_USE_BOEHM"
-             LIBS="$LIBS -lgc"
-            ])
+             LIBS="$LIBS -lgc"])
 
 # Checks for libraries.
 LT_INIT

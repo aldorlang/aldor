@@ -151,18 +151,19 @@ $1.dep: $(addsuffix .dep,$($1_deps))
 endef
 
 $(addsuffix .dep,$(alldomains) $(SUBLIB)): 
-	$(AM_V_DEP)set -e;					\
-	truncate --size 0 $@_tmp;				\
-	for i in $(filter %.dep, $^); do			\
-	   d=$$(basename $$i .dep);				\
-	   cat $$i >> $@_tmp; echo $(basename $$d )>> $@_tmp;	\
-	done;							\
-	if test ! -f $@; then					\
-	   mv $@_tmp $@;					\
-	elif diff $@ $@_tmp > /dev/null; then			\
-	   mv $@_tmp $@;					\
-	else							\
-	   rm $@_tmp;						\
+	$(AM_V_DEP)set -e;			\
+	true > $@_tmp;				\
+	for i in $(filter %.dep, $^); do	\
+	   d=$$(basename $$i .dep);		\
+	   cat $$i >> $@_tmp;			\
+	   echo $(basename $$d) >> $@_tmp;	\
+	done;					\
+	if test ! -f $@; then			\
+	   mv $@_tmp $@;			\
+	elif diff $@ $@_tmp > /dev/null; then	\
+	   mv $@_tmp $@;			\
+	else					\
+	   rm $@_tmp;				\
 	fi
 
 $(foreach l,$(alldomains), $(eval $(call dep_template,$(l))))
