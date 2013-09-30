@@ -877,12 +877,9 @@ void terrorSequence(Stab stab, AbSyn absyn, TForm type)
 	}
 
 	if (!abExitsList) {
-		String	msg = "no exit list for terrorSequence (ooops)";
-		comsgFatal(absyn, ALDOR_F_Bug, msg);
-#if 0
-		bug("terrorSequence: no exit list (ooops)\n");
+		comsgError(absyn, ALDOR_E_ExplicitMsg,
+			   "Unable to determine return type");
 		return;
-#endif
 	}
 
 	bputFirstExitTypes(car(abExitsList), "exit");
