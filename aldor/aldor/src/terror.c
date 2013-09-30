@@ -1554,7 +1554,9 @@ bputBadArgType0(TRejectInfo trInfo, Stab stab, Buffer obuf, AbSyn ab, AbSyn op,
 		    trArgN(tr) != trArgN(trFirst(trInfo)))
 			break;
 
-		opType  = tfFollow(trType(tr));
+		opType  = tfDefineeType(trType(tr));
+		if (tfIsDeclare(opType))
+			opType = tfDeclareType(opType);
 		argc0   = tfMapHasDefaults(opType) ? tfMapArgc(opType) : argc;
 		argType = tfMapArg(opType);
 
