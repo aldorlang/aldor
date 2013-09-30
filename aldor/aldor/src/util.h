@@ -114,6 +114,8 @@ extern void	lisort		(Pointer base, Length n, Length sz,
 #define	hashCombine(h1, h2) \
 	(((h1) ^ ((h1) << 8)) + ((h2) + 200041) & 0x3FFFFFFF)
 
+extern int hashCombinePair(int h1, int h2);
+
 /******************************************************************************
  *
  * :: Memory operations

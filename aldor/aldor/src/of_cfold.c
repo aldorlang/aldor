@@ -728,7 +728,7 @@ cfoldBCall(Foam bcall)
 		if (!cfoldFoldAll) break;
 		assert(foamTag(argv[0]) == FOAM_SInt);
 		assert(foamTag(argv[1]) == FOAM_SInt);
-		foam = foamNewSInt(hashCombine(argv[0]->foamSInt.SIntData,
+		foam = foamNewSInt(hashCombinePair(argv[0]->foamSInt.SIntData,
 					       argv[1]->foamSInt.SIntData));
 		break;
 
