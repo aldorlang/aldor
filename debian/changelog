@@ -1,3 +1,12 @@
+aldor (1.2.0+20131001) precise; urgency=low
+
+  * Fixes for mutually dependent domains.
+  * Emit $base-aldormain.c instead of just aldormain.c with -Fmain.
+  * Better type inference in conditionals.
+  * Various minor fixes and library additions.
+
+ -- Pippijn van Steenhoven <pip88nl@gmail.com>  Tue, 01 Oct 2013 20:04:21 +0200
+
 aldor (1.2.0+20130806) precise; urgency=low
 
   * Build libraries with -Wcheck.
