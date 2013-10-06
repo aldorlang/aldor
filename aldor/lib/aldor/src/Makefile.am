@@ -38,6 +38,7 @@ libaldor_a_SOURCES =	\
 	base/sal_syntax.c	\
 	base/sal_torder.c	\
 	base/sal_tstream.c	\
+	datastruc/ald_flags.c	\
 	datastruc/ald_symbol.c	\
 	datastruc/ald_symtab.c	\
 	datastruc/sal_array.c	\
