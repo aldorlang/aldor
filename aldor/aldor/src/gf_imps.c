@@ -78,6 +78,7 @@ gen0InitImport(Syme syme)
 	int  idx;
 
  	exporter = symeExporter(syme);
+	syme = symeExportingSyme(syme);
 
 	idx = gen0MoveToImportPlace(&ss, symeLexLevel);
 
