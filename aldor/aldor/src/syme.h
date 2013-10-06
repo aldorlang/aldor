@@ -307,6 +307,7 @@ extern Hash		symeHashFn		(Syme);
 #define			symeHash(syme)		((syme)->hash)
 
 extern TForm		symeType		(Syme);
+extern Syme		symeExportingSyme	(Syme);
 extern TForm		symeExporter		(Syme);
 extern SymeList		symeExtendee		(Syme);
 extern Doc		symeComment		(Syme);

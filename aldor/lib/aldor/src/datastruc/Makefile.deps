@@ -32,3 +32,5 @@ ald_symbol_deps := sal_hash
 ald_symtab_deps := ald_symbol sal_hash
 
 sal_fold_deps := sal_list
+
+ald_flags_deps := sal_list sal_barray

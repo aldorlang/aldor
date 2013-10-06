@@ -877,12 +877,9 @@ void terrorSequence(Stab stab, AbSyn absyn, TForm type)
 	}
 
 	if (!abExitsList) {
-		String	msg = "no exit list for terrorSequence (ooops)";
-		comsgFatal(absyn, ALDOR_F_Bug, msg);
-#if 0
-		bug("terrorSequence: no exit list (ooops)\n");
+		comsgError(absyn, ALDOR_E_ExplicitMsg,
+			   "Unable to determine return type");
 		return;
-#endif
 	}
 
 	bputFirstExitTypes(car(abExitsList), "exit");
@@ -1554,7 +1551,9 @@ bputBadArgType0(TRejectInfo trInfo, Stab stab, Buffer obuf, AbSyn ab, AbSyn op,
 		    trArgN(tr) != trArgN(trFirst(trInfo)))
 			break;
 
-		opType  = tfFollow(trType(tr));
+		opType  = tfDefineeType(trType(tr));
+		if (tfIsDeclare(opType))
+			opType = tfDeclareType(opType);
 		argc0   = tfMapHasDefaults(opType) ? tfMapArgc(opType) : argc;
 		argType = tfMapArg(opType);
 

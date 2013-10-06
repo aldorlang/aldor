@@ -63,7 +63,7 @@ foamSigHash(FoamSig s1)
 	Hash h = s1->retType;;
 	ltmp = s1->inArgs;
 	while (ltmp) {
-		h = hashCombine(h, car(ltmp));
+		h = hashCombinePair(h, car(ltmp));
 		ltmp = cdr(ltmp);
 	}
 	return h;

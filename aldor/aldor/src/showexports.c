@@ -5,6 +5,7 @@
 #include "token.h"
 #include "stab.h"
 #include "tform.h"
+#include "tqual.h"
 #include "tinfer.h"
 #include "srcpos.h"
 #include "srcline.h"
@@ -89,12 +90,22 @@ main(int argc, char *argv[])
 		}
 	}
 	else {
+		aprintf(">>> Exports\n");
 		SymeList list = tfStabGetDomImports(stab, tf);
 
 		for (; list != listNil(Syme); list = cdr(list)) {
 			Syme syme = car(list);
 			aprintf("%s %d %d %s\n", symeString(syme),
 				symeDefnNum(syme), symeConstNum(syme), tfPretty(symeType(syme)));
+		}
+
+		TQualList tqList;
+		aprintf(">>> Cascades\n");
+		tqList = tfGetDomCascades(tf);
+
+		for (; tqList != listNil(TQual); tqList = cdr(tqList)) {
+			TQual tq = car(tqList);
+			aprintf("--> %pTForm\n", tfPretty(tqBase(tq)));
 		}
 	}
 

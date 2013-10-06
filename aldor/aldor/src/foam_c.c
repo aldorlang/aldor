@@ -2592,5 +2592,5 @@ FiSInt fiCounter()
 
 FiSInt fiSIntHashCombine(FiSInt h1, FiSInt h2)
 {
-	return hashCombine(h1, h2);
+	return hashCombinePair(h1, h2);
 }

@@ -305,6 +305,13 @@ symeType(Syme syme)
 TForm
 symeExporter(Syme syme)
 {
+	assert(symeIsImport(syme));
+	return (TForm) symeGetField(symeExportingSyme(syme), SYFI_Exporter);
+}
+
+Syme
+symeExportingSyme(Syme syme)
+{
 	Syme	ext;
 
 	assert(symeIsImport(syme));
@@ -312,9 +319,9 @@ symeExporter(Syme syme)
 	/* Use the exporter of the extension if present. */
 	ext = symeExtension(syme);
 	if (ext && symeIsImport(ext))
-		return symeExporter(ext);
+		return symeExportingSyme(ext);
 
-	return (TForm) symeGetField(syme, SYFI_Exporter);
+	return syme;
 }
 
 SymeList

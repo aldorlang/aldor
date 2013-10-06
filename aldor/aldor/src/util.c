@@ -449,3 +449,61 @@ ubPrintBits0(int n, UByte *ub)
 		ubPrintUByteBits(ub[i]);
 	printf("]");
 }
+
+
+int
+hashCombinePair(int i1, int i2)
+{
+	/* http://opendatastructures.org/ods-java/5_3_Hash_Codes.html */
+	assert(sizeof(long) >= 8);
+	long z1 = 0x419ac241;
+	long z2 = 0x5577f8e1;
+	long zz = 0x440badfc05072367;
+
+        long h1 = i1 & ((1L<<32)-1);
+        long h2 = i2 & ((1L<<32)-1);
+
+        int tmp = (int)(((z1*h1 + z2*h2) * zz) >> 32);
+
+	return tmp & 0x3FFFFFFF;
+}
+
+/* Used this for digging out random numbers:
+
+long gcd(long a, long b)
+{
+	if (a < 0) a = -a;
+	if (b < 0) b = -b;
+
+	while (b != 0) {
+		long t = a;
+		a = b;
+		b = t % b;
+	}
+	return a;
+}
+
+
+int main(int argc, char *argv[])
+{
+	while (1) {
+		long h1 = rand();
+		long h2 = rand();
+		long h3 = ((long) rand()) << 32 | rand();
+
+		int g1 = gcd(h1, h2);
+		int g2 = gcd(h2, h3);
+		int g3 = gcd(h1, h3);
+
+		if (g1 + g2 + g3 == 3) {
+			printf("%lx %lx %lx\n", h1, h2, h3);
+		}
+	}
+}
+*/
+
+  /*****************************************************************************
+   *
+   * :: Strings
+   *
+   ****************************************************************************/
