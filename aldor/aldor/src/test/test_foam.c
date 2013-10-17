@@ -104,68 +104,52 @@ testHash()
 	testIntEqual("UTS", 585167620, hUTS);
 	testIntEqual("->", 51489085, hMapping);
 /*(HASH 869829933 134808007 (|Fraction| (|Integer|))) */
-	testIntEqual("FR_INT", 869829933, oldHashCombine(hINT, hFRAC));
+	testIntEqual("FR_INT", 850477418, hashCombinePair(hINT, hFRAC));
 
 /*(HASH 1027140807 134808007 (|Mapping| $ $)) */
-	testIntEqual("X -> X", 1027140807, oldHashCombine(134808007,
-							  oldHashCombine(twist,
-									 oldHashCombine(134808007, hMapping))));
+	testIntEqual("X -> X", 1021768245, hashCombinePair(134808007,
+							  hashCombinePair(twist,
+									  hashCombinePair(134808007, hMapping))));
 
 /*(HASH 476114119 134808007 (|Mapping| $ $ $)) */
-	testIntEqual("(X, X) -> X", 476114119,
-		     oldHashCombine(134808007,
-				    oldHashCombine(twist, oldHashCombine(134808007,
-									 oldHashCombine(134808007, hMapping)))));
+	testIntEqual("(X, X) -> X", 898414238,
+		     hashCombinePair(134808007,
+				 hashCombinePair(twist, hashCombinePair(134808007,
+									hashCombinePair(134808007, hMapping)))));
 
 /*(HASH 200862919 134808007 (|Mapping| $ (|Integer|) $)) */
 
-	testIntEqual("T1", 200862919,
-		     oldHashCombine(134808007,
-				    oldHashCombine(twist, oldHashCombine(134808007,
-									 oldHashCombine(hINT, hMapping)))));
+	testIntEqual("T1", 972614544,
+		     hashCombinePair(134808007,
+				     hashCombinePair(twist, hashCombinePair(134808007,
+									 hashCombinePair(hINT, hMapping)))));
 
 /*(HASH 134808007 0 (|UnivariateLaurentSeries| (|Fraction| (|Integer|)) |z| (0 . 1))) */
 
-	AInt hULS_FI = oldHashCombine(7, oldHashCombine(7,
-							oldHashCombine(oldHashCombine(hINT, hFRAC),
-								       hULS)));
-	testIntEqual("HULS_FI", 134808007, hULS_FI);
+	AInt hULS_FI = hashCombinePair(7, hashCombinePair(7,
+							  hashCombinePair(hashCombinePair(hINT, hFRAC),
+									  hULS)));
+	testIntEqual("HULS_FI", 794083080, hULS_FI);
 
 /*
 (HASH 350552519 134808007
  (|UnivariateTaylorSeries| (|Fraction| (|Integer|)) |z| (0 . 1)))
 */
-	AInt hUTS_FI = oldHashCombine(7, oldHashCombine(7,
-							oldHashCombine(oldHashCombine(hINT, hFRAC),
-								       hUTS)));
-	testIntEqual("HUTS_FI", 350552519, hUTS_FI);
+	AInt hUTS_FI = hashCombinePair(7, hashCombinePair(7,
+							  hashCombinePair(hashCombinePair(hINT, hFRAC),
+									  hUTS)));
+	testIntEqual("HUTS_FI", 659312886, hUTS_FI);
 
 /*(HASH 476114119 134808007
         (|Mapping| $ (|UnivariateTaylorSeries| (|Fraction| (|Integer|)) |z| (0 . 1)) $))
 */
-	testIntEqual("(UTS_FI, X) -> X", 476114119,
-		     oldHashCombine(hULS_FI,
-				    oldHashCombine(twist, oldHashCombine(hULS_FI,
-									 oldHashCombine(hUTS_FI, hMapping)))));
+	testIntEqual("(UTS_FI, X) -> X", 937065739,
+		     hashCombinePair(hULS_FI,
+				     hashCombinePair(twist, hashCombinePair(hULS_FI,
+									    hashCombinePair(hUTS_FI, hMapping)))));
 /* Clash: UTS_FI/ULS_FI */
-	testIntEqual("(X, X) -> X", 476114119,
-		     oldHashCombine(134808007,
-				    oldHashCombine(twist, oldHashCombine(134808007,
-									 oldHashCombine(134808007, hMapping)))));
-	/*
-	 * ++ New hash function
-	 */
-	int nULS_FI = hashCombinePair(7, hashCombinePair(7,
-						 hashCombinePair(hashCombinePair(hINT, hFRAC),
-							     hUTS)));
-	int nUTS_FI = hashCombinePair(7, hashCombinePair(7,
-						 hashCombinePair(hashCombinePair(hINT, hFRAC),
-							     hULS)));
-	int nMap_X_X_to_X = hashCombinePair(nULS_FI,
-					   hashCombinePair(twist, hashCombinePair(nULS_FI,
-										hashCombinePair(nULS_FI, hMapping))));
-	int nMap_T_X_to_X = hashCombinePair(nULS_FI,
-					   hashCombinePair(twist, hashCombinePair(nULS_FI,
-										hashCombinePair(nUTS_FI, hMapping))));
-	testTrue("%d %d\n", nMap_T_X_to_X != nMap_X_X_to_X);
+	testIntEqual("(X, X) -> X", 898414238,
+		     hashCombinePair(134808007,
+				    hashCombinePair(twist, hashCombinePair(134808007,
+									 hashCombinePair(134808007, hMapping)))));
 }

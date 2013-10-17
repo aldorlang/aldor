@@ -2499,7 +2499,7 @@ gen0CombineHash(Foam hash1, Foam hash0)
         return gen0BuiltinCCall(FOAM_SInt, "combineHash", "runtime",
                                hash1, hash0);
 #endif
-        bcall = foamNew(FOAM_BCall, 3, FOAM_BVal_SIntHashCombine, hash0, hash1);
+        bcall = foamNew(FOAM_BCall, 3, FOAM_BVal_SIntHashCombine, hash1, hash0);
 
         return bcall;
 }
