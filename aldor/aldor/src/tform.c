@@ -4099,7 +4099,7 @@ tfGetCatExportsCond(SymeList symes0, SefoList conds0, Bool pos)
 	 */
 	for (symes = symes0; symes; symes = cdr(symes)) {
 		Syme nsyme = symeCopy(car(symes));
-		for (conds = reversedConds0; reversedConds0; reversedConds0 = cdr(reversedConds0)) {
+		for (conds = reversedConds0; conds; conds = cdr(conds)) {
 			symeAddCondition(nsyme, car(conds), pos);
 		}
 		nsymes = listCons(Syme)(nsyme, nsymes);
