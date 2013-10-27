@@ -137,7 +137,7 @@ testSFloParts(FiSFlo sf, BInt integer, FiSFlo frac)
 	if (strEqual(strOrig, strNew))
 		return true;
 
-	fprintf(dbOut, "testSFloParts failed: [%s] != [%s]\n", strOrig,strNew);
+	printf("testSFloParts failed: [%s] != [%s]\n", strOrig,strNew);
 	return false;
 }
 
@@ -162,7 +162,7 @@ testDFloParts(FiDFlo df, BInt integer, FiDFlo frac)
 	if (strEqual(strOrig, strNew))
 		return true;
 
-	fprintf(dbOut, "testDFloParts failed: [%s] != [%s]\n", strOrig,strNew);
+	printf("testDFloParts failed: [%s] != [%s]\n", strOrig,strNew);
 	return false;
 }
 
@@ -172,25 +172,25 @@ testPrevNext()
 	FiSFlo	sf0, sf1;
 	FiDFlo	df0, df1;
 
-	fprintf(dbOut, "Starting prev/next test. (Please, wait!)\n");
+	printf("Starting prev/next test. (Please, wait!)\n");
 
-	fprintf(dbOut, "SFlo Range [0.01, 0.010001]\n");
+	printf("SFlo Range [0.01, 0.010001]\n");
 	sf0 = 0.01f; sf1 = 0.010001f;
 	testSFloInRange(&sf0, &sf1);
 
-	fprintf(dbOut, "SFlo Range [100.0, 100.1]\n");
+	printf("SFlo Range [100.0, 100.1]\n");
 	sf0 = 100.0f; sf1 = 100.1f;
 	testSFloInRange(&sf0, &sf1);
 
-	fprintf(dbOut, "SFlo Range [2.0e-38, 2.0001e-38]\n");
+	printf("SFlo Range [2.0e-38, 2.0001e-38]\n");
 	sf0 = 2.0e-38f; sf1 = 2.0001e-38f;
 	testSFloInRange(&sf0, &sf1);
 
-	fprintf(dbOut, "DFlo Range [0.01, 0.010000000000001]\n");
+	printf("DFlo Range [0.01, 0.010000000000001]\n");
 	df0 = 0.01; df1 = 0.0100000000001;
 	testDFloInRange(&df0, &df1);
 
-	fprintf(dbOut, "DFlo Range [100.0, 100.00000000001]\n");
+	printf("DFlo Range [100.0, 100.00000000001]\n");
 	df0 = 100.0; df1 = 100.000000001;
 	testDFloInRange(&df0, &df1);
 }
@@ -200,45 +200,45 @@ testRound()
 {
 	int   i, sign;
 
-	fprintf(dbOut, "------------ Rounding (SFlo): ------------\n");
+	printf("------------ Rounding (SFlo): ------------\n");
 
 	for (sign = 0; sign < 2; sign++)
 		for (i = 0; i < sizeof(fv) / sizeof(FiSFlo); i++) {
 			FiSFlo	sf = (sign? -fv[i] : fv[i]);
-			fprintf(dbOut, "Orig: %f \n", sf);
-			fprintf(dbOut, " up:\t"); 
+			printf("Orig: %f \n", sf);
+			printf(" up:\t"); 
 			bintPrintDb(fiSFloRound(sf, fiRoundUp()));
-			fprintf(dbOut, " down:\t"); 
+			printf(" down:\t"); 
 			bintPrintDb(fiSFloRound(sf, fiRoundDown()));
-			fprintf(dbOut, " zero:\t"); 
+			printf(" zero:\t"); 
 			bintPrintDb(fiSFloRound(sf, fiRoundZero()));
-			fprintf(dbOut, " nearest:\t"); 
+			printf(" nearest:\t"); 
 			bintPrintDb(fiSFloRound(sf, fiRoundNearest()));
-			fprintf(dbOut, " any:\t"); 
+			printf(" any:\t"); 
 			bintPrintDb(fiSFloRound(sf, fiRoundDontCare()));
 		} 
 
-	fprintf(dbOut, "------------ Rounding (DFlo): ------------\n");
+	printf("------------ Rounding (DFlo): ------------\n");
 
 
 	for (sign = 0; sign < 2; sign++)
 		for (i = 0; i < sizeof(fv) / sizeof(FiSFlo); i++) {
 			FiDFlo	df = (FiDFlo) (sign? -fv[i] : fv[i]);
-			fprintf(dbOut, "Orig: %f \n", df);
-			fprintf(dbOut, " up:\t"); 
+			printf("Orig: %f \n", df);
+			printf(" up:\t"); 
 			bintPrintDb(fiDFloRound(df, fiRoundUp()));
-			fprintf(dbOut, " down:\t"); 
+			printf(" down:\t"); 
 			bintPrintDb(fiDFloRound(df, fiRoundDown()));
-			fprintf(dbOut, " zero:\t"); 
+			printf(" zero:\t"); 
 			bintPrintDb(fiDFloRound(df, fiRoundZero()));
-			fprintf(dbOut, " nearest:\t"); 
+			printf(" nearest:\t"); 
 			bintPrintDb(fiDFloRound(df, fiRoundNearest()));
-			fprintf(dbOut, " no care:\t"); 
+			printf(" no care:\t"); 
 			bintPrintDb(fiDFloRound(df, fiRoundDontCare()));
 
 		} 
 
-	fprintf(dbOut, "---------- Rounding tests finished. --------------\n");
+	printf("---------- Rounding tests finished. --------------\n");
 
 }
 
@@ -277,37 +277,37 @@ testInteractive()
 
 	while (1) {
 
-		fprintf(dbOut, "\nEnter a single float: ");
+		printf("\nEnter a single float: ");
 		IgnoreResult(scanf("%f", &sfl));
 
-		fprintf(dbOut, "\ntrunc(%.*g) = ", 9, sfl);
+		printf("\ntrunc(%.*g) = ", 9, sfl);
 
 		bi = (BInt) fiSFloTruncate(sfl);
 		bintPrint(osStdout, bi);
 
 		sfrac = fiSFloFraction(sfl);
-		fprintf(dbOut, "\nfrac = %g \n", sfrac);
+		printf("\nfrac = %g \n", sfrac);
 
 		testSFloParts(sfl, bi, sfrac);
 
 		sfl0 = fiSFloNext(sfl);
-		fprintf(dbOut, "Next: %.*g (eq = %d)\n", 9, sfl0, sfl == sfl0);
+		printf("Next: %.*g (eq = %d)\n", 9, sfl0, sfl == sfl0);
 
-		fprintf(dbOut, "\nEnter a double float: ");
+		printf("\nEnter a double float: ");
 		IgnoreResult(scanf("%lf", &dfl));
 
-		fprintf(dbOut, "\ntrunc(%.*g) = ", 50, dfl);
+		printf("\ntrunc(%.*g) = ", 50, dfl);
 
 		bi = (BInt) fiDFloTruncate(dfl);
 		bintPrint(osStdout, bi);
 
 		dfrac = fiDFloFraction(dfl);
-		fprintf(dbOut, "\nfrac = %g \n", dfrac);
+		printf("\nfrac = %g \n", dfrac);
 
 		testDFloParts(dfl, bi, dfrac);
 
 		dfl0 = fiDFloNext(dfl);
-		fprintf(dbOut, "Next: %.*g (diff = %.*g)\n", 50, dfl0, 50, dfl0 - dfl);
+		printf("Next: %.*g (diff = %.*g)\n", 50, dfl0, 50, dfl0 - dfl);
 
 		/* for (i = 0; i < sizeof(FiDFlo) */
 	}
@@ -320,7 +320,7 @@ testTruncate()
 	int 	sign, i;
 	Bool	stateOk = true;
 
-	fprintf(dbOut, "Starting truncate self-test...\n");
+	printf("Starting truncate self-test...\n");
 
 	for (sign = 0; sign < 2; sign++)
 		for (i = 0; i < sizeof(fv)/sizeof(FiSFlo); i++) {
@@ -341,7 +341,7 @@ testTruncate()
 				      fiDFloFraction(df));
 		}
 
-	fprintf(dbOut, "Truncate self-test finished [%s].\n",
+	printf("Truncate self-test finished [%s].\n",
 		(stateOk? "success" : "failure"));
 
 	return;
