@@ -26,9 +26,10 @@ SUBDIRS =			\
 	algext			\
 	polyfactorp		\
 	ffield			\
+	polyfactor0		\
 	test
 
-# polyfactor0 multpoly/multpolycat	\
+# multpoly/multpolycat	\
 #	  multpoly/multpolydom multpoly/multpolypkg			\
 #	  multpoly/multpolytest
 
@@ -186,6 +187,10 @@ libalgebra_a_SOURCES =				\
 	numbers/sit_prmroot.c			\
 	numbers/sit_prmtabl.c			\
 	numbers/sit_prmword.c			\
+	polyfactor0/sit_fhensel.c		\
+	polyfactor0/sit_zfactor.c		\
+	polyfactor0/sit_zfring.c		\
+	polyfactor0/sit_zfringg.c		\
 	polyfactorp/sit_upfactp.c		\
 	series/alg_serpoly.c			\
 	series/compbug/sit_duts.c		\

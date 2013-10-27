@@ -3,9 +3,8 @@ dir := polyfactor0
 subdirs := 
 sit_fhensel_deps := 
 sit_zfactor_deps := sit_fhensel
-sit_zfring0_deps :=
-sit_zfring_deps :=
-sit_zfringg_deps :=
+sit_zfring_deps := sit_zfactor
+sit_zfringg_deps := sit_zfactor
 
 library_deps := util numbers extree extree/operators extree/parser	\
 	        categories basic mat mat/modular mat/modular/compbug	\
