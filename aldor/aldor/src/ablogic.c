@@ -70,8 +70,8 @@ local DNF_Atom	ablogNextIx;
 local void
 ablogInitTables(void)
 {
-	ablogToTable = tblNew((TblHashFun) abHash, (TblEqFun) sefoEqual);
-	ablogFrTable = tblNew((TblHashFun) 0,      (TblEqFun) 0);
+	ablogToTable = tblNew((TblHashFun) abHashSefo, (TblEqFun) sefoEqual);
+	ablogFrTable = tblNew((TblHashFun) 0,          (TblEqFun) 0);
 	ablogNextIx  = 1;
 }
 

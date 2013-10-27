@@ -950,6 +950,7 @@ extern Bool	abContains		(AbSyn, AbSyn);
 extern Bool	abEqual			(AbSyn, AbSyn);
 extern Bool	abEqualModDeclares	(AbSyn, AbSyn);
 extern Hash	abHash			(AbSyn);
+extern Hash	abHashSefo		(AbSyn);
 extern Hash	abHashList		(AbSynList);
 extern Hash	abHashModDeclares	(AbSyn);
 extern void	abSubSymbol		(AbSyn, Symbol, Symbol);

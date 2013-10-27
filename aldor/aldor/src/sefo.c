@@ -1432,6 +1432,9 @@ sefoEqual(Sefo sefo1, Sefo sefo2)
 	eq = sefoEqual0(NULL, sefo1, sefo2);
 	sstDoneSefo(sefo1);
 
+	if (eq)
+		assert(abHashSefo(sefo1) == abHashSefo(sefo2));
+
 	return eq;
 }
 
@@ -2148,6 +2151,12 @@ sefoEqualMods(Sefo sefo)
 		case AB_Declare:
 			sefo = sefo->abDeclare.type;
 			break;
+		case AB_Test: {
+			if (tfEqual(abTUnique(sefo), tfBoolean))
+				sefo = sefo->abTest.cond;
+			break;
+		}
+
 		default:
 			changed = false;
 			break;

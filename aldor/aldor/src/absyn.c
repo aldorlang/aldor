@@ -701,6 +701,46 @@ abEqualModDeclares(AbSyn ab1, AbSyn ab2)
 }
 
 Hash
+abHashSefo(AbSyn ab)
+{
+	Hash	h = 0;
+	Length	i;
+
+	if (abHasTag(ab, AB_Declare))
+		return abHashSefo(ab->abDeclare.type);
+	if (abHasTag(ab, AB_Qualify))
+		return abHashSefo(ab->abQualify.what);
+	if (abHasTag(ab, AB_PretendTo))
+		return abHashSefo(ab->abPretendTo.expr);
+	if (abHasTag(ab, AB_RestrictTo))
+		return abHashSefo(ab->abRestrictTo.expr);
+	if (abHasTag(ab, AB_Test))
+		return abHashSefo(ab->abTest.cond);
+
+	if (abIsSymTag(abTag(ab)))
+		h = strHash(symString(abLeafSym(ab)));
+	else if (abIsDocTag(abTag(ab)))
+		h = strHash(docString(abLeafDoc(ab)));
+	else if (abIsStrTag(abTag(ab)))
+		h = strHash(abLeafStr(ab));
+	else if (abHasTag(ab, AB_Define)) {
+		abHashArg(h, abHashSefo(ab->abDefine.lhs));
+		abHashArg(h, abHashSefo(ab->abDefine.rhs));
+	}
+	else if (abTag(ab) == AB_Lambda) {
+		abHashArg(h, abHashSefo(ab->abLambda.param));
+		abHashArg(h, abHashSefo(ab->abLambda.rtype));
+	}
+	else
+		for (i = 0; i < abArgc(ab); i++)
+			abHashArg(h, abHashSefo(abArgv(ab)[i]));
+
+	h += abInfo(abTag(ab)).hash;
+	h &= 0x3FFFFFFF;
+	return h;
+}
+
+Hash
 abHash(AbSyn ab)
 {
 	Hash	h = 0;
