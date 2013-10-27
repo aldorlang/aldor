@@ -4063,9 +4063,8 @@ tfGetCatExportsFrParents(SymeList symes)
 		if (!symeIsSelfSelf(syme)) continue;
 
 		if (DEBUG(tfParent)) {
-			fprintf(dbOut, "tfCatExports:  %p= expanding: ", syme);
-			symePrint(dbOut, syme);
-			fnewline(dbOut);
+			afprintf(dbOut, "(tfCatExports: expanding %pTForm %pAbSynList\n",
+				 symeType(syme), symeCondition(syme));
 		}
 
 		nsymes = tfGetCatParents(symeType(syme), true);
@@ -4073,9 +4072,7 @@ tfGetCatExportsFrParents(SymeList symes)
 		if (cond) nsymes = tfGetCatExportsCond(nsymes, cond, true);
 
 		if (DEBUG(tfParent)) {
-			fprintf(dbOut, "tfCatExports:  %p= into: ", syme);
-			symeListPrint(dbOut, nsymes);
-			fnewline(dbOut);
+			afprintf(dbOut, "tfCatExports: into %pSymeList)\n", nsymes);
 		}
 
 		nsymes = tfGetCatExportsFilter(osymes, nsymes);
