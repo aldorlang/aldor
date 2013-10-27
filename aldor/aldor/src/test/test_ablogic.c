@@ -91,5 +91,8 @@ testDnf()
 	DNF a = dnfAtom(1);
 	DNF b = dnfAtom(2);
 
-	afprintf(dbOut, "%pDNF\n", dnfOr(dnfAtom(1), dnfNotAtom(1)));
+	testTrue("DNF1", dnfIsTrue(dnfOr(dnfAtom(1), dnfNotAtom(1))));
+	testTrue("DNF2", dnfIsTrue(dnfOr(dnfAnd(dnfAtom(1), dnfAtom(2)),
+					 dnfAnd(dnfNotAtom(1), dnfNotAtom(2)))));
+	testTrue("DNF3", dnfIsFalse(dnfAnd(dnfAtom(1), dnfNotAtom(1))));
 }

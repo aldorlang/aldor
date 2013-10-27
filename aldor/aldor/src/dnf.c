@@ -72,7 +72,7 @@ dnfAndNew(int argc)
 	for (i = 0; i < argc; i += 1)
 		xx->argv[i] = 0;
 
-	dnfDEBUG(dbOut, ">dnfAndNew: %p[%d]\n", xx, argc);
+	dnfDEBUG(dbOut, ">dnfAndNew: %pDNF\n", xx);
 
 	return xx;
 }
@@ -83,7 +83,7 @@ dnfAndCopy(DNF_And xx)
 	int	i;
 	DNF_And yy;
 
-	dnfDEBUG(dbOut, ">dnfAndCopy: %p[%d]\n", xx, (int) xx->argc);
+	dnfDEBUG(dbOut, ">dnfAndCopy: %pDNF\n", xx);
 
 	yy = dnfAndNew(xx->argc);
 	for (i = 0; i < xx->argc; i += 1)
@@ -95,7 +95,7 @@ dnfAndCopy(DNF_And xx)
 local void
 dnfAndFree(DNF_And xx)
 {
-	dnfDEBUG(dbOut, ">dnfAndFree: %p[%d]\n", xx, (int) xx->argc);
+	dnfDEBUG(dbOut, ">dnfAndFree: %pDNF\n", xx);
 	stoFree((Pointer) xx);
 }
 
@@ -282,7 +282,7 @@ dnfOrNew(int argc)
 	for (i = 0; i < argc; i += 1)
 		xx->argv[i] = 0;
 
-	dnfDEBUG(dbOut, ">dnfOrNew: %p[%d]\n", xx, argc);
+	dnfDEBUG(dbOut, ">dnfOrNew: %pDNF\n", xx);
 
 	return xx;
 }
@@ -293,7 +293,7 @@ dnfOrCopy(DNF xx)
 	int	i;
 	DNF	yy;
 
-	dnfDEBUG(dbOut, ">dnfOrCopy: %p[%d]\n", xx, xx->argc);
+	dnfDEBUG(dbOut, ">dnfOrCopy: %pDNF\n", xx);
 
 	yy = dnfOrNew(xx->argc);
 	for (i = 0; i < xx->argc; i += 1)
@@ -307,7 +307,7 @@ dnfOrFree(DNF xx)
 {
 	int	i;
 
-	dnfDEBUG(dbOut, ">dnfOrFree: %p[%d]\n", xx, xx->argc);
+	dnfDEBUG(dbOut, ">dnfOrFree: %pDNF\n", xx);
 
 	for (i = 0; i < xx->argc; i += 1)
 		dnfAndFree(xx->argv[i]);
@@ -483,8 +483,8 @@ dnfAnd(DNF xx, DNF yy)
 	if (dnfIsTrue(yy))
 		return dnfCopy(xx);
 
-	dnfDEBUG(dbOut, ">dnfAnd: %p[%d] %p[%d]\n",
-		 xx, xx->argc, yy, yy->argc);
+	dnfDEBUG(dbOut, ">dnfAnd: %pDNF %pDNF\n",
+		 xx, yy);
 
 	rr  = dnfOrNew(xx->argc * yy->argc);
 	rri = 0;
@@ -495,7 +495,7 @@ dnfAnd(DNF xx, DNF yy)
 
 	dnfOrMerge(rr);
 
-	dnfDEBUG(dbOut, "<dnfAnd: %p[%d]\n", rr, rr->argc);
+	dnfDEBUG(dbOut, "<dnfAnd: %pDNF\n", rr);
 
 	return rr;
 }
@@ -518,7 +518,7 @@ dnfNot(DNF xx)
 	if (dnfIsTrue(xx))
 		return dnfFalse();
 
-	dnfDEBUG(dbOut, ">dnfNot: %p[%d]\n", xx, xx->argc);
+	dnfDEBUG(dbOut, ">dnfNot: %pDNF\n", xx);
 
 	rr = dnfTrue();
 	for (i = 0; i < xx->argc; i += 1) {
@@ -530,7 +530,7 @@ dnfNot(DNF xx)
 		dnfFree(bb);
 	}
 
-	dnfDEBUG(dbOut, "<dnfNot: %p[%d]\n", rr, rr->argc);
+	dnfDEBUG(dbOut, "<dnfNot: %pDNF\n", rr);
 
 	return rr;
 }
