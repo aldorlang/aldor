@@ -1,4 +1,32 @@
-library_deps := util extree extree/operators extree/parser numbers categories basic
+# This is the list from src/Makefile.in, without test.
+library_deps := 	\
+	util			\
+	numbers			\
+	extree			\
+	extree/operators	\
+	extree/parser		\
+	categories		\
+	basic			\
+	basic/compbug		\
+	mat			\
+	mat/gauss		\
+	mat/modular		\
+	mat/modular/compbug	\
+	mat/linalg		\
+	multpoly/multpolydata	\
+	multpoly/exponent	\
+	univpoly/categories	\
+	mat/linalg2		\
+	univpoly		\
+	univpoly/gcd		\
+	fraction		\
+	series			\
+	series/compbug		\
+	mat/linalg3		\
+	algext			\
+	polyfactorp		\
+	ffield			\
+	polyfactor0		\
 
 tst_assert_deps := 
 tst_test_deps := tst_assert
@@ -8,3 +36,4 @@ tst_ring_deps := tst_test tst_assert
 tst_mint_deps := tst_assert tst_test
 tst_fold_deps := tst_assert tst_test
 tst_int_deps := tst_assert tst_test tst_ring
+tst_dup_deps := tst_assert tst_test tst_ring
