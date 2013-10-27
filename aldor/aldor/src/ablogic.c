@@ -125,6 +125,7 @@ ablogInit(void)
 
 	ablogInitTables();
 	fmtRegister("AbLogic", ablogFormatter);
+	fmtRegister("DNF", dnfFormatter);
 
 	ablogIsInit = true;
 }

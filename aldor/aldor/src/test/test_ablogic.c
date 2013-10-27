@@ -11,8 +11,10 @@
 #include "sefo.h"
 #include "ablogic.h"
 #include "comsg.h"
+#include "dnf.h"
 
 local void testAblog();
+local void testDnf();
 
 /* XXX: from test_tinfer.c */
 void init(void);
@@ -22,6 +24,7 @@ void initFile(void);
 void ablogTest()
 {
 	init();
+	testDnf();
 	testAblog();
 	fini();
 }
@@ -79,3 +82,14 @@ testAblog()
 }
 
 
+local void
+testDnf()
+{
+	testFalse("true", dnfIsFalse(dnfTrue()));
+	testFalse("false", dnfIsTrue(dnfFalse()));
+
+	DNF a = dnfAtom(1);
+	DNF b = dnfAtom(2);
+
+	afprintf(dbOut, "%pDNF\n", dnfOr(dnfAtom(1), dnfNotAtom(1)));
+}

@@ -28,6 +28,8 @@ local void	dnfAndFree		(DNF_And);
 local Bool	dnfAndIsTrue		(DNF_And);
 local DNF_And	dnfAndMerge		(DNF_And, DNF_And);
 local Bool	dnfAndImplies		(DNF_And, DNF_And);
+local Bool	dnfAndImpliesNegation	(DNF_And, DNF_And);
+local DNF_And	dnfAndCancelNegation	(DNF_And, DNF_And);
 local DNF	dnfAndNot		(DNF_And);
 
 local DNF	dnfOrNew		(int argc);
@@ -151,7 +153,6 @@ dnfAndMerge(DNF_And xx, DNF_And yy)
  * If xx => yy then (xx or yy) == yy.
  */
 
-
 local Bool
 dnfAndImplies(DNF_And xx, DNF_And yy)
 {
@@ -179,6 +180,73 @@ dnfAndImplies(DNF_And xx, DNF_And yy)
 
 	/* Return true if we found each of the yyi. */
 	return yyi == yy->argc;
+}
+
+local Bool
+dnfAndImpliesNegation(DNF_And xx, DNF_And yy)
+{
+	int	xxi, yyi;
+
+	/* xx implies ~yy if each atom in ~yy can be found in xx. */
+	if (xx->argc < yy->argc)
+		return false;
+
+	xxi = yyi = 0;
+	for (xxi = yyi = 0; xxi < xx->argc && yyi < yy->argc; ) {
+		DNF_Atom xxa = xx->argv[xxi];
+		DNF_Atom yya = yy->argv[yyi];
+
+		if (dnfAtomLT(xxa, yya))
+			xxi += 1;	/* Keep looking for yyi. */
+
+		else if (xxa == -yya) {
+			xxi += 1;	/* Found yyi. */
+			yyi += 1;
+		}
+		else
+			return false;	/* Failed to find yyi. */
+	}
+
+	/* Return true if we found each of the yyi. */
+	return yyi == yy->argc;
+}
+
+local DNF_And
+dnfAndCancelNegation(DNF_And xx, DNF_And yy)
+{
+	DNF_And result;
+	int	xxi, yyi, rri;
+
+	/* xx implies ~yy if each atom in ~yy can be found in xx. */
+	assert (xx->argc >= yy->argc);
+
+	xxi = yyi = rri = 0;
+	result = dnfAndNew(xx->argc - yy->argc);
+	for (xxi = yyi = 0; xxi < xx->argc && yyi < yy->argc; ) {
+		DNF_Atom xxa = xx->argv[xxi];
+		DNF_Atom yya = yy->argv[yyi];
+
+		if (dnfAtomLT(xxa, yya)) {
+			result->argv[rri] = xx->argv[xxi];
+			rri += 1;
+			xxi += 1;	/* Keep looking for yyi. */
+			yyi += 1;
+		}
+		else if (xxa == -yya) {
+			yyi += 1;
+			xxi += 1;
+		}
+		else {
+			assert(false);
+		}
+	}
+	while (xxi < xx->argc) {
+		result->argv[rri] = xx->argv[xxi];
+		xxi += 1;
+		rri += 1;
+	}
+
+	return result;
 }
 
 local DNF
@@ -261,7 +329,7 @@ dnfOrMerge(DNF xx)
 {
 	int	i, j;
 
-	dnfDEBUG(dbOut, ">dnfOrMerge: %p[%d]\n", xx, xx->argc);
+	dnfDEBUG(dbOut, ">dnfOrMerge: %pDNF\n", xx);
 
 	/* As we work, terms are merged by replacing them with NULL. */
 	for (i = 0; i < xx->argc; i += 1) {
@@ -272,6 +340,12 @@ dnfOrMerge(DNF xx)
 				dnfAndFree(xx->argv[i]);
 				xx->argv[i] = NULL;
 			}
+			if (i != j && xx->argv[i] && xx->argv[j] &&
+			    dnfAndImpliesNegation(xx->argv[i], xx->argv[j])) {
+				DNF_And xxi = dnfAndCancelNegation(xx->argv[i], xx->argv[j]);
+				dnfAndFree(xx->argv[i]);
+				xx->argv[i] = xxi;
+			}
 		}
 	}
 
@@ -281,7 +355,7 @@ dnfOrMerge(DNF xx)
 			xx->argv[i++] = xx->argv[j];
 	xx->argc = i;
 
-	dnfDEBUG(dbOut, "<dnfOrMerge: %p[%d]\n", xx, xx->argc);
+	dnfDEBUG(dbOut, "<dnfOrMerge: %pDNF\n", xx);
 }
 
 
@@ -371,8 +445,7 @@ dnfOr(DNF xx, DNF yy)
 	if (dnfIsFalse(yy))
 		return dnfCopy(xx);
 
-	dnfDEBUG(dbOut, ">dnfOr: %p[%d] %p[%d]\n",
-		 xx, xx->argc, yy, yy->argc);
+	dnfDEBUG(dbOut, ">dnfOr: %pDNF %pDNF\n", xx, yy);
 
 	rr  = dnfOrNew(xx->argc + yy->argc);
 	rri = 0;
@@ -384,7 +457,7 @@ dnfOr(DNF xx, DNF yy)
 
 	dnfOrMerge(rr);
 
-	dnfDEBUG(dbOut, "<dnfOr: %p[%d]\n", rr, rr->argc);
+	dnfDEBUG(dbOut, "<dnfOr: %pDNF\n", rr);
 
 	return rr;
 }
@@ -651,4 +724,33 @@ dnfAlias(DNF old, DNF new)
 		old->argc = -1;
 	}
 	old->argv[0] = (DNF_And) new;
+}
+
+int
+dnfFormatter(OStream ostream, Pointer p)
+{
+	DNF dnf = (DNF) p;
+	DNF_And xx;
+	int c, i, j;
+
+	if (dnfIsTrue(dnf))
+		c = ostreamWrite(ostream, "[TRUE]", -1);
+	else if (dnfIsFalse(dnf))
+		c = ostreamWrite(ostream, "[FALSE]", -1);
+	else {
+		c = ostreamWrite(ostream, "[", -1);
+		char *sep = "";
+		for (i=0; i<dnf->argc; i++) {
+			c += ostreamWrite(ostream, sep, -1);
+			sep = " ";
+			DNF_And xx = dnf->argv[i];
+			c = ostreamWrite(ostream, "[", -1);
+			for (j=0; j<xx->argc; j++) {
+				c += ostreamPrintf(ostream, "%s%d", j>0?" ": "", xx->argv[j]);
+			}
+			c += ostreamWrite(ostream, "]", -1);
+		}
+		c += ostreamWrite(ostream, "]", -1);
+	}
+	return c;
 }
