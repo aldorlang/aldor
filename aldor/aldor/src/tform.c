@@ -452,6 +452,11 @@ tfInit(void)
 	fmtRegister("AInt", aintFormatter);
 	fmtRegister("AIntList", aintListFormatter);
 
+	/* syme.c checks */
+
+	for (i=SYME_FIELD_START; i<SYME_FIELD_LIMIT; i++)
+		assert(symeFieldInfo[i].tag == i);
+
 	isInit = true;
 }
 
