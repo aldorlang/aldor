@@ -1,0 +1,18 @@
+
+alg_defgcd_deps := sm_polring0
+alg_poltype_deps := alg_stdfrng
+alg_stdfrng_deps :=
+sm_famr0_deps := sm_polring0
+sm_polring0_deps := alg_poltype
+sm_polring_deps := sm_famr0 alg_defgcd
+sm_rmpcat0_deps := sm_polring
+
+extra_files := alg_debugdup
+
+library_deps := util numbers extree extree/operators extree/parser \
+	        categories basic mat mat/gauss mat/modular mat/modular \
+	        mat/modular/compbug mat/linalg univpoly/categories \
+	        mat/linalg2 multpoly/multpolydata multpoly/exponent \
+	        univpoly
+
+

@@ -17,4 +17,6 @@ subdir		:= $(subst $(abs_top_builddir)/,,$(abs_builddir))
 # Build starts here
 library = alg_bivarpk alg_disolve alg_expo alg_ezgcd alg_mhensel alg_mresbiv alg_ZpUVres 
 
+alg_ezgcd_AXLFLAGS=-WD+tipBup -WD+tipTdn
+
 include $(abs_top_srcdir)/lib/algebra/src/common.mk

@@ -1,0 +1,12 @@
+alg_smp_deps :=
+sm_dmp0_deps :=
+sm_dmp1_deps := sm_dmp0
+sm_rmp_deps :=
+sm_rmpz_deps := sm_rmp
+sm_rmpzx_deps := sm_rmp
+
+library_deps := util numbers extree extree/operators extree/parser \
+	        categories basic mat mat/gauss mat/modular mat/modular \
+	        mat/modular/compbug mat/linalg univpoly/categories \
+	        mat/linalg2 multpoly/multpolydata multpoly/exponent \
+	        univpoly multpoly/multpolycat
