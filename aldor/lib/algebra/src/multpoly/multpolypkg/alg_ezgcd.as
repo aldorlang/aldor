@@ -137,6 +137,13 @@ MultivariateGCD( R: Join(GcdDomain,ModularComputation,SourceOfPrimes),
 	return (cont, ppart);
     }
 
+          -- `combine(p,v)' generates only the couple `(0,p)' if
+          -- `ground?(p)' holds otherwise generates `(n,an)...(m,am)'
+          -- such that `p' writes `an*v^n+...+am*v^m' as a univariate
+          -- polynomial in the variable `v'. Couples in the output
+          -- are sorted by (strictly) increasing degree w.r.t. `v'.
+    local combine(ard: MP, x: V): Generator Cross(MP, Z) == never;
+
     -- findPrime(a,b,x,p) returns a prime `P' such that the leading
     -- coefficients of `a' and `b' mod `P' w.r.t the indeterminate `x'
     -- are not zero. `p', a prime, is an optional argument which is

@@ -1,0 +1,15 @@
+alg_bivarpk_deps :=
+alg_disolve_deps :=
+alg_expo_deps :=
+alg_ezgcd_deps := alg_mhensel	
+alg_mhensel_deps := alg_disolve
+alg_mresbiv_deps := alg_ZpUVres alg_bivarpk
+alg_ZpUVres_deps :=
+
+library_deps := util numbers extree extree/operators extree/parser	\
+	         categories basic mat mat/gauss mat/modular		\
+	        mat/modular mat/modular/compbug mat/linalg ffield	\
+	         univpoly/categories mat/linalg2 univpoly		\
+	        univpoly/gcd fraction series series/compbug algext	\
+	        polyfactorp multpoly/multpolydata multpoly/exponent	\
+	         multpoly/multpolycat multpoly/multpolydom

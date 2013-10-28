@@ -1,0 +1,15 @@
+alg_bivtst1_deps :=
+alg_bivtst2_deps :=
+alg_bivtst3_deps :=
+sm_dmp0pkgt_deps :=
+sm_exppkgt_deps :=
+sm_pr0pkgt_deps :=
+
+library_deps := util numbers extree extree/operators extree/parser	\
+	          categories basic mat mat/gauss mat/modular		\
+	          mat/modular mat/modular/compbug mat/linalg ffield	\
+	          univpoly/categories mat/linalg2 univpoly		\
+	          univpoly/gcd fraction series series/compbug algext	\
+	          polyfactorp multpoly/multpolydata multpoly/exponent	\
+	          multpoly/multpolycat multpoly/multpolydom		\
+	         multpoly/multpolypkg

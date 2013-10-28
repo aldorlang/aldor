@@ -27,12 +27,12 @@ SUBDIRS =			\
 	polyfactorp		\
 	ffield			\
 	polyfactor0		\
+	multpoly/exponent	\
+	multpoly/multpolycat	\
+	multpoly/multpolydom	\
+	multpoly/multpolypkg	\
+	multpoly/multpolytest	\
 	test
-
-# multpoly/multpolycat	\
-#	  multpoly/multpolydom multpoly/multpolypkg			\
-#	  multpoly/multpolytest
-
 
 lib_LIBRARIES = libalgebra.a
 
@@ -181,7 +181,33 @@ libalgebra_a_SOURCES =				\
 	multpoly/exponent/sm_tuplovar.c		\
 	multpoly/exponent/sm_vt.c		\
 	multpoly/exponent/sm_zevc.c		\
+	multpoly/multpolycat/alg_defgcd.c	\
+	multpoly/multpolycat/alg_poltype.c	\
+	multpoly/multpolycat/alg_stdfrng.c	\
+	multpoly/multpolycat/sm_famr0.c		\
+	multpoly/multpolycat/sm_polring0.c	\
+	multpoly/multpolycat/sm_polring.c	\
+	multpoly/multpolycat/sm_rmpcat0.c	\
 	multpoly/multpolydata/sm_delist.c	\
+	multpoly/multpolydom/alg_smp.c		\
+	multpoly/multpolydom/sm_dmp0.c		\
+	multpoly/multpolydom/sm_dmp1.c		\
+	multpoly/multpolydom/sm_rmp.c		\
+	multpoly/multpolydom/sm_rmpz.c		\
+	multpoly/multpolydom/sm_rmpzx.c		\
+	multpoly/multpolypkg/alg_bivarpk.c	\
+	multpoly/multpolypkg/alg_disolve.c	\
+	multpoly/multpolypkg/alg_expo.c		\
+	multpoly/multpolypkg/alg_ezgcd.c	\
+	multpoly/multpolypkg/alg_mhensel.c	\
+	multpoly/multpolypkg/alg_mresbiv.c	\
+	multpoly/multpolypkg/alg_ZpUVres.c	\
+	multpoly/multpolytest/alg_bivtst1.c	\
+	multpoly/multpolytest/alg_bivtst2.c	\
+	multpoly/multpolytest/alg_bivtst3.c	\
+	multpoly/multpolytest/sm_dmp0pkgt.c	\
+	multpoly/multpolytest/sm_exppkgt.c	\
+	multpoly/multpolytest/sm_pr0pkgt.c	\
 	numbers/sit_primes.c			\
 	numbers/sit_primgen.c			\
 	numbers/sit_prmroot.c			\

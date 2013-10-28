@@ -1,0 +1,6 @@
+collector_deps :=
+logic_deps := collector
+bool_deps := logic
+
+library_deps := util numbers extree extree/operators extree/parser	\
+	        categories basic 

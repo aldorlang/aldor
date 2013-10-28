@@ -388,7 +388,10 @@ tfsEmbedResult(TForm tf, AbEmbed embed)
 
 	if (!tf) return tf;
 
-	tfFollow(tf);
+	tf  = tfDefineeType(tf);
+	if (tfIsDefinedType(tf)) {
+		tf = tfDefinedVal(tf);
+	}
 
 	if (embed & AB_Embed_Identity || embed == 0)
 		return tf;
