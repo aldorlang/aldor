@@ -105,7 +105,7 @@ main(int argc, char *argv[])
 
 		for (; tqList != listNil(TQual); tqList = cdr(tqList)) {
 			TQual tq = car(tqList);
-			aprintf("--> %pTForm\n", tfPretty(tqBase(tq)));
+			aprintf("--> %s\n", tfPretty(tqBase(tq)));
 		}
 	}
 
