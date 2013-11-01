@@ -2925,7 +2925,7 @@ gen0HasImports(Foam dom, SymeList symes, Foam startTest)
 		assert(symeIsExport(car(symes)));
 
 		nextLabel = gen0State->labelNo++;
-		gen0AddStmt(foamNewIf(gen0HasImport(dom, car(symes)),
+		gen0AddStmt(foamNewIf(foamNewCast(FOAM_Bool, gen0HasImport(dom, car(symes))),
 				      nextLabel), NULL);
 		gen0AddStmt(foamNewGoto(falseLabel), NULL);
 		gen0AddStmt(foamNewLabel(nextLabel), NULL);
