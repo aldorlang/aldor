@@ -213,8 +213,15 @@ abNewAndAll(SrcPos pos, AbSynList absyn)
 {
 	if (cdr(absyn) == listNil(AbSyn))
 		return car(absyn);
-	return abNewAnd(pos, car(absyn), abNewAndAll(pos, cdr(absyn)));
 
+	return abNewAnd(pos, car(absyn), abNewAndAll(pos, cdr(absyn)));
+}
+AbSyn
+abNewOrAll(SrcPos pos, AbSynList absyn)
+{
+	if (cdr(absyn) == listNil(AbSyn))
+		return car(absyn);
+	return abNewOr(pos, car(absyn), abNewAndAll(pos, cdr(absyn)));
 }
 
 void
