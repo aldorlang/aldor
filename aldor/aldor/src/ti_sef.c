@@ -831,6 +831,7 @@ tisefWith(Stab stab, Sefo sefo)
 	tf = tfThird(symes);
 	tfAddSelf(tf, abGetCatSelf(sefo->abWith.base));
 	tfAddSelf(tf, tfGetThdSelf(wtf));
+	tfAddSelf(tf, abSelf(sefo));
 
 	abTUnique(sefo) = tf;
 }

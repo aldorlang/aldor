@@ -3069,6 +3069,8 @@ sefoSubst0(AbSub sigma, Sefo sefo)
 			 */
 			abSetTForm(final, abTForm(sefo));
 		}
+		if (abSelf(sefo))
+			abSetSelf(final, abSelf(sefo));
 #else
 		if (abState(sefo) == AB_State_HasUnique)
 			abState(final) = AB_State_AbSyn;
@@ -3718,6 +3720,11 @@ sefoClosure0(Lib lib, Sefo sefo)
 		}
 	}
 
+	if (abTag(sefo) == AB_With) {
+		symeListClosure0(lib, tfSelf(abTForm(sefo)));
+		tformClosure0(lib, abTForm(sefo));
+	}
+
 	if (DEBUG(sefoClose)) {
 		fprintf(dbOut, " S)");
 		sefoPrintDb(sefo);
@@ -4071,6 +4078,12 @@ sefoToBuffer(Lib lib, Buffer buf, Sefo sefo)
 		sefoToBuffer(lib, buf, sefo->abLambda.param);
 		sefoToBuffer(lib, buf, sefo->abLambda.rtype);
 		break;
+
+	case AB_With:
+		sefoToBuffer(lib, buf, sefo->abWith.base);
+		sefoToBuffer(lib, buf, sefo->abWith.within);
+		symeListToBuffer(lib, buf, tfGetCatSelf(abTForm(sefo)));
+		break;
 	default:
 		argc = abArgc(sefo);
 		bufPutHInt(buf, argc);
@@ -4326,6 +4339,15 @@ sefoFrBuffer(Lib lib, Buffer buf)
 		sefo  = abNewLambda(sposNone, sefo1, sefo, body);
 		}
 		break;
+	case AB_With: {
+		SymeList list;
+		sefo1 = sefoFrBuffer(lib, buf);
+		sefo  = sefoFrBuffer(lib, buf);
+		list = symeListFrBuffer(lib, buf);
+		sefo = abNewWith(sposNone, sefo1, sefo);
+		abSetSelf(sefo, list);
+		break;
+	}
 	default:
 		argc = bufGetHInt(buf);
 		sefo = abNewEmpty(tag, argc);
@@ -4600,7 +4622,11 @@ sefoFrBuffer0(Buffer buf)
 		sefoFrBuffer0(buf);
 		sefoFrBuffer0(buf);
 		break;
-
+	case AB_With:
+		sefoFrBuffer0(buf);
+		sefoFrBuffer0(buf);
+		symeListFrBuffer0(buf);
+		break;
 	default:
 		argc = bufGetHInt(buf);
 		for (i = 0; i < argc; i += 1)

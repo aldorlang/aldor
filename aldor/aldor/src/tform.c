@@ -2886,7 +2886,11 @@ tfGetCatSelf(TForm cat)
 			wself = tfGetCatSelf(tfw);
 
 		tfAddSelf(tfw, wself);
+
 		tfHasSelf(tfw) = true;
+
+		if (tfHasExpr(cat))
+			tfAddSelf(cat, abSelf(tfGetExpr(cat)));
 
 		tfAddSelf(cat, wself);
 	}

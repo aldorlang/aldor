@@ -290,6 +290,7 @@ struct abSeman {
 	AbSyn	implicit;	/* Implicit operator on expression. */
 	AbEmbed embed;		/* Implicit embedding for product contexts. */
 	SImpl   impl;		/* Syme implementation, if any */
+	SymeList self;          /* value of '%' for withs */
 };
 
 typedef struct abSeman *AbSeman;
@@ -870,6 +871,7 @@ extern struct ab_info	abInfoTable[];
 # define abTContext(a)	  ((a)->abHdr.seman ? (a)->abHdr.seman->embed	 : 0)
 # define abDefineIdx(a)	  ((a)->abHdr.seman ? (a)->abHdr.seman->defnIdx  : -1)
 # define abSymeImpl(a)	  ((a)->abHdr.seman ? (a)->abHdr.seman->impl	 : 0)
+# define abSelf(a)	  ((a)->abHdr.seman ? (a)->abHdr.seman->self	 : 0)
 
 # define abRepeatIterc(a) (abArgc(a)-1) /* -1 for body */
 # define abCollectIterc(a)(abArgc(a)-1) /* -1 for body */
@@ -977,6 +979,7 @@ extern AbSeman	abNewSemantics		(void);
 extern Doc	abSetComment		(AbSyn, Doc);
 extern Stab	abSetStab		(AbSyn, Stab);
 extern Syme	abSetSyme		(AbSyn, Syme);
+extern void	abSetSelf		(AbSyn, SymeList);
 extern TForm	abSetTForm		(AbSyn, TForm);
 extern AbSyn	abSetImplicit		(AbSyn, AbSyn);
 extern AbEmbed	abSetTContext		(AbSyn, AbEmbed);

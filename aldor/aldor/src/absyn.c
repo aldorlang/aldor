@@ -1665,6 +1665,7 @@ abTransferSemantics(AbSyn from, AbSyn to)
 		abSetImplicit(to, abImplicit(from));
 		abSetTContext(to, abTContext(from));
 		abSetDefineIdx(to, abDefineIdx(from));
+		abSetSelf(to, abSelf(from));
 	}
 
 	switch (abState(from)) {
@@ -1709,6 +1710,7 @@ abNewSemantics(void)
 	as->embed	= 0;
 	as->defnIdx     = -1;
 	as->impl	= NULL;
+	as->self	= listNil(Syme);
 
 	return as;
 }
@@ -1747,6 +1749,17 @@ abSetSyme(AbSyn ab, Syme syme)
 		ab->abHdr.seman->syme = syme;
 	}
 	return syme;
+}
+
+void
+abSetSelf(AbSyn ab, SymeList symes)
+{
+	/* scobind may hand this a 0 ab */
+	if (ab) {
+		if (! ab->abHdr.seman)
+			ab->abHdr.seman = abNewSemantics();
+		ab->abHdr.seman->self = symes;
+	}
 }
 
 void
