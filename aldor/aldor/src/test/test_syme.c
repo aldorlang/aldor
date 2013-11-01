@@ -14,6 +14,7 @@
 #include "tform.h"
 
 local void testSymeSExpr();
+local void testSymeAddCondition();
 
 /* XXX: from test_tinfer.c */
 void init(void);
@@ -26,6 +27,7 @@ symeTest()
 {
 	init();
 	TEST(testSymeSExpr);
+	TEST(testSymeAddCondition);
 	fini();
 }
 
@@ -63,10 +65,11 @@ testSymeSExpr()
 local void
 testSymeAddCondition()
 {
+	String B_imp = "import from Boolean";
 	String C_txt = "C: Category == with";
 	String D1_txt = "D1: with == add";
 	String D2_txt = "D2: with == add";
-	StringList lines = listList(String)(3, C_txt, D1_txt, D2_txt);
+	StringList lines = listList(String)(4, B_imp, C_txt, D1_txt, D2_txt);
 	AbSynList code = listCons(AbSyn)(stdtypes(), abqParseLines(lines));
 	
 	AbSyn absyn = abNewSequenceL(sposNone, code);
@@ -74,6 +77,7 @@ testSymeAddCondition()
 	initFile();
 	Stab stab = stabFile();
 	
+	abPutUse(absyn, AB_Use_NoValue);
 	scopeBind(stab, absyn);
 	typeInfer(stab, absyn);
 	

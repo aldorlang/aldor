@@ -3292,11 +3292,7 @@ tfGetCatParentsFrIf(TForm cat)
 	}
 
 	tsymes = tfGetCatParentsFrInner(tfIfThen(cat));
-	tsymes = listCopy(Syme)(tsymes);
-	for (symes = tsymes; symes; symes=cdr(symes)) {
-		car(symes) = symeCopy(car(symes));
-		symeAddCondition(car(symes), cond, true);
-	}
+	tsymes = symeListAddCondition(tsymes, cond, true);
 
 	esymes = tfGetCatParentsFrInner(tfIfElse(cat));
 	esymes = listCopy(Syme)(esymes);
