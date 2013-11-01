@@ -587,10 +587,10 @@ symeAddCondition(Syme syme, Sefo cond, Bool pos)
 			symeAddCondition(syme, abArgv(cond)[--i], pos);
 		}
 	}
-	else
+	else {
 		l = listCons(Sefo)(cond, l);
-
-	symeSetCondition(syme, l);
+		symeSetCondition(syme, l);
+	}
 	return syme;
 }
 
