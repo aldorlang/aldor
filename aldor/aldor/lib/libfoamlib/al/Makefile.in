@@ -50,6 +50,7 @@ libraryname	:= foamlib
 AXLFLAGS	:= -Z db -Fc -Q8 $(AXLCDB)
 
 include $(top_srcdir)/lib/buildlib.mk
+libraryincdir := $(top_srcdir)/aldor/lib/libfoamlib/al
 
 Libraryname	:= Axl
 
