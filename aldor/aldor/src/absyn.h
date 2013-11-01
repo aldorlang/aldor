@@ -945,6 +945,8 @@ extern AbSyn	abNewOfList		(AbSynTag t, SrcPos, AbSynList);
 extern AbSyn	abNewOfOpAndList	(AbSynTag t, SrcPos,AbSyn op,AbSynList);
 extern AbSyn	abNewOfToken		(AbSynTag t, Token);
 
+extern AbSyn    abNewAndAll		(SrcPos, AbSynList);
+
 extern AbSyn	abCopy			(AbSyn);
 extern AbSyn	abReposition		(AbSyn, SrcPos pos, SrcPos end);
 extern AbSyn	abMarkAsMacroExpanded	(AbSyn);

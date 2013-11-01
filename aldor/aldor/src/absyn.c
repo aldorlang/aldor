@@ -208,6 +208,15 @@ abNewOfOpAndList(AbSynTag abtag, SrcPos pos, AbSyn op, AbSynList args)
 	return ab;
 }
 
+AbSyn
+abNewAndAll(SrcPos pos, AbSynList absyn)
+{
+	if (cdr(absyn) == listNil(AbSyn))
+		return car(absyn);
+	return abNewAnd(pos, car(absyn), abNewAndAll(pos, cdr(absyn)));
+
+}
+
 void
 abFree(AbSyn ab)
 {
