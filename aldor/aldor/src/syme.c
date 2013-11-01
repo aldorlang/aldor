@@ -578,6 +578,8 @@ symeAddCondition(Syme syme, Sefo cond, Bool pos)
 {
 	SefoList	l = symeCondition(syme);
 
+	assert(tiTopFns()->tiCanSefo(cond));
+
 	if (abTag(cond) == AB_Test)
 		cond = cond->abTest.cond;
 
