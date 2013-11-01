@@ -464,18 +464,18 @@ tiAddSymes(Stab astab, AbSyn capsule, TForm base, TForm context, SymeList *p)
 				csymes = listCons(Syme)(syme, csymes);
 		}
 
-		/* Look for syme in the conditional symes. */
-		else if (symeCondition(syme)) {
-			tipAddDEBUG(dbOut, "  [conditional]\n");
-			/*!! if (!symeIsSelfSelf(syme)) */
-				usymes = listCons(Syme)(syme, usymes);
-		}
-
 		/* Look for the syme in the implicits */
 		else if (hasImplicit &&
 			((xsyme = tfImplicitExport(astab,mods,syme))!=NULL)) {
 			tipAddDEBUG(dbOut, "  [implicit]\n");
 			isymes = listCons(Syme)(xsyme, isymes);
+		}
+
+		/* Look for syme in the conditional symes. */
+		else if (symeCondition(syme)) {
+			tipAddDEBUG(dbOut, "  [conditional]\n");
+			/*!! if (!symeIsSelfSelf(syme)) */
+				usymes = listCons(Syme)(syme, usymes);
 		}
 
 		/* The add doesn't satisfy its context. */
