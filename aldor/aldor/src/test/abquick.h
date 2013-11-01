@@ -52,6 +52,7 @@ ABQK_DECLARE1(test, abNewTest);
 ABQK_DECLARE2(qualify, abNewQualify);
 ABQK_DECLARE2(pretend, abNewPretendTo);
 ABQK_DECLARE2(restrictTo, abNewRestrictTo);
+ABQK_DECLARE2(and, abNewAnd);
 
 ABQK_DECLARE1_Symbol(id, abNewId);
 
@@ -68,5 +69,6 @@ AbSyn abqParseLinesAsSeq(StringList lines);
 AbSyn stdtypes();
 
 Syme uniqueMeaning(Stab stab, String s);
+Sefo sefo(AbSyn absyn);
 
 #endif
