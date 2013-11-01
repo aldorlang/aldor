@@ -1182,6 +1182,9 @@ symeCheckHas(SymeCContext conditionContext, Sefo dom, Sefo cat)
 		return flg;
 	
 	tfdom = abGetCategory(dom);
+	if (tiTopFns()->tiCanSefo(cat)) {
+		tiTopFns()->tiSefo(stabFile(), cat);
+	}
 	tfcat = abTForm(cat) ? abTForm(cat) : tiTopFns()->tiGetTopLevelTForm(NULL, cat);
 
 	/* D has C iff typeof(D) satisfies C. */
