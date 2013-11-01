@@ -65,8 +65,7 @@ am__v_ALDOR_0 = @echo "  ALDOR " $@;
 
 %.ao: %.as $(ALDOR)
 	@$(MKDIR_P) $(@D)
-	$(AM_V_ALDOR)$(ALDOR) $(ALDORFLAGS) -Y$(@D) -Fao=$@ $<
-
+	$(AM_V_ALDOR)$(DBG) $(ALDOR) $(ALDORFLAGS) -Y$(@D) -Fao=$@ $<
 
 TEST_EXTENSIONS = .ao
 AO_LOG_COMPILER = $(ALDOR) $(ALDORFLAGS) -Y$(foamlibdir)/al -lax0 -ginterp
