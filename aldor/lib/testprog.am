@@ -30,7 +30,7 @@ am__v_ALDOR_0 = @echo "  ALDOR " $@;
 	$(AM_V_ALDOR)$(ALDOR) $(ALDORFLAGS) -Fmain -R $(dir $@) $(abspath $<)
 
 include Tests.am
-$(srcdir)/Tests.am: Makefile.am $(abs_top_srcdir)/lib/testprog.am
+$(srcdir)/Tests.am: $(srcdir)/Makefile.am $(abs_top_srcdir)/lib/testprog.am
 	truncate -s0 $@
 	for test in $(AXLTESTS); do			\
 	  ctest=`echo $$test | sed -e 's/-/_/g'`;	\
