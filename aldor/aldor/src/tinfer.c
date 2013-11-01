@@ -20,6 +20,7 @@
 #include "ti_tdn.h"
 #include "ti_top.h"
 #include "tinfer.h"
+#include "syme.h"
 #include "sefo.h"
 #include "lib.h"
 #include "tqual.h"
@@ -200,8 +201,9 @@ local Bool		tiTopEqual		(TFormUses, TFormUses);
  *
  ****************************************************************************/
 
-local Bool		tqShouldImport	  (TQual);
-local TForm             tiGetTopLevelTForm(SymeCContext context, AbSyn type);
+local Bool	tqShouldImport	  (TQual);
+local TForm     tiGetTopLevelTForm(SymeCContext context, AbSyn type);
+local Bool 	tiCheckSymeConditionalImplementation(Stab stab, Syme syme, Syme implSyme);
 
 void
 tinferInit()
@@ -319,6 +321,7 @@ tiWithSymes(Stab stab, TForm context)
 	SymeList	mods;
 	SymeList	symes;
 	SymeList	csymes = listNil(Syme);
+	SymeList	esymes = listNil(Syme);
 	Stab		wstab = stab;
 	while (wstab && stabGetSelf(wstab) == NULL) wstab = cdr(wstab);
 	tipAddDEBUG(dbOut, ">>tiWithSymes:\n");
@@ -338,8 +341,13 @@ tiWithSymes(Stab stab, TForm context)
 		}
 
 		/* Look for syme in the capsule. */
-		if ((xsyme = stabGetExportMod(wstab, mods, sym, tf)) != NULL) {
-			tipAddDEBUG(dbOut, "  [export]\n");
+		if ((xsyme = stabGetExportMod(wstab, mods, sym, tf))) {
+			if (tiCheckSymeConditionalImplementation(wstab, syme, xsyme))
+				tipAddDEBUG(dbOut, "  [export]\n");
+			else {
+				tipAddDEBUG(dbOut, "  [conditional override]\n");
+				esymes = listCons(Syme)(syme, esymes);
+			}
 		}
 
 		else {
@@ -347,6 +355,23 @@ tiWithSymes(Stab stab, TForm context)
 			csymes = listCons(Syme)(syme, csymes);
 		}
 	}
+
+	for (; esymes != listNil(Syme); esymes = cdr(esymes)) {
+		Syme 	esyme = car(esymes);
+		Symbol	sym  = symeId(esyme);
+		TForm	tf   = symeType(esyme);
+		Syme xsyme = stabGetExportMod(wstab, mods, sym, tf);
+		if (symeCondition(esyme) == listNil(Sefo)) {
+			symeSetDefinitionConditions(xsyme, listNil(AbSyn));
+		}
+		else {
+			symeSetDefinitionConditions(xsyme,
+						    listCons(AbSyn)(abNewAndAll(sposNone,
+										(AbSynList) symeCondition(esyme)), 
+								    symeDefinitionConditions(xsyme)));
+		}
+	}
+
 
 	symes = symeListSubstCat(wstab, mods, context, csymes);
 
@@ -389,6 +414,43 @@ symeListSetImplicit(Stab stab, SymeList symes)
 		/* Add to the list of results */
 		result = listCons(Syme)(syme, result);
 	}
+
+	return result;
+}
+
+local Bool
+tiCheckSymeConditionalImplementation(Stab stab, Syme syme, Syme implSyme)
+{
+	SefoList condition = symeCondition(syme);
+	AbSynList implCondition = symeDefinitionConditions(implSyme);
+	AbSynList tmp;
+	SefoList tmpSefo;
+
+	if (implCondition == listNil(AbSyn))
+		return true;
+	/* Need to check that implCondition implies condition */
+	/* First, unconditional implies it does */
+	for (tmp = implCondition; tmp != listNil(AbSyn); tmp = cdr(tmp)) {
+		if (car(tmp) == NULL)
+			return true;
+	}
+
+	for (tmp = implCondition; tmp != listNil(AbSyn); tmp = cdr(tmp)) {
+		tiBottomUp(stab, car(tmp), tfUnknown);
+		tiTopDown(stab, car(tmp), tfUnknown);
+	}
+
+	AbLogic implAbLog = ablogFalse();
+	for (tmp = implCondition; tmp != listNil(AbSyn); tmp = cdr(tmp)) {
+		implAbLog = ablogOr(ablogFrSefo(car(tmp)), implAbLog);
+	}
+	AbLogic conditionAbLog = ablogTrue();
+	for (tmpSefo = condition; tmpSefo != listNil(Sefo); tmpSefo = cdr(tmpSefo)) {
+		conditionAbLog = ablogAnd(ablogFrSefo(car(tmpSefo)), conditionAbLog);
+	}
+
+	Bool result = ablogImplies(conditionAbLog,
+				   ablogAnd(abCondKnown != NULL ? abCondKnown : ablogTrue(), implAbLog));
 
 	return result;
 }
@@ -444,7 +506,8 @@ tiAddSymes(Stab astab, AbSyn capsule, TForm base, TForm context, SymeList *p)
 		tipAddDEBUG(dbOut, "  looking for: %pSyme %pAbSynList ", syme, symeCondition(syme));
 		
 		/* Look for syme in the capsule. */
-		if ((xsyme = stabGetDomainExportMod(astab, mods, sym, tf)) != NULL) {
+		if ((xsyme = stabGetDomainExportMod(astab, mods, sym, tf)) != NULL
+		    && tiCheckSymeConditionalImplementation(astab, syme, xsyme)) {
 			tipAddDEBUG(dbOut, "  [export]\n");
 			symeImplAddInherit(xsyme, base, syme);
 		}
