@@ -99,6 +99,7 @@ $(patsubst %, out/ap/%.ap, $(_aptests)): out/ap/%.ap: $(srcdir)/%.as
 
 define aldor_args
 	$(nfile) 		\
+	-Wcheck			\
 	-Y$(foamlibdir)/al	\
 	-I$(foamsrclibdir)/al	\
 	-lAxlLib=foamlib 		\
