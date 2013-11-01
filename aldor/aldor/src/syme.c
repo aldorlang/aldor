@@ -1708,4 +1708,5 @@ struct symeFieldInfo symeFieldInfo[] = {
 	{ SYFI_HashNum,		"hashNum",	(AInt) (int)       0 },
 	{ SYFI_ExtraBits,	"extraBits",	(AInt) (int)       0 },
 	{ SYFI_ConditionContext,"conditionContext",(AInt) (AbSyn) NULL },
+	{ SYFI_DefinitionConditions,"definedConditions",(AInt) listNil(AbSyn) },
 };
