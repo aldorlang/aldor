@@ -85,8 +85,8 @@ main(int argc, char *argv[])
 		aprintf("Category\n");
 		for (; list != listNil(Syme); list = cdr(list)) {
 			Syme syme = car(list);
-			aprintf("%5s %3d %s\n", symeString(syme), symeHasDefault(syme),
-				tfPretty(symeType(syme)));
+			aprintf("%5s %3d %s %pAbSynList\n", symeString(syme), symeHasDefault(syme),
+				tfPretty(symeType(syme)), symeCondition(syme));
 		}
 	}
 	else {
@@ -105,7 +105,7 @@ main(int argc, char *argv[])
 
 		for (; tqList != listNil(TQual); tqList = cdr(tqList)) {
 			TQual tq = car(tqList);
-			aprintf("--> %pTForm\n", tfPretty(tqBase(tq)));
+			aprintf("--> %s\n", tfPretty(tqBase(tq)));
 		}
 	}
 

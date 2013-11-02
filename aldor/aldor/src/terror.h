@@ -18,7 +18,7 @@ extern void terrorNotUniqueType     (Msg, AbSyn, TForm, TPoss);
 extern void terrorNotUniqueMeaning  (Msg, AbSyn, SymeList, SymeList, String,
 				     TForm);
 
-extern void terrorNotEnoughExports  (AbSyn, TPoss, Bool);
+extern void terrorNotEnoughExports  (Stab, AbSyn, TPoss, Bool);
 extern void terrorAssign	    (AbSyn, TForm, TPoss);
 extern void terrorSetBang	    (Stab, AbSyn, Length, AbSynGetter);
 extern void terrorTypeConstFailed   (TConst);

@@ -197,6 +197,7 @@ local DefnPos 	defposTail	(DefnPos pos);
 local Bool    	defposEqual	(DefnPos a, DefnPos b);
 local Bool      defposIsRoot	(DefnPos pos);
 local void      defposFree      (DefnPos pos);
+local AbSynList defposToAbSyn(AIntList defnPos);
 /* (ToDo: Rename above functions to defnposXXX) */
 
 /******************************************************************************
@@ -392,7 +393,6 @@ local Bool		scobindNeedsMeaning	(AbSyn, TForm);
 local void		scobindSetMeaning	(AbSyn, Syme);
 local Syme		scobindDefMeaning	(Stab, SymeTag, Symbol,
 						 TForm, AInt);
-
 /*
  * scobindReconcile
  */
@@ -3518,6 +3518,25 @@ scobindCheckDefnPos(DeclInfo declInfo, DefnPos posn)
 	return scobindCheckDefnPos(declInfo, defposTail(posn));
 }
 
+AbSynList
+scobindDefnPosToList(DefnPosList defnPosList)
+{
+	AbSynList conditionList = listNil(AbSyn);
+	while (defnPosList != listNil(DefnPos)) {
+		AbSynList absynList = defposToAbSyn(car(defnPosList));
+		defnPosList = cdr(defnPosList);
+
+		if (absynList == listNil(AbSyn))
+			conditionList = listCons(AbSyn)(NULL, conditionList);
+		else {
+			AbSyn absyn = (cdr(absynList) == listNil(AbSyn))
+				? car(absynList) : abNewAndAll(sposNone, absynList);
+			conditionList = listCons(AbSyn)(absyn, conditionList);
+		}
+	}
+	return listNReverse(AbSyn)(conditionList);
+}
+
 /******************************************************************************
  *
  * :: scobindAddMeaning
@@ -3896,6 +3915,10 @@ scobindReconcileDecl(Stab stab, AbSynTag context, Symbol sym, IdInfo idInfo,
 				scobindAddMeaning(declInfo->id,
 					  sym, stab, SYME_Export,
 					  tf, (AInt) declInfo->doc);
+			assert(abSyme(declInfo->id));
+			Syme syme = abSyme(declInfo->id);
+			AbSynList defConditions = scobindDefnPosToList(declInfo->defpos);
+			symeSetDefinitionConditions(syme, defConditions);
 		}
 		else {
 			checkOuterUseOfLexicalConstant(stab, declInfo->id);

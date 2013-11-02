@@ -587,8 +587,8 @@ extend Matrix(R: Ring): with {
 }
 
 ShouldHaveSegmentGenerator(S) ==>
-	S has OrderedSet and S has AbelianSemiGroup 
-	and S has with { coerce: I -> S; }
+	S has OrderedSet and S has AbelianSemiGroup
+	and S has with { coerce: I -> %; }
 
 define GeneratorCategory(S: Type): Category == with {
 	generator:	% -> Generator S;

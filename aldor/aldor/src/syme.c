@@ -578,6 +578,8 @@ symeAddCondition(Syme syme, Sefo cond, Bool pos)
 {
 	SefoList	l = symeCondition(syme);
 
+	assert(tiTopFns()->tiCanSefo(cond));
+
 	if (abTag(cond) == AB_Test)
 		cond = cond->abTest.cond;
 
@@ -587,10 +589,10 @@ symeAddCondition(Syme syme, Sefo cond, Bool pos)
 			symeAddCondition(syme, abArgv(cond)[--i], pos);
 		}
 	}
-	else
+	else {
 		l = listCons(Sefo)(cond, l);
-
-	symeSetCondition(syme, l);
+		symeSetCondition(syme, l);
+	}
 	return syme;
 }
 
@@ -1182,6 +1184,9 @@ symeCheckHas(SymeCContext conditionContext, Sefo dom, Sefo cat)
 		return flg;
 	
 	tfdom = abGetCategory(dom);
+	if (tiTopFns()->tiCanSefo(cat)) {
+		tiTopFns()->tiSefo(stabFile(), cat);
+	}
 	tfcat = abTForm(cat) ? abTForm(cat) : tiTopFns()->tiGetTopLevelTForm(NULL, cat);
 
 	/* D has C iff typeof(D) satisfies C. */
@@ -1702,4 +1707,6 @@ struct symeFieldInfo symeFieldInfo[] = {
 	{ SYFI_DefnNum,		"defnNum",	(AInt) (int)       0 },
 	{ SYFI_HashNum,		"hashNum",	(AInt) (int)       0 },
 	{ SYFI_ExtraBits,	"extraBits",	(AInt) (int)       0 },
+	{ SYFI_ConditionContext,"conditionContext",(AInt) (AbSyn) NULL },
+	{ SYFI_DefinitionConditions,"definedConditions",(AInt) listNil(AbSyn) },
 };

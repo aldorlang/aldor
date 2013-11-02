@@ -113,17 +113,6 @@ extern Bool		gen0Hashcheck;
 
 /*****************************************************************************
  *
- * :: Flags for -W new-hcodes
- *
- ****************************************************************************/
-
-extern Bool		gen0NewHashCodes;
-
-#define			genNewHashCodes()		(gen0NewHashCodes)
-#define			genResetNewHashCodes()		(gen0NewHashCodes = false)
-
-/*****************************************************************************
- *
  * :: Foam Patching
  *
  ****************************************************************************/

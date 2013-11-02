@@ -290,6 +290,7 @@ struct abSeman {
 	AbSyn	implicit;	/* Implicit operator on expression. */
 	AbEmbed embed;		/* Implicit embedding for product contexts. */
 	SImpl   impl;		/* Syme implementation, if any */
+	SymeList self;          /* value of '%' for withs */
 };
 
 typedef struct abSeman *AbSeman;
@@ -870,6 +871,7 @@ extern struct ab_info	abInfoTable[];
 # define abTContext(a)	  ((a)->abHdr.seman ? (a)->abHdr.seman->embed	 : 0)
 # define abDefineIdx(a)	  ((a)->abHdr.seman ? (a)->abHdr.seman->defnIdx  : -1)
 # define abSymeImpl(a)	  ((a)->abHdr.seman ? (a)->abHdr.seman->impl	 : 0)
+# define abSelf(a)	  ((a)->abHdr.seman ? (a)->abHdr.seman->self	 : 0)
 
 # define abRepeatIterc(a) (abArgc(a)-1) /* -1 for body */
 # define abCollectIterc(a)(abArgc(a)-1) /* -1 for body */
@@ -943,6 +945,9 @@ extern AbSyn	abNewOfList		(AbSynTag t, SrcPos, AbSynList);
 extern AbSyn	abNewOfOpAndList	(AbSynTag t, SrcPos,AbSyn op,AbSynList);
 extern AbSyn	abNewOfToken		(AbSynTag t, Token);
 
+extern AbSyn    abNewAndAll		(SrcPos, AbSynList);
+extern AbSyn    abNewOrAll		(SrcPos, AbSynList);
+
 extern AbSyn	abCopy			(AbSyn);
 extern AbSyn	abReposition		(AbSyn, SrcPos pos, SrcPos end);
 extern AbSyn	abMarkAsMacroExpanded	(AbSyn);
@@ -950,6 +955,7 @@ extern Bool	abContains		(AbSyn, AbSyn);
 extern Bool	abEqual			(AbSyn, AbSyn);
 extern Bool	abEqualModDeclares	(AbSyn, AbSyn);
 extern Hash	abHash			(AbSyn);
+extern Hash	abHashSefo		(AbSyn);
 extern Hash	abHashList		(AbSynList);
 extern Hash	abHashModDeclares	(AbSyn);
 extern void	abSubSymbol		(AbSyn, Symbol, Symbol);
@@ -976,6 +982,7 @@ extern AbSeman	abNewSemantics		(void);
 extern Doc	abSetComment		(AbSyn, Doc);
 extern Stab	abSetStab		(AbSyn, Stab);
 extern Syme	abSetSyme		(AbSyn, Syme);
+extern void	abSetSelf		(AbSyn, SymeList);
 extern TForm	abSetTForm		(AbSyn, TForm);
 extern AbSyn	abSetImplicit		(AbSyn, AbSyn);
 extern AbEmbed	abSetTContext		(AbSyn, AbEmbed);

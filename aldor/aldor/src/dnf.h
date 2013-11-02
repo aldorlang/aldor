@@ -65,4 +65,6 @@ extern Bool dnfExpandImplies(Bool (*testFn)(void *, DNF_Atom, DNF_Atom),
 			     void *clos,
 			     DNF xx, DNF yy);
 
+extern int dnfFormatter(OStream ostream, Pointer ptr);
+
 #endif /* !_DNF_H_ */

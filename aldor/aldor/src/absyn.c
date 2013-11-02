@@ -208,6 +208,22 @@ abNewOfOpAndList(AbSynTag abtag, SrcPos pos, AbSyn op, AbSynList args)
 	return ab;
 }
 
+AbSyn
+abNewAndAll(SrcPos pos, AbSynList absyn)
+{
+	if (cdr(absyn) == listNil(AbSyn))
+		return car(absyn);
+
+	return abNewAnd(pos, car(absyn), abNewAndAll(pos, cdr(absyn)));
+}
+AbSyn
+abNewOrAll(SrcPos pos, AbSynList absyn)
+{
+	if (cdr(absyn) == listNil(AbSyn))
+		return car(absyn);
+	return abNewOr(pos, car(absyn), abNewAndAll(pos, cdr(absyn)));
+}
+
 void
 abFree(AbSyn ab)
 {
@@ -698,6 +714,46 @@ abEqualModDeclares(AbSyn ab1, AbSyn ab2)
 	h ^= (h << 8);			\
 	h += (hi) + 200041;		\
 	h &= 0x3FFFFFFF;		\
+}
+
+Hash
+abHashSefo(AbSyn ab)
+{
+	Hash	h = 0;
+	Length	i;
+
+	if (abHasTag(ab, AB_Declare))
+		return abHashSefo(ab->abDeclare.type);
+	if (abHasTag(ab, AB_Qualify))
+		return abHashSefo(ab->abQualify.what);
+	if (abHasTag(ab, AB_PretendTo))
+		return abHashSefo(ab->abPretendTo.expr);
+	if (abHasTag(ab, AB_RestrictTo))
+		return abHashSefo(ab->abRestrictTo.expr);
+	if (abHasTag(ab, AB_Test))
+		return abHashSefo(ab->abTest.cond);
+
+	if (abIsSymTag(abTag(ab)))
+		h = strHash(symString(abLeafSym(ab)));
+	else if (abIsDocTag(abTag(ab)))
+		h = strHash(docString(abLeafDoc(ab)));
+	else if (abIsStrTag(abTag(ab)))
+		h = strHash(abLeafStr(ab));
+	else if (abHasTag(ab, AB_Define)) {
+		abHashArg(h, abHashSefo(ab->abDefine.lhs));
+		abHashArg(h, abHashSefo(ab->abDefine.rhs));
+	}
+	else if (abTag(ab) == AB_Lambda) {
+		abHashArg(h, abHashSefo(ab->abLambda.param));
+		abHashArg(h, abHashSefo(ab->abLambda.rtype));
+	}
+	else
+		for (i = 0; i < abArgc(ab); i++)
+			abHashArg(h, abHashSefo(abArgv(ab)[i]));
+
+	h += abInfo(abTag(ab)).hash;
+	h &= 0x3FFFFFFF;
+	return h;
 }
 
 Hash
@@ -1625,6 +1681,7 @@ abTransferSemantics(AbSyn from, AbSyn to)
 		abSetImplicit(to, abImplicit(from));
 		abSetTContext(to, abTContext(from));
 		abSetDefineIdx(to, abDefineIdx(from));
+		abSetSelf(to, abSelf(from));
 	}
 
 	switch (abState(from)) {
@@ -1669,6 +1726,7 @@ abNewSemantics(void)
 	as->embed	= 0;
 	as->defnIdx     = -1;
 	as->impl	= NULL;
+	as->self	= listNil(Syme);
 
 	return as;
 }
@@ -1707,6 +1765,17 @@ abSetSyme(AbSyn ab, Syme syme)
 		ab->abHdr.seman->syme = syme;
 	}
 	return syme;
+}
+
+void
+abSetSelf(AbSyn ab, SymeList symes)
+{
+	/* scobind may hand this a 0 ab */
+	if (ab) {
+		if (! ab->abHdr.seman)
+			ab->abHdr.seman = abNewSemantics();
+		ab->abHdr.seman->self = symes;
+	}
 }
 
 void

@@ -32,7 +32,11 @@ ABQK_DEFINE3(apply2, abNewApply2);
 ABQK_DEFINE3(lambda, abNewLambda);
 ABQK_DEFINE3(_if0, abNewIf);
 ABQK_DEFINE2(import, abNewImport);
+ABQK_DEFINE2(qualify, abNewQualify);
+ABQK_DEFINE2(pretend, abNewPretendTo);
+ABQK_DEFINE2(restrictTo, abNewRestrictTo);
 ABQK_DEFINE1(test, abNewTest);
+ABQK_DEFINE2(and, abNewAnd);
 
 ABQK_DEFINE1_Symbol(id, abNewId);
 
@@ -165,4 +169,11 @@ uniqueMeaning(Stab stab, String s)
 	Syme d = car(symesForString);
 
 	return d;
+}
+
+Sefo
+sefo(AbSyn absyn)
+{
+	tiSefo(stabFile(), absyn);
+	return (Sefo) absyn;
 }

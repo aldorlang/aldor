@@ -882,8 +882,6 @@ cmdDoOptDeveloper(String arg)
 		NoWhereHack = true;
 	else if (strAEqual("runtime-hashcheck", arg))
 		genSetHashcheck();
-	else if (strAEqual("old-hcodes", arg))
-		genResetNewHashCodes();
 	else if (strAIsPrefix("keyword", arg)) {
 		String darg = cmdDGetOptArg(arg, "keyword", NULL);
 		cmdDoKeywordStatus(darg, true);

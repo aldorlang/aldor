@@ -353,7 +353,7 @@ where $s = \sum_{n \ge 0} a_n x^n$.}
 		}
 	}
 
-	if R has GcdDomain then {
+	if R has CommutativeRing then {
 		monicNewtonSeries(p:RX):RXX == {
 			import from Z, R, RX, Partial RXX;
 			assert(~zero? p);

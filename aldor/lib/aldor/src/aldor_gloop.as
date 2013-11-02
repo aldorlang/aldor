@@ -25,7 +25,7 @@ extend Union(T:Tuple Type):with { <<: (TextWriter, %) -> TextWriter } == add {
 }
 
 extend List(T:Type): with { <<: (TextWriter, %) -> TextWriter } == add {
-	if not(T has PrimitiveType) then {
+	if not(T has OutputType) then {
 		(p:TextWriter) << (a:%):TextWriter == {
 			import from String, MachineInteger;
 			empty? a => p << "[]";

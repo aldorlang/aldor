@@ -452,6 +452,11 @@ tfInit(void)
 	fmtRegister("AInt", aintFormatter);
 	fmtRegister("AIntList", aintListFormatter);
 
+	/* syme.c checks */
+
+	for (i=SYME_FIELD_START; i<SYME_FIELD_LIMIT; i++)
+		assert(symeFieldInfo[i].tag == i);
+
 	isInit = true;
 }
 
@@ -2881,7 +2886,11 @@ tfGetCatSelf(TForm cat)
 			wself = tfGetCatSelf(tfw);
 
 		tfAddSelf(tfw, wself);
+
 		tfHasSelf(tfw) = true;
+
+		if (tfHasExpr(cat))
+			tfAddSelf(cat, abSelf(tfGetExpr(cat)));
 
 		tfAddSelf(cat, wself);
 	}
@@ -3283,11 +3292,7 @@ tfGetCatParentsFrIf(TForm cat)
 	}
 
 	tsymes = tfGetCatParentsFrInner(tfIfThen(cat));
-	tsymes = listCopy(Syme)(tsymes);
-	for (symes = tsymes; symes; symes=cdr(symes)) {
-		car(symes) = symeCopy(car(symes));
-		symeAddCondition(car(symes), cond, true);
-	}
+	tsymes = symeListAddCondition(tsymes, cond, true);
 
 	esymes = tfGetCatParentsFrInner(tfIfElse(cat));
 	esymes = listCopy(Syme)(esymes);
@@ -4063,9 +4068,8 @@ tfGetCatExportsFrParents(SymeList symes)
 		if (!symeIsSelfSelf(syme)) continue;
 
 		if (DEBUG(tfParent)) {
-			fprintf(dbOut, "tfCatExports:  %p= expanding: ", syme);
-			symePrint(dbOut, syme);
-			fnewline(dbOut);
+			afprintf(dbOut, "(tfCatExports: expanding %pTForm %pAbSynList\n",
+				 symeType(syme), symeCondition(syme));
 		}
 
 		nsymes = tfGetCatParents(symeType(syme), true);
@@ -4073,9 +4077,7 @@ tfGetCatExportsFrParents(SymeList symes)
 		if (cond) nsymes = tfGetCatExportsCond(nsymes, cond, true);
 
 		if (DEBUG(tfParent)) {
-			fprintf(dbOut, "tfCatExports:  %p= into: ", syme);
-			symeListPrint(dbOut, nsymes);
-			fnewline(dbOut);
+			afprintf(dbOut, "tfCatExports: into %pSymeList)\n", nsymes);
 		}
 
 		nsymes = tfGetCatExportsFilter(osymes, nsymes);
@@ -4099,7 +4101,7 @@ tfGetCatExportsCond(SymeList symes0, SefoList conds0, Bool pos)
 	 */
 	for (symes = symes0; symes; symes = cdr(symes)) {
 		Syme nsyme = symeCopy(car(symes));
-		for (conds = reversedConds0; reversedConds0; reversedConds0 = cdr(reversedConds0)) {
+		for (conds = reversedConds0; conds; conds = cdr(conds)) {
 			symeAddCondition(nsyme, car(conds), pos);
 		}
 		nsymes = listCons(Syme)(nsyme, nsymes);

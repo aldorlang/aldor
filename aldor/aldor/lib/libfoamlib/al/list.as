@@ -307,10 +307,14 @@ List(S: Type): ListCategory S with == FakedConditionalOperations S add {
 --    on conditionals
 FakedConditionalOperations(S: Type): with {
 	=: (%, %) -> Boolean;
+	~=: (%, %) -> Boolean;
 	<<: (TextWriter, %) -> TextWriter;
 	member?: (S, %) -> Boolean;
 }  == add {
 	(a: %) = (b: %): Boolean == {
+		error "no equality on this object";
+	}
+	(a: %) ~= (b: %): Boolean == {
 		error "no equality on this object";
 	}
 	member?(a: S, b: %): Boolean == {

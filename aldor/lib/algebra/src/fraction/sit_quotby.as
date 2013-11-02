@@ -41,6 +41,7 @@ FractionBy(R: IntegralDomain, p:R, irr?:Boolean): FractionByCategory R == {
 	-- Keeps normalized, ie exactQuotient(Numerator, p) = failed
 	-- value is Numer p^Order
 	Rep == Record(Numer:R, Order:Z);
+	import from String;
 
 	local gcd?:Boolean		== R has GcdDomain;
 	local mkquot(a:R, n:Z):%	== { import from Rep; per [a, n]; }
@@ -92,7 +93,7 @@ FractionBy(R: IntegralDomain, p:R, irr?:Boolean): FractionByCategory R == {
 	-- b p^m divides a p^n if and only if b divides a p^k for some k >= 0
 	exactQuotient(x:%, y:%):Partial % == {
 		TRACE("fractionby::exactQuotient, p = ", p);
-		import from String, Z, Partial R;
+		import from Z, Partial R;
 		(a, n) := numord x;
 		TRACE("a = ", a); TRACE("n = ", n);
 		(b, m) := numord y;
@@ -127,6 +128,9 @@ FractionBy(R: IntegralDomain, p:R, irr?:Boolean): FractionByCategory R == {
 			k < 0 => (0, -1);
 			(h * qq^(next k), next k);
 		}
+	}
+	else {
+		normalize(x:%): % == error "Normalize on non GCD Domain";
 	}
 
 	shift(x:%, n:Z):% == {
