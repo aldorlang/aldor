@@ -79,3 +79,6 @@ CLEANFILES += testargs/testargs-aldormain.c testargs/testargs.c testargs/testarg
 check_PROGRAMS += type-constant/type-constant
 type_constant_type_constant_SOURCES = type-constant/type-constant-aldormain.c type-constant/type-constant.c
 CLEANFILES += type-constant/type-constant-aldormain.c type-constant/type-constant.c type-constant/type-constant.ao
+check_PROGRAMS += cond/cond
+cond_cond_SOURCES = cond/cond-aldormain.c cond/cond.c
+CLEANFILES += cond/cond-aldormain.c cond/cond.c cond/cond.ao

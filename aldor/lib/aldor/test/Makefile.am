@@ -28,6 +28,7 @@ AXLTESTS =	\
 	removebug2	\
 	testargs	\
 	type-constant	\
+	cond	\
 	#
 
 BROKEN =	\
@@ -57,3 +58,6 @@ CLEANFILES = # filled by Tests.am
 TESTS = $(check_PROGRAMS)
 
 include ../../testprog.am
+
+cond/cond.c: cond/cond1.c
+cond_cond_SOURCES += cond/cond1.c
