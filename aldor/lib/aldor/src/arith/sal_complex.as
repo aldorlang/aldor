@@ -270,6 +270,13 @@ is not commutative.}
 				imag a * real b - real a * imag b, d);
 		}
 	}
+	else {
+		(a:%)^(n:MachineInteger):% == {
+			import from BinaryPowering(%, MachineInteger);
+			n > 0 => binaryExponentiation(a, n);
+			never;
+		}
+	}
 
 	if R has SerializableType then {
 		(p:BinaryWriter) << (a:%):BinaryWriter == p << real a << imag a;
