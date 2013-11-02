@@ -2112,13 +2112,14 @@ tibupAdd(Stab stab, AbSyn absyn, TForm type)
 
 	if (symes) {
 		if (tiIsSoftMissing()) {
-			terrorNotEnoughExports(absyn,
+			terrorNotEnoughExports(stab, absyn,
 				tpossSingleton(tfWithFrSymes(symes)), true);
 			tfw = tfWithFrAbSyn(absyn);
 		}
 		else {
 			abState(absyn) = AB_State_Error;
 			tfw = tfWithFrSymes(symes);
+			tfSetSelf(tfw, tfGetCatSelf(type));
 		}
 	}
 	else

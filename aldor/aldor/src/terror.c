@@ -71,7 +71,9 @@ local void		trInfoFrSymes		(TRejectInfo, SymeList);
 local void		trInfoFrTPoss		(TRejectInfo, TPoss);
 local void		trInfoFrTUnique		(TRejectInfo, TForm);
 
-local void	bputCondition(Buffer buf, SefoList conds);
+local void bputCondition      (Buffer buf, SefoList conds);
+local void terrorPrintSymeList(Buffer obuf, String prefix, SymeList msymes);
+local void terrorPutConditionallyDefinedExports(Buffer obuf, Stab stab, SymeList mods, AbSyn ab, SymeList symes);
 
 /**************************************************************************
  * TReject / TRejectInfo utility
@@ -344,7 +346,7 @@ terror (Stab stab, AbSyn absyn, TForm type)
 		       * occurred.
 		       */
 		assert(abState(absyn) != AB_State_HasUnique);
-		terrorNotEnoughExports(absyn, abTPoss(absyn), false);
+		terrorNotEnoughExports(stab, absyn, abTPoss(absyn), false);
 		tpossFree(abTPoss(absyn));
 		abTPoss(absyn) = tpossEmpty();
 		break;
@@ -1901,7 +1903,7 @@ terrorAssign(AbSyn ab, TForm type, TPoss tposs)
 /**************************************************************************/
 
 local void 
-terrorPutConditionalExports(Buffer buf, SymeList csymes)
+terrorPutConditionalExports(Stab stab, Buffer buf, SymeList csymes)
 {
 	SefoList conds;
 	SymeList gsymes, symes, nsymes, hsyme;
@@ -1945,49 +1947,70 @@ terrorPutConditionalExports(Buffer buf, SymeList csymes)
 			String s;
 			s = fmtTForm(symeType(car(gsymes)));
 			bufPrintf(buf , "\n\t\t");
+
 			bufPrintf(buf, fmt,
 				  symeString(car(gsymes)), s);
 			strFree(s);
 			gsymes = listFreeCons(Syme)(gsymes);
 		}
 	}
-	
 }
 
 void
-terrorNotEnoughExports(AbSyn ab, TPoss tposs, Bool onlyWarning)
+terrorNotEnoughExports(Stab stab, AbSyn ab, TPoss tposs, Bool onlyWarning)
 {
-	String		fmt, s;
-	Buffer		obuf;
+	TForm 		base;
 	SymeList	symes;
 	SymeList	csymes;
+	SymeList	isymes;
+	SymeList        msymes;
+	SymeList        mods;
+	SymeList 	aself;
+	Buffer		obuf;
 
 	terrorClip =  comsgOkAbbrev() ? CLIP : ABPP_UNCLIPPED;
 
 	obuf = bufNew();
 
-	fmt = comsgString(ALDOR_D_TinMissingExports);
-	bufPrintf(obuf, "%s", fmt);
-
 	if (!comsgOkDetails()) goto done;
 	
+	base = abTForm(ab->abAdd.base);
 	assert(tpossIsUnique(tposs));
 	symes = tfGetCatExports(tpossUnique(tposs));
+
+	aself = tfGetSelfFrStab(stab);	
+	mods = listCopy(Syme)(tfGetCatSelf(tpossUnique(tposs)));
+	mods = listNConcat(Syme)(listCopy(Syme)(tfGetDomSelf(base)), mods);
+	mods = listNConcat(Syme)(aself, mods);
+
 	csymes = listNil(Syme);
-	fmt = comsgString(ALDOR_D_TinMissingExport);
+	isymes = listNil(Syme);
+	msymes = listNil(Syme);
 	for (; symes; symes = cdr(symes)) {
-		if (symeCondition(car(symes)))
-			csymes = listCons(Syme)(car(symes), csymes);
+		Syme syme = car(symes);
+		Syme isyme = stabGetDomainExportMod(stab, mods, symeId(syme), symeType(syme));
+		if (isyme != NULL) {
+			isymes = listCons(Syme)(syme, isymes);
+		}
+		else if (symeCondition(car(symes)))
+			csymes = listCons(Syme)(syme, csymes);
 		else {
-			s = fmtTForm(symeType(car(symes)));
-			bufPrintf(obuf , "\n\t");
-			bufPrintf(obuf, fmt, symeString(car(symes)), s);
-			strFree(s); 
+			msymes = listCons(Syme)(syme, msymes);
 		}
 	}
 	
-	if (csymes) terrorPutConditionalExports(obuf, csymes);
+	if (msymes != listNil(Syme)) {
+		String fmt = comsgString(ALDOR_D_TinMissingExports);
+		bufPrintf(obuf, "%s", fmt);
+		terrorPrintSymeList(obuf, "", msymes);
+	}
 
+	if (csymes) {
+		terrorPutConditionalExports(stab, obuf, csymes);
+	}
+	if (isymes) {
+		terrorPutConditionallyDefinedExports(obuf, stab, mods, ab, isymes);
+	}
 done:
 	if (onlyWarning)
 		comsgWarning(ab, ALDOR_E_ExplicitMsg, bufChars(obuf));
@@ -1995,6 +2018,65 @@ done:
 		comsgError(ab, ALDOR_E_ExplicitMsg, bufChars(obuf));
 	bufFree(obuf);
 
+}
+
+local void
+terrorPrintSymeList(Buffer obuf, String prefix, SymeList msymes)
+{
+	String fmt = comsgString(ALDOR_D_TinMissingExport);
+
+	for (; msymes != listNil(Syme); msymes = listFreeCons(Syme)(msymes)) {
+		Syme syme = car(msymes);
+		String s = fmtTForm(symeType(syme));
+		bufPrintf(obuf , "\n\t%s", prefix);
+		bufPrintf(obuf, fmt, symeString(syme), s);
+		strFree(s);
+	}
+}
+
+local void
+terrorPutConditionallyDefinedExports(Buffer obuf, Stab stab, SymeList mods, AbSyn ab, SymeList symes)
+{
+	SymeList usymes;
+	SymeList iter;
+
+	iter = listCopy(Syme)(symes);
+	while (iter != listNil(Syme)) {
+		Syme syme = car(iter);
+		SymeList msymes, nsymes;
+		SefoList condition = symeCondition(syme);
+		Syme implSyme = stabGetDomainExportMod(stab, mods, symeId(syme), symeType(syme));
+		AbSynList defCondition = symeDefinitionConditions(implSyme);
+
+		nsymes = listNil(Syme);
+		msymes = listCons(Syme)(syme, listNil(Syme));
+		iter = listFreeCons(Syme)(iter);
+		while (iter != listNil(Syme)) {
+			Syme iterSyme = car(iter);
+			Syme implSyme = stabGetDomainExportMod(stab, mods, symeId(iterSyme), symeType(iterSyme));
+			if (sefoListEqual(condition, symeCondition(iterSyme))
+			    && sefoListEqual((SefoList) defCondition, 
+					     (SefoList) symeDefinitionConditions(implSyme)))
+				msymes = listCons(Syme)(iterSyme, msymes);
+			else
+				nsymes = listCons(Syme)(iterSyme, nsymes);
+			iter = listFreeCons(Syme)(iter);
+		}
+		iter = nsymes;
+		bufPrintf(obuf, "\n");
+		if (condition == listNil(Sefo)) {
+			AbSyn expr = abNewNot(sposNone, abNewOrAll(sposNone, defCondition));
+			bufPrintf(obuf, "\tMissing where %s", abPretty(expr));
+			terrorPrintSymeList(obuf, "\t", msymes);
+		}
+		else {
+			AbSyn expr = abNewNot(sposNone, abNewOrAll(sposNone, defCondition));
+			bufPrintf(obuf, "\tMissing where %s\n", abPretty(abNewAndAll(sposNone, 
+											   (AbSynList) condition)));
+			bufPrintf(obuf, "\t\t  and %s", abPretty(expr));
+			terrorPrintSymeList(obuf, "\t", msymes);
+		}
+	}
 }
 
 /***************************************************************************/
