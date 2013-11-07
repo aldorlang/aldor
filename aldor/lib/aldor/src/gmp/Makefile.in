@@ -17,4 +17,6 @@ subdir		:= $(subst $(abs_top_builddir)/,,$(abs_builddir))
 # Build starts here
 library = sal_fltgmp sal_gmptls sal_intgmp
 
+XFAIL=sal_intgmp
+
 include $(abs_top_srcdir)/lib/aldor/src/common.mk

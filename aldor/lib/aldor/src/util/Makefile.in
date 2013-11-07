@@ -18,4 +18,6 @@ subdir		:= $(subst $(abs_top_builddir)/,,$(abs_builddir))
 library = ald_trace eio_rsto rtexns sal_agat sal_cmdline sal_file	\
 	  sal_timer sal_version
 
+XFAIL=sal_cmdline
+
 include $(abs_top_srcdir)/lib/aldor/src/common.mk
