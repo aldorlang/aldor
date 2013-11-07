@@ -177,6 +177,8 @@ x has been locally allocated, and is guaranteed not to share space
 with other elements. Some functions are not necessarily copying their
 arguments and can thus create memory aliases.}
 #endif
+	if % has CopyableType then PrimitiveType;
+
 	default {
 		macro copy? == % has CopyableType;
 		divide(a:%, b:%):(%, %)		== (a quo b, a rem b);
