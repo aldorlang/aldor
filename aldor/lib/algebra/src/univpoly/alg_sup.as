@@ -155,11 +155,20 @@ modgcd():Boolean == gcd mgcd;
 
 gcd(ggt:(Zx,Zx) -> Zx):Boolean == {
 	import from Z, Zx;
+	import from Assert Zx;
 
 	x := monom;
+	r := x^2 + 1;
+	s := x^2 - 1;
+
+	assertEquals(x, ggt(x, x));
+	assertEquals(x, ggt(x, x^2));
+	assertEquals(1, ggt(r, x));
+	assertEquals(x, ggt(x, x*r));
+	assertEquals(r, ggt(r^2, r*s));
+
 	p := x^8 + x^6 - 3*x^4 - 3*x^3 + 8*x^2 +2*x - 5@Z ::Zx;
 	q := 3*x^6 + 5*x^4 -4*x^2 -9*x + 21@Z ::Zx;
-	r := x^2 + 1;
 	g := ggt(p, q);
 	rg := ggt(r * p, r * q);
 	g = 1 and rg = r;
@@ -169,7 +178,7 @@ stdout << "Testing alg__sup..." << endnl;
 aldorTest("degree", degree);
 aldorTest("exactQuotient", exactQuotient);
 aldorTest("diff", diff);
-aldorTest("heugcd", heugcd);
 aldorTest("modgcd", modgcd);
+aldorTest("heugcd", heugcd);
 stdout << endnl;
 #endif
