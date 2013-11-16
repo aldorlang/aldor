@@ -627,10 +627,19 @@ tiGetTFormContext(Stab stab, SymeCContext context, AbSyn type)
 {
 	TForm	tf, ntf;
 
-	tf  = abTForm(type) ? abTForm(type) : tfSyntaxFrAbSyn(stab, type);
+	if (abTForm(type)) {
+		/* This is a little hacky... we just want to ensure
+		 * that if 'type' has an attached tform, then that
+		 * tform in turn should have a decent looking sefo
+		 * attached */
+		abSetTForm(type, tfFollowFn(abTForm(type)));
+		if (!tfHasExpr(abTForm(type)))
+			tfToAbSyn(abTForm(type));
+	}
+	tf  = abTForm(type) ? (abTForm(type)) : tfSyntaxFrAbSyn(stab, type);
 
 	/* Transfer semantics from type to tf. */
-	if (abIsSefo(type) && !abIsSefo(tfGetExpr(tf))) {
+	if (abIsSefo(type) && tfHasExpr(tf) && !abIsSefo(tfGetExpr(tf))) {
 		abTransferSemantics(type, tfGetExpr(tf));
 	}
 
