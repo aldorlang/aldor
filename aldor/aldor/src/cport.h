@@ -340,6 +340,13 @@ typedef unsigned long	ULong;
 # define AINT_FMT "%ld"
 #endif
 
+/* SFloat format argument to scanf. */
+#ifdef CC_SF_is_double
+# define SFLO_SFMT "%lf"
+#else
+# define SFLO_SFMT "%f"
+#endif
+
 #ifdef CC_second_largest_is_int
 typedef unsigned int 	UNotAsLong;
 #define U16sPerUNotAsLong 2

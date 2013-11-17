@@ -33,6 +33,11 @@
 
 void fiBIntInit()
 {
+	/* Random check that integers are where we expect them to be */
+	if (sizeof(int) != sizeof(long))
+		assert(sizeof(int) == sizeof(BIntS));
+	if (sizeof(int) == sizeof(long))
+		assert(sizeof(short) == sizeof(BIntS));
 }
 
 

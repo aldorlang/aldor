@@ -28,6 +28,7 @@ AXLTESTS =	\
 	removebug2	\
 	testargs	\
 	type-constant	\
+	cond-defaults	\
 	cond	\
 	#
 
@@ -51,6 +52,7 @@ XFAIL_TESTS =		\
 	bugFree/bugFree	\
 	bugreport_5/bugreport_5	\
 	issue2/issue2	\
+	cond-defaults/cond-defaults \
 	#
 
 check_PROGRAMS = # filled by Tests.am

@@ -159,7 +159,9 @@
 # define OS_UNIX
 # define OS_LINUX
 # define CC_GNU
-
+# if defined(_LP64) || defined(__LP64__)
+#   define HW_IA64
+# endif
 # if defined(__i386__)
 #    define HW_80386
 # endif
@@ -169,7 +171,6 @@
 # if defined(__ia64) || defined(__ia64__) || defined(__IA64) || defined(__IA64__)
 #  define HW_IA64
 # endif
-
 
      /* GCC 2.96 shipped with RH 7.0 is severly broken ... */
 # if defined(__GNUC_MINOR__) && __GNUC__ == 2 && __GNUC_MINOR__ == 96

@@ -27,6 +27,11 @@ library_deps := 	\
 	polyfactorp		\
 	ffield			\
 	polyfactor0		\
+	multpoly/exponent	\
+	multpoly/multpolycat	\
+	multpoly/multpolydom	\
+	multpoly/multpolypkg	\
+	multpoly/multpolytest	\
 
 tst_assert_deps := 
 tst_test_deps := tst_assert
@@ -37,3 +42,6 @@ tst_mint_deps := tst_assert tst_test
 tst_fold_deps := tst_assert tst_test
 tst_int_deps := tst_assert tst_test tst_ring
 tst_dup_deps := tst_assert tst_test tst_ring
+doc_poly_deps := tst_assert tst_test
+doc_intpoly_deps := tst_assert tst_test
+doc_series_deps := tst_assert tst_test

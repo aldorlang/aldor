@@ -251,9 +251,9 @@ testRangeInteractive()
 	while (1) {
 
 		printf("SFlo0= ");
-		IgnoreResult(scanf("%f", &sf0));
+		IgnoreResult(scanf(SFLO_SFMT, &sf0));
 		printf("SFlo1= ");
-		IgnoreResult(scanf("%f", &sf1));
+		IgnoreResult(scanf(SFLO_SFMT, &sf1));
 
 		testSFloInRange(&sf0, &sf1);
 
@@ -278,7 +278,7 @@ testInteractive()
 	while (1) {
 
 		printf("\nEnter a single float: ");
-		IgnoreResult(scanf("%f", &sfl));
+		IgnoreResult(scanf(SFLO_SFMT, &sfl));
 
 		printf("\ntrunc(%.*g) = ", 9, sfl);
 

@@ -3060,14 +3060,14 @@ sefoSubst0(AbSub sigma, Sefo sefo)
 		/* Copy semantics if they have some and we don't */
 		if (abTForm(sefo) && !abTForm(final) && !stabDumbImport()) {
 			/*
-			 * Really not sure about this: without it we fail
-			 * to process conditional imports correctly after
-			 * calling tfDefineeBaseType() in stabImportFrom().
-			 * One might expect that tformSubst0() ought to be
-			 * used but this induces bad mutual recursion with
-			 * this function. At least this way seems to work.
+			 * Really not sure about this: without it we
+			 * fail to process conditional imports
+			 * correctly after calling tfDefineeBaseType()
+			 * in stabImportFrom().  The final tform
+			 * should be the substituted version, which
+			 * hopefully won't cause too much recursion.
 			 */
-			abSetTForm(final, abTForm(sefo));
+			abSetTForm(final, tformSubst0(sigma, abTForm(sefo)));
 		}
 		if (abSelf(sefo))
 			abSetSelf(final, abSelf(sefo));

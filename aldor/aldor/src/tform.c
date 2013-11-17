@@ -2050,7 +2050,7 @@ tfSyntaxConditions(Stab stab, TForm tf, TfCondElt conditions)
 				 tf, conditions->list,
 				 tfIsSyntax(tf) || tfIsMap(tf) || tfIsEmptyMulti(tf) || tfIsWith(tf));
 	}
-	assert(tfIsSyntax(tf) || tfIsMap(tf) || tfIsMulti(tf) || tfIsWith(tf) || tfIsCategory(tf));
+
 	if (!tfIsMeaning(tf))
 		tfMergeConditions(tf, stab, conditions);
 

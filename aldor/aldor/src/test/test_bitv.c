@@ -2,9 +2,11 @@
 #include "bitv.h"
 #include "foam.h"
 #include "testlib.h"
+#include "bigint.h"
 
 local void testBitvToInt();
 local void testBitvCount();
+local void testBInt();
 
 /* XXX: from test_tinfer.c */
 void init(void);
@@ -16,6 +18,7 @@ bitvTestSuite()
 	init();
 	TEST(testBitvToInt);
 	TEST(testBitvCount);
+	TEST(testBInt);
 	fini();
 }
 
@@ -65,4 +68,10 @@ testBitvCount()
 		testIntEqual("C", i, bitvCountTo(clss, bitv, i));
 	}
 	bitvClassDestroy(clss);
+}
+
+local void
+testBInt()
+{
+	testTrue("bint size", sizeof(UNotAsLong) < sizeof(long));
 }

@@ -690,8 +690,9 @@ tfSatAsMulti(SatMask mask, AbSub sigma, TForm S, TForm TScope,
 		 * BUG: if tfi is a tfSyntax then we will almost certainly
 		 * fail to spot any dependencies. See bug 1303 for example.
 		 */
-		if (syme && (tfSymeInducesDependency(syme, TScope) ||
-			     listMemq(Syme)(tfSymes(TScope), syme))) {
+		if (syme && (tfSymeInducesDependency(syme, TScope)
+			     || listMemq(Syme)(tfSymes(TScope), syme)
+			     || listMember(Syme)( tfSymes(TScope), syme, symeEqual))) {
 			abi = sefoCopy(abi);
 			tiTopFns()->tiBottomUp(absStab(sigma), abi, tfUnknown);
 			tiTopFns()->tiTopDown (absStab(sigma), abi, tfi);

@@ -210,6 +210,9 @@
 #    define CC_stdlib_no_exits
 #    define CC_little_endian
 #    define CC_getcwd_has_proto
+#    if defined(HW_IA64)
+#       define CC_second_largest_is_int
+#    endif
 #  else
 #    define CC_CONFIGURED
 #    define CC_no_redefine

@@ -306,11 +306,11 @@ For example, the following function takes constants
 $a_0$ and $c$ and produces the hypergeometric series
 $\sum_{n\ge 0} a_n x^n$ where $a_{n+1}/a_n = c$.
 \begin{verbatim}
-SeriesSample(R:CommutativeRing, Rx:UnivariateTaylorSeriesCategory R): with {
+SeriesSample(R:CommutativeRing, Rx:UnivariateTaylorSeriesType R): with {
          hypergeometricSeries: (R, R) -> Rx;
 } == add {
          hypergeometricSeries(a0:R, c:R):Rx == {
-                import from Sequence F;
+                import from Sequence R;
                 zero? a0 => 0;
                 -- the following creates the stream [a0, c a0, c^2 a0, ... ]
                 coeffs:Stream R := orbit(a0, (x:R):R +-> c * x);

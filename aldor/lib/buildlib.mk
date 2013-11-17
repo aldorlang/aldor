@@ -48,6 +48,11 @@ AM_V_JAVAC = $(am__v_JAVAC_$(V))
 am__v_JAVAC_ = $(am__v_JAVAC_$(AM_DEFAULT_VERBOSITY))
 am__v_JAVAC_0 = @echo "  JAVAC " $@;
 
+# ALDORTEST - don't echo anything as the build rule will show the test name
+AM_V_ALDORTEST = $(am__v_ALDORTEST_$(V))
+am__v_ALDORTEST_ = $(am__v_ALDORTEST_$(AM_DEFAULT_VERBOSITY))
+am__v_ALDORTEST_0 = @
+
 # Check the makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status 
@@ -201,6 +206,28 @@ all: $(libraryname).jar				\
 	$(addsuffix .java,$(javalibrary))	\
 	$(addsuffix .class,$(javalibrary))
 endif
+
+aldortests := $(patsubst %,%.aldortest,$(library))
+
+$(aldortests): %.aldortest: Makefile
+	$(AM_V_ALDORTEST) \
+         (if ! grep -q '^#if ALDORTEST' $(srcdir)/$*.as; then exit 0; fi; \
+	 echo "  ALDORTEST $*.as"; \
+	 sed -n -e '/^#if ALDORTEST/,/^#endif/p' < $(srcdir)/$*.as > $*.test.as; \
+	 $(DBG) $(aldorexedir)/aldor $(aldor_common_args) -Y$(aldorlibdir)/libfoam/al \
+			-I$(top_srcdir)/lib/aldor/include -Y$(top_builddir)/lib/aldor/src \
+			-Y$(librarylibdir) -I$(libraryincdir) -ginterp -DALDORTEST \
+			$*.test.as; \
+	 status=$$?; \
+	 exstatus=$(filter $*, $(XFAIL));	\
+	 if ! [ "$$exstatus" = "" ] ; then \
+	     if [ $$status = 0 ] ; then echo XPASS: $*; exit 1; else echo XFAIL: $*; exit 0; fi;  \
+	 fi;\
+	 if [ $$status = 0 ] ; then echo PASS: $*; else echo FAIL: $*; fi; \
+	 exit $$status)
+
+.PHONY: $(aldortests)
+check: $(aldortests)
 
 # 
 # :: Automake requires this little lot

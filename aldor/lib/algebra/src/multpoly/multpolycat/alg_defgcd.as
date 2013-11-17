@@ -205,26 +205,30 @@ P:PolynomialRing(R,V), v1:V, v2:V): B == {
   --Also test with a=b 
 
     pack==>MultivariatePolynomialGcdPackage(R, V, P);
+    bothZero(a, b) ==> zero? a and zero? b;
+    status: Boolean := true;
+    ok() ==> stdout;
+    fail() ==> {status := false; stdout}
     import from pack,R;
     z:P:=0;
     myg1:=gcd(a1,b1)$pack;
     res1:=myg1-unitCanonical(g1)$pack;
-    if (res1=z) then {stdout<<" ok "<<newline;} else {stdout<<" result is incorrect! "<<newline; }
+    if (res1=z or bothZero(a1, b1)) then {ok() <<" 1 ok "<<newline;} else {fail()<<" 1 result is incorrect! "<<newline; }
     myg2:=gcd(a2,b2)$pack;
     res2:=myg2-unitCanonical(g2)$pack;
-    if (res2=z) then {stdout<<" ok "<<newline;} else {stdout<<" result is incorrect! "<<newline; }
+    if (res2=z or bothZero(a2, b2)) then {ok()<<" 2 ok "<<newline;} else {fail()<<" 2 result is incorrect! "<<newline; }
     myg3:=gcd(a3,b3)$pack;
     res3:=myg3-unitCanonical(g3)$pack; 
-    if (res3=z) then {stdout<<" ok "<<newline;} else {stdout<<" result is incorrect! "<<newline; }
+    if (res3=z or bothZero(a3, b3)) then {ok()<<" 3 ok "<<newline;} else {fail()<<" 3 result is incorrect! "<<newline; }
 
 --    myg4:=gcd(a4,b4)$pack;
 --    res4:=ground? myg4;
---    if (res4) then {stdout<<" ok "<<newline;} else {stdout<<" result is incorrect! "<<newline; }
+--    if (res4) then {stdout<<" 4 ok "<<newline;} else {stdout<<" 4 result is incorrect! "<<newline; }
 --    TEST FAILED: reaches "never"
 
     myg5:=gcd(a5,b5)$pack;
     res5:=myg5-unitCanonical(g5)$pack;
-    if (res5=z) then {stdout<<" ok "<<newline;} else {stdout<<" result is incorrect! "<<newline; }
+    if (res5=z or bothZero(a5, b5)) then {ok()<<" 5 ok "<<newline;} else {fail()<<" 5 result is incorrect! "<<newline; }
 
     -- big example
     --factor9:P:=factor1*factor2*factor3*factor4*factor5+factor5;
@@ -234,12 +238,9 @@ P:PolynomialRing(R,V), v1:V, v2:V): B == {
     --stdout<<"bigone is "<<res5<<newline;
     -- bit example over
 
-    (zero? res1 and zero? res2 and zero? res3 and 
---res4 and 
-	zero? res5) =>
-       {stdout<<"result is correct"<<newline;true;}
-
-    false;
+    status => {stdout<<"result is correct"<<newline;true;}
+    stdout << "result is incorrect" << newline;
+    status
 }
 
 
@@ -248,12 +249,14 @@ P:PolynomialRing(R,V), v1:V, v2:V): B == {
 
 multipolygcd__test(): Boolean == {
 	import from Symbol;
-	gcdTest(INT, V1, SMPI, variable(1)$V1, variable(2)$V1);
-	gcdTest(SMPI, V2, SMPII, variable(1)$V2, variable(2)$V2);
-	gcdTest(Q, V1, SMPQ, variable(1)$V1, variable(2)$V1);
-	gcdTest(SMPQ, V2, SMPQQ, variable(1)$V2, variable(2)$V2);
-	gcdTest(SPF, V1, SMPP, variable(1)$V1, variable(2)$V1);
-	gcdTest(SMPP, V2, SMPPP, variable(1)$V2, variable(2)$V2);
+	r: Boolean := true;
+	r := r and gcdTest(INT, V1, SMPI, variable(1)$V1, variable(2)$V1);
+	r := r and gcdTest(SMPI, V2, SMPII, variable(1)$V2, variable(2)$V2);
+	r := r and gcdTest(Q, V1, SMPQ, variable(1)$V1, variable(2)$V1);
+	r := r and gcdTest(SMPQ, V2, SMPQQ, variable(1)$V2, variable(2)$V2);
+	r := r and gcdTest(SPF, V1, SMPP, variable(1)$V1, variable(2)$V1);
+	r := r and gcdTest(SMPP, V2, SMPPP, variable(1)$V2, variable(2)$V2);
+	r
 }
 
 
