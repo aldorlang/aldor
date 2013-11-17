@@ -722,7 +722,7 @@ testDirectSFloatToXSFloat(void)
 	sfAssemble(&test, 0, expon, pb);
 */
 	printf("Enter a float:");
-	IgnoreResult(scanf("%f", &test));
+	IgnoreResult(scanf(SFLO_SFMT, &test));
 
 	sfDissemble(&test, &sign, &expon, pb,NULL);
 	printf("[%d|%d]\n", sign, expon);
