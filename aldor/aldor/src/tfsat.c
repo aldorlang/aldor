@@ -533,27 +533,6 @@ tfSatSubList(AbSyn ab)
  *
  *****************************************************************************/
 
-/*
- * Designed to pick up on x@T when typeOf(x) != T
- * but there exists an embedding typeOf(x) -> T. See
- * bug 1318 for more details.
- */
-void tfCheckBug1318(AbSyn abi)
-{
-	if (abTag(abi)==AB_RestrictTo) {
-		AbSyn abe = abi->abRestrictTo.expr;
-		AbState absA = abState(abi);
-		AbState absB = abState(abe);
-		if (absA==AB_State_HasUnique && absA==absB) {
-			TForm tfA = abTUnique(abi);
-			TForm tfB = abTUnique(abe);
-			SatMask	xmask = tfSatBupMask();
-			if (!tfSatBit(xmask,tfA,tfB))
-				comsgFatal(abi, ALDOR_F_TinRestrictOops);
-		}
-	}
-}
-
 SatMask
 tfSatMap(SatMask mask, Stab stab, TForm S, TForm T,
 	 AbSyn ab, Length argc, AbSynGetter argf)
@@ -669,13 +648,20 @@ tfSatAsMulti(SatMask mask, AbSub sigma, TForm S, TForm TScope,
 			 * the past this meant that we had to TFS_Fail
 			 * or something similar. Seems fine now.
 			 */
+
 			tiTopFns()->tiTopDown(absStab(sigma), abi, tfi);
 
-			/* Gross hack */
-			tfCheckBug1318(abi);
-
-			if (abUse(abi) != AB_Use_Type)
-				abAddTContext(abi, tfSatAbEmbed(maski));
+			if (abUse(abi) != AB_Use_Type) {
+				/* Double check the type on abi (now unique) against tfi
+				 * - it may have changed due to embeddings being applied
+				 * within abi itself. (Note: embeddings are applied by
+				 * callers, with the type on the absyn being the 'original'
+				 * type).
+				 * cf. axllib/tests/bug13138 and aldor/tests/hang
+				 */
+				SatMask checkMask = tfSatArg(mask, abi, tfi);
+				abAddTContext(abi, tfSatAbEmbed(checkMask));
+			}
 		}
 		/* Install the packed embedding on abi, if needed. */
 		if (tfSatCommit(mask) && packed)
