@@ -100,6 +100,7 @@ AC_CONFIG_FILES(
    lib/aldor/src/base/Makefile
    lib/aldor/src/arith/Makefile
    lib/aldor/src/datastruc/Makefile
+   lib/aldor/src/test/Makefile
    lib/aldor/src/util/Makefile
    lib/aldor/src/gmp/Makefile
    lib/aldor/test/Makefile
