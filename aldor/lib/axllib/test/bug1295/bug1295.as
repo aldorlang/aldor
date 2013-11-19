@@ -25,7 +25,16 @@ SI ==> SingleInteger;
 T ==> Tuple;
 L ==> List;
 import from T(SI),SI,L(T(SI));
-l:L(T(SI)) := [(1,12)];
+
+l:L(T(SI)) := [(11,22)]; -- bizzarely, this parses as a list of two items.
 for e in l repeat {
-  print << element(e,1)<<","<<element(e,2)<<newline}
+  print << length(e) << newline;
+  print << element(e,1) << newline
+}
+
+l:L(T(SI)) := [(1,2),(3,4)];
+for e in l repeat {
+  print << length(e) << newline;
+  print << element(e, 1)<<", "<<element(e, 2)<<newline;
+}
 
