@@ -692,7 +692,7 @@ tfSatAsMulti(SatMask mask, AbSub sigma, TForm S, TForm TScope,
 		 */
 		if (syme && (tfSymeInducesDependency(syme, TScope)
 			     || listMemq(Syme)(tfSymes(TScope), syme)
-			     || listMember(Syme)( tfSymes(TScope), syme, symeEqual))) {
+			     || listMember(Syme)(tfSymes(TScope), syme, symeEqual))) {
 			abi = sefoCopy(abi);
 			tiTopFns()->tiBottomUp(absStab(sigma), abi, tfUnknown);
 			tiTopFns()->tiTopDown (absStab(sigma), abi, tfi);
@@ -1262,7 +1262,7 @@ tfSatMap0(SatMask mask, TForm S, TForm T)
 			/* Extend the sublist for dependent symes. */
 			if (Ssyme && Tsyme && Ssyme != Tsyme &&
 			    (tfSymeInducesDependency(Ssyme, S) ||
-                             listMember(Syme)( tfSymes(S), Ssyme, symeEqual))) {
+                             listMember(Syme)(tfSymes(S), Ssyme, symeEqual))) {
 			     /* listMemq(Syme)(tfSymes(S), Ssyme))) { */ /* Commented by C.O. for ALMA usage*/
 				AbSyn	ab = abFrSyme(Tsyme);
 
