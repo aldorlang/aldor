@@ -1505,50 +1505,9 @@ fiScanSInt(FiArr s,FiSInt i,FiSInt * r0,FiSInt * r1)
  *****************************************************************************/
 
 #define fiRadixChar	('r')
-#define fiRadixBits	(sizeof(FiWord) << 3)
+
 /* Note: << 3 assumes 8 bits per byte */
 
-
-/*
- * Extract a small unsigned integer of specified radix from a
- * string. The first `ndigs' of the string represent a valid
- * number. On failure we return 0 and may update errno. Note
- * that this function is also used by the bigint scanners.
- */
-FiWord
-fiScanSmallIntFrString(char * start,FiWord  ndigs,FiWord  radix)
-{
-	char 	*junk;
-	FiWord	ires;
-	FiWord	slen;
-	char	num[fiRadixBits + 1];
-
-	/*
-	 * Copy out the number to be scanned. Since we know
-	 * that the number is small, we know the maximum bit
-	 * length. This means that we can allocate temporary
-	 * storage statically which is good. However, we can
-	 * never trust anyone to get things right so we have
-	 * a quick test to prevent buffer overflow.
-	 */
-	assert(ndigs <= fiRadixBits);
-	slen = (ndigs <= fiRadixBits) ? ndigs : fiRadixBits;
-	(void) strncpy(num, start, slen);
-	num[slen] = '\0';
-
-
-	/* Convert the string into an integer */
-	errno = 0;
-	ires  = strtol(num, &junk, (int)radix);
-
-
-	/* Were all the characters valid? */
-	if (!errno && *junk) errno = EDOM;
-
-
-	/* Return the result */
-	return ires;
-}
 
 
 FiSFlo
@@ -1564,6 +1523,11 @@ fiArrToDFlo(FiArr s)
 	return (FiDFlo) atof((String) s);
 }
 
+FiWord
+fiScanSmallIntFrString(char * start,FiWord  ndigs,FiWord  radix)
+{
+	return ulongSmallIntFrString(start, ndigs, radix);
+}
 
 /*
  * Convert an integer literal of the form RRrWW into an integer. If

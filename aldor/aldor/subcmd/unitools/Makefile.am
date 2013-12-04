@@ -3,10 +3,13 @@ noinst_LIBRARIES = libport.a
 s = $(srcdir)/../../src
 
 libport_a_SOURCES =	\
+	$s/bigint.c	\
 	$s/btree.c	\
 	$s/buffer.c	\
 	$s/cfgfile.c	\
+	$s/compopt.c	\
 	$s/debug.c	\
+	$s/dword.c	\
 	$s/file.c	\
 	$s/fluid.c	\
 	$s/fname.c	\
@@ -27,7 +30,7 @@ libport_a_SOURCES =	\
 bin_PROGRAMS = unicl
 
 unicl_SOURCES = unicl.c
-unicl_LDADD = libport.a
+unicl_LDADD = libport.a -lm
 unicl_CFLAGS = -I $s $(AM_CFLAGS)
 
 

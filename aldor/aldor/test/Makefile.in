@@ -89,7 +89,7 @@ $(patsubst %, %.o, $(_otests)): %.o: out/ao/%.ao
 	mkdir -p $$(dirname $@)
 	$(aldorexedir)/aldor $(nfile) 	\
 			      -Ccc=$(aldortooldir)/unicl	\
-			      -Cargs="-Wconfig=$(aldorsrcdir)/aldor.conf -I$(aldorsrcdir)" \
+			      -Cargs="-Wconfig=$(aldorsrcdir)/aldor.conf $(UNICLFLAGS) -I$(aldorsrcdir)" \
 			      -Fo=$(builddir)/$@ $<
 
 $(patsubst %, out/ap/%.ap, $(_aptests)): out/ap/%.ap: $(srcdir)/%.as
@@ -126,7 +126,7 @@ $(patsubst %, %.exe, $(_xtests)): %.exe: %.o rtexns.o
 		      -Y$(foamdir)			\
 		      -Y$(foamlibdir)			\
 		      -Lfoamlib				\
-		      -Cargs="-Wconfig=$(aldorsrcdir)/aldor.conf -I$(aldorsrcdir) -Wv=2" \
+		      -Cargs="-Wconfig=$(aldorsrcdir)/aldor.conf -I$(aldorsrcdir) -Wv=2 $(UNICLFLAGS)" \
 		      -Fx=$@ out/ao/$*.ao rtexns.o
 
 #		      -Fmain=bobthebuilder.c		\

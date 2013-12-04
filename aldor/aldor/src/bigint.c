@@ -30,6 +30,7 @@
 #include "debug.h"
 #include "store.h"
 #include "util.h"
+#include "compopt.h"
 
 /*
  * The following symbols are used to conditionalize code in this file:
@@ -417,7 +418,6 @@ bintToString(BInt b)
 	return s;
 }
 
-
 /*
  * Convert from the textual representation of an Aldor number into a big
  * integer. This function may be invoked (indirectly) by convert()$Machine
@@ -438,9 +438,6 @@ bintFrString(String s)
 #define fiRadixChar	('r')
 #define fiPlusChar	('+')
 #define fiMinusChar	('-')
-
-extern ULong fiScanSmallIntFrString(String, ULong, ULong);
-
 
 /* Scan a big integer with possible radix specification */
 BInt
@@ -512,7 +509,7 @@ bintRadixScanFrString(String num, String *pEnd)
 	{
 		/* Extract the radix as a (small) decimal integer */
 		rlen  = rpos - num;
-		radix = fiScanSmallIntFrString(num, rlen, 10);
+		radix = ulongSmallIntFrString(num, rlen, 10);
 
 
 		/* Valid radix: 2-36 inclusive */
@@ -575,7 +572,7 @@ bintRadixScanFrString(String num, String *pEnd)
 	if (nbits <= INT_LG_IMMED)
 	{
 		/* Scan the small immediate integer */
-		ires = fiScanSmallIntFrString(num, ndigs, radix);
+		ires = ulongSmallIntFrString(num, ndigs, radix);
 
 
 		/*
@@ -1528,7 +1525,7 @@ bintShiftRem(BInt b, int n)
 	
 	if (IsImmed(b)) {
 		IInt x = BIntToInt(b);
-		return (BInt) (x & ((1 << n) - 1));
+		return IntToBInt(x & ((1 << n) - 1));
 	}
 
 	r = bintAlloc(n);

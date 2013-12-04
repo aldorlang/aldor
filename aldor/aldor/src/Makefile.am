@@ -136,7 +136,7 @@ libgen_a_SOURCES =	\
 #libgen_a_LIBADD = libport.a
 
 gentest_SOURCES = gentest.c
-gentest_LDADD = libgen.a libport.a
+gentest_LDADD = libgen.a libport.a -lm
 
 libstruct_a_SOURCES =	\
 	ablogic.c	\
