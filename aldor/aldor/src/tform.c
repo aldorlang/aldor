@@ -267,6 +267,8 @@ local int ptrListFormatter(OStream stream, Pointer p);
 local int aintFormatter(OStream stream, Pointer p);
 local int aintListFormatter(OStream stream, Pointer p);
 
+local int bintFormatter(OStream stream, Pointer p);
+
 /* For breakpoints */
 local void tfBreak(TForm tf);
 static TForm tfBreakVal;
@@ -452,6 +454,7 @@ tfInit(void)
 	fmtRegister("AInt", aintFormatter);
 	fmtRegister("AIntList", aintListFormatter);
 
+	fmtRegister("BInt", bintFormatter);
 	/* syme.c checks */
 
 	for (i=SYME_FIELD_START; i<SYME_FIELD_LIMIT; i++)
@@ -513,6 +516,17 @@ aintFormatter(OStream ostream, Pointer p)
 
 	return c;
 }
+
+local int
+bintFormatter(OStream ostream, Pointer p)
+{
+	String s = bintToString((BInt) p);
+	int c = ostreamWrite(ostream, s, -1);
+	strFree(s);
+
+	return c;
+}
+
 
 local int
 tfFormatter(OStream ostream, Pointer p)
