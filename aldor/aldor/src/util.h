@@ -81,6 +81,7 @@ extern int	cielLg		(ULong);
 	 * i = cielLg(n) returns the smallest integer i such that n <= 2**i.
 	 */
 
+extern ULong ulongSmallIntFrString(String start, unsigned int ndigs, unsigned int radix);
 /******************************************************************************
  *
  * :: Strings

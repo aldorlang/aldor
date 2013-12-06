@@ -30,6 +30,7 @@ AXLTESTS =	\
 	type-constant	\
 	cond-defaults	\
 	cond	\
+	hang	\
 	#
 
 BROKEN =	\
@@ -41,7 +42,6 @@ BROKEN =	\
 	bugreport_15	\
 	bugreport_1347	\
 	bugreport_1363	\
-	hang	\
 	has-bug1	\
 	poly-type-expt	\
 	testbug	\

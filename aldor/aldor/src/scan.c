@@ -493,7 +493,7 @@ scanWord(void)
 #define isExponChar(c)	((c) == 'e' || (c) == 'E')
 #define isSignChar(c)	((c) == '+' || (c) == '-')
 
-extern ULong fiScanSmallIntFrString(String, ULong, ULong);
+extern ULong ulongIntFrString(String, unsigned int, unsigned int);
 
 
 local Token
@@ -535,7 +535,7 @@ scanNumber(void)
 		 * (nd > 0) otherwise we wouldn't have been called.
 		 */
 		s = scTokText();
-		rad = fiScanSmallIntFrString(s, nd, 10);
+		rad = ulongSmallIntFrString(s, nd, 10);
 		if ((rad < 2) || (rad > 36))
 			return tokCoError(spos, epos, ALDOR_E_ScanBadRadix);
 

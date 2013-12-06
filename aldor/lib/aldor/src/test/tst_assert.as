@@ -1,4 +1,4 @@
-#include "algebra"
+#include "aldor"
 
 GeneralAssert: with {
     assertTrue: Boolean -> ();
@@ -21,7 +21,7 @@ GeneralAssert: with {
     -- TODO: Replace overload with named arguments
     fail(s: String): Exit == {
     	    stdout << s << newline;
-	    never
+	    error s;
     }
 
     fail(): Exit == fail("Failed.");
@@ -31,10 +31,6 @@ Assert(T: with): with {
     if T has PrimitiveType then {
       assertEquals: (T, T) -> ();
       assertEquals: (String, T, T) -> ();
-    }
-    if T has AbelianMonoid then {
-      assertZero: T -> ();
-      assertNotZero: T -> ();
     }
 
     export from GeneralAssert;
@@ -53,10 +49,6 @@ Assert(T: with): with {
       assertEquals(s: String, a: T, b: T): () == if not(a = b) then {
          fail(s + ": expected " + string(T)(a) + " got " + string(T)(b) + " " + string(Boolean)(a=b));
       }
-    }
-    if T has AbelianMonoid then {
-      assertZero(a: T): () == if zero? a then fail("Expected 0, got " + string(T)(a));
-      assertNotZero(a: T): () == if not zero? a then fail("Expected 0, got " + string(T)(a));
     }
 
     string(T: PrimitiveType)(t: T): String == {

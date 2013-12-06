@@ -1,4 +1,4 @@
-SUBDIRS = lang base arith datastruc util gmp 
+SUBDIRS = lang base arith datastruc util gmp test
 
 lib_LIBRARIES = libaldor.a
 
@@ -64,6 +64,7 @@ libaldor_a_SOURCES =	\
 	datastruc/sal_string.c	\
 	datastruc/sal_table.c	\
 	lang/sal_lang.c	\
+	test/tst_assert.c	\
 	util/ald_trace.c	\
 	util/eio_rsto.c	\
 	util/rtexns.c	\

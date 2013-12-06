@@ -9,6 +9,7 @@
 #include "axlgen0.h"
 #include "opsys.h"
 #include "util.h"
+#include "bigint.h"
 
 /*****************************************************************************
  *
@@ -450,22 +451,52 @@ ubPrintBits0(int n, UByte *ub)
 	printf("]");
 }
 
+local BInt
+bintOpAndFree(BInt (*op)(BInt, BInt) , BInt x, BInt y)
+{
+	BInt r = op(x, y);
+	bintFree(x);
+	bintFree(y);
+	return r;
+}
 
 int
 hashCombinePair(int i1, int i2)
 {
+	long z1  = 0x419ac241;
+	long z2  = 0x5577f8e1;
+	long zzh = 0x440badfc;
+	long zzl = 0x05072367;
 	/* http://opendatastructures.org/ods-java/5_3_Hash_Codes.html */
-	assert(sizeof(long) >= 8);
-	long z1 = 0x419ac241;
-	long z2 = 0x5577f8e1;
-	long zz = 0x440badfc05072367;
+	if (sizeof(long) >= 8) {
+		long zz = (zzh << 32) + zzl;
+		long h1 = i1 & ((1L<<32)-1);
+		long h2 = i2 & ((1L<<32)-1);
 
-        long h1 = i1 & ((1L<<32)-1);
-        long h2 = i2 & ((1L<<32)-1);
-
-        int tmp = (int)(((z1*h1 + z2*h2) * zz) >> 32);
-
-	return tmp & 0x3FFFFFFF;
+		int tmp = (int)(((z1*h1 + z2*h2) * zz) >> 32);
+		return tmp & 0x3FFFFFFF;
+	}
+	else if (sizeof(long) == 4 && sizeof(unsigned int) == 4) {
+		BInt bi1 = bintNew(i1);
+		BInt bi2 = bintNew(i2);
+		BInt b1 = bintNew(z1);
+		BInt b2 = bintNew(z2);
+		BInt bb = bintPlus(bintShift(bintNew(zzh), 32),
+				   bintNew(zzl));
+		BInt tmp = bintOpAndFree(bintPlus, 
+					 bintTimes(bi1, b1),
+					 bintTimes(bi2, b2));
+		BInt tmp2 = bintOpAndFree(bintTimes, tmp, bb);
+		BInt a = bintShift(tmp2, -32);
+		BInt al = bintShiftRem(a, 30);
+		
+		assert(bintIsSmall(al));
+		
+		return bintSmall(al);
+	}
+	else {
+		assert(0);/* Need a new hash function */
+	}
 }
 
 /* Used this for digging out random numbers:
@@ -507,3 +538,46 @@ int main(int argc, char *argv[])
    * :: Strings
    *
    ****************************************************************************/
+
+
+/*
+ * Extract a small unsigned integer of specified radix from a
+ * string. The first `ndigs' of the string represent a valid
+ * number. On failure we return 0 and may update errno. Note
+ * that this function is also used by the bigint scanners.
+ */
+ULong
+ulongSmallIntFrString(String start, unsigned int ndigs, unsigned int radix)
+{
+	char 	*junk;
+	ULong	ires;
+	ULong	slen;
+	int     radixBits = sizeof(ULong) << 3;
+	char	num[radixBits + 1];
+	/*
+	 * Copy out the number to be scanned. Since we know
+	 * that the number is small, we know the maximum bit
+	 * length. This means that we can allocate temporary
+	 * storage statically which is good. However, we can
+	 * never trust anyone to get things right so we have
+	 * a quick test to prevent buffer overflow.
+	 */
+	assert(ndigs <= radixBits);
+	slen = (ndigs <= radixBits) ? ndigs : radixBits;
+	(void) strncpy(num, start, slen);
+	num[slen] = '\0';
+
+
+	/* Convert the string into an integer */
+	errno = 0;
+	ires  = strtol(num, &junk, (int)radix);
+
+
+	/* Were all the characters valid? */
+	if (!errno && *junk) errno = EDOM;
+
+
+	/* Return the result */
+	return ires;
+}
+

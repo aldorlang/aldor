@@ -85,3 +85,6 @@ CLEANFILES += cond-defaults/cond-defaults-aldormain.c cond-defaults/cond-default
 check_PROGRAMS += cond/cond
 cond_cond_SOURCES = cond/cond-aldormain.c cond/cond.c
 CLEANFILES += cond/cond-aldormain.c cond/cond.c cond/cond.ao
+check_PROGRAMS += hang/hang
+hang_hang_SOURCES = hang/hang-aldormain.c hang/hang.c
+CLEANFILES += hang/hang-aldormain.c hang/hang.c hang/hang.ao

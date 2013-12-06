@@ -1,9 +1,14 @@
 #include "aldor"
 #include "aldorio"
 
-import from Integer;
-import from List Integer;
+foo(): () == {
+       import from Integer;
+       import from List Integer;
+       import from Assert List Integer;
+       stdout << [1,2] << newline;
+       stdout << [1;2] << newline;
+       stdout << [2] << newline;
+       assertEquals([2], [1;2]);
+}
 
-stdout << [1;2];
-
-
+foo();

@@ -222,7 +222,7 @@ libalgebra_a_SOURCES =				\
 	series/compbug/sit_duts.c		\
 	series/sit_seqence.c			\
 	series/sit_sercat.c			\
-	test/tst_assert.c			\
+	test/alg_assert.c			\
 	test/tst_test.c				\
 	test/tst_ring.c				\
 	univpoly/alg_sup0.c			\

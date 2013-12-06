@@ -33,15 +33,14 @@ library_deps := 	\
 	multpoly/multpolypkg	\
 	multpoly/multpolytest	\
 
-tst_assert_deps := 
-tst_test_deps := tst_assert
-tst_complex_deps := tst_assert tst_test
-tst_random_deps := tst_assert tst_test
-tst_ring_deps := tst_test tst_assert
-tst_mint_deps := tst_assert tst_test
-tst_fold_deps := tst_assert tst_test
-tst_int_deps := tst_assert tst_test tst_ring
-tst_dup_deps := tst_assert tst_test tst_ring
-doc_poly_deps := tst_assert tst_test
-doc_intpoly_deps := tst_assert tst_test
-doc_series_deps := tst_assert tst_test
+tst_test_deps := alg_assert
+tst_complex_deps := tst_test
+tst_random_deps := tst_test
+tst_ring_deps := tst_test
+tst_mint_deps := tst_test
+tst_fold_deps := tst_test
+tst_int_deps := tst_test tst_ring
+tst_dup_deps := tst_test tst_ring
+doc_poly_deps := tst_test
+doc_intpoly_deps := tst_test
+doc_series_deps := tst_test
