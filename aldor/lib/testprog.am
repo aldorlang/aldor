@@ -39,5 +39,7 @@ $(srcdir)/Tests.am: $(srcdir)/Makefile.am $(abs_top_srcdir)/lib/testprog.am
 	  echo "CLEANFILES += $$test/$${test}-aldormain.c $$test/$${test}.c $$test/$${test}.ao" >> $@;	\
 	done
 
+Makefile: $(srcdir)/Tests.am
+
 AM_CPPFLAGS = -I$(aldorsrcdir)
 AM_LDFLAGS = -L$(foamlibdir) $(addprefix -L,$(librarylibdirs)) $(addprefix -l,$(libraries)) -lfoam -lm
