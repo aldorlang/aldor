@@ -255,6 +255,7 @@ testsuite =			\
 	test/test_ablogic.c 	\
 	test/test_abnorm.c	\
 	test/test_absyn.c 	\
+	test/test_bigint.c 	\
 	test/test_bitv.c 	\
 	test/test_flog.c	\
 	test/test_fname.c 	\
