@@ -45,6 +45,7 @@ libaxllib_a_SOURCES =	\
 	al/sort.c	\
 	al/string.c	\
 	al/table.c	\
+	al/textread.c	\
 	al/textwrit.c	\
 	al/tuple.c
 
