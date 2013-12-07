@@ -28,3 +28,6 @@ CLEANFILES += scobind1/scobind1-aldormain.c scobind1/scobind1.c scobind1/scobind
 check_PROGRAMS += type6/type6
 type6_type6_SOURCES = type6/type6-aldormain.c type6/type6.c
 CLEANFILES += type6/type6-aldormain.c type6/type6.c type6/type6.ao
+check_PROGRAMS += intfact/intfact
+intfact_intfact_SOURCES = intfact/intfact-aldormain.c intfact/intfact.c
+CLEANFILES += intfact/intfact-aldormain.c intfact/intfact.c intfact/intfact.ao

@@ -11,10 +11,10 @@ AXLTESTS =	\
 	iroots	\
 	scobind1	\
 	type6	\
+	intfact	\
 	#
 
 BROKEN =	\
-	intfact	\
 	#
 
 XFAIL_TESTS =	\
