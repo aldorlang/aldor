@@ -32,17 +32,19 @@
 
 import from Integer;
 
-skriv(a : Tuple Type,f:a -> Integer): with
+skriv(a : Tuple Type, f:a -> Integer): with
 {
     skr : a -> Integer;
     }
 == add
 {
-    skr(s:a):Integer == f(s);
+    skr(s:a):Integer == {
+       f(s) + 1;
+    }
 }
 
 import from SingleInteger;
 
-SK ==> skriv((Integer,SingleInteger),(m:Integer,n:SingleInteger):Integer +-> m);
+SK ==> skriv((Integer,Integer),(m:Integer,n:Integer):Integer +-> { print << "m: " << m << " n: " << n << newline; 100*m + 10*n});
 
-skr(3,3)$SK;
+print << skr(22,1)$SK << newline;

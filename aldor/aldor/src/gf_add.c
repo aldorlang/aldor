@@ -1523,6 +1523,8 @@ gen0IssueDCache1()
 #define foamNewProgInfo(x)	foamNewPRef(0, foamNewCProg(x))
 
 local Foam	gen0RtTypeHashAsGeneral		(TForm);
+local Foam      gen0RtTypeHashTuple             (Sefo, Foam);
+local Foam      gen0RtTypeHashMap		(TForm, TForm);
 local Bool	gen0RtSefoIsSpecialOp		(AbSyn);
 local Foam	gen0RtSefoHashSpecialExporter	(Sefo, Sefo);
 local Foam	gen0RtSefoHashId		(Sefo, Sefo);
@@ -1533,9 +1535,11 @@ local Foam	gen0RtSefoHashEnum		(Sefo, SefoList);
 local Foam	gen0RtSefoHashList		(SefoList, SefoList, Foam);
 local SefoList	gen0RtSefoMakeArgList		(Sefo);
 local Foam	gen0RtTypeHashAsGeneral		(TForm);
+local Foam	gen0RtTypeHashAsGeneralMap	(TForm);
 local void	gen0RtUseDeclares		(SefoList);
 local SefoList  gen0RtSefoListUnComma		(SefoList);
 local Foam	gen0RtIsProgInfoNull		(Foam);
+local Foam      gen0RtSefoHashExpr		(Sefo, Sefo);
 
 Foam 
 gen0RtSetProgHash(Foam clos, AInt hash)
@@ -1594,7 +1598,6 @@ gen0RtTypeHash(TForm tf, TForm otf)
         TFormList       tfl = 0, otfl = 0, l, ol;
         Foam            hash = 0;
         int             code, i;
-	int		hashPoint = -1;
 	int		hashMask = (int)TF_START;
 	Foam		twist = (Foam)NULL;
 
@@ -1609,24 +1612,17 @@ gen0RtTypeHash(TForm tf, TForm otf)
 	if (tfTag(otf) == TF_General && tfTag(tf) != TF_General)
 		return gen0RtTypeHashAsGeneral(tf);
 
+	if (tfIsAnyMap(tf)) {
+		return gen0RtTypeHashMap(tf, otf);
+	}
+
 	if (tfArgc(otf) != tfArgc(tf))
 		otf = tf;
 
 	switch (tfTag(otf)) {
           case TF_Map:
           case TF_PackedMap:
-                assert(tfTag(tf) == tfTag(otf));
-                for(i=0; i<tfMapArgc(tf); i++) {
-                        tfl  = listCons(TForm)(tfMapArgN(tf, i), tfl);
-                        otfl = listCons(TForm)(tfMapArgN(otf, i), otfl);
-                }
-                for(i=0; i<tfMapRetc(tf); i++) {
-                        tfl  = listCons(TForm)(tfMapRetN(tf, i), tfl);
-                        otfl = listCons(TForm)(tfMapRetN(otf, i), otfl);
-                }
-		hashMask = (int)tfTag(otf);
-		/* Between argument types and return types */
-		hashPoint = tfMapArgc(tf);
+		bug("Unreachable");
                 break;
           case TF_RawRecord:
                 assert(tfTag(tf) == tfTag(otf));
@@ -1705,31 +1701,126 @@ gen0RtTypeHash(TForm tf, TForm otf)
                 hash = foamNewSInt(code);
         tfl  = listNReverse(TForm)(tfl);
         otfl = listNReverse(TForm)(otfl);
-	/* Ensure that we have hash masks */
-	if (!gen0RtArgHashMask) gen0RtInitHashMask();
 
-	/* Original hash combine with a twist of lime for maps */
 	for(i = 0, l = tfl, ol = otfl; l; i++, l = cdr(l), ol = cdr(ol)) {
-		/* Extra hash code merged in at the correct moment */
-		if (i == hashPoint) {
-			twist = foamNewSInt(gen0RtArgHashMask[hashMask]);
-			foamPure(twist) = true;
-			hash = gen0CombineHash(twist, hash);
-			foamPure(hash) = true;
-		}
 		hash = gen0CombineHash(gen0RtTypeHash(car(l), car(ol)), hash);
-		foamPure(hash) = true;
-	}
-	/* Add the lime if not done so already */
-	if (!twist && (hashPoint >= 0)) {
-		twist = foamNewSInt(gen0RtArgHashMask[hashMask]);
-		foamPure(twist) = true;
-		hash = gen0CombineHash(twist, hash);
 		foamPure(hash) = true;
 	}
 
         return hash;
 }
+
+local Bool
+tfMapArgIsTuple(TForm tf)
+{
+	if (tfMapArgc(tf) != 1)
+		return false;
+	if (abTUnique(tfExpr(tfMapArg(tf))) == NULL)
+		return false;
+	return tfIsTypeTuple(abTUnique(tfExpr(tfMapArg(tf))));
+}
+
+local Bool
+tfMapRetIsTuple(TForm tf)
+{
+	if (tfMapRetc(tf) != 1)
+		return false;
+	if (abTUnique(tfExpr(tfMapRet(tf))) == NULL)
+		return false;
+	return tfIsTypeTuple(abTUnique(tfExpr(tfMapRet(tf))));
+}
+
+local Foam
+gen0RtTypeHashMap(TForm tf, TForm otf)
+{
+	int code = gen0StrHash(tformSyntax(tfTag(tf)));
+	Foam hash, twist;
+	int i;
+	assert(tfIsAnyMap(tf));
+	assert(tfIsAnyMap(otf));
+
+	if (!gen0RtArgHashMask) gen0RtInitHashMask();
+
+	hash = foamNewSInt(code);
+
+	if (tfMapArgIsTuple(tf)) {
+		hash = gen0RtTypeHashTuple(tfExpr(tfMapArg(tf)), hash);
+	}
+	else {
+		TForm otfX = (tfMapArgIsTuple(otf)) ? tf : otf;
+		for(i=0; i<tfMapArgc(tf); i++) {
+			TForm ptf = tfMapArgN(tf, i);
+			TForm potf = tfMapArgN(otfX, i);
+			Foam val = gen0RtTypeHash(ptf, potf);
+			hash = gen0CombineHash(val, hash);
+			foamPure(hash) = true;
+		}
+	}
+	twist = foamNewSInt(gen0RtArgHashMask[tfTag(otf)]);
+	foamPure(twist) = true;
+
+	hash = gen0CombineHash(twist, hash);
+	foamPure(hash) = true;
+
+	if (tfMapRetIsTuple(tf)) {
+		hash = gen0RtTypeHashTuple(tfExpr(tfMapRet(tf)), hash);
+	}
+	else {
+		TForm otfX = (tfMapArgIsTuple(otf)) ? tf : otf;
+		for(i=0; i<tfMapRetc(tf); i++) {
+			TForm ptf = tfMapRetN(tf, i);
+			TForm potf = tfMapRetN(otfX, i);
+			Foam val = gen0RtTypeHash(ptf, potf);
+			hash = gen0CombineHash(val, hash);
+			foamPure(hash) = true;
+		}
+	}
+	return hash;
+}
+
+local Foam
+gen0RtTypeHashAsGeneralMap(TForm tf)
+{
+	int code = gen0StrHash(tformSyntax(tfTag(tf)));
+	Foam hash, twist;
+	int i;
+	assert(tfIsAnyMap(tf));
+
+	if (!gen0RtArgHashMask) gen0RtInitHashMask();
+
+	hash = foamNewSInt(code);
+
+	if (tfMapArgIsTuple(tf)) {
+		hash = gen0RtTypeHashTuple(tfExpr(tfMapArg(tf)), hash);
+	}
+	else {
+		for(i=0; i<tfMapArgc(tf); i++) {
+			TForm ptf = tfMapArgN(tf, i);
+			Foam val = gen0RtTypeHash(ptf, ptf);
+			hash = gen0CombineHash(val, hash);
+			foamPure(hash) = true;
+		}
+	}
+	twist = foamNewSInt(gen0RtArgHashMask[tfTag(tf)]);
+	foamPure(twist) = true;
+
+	hash = gen0CombineHash(twist, hash);
+	foamPure(hash) = true;
+
+	if (tfMapRetIsTuple(tf)) {
+		hash = gen0RtTypeHashTuple(tfExpr(tfMapRet(tf)), hash);
+	}
+	else {
+		for(i=0; i<tfMapRetc(tf); i++) {
+			TForm ptf = tfMapRetN(tf, i);
+			Foam val = gen0RtTypeHash(ptf, ptf);
+			hash = gen0CombineHash(val, hash);
+			foamPure(hash) = true;
+		}
+	}
+	return hash;
+}
+
 
 /*
  * Left as a function, as the hashcode for a TF_With is odd.
@@ -1750,7 +1841,6 @@ gen0RtTypeHashAsGeneral(TForm tf)
 	TFormList	tfl = listNil(TForm);
 	Foam		hash = NULL;
 	int		code, i;
-	int		hashPoint = -1;
 	int		hashMask = (int)TF_START;
 	Foam		twist = (Foam)NULL;
 
@@ -1759,16 +1849,14 @@ gen0RtTypeHashAsGeneral(TForm tf)
 	if (tfIsSym(tf) || tfIsThird(tf))
 		return gen0RtSefoHash(tfExpr(tf), tfExpr(tf));
 
+	if (tfIsAnyMap(tf)) {
+		return gen0RtTypeHashAsGeneralMap(tf);
+	}
+
 	switch(tfTag(tf)) {
 	case TF_Map:
 	case TF_PackedMap:
-                for(i = 0; i < tfMapArgc(tf); i += 1)
-                        tfl  = listCons(TForm)(tfMapArgN(tf, i), tfl);
-                for(i = 0; i < tfMapRetc(tf); i += 1)
-                        tfl  = listCons(TForm)(tfMapRetN(tf, i), tfl);
-		hashMask = (int)tfTag(tf);
-		/* Between argument types and return types */
-		hashPoint = tfMapArgc(tf);
+		bug("unreachable");
                 break;
 	case TF_RawRecord:
 		for (i = 0; i < tfRawRecordArgc(tf); i += 1) {
@@ -1819,29 +1907,12 @@ gen0RtTypeHashAsGeneral(TForm tf)
 	tfl = listNReverse(TForm)(tfl);
 	if (hash == NULL)
 		hash = foamNewSInt(code);
-	/* Ensure that we have hash masks */
-	if (!gen0RtArgHashMask) gen0RtInitHashMask();
 	
-	/* Original hash combine plus a twist of lime */
 	for(i = 0; tfl; i++, tfl = cdr(tfl)) {
-		/* Extra hash code merged in at the correct moment */
-		if (i == hashPoint) {
-			twist = foamNewSInt(gen0RtArgHashMask[hashMask]);
-			foamPure(twist) = true;
-			hash = gen0CombineHash(twist, hash);
-			foamPure(hash) = true;
-		}
 		hash = gen0CombineHash(gen0RtTypeHash(car(tfl),car(tfl)),hash);
 		foamPure(hash) = true;
 	}
 	
-	/* Add the lime if not done so already */
-	if (!twist && (hashPoint >= 0)) {
-		twist = foamNewSInt(gen0RtArgHashMask[hashMask]);
-		foamPure(twist) = true;
-		hash = gen0CombineHash(twist, hash);
-		foamPure(hash) = true;
-	}
 
 	return hash;
 }
@@ -2019,6 +2090,42 @@ gen0RtSefoHashSpecialExporter(Sefo sf, Sefo osf)
 	return Th;
 }
 
+
+local Foam
+gen0RtTypeHashTuple(Sefo sefo, Foam init)
+{
+	Foam	Tt = gen0TempLocal0(FOAM_Rec, gen0MakeTupleFormat());
+	Foam 	Tn = gen0TempLocal(FOAM_SInt);
+	Foam 	Ti = gen0TempLocal(FOAM_SInt);
+	Foam 	Th = gen0TempLocal(FOAM_SInt);
+	int	TS  = gen0State->labelNo++;
+	int  	TE  = gen0State->labelNo++;
+	Foam    val;
+
+	sefo = abDefineeTypeOrElse(sefo, sefo);
+
+	GSTAT(GSET(Th, init));
+
+	GSTAT(GSET(Tt, foamNewCast(FOAM_Rec, genFoamVal(sefo))));
+	GSTAT(GSET(Tn, gen0NewTupleSizeRef(foamCopy(Tt))));
+	GSTAT(GSET(Ti, foamNewSInt(int0)));
+	GSTAT(foamNewLabel(TS));
+	GSTAT(foamNewIf(foamNew(FOAM_BCall, 3, FOAM_BVal_SIntEQ,
+				foamCopy(Ti), foamCopy(Tn)), TE));
+	val = foamNewAElt(FOAM_Word,
+			  foamCopy(Ti),
+			  gen0NewTupleValsRef(foamCopy(Tt)));
+
+	val = gen0RtDomainHash(val);
+
+	GSTAT(GSET(Th, gen0CombineHash(val, foamCopy(Th))));
+	GSTAT(GSET(Ti, foamNew(FOAM_BCall, 3, FOAM_BVal_SIntPlus,
+			       foamCopy(Ti), foamNewSInt(1))));
+	GSTAT(foamNewGoto(TS));
+	GSTAT(foamNewLabel(TE));
+
+	return Th;
+}
 /* extract the hash code from a domain. */
 
 local Foam
@@ -2035,8 +2142,6 @@ local Foam
 gen0RtSefoHash(Sefo sf, Sefo osf)
 {
 	TForm	tf;
-	Foam	hash;
-	String	msg;
 
 	if (genIsRuntime() || sf == NULL || abHasTag(sf, AB_With))
 		return foamNewSInt(int0);
@@ -2048,6 +2153,15 @@ gen0RtSefoHash(Sefo sf, Sefo osf)
 
 	if (tf && !tfSatDom(tf) && !tfSatCat(tf))
 		return foamNewSInt(7);
+
+	return gen0RtSefoHashExpr(sf, osf);
+}
+
+local Foam
+gen0RtSefoHashExpr(Sefo sf, Sefo osf)
+{
+	Foam	hash;
+	String	msg;
 
 	switch(abTag(sf)) {
 	  case AB_Id:
@@ -2283,7 +2397,6 @@ gen0RtSefoHashSpecialMap(Sefo sf)
 	/* Hash the operator ... */
 	hash = foamNewSInt(gen0StrHash(symString(sym)));
 
-	/* Process the map argument types */
 	arg  = abApplyArg(sf, int0);
 	argv = abArgvAs(AB_Comma, arg);
 	argc = abArgcAs(AB_Comma, arg);
@@ -2297,7 +2410,6 @@ gen0RtSefoHashSpecialMap(Sefo sf)
 		hash = gen0CombineHash(hi, hash);
 		foamPure(hash) = true;
 	}
-
 	/* Fold in the map hash mask */
 	twist = foamNewSInt(gen0RtArgHashMask[hashMask]);
 	foamPure(twist) = true;
