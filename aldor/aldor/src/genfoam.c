@@ -645,6 +645,35 @@ genFoamVal(AbSyn absyn)
 }
 
 Foam
+genFoamValAs(TForm tf, AbSyn ab)
+{
+	Foam foam = genFoamVal(ab);
+	if (tfIsExit(gen0AbType(ab))) {
+		if (foamTag(foam) == FOAM_Nil)
+			return foam;
+
+		if (tfIsMulti(tf) && tfMultiArgc(tf) > 0) {
+			gen0AddStmt(foam, ab);
+
+			Foam fakeValue = foamNewEmpty(FOAM_Values, tfMultiArgc(tf));
+			int i;
+			for (i=0; i<tfMultiArgc(tf); i++) {
+				FoamTag type = gen0Type(tfMultiArgN(tf, i), NULL);
+				fakeValue->foamValues.argv[i] = foamNewCast(type, foamNewNil());
+			}
+
+			return fakeValue;
+		}
+		else {
+			return foam;
+		}
+	}
+	else {
+		return foam;
+	}
+}
+
+Foam
 genFoamType(AbSyn ab)
 {
 	AbEmbed	tc = abTContext(ab);
@@ -5044,7 +5073,7 @@ gen0Lambda(AbSyn absyn, Syme syme, AbSyn defaults)
 		if (gen0DebuggerWanted)
 			val = gen1DbgFnBody(fbody);
 		else
-			val = genFoamVal(fbody);
+			val = genFoamValAs(tfMapRet(tf), fbody);
 		if (foamTag(val) == FOAM_Nil && gen0ProgHasReturn())
 			val = NULL;
 	}
@@ -5160,7 +5189,7 @@ genReturn(AbSyn ab)
 		ret = foamNew(FOAM_Values, int0);
 	}
 	else {
-		ret = genFoamVal(val);
+		ret = genFoamValAs(tfMapRet(gen0State->type), val);
 
 		/* Old style debugger hook */
 		if (gen0DebugWanted) 

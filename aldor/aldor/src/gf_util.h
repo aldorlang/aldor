@@ -243,6 +243,7 @@ extern void	   	gen0ResetImportPlace	  (FoamList);
 
 extern void		genFoamStmt		(AbSyn);
 extern Foam		genFoamVal		(AbSyn);
+extern Foam		genFoamValAs		(TForm tf, AbSyn);
 extern Foam		genFoamType		(AbSyn);
 extern Foam 	   	genFoamBit	  	(AbSyn);
 
