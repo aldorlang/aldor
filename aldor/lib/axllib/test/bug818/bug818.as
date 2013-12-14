@@ -29,22 +29,21 @@
 --+ Looking in skriv(a==<value>, f==<value>) for skr with code 673701613
 --+ Export not found
 #include "axllib"
+import from SingleInteger;
 
-import from Integer;
 
-skriv(a : Tuple Type, f:a -> Integer): with
+skriv(a : Tuple Type, f:a -> SingleInteger): with
 {
-    skr : a -> Integer;
+    skr : a -> SingleInteger;
     }
 == add
 {
-    skr(s:a):Integer == {
+    skr(s:a):SingleInteger == {
        f(s) + 1;
     }
 }
 
-import from SingleInteger;
 
-SK ==> skriv((Integer,Integer),(m:Integer,n:Integer):Integer +-> { print << "m: " << m << " n: " << n << newline; 100*m + 10*n});
+SK ==> skriv((SingleInteger,SingleInteger),(m:SingleInteger,n:SingleInteger):SingleInteger +-> { print << "m: " << m << " n: " << n << newline; 100*m + 10*n});
 
 print << skr(22,1)$SK << newline;
