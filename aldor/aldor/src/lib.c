@@ -6,7 +6,6 @@
  *
  ****************************************************************************/
 
-#include "axlobs.h"
 #include "debug.h"
 #include "file.h"
 #include "fint.h"
@@ -26,6 +25,7 @@
 #include "comsg.h"
 #include "strops.h"
 #include "table.h"
+#include "ftype.h"
 
 Bool	libDebug 	= false;
 Bool	libLazyDebug 	= false;
