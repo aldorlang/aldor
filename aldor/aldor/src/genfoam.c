@@ -6479,7 +6479,6 @@ gen0FindDefsDefine(AbSyn absyn, Stab stab, Bool inHighLev, Bool topLev)
 	}
 }
 
-
 local void
 gen0FindDefsSyme(Stab stab, Syme syme, Bool inHighLev)
 {
@@ -6495,6 +6494,8 @@ gen0FindDefsSyme(Stab stab, Syme syme, Bool inHighLev)
 		symeSetUsedDeeply(syme);
 	}
 }
+
+
 local void
 gen0MarkParamsDeep(Stab stab, AbSyn param)
 {
