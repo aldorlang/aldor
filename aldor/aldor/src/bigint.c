@@ -449,7 +449,8 @@ bintRadixScanFrString(String num, String *pEnd)
 	long	radix = 10;
 	BInt	retval;
 	Length	rlen, ndigs, bpd;
-	IInt	dim, dio, ires;
+	IInt	dim, dio;
+	UIInt    ires;
 	IInt	l, l0, n;
 	ULong	rim, rio, nbits;
 	ULong	maxi;

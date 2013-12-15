@@ -11,10 +11,10 @@
 
 -- func returns true if test is successful, false otherwise
 local aldorTest(name:String, func:() -> Boolean):Boolean == {
-	stdout << "    testing " << name << "...                ";
+	stderr << "    testing " << name << "...                ";
 	ok := func();
-	if ok then stderr << "OK"; else stdout << "ERROR";
-	stdout << newline;
+	if ok then stderr << "OK"; else stderr << "ERROR";
+	stderr << newline;
 	not ok => error("Test " + name + " failed");
 	ok;
 }

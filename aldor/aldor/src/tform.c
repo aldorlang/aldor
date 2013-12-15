@@ -31,6 +31,7 @@
 #include "abpretty.h"
 #include "comsg.h"
 #include "strops.h"
+#include "bigint.h"
 
 Bool	tfDebug			= false;
 Bool	tfExprDebug		= false;

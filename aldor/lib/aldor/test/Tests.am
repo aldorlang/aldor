@@ -88,3 +88,6 @@ CLEANFILES += cond/cond-aldormain.c cond/cond.c cond/cond.ao
 check_PROGRAMS += hang/hang
 hang_hang_SOURCES = hang/hang-aldormain.c hang/hang.c
 CLEANFILES += hang/hang-aldormain.c hang/hang.c hang/hang.ao
+check_PROGRAMS += ret-exit/ret-exit
+ret_exit_ret_exit_SOURCES = ret-exit/ret-exit-aldormain.c ret-exit/ret-exit.c
+CLEANFILES += ret-exit/ret-exit-aldormain.c ret-exit/ret-exit.c ret-exit/ret-exit.ao

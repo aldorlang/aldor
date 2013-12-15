@@ -235,16 +235,15 @@ check: $(aldortests)
 mostlyclean: 
 	rm -f $(SUBLIB_DEPEND).al
 	rm -f $(SUBLIB).dep
-	rm -f lib$(libraryname).al
-	rm -f lib$(libraryname)*.al
+	rm -f lib*.al
 	rm -f $(libraryname).classlib
 	rm -f $(libraryname).jar
-	rm -f $(addsuffix .dep,$(alldomains))
-	rm -f $(addsuffix .ao,$(alldomains))
+	rm -f *.dep
+	rm -f *.ao
 	rm -f $(addsuffix .c,$(alldomains))
 	rm -f $(addsuffix .fm,$(alldomains))
-	rm -f $(addsuffix .java,$(javalibrary))
-	rm -f $(addsuffix *.class,$(javalibrary))
+	rm -f *.java
+	rm -f *.class
 
 clean: mostlyclean
 	rm -f $(SUBLIB).al

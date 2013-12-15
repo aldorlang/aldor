@@ -31,6 +31,7 @@ AXLTESTS =	\
 	cond-defaults	\
 	cond	\
 	hang	\
+	ret-exit \
 	#
 
 BROKEN =	\

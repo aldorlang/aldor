@@ -305,7 +305,8 @@ FakedConditionalOperations(S: Type): with {
 	member?: (S, %) -> Boolean;
 }  == add {
 	(a: %) = (b: %): Boolean == {
-		error "no equality on this object";
+	        import from Pointer;
+		(a pretend Pointer) = (b pretend Pointer)
 	}
 	member?(a: S, b: %): Boolean == {
 		error "no member? on this object";
