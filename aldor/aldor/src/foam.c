@@ -40,6 +40,7 @@
 #include "sexpr.h"
 #include "fbox.h"
 #include "foamsig.h"
+#include "symcoinfo.h"
 
 #define FOAM_NARY	(-1)	/* Identifies tags with N-ary data argument. */
 

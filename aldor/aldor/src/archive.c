@@ -7,7 +7,6 @@
  ****************************************************************************/
 
 #include "archive.h"
-#include "axlobs.h"
 #include "comsg.h"
 #include "debug.h"
 #include "file.h"
@@ -18,6 +17,7 @@
 #include "syme.h"
 #include "table.h"
 #include "util.h"
+#include "ftype.h"
 
 Bool	arDebug		= false;
 #define arDEBUG		DEBUG_IF(ar) afprintf

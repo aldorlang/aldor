@@ -27,6 +27,7 @@
 #include "comsg.h"
 #include "symbol.h"
 #include "strops.h"
+#include "symcoinfo.h"
  
 #undef MacDeclArgs
 

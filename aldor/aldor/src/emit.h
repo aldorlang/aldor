@@ -10,6 +10,7 @@
 #define _EMIT_H_
 
 #include "axlobs.h"
+#include "ftype.h"
 
 /*
  * Controlling options.

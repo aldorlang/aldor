@@ -159,6 +159,7 @@ libstruct_a_SOURCES =	\
 	foamsig.c	\
 	forg.c		\
 	freevar.c	\
+	ftype.c		\
 	gf_syme.c	\
 	lib.c		\
 	loops.c		\
@@ -169,6 +170,7 @@ libstruct_a_SOURCES =	\
 	srcline.c	\
 	stab.c		\
 	syme.c		\
+	symcoinfo.c	\
 	tconst.c	\
 	tfcond.c	\
 	tform.c		\

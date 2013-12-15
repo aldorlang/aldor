@@ -1330,6 +1330,7 @@ extern struct foamDDecl_info foamDDeclInfoTable[];
 #define foamProtoSExpr(tag) (foamProtoInfo(tag).sxsym)
 #define foamDDeclSExpr(tag) (foamDDeclInfo(tag).sxsym)
 
+/* To use these, include symcoinfo.h as well */
 #define foamIdTag(sym)      ((FoamTag)      symCoInfo(sym)->foamTagVal)
 #define foamBValIdTag(sym)  ((FoamBValTag)  symCoInfo(sym)->foamTagVal)
 #define foamProtoIdTag(sym) ((FoamProtoTag) symCoInfo(sym)->foamTagVal)
