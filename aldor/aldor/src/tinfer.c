@@ -1317,13 +1317,36 @@ tiTfPushDefinee(AbSyn lhs)
 {
 	Symbol	sym;
 
-	lhs = abDefineeIdOrElse(lhs, NULL);
-	sym = lhs ? lhs->abId.sym : NULL;
-	tiTfPushDefinee0(sym);
+	if (abTag(lhs) == AB_Comma) {
+		int i;
+		for (i=0; i<abArgc(lhs); i++) {
+			tiTfPushDefinee(lhs->abComma.argv[i]);
+		}
+	}
+	else {
+		lhs = abDefineeIdOrElse(lhs, NULL);
+		sym = lhs ? lhs->abId.sym : NULL;
+		tiTfPushDefinee0(sym);
+	}
 }
 
 void
-tiTfPopDefinee(void)
+tiTfPopDefinee(AbSyn lhs)
+{
+	if (abTag(lhs) == AB_Comma) {
+		int i;
+		for (i=0; i<abArgc(lhs); i++) {
+			tiTfPopDefinee(lhs->abComma.argv[i]);
+		}
+	}
+	else {
+		tiTfDefinees = listFreeCons(Symbol)(tiTfDefinees);
+	}
+
+}
+
+void
+tiTfPopDefinee0(Symbol sym)
 {
 	tiTfDefinees = listFreeCons(Symbol)(tiTfDefinees);
 }
@@ -1558,7 +1581,7 @@ tiTfThird1(Stab stab, TFormUses tfu, TForm tf, AbSynList params)
 	/* typeInferTForm(stab, tfw); */
 	if (tfIsSyntax(tfc))
 		tfForwardFrSyntax(tfc, tfThirdFrTForm(tfw));
-	tiTfPopDefinee();
+	tiTfPopDefinee0(sym);
 
 	ab  = tfExpr(tf);
 	abc = abDefineDecl(ab)->abDeclare.type;
@@ -1792,7 +1815,7 @@ tiTfCategory1(Stab stab, TFormUses tfu, TForm tf, AbSynList params)
 	if (abt && tfu)
 		tfu->extension = listCons(AbSyn)(abt, listNil(AbSyn));
 
-	tiTfPopDefinee();
+	tiTfPopDefinee0(sym);
 
 	ab  = tfExpr(tf);
 	abw = abDefineDecl(ab)->abDeclare.type;
@@ -1836,7 +1859,7 @@ tiTfUnknown1(Stab stab, TFormUses tfu, TForm tf, AbSynList params)
 	tfSetMeaning(tf);
 	tfCheckConsts(tf);
 
-	tiTfPopDefinee();
+	tiTfPopDefinee0(sym);
 
 	ab  = tfExpr(tf);
 	abl = abDefineDecl(ab)->abDeclare.type;

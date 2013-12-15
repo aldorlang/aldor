@@ -393,7 +393,7 @@ tibup0Within(Stab stab, AbSyn absyn, SymeList bsymes, Bool doDefault)
 				tiTfPushDefinee(lhs);
 				typeInferAs(stab, lhs,
 					    tiDefineFilter(argv[i],tfUnknown));
-				tiTfPopDefinee();
+				tiTfPopDefinee(lhs);
 			}
 			else /*if (doDefault)*/
 				typeInferAs(stab, argv[i], tfUnknown);
@@ -506,7 +506,7 @@ tibup0DefaultBody(Stab stab, AbSyn absyn, Bool doDef)
 			tiTfPushDefinee(lhs);
 			typeInferAs(stab, lhs,
 				    tiDefineFilter(argv[i],tfUnknown));
-			tiTfPopDefinee();
+			tiTfPopDefinee(lhs);
 
 			if (abSyme(id) && symeIsExport(abSyme(id)))
 				xsymes = listCons(Syme)(abSyme(id), xsymes);
@@ -1232,7 +1232,7 @@ tibupDefine(Stab stab, AbSyn absyn, TForm type)
 			abState(absyn) = AB_State_Error;
 	}
 
-	tiTfPopDefinee();
+	tiTfPopDefinee(lhs);
 
 	if (abTag(lhs) == AB_Declare)
 	{

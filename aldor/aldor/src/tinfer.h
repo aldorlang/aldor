@@ -67,7 +67,8 @@ extern AbSyn	abExpandDefs(Stab, AbSyn);
 
 extern void		tiTfSefo		(Stab, TForm);
 extern void		tiTfPushDefinee 	(AbSyn);
-extern void		tiTfPopDefinee		(void);
+extern void		tiTfPopDefinee		(AbSyn);
+extern void		tiTfPopDefinee0		(Symbol);
 extern Bool		tiTfDoDefault		(Sefo);
 extern void		tiTfImportCascades	(Stab stab, TQualList tq);
 extern SymeList		tiAddSymes		(Stab, AbSyn, TForm, TForm, SymeList *);

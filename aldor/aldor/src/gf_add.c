@@ -1300,6 +1300,8 @@ gen0EqualMods(Sefo sefo)
 	       abTag(sefo) == AB_Id ||
 	       abTag(sefo) == AB_Apply ||
 	       abTag(sefo) == AB_Except ||
+	       abTag(sefo) == AB_Add ||
+	       abTag(sefo) == AB_With ||
 	       (abIsLeaf(sefo) && abSyme(sefo)));
 	return sefo;
 }

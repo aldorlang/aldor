@@ -3955,12 +3955,15 @@ gen0SetValue(Foam set, AbSyn absyn)
 local Foam
 genDefine(AbSyn absyn)
 {
-	AbSyn	lhs = abDefineeId(absyn);
-	Syme	syme = abSyme(lhs);
-	Foam	result;
+	Syme syme = NULL;
+	Foam result;
 
-	assert(syme);
-	if (symeExtension(syme))
+	if (abTag(absyn->abDefine.lhs) != AB_Comma) {
+		AbSyn	lhs = abDefineeId(absyn);
+		syme = abSyme(lhs);
+	}
+
+	if (syme && symeExtension(syme))
 		result = gen0Extend(absyn);
 	else
 		result = gen0Define(absyn);
@@ -6236,6 +6239,7 @@ gen0ForIter(AbSyn absyn, FoamList *forl, FoamList *itl)
  * !!should replace lhs with exporter
  */
 local void gen0FindDefsSyme(Stab stab, Syme syme, Bool inHighLev);
+local void gen0FindDefsDefine(AbSyn absyn, Stab stab, Bool inHighLev, Bool topLev);
 
 local void
 gen0FindDefs(AbSyn absyn, AbSyn lhs, Stab stab, Bool inHighLev, Bool topLev)
@@ -6254,26 +6258,7 @@ gen0FindDefs(AbSyn absyn, AbSyn lhs, Stab stab, Bool inHighLev, Bool topLev)
 		break;
 	}
 	case AB_Define: {
-		AbSyn	lhs = absyn->abDefine.lhs;
-		AbSyn	rhs = absyn->abDefine.rhs;
-		AbSyn	id = abDefineeId(lhs);
-		AbSyn	type = abDefineeTypeOrElse(lhs, NULL);
-
-		gen0FindDefs(rhs, id, stab, inHighLev, false);
-
-		if (!type) break;
-
-		if (abIsAnyMap(type)) type = abMapRet(type);
-
-		if (abTag(type) == AB_With &&
-		    (abIsNotNothing(type->abWith.base) ||
-		     gen0HasDefaults(type)))
-			gen0FindDefs(type, NULL, stab, true, false);
-		else if (tfIsCategoryType(gen0AbType(type)))
-			gen0FindDefs(type, NULL, stab, true, false);
-		else 
-			gen0FindDefs(type, NULL, stab, inHighLev, topLev);
-
+		gen0FindDefsDefine(absyn, stab, inHighLev, topLev);
 		break;
 	}
 	case AB_RestrictTo: {
@@ -6452,6 +6437,48 @@ gen0FindDefs(AbSyn absyn, AbSyn lhs, Stab stab, Bool inHighLev, Bool topLev)
 		break;
 	}
 }
+
+local void
+gen0FindDefsDefine(AbSyn absyn, Stab stab, Bool inHighLev, Bool topLev)
+{
+	assert(abTag(absyn) == AB_Define);
+	AbSyn  *argv;
+	AbSyn	lhs = absyn->abDefine.lhs;
+	AbSyn	rhs = absyn->abDefine.rhs;
+	AbSyn   id;
+	int     argc, i;
+
+	if (abTag(lhs) == AB_Comma) {
+		argv = lhs->abComma.argv;
+		argc = abArgc(lhs);
+		id = NULL;
+	}
+	else {
+		argv = &lhs;
+		argc = 1;
+		id = abDefineeId(lhs);
+	}
+	gen0FindDefs(rhs, id, stab, inHighLev, false);
+
+	for (i=0; i<argc; i++) {
+		AbSyn   lhs = argv[i];
+		AbSyn	type = abDefineeTypeOrElse(lhs, NULL);
+
+		if (!type) break;
+
+		if (abIsAnyMap(type)) type = abMapRet(type);
+
+		if (abTag(type) == AB_With &&
+		    (abIsNotNothing(type->abWith.base) ||
+		     gen0HasDefaults(type)))
+			gen0FindDefs(type, NULL, stab, true, false);
+		else if (tfIsCategoryType(gen0AbType(type)))
+			gen0FindDefs(type, NULL, stab, true, false);
+		else
+			gen0FindDefs(type, NULL, stab, inHighLev, topLev);
+	}
+}
+
 
 local void
 gen0FindDefsSyme(Stab stab, Syme syme, Bool inHighLev)
