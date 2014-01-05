@@ -113,6 +113,8 @@ libgen_a_SOURCES =	\
 	format.c	\
 	int.c		\
 	intset.c	\
+	java/javacode.c	\
+	java/javaobj.c	\
 	list.c		\
 	memclim.c	\
 	msg.c		\
@@ -200,6 +202,7 @@ libphase_a_SOURCES =	\
 	gencpp.c	\
 	genfoam.c	\
 	genlisp.c	\
+	java/genjava.c	\
 	gf_add.c	\
 	gf_excpt.c	\
 	gf_fortran.c	\
