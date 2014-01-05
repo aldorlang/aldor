@@ -578,20 +578,23 @@ jcLiteralString(String s)
 JavaCode 
 jcLiteralChar(String s)
 {
-	
+	String t;
 	if (s[0] == '\0') 
-		s = strCopy("\\0");
-	if (s[0] == '\'')
-		s = strCopy("\\'");
-	if (s[0] == '"')
-		s = strCopy("\\\"");
-	if (s[0] == '\n')
-		s = strCopy("\\n");
-	if (s[0] == '\t')
-		s = strCopy("\\t");
+		t = strCopy("\\0");
+	else if (s[0] == '\'')
+		t = strCopy("\\'");
+	else if (s[0] == '"')
+		t = strCopy("\\\"");
+	else if (s[0] == '\n')
+		t = strCopy("\\n");
+	else if (s[0] == '\t')
+		t = strCopy("\\t");
+	else if (s[0] == -1)
+		t = strCopy("\\1");
 	else
-		s = strCopy(s);
-	return jcoNewLiteral(jc0ClassObj(JCO_CLSS_Character), s);
+		t = strCopy(s);
+
+	return jcoNewLiteral(jc0ClassObj(JCO_CLSS_Character), t);
 }
 
 local void

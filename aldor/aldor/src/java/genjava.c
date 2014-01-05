@@ -48,6 +48,8 @@ local JavaCode gj0GloSet(Foam ref, Foam rhs);
 local JavaCode gj0GloRegister(Foam lhs, Foam rhs);
 local JavaCode gj0Nil(Foam foam);
 
+local JavaCode gj0Throw(Foam foam);
+
 local JavaCode gj0ValuesSet(Foam foam, Foam rhs);
 local JavaCode gj0ValuesReturn(Foam foam);
 
@@ -232,7 +234,7 @@ Bool	genJavaDebug	= false;
 /* Functions... */
 
 JavaCode 
-gjGenJavaUnit(Foam foam, String name)
+genJavaUnit(Foam foam, String name)
 {
 	JavaCodeList imps, code, mainImpl, interfaces, fmts, body;
 	JavaCode clss, contextDecl;
@@ -359,6 +361,8 @@ gj0Gen(Foam foam)
 		return gj0Glo(foam);
 	case FOAM_Seq:
 		return gj0Seq(foam);
+	case FOAM_Throw:
+		return gj0Throw(foam);
 	case FOAM_SInt:
 		return gj0SInt(foam);
 	case FOAM_HInt:
@@ -752,6 +756,7 @@ gj0ProgDeclDefaultValue(Foam decl)
 		return jcKeyword(symInternConst("false"));
 	case FOAM_Char:
 		return jcLiteralChar("\\0");
+	case FOAM_Byte:
 	case FOAM_SInt:
 	case FOAM_HInt:
 	case FOAM_SFlo:
@@ -1827,6 +1832,18 @@ gj0SeqBucketIsHalt(GjSeqBucket bucket)
 	return bucket->label == GJ_SEQ_Halt;
 }
 
+local JavaCode
+gj0Throw(Foam foam)
+{
+	SExpr sx = foamToSExpr(foam);
+	String s = sxiFormat(sx);
+	
+	sxiFree(sx);
+
+	return jcComment(s);
+}
+
+
 /*
  * :: Custom java classes
  */
@@ -2662,7 +2679,7 @@ gj0FoamSigFrCCall(Foam ccall)
 	/* FIXME: Not sure how to get return types. */
 
 	inArgList = listNReverse(AInt)(inArgList);
-	if (ccall->foamCCall.type == FOAM_NOp) {
+	if (ccall->foamCCall.type == FOAM_NOp && gjContext->mfmt != 0) {
 		Foam ddecl = gjContext->formats->foamDFmt.argv[gjContext->mfmt];
 		retVals   = gj0FoamSigRets(ddecl, &nRets);
 	}

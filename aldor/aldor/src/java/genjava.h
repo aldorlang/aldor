@@ -3,7 +3,7 @@
 
 #include "javacode.h"
 
-JavaCode gjGenJavaUnit(Foam foam, String name);
+JavaCode genJavaUnit(Foam foam, String name);
 
 void gjGenSetMain(Bool flg);
 extern Bool genJavaDebug;
