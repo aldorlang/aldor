@@ -64,6 +64,7 @@ struct phInfo phInfo[] = {
 	{PH_OptFoam,	"of", "optfoam",  0,	0,   0,	   0,	0},
 	{PH_PutIntermed,"pb", "putao",	  0,	0,   0,	   0,	0},
 	{PH_PutLisp,	"pl", "putlisp",  0,	0,   0,	   0,	0},
+	{PH_PutJava,	"pj", "putjava",  0,	0,   0,	   0,	0},
 	{PH_PutC,	"pc", "putc",	  0,	0,   0,	   0,	0},
 	{PH_PutObject,	"po", "putobject",0,	0,   0,	   0,	0},
 	{PH_Misc,	"mi", "misc",	  0,	0,   0,	   0,	0}

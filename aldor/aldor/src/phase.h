@@ -28,6 +28,7 @@ enum phTag {
 		PH_OptFoam,
 		PH_PutIntermed,
 		PH_PutLisp,
+		PH_PutJava,
 		PH_PutC,
 		PH_PutObject,
 		PH_Misc,		/* Time spent outside of the others. */

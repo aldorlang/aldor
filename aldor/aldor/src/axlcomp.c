@@ -46,6 +46,8 @@
 #include "abpretty.h"
 #include "srcline.h"
 #include "comsg.h"
+#include "java/genjava.h"
+#include "java/javaobj.h"
 
 String 		compRootDir     = 0;
 Bool   		compIsDebug     = false;
@@ -869,6 +871,7 @@ void
 compFileBack(EmitInfo finfo, Foam foam)
 {
 	compPhasePutLisp  (finfo, foam);
+	compPhasePutJava  (finfo, foam);
 	compPhasePutC	  (finfo, foam);
 	compPhasePutObject(finfo);
 }
@@ -1202,6 +1205,26 @@ compPhasePutLisp(EmitInfo finfo, Foam foam)
 		lisp = genLisp(foam);
 		emitTheLisp(finfo, lisp);
 		sxiFree(lisp);
+	}
+
+	phEnd((PhPrFun) 0, (PhPrFun) 0, (Pointer) NULL);
+}
+
+void
+compPhasePutJava(EmitInfo finfo, Foam foam)
+{
+	JavaCode java;
+	FileName fileName;
+	String fnstring;
+
+	phStart(PH_PutJava);
+
+	fnstring = emitGetFileIdName(finfo);
+	if (emitIsOutputNeededOrWarn(finfo, FTYPENO_JAVA)) {
+		JavaCode jc = genJavaUnit(foam, fnstring);
+		java = genJavaUnit(foam, fnstring);
+		emitTheJava(finfo, java);
+		jcoFree(java);
 	}
 
 	phEnd((PhPrFun) 0, (PhPrFun) 0, (Pointer) NULL);
