@@ -1724,7 +1724,7 @@ gen0ApplySyme(FoamTag type, Syme syme, SImpl impl,
 		foam = gen0CCall(type, syme, argc, &args);
 
 	if (type != otype)
-		foam = foamNewCast(type, foam);
+		foam = foamNewCast(otype, foam);
 
 	*pargv = args;
 	return foam;
@@ -5609,7 +5609,7 @@ gen0VarsLex(Syme syme, Stab stab)
 	type = gen0Type(symeType(syme), &fmt);
 	assert(symeIsLexVar(syme) || symeIsLexConst(syme));
 
-	if (type == FOAM_Rec) fmtSlot = fmt;
+	if (type == FOAM_Rec || type == FOAM_Arr) fmtSlot = fmt;
 
 	decl = foamNewDecl(type, name, fmtSlot);
 
@@ -7829,7 +7829,11 @@ gen0BuiltinExporter(Foam glo, Syme syme)
 	for (i=0; i < tfMapArgc(tf); i++)
 		call->foamCCall.argv[i] = foamNewPar(i);
 
-	if (retFmt == 0)
+	if (tfMapRetc(tf) == 0) {
+		gen0AddStmt(call, NULL);
+		result = foamNewEmpty(FOAM_Values, 0);
+	}
+	else if (retFmt == 0)
 		result = call;
 	else {
 		tmp = gen0TempFrDDecl(retFmt, true);
