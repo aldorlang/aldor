@@ -57,6 +57,14 @@ public class Foam {
 		throw new RuntimeException();
 	}
 
+	public static Word fflush(Word w1) {
+		throw new RuntimeException();
+	}
+
+    public static void lungetc(Word w1, Word w2) {
+	throw new RuntimeException();
+    }
+
 	public static Word fclose(Word w1) {
 		throw new RuntimeException();
 	}
@@ -81,7 +89,7 @@ public class Foam {
 		throw new RuntimeException();
 	}
 
-    public static int sintToPtr(int o) {
+    public static Word sintToPtr(int o) {
 		throw new RuntimeException("wheee");
 	}
 
@@ -273,4 +281,80 @@ public class Foam {
 	    return Integer.parseInt(new String(arr));
 	}
 	public static BigInteger arrToBInt(Object o) { throw new RuntimeException(); }
+
+    public static Double pow(double a, double b) {
+	return java.lang.Math.pow(a, b);
+    }
+
+    public static Word powf(Word w1, Word w2) {
+	throw new RuntimeException();
+    }
+
+    public static Word randomSeed() {
+	return Word.U.fromSInt(0);
+    }
+
+    public static void stoGc() {
+	throw new RuntimeException();
+    }
+
+    public static void stoShow() {
+	throw new RuntimeException();
+    }
+
+    public static Word gcTimer() {
+	throw new RuntimeException();
+    }
+
+    public static void fiSetDebugVar(Word word) {
+	throw new RuntimeException();
+    }
+
+    public static void agatSendLong(Word w1, Word w2) {
+	throw new RuntimeException();
+    }
+
+    public static void agatSendChar(Word w1, Word w2) {
+	throw new RuntimeException();
+    }
+
+    public static void agatSendFloat(Word w1, Word w2) {
+	throw new RuntimeException();
+    }
+
+    public static void agatSendDouble(Word w1, double w2) {
+	throw new RuntimeException();
+    }
+
+    public static Word cerrno() {
+	throw new RuntimeException();
+    }
+
+    public static Word ftell(Word w) {
+	throw new RuntimeException();
+    }
+
+    public static Word fseekset(Word w1, Word w2) {
+	throw new RuntimeException();
+    }
+
+    public static Word fseekend(Word w1, Word w2) {
+	throw new RuntimeException();
+    }
+
+    public static Word fseekcur(Word w1, Word w2) {
+	throw new RuntimeException();
+    }
+
+    public static Word mkstemp(Word w1) {
+	throw new RuntimeException();
+    }
+
+    public static Word lfputc(Word w1, Word w2) {
+	throw new RuntimeException();
+    }
+
+    public static Word unlink(Word w) {
+	throw new RuntimeException();
+    }
 }
