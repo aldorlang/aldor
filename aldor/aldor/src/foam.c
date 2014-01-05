@@ -651,6 +651,7 @@ local void	foamAuditBadSharing	(Foam foam);
 local void	foamAuditBadRuntime	(Foam foam);
 local void	foamAuditBadCast  	(Foam foam);
 local void	foamAuditBadDecl  	(Foam foam);
+local void	foamAuditBadType  	(Foam foam);
 
 Foam	faUnit;
 Foam	faProg;
@@ -703,6 +704,7 @@ local Bool	faTypeCheckingValues	(Foam, Foam, AInt);
 local Bool	faTypeCheckingFmtIsEnv	(Foam, AInt);
 local Bool	faTypeCheckingFmtIsRec (Foam, AInt);
 local Bool	faTypeCheckingBCall	(Foam);
+local FoamTag	faFoamExprType		(Foam, AInt *);
 
 local void	faTypeCheckingFailure	(Foam, String, ...);
 
@@ -775,7 +777,7 @@ local Bool
 foamAuditExpr(Foam foam)
 {
 	Bool	result = true;
-
+	Bool	checkTypes = false;
 	assert(foam);
 	assert(foamTag(foam) <= FOAM_LIMIT);
 	if (foamMark(foam) == FOAM_MARKED)
@@ -806,6 +808,10 @@ foamAuditExpr(Foam foam)
 	foamIter(foam, arg, foamAuditExpr(*arg));
 
 	switch (foamTag(foam)) {
+	  case FOAM_Set:
+	  case FOAM_Def:
+		  checkTypes = true;
+		  break;
 	  case FOAM_Loc:
 		if (foam->foamLoc.index >= faNumLocals)
 			foamAuditBadRef(foam);
@@ -958,10 +964,8 @@ foamAuditTypeCheck(Foam foam)
 						    rhs->foamMFmt.format);
 		}
 		else {
-			typeLhs = foamExprType(lhs, faProg, faFormats,
-					    NULL, NULL, &fmtLhs);
-			typeRhs = foamExprType(rhs, faProg, faFormats,
-					    NULL, NULL, &fmtRhs);
+			typeLhs = faFoamExprType(lhs, &fmtLhs);
+			typeRhs = faFoamExprType(rhs, &fmtRhs);
 			if (typeLhs == FOAM_Nil && typeRhs == FOAM_Ptr)
 				return true;
 			if (typeRhs == FOAM_Nil && typeLhs == FOAM_Ptr)
@@ -997,8 +1001,7 @@ foamAuditTypeCheck(Foam foam)
 
 		if (!foamAuditIf) return true;
 
-		type = foamExprType(foam->foamIf.test, faProg, faFormats,
-				    NULL, NULL, NULL);
+		type = faFoamExprType(foam->foamIf.test, NULL);
 
 		if (type != FOAM_Bool) {
 				faTypeCheckingFailure(foam,
@@ -1024,8 +1027,7 @@ foamAuditTypeCheck(Foam foam)
 						    faProg->foamProg.format);
 		}
 
-		type = foamExprType(foam->foamReturn.value, faProg, faFormats,
-				    NULL, NULL, &fmt);
+		type = faFoamExprType(foam->foamReturn.value, &fmt);
 
 		if (type != faProg->foamProg.retType) {
 			AInt typeLhs = faProg->foamProg.retType;
@@ -1047,8 +1049,7 @@ foamAuditTypeCheck(Foam foam)
 
 		if (!foamAuditCast) return true;
 
-		type = foamExprType(foam->foamCast.expr, faProg, faFormats,
-				    NULL, NULL, NULL);
+		type = faFoamExprType(foam->foamCast.expr, NULL);
 
 		return true;
 
@@ -1098,8 +1099,7 @@ faTypeCheckingValues(Foam foam, Foam values, AInt formatNo)
 	}
 	
 	for (i = 0; i < numFmtSlots; i++) {
-		type = foamExprType(values->foamValues.argv[i], faProg,
-				    faFormats, NULL, NULL, &fmt);
+		type = faFoamExprType(values->foamValues.argv[i], &fmt);
 		decl = faFormatsv[formatNo]->foamDDecl.argv[i];
 
 		if (type != decl->foamDecl.type) {
@@ -1174,8 +1174,7 @@ faTypeCheckingBCall(Foam foam)
 
 	for (i = 0; i < nargs; i++) {
 
-		argType = foamExprType(foam->foamBCall.argv[i],
-				       faProg, faFormats, NULL, NULL, &fmt);
+		argType = faFoamExprType(foam->foamBCall.argv[i], &fmt);
 
 		parType = foamBValInfo(op).argTypes[i];
 
@@ -1208,6 +1207,15 @@ faTypeCheckingFailure(Foam foam, String msg, ...)
 
 	foamWrSExpr(dbOut, foam, SXRW_AsIs);
 	va_end(argp);
+}
+
+local FoamTag
+faFoamExprType(Foam foam, AInt *fmt)
+{
+	FoamTag type = foamExprType0(foam,
+				    faProg, faFormats, NULL, NULL, fmt);
+
+	return type;
 }
 
 /* Reset the foam sharing mark. */
@@ -1249,6 +1257,13 @@ foamAuditBadDecl(Foam foam)
 	foamPrint(stderr, foam);
 	if (DEBUG(foam)){foamPrint(dbOut, faUnit);}
 	bug("\nBad foam decl\n", faConstNum);
+}
+
+local void
+foamAuditBadType(Foam foam)
+{
+	foamPrint(stderr, foam);
+	bug("\nBad type\n", faConstNum);
 }
 
 local void
