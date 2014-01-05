@@ -115,6 +115,7 @@ extern Foam		compPhaseGenFoam      	(EmitInfo, Stab, AbSyn);
 extern Foam		compPhaseOptFoam      	(EmitInfo, Foam);
 extern void		compPhaseSave	      	(EmitInfo, Foam, Stab);
 extern void		compPhasePutLisp      	(EmitInfo, Foam);
+extern void		compPhasePutJava	(EmitInfo, Foam);
 extern void		compPhasePutC	      	(EmitInfo, Foam);
 extern void		compPhasePutAXLmainC   	(EmitInfo);
 extern void		compPhasePutObject    	(EmitInfo);
