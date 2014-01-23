@@ -1568,6 +1568,10 @@ extern Bool foamTypeIsValue(Foam fmts, FoamTag type, AInt fmt);
 
 #define foamSelectArgc(foam)    (foamArgc(foam) - 1)
 
+extern Bool foamProgHasMultiAssign(Foam prog);
+extern Bool foamIsMultiAssign(Foam prog);
+
+extern Bool foamDeclEqual(Foam, Foam);
 /*
  * This macro can be used to strip multiple casts from an expression. Be
  * careful where you use it otherwise you may introduce bad foam sharing.
