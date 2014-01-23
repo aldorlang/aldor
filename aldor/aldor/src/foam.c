@@ -692,6 +692,37 @@ foamDefPrintDb(Foam foam, int defNo)
 	return foamPrintDb(defs->foamDDef.argv[defNo]);
 }
 
+Bool
+foamProgHasMultiAssign(Foam prog)
+{
+	assert(foamTag(prog) == FOAM_Prog);
+	Foam seq = prog->foamProg.body;
+	int bodyArgc = foamArgc(seq);
+	int i;
+
+	for (i=0; i < bodyArgc; i++) {
+		if (foamIsMultiAssign(seq->foamSeq.argv[i])) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+Bool
+foamIsMultiAssign(Foam foam)
+{
+	return (foamTag(foam) == FOAM_Set || foamTag(foam) == FOAM_Def)
+		&& foamTag(foam->foamSet.lhs) == FOAM_Values;
+}
+
+Bool
+foamDeclEqual(Foam decl1, Foam decl2)
+{
+	return decl1->foamDecl.type == decl2->foamDecl.type
+		&& decl1->foamDecl.format == decl2->foamDecl.format;
+}
+
 /* Foam Auditing */
 
 local Bool	foamAuditExpr		(Foam foam);

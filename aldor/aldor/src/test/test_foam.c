@@ -8,6 +8,7 @@
 local void testCall();
 local void testDDecl();
 local void testConstructors();
+local void testTests();
 local void testHash();
 local void testSIntReduce();
 local void testFoamBuffer();
@@ -20,6 +21,7 @@ foamTest()
 	TEST(testCall);
 	TEST(testDDecl);
 	TEST(testConstructors);
+	TEST(testTests);
 	TEST(testHash);
 	TEST(testSIntReduce);
 	TEST(testFoamBuffer);
@@ -72,6 +74,18 @@ testConstructors()
 	testPointerEqual("arg1", arg1, foam->foamBCall.argv[0]);
 	testPointerEqual("arg1", arg2, foam->foamBCall.argv[1]);
 }
+
+local void
+testTests()
+{
+	Foam foam = foamNewSet(foamNewLoc(1), foamNewLoc(1));
+	testFalse("", foamIsMultiAssign(foam));
+
+	foam = foamNewSet(foamNew(FOAM_Values, 2, foamNewLoc(1), foamNewLoc(2)),
+			  foamNewLoc(3));
+	testTrue("", foamIsMultiAssign(foam));
+}
+
 
 
 local AInt
