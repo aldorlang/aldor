@@ -586,6 +586,7 @@ Optimization options:\n\
  \t-Q peep        \tLocal ``peep-hole'' optimizations.      \t     X   X   X   X\n\
  \t-Q cprop       \tCopy propagation.                       \t         X   X   X\n\
  \t-Q cse         \tCommon sub-expression elimination.      \t         X   X   X\n\
+ \t-Q cast        \tSimplify variable types.                \t         X   X   X\n\
  \t-Q env         \tVarious environment optimisations.      \t         X   X   X\n\
  \t-Q emerge      \tEliminate lexical levels and records.   \t         X   X   X\n\
  \t-Q emerge-rr   \tEliminate raw records.                  \t         X   X   X\n\
