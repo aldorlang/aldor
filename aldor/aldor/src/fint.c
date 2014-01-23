@@ -1507,12 +1507,12 @@ fintStmt(DataObj retDataObj)
 
 	if (DEBUG(fintSto)) {stoAudit();}
 #ifndef NDEBUG
+	int zz = instrCounter;
 	if (instrCounter++ == instrBreak) {
 		/* stoAudit()*/;	/* SET BREAKPOINT HERE */
 		fintDebug = true;
 	}
 #endif
-
 
 	stmtPos = ip;
 
