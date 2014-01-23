@@ -534,6 +534,11 @@ flogToSeq0(FlowGraph flog, int * nLabels)
         FoamList        stats = listNil(Foam);
         int             lab;
 	Foam		seq;
+
+	if (flogDebug) {
+		flogDEBUG(dbOut, "FlogToSeq: ...\n");
+		flogPrintDb(flog);
+	}
  
 	flogFixLabels(flog);
 	flogFixRefCounts(flog);
@@ -557,6 +562,7 @@ flogToSeq0(FlowGraph flog, int * nLabels)
 
 	stoFree(flog);
 
+	flogDEBUG(dbOut, "FlogToSeq: ---> %pFoam\n", seq);
         return seq;
 }
 
@@ -912,7 +918,7 @@ bbPrint(FILE *fout, BBlock bb, Bool extended)
 	cc += fprintf(fout, "Block %d: %s", bb->label, s);
 	cc += fprintf(fout, " [refc=%d, lrefc=%d, isblock0=%d, mark=%d, iextra=%d]\n",
 			    bb->refc, bb->lrefc, bb->isblock0, bb->mark, bb->iextra);
-	cc += fprintf(fout, "  Exits:");
+	cc += fprintf(fout, " %d Exits:", bb->label);
 	for (i = 0; i < bbExitC(bb); i++)
 		cc += fprintf(fout, " %d", bbExit(bb,i)->label);
 	cc += fprintf(fout, "  Entries:");
