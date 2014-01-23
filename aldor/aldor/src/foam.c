@@ -730,6 +730,7 @@ local Bool	foamAuditCast		= false;
 
 local Bool	foamAudit0		(Foam);
 local Bool	foamAuditTypeCheck	(Foam);
+local void	foamAuditCastExpr	(Foam foam);
 
 local Bool	faTypeCheckingValues	(Foam, Foam, AInt);
 local Bool	faTypeCheckingFmtIsEnv	(Foam, AInt);
@@ -900,7 +901,8 @@ foamAuditExpr(Foam foam)
 	  case FOAM_Cast:
 	       if (foamTag(foam->foamCast.expr) == FOAM_Values)
 		    foamAuditBadCast(foam);
-
+	       foamAuditCastExpr(foam);
+	       break;
 	  case FOAM_CCall: 
 		  /* There was a check for runtime constraint breakage
 		   * here - removed as a layering violation... */
@@ -942,6 +944,18 @@ foamAuditDecl(Foam decl)
 		break;
 	}
 }
+
+void
+foamAuditCastExpr(Foam foam)
+{
+	FoamTag type = foam->foamCast.type;
+	FoamTag exprType = faFoamExprType(foam->foamCast.expr, NULL);
+
+	if (type == FOAM_Ptr && exprType == FOAM_SInt) {
+		foamAuditBadType(foam);
+	}
+}
+
 
 /**************************************************************************
  * NOTE: This procedure doesn't perform type checking on subtrees,
@@ -2866,7 +2880,7 @@ foamExprTypeCB(Foam expr, AInt *extra, FoamExprTypeCallback callback, void *arg)
 	  case FOAM_CEnv:
 		return FOAM_Env;
 	  case FOAM_Cast:
-		  if (expr->foamCast.type == FOAM_Arr)
+		  if (expr->foamCast.type == FOAM_Arr && extra)
 			  *extra = 0;
 		return expr->foamCast.type;
 	  case FOAM_ANew:
