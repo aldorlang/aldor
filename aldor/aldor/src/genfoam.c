@@ -3910,8 +3910,10 @@ gen0MultiAssign(FoamTag set, AbSyn lhs, Foam rhsFoam)
 		/* FIXME: deal with domains defs here (see gen0Define) */
 	}
 	if (!gen0ValueMode) {
+		/*
 		for(i = 0; i < argc; i++)
 			gen0FreeTemp(temps->foamValues.argv[i]);
+		*/
 		foamFree(temps);
 
 		return 0;

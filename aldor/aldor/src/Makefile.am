@@ -228,7 +228,7 @@ libphase_a_SOURCES =	\
 	of_killp.c	\
 	of_loops.c	\
 	of_peep.c	\
-	of_retyp.c	\
+	of_retyp2.c	\
 	of_rrfmt.c	\
 	of_util.c	\
 	optfoam.c	\
@@ -270,6 +270,7 @@ testsuite =			\
 	test/test_list.c	\
 	test/test_ostream.c	\
 	test/test_printf.c	\
+	test/test_retyp.c	\
 	test/test_scobind.c	\
 	test/test_srcpos.c	\
 	test/test_stab.c	\

@@ -17,6 +17,7 @@ void intTestSuite(void);
 void ostreamTest(void);
 void printfTest(void);
 void formatTest(void);
+void retypeTest(void);
 void tinferTest(void);
 void stabTest(void);
 void scobindTest(void);
