@@ -6,6 +6,7 @@
 #include "testlib.h"
 #include "syme.h"
 #include "strops.h"
+#include "debug.h"
 
 local void testJFlow1();
 local void testJFlow2();
@@ -17,8 +18,12 @@ local int fmTestNLabels(Foam seq);
 void
 jflowTest()
 {
+	dbInit();
+
 	TEST(testJFlow1);
 	TEST(testJFlow2);
+
+	dbFini();
 }
 
 extern int jflowCatDebug, jflowDfDebug, jflowDfiDebug, jflowGoDebug, jflowDmDebug;
@@ -52,12 +57,6 @@ local void
 testJFlow2()
 {
 	Foam body;
-
-	jflowCatDebug = 1;
-	jflowDfDebug = 1;
-	jflowDfiDebug = 1;
-	jflowGoDebug = 1;
-	jflowDmDebug = 1;
 
 	body = foamNewSeq(foamNewSet(foamNewLoc(int0), foamNewBool(true)),
 			  foamNewLabel(1),
