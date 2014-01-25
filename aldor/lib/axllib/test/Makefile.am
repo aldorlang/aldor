@@ -76,7 +76,6 @@ AXLTESTS =	\
 	bug1045	\
 	bug1046	\
 	bug1053	\
-	bug1054	\
 	bug1055	\
 	bug1056	\
 	bug1061	\
@@ -483,6 +482,7 @@ BROKEN =	\
 	pack1	\
 	pack2	\
 	t1088	\
+	bug1054	\
 	#
 
 XFAIL_TESTS =	\
