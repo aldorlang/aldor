@@ -5,6 +5,7 @@ void abcheckTest(void);
 void ablogTest(void);
 void abnormTest(void);
 void absynTest(void);
+void floatTestSuite(void);
 void bigintTestSuite(void);
 void bitvTestSuite(void);
 void listTestSuite(void);
