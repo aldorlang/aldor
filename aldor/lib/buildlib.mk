@@ -229,6 +229,25 @@ $(aldortests): %.aldortest: Makefile
 .PHONY: $(aldortests)
 check: $(aldortests)
 
+aldortestexecs := $(patsubst %,%.aldortest.exe,$(library))
+aldortooldir = $(abs_top_builddir)/aldor/subcmd/unitools
+foamdir = $(abs_top_builddir)/aldor/lib/libfoam
+foamlibdir = $(abs_top_builddir)/aldor/lib/libfoamlib
+libs=aldor algebra
+
+$(aldortestexecs): %.aldortest.exe: Makefile
+	$(AM_V_ALDORTEST) \
+         (if ! grep -q '^#if ALDORTEST' $(srcdir)/$*.as; then touch $@; fi; \
+	 echo "  ALDORTEST $*.as"; \
+	 sed -n -e '/^#if ALDORTEST/,/^#endif/p' < $(srcdir)/$*.as > $*.test.as; \
+	 $(DBG) $(aldorexedir)/aldor $(aldor_common_args) -Y$(aldorlibdir)/libfoam/al \
+		        -Ccc=$(aldortooldir)/unicl	\
+		      -Y$(foamdir) -Y			\
+		      -Y$(foamlibdir)  -lalgebra -laldor \
+		        -Cargs="-Wconfig=$(aldorsrcdir)/aldor.conf -I$(aldorsrcdir) -Wv=2 $(UNICLFLAGS)" \
+			-I$(top_srcdir)/lib/aldor/include -Y$(top_builddir)/lib/aldor/src \
+			-Y$(librarylibdir) -I$(libraryincdir) -fx=$@ -DALDORTEST \
+			$*.test.as; )
 # 
 # :: Automake requires this little lot
 #
