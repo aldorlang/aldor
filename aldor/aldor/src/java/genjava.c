@@ -343,6 +343,8 @@ local JavaCode
 gj0Gen(Foam foam)
 {
 	switch (foamTag(foam)) {
+	case  FOAM_NOp:
+		return jcComment(strCopy("NOp"));
 	case  FOAM_Def:
 		return gj0Def(foam);
 	case FOAM_Set:
@@ -1510,7 +1512,9 @@ gj0SeqGoto(GjSeqStore store, Foam foam)
 	AInt tgt = foam->foamGoto.label;
 	JavaCode s1 = jcAssign(gj0SeqSwitchId(), jcLiteralInteger(tgt));
 	JavaCode s2 = jcContinue(0);
-	
+
+	gj0SeqStoreEnsureBody(store);
+
 	gj0SeqStoreAddStmt(store, jcStatement(s1));
 	gj0SeqStoreAddStmt(store, jcStatement(s2));
 }
