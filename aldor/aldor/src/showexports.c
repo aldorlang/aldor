@@ -113,7 +113,7 @@ main(int argc, char *argv[])
 	stabFiniFile();
 	comsgFini();
 	macexFiniFile();
-
+	dbFini();
 }
 
 local AbSyn
