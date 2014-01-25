@@ -651,7 +651,6 @@ compInit(void)
 	foamInit();
 	optInit();
 	tinferInit();
-	dbFini();
 }
  
  

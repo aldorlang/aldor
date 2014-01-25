@@ -16,6 +16,7 @@ FILE	*dbOut;
 void
 dbInit(void)
 {
+	assert(osStdout != NULL);
 	dbOut = osStdout;
 }
 
