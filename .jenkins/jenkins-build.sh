@@ -3,10 +3,15 @@ set -x
 case $JOB_NAME in
     aldor-gcc)
 	configure_options='CFLAGS='
+	make=make
 	;;
     aldor-gcc-m32)
 	configure_options='CFLAGS=-m32 LDFLAGS=-m32 UNICLFLAGS=-Wsys=linux-x32'
 	build_options=UNICLFLAGS=-Wsys=linux-x32
+	make=make
+	;;
+    rh-32bit-aldor-gcc)
+	configure_options='CFLAGS='
 	make=make
 	;;
     aldor-clang)
@@ -42,6 +47,6 @@ rm -rf build
 mkdir build
 cd $thisdir/build
 $thisdir/aldor/configure --prefix=$thisdir/opt $configure_options
-$make -j $build_options && make check $build_options -j && gmake install $build_options -j && $make -j installcheck
+$make -j $build_options && $make check $build_options -j && $make install $build_options -j && $make -j installcheck
 
 
