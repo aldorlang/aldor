@@ -56,7 +56,12 @@ MyInt: with {
 }
 main():() == {
 	import from Z, MyInt, List MyInt, TextWriter, Character;
-	l: List MyInt := [1 :: MyInt];
-	stdout << (l = l) << newline;
+	try { l: List MyInt := [1 :: MyInt];
+	      stdout << (l = l) << newline;
+        }
+	catch E in {
+	   import from String;
+	   stdout << "This test should fail to compile.  An existing bug means that an exception is thrown" << newline
+	}
 }
 main();
