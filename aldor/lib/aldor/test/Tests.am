@@ -91,3 +91,6 @@ CLEANFILES += hang/hang-aldormain.c hang/hang.c hang/hang.ao
 check_PROGRAMS += ret-exit/ret-exit
 ret_exit_ret_exit_SOURCES = ret-exit/ret-exit-aldormain.c ret-exit/ret-exit.c
 CLEANFILES += ret-exit/ret-exit-aldormain.c ret-exit/ret-exit.c ret-exit/ret-exit.ao
+check_PROGRAMS += tst_integer/tst_integer
+tst_integer_tst_integer_SOURCES = tst_integer/tst_integer-aldormain.c tst_integer/tst_integer.c
+CLEANFILES += tst_integer/tst_integer-aldormain.c tst_integer/tst_integer.c tst_integer/tst_integer.ao
