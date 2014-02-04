@@ -233,7 +233,6 @@ aldortestexecs := $(patsubst %,%.aldortest.exe,$(library))
 aldortooldir = $(abs_top_builddir)/aldor/subcmd/unitools
 foamdir = $(abs_top_builddir)/aldor/lib/libfoam
 foamlibdir = $(abs_top_builddir)/aldor/lib/libfoamlib
-libs=aldor algebra
 
 $(aldortestexecs): %.aldortest.exe: Makefile
 	$(AM_V_ALDORTEST) \
@@ -243,7 +242,7 @@ $(aldortestexecs): %.aldortest.exe: Makefile
 	 $(DBG) $(aldorexedir)/aldor $(aldor_common_args) -Y$(aldorlibdir)/libfoam/al \
 		        -Ccc=$(aldortooldir)/unicl	\
 		      -Y$(foamdir) -Y			\
-		      -Y$(foamlibdir)  -lalgebra -laldor \
+		      -Y$(foamlibdir) -l$(libraryname) $(patsubst %,-l%,$(librarydeps))  \
 		        -Cargs="-Wconfig=$(aldorsrcdir)/aldor.conf -I$(aldorsrcdir) -Wv=2 $(UNICLFLAGS)" \
 			-I$(top_srcdir)/lib/aldor/include -Y$(top_builddir)/lib/aldor/src \
 			-Y$(librarylibdir) -I$(libraryincdir) -fx=$@ -DALDORTEST \
