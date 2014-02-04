@@ -32,6 +32,7 @@ AXLTESTS =	\
 	cond	\
 	hang	\
 	ret-exit \
+	tst_integer \
 	#
 
 BROKEN =	\
