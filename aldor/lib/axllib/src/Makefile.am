@@ -4,6 +4,7 @@ lib_LIBRARIES = libaxllib.a
 
 libaxllib_a_SOURCES =	\
 	al/array.c	\
+	al/assert.c	\
 	al/axl_boolean.c	\
 	al/axl_byte.c	\
 	al/axlcat.c	\
@@ -11,6 +12,7 @@ libaxllib_a_SOURCES =	\
 	al/axl_float.c	\
 	al/basic.c	\
 	al/bpower.c	\
+	al/buffer.c	\
 	al/complex.as	\
 	al/complex.c	\
 	al/dfloat.c	\
@@ -47,8 +49,8 @@ libaxllib_a_SOURCES =	\
 	al/table.c	\
 	al/textread.c	\
 	al/textwrit.c	\
-	al/tuple.c
-
+	al/tuple.c	\
+	#
 
 datalibdir = $(datadir)/lib
 datalib_DATA = libaxllib.al
