@@ -58,7 +58,9 @@ library =	\
 	table	\
 	textread	\
 	textwrit	\
-	tuple
+	tuple		\
+	buffer		\
+	xassert
 
 noclass =	\
 	axl_float	\
