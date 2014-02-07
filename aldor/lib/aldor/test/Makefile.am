@@ -34,6 +34,7 @@ AXLTESTS =	\
 	hang	\
 	ret-exit \
 	tst_integer \
+	union-print \
 	#
 
 BROKEN =	\
