@@ -491,6 +491,7 @@ XFAIL_TESTS =	\
 	bug1020/bug1020	\
 	bug1023/bug1023	\
 	bug1054/bug1054	\
+	bug1071/bug1071 \
 	bug1087/bug1087	\
 	bug1113/bug1113	\
 	bug1114/bug1114	\
