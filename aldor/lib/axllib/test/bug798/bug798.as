@@ -34,5 +34,5 @@
 #include "axllib"
 
 import from Integer;
-
-2^(-3)
+import from GeneralAssert;
+assertFail((): () +-> 2^(-3));
