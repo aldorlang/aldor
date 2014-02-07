@@ -30,6 +30,7 @@ AXLTESTS =	\
 	type-constant	\
 	cond-defaults	\
 	cond	\
+	cond2
 	hang	\
 	ret-exit \
 	tst_integer \
