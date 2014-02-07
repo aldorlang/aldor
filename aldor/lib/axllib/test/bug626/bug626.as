@@ -22,8 +22,20 @@
 --@ Tested by: <Name of new or existing file in test directory>
 --@ Summary:   <Description of real problem and the fix>
 
+
+-- Check that division by integer zero throws an exception
+-- note there's no check on the nature of the exception.
 #pile
 #include "axllib"
 
 import from Integer
-print << "For large values of " << (1 quo 0) << " I get confused." << newline
+flg := true
+try
+  print << "For large values of " << (1 quo 0) << " I get confused." << newline
+  flg := false
+
+catch E in {
+
+}
+
+if not flg then never
