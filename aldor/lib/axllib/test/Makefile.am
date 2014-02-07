@@ -17,7 +17,6 @@ AXLTESTS =	\
 	bug715	\
 	bug778	\
 	bug798	\
-	bug813	\
 	bug818	\
 	bug821	\
 	bug822	\
