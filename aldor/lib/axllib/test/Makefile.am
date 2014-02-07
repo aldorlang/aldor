@@ -496,6 +496,8 @@ XFAIL_TESTS =	\
 	bug1113/bug1113	\
 	bug1114/bug1114	\
 	bug1176/bug1176	\
+	bug1220/bug1220 \
+	bug1252/bug1252 \
 	default8/default8	\
 	depend1/depend1	\
 	object1/object1	\
