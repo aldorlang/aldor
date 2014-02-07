@@ -135,9 +135,9 @@ TestTop(R:Ring): TopologicalMeasureSpace(R) with {Module(R); new:(R,R)->%;
   empty: % == per [0,0]
   empty?(o:%):Boolean == rep(o).low = rep(o).high
   
-  whole: % == error "not written yet"
+  whole: % == per [0, 0] -- error "not written yet"
   
-  intersection(o1:%,o2:%):% == error "not written yet"
+  intersection(o1:%,o2:%):% == per [0, 0] -- error "not written yet"
   
   =(o1:%,o2:%):Boolean == (empty?(o1) and empty?(o2)) or 
      ((rep(o1).low = rep(o2).low) and (rep(o1).high = rep(o2).high))
