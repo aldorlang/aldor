@@ -484,9 +484,11 @@ BROKEN =	\
 
 XFAIL_TESTS =	\
 	bug892/bug892	\
+	bug911/bug911	\
 	bug928/bug928	\
 	bug944/bug944	\
 	bug965/bug965	\
+	bug1020/bug1020	\
 	bug1023/bug1023	\
 	bug1054/bug1054	\
 	bug1087/bug1087	\
