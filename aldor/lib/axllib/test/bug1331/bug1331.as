@@ -105,14 +105,17 @@ FunChoice: with {
 
 main():() == {
         import from FunChoice, I;
-        funs:List String := ["identity", "double", "product", "foo"];
+	import from GeneralAssert;
+        funs:List String := ["identity", "double", "product"];
+        nofuns:List String := ["foo", "bar"];
 
         for fname in funs repeat {
                 fun := choose(fname);
-                print << fname << "(" << 12 << ") = " << fun(12) <<
-newline;
+                print << fname << "(" << 12 << ") = " << fun(12) << newline;
+        }
+        for fname in nofuns repeat {
+                assertFail((): () +-> choose(fname));
         }
 }
-
 
 main();
