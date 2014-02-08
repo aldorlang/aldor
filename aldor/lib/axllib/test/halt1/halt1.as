@@ -5,4 +5,5 @@
 #pile
 
 print<<"Goodbye world!"<<newline
-never
+import from GeneralAssert
+assertFail( (): () +-> never)
