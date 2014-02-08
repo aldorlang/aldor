@@ -52,8 +52,8 @@ main(n:SingleInteger, m:SingleInteger):SingleInteger ==
    42;
 }
 
-
+import from GeneralAssert;
 import from SingleInteger;
-main(21, 64);
+assertFail((): () +-> main(21, 64));
 
 
