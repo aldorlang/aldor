@@ -498,8 +498,11 @@ XFAIL_TESTS =	\
 	bug1176/bug1176	\
 	bug1220/bug1220 \
 	bug1252/bug1252 \
+	bug1290/bug1290 \
+	depend8/depend8 \
 	default8/default8	\
 	depend1/depend1	\
+	funlist1/funlist1	\
 	object1/object1	\
 	pack1/pack1	\
 	pack2/pack2	\
