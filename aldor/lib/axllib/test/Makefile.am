@@ -337,7 +337,6 @@ AXLTESTS =	\
 	libdup0	\
 	libdup1	\
 	limits	\
-	linear5	\
 	lit0	\
 	lit1	\
 	loop0	\
