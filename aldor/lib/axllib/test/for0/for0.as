@@ -114,7 +114,8 @@ f: FunctionMap(BI,SI) ==
   coerce( (x: BI): SI +-> 10 * x::SI )
 
 import from BI
-print<<"f(13) = "<<f(13::BI)<<newline
+import from GeneralAssert
+assertFail((): () +-> 13::BI)
 
 l: ArrayMap(BI,SI) == f :: BI -> SI :: ArrayMap(BI,SI)
 -- l: ArrayMap(BI,SI) == coerce(coerce(f)@(BI -> SI))@(ArrayMap(BI,SI))
