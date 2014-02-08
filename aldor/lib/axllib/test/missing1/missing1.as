@@ -50,8 +50,9 @@ ComplexDoubleFloat: Complex
 foo(): () ==
   import from ComplexDoubleFloat
   import from DoubleFloat
+  import from GeneralAssert
 
-  print << complex(1.0, 2.0)                     << newline
-  print << complex(2.0, 3.0) / complex(1.0, 4.0) << newline  -- Export not found
+  print << complex(1.0, 2.0) << newline
+  assertFail( (): () +-> print << complex(2.0, 3.0) / complex(1.0, 4.0))
 
 foo()
