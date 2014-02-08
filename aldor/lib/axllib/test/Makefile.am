@@ -312,7 +312,6 @@ AXLTESTS =	\
 	gfGener2	\
 	goto0	\
 	grok	\
-	halt0	\
 	halt1	\
 	has1	\
 	has2	\
