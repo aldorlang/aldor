@@ -7246,10 +7246,8 @@ gen0GlobalName(String libname, Syme syme)
 	if (genIsRuntime() && !symeIsImport(syme))
 		g = strCopy(symeString(syme));
 	else {
-		String l = strLower(strCopy(libname));
 		Hash   h = gen0SymeTypeCode(syme);
-		g = strPrintf("%s_%s_%09d", l, symeString(syme), h);
-		strFree(l);
+		g = strPrintf("%s_%s_%09d", libname, symeString(syme), h);
 	}
 	symeSetExtension(syme, ext0);
 
