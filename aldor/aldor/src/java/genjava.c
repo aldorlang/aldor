@@ -69,6 +69,7 @@ local JavaCode gj0RecSet(JavaCode lhs, JavaCode rhs, Foam ddecl, int idx);
 
 local JavaCode gj0SInt(Foam foam);
 local JavaCode gj0HInt(Foam foam);
+local JavaCode gj0BInt(Foam foam);
 local JavaCode gj0SFlo(Foam foam);
 local JavaCode gj0DFlo(Foam foam);
 local JavaCode gj0Byte(Foam foam);
@@ -173,9 +174,12 @@ enum gjId {
 
 	GJ_Object,
 	GJ_String,
+	GJ_BigInteger,
 	
 	GJ_ContextVar,
 	GJ_Main,
+
+	GJ_LIMIT
 };
 
 typedef Enum(gjId) GjId;
@@ -371,6 +375,8 @@ gj0Gen(Foam foam)
 		return gj0SFlo(foam);
 	case FOAM_DFlo:
 		return gj0DFlo(foam);
+	case FOAM_BInt:
+		return gj0BInt(foam);
 	case FOAM_Byte:
 		return gj0Byte(foam);
 	case FOAM_Char:
@@ -2120,6 +2126,31 @@ gj0SInt(Foam foam)
 }
 
 local JavaCode
+gj0BInt(Foam foam)
+{
+	BInt val = foam->foamBInt.BIntData;
+	if (bintIsZero(val))
+		return jcMemRef(gj0Id(GJ_BigInteger),
+				jcId(strCopy("ZERO")));
+	if (bintLength(val) < 30 && bintIsSmall(val)) {
+		long smallval = bintSmall(val);
+		if (smallval == 1) {
+			return jcMemRef(gj0Id(GJ_BigInteger),
+					jcId(strCopy("ONE")));
+		}
+		else {
+			return jcApplyMethodV(gj0Id(GJ_BigInteger),
+					      jcId(strCopy("valueOf")),
+					      1, jcLiteralInteger(smallval));
+		}
+	}
+	else {
+		return jcConstructV(gj0Id(GJ_BigInteger),
+				    1, jcLiteralString(bintToString(val)));
+	}
+}
+
+local JavaCode
 gj0Byte(Foam foam)
 {
 	return jcCast(gj0TypeFrFmt(FOAM_Byte, 0),
@@ -3273,17 +3304,22 @@ struct gjIdInfo gjIdInfo[] = {
 
 	{GJ_Object,     0, "Object"},
 	{GJ_String,     0, "String"},
+	{GJ_BigInteger, "java.math", "BigInteger"},
 
 	{GJ_ContextVar, 0, "ctxt"},
 	{GJ_Main,       0, "main"},
+	{ -1, 0, 0 }
 };
 
 
 local JavaCode
 gj0Id(GjId id) 
 {
+	assert(gjIdInfo[GJ_LIMIT].id == -1);
+
 	struct gjIdInfo *info = &gjIdInfo[id];
 	assert(id == info->id);
+
 	if (info->pkg != 0)
 		return jcImportedId(strCopy(info->pkg),
 				    strCopy(info->name));
