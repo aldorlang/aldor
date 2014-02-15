@@ -60,7 +60,7 @@ library =	\
 	textwrit	\
 	tuple		\
 	buffer		\
-	assert
+	xassert
 
 noclass =	\
 	axl_float	\
