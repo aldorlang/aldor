@@ -916,6 +916,11 @@ foamAuditExpr(Foam foam)
 	switch (foamTag(foam)) {
 	  case FOAM_Set:
 	  case FOAM_Def:
+		  if (foamTag(foam->foamSet.lhs) == FOAM_Values
+		      && foamArgc(foam->foamSet.lhs) == 0)
+			  foamAuditBadRef(foam);
+		  break;
+	  case FOAM_If:
 		  checkTypes = true;
 		  break;
 	  case FOAM_Loc:
