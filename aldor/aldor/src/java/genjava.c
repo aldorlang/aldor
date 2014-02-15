@@ -1455,7 +1455,7 @@ gj0Seq(Foam seq)
 	GjSeqStore seqs = gj0SeqStoreNew();
 	int i;
 	
-	for (i=0; i<foamArgc(seq); i++) {
+	for (i=0; i != -1; i = foamSeqNextReachable(seq, i)) {
 		gj0SeqGen(seqs, seq->foamSeq.argv[i]);
 	}
 
