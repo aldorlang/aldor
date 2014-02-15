@@ -836,7 +836,7 @@ ALDOR_F_BugNoBoolean	"Missing vital semantic information: please add `import fro
 
 ALDOR_F_BugExportSymeNotInit "Compiler bug: I am trying to create a slot for the export `%s:%s'. However, gen0SymeSetInit() has not been used to initialise it so I can not continue (sorry)."
 
-
+ALDOR_F_BadJavaFileName "Cannot generate java for %s; name reserved by java"
 
 ALDOR_I_PreRelease        "This is a pre-release of %s. `aldor -h info' for \
 more details."

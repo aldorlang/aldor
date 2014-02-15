@@ -8,6 +8,7 @@
 #include "syme.h"
 #include "table.h"
 #include "sexpr.h"
+#include "comsgdb.h"
 
 /*
  * Implement as the following...
@@ -248,7 +249,9 @@ genJavaUnit(Foam foam, String name)
 	gjInit(foam, name);
 
 	className = gj0ClassName(foam, name);
-
+	if (!jcIsLegalClassName(className)) {
+		comsgFatal(NULL, ALDOR_F_BadJavaFileName, className);
+	}
 	code = gj0DDef(foam->foamUnit.defs);
 	mainImpl = gj0ClassHeader(name);
 	comment = gj0ClassDocumentation(foam, name);
