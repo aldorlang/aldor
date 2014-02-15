@@ -17,7 +17,7 @@ IntegerCRTLinearAlgebra(Z:IntegerCategory, M:MatrixCategory Z): with {
       determinant: (M,Z,Z) -> Partial Z;
       kernel: (M, I) -> M;
       hadamard: M -> Z;
-      modp: (GMPInteger,I) -> I;
+--      modp: (GMPInteger,I) -> I;
 } == add {
       determinant(m:M, fd:Z): Partial Z == determinant(m,fd,2*hadamard m);
 
@@ -75,42 +75,42 @@ IntegerCRTLinearAlgebra(Z:IntegerCategory, M:MatrixCategory Z): with {
         failed;
       }
 
-	modp(a:GMPInteger,p:I):I =={
-	   macro Zg == GMPInteger;
-	   import from Zg,I, Generator I;
-	   ba:Zg := 2^(bytes*8);
-
-	   --if p > ba then
-	   --k:I :=1;
-	   k:I := machine(ba quo (p::Zg-1)^(2@I));
-
-           i:I :=1;
-	   b:I :=0;
-	   ap:I :=0;
-	   (n,r):=divide(length(a),(bytes*8));
-	   if r ~= 0 then n:= next n;
-	   j:I :=1;
-	   mp:= max mod p;
-	   mul:= 2*mp+ 2::I mod p;
-	   for g in limbs(a) repeat {
-		if g < 0 then 
-			b:= b + (g mod p + mul) * (ba^(j-1) mod p);
-		else b:= b+(g mod p)  * (ba^(j-1) mod p) ;
-
-		if j=n then ap:=ap + (b mod p);
-		else {
-		  if i=k then {
-		    ap:= ap + (b mod p);
-		    b:=0;
-		    i:=1;
-		  }
-		  else i:= next i;
-		  j:= next j;
-		}
-	   }
-
-	   ap mod p;
-	}
+--	modp(a:GMPInteger,p:I):I =={
+--	   macro Zg == GMPInteger;
+--	   import from Zg,I, Generator I;
+--	   ba:Zg := 2^(bytes*8);
+--
+--	   --if p > ba then
+--	   --k:I :=1;
+--	   k:I := machine(ba quo (p::Zg-1)^(2@I));
+--
+--           i:I :=1;
+--	   b:I :=0;
+--	   ap:I :=0;
+--	   (n,r):=divide(length(a),(bytes*8));
+--	   if r ~= 0 then n:= next n;
+--	   j:I :=1;
+--	   mp:= max mod p;
+--	   mul:= 2*mp+ 2::I mod p;
+--	   for g in limbs(a) repeat {
+--		if g < 0 then 
+--			b:= b + (g mod p + mul) * (ba^(j-1) mod p);
+--		else b:= b+(g mod p)  * (ba^(j-1) mod p) ;
+--
+--		if j=n then ap:=ap + (b mod p);
+--		else {
+--		  if i=k then {
+--		    ap:= ap + (b mod p);
+--		    b:=0;
+--		    i:=1;
+--		  }
+--		  else i:= next i;
+--		  j:= next j;
+--		}
+--	   }
+--
+--	   ap mod p;
+--	}
 
 	-- r = rank mat
       kernel(mat:M, r:I): M == {
