@@ -3784,8 +3784,8 @@ struct gjBVal_info gjBValInfoTable[] = {
 	{FOAM_BVal_WordPlusStep,    GJ_NotImpl},
 	{FOAM_BVal_WordTimesStep,   GJ_NotImpl},
 
-	{FOAM_BVal_BInt0,        GJ_Const, 0,   "BigDecimal",   "ZERO"},
-	{FOAM_BVal_BInt1,        GJ_Const, 0,   "BigDecimal",   "ONE"},
+	{FOAM_BVal_BInt0,        GJ_Const, 0,   "BigInteger",   "ZERO"},
+	{FOAM_BVal_BInt1,        GJ_Const, 0,   "BigInteger",   "ONE"},
 	{FOAM_BVal_BIntIsZero,   GJ_Apply, 0,   "foamj.Math",   "isZero"},
 	{FOAM_BVal_BIntIsNeg,    GJ_Apply, 0,   "foamj.Math",   "isNeg"},
 	{FOAM_BVal_BIntIsPos,    GJ_Apply, 0,   "foamj.Math",   "isPos"},
