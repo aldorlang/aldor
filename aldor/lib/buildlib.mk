@@ -190,7 +190,7 @@ all: $(addsuffix .c,$(library))
 endif
 
 ifneq ($(javalibrary),)
-$(addsuffix .java, $(javalibrary)): %.java: %.fm
+$(addsuffix .java, $(javalibrary)): %.java: %.ao
 	$(AM_V_FOAMJ)$(DBG)	\
 	$(aldorexedir)/aldor $(aldor_common_args) -Fjava $*.ao
 
