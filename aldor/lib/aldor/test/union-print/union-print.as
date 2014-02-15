@@ -4,4 +4,4 @@
 U ==> Union(a: Integer, b: String);
 
 u: U := [12];
-print << u << newline;
+stdout << u << newline;
