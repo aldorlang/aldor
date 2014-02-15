@@ -7470,7 +7470,10 @@ local Foam
 gen0UnaryToTuple(Foam val)
 {
 	Foam	vars[2], tupl, elts;
-	
+	FoamTag type = gen0FoamType(val);
+	if (type != FOAM_Word)
+		val = foamNewCast(FOAM_Word, val);
+
 	gen0MakeEmptyTuple(foamNewSInt(1), vars, NULL);
 	tupl = vars[0];
 	elts = vars[1];
