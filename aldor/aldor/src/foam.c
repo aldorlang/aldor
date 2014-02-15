@@ -3278,7 +3278,7 @@ foamTypeIsMulti(Foam fmts, FoamTag type, AInt fmt)
 		return false;
 	if (fmt == 0)
 		return false;
-	decl = fmts->foamDDecl.argv[fmt];
+	decl = fmts->foamDFmt.argv[fmt];
 	return foamDDeclArgc(decl) > 0;
 }
 
