@@ -2935,6 +2935,8 @@ gj0CastFmt(Foam foam, AInt cfmt)
 	}
 	else if (iType == type)
 		return jc;
+	else if (iType == FOAM_Nil)
+		return jcNull();
 	else  {
 		return gj0Default(foam,
 			   strPrintf("No cast: %s, %s", foamStr(type), foamStr(iType)));
