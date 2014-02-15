@@ -1,6 +1,6 @@
 # Check the makefile
 .PRECIOUS: Makefile
-Makefile: $(srcdir)/Makefile.am $(srcdir)/Makefile.in $(top_builddir)/config.status
+Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
 	  *config.status*) \
 	    cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh;; \
@@ -50,8 +50,6 @@ $(srcdir)/Tests.am: $(srcdir)/Makefile.am $(abs_top_srcdir)/lib/testprog.am
 	  echo "$${ctest}_$${ctest}_SOURCES = $$test/$${test}-aldormain.c $$test/$${test}.c" >> $@;	\
 	  echo "CLEANFILES += $$test/$${test}-aldormain.c $$test/$${test}.c $$test/$${test}.ao" >> $@;	\
 	done
-
-Makefile: $(srcdir)/Tests.am
 
 AM_CPPFLAGS = -I$(aldorsrcdir)
 AM_LDFLAGS = -L$(foamlibdir) $(addprefix -L,$(librarylibdirs)) $(addprefix -l,$(libraries)) -lfoam -lm
