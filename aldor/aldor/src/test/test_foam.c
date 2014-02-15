@@ -10,6 +10,7 @@ local void testDDecl();
 local void testConstructors();
 local void testTests();
 local void testHash();
+local void testIter();
 
 void
 foamTest()
@@ -21,6 +22,7 @@ foamTest()
 	TEST(testConstructors);
 	TEST(testTests);
 	TEST(testHash);
+	TEST(testIter);
 }
 
 local void
@@ -82,6 +84,46 @@ testTests()
 	testTrue("", foamIsMultiAssign(foam));
 }
 
+
+local void
+testIter()
+{
+	Foam seq;
+	int i;
+	seq = foamNewSeq(NULL);
+	i = -1;
+	i = foamSeqNextReachable(seq, i);
+	testIntEqual("1", -1, i);
+
+	seq = foamNewSeq(foamNewNOp(),
+			 foamNewGoto(10),
+			 foamNewLabel(10),
+			 NULL);
+	i = -1;
+	i = foamSeqNextReachable(seq, i);
+	testIntEqual("", 0, i);
+	i = foamSeqNextReachable(seq, i);
+	testIntEqual("", 1, i);
+	i = foamSeqNextReachable(seq, i);
+	testIntEqual("", 2, i);
+	i = foamSeqNextReachable(seq, i);
+	testIntEqual("", -1, i);
+
+	seq = foamNewSeq(foamNewNOp(),
+			 foamNewGoto(10),
+			 foamNewNOp(),
+			 foamNewLabel(10),
+			 NULL);
+	i = -1;
+	i = foamSeqNextReachable(seq, i);
+	testIntEqual("", 0, i);
+	i = foamSeqNextReachable(seq, i);
+	testIntEqual("", 1, i);
+	i = foamSeqNextReachable(seq, i);
+	testIntEqual("", 3, i);
+	i = foamSeqNextReachable(seq, i);
+	testIntEqual("", -1, i);
+}
 
 
 local AInt

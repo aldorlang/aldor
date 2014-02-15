@@ -1272,13 +1272,16 @@ union foam {
  *
  ******************************************************************************/
 
+#define FOAMP_SeqExit (1<<0)
+
+
 struct foam_info {
 	FoamTag                 tag;
 	SExpr                   sxsym;
 	String                  str;            
 	short                   argc;      /* -1 => N-ary */
 	String                  argf;
-
+	int			properties;
 };
 
 #define FOAM_BVAL_MAX_ARGC    5
@@ -1572,6 +1575,9 @@ extern Bool foamProgHasMultiAssign(Foam prog);
 extern Bool foamIsMultiAssign(Foam prog);
 
 extern Bool foamDeclEqual(Foam, Foam);
+
+extern int foamSeqNextReachable(Foam seq, int index);
+
 /*
  * This macro can be used to strip multiple casts from an expression. Be
  * careful where you use it otherwise you may introduce bad foam sharing.
