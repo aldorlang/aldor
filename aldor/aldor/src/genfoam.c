@@ -6207,10 +6207,14 @@ gen0ForIter(AbSyn absyn, FoamList *forl, FoamList *itl)
                 gen0MultiAssign(FOAM_Set, absyn->abFor.lhs, call);
         }
         else {
+		FoamTag type;
                 id = abDefineeId(absyn);
                 call = foamNewEmpty(FOAM_CCall, 2);
-                call->foamCCall.type = gen0Type(gen0AbContextType(id), NULL);
+		type = gen0Type(gen0AbContextType(id), NULL);
+                call->foamCCall.type = FOAM_Word;
                 call->foamCCall.op   = foamCopy(valueFun);
+		if (type != FOAM_Word)
+			call = foamNewCast(type, call);
                 gen0AddStmt(foamNewSet(genFoamVal(id), call), absyn);
         }
 
