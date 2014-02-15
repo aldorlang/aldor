@@ -56,6 +56,7 @@ GC_XFAIL_TESTS=issue2/issue2
 endif
 
 XFAIL_TESTS =		\
+	union-print/union-print	\
 	bugExtend1/bugExtend1	\
 	bugFree/bugFree	\
 	bugreport_5/bugreport_5	\
