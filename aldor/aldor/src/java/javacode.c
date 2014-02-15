@@ -69,6 +69,125 @@ enum jc_clss_enum {
 	JCO_CLSSS_END
 };
 
+enum JavaKeywordTag {
+JK_Abstract,
+JK_Assert,
+JK_Boolean,
+JK_Break,
+JK_Byte,
+JK_Case,
+JK_Catch,
+JK_Char,
+JK_Class,
+JK_Const,
+JK_Continue,
+JK_Default,
+JK_Do,
+JK_Double,
+JK_Else,
+JK_Enum,
+JK_Extends,
+JK_Final,
+JK_Finally,
+JK_Float,
+JK_For,
+JK_Goto,
+JK_If,
+JK_Implements,
+JK_Import,
+JK_Instanceof,
+JK_Int,
+JK_Interface,
+JK_Long,
+JK_Native,
+JK_New,
+JK_Package,
+JK_Private,
+JK_Protected,
+JK_Public,
+JK_Return,
+JK_Short,
+JK_Static,
+JK_Strictfp,
+JK_Super,
+JK_Switch,
+JK_Synchronized,
+JK_This,
+JK_Throw,
+JK_Throws,
+JK_Transient,
+JK_Try,
+JK_Void,
+JK_Volatile,
+JK_While,
+JK_False,
+JK_Null,
+JK_True,
+JK_END
+};
+
+
+typedef struct javaKeyword {
+	int id;
+	String text;
+} *JavaKeyword;
+
+struct javaKeyword jkKeywords[] = {
+	JK_Abstract,      "abstract",
+	JK_Assert,	  "assert",
+	JK_Boolean,	  "boolean",
+	JK_Break,	  "break",
+	JK_Byte,	  "byte",
+	JK_Case,	  "case",
+	JK_Catch,	  "catch",
+	JK_Char,	  "char",
+	JK_Class,	  "class",
+	JK_Const,	  "const",
+	JK_Continue,	  "continue",
+	JK_Default,	  "default",
+	JK_Do,		  "do",
+	JK_Double,	  "double",
+	JK_Else,	  "else",
+	JK_Enum,	  "enum",
+	JK_Extends,	  "extends",
+	JK_Final,	  "final",
+	JK_Finally,	  "finally",
+	JK_Float,	  "float",
+	JK_For,		  "for",
+	JK_Goto,	  "goto",
+	JK_If,		  "if",
+	JK_Implements,	  "implements",
+	JK_Import,	  "import",
+	JK_Instanceof,	  "instanceof",
+	JK_Int,		  "int",
+	JK_Interface,	  "interface",
+	JK_Long,	  "long",
+	JK_Native,	  "native",
+	JK_New,		  "new",
+	JK_Package,	  "package",
+	JK_Private,	  "private",
+	JK_Protected,	  "protected",
+	JK_Public,	  "public",
+	JK_Return,	  "return",
+	JK_Short,	  "short",
+	JK_Static,	  "static",
+	JK_Strictfp,	  "strictfp",
+	JK_Super,	  "super",
+	JK_Switch,	  "switch",
+	JK_Synchronized,  "synchronized",
+	JK_This,	  "this",
+	JK_Throw,	  "throw",
+	JK_Throws,	  "throws",
+	JK_Transient,	  "transient",
+	JK_Try,		  "try",
+	JK_Void,	  "void",
+	JK_Volatile,	  "volatile",
+	JK_While,	  "while",
+	JK_False,	  "false",
+	JK_Null,	  "null",
+	JK_True,	  "true",
+};
+
 typedef Enum(jc_clss_enum) JcClassId;
 			   
 local JWriteFn jcApplyPrint;
@@ -201,9 +320,20 @@ static struct jclss jcClss[] = {
 	{ JCO_CLSS_ShiftUp, jcBinOpPrint,  jcNodeSExpr, "shiftup", "<<",    10,JCO_LR },
 	{ JCO_CLSS_ShiftDn, jcBinOpPrint,  jcNodeSExpr, "shiftdn", ">>",    10,JCO_LR },
 
-
 	{ JCO_CLSS_Conditional,jcCondPrint,jcNodeSExpr, "cond",   0,      2, JCO_RL },
 };
+
+void
+jcInit()
+{
+	int i;
+	for (i=0; i<JK_END; i++) {
+		if (jkKeywords[i].id != i)
+			bug("Java is a mess");
+	}
+}
+
+
 
 local JavaCodeClass jc0ClassObj(JcClassId);
 
@@ -1456,4 +1586,41 @@ jc0EscapeString(String s)
 	}
 
 	return bufLiberate(buf);
+}
+
+/*
+ * :: Names and so on
+ */
+
+local Bool jcIsId(String word);
+
+Bool
+jcIsLegalClassName(String word)
+{
+	int i;
+	if (!jcIsId(word))
+		return false;
+
+	for (i=0; i<JK_END; i++) {
+		if (strcmp(word, jkKeywords[i].text) == 0)
+			return false;
+	}
+	return true;
+}
+
+local Bool
+jcIsId(String word)
+{
+	char *p = word;
+	if (word[0] == '\0')
+		return false;
+	if (!(word[0] == '_' || isalpha(word[0])))
+		return false;
+	while (*p != '\0') {
+		if (!(*p == '_' || isalnum(*p)))
+			return false;
+		p++;
+	}
+
+	return true;
 }
