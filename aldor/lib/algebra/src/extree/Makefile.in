@@ -15,6 +15,7 @@ abs_top_srcdir	:= @abs_top_srcdir@
 subdir		:= $(subst $(abs_top_builddir)/,,$(abs_builddir))
 
 # Build starts here
-library = alg_leaf alg_op sit_extree sit_optools 
+library := sit_extree sit_optools
+otherfiles := alg_leaf alg_op
 
 include $(abs_top_srcdir)/lib/algebra/src/common.mk
