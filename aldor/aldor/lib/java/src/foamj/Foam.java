@@ -1,6 +1,7 @@
 package foamj;
 
 import java.math.BigInteger;
+import java.lang.Math;
 
 public class Foam {
     public final static int RTE = 1;
@@ -282,9 +283,6 @@ public class Foam {
 	}
 	public static BigInteger arrToBInt(Object o) { throw new RuntimeException(); }
 
-    public static Double pow(double a, double b) {
-	return java.lang.Math.pow(a, b);
-    }
 
     public static Word powf(Word w1, Word w2) {
 	throw new RuntimeException();
@@ -357,4 +355,56 @@ public class Foam {
     public static Word unlink(Word w) {
 	throw new RuntimeException();
     }
+
+    public static void system(Object obj) {
+	throw new RuntimeException();
+    }
+
+
+    public static double sqrt(double d) {
+	return Math.sqrt(d);
+    }
+    public static double pow(double a, double b) {
+	return Math.pow(a, b);
+    }
+    public static double log(double d) {
+	return Math.log(d);
+    }
+    public static double exp(double d) {
+	return Math.exp(d);
+    }
+
+    public static double sin(double d) {
+	return Math.sin(d);
+    }
+    public static double cos(double d) {
+	return Math.cos(d);
+    }
+    public static double tan(double d) {
+	return Math.tan(d);
+    }
+
+    public static double sinh(double d) {
+	return Math.sinh(d);
+    }
+    public static double cosh(double d) {
+	return Math.cosh(d);
+    }
+    public static double tanh(double d) {
+	return Math.tanh(d);
+    }
+
+    public static double asin(double d) {
+	return Math.asin(d);
+    }
+    public static double acos(double d) {
+	return Math.acos(d);
+    }
+    public static double atan(double d) {
+	return Math.atan(d);
+    }
+    public static double atan2(double a, double b) {
+    return Math.atan2(a, b);
+    }
+
 }
