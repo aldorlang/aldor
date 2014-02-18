@@ -153,20 +153,20 @@ double--precision machine floats.}
 		ArrSet(a pretend Arr, n::SInt, c::DFlo);
 
 	-- TEMPORARY: FIX FOR 64-BIT dissemble-bug in Machine (1.1.13)
-	local b64?:Boolean	== { import from Z; bytes = 8 }
-	local maskneg:Z		== shift(-1, 32);
-	local maskpos:Z		== 2^32 - 1;
-	local patch(x:SInt):SInt == {
-		b64? => {
-			n := x::Z;
-			bit?(n, 31) => (n \/ maskneg)::SInt;
-			(n /\ maskpos)::SInt;
-		}
-		x;
-	}
+--	local b64?:Boolean	== { import from Z; bytes = 8 }
+--	local maskneg:Z		== shift(-1, 32);
+--	local maskpos:Z		== 2^32 - 1;
+--	local patch(x:SInt):SInt == {
+--		b64? => {
+--			n := x::Z;
+--			bit?(n, 31) => (n \/ maskneg)::SInt;
+--			(n /\ maskpos)::SInt;
+--		}
+--		x;
+--	}
 	local mydissemble(x:DFlo):(Bool, SInt, Word, Word) == {
 		(s, e, m1, m2) := dissemble x;
-		(patch(s pretend SInt) pretend Bool, patch e, m1, m2);
+		(s, e, m1, m2)
 	}
 
 	(p:BinaryWriter) << (x:%):BinaryWriter == {
