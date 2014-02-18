@@ -20,4 +20,6 @@ library = ald_trace eio_rsto rtexns sal_agat sal_cmdline sal_file	\
 
 XFAIL=sal_cmdline
 
+@BUILD_JAVA_TRUE@javalibrary := $(library)
+
 include $(abs_top_srcdir)/lib/aldor/src/common.mk
