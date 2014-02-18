@@ -17,4 +17,6 @@ subdir		:= $(subst $(abs_top_builddir)/,,$(abs_builddir))
 # Build starts here
 library = sal_lang
 
+@BUILD_JAVA_TRUE@javalibrary := $(library)
+
 include $(abs_top_srcdir)/lib/aldor/src/common.mk

@@ -21,4 +21,6 @@ library = ald_symbol ald_symtab sal_array sal_barray sal_bdata		\
 	  sal_set sal_slist sal_sortas sal_sset sal_stream sal_string	\
 	  sal_table sal_fold ald_flags
 
+@BUILD_JAVA_TRUE@javalibrary := $(library)
+
 include $(abs_top_srcdir)/lib/aldor/src/common.mk
