@@ -12,6 +12,7 @@ local void testTests();
 local void testHash();
 local void testIter();
 local void testSIntReduce();
+local void testFoamBuffer();
 
 void
 foamTest()
@@ -25,6 +26,7 @@ foamTest()
 	TEST(testHash);
 	TEST(testIter);
 	TEST(testSIntReduce);
+	TEST(testFoamBuffer);
 }
 
 local void
@@ -232,4 +234,27 @@ testSIntReduce()
 
 	/* Really need a working foam interpreter to test this properly */
 	/* .. probably easier to do as library tests */
+}
+
+local Buffer tFoamToBuffer(Foam foam);
+local void
+testFoamBuffer()
+{
+	Foam foam1, foam2;
+	Buffer buf1, buf2;
+
+	foam1 = foamNewSInt(23);
+	foam2 = foamNewSInt(24);
+
+	testTrue("t1", foamVerifyBuffer(tFoamToBuffer(foam1), foam1));
+	testFalse("t2", foamVerifyBuffer(tFoamToBuffer(foam2), foam1));
+}
+
+local Buffer
+tFoamToBuffer(Foam foam)
+{
+	Buffer buf = bufNew();
+	foamToBuffer(buf, foam);
+
+	return buf;
 }

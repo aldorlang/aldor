@@ -2941,6 +2941,7 @@ libPutFoam(Lib lib, Foam foam)
 
 	if (buf) {
 		foamToBuffer(buf, foam);
+		assert(foamVerifyBuffer(buf, foam));
 		libPutSection(lib, LIB_Foam, buf);
 	}
 	return foam;
