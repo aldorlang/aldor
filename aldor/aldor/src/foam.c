@@ -489,8 +489,52 @@ foamNaryStart(FoamTag tag)
 	return n-1;
 }
 
+/*
+ * :: Foam Equality
+ *
+ * This is complicated by the way SInt is dealt with; 64 bit foam expressions
+ * are rewritten as 32 bit expressions.
+ */
+local Bool foamEqual1(int mods, Foam f1, Foam f2);
+
+#define FE_ModSIntReduce  (1<<0)
+local Bool foamEqual0(int mods, Foam f1, Foam f2);
+
+Bool
+foamEqualFrBuf(Foam f1, Foam f2)
+{
+	return foamEqual0(FE_ModSIntReduce, f1, f2);
+}
+
 Bool
 foamEqual(Foam f1, Foam f2)
+{
+	return foamEqual0(0, f1, f2);
+}
+
+local Bool
+foamEqual0(int mods, Foam f1, Foam f2)
+{
+	Foam of1 = f1;
+	Foam of2 = f2;
+	Bool ret;
+	if (mods & FE_ModSIntReduce) {
+		if (foamTag(f1) == FOAM_SInt)
+			f1 = foamSIntReduce(f1);
+		if (foamTag(f2) == FOAM_SInt)
+			f2 = foamSIntReduce(f2);
+	}
+
+	ret = foamEqual1(mods, f1, f2);
+	if (of1 != f1)
+		foamFree(f1);
+	if (of2 != f2)
+		foamFree(f2);
+	return ret;
+}
+
+local Bool
+foamEqual1(int mods, Foam f1, Foam f2)
 {
 	int	fi, si;
 	String	argf;
@@ -504,8 +548,8 @@ foamEqual(Foam f1, Foam f2)
 		if (argf[fi] == '*') fi--;
 		switch (argf[fi]) {
 		  case 'C':
-			if (!foamEqual(foamArgv(f1)[si].code,
-				       foamArgv(f2)[si].code))
+			  if (!foamEqual0(mods, foamArgv(f1)[si].code,
+					  foamArgv(f2)[si].code))
 				return false;
 			break;
 		  case 't':
@@ -519,8 +563,11 @@ foamEqual(Foam f1, Foam f2)
 		  case 'L':
 		  case 'X':
 		  case 'F':
-		  case 'f':
 			if (foamArgv(f1)[si].data != foamArgv(f2)[si].data)
+				return false;
+			break;
+		  case 'f':
+			if (foamArgv(f1)[si].sfloat != foamArgv(f2)[si].sfloat)
 				return false;
 			break;
 		  case 's':
