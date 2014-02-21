@@ -2013,7 +2013,7 @@ foamFrBuffer(Buffer buf)
 			break;
 		case 'b':
 			n = bufGetByte(buf);
-			foamArgv(foam)[si].data = n;
+			foamArgv(foam)[si].data = (char)n;
 			break;
 		case 'h':
 			n = bufGetHInt(buf);
@@ -2060,19 +2060,20 @@ foamFrBuffer(Buffer buf)
 			break;
 		case 'n': {
 			BInt b;
+			U16 *data;
 			neg = bufGetByte(buf);
 			FOAM_GET_INT(format, buf, slen);
-			bint = bintAllocPlaces(slen);
-			bint->isNeg = neg;
+			data = (U16*) stoAlloc(OB_Other, slen*sizeof(U16));
 			for (bi = 0; bi < slen; bi++) {
 				n = bufGetHInt(buf);
-				bint->placev[bi] = n;
+				data[bi] = n;
 			}
-			b = xintImmedIfCan(bint);
-			if (b != bint) bintFree(bint);
+			b = bintFrPlacevS(neg, slen, data);
+			stoFree(data);
 			foamArgv(foam)[si].bint = b;
 			break;
 		}
+
 		case 'C':
 			foamArgv(foam)[si].code = foamFrBuffer(buf);
 			break;
