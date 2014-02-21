@@ -1519,6 +1519,7 @@ extern Foam              foamFrString   (String);
 
 extern int		 foamToBuffer   (Buffer, Foam);
 extern Foam		 foamFrBuffer   (Buffer);
+extern Bool              foamVerifyBuffer(Buffer, Foam);
 
 extern void		 foamPosToBuffer   (Buffer, Foam);
 extern void		 foamPosFrBuffer   (Buffer, Foam);
