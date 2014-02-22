@@ -2323,6 +2323,7 @@ foamToBuffer(Buffer buf, Foam foam)
 			bufPutHInt(buf, foamArgv(foam)[si].data);
 			break;
 		case 'w':
+			assert(bufIsSInt(foamArgv(foam)[si].data));
 			n = foamArgv(foam)[si].data;
 			if (isArr) {
 				if (foam->foamArr.baseType == FOAM_Char)
