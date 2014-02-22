@@ -2220,6 +2220,8 @@ foamPosFrBuffer(Buffer buf, Foam foam)
 Foam
 foamSIntReduce(Foam foam)
 {
+	if (sizeof(foam->foamSInt.SIntData) <= SINT_BYTES)
+		return foam;
 	/*
 	 * Convert arbitrarily large integer literals into an equivalent
 	 * expression involving only unsigned 31 bit arithmetic. This is
