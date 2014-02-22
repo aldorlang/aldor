@@ -2164,7 +2164,8 @@ foamSIntReduce(Foam foam)
 	 * flat FOAM buffers/files and be retrieved correctly.
 	 */
 	int	negative = (foam->foamSInt.SIntData < 0);
-	long	bignum = ((-1*negative)*foam->foamSInt.SIntData) >> 31;
+	long	bignum = (negative ? foam->foamSInt.SIntData < -(1L<<31)
+			  :foam->foamSInt.SIntData > (1L<<31));
 	assert(foamTag(foam) == FOAM_SInt);
 	if (bignum) {
 		/* Must split into unsigned 31-bit chunks */
@@ -2173,7 +2174,7 @@ foamSIntReduce(Foam foam)
 		long	*parts = (long *)stoAlloc(OB_Other, hunks*sizeof(long));
 
 		/* Kill the sign */
-		long	number = (-1*negative)*foam->foamSInt.SIntData;
+		long	number = negative ? -foam->foamSInt.SIntData : foam->foamSInt.SIntData;
 
 		/* Split ... */
 		for (i = 0; i < hunks; i++)
