@@ -311,6 +311,14 @@ bufPutSInt(Buffer b, ULong i)
 	bufAdd1(b, BYTE3(i));
 }
 
+Bool
+bufIsSInt(long i)
+{
+	if (sizeof(i) == SINT_BYTES)
+		return true;
+	return i < (1L<<31) && i > -(1L<<31);
+}
+
 UByte
 bufGetByte(Buffer b)
 {

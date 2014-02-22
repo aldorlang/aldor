@@ -99,6 +99,7 @@ extern void	bufGetChars	(Buffer buf, char *s, Length cc);
 extern void	bufPutByte	(Buffer b, UByte c);
 extern void	bufPutHInt	(Buffer b, UShort c);
 extern void	bufPutSInt	(Buffer b, ULong c);
+extern Bool     bufIsSInt	(long i);
 
 extern UByte	bufGetByte	(Buffer b);
 extern UShort	bufGetHInt	(Buffer b);

@@ -526,6 +526,7 @@ struct foamGen {
 		AInt    data;
 		String  str;
 		BInt	bint;
+		SFloat  sfloat;
 	} argv[NARY];
 };
 
@@ -575,6 +576,7 @@ struct foamSInt {
 	struct foamHdr          hdr;
 	AInt                    SIntData;
 };
+extern Foam foamSIntReduce(Foam foam);
 
 # define foamNewBInt(b)		foamNew(FOAM_BInt, 1, (b))
 
@@ -1485,6 +1487,7 @@ extern Length		 foamNodeCount	(Foam);
 extern int		 foamNaryStart  (FoamTag);
 
 extern Bool		 foamEqual	(Foam, Foam);
+extern Bool		 foamEqualFrBuf	(Foam, Foam);
 extern Hash		 foamHash	(Foam);
 
 extern void              foamFreeNode   (Foam);
@@ -1517,6 +1520,7 @@ extern Foam              foamFrString   (String);
 
 extern int		 foamToBuffer   (Buffer, Foam);
 extern Foam		 foamFrBuffer   (Buffer);
+extern Bool              foamVerifyBuffer(Buffer, Foam);
 
 extern void		 foamPosToBuffer   (Buffer, Foam);
 extern void		 foamPosFrBuffer   (Buffer, Foam);

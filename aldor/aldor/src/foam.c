@@ -489,8 +489,52 @@ foamNaryStart(FoamTag tag)
 	return n-1;
 }
 
+/*
+ * :: Foam Equality
+ *
+ * This is complicated by the way SInt is dealt with; 64 bit foam expressions
+ * are rewritten as 32 bit expressions.
+ */
+local Bool foamEqual1(int mods, Foam f1, Foam f2);
+
+#define FE_ModSIntReduce  (1<<0)
+local Bool foamEqual0(int mods, Foam f1, Foam f2);
+
+Bool
+foamEqualFrBuf(Foam f1, Foam f2)
+{
+	return foamEqual0(FE_ModSIntReduce, f1, f2);
+}
+
 Bool
 foamEqual(Foam f1, Foam f2)
+{
+	return foamEqual0(0, f1, f2);
+}
+
+local Bool
+foamEqual0(int mods, Foam f1, Foam f2)
+{
+	Foam of1 = f1;
+	Foam of2 = f2;
+	Bool ret;
+	if (mods & FE_ModSIntReduce) {
+		if (foamTag(f1) == FOAM_SInt)
+			f1 = foamSIntReduce(f1);
+		if (foamTag(f2) == FOAM_SInt)
+			f2 = foamSIntReduce(f2);
+	}
+
+	ret = foamEqual1(mods, f1, f2);
+	if (of1 != f1)
+		foamFree(f1);
+	if (of2 != f2)
+		foamFree(f2);
+	return ret;
+}
+
+local Bool
+foamEqual1(int mods, Foam f1, Foam f2)
 {
 	int	fi, si;
 	String	argf;
@@ -504,8 +548,8 @@ foamEqual(Foam f1, Foam f2)
 		if (argf[fi] == '*') fi--;
 		switch (argf[fi]) {
 		  case 'C':
-			if (!foamEqual(foamArgv(f1)[si].code,
-				       foamArgv(f2)[si].code))
+			  if (!foamEqual0(mods, foamArgv(f1)[si].code,
+					  foamArgv(f2)[si].code))
 				return false;
 			break;
 		  case 't':
@@ -519,8 +563,11 @@ foamEqual(Foam f1, Foam f2)
 		  case 'L':
 		  case 'X':
 		  case 'F':
-		  case 'f':
 			if (foamArgv(f1)[si].data != foamArgv(f2)[si].data)
+				return false;
+			break;
+		  case 'f':
+			if (foamArgv(f1)[si].sfloat != foamArgv(f2)[si].sfloat)
 				return false;
 			break;
 		  case 's':
@@ -1928,6 +1975,22 @@ local int	labelFmt;
 /*
  * External entry point for reading foam byte codes from a buffer.
  */
+Bool
+foamVerifyBuffer(Buffer buf, Foam foam)
+{
+	Foam readFoam;
+	Bool ret;
+	Length pos;
+
+	pos = bufPosition(buf);
+	bufSetPosition(buf, 0);
+	readFoam = foamFrBuffer(buf);
+	ret = foamEqualFrBuf(foam, readFoam);
+	bufSetPosition(buf, pos);
+	foamFree(readFoam);
+
+	return ret;
+}
 
 Foam
 foamFrBuffer(Buffer buf)
@@ -1983,7 +2046,7 @@ foamFrBuffer(Buffer buf)
 			break;
 		case 'b':
 			n = bufGetByte(buf);
-			foamArgv(foam)[si].data = n;
+			foamArgv(foam)[si].data = (char)n;
 			break;
 		case 'h':
 			n = bufGetHInt(buf);
@@ -2030,19 +2093,20 @@ foamFrBuffer(Buffer buf)
 			break;
 		case 'n': {
 			BInt b;
+			U16 *data;
 			neg = bufGetByte(buf);
 			FOAM_GET_INT(format, buf, slen);
-			bint = bintAllocPlaces(slen);
-			bint->isNeg = neg;
+			data = (U16*) stoAlloc(OB_Other, slen*sizeof(U16));
 			for (bi = 0; bi < slen; bi++) {
 				n = bufGetHInt(buf);
-				bint->placev[bi] = n;
+				data[bi] = n;
 			}
-			b = xintImmedIfCan(bint);
-			if (b != bint) bintFree(bint);
+			b = bintFrPlacevS(neg, slen, data);
+			stoFree(data);
 			foamArgv(foam)[si].bint = b;
 			break;
 		}
+
 		case 'C':
 			foamArgv(foam)[si].code = foamFrBuffer(buf);
 			break;
@@ -2217,6 +2281,8 @@ foamPosFrBuffer(Buffer buf, Foam foam)
 Foam
 foamSIntReduce(Foam foam)
 {
+	if (sizeof(foam->foamSInt.SIntData) <= SINT_BYTES)
+		return foam;
 	/*
 	 * Convert arbitrarily large integer literals into an equivalent
 	 * expression involving only unsigned 31 bit arithmetic. This is
@@ -2224,7 +2290,8 @@ foamSIntReduce(Foam foam)
 	 * flat FOAM buffers/files and be retrieved correctly.
 	 */
 	int	negative = (foam->foamSInt.SIntData < 0);
-	long	bignum = ((-1*negative)*foam->foamSInt.SIntData) >> 31;
+	long	bignum = (negative ? foam->foamSInt.SIntData < -(1L<<31)
+			  :foam->foamSInt.SIntData > (1L<<31));
 	assert(foamTag(foam) == FOAM_SInt);
 	if (bignum) {
 		/* Must split into unsigned 31-bit chunks */
@@ -2233,7 +2300,7 @@ foamSIntReduce(Foam foam)
 		long	*parts = (long *)stoAlloc(OB_Other, hunks*sizeof(long));
 
 		/* Kill the sign */
-		long	number = (-1*negative)*foam->foamSInt.SIntData;
+		long	number = negative ? -foam->foamSInt.SIntData : foam->foamSInt.SIntData;
 
 		/* Split ... */
 		for (i = 0; i < hunks; i++)
@@ -2319,6 +2386,7 @@ foamToBuffer(Buffer buf, Foam foam)
 			bufPutHInt(buf, foamArgv(foam)[si].data);
 			break;
 		case 'w':
+			assert(bufIsSInt(foamArgv(foam)[si].data));
 			n = foamArgv(foam)[si].data;
 			if (isArr) {
 				if (foam->foamArr.baseType == FOAM_Char)
