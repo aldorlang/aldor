@@ -18,3 +18,9 @@ dbInit(void)
 {
 	dbOut = osStdout;
 }
+
+void
+dbFini(void)
+{
+	dbOut = NULL;
+}
