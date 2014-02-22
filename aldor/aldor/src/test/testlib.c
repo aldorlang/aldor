@@ -181,4 +181,6 @@ void
 fini()
 {
 	saveAndEmptyAllPhaseSymbolData();
+
+	dbFini();
 }
