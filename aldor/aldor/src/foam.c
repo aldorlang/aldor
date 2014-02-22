@@ -2311,6 +2311,8 @@ foamPosFrBuffer(Buffer buf, Foam foam)
 Foam
 foamSIntReduce(Foam foam)
 {
+	if (sizeof(foam->foamSInt.SIntData) <= SINT_BYTES)
+		return foam;
 	/*
 	 * Convert arbitrarily large integer literals into an equivalent
 	 * expression involving only unsigned 31 bit arithmetic. This is
@@ -2414,6 +2416,7 @@ foamToBuffer(Buffer buf, Foam foam)
 			bufPutHInt(buf, foamArgv(foam)[si].data);
 			break;
 		case 'w':
+			assert(bufIsSInt(foamArgv(foam)[si].data));
 			n = foamArgv(foam)[si].data;
 			if (isArr) {
 				if (foam->foamArr.baseType == FOAM_Char)
