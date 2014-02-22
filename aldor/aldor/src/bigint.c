@@ -819,7 +819,7 @@ bintFrPlacevS(Bool isNeg, Length placec, U16 *data)
 	if (placec & 1)
 		bint_data = (BIntS*) data;
 	else
-		bint_data = (BIntS*) stoAlloc(OB_Other, placec + 1);
+		bint_data = (BIntS*) stoAlloc(OB_Other, sizeof(BIntS) * (placec + 1));
 	newc = (placec+1)/2;
 	for (i = 0; i < newc-1; i++) 
 		bint_data[i] = data[2*i] + (data[2*i+1] << bitsizeof(U16));
