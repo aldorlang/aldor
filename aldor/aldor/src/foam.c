@@ -1914,9 +1914,29 @@ local int	foamTagFormat	(Foam);
 local int	labelFmt;
 
 /*
+ * Check that a buffer filled by foamToBuffer will
+ * unpack to the original foam
+ */
+Bool
+foamVerifyBuffer(Buffer buf, Foam foam)
+{
+	Foam readFoam;
+	Bool ret;
+	Length pos;
+
+	pos = bufPosition(buf);
+	bufSetPosition(buf, 0);
+	readFoam = foamFrBuffer(buf);
+	ret = foamEqualModBuffer(foam, readFoam);
+	bufSetPosition(buf, pos);
+	foamFree(readFoam);
+
+	return ret;
+}
+
+/*
  * External entry point for reading foam byte codes from a buffer.
  */
-
 Foam
 foamFrBuffer(Buffer buf)
 {
