@@ -1724,7 +1724,7 @@ gen0ApplySyme(FoamTag type, Syme syme, SImpl impl,
 		foam = gen0CCall(type, syme, argc, &args);
 
 	if (type != otype)
-		foam = foamNewCast(otype, foam);
+		foam = foamNewCast(type, foam);
 
 	*pargv = args;
 	return foam;
