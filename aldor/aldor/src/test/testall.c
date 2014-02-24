@@ -35,6 +35,7 @@ main(int argc, char *argv[])
 	if (testShouldRun("printf")) printfTest();
 	if (testShouldRun("ostream")) ostreamTest();
 	if (testShouldRun("float")) floatTestSuite();
+	if (testShouldRun("int")) intTestSuite();
 	if (testShouldRun("bigint")) bintTestSuite();
 	if (testShouldRun("bitv")) bitvTestSuite();
 	if (testShouldRun("list")) listTestSuite();

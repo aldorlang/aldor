@@ -13,6 +13,7 @@ void fnameTest(void);
 void flogTest(void);
 void foamTest(void);
 void jflowTest(void);
+void intTestSuite(void);
 void ostreamTest(void);
 void printfTest(void);
 void formatTest(void);
