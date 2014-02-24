@@ -2235,8 +2235,7 @@ foamSIntReduce(Foam foam)
 	 * flat FOAM buffers/files and be retrieved correctly.
 	 */
 	int	negative = (foam->foamSInt.SIntData < 0);
-	long	bignum = (negative ? foam->foamSInt.SIntData < -(1L<<31)
-			  :foam->foamSInt.SIntData > (1L<<31));
+	long	bignum = !longIsInt32(foam->foamSInt.SIntData);
 	assert(foamTag(foam) == FOAM_SInt);
 	if (bignum) {
 		/* Must split into unsigned 31-bit chunks */
