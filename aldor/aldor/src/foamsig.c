@@ -2,8 +2,7 @@
 #include "foamsig.h"
 #include "store.h"
 #include "util.h"
-
-local Bool aintEqual(AInt i1, AInt i2);
+#include "int.h"
 
 FoamSig
 foamSigNew(AIntList inArgs, FoamTag retType, int nRets, FoamTag *rets)
@@ -67,11 +66,4 @@ foamSigHash(FoamSig s1)
 		ltmp = cdr(ltmp);
 	}
 	return h;
-}
-
-
-local Bool
-aintEqual(AInt i1, AInt i2)
-{
-	return i1 == i2;
 }
