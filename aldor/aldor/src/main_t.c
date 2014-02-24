@@ -23,6 +23,7 @@ main(int argc, String *argv)
 		osInit();
 		dbInit();
 		while (--argc) testSelf(*++argv);
+		dbFini();
 	}
 
 	return EXIT_SUCCESS;

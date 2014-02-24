@@ -39,5 +39,6 @@ extern Bool phaseDebug;
 extern	FILE	*dbOut;
 
 extern	void	dbInit	(void);
+extern	void	dbFini	(void);
 
 #endif /* _DEBUG_H_ */

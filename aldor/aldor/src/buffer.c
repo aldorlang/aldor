@@ -11,6 +11,7 @@
 #include "store.h"
 #include "strops.h"
 #include "xfloat.h"
+#include "int.h"
 
 struct buffer {
 	Length		pos;		/* amount used == next position */
@@ -309,6 +310,12 @@ bufPutSInt(Buffer b, ULong i)
 	bufAdd1(b, BYTE1(i));
 	bufAdd1(b, BYTE2(i));
 	bufAdd1(b, BYTE3(i));
+}
+
+Bool
+bufIsSInt(long i)
+{
+	return longIsInt32(i);
 }
 
 UByte
