@@ -111,6 +111,7 @@ libgen_a_SOURCES =	\
 	foam_i.c	\
 	foamopt.c	\
 	format.c	\
+	int.c		\
 	intset.c	\
 	list.c		\
 	memclim.c	\
@@ -257,11 +258,13 @@ testsuite =			\
 	test/test_absyn.c 	\
 	test/test_bigint.c 	\
 	test/test_bitv.c 	\
+	test/test_float.c	\
 	test/test_flog.c	\
 	test/test_fname.c 	\
 	test/test_foam.c 	\
 	test/test_format.c	\
 	test/test_jflow.c	\
+	test/test_int.c		\
 	test/test_list.c	\
 	test/test_ostream.c	\
 	test/test_printf.c	\

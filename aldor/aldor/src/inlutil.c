@@ -397,7 +397,7 @@ inuUnitFini(Foam foam)
  * :: Analyse Progs
  *
  *****************************************************************************/
-
+#define TIME_MAX (1<<30)
 local void
 inuAnalyseProg(Foam foam, int constNum)
 {
@@ -437,7 +437,7 @@ inuAnalyseProg(Foam foam, int constNum)
 		timeCost += (1 << (bb->iextra * InlLoopMagicNumber));
 	});
 
-	foam->foamProg.time = timeCost;
+	foam->foamProg.time = timeCost > TIME_MAX ? TIME_MAX : timeCost;
 
 	foamProgSetHasInlineInfo(foam);
 }

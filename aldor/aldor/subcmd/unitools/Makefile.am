@@ -14,6 +14,7 @@ libport_a_SOURCES =	\
 	$s/fluid.c	\
 	$s/fname.c	\
 	$s/format.c	\
+	$s/int.c	\
 	$s/list.c	\
 	$s/memclim.c	\
 	$s/opsys.c	\

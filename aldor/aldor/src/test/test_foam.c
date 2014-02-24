@@ -9,6 +9,8 @@ local void testCall();
 local void testDDecl();
 local void testConstructors();
 local void testHash();
+local void testSIntReduce();
+local void testFoamBuffer();
 
 void
 foamTest()
@@ -19,6 +21,8 @@ foamTest()
 	TEST(testDDecl);
 	TEST(testConstructors);
 	TEST(testHash);
+	TEST(testSIntReduce);
+	TEST(testFoamBuffer);
 }
 
 local void
@@ -152,4 +156,49 @@ testHash()
 		     hashCombinePair(134808007,
 				    hashCombinePair(twist, hashCombinePair(134808007,
 									 hashCombinePair(134808007, hMapping)))));
+}
+
+
+local void
+testSIntReduce()
+{
+	Foam foam, reduced;
+	if (sizeof(AInt) < 8) {
+		return;
+	}
+	foam = foamNewSInt(1L<<40);
+	reduced = foamSIntReduce(foam);
+	testFalse("t0", foam == reduced);
+
+	foam = foamNewSInt(-(1L<<40));
+	reduced = foamSIntReduce(foam);
+	testFalse("t0", foam == reduced);
+	testFalse("t0", foamEqual(foamSIntReduce(foamNewSInt(1L<<40)), reduced));
+	testTrue("t1", foamTag(reduced) == FOAM_BCall && reduced->foamBCall.op == FOAM_BVal_SIntNegate);
+
+	/* Really need a working foam interpreter to test this properly */
+	/* .. probably easier to do as library tests */
+}
+
+local Buffer tFoamToBuffer(Foam foam);
+local void
+testFoamBuffer()
+{
+	Foam foam1, foam2;
+	Buffer buf1, buf2;
+
+	foam1 = foamNewSInt(23);
+	foam2 = foamNewSInt(24);
+
+	testTrue("t1", foamVerifyBuffer(tFoamToBuffer(foam1), foam1));
+	testFalse("t2", foamVerifyBuffer(tFoamToBuffer(foam2), foam1));
+}
+
+local Buffer
+tFoamToBuffer(Foam foam)
+{
+	Buffer buf = bufNew();
+	foamToBuffer(buf, foam);
+
+	return buf;
 }
