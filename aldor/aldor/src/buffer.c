@@ -11,6 +11,7 @@
 #include "store.h"
 #include "strops.h"
 #include "xfloat.h"
+#include "int.h"
 
 struct buffer {
 	Length		pos;		/* amount used == next position */
@@ -314,9 +315,7 @@ bufPutSInt(Buffer b, ULong i)
 Bool
 bufIsSInt(long i)
 {
-	if (sizeof(i) == SINT_BYTES)
-		return true;
-	return i < (1L<<31) && i > -(1L<<31);
+	return longIsInt32(i);
 }
 
 UByte
