@@ -1724,7 +1724,7 @@ gen0ApplySyme(FoamTag type, Syme syme, SImpl impl,
 		foam = gen0CCall(type, syme, argc, &args);
 
 	if (type != otype)
-		foam = foamNewCast(type, foam);
+		foam = foamNewCast(otype, foam);
 
 	*pargv = args;
 	return foam;
@@ -3910,8 +3910,10 @@ gen0MultiAssign(FoamTag set, AbSyn lhs, Foam rhsFoam)
 		/* FIXME: deal with domains defs here (see gen0Define) */
 	}
 	if (!gen0ValueMode) {
+		/*
 		for(i = 0; i < argc; i++)
 			gen0FreeTemp(temps->foamValues.argv[i]);
+		*/
 		foamFree(temps);
 
 		return 0;
@@ -5607,7 +5609,7 @@ gen0VarsLex(Syme syme, Stab stab)
 	type = gen0Type(symeType(syme), &fmt);
 	assert(symeIsLexVar(syme) || symeIsLexConst(syme));
 
-	if (type == FOAM_Rec) fmtSlot = fmt;
+	if (type == FOAM_Rec || type == FOAM_Arr) fmtSlot = fmt;
 
 	decl = foamNewDecl(type, name, fmtSlot);
 
@@ -6205,10 +6207,14 @@ gen0ForIter(AbSyn absyn, FoamList *forl, FoamList *itl)
                 gen0MultiAssign(FOAM_Set, absyn->abFor.lhs, call);
         }
         else {
+		FoamTag type;
                 id = abDefineeId(absyn);
                 call = foamNewEmpty(FOAM_CCall, 2);
-                call->foamCCall.type = gen0Type(gen0AbContextType(id), NULL);
+		type = gen0Type(gen0AbContextType(id), NULL);
+                call->foamCCall.type = FOAM_Word;
                 call->foamCCall.op   = foamCopy(valueFun);
+		if (type != FOAM_Word)
+			call = foamNewCast(type, call);
                 gen0AddStmt(foamNewSet(genFoamVal(id), call), absyn);
         }
 
@@ -6552,9 +6558,7 @@ gen0TempValueMode(TForm tf)
 		AInt fmt;
 		FoamTag type;
 		type = gen0Type(tf, &fmt);
-		if (type == FOAM_Arr) {
-		  return gen0TempLocal0(FOAM_Ptr,emptyFormatSlot) ;
-		    }
+
 		return gen0TempLocal0(type, fmt);
 	}
 	vals = foamNewEmpty(FOAM_Values, tfMultiArgc(tf));
@@ -7244,10 +7248,8 @@ gen0GlobalName(String libname, Syme syme)
 	if (genIsRuntime() && !symeIsImport(syme))
 		g = strCopy(symeString(syme));
 	else {
-		String l = strLower(strCopy(libname));
 		Hash   h = gen0SymeTypeCode(syme);
-		g = strPrintf("%s_%s_%09d", l, symeString(syme), h);
-		strFree(l);
+		g = strPrintf("%s_%s_%09d", libname, symeString(syme), h);
 	}
 	symeSetExtension(syme, ext0);
 
@@ -7472,7 +7474,10 @@ local Foam
 gen0UnaryToTuple(Foam val)
 {
 	Foam	vars[2], tupl, elts;
-	
+	FoamTag type = gen0FoamType(val);
+	if (type != FOAM_Word)
+		val = foamNewCast(FOAM_Word, val);
+
 	gen0MakeEmptyTuple(foamNewSInt(1), vars, NULL);
 	tupl = vars[0];
 	elts = vars[1];
@@ -7829,7 +7834,11 @@ gen0BuiltinExporter(Foam glo, Syme syme)
 	for (i=0; i < tfMapArgc(tf); i++)
 		call->foamCCall.argv[i] = foamNewPar(i);
 
-	if (retFmt == 0)
+	if (tfMapRetc(tf) == 0) {
+		gen0AddStmt(call, NULL);
+		result = foamNewEmpty(FOAM_Values, 0);
+	}
+	else if (retFmt == 0)
 		result = call;
 	else {
 		tmp = gen0TempFrDDecl(retFmt, true);

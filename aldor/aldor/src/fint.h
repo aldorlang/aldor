@@ -8,6 +8,9 @@
 
 #ifndef _FINT_H_
 #define _FINT_H_
+#include <stdio.h>
+#include "axlgen.h"
+#include "absyn.h"
 
 extern void	fintInit 		(void);
 extern void	fintFini 		(void);

@@ -21,6 +21,7 @@
 #include "comsg.h"
 #include "strops.h"
 #include "symbol.h"
+#include "ftype.h"
 
 /*****************************************************************************
  *

@@ -10,6 +10,8 @@
 #define _EMIT_H_
 
 #include "axlobs.h"
+#include "ftype.h"
+#include "java/javacode.h"
 
 /*
  * Controlling options.
@@ -91,6 +93,7 @@ extern void	emitTheLisp	    	(EmitInfo, SExpr);
 extern void	emitTheC    	    	(EmitInfo, CCodeList);
 extern void	emitTheCpp    	    	();
 extern void	emitTheObject	    	(EmitInfo);
+extern void	emitTheJava	    	(EmitInfo, JavaCode);
 
 /*
  * Linkage, execution, and cleanup.

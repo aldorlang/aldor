@@ -274,6 +274,7 @@ List(S: Type): ListCategory S with == FakedConditionalOperations S add {
 	}
 
         [t: Tuple S]: % == {
+		length t = 0 => nil;
                 l := nil;
                 for i in length t..1 by -1 repeat
                         l := cons(element(t, i), l);

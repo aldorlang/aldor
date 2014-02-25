@@ -40,6 +40,7 @@
 #include "sexpr.h"
 #include "fbox.h"
 #include "foamsig.h"
+#include "symcoinfo.h"
 
 #define FOAM_NARY	(-1)	/* Identifies tags with N-ary data argument. */
 
@@ -691,6 +692,62 @@ foamDefPrintDb(Foam foam, int defNo)
 	return foamPrintDb(defs->foamDDef.argv[defNo]);
 }
 
+Bool
+foamProgHasMultiAssign(Foam prog)
+{
+	assert(foamTag(prog) == FOAM_Prog);
+	Foam seq = prog->foamProg.body;
+	int bodyArgc = foamArgc(seq);
+	int i;
+
+	for (i=0; i < bodyArgc; i++) {
+		if (foamIsMultiAssign(seq->foamSeq.argv[i])) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+Bool
+foamIsMultiAssign(Foam foam)
+{
+	return (foamTag(foam) == FOAM_Set || foamTag(foam) == FOAM_Def)
+		&& foamTag(foam->foamSet.lhs) == FOAM_Values;
+}
+
+Bool
+foamDeclEqual(Foam decl1, Foam decl2)
+{
+	return decl1->foamDecl.type == decl2->foamDecl.type
+		&& decl1->foamDecl.format == decl2->foamDecl.format;
+}
+
+/** Return the next statement in seq which is reachable */
+int
+foamSeqNextReachable(Foam seq, int index)
+{
+	if (index == foamArgc(seq) - 1)
+		return -1;
+	if (index == -1)
+		return 0;
+
+	Foam lastStmt = seq->foamSeq.argv[index];
+	if (foamTag(lastStmt) == FOAM_Goto
+	    || foamInfo(foamTag(lastStmt)).properties & FOAMP_SeqExit) {
+		index++;
+		while (index < foamArgc(seq)) {
+			Foam nextStmt = seq->foamSeq.argv[index];
+			if (foamTag(nextStmt) == FOAM_Label)
+				return index;
+			index++;
+		}
+		return -1;
+	}
+	return index+1;
+}
+
+
 /* Foam Auditing */
 
 local Bool	foamAuditExpr		(Foam foam);
@@ -699,6 +756,7 @@ local void	foamAuditBadSharing	(Foam foam);
 local void	foamAuditBadRuntime	(Foam foam);
 local void	foamAuditBadCast  	(Foam foam);
 local void	foamAuditBadDecl  	(Foam foam);
+local void	foamAuditBadType  	(Foam foam);
 
 Foam	faUnit;
 Foam	faProg;
@@ -746,11 +804,13 @@ local Bool	foamAuditCast		= false;
 
 local Bool	foamAudit0		(Foam);
 local Bool	foamAuditTypeCheck	(Foam);
+local void	foamAuditCastExpr	(Foam foam);
 
 local Bool	faTypeCheckingValues	(Foam, Foam, AInt);
 local Bool	faTypeCheckingFmtIsEnv	(Foam, AInt);
 local Bool	faTypeCheckingFmtIsRec (Foam, AInt);
 local Bool	faTypeCheckingBCall	(Foam);
+local FoamTag	faFoamExprType		(Foam, AInt *);
 
 local void	faTypeCheckingFailure	(Foam, String, ...);
 
@@ -823,7 +883,7 @@ local Bool
 foamAuditExpr(Foam foam)
 {
 	Bool	result = true;
-
+	Bool	checkTypes = false;
 	assert(foam);
 	assert(foamTag(foam) <= FOAM_LIMIT);
 	if (foamMark(foam) == FOAM_MARKED)
@@ -854,6 +914,15 @@ foamAuditExpr(Foam foam)
 	foamIter(foam, arg, foamAuditExpr(*arg));
 
 	switch (foamTag(foam)) {
+	  case FOAM_Set:
+	  case FOAM_Def:
+		  if (foamTag(foam->foamSet.lhs) == FOAM_Values
+		      && foamArgc(foam->foamSet.lhs) == 0)
+			  foamAuditBadRef(foam);
+		  break;
+	  case FOAM_If:
+		  checkTypes = true;
+		  break;
 	  case FOAM_Loc:
 		if (foam->foamLoc.index >= faNumLocals)
 			foamAuditBadRef(foam);
@@ -911,7 +980,8 @@ foamAuditExpr(Foam foam)
 	  case FOAM_Cast:
 	       if (foamTag(foam->foamCast.expr) == FOAM_Values)
 		    foamAuditBadCast(foam);
-
+	       foamAuditCastExpr(foam);
+	       break;
 	  case FOAM_CCall: 
 		  /* There was a check for runtime constraint breakage
 		   * here - removed as a layering violation... */
@@ -953,6 +1023,18 @@ foamAuditDecl(Foam decl)
 		break;
 	}
 }
+
+void
+foamAuditCastExpr(Foam foam)
+{
+	FoamTag type = foam->foamCast.type;
+	FoamTag exprType = faFoamExprType(foam->foamCast.expr, NULL);
+
+	if (type == FOAM_Ptr && exprType == FOAM_SInt) {
+		foamAuditBadType(foam);
+	}
+}
+
 
 /**************************************************************************
  * NOTE: This procedure doesn't perform type checking on subtrees,
@@ -1006,10 +1088,8 @@ foamAuditTypeCheck(Foam foam)
 						    rhs->foamMFmt.format);
 		}
 		else {
-			typeLhs = foamExprType(lhs, faProg, faFormats,
-					    NULL, NULL, &fmtLhs);
-			typeRhs = foamExprType(rhs, faProg, faFormats,
-					    NULL, NULL, &fmtRhs);
+			typeLhs = faFoamExprType(lhs, &fmtLhs);
+			typeRhs = faFoamExprType(rhs, &fmtRhs);
 			if (typeLhs == FOAM_Nil && typeRhs == FOAM_Ptr)
 				return true;
 			if (typeRhs == FOAM_Nil && typeLhs == FOAM_Ptr)
@@ -1045,8 +1125,7 @@ foamAuditTypeCheck(Foam foam)
 
 		if (!foamAuditIf) return true;
 
-		type = foamExprType(foam->foamIf.test, faProg, faFormats,
-				    NULL, NULL, NULL);
+		type = faFoamExprType(foam->foamIf.test, NULL);
 
 		if (type != FOAM_Bool) {
 				faTypeCheckingFailure(foam,
@@ -1072,8 +1151,7 @@ foamAuditTypeCheck(Foam foam)
 						    faProg->foamProg.format);
 		}
 
-		type = foamExprType(foam->foamReturn.value, faProg, faFormats,
-				    NULL, NULL, &fmt);
+		type = faFoamExprType(foam->foamReturn.value, &fmt);
 
 		if (type != faProg->foamProg.retType) {
 			AInt typeLhs = faProg->foamProg.retType;
@@ -1095,8 +1173,7 @@ foamAuditTypeCheck(Foam foam)
 
 		if (!foamAuditCast) return true;
 
-		type = foamExprType(foam->foamCast.expr, faProg, faFormats,
-				    NULL, NULL, NULL);
+		type = faFoamExprType(foam->foamCast.expr, NULL);
 
 		return true;
 
@@ -1146,8 +1223,7 @@ faTypeCheckingValues(Foam foam, Foam values, AInt formatNo)
 	}
 	
 	for (i = 0; i < numFmtSlots; i++) {
-		type = foamExprType(values->foamValues.argv[i], faProg,
-				    faFormats, NULL, NULL, &fmt);
+		type = faFoamExprType(values->foamValues.argv[i], &fmt);
 		decl = faFormatsv[formatNo]->foamDDecl.argv[i];
 
 		if (type != decl->foamDecl.type) {
@@ -1222,8 +1298,7 @@ faTypeCheckingBCall(Foam foam)
 
 	for (i = 0; i < nargs; i++) {
 
-		argType = foamExprType(foam->foamBCall.argv[i],
-				       faProg, faFormats, NULL, NULL, &fmt);
+		argType = faFoamExprType(foam->foamBCall.argv[i], &fmt);
 
 		parType = foamBValInfo(op).argTypes[i];
 
@@ -1256,6 +1331,15 @@ faTypeCheckingFailure(Foam foam, String msg, ...)
 
 	foamWrSExpr(dbOut, foam, SXRW_AsIs);
 	va_end(argp);
+}
+
+local FoamTag
+faFoamExprType(Foam foam, AInt *fmt)
+{
+	FoamTag type = foamExprType0(foam,
+				    faProg, faFormats, NULL, NULL, fmt);
+
+	return type;
 }
 
 /* Reset the foam sharing mark. */
@@ -1297,6 +1381,13 @@ foamAuditBadDecl(Foam foam)
 	foamPrint(stderr, foam);
 	if (DEBUG(foam)){foamPrint(dbOut, faUnit);}
 	bug("\nBad foam decl\n", faConstNum);
+}
+
+local void
+foamAuditBadType(Foam foam)
+{
+	foamPrint(stderr, foam);
+	bug("\nBad type\n", faConstNum);
 }
 
 local void
@@ -2892,7 +2983,7 @@ foamExprTypeCB(Foam expr, AInt *extra, FoamExprTypeCallback callback, void *arg)
 	  case FOAM_CEnv:
 		return FOAM_Env;
 	  case FOAM_Cast:
-		  if (expr->foamCast.type == FOAM_Arr)
+		  if (expr->foamCast.type == FOAM_Arr && extra)
 			  *extra = 0;
 		return expr->foamCast.type;
 	  case FOAM_ANew:
@@ -3192,7 +3283,7 @@ foamTypeIsMulti(Foam fmts, FoamTag type, AInt fmt)
 		return false;
 	if (fmt == 0)
 		return false;
-	decl = fmts->foamDDecl.argv[fmt];
+	decl = fmts->foamDFmt.argv[fmt];
 	return foamDDeclArgc(decl) > 0;
 }
 
@@ -3301,101 +3392,101 @@ foamFindFirst(FoamTestFn testFn, Foam foam)
  */
 
 struct foam_info foamInfoTable[] = {
-/* tag        sxsym    str         argc       argf */
- {FOAM_Nil,	    0,"Nil",          0,        ""},
- {FOAM_Char,	    0,"Char",         1,        "b"},
- {FOAM_Bool,	    0,"Bool",         1,        "b"},
- {FOAM_Byte,	    0,"Byte",         1,        "b"},
- {FOAM_HInt,	    0,"HInt",         1,        "h"},
- {FOAM_SInt,	    0,"SInt",         1,        "w"},
- {FOAM_SFlo,	    0,"SFlo",         1,        "f"},
- {FOAM_DFlo,	    0,"DFlo",         1,        "d"},
- {FOAM_Word,	    0,"Word",         1,        "w"},
- {FOAM_Arb,	    0,"Arb",          1,        "!"},
+/* tag        sxsym    str         argc       argf, flags */
+ {FOAM_Nil,	    0,"Nil",          0,        "", 	0},
+ {FOAM_Char,	    0,"Char",         1,        "b", 	0},
+ {FOAM_Bool,	    0,"Bool",         1,        "b", 	0},
+ {FOAM_Byte,	    0,"Byte",         1,        "b", 	0},
+ {FOAM_HInt,	    0,"HInt",         1,        "h", 	0},
+ {FOAM_SInt,	    0,"SInt",         1,        "w", 	0},
+ {FOAM_SFlo,	    0,"SFlo",         1,        "f", 	0},
+ {FOAM_DFlo,	    0,"DFlo",         1,        "d", 	0},
+ {FOAM_Word,	    0,"Word",         1,        "w", 	0},
+ {FOAM_Arb,	    0,"Arb",          1,        "!", 	0},
 
- {FOAM_Int8,	    0,"Int8",         1,        "b"},
- {FOAM_Int16,	    0,"Int16",        1,        "bb"},
- {FOAM_Int32,	    0,"Int32",        1,        "bbbb"},
- {FOAM_Int64,	    0,"Int64",        1,        "bbbbbbbb"},
- {FOAM_Int128,	    0,"Int128",       1,        "bbbbbbbbbbbbbbbb"},
+ {FOAM_Int8,	    0,"Int8",         1,        "b", 	0},
+ {FOAM_Int16,	    0,"Int16",        1,        "bb", 	0},
+ {FOAM_Int32,	    0,"Int32",        1,        "bbbb", 	0},
+ {FOAM_Int64,	    0,"Int64",        1,        "bbbbbbbb", 	0},
+ {FOAM_Int128,	    0,"Int128",       1,        "bbbbbbbbbbbbbbbb", 	0},
 
- {FOAM_NOp,	    0,"NOp",          0,        ""},
- {FOAM_BVal,	    0,"BVal",         1,        "o"},
- {FOAM_Ptr,	    0,"Ptr",          1,        "C"},
- {FOAM_CProg,	    0,"CProg",        1,        "C"},
- {FOAM_CEnv,	    0,"CEnv",         1,        "C"},
- {FOAM_Loose,	    0,"Loose",        1,        "C"},
- {FOAM_EEnsure,	    0,"EEnsure",      1,        "C"},
- {FOAM_EInfo,	    0,"EInfo",	      1,	"C"},
- {FOAM_Kill,	    0,"Kill",         1,        "C"},
- {FOAM_Free,	    0,"Free",         1,        "C"},
- {FOAM_Return,	    0,"Return",       1,        "C"},
- {FOAM_Cast,	    0,"Cast",         2,        "tC"},
- {FOAM_ANew,	    0,"ANew",         2,        "tC"},
- {FOAM_RRNew,	    0,"RRNew",        2,        "iC"},
- {FOAM_RRec,	    0,"RRec",         2,        "CC"},
- {FOAM_Clos,	    0,"Clos",         2,        "CC"},
- {FOAM_Set,	    0,"Set",          2,        "CC"},
- {FOAM_Def,	    0,"Def",          2,        "CC"},
- {FOAM_AElt,	    0,"AElt",         3,        "tCC"},
- {FOAM_If,	    0,"If",           2,        "CL"},
- {FOAM_Goto,	    0,"Goto",         1,        "L"},
- {FOAM_Throw,	    0,"Throw",        2,        "CC"},
- {FOAM_Catch,	    0,"Catch",        2,        "CC"},
- {FOAM_Protect,     0,"Protect",      2,        "CCC"},
- {FOAM_Unit,	    0,"Unit",         2,        "CC"},
- {FOAM_PushEnv,	    0,"PushEnv",      2,        "iC"},
- {FOAM_PopEnv,	    0,"PopEnv",       0,        ""},
- {FOAM_MFmt,	    0,"MFmt",         2,        "iC"},
- {FOAM_RRFmt,	    0,"RRFmt",        1,        "C"},
+ {FOAM_NOp,	    0,"NOp",          0,        "", 	0},
+ {FOAM_BVal,	    0,"BVal",         1,        "o", 	0},
+ {FOAM_Ptr,	    0,"Ptr",          1,        "C", 	0},
+ {FOAM_CProg,	    0,"CProg",        1,        "C", 	0},
+ {FOAM_CEnv,	    0,"CEnv",         1,        "C", 	0},
+ {FOAM_Loose,	    0,"Loose",        1,        "C", 	0},
+ {FOAM_EEnsure,	    0,"EEnsure",      1,        "C", 	0},
+ {FOAM_EInfo,	    0,"EInfo",	      1,	"C", 	0},
+ {FOAM_Kill,	    0,"Kill",         1,        "C", 	0},
+ {FOAM_Free,	    0,"Free",         1,        "C", 	0},
+ {FOAM_Return,	    0,"Return",       1,        "C", 	FOAMP_SeqExit},
+ {FOAM_Cast,	    0,"Cast",         2,        "tC", 	0},
+ {FOAM_ANew,	    0,"ANew",         2,        "tC", 	0},
+ {FOAM_RRNew,	    0,"RRNew",        2,        "iC", 	0},
+ {FOAM_RRec,	    0,"RRec",         2,        "CC", 	0},
+ {FOAM_Clos,	    0,"Clos",         2,        "CC", 	0},
+ {FOAM_Set,	    0,"Set",          2,        "CC", 	0},
+ {FOAM_Def,	    0,"Def",          2,        "CC", 	0},
+ {FOAM_AElt,	    0,"AElt",         3,        "tCC", 	0},
+ {FOAM_If,	    0,"If",           2,        "CL", 	0},
+ {FOAM_Goto,	    0,"Goto",         1,        "L", 	0},
+ {FOAM_Throw,	    0,"Throw",        2,        "CC", 	FOAMP_SeqExit},
+ {FOAM_Catch,	    0,"Catch",        2,        "CC", 	0},
+ {FOAM_Protect,     0,"Protect",      2,        "CCC", 	0},
+ {FOAM_Unit,	    0,"Unit",         2,        "CC", 	0},
+ {FOAM_PushEnv,	    0,"PushEnv",      2,        "iC", 	0},
+ {FOAM_PopEnv,	    0,"PopEnv",       0,        "", 	0},
+ {FOAM_MFmt,	    0,"MFmt",         2,        "iC", 	0},
+ {FOAM_RRFmt,	    0,"RRFmt",        1,        "C", 	0},
 
 /* ========> FFO_ORIGIN (start of multi-format instructions) <======== */
 
- {FOAM_Unimp,	    0,"Unimp",        1,        "s"},
- {FOAM_GDecl,	    0,"GDecl",        6,        "tswibp"},
- {FOAM_Decl,	    0,"Decl",         4,        "tswi"},
- {FOAM_BInt,	    0,"BInt",         1,        "n"},
+ {FOAM_Unimp,	    0,"Unimp",        1,        "s", 	0},
+ {FOAM_GDecl,	    0,"GDecl",        6,        "tswibp", 	0},
+ {FOAM_Decl,	    0,"Decl",         4,        "tswi", 	0},
+ {FOAM_BInt,	    0,"BInt",         1,        "n", 	0},
 
- {FOAM_Par,	    0,"Par",          1,        "i"},
- {FOAM_Loc,	    0,"Loc",          1,        "i"},
- {FOAM_Glo,	    0,"Glo",          1,        "i"},
- {FOAM_Fluid,	    0,"Fluid",        1,        "i"},
- {FOAM_Const,	    0,"Const",        1,        "i"},
- {FOAM_Env,	    0,"Env",          1,        "i"},
- {FOAM_EEnv,	    0,"EEnv",         2,        "iC"},
- {FOAM_RNew,	    0,"RNew",         1,        "i"},
- {FOAM_PRef,	    0,"PRef",	      2,	"iC"},
- {FOAM_TRNew,	    0,"TRNew",        2,        "iC"},
- {FOAM_RRElt,       0,"RRElt",        3,        "iCC"},
- {FOAM_Label,	    0,"Label",        1,        "i"},
+ {FOAM_Par,	    0,"Par",          1,        "i", 	0},
+ {FOAM_Loc,	    0,"Loc",          1,        "i", 	0},
+ {FOAM_Glo,	    0,"Glo",          1,        "i", 	0},
+ {FOAM_Fluid,	    0,"Fluid",        1,        "i", 	0},
+ {FOAM_Const,	    0,"Const",        1,        "i", 	0},
+ {FOAM_Env,	    0,"Env",          1,        "i", 	0},
+ {FOAM_EEnv,	    0,"EEnv",         2,        "iC", 	0},
+ {FOAM_RNew,	    0,"RNew",         1,        "i", 	0},
+ {FOAM_PRef,	    0,"PRef",	      2,	"iC", 	0},
+ {FOAM_TRNew,	    0,"TRNew",        2,        "iC", 	0},
+ {FOAM_RRElt,       0,"RRElt",        3,        "iCC", 	0},
+ {FOAM_Label,	    0,"Label",        1,        "i", 	0},
 
- {FOAM_Lex,	    0,"Lex",          2,        "ii"},
- {FOAM_RElt,	    0,"RElt",         3,        "iCi"},
- {FOAM_IRElt,	    0,"IRElt",        3,        "iCi"},
- {FOAM_TRElt,	    0,"TRElt",        4,        "iCCi"},
- {FOAM_EElt,	    0,"EElt",         4,        "iCii"},
- {FOAM_CFCall,	    0,"CFCall",       4,        "iiCC"},
- {FOAM_OFCall,	    0,"OFCall",       4,        "iiCCC"},
+ {FOAM_Lex,	    0,"Lex",          2,        "ii", 	0},
+ {FOAM_RElt,	    0,"RElt",         3,        "iCi", 	0},
+ {FOAM_IRElt,	    0,"IRElt",        3,        "iCi", 	0},
+ {FOAM_TRElt,	    0,"TRElt",        4,        "iCCi", 	0},
+ {FOAM_EElt,	    0,"EElt",         4,        "iCii", 	0},
+ {FOAM_CFCall,	    0,"CFCall",       4,        "iiCC", 	0},
+ {FOAM_OFCall,	    0,"OFCall",       4,        "iiCCC", 	0},
 
- {FOAM_DDecl,	    0,"DDecl",        FOAM_NARY, "DC*"},
- {FOAM_DFluid,	    0,"DFluid",       FOAM_NARY, "i*"},
- {FOAM_DEnv,	    0,"DEnv",         FOAM_NARY, "i*"},
- {FOAM_DDef,	    0,"DDef",         FOAM_NARY, "C*"},
- {FOAM_DFmt,	    0,"DFmt",         FOAM_NARY, "C*"},
- {FOAM_Rec,	    0,"Rec",          FOAM_NARY, "iC*"},
- {FOAM_Arr,	    0,"Arr",          FOAM_NARY, "tw*"},
- {FOAM_TR,	    0,"TR",           FOAM_NARY, "iC*"},
- {FOAM_Select,	    0,"Select",       FOAM_NARY, "CL*"},
- {FOAM_PCall,	    0,"PCall",        FOAM_NARY, "ptC*"},
- {FOAM_BCall,	    0,"BCall",        FOAM_NARY, "oC*"},
- {FOAM_CCall,	    0,"CCall",        FOAM_NARY, "tCC*"},
- {FOAM_OCall,	    0,"OCall",        FOAM_NARY, "tCCC*"},
- {FOAM_Seq,	    0,"Seq",          FOAM_NARY, "C*"},
- {FOAM_Values,	    0,"Values",       FOAM_NARY, "C*"},
+ {FOAM_DDecl,	    0,"DDecl",        FOAM_NARY, "DC*", 	0},
+ {FOAM_DFluid,	    0,"DFluid",       FOAM_NARY, "i*", 	0},
+ {FOAM_DEnv,	    0,"DEnv",         FOAM_NARY, "i*", 	0},
+ {FOAM_DDef,	    0,"DDef",         FOAM_NARY, "C*", 	0},
+ {FOAM_DFmt,	    0,"DFmt",         FOAM_NARY, "C*", 	0},
+ {FOAM_Rec,	    0,"Rec",          FOAM_NARY, "iC*", 	0},
+ {FOAM_Arr,	    0,"Arr",          FOAM_NARY, "tw*", 	0},
+ {FOAM_TR,	    0,"TR",           FOAM_NARY, "iC*", 	0},
+ {FOAM_Select,	    0,"Select",       FOAM_NARY, "CL*", 	0},
+ {FOAM_PCall,	    0,"PCall",        FOAM_NARY, "ptC*", 	0},
+ {FOAM_BCall,	    0,"BCall",        FOAM_NARY, "oC*", 	0},
+ {FOAM_CCall,	    0,"CCall",        FOAM_NARY, "tCC*", 	0},
+ {FOAM_OCall,	    0,"OCall",        FOAM_NARY, "tCCC*", 	0},
+ {FOAM_Seq,	    0,"Seq",          FOAM_NARY, "C*", 	0},
+ {FOAM_Values,	    0,"Values",       FOAM_NARY, "C*", 	0},
 #ifdef NEW_FORMATS
- {FOAM_Prog,	    0,"Prog",         FOAM_NARY, "XFtiwwwwC*"}
+ {FOAM_Prog,	    0,"Prog",         FOAM_NARY, "XFtiwwwwC*", 	0}
 #else
- {FOAM_Prog,	    0,"Prog",         FOAM_NARY, "XFtiwwwwC*"}
+ {FOAM_Prog,	    0,"Prog",         FOAM_NARY, "XFtiwwwwC*", 	0}
 #endif
 };
 

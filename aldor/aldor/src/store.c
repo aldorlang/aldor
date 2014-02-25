@@ -3408,7 +3408,7 @@ stoFree(Pointer p)
 	int	si;
 	Length	qi;
 	Section *sect;
-	
+
 	if (p==0) return; /* TTT */
 	if (!stoIsInit || !isInHeap(p) || (sect = sectFor(p)) == 0) {
 		(*stoError)(StoErr_FreeBad);
@@ -4851,6 +4851,8 @@ stoAlloc(unsigned code, ULong size)
 void
 stoFree(Pointer p)
 {
+	if (p==NULL)
+		return;
 	stoTally(stoBytesFree += stoPtrToHdr(p)->size);
 	stoLess(stoPtrToHdr(p));
 }

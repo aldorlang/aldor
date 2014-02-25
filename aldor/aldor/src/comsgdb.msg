@@ -586,6 +586,7 @@ Optimization options:\n\
  \t-Q peep        \tLocal ``peep-hole'' optimizations.      \t     X   X   X   X\n\
  \t-Q cprop       \tCopy propagation.                       \t         X   X   X\n\
  \t-Q cse         \tCommon sub-expression elimination.      \t         X   X   X\n\
+ \t-Q cast        \tSimplify variable types.                \t         X   X   X\n\
  \t-Q env         \tVarious environment optimisations.      \t         X   X   X\n\
  \t-Q emerge      \tEliminate lexical levels and records.   \t         X   X   X\n\
  \t-Q emerge-rr   \tEliminate raw records.                  \t         X   X   X\n\
@@ -835,7 +836,7 @@ ALDOR_F_BugNoBoolean	"Missing vital semantic information: please add `import fro
 
 ALDOR_F_BugExportSymeNotInit "Compiler bug: I am trying to create a slot for the export `%s:%s'. However, gen0SymeSetInit() has not been used to initialise it so I can not continue (sorry)."
 
-
+ALDOR_F_BadJavaFileName "Cannot generate java for %s; name reserved by java"
 
 ALDOR_I_PreRelease        "This is a pre-release of %s. `aldor -h info' for \
 more details."

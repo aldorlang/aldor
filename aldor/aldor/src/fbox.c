@@ -51,11 +51,14 @@ fboxMake(FoamBox fbox)
         int             i=0;
         FoamList        l;
  
-        if (fbox->l == 0) {
+        if (fbox->l == listNil(Foam)) {
+		Foam ret;
                 if (fbox->initial)
-                        return fbox->initial;
+                        ret = fbox->initial;
                 else
-                        return foamNewEmpty(fbox->tag, int0);
+                        ret = foamNewEmpty(fbox->tag, int0);
+		stoFree(fbox);
+		return ret;
         }
  
         newFoam = foamNewEmpty(fbox->tag, fbox->argc + foamNaryStart(fbox->tag));

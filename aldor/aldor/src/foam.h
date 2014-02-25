@@ -1274,13 +1274,16 @@ union foam {
  *
  ******************************************************************************/
 
+#define FOAMP_SeqExit (1<<0)
+
+
 struct foam_info {
 	FoamTag                 tag;
 	SExpr                   sxsym;
 	String                  str;            
 	short                   argc;      /* -1 => N-ary */
 	String                  argf;
-
+	int			properties;
 };
 
 #define FOAM_BVAL_MAX_ARGC    5
@@ -1330,6 +1333,7 @@ extern struct foamDDecl_info foamDDeclInfoTable[];
 #define foamProtoSExpr(tag) (foamProtoInfo(tag).sxsym)
 #define foamDDeclSExpr(tag) (foamDDeclInfo(tag).sxsym)
 
+/* To use these, include symcoinfo.h as well */
 #define foamIdTag(sym)      ((FoamTag)      symCoInfo(sym)->foamTagVal)
 #define foamBValIdTag(sym)  ((FoamBValTag)  symCoInfo(sym)->foamTagVal)
 #define foamProtoIdTag(sym) ((FoamProtoTag) symCoInfo(sym)->foamTagVal)
@@ -1570,6 +1574,13 @@ extern Bool foamTypeIsValue(Foam fmts, FoamTag type, AInt fmt);
 				    [1+ foamTRDDeclIDeclN(ddecl) + (n)])
 
 #define foamSelectArgc(foam)    (foamArgc(foam) - 1)
+
+extern Bool foamProgHasMultiAssign(Foam prog);
+extern Bool foamIsMultiAssign(Foam prog);
+
+extern Bool foamDeclEqual(Foam, Foam);
+
+extern int foamSeqNextReachable(Foam seq, int index);
 
 /*
  * This macro can be used to strip multiple casts from an expression. Be

@@ -30,8 +30,11 @@ AXLTESTS =	\
 	type-constant	\
 	cond-defaults	\
 	cond	\
+	cond2   \
 	hang	\
 	ret-exit \
+	tst_integer \
+	union-print \
 	#
 
 BROKEN =	\
@@ -48,12 +51,17 @@ BROKEN =	\
 	testbug	\
 	#
 
+if HAVE_ALDOR_GC
+GC_XFAIL_TESTS=issue2/issue2
+endif
+
 XFAIL_TESTS =		\
+	union-print/union-print	\
 	bugExtend1/bugExtend1	\
 	bugFree/bugFree	\
 	bugreport_5/bugreport_5	\
-	issue2/issue2	\
 	cond-defaults/cond-defaults \
+	$(GC_XFAIL_TESTS) \
 	#
 
 check_PROGRAMS = # filled by Tests.am

@@ -18,6 +18,7 @@
 #include "doc.h"
 #include "comsg.h"
 #include "sexpr.h"
+#include "symcoinfo.h"
 
 Bool	abDebug		= false;
 #define abDEBUG		DEBUG_IF(ab)	afprintf

@@ -8,6 +8,7 @@
 #include "syme.h"
 #include "table.h"
 #include "sexpr.h"
+#include "comsgdb.h"
 
 /*
  * Implement as the following...
@@ -48,6 +49,8 @@ local JavaCode gj0GloSet(Foam ref, Foam rhs);
 local JavaCode gj0GloRegister(Foam lhs, Foam rhs);
 local JavaCode gj0Nil(Foam foam);
 
+local JavaCode gj0Throw(Foam foam);
+
 local JavaCode gj0ValuesSet(Foam foam, Foam rhs);
 local JavaCode gj0ValuesReturn(Foam foam);
 
@@ -67,6 +70,7 @@ local JavaCode gj0RecSet(JavaCode lhs, JavaCode rhs, Foam ddecl, int idx);
 
 local JavaCode gj0SInt(Foam foam);
 local JavaCode gj0HInt(Foam foam);
+local JavaCode gj0BInt(Foam foam);
 local JavaCode gj0SFlo(Foam foam);
 local JavaCode gj0DFlo(Foam foam);
 local JavaCode gj0Byte(Foam foam);
@@ -171,9 +175,12 @@ enum gjId {
 
 	GJ_Object,
 	GJ_String,
+	GJ_BigInteger,
 	
 	GJ_ContextVar,
 	GJ_Main,
+
+	GJ_LIMIT
 };
 
 typedef Enum(gjId) GjId;
@@ -232,7 +239,7 @@ Bool	genJavaDebug	= false;
 /* Functions... */
 
 JavaCode 
-gjGenJavaUnit(Foam foam, String name)
+genJavaUnit(Foam foam, String name)
 {
 	JavaCodeList imps, code, mainImpl, interfaces, fmts, body;
 	JavaCode clss, contextDecl;
@@ -242,7 +249,9 @@ gjGenJavaUnit(Foam foam, String name)
 	gjInit(foam, name);
 
 	className = gj0ClassName(foam, name);
-
+	if (!jcIsLegalClassName(className)) {
+		comsgFatal(NULL, ALDOR_F_BadJavaFileName, className);
+	}
 	code = gj0DDef(foam->foamUnit.defs);
 	mainImpl = gj0ClassHeader(name);
 	comment = gj0ClassDocumentation(foam, name);
@@ -343,6 +352,8 @@ local JavaCode
 gj0Gen(Foam foam)
 {
 	switch (foamTag(foam)) {
+	case  FOAM_NOp:
+		return jcComment(strCopy("NOp"));
 	case  FOAM_Def:
 		return gj0Def(foam);
 	case FOAM_Set:
@@ -357,6 +368,8 @@ gj0Gen(Foam foam)
 		return gj0Glo(foam);
 	case FOAM_Seq:
 		return gj0Seq(foam);
+	case FOAM_Throw:
+		return gj0Throw(foam);
 	case FOAM_SInt:
 		return gj0SInt(foam);
 	case FOAM_HInt:
@@ -365,6 +378,8 @@ gj0Gen(Foam foam)
 		return gj0SFlo(foam);
 	case FOAM_DFlo:
 		return gj0DFlo(foam);
+	case FOAM_BInt:
+		return gj0BInt(foam);
 	case FOAM_Byte:
 		return gj0Byte(foam);
 	case FOAM_Char:
@@ -750,6 +765,7 @@ gj0ProgDeclDefaultValue(Foam decl)
 		return jcKeyword(symInternConst("false"));
 	case FOAM_Char:
 		return jcLiteralChar("\\0");
+	case FOAM_Byte:
 	case FOAM_SInt:
 	case FOAM_HInt:
 	case FOAM_SFlo:
@@ -1439,7 +1455,7 @@ gj0Seq(Foam seq)
 	GjSeqStore seqs = gj0SeqStoreNew();
 	int i;
 	
-	for (i=0; i<foamArgc(seq); i++) {
+	for (i=0; i != -1; i = foamSeqNextReachable(seq, i)) {
 		gj0SeqGen(seqs, seq->foamSeq.argv[i]);
 	}
 
@@ -1510,7 +1526,9 @@ gj0SeqGoto(GjSeqStore store, Foam foam)
 	AInt tgt = foam->foamGoto.label;
 	JavaCode s1 = jcAssign(gj0SeqSwitchId(), jcLiteralInteger(tgt));
 	JavaCode s2 = jcContinue(0);
-	
+
+	gj0SeqStoreEnsureBody(store);
+
 	gj0SeqStoreAddStmt(store, jcStatement(s1));
 	gj0SeqStoreAddStmt(store, jcStatement(s2));
 }
@@ -1823,6 +1841,18 @@ gj0SeqBucketIsHalt(GjSeqBucket bucket)
 	return bucket->label == GJ_SEQ_Halt;
 }
 
+local JavaCode
+gj0Throw(Foam foam)
+{
+	SExpr sx = foamToSExpr(foam);
+	String s = sxiFormat(sx);
+	
+	sxiFree(sx);
+
+	return jcComment(s);
+}
+
+
 /*
  * :: Custom java classes
  */
@@ -2096,6 +2126,31 @@ local JavaCode
 gj0SInt(Foam foam)
 {
 	return jcLiteralInteger(foam->foamSInt.SIntData);
+}
+
+local JavaCode
+gj0BInt(Foam foam)
+{
+	BInt val = foam->foamBInt.BIntData;
+	if (bintIsZero(val))
+		return jcMemRef(gj0Id(GJ_BigInteger),
+				jcId(strCopy("ZERO")));
+	if (bintLength(val) < 30 && bintIsSmall(val)) {
+		long smallval = bintSmall(val);
+		if (smallval == 1) {
+			return jcMemRef(gj0Id(GJ_BigInteger),
+					jcId(strCopy("ONE")));
+		}
+		else {
+			return jcApplyMethodV(gj0Id(GJ_BigInteger),
+					      jcId(strCopy("valueOf")),
+					      1, jcLiteralInteger(smallval));
+		}
+	}
+	else {
+		return jcConstructV(gj0Id(GJ_BigInteger),
+				    1, jcLiteralString(bintToString(val)));
+	}
 }
 
 local JavaCode
@@ -2658,7 +2713,7 @@ gj0FoamSigFrCCall(Foam ccall)
 	/* FIXME: Not sure how to get return types. */
 
 	inArgList = listNReverse(AInt)(inArgList);
-	if (ccall->foamCCall.type == FOAM_NOp) {
+	if (ccall->foamCCall.type == FOAM_NOp && gjContext->mfmt != 0) {
 		Foam ddecl = gjContext->formats->foamDFmt.argv[gjContext->mfmt];
 		retVals   = gj0FoamSigRets(ddecl, &nRets);
 	}
@@ -2880,6 +2935,8 @@ gj0CastFmt(Foam foam, AInt cfmt)
 	}
 	else if (iType == type)
 		return jc;
+	else if (iType == FOAM_Nil)
+		return jcNull();
 	else  {
 		return gj0Default(foam,
 			   strPrintf("No cast: %s, %s", foamStr(type), foamStr(iType)));
@@ -3252,17 +3309,22 @@ struct gjIdInfo gjIdInfo[] = {
 
 	{GJ_Object,     0, "Object"},
 	{GJ_String,     0, "String"},
+	{GJ_BigInteger, "java.math", "BigInteger"},
 
 	{GJ_ContextVar, 0, "ctxt"},
 	{GJ_Main,       0, "main"},
+	{ -1, 0, 0 }
 };
 
 
 local JavaCode
 gj0Id(GjId id) 
 {
+	assert(gjIdInfo[GJ_LIMIT].id == -1);
+
 	struct gjIdInfo *info = &gjIdInfo[id];
 	assert(id == info->id);
+
 	if (info->pkg != 0)
 		return jcImportedId(strCopy(info->pkg),
 				    strCopy(info->name));
@@ -3727,8 +3789,8 @@ struct gjBVal_info gjBValInfoTable[] = {
 	{FOAM_BVal_WordPlusStep,    GJ_NotImpl},
 	{FOAM_BVal_WordTimesStep,   GJ_NotImpl},
 
-	{FOAM_BVal_BInt0,        GJ_Const, 0,   "BigDecimal",   "ZERO"},
-	{FOAM_BVal_BInt1,        GJ_Const, 0,   "BigDecimal",   "ONE"},
+	{FOAM_BVal_BInt0,        GJ_Const, 0,   "BigInteger",   "ZERO"},
+	{FOAM_BVal_BInt1,        GJ_Const, 0,   "BigInteger",   "ONE"},
 	{FOAM_BVal_BIntIsZero,   GJ_Apply, 0,   "foamj.Math",   "isZero"},
 	{FOAM_BVal_BIntIsNeg,    GJ_Apply, 0,   "foamj.Math",   "isNeg"},
 	{FOAM_BVal_BIntIsPos,    GJ_Apply, 0,   "foamj.Math",   "isPos"},

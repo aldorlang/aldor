@@ -258,7 +258,7 @@ AldorDomainRep: Conditional with {
 		for expType  in rep(dom).types
 		for expValue in rep(dom).exports
 	        repeat {
-			Nil?(Hash)expName => iterate;
+			zero? expName => iterate;
 
 			DEBUG(PRINT() << "(Export: " << find expName
 				      << " with type " << expType << NL());

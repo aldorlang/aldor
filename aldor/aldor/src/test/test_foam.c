@@ -8,9 +8,11 @@
 local void testCall();
 local void testDDecl();
 local void testConstructors();
+local void testTests();
 local void testHash();
 local void testSIntReduce();
 local void testFoamBuffer();
+local void testIter();
 
 void
 foamTest()
@@ -20,9 +22,11 @@ foamTest()
 	TEST(testCall);
 	TEST(testDDecl);
 	TEST(testConstructors);
+	TEST(testTests);
 	TEST(testHash);
 	TEST(testSIntReduce);
 	TEST(testFoamBuffer);
+	TEST(testIter);
 }
 
 local void
@@ -71,6 +75,58 @@ testConstructors()
 	testIntEqual("tag", FOAM_BVal_BoolNot, foam->foamBCall.op);
 	testPointerEqual("arg1", arg1, foam->foamBCall.argv[0]);
 	testPointerEqual("arg1", arg2, foam->foamBCall.argv[1]);
+}
+
+local void
+testTests()
+{
+	Foam foam = foamNewSet(foamNewLoc(1), foamNewLoc(1));
+	testFalse("", foamIsMultiAssign(foam));
+
+	foam = foamNewSet(foamNew(FOAM_Values, 2, foamNewLoc(1), foamNewLoc(2)),
+			  foamNewLoc(3));
+	testTrue("", foamIsMultiAssign(foam));
+}
+
+
+local void
+testIter()
+{
+	Foam seq;
+	int i;
+	seq = foamNewSeq(NULL);
+	i = -1;
+	i = foamSeqNextReachable(seq, i);
+	testIntEqual("1", -1, i);
+
+	seq = foamNewSeq(foamNewNOp(),
+			 foamNewGoto(10),
+			 foamNewLabel(10),
+			 NULL);
+	i = -1;
+	i = foamSeqNextReachable(seq, i);
+	testIntEqual("", 0, i);
+	i = foamSeqNextReachable(seq, i);
+	testIntEqual("", 1, i);
+	i = foamSeqNextReachable(seq, i);
+	testIntEqual("", 2, i);
+	i = foamSeqNextReachable(seq, i);
+	testIntEqual("", -1, i);
+
+	seq = foamNewSeq(foamNewNOp(),
+			 foamNewGoto(10),
+			 foamNewNOp(),
+			 foamNewLabel(10),
+			 NULL);
+	i = -1;
+	i = foamSeqNextReachable(seq, i);
+	testIntEqual("", 0, i);
+	i = foamSeqNextReachable(seq, i);
+	testIntEqual("", 1, i);
+	i = foamSeqNextReachable(seq, i);
+	testIntEqual("", 3, i);
+	i = foamSeqNextReachable(seq, i);
+	testIntEqual("", -1, i);
 }
 
 

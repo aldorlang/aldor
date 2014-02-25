@@ -23,6 +23,7 @@
 #include "comsg.h"
 #include "strops.h"
 #include "table.h"
+#include "symcoinfo.h"
 
 Bool	scoDebug	= false;
 Bool	scoStabDebug	= false;

@@ -113,6 +113,8 @@ libgen_a_SOURCES =	\
 	format.c	\
 	int.c		\
 	intset.c	\
+	java/javacode.c	\
+	java/javaobj.c	\
 	list.c		\
 	memclim.c	\
 	msg.c		\
@@ -159,6 +161,7 @@ libstruct_a_SOURCES =	\
 	foamsig.c	\
 	forg.c		\
 	freevar.c	\
+	ftype.c		\
 	gf_syme.c	\
 	lib.c		\
 	loops.c		\
@@ -169,6 +172,7 @@ libstruct_a_SOURCES =	\
 	srcline.c	\
 	stab.c		\
 	syme.c		\
+	symcoinfo.c	\
 	tconst.c	\
 	tfcond.c	\
 	tform.c		\
@@ -198,6 +202,7 @@ libphase_a_SOURCES =	\
 	gencpp.c	\
 	genfoam.c	\
 	genlisp.c	\
+	java/genjava.c	\
 	gf_add.c	\
 	gf_excpt.c	\
 	gf_fortran.c	\
@@ -226,7 +231,7 @@ libphase_a_SOURCES =	\
 	of_killp.c	\
 	of_loops.c	\
 	of_peep.c	\
-	of_retyp.c	\
+	of_retyp2.c	\
 	of_rrfmt.c	\
 	of_util.c	\
 	optfoam.c	\
@@ -268,6 +273,7 @@ testsuite =			\
 	test/test_list.c	\
 	test/test_ostream.c	\
 	test/test_printf.c	\
+	test/test_retyp.c	\
 	test/test_scobind.c	\
 	test/test_srcpos.c	\
 	test/test_stab.c	\

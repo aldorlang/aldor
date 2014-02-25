@@ -17,6 +17,7 @@
 #include "abpretty.h"
 #include "comsg.h"
 #include "strops.h"
+#include "symcoinfo.h"
 
 Bool	tqDebug		= false;
 
