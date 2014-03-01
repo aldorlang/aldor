@@ -100,3 +100,6 @@ CLEANFILES += tst_integer/tst_integer-aldormain.c tst_integer/tst_integer.c tst_
 check_PROGRAMS += union-print/union-print
 union_print_union_print_SOURCES = union-print/union-print-aldormain.c union-print/union-print.c
 CLEANFILES += union-print/union-print-aldormain.c union-print/union-print.c union-print/union-print.ao
+check_PROGRAMS += trec/trec
+trec_trec_SOURCES = trec/trec-aldormain.c trec/trec.c
+CLEANFILES += trec/trec-aldormain.c trec/trec.c trec/trec.ao
