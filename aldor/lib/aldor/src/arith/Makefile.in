@@ -20,4 +20,6 @@ library = sal_arith sal_binpow sal_bool sal_bsearch sal_complex		\
 	  sal_itools sal_lincomb sal_mint sal_oarith sal_pointer	\
 	  sal_random sal_segment sal_sfloat
 
+@BUILD_JAVA_TRUE@javalibrary := $(library)
+
 include $(abs_top_srcdir)/lib/aldor/src/common.mk

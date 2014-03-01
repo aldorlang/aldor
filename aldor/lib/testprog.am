@@ -1,6 +1,6 @@
 # Check the makefile
 .PRECIOUS: Makefile
-Makefile: $(srcdir)/Makefile.am $(srcdir)/Makefile.in $(top_builddir)/config.status
+Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
 	  *config.status*) \
 	    cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh;; \
@@ -32,10 +32,9 @@ AM_V_ALDOR = $(am__v_ALDOR_$(V))
 am__v_ALDOR_ = $(am__v_ALDOR_$(AM_DEFAULT_VERBOSITY))
 am__v_ALDOR_0 = @echo "  ALDOR " $@;
 
-
 %.c: %.as $(ALDOR)
 	@$(MKDIR_P) $(@D)
-	$(AM_V_ALDOR)$(DBG) $(ALDOR) $(ALDORFLAGS) -Y$(@D) -Fao=$(@:.c=.ao) -Fc=$@ $<
+	$(AM_V_ALDOR)$(DBG) $(ALDOR) $(ALDORFLAGS) $($(*F)_AXLFLAGS) -Y$(@D) -Fao=$(@:.c=.ao) -Fc=$@ $<
 
 %-aldormain.c: %.as $(ALDOR)
 	@$(MKDIR_P) $(@D)
@@ -50,8 +49,6 @@ $(srcdir)/Tests.am: $(srcdir)/Makefile.am $(abs_top_srcdir)/lib/testprog.am
 	  echo "$${ctest}_$${ctest}_SOURCES = $$test/$${test}-aldormain.c $$test/$${test}.c" >> $@;	\
 	  echo "CLEANFILES += $$test/$${test}-aldormain.c $$test/$${test}.c $$test/$${test}.ao" >> $@;	\
 	done
-
-Makefile: $(srcdir)/Tests.am
 
 AM_CPPFLAGS = -I$(aldorsrcdir)
 AM_LDFLAGS = -L$(foamlibdir) $(addprefix -L,$(librarylibdirs)) $(addprefix -l,$(libraries)) -lfoam -lm

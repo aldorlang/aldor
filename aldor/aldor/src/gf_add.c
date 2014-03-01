@@ -77,6 +77,7 @@ local void 	   gen0InitConditionalExport (Syme);
 local SymeList 	   gen0AddExportedSymes	     (void);
 local Foam 	   gen0HasJoin		     (Foam, int, AbSyn *);
 local Foam 	   gen0HasCat		     (Foam, AbSyn);
+local Foam 	   gen0HasCatBit	     (Foam, AbSyn);
 local Foam 	   gen0HasImports	     (Foam, SymeList, Foam);
 local Foam 	   gen0HasImport	     (Foam, Syme);
 
@@ -2993,7 +2994,7 @@ gen0HasJoin(Foam dom, int argc, AbSyn *argv)
 
 	for (i = 0; i < argc ; i++) {
 		int nextLabel = gen0State->labelNo++;
-		gen0AddStmt(foamNewIf(gen0HasCat(dom, argv[i]), nextLabel), NULL);
+		gen0AddStmt(foamNewIf(gen0HasCatBit(dom, argv[i]), nextLabel), NULL);
 		gen0AddStmt(foamNewGoto(falseLabel), NULL);
 		gen0AddStmt(foamNewLabel(nextLabel), NULL);
 	}
@@ -3008,6 +3009,12 @@ gen0HasJoin(Foam dom, int argc, AbSyn *argv)
 local Foam 
 gen0HasCat(Foam dom, AbSyn cat)
 {
+	return foamNewCast(FOAM_Word, gen0HasCatBit(dom, cat));
+}
+
+local Foam
+gen0HasCatBit(Foam dom, AbSyn cat)
+{
 	Foam foam;
 	if (DEBUG(genf)) {
 		fprintf(dbOut, "Hash:\n");
@@ -3019,7 +3026,7 @@ gen0HasCat(Foam dom, AbSyn cat)
 				foamCopy(dom),
 				 foamNewSInt(gen0StrHash("%%")), 
 				 gen0SefoHash(cat, cat));
-	return foamNewCast(FOAM_Word, foam);
+	return foam;
 }
 
 local Foam

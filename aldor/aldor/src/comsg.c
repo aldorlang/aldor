@@ -15,6 +15,7 @@
 #include "abpretty.h"
 #include "path.h"
 #include "strops.h"
+#include "ftype.h"
 
 /****************************************************************************
  *

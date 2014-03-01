@@ -640,6 +640,8 @@ inlProgram(Foam prog, int n)
 	OptInfo		fluid(inlProg);
 	int		count, maxCount = 30;
 
+	inlProgDEBUG(stdout, "(Program %d\n", n);
+
 	assert(foamTag(prog) == FOAM_Prog);
 
 	inlProg = foamOptInfo(prog);
@@ -680,7 +682,6 @@ inlProgram(Foam prog, int n)
 		/* the inlProg is in prog.hdr.info.opt */
 		inlInlineProgWithPriq(prog); 
 
-
 		if (inlProg->changed)
 			inlMakeFlatFlog(inlProg->flog);
 
@@ -714,6 +715,7 @@ inlProgram(Foam prog, int n)
 	(void)foamPrintDb(prog);
 	(void)fprintf(dbOut, "***************************************\n\n");
 #endif
+	inlProgDEBUG(stdout, " Program %d:\n%pFoam\n)\n", n, prog);
 
 	Return(prog);
 }
@@ -1937,7 +1939,19 @@ inlInlineBody(Foam code, Foam call, Foam *argv, Foam env,
 	inlProg->newLabel = inlProg->numLabels + code->foamProg.nLabels;
 
 	inlAddEnv(envLoc, env, usesInnerEnvironment);
-	
+	for(i=0; i< paramArgc; i++) {
+		AInt argFmt;
+		FoamTag argType = inlExprType(argv[i], &argFmt);
+		Foam paramDecl = code->foamProg.params->foamDDecl.argv[i];
+		if (argType != paramDecl->foamDecl.type) {
+			inlineDEBUG(dbOut, "Mismatched caller type: %s -- %pFoam\n",
+				    foamStr(argType), paramDecl);
+			argv[i] = foamNewCast(paramDecl->foamDecl.type, argv[i]);
+		}
+		if (argFmt != paramDecl->foamDecl.format)
+			inlineDEBUG(dbOut, "Mismatched caller format: %d -- %pFoam\n",
+				    argFmt, paramDecl);
+	}
 	/* Initialize the variables used to hold the paramters of the call. */
 	for(i=0; i< paramArgc; i++) {
 		if (inlUseParam(argv[i], paramCount[i]))
@@ -2110,8 +2124,14 @@ inlInlineProg(Foam code, Foam *paramArgv, Foam *localArgv, Bool valueMode)
 						    paramArgv, localArgv));
 		if (code->foamProg.retType != FOAM_NOp)
 			retVal = foamNewNil();
-		else
-			retVal = foamNew(FOAM_Values, int0);
+		else {
+			AInt format = code->foamProg.format;
+			int nValues = foamDDeclArgc(inlInlinee->formats->foamDFmt.argv[format]);
+			retVal = foamNewEmpty(FOAM_Values, nValues);
+			for (i=0; i<nValues; i++) {
+				retVal->foamValues.argv[i] = foamNewNil();
+			}
+		}
 	}
 	else {
 		/* Set up communication with inlReturn. */

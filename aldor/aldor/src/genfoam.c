@@ -168,7 +168,7 @@ local Bool	   gen0IsResultCachable	  (AbSyn, TForm);
 local void	   gen0Iter		  (AbSyn, FoamList *, FoamList *);
 local Foam	   gen0Lambda		  (AbSyn, Syme, AbSyn);
 local Symbol	   gen0MachineType	  (TForm);
-local Foam *	   gen0MakeApplyArgs	  (AbSyn, Length *);
+local Foam *	   gen0MakeApplyArgs	  (Syme syme, AbSyn, Length *);
 local Foam	   gen0EmbedApply	  (int, AbSyn *, AbSyn, AbEmbed);
 local void	   gen0MakeBuiltinExports (void);
 local Foam	   gen0MakeExtend	  (Syme, TForm);
@@ -251,6 +251,7 @@ local Bool	   gen0IsOpenCallable(Syme syme, SImpl impl);
 
 local AInt	   gen0FortranSigFormatNumber   (TForm, Bool);
 local String       gen0TypeString               (Sefo);
+local FoamTag 	   gen0TfMapType(Syme syme, TForm mapTf, FoamTag argFoamTag, AInt *newFmt);
 
 
 /*
@@ -1424,7 +1425,7 @@ genApply(AbSyn absyn)
 	}
 	else {
 		/* Generate code for the arguments. */
-		vals = gen0MakeApplyArgs(absyn, &valc);
+		vals = gen0MakeApplyArgs(abSyme(op), absyn, &valc);
 
 		/* Fill in the operator and leave room for the arguments. */
 		if (abTag(op) == AB_Id) {
@@ -1536,7 +1537,7 @@ gen0IsFortranCall(AbSyn ab)
 
 
 local Foam *
-gen0MakeApplyArgs(AbSyn absyn, Length *valc)
+gen0MakeApplyArgs(Syme syme, AbSyn absyn, Length *valc)
 {
 	AbSyn		op, *argv, abi;
 	Length		i, argc;
@@ -1664,9 +1665,11 @@ gen0MakeApplyArgs(AbSyn absyn, Length *valc)
 	}
 	else {
 		for (i = 0; i < *valc; i += 1) {
+			FoamTag exprType = gen0Type(tfMapArgN(opTf, i), NULL);
+			FoamTag paramType = gen0TfMapType(syme, opTf, exprType, NULL);
 			abi = tfMapSelectArg(opTf, absyn, i);
 			assert(abi);
-			vals[i] = genFoamVal(abi);
+			vals[i] = foamCastIfNeeded(paramType, exprType, genFoamVal(abi));
 		}
 	}
 
@@ -2784,7 +2787,12 @@ gen0RecordNew(TForm key, Length argc, AbSyn *argv, Foam *vals)
 
 	gen0AddStmt(gen0RNew(whole, format), NULL);
 	for (index = 0; index < argc; index += 1) {
-		Foam	value = genFoamArg(argv, vals, index);
+		TForm tf = tfRecordArgN(key, index);
+		AInt fmt;
+		Foam value = genFoamArg(argv, vals, index);
+		FoamTag type = gen0Type(tf, NULL);
+		if (type != FOAM_Word)
+			value = foamNewCast(type, value);
 		gen0AddStmt(gen0RSet(whole, format, index, value), NULL);
 	}
 
@@ -2799,7 +2807,7 @@ gen0RecordElt(Syme syme, TForm key, Length argc, AbSyn *argv, Foam *vals)
 
 	AInt	format = gen0RecordFormatNumber(key);
 	AInt	index  = gen0RecordIndex(key, elt);
-	Foam	whole  = genFoamArg(argv, vals, int0);
+	Foam	whole  = foamNewCast(FOAM_Rec, genFoamArg(argv, vals, int0));
 
 	return foamNewRElt(format, whole, index);
 }
@@ -2826,7 +2834,7 @@ gen0RecordExplode(TForm key, Length argc, AbSyn *argv, Foam *vals)
 	Foam	tvals  = gen0TempFrDDecl(format, true);
 	int	i;
 
-	gen0AddStmt(foamNewSet(whole, genFoamArg(argv, vals, int0)), NULL);
+	gen0AddStmt(foamNewSet(whole, foamNewCast(FOAM_Rec, genFoamArg(argv, vals, int0))), NULL);
 
 	whole = gen0MakeMultiEvaluable(FOAM_Rec, format, whole);
 
@@ -3910,8 +3918,10 @@ gen0MultiAssign(FoamTag set, AbSyn lhs, Foam rhsFoam)
 		/* FIXME: deal with domains defs here (see gen0Define) */
 	}
 	if (!gen0ValueMode) {
+		/*
 		for(i = 0; i < argc; i++)
 			gen0FreeTemp(temps->foamValues.argv[i]);
+		*/
 		foamFree(temps);
 
 		return 0;
@@ -5538,7 +5548,9 @@ gen0VarsParam(Syme syme, Stab stab)
 	AInt		index;
 	FoamTag		kind;
 	AInt		fmtSlot = emptyFormatSlot;
+	AInt		paramFmtSlot = emptyFormatSlot;
 	Bool		packed = tfIsPackedMap(gen0State->type);
+	FoamTag         paramType;
 
 	assert(symeIsParam(syme));
 
@@ -5549,9 +5561,10 @@ gen0VarsParam(Syme syme, Stab stab)
 
 /*	printf("BDS: entered gen0VarsParam\n"); */
 	type = packed ? gen0Type(tfRawType(tf), NULL) : gen0Type(tf, &fmtSlot);
+	paramType = gen0TfMapType(NULL, gen0State->type, type, &paramFmtSlot);
 /*	printf("BDS: done in gen0VarsParam\n"); */
 
-	decl = foamNewDecl(type, name, fmtSlot);
+	decl = foamNewDecl(paramType, name, paramFmtSlot);
 	index = gen0AddParam(decl);
 	kind = FOAM_Par;
 
@@ -5567,7 +5580,7 @@ gen0VarsParam(Syme syme, Stab stab)
 		kind = FOAM_Lex;
 
 		par = gen0RawToUnary(par, id);
-		gen0AddStmt(foamNewSet(foamNewLex(int0, index), par), NULL);
+		gen0AddStmt(foamNewSet(foamNewLex(int0, index), foamCastIfNeeded(type, paramType, par)), NULL);
 		if (gen0State->program)
 			foamProgUnsetLeaf(gen0State->program);
 		gen0State->hasTemps = true;
@@ -5576,12 +5589,21 @@ gen0VarsParam(Syme syme, Stab stab)
 	else if (symeUsedDeeply(syme)) {
 		Foam	par = foamNewPar(index);
 
-		index = gen0AddLex(foamCopy(decl));
+		index = gen0AddLex(foamNewDecl(type, strCopy(name), emptyFormatSlot));
 		kind = FOAM_Lex;
 
-		gen0AddInit(foamNewSet(foamNewLex(int0, index), par));
+		gen0AddInit(foamNewSet(foamNewLex(int0, index), foamCastIfNeeded(type, paramType, par)));
 		if (gen0State->program)
 			foamProgUnsetLeaf(gen0State->program);
+		gen0State->hasTemps = true;
+	}
+	else if (type != paramType) {
+		Foam par = foamNewPar(index);
+		index = gen0AddLocal(foamNewDecl(type, strCopy(name), emptyFormatSlot));
+		kind = FOAM_Loc;
+		par = foamCastIfNeeded(type, paramType, par);
+
+		gen0AddInit(foamNewSet(foamNewLoc(index), par));
 		gen0State->hasTemps = true;
 	}
 
@@ -5591,6 +5613,31 @@ gen0VarsParam(Syme syme, Stab stab)
 	gen0SetVarIndex(syme, index);
 	gen0SetFoamKind(syme, kind);
 }
+
+local FoamTag
+gen0TfMapType(Syme syme, TForm mapTf, FoamTag argFoamTag, AInt *newFmt)
+{
+	AInt dummy;
+	if (newFmt == NULL)
+		newFmt = &dummy;
+
+	if (syme && (symeIsBuiltin(syme) || symeIsForeign(syme)))
+		return argFoamTag;
+
+	*newFmt = emptyFormatSlot;
+	switch (argFoamTag) {
+	case FOAM_Rec:
+		return FOAM_Word;
+	case FOAM_Clos:
+		return FOAM_Word;
+	case FOAM_Arr:
+		*newFmt = 0;
+		return FOAM_Arr;
+	default:
+		return argFoamTag;
+	}
+}
+
 
 local void
 gen0VarsLex(Syme syme, Stab stab)
@@ -5607,7 +5654,7 @@ gen0VarsLex(Syme syme, Stab stab)
 	type = gen0Type(symeType(syme), &fmt);
 	assert(symeIsLexVar(syme) || symeIsLexConst(syme));
 
-	if (type == FOAM_Rec) fmtSlot = fmt;
+	if (type == FOAM_Rec || type == FOAM_Arr) fmtSlot = fmt;
 
 	decl = foamNewDecl(type, name, fmtSlot);
 
@@ -6205,10 +6252,14 @@ gen0ForIter(AbSyn absyn, FoamList *forl, FoamList *itl)
                 gen0MultiAssign(FOAM_Set, absyn->abFor.lhs, call);
         }
         else {
+		FoamTag type;
                 id = abDefineeId(absyn);
                 call = foamNewEmpty(FOAM_CCall, 2);
-                call->foamCCall.type = gen0Type(gen0AbContextType(id), NULL);
+		type = gen0Type(gen0AbContextType(id), NULL);
+                call->foamCCall.type = FOAM_Word;
                 call->foamCCall.op   = foamCopy(valueFun);
+		if (type != FOAM_Word)
+			call = foamNewCast(type, call);
                 gen0AddStmt(foamNewSet(genFoamVal(id), call), absyn);
         }
 
@@ -6552,9 +6603,7 @@ gen0TempValueMode(TForm tf)
 		AInt fmt;
 		FoamTag type;
 		type = gen0Type(tf, &fmt);
-		if (type == FOAM_Arr) {
-		  return gen0TempLocal0(FOAM_Ptr,emptyFormatSlot) ;
-		    }
+
 		return gen0TempLocal0(type, fmt);
 	}
 	vals = foamNewEmpty(FOAM_Values, tfMultiArgc(tf));
@@ -7244,10 +7293,8 @@ gen0GlobalName(String libname, Syme syme)
 	if (genIsRuntime() && !symeIsImport(syme))
 		g = strCopy(symeString(syme));
 	else {
-		String l = strLower(strCopy(libname));
 		Hash   h = gen0SymeTypeCode(syme);
-		g = strPrintf("%s_%s_%09d", l, symeString(syme), h);
-		strFree(l);
+		g = strPrintf("%s_%s_%09d", libname, symeString(syme), h);
 	}
 	symeSetExtension(syme, ext0);
 
@@ -7472,7 +7519,10 @@ local Foam
 gen0UnaryToTuple(Foam val)
 {
 	Foam	vars[2], tupl, elts;
-	
+	FoamTag type = gen0FoamType(val);
+	if (type != FOAM_Word)
+		val = foamNewCast(FOAM_Word, val);
+
 	gen0MakeEmptyTuple(foamNewSInt(1), vars, NULL);
 	tupl = vars[0];
 	elts = vars[1];
@@ -7829,7 +7879,11 @@ gen0BuiltinExporter(Foam glo, Syme syme)
 	for (i=0; i < tfMapArgc(tf); i++)
 		call->foamCCall.argv[i] = foamNewPar(i);
 
-	if (retFmt == 0)
+	if (tfMapRetc(tf) == 0) {
+		gen0AddStmt(call, NULL);
+		result = foamNewEmpty(FOAM_Values, 0);
+	}
+	else if (retFmt == 0)
 		result = call;
 	else {
 		tmp = gen0TempFrDDecl(retFmt, true);

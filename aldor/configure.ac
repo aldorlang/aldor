@@ -16,6 +16,7 @@ AM_MAINTAINER_MODE([enable])
 AC_PROG_LEX
 AC_PROG_YACC
 
+GC=aldor
 # Check for GMP
 AC_CHECK_HEADER([gmp.h],
                 [AM_CONDITIONAL(GMP, true)],
@@ -41,7 +42,14 @@ AC_ARG_WITH([boehm-gc],
             [AS_HELP_STRING([--with-boehm-gc],
                             [Use Boehm Garbage Collector instead of built-in])],
             [CFLAGS="$CFLAGS -DSTO_USE_BOEHM"
+	     GC=boehm
              LIBS="$LIBS -lgc"])
+
+AC_SUBST([GC])
+AM_CONDITIONAL(HAVE_ALDOR_GC, test $GC = aldor)
+AM_CONDITIONAL(HAVE_BOEHM_GC, test $GC = boehm)
+AC_SUBST([HAVE_ALDOR_GC])
+AC_SUBST([HAVE_BOEHM_GC])
 
 # Checks for libraries.
 LT_INIT

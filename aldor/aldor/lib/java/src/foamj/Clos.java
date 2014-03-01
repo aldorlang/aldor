@@ -3,7 +3,7 @@ package foamj;
 import java.util.Arrays;
 
 
-public class Clos extends AbstractValue implements Word {
+public class Clos extends AbstractValue implements Word, Value {
     private Env env;
     private Fn fn;
     private Word info;

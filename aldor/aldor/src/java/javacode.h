@@ -152,4 +152,6 @@ extern JavaCodeList jcCollectImports(JavaCode clss);
 extern SExpr        jcNodeSExpr(JavaCode code);
 extern void         jcNodePrint(JavaCodePContext ctxt, JavaCode code);
 
+extern Bool         jcIsLegalClassName(String word);
+
 #endif

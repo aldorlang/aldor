@@ -17,7 +17,6 @@ AXLTESTS =	\
 	bug715	\
 	bug778	\
 	bug798	\
-	bug813	\
 	bug818	\
 	bug821	\
 	bug822	\
@@ -76,7 +75,6 @@ AXLTESTS =	\
 	bug1045	\
 	bug1046	\
 	bug1053	\
-	bug1054	\
 	bug1055	\
 	bug1056	\
 	bug1061	\
@@ -314,7 +312,6 @@ AXLTESTS =	\
 	gfGener2	\
 	goto0	\
 	grok	\
-	halt0	\
 	halt1	\
 	has1	\
 	has2	\
@@ -339,7 +336,6 @@ AXLTESTS =	\
 	libdup0	\
 	libdup1	\
 	limits	\
-	linear5	\
 	lit0	\
 	lit1	\
 	loop0	\
@@ -483,20 +479,30 @@ BROKEN =	\
 	pack1	\
 	pack2	\
 	t1088	\
+	bug1054	\
 	#
 
 XFAIL_TESTS =	\
+	bug892/bug892	\
+	bug911/bug911	\
 	bug928/bug928	\
 	bug944/bug944	\
 	bug965/bug965	\
+	bug1020/bug1020	\
 	bug1023/bug1023	\
 	bug1054/bug1054	\
+	bug1071/bug1071 \
 	bug1087/bug1087	\
 	bug1113/bug1113	\
 	bug1114/bug1114	\
 	bug1176/bug1176	\
+	bug1220/bug1220 \
+	bug1252/bug1252 \
+	bug1290/bug1290 \
+	depend8/depend8 \
 	default8/default8	\
 	depend1/depend1	\
+	funlist1/funlist1	\
 	object1/object1	\
 	pack1/pack1	\
 	pack2/pack2	\

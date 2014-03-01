@@ -35,6 +35,7 @@
 #include "srcline.h"
 #include "comsg.h"
 #include "strops.h"
+#include "ftype.h"
 
 /******************************************************************************
  *

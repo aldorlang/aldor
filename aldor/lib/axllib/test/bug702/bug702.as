@@ -42,13 +42,16 @@ import from I
 import from F
 import from U
 
+import from GeneralAssert;
 x : U := [ 3 ]
 y : U := union( 2.71828 )
 
 print << (x case first)  <<newline
-print << (x case second) <<newline
-print << (y case first ) <<newline
-print << (y case second) <<newline
+print << (x case second) << newline
+print << (y case first) << newline
+print << (y case second ) <<newline
+
 print << x.first       <<newline
-print << y.second      <<newline
-print << y.first       <<newline
+print << y.second       <<newline
+assertFail( (): () +-> x.second)
+assertFail( (): () +-> y.first)

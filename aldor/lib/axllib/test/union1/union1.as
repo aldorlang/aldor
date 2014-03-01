@@ -26,4 +26,4 @@ print << (y case first ) <<newline
 print << (y case second) <<newline
 print << x.first       <<newline
 print << y.second      <<newline
-print << y.first       <<newline
+

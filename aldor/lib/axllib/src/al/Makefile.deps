@@ -43,3 +43,5 @@ ieeectl_deps  := efuns
 except_deps   := axlcat
 sort_deps     := axlcat list
 axl_byte_deps     := axlcat
+xassert_deps := axlcat textwrit string buffer
+buffer_deps := string

@@ -2010,8 +2010,10 @@ fiUnhandledException(FiWord exn)
 		fiImportGlobal("G_LKR1B_aldorUnhandledExceptio", pfoo);
 		if (pfoo) unhHandler = (FiClos) *pfoo;
 	}
-	if (unhHandler)
+	if (unhHandler) {
 		fiCCall1(FiWord, unhHandler, (FiWord) exn);
+		exit(2);
+	}
 	else {
 		printf("Aldor runtime: there is no exception handler installed.\nNote: There seems to be no aldorUnhandledException function defined\nso it is not possible to continue.\n");
 		exit(2);
@@ -2034,8 +2036,9 @@ fiRaiseException(FiWord problem)
 		fiImportGlobal("G_JSAWY_aldorRuntimeException", pfoo);
 		if (pfoo) exnHandler = (FiClos) *pfoo;
 	}
-	if (exnHandler)
+	if (exnHandler) {
 		fiCCall2(FiWord, exnHandler, (FiWord) problem, NULL);
+	}
 	else {
 		printf("Aldor runtime: An Aldor runtime error occurred : %s\n\
 Note: there seems to be no aldorRuntimeException function defined\n\

@@ -56,6 +56,8 @@ main(int argc, char *argv[])
 	if (testShouldRun("syme")) symeTest();
 	if (testShouldRun("tibup")) tibupTest();
 	if (testShouldRun("tfsat")) tfsatTest();
+	if (testShouldRun("retype")) retypeTest();
+	if (testShouldRun("genfoam")) genfoamTestSuite();
 
 	testIntEqual("fluidlevel", 0, fluidLevel);
 

@@ -68,6 +68,7 @@ typedef struct emUsage {
 	EmUsageState	used;		/* Usage flag */
 	int		format;		/* format of env  (size of array) */
 	Foam		type;		/* Foam instruction creating env */
+	Foam		decl;		/* Foam decl for this variable */
 	Foam		*remap;		/* Vector of remaps to locals */
 	BPack(Bool)	mark;		/* mark for detecting circular links */
 	BPack(Bool)	isSet;		/* has an assignment been seen? */
@@ -285,10 +286,15 @@ emMakeUsageVec(Foam ddecl)
 		emu[i].link   = 0;
 		emu[i].mark   = 0;
 		emu[i].type   = 0;
+		emu[i].decl   = NULL;
 		emu[i].isSet  = false;
 		emu[i].format = emptyFormatSlot;
 	}
 	emu[0].used = EM_NonEscapingEnv;	/* for Env(0) */
+	emu[0].decl = NULL;
+	for (i=0; i<foamDDeclArgc(ddecl); i++) {
+		emu[i+1].decl = ddecl->foamDDecl.argv[i];
+	}
 	return emu;
 }
 
@@ -987,10 +993,14 @@ emNewEnvSet(Foam def, Foam lhs, Foam rhs)
 							 
 	}
 	else {
+		Foam decl = emUsage(lhs)->decl;
+		Foam typedLhs;
+		typedLhs = (decl->foamDecl.type == FOAM_Rec) ? foamCopy(lhs) : foamNewCast(FOAM_Rec, foamCopy(lhs));
 		for(i=0; i<size; i++)
 			emAddStmt(foamNewSet(foamCopy(emUsage(lhs)->remap[i]),
 					     foamNewRElt(format,
-							 foamCopy(lhs), i)));
+							 foamCopy(typedLhs), i)));
+		foamFree(typedLhs);
 	}
 
 	emChanged = true;
