@@ -1601,4 +1601,7 @@ extern Bool		 foamIsControlFlow	(Foam);
 typedef Bool (*FoamTestFn)(Foam f);
 extern Foam foamFindFirst(FoamTestFn testFn, Foam foam);
 
+Foam foamCastIfNeeded(FoamTag wanted, FoamTag actual, Foam foam);
+
+
 #endif /* !_FOAM_H_ */

@@ -3362,6 +3362,14 @@ foamFindFirst(FoamTestFn testFn, Foam foam)
 	return 0;
 }
 
+Foam
+foamCastIfNeeded(FoamTag wanted, FoamTag actual, Foam foam)
+{
+	if (wanted == actual)
+		return foam;
+
+	return foamNewCast(wanted, foam);
+}
 
 /*****************************************************************************
  *
