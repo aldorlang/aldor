@@ -1944,13 +1944,13 @@ inlInlineBody(Foam code, Foam call, Foam *argv, Foam env,
 		FoamTag argType = inlExprType(argv[i], &argFmt);
 		Foam paramDecl = code->foamProg.params->foamDDecl.argv[i];
 		if (argType != paramDecl->foamDecl.type) {
-			afprintf(dbOut, "Mismatched caller type: %s -- %pFoam\n",
-				 foamStr(argType), paramDecl);
+			inlineDEBUG(dbOut, "Mismatched caller type: %s -- %pFoam\n",
+				    foamStr(argType), paramDecl);
 			argv[i] = foamNewCast(paramDecl->foamDecl.type, argv[i]);
 		}
 		if (argFmt != paramDecl->foamDecl.format)
-			afprintf(dbOut, "Mismatched caller format: %d -- %pFoam\n",
-				 argFmt, paramDecl);
+			inlineDEBUG(dbOut, "Mismatched caller format: %d -- %pFoam\n",
+				    argFmt, paramDecl);
 	}
 	/* Initialize the variables used to hold the paramters of the call. */
 	for(i=0; i< paramArgc; i++) {
