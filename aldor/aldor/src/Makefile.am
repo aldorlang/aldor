@@ -268,6 +268,7 @@ testsuite =			\
 	test/test_fname.c 	\
 	test/test_foam.c 	\
 	test/test_format.c	\
+	test/test_genfoam.c	\
 	test/test_jflow.c	\
 	test/test_int.c		\
 	test/test_list.c	\
