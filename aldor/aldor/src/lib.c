@@ -2402,9 +2402,9 @@ lib1GetSymes(Lib lib)
 
 		for (i=0; i< lib->symec; i++) {
 			syme = lib->symev[i];
-			fprintf(dbOut, "%d: %s %s %ld %s (%s %s . %ld)\n", 
+			fprintf(dbOut, "%s %d: %s %ld %s (%s %s . %ld)\n",
+				fnameUnparse(lib->name),
 				i,
-				libSymeIsLocal(lib, syme) ? "O" : "Z",
 				symeInfo[symeKind(syme)].str,
 				syme->hash,
 				syme->id->str,
