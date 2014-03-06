@@ -1,7 +1,6 @@
 #include "aldor"
 #include "aldorio"
 #include "algebra"
-#include "aldorinterp"
 #pile
 
 -- Very incomplete test, just sufficient to show that
