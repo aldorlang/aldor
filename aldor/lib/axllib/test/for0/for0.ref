@@ -2,7 +2,10 @@ Start test...
 Constructing domain FunctionMap
 FunctionMap: coerce:Rep -> %
 FunctionMap: coerce:Rep -> %
-f(13) = Constructing domain BoundedInteger(1,4)
+Constructing domain BoundedInteger(1,4)
 BoundedInteger: ord of coerce out of range
-Unhandled Exception: RuntimeError(??)
-(Aldor error) Halt
+Constructing domain ArrayMap
+l(3) = 30
+l = array(10, 20, 30, 40) :: ArrayMap
+
+...End test
