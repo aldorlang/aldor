@@ -27,20 +27,21 @@
  */
 
 #include "axlobs.h"
+#include "comsg.h"
 #include "debug.h"
+#include "fbox.h"
 #include "file.h"
 #include "fluid.h"
+#include "foamsig.h"
 #include "format.h"
+#include "int.h"
 #include "opsys.h"
+#include "sexpr.h"
 #include "store.h"
+#include "symbol.h"
+#include "symcoinfo.h"
 #include "util.h"
 #include "xfloat.h"
-#include "comsg.h"
-#include "symbol.h"
-#include "sexpr.h"
-#include "fbox.h"
-#include "foamsig.h"
-#include "symcoinfo.h"
 
 #define FOAM_NARY	(-1)	/* Identifies tags with N-ary data argument. */
 

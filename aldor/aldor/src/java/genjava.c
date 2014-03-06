@@ -1,14 +1,14 @@
+#include "comsg.h"
 #include "debug.h"
 #include "flog.h"
 #include "foamsig.h"
 #include "intset.h"
 #include "javacode.h"
+#include "sexpr.h"
 #include "store.h"
-#include "util.h"
 #include "syme.h"
 #include "table.h"
-#include "sexpr.h"
-#include "comsgdb.h"
+#include "util.h"
 
 /*
  * Implement as the following...
