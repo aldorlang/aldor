@@ -386,7 +386,7 @@ retLocal(Foam foam)
 		return retLocal(foam->foamCast.expr);
 	case FOAM_RElt:
 		return retLocal(foam->foamRElt.expr);
-		// FOAM_Arr, FOAM_TRElt, etc
+		/* FOAM_Arr, FOAM_TRElt, etc */
 	default:
 		return NULL;
 	}
