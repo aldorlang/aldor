@@ -40,6 +40,10 @@ am__v_ALDOR_0 = @echo "  ALDOR " $@;
 	@$(MKDIR_P) $(@D)
 	$(AM_V_ALDOR)$(ALDOR) $(ALDORFLAGS) -Fmain -R $(dir $@) $(abspath $<)
 
+check_PROGRAMS = # filled by Tests.am
+CLEANFILES = # filled by Tests.am
+TESTS = $(check_PROGRAMS)
+
 include Tests.am
 $(srcdir)/Tests.am: $(srcdir)/Makefile.am $(abs_top_srcdir)/lib/testprog.am
 	truncate -s0 $@

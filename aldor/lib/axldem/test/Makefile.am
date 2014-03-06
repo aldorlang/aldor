@@ -22,8 +22,4 @@ XFAIL_TESTS =	\
 	type6/type6	\
 	#
 
-check_PROGRAMS = # filled by Tests.am
-CLEANFILES = # filled by Tests.am
-TESTS = $(check_PROGRAMS)
-
 include ../../testprog.am

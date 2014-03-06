@@ -511,10 +511,6 @@ XFAIL_TESTS =	\
 RESOLVED = \
 	bug814
 
-check_PROGRAMS = # filled by Tests.am
-CLEANFILES = # filled by Tests.am
-TESTS = $(check_PROGRAMS)
-
 include ../../testprog.am
 
 pack0_pack0_SOURCES += pack0/packfns.c

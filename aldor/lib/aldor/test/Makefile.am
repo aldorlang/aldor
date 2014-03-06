@@ -65,10 +65,6 @@ XFAIL_TESTS =		\
 	$(GC_XFAIL_TESTS) \
 	#
 
-check_PROGRAMS = # filled by Tests.am
-CLEANFILES = # filled by Tests.am
-TESTS = $(check_PROGRAMS)
-
 include ../../testprog.am
 
 cond/cond.c: cond/cond1.c
