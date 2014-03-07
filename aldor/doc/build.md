@@ -15,12 +15,12 @@ configuration.
 Compiler
 --------
 
-The Aldor compiler has a layered design (see structure.md for more details).
-This layering is represented in the build process by putting the object files
-(.o) for each layer in a separate convenience library (.a/.lib file). In
-general, code from one layer should not use code from a layer above it, and
-not include headers from that layer. Currently, this is violated in several
-instances.
+The Aldor compiler has a layered design (see [compiler internals](compiler)
+for more details).  This layering is represented in the build process by
+putting the object files (.o) for each layer in a separate convenience library
+(.a/.lib file). In general, code from one layer should not use code from a
+layer above it, and not include headers from that layer. Currently, this is
+violated in several instances.
 
 The compiler is written in C and uses a LALR(1) macro-grammar to generate its
 parser. The tool `zacc` in `aldor/tools/unix` expands macros in `axl.z` and
@@ -50,12 +50,12 @@ Other subdirectories can be added, but the build scripts expect at least the
 three above to exist. By convention, we recommend the following names for
 optional directories:
 
-- doc:			Library documentation, usually in LaTeX form.
-- tools:		Extra programs, not installed with the library, but
-			used to generate sources or perform more complex build
-			tasks. These must be built *before* `src`.
-- utility:		Extra programs built for and/or with the library. Must
-			be built *after* `src`.
+- doc:                  Library documentation, usually in LaTeX form.
+- tools:                Extra programs, not installed with the library, but
+                        used to generate sources or perform more complex build
+                        tasks. These must be built *before* `src`.
+- utility:              Extra programs built for and/or with the library. Must
+                        be built *after* `src`.
 
 The following is a high level view of the library build. A more in-depth
 explanation of what the build scripts and helpers do will follow in another
@@ -68,7 +68,7 @@ The root Makefile.am should be mostly empty, and only dispatch into
 sub-directories. For most complete libraries with documentation, it will look
 similar to this:
 
-```
+```automake
 SUBDIRS = doc include src test
 ```
 
@@ -79,14 +79,14 @@ Each Aldor library consists of one or more sub-libraries that are built in
 dependency order. This order must be stated explicitly in the source
 `src/Makefile.am` for the library by listing them in the `SUBDIRS` variable.
 
-```
+```automake
 SUBDIRS = part1 part2
 ```
 
 Second in the Automake file should be the file name of the library being
 built. We call our demo library here `libsample.a`.
 
-```
+```automake
 lib_LIBRARIES = libsample.a
 ```
 
@@ -95,7 +95,7 @@ code. Extra support code for the C side should also be listed in this
 variable. The variable name is the above library name with non-alphanumeric
 characters such as `-` and `.` replaced by underscores `_`.
 
-```
+```automake
 libsample_a_SOURCES =	\
 	part1/doma.c	\
 	part1/domb.c	\
@@ -118,7 +118,7 @@ are creating is `lib/sample/Makefile.am`, then `libraryname` must be `sample`.
 This name is used to build the Aldor side of the library, i.e. the .al file,
 in this case `libsample.al`.
 
-```
+```automake
 libraryname = sample
 ```
 
@@ -140,7 +140,7 @@ be `BuildSampleLib`. If you want to override the name between `Build` and
 
 E.g.:
 
-```
+```automake
 Libraryname = Demo
 ```
 
@@ -154,7 +154,7 @@ Most libraries will want to include the default Automake rule file that
 produces and installs the Aldor library. This file resides in the `lib` under
 the `aldor` build root.
 
-```
+```automake
 include ../../buildlib.am
 ```
 
@@ -187,7 +187,7 @@ we want to be integrated with the Automake-based build.
 (TODO: move this to an extra file in the same directory (perhaps
 `prelude.mk.in`), so it can be updated automatically)
 
-```
+```automake
 @SET_MAKE@
 VPATH = @srcdir@
 
@@ -207,7 +207,7 @@ abs_top_srcdir	:= @abs_top_srcdir@
 The boilerplate is followed by a list of Aldor source files without the `.as`
 suffix.
 
-```
+```automake
 library = doma domb
 ```
 
@@ -215,7 +215,7 @@ Lastly, the common build variables for the library are included. A relative
 path using explicit `../..` should not be used, as that would break vpath (out
 of tree) builds.
 
-```
+```automake
 include $(top_srcdir)/lib/sample/src/common.mk
 ```
 
@@ -226,21 +226,21 @@ The purpose of this extraction is to minimise reduncancy by defining common
 variables only once. The only required variable in this file is `libraryname`,
 whose purpose was described in the earlier section "Library name".
 
-```
+```automake
 libraryname	:= sample
 ```
 
 Commonly, libraries will want to define their Aldor optimisation and debug
 flags, more generally speaking its compiler flags.
 
-```
+```automake
 AXLFLAGS	:= -Q8 -Zdb
 ```
 
 Finally, at the end of a library's `common.mk`, the main build machinery for
 Aldor sub-libraries is included.
 
-```
+```automake
 include $(top_srcdir)/lib/buildlib.mk
 ```
 
@@ -270,7 +270,7 @@ on part1, and in which `domd` depends on `domc`. Note that although files in
 part2 may depend on files in part1, these dependencies are not listed
 explicitly, but rather the complete part1 is imported.
 
-```
+```automake
 # Intra-sublib dependencies
 domd_deps	:= domc
 
@@ -297,7 +297,7 @@ Makefile.am contains a list of libraries required for the tests, a list of
 test directories, a list of tests known to fail, and an include directive for
 the common test code.
 
-```
+```automake
 libraries = aldor sample
 
 AXLTESTS =		\
@@ -318,7 +318,7 @@ After the include, one may add other C sources required for the tests to run,
 as well as dependencies between tests, if one test uses the Aldor object of
 another.
 
-```
+```automake
 domatest2_domatest2_SOURCES += domatest2/support.c
 
 domatest2/domatest2.c: domatest1/domatest1.c
