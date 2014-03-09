@@ -65,9 +65,6 @@
  *	DFloat
  *		Floating-point numbers of specific sizes.
  *
- *	LongDouble
- *		long double, if supported, otherwise double.
- *
  *	MostAlignedType
  *		This is the type with the strongest alignment restrictions.
  *      UNotAsLong
@@ -387,12 +384,6 @@ typedef char		*IOMode;
   typedef float		SFloat;
 #endif
 typedef double		DFloat;
-
-#ifdef CC_no_long_double
-   typedef double	LongDouble;
-#else
-   typedef long double	LongDouble;
-#endif
 
 typedef double	MostAlignedType;
 

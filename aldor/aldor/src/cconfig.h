@@ -36,9 +36,6 @@
  * CC_no_const
  *	if the "const" modifier is not (fully) supported
  *
- * CC_no_long_double
- *	if long double is not supported
- *
  * CC_no_prototype
  *	if ANSI-style function prototypes are not supported
  *
@@ -246,7 +243,6 @@
 #  define CC_no_void_pointer
 #  define CC_no_token_paste
 #  define CC_no_const
-#  define CC_no_long_double
 #  define CC_no_prototype
 #  define CC_no_constant_questions
 #  define CC_missing_memmove
@@ -266,7 +262,6 @@
  */
 #if defined(CC_XLC) && defined(OS_AIX_RS)
 #  define CC_CONFIGURED
-#  define CC_no_long_double
 #  ifdef OS_AIX41_RS
 #    define CC_getcwd_has_proto
 #    define CC_chdir_has_proto
@@ -335,7 +330,6 @@
 #      define CC_no_token_paste
 #      define CC_no_const
 #      define CC_no_prototype
-#      define CC_no_long_double
 #      define CC_sun_sparc_varargs
 #      define CC_no_float_h
 #      define CC_no_stdarg_h
@@ -370,7 +364,6 @@
  */
 #if defined(CC_DEC_AXP) && defined(HW_AXP) && defined(OS_UNIX)
 #  define CC_CONFIGURED
-#  define CC_no_long_double
 #  define CC_little_endian
 #  define CC_second_largest_is_int
 #  define SF_no_denorms
@@ -378,7 +371,6 @@
 
 #if defined(CC_DEC_AXP) && defined(HW_AXP) && defined(OS_VMS)
 #  define CC_CONFIGURED
-#  define CC_no_long_double
 #  define CC_little_endian
 #  define CC_second_largest_is_int
 #  endif
@@ -388,7 +380,6 @@
  */
 #if defined(CC_MIPS) && defined(OS_IRIX) && defined (HW_MIPS)
 #  define CC_getcwd_has_proto
-#  define CC_no_long_double
 #  if HW_MIPS==4
 /* this is long64 int32 ptr64 */
 #    define CC_second_largest_is_int
@@ -420,8 +411,6 @@
 #if defined(OS_HPUX) /* may want to split the gnu case */
 #  define CC_CONFIGURED
 #  define CC_hpux_broken_stdarg
-/* Not actually true, but breaks format.c (C compiler bug)*/
-#  define CC_no_long_double
 #  define CC_no_math_h
 #  endif
 
@@ -447,7 +436,6 @@
 #  define CC_no_stddef_h
 #  define CC_no_stdlib_h
 #  define CC_missing_memmove
-#  define CC_no_long_double
 #  endif
 
 #endif /* !_CCONFIG_H_ */

@@ -328,7 +328,7 @@ ostreamVPrintf(OStream ostream, const char *fmt, va_list argp)
 			break;
 		case 'e': case 'E': case 'f': case 'g': case 'G':
 			if (fb.size == 'L') 
-				sprintf(arg_buf,f,va_arg(argp, LongDouble));
+				sprintf(arg_buf,f,va_arg(argp, long double));
 			else
 				sprintf(arg_buf,f,va_arg(argp, double));
 			break;
