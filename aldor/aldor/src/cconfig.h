@@ -314,14 +314,6 @@
  * :: Sun platforms
  */
 
-/*
- *  cconfig.h is included into some files so that CC_SF_is_double can be
- *  checked.  In atleast one instance, the file it is included into does
- *  not include platform.h earlier, and as such HW_SPARC_64 is not defined.  As
- *  a result, it is necessary to check again the flags that would set 
- *  HW_SPARC_64 here.  These also need to appear outside of if defined(OS_SUN)
- *  because it is defined in platform.h
- */
 #if defined(HW_SPARC_64)
 #  define CC_second_largest_is_int
 #  define CC_long_not_int32
@@ -433,13 +425,6 @@
 #  define CC_no_math_h
 #  endif
 
-/*
- *  cconfig.h is included into some files so that CC_SF_is_double can be
- *  checked.  In atleast one instance, the file it is included into does
- *  not include platform.h earlier, and as such HW_IA64 is not defined.  As
- *  a result, it is necessary to check agains the flags that would set 
- *  HW_IA64 here.
- */
 #if defined(HW_IA64)
 #  define CC_CONFIGURED
 #  define CC_second_largest_is_int
