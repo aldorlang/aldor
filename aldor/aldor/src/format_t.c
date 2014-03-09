@@ -56,7 +56,7 @@ testFormat(void)
 	n = sprintf(buf0, "The rain in %.*spain falls %+-6d times\n",-4,"my ",5);
 	printf("*** CC = %d\n", n);
 	buf1 = strPrintf("The rain in %#.*spain falls %+-6d times\n",-4,"my ",5);
-	printf("*** CC = " AINT_FMT "\n", strLength(buf1));
+	printf("*** CC = " LENGTH_FMT "\n", strLength(buf1));
 	if (!strEqual(buf0, buf1))
 		printf("*** [DIFFERENT]:\n%s\n%s\n", buf0, buf1);
 

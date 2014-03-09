@@ -989,7 +989,7 @@ pagesGet(Length nMin)
 		}
 
 		if (gcTraceFile) {
-			fprintf(gcTraceFile, " [GC: %s enough, %d/%d -> %d/%d for " AINT_FMT "]\n",
+			fprintf(gcTraceFile, " [GC: %s enough, %d/%d -> %d/%d for " LENGTH_FMT "]\n",
 				p ? "!!! Got" : "... Not", free0, tot, free1, tot, nMin);
 
 			if (addAnyway) {
@@ -999,7 +999,7 @@ pagesGet(Length nMin)
 		}
 #ifdef FOAM_RTS 
 		if (markingStats) {
-			fprintf(osStderr, " [GC: %s enough, %d/%d -> %d/%d for " AINT_FMT "]\n",
+			fprintf(osStderr, " [GC: %s enough, %d/%d -> %d/%d for " LENGTH_FMT "]\n",
 				p ? "!!! Got" : "... Not", free0, tot, free1, tot, nMin);
 
 			if (addAnyway) {

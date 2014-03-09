@@ -362,6 +362,8 @@ typedef size_t		Length;
 typedef ULong		Offset;
 typedef ULong		Millisec;
 
+#define LENGTH_FMT "%zd"
+
 #ifdef CC_no_void_pointer
    typedef char		*Pointer;
    typedef const char	*ConstPointer;
@@ -376,7 +378,7 @@ typedef const char	*CString;
 typedef char		*IOMode;
 
 /*
- *  On some architecutres, we use a double to represent a single float so that
+ *  On some architectures, we use a double to represent a single float so that
  *  a single float has the same size as a pointer
  */
 #ifdef CC_SF_is_double

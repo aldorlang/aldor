@@ -237,7 +237,7 @@ ostreamVPrintf(OStream ostream, const char *fmt, va_list argp)
 		fb.prec  = r;
 
 		/* Size modifier */
-		if ((c = *fmt) == 'h' || c == 'l' || c == 'L')
+		if ((c = *fmt) == 'h' || c == 'l' || c == 'L' || c == 'z')
 			fb.fmt[fb.len++] = fb.size = *fmt++;
 		else
 			fb.size = 0;
@@ -253,9 +253,10 @@ ostreamVPrintf(OStream ostream, const char *fmt, va_list argp)
 		/* n format requires the parameter to be assigned cc */
 		if (fb.conv == 'n') {
 			switch (fb.size) {
-			case 'h': *va_arg(argp, short *) = cc; break;
-			case 'l': *va_arg(argp, long  *) = cc; break;
-			default:  *va_arg(argp, int   *) = cc; break;
+			case 'h': *va_arg(argp, short  *) = cc; break;
+			case 'l': *va_arg(argp, long   *) = cc; break;
+			case 'z': *va_arg(argp, Length *) = cc; break;
+			default:  *va_arg(argp, int    *) = cc; break;
 			}
 			continue;
 		}
@@ -320,6 +321,8 @@ ostreamVPrintf(OStream ostream, const char *fmt, va_list argp)
 		case 'o': case 'x': case 'X':
 			if (fb.size == 'l')
 				sprintf(arg_buf,f,va_arg(argp, long));
+			else if (fb.size == 'z')
+				sprintf(arg_buf,f,va_arg(argp, Length));
 			else 
 				sprintf(arg_buf,f,va_arg(argp, int));
 			break;
