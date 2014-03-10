@@ -1,8 +1,9 @@
 #include "axlobs.h"
 #include "foam.h"
-#include "testlib.h"
-#include "syme.h"
+#include "int.h"
 #include "sexpr.h"
+#include "syme.h"
+#include "testlib.h"
 #include "util.h"
 
 local void testCall();
@@ -218,19 +219,19 @@ testHash()
 local void
 testSIntReduce()
 {
-	Foam foam, reduced;
-	if (sizeof(AInt) < 8) {
-		return;
-	}
-	foam = foamNewSInt(1L<<40);
-	reduced = foamSIntReduce(foam);
-	testFalse("t0", foam == reduced);
+	IF_LongOver32Bits(
+		Foam foam;
+		Foam reduced;
+		foam = foamNewSInt(1L<<40);
+		reduced = foamSIntReduce(foam);
+		testFalse("t0", foam == reduced);
 
-	foam = foamNewSInt(-(1L<<40));
-	reduced = foamSIntReduce(foam);
-	testFalse("t0", foam == reduced);
-	testFalse("t0", foamEqual(foamSIntReduce(foamNewSInt(1L<<40)), reduced));
-	testTrue("t1", foamTag(reduced) == FOAM_BCall && reduced->foamBCall.op == FOAM_BVal_SIntNegate);
+		foam = foamNewSInt(-(1L<<40));
+		reduced = foamSIntReduce(foam);
+		testFalse("t0", foam == reduced);
+		testFalse("t0", foamEqual(foamSIntReduce(foamNewSInt(1L<<40)), reduced));
+		testTrue("t1", foamTag(reduced) == FOAM_BCall && reduced->foamBCall.op == FOAM_BVal_SIntNegate);
+	)
 
 	/* Really need a working foam interpreter to test this properly */
 	/* .. probably easier to do as library tests */
