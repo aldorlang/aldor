@@ -68,7 +68,7 @@ testFormat(void)
 	n = sprintf(buf0, "The rain in %#.*Lg pain\n", 200, L);
 	printf("*** CC = %d\n", n);
 	buf1 = strPrintf("The rain in %#.*Lg pain\n", 200, L);
-	printf("*** CC = %d\n", strLength(buf1));
+	printf("*** CC = " LENGTH_FMT "\n", strLength(buf1));
 	if (!strEqual(buf0, buf1))
 		printf("*** [DIFFERENT]:\n%s\n%s\n", buf0, buf1);
 
