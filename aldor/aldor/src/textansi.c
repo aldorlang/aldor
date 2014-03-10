@@ -27,7 +27,7 @@
  * terminals only removes bold, underline etc. Colours can only be restored
  * via AF/AB but since we don't know the original colouring this won't work.
  */
-local String term_escapes[][4] = {
+local String ansi_term_escapes[][4] = {
   /* forground	background	normal		extra bright	terminal */
   /* AF		AB		me		md			 */
   {"\033[3%dm",	"\033[4%dm",	"\033[m",	"\033[1m"},	/* xterm */
@@ -35,8 +35,8 @@ local String term_escapes[][4] = {
   {"\033[3%dm",	"\033[4%dm",	"\033[0m",	"\033[1m"},	/* iris-ansi */
 };
 
-/* Capabilities of interest (index into term_escapes[]) */
-enum ansi_term_capabilities { AF_cap, AB_cap, me_cap, md_cap };
+/* Capabilities of interest (index into ansi_term_escapes[]) */
+enum ansi_term_capabilities { ANSI_AF_cap, ANSI_AB_cap, ANSI_me_cap, ANSI_md_cap };
 
 /*
  * txtBoldANSI() returns a string of escape codes for enabling the
@@ -48,7 +48,7 @@ enum ansi_term_capabilities { AF_cap, AB_cap, me_cap, md_cap };
 String
 txtBoldANSI(void)
 {
-	return term_escapes[termType()-FirstANSITerm][md_cap];
+	return ansi_term_escapes[termType()-FirstANSITerm][ANSI_md_cap];
 }
 
 
@@ -60,7 +60,7 @@ txtBoldANSI(void)
 String
 txtNormalANSI(void)
 {
-	return term_escapes[termType()-FirstANSITerm][me_cap];
+	return ansi_term_escapes[termType()-FirstANSITerm][ANSI_me_cap];
 }
 
 /*
@@ -72,7 +72,7 @@ String
 txtForegroundANSI(ColourANSI col)
 {
 	static char result[ANSI_ESCAPE_MAXLEN+1];
-	String fmt = term_escapes[termType()-FirstANSITerm][AF_cap];
+	String fmt = ansi_term_escapes[termType()-FirstANSITerm][ANSI_AF_cap];
 	(void)sprintf(result, fmt, col);
 	return result;
 }
@@ -86,7 +86,7 @@ String
 txtBackgroundANSI(ColourANSI col)
 {
 	static char result[ANSI_ESCAPE_MAXLEN+1];
-	String fmt = term_escapes[termType()-FirstANSITerm][AB_cap];
+	String fmt = ansi_term_escapes[termType()-FirstANSITerm][ANSI_AB_cap];
 	(void)sprintf(result, fmt, col);
 	return result;
 }
