@@ -25,6 +25,6 @@ void fini(void);
 void initFile(void);
 void finiFile(void);
 
-#define TEST(x) showTest(Enstring(x), x)
+#define TEST(x) showTest(#x, x)
 
 #endif
