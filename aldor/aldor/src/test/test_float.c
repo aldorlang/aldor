@@ -15,8 +15,8 @@ floatTestSuite()
 local void
 testFloatSizes()
 {
-	fprintf(dbOut, "sizeof float: %ld\n", sizeof(SFloat));
-	fprintf(dbOut, "sizeof dfloat: %ld\n", sizeof(DFloat));
+	fprintf(dbOut, "sizeof float: " LENGTH_FMT "\n", sizeof(SFloat));
+	fprintf(dbOut, "sizeof dfloat: " LENGTH_FMT "\n", sizeof(DFloat));
 
 	testIntEqual("float", 4, sizeof(SFloat));
 	testIntEqual("float", 8, sizeof(DFloat));
