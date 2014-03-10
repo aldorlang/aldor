@@ -1214,14 +1214,12 @@ void
 compPhasePutJava(EmitInfo finfo, Foam foam)
 {
 	JavaCode java;
-	FileName fileName;
 	String fnstring;
 
 	phStart(PH_PutJava);
 
 	fnstring = emitGetFileIdName(finfo);
 	if (emitIsOutputNeededOrWarn(finfo, FTYPENO_JAVA)) {
-		JavaCode jc = genJavaUnit(foam, fnstring);
 		java = genJavaUnit(foam, fnstring);
 		emitTheJava(finfo, java);
 		jcoFree(java);

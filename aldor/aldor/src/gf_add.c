@@ -1598,19 +1598,17 @@ gen0RtInitHashMask(void)
 local Foam
 gen0RtTypeHash(TForm tf, TForm otf)
 {
-        TFormList       tfl = 0, otfl = 0, l, ol;
-        Foam            hash = 0;
-        int             code, i;
-	int		hashMask = (int)TF_START;
-	Foam		twist = (Foam)NULL;
+	TFormList	tfl = 0, otfl = 0, l, ol;
+	Foam		hash = 0;
+	int		code, i;
 
 	if (genIsRuntime())
 		return foamNewSInt(int0);
-        /* first fill tfl with the tforms we want to combine */
-        tf  = tfDefineeType(tf);
-        otf = tfDefineeType(otf);
+	/* first fill tfl with the tforms we want to combine */
+	tf  = tfDefineeType(tf);
+	otf = tfDefineeType(otf);
 
-        code = gen0StrHash(tformSyntax(tfTag(tf)));
+	code = gen0StrHash(tformSyntax(tfTag(tf)));
 
 	if (tfTag(otf) == TF_General && tfTag(tf) != TF_General)
 		return gen0RtTypeHashAsGeneral(tf);
@@ -1623,94 +1621,94 @@ gen0RtTypeHash(TForm tf, TForm otf)
 		otf = tf;
 
 	switch (tfTag(otf)) {
-          case TF_Map:
-          case TF_PackedMap:
+	case TF_Map:
+	case TF_PackedMap:
 		bug("Unreachable");
-                break;
-          case TF_RawRecord:
-                assert(tfTag(tf) == tfTag(otf));
-                for(i=0; i<tfRawRecordArgc(tf); i++) {
-                        tfl  = listCons(TForm)(tfRawRecordArgN(tf, i), tfl);
-                        otfl = listCons(TForm)(tfRawRecordArgN(otf, i), otfl);
-                }
-                break;
-          case TF_Record:
-                assert(tfTag(tf) == tfTag(otf));
-                for(i=0; i<tfRecordArgc(tf); i++) {
-                        tfl  = listCons(TForm)(tfRecordArgN(tf, i), tfl);
-                        otfl = listCons(TForm)(tfRecordArgN(otf, i), otfl);
-                }
-                break;
-          case TF_Union:
-                assert(tfTag(tf) == tfTag(otf));
-                for(i=0; i<tfUnionArgc(tf); i++) {
-                        tfl  = listCons(TForm)(tfUnionArgN(tf, i), tfl);
-                        otfl = listCons(TForm)(tfUnionArgN(otf, i), otfl);
-                }
-                break;
-          case TF_Cross:
-                assert(tfTag(tf) == tfTag(otf));
-                for(i=0; i<tfCrossArgc(tf); i++) {
-                        tfl  = listCons(TForm)(tfCrossArgN(tf, i), tfl);
-                        otfl = listCons(TForm)(tfCrossArgN(otf, i), otfl);
-                }
-                break;
-          case TF_Multiple:
-                assert(tfTag(tf) == tfTag(otf));
-                for(i=0; i<tfMultiArgc(tf); i++) {
-                        tfl  = listCons(TForm)(tfMultiArgN(tf, i), tfl);
-                        otfl = listCons(TForm)(tfMultiArgN(otf, i), otfl);
-                }
-                break;
-	  case TF_Tuple:
+		break;
+	case TF_RawRecord:
+		assert(tfTag(tf) == tfTag(otf));
+		for (i = 0; i < tfRawRecordArgc(tf); i++) {
+			tfl  = listCons(TForm)(tfRawRecordArgN(tf, i), tfl);
+			otfl = listCons(TForm)(tfRawRecordArgN(otf, i), otfl);
+		}
+		break;
+	case TF_Record:
+		assert(tfTag(tf) == tfTag(otf));
+		for (i = 0; i < tfRecordArgc(tf); i++) {
+			tfl  = listCons(TForm)(tfRecordArgN(tf, i), tfl);
+			otfl = listCons(TForm)(tfRecordArgN(otf, i), otfl);
+		}
+		break;
+	case TF_Union:
+		assert(tfTag(tf) == tfTag(otf));
+		for (i = 0; i < tfUnionArgc(tf); i++) {
+			tfl  = listCons(TForm)(tfUnionArgN(tf, i), tfl);
+			otfl = listCons(TForm)(tfUnionArgN(otf, i), otfl);
+		}
+		break;
+	case TF_Cross:
+		assert(tfTag(tf) == tfTag(otf));
+		for (i = 0; i < tfCrossArgc(tf); i++) {
+			tfl  = listCons(TForm)(tfCrossArgN(tf, i), tfl);
+			otfl = listCons(TForm)(tfCrossArgN(otf, i), otfl);
+		}
+		break;
+	case TF_Multiple:
+		assert(tfTag(tf) == tfTag(otf));
+		for (i = 0; i < tfMultiArgc(tf); i++) {
+			tfl  = listCons(TForm)(tfMultiArgN(tf, i), tfl);
+			otfl = listCons(TForm)(tfMultiArgN(otf, i), otfl);
+		}
+		break;
+	case TF_Tuple:
 		assert(tfTag(tf) == tfTag(otf));
 		tfl  = listCons(TForm)(tfTupleArg( tf), listNil(TForm));
 		otfl = listCons(TForm)(tfTupleArg(otf), listNil(TForm));
 		break;
-	  case TF_Generator:
+	case TF_Generator:
 		assert(tfTag(tf) == tfTag(otf));
 		tfl  = listCons(TForm)(tfGeneratorArg( tf), listNil(TForm));
 		otfl = listCons(TForm)(tfGeneratorArg(otf), listNil(TForm));
 		break;
-	  case TF_Reference:
+	case TF_Reference:
 		assert(tfTag(tf) == tfTag(otf));
 		tfl  = listCons(TForm)(tfReferenceArg( tf), listNil(TForm));
 		otfl = listCons(TForm)(tfReferenceArg(otf), listNil(TForm));
 		break;
-          case TF_Enumerate:
-                assert(tfTag(tf) == tfTag(otf));
-                hash = foamNewSInt(code);
-                for(i=0; i<tfEnumArgc(tf); i++) {
-                        String  lit;
-                        AbSyn   tfi  = abDefineeId(tfExpr(tfEnumArgN(tf, i)));
-                        assert(abTag(tfi) == AB_Id);
-                        lit = tfi->abId.sym->str;
-                        hash = gen0CombineHash(foamNewSInt(gen0StrHash(lit)),
-                                               hash);
-                }
-                break;
-          case TF_Literal:
-                break;
-		       
-          case TF_With:
-		code = 0;
-                break;
-          case TF_General:
-                hash = gen0RtSefoHash(tfExpr(tf), tfExpr(otf));
-          default:
-                break;
-        }
-        if (!hash)
-                hash = foamNewSInt(code);
-        tfl  = listNReverse(TForm)(tfl);
-        otfl = listNReverse(TForm)(otfl);
+	case TF_Enumerate:
+		assert(tfTag(tf) == tfTag(otf));
+		hash = foamNewSInt(code);
+		for (i = 0; i < tfEnumArgc(tf); i++) {
+			String  lit;
+			AbSyn   tfi  = abDefineeId(tfExpr(tfEnumArgN(tf, i)));
+			assert(abTag(tfi) == AB_Id);
+			lit = tfi->abId.sym->str;
+			hash = gen0CombineHash(foamNewSInt(gen0StrHash(lit)),
+					       hash);
+		}
+		break;
+	case TF_Literal:
+		break;
 
-	for(i = 0, l = tfl, ol = otfl; l; i++, l = cdr(l), ol = cdr(ol)) {
+	case TF_With:
+		code = 0;
+		break;
+	case TF_General:
+		hash = gen0RtSefoHash(tfExpr(tf), tfExpr(otf));
+	default:
+		break;
+	}
+	if (!hash)
+		hash = foamNewSInt(code);
+	tfl  = listNReverse(TForm)(tfl);
+	otfl = listNReverse(TForm)(otfl);
+
+	for (i = 0, l = tfl, ol = otfl; l; i++, l = cdr(l), ol = cdr(ol)) {
 		hash = gen0CombineHash(gen0RtTypeHash(car(l), car(ol)), hash);
 		foamPure(hash) = true;
 	}
 
-        return hash;
+	return hash;
 }
 
 local Bool
@@ -1844,10 +1842,8 @@ gen0RtTypeHashAsGeneral(TForm tf)
 	TFormList	tfl = listNil(TForm);
 	Foam		hash = NULL;
 	int		code, i;
-	int		hashMask = (int)TF_START;
-	Foam		twist = (Foam)NULL;
 
-        code = gen0StrHash(tformSyntax(tfTag(tf)));
+	code = gen0StrHash(tformSyntax(tfTag(tf)));
 
 	if (tfIsSym(tf) || tfIsThird(tf))
 		return gen0RtSefoHash(tfExpr(tf), tfExpr(tf));
@@ -1860,7 +1856,7 @@ gen0RtTypeHashAsGeneral(TForm tf)
 	case TF_Map:
 	case TF_PackedMap:
 		bug("unreachable");
-                break;
+		break;
 	case TF_RawRecord:
 		for (i = 0; i < tfRawRecordArgc(tf); i += 1) {
 			TForm	tfi = tfRawRecordArgN(tf, i);
@@ -1892,7 +1888,7 @@ gen0RtTypeHashAsGeneral(TForm tf)
 	case TF_Generator:
 		tfl = listCons(TForm)(tfGeneratorArg(tf), listNil(TForm));
 		break;
-        case TF_Enumerate:
+	case TF_Enumerate:
 		hash = foamNewSInt(code);
 		for (i = 0; i < tfEnumArgc(tf); i++) {
 			String lit;
@@ -1906,16 +1902,16 @@ gen0RtTypeHashAsGeneral(TForm tf)
 		tfPrintDb(tf);
 		bug("unhandled special type used in value context");
 	}
-	
+
 	tfl = listNReverse(TForm)(tfl);
 	if (hash == NULL)
 		hash = foamNewSInt(code);
-	
+
 	for(i = 0; tfl; i++, tfl = cdr(tfl)) {
 		hash = gen0CombineHash(gen0RtTypeHash(car(tfl),car(tfl)),hash);
 		foamPure(hash) = true;
 	}
-	
+
 
 	return hash;
 }

@@ -474,7 +474,6 @@ tfInit(void)
 local int
 symeFormatter(OStream ostream, Pointer p)
 {
-	TForm tf = (TForm) p;
 	int c;
 
 	c = symeOStreamWrite(ostream, p);
@@ -532,7 +531,6 @@ bintFormatter(OStream ostream, Pointer p)
 local int
 tfFormatter(OStream ostream, Pointer p)
 {
-	TForm tf = (TForm) p;
 	int c;
 
 	c = tformOStreamWrite(ostream, p);
@@ -2349,9 +2347,8 @@ tfFloat(Stab stab, TForm tf)
 {
 	ULong	odepth, ndepth;
 	TForm	outerTf = NULL;
-	Stab    ostab = stab;
 
-	if (! tfIsSyntax(tf))
+	if (!tfIsSyntax(tf))
 		return NULL;
 
 	odepth = stabLevelNo(stab);
@@ -4303,7 +4300,6 @@ tfStabGetDomImports(Stab stab, TForm tf)
 	symes = symeListSubstSelf(stab, tf, xsymes);
 
 	if (tfConditions(tf) != NULL) {
-		Syme syme;
 		SymeList sl = symes;
 		while (sl != listNil(Syme)) {
 			Syme syme = car(sl);

@@ -394,7 +394,6 @@ stabEntryGetSymes(StabEntry stent, AbLogic abl)
 {
 	Length		i;
 	SymeList	symes;
-	SymeList        psymes, npsymes;
 
 	stabEntryCheckConditions(stent);
 
@@ -1058,7 +1057,6 @@ Syme
 stabGetDomainExportMod(Stab astab, SymeList mods, Symbol sym, TForm tf)
 {
 	SymeList exports = stabGetExportedSymes(astab);
-	Syme syme;
 	while (exports != listNil(Syme)) {
 		Syme syme = car(exports);
 		exports = cdr(exports);
@@ -1706,7 +1704,6 @@ stabGetExportedSymes(Stab stab)
 TQualList
 stabImportFrom(Stab stab, TQual tq)
 {
-	TQualList	ql;
 	SymeList	dsymes;
 	TForm		origin = tqBase(tq);
 

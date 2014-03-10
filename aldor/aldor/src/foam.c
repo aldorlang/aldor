@@ -2037,7 +2037,6 @@ foamFrBuffer(Buffer buf)
 	Bool	isArr, isNary;
 	String	argf;
 	Bool	neg;
-	BInt	bint;
 
 	tag = bufGetByte(buf);
 	format = FOAM_FORMAT_GET(tag);
@@ -3057,9 +3056,6 @@ foamExprTypeCB(Foam expr, AInt *extra, FoamExprTypeCallback callback, void *arg)
 		return FOAM_Word;
 
 	  case FOAM_Lex: {
-		Foam 	ddecl;
-		int 	index;
-
 		decl = callback(arg, expr);
 		type = decl->foamDecl.type;
 

@@ -2788,7 +2788,6 @@ gen0RecordNew(TForm key, Length argc, AbSyn *argv, Foam *vals)
 	gen0AddStmt(gen0RNew(whole, format), NULL);
 	for (index = 0; index < argc; index += 1) {
 		TForm tf = tfRecordArgN(key, index);
-		AInt fmt;
 		Foam value = genFoamArg(argv, vals, index);
 		FoamTag type = gen0Type(tf, NULL);
 		if (type != FOAM_Word)

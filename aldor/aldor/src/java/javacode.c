@@ -217,7 +217,6 @@ local JWriteFn jcUnaryOpPrint;
 
 local JSExprFn jcCommentSExpr;
 local JSExprFn jcIdSExpr;
-local JSExprFn jcImportedIdSExpr;
 local JSExprFn jcImportSExpr;
 local JSExprFn jcIntegerSExpr;
 local JSExprFn jcKeywordSExpr;
@@ -397,8 +396,6 @@ jcMethod(int modifiers, String comment,
 			 JavaCodeList args,
 			 JavaCodeList exns, JavaCode body)
 {
-	JavaCodeList jcmods = jc0CreateModifiers(modifiers);
-	
 	JavaCode meth = jcoNew(jc0ClassObj(JCO_CLSS_Method),
 			       2,
 			       jcDeclaration(modifiers, retnType, 
@@ -414,8 +411,6 @@ jcConstructor(int modifiers, String comment,
 	      JavaCodeList args,
 	      JavaCodeList exns, JavaCode body)
 {
-	JavaCodeList jcmods = jc0CreateModifiers(modifiers);
-	
 	JavaCode meth = jcoNew(jc0ClassObj(JCO_CLSS_Method),
 			       2,
 			       jcDeclaration(modifiers, jcSpaceSeqV(0), 
@@ -1181,7 +1176,7 @@ jcConditional(JavaCode test, JavaCode truePart, JavaCode falsePart)
 local void
 jcCondPrint(JavaCodePContext ctxt, JavaCode code)
 {
-	JavaCodeClass thisClss, aClss;
+	JavaCodeClass thisClss;
 	JavaCode arg1 = jcoArgv(code)[0];
 	JavaCode arg2 = jcoArgv(code)[1];
 	JavaCode arg3 = jcoArgv(code)[2];

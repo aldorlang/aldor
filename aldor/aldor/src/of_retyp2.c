@@ -120,7 +120,6 @@ Foam
 rtcCurrentDecl(RetContext context, Foam foam)
 {
 	Foam decl;
-	int index;
 
 	decl = rtcNewDecl(context, foam);
 	if (decl != NULL)
@@ -145,6 +144,7 @@ rtcOriginalDecl(RetContext context, Foam foam)
 		decl = context->prog->foamProg.params->foamDDecl.argv[index];
 		break;
 	default:
+		decl = NULL;
 		bug("bad case");
 	}
 	return decl;
@@ -179,6 +179,7 @@ rtcNewDecl(RetContext context, Foam foam)
 		decl = context->parDecls[index];
 		break;
 	default:
+		decl = NULL;
 		bug("bad case");
 	}
 	return decl;
@@ -490,7 +491,6 @@ rtcRearrangeProg(RetContext context)
 					    sizeof(Foam) * foamDDeclArgc(prog->foamProg.params));
 	for (i=0; i < foamDDeclArgc(prog->foamProg.params); i++) {
 		Foam newDecl = context->parDecls[i];
-		Foam origDecl = prog->foamProg.params->foamDDecl.argv[i];
 		if (context->parDecls[i] != NULL) {
 			int id = fboxAdd(newLocals, newDecl);
 			Foam newAssignment = foamNewSet(foamNewLoc(id),

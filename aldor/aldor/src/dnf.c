@@ -730,7 +730,6 @@ int
 dnfFormatter(OStream ostream, Pointer p)
 {
 	DNF dnf = (DNF) p;
-	DNF_And xx;
 	int c, i, j;
 
 	if (dnfIsTrue(dnf))
