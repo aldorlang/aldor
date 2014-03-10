@@ -1,33 +1,32 @@
-#ifndef _TESTALL_H_
-#define _TESTALL_H_
+#ifndef TESTALL_H
+#define TESTALL_H
 
 void abcheckTest(void);
 void ablogTest(void);
 void abnormTest(void);
 void absynTest(void);
-void floatTestSuite(void);
 void bigintTestSuite(void);
+void bintTestSuite(void);
 void bitvTestSuite(void);
-void listTestSuite(void);
-void fnameTest(void);
+void floatTestSuite(void);
 void flogTest(void);
+void fnameTest(void);
 void foamTest(void);
-void jflowTest(void);
+void formatTest(void);
+void genfoamTestSuite(void);
 void intTestSuite(void);
+void jflowTest(void);
+void listTestSuite(void);
 void ostreamTest(void);
 void printfTest(void);
-void formatTest(void);
 void retypeTest(void);
-void tinferTest(void);
-void stabTest(void);
 void scobindTest(void);
-void symeTest(void);
 void srcposTest(void);
+void stabTest(void);
+void symeTest(void);
 void tformTest(void);
 void tfsatTest(void);
 void tibupTest(void);
-
-
+void tinferTest(void);
 
 #endif
-

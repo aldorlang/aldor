@@ -84,7 +84,7 @@ testAblog()
 	testTrue("11", ablogImplies(cond1, cond1));
 }
 
-local Bool testAbLogEqual(String text, Stab stab, Sefo sefo1, Sefo sefo2);
+local void testAbLogEqual(String text, Stab stab, Sefo sefo1, Sefo sefo2);
 
 local void
 testAblogSefo()
@@ -125,7 +125,7 @@ testAblogSefo()
 	testAbLogEqual("restrict", stab, apply1(prime, restrictTo(d0, D0)), apply1(prime, d0));
 }
 
-local Bool
+local void
 testAbLogEqual(String text, Stab stab, Sefo sefo1, Sefo sefo2)
 {
 	tiSefo(stab, sefo1);
@@ -133,7 +133,6 @@ testAbLogEqual(String text, Stab stab, Sefo sefo1, Sefo sefo2)
 	AbLogic ablog1 = ablogFrSefo(sefo1);
 	AbLogic ablog2 = ablogFrSefo(sefo2);
 	testTrue(text, dnfEqual((DNF) ablog1, (DNF) ablog2));
-
 }
 
 local void

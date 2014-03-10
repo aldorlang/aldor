@@ -1,5 +1,6 @@
-#include "testlib.h"
 #include "debug.h"
+#include "opsys.h"
+#include "testlib.h"
 
 local void testFloatSizes(void);
 
