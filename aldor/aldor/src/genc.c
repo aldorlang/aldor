@@ -65,11 +65,6 @@ struct Cdecls {
 	struct Cdecls	*next;
 };
 
-struct ccSpecCharId_info {
-	int		ch;
-	String          str;
-}; 
-
 struct ccBVal_info {
 	FoamBValTag	tag;
 	CCodeTag	cfun;
@@ -460,13 +455,12 @@ local	Foam		gc0AddExplicitReturn(Foam);
  * These macros should be moved to other files, e.g. foam.h and ccode.h
  */
 
-#define emptyEnv(x) ((x == emptyFormatSlot) || \
-		     (foamDDeclArgc(gcvFmt->foamDFmt.argv[x]) == 0))
+#define gc0EmptyEnv(x) ((x == emptyFormatSlot) || \
+			(foamDDeclArgc(gcvFmt->foamDFmt.argv[x]) == 0))
 
 #define gc0EmptyFormat(fmt) \
-	(emptyEnv(fmt) || (fmt) == envUsedSlot || \
+	(gc0EmptyEnv(fmt) || (fmt) == envUsedSlot || \
 	 (foamDDeclArgc(gcvFmt->foamDFmt.argv[fmt]) < 1))
-extern struct ccSpecCharId_info  ccSpecCharIdTable[];
 
 #define ccIdInfo(tag)   (ccSpecCharIdTable[tag])
 #define ccIdChar(tag)   (ccIdInfo(tag).ch)
@@ -4351,7 +4345,7 @@ gccId(Foam foam)
 		else
 			cc = gc0VarId("e", level);
 		/* !! Because sometimes usage info is lost */
-		if (emptyEnv(gcvLFmtStk->foamDEnv.argv[level]) && level!=0) {
+		if (gc0EmptyEnv(gcvLFmtStk->foamDEnv.argv[level]) && level!=0) {
 			gcvLFmtStk = foamCopy(gcvLFmtStk);
 			gcvLFmtStk->foamDEnv.argv[level] = envUsedSlot;
 		}
@@ -4508,18 +4502,18 @@ gc0Levels(int nLexs, int maxLev, int isLeaf, int fmt)
 
 	for (i = 0; i < nLexs; i++) {
 		level = gcvLFmtStk->foamDEnv.argv[i];
-		if (!emptyEnv(level) && level != envUsedSlot)
+		if (!gc0EmptyEnv(level) && level != envUsedSlot)
 			if (foamArgc(gcvFmt->foamDFmt.argv[level]) > 0)
 				gc0AddLine(code, gc0LexRef(level, i));
-		if (!emptyEnv(level) && i != 1)
+		if (!gc0EmptyEnv(level) && i != 1)
 			gc0AddLine(code, gc0EnvRef(i));
-		if (emptyEnv(level) && i > 1 && i <= maxLev)
+		if (gc0EmptyEnv(level) && i > 1 && i <= maxLev)
 			gc0AddLine(code, gc0EnvRef(i));
 	}
 	if (!isLeaf) {
-		if (emptyEnv(fmt))
+		if (gc0EmptyEnv(fmt))
 			gc0AddLine(code, gc0EnvRef(int0));
-		if (!emptyEnv(fmt) && fmt != envUsedSlot)
+		if (!gc0EmptyEnv(fmt) && fmt != envUsedSlot)
 			if (foamArgc(foamArgv(gcvFmt)[fmt].code) > 0)
 				gc0AddLine(code, gc0EnvMake(fmt));
 		gc0AddLine(code, gc0EnvPush(fmt));
@@ -4528,7 +4522,7 @@ gc0Levels(int nLexs, int maxLev, int isLeaf, int fmt)
 		level = gcvLFmtStk->foamDEnv.argv[i];
 		if (i != 1)
 			gc0AddLine(code, gc0EnvNext(i, i-1));
-		if (!emptyEnv(level) && level != envUsedSlot)
+		if (!gc0EmptyEnv(level) && level != envUsedSlot)
 			gc0AddLine(code, gc0EnvLevel(i, level));
 	}
 	code = listNReverse(CCode)(code);
@@ -6645,7 +6639,7 @@ gc0MaxLevel(int numLexs)
 
 	for (i = 1; i < numLexs; i++) {
 		level = gcvLFmtStk->foamDEnv.argv[i];
-		if (!emptyEnv(level) || level == envUsedSlot) maxLevel = i;
+		if (!gc0EmptyEnv(level) || level == envUsedSlot) maxLevel = i;
 	}
 	return maxLevel;
 }

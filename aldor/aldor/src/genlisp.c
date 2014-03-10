@@ -897,8 +897,8 @@ gl0Id(FoamTag tag, int idx, String str)
 #define gl0EnvLevel(i)	lisp1(GL_EnvLevel, gl0Env(i))
 #define gl0EnvNext(i)	lisp1(GL_EnvNext, gl0Env(i))
 
-#define emptyEnv(x) ((x == emptyFormatSlot) || \
-		     (foamArgc(glvDFmt->foamDFmt.argv[x]) == 0))
+#define gl0EmptyEnv(x) ((x == emptyFormatSlot) || \
+			(foamArgc(glvDFmt->foamDFmt.argv[x]) == 0))
 
 local SExpr
 gliEnv(Foam foam)
@@ -1013,7 +1013,7 @@ gl0EnvInit(Foam prog)
 
 	for (i=1; i< foamArgc(levels); i++) {
 		level = levels->foamDEnv.argv[i];
-		if (!emptyEnv(level) || level == envUsedSlot) maxLevel = i;
+		if (!gl0EmptyEnv(level) || level == envUsedSlot) maxLevel = i;
 	}
 
 	/* Construct initialiser block */
@@ -1023,7 +1023,7 @@ gl0EnvInit(Foam prog)
 
 		if (i == 1)
 			chain = gl0EnvNext(i);
-		else if (level == envUsedSlot || !emptyEnv(level)) {
+		else if (level == envUsedSlot || !gl0EmptyEnv(level)) {
 			sx = sxCons(lisp2(GL_Setq, gl0Env(i), chain), 
 				    sx);
 			chain = gl0EnvNext(i);
@@ -1031,7 +1031,7 @@ gl0EnvInit(Foam prog)
 		else
 			chain = lisp1(GL_EnvNext, chain);
 
-		if (!emptyEnv(level) && level != envUsedSlot)
+		if (!gl0EmptyEnv(level) && level != envUsedSlot)
 			sx = sxCons(lisp2(GL_Setq, gl0Level(i),
 					     gl0EnvLevel(i)), sx);
 	}
@@ -1044,7 +1044,7 @@ gl0MakeLevel(int i)
 {
 	String 	buf;
 
-	if (emptyEnv(i) || i == envUsedSlot) return GL_Nil;
+	if (gl0EmptyEnv(i) || i == envUsedSlot) return GL_Nil;
 
 	buf = strPrintf("MAKE-Struct-%s-%d", glvFileName, i);
 	return lisp2(GL_MakeLevel,lispId(buf), lispId(buf+strlen("MAKE-")));

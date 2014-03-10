@@ -30,6 +30,13 @@ typedef struct
 	CCode	class;	/* Storage class of parameter and closure */
 } *FtnFunParam;
 
+struct ccSpecCharId_info {
+	int		ch;
+	String          str;
+}; 
+
+extern struct ccSpecCharId_info  ccSpecCharIdTable[];
+
 
 /* Accessers for FtnFunParam */
 #define gc0FtnFunBase(p)	((p)->base)
