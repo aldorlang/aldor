@@ -87,23 +87,6 @@
  *	We follow the ANSI <stdarg.h> conventions.
  *	If we have to, we implement it ourselves.
  *
- * * Token formation:
- *	The "Abut" macro is used to concatenate tokens.
- *
- *	Abut(a,b)
- *
- *	In ANSI C, this expands to a##b and in other C environments
- *	the old comment trick is used.
- *	Use Abut(a,b) rather than Abut(a, b) since spaces are significant
- *	in K&R C.
- *
- *	The "Enstring" macro is used to string-ize a token.
- *
- *	Enstring(a)
- *
- *	In ANSI C, this expands to #a and in other C environments
- *	the fact that cpp substitutes into strings is used.
- *
  *
  * * Trailing arrays:
  *	The "NARY" macro is used for trailing variable sized arrays.
@@ -410,20 +393,6 @@ typedef double	MostAlignedType;
 /*
  * Handled by stdarg.h0
  */
-
-/*****************************************************************************
- *
- * :: Token Formation
- *
- ****************************************************************************/
-
-#ifndef CC_no_token_paste
-#  define Abut(a,b)	a##b
-#  define Enstring(a)	#a
-#else
-#  define Abut(a,b)	a/**/b
-#  define Enstring(a)	"a"
-#endif
 
 /*****************************************************************************
  *

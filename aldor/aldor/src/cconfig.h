@@ -30,9 +30,6 @@
  *	if pointers to the same addres might not be ==.
  *	This is sometimes the case with compilers for segmented architectures.
  *
- * CC_no_token_paste
- *	if ANSI-style ## token pasting is not supported
- *
  * CC_no_const
  *	if the "const" modifier is not (fully) supported
  *
@@ -189,7 +186,6 @@
 
 #if defined(CC_IBM_PS2) && defined(OS_AIX_PS2)
 #  define CC_CONFIGURED
-#  define CC_no_token_paste
 #  define CC_no_const		/* const is buggy here */
 #  define CC_no_enum_typedef
 #  define CC_no_stdarg_h	/* va_start is defined with wrong no. args */
@@ -241,7 +237,6 @@
 #if defined(CC_IBM_RT) && defined(OS_AIX_RT)
 #  define CC_CONFIGURED
 #  define CC_no_void_pointer
-#  define CC_no_token_paste
 #  define CC_no_const
 #  define CC_no_prototype
 #  define CC_no_constant_questions
@@ -290,7 +285,6 @@
 #if defined(CC_METAWARE) && defined(OS_AIX_370)
 #  define CC_CONFIGURED
 #  define CC_non_ieee_floats
-#  define CC_no_token_paste
 #  define CC_no_enum_typedef
 #  define CC_nlchar_unused_static
 #  define CC_broken_toupper
@@ -327,7 +321,6 @@
 
 #    elif defined(CC_SUN)
 
-#      define CC_no_token_paste
 #      define CC_no_const
 #      define CC_no_prototype
 #      define CC_sun_sparc_varargs
@@ -426,7 +419,6 @@
 #if !defined(CC_CONFIGURED) && !defined(__STDC__)
 #  define CC_CONFIGURED
 #  define CC_no_void_pointer
-#  define CC_no_token_paste
 #  define CC_no_const
 #  define CC_no_prototype
 #  define CC_no_float_h
