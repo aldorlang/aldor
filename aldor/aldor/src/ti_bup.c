@@ -54,13 +54,13 @@ Bool	tipBupDebug	= false;
  */
 
 
-static TPoss   tuniYieldTPoss  = 0;
-static TPoss   tuniReturnTPoss = 0;
-static TPoss   tuniExitTPoss   = 0;
-static TPoss   tuniSelectTPoss = 0;
-static TForm   tuniYieldType   = 0;
-static TForm   tuniExitType    = 0;
-static AbSyn   tuniSelectObj   = 0;
+static TPoss	tuniYieldTPoss		= 0;
+static TPoss	tuniReturnTPoss		= 0;
+static TPoss	tuniExitTPoss		= 0;
+static TPoss	tuniSelectTPoss		= 0;
+static TForm	tuniYieldType		= 0;
+static TForm	tuniExitType		= 0;
+static AbSyn	tuniBupSelectObj	= 0;
 
 /*****************************************************************************
  *
@@ -1606,10 +1606,10 @@ tibupSequence(Stab stab, AbSyn absyn, TForm type)
 	TPoss	fluid(tuniExitTPoss);
 	TForm	fluid(tuniExitType);
 	TPoss   fluid(tuniSelectTPoss);
-	AbSyn   fluid(tuniSelectObj);
+	AbSyn   fluid(tuniBupSelectObj);
 
-	tuniSelectTPoss = NULL;
-	tuniSelectObj   = NULL;
+	tuniSelectTPoss  = NULL;
+	tuniBupSelectObj = NULL;
 
  	if (abUse(absyn) == AB_Use_NoValue || tfIsNone(type))
 		tuniExitTPoss = tuniNoValueTPoss;
@@ -1683,8 +1683,7 @@ tibupExit(Stab stab, AbSyn absyn, TForm type)
 
 	tibup(stab, test, tfUnknown);
 
-	if (!tuniSelectObj) 
-	{
+	if (!tuniBupSelectObj) {
 		/*
 		 * Cases in a select don't affect abCondKnown at the
 		 * moment. We could do better though because we know
@@ -1696,7 +1695,7 @@ tibupExit(Stab stab, AbSyn absyn, TForm type)
 
 	tibup0FarValue(stab, absyn, tuniExitType, value, &tuniExitTPoss);
 
-	if (!tuniSelectObj)
+	if (!tuniBupSelectObj)
 		ablogAndPop (&abCondKnown, &saveCond);
 
 	if (abState(absyn) != AB_State_Error)
@@ -2313,8 +2312,10 @@ tibupIf(Stab stab, AbSyn absyn, TForm type)
 
 AbSyn tibupSelectArgf(AbSyn ab, Length i)
 {
-	if (i==0) return tuniSelectObj;
-	else return abArgv(ab)[i-1];
+	if (i == 0)
+		return tuniBupSelectObj;
+	else
+		return abArgv(ab)[i - 1];
 }
 
 local void
@@ -2329,7 +2330,7 @@ tibupTest(Stab stab, AbSyn absyn, TForm type)
 	 */
 	if (tfBoolean == tfUnknown) comsgFatal(absyn, ALDOR_F_BugNoBoolean);
 
-	if (tuniSelectObj != NULL) {
+	if (tuniBupSelectObj != NULL) {
 		tibup0ApplySym(stab, absyn, 
 			       tfBoolean, 
 			       ssymTheCase,
@@ -3149,18 +3150,18 @@ tibupSelect(Stab stab, AbSyn absyn, TForm type)
 {
 	Scope("tibupSelect");
 	TPoss   fluid(tuniSelectTPoss);
-	AbSyn   fluid(tuniSelectObj);
+	AbSyn   fluid(tuniBupSelectObj);
 	TPoss	fluid(tuniExitTPoss);
 	TForm	fluid(tuniExitType);
 	TPoss tp;
 	AbSyn seq;
-	tuniSelectTPoss = NULL;
-	tuniSelectObj   = NULL;
+	tuniSelectTPoss  = NULL;
+	tuniBupSelectObj = NULL;
 
 	tibup(stab, absyn->abSelect.testPart, tfUnknown);
 	
-	tuniSelectTPoss = abTPoss(absyn->abSelect.testPart);
-	tuniSelectObj   = absyn->abSelect.testPart;
+	tuniSelectTPoss  = abTPoss(absyn->abSelect.testPart);
+	tuniBupSelectObj = absyn->abSelect.testPart;
 
 	if (abUse(absyn) == AB_Use_NoValue || tfIsNone(type))
 		tuniExitTPoss = tuniNoValueTPoss;
