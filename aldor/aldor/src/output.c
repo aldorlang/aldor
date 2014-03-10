@@ -9,7 +9,7 @@
 #include "store.h"
 
 local String
-localStrAlloc(Length n)
+outputStrAlloc(Length n)
 {
 	String  s;
 	s = (String) stoAlloc((unsigned) OB_String, n + 1);
@@ -19,7 +19,7 @@ localStrAlloc(Length n)
 }
 
 local void
-localStrFree(String s)
+outputStrFree(String s)
 {
 	stoFree((Pointer) s);
 }
@@ -118,12 +118,12 @@ formatBInt(FiBInt i)
 	int len = bintStringSize((BInt) i);
 
 	if (len > bufferSize) {
-		if (bufIsAlloc) localStrFree(buf);
+		if (bufIsAlloc) outputStrFree(buf);
 
 		/* Ensure buffer grows by at least 50 %. */
 		if (len < (3 * bufferSize)/2) len = (3*bufferSize)/2;
 		
-		buf        = localStrAlloc(len);
+		buf        = outputStrAlloc(len);
 		bufferSize    = len;
 		bufIsAlloc = 1;
 	}
@@ -134,7 +134,7 @@ formatBInt(FiBInt i)
 
 /*fixes the differences in the exponent output between windows and linux*/
 local void
-fixFloat()
+outputFixFloat()
 {
 	int i, j;
 	int len = strlen(buf);
@@ -156,7 +156,7 @@ formatSFloat(FiSFlo sf)
 {
 	int prec = 9;
 	sprintf(buf, "%.*g", prec, sf);
-	fixFloat();
+	outputFixFloat();
 	return buf;
 }
 
@@ -165,6 +165,6 @@ formatDFloat(FiDFlo d)
 {
 	int prec = 17;
 	sprintf(buf, "%.*g", prec, d);
-	fixFloat();
+	outputFixFloat();
 	return buf;
 }
