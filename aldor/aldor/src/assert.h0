@@ -36,11 +36,9 @@ extern int	_fatal_assert;
 #  define assert(c)
 #else
 
-#  if defined(CC_no_token_paste)
-#    define assert(c) if(_dont_assert || (c)) ; \
-		      else _do_assert(_a_msg("c"),__FILE__,__LINE__)
-#  else
-#    define assert(c) if(_dont_assert || (c)) ; \
-		      else _do_assert(_a_msg(#c), __FILE__,__LINE__)
-#  endif
+#  define assert(c)					\
+     do {						\
+       if (!(c))					\
+         _do_assert(_a_msg(#c),__FILE__,__LINE__);	\
+     } while (0)
 #endif
