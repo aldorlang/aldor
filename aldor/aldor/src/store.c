@@ -55,11 +55,12 @@
  * penalty of a 48K table in static data.
  */
 
-#define _BSD_SOURCE /* strncasecmp */
+#define _BSD_SOURCE 1 /* strncasecmp */
 
 #include "debug.h"
 #include "opsys.h"
 #include "store.h"
+#include "timer.h"
 
 /*
  * If no other allocator is specified, used the B-Tree based by default.
@@ -385,17 +386,6 @@ static Bool     markingStats    = false;
  * :: Benchmarks
  *
  *****************************************************************************/
-
-typedef struct {
-	long time;
-	long start;
-	long live;
-} *TmTimer, _TmTimer;
-
-extern void	tmFree(TmTimer tm);
-extern long	tmRead(TmTimer tm);
-extern void	tmStart(TmTimer tm);
-extern void	tmStop(TmTimer tm);
 
 static _TmTimer stoGcTimer;
 extern TmTimer gcTimer		(void);
@@ -4914,12 +4904,6 @@ void stoSetTracer		(int code, Pointer fun) {}
 int  stoMarkObject		(Pointer p)	{ return 0; }
 int  stoWritablePointer		(Pointer p)	{ return POINTER_IS_UNKNOWN; }
 int  stoCtl			(int cmd, ...)	{ return 0; }
-
-typedef struct {
-	long time;
-	long start;
-	long live;
-} *TmTimer, _TmTimer;
 
 static _TmTimer stoGcTimer;
 TmTimer gcTimer			(void) { return &stoGcTimer; }
