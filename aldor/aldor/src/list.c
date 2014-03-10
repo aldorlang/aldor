@@ -38,10 +38,9 @@ ptrlistList(int n, ...)
 	int i;
 	PointerList head = listNil(Pointer);
 	PointerList *nextptr = &head;
-	PointerList tail;
 
 	va_start(argp, n);
-	for (i=0; i<n; i++) {
+	for (i = 0; i < n; i++) {
 		PointerList cell = listCons(Pointer)((Pointer) va_arg(argp, Pointer), 
 						     listNil(Pointer));
 		*nextptr = cell;
@@ -71,7 +70,6 @@ ptrlistListNull(Pointer arg0, ...)
 local PointerList
 ptrlistListv(va_list argp)
 {
-	int i;
 	PointerList head = listNil(Pointer);
 	PointerList *nextptr = &head;
 
@@ -81,7 +79,7 @@ ptrlistListv(va_list argp)
 		if (nextElt == NULL)
 			break;
 		cell = listCons(Pointer)(nextElt,
-						     listNil(Pointer));
+					 listNil(Pointer));
 		*nextptr = cell;
 		nextptr = &cell->rest;
 	}
