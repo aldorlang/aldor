@@ -359,7 +359,11 @@ typedef size_t		Length;
 typedef ULong		Offset;
 typedef ULong		Millisec;
 
-#define LENGTH_FMT "%zd"
+#ifdef CC_long_not_int32
+#  define LENGTH_FMT "%lu"
+#else
+#  define LENGTH_FMT "%u"
+#endif
 
 #ifdef CC_no_void_pointer
    typedef char		*Pointer;
