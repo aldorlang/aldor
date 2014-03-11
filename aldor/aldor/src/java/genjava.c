@@ -1621,11 +1621,13 @@ local void
 gj0SeqBCall(GjSeqStore seqs, Foam foam)
 {
 	JavaCode jc;
-	if (foam->foamBCall.op != FOAM_BVal_Halt)
-		return gj0SeqGenDefault(seqs, foam);
+	if (foam->foamBCall.op != FOAM_BVal_Halt) {
+		gj0SeqGenDefault(seqs, foam);
+		return;
+	}
 	jc = jcStatement(gj0Gen(foam));
 	
-	return gj0SeqStoreAddHalt(seqs, jc);
+	gj0SeqStoreAddHalt(seqs, jc);
 }
 
 local void
@@ -3130,7 +3132,7 @@ gj0ClassConstructor(String className)
 	s1 = jcStatement(s1);
 	
 	inits = listNil(JavaCode);
-	for (i=0; i<foamDDeclArgc(gjContextGlobals); i++) {
+	for (i = 0; i < foamDDeclArgc(gjContextGlobals); i++) {
 		decl = gjContextGlobal(i);
 		
 		if (decl->foamGDecl.protocol != FOAM_Proto_Init)
@@ -3310,9 +3312,10 @@ struct gjIdInfo gjIdInfo[] = {
 local JavaCode
 gj0Id(GjId id) 
 {
+	struct gjIdInfo *info;
 	assert(gjIdInfo[GJ_LIMIT].id == GJ_INVALID);
 
-	struct gjIdInfo *info = &gjIdInfo[id];
+	info = &gjIdInfo[id];
 	assert(id == info->id);
 
 	if (info->pkg != 0)
@@ -3378,7 +3381,7 @@ enum gj_BCallMethod {
 	GJ_NegConst,
 	GJ_Cast,
 	GJ_Exception,
-	GJ_NotImpl, 
+	GJ_NotImpl
 };
 
 typedef Enum(gj_BCallMethod) GJ_BCallMethod;
@@ -3952,11 +3955,11 @@ gj0BCallBValInfo(FoamBValTag tag)
  */
 struct gjSpecCharId_info {
 	unsigned char c;
-	String s;
+	char const *s;
 };
 struct gjSpecCharId_info gjSpecCharIdTable[];
 
-char *gjCharIds[CHAR_MAX];
+char const *gjCharIds[CHAR_MAX];
 
 local void
 gj0NameInit() 
@@ -4001,8 +4004,9 @@ gj0NameFrString(String fmName)
 	flg = false;
 	p = fmName;
 	while (*p != 0) {
+		char const *repl;
 		assert(*p >= 0 && *p < CHAR_MAX);
-		char *repl = gjCharIds[(unsigned char)*p];
+		repl = gjCharIds[(unsigned char)*p];
 		if (repl != 0)
 			flg = true;
 		p++;
@@ -4013,8 +4017,9 @@ gj0NameFrString(String fmName)
 	p = fmName;
 	bufNeed(buf, strlen(fmName));
 	while (*p != 0) {
+		char const *repl;
 		assert(*p >= 0 && *p < CHAR_MAX);
-		char *repl = gjCharIds[(unsigned char)*p];
+		repl = gjCharIds[(unsigned char)*p];
 		if (!repl) {
 			bufAdd1(buf, *p);
 		}

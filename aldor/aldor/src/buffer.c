@@ -133,8 +133,9 @@ bufAddn(Buffer b, const char *s, Length n)
 String
 bufGetn(Buffer b, Length n)
 {
+	UByte	*s;
 	assert(b->pos + n <= b->argc);
-	UByte	*s = b->argv + b->pos;
+	s = b->argv + b->pos;
 	bufSkip(b, n);
 	return (String) s;
 }

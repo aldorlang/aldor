@@ -737,15 +737,18 @@ dnfFormatter(OStream ostream, Pointer p)
 	else if (dnfIsFalse(dnf))
 		c = ostreamWrite(ostream, "[FALSE]", -1);
 	else {
+		String sep = "";
 		c = ostreamWrite(ostream, "[", -1);
-		char *sep = "";
-		for (i=0; i<dnf->argc; i++) {
+		for (i = 0; i < dnf->argc; i++) {
+			DNF_And xx;
 			c += ostreamWrite(ostream, sep, -1);
 			sep = " ";
-			DNF_And xx = dnf->argv[i];
+			xx = dnf->argv[i];
 			c = ostreamWrite(ostream, "[", -1);
-			for (j=0; j<xx->argc; j++) {
-				c += ostreamPrintf(ostream, "%s%d", j>0?" ": "", xx->argv[j]);
+			for (j = 0; j < xx->argc; j++) {
+				c += ostreamPrintf(ostream, "%s%d",
+						   j > 0 ? " " : "",
+						   xx->argv[j]);
 			}
 			c += ostreamWrite(ostream, "]", -1);
 		}

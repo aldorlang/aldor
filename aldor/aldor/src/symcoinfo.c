@@ -16,7 +16,7 @@ symCoInfoNew(void)
 
 	info->val.phaseVal.generic = 0;
 	info->val.abTagVal	   = AB_LIMIT;
-	info->val.foamTagVal	   = FOAM_BVAL_LIMIT;
+	info->val.foamTagVal	   = (FoamTag)FOAM_BVAL_LIMIT;
 
 	return info;
 }

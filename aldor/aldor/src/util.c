@@ -556,7 +556,7 @@ ulongSmallIntFrString(String start, unsigned int ndigs, unsigned int radix)
 	char 	*junk;
 	ULong	ires;
 	ULong	slen;
-	int     radixBits = sizeof(ULong) << 3;
+#define radixBits (sizeof(ULong) << 3)
 	char	num[radixBits + 1];
 	/*
 	 * Copy out the number to be scanned. Since we know

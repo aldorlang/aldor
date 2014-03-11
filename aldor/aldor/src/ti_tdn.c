@@ -191,7 +191,7 @@ titdn(Stab stab, AbSyn absyn, TForm type)
 	TPoss		abtposs;
 	static int	serialNo = 0, depthNo = 0;
 	int		serialThis;
-	Bool		s;
+	Bool		s = false;
 	TForm		stype;
 
 	if (abState(absyn) == AB_State_HasUnique)

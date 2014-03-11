@@ -3,8 +3,6 @@
 #include "sexpr.h"
 #include "util.h"
 
-static Bool initialised = false;
-
 enum jc_clss_enum {
 	JCO_CLSS_START,
 	JCO_CLSS_String = JCO_CLSS_START,
