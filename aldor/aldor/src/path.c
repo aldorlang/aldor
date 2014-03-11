@@ -49,7 +49,7 @@ pathListFrString(String path)
 {
 	Length		n = osPathLength(path);
 	String		sbuf = strAlloc(strLength(path));
-	String *	pathv = (String *) stoAlloc((int) OB_Other,
+	String *	pathv = (String *) stoAlloc(OB_Other,
 						    n * sizeof(String));
 	StringList	result = listNil(String);
 
@@ -63,16 +63,20 @@ pathListFrString(String path)
 }
 
 PathList
-pathListFrArray(String * pathv)
+pathListFrArray(String *pathv)
 {
 	Length		n = 0;
 	StringList	result = listNil(String);
 
-	while (pathv[n] != 0)
+	assert(pathv != NULL);
+	if (pathv[0] == NULL)
+		return result;
+
+	while (pathv[n] != NULL)
 		result = listCons(String)(pathv[n++], result);
 	result = listNReverse(String)(result);
 
-	assert( result != listNil(String) );
+	assert (result != listNil(String));
 	return (PathList) result;
 }
 
