@@ -121,7 +121,7 @@ local String       gj0ProgFnName(int idx);
 local void         gj0ProgAddStubs(FoamSigList sigList);
 local JavaCodeList gj0ProgDeclarations(Foam ddecl, Foam body);
 
-local String       gj0Name(char *prefix, Foam fmt, int idx);
+local String       gj0Name(CString prefix, Foam fmt, int idx);
 local JavaCode     gj0ProgRetnType(Foam rhs);
 local JavaCode     gj0TopConst(Foam lhs, Foam rhs);
 
@@ -3390,8 +3390,8 @@ struct gjBVal_info {
 	FoamBValTag tag;
 	GJ_BCallMethod method;
 	AInt gjTag;
-	char *c1;
-	char *c2;
+	String c1;
+	String c2;
 };
 
 typedef struct gjBVal_info *GJBValInfo;
@@ -3471,7 +3471,7 @@ gj0BCallApply(Foam foam)
 	JavaCodeList args;
 	JavaCode tgtClss;
 	GJBValInfo inf;
-	char *p;
+	CString p;
 
 	inf = gj0BCallBValInfo(foam->foamBCall.op);
 	args = gj0GenList(foam->foamBCall.argv, foamArgc(foam)-1);
@@ -3955,11 +3955,11 @@ gj0BCallBValInfo(FoamBValTag tag)
  */
 struct gjSpecCharId_info {
 	unsigned char c;
-	char const *s;
+	CString s;
 };
 struct gjSpecCharId_info gjSpecCharIdTable[];
 
-char const *gjCharIds[CHAR_MAX];
+CString gjCharIds[CHAR_MAX];
 
 local void
 gj0NameInit() 
@@ -3976,7 +3976,7 @@ gj0NameInit()
 }
 
 local String
-gj0Name(char *prefix, Foam fmt, int idx)
+gj0Name(CString prefix, Foam fmt, int idx)
 {
 	Foam decl;
 	Buffer b = bufNew();
@@ -3999,12 +3999,12 @@ gj0NameFrString(String fmName)
 {
 	Buffer buf = bufNew();
 	Bool flg;
-	char *p;
+	CString p;
 
 	flg = false;
 	p = fmName;
 	while (*p != 0) {
-		char const *repl;
+		CString repl;
 		assert(*p >= 0 && *p < CHAR_MAX);
 		repl = gjCharIds[(unsigned char)*p];
 		if (repl != 0)
@@ -4017,7 +4017,7 @@ gj0NameFrString(String fmName)
 	p = fmName;
 	bufNeed(buf, strlen(fmName));
 	while (*p != 0) {
-		char const *repl;
+		CString repl;
 		assert(*p >= 0 && *p < CHAR_MAX);
 		repl = gjCharIds[(unsigned char)*p];
 		if (!repl) {
