@@ -29,10 +29,10 @@
 /* Implementations */
 #ifdef OPT_Linux_i386
 
-extern void	fiWordPlusStep     _of_((FiWord, FiWord, FiWord,
-					 FiWord *, FiWord *));
-extern void	fiWordTimesStep    _of_((FiWord, FiWord, FiWord, FiWord,
-					 FiWord *, FiWord *));
+extern void	fiWordPlusStep	(FiWord, FiWord, FiWord,
+				 FiWord *, FiWord *);
+extern void	fiWordTimesStep	(FiWord, FiWord, FiWord, FiWord,
+				 FiWord *, FiWord *);
 
 #define fiWordTimesDoubleMacro						  \
 void fiWordTimesDouble(FiWord a, FiWord b, 				  \
@@ -73,10 +73,10 @@ extern __inline__ fiWordTimesDoubleMacro
 
 #ifdef OPT_Sparc_v8
 
-extern void	fiWordPlusStep     _of_((FiWord, FiWord, FiWord,
-					 FiWord *, FiWord *));
-extern void	fiWordTimesStep    _of_((FiWord, FiWord, FiWord, FiWord,
-					 FiWord *, FiWord *));
+extern void	fiWordPlusStep	(FiWord, FiWord, FiWord,
+				 FiWord *, FiWord *);
+extern void	fiWordTimesStep	(FiWord, FiWord, FiWord, FiWord,
+				 FiWord *, FiWord *);
 
 #define fiWordTimesDoubleMacro 								\
 void fiWordTimesDouble(FiWord a, FiWord b, FiWord *hi, FiWord *lo)			\

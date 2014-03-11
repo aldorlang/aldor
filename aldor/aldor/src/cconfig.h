@@ -33,9 +33,6 @@
  * CC_no_const
  *	if the "const" modifier is not (fully) supported
  *
- * CC_no_prototype
- *	if ANSI-style function prototypes are not supported
- *
  * CC_no_enum_typedef
  *	if the values of enum foo must be given before it is typedefed.
  *
@@ -238,7 +235,6 @@
 #  define CC_CONFIGURED
 #  define CC_no_void_pointer
 #  define CC_no_const
-#  define CC_no_prototype
 #  define CC_no_constant_questions
 #  define CC_missing_memmove
 #  define CC_missing_remove
@@ -322,7 +318,6 @@
 #    elif defined(CC_SUN)
 
 #      define CC_no_const
-#      define CC_no_prototype
 #      define CC_sun_sparc_varargs
 #      define CC_no_float_h
 #      define CC_no_stdarg_h
@@ -420,7 +415,6 @@
 #  define CC_CONFIGURED
 #  define CC_no_void_pointer
 #  define CC_no_const
-#  define CC_no_prototype
 #  define CC_no_float_h
 #  define CC_no_limits_h
 #  define CC_no_locale_h

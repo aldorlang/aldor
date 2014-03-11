@@ -1819,7 +1819,7 @@ fiStrHash(FiWord s)
  *
  *****************************************************************************/
 
-local FiFluid	fiPushFluid _of_((void));
+local FiFluid	fiPushFluid (void);
 FiFluidStack fiGlobalFluidStack;
 
 FiFluid 
