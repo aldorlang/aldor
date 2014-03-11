@@ -209,7 +209,7 @@ local int	ccoPrNewline  (void);
 local int	ccoPrNewlineDo(Bool);
 
 /* Printers for actually doing output. */
-local int	ccoPrintf     (const char *fmt, ...);
+local int	ccoPrintf     (const char *fmt, ...) chk_fmt (1, 2);
 local int	ccoPuts	      (char *s);
 local int	ccoPutc	      (int  c);
 

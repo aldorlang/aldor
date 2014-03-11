@@ -816,7 +816,7 @@ local Bool	faTypeCheckingFmtIsRec (Foam, AInt);
 local Bool	faTypeCheckingBCall	(Foam);
 local FoamTag	faFoamExprType		(Foam, AInt *);
 
-local void	faTypeCheckingFailure	(Foam, String, ...);
+local void	faTypeCheckingFailure	(Foam, String, ...) chk_fmt (2, 3);
 
 local void	foamAuditUnmark		(Foam);
 

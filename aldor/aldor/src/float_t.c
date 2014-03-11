@@ -167,7 +167,7 @@ testDFloParts(FiDFlo df, BInt integer, FiDFlo frac)
 }
 
 void
-testPrevNext()
+testPrevNext(void)
 {
 	FiSFlo	sf0, sf1;
 	FiDFlo	df0, df1;
@@ -196,7 +196,7 @@ testPrevNext()
 }
 
 void
-testRound()
+testRound(void)
 {
 	int   i, sign;
 
@@ -243,7 +243,7 @@ testRound()
 }
 
 void
-testRangeInteractive()
+testRangeInteractive(void)
 {
 	FiSFlo	sf0, sf1;
 	FiDFlo	df0, df1;
@@ -267,7 +267,7 @@ testRangeInteractive()
 }
 
 void
-testInteractive()
+testInteractive(void)
 {
 	FiSFlo  sfl, sfl0;
 	FiDFlo  dfl, dfl0;
@@ -315,7 +315,7 @@ testInteractive()
 }
 
 local void
-testTruncate()
+testTruncate(void)
 {
 	int 	sign, i;
 	Bool	stateOk = true;
@@ -355,7 +355,7 @@ testTruncate()
  *****************************************************************************/
 
 void
-testFloat()
+testFloat(void)
 {
 	testRound();
 	testTruncate();

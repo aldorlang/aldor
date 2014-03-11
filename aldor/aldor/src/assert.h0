@@ -18,7 +18,7 @@
 
 #ifndef DO_ASSERT_IS_DECLARED
 #define DO_ASSERT_IS_DECLARED
-void _do_assert(char *str, char *file, int line) ANALYZER_NORETURN;
+void _do_assert(char *str, char *file, int line) noreturn;
 #endif
 
 #if defined(QASSERT)

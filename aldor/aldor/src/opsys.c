@@ -644,15 +644,15 @@ osPathParse(String* partv, String sbuf, String path)
 
 #if !defined(OS_Has_IoModes)
 
-IOMode	osIoRdMode  = "r";
-IOMode	osIoWrMode  = "w";
-IOMode	osIoApMode  = "a";
-IOMode	osIoRbMode  = "rb";
-IOMode	osIoWbMode  = "wb";
-IOMode	osIoAbMode  = "ab";
-IOMode	osIoRubMode = "r+b";
-IOMode	osIoWubMode = "w+b";
-IOMode	osIoAubMode = "a+b";
+IOMode osIoRdMode  = "r";
+IOMode osIoWrMode  = "w";
+IOMode osIoApMode  = "a";
+IOMode osIoRbMode  = "rb";
+IOMode osIoWbMode  = "wb";
+IOMode osIoAbMode  = "ab";
+IOMode osIoRubMode = "r+b";
+IOMode osIoWubMode = "w+b";
+IOMode osIoAubMode = "a+b";
 
 #endif /* ! OS_Has_IoModes */
 
@@ -665,12 +665,12 @@ IOMode	osIoAubMode = "a+b";
 
 #if (!defined(OS_Has_SpecialStreams))
 
-FILE * osStdout;
-FILE * osStdin;
-FILE * osStderr; 
+FILE *osStdout;
+FILE *osStdin;
+FILE *osStderr; 
 
 void
-osSetStreams(FILE * sstdin, FILE * sstdout, FILE * sstderr)
+osSetStreams(FILE *sstdin, FILE *sstdout, FILE *sstderr)
 {
 	osStdout = sstdout;
 	osStdin  = sstdin;
@@ -678,7 +678,7 @@ osSetStreams(FILE * sstdin, FILE * sstdout, FILE * sstderr)
 }
 
 int  
-osGetc(FILE * f)
+osGetc(FILE *f)
 {
 	return getc(f);
 }
@@ -690,7 +690,7 @@ osPutc(FILE *f, int c)
 }
 
 int
-osFPrintf(FILE *f, char *format, ...)
+osFPrintf(FILE *f, CString format, ...)
 {
 	int ret;
 	va_list argp;
@@ -702,7 +702,7 @@ osFPrintf(FILE *f, char *format, ...)
 }
 
 int
-osFEof(FILE * f)
+osFEof(FILE *f)
 {
 	return feof(f);
 }

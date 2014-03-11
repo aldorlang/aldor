@@ -26,14 +26,14 @@ void
 exitSuccess(void)
 {
 	(*exitHandler)(EXIT_SUCCESS);
-        osExit(EXIT_SUCCESS);
+	osExit(EXIT_SUCCESS);
 }
 
 void
 exitFailure(void)
 {
 	(*exitHandler)(EXIT_FAILURE);
-        osExit(EXIT_FAILURE);
+	osExit(EXIT_FAILURE);
 }
 
 local void
@@ -65,12 +65,9 @@ bugWarning(String fmt, ...)
 {
 	va_list argp;
 
-	if (_dont_assert) return;   /* no -Wcheck opt. */
-
 	printf("Internal Warning: ");
 	va_start(argp, fmt); vprintf(fmt, argp); va_end(argp);
 	printf("\n");
-
 }
 
 /*****************************************************************************
@@ -88,8 +85,7 @@ bug(String fmt, ...)
 	va_start(argp, fmt); vprintf(fmt, argp); va_end(argp);
 	printf("\n");
 
-	if (_fatal_assert)
-		exitFailure();
+	assert(false);
 }
 
 /*****************************************************************************

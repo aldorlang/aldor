@@ -65,8 +65,7 @@ peepUnit(Foam unit,Bool foldfloats)
 
 	if (DEBUG(peep)) {
 		fprintf(dbOut, ">>peepUnit:\n");
-		if (!_dont_assert)
-			foamPrint(dbOut, unit);
+		foamPrint(dbOut, unit);
 		fnewline(dbOut);
 	}
 
@@ -84,8 +83,7 @@ peepUnit(Foam unit,Bool foldfloats)
 
 	if (DEBUG(peep)) {
 		fprintf(dbOut, "<<peepUnit:\n");
-		if (!_dont_assert)
-			foamPrint(dbOut, unit);
+		foamPrint(dbOut, unit);
 		fnewline(dbOut);
 	}
 

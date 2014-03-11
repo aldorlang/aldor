@@ -97,7 +97,7 @@ int		dvThisConst;
 #define DvMaxPasses	10
 
 void
-dvInit()
+dvInit(void)
 {
 	dvGeneration = 0;
 }

@@ -17,8 +17,8 @@
  *
  *****************************************************************************/
 
-extern void	exitSuccess	(void) ANALYZER_NORETURN;
-extern void	exitFailure	(void) ANALYZER_NORETURN;
+extern void	exitSuccess	(void) noreturn;
+extern void	exitFailure	(void) noreturn;
 	/*
 	 * Exit from program with an appropriate return code.
 	 */
@@ -35,9 +35,9 @@ extern ExitFun	exitSetHandler	(ExitFun);
  * :: Bugs
  *
  *****************************************************************************/
-extern void	bugWarning	(String fmt, ...);
+extern void	bugWarning	(String fmt, ...) chk_fmt (1, 2);
 
-extern void	bug		(String fmt, ...) ANALYZER_NORETURN;
+extern void	bug		(String fmt, ...) chk_fmt (1, 2) noreturn;
 
 #define		bugUnimpl(m)	_bug("Unimplemented %s (line %d in file %s).",m)
 #define		bugBadCase(no)	_bug("Bad case %d (line %d in file %s).", no)
@@ -170,7 +170,7 @@ extern int      bfFirst1 (int nb,UByte *t);
  *
  ****************************************************************************/
 
-extern void	prompt		(FILE *fin, FILE *fout, String fmt, ...);
+extern void	prompt		(FILE *fin, FILE *fout, String fmt, ...) chk_fmt (3, 4);
 	/*
 	 * If fin is interactive print the prompt on fout using
 	 * printf-style formatting.

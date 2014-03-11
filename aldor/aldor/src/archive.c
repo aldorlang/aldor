@@ -96,7 +96,7 @@ PathList	arLibraryKeyList  = 0;	/* library archive file keys */
  * archives on the default lists.
  */
 void
-arInit(String * files, String * keys)
+arInit(String *files, String *keys)
 {
 	arLibraryFileList = pathListFrArray(files);
 	arLibraryKeyList  = pathListFrArray(keys);
