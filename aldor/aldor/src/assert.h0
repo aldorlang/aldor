@@ -14,13 +14,11 @@
  * that we just do it ourselves.
  */
 
-#ifndef _ASSERT_DECL
-#define _ASSERT_DECL
-#  if defined(CC_no_prototype)
-      void _do_assert();
-#  else
-      void _do_assert(char *str, char *file, int line);
-#  endif
+#include "features.h0"
+
+#ifndef DO_ASSERT_IS_DECLARED
+#define DO_ASSERT_IS_DECLARED
+void _do_assert(char *str, char *file, int line) ANALYZER_NORETURN;
 #endif
 
 #if defined(QASSERT)
