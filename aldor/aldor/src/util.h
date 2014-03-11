@@ -40,7 +40,7 @@ extern void	bugWarning	(String fmt, ...) chk_fmt (1, 2);
 extern void	bug		(String fmt, ...) chk_fmt (1, 2) noreturn;
 
 #define		bugUnimpl(m)	_bug("Unimplemented %s (line %d in file %s).",m)
-#define		bugBadCase(no)	_bug("Bad case %d (line %d in file %s).", no)
+#define		bugBadCase(no)	_bug("Bad case %d (line %d in file %s).", (int) no)
 #define		_bug(fmt,a)	bug(fmt, a, __LINE__, __FILE__)
 
 /******************************************************************************

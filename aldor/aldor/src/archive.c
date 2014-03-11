@@ -350,7 +350,7 @@ arFirstPos(Archive ar)
 {
 	Offset	pos = 0;
 
-	switch(ar->format) {
+	switch (ar->format) {
 	case AR_AIX:
 		arDEBUG(dbOut, "AIX-style archive\n");
 		pos = arFirstPosAIX(ar);
@@ -368,7 +368,7 @@ arFirstPos(Archive ar)
 		pos = arFirstPosArch(ar);
 		break;
 	default:
-		bugUnimpl(ar->format);
+		bug("Unimplemented archive format: %d", ar->format);
 		break;
 	}
 
@@ -436,7 +436,7 @@ arRdItem(Archive ar)
 		s = arRdItemCMS(ar);
 		break;
 	default:
-		bugUnimpl(ar->format);
+		bug("Unimplemented archive format: %d", ar->format);
 		break;
 	}
 

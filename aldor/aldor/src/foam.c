@@ -1256,14 +1256,14 @@ faTypeCheckingValues(Foam foam, Foam values, AInt formatNo)
 local Bool
 faTypeCheckingFmtIsEnv(Foam foam, AInt format)
 {
-	if (!foamAuditEnvs) return true;
+	if (!foamAuditEnvs)
+		return true;
 
 	if (faFormatsv[format]->foamDDecl.usage != FOAM_DDecl_LocalEnv &&
 	    faFormatsv[format]->foamDDecl.usage != FOAM_DDecl_NonLocalEnv) {
 		faTypeCheckingFailure(foam,
-		  	"NOT environment format used in environment context");
+				      "NOT environment format used in environment context");
 		return false;
-		
 	}
 
 	return true;
@@ -1272,14 +1272,14 @@ faTypeCheckingFmtIsEnv(Foam foam, AInt format)
 local Bool
 faTypeCheckingFmtIsRec(Foam foam, AInt format)
 {
-	if (!foamAuditRecords) return true;
+	if (!foamAuditRecords)
+		return true;
 
 	if (faFormatsv[format]->foamDDecl.usage != FOAM_DDecl_Record) {
 		faTypeCheckingFailure(foam,
-		  	"NOT record format (%d) used in record context",
+				      "NOT record format (" AINT_FMT ") used in record context",
 				      format);
 		return false;
-		
 	}
 
 	return true;
@@ -1288,7 +1288,7 @@ faTypeCheckingFmtIsRec(Foam foam, AInt format)
 local Bool
 faTypeCheckingBCall(Foam foam)
 {
-	int 		i, nargs;
+	int		i, nargs;
 	FoamBValTag	op;
 	AInt		argType, parType, fmt;
 	Bool		result = true;
@@ -1384,14 +1384,14 @@ foamAuditBadDecl(Foam foam)
 {
 	foamPrint(stderr, foam);
 	if (DEBUG(foam)){foamPrint(dbOut, faUnit);}
-	bug("\nBad foam decl\n", faConstNum);
+	bug("\nBad foam decl %d:\n", faConstNum);
 }
 
 local void
 foamAuditBadType(Foam foam)
 {
 	foamPrint(stderr, foam);
-	bug("\nBad type\n", faConstNum);
+	bug("\nBad type %d:\n", faConstNum);
 }
 
 local void

@@ -325,7 +325,7 @@ typedef struct fintUnit	fintUnit;
      case FOAM_NOp: fintSetMFmt((ref), &(expr)); break; \
      case FOAM_Nil:  (ref)->_fiNil = (expr)._fiNil; break;\
      case FOAM_BInt:  (ref)->fiBInt = (Ptr) (bintCopy((BInt) (expr).fiBInt)); break;\
-     default: fintWhere(int0);bug("fintSet: type %d unimplemented.", type); \
+     default: fintWhere(int0);bug("fintSet: type %d unimplemented.", (int)type); \
      }						\
   }
 
@@ -340,7 +340,7 @@ typedef struct fintUnit	fintUnit;
     case FOAM_DFlo: ((FiDFlo *)((ref)->fiArr))[(n)] = (expr).fiDFlo; break; \
     case FOAM_Word: ((FiWord *)((ref)->fiArr))[(n)] = (expr).fiWord; break; \
     case FOAM_BInt: ((FiBInt *)((ref)->fiArr))[(n)] = (expr).fiBint; break; \
-    default: fintWhere(int0);bug("fintASetElem: type %d unimplemented.", type); \
+    default: fintWhere(int0);bug("fintASetElem: type %d unimplemented.", (int)type); \
     } \
 }
 
@@ -355,7 +355,7 @@ typedef struct fintUnit	fintUnit;
     case FOAM_DFlo: (pdata)->fiDFlo = ((FiDFlo *)((ref)->fiArr))[(n)]; break; \
     case FOAM_Word: (pdata)->fiWord = ((FiWord *)((ref)->fiArr))[(n)]; break; \
     case FOAM_BInt: (pdata)->fiBInt = ((FiBInt *)((ref)->fiArr))[(n)]; break; \
-    default: fintWhere(int0);bug("fintAGetElem: type %d unimplemented.", type); \
+    default: fintWhere(int0);bug("fintAGetElem: type %d unimplemented.", (int)type); \
     } \
 }
 
@@ -370,7 +370,7 @@ typedef struct fintUnit	fintUnit;
     case FOAM_DFlo:(pdata)=(DataObj)(((FiDFlo *)((ref)->fiArr)) + (n)); break;\
     case FOAM_Word:(pdata)=(DataObj)(((FiWord *)((ref)->fiArr)) + (n)); break;\
     case FOAM_BInt:(pdata)=(DataObj)(((FiBInt *)((ref)->fiArr)) + (n)); break;\
-    default: fintWhere(int0);bug("fintAGetElemRef: type %d unimplemented.", type); \
+    default: fintWhere(int0);bug("fintAGetElemRef: type %d unimplemented.", (int)type); \
     } \
 }
 
@@ -394,7 +394,7 @@ typedef struct fintUnit	fintUnit;
 	 case FOAM_Word: (x) = sizeof(FiWord); break; \
 	 case FOAM_Arb: (x) = sizeof(FiArb); break; \
 	 case FOAM_Nil: (x) = sizeof(FiNil); break; \
-	 default: fintWhere(int0);bug("fintGetTypeSize: type %d unimplemented.", type); \
+	 default: fintWhere(int0);bug("fintGetTypeSize: type %d unimplemented.", (int)type); \
   }}
 
 /* $$!! ----- From foam.c; This should be moved in foam.h ----- */
@@ -3995,7 +3995,8 @@ fintEval_(DataObj retDataObj)
 				retDataObj->fiHInt = (FiHInt) expr.fiSFlo;
 				break;
 			default:
-				bug("FintEval: Cast from %d to %d unimplemented.", frType, toType);
+				bug("FintEval: Cast from %d to %d unimplemented.",
+				    (int)frType, (int)toType);
 			}
 			break;
 		case FOAM_DFlo:
@@ -4015,7 +4016,8 @@ fintEval_(DataObj retDataObj)
 				retDataObj->fiHInt = (FiHInt) expr.fiDFlo;
 				break;
 			default:
-				bug("FintEval: Cast from %d to %d unimplemented.", frType, toType);
+				bug("FintEval: Cast from %d to %d unimplemented.",
+				    (int)frType, (int)toType);
 			}
 			break;
 		case FOAM_SInt:
@@ -4063,7 +4065,8 @@ fintEval_(DataObj retDataObj)
 				else if (toSize == sizeof(FiWord))
 					retDataObj->fiWord = expr.fiChar;
 				else
-					bug("FintEval: Cast from %d to %d unimplemented.", frType, toType);
+					bug("FintEval: Cast from %d to %d unimplemented.",
+					    (int)frType, (int)toType);
 
 			}
 			else if (frSize == sizeof(FiHInt)) {
@@ -4075,7 +4078,8 @@ fintEval_(DataObj retDataObj)
 				else if (toSize == sizeof(FiWord))
 					retDataObj->fiWord = expr.fiHInt;
 				else
-					bug("FintEval: Cast from %d to %d unimplemented.", frType, toType);
+					bug("FintEval: Cast from %d to %d unimplemented.",
+					    (int)frType, (int)toType);
 			}
 			else if (frSize == sizeof(FiWord)) {
 				if (toSize == sizeof(FiChar))
@@ -4086,10 +4090,12 @@ fintEval_(DataObj retDataObj)
 					retDataObj->fiWord = expr.fiWord;
 
 				else
-					bug("FintEval: Cast from %d to %d unimplemented.", frType, toType);
+					bug("FintEval: Cast from %d to %d unimplemented.",
+					    (int)frType, (int)toType);
 			}
 			else
-				bug("FintEval: Cast from %d to %d unimplemented.", frType, toType);
+				bug("FintEval: Cast from %d to %d unimplemented.",
+				    (int)frType, (int)toType);
 
 			break;
 			}
@@ -4982,10 +4988,14 @@ fintEval_(DataObj retDataObj)
 		        }
 		default: {
 			AInt pcallId = expr.fiSInt;
-			bug("fintEval: %s PCall %d %s, (called from <%s> in [%s])\n",
-			    pcallId == -1 ?
-			    "undeclared" : "unimplemented", pcallId,
-			    (pcallId > 0 && pcallId < FINT_FOREIGN_END) ? fintForeignTable[pcallId].string : "??",
+			bug("fintEval: %s PCall " AINT_FMT " %s, (called from <%s> in [%s])\n",
+			    pcallId == -1
+			      ? "undeclared"
+			      : "unimplemented",
+			    pcallId,
+			    pcallId > 0 && pcallId < FINT_FOREIGN_END
+			      ? fintForeignTable[pcallId].string
+			      : "??",
 			    prog->name, prog->unit->name);
 			    }
 		}

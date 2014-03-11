@@ -7128,7 +7128,7 @@ gen0FoamLevel(AInt level)
 		i++;
 		i += s->whereNest;
 	}
-	bug("level %d not found\n", level);
+	bug("level " AINT_FMT " not found\n", level);
 	return 0;
 }
 
