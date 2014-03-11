@@ -7,9 +7,9 @@
  ****************************************************************************/
 
 
-#define _ALL_SOURCE   /* For RS/6000 - should come before cport.h include. */
-#define _POSIX_SOURCE /* For Linux/BSD. */
-#define _BSD_SOURCE   /* sbrk */
+#define _ALL_SOURCE 1   /* For RS/6000 - should come before cport.h include. */
+#define _POSIX_SOURCE 1 /* For Linux/BSD. */
+#define _BSD_SOURCE 1  /* sbrk */
 
 #include "cport.h"
 #include "editlevels.h"
@@ -891,8 +891,8 @@ osSetSignalHandlers(OsSignalHandler *posigfn,int *sigv,OsSignalHandler nsigfn)
 OsSignalHandler
 osSetSignalHandlers(OsSignalHandler *posigfn,int *sigv,OsSignalHandler nsigfn)
 {
-	struct sigaction oldaction = { };
-	struct sigaction newaction = { };
+	struct sigaction oldaction = { 0 };
+	struct sigaction newaction = { 0 };
 
 	newaction.sa_handler = nsigfn ? nsigfn : SIG_DFL;
 

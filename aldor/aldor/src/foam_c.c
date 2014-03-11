@@ -1967,15 +1967,15 @@ fiUnwind(FiWord target, FiWord value)
 
 typedef struct {
 	FiFluidStack chain;
-} fintState;
+} fiState;
 
 void *
 fiSaveFIState(void)
 {
 #if OLDWAY
-	fintState *state = (fintState *) stoAlloc(OB_Other, sizeof(*state));
+	fiState *state = (fiState *) stoAlloc(OB_Other, sizeof(*state));
 #else
-	fintState *state = (fintState *)FI_ALLOC(sizeof(*state), CENSUS_SaveState);
+	fiState *state = (fiState *)FI_ALLOC(sizeof(*state), CENSUS_SaveState);
 #endif
 	state->chain = fiGlobalFluidStack;
 
@@ -1985,7 +1985,7 @@ fiSaveFIState(void)
 void
 fiRestoreFIState(void *state)
 {
-	fiGlobalFluidStack = ((fintState *) state)->chain;
+	fiGlobalFluidStack = ((fiState *) state)->chain;
 #if OLDWAY
 	stoFree(state);
 #else

@@ -46,11 +46,11 @@ Bool	tipTdnDebug	= false;
  *
  ****************************************************************************/
 
-TForm		tuniYieldTForm	= 0;
-TForm		tuniReturnTForm = 0;
-TForm		tuniExitTForm	= 0;
-TForm		tuniSelectTForm	= 0;
-AbSyn		tuniSelectObj   = 0;
+TForm		tuniYieldTForm		= 0;
+TForm		tuniReturnTForm		= 0;
+TForm		tuniExitTForm		= 0;
+static AbSyn	tuniTdnSelectObj	= 0;
+
 /*****************************************************************************
  *
  * :: Fluids to keep trace of multiple exit points
@@ -173,7 +173,7 @@ tiTopDown(Stab stab, AbSyn absyn, TForm type)
 	TForm	fluid(tuniExitTForm);
 	AbLogic fluid(abCondKnown);
 
-	tuniReturnTForm = tfNone();
+	tuniReturnTForm	= tfNone();
 	tuniYieldTForm	= tfNone();
 	tuniExitTForm	= tfNone();
 	abCondKnown     = abCondKnown ? ablogCopy(abCondKnown) : ablogTrue();
@@ -191,7 +191,7 @@ titdn(Stab stab, AbSyn absyn, TForm type)
 	TPoss		abtposs;
 	static int	serialNo = 0, depthNo = 0;
 	int		serialThis;
-	Bool		s;
+	Bool		s = false;
 	TForm		stype;
 
 	if (abState(absyn) == AB_State_HasUnique)
@@ -1102,7 +1102,7 @@ titdnLambda(Stab stab, AbSyn absyn, TForm type)
 	TForm		fluid(tuniExitTForm);
 	AbSynList	fluid(abReturnsList);
 
-	tuniReturnTForm = tfNone();
+	tuniReturnTForm	= tfNone();
 	tuniYieldTForm	= tfNone();
 	tuniExitTForm	= tfNone();
 	abReturnsList = listNil(AbSyn);
@@ -1199,12 +1199,12 @@ titdnSequence(Stab stab, AbSyn absyn, TForm type)
 	Scope("titdnSequence");
 	TForm		fluid(tuniExitTForm);
 	AbSynList	fluid(abExitsList);
-	AbSyn		fluid(tuniSelectObj);
-	Bool 		result;
+	AbSyn		fluid(tuniTdnSelectObj);
+	Bool		result;
 
-	tuniExitTForm = type;
-	abExitsList   = listNil(AbSyn);
-	tuniSelectObj = NULL;
+	tuniExitTForm    = type;
+	abExitsList      = listNil(AbSyn);
+	tuniTdnSelectObj = NULL;
 
 	result = titdnSequence0(stab, absyn, type);
 
@@ -1261,8 +1261,7 @@ titdnExit(Stab stab, AbSyn absyn, TForm type)
 
 	titdn(stab, test, tfUnknown);
 
-	if (!tuniSelectObj)
-	{
+	if (!tuniTdnSelectObj) {
 		/* See tibupExit for comments */
 		AbSyn nTest = abExpandDefs(stab, test);
 		ablogAndPush(&abCondKnown, &saveCond, nTest, true);
@@ -1270,7 +1269,7 @@ titdnExit(Stab stab, AbSyn absyn, TForm type)
 
 	titdn0FarValue(stab, absyn, type, value, &tuniExitTForm, &abExitsList);
 
-	if (!tuniSelectObj)
+	if (!tuniTdnSelectObj)
 		ablogAndPop (&abCondKnown, &saveCond);
 	
 	return titdn0NoValue(stab, absyn, type, ALDOR_E_TinContextExit);
@@ -1310,7 +1309,7 @@ titdnGenerate(Stab stab, AbSyn absyn, TForm type)
 	AbSyn		count = absyn->abGenerate.count;
 	Bool		result;
 
-	tuniReturnTForm = tfNone();
+	tuniReturnTForm	= tfNone();
 	tuniYieldTForm	= tfNone();
 	tuniExitTForm	= tfNone();
 	abYieldsList = listNil(AbSyn);
@@ -1511,8 +1510,10 @@ titdnIf(Stab stab, AbSyn absyn, TForm type)
 AbSyn
 titdnSelectArgf(AbSyn ab, Length i)
 {
-	if (i==0) return tuniSelectObj;
-	else return abArgv(ab)[i-1];
+	if (i == 0)
+		return tuniTdnSelectObj;
+	else
+		return abArgv(ab)[i - 1];
 }
 
 local Bool
@@ -1525,7 +1526,7 @@ titdnTest(Stab stab, AbSyn absyn, TForm type)
 	 */
 	assert(tfBoolean != tfUnknown);
 
-	if (tuniSelectObj != NULL) {
+	if (tuniTdnSelectObj != NULL) {
 		titdn0ApplySym(stab, absyn, 
 			       tfBoolean,
 			       ssymTheCase, 2,
@@ -1559,7 +1560,7 @@ titdnCollect(Stab stab, AbSyn absyn, TForm type)
 	TForm	fluid(tuniYieldTForm);
 	TForm	fluid(tuniExitTForm);
 
-	tuniReturnTForm = tfNone();
+	tuniReturnTForm	= tfNone();
 	tuniYieldTForm	= tfNone();
 	tuniExitTForm	= tfNone();
 
@@ -2358,13 +2359,13 @@ titdnSelect(Stab stab, AbSyn absyn, TForm type)
 	Scope("titdnSelect");
 	TForm		fluid(tuniExitTForm);
 	AbSynList	fluid(abExitsList);
-	AbSyn		fluid(tuniSelectObj);
-	AbSyn  	seq;
-	Bool result;
+	AbSyn		fluid(tuniTdnSelectObj);
+	AbSyn		seq;
+	Bool		result;
 
-	tuniExitTForm = type;
-	abExitsList   = listNil(AbSyn);
-	tuniSelectObj = absyn->abSelect.testPart;
+	tuniExitTForm    = type;
+	abExitsList      = listNil(AbSyn);
+	tuniTdnSelectObj = absyn->abSelect.testPart;
 	
 	titdn(stab, absyn->abSelect.testPart, tfUnknown);
 

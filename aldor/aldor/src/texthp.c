@@ -25,15 +25,15 @@
  * NOTE that the me capability for HP terminals does not (normally) alter
  * the current colour-pair selection but we do here.
  */
-local String term_escapes[][4] = {
+local String hp_term_escapes[][4] = {
   /* set-pair	normal			extra bright	terminal */
   /* sp		me			md			 */
   {"\033&v%dS",	"\033&d@\033&v0S",	"\033&dB"},	/* hpterm */
   {"\033[3%dm",	"\033[m",		"\033[1m"},	/* xterm (debug) */
 };
 
-/* Capabilities of interest (index into term_escapes[]) */
-enum hp_term_capabilities { sp_cap, me_cap, md_cap };
+/* Capabilities of interest (index into hp_term_escapes[]) */
+enum hp_term_capabilities { HP_sp_cap, HP_me_cap, HP_md_cap };
 
 /*
  * txtBoldHP() returns a string of escape codes for enabling the bold
@@ -44,7 +44,7 @@ enum hp_term_capabilities { sp_cap, me_cap, md_cap };
 String
 txtBoldHP(void)
 {
-	return term_escapes[termType()-FirstHPTerm][md_cap];
+	return hp_term_escapes[termType()-FirstHPTerm][HP_md_cap];
 }
 
 /*
@@ -56,7 +56,7 @@ txtBoldHP(void)
 String
 txtNormalHP(void)
 {
-	return term_escapes[termType()-FirstHPTerm][me_cap];
+	return hp_term_escapes[termType()-FirstHPTerm][HP_me_cap];
 }
 
 /*
@@ -68,7 +68,7 @@ String
 txtColourHP(ColourHP cp)
 {
 	static char result[HP_ESCAPE_MAXLEN+1];
-	String fmt = term_escapes[termType()-FirstHPTerm][sp_cap];
+	String fmt = hp_term_escapes[termType()-FirstHPTerm][HP_sp_cap];
 	(void)sprintf(result, fmt, cp);
 	return result;
 }

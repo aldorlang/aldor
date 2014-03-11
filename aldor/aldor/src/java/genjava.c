@@ -32,7 +32,6 @@ local JavaCodeList gj0CollectImports(JavaCode clss);
 local JavaCodeList gj0DDef(Foam foam);
 local JavaCode gj0Gen(Foam foam);
 local JavaCode gj0Gen(Foam foam);
-local JavaCode gj0GenWType(Foam foam);
 local JavaCodeList gj0GenList(Foam *p, AInt n);
 local JavaCode gj0Def(Foam foam);
 local JavaCode gj0Default(Foam foam, String s);
@@ -122,7 +121,7 @@ local String       gj0ProgFnName(int idx);
 local void         gj0ProgAddStubs(FoamSigList sigList);
 local JavaCodeList gj0ProgDeclarations(Foam ddecl, Foam body);
 
-local String       gj0Name(char *prefix, Foam fmt, int idx);
+local String       gj0Name(CString prefix, Foam fmt, int idx);
 local JavaCode     gj0ProgRetnType(Foam rhs);
 local JavaCode     gj0TopConst(Foam lhs, Foam rhs);
 
@@ -135,7 +134,6 @@ local JavaCode     gj0TypeValueToArr(JavaCode value, AInt fmt);
 local FoamTag      gj0FoamExprType(Foam foam);
 local FoamTag      gj0FoamExprTypeWFmt(Foam foam, AInt *fmt);
 
-local JavaCodeList gj0CCallCollectArgs(Foam call);
 local FoamSigList  gj0CCallStubAdd(FoamSigList list, FoamSig sig);
 
 local FoamSig      gj0FoamSigFrCCall(Foam ccall);
@@ -158,6 +156,8 @@ local JavaCodeList gj0ClassHeader(String className);
 local String       gj0InitVar(AInt idx);
 
 enum gjId {
+	GJ_INVALID = -1,
+
 	GJ_Foam,
 	GJ_FoamWord,
 	GJ_FoamClos,
@@ -242,7 +242,7 @@ JavaCode
 genJavaUnit(Foam foam, String name)
 {
 	JavaCodeList imps, code, mainImpl, interfaces, fmts, body;
-	JavaCode clss, contextDecl;
+	JavaCode clss;
 	String className, comment;
 	
 	gjArgs->name = name;
@@ -998,7 +998,7 @@ local JavaCode
 gj0ProgFnMethodBody(Foam lhs, Foam prog)
 {
 	Foam pddecl = prog->foamProg.params;
-	JavaCodeList l, tmp;
+	JavaCodeList l;
 	JavaCode call;
 	int i;
 	JavaCodeList ret;
@@ -1079,7 +1079,6 @@ gj0ProgFnMethodBody(Foam lhs, Foam prog)
  * Clos --> foamj.Clos
  * Env  --> foamj.Env
  */
-local JavaCode jcTypeValueToArr(JavaCode value, AInt fmt);
 
 local JavaCode
 gj0Type(Foam decl)
@@ -1364,8 +1363,6 @@ gj0GloSet(Foam lhs, Foam rhs)
 {
 	JavaCode jc;
 	Foam decl;
-	FoamTag type;
-	AInt fmt;
 	String id;
 
 	decl = gjContextGlobal(lhs->foamGlo.index);
@@ -1467,9 +1464,6 @@ gj0Seq(Foam seq)
 local JavaCode
 gj0Return(Foam r)
 {
-	FoamTag tag;
-	AInt fmt;
-
 	if (foamTag(r->foamReturn.value) == FOAM_Values)
 		return gj0ValuesReturn(r->foamReturn.value);
 
@@ -1627,11 +1621,13 @@ local void
 gj0SeqBCall(GjSeqStore seqs, Foam foam)
 {
 	JavaCode jc;
-	if (foam->foamBCall.op != FOAM_BVal_Halt)
-		return gj0SeqGenDefault(seqs, foam);
+	if (foam->foamBCall.op != FOAM_BVal_Halt) {
+		gj0SeqGenDefault(seqs, foam);
+		return;
+	}
 	jc = jcStatement(gj0Gen(foam));
 	
-	return gj0SeqStoreAddHalt(seqs, jc);
+	gj0SeqStoreAddHalt(seqs, jc);
 }
 
 local void
@@ -1690,7 +1686,6 @@ local void
 gj0SeqStoreAddStmt(GjSeqStore store, JavaCode stmt)
 {
 	GjSeqBucket bucket;
-	int i;
 
 	if (store->buckets == listNil(GjSeqBucket)) {
 		store->buckets = listSingleton(GjSeqBucket)(gj0SeqBucketNew(GJ_SEQ_Prefix));
@@ -2257,7 +2252,6 @@ local FoamTag
 gj0FoamExprTypeWFmt(Foam foam, AInt *fmt)
 {
 	FoamTag tag;
-	AInt    extra;
 
 	tag = foamExprType0(foam, gjContext->prog, 
 			    gjContext->formats,
@@ -2473,7 +2467,7 @@ gj0EElt(Foam foam)
 local JavaCode
 gj0EEnv(Foam foam)
 {
-	JavaCode env, ref;
+	JavaCode env;
 	AInt lvl = foam->foamEEnv.level;
 	
 	if (lvl == 0)
@@ -2795,8 +2789,7 @@ local JavaCode
 gj0CCallStubGenFrSig(FoamSig sig)
 {
 	JavaCodeList valList, paramList;
-	JavaCode retType = gj0TypeFrFmt(sig->retType, 0);
-	JavaCode l1, l2, l3, call;
+	JavaCode l1, l2, call;
 	JavaCode resultVar, retnType, body;
 	AIntList argList = sig->inArgs;
 	int idx;
@@ -3072,7 +3065,6 @@ local JavaCodeList
 gj0ClassHeader(String className)
 {
 	JavaCodeList list, fields;
-	JavaCode decl;
 	JavaCode constructor;
 	JavaCode runMethod;
 
@@ -3095,8 +3087,7 @@ local JavaCodeList
 gj0ClassFields()
 {
 	JavaCodeList vars;
-	JavaCode ctxtDecl, rhs, declJ;
-	Foam prog;
+	JavaCode ctxtDecl, declJ;
 	int i;
 
 	/* private FoamContext ctxt;*/
@@ -3141,7 +3132,7 @@ gj0ClassConstructor(String className)
 	s1 = jcStatement(s1);
 	
 	inits = listNil(JavaCode);
-	for (i=0; i<foamDDeclArgc(gjContextGlobals); i++) {
+	for (i = 0; i < foamDDeclArgc(gjContextGlobals); i++) {
 		decl = gjContextGlobal(i);
 		
 		if (decl->foamGDecl.protocol != FOAM_Proto_Init)
@@ -3176,8 +3167,7 @@ gj0ClassRunMethod(String className)
 	 * }
          */
 	
-	JavaCode s1, s2;
-	Foam initDecl;
+	JavaCode s1;
 	int idx;
 
 	idx = gj0ClassFindInitDeclIdx();
@@ -3208,7 +3198,6 @@ gj0ClassFindInitDeclIdx()
 local Foam
 gj0ClassFindInitDef()
 {
-	int idx = gj0ClassFindInitDeclIdx();
 	int i;
 	for (i=0; i<foamArgc(gjContext->defs); i++) {
 		Foam def = gjContext->defs->foamDDef.argv[i];
@@ -3289,8 +3278,8 @@ gj0InitVar(AInt idx)
 
 struct gjIdInfo {
 	GjId id;
-	char *pkg;
-	char *name;
+	String pkg;
+	String name;
 };
 
 struct gjIdInfo gjIdInfo[] = {
@@ -3316,16 +3305,17 @@ struct gjIdInfo gjIdInfo[] = {
 
 	{GJ_ContextVar, 0, "ctxt"},
 	{GJ_Main,       0, "main"},
-	{ -1, 0, 0 }
+	{GJ_INVALID,    0, 0 },
 };
 
 
 local JavaCode
 gj0Id(GjId id) 
 {
-	assert(gjIdInfo[GJ_LIMIT].id == -1);
+	struct gjIdInfo *info;
+	assert(gjIdInfo[GJ_LIMIT].id == GJ_INVALID);
 
-	struct gjIdInfo *info = &gjIdInfo[id];
+	info = &gjIdInfo[id];
 	assert(id == info->id);
 
 	if (info->pkg != 0)
@@ -3391,7 +3381,7 @@ enum gj_BCallMethod {
 	GJ_NegConst,
 	GJ_Cast,
 	GJ_Exception,
-	GJ_NotImpl, 
+	GJ_NotImpl
 };
 
 typedef Enum(gj_BCallMethod) GJ_BCallMethod;
@@ -3400,8 +3390,8 @@ struct gjBVal_info {
 	FoamBValTag tag;
 	GJ_BCallMethod method;
 	AInt gjTag;
-	char *c1;
-	char *c2;
+	String c1;
+	String c2;
 };
 
 typedef struct gjBVal_info *GJBValInfo;
@@ -3481,10 +3471,7 @@ gj0BCallApply(Foam foam)
 	JavaCodeList args;
 	JavaCode tgtClss;
 	GJBValInfo inf;
-	String pkg;
-	String id;
-	int lastDot;
-	char *p;
+	CString p;
 
 	inf = gj0BCallBValInfo(foam->foamBCall.op);
 	args = gj0GenList(foam->foamBCall.argv, foamArgc(foam)-1);
@@ -3520,7 +3507,7 @@ local JavaCode
 gj0BCallOp(Foam foam) 
 {
 	JavaCodeList args;
-	JavaCode r, extraArg;
+	JavaCode r;
 	GJBValInfo inf;
 
 	inf = gj0BCallBValInfo(foam->foamBCall.op);
@@ -3556,7 +3543,6 @@ gj0BCallOpMod(Foam foam)
 local JavaCode
 gj0BCallLitChar(Foam foam)
 {
-	JavaCodeList args;
 	GJBValInfo inf;
 
 	inf = gj0BCallBValInfo(foam->foamBCall.op);
@@ -3567,7 +3553,6 @@ gj0BCallLitChar(Foam foam)
 local JavaCode
 gj0BCallLitString(Foam foam) 
 {
-	JavaCodeList args;
 	GJBValInfo inf;
 
 	inf = gj0BCallBValInfo(foam->foamBCall.op);
@@ -3969,12 +3954,12 @@ gj0BCallBValInfo(FoamBValTag tag)
  * :: Names
  */
 struct gjSpecCharId_info {
-	char c;
-	char *s;
+	unsigned char c;
+	CString s;
 };
 struct gjSpecCharId_info gjSpecCharIdTable[];
 
-char *gjCharIds[CHAR_MAX];
+CString gjCharIds[CHAR_MAX];
 
 local void
 gj0NameInit() 
@@ -3991,7 +3976,7 @@ gj0NameInit()
 }
 
 local String
-gj0Name(char *prefix, Foam fmt, int idx)
+gj0Name(CString prefix, Foam fmt, int idx)
 {
 	Foam decl;
 	Buffer b = bufNew();
@@ -4014,13 +3999,14 @@ gj0NameFrString(String fmName)
 {
 	Buffer buf = bufNew();
 	Bool flg;
-	char *p;
+	CString p;
 
 	flg = false;
 	p = fmName;
 	while (*p != 0) {
+		CString repl;
 		assert(*p >= 0 && *p < CHAR_MAX);
-		char *repl = gjCharIds[*p];
+		repl = gjCharIds[(unsigned char)*p];
 		if (repl != 0)
 			flg = true;
 		p++;
@@ -4031,8 +4017,9 @@ gj0NameFrString(String fmName)
 	p = fmName;
 	bufNeed(buf, strlen(fmName));
 	while (*p != 0) {
+		CString repl;
 		assert(*p >= 0 && *p < CHAR_MAX);
-		char *repl = gjCharIds[*p];
+		repl = gjCharIds[(unsigned char)*p];
 		if (!repl) {
 			bufAdd1(buf, *p);
 		}

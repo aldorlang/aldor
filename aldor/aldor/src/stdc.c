@@ -7,16 +7,21 @@
  ****************************************************************************/
 
 #include "stdc.h"
+
 int _dont_assert = 0;
 int _fatal_assert = 1;
 
 void
 _do_assert(char *str, char *file, int line)
 {
-	if (!str) str = "Details not available.";
+	if (_dont_assert)
+		return;
+
+	if (!str)
+		str = "Details not available.";
 	fprintf(stderr,
 		"Assertion failed, file \"%s\" line %d: %s\n",
-		 file, line, str);
+		file, line, str);
 	if (_fatal_assert)
 		abort();
 }

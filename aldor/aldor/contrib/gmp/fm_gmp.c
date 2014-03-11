@@ -74,9 +74,9 @@ int fgmpBigCounter[30];
 int fgmpMixedCounter[30];
 int fgmpImmed;
 int fgmpBig;
-#define SmallOp(i,x,y) ((Abut(x,Immed) && Abut(y,Immed))  \
+#define SmallOp(i,x,y) ((x##Immed && y##Immed  \
 			? fgmpSmallCounter[i]++ 	  \
-			: (Abut(x,Immed) != Abut(y,Immed) \
+			: x##Immed != y##Immed \
 			   ? fgmpMixedCounter[i]++ : fgmpBigCounter[i]++))
 #define NewImmed() (fgmpImmed++)
 #define NewBig()	 (fgmpBig++)

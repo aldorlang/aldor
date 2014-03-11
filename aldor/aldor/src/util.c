@@ -472,12 +472,13 @@ hashCombinePair(int i1, int i2)
 
 	if (sizeof(long) >= 8) {
 		IF_LongOver32Bits(
-				long zz = (zzh << 32) + zzl;
-				long h1 = i1 & ((1L<<32)-1);
-				long h2 = i2 & ((1L<<32)-1);
+			long zz = (zzh << 32) + zzl;
+			long h1 = i1 & ((1L<<32)-1);
+			long h2 = i2 & ((1L<<32)-1);
 
-				int tmp = (int)(((z1*h1 + z2*h2) * zz) >> 32);
-				return tmp & 0x3FFFFFFF;)
+			int tmp = (int)(((z1*h1 + z2*h2) * zz) >> 32);
+			return tmp & 0x3FFFFFFF;
+		)
 	}
 	else if (sizeof(long) == 4 && sizeof(unsigned int) == 4) {
 		BInt bi1 = bintNew(i1);
@@ -555,7 +556,7 @@ ulongSmallIntFrString(String start, unsigned int ndigs, unsigned int radix)
 	char 	*junk;
 	ULong	ires;
 	ULong	slen;
-	int     radixBits = sizeof(ULong) << 3;
+#define radixBits (sizeof(ULong) << 3)
 	char	num[radixBits + 1];
 	/*
 	 * Copy out the number to be scanned. Since we know

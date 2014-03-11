@@ -1,9 +1,13 @@
-#include "testlib.h"
+#include "abquick.h"
+#include "abuse.h"
+#include "comsg.h"
 #include "debug.h"
 #include "foam.h"
-#include "stab.h"
-#include "abquick.h"
 #include "genfoam.h"
+#include "scobind.h"
+#include "stab.h"
+#include "testlib.h"
+#include "tinfer.h"
 
 local void testForeign(void);
 

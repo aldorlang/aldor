@@ -758,7 +758,7 @@ enum jcoTag {
   JCO_LIT, /* literal */
   JCO_TOKEN, /* token */
   JCO_IMPORT, /* import */
-  JCO_LIMIT,
+  JCO_LIMIT
 };
 
 typedef Enum(jcoTag) JcoTag;
@@ -848,7 +848,7 @@ typedef SExpr JSExprFn(JavaCode c);
 enum jcoAssoc {
 	JCO_LR,
 	JCO_RL,
-	JCO_NONE,
+	JCO_NONE
 };
 
 typedef Enum(jcoAssoc) JcoAssoc;

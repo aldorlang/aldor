@@ -44,15 +44,6 @@ Bool	tipDeclDebug	= false;
 
 /*****************************************************************************
  *
- * :: Other fluids and globals
- *
- ****************************************************************************/
-
-static Bool	  tloopBreakCount    = -1;/* Handle loop exits */
-static SymbolList terrorIdComplaints = 0; /* Id complaint list for scope. */
-
-/*****************************************************************************
- *
  * :: Declarations for breadth-first declaration pass
  *
  ****************************************************************************/
@@ -97,14 +88,10 @@ tiDeclarations(Stab stab, AbSyn absyn, TForm type)
 	Scope("tiDeclarations");
 	int	passNo = 0;
 
-	Bool	   fluid(tloopBreakCount);
-	SymbolList fluid(terrorIdComplaints);
 	PendingDeclList fluid(pdPending);
 	PendingDeclList pds;
 
 	pdPending = NULL;
-	tloopBreakCount	   = -1;
-	terrorIdComplaints = 0;
 
 	/* Add the top-level node to the pending list */
 	pdPending = listCons(PendingDecl)(pdNew(stab, absyn, type), pdPending);
@@ -132,7 +119,6 @@ tiDeclarations(Stab stab, AbSyn absyn, TForm type)
 	}
 
 	/* Clean up and return */
-	listFree(Symbol)(terrorIdComplaints);
 	ReturnNothing;
 }
 

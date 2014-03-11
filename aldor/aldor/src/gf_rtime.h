@@ -9,6 +9,8 @@
 #ifndef _GF_RTIME_H_
 #define _GF_RTIME_H_
 
+#include "foam.h"
+
 /* 
  * Info on builtin runtime calls
  */

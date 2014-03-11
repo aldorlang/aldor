@@ -3912,13 +3912,15 @@ scobindReconcileDecl(Stab stab, AbSynTag context, Symbol sym, IdInfo idInfo,
 	if (declInfo->uses[SCO_Sig_Define]) {
 		TForm	tf = scobindTfSyntaxFrAbSyn(stab, declInfo->type);
 		if (context == AB_Add || context == AB_With) {
+			Syme syme;
+			AbSynList defConditions;
 			if (!abSyme(declInfo->id))
 				scobindAddMeaning(declInfo->id,
 					  sym, stab, SYME_Export,
 					  tf, (AInt) declInfo->doc);
 			assert(abSyme(declInfo->id));
-			Syme syme = abSyme(declInfo->id);
-			AbSynList defConditions = scobindDefnPosToList(declInfo->defpos);
+			syme = abSyme(declInfo->id);
+			defConditions = scobindDefnPosToList(declInfo->defpos);
 			symeSetDefinitionConditions(syme, defConditions);
 		}
 		else {

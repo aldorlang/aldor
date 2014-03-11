@@ -10,9 +10,10 @@
  * The main job is done by axl.y.
  */
 
-#include "debug.h"
-#include "phase.h"
 #include "comsg.h"
+#include "debug.h"
+#include "parseby.h"
+#include "phase.h"
 #include "strops.h"
 
 static TokenList        yytoklist;      /* The unseen tokens */
@@ -48,13 +49,6 @@ parse(TokenList *prest)
 		return absyn;
 }
 
-extern union {
-	Token           tok;
-	TokenList       toklist;
-	AbSyn           ab;
-	AbSynList       ablist;
-} yylval;
-	
 int
 yylex(void)
 {
@@ -131,21 +125,19 @@ parseDeprecated(TokenTag tok, AbSyn ab)
 {
 	switch (tok)
 	{
-	   case KW_Always:
+	case KW_Always:
 		comsgWarning(ab, ALDOR_W_OldSyntaxAlways);
 		break;
-	   case KW_But:
+	case KW_But:
 		comsgWarning(ab, ALDOR_W_OldSyntaxCatch);
 		break;
-	   case KW_Except:
+	case KW_Except:
 		comsgWarning(ab, ALDOR_W_OldSyntaxThrow);
 		break;
-	   default:
+	default:
 		comsgWarning(ab, ALDOR_W_OldSyntaxUnknown);
 		break;
 	}
 
 	return ab;
 }
-
-

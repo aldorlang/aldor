@@ -391,24 +391,24 @@ struct GenBoundCalc {
 	GenBoundTag tag;
 	AbSyn code;
 	GenBoundCalcList subs;
-} ;
+};
 
-local GenBoundCalc gen0MakeBoundCalc	(AbSyn, Bool);
-local GenBoundCalc gen0NewBoundCalc	(GenBoundTag, AbSyn, GenBoundCalcList);
-local GenBoundCalc gen0MakeYieldBound	(AbSyn);
-local GenBoundCalc gen0MakeRepeatBound	(AbSyn, Bool);
-local GenBoundCalc gen0MakeIterBound	(AbSyn, Bool);
-local GenBoundCalc gen0MakeForBound	(AbSyn, Bool);
-local GenBoundCalc gen0MakeSeqBound	(AbSyn, Bool);
-local Bool	   gen0VerifyExprBoundSafe	(AbSyn, Bool);
-local AbSynList	   gen0FindIterVars	(AbSyn);
+local GenBoundCalc	gen0MakeBoundCalc	(AbSyn, Bool);
+local GenBoundCalc	gen0NewBoundCalc	(GenBoundTag, AbSyn, GenBoundCalcList);
+local GenBoundCalc	gen0MakeYieldBound	(AbSyn);
+local GenBoundCalc	gen0MakeRepeatBound	(AbSyn, Bool);
+local GenBoundCalc	gen0MakeIterBound	(AbSyn, Bool);
+local GenBoundCalc	gen0MakeForBound	(AbSyn, Bool);
+local GenBoundCalc	gen0MakeSeqBound	(AbSyn, Bool);
+local Bool		gen0VerifyExprBoundSafe	(AbSyn, Bool);
+local AbSynList		gen0FindIterVars	(AbSyn);
 
 #ifdef GenerBetterGuesses
-local Foam	   gen0ComputeBoundExpr	(GenBoundCalc, int);
-local Foam 	   gen0ComputeBoundGener	(AbSyn, int);
-local Foam	   gen0ComputeBCall	(FoamTag, FoamList);
-local FoamTag      gen0CalcToBuiltin	(GenBoundTag);
-local Foam	   gen0ComputeMin	(FoamList);
+local Foam		gen0ComputeBoundExpr	(GenBoundCalc, int);
+local Foam		gen0ComputeBoundGener	(AbSyn, int);
+local Foam		gen0ComputeBCall	(FoamBValTag, FoamList);
+local FoamBValTag	gen0CalcToBuiltin	(GenBoundTag);
+local Foam		gen0ComputeMin		(FoamList);
 #endif
 
 /*  I/face to forIter from bound calc */
@@ -418,11 +418,17 @@ struct GenerGenInfo {
 	FoamList  foamVars;
 	FoamList  nestChecks;
 	AbSynList ids;
-}  ;
+};
 
 /* Same order as GenCalcTags */
-FoamTag gen0CalcOps[] = { FOAM_BVal_SIntMin, FOAM_BVal_SIntTimes, FOAM_BVal_SIntPlus, 
-			0, 0,0 };
+FoamBValTag gen0CalcOps[] = {
+	FOAM_BVal_SIntMin,
+	FOAM_BVal_SIntTimes,
+	FOAM_BVal_SIntPlus,
+	0,
+	0,
+	0,
+};
 
 CREATE_LIST(GenBoundCalc);
 
@@ -913,7 +919,7 @@ gen0ComputeMin(FoamList lst)
 }
 
 local Foam
-gen0ComputeBCall(FoamTag fn, FoamList lst)
+gen0ComputeBCall(FoamBValTag fn, FoamList lst)
 {
 	Foam acc;
 	if (cdr(lst)==0) return car(lst);
@@ -921,7 +927,7 @@ gen0ComputeBCall(FoamTag fn, FoamList lst)
 	return acc;
 }
 
-local FoamTag 
+local FoamBValTag
 gen0CalcToBuiltin(GenBoundTag tag)
 {
 	assert(gen0CalcOps[tag]);

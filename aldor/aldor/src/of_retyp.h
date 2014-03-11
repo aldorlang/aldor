@@ -16,6 +16,7 @@ void	retypeUnit	(Foam);
  * :: Context
  *
  *****************************************************************************/
+
 typedef struct retypeContext {
 	Foam formats;
 	Foam prog;
@@ -38,5 +39,6 @@ extern Foam rtcNewDecl(RetContext context, Foam foam);
 extern Bool rtcHasNewDecl(RetContext context, Foam foam);
 extern void rtcAddUse(RetContext global, Foam foam);
 extern Bool rtcRearrangeProg(RetContext context);
+extern void rtcSetType(RetContext context, Foam foam, FoamTag type, AInt fmt);
 
 #endif /* _OF_RETYPE_H */

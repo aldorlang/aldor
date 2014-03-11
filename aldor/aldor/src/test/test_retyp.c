@@ -1,11 +1,11 @@
 #include "axlobs.h"
-#include "foam.h"
 #include "fbox.h"
-#include "testlib.h"
-#include "syme.h"
-#include "sexpr.h"
-#include "util.h"
+#include "foam.h"
 #include "of_retyp.h"
+#include "sexpr.h"
+#include "syme.h"
+#include "testlib.h"
+#include "util.h"
 
 local void rtcTest0();
 
@@ -50,7 +50,7 @@ rtcTest0()
 	
 	rtcAddUse(progContext, foamNewLoc(int0));
 	
-	rtcSetType(progContext, foamNewLoc(int0), FOAM_BInt);
+	rtcSetType(progContext, foamNewLoc(int0), FOAM_BInt, 0);
 
 	rtcRearrangeProg(progContext);
 

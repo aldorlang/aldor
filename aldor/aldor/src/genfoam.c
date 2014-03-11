@@ -654,11 +654,13 @@ genFoamValAs(TForm tf, AbSyn ab)
 			return foam;
 
 		if (tfIsMulti(tf) && tfMultiArgc(tf) > 0) {
+			Foam fakeValue;
+			int i;
+
 			gen0AddStmt(foam, ab);
 
-			Foam fakeValue = foamNewEmpty(FOAM_Values, tfMultiArgc(tf));
-			int i;
-			for (i=0; i<tfMultiArgc(tf); i++) {
+			fakeValue = foamNewEmpty(FOAM_Values, tfMultiArgc(tf));
+			for (i = 0; i < tfMultiArgc(tf); i++) {
 				FoamTag type = gen0Type(tfMultiArgN(tf, i), NULL);
 				fakeValue->foamValues.argv[i] = foamNewCast(type, foamNewNil());
 			}
@@ -2788,7 +2790,6 @@ gen0RecordNew(TForm key, Length argc, AbSyn *argv, Foam *vals)
 	gen0AddStmt(gen0RNew(whole, format), NULL);
 	for (index = 0; index < argc; index += 1) {
 		TForm tf = tfRecordArgN(key, index);
-		AInt fmt;
 		Foam value = genFoamArg(argv, vals, index);
 		FoamTag type = gen0Type(tf, NULL);
 		if (type != FOAM_Word)
@@ -6492,12 +6493,15 @@ gen0FindDefs(AbSyn absyn, AbSyn lhs, Stab stab, Bool inHighLev, Bool topLev)
 local void
 gen0FindDefsDefine(AbSyn absyn, Stab stab, Bool inHighLev, Bool topLev)
 {
+	AbSyn	*argv;
+	AbSyn	lhs;
+	AbSyn	rhs;
+	AbSyn	id;
+	int	argc, i;
+
 	assert(abTag(absyn) == AB_Define);
-	AbSyn  *argv;
-	AbSyn	lhs = absyn->abDefine.lhs;
-	AbSyn	rhs = absyn->abDefine.rhs;
-	AbSyn   id;
-	int     argc, i;
+	lhs = absyn->abDefine.lhs;
+	rhs = absyn->abDefine.rhs;
 
 	if (abTag(lhs) == AB_Comma) {
 		argv = lhs->abComma.argv;
@@ -6511,13 +6515,15 @@ gen0FindDefsDefine(AbSyn absyn, Stab stab, Bool inHighLev, Bool topLev)
 	}
 	gen0FindDefs(rhs, id, stab, inHighLev, false);
 
-	for (i=0; i<argc; i++) {
+	for (i = 0; i < argc; i++) {
 		AbSyn   lhs = argv[i];
 		AbSyn	type = abDefineeTypeOrElse(lhs, NULL);
 
-		if (!type) break;
+		if (!type)
+			break;
 
-		if (abIsAnyMap(type)) type = abMapRet(type);
+		if (abIsAnyMap(type))
+			type = abMapRet(type);
 
 		if (abTag(type) == AB_With &&
 		    (abIsNotNothing(type->abWith.base) ||

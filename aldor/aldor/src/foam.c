@@ -696,12 +696,13 @@ foamDefPrintDb(Foam foam, int defNo)
 Bool
 foamProgHasMultiAssign(Foam prog)
 {
+	int bodyArgc, i;
+	Foam seq;
 	assert(foamTag(prog) == FOAM_Prog);
-	Foam seq = prog->foamProg.body;
-	int bodyArgc = foamArgc(seq);
-	int i;
+	seq = prog->foamProg.body;
+	bodyArgc = foamArgc(seq);
 
-	for (i=0; i < bodyArgc; i++) {
+	for (i = 0; i < bodyArgc; i++) {
 		if (foamIsMultiAssign(seq->foamSeq.argv[i])) {
 			return true;
 		}
@@ -728,12 +729,14 @@ foamDeclEqual(Foam decl1, Foam decl2)
 int
 foamSeqNextReachable(Foam seq, int index)
 {
+	Foam lastStmt;
+
 	if (index == foamArgc(seq) - 1)
 		return -1;
 	if (index == -1)
 		return 0;
 
-	Foam lastStmt = seq->foamSeq.argv[index];
+	lastStmt = seq->foamSeq.argv[index];
 	if (foamTag(lastStmt) == FOAM_Goto
 	    || foamInfo(foamTag(lastStmt)).properties & FOAMP_SeqExit) {
 		index++;
@@ -745,7 +748,7 @@ foamSeqNextReachable(Foam seq, int index)
 		}
 		return -1;
 	}
-	return index+1;
+	return index + 1;
 }
 
 
@@ -1843,7 +1846,7 @@ foamFrSExpr(SExpr sx)
 	if (!sxiSymbolP(sxi = sxCar(sx))) croak(sxi, ALDOR_F_LoadNotSymbol);
 
 	op   = sxiToSymbol(sxi);
-	if (!symCoInfo(op) || symCoInfo(op)->foamTagVal == FOAM_BVAL_LIMIT)
+	if (!symCoInfo(op) || (FoamBValTag)symCoInfo(op)->foamTagVal == FOAM_BVAL_LIMIT)
 		croak(sxi, ALDOR_F_LoadNotFoam);
 
 	tag  = symCoInfo(op)->foamTagVal;
@@ -1881,7 +1884,7 @@ foamFrSExpr(SExpr sx)
 			if (!sxiSymbolP(sxi)) croak(sxi, ALDOR_F_LoadNotSymbol);
 			sym = sxiToSymbol(sxi);
 
-			if (!symCoInfo(sym) || symCoInfo(sym)->foamTagVal==-1)
+			if (!symCoInfo(sym) || (int)symCoInfo(sym)->foamTagVal == -1)
 				croak(sxi, ALDOR_F_LoadNotFoam);
 			foamArgv(foam)[si].data = symCoInfo(sym)->foamTagVal;
 			break;
@@ -2037,7 +2040,6 @@ foamFrBuffer(Buffer buf)
 	Bool	isArr, isNary;
 	String	argf;
 	Bool	neg;
-	BInt	bint;
 
 	tag = bufGetByte(buf);
 	format = FOAM_FORMAT_GET(tag);
@@ -2318,6 +2320,9 @@ foamPosFrBuffer(Buffer buf, Foam foam)
 Foam
 foamSIntReduce(Foam foam)
 {
+	int negative;
+	long bignum;
+
 	if (sizeof(foam->foamSInt.SIntData) <= SINT_BYTES)
 		return foam;
 	/*
@@ -2326,8 +2331,8 @@ foamSIntReduce(Foam foam)
 	 * to allow >32-bit constants on 64-bit platforms to be stored in
 	 * flat FOAM buffers/files and be retrieved correctly.
 	 */
-	int	negative = (foam->foamSInt.SIntData < 0);
-	long	bignum = !longIsInt32(foam->foamSInt.SIntData);
+	negative = (foam->foamSInt.SIntData < 0);
+	bignum = !longIsInt32(foam->foamSInt.SIntData);
 	assert(foamTag(foam) == FOAM_SInt);
 	if (bignum) {
 		/* Must split into unsigned 31-bit chunks */
@@ -3057,9 +3062,6 @@ foamExprTypeCB(Foam expr, AInt *extra, FoamExprTypeCallback callback, void *arg)
 		return FOAM_Word;
 
 	  case FOAM_Lex: {
-		Foam 	ddecl;
-		int 	index;
-
 		decl = callback(arg, expr);
 		type = decl->foamDecl.type;
 

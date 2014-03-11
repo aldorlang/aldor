@@ -130,7 +130,7 @@
  *
  ****************************************************************************/
 
-typedef Foam ProgInfo;  /* ProgInfo is a foamProg without children */
+typedef Foam InlProgInfo;  /* InlProgInfo is a foamProg without children */
 
 /*
  * Elements of a association list of format numbers with their library of 
@@ -355,8 +355,8 @@ local void	inlUpdateConstBody	(Foam);
 local Foam	inlGetFoam		(Syme);
 local Foam	inlGetLocalFoam		(Syme);
 local Foam	inlGetExternalFoam	(Syme);
-local ProgInfo	inlGetProgInfoFrSyme	(Syme);
-local ProgInfo	inlGetExternalProgHdr	(Syme);
+local InlProgInfo	inlGetProgInfoFrSyme	(Syme);
+local InlProgInfo	inlGetExternalProgHdr	(Syme);
 
 local OptInfo	inlInfoNew0		(Stab, Foam, Syme, Bool, Bool);
 
@@ -757,7 +757,7 @@ inlPrintPriq()
 local Foam	inlGetClosFrVar(Foam op);
 
 /* Return NULL if the prog is the some that we are inlining */
-local ProgInfo
+local InlProgInfo
 inlGetProgInfoFrProg(Foam foam)
 {
 	Foam prog;
@@ -780,10 +780,10 @@ inlGetProgInfoFrProg(Foam foam)
 	return prog;
 }
 
-local ProgInfo
+local InlProgInfo
 inlPriqGetSymeCallInfo(Syme syme, Bool * isLocal)
 {
-	ProgInfo	code;
+	InlProgInfo	code;
 
 	if (!inlIsConstProgSyme(syme)) {
 		inlRejectInfo = INL_REJ_NotConstSyme;
@@ -819,7 +819,7 @@ inlPriqGetSymeCallInfo(Syme syme, Bool * isLocal)
 		catsyme = (symeDefnNum(osyme) == symeDefnNum(syme));
 		if (symeHasDefault(osyme) && catsyme) {
 			inlRejectInfo = INL_REJ_NotConstSyme;
-			return (ProgInfo)0;
+			return (InlProgInfo)0;
 		}
 	}
 #endif
@@ -843,7 +843,7 @@ inlPriqGetSymeCallInfo(Syme syme, Bool * isLocal)
 	return code;
 }
 
-local ProgInfo
+local InlProgInfo
 inlPriqGetOpenCallInfo(Foam op, Bool * isLocal)
 {
 	Foam		code;
@@ -859,7 +859,7 @@ inlPriqGetOpenCallInfo(Foam op, Bool * isLocal)
 	return code;
 }
 
-local ProgInfo
+local InlProgInfo
 inlPriqGetConstCallInfo(Foam op, Bool *isLocal)
 {
 	Foam		code, cnst;
@@ -880,7 +880,7 @@ inlPriqGetConstCallInfo(Foam op, Bool *isLocal)
 	return code;
 }
 
-local ProgInfo
+local InlProgInfo
 inlPriqGetCallInfo(Foam call, Bool * pIsLocal)
 {
 	Foam 	op, val, progInfo = NULL;
@@ -989,7 +989,7 @@ inlPriqGetCallInfo(Foam call, Bool * pIsLocal)
  * If return value == 0 -> must inline
  */
 local PriQKey
-inlGetSpaceFactor(Foam call, ProgInfo progInfo)
+inlGetSpaceFactor(Foam call, InlProgInfo progInfo)
 {
 	int	constParams = 0, totParams, i;
 	Foam	* parv, prog, cnst;
@@ -1036,7 +1036,7 @@ inlGetSpaceFactor(Foam call, ProgInfo progInfo)
 local PriQKey
 inlPriqGetPriority(int depth, Foam call, int * psize, Foam * pinfo)
 {
-	ProgInfo	progInfo;
+	InlProgInfo	progInfo;
 	PriQKey		priority, size, spaceFactor;
 	ULong		expectedCalls;
 	PriQKey		timeFactor;
@@ -1167,7 +1167,7 @@ inlAddCallToPriq(Foam call, Foam * stmtp, int depth, BBlock bb)
 {
 	Syme 		syme;
 	InlPriCall 	inlPriCall;
-	ProgInfo	progInfo;
+	InlProgInfo	progInfo;
 	String		string;
 	int size;
 
@@ -1619,7 +1619,7 @@ inlId(Foam var)
 {
 	Syme	syme;
 	Foam	foam, id;
-	ProgInfo progInfo;
+	InlProgInfo progInfo;
 
 	if (foamTag(var) == FOAM_CCall)
 		id = var->foamCCall.argv[0];
@@ -1948,9 +1948,10 @@ inlInlineBody(Foam code, Foam call, Foam *argv, Foam env,
 				    foamStr(argType), paramDecl);
 			argv[i] = foamNewCast(paramDecl->foamDecl.type, argv[i]);
 		}
-		if (argFmt != paramDecl->foamDecl.format)
+		if (argFmt != paramDecl->foamDecl.format) {
 			inlineDEBUG(dbOut, "Mismatched caller format: %d -- %pFoam\n",
 				    argFmt, paramDecl);
+		}
 	}
 	/* Initialize the variables used to hold the paramters of the call. */
 	for(i=0; i< paramArgc; i++) {
@@ -2839,7 +2840,7 @@ inlGetExternalFoam(Syme syme)
 	return ret;
 }
 
-local ProgInfo
+local InlProgInfo
 inlGetProgInfoFrSyme(Syme syme)
 {
 	Foam	code;
@@ -2866,7 +2867,7 @@ inlGetProgInfoFrSyme(Syme syme)
 	return code;
 }
 
-local ProgInfo
+local InlProgInfo
 inlGetExternalProgHdr(Syme syme)
 {
 	Lib origin = symeConstLib(syme);
@@ -2880,7 +2881,7 @@ inlGetExternalProgHdr(Syme syme)
 		return NULL;
 
 	if (genHasConstNum(syme)) {
-		ProgInfo res = libGetProgHdr(origin, genGetConstNum(syme));
+		InlProgInfo res = libGetProgHdr(origin, genGetConstNum(syme));
 		if (!res) inlRejectInfo = INL_REJ_ExternalProgHdrFail;
 		inlineDEBUG(dbOut, "%s)\n", res ? "OK" : "Fail");
 		return res;
@@ -3095,7 +3096,7 @@ inlIsSideEffecting(Foam param)
 {
 	FoamTag		tag;
 	Foam		op;
-	ProgInfo	prog;
+	InlProgInfo	prog;
 	
 	tag = foamTag(param);
 	switch (tag) {

@@ -6,28 +6,29 @@
  *
  ****************************************************************************/
 
-#define _POSIX_SOURCE /* fileno */
+#define _POSIX_SOURCE 1 /* fileno */
 
+#include "abpretty.h"
+#include "archive.h"
 #include "axlobs.h"
+#include "bigint.h"
 #include "cmdline.h"
+#include "comsg.h"
 #include "debug.h"
 #include "file.h"
 #include "fint.h"
 #include "fluid.h"
 #include "foam_c.h"
+#include "lib.h"
 #include "opsys.h"
 #include "output.h"
 #include "store.h"
+#include "strops.h"
+#include "syme.h"
 #include "syscmd.h"
+#include "timer.h"
 #include "util.h"
 #include "xfloat.h"
-#include "syme.h"
-#include "archive.h"
-#include "lib.h"
-#include "abpretty.h"
-#include "comsg.h"
-#include "strops.h"
-#include "bigint.h"
 
 
 
@@ -629,8 +630,16 @@ static JmpBuf	fintJmpBuf;
 local Bool	fintSoftAssertIsOn = false;
 local long	instrBreak = -1;
 
-#define softAssert(x)			if (!fintSoftAssertIsOn || x) ; else fintSoftAssert(Enstring(x), __FILE__, __LINE__)
-#define hardAssert(x)			if (x) ; else fintHardAssert(Enstring(x), __FILE__, __LINE__)
+#define softAssert(x)						\
+	do {							\
+		if (fintSoftAssertIsOn && !(x))			\
+			fintSoftAssert(#x, __FILE__, __LINE__);	\
+	} while (0)
+#define hardAssert(x)						\
+	do {							\
+		if (!(x))					\
+			fintHardAssert(#x, __FILE__, __LINE__);	\
+	} while (0)
 
 #define		fintTypedEval(pExpr,t) { \
 	dataType type = fintEval(pExpr); \
@@ -777,8 +786,8 @@ typedef struct {
 	Bool			isConst;
 } fintForeign;
 
-#define		DECL_FOREIGN(x)		{ Enstring(x), Abut(FINT_FOREIGN_,x), false }
-#define		DECL_FOREIGN_CONST(x)	{ Enstring(x), Abut(FINT_FOREIGN_,x), true }
+#define		DECL_FOREIGN(x)		{ #x, FINT_FOREIGN_##x, false }
+#define		DECL_FOREIGN_CONST(x)	{ #x, FINT_FOREIGN_##x, true }
 
 
 DECLARE_LIST(FintUnit);
@@ -1507,7 +1516,6 @@ fintStmt(DataObj retDataObj)
 
 	if (DEBUG(fintSto)) {stoAudit();}
 #ifndef NDEBUG
-	int zz = instrCounter;
 	if (instrCounter++ == instrBreak) {
 		/* stoAudit()*/;	/* SET BREAKPOINT HERE */
 		fintDebug = true;
@@ -4940,7 +4948,7 @@ fintEval_(DataObj retDataObj)
 				    (String) expr3.fiArr);
 			break;
 		case FINT_FOREIGN_gcTimer: {
-			extern void *gcTimer(void);
+			extern TmTimer gcTimer(void);
 			retDataObj->fiWord = (FiWord) gcTimer();
 			break;
 			}

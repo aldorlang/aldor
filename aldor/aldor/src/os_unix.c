@@ -810,7 +810,7 @@ osAllocShow(void)
 		printf("%s [%#lx @ %#lx]\n",
 			s, ff->nbytes, ptrDiff((char *) ff->piece, sbrk0));
 	}
-	printf("Delta sbrk  = %#lx\n", ptrDiff(sbrk(int0), sbrk0));
+	printf("Delta sbrk  = %#lx\n", ptrDiff(sbrk(0), sbrk0));
 }
 #else /* defined(OS_MAC_OSX) */
 #include "os_macosx_vm.c"

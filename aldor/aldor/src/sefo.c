@@ -4690,7 +4690,6 @@ tqualFrBuffer0(Buffer buf)
 local void
 sefoListFrBuffer0(Buffer buf)
 {
-	SefoList	sefos = listNil(Sefo);
 	UShort		i, sefoc;
 
 	sefoc = bufGetHInt(buf);
