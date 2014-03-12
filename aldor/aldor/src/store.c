@@ -4899,7 +4899,7 @@ void stoShowDetail		(int x)		{ }
 void stoAudit			(void)		{ }
 void stoRegister		(StoInfo info)	{ }
 void stoSetAldorTracer		(int code, Pointer clos) {}
-void stoSetTracer		(int code, Pointer fun) {}
+void stoSetTracer		(int code, StoTraceFun fun) {}
 int  stoMarkObject		(Pointer p)	{ return 0; }
 int  stoWritablePointer		(Pointer p)	{ return POINTER_IS_UNKNOWN; }
 int  stoCtl			(int cmd, ...)	{ return 0; }
