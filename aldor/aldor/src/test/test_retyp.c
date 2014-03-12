@@ -7,10 +7,10 @@
 #include "testlib.h"
 #include "util.h"
 
-local void rtcTest0();
+local void rtcTest0(void);
 
 void
-retypeTest()
+retypeTest(void)
 {
 	sxiInit();
 
@@ -18,17 +18,21 @@ retypeTest()
 }
 
 local void
-rtcTest0()
+rtcTest0(void)
 {
+	Foam unit, prog;
+	FoamBox paramBox, localBox, seqBox;
+	RetContext unitContext, progContext;
+
 	init();
 
-	Foam unit = foamNewUnit(foamNewEmpty(FOAM_DFmt, 0), foamNewEmpty(FOAM_DDef, 1));
-	Foam prog = foamNewProg(/*x*/0,/*m*/0,/*t*/0,/*f*/0,/*ib*/0,/*p*/NULL,/*l*/NULL,
-				/*fl*/NULL,/*le*/NULL,/*b*/NULL);
-	FoamBox paramBox = fboxNew(foamNewEmptyDDecl(FOAM_DDecl_Local));
-	FoamBox localBox = fboxNew(foamNewEmptyDDecl(FOAM_DDecl_Local));
+	unit = foamNewUnit(foamNewEmpty(FOAM_DFmt, 0), foamNewEmpty(FOAM_DDef, 1));
+	prog = foamNewProg(/*x*/0,/*m*/0,/*t*/0,/*f*/0,/*ib*/0,/*p*/NULL,/*l*/NULL,
+			   /*fl*/NULL,/*le*/NULL,/*b*/NULL);
+	paramBox = fboxNew(foamNewEmptyDDecl(FOAM_DDecl_Local));
+	localBox = fboxNew(foamNewEmptyDDecl(FOAM_DDecl_Local));
 
-	FoamBox seqBox = fboxNewEmpty(FOAM_Seq);
+	seqBox = fboxNewEmpty(FOAM_Seq);
 
 	fboxAdd(localBox, foamNewDecl(FOAM_Word, strCopy(""), 0));
 	fboxAdd(localBox, foamNewDecl(FOAM_Word, strCopy(""), 0));
@@ -45,8 +49,8 @@ rtcTest0()
 	unit->foamUnit.defs->foamDDef.argv[0] = foamNewDef(foamNewConst(int0),
 							   prog);
 
-	RetContext unitContext = rtcInit(unit);
-	RetContext progContext = rtcNewProg(unitContext, prog, 2);
+	unitContext = rtcInit(unit);
+	progContext = rtcNewProg(unitContext, prog, 2);
 	
 	rtcAddUse(progContext, foamNewLoc(int0));
 	

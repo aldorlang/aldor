@@ -33,9 +33,10 @@ testAbSynFormat()
 local void
 testExquo()
 {
-	AbSyn ab1 = abqParse("5 quo 7");
+	AbSyn ab1, ab2;
+	ab1 = abqParse("5 quo 7");
 	testIntEqual("isApply", AB_Apply, abTag(ab1));
-	AbSyn ab2 = abqParse("5 exquo 7");
+	ab2 = abqParse("5 exquo 7");
 	testIntEqual("isApply", AB_Apply, abTag(ab2));
 }
 
@@ -43,25 +44,29 @@ testExquo()
 local void
 testAbSynFormatList()
 {
+	AbSynList l;
+	Buffer b;
+	String result;
+
 	{
-		AbSynList l = listNil(AbSyn);
-		Buffer b = bufNew();
+		l = listNil(AbSyn);
+		b = bufNew();
 		bufPrintf(b, "%pAbSynList", l);
-		String result = bufLiberate(b);
+		result = bufLiberate(b);
 		testStringEqual("emptyList", "[]", result);
 	}
 	{
-		AbSynList l = listList(AbSyn)(1, id("x"));
-		Buffer b = bufNew();
+		l = listList(AbSyn)(1, id("x"));
+		b = bufNew();
 		bufPrintf(b, "+%pAbSynList+", l);
-		String result = bufLiberate(b);
+		result = bufLiberate(b);
 		testStringEqual("twoitem", "+[x]+", result);
 	}
 	{
-		AbSynList l = listList(AbSyn)(2, id("x"), id("y"));
-		Buffer b = bufNew();
+		l = listList(AbSyn)(2, id("x"), id("y"));
+		b = bufNew();
 		bufPrintf(b, "+%pAbSynList+", l);
-		String result = bufLiberate(b);
+		result = bufLiberate(b);
 		testStringEqual("twoitem", "+[x, y]+", result);
 	}
 }
@@ -93,13 +98,14 @@ testAbParse()
 local void
 testAbContains()
 {
-	AbSyn ab = abqParse("x := y");
+	AbSyn ab, ab2;
+	ab = abqParse("x := y");
 	testTrue("1", abContains(ab, id("x")));
 	testTrue("2", abContains(ab, id("y")));
 	testTrue("3", abContains(ab, ab));
 	testFalse("4", abContains(ab, id("z")));
 
-	AbSyn ab2 = abqParse("A has B");
+	ab2 = abqParse("A has B");
 	testTrue("1", abContains(ab2, id("A")));
 
 }

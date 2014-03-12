@@ -36,16 +36,18 @@ displayPtr(OStream ostream, Pointer p)
 local void 
 testFormat1()
 {
+	String s;
 	fmtRegister("x", displayPtr);
-	String s = strPrintf("Hello: %px", 0);
+	s = strPrintf("Hello: %px", 0);
 	testStringEqual("test1", "Hello: [0]", s);
 }
 
 local void 
 testFormat2()
 {
+	String s;
 	fmtRegister("x", displayPtr);
-	String s = strPrintf("Hello: %pxBlah", 0);
+	s = strPrintf("Hello: %pxBlah", 0);
 	testStringEqual("test2", "Hello: [0]Blah", s);
 }
 
@@ -71,8 +73,9 @@ testFormat4()
 local void
 testFormat5()
 {
+	String s;
 	fmtRegisterFull("z", displayPtr, false);
-	String s = strPrintf("Hello: %pz", 0);
+	s = strPrintf("Hello: %pz", 0);
 	testStringEqual("test2", "Hello: (nil)", s);
 
 	s = strPrintf("Hello: %pz", 1);

@@ -31,7 +31,7 @@ extern int jflowCatDebug, jflowDfDebug, jflowDfiDebug, jflowGoDebug, jflowDmDebu
 local void
 testJFlow1()
 {
-	Foam body;
+	Foam body, locals, prog;
 
 	body = foamNewSeq(foamNewSet(foamNewLoc(int0), foamNewSInt(int0)),
 			  foamNewLabel(int0),
@@ -42,10 +42,10 @@ testJFlow1()
 			  NULL
 		);
 
-	Foam locals = foamNewDDecl(FOAM_DDecl_Local,
-				   foamNewDecl(FOAM_SInt, strCopy("control"), emptyFormatSlot), NULL);
+	locals = foamNewDDecl(FOAM_DDecl_Local,
+			      foamNewDecl(FOAM_SInt, strCopy("control"), emptyFormatSlot), NULL);
 
-	Foam prog = fmTestProgFrCode(locals, body);
+	prog = fmTestProgFrCode(locals, body);
 
 	jflowProg(prog);
 
@@ -56,7 +56,7 @@ testJFlow1()
 local void
 testJFlow2()
 {
-	Foam body;
+	Foam body, locals, prog;
 
 	body = foamNewSeq(foamNewSet(foamNewLoc(int0), foamNewBool(true)),
 			  foamNewLabel(1),
@@ -86,13 +86,14 @@ testJFlow2()
 			  NULL
 		);
 
-	Foam locals = foamNewDDecl(FOAM_DDecl_Local,
-				   foamNewDecl(FOAM_Bool, strCopy("good"), emptyFormatSlot),
-				   foamNewDecl(FOAM_Bool, strCopy("control"), emptyFormatSlot),
-				   NULL);
+	locals = foamNewDDecl(FOAM_DDecl_Local,
+			      foamNewDecl(FOAM_Bool, strCopy("good"), emptyFormatSlot),
+			      foamNewDecl(FOAM_Bool, strCopy("control"), emptyFormatSlot),
+			      NULL
+		);
 
 
-	Foam prog = fmTestProgFrCode(locals, body);
+	prog = fmTestProgFrCode(locals, body);
 	foamPrintDb(prog);
 
 	jflowProg(prog);
@@ -124,9 +125,10 @@ fmTestSideEffectingStmt(FoamTag type, ...)
 	va_list argp;
 	Foam foam;
 	int i;
+	FoamList args;
 
 	va_start(argp, type);
-	FoamList args = listListv(Foam)(argp);
+	args = listListv(Foam)(argp);
 	va_end(argp);
 
 	foam = foamNewEmpty(FOAM_PCall, foamPCallSlotc + listLength(Foam)(args));
@@ -134,7 +136,7 @@ fmTestSideEffectingStmt(FoamTag type, ...)
 	foam->foamPCall.type = type;
 	foam->foamPCall.op = foamNewGlo(int0);
 
-	i=0;
+	i = 0;
 	while (args != listNil(Foam)) {
 		foam->foamPCall.argv[i++] = car(args);
 		args = listFreeCons(Foam)(args);
@@ -147,10 +149,10 @@ int
 fmTestNLabels(Foam seq)
 {
 	int maxLabel = -1;
-	int i=0;
+	int i = 0;
 	assert(foamTag(seq) == FOAM_Seq);
 
-	for (i=0; i<foamArgc(seq); i++) {
+	for (i = 0; i < foamArgc(seq); i++) {
 		Foam stmt = seq->foamSeq.argv[i];
 		if (foamTag(stmt) == FOAM_Label) {
 			AInt lno = stmt->foamLabel.label;
@@ -158,6 +160,6 @@ fmTestNLabels(Foam seq)
 				maxLabel = lno;
 		}
 	}
-	return maxLabel+1;
-}
 
+	return maxLabel + 1;
+}

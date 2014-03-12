@@ -73,8 +73,9 @@ void
 testSimpleTInfer()
 {
 	AbSyn absyn = define(declare(id("x"), emptyWith()), emptyAdd());
+	Stab stab;
 	initFile();
-	Stab stab = stabFile();
+	stab = stabFile();
 
 	abPutUse(absyn, AB_Use_NoValue);
 	scopeBind(stab, absyn);
@@ -125,11 +126,15 @@ testConditionalTInfer()
 	AbSyn a = define(declare(id("A"), with(fooD1, nothing())), theAdd);
 	AbSyn absyn = abNewSequenceL(sposNone, listList(AbSyn)(6, stdtypes(), impBoolean, c1, foo, d1, a));
 
+	TForm tf;
+	SymeList sl;
+	Stab stab;
+
 	initFile();
 	ablogDebug = 0;
 	tipBupDebug = 0;
 	tfDebug = 0;
-	Stab stab = stabFile();
+	stab = stabFile();
 
 	abPutUse(absyn, AB_Use_NoValue);
 	abPrintDb(absyn);
@@ -139,9 +144,9 @@ testConditionalTInfer()
 	testTrue("Declare is sefo", abIsSefo(absyn));
 	testIntEqual("Error Count", 1, comsgErrorCount());
 
-	TForm tf = abTForm(fooD1);
-	SymeList sl = tiAddSymes(abStab(theAdd), theAdd->abAdd.capsule,
-				 abTForm(theAdd->abAdd.base), tf, (SymeList *) NULL);
+	tf = abTForm(fooD1);
+	sl = tiAddSymes(abStab(theAdd), theAdd->abAdd.capsule,
+			abTForm(theAdd->abAdd.base), tf, (SymeList *) NULL);
 	testIntEqual("SymeList Length", 1, listLength(Syme)(sl));
 	finiFile();
 }
@@ -160,9 +165,18 @@ testSelfTInfer()
 					    XLocalAlgebra_def, D_def);
 	AbSynList absynList = listCons(AbSyn)(stdtypes(), abqParseLines(lines));
 	AbSyn absyn = abNewSequenceL(sposNone, absynList);
+
+	Stab stab;
+	AbSyn F, selfRef, sefo, dSefo;
+
+	Syme xalgebra, d;
+	TForm tf, dTf;
+
+	SymeList dCatSelfList;
+
 	initFile();
 
-	Stab stab = stabFile();
+	stab = stabFile();
 
 	abPutUse(absyn, AB_Use_NoValue);
 	scopeBind(stab, absyn);
@@ -171,26 +185,26 @@ testSelfTInfer()
 	testTrue("Declare is sefo", abIsSefo(absyn));
 	testIntEqual("Error Count", 0, comsgErrorCount());
 
-	Syme xalgebra = uniqueMeaning(stab, "XAlgebra");
-	Syme d = uniqueMeaning(stab, "D");
-	AbSyn sefo = abNewApply1(sposNone, abFrSyme(xalgebra), abFrSyme(d));
-	TForm tf = tfFullFrAbSyn(stab, sefo);
+	xalgebra = uniqueMeaning(stab, "XAlgebra");
+	d = uniqueMeaning(stab, "D");
+	sefo = abNewApply1(sposNone, abFrSyme(xalgebra), abFrSyme(d));
+	tf = tfFullFrAbSyn(stab, sefo);
 
 	symePrintDb(d);
 	tipBupDebug = tipTdnDebug = tfsDebug = tfsParentDebug = tfsExportDebug = 0;
 	sefoEqualDebug = 0;
 
-	Sefo dSefo = abFrSyme(d);
+	dSefo = abFrSyme(d);
 	tiSefo(stab, dSefo);
-	TForm dTf = abTUnique(dSefo);
+	dTf = abTUnique(dSefo);
 	afprintf(dbOut, "Type of D is %pTForm\n", dTf);
-	SymeList dCatSelfList = tfGetCatSelf(dTf);
+	dCatSelfList = tfGetCatSelf(dTf);
 	afprintf(dbOut, "Self for Type of D is %pSymeList\n", dCatSelfList);
 	listIter(Syme, dCatSelf, dCatSelfList,
 		 afprintf(dbOut, "Self: %s Type: %pTForm\n", symeString(dCatSelf), symeType(dCatSelf)));
 
 
-	AbSyn selfRef = abqParse(E_def);
+	selfRef = abqParse(E_def);
 
 	abPutUse(selfRef, AB_Use_NoValue);
 	scopeBind(stab, selfRef);
@@ -199,7 +213,7 @@ testSelfTInfer()
 	testTrue("Declare is sefo", abIsSefo(absyn));
 	testIntEqual("Error Count", 0, comsgErrorCount());
 
-	AbSyn F = abqParse(F_def);
+	F = abqParse(F_def);
 	abPutUse(selfRef, AB_Use_NoValue);
 	scopeBind(stab, selfRef);
 	typeInfer(stab, selfRef);
@@ -232,11 +246,13 @@ testConditionalTInfer2()
 	AbSynList code = listCons(AbSyn)(stdtypes(), abqParseLines(lines));
 	AbSyn absyn = abNewSequenceL(sposNone, code);
 
+	Stab stab;
+
 	initFile();
 	ablogDebug = 0;
 	tipBupDebug = 0;
 	titfDebug = 0;
-	Stab stab = stabFile();
+	stab = stabFile();
 
 	abPutUse(absyn, AB_Use_NoValue);
 
@@ -266,12 +282,18 @@ testTinfer3()
 	AbSynList code = listCons(AbSyn)(stdtypes(), abqParseLines(lines));
 	AbSyn absyn = abNewSequenceL(sposNone, code);
 
+	AbSyn ab, ab2;
+	SymeList symes, l;
+	Syme syme;
+	TForm tf;
+	Stab stab;
+
 	initFile();
 	ablogDebug = 0;
 	tipBupDebug = 0;
 	titfDebug = 0;
 	tfDebug = 0;
-	Stab stab = stabFile();
+	stab = stabFile();
 
 	abPutUse(absyn, AB_Use_NoValue);
 
@@ -281,22 +303,22 @@ testTinfer3()
 	testTrue("Declare is sefo", abIsSefo(absyn));
 	testIntEqual("Error Count", 0, comsgErrorCount());
 
-	AbSyn ab = abqParse("Obj(AnAdditive)");
+	ab = abqParse("Obj(AnAdditive)");
 	abPutUse(absyn, AB_Use_NoValue);
 	typeInfer(stab, ab);
 	testIntEqual("Error Count", 0, comsgErrorCount());
-	TForm tf = abTUnique(ab);
-	SymeList l = tfGetThdExports(tf);
+	tf = abTUnique(ab);
+	l = tfGetThdExports(tf);
 	testIntEqual("Export count", 6, listLength(Syme)(l));
 
-	AbSyn ab2 = abqParse("X: Obj(AnAdditive)");
+	ab2 = abqParse("X: Obj(AnAdditive)");
 	abPutUse(ab2, AB_Use_NoValue);
 	scopeBind(stab, ab2);
 	typeInfer(stab, ab2);
 	testIntEqual("Error Count", 0, comsgErrorCount());
-	SymeList symes = stabGetMeanings(stab, ablogTrue(), symInternConst("X"));
+	symes = stabGetMeanings(stab, ablogTrue(), symInternConst("X"));
 	testIntEqual("Inferred X", 1, listLength(Syme)(symes));
-	Syme syme = car(symes);
+	syme = car(symes);
 	tf = symeType(syme);
 	symes = tfGetDomImports(tf);
 	symeListPrintDb(symes);
@@ -332,6 +354,9 @@ testConditionalTInfer4()
 					    Evalable_txt, Obj_txt);
 	AbSynList code = listCons(AbSyn)(stdtypes(), abqParseLines(lines));
 	AbSyn absyn = abNewSequenceL(sposNone, code);
+
+	Stab stab;
+
 	initFile();
 	tfImportDebug = 0;
 	ablogDebug = 0;
@@ -339,7 +364,7 @@ testConditionalTInfer4()
 	titfDebug = 0;
 	tfDebug = 0;
 
-	Stab stab = stabFile();
+	stab = stabFile();
 
 	abPutUse(absyn, AB_Use_NoValue);
 
@@ -371,6 +396,8 @@ testConditionalAdd()
 	AbSynList code = listCons(AbSyn)(stdtypes(), abqParseLines(lines));
 	AbSyn absyn = abNewSequenceL(sposNone, code);
 
+	Stab stab;
+
 	initFile();
 	tfImportDebug = 0;
 	ablogDebug = 0;
@@ -382,7 +409,7 @@ testConditionalAdd()
 	tipAddDebug = 0;
 	tfImportDebug = 0;
 
-	Stab stab = stabFile();
+	stab = stabFile();
 
 	abPutUse(absyn, AB_Use_NoValue);
 
@@ -409,17 +436,22 @@ testConditionalAdd()
 void
 testTinfer5()
 {
-	initFile();
 	String Boolean_imp         = "import from Boolean";
 	String R_def   = "R: Category == with";
 	String M_def   = "M(T: R): with == add";
 	String V_def   = "V(T: Type): Category == with { if T has R then o: % -> M T }";
+	StringList lines;
 
-	StringList lines = listList(String)(4, Boolean_imp, R_def, M_def, V_def);
+	AbSynList code;
+	AbSyn absyn;
+	Stab stab;
 
-	AbSynList code = listCons(AbSyn)(stdtypes(), abqParseLines(lines));
-	AbSyn absyn = abNewSequenceL(sposNone, code);
-	Stab stab = stabFile();
+	initFile();
+	lines = listList(String)(4, Boolean_imp, R_def, M_def, V_def);
+
+	code = listCons(AbSyn)(stdtypes(), abqParseLines(lines));
+	absyn = abNewSequenceL(sposNone, code);
+	stab = stabFile();
 
 	abPutUse(absyn, AB_Use_NoValue);
 	scopeBind(stab, absyn);
@@ -435,13 +467,18 @@ void
 testTinfer9()
 {
 	String Bar_def = "Bar: with { f: () -> %; a: % } == add { f():  % == a$% }";
+	StringList lines;
+
+	AbSynList code;
+	AbSyn absyn;
+	Stab stab;
 
 	initFile();
-	StringList lines = listList(String)(1, Bar_def);
+	lines = listList(String)(1, Bar_def);
 
-	AbSynList code = listCons(AbSyn)(stdtypes(), abqParseLines(lines));
-	AbSyn absyn = abNewSequenceL(sposNone, code);
-	Stab stab = stabFile();
+	code = listCons(AbSyn)(stdtypes(), abqParseLines(lines));
+	absyn = abNewSequenceL(sposNone, code);
+	stab = stabFile();
 	tipLitDebug = 1;
 
 	abPutUse(absyn, AB_Use_NoValue);
@@ -460,13 +497,18 @@ testTinferMutualReference()
 {
 	String Foo_def = "Foo(F: with): with { f: () -> %;} == add { f(): % == (f()$Bar(F)) pretend %; }";
 	String Bar_def = "Bar(B: with): with { f: () -> %;} == add { f(): % == (f()$Foo(B)) pretend % }";
+	StringList lines;
+
+	AbSynList code;
+	AbSyn absyn;
+	Stab stab;
 
 	initFile();
-	StringList lines = listList(String)(2, Foo_def, Bar_def);
+	lines = listList(String)(2, Foo_def, Bar_def);
 
-	AbSynList code = listCons(AbSyn)(stdtypes(), abqParseLines(lines));
-	AbSyn absyn = abNewSequenceL(sposNone, code);
-	Stab stab = stabFile();
+	code = listCons(AbSyn)(stdtypes(), abqParseLines(lines));
+	absyn = abNewSequenceL(sposNone, code);
+	stab = stabFile();
 
 	abPutUse(absyn, AB_Use_NoValue);
 	scopeBind(stab, absyn);
@@ -485,13 +527,18 @@ testTinferValueConditionalAliased()
 	String C_def =
 		"C(i: I): with { if zero? i then { foo: % -> () } } == "
 		"    add { if zero? i then foo(i: %): () == never };";
+	StringList lines;
+
+	AbSynList code;
+	AbSyn absyn;
+	Stab stab;
 
 	initFile();
-	StringList lines = listList(String)(2, I_def, C_def);
+	lines = listList(String)(2, I_def, C_def);
 
-	AbSynList code = listCons(AbSyn)(stdtypes(), abqParseLines(lines));
-	AbSyn absyn = abNewSequenceL(sposNone, code);
-	Stab stab = stabFile();
+	code = listCons(AbSyn)(stdtypes(), abqParseLines(lines));
+	absyn = abNewSequenceL(sposNone, code);
+	stab = stabFile();
 
 	abPutUse(absyn, AB_Use_NoValue);
 	scopeBind(stab, absyn);
@@ -510,13 +557,17 @@ testTinferValueConditional()
 	String C_def =
 		"C(i: I): with { if zero? i then { foo: % -> () } } == "
 		"    add { import from I; if zero? i then foo(n: %): () == never };";
+	StringList lines;
+	AbSynList code;
+	AbSyn absyn;
+	Stab stab;
 
 	initFile();
-	StringList lines = listList(String)(2, I_def, C_def);
 
-	AbSynList code = listCons(AbSyn)(stdtypes(), abqParseLines(lines));
-	AbSyn absyn = abNewSequenceL(sposNone, code);
-	Stab stab = stabFile();
+	lines = listList(String)(2, I_def, C_def);
+	code = listCons(AbSyn)(stdtypes(), abqParseLines(lines));
+	absyn = abNewSequenceL(sposNone, code);
+	stab = stabFile();
 	tfImportDebug = 1;
 	abPutUse(absyn, AB_Use_NoValue);
 	scopeBind(stab, absyn);

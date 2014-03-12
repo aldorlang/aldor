@@ -29,6 +29,16 @@ tfsatTest()
 local void
 testTfSatEmbed()
 {
+	Stab stab;
+
+	int mask;
+	SatMask result;
+
+	Syme g;
+	TForm E, tf1, tf2;
+
+	AbSub sigma;
+
 	String Boolean_imp = "import from Boolean";
 	String E_def = "E: with == add";
 	String g_def = "g: E == never";
@@ -38,22 +48,20 @@ testTfSatEmbed()
 	AbSyn absyn = abNewSequenceL(sposNone, absynList);
 
 	initFile();
-	Stab stab = stabFile();
+	stab = stabFile();
 
 	abPutUse(absyn, AB_Use_NoValue);
 	abPrintDb(absyn);
 	scopeBind(stab, absyn);
 	typeInfer(stab, absyn);
 
-	Syme g = uniqueMeaning(stab, "g");
-	TForm E = symeType(g);
-	TForm tf1 = tfCross(2, E, E);
-	TForm tf2 = tfMulti(2, E, E);
+	g = uniqueMeaning(stab, "g");
+	E = symeType(g);
+	tf1 = tfCross(2, E, E);
+	tf2 = tfMulti(2, E, E);
 	
-	AbSub sigma = absNew(stab);
+	sigma = absNew(stab);
 
-	int mask;
-	SatMask result;
 	mask = tfSatTdnMask();
 	result = tfSat(mask, tf1, tf2);
 	
@@ -80,6 +88,16 @@ testTfSatEmbed()
 local void
 testTfSatEmbedExcept()
 {
+	Stab stab;
+	int mask;
+	SatMask result;
+
+	TForm T;
+	TForm E;
+	TForm TExceptE;
+	TForm MultiT;
+	TForm MultiTExceptE;
+
 	String Boolean_imp = "import from Boolean";
 	String E_def = "E: Category == with";
 	String T_def = "T: with == add";
@@ -91,19 +109,16 @@ testTfSatEmbedExcept()
 	AbSyn absyn = abNewSequenceL(sposNone, absynList);
 
 	initFile();
-	Stab stab = stabFile();
+	stab = stabFile();
 
 	abPutUse(absyn, AB_Use_NoValue);
 	abPrintDb(absyn);
 	scopeBind(stab, absyn);
 	typeInfer(stab, absyn);
 
-	int mask;
-	SatMask result;
-
-	TForm T = symeType(uniqueMeaning(stab, "t"));
-	TForm E = symeType(uniqueMeaning(stab, "e"));
-	TForm TExceptE = tfExcept(T, T);
+	T = symeType(uniqueMeaning(stab, "t"));
+	E = symeType(uniqueMeaning(stab, "e"));
+	TExceptE = tfExcept(T, T);
 	
 	mask = tfSatTdnMask();
 	/* T satisfies T */
@@ -117,8 +132,8 @@ testTfSatEmbedExcept()
 	testIntEqual("", 0, tfSatAbEmbed(result));
 
 	/* (T) satisfies "(T) except E" */
-	TForm MultiT = tfMulti(1, T);
-	TForm MultiTExceptE = tfExcept(tfMulti(1, T), E);
+	MultiT = tfMulti(1, T);
+	MultiTExceptE = tfExcept(tfMulti(1, T), E);
 	result = tfSat(mask, MultiT, MultiTExceptE);
 	testTrue("", tfSatSucceed(result));
 	testIntEqual("", 0, tfSatAbEmbed(result));
@@ -144,12 +159,21 @@ testTfSatRec()
 	String r_def = "local r: R";
 	String s_def = "local s: Record(t: T)";
 
-	initFile();
-	StringList lines = listList(String)(4, T_def, R_def, r_def, s_def);
+	StringList lines;
 
-	AbSynList code = listCons(AbSyn)(stdtypes(), abqParseLines(lines));
-	AbSyn absyn = abNewSequenceL(sposNone, code);
-	Stab stab = stabFile();
+	AbSynList code;
+	AbSyn absyn;
+	Stab stab;
+
+	Syme r, s;
+	TForm rtf, stf;
+
+	initFile();
+	lines = listList(String)(4, T_def, R_def, r_def, s_def);
+
+	code = listCons(AbSyn)(stdtypes(), abqParseLines(lines));
+	absyn = abNewSequenceL(sposNone, code);
+	stab = stabFile();
 
 	abPutUse(absyn, AB_Use_NoValue);
 	scopeBind(stab, absyn);
@@ -158,14 +182,13 @@ testTfSatRec()
 	testTrue("Declare is sefo", abIsSefo(absyn));
 	testIntEqual("Error Count", 0, comsgErrorCount());
 
-	Syme r = uniqueMeaning(stab, "r");
-	TForm rtf = symeType(r);
-	Syme s = uniqueMeaning(stab, "s");
-	TForm stf = symeType(s);
+	r = uniqueMeaning(stab, "r");
+	rtf = symeType(r);
+	s = uniqueMeaning(stab, "s");
+	stf = symeType(s);
 	aprintf("R: %pTForm S: %pTForm\n", rtf, stf);
 
 	testTrue("def eq", tfSatisfies(rtf, stf));
 
 	finiFile();
 }
-

@@ -66,26 +66,37 @@ extern int tipBupDebug;
 local void
 testTFormCascadedImport()
 {
-	initFile();
 	String Foo_def = "Foo(S: with): with { x: %; export from S } == add { x: % == never }";
 	String D_def = "D: with { a: %} == add { a: % == never}";
 
-	StringList lines = listList(String)(2, Foo_def, D_def);
-	AbSynList absynList = listCons(AbSyn)(stdtypes(), abqParseLines(lines));
-	AbSyn absyn = abNewSequenceL(sposNone, absynList);
+	StringList lines;
+	AbSynList absynList;
+	AbSyn absyn;
+
+	Stab subStab;
+
+	TForm Foo_D, D;
+
+	SymeList lSubStab, lStab;
+
+	initFile();
+
+	lines = listList(String)(2, Foo_def, D_def);
+	absynList = listCons(AbSyn)(stdtypes(), abqParseLines(lines));
+	absyn = abNewSequenceL(sposNone, absynList);
 
 	initFile();
 	stabImportDebug = 1;
 	tipBupDebug = 1;
 
-	Stab subStab = stabPushLevel(stabFile(), sposNone, 0);
+	subStab = stabPushLevel(stabFile(), sposNone, 0);
 	abPutUse(absyn, AB_Use_NoValue);
 	scopeBind(stabFile(), absyn);
 	typeInfer(stabFile(), absyn);
 	testIntEqual("Error Count", 0, comsgErrorCount());
 	
-	TForm Foo_D = tiGetTForm(stabFile(), apply1(id("Foo"), id("D")));
-	TForm D = tiGetTForm(stabFile(), id("D"));
+	Foo_D = tiGetTForm(stabFile(), apply1(id("Foo"), id("D")));
+	D = tiGetTForm(stabFile(), id("D"));
 	afprintf(dbOut, "Foo D: %pTForm\n", Foo_D);
 	afprintf(dbOut, "D: %pTForm\n", D);
 	stabImportFrom(subStab, tqNewUnqualified(Foo_D));
@@ -96,12 +107,11 @@ testTFormCascadedImport()
 	testTrue("imported D subStab", stabIsImportedTForm(subStab, D));
 	testFalse("imported D stab", stabIsImportedTForm(stabFile(), D));
 
-	SymeList lSubStab = stabGetMeanings(subStab, ablogTrue(), symInternConst("a"));
-	SymeList lStab =    stabGetMeanings(stabFile(), ablogTrue(), symInternConst("a"));
+	lSubStab = stabGetMeanings(subStab, ablogTrue(), symInternConst("a"));
+	lStab =    stabGetMeanings(stabFile(), ablogTrue(), symInternConst("a"));
 
 	testIntEqual("one meaning", 1, listLength(Syme)(lSubStab));
 	testIntEqual("no meanings", 0, listLength(Syme)(lStab));
 
 	finiFile();
 }
-

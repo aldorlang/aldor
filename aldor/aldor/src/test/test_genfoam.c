@@ -36,8 +36,11 @@ testForeign()
 	AbSynList absynList = listCons(AbSyn)(stdtypes(), abqParseLines(lines));
 	AbSyn absyn = abNewSequenceL(sposNone, absynList);
 
+	Stab stab;
+	Foam foam;
+
 	initFile();
-	Stab stab = stabFile();
+	stab = stabFile();
 
 	abPutUse(absyn, AB_Use_NoValue);
 	abPrintDb(absyn);
@@ -45,16 +48,14 @@ testForeign()
 	typeInfer(stab, absyn);
 	testIntEqual("Error Count", 0, comsgErrorCount());
 
-	Foam foam = generateFoam(stab, absyn, "test");
+	foam = generateFoam(stab, absyn, "test");
 	/* At this point, we should check that the 'test' function
 	 * calls 'fn' with a type of FOAM_Rec.  In order to do this
 	 * nicely, there should be a decent way of searching a blob of
 	 * foam for certain properties. */
 #if 0
 	FoamList pcall = foamFind(fmfAnd(fmfFoamTag(FOAM_PCall), fmfPCallProto(FOAM_Proto_C)),
-			      foam);
+				  foam);
 	testAIntEqual(FOAM_Rec, foamExprType(foam, pcall->first->foamPCall.argv[0]))
 #endif
 }
-
-

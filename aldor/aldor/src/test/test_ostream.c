@@ -24,12 +24,14 @@ testBuffer()
 	char *orig_txt = "abcdefghi";
 	char *txt = "abcdefghi";
 	for (i=0; i<strlen(txt); i++) {
+		String txt2, expect;
+
 		Buffer buffer = bufNew();
 		OStream s = ostreamNewFrBuffer(buffer);
 		int n = ostreamWrite(s, txt, i);
 		testIntEqual("ostreamWriteReturn", i, n);
-		String txt2 = bufLiberate(buffer);
-		String expect = strnCopy(txt, i);
+		txt2 = bufLiberate(buffer);
+		expect = strnCopy(txt, i);
 		testStringEqual("ostreamWrite-no-src-change", orig_txt, txt);
 		testStringEqual("ostreamWrite-Substring", expect, txt2);
 		ostreamClose(s);
