@@ -36,12 +36,13 @@ arrWrite(const char *s, int n)
 local void
 testPrintf1()
 {
-	char arr2[100];
-	memset(arr, 'X', 100);
+	int cc;
 	String fmt = "foo: %s";
 	String arg1 = "bar";
+	char arr2[100];
+	memset(arr, 'X', 100);
 	sprintf(arr2, fmt, arg1);
-	int cc = xprintf(arrWrite, fmt, arg1);
+	cc = xprintf(arrWrite, fmt, arg1);
 	
 	testStringEqual("content", arr2, arr);
 	testIntEqual("retval", cc, strlen(arr));
@@ -66,9 +67,10 @@ local void
 checkPrintfCase(int w, const char *txt)
 {
 	String name = strPrintf("%d-[%s]", w, txt);
+	String s2;
 	char buf[20];
 	sprintf(buf, "%*s", w, txt);
-	String s2 = strPrintf("%*s", w, txt);
+	s2 = strPrintf("%*s", w, txt);
 
 	testStringEqual(name, buf, s2);
 	strFree(name);

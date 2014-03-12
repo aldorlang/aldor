@@ -96,7 +96,7 @@ PathList	arLibraryKeyList  = 0;	/* library archive file keys */
  * archives on the default lists.
  */
 void
-arInit(String * files, String * keys)
+arInit(String *files, String *keys)
 {
 	arLibraryFileList = pathListFrArray(files);
 	arLibraryKeyList  = pathListFrArray(keys);
@@ -350,7 +350,7 @@ arFirstPos(Archive ar)
 {
 	Offset	pos = 0;
 
-	switch(ar->format) {
+	switch (ar->format) {
 	case AR_AIX:
 		arDEBUG(dbOut, "AIX-style archive\n");
 		pos = arFirstPosAIX(ar);
@@ -368,7 +368,7 @@ arFirstPos(Archive ar)
 		pos = arFirstPosArch(ar);
 		break;
 	default:
-		bugUnimpl(ar->format);
+		bug("Unimplemented archive format: %d", ar->format);
 		break;
 	}
 
@@ -436,7 +436,7 @@ arRdItem(Archive ar)
 		s = arRdItemCMS(ar);
 		break;
 	default:
-		bugUnimpl(ar->format);
+		bug("Unimplemented archive format: %d", ar->format);
 		break;
 	}
 
@@ -1098,6 +1098,7 @@ local void
 arReadNumber(Archive ar, Offset *plong, int len, int base)
 {
 	char *endp;
+	assert(len < sizeof ar_buffer);
 
 	/* First read the text */
 	arReadText(ar, ar_buffer, len);

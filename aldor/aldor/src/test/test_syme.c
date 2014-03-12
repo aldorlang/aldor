@@ -36,16 +36,20 @@ extern int stabDebug;
 local void
 testSymeSExpr()
 {
-
 	String aSimpleDomain = "+++Comment\nDom: Category == with {f: () -> () ++ f\n}";
 	StringList lines = listList(String)(1, aSimpleDomain);
 	AbSynList code = listCons(AbSyn)(stdtypes(), abqParseLines(lines));
-	
+
 	AbSyn absyn = abNewSequenceL(sposNone, code);
 
+	Stab stab;
+	SymeList symes;
+	Syme syme;
+	SExpr sx;
+
 	initFile();
-	Stab stab = stabFile();
-	
+	stab = stabFile();
+
 	abPutUse(absyn, AB_Use_NoValue);
 	scopeBind(stab, absyn);
 	typeInfer(stab, absyn);
@@ -53,12 +57,12 @@ testSymeSExpr()
 	testTrue("Declare is sefo", abIsSefo(absyn));
 	testIntEqual("Error Count", 0, comsgErrorCount());
 
-	SymeList symes = stabGetMeanings(stab, ablogFalse(), symInternConst("Dom"));
+	symes = stabGetMeanings(stab, ablogFalse(), symInternConst("Dom"));
 	testIntEqual("unique meaning", 1, listLength(Syme)(symes));
 
-	Syme syme = car(symes);
-	SExpr sx = symeSExprAList(syme);
-	
+	syme = car(symes);
+	sx = symeSExprAList(syme);
+
 	finiFile();
 }
 
@@ -74,21 +78,25 @@ testSymeAddCondition()
 	
 	AbSyn absyn = abNewSequenceL(sposNone, code);
 
+	AbSyn D1, D2, C;
+	Syme syme1, syme2;
+	Stab stab;
+
 	initFile();
-	Stab stab = stabFile();
+	stab = stabFile();
 	
 	abPutUse(absyn, AB_Use_NoValue);
 	scopeBind(stab, absyn);
 	typeInfer(stab, absyn);
 	
-	AbSyn D1 = abFrSyme(uniqueMeaning(stabFile(), "D1"));
-	AbSyn D2 = abFrSyme(uniqueMeaning(stabFile(), "D2"));
-	AbSyn C = abFrSyme(uniqueMeaning(stabFile(), "C"));
-	Syme syme1 = symeNewExport(symInternConst("syme2"), tfNewAbSyn(TF_General, id("D")), car(stab));
+	D1 = abFrSyme(uniqueMeaning(stabFile(), "D1"));
+	D2 = abFrSyme(uniqueMeaning(stabFile(), "D2"));
+	C = abFrSyme(uniqueMeaning(stabFile(), "C"));
+	syme1 = symeNewExport(symInternConst("syme2"), tfNewAbSyn(TF_General, id("D")), car(stab));
 	symeAddCondition(syme1, sefo(has(D1, C)), true);
 	testIntEqual("test1", 1, listLength(Sefo)(symeCondition(syme1)));
 
-	Syme syme2 = symeNewExport(symInternConst("syme1"),tfNewAbSyn(TF_General, id("D")), car(stab));
+	syme2 = symeNewExport(symInternConst("syme1"),tfNewAbSyn(TF_General, id("D")), car(stab));
 	symeAddCondition(syme2, sefo(and(has(D1, C),
 					 has(D2, C))), true);
 	

@@ -180,7 +180,6 @@ ablogWrite(OStream ostream, AbLogic xx0)
 local int
 ablogFormatter(OStream ostream, Pointer p)
 {
-	TForm tf = (TForm) p;
 	int c;
 
 	c = ablogWrite(ostream, p);

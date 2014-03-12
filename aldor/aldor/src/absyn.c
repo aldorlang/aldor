@@ -443,6 +443,7 @@ abContainer0(AbSyn root, SrcPos pos, AbSyn *psubtree)
 		Bool	anyToLeft, anyToRight;
 
 		n = abArgc(root);
+		assert(n > 0);
 
 		anyToLeft  = false;
 		anyToRight = false;

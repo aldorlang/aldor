@@ -112,7 +112,7 @@ extern void	comsgReportOne	  (FILE *, CoMsg);
 extern int	comsgFPrintf	  (FILE *, Msg fmt, ...);
 extern int	comsgVFPrintf	  (FILE *, Msg fmt, va_list);
 
-extern void	comsgPromptPrint  (FILE *, FILE *, String, ...);
+extern void	comsgPromptPrint  (FILE *, FILE *, String, ...) chk_fmt (3, 4);
 
 /*
  * :: Strictly local but quite useful.

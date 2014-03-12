@@ -85,12 +85,6 @@
  * worrying about all combinations.
  */
 
-#  if  defined(CC_no_prototype)
-#    define _of(x)	()
-#  else
-#    define _of(x)	x
-#  endif
-
 #  ifdef CC_no_const
 #    define _const
 #  else

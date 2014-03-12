@@ -26,4 +26,14 @@ extern int   yyerrorfn         (String);
 extern AbSyn parseMakeJuxtapose(AbSyn, AbSyn);
 extern AbSyn parseDeprecated(TokenTag, AbSyn);
 
+#define YYSTYPE_IS_DECLARED
+typedef union YYSTYPE {
+	Token           tok;
+	TokenList       toklist;
+	AbSyn           ab;
+	AbSynList       ablist;
+} YYSTYPE;
+
+extern YYSTYPE yylval;
+
 #endif /* !_PARSEBY_H_ */

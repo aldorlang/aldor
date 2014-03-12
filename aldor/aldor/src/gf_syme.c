@@ -69,7 +69,7 @@ genSetConstNum(Syme syme, int defineIdx, UShort index, Bool unique)
 	 * are okay: if the type checker allowed the call then we
 	 * can inline it.
 	 */
-	if (unique && (cnum >= 0) && (cnum <= 0x3fff) && (cnum != index)) {
+	if (unique && cnum <= 0x3fff && cnum != index) {
 		/*
 		 * Conditional syme with multiple implementations.
 		 * We have to record the fact that we have stomped

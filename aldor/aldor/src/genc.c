@@ -65,11 +65,6 @@ struct Cdecls {
 	struct Cdecls	*next;
 };
 
-struct ccSpecCharId_info {
-	int		ch;
-	String          str;
-}; 
-
 struct ccBVal_info {
 	FoamBValTag	tag;
 	CCodeTag	cfun;
@@ -460,13 +455,12 @@ local	Foam		gc0AddExplicitReturn(Foam);
  * These macros should be moved to other files, e.g. foam.h and ccode.h
  */
 
-#define emptyEnv(x) ((x == emptyFormatSlot) || \
-		     (foamDDeclArgc(gcvFmt->foamDFmt.argv[x]) == 0))
+#define gc0EmptyEnv(x) ((x == emptyFormatSlot) || \
+			(foamDDeclArgc(gcvFmt->foamDFmt.argv[x]) == 0))
 
 #define gc0EmptyFormat(fmt) \
-	(emptyEnv(fmt) || (fmt) == envUsedSlot || \
+	(gc0EmptyEnv(fmt) || (fmt) == envUsedSlot || \
 	 (foamDDeclArgc(gcvFmt->foamDFmt.argv[fmt]) < 1))
-extern struct ccSpecCharId_info  ccSpecCharIdTable[];
 
 #define ccIdInfo(tag)   (ccSpecCharIdTable[tag])
 #define ccIdChar(tag)   (ccIdInfo(tag).ch)
@@ -1012,7 +1006,7 @@ gc0GetterDecl(String name)
 local CCode
 gc0ArgcDecl(void)
 {
-	return ccoDecl(ccoType(ccoExtern(), ccoTypeIdOf("long")),
+	return ccoDecl(ccoType(ccoExtern(), ccoTypeIdOf("int")),
 		       ccoIdOf("mainArgc"));
 }
 
@@ -3257,10 +3251,10 @@ gccPCallId(Foam foam)
 local CCode
 gccFortranPCall(Foam *resultvar, int numresultvars, Foam foam, CCodeList *closnulls)
 {
-        Foam gdecl, argformat, fargfmt, farg, fargnocast; 
-        CCode ccTmp, ccArg, ccType, ccName, ccCast, ccChrTmp;
+	Foam gdecl, argformat, fargfmt, farg, fargnocast; 
+	CCode ccTmp, ccArg, ccType, ccName, ccCast, ccChrTmp;
 	CCode ccLenArg;
-	CCode ccChrlen, ccArgs;
+	CCode ccChrlen = NULL, ccArgs;
 	CCodeList argslist;
 	CCodeList mainargs = listNil(CCode);
 	CCodeList chrlenargs = listNil(CCode);
@@ -3288,10 +3282,10 @@ gccFortranPCall(Foam *resultvar, int numresultvars, Foam foam, CCodeList *closnu
 	ccLenArg = NULL;
 	resvartype = FOAM_Nil;
 	resvarfmt  = 0;
-	
+
 	/* deal with result type... */
 	gdecl = gc0GetDecl(foam->foamPCall.op);
-        argformat = gcvFmt->foamDFmt.argv[gdecl->foamGDecl.format]; 
+	argformat = gcvFmt->foamDFmt.argv[gdecl->foamGDecl.format]; 
 	fnresultdecl = gc0GetFortranRetFm(argformat);
 
 	restype = gc0GetFortranRetType(argformat);
@@ -3309,9 +3303,8 @@ gccFortranPCall(Foam *resultvar, int numresultvars, Foam foam, CCodeList *closnu
 	/* Only allow 0 or 1 return value now ... */
 	assert(!numresultvars || (numresultvars == 1));
 
-	switch (restype)
-	{
-	  case FTN_Character:
+	switch (restype) {
+	case FTN_Character:
 		/*
 		 * Our hack in gen0MakeApplyArgs() has provided
 		 * us with the string length as the first argument
@@ -3352,8 +3345,8 @@ gccFortranPCall(Foam *resultvar, int numresultvars, Foam foam, CCodeList *closnu
 		/* We have an extra dummy argument */
 		extraArg = 1;
 		break;
-	  case FTN_String:
-	  case FTN_XLString:
+	case FTN_String:
+	case FTN_XLString:
 		/*
 		 * Our hack in gen0MakeApplyArgs() has provided
 		 * us with the string length as the first argument
@@ -3361,7 +3354,7 @@ gccFortranPCall(Foam *resultvar, int numresultvars, Foam foam, CCodeList *closnu
 		 */
 		ccType = ccoPostStar(ccoChar());
 		if (numresultvars)
-			ccName   = gccRef(resultvar[numresultvars-1]);
+			ccName = gccRef(resultvar[numresultvars - 1]);
 		else
 			ccName = gc0GetTmp(ccType); 
 
@@ -3373,7 +3366,7 @@ gccFortranPCall(Foam *resultvar, int numresultvars, Foam foam, CCodeList *closnu
 
 		/* How long is the return value? */
 		ccLenArg = gc0GetTmp(ccoTypeIdOf(gcFiSInt));
-		farg = foam->foamPCall.argv[0];	
+		farg = foam->foamPCall.argv[0];
 		ccTmp = ccoAsst(ccoCopy(ccLenArg), gccExpr(farg));
 		gc0AddTopLevelStmt(gcvStmts, ccoStat(ccTmp));
 
@@ -3393,17 +3386,17 @@ gccFortranPCall(Foam *resultvar, int numresultvars, Foam foam, CCodeList *closnu
 		/* We have an extra dummy argument */
 		extraArg = 1;
 		break;
-	  case FTN_FSComplex:
+	case FTN_FSComplex:
 		/* Fall through */
-	  case FTN_FDComplex:
+	case FTN_FDComplex:
 		if (!cmplxfns)
 			comsgFatal(NULL, ALDOR_F_NoFCmplxProperty, "fortran-cmplx-fns");
 		else if (strEqual(cmplxfns, "return-void")) { 
 			ccType = ccoTypeIdOf(restype == FTN_FSComplex ?
-						gcFiComplexSF : gcFiComplexDF);
+					     gcFiComplexSF : gcFiComplexDF);
 			if (numresultvars)
 				mainargs = listCons(CCode)(ccoCast(ccoPostStar(ccType), 
-						   gccRef(resultvar[numresultvars-1])), 
+								   gccRef(resultvar[numresultvars-1])), 
 							   mainargs);  
 			else {
 				ccName = gc0GetTmp(ccType); 
@@ -3415,15 +3408,14 @@ gccFortranPCall(Foam *resultvar, int numresultvars, Foam foam, CCodeList *closnu
 		else if (!strEqual(cmplxfns, "return-struct"))
 			comsgFatal(NULL, ALDOR_F_BadFCmplxValue, cmplxfns);
 		break;
-	  default:
+	default:
 		break;
 	}
 
 
 	/* We need to add some extra statements after the PCall */
-	switch (restype)
-	{
-	   case FTN_Character:
+	switch (restype) {
+	case FTN_Character:
 		/* Pull out the char result */
 		ccTmp  = ccoCast(ccoCopy(ccType), ccoCopy(ccChrTmp));
 		ccCast = ccoARef(ccoParen(ccTmp), ccoIdOf("0"));
@@ -3432,7 +3424,7 @@ gccFortranPCall(Foam *resultvar, int numresultvars, Foam foam, CCodeList *closnu
 
 		closnullifys = listCons(CCode)(ccTmp, closnullifys);  
 		break;
-	   case FTN_XLString:
+	case FTN_XLString:
 		/*
 		 * Kill the string return value because we
 		 * don't know how long it is. They need to
@@ -3449,7 +3441,7 @@ gccFortranPCall(Foam *resultvar, int numresultvars, Foam foam, CCodeList *closnu
 
 		closnullifys = listCons(CCode)(ccTmp, closnullifys);  
 		break;
-	   default:
+	default:
 		break;
 	}
 
@@ -3478,7 +3470,7 @@ gccFortranPCall(Foam *resultvar, int numresultvars, Foam foam, CCodeList *closnu
 		argtype       = gc0GetFortranType(fargfmt);
 		farg          = foam->foamPCall.argv[i];	
 		fargnocast    = (foamTag(farg) == FOAM_Cast) ?
-					farg->foamCast.expr : farg;
+			farg->foamCast.expr : farg;
 		fmtype        = fargfmt->foamDecl.type;
 
 
@@ -3488,36 +3480,36 @@ gccFortranPCall(Foam *resultvar, int numresultvars, Foam foam, CCodeList *closnu
 
 
 		switch (argtype) {
-	  	   case FTN_Character:
+		case FTN_Character:
 			/* Fall through */
-	  	   case FTN_String:
+		case FTN_String:
 			/* Fall through */
-		   case FTN_XLString :
+		case FTN_XLString:
 			ccArg = gccFtnXLstring(farg, argtype, modifiablearg, &ccChrlen);
 			chrlenargs = listCons(CCode)(ccChrlen, chrlenargs);
 			break;
-	  	   case FTN_StringArray:
+		case FTN_StringArray:
 			ccArg = gccFtnStringArray(farg, &ccChrlen);
 			chrlenargs = listCons(CCode)(ccChrlen, chrlenargs);
 			break;
-		   case FTN_FnParam :
+		case FTN_FnParam:
 			tmpstr = gdecl->foamGDecl.id;
 			fnparam = gc0FtnFunParam(tmpstr, fnparamno++);
 			ccArg = gccFtnFnParam(farg, fnparam, &ccTmp);
 			closnullifys = listCons(CCode)(ccTmp, closnullifys);  
 			break;
-		   case FTN_Array :
-		   case FTN_Word :
-		   case FTN_Machine :
-		   case FTN_Boolean :
-		   case FTN_SingleInteger :
-		   case FTN_FDouble :
-		   case FTN_FSingle :
-		   case FTN_FSComplex :
-		   case FTN_FDComplex :
+		case FTN_Array:
+		case FTN_Word:
+		case FTN_Machine:
+		case FTN_Boolean:
+		case FTN_SingleInteger:
+		case FTN_FDouble:
+		case FTN_FSingle:
+		case FTN_FSComplex:
+		case FTN_FDComplex:
 			ccArg = gccExpr(farg);
 			break;
-		   default : bug("gccFortranPCall : bad case");
+		default: bug("gccFortranPCall: bad case");
 		}
 
 
@@ -3532,11 +3524,10 @@ gccFortranPCall(Foam *resultvar, int numresultvars, Foam foam, CCodeList *closnu
 		 *
 		 *    (char *)ccArg[ccLen] = (char)0
 		 */
-		switch (argtype)
-		{
-		   case FTN_String:
+		switch (argtype) {
+		case FTN_String:
 			/* Fall through */
-		   case FTN_XLString:
+		case FTN_XLString:
 			/*
 			 * Kill the string return value because we
 			 * don't know how long it is. They need to
@@ -3554,7 +3545,7 @@ gccFortranPCall(Foam *resultvar, int numresultvars, Foam foam, CCodeList *closnu
 
 			closnullifys = listCons(CCode)(ccTmp, closnullifys);  
 			break;
-		   default:
+		default:
 			break;
 		}
 		mainargs = listCons(CCode)(ccArg, mainargs);  
@@ -4351,7 +4342,7 @@ gccId(Foam foam)
 		else
 			cc = gc0VarId("e", level);
 		/* !! Because sometimes usage info is lost */
-		if (emptyEnv(gcvLFmtStk->foamDEnv.argv[level]) && level!=0) {
+		if (gc0EmptyEnv(gcvLFmtStk->foamDEnv.argv[level]) && level!=0) {
 			gcvLFmtStk = foamCopy(gcvLFmtStk);
 			gcvLFmtStk->foamDEnv.argv[level] = envUsedSlot;
 		}
@@ -4508,18 +4499,18 @@ gc0Levels(int nLexs, int maxLev, int isLeaf, int fmt)
 
 	for (i = 0; i < nLexs; i++) {
 		level = gcvLFmtStk->foamDEnv.argv[i];
-		if (!emptyEnv(level) && level != envUsedSlot)
+		if (!gc0EmptyEnv(level) && level != envUsedSlot)
 			if (foamArgc(gcvFmt->foamDFmt.argv[level]) > 0)
 				gc0AddLine(code, gc0LexRef(level, i));
-		if (!emptyEnv(level) && i != 1)
+		if (!gc0EmptyEnv(level) && i != 1)
 			gc0AddLine(code, gc0EnvRef(i));
-		if (emptyEnv(level) && i > 1 && i <= maxLev)
+		if (gc0EmptyEnv(level) && i > 1 && i <= maxLev)
 			gc0AddLine(code, gc0EnvRef(i));
 	}
 	if (!isLeaf) {
-		if (emptyEnv(fmt))
+		if (gc0EmptyEnv(fmt))
 			gc0AddLine(code, gc0EnvRef(int0));
-		if (!emptyEnv(fmt) && fmt != envUsedSlot)
+		if (!gc0EmptyEnv(fmt) && fmt != envUsedSlot)
 			if (foamArgc(foamArgv(gcvFmt)[fmt].code) > 0)
 				gc0AddLine(code, gc0EnvMake(fmt));
 		gc0AddLine(code, gc0EnvPush(fmt));
@@ -4528,7 +4519,7 @@ gc0Levels(int nLexs, int maxLev, int isLeaf, int fmt)
 		level = gcvLFmtStk->foamDEnv.argv[i];
 		if (i != 1)
 			gc0AddLine(code, gc0EnvNext(i, i-1));
-		if (!emptyEnv(level) && level != envUsedSlot)
+		if (!gc0EmptyEnv(level) && level != envUsedSlot)
 			gc0AddLine(code, gc0EnvLevel(i, level));
 	}
 	code = listNReverse(CCode)(code);
@@ -6645,7 +6636,7 @@ gc0MaxLevel(int numLexs)
 
 	for (i = 1; i < numLexs; i++) {
 		level = gcvLFmtStk->foamDEnv.argv[i];
-		if (!emptyEnv(level) || level == envUsedSlot) maxLevel = i;
+		if (!gc0EmptyEnv(level) || level == envUsedSlot) maxLevel = i;
 	}
 	return maxLevel;
 }

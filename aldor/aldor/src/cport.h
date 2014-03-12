@@ -65,9 +65,6 @@
  *	DFloat
  *		Floating-point numbers of specific sizes.
  *
- *	LongDouble
- *		long double, if supported, otherwise double.
- *
  *	MostAlignedType
  *		This is the type with the strongest alignment restrictions.
  *      UNotAsLong
@@ -89,23 +86,6 @@
  * * Using variable number of function arguments:
  *	We follow the ANSI <stdarg.h> conventions.
  *	If we have to, we implement it ourselves.
- *
- * * Token formation:
- *	The "Abut" macro is used to concatenate tokens.
- *
- *	Abut(a,b)
- *
- *	In ANSI C, this expands to a##b and in other C environments
- *	the old comment trick is used.
- *	Use Abut(a,b) rather than Abut(a, b) since spaces are significant
- *	in K&R C.
- *
- *	The "Enstring" macro is used to string-ize a token.
- *
- *	Enstring(a)
- *
- *	In ANSI C, this expands to #a and in other C environments
- *	the fact that cpp substitutes into strings is used.
  *
  *
  * * Trailing arrays:
@@ -362,6 +342,12 @@ typedef size_t		Length;
 typedef ULong		Offset;
 typedef ULong		Millisec;
 
+#ifdef CC_long_not_int32
+#  define LENGTH_FMT "%lu"
+#else
+#  define LENGTH_FMT "%u"
+#endif
+
 #ifdef CC_no_void_pointer
    typedef char		*Pointer;
    typedef const char	*ConstPointer;
@@ -376,7 +362,7 @@ typedef const char	*CString;
 typedef char		*IOMode;
 
 /*
- *  On some architecutres, we use a double to represent a single float so that
+ *  On some architectures, we use a double to represent a single float so that
  *  a single float has the same size as a pointer
  */
 #ifdef CC_SF_is_double
@@ -385,12 +371,6 @@ typedef char		*IOMode;
   typedef float		SFloat;
 #endif
 typedef double		DFloat;
-
-#ifdef CC_no_long_double
-   typedef double	LongDouble;
-#else
-   typedef long double	LongDouble;
-#endif
 
 typedef double	MostAlignedType;
 
@@ -413,20 +393,6 @@ typedef double	MostAlignedType;
 /*
  * Handled by stdarg.h0
  */
-
-/*****************************************************************************
- *
- * :: Token Formation
- *
- ****************************************************************************/
-
-#ifndef CC_no_token_paste
-#  define Abut(a,b)	a##b
-#  define Enstring(a)	#a
-#else
-#  define Abut(a,b)	a/**/b
-#  define Enstring(a)	"a"
-#endif
 
 /*****************************************************************************
  *

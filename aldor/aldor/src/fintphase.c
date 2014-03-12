@@ -34,9 +34,9 @@
  *      Length verboseOptLen = strLength(verboseOpt);
  */
 
-#define FINT_DECLARE_OPTION(var, str)  \
-         String Abut(var,Opt) = str;   \
-         Length Abut(var,OptLen) = strLength(Abut(var,Opt))
+#define FINT_DECLARE_OPTION(var, str)	\
+	String var##Opt = str;		\
+	Length var##OptLen = strLength(var##Opt)
 
 void
 fintParseOptions(String str)
@@ -128,22 +128,22 @@ fintParseOptions(String str)
 		return;
 	}
 
-	/*
+#if 0
 	if (!strncmp(str, optionsOpt, optionsOptLen)) {
-	        int     argc, iargc;
-	        String  *argv;
-	
-	        str += optionsOptLen;
-	        cmdParseOptions     (str, &argc, &argv);
-	        iargc = cmdArguments(int0, argc, argv);
-	        cmdFreeOptions      (argc, argv);
-	
-	        if (argc > iargc)
+		int     argc, iargc;
+		String  *argv;
+
+		str += optionsOptLen;
+		cmdParseOptions     (str, &argc, &argv);
+		iargc = cmdArguments(int0, argc, argv);
+		cmdFreeOptions      (argc, argv);
+
+		if (argc > iargc)
 			(void)comsgFPrintf(osStdout, ALDOR_M_FintIntOptionsNoFile,
-				     argv[iargc]);
+					   argv[iargc]);
 		return;
 	}
-	*/
+#endif
 	if (!strncmp(str, helpOpt, helpOptLen)) {
 		(void)comsgFPrintf(osStdout, ALDOR_M_FintOptions,
 		       verboseOpt, historyOpt, confirmOpt, timingsOpt,

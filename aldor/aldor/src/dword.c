@@ -11,7 +11,7 @@
 typedef ULong	BIntD;		/* To contain two BInt digits. */
 
 #define BINT_LG_RADIX		(bitsizeof(BIntS))
-#define BINT_RADIX		(((long) 1) << BINT_LG_RADIX)
+#define BINT_RADIX		(((unsigned long) 1) << BINT_LG_RADIX)
 
 #define DivideDouble(q, r, nh, nl, d) {			\
 	BIntD n_ = (BIntD)(nh)*(BIntD)BINT_RADIX + (nl);\

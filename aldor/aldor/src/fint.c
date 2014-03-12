@@ -6,28 +6,29 @@
  *
  ****************************************************************************/
 
-#define _POSIX_SOURCE /* fileno */
+#define _POSIX_SOURCE 1 /* fileno */
 
+#include "abpretty.h"
+#include "archive.h"
 #include "axlobs.h"
+#include "bigint.h"
 #include "cmdline.h"
+#include "comsg.h"
 #include "debug.h"
 #include "file.h"
 #include "fint.h"
 #include "fluid.h"
 #include "foam_c.h"
+#include "lib.h"
 #include "opsys.h"
 #include "output.h"
 #include "store.h"
+#include "strops.h"
+#include "syme.h"
 #include "syscmd.h"
+#include "timer.h"
 #include "util.h"
 #include "xfloat.h"
-#include "syme.h"
-#include "archive.h"
-#include "lib.h"
-#include "abpretty.h"
-#include "comsg.h"
-#include "strops.h"
-#include "bigint.h"
 
 
 
@@ -324,7 +325,7 @@ typedef struct fintUnit	fintUnit;
      case FOAM_NOp: fintSetMFmt((ref), &(expr)); break; \
      case FOAM_Nil:  (ref)->_fiNil = (expr)._fiNil; break;\
      case FOAM_BInt:  (ref)->fiBInt = (Ptr) (bintCopy((BInt) (expr).fiBInt)); break;\
-     default: fintWhere(int0);bug("fintSet: type %d unimplemented.", type); \
+     default: fintWhere(int0);bug("fintSet: type %d unimplemented.", (int)type); \
      }						\
   }
 
@@ -339,7 +340,7 @@ typedef struct fintUnit	fintUnit;
     case FOAM_DFlo: ((FiDFlo *)((ref)->fiArr))[(n)] = (expr).fiDFlo; break; \
     case FOAM_Word: ((FiWord *)((ref)->fiArr))[(n)] = (expr).fiWord; break; \
     case FOAM_BInt: ((FiBInt *)((ref)->fiArr))[(n)] = (expr).fiBint; break; \
-    default: fintWhere(int0);bug("fintASetElem: type %d unimplemented.", type); \
+    default: fintWhere(int0);bug("fintASetElem: type %d unimplemented.", (int)type); \
     } \
 }
 
@@ -354,7 +355,7 @@ typedef struct fintUnit	fintUnit;
     case FOAM_DFlo: (pdata)->fiDFlo = ((FiDFlo *)((ref)->fiArr))[(n)]; break; \
     case FOAM_Word: (pdata)->fiWord = ((FiWord *)((ref)->fiArr))[(n)]; break; \
     case FOAM_BInt: (pdata)->fiBInt = ((FiBInt *)((ref)->fiArr))[(n)]; break; \
-    default: fintWhere(int0);bug("fintAGetElem: type %d unimplemented.", type); \
+    default: fintWhere(int0);bug("fintAGetElem: type %d unimplemented.", (int)type); \
     } \
 }
 
@@ -369,7 +370,7 @@ typedef struct fintUnit	fintUnit;
     case FOAM_DFlo:(pdata)=(DataObj)(((FiDFlo *)((ref)->fiArr)) + (n)); break;\
     case FOAM_Word:(pdata)=(DataObj)(((FiWord *)((ref)->fiArr)) + (n)); break;\
     case FOAM_BInt:(pdata)=(DataObj)(((FiBInt *)((ref)->fiArr)) + (n)); break;\
-    default: fintWhere(int0);bug("fintAGetElemRef: type %d unimplemented.", type); \
+    default: fintWhere(int0);bug("fintAGetElemRef: type %d unimplemented.", (int)type); \
     } \
 }
 
@@ -393,7 +394,7 @@ typedef struct fintUnit	fintUnit;
 	 case FOAM_Word: (x) = sizeof(FiWord); break; \
 	 case FOAM_Arb: (x) = sizeof(FiArb); break; \
 	 case FOAM_Nil: (x) = sizeof(FiNil); break; \
-	 default: fintWhere(int0);bug("fintGetTypeSize: type %d unimplemented.", type); \
+	 default: fintWhere(int0);bug("fintGetTypeSize: type %d unimplemented.", (int)type); \
   }}
 
 /* $$!! ----- From foam.c; This should be moved in foam.h ----- */
@@ -629,8 +630,16 @@ static JmpBuf	fintJmpBuf;
 local Bool	fintSoftAssertIsOn = false;
 local long	instrBreak = -1;
 
-#define softAssert(x)			if (!fintSoftAssertIsOn || x) ; else fintSoftAssert(Enstring(x), __FILE__, __LINE__)
-#define hardAssert(x)			if (x) ; else fintHardAssert(Enstring(x), __FILE__, __LINE__)
+#define softAssert(x)						\
+	do {							\
+		if (fintSoftAssertIsOn && !(x))			\
+			fintSoftAssert(#x, __FILE__, __LINE__);	\
+	} while (0)
+#define hardAssert(x)						\
+	do {							\
+		if (!(x))					\
+			fintHardAssert(#x, __FILE__, __LINE__);	\
+	} while (0)
 
 #define		fintTypedEval(pExpr,t) { \
 	dataType type = fintEval(pExpr); \
@@ -777,8 +786,8 @@ typedef struct {
 	Bool			isConst;
 } fintForeign;
 
-#define		DECL_FOREIGN(x)		{ Enstring(x), Abut(FINT_FOREIGN_,x), false }
-#define		DECL_FOREIGN_CONST(x)	{ Enstring(x), Abut(FINT_FOREIGN_,x), true }
+#define		DECL_FOREIGN(x)		{ #x, FINT_FOREIGN_##x, false }
+#define		DECL_FOREIGN_CONST(x)	{ #x, FINT_FOREIGN_##x, true }
 
 
 DECLARE_LIST(FintUnit);
@@ -1507,7 +1516,6 @@ fintStmt(DataObj retDataObj)
 
 	if (DEBUG(fintSto)) {stoAudit();}
 #ifndef NDEBUG
-	int zz = instrCounter;
 	if (instrCounter++ == instrBreak) {
 		/* stoAudit()*/;	/* SET BREAKPOINT HERE */
 		fintDebug = true;
@@ -3987,7 +3995,8 @@ fintEval_(DataObj retDataObj)
 				retDataObj->fiHInt = (FiHInt) expr.fiSFlo;
 				break;
 			default:
-				bug("FintEval: Cast from %d to %d unimplemented.", frType, toType);
+				bug("FintEval: Cast from %d to %d unimplemented.",
+				    (int)frType, (int)toType);
 			}
 			break;
 		case FOAM_DFlo:
@@ -4007,7 +4016,8 @@ fintEval_(DataObj retDataObj)
 				retDataObj->fiHInt = (FiHInt) expr.fiDFlo;
 				break;
 			default:
-				bug("FintEval: Cast from %d to %d unimplemented.", frType, toType);
+				bug("FintEval: Cast from %d to %d unimplemented.",
+				    (int)frType, (int)toType);
 			}
 			break;
 		case FOAM_SInt:
@@ -4055,7 +4065,8 @@ fintEval_(DataObj retDataObj)
 				else if (toSize == sizeof(FiWord))
 					retDataObj->fiWord = expr.fiChar;
 				else
-					bug("FintEval: Cast from %d to %d unimplemented.", frType, toType);
+					bug("FintEval: Cast from %d to %d unimplemented.",
+					    (int)frType, (int)toType);
 
 			}
 			else if (frSize == sizeof(FiHInt)) {
@@ -4067,7 +4078,8 @@ fintEval_(DataObj retDataObj)
 				else if (toSize == sizeof(FiWord))
 					retDataObj->fiWord = expr.fiHInt;
 				else
-					bug("FintEval: Cast from %d to %d unimplemented.", frType, toType);
+					bug("FintEval: Cast from %d to %d unimplemented.",
+					    (int)frType, (int)toType);
 			}
 			else if (frSize == sizeof(FiWord)) {
 				if (toSize == sizeof(FiChar))
@@ -4078,10 +4090,12 @@ fintEval_(DataObj retDataObj)
 					retDataObj->fiWord = expr.fiWord;
 
 				else
-					bug("FintEval: Cast from %d to %d unimplemented.", frType, toType);
+					bug("FintEval: Cast from %d to %d unimplemented.",
+					    (int)frType, (int)toType);
 			}
 			else
-				bug("FintEval: Cast from %d to %d unimplemented.", frType, toType);
+				bug("FintEval: Cast from %d to %d unimplemented.",
+				    (int)frType, (int)toType);
 
 			break;
 			}
@@ -4940,8 +4954,7 @@ fintEval_(DataObj retDataObj)
 				    (String) expr3.fiArr);
 			break;
 		case FINT_FOREIGN_gcTimer: {
-			extern void *gcTimer(void);
-			retDataObj->fiWord = (FiWord) gcTimer();
+			retDataObj->fiWord = (FiWord) stoGcTimer();
 			break;
 			}
 		case FINT_FOREIGN_fiRaiseException: {
@@ -4974,10 +4987,14 @@ fintEval_(DataObj retDataObj)
 		        }
 		default: {
 			AInt pcallId = expr.fiSInt;
-			bug("fintEval: %s PCall %d %s, (called from <%s> in [%s])\n",
-			    pcallId == -1 ?
-			    "undeclared" : "unimplemented", pcallId,
-			    (pcallId > 0 && pcallId < FINT_FOREIGN_END) ? fintForeignTable[pcallId].string : "??",
+			bug("fintEval: %s PCall " AINT_FMT " %s, (called from <%s> in [%s])\n",
+			    pcallId == -1
+			      ? "undeclared"
+			      : "unimplemented",
+			    pcallId,
+			    pcallId > 0 && pcallId < FINT_FOREIGN_END
+			      ? fintForeignTable[pcallId].string
+			      : "??",
 			    prog->name, prog->unit->name);
 			    }
 		}
@@ -6057,10 +6074,10 @@ fintWhere(int level)
 
 	while (n != level && bp0 != stackBase) {
 		(void)fprintf(dbOut, "#%d %lx in <%s> at unit [%s]\n",
-			l++,
-			(ULong)stackFrameIp(bp0),
-			stackFrameProg(bp0)->name,
-			stackFrameProg(bp0)->unit->name);
+			      l++,
+			      (ULong)stackFrameIp(bp0),
+			      stackFrameProg(bp0)->name,
+			      stackFrameProg(bp0)->unit->name);
 		bp0 = stackFrameBp(bp0);
 		n += 1;
 	}
@@ -6118,7 +6135,7 @@ local Bool
 fintExecMainUnit(void)
 {
 	union dataObj	expr;
-	dataType	type;
+	dataType	type = 0;
 	UByte		denv;
 	int		nFluids;
 	FiBool ok;
@@ -6162,11 +6179,10 @@ fintExecMainUnit(void)
 
 	denv = progInfoDEnv(prog)[0];
 
-	if (fintUnitLexsCount(unit, denv)) {
-	      lev0 = fintAlloc(union dataObj, fintUnitLexsCount(unit, denv));
-	}
+	if (fintUnitLexsCount(unit, denv))
+		lev0 = fintAlloc(union dataObj, fintUnitLexsCount(unit, denv));
 	else
-	      lev0 = NULL;
+		lev0 = NULL;
 
 	fintEnvPush(lexEnv, lev0, NULL);
 
@@ -6193,20 +6209,20 @@ fintExecMainUnit(void)
 			(void)loadOtherUnits();
 			/*	 * hack 03450 */
 			handler = shDataObjFindBis((AInt) FOAM_Clos,
-						"aldorUnhandledException",
-						FOAM_Proto_Foam);
+						   "aldorUnhandledException",
+						   FOAM_Proto_Foam);
 			if (handler) {
-			  if (fintExntraceMode == 1 ) {
-			    FILE *oldDbOut = dbOut;
-			    dbOut = osStderr;
-			    fprintf(dbOut, "Aldor runtime (interpreter): backtrace:\n");
-			    fintWhere(FINT_BACKTRACE_CUTOFF);
-			    fprintf(dbOut, "\n");
-			    dbOut = oldDbOut;
-			  };
+				if (fintExntraceMode == 1 ) {
+					FILE *oldDbOut = dbOut;
+					dbOut = osStderr;
+					fprintf(dbOut, "Aldor runtime (interpreter): backtrace:\n");
+					fintWhere(FINT_BACKTRACE_CUTOFF);
+					fprintf(dbOut, "\n");
+					dbOut = oldDbOut;
+				};
 
-			  dexn.fiWord = exn;
-			  (void)fintDoCall1(&handler->dataObj, &ret, &dexn);
+				dexn.fiWord = exn;
+				(void)fintDoCall1(&handler->dataObj, &ret, &dexn);
 			}
 		}
 	}

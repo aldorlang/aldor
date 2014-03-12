@@ -77,22 +77,22 @@ RetContext
 rtcNewProg(RetContext global, Foam prog, int nLocals)
 {
 	int nParams = foamDDeclArgc(prog->foamProg.params);
+	int i;
 
 	RetContext context = (RetContext) stoAlloc(OB_Other, sizeof(*context));
 	
-	context->locDecls = (Foam*) stoAlloc(OB_Other, nLocals * sizeof(Foam));
-	context->parDecls = (Foam*) stoAlloc(OB_Other, nParams * sizeof(Foam));
+	context->locDecls = (Foam *) stoAlloc(OB_Other, nLocals * sizeof(Foam));
+	context->parDecls = (Foam *) stoAlloc(OB_Other, nParams * sizeof(Foam));
 	context->parLocs = NULL;
-	context->nUses = (int*) stoAlloc(OB_Other, nParams * sizeof(int));
+	context->nUses = (int *) stoAlloc(OB_Other, nParams * sizeof(int));
 	context->nLocals = nLocals;
-	int i;
 
 	context->formats = global->formats;
 	context->prog = prog;
-	for (i=0; i < nLocals; i++) {
+	for (i = 0; i < nLocals; i++) {
 		context->locDecls[i] = foamCopy(context->prog->foamProg.locals->foamDDecl.argv[i]);
 	}
-	for (i=0; i < nParams; i++) {
+	for (i = 0; i < nParams; i++) {
 		context->parDecls[i] = foamCopy(context->prog->foamProg.params->foamDDecl.argv[i]);
 		context->nUses[i] = 0;
 	}
@@ -120,7 +120,6 @@ Foam
 rtcCurrentDecl(RetContext context, Foam foam)
 {
 	Foam decl;
-	int index;
 
 	decl = rtcNewDecl(context, foam);
 	if (decl != NULL)
@@ -145,6 +144,7 @@ rtcOriginalDecl(RetContext context, Foam foam)
 		decl = context->prog->foamProg.params->foamDDecl.argv[index];
 		break;
 	default:
+		decl = NULL;
 		bug("bad case");
 	}
 	return decl;
@@ -179,6 +179,7 @@ rtcNewDecl(RetContext context, Foam foam)
 		decl = context->parDecls[index];
 		break;
 	default:
+		decl = NULL;
 		bug("bad case");
 	}
 	return decl;
@@ -326,18 +327,19 @@ retypeUnit(Foam foam)
 {
 	RetContext globals;
 	int i;
-	Foam def;
 
 	assert(foamTag(foam) == FOAM_Unit);
 	globals = rtcInit(foam);
 
 	for (i = 0; i < foamArgc(foam->foamUnit.defs); i++) {
+		Foam decl, def;
+
 		def = foam->foamUnit.defs->foamDDef.argv[i];
 
 		if (foamTag(def->foamDef.lhs) != FOAM_Const) continue;
 		if (foamTag(def->foamDef.rhs) != FOAM_Prog) continue;
 
-		Foam decl = foamUnitConstants(foam)->foamDDecl.argv[i];
+		decl = foamUnitConstants(foam)->foamDDecl.argv[i];
 
 		retDEBUG(dbOut, "(Retype begins.. %d - %s\n", i, decl->foamDecl.id);
 
@@ -429,12 +431,14 @@ retMarkExpr(RetContext context, Foam foam)
 Bool
 rtcRearrangeProg(RetContext context)
 {
+	FoamBox newLocals;
+	FoamList newAssignments;
 	Foam prog = context->prog;
 	int i;
 	int paramCount = foamDDeclArgc(prog->foamProg.params);
 	int changeCount = 0;
 	/* Mark locals that should be converted */
-	for (i=0; i<context->nLocals; i++) {
+	for (i = 0; i < context->nLocals; i++) {
 		Foam origDecl = prog->foamProg.locals->foamDDecl.argv[i];
 		if (context->locDecls[i] == NULL) {
 		}
@@ -453,7 +457,7 @@ rtcRearrangeProg(RetContext context)
 	}
 	
 	/* Mark params that should be converted */
-	for (i=0; i<paramCount; i++) {
+	for (i = 0; i < paramCount; i++) {
 		Foam origDecl = prog->foamProg.params->foamDDecl.argv[i];
 		if (context->parDecls[i] == NULL) {
 		}
@@ -483,14 +487,13 @@ rtcRearrangeProg(RetContext context)
 	rtcRearrangeMultiAssign(context);
 
 	/* Parameters */
-	FoamBox newLocals = fboxNew(prog->foamProg.locals);
-	FoamList newAssignments = listNil(Foam);
+	newLocals = fboxNew(prog->foamProg.locals);
+	newAssignments = listNil(Foam);
 
-	context->parLocs = (int*) stoAlloc(OB_Other,
+	context->parLocs = (int *) stoAlloc(OB_Other,
 					    sizeof(Foam) * foamDDeclArgc(prog->foamProg.params));
-	for (i=0; i < foamDDeclArgc(prog->foamProg.params); i++) {
+	for (i = 0; i < foamDDeclArgc(prog->foamProg.params); i++) {
 		Foam newDecl = context->parDecls[i];
-		Foam origDecl = prog->foamProg.params->foamDDecl.argv[i];
 		if (context->parDecls[i] != NULL) {
 			int id = fboxAdd(newLocals, newDecl);
 			Foam newAssignment = foamNewSet(foamNewLoc(id),
@@ -511,14 +514,14 @@ rtcRearrangeProg(RetContext context)
 		int bodyArgc = foamArgc(prog->foamProg.body);
 		Foam newSeq = foamNewEmpty(FOAM_Seq,
 					   bodyArgc + listLength(Foam)(newAssignments));
-		int i=0, j=0;
+		int i = 0, j = 0;
 		while (newAssignments != listNil(Foam)) {
 			newSeq->foamSeq.argv[i] = car(newAssignments);
 			newAssignments = listFreeCons(Foam)(newAssignments);
 			i++;
 		}
 		
-		for (j=0; j<bodyArgc; j++) {
+		for (j = 0; j < bodyArgc; j++) {
 			newSeq->foamSeq.argv[i] = retRearrangeExpr(context,
 								   prog->foamProg.body->foamSeq.argv[j],
 								   false);
@@ -528,7 +531,7 @@ rtcRearrangeProg(RetContext context)
 		prog->foamProg.body = newSeq;
 	}
 
-	for (i=0; i < context->nLocals; i++) {
+	for (i = 0; i < context->nLocals; i++) {
 		if (context->locDecls[i] != NULL) {
 			foamFreeNode(prog->foamProg.locals->foamDDecl.argv[i]);
 			prog->foamProg.locals->foamDDecl.argv[i] = context->locDecls[i];
@@ -679,6 +682,7 @@ retIsVar(Foam foam)
 local Foam
 retRearrangeSet(RetContext context, Foam set)
 {
+	Foam decl;
 	Foam lhs = set->foamSet.lhs;
 	Foam rhs = set->foamSet.rhs;
 
@@ -691,7 +695,7 @@ retRearrangeSet(RetContext context, Foam set)
 	if (!rtcHasNewDecl(context, lhs)) {
 		return set;
 	}
-	Foam decl = rtcCurrentDecl(context, lhs);
+	decl = rtcCurrentDecl(context, lhs);
 
 	foamFreeNode(set);
 
@@ -701,12 +705,15 @@ retRearrangeSet(RetContext context, Foam set)
 local Foam
 retRearrangeVar(RetContext context, Foam var)
 {
+	Foam originalDecl;
+	int index;
+
 	if (!rtcHasNewDecl(context, var))
 		return var;
 
-	Foam originalDecl = rtcOriginalDecl(context, var);
+	originalDecl = rtcOriginalDecl(context, var);
 
-	int index = var->foamPar.index;
+	index = var->foamPar.index;
 	if (foamTag(var) == FOAM_Par
 	    && context->parLocs[index] != -1)  {
 		foamFree(var);
@@ -718,10 +725,12 @@ retRearrangeVar(RetContext context, Foam var)
 local Foam
 retCast(RetContext context, FoamTag type, Foam foam)
 {
+	FoamTag current;
+
 	while (foamTag(foam) == FOAM_Cast)
 		foam = foam->foamCast.expr;
 
-	FoamTag current = rtcFoamExprType(context, foam, NULL);
+	current = rtcFoamExprType(context, foam, NULL);
 
 	if (type != current)
 		return foamNewCast(type, foam);

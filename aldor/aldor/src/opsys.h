@@ -6,8 +6,8 @@
  *
  ****************************************************************************/
 
-#ifndef _OPSYS_H_
-#define _OPSYS_H_
+#ifndef OPSYS_H_
+#define OPSYS_H_
 
 #include "cport.h"
 #include "editlevels.h"
@@ -18,10 +18,10 @@
  *
  ****************************************************************************/
 
-extern void     osInit              (void);
-extern void     osExit              (int);
-extern Bool     osIsGUI             (void);
-extern void     osDisplayMessage    (char *);
+extern void	osInit			(void);
+extern void	osExit			(int) chk_noreturn;
+extern Bool	osIsGUI			(void);
+extern void	osDisplayMessage	(char *);
 
 /*****************************************************************************
  *
@@ -43,7 +43,7 @@ extern int	osRun		(String);
 	 * A return value of 0 indicates success.
 	 */
 
-extern int	osRunConcurrent (String, FILE **, FILE **, FILE **);
+extern int	osRunConcurrent	(String, FILE **, FILE **, FILE **);
 	/*
 	 * If possible, spawn an asynchronous process and communicate with it.
 	 * The three FILE** parameters correspond to stdin, stdout and stderr.
@@ -72,7 +72,7 @@ extern int	osRunQuoteArg	(String word, int (*putter)(int));
  *
  ****************************************************************************/
 
-extern Millisec osCpuTime	(void);
+extern Millisec	osCpuTime	(void);
 	/*
 	 * The time accounted to this process, in milliseconds.
 	 * On systems where it counts, this is user + system time.
@@ -117,7 +117,7 @@ extern Bool	osPutEnvIsKept	(void);
  *
  ****************************************************************************/
 
-extern        int osFixCmdLine(int *pargc, char ***pargv);
+extern int	osFixCmdLine	(int *pargc, char ***pargv);
 
       /*
        *      Obtain or accept command line arguments
@@ -146,10 +146,10 @@ extern IOMode	osIoAubMode;
  *
  ****************************************************************************/
 
-extern int  osGetc      (FILE *);
-extern int  osPutc      (FILE *, int);
-extern int  osFPrintf   (FILE *, char *, ...);
-extern int  osFEof      (FILE *);
+extern int	osGetc		(FILE *);
+extern int	osPutc		(FILE *, int);
+extern int	osFPrintf	(FILE *, CString, ...) chk_fmt (2, 3);
+extern int	osFEof		(FILE *);
 
 /*****************************************************************************
  *
@@ -161,12 +161,12 @@ extern String	osObjectFileType;
 extern String	osExecFileType;
 
 extern String	osCurDirName	(void);
-extern String   osTmpDirName	(void);
+extern String	osTmpDirName	(void);
 	/*
 	 * These don't change as the program executes and moves around.
 	 */
 
-extern Bool	osFnameDirEqual (String d1, String d2);
+extern Bool	osFnameDirEqual	(String d1, String d2);
 extern void	osSubdir	(String buf,String relativeTo, String subdir);
 extern Length	osSubdirLength	(String relativeTo, String subdir);
 	/*
@@ -187,13 +187,13 @@ extern Length	osSubdirLength	(String relativeTo, String subdir);
 
 extern Length	osFnameNParts;
 
-extern void	osFnameParse	(String* partv, String buffer,
-				 String fname, String relativeTo);
-extern Length	osFnameParseSize  (String fname, String relativeTo);
+extern void	osFnameParse		(String* partv, String buffer,
+					 String fname, String relativeTo);
+extern Length	osFnameParseSize	(String fname, String relativeTo);
 
-extern String	osFnameUnparse	  (String buffer,
-			           String *partv, Bool full);
-extern Length	osFnameUnparseSize(String *partv, Bool full);
+extern String	osFnameUnparse		(String buffer,
+					 String *partv, Bool full);
+extern Length	osFnameUnparseSize	(String *partv, Bool full);
 	/*
 	 * osFnameNParts;
 	 *	is the number of parts file names have on this platform.
@@ -238,15 +238,15 @@ extern String	osFnameTempDir	(String relativeTo);
  *
  ****************************************************************************/
 
-extern Bool	osIsInteractive (FILE *);
+extern Bool	osIsInteractive	(FILE *);
 
-extern int	osFileRemove    (String fn);
-extern int	osFileRename    (String from, String to);
-extern Bool	osFileIsThere   (String fn);
-extern Hash	osFileHash      (String fn);
-extern Length	osFileSize      (String fn);
+extern int	osFileRemove	(String fn);
+extern int	osFileRename	(String from, String to);
+extern Bool	osFileIsThere	(String fn);
+extern Hash	osFileHash	(String fn);
+extern Length	osFileSize	(String fn);
 
-extern Bool	osDirIsThere    (String dn);
+extern Bool	osDirIsThere	(String dn);
 extern int	osDirSwap	(String newwd, String oldwd, Length oldwdlen);
 	/*
 	 * osIsInteractive determines whether an input stream is interactive,
@@ -284,7 +284,7 @@ extern String	osExecutePath	(void);
 	 *   executable programs, THE RESULT MAY BE VOLATILE.
 	 */
 
-extern char     osPathSeparator (void);
+extern char	osPathSeparator	(void);
 extern Length	osPathLength	(String path);
 extern void	osPathParse	(String* partv, String buffer, String path);
 	/*
@@ -354,11 +354,11 @@ extern void	osAllocShow	(void);
 	 */
 
 struct osMemMap {
-        UAInt	use;
+	UAInt	use;
 	Pointer lo, hi;
 };
 
-extern struct osMemMap ** osMemMap(int mask);
+extern struct osMemMap **osMemMap(int mask);
 	/*
 	 * osMemMap returns an array of pointers to osMemMap structs
 	 * containing a map of memory at the time it was called.
@@ -382,9 +382,9 @@ extern struct osMemMap ** osMemMap(int mask);
  *
  ****************************************************************************/
 
-extern FILE * osStdout;
-extern FILE * osStdin;
-extern FILE * osStderr;
+extern FILE *osStdout;
+extern FILE *osStdin;
+extern FILE *osStderr;
 
 
 /*****************************************************************************
@@ -395,6 +395,4 @@ extern FILE * osStderr;
 
 extern Length osRandom(void);
 
-#endif	/* !_OPSYS_H_ */
-
-
+#endif /* !OPSYS_H_ */

@@ -1,8 +1,9 @@
 #include "axlobs.h"
 #include "foam.h"
-#include "testlib.h"
-#include "syme.h"
+#include "int.h"
 #include "sexpr.h"
+#include "syme.h"
+#include "testlib.h"
 #include "util.h"
 
 local void testCall();
@@ -58,13 +59,13 @@ testDDecl()
 local void
 testConstructors()
 {
-	Foam foam;
+	Foam foam, arg1, arg2;
 	foam = foamNewBCall0(FOAM_BVal_BoolNot);
 	testIntEqual("argc", foamBCallSlotc, foamArgc(foam));
 	testIntEqual("tag", FOAM_BVal_BoolNot, foam->foamBCall.op);
 
-	Foam arg1 = foamNewLoc(int0);
-	Foam arg2 = foamNewLoc(int0);
+	arg1 = foamNewLoc(int0);
+	arg2 = foamNewLoc(int0);
 	foam = foamNewBCall1(FOAM_BVal_BoolNot, arg1);
 	testIntEqual("argc", 1, foamBCallArgc(foam));
 	testIntEqual("tag", FOAM_BVal_BoolNot, foam->foamBCall.op);
@@ -156,6 +157,8 @@ testHash()
 	AInt hINT = strHash("Integer");
 	AInt hMapping = strHash("->");
 	AInt twist = 32236;
+	AInt hULS_FI;
+	AInt hUTS_FI;
 
 /*(HASH 484208045 134808007 (|Integer|)) */
 	testIntEqual("INT", 484208045, hINT);
@@ -186,18 +189,18 @@ testHash()
 
 /*(HASH 134808007 0 (|UnivariateLaurentSeries| (|Fraction| (|Integer|)) |z| (0 . 1))) */
 
-	AInt hULS_FI = hashCombinePair(7, hashCombinePair(7,
-							  hashCombinePair(hashCombinePair(hINT, hFRAC),
-									  hULS)));
+	hULS_FI = hashCombinePair(7, hashCombinePair(7,
+						     hashCombinePair(hashCombinePair(hINT, hFRAC),
+								     hULS)));
 	testIntEqual("HULS_FI", 794083080, hULS_FI);
 
 /*
 (HASH 350552519 134808007
  (|UnivariateTaylorSeries| (|Fraction| (|Integer|)) |z| (0 . 1)))
 */
-	AInt hUTS_FI = hashCombinePair(7, hashCombinePair(7,
-							  hashCombinePair(hashCombinePair(hINT, hFRAC),
-									  hUTS)));
+	hUTS_FI = hashCombinePair(7, hashCombinePair(7,
+						     hashCombinePair(hashCombinePair(hINT, hFRAC),
+								     hUTS)));
 	testIntEqual("HUTS_FI", 659312886, hUTS_FI);
 
 /*(HASH 476114119 134808007
@@ -218,19 +221,19 @@ testHash()
 local void
 testSIntReduce()
 {
-	Foam foam, reduced;
-	if (sizeof(AInt) < 8) {
-		return;
-	}
-	foam = foamNewSInt(1L<<40);
-	reduced = foamSIntReduce(foam);
-	testFalse("t0", foam == reduced);
+	IF_LongOver32Bits(
+		Foam foam;
+		Foam reduced;
+		foam = foamNewSInt(1L<<40);
+		reduced = foamSIntReduce(foam);
+		testFalse("t0", foam == reduced);
 
-	foam = foamNewSInt(-(1L<<40));
-	reduced = foamSIntReduce(foam);
-	testFalse("t0", foam == reduced);
-	testFalse("t0", foamEqual(foamSIntReduce(foamNewSInt(1L<<40)), reduced));
-	testTrue("t1", foamTag(reduced) == FOAM_BCall && reduced->foamBCall.op == FOAM_BVal_SIntNegate);
+		foam = foamNewSInt(-(1L<<40));
+		reduced = foamSIntReduce(foam);
+		testFalse("t0", foam == reduced);
+		testFalse("t0", foamEqual(foamSIntReduce(foamNewSInt(1L<<40)), reduced));
+		testTrue("t1", foamTag(reduced) == FOAM_BCall && reduced->foamBCall.op == FOAM_BVal_SIntNegate);
+	)
 
 	/* Really need a working foam interpreter to test this properly */
 	/* .. probably easier to do as library tests */

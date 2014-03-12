@@ -87,6 +87,7 @@ cmdArguments(int argi0, int argc, String *argv)
 	 */
 	cmdFileCount = argc - 1;
 	cmdIncDirs   = cmdLibDirs = cmdLibKeys = 0;
+	_dont_assert = true;	/* Disable assertions by default. */
  
 	/*
 	 * Handle the options.

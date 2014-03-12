@@ -493,8 +493,8 @@ testDFExhaustive(void)
 	printf("Warning: Running exhaustive tests. ");
 	printf("It may take several minutes...\n");
 	
-	for ( x = 0 ; x <= 0xffff ; x++) {
-		first = x >> 8;
+	for (x = 0; x <= 0xffff; x++) {
+		first = (x >> 8) & 0xff;
 		second = x & 0xff;
 		
 		DFADD0(first , second, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00);
@@ -536,8 +536,8 @@ testSFExhaustive(void)
 	printf("Warning: Running exhaustive tests.");
 	printf(" It may take several minutes...\n");
 	
-	for ( x = 0 ; x <= 0xffff ; x++) {
-		first = x >> 8;
+	for (x = 0; x <= 0xffff; x++) {
+		first = (x >> 8) & 0xff;
 		second = x & 0xff;
 		
 		SFADD0(first , second, 0x00, 0x00);
@@ -655,8 +655,8 @@ testDFloatToSFloat(void)
 	printf("Warning: Running exhaustive tests. ");
 	printf("It may take several minutes...\n");
 	
-	for ( x = 19000 ; x <= 50000 ; x++) {
-		first = x >> 8;
+	for (x = 19000 ;x <= 50000 ;x++) {
+		first = (x >> 8) & 0xff;
 		second = x & 0xff;
 		
 		DFADD0(first , second, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00);

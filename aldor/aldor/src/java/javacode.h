@@ -10,7 +10,7 @@ enum jcoModifier {
 	JCO_MOD_Final     = (1 << 4),
 	JCO_MOD_Transient = (1 << 5),
 	JCO_MOD_Volatile  = (1 << 6),
-	JCO_MOD_MAX  = (1 << 7),
+	JCO_MOD_MAX       = (1 << 7)
 };
 
 typedef Enum(jcoModifier) JcoModifier;
@@ -37,7 +37,7 @@ enum jcOperation {
 	JCO_OP_Negate,
 	JCO_OP_TimesPlus,
 	JCO_OP_ShiftUp,
-	JCO_OP_ShiftDn,
+	JCO_OP_ShiftDn
 };
 			  
 typedef Enum(jcOperation) JcOperation;

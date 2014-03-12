@@ -45,11 +45,12 @@ local void
 testBIntNew()
 {
 	int i;
-	for (i=0; i<bitsizeof(long) -2; i++)
+	for (i = 0; i < bitsizeof(long) - 2; i++)
 	{
-		BInt b = bintNew(1L<<i);
+		BInt b, nb;
+		b = bintNew(1L << i);
 		testTrue("bit", bintBit(b, i));
-		BInt nb = bintNew(-1L<<i);
+		nb = bintNew(-1L << i);
 		testTrue("pos", bintIsPos(b));
 		testTrue("neg", bintIsNeg(nb));
 		testTrue("sum.. ", bintEQ(bint0, bintPlus(b, nb)));

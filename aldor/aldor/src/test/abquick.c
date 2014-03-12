@@ -1,16 +1,17 @@
+#include "ablogic.h"
 #include "abnorm.h"
 #include "abquick.h"
+#include "format.h"
 #include "linear.h"
 #include "macex.h"
 #include "parseby.h"
 #include "scan.h"
-#include "stab.h"
-#include "ablogic.h"
 #include "srcline.h"
-#include "symbol.h"
+#include "stab.h"
 #include "strops.h"
+#include "symbol.h"
 #include "testlib.h"
-#include "format.h"
+#include "ti_sef.h"
 
 local AbSyn abqParseSrcLines(SrcLineList sll);
 
@@ -111,12 +112,14 @@ abqParseLinesAsSeq(StringList lines)
 
 	while (lines != listNil(String))
 	{
+		String tmp;
+		SrcLine line;
+		int indent = 0;
 		char *p = car(lines);
 		lines = cdr(lines);
-		int indent;
 		while (*p == ' ') { p++; indent++; }
-		String tmp = strConcat(p, "\n");
-		SrcLine line = slineNew(sposNone, indent, tmp);
+		tmp = strConcat(p, "\n");
+		line = slineNew(sposNone, indent, tmp);
 		strFree(tmp);
 		sll = listCons(SrcLine)(line, sll);
 	}
@@ -149,7 +152,7 @@ stdtypes()
 	String Boolean_txt = "Boolean: with == add";
 	String Join_txt = "Join(T: Tuple Category): Category == with";
 	String Record_txt = "Record(T: Tuple Type): with == add";
-	
+
 	StringList lines = listList(String)(9, Type_txt, Category_txt, Cross_txt,
 					    Tuple_txt, Map_txt, Boolean_txt, Join_txt, 
 					    Generator_txt, Record_txt);
@@ -163,10 +166,11 @@ Syme
 uniqueMeaning(Stab stab, String s)
 {
 	SymeList symesForString = stabGetMeanings(stab, ablogTrue(), symIntern(s));
+	Syme d;
 
 	testIsNull("", cdr(symesForString));
 
-	Syme d = car(symesForString);
+	d = car(symesForString);
 
 	return d;
 }

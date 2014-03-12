@@ -106,7 +106,6 @@ tfCondFloat(Stab stab, TfCond tfcond)
 TfCond
 tfCondMerge(TfCond c1, Stab stab, TfCondElt condition)
 {
-	Buffer buf = bufNew();
 	if (condition == NULL)
 		return c1;
 

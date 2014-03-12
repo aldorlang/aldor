@@ -55,11 +55,12 @@
  * penalty of a 48K table in static data.
  */
 
-#define _BSD_SOURCE /* strncasecmp */
+#define _BSD_SOURCE 1 /* strncasecmp */
 
 #include "debug.h"
 #include "opsys.h"
 #include "store.h"
+#include "timer.h"
 
 /*
  * If no other allocator is specified, used the B-Tree based by default.
@@ -386,19 +387,7 @@ static Bool     markingStats    = false;
  *
  *****************************************************************************/
 
-typedef struct {
-	long time;
-	long start;
-	long live;
-} *TmTimer, _TmTimer;
-
-extern void	tmFree(TmTimer tm);
-extern long	tmRead(TmTimer tm);
-extern void	tmStart(TmTimer tm);
-extern void	tmStop(TmTimer tm);
-
-static _TmTimer stoGcTimer;
-extern TmTimer gcTimer		(void);
+static struct tmTimer gcTimer;
 
 /*****************************************************************************
  *
@@ -598,9 +587,9 @@ stoCertifyReally(int loc, Bool flag)
 }
 
 TmTimer
-gcTimer()
+stoGcTimer(void)
 {
-  	return &stoGcTimer;
+	return &gcTimer;
 }
 
 /****************************************************************************
@@ -989,7 +978,7 @@ pagesGet(Length nMin)
 		}
 
 		if (gcTraceFile) {
-			fprintf(gcTraceFile, " [GC: %s enough, %d/%d -> %d/%d for " AINT_FMT "]\n",
+			fprintf(gcTraceFile, " [GC: %s enough, %d/%d -> %d/%d for " LENGTH_FMT "]\n",
 				p ? "!!! Got" : "... Not", free0, tot, free1, tot, nMin);
 
 			if (addAnyway) {
@@ -999,7 +988,7 @@ pagesGet(Length nMin)
 		}
 #ifdef FOAM_RTS 
 		if (markingStats) {
-			fprintf(osStderr, " [GC: %s enough, %d/%d -> %d/%d for " AINT_FMT "]\n",
+			fprintf(osStderr, " [GC: %s enough, %d/%d -> %d/%d for " LENGTH_FMT "]\n",
 				p ? "!!! Got" : "... Not", free0, tot, free1, tot, nMin);
 
 			if (addAnyway) {
@@ -3286,8 +3275,8 @@ stoInit(void)
 
 	stoIsInit     =	 pgMap != 0;
 	
-	stoGcTimer.time = 0;
-	stoGcTimer.live = 0;
+	gcTimer.time = 0;
+	gcTimer.live = 0;
 
 	return stoIsInit;
 }
@@ -3665,7 +3654,7 @@ stoGc(void)
 	if (stoMustTag) {
 		static Bool inGc = false;
 		if (inGc) return;
-		tmStart(gcTimer());
+		tmStart(stoGcTimer());
 		if (DEBUG(sto)) {
 			if (doShow) {
 				/* Census taking is special */
@@ -3691,7 +3680,7 @@ stoGc(void)
 				stoShowDetail(doShow);
 			}
 		}
-		tmStop(gcTimer());
+		tmStop(stoGcTimer());
 	}
 }
 
@@ -4514,7 +4503,7 @@ stoSetAldorTracer(int code, Pointer clos)
  * called from C.
  */
 void
-stoSetTracer(int code, Pointer fun)
+stoSetTracer(int code, StoTraceFun fun)
 {
 	if (code >= OB_MAX)
 		bug("Too many object types");
@@ -4522,7 +4511,7 @@ stoSetTracer(int code, Pointer fun)
 	if (!stoObRegistered[code])
 		bug("Object type not registered");
 
-	stoObCTracer[code] = (StoTraceFun)fun;
+	stoObCTracer[code] = fun;
 }
 
 
@@ -4910,19 +4899,13 @@ void stoShowDetail		(int x)		{ }
 void stoAudit			(void)		{ }
 void stoRegister		(StoInfo info)	{ }
 void stoSetAldorTracer		(int code, Pointer clos) {}
-void stoSetTracer		(int code, Pointer fun) {}
+void stoSetTracer		(int code, StoTraceFun fun) {}
 int  stoMarkObject		(Pointer p)	{ return 0; }
 int  stoWritablePointer		(Pointer p)	{ return POINTER_IS_UNKNOWN; }
 int  stoCtl			(int cmd, ...)	{ return 0; }
 
-typedef struct {
-	long time;
-	long start;
-	long live;
-} *TmTimer, _TmTimer;
-
-static _TmTimer stoGcTimer;
-TmTimer gcTimer			(void) { return &stoGcTimer; }
+static struct tmTimer gcTimer;
+TmTimer stoGcTimer		(void) { return &gcTimer; }
 
 
 /*

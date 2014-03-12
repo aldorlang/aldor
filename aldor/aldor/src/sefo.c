@@ -1015,7 +1015,7 @@ sstDoneDB(void)
 int
 sefoPrint(FILE *fout, Sefo sefo)
 {
-	struct _OStream ostream;
+	struct ostream ostream;
 	int n;
 
 	ostreamInitFrFile(&ostream, fout);
@@ -1027,7 +1027,7 @@ sefoPrint(FILE *fout, Sefo sefo)
 int
 symePrint(FILE *fout, Syme syme)
 {
-	struct _OStream ostream;
+	struct ostream ostream;
 	int n;
 	ostreamInitFrFile(&ostream, fout);
 	n = symeOStreamPrint0(&ostream, true, syme);
@@ -1046,7 +1046,7 @@ symeOStreamWrite(OStream ostream, Syme syme)
 int
 tformPrint(FILE *fout, TForm tf)
 {
-	struct _OStream ostream;
+	struct ostream ostream;
 	int n;
 	ostreamInitFrFile(&ostream, fout);
 	n = tformOStreamPrint0(&ostream, true, tf);
@@ -1057,7 +1057,7 @@ tformPrint(FILE *fout, TForm tf)
 int
 sefoListPrint(FILE *fout, SefoList sefos)
 {
-	struct _OStream ostream;
+	struct ostream ostream;
 	int n;
 
 	ostreamInitFrFile(&ostream, fout);
@@ -1069,7 +1069,7 @@ sefoListPrint(FILE *fout, SefoList sefos)
 int
 symeListPrint(FILE *fout, SymeList symes)
 {
-	struct _OStream ostream;
+	struct ostream ostream;
 	int n;
 
 	ostreamInitFrFile(&ostream, fout);
@@ -1081,7 +1081,7 @@ symeListPrint(FILE *fout, SymeList symes)
 int
 tformListPrint(FILE *fout, TFormList tforms)
 {
-	struct _OStream ostream;
+	struct ostream ostream;
 	int n;
 
 	ostreamInitFrFile(&ostream, fout);
@@ -1097,7 +1097,7 @@ tformListPrint(FILE *fout, TFormList tforms)
 int
 sefoPrintDb(Sefo sefo)
 {
-	struct _OStream ostream;
+	struct ostream ostream;
 	int n;
 	ostreamInitFrFile(&ostream, dbOut);
 	n = sefoOStreamPrint0(&ostream, false, sefo);
@@ -1110,7 +1110,7 @@ sefoPrintDb(Sefo sefo)
 int
 symePrintDb(Syme syme)
 {
-	struct _OStream ostream;
+	struct ostream ostream;
 	int n;
 	ostreamInitFrFile(&ostream, dbOut);
 	n = symeOStreamPrint0(&ostream, false, syme);
@@ -1122,7 +1122,7 @@ symePrintDb(Syme syme)
 int
 symePrintDb2(Syme syme)
 {
-	struct _OStream ostream;
+	struct ostream ostream;
 	int n;
 	ostreamInitFrFile(&ostream, dbOut);
 	n = symeOStreamPrint0(&ostream, false, syme);
@@ -1149,7 +1149,7 @@ sefoOStreamWrite(OStream ostream, Sefo sefo)
 int
 tformPrintDb(TForm tf)
 {
-	struct _OStream ostream;
+	struct ostream ostream;
 	int n;
 	ostreamInitFrFile(&ostream, dbOut);
 	n = tformOStreamPrint0(&ostream, false, tf);
@@ -1161,7 +1161,7 @@ tformPrintDb(TForm tf)
 int
 sefoListPrintDb(SefoList sefos)
 {
-	struct _OStream ostream;
+	struct ostream ostream;
 	int n;
 	ostreamInitFrFile(&ostream, dbOut);
 	n = sefoListOStreamPrint0(&ostream, false, sefos);
@@ -1173,7 +1173,7 @@ sefoListPrintDb(SefoList sefos)
 int
 symeListPrintDb(SymeList symes)
 {
-	struct _OStream ostream;
+	struct ostream ostream;
 	int n;
 	ostreamInitFrFile(&ostream, dbOut);
 	n = symeListOStreamPrint0(&ostream, false, symes);
@@ -1185,7 +1185,7 @@ symeListPrintDb(SymeList symes)
 int
 tformListPrintDb(TFormList tforms)
 {
-	struct _OStream ostream;
+	struct ostream ostream;
 	int n;
 	ostreamInitFrFile(&ostream, dbOut);
 	n = tformListOStreamPrint0(&ostream, false, tforms);
@@ -4690,7 +4690,6 @@ tqualFrBuffer0(Buffer buf)
 local void
 sefoListFrBuffer0(Buffer buf)
 {
-	SefoList	sefos = listNil(Sefo);
 	UShort		i, sefoc;
 
 	sefoc = bufGetHInt(buf);

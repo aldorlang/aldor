@@ -46,40 +46,46 @@ testTiBupCollect1()
 	AbSynList absynList = listCons(AbSyn)(stdtypes(), abqParseLines(lines));
 	AbSyn absyn = abNewSequenceL(sposNone, absynList);
 
+	Stab stab;
+
+	TForm D, E;
+	Syme g;
+
+	AbSyn collect, collect2, collect3, collect4;
+
 	initFile();
-	Stab stab = stabFile();
+	stab = stabFile();
 
 	abPutUse(absyn, AB_Use_NoValue);
 	abPrintDb(absyn);
 	scopeBind(stab, absyn);
 	typeInfer(stab, absyn);
-	
 
-	TForm D = tiGetTForm(stab, id("D"));
-	TForm E = tiGetTForm(stab, id("E"));
-	Syme g = uniqueMeaning(stab, "g");
+	D = tiGetTForm(stab, id("D"));
+	E = tiGetTForm(stab, id("E"));
+	g = uniqueMeaning(stab, "g");
 
 	afprintf(dbOut, "D is %pTForm.  E is %pTForm.  g is: %pTForm\n", D, E, symeType(g));
-	AbSyn collect = abqParse("x for x in g()");
+	collect = abqParse("x for x in g()");
 	scopeBind(stab, collect);
 	
 	abPutUse(collect, AB_Use_Value);
 	tiBottomUp(stab, collect, tfGenerator(D));
 	testIntEqual("one", 1, tpossCount(abTPoss(collect)));
 
-	AbSyn collect2 = abqParse("x for x in g()");
+	collect2 = abqParse("x for x in g()");
 	scopeBind(stab, collect2);
 	
 	tiBottomUp(stab, collect2, tfUnknown);
 	testIntEqual("two", 1, tpossCount(abTPoss(collect2)));
 
-	AbSyn collect3 = abqParse("x for x in g()");
+	collect3 = abqParse("x for x in g()");
 	scopeBind(stab, collect3);
 	
 	tiBottomUp(stab, collect3, E);
 	testIntEqual("three", 0, tpossCount(abTPoss(collect3)));
 
-	AbSyn collect4 = abqParse("x for x in g()");
+	collect4 = abqParse("x for x in g()");
 	scopeBind(stab, collect4);
 	
 	tiBottomUp(stab, collect4, tfGenerator(E));
@@ -102,25 +108,32 @@ testTiBupCollect2()
 	AbSynList absynList = listCons(AbSyn)(stdtypes(), abqParseLines(lines));
 	AbSyn absyn = abNewSequenceL(sposNone, absynList);
 
+	Stab stab;
+
+	TForm D, E, yTF;
+	Syme y;
+
+	AbSyn collect;
+
 	initFile();
-	Stab stab = stabFile();
+	stab = stabFile();
 
 	abPutUse(absyn, AB_Use_NoValue);
 	abPrintDb(absyn);
 	scopeBind(stab, absyn);
 	typeInfer(stab, absyn);
 
-	TForm D = tiGetTForm(stab, id("D"));
-	TForm E = tiGetTForm(stab, id("E"));
+	D = tiGetTForm(stab, id("D"));
+	E = tiGetTForm(stab, id("E"));
 
-	AbSyn collect = abqParse("local x: D := never; y := x for free x in g()");
+	collect = abqParse("local x: D := never; y := x for free x in g()");
 	scopeBind(stab, collect);
 	tiBottomUp(stab, collect, tfUnknown);
 
 	testIntEqual("Collect is ok", 1, tpossCount(abTPoss(collect)));
 
-	Syme y = uniqueMeaning(stab, "y");
-	TForm yTF = symeType(y);
+	y = uniqueMeaning(stab, "y");
+	yTF = symeType(y);
 	testTrue("is a generator", tfIsGenerator(yTF));
 
 	testTrue("Generates D", tformEqual(D, tfGeneratorArg(yTF)));
@@ -140,15 +153,19 @@ testTiTdnPretend()
 	AbSynList absynList = listCons(AbSyn)(stdtypes(), abqParseLines(lines));
 	AbSyn absyn = abNewSequenceL(sposNone, absynList);
 
+	Stab stab;
+
+	AbSyn pretend;
+
 	initFile();
-	Stab stab = stabFile();
+	stab = stabFile();
 
 	abPutUse(absyn, AB_Use_NoValue);
 	abPrintDb(absyn);
 	scopeBind(stab, absyn);
 	typeInfer(stab, absyn);
 
-	AbSyn pretend = abqParse("(x, x) pretend D");
+	pretend = abqParse("(x, x) pretend D");
 	scopeBind(stab, pretend);
 	tiBottomUp(stab, pretend, tfUnknown);
 	tiTopDown(stab, pretend, tfUnknown);
@@ -190,15 +207,19 @@ testTiTdnMultiToCrossEmbed()
 	AbSynList absynList = listCons(AbSyn)(stdtypes(), abqParseLines(lines));
 	AbSyn absyn = abNewSequenceL(sposNone, absynList);
 
+	Stab stab;
+
+	AbSyn fncall;
+
 	initFile();
-	Stab stab = stabFile();
+	stab = stabFile();
 
 	abPutUse(absyn, AB_Use_NoValue);
 	abPrintDb(absyn);
 	scopeBind(stab, absyn);
 	typeInfer(stab, absyn);
 
-	AbSyn fncall = abqParse("g(f())");
+	fncall = abqParse("g(f())");
 	scopeBind(stab, fncall);
 	tiBottomUp(stab, fncall, tfUnknown);
 	tiTopDown(stab, fncall, tfUnknown);

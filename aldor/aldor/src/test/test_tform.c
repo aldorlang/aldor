@@ -5,8 +5,8 @@
 #include "testlib.h"
 #include "strops.h"
 
-local void testTFormFormat();
-local void testTFormSyntaxConditions();
+local void testTFormFormat(void);
+local void testTFormSyntaxConditions(void);
 local void testTFormFormatOne(String name, String expect, TForm tf);
 
 /* XXX: from test_tinfer.c */
@@ -16,7 +16,7 @@ void initFile(void);
 void finiFile(void);
 
 void
-tformTest()
+tformTest(void)
 {
 	init();
 	TEST(testTFormFormat);
@@ -25,7 +25,7 @@ tformTest()
 }
 
 local void
-testTFormFormat()
+testTFormFormat(void)
 {
 	TForm tf = tfSyntaxFrAbSyn(stabFile(), id("x"));
 	testTFormFormatOne("id", "<* Syntax (* x *) *>", tf);
@@ -47,7 +47,7 @@ testTFormFormatOne(String name, String expect, TForm tf)
 }
 
 local void
-testAbParse()
+testAbParse(void)
 {
 	AbSyn ab = abqParse("x := y");
 
@@ -57,13 +57,18 @@ testAbParse()
 }
 
 local void
-testTFormSyntaxConditions()
+testTFormSyntaxConditions(void)
 {
+	Stab stab;
+	AbSyn ab;
+	TForm tf;
+	AbSynList cond;
+
 	initFile();
-	Stab stab = stabPushLevel(stabFile(), sposNone, STAB_LEVEL_LARGE);
-	AbSyn ab = apply2(id("->"), id("A"), id("B"));
-	TForm tf = tfSyntaxFrAbSyn(stabFile(), ab);
-	AbSynList cond = listList(AbSyn)(1, test(has(id("X"), id("Y"))));
+	stab = stabPushLevel(stabFile(), sposNone, STAB_LEVEL_LARGE);
+	ab = apply2(id("->"), id("A"), id("B"));
+	tf = tfSyntaxFrAbSyn(stabFile(), ab);
+	cond = listList(AbSyn)(1, test(has(id("X"), id("Y"))));
 	tfSyntaxConditions(stabFile(), tf, tfCondEltNew(stab, cond));
 	
 	finiFile();

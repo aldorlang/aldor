@@ -1025,7 +1025,6 @@ local void
 abCheckWithinDeclare(AbSyn ab, String str)
 {
 	AbSyn id = ab->abDeclare.id;
-	AbSyn type = ab->abDeclare.type;
 
 	if (abTag(id) != AB_Id) {
 		comsgError(ab, ALDOR_E_ChkBadForm, str);

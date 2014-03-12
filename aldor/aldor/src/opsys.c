@@ -7,9 +7,9 @@
  ****************************************************************************/
 
 
-#define _ALL_SOURCE   /* For RS/6000 - should come before cport.h include. */
-#define _POSIX_SOURCE /* For Linux/BSD. */
-#define _BSD_SOURCE   /* sbrk */
+#define _ALL_SOURCE 1   /* For RS/6000 - should come before cport.h include. */
+#define _POSIX_SOURCE 1 /* For Linux/BSD. */
+#define _BSD_SOURCE 1  /* sbrk */
 
 #include "cport.h"
 #include "editlevels.h"
@@ -644,15 +644,15 @@ osPathParse(String* partv, String sbuf, String path)
 
 #if !defined(OS_Has_IoModes)
 
-IOMode	osIoRdMode  = "r";
-IOMode	osIoWrMode  = "w";
-IOMode	osIoApMode  = "a";
-IOMode	osIoRbMode  = "rb";
-IOMode	osIoWbMode  = "wb";
-IOMode	osIoAbMode  = "ab";
-IOMode	osIoRubMode = "r+b";
-IOMode	osIoWubMode = "w+b";
-IOMode	osIoAubMode = "a+b";
+IOMode osIoRdMode  = "r";
+IOMode osIoWrMode  = "w";
+IOMode osIoApMode  = "a";
+IOMode osIoRbMode  = "rb";
+IOMode osIoWbMode  = "wb";
+IOMode osIoAbMode  = "ab";
+IOMode osIoRubMode = "r+b";
+IOMode osIoWubMode = "w+b";
+IOMode osIoAubMode = "a+b";
 
 #endif /* ! OS_Has_IoModes */
 
@@ -665,12 +665,12 @@ IOMode	osIoAubMode = "a+b";
 
 #if (!defined(OS_Has_SpecialStreams))
 
-FILE * osStdout;
-FILE * osStdin;
-FILE * osStderr; 
+FILE *osStdout;
+FILE *osStdin;
+FILE *osStderr; 
 
 void
-osSetStreams(FILE * sstdin, FILE * sstdout, FILE * sstderr)
+osSetStreams(FILE *sstdin, FILE *sstdout, FILE *sstderr)
 {
 	osStdout = sstdout;
 	osStdin  = sstdin;
@@ -678,7 +678,7 @@ osSetStreams(FILE * sstdin, FILE * sstdout, FILE * sstderr)
 }
 
 int  
-osGetc(FILE * f)
+osGetc(FILE *f)
 {
 	return getc(f);
 }
@@ -690,7 +690,7 @@ osPutc(FILE *f, int c)
 }
 
 int
-osFPrintf(FILE *f, char *format, ...)
+osFPrintf(FILE *f, CString format, ...)
 {
 	int ret;
 	va_list argp;
@@ -702,7 +702,7 @@ osFPrintf(FILE *f, char *format, ...)
 }
 
 int
-osFEof(FILE * f)
+osFEof(FILE *f)
 {
 	return feof(f);
 }
@@ -891,8 +891,8 @@ osSetSignalHandlers(OsSignalHandler *posigfn,int *sigv,OsSignalHandler nsigfn)
 OsSignalHandler
 osSetSignalHandlers(OsSignalHandler *posigfn,int *sigv,OsSignalHandler nsigfn)
 {
-	struct sigaction oldaction = { };
-	struct sigaction newaction = { };
+	struct sigaction oldaction = { 0 };
+	struct sigaction newaction = { 0 };
 
 	newaction.sa_handler = nsigfn ? nsigfn : SIG_DFL;
 

@@ -52,14 +52,14 @@
    /* This include is technically non-conforming, but saves duplication. */
 #  include "stddef.h0"
 #  undef sprintf
-   extern int	sprintf	_of((char *s, _const char *format, ...));
+   extern int	sprintf	(char *s, _const char *format, ...);
 #endif
 
 #ifdef CC_undecl_flsbuf
    /* This include is technically non-conforming, but saves duplication. */
 #  include "stddef.h0"
-   extern int	_flsbuf _of((int, FILE *));
-   extern int	_filbuf _of((FILE *));
+   extern int	_flsbuf (int, FILE *);
+   extern int	_filbuf (FILE *);
 #endif
 
 #endif /* !_STDIO_H0_ */

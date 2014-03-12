@@ -1,0 +1,14 @@
+#ifndef FEATURES_H0
+#define FEATURES_H0
+
+#if defined(__GNUC__) && defined(_ANALYSING)
+#  define chk_fmt(a, b)		__attribute__((format(printf, a, b)))
+#  define chk_noreturn		__attribute__((noreturn))
+#  define chk_nonnull(x)	__attribute__((nonnull x))
+#else
+#  define chk_fmt(a, b)
+#  define chk_noreturn
+#  define chk_nonnull(x)
+#endif
+
+#endif /* FEATURES_H0 */

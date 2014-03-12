@@ -8,6 +8,7 @@
 
 #ifndef _HFOLD_H
 #define _HFOLD_H
-extern void 	hfoldUnit	(Foam);
+
+extern void	hfoldUnit	(Foam);
 
 #endif

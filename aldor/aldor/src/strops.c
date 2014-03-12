@@ -154,7 +154,6 @@ String
 strPrintf(const char *fmt, ...)
 {
 	va_list argp;
-	int     cc;
 	Buffer  buf = bufNew();
 
 	va_start(argp, fmt);

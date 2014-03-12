@@ -49,22 +49,22 @@
 #include "java/genjava.h"
 #include "java/javaobj.h"
 
-String 		compRootDir     = 0;
-Bool   		compIsDebug     = false;
-static Bool	compDoGc        = true;
-static Bool     compDoGcVerbose = false;
-static Bool	compDoGcFile    = false;
+String		compRootDir	= 0;
+Bool		compIsDebug	= false;
+static Bool	compDoGc	= true;
+static Bool	compDoGcVerbose	= false;
+static Bool	compDoGcFile	= false;
 static EmitInfo *compFinfov	= 0;	/* Tells exit handler about files. */
 
 static JmpBuf	compFintJmpBuf;
-static void 	compFintBreakHandler0	(int);
+static void	compFintBreakHandler0	(int);
 
 static String compRootFromCmdLine(String cwd, String file);
 
-extern int      compGLoop       (int, char **, FILE *, FILE *);
-extern void     compGLoopEval   (FILE *, FILE *, EmitInfo);
-extern void     compGLoopInit   (int, char **, FILE *, FileName *, EmitInfo *);
-extern int      compGLoopFinish (FileName, EmitInfo);
+extern int	compGLoop	(int, char **, FILE *, FILE *);
+extern void	compGLoopEval	(FILE *, FILE *, EmitInfo);
+extern void	compGLoopInit	(int, char **, FILE *, FileName *, EmitInfo *);
+extern int	compGLoopFinish	(FileName, EmitInfo);
 
 /*****************************************************************************
  *
@@ -80,7 +80,7 @@ compCmd(int argc, char **argv)
 {
 	Bool	echo;
 
-        osInit();
+	osInit();
 	osObtainLicense();
 
 	echo = cmdSubsumeResponseFiles(1, &argc, &argv);
@@ -142,7 +142,7 @@ compCmd(int argc, char **argv)
 #ifdef OS_MAC_SYS7
         if (!compRootDir)
 		/*!!FIX! Parent of Directory in which binary was found */
-                compRootDir = "::";
+		compRootDir = "::";
 #endif
 
 	/*
@@ -166,10 +166,10 @@ compCmd(int argc, char **argv)
 
 	if (cmdHasInteractiveOption(argc, argv))
 	{
-            if (osIsGUI())
-                return 0;  /* gloop must be handled in event-driven style */
-	    else
-                return compGLoop(argc, argv, osStdin, osStdout);
+		if (osIsGUI())
+			return 0;  /* gloop must be handled in event-driven style */
+		else
+			return compGLoop(argc, argv, osStdin, osStdout);
 	}
 
 	return compFilesLoop(argc, argv);
@@ -212,7 +212,7 @@ compSEvalLoop(FILE *in, FILE *out)
 	compInit();
 
 	sxiReadEvalPrintLoop(in, out,
-		             compIsDebug ? SXRW_SrcPos : SXRW_NoSrcPos);
+			     compIsDebug ? SXRW_SrcPos : SXRW_NoSrcPos);
 	compFini();
 	return 0;
 }
@@ -226,9 +226,9 @@ compInteractiveLoop(int argc, char **argv, FILE *fin, FILE *fout)
 	AbSyn		ab;
 	Stab		stab;
 	Foam		foam;
-	Bool		readingInitFile	= true, tmpHistory;
+	Bool		readingInitFile = true, tmpHistory;
 	Bool		endOfInput = false; 
-	FILE		* fin0 = fin;
+	FILE		*fin0 = fin;
 
 	compInit();
 
@@ -598,24 +598,26 @@ compFilesLoop(int argc, char **argv)
  * ALDORROOT overrides AXIOMXLROOT.
  */
 
-static String	compLibraryFiles[] = {  0 };
-static String	compLibraryKeys[]  = {  0 };
+static String	compLibraryFiles[] = { 0 };
+static String	compLibraryKeys[]  = { 0 };
  
 void
 compInit(void)
 {
 	int	gclevel;
 
-	_dont_assert = true;		/* Turn off assertions (cf -Wcheck).*/
-	_fatal_assert = true;		/* Make assertions fatal by default. */
-
 	gclevel = compDoGc     ? StoCtl_GcLevel_Automatic :
 		  compDoGcFile ? StoCtl_GcLevel_Demand    :
 		                 StoCtl_GcLevel_Never;
-	stoCtl(StoCtl_GcLevel, gclevel); /* If and when to GG.           */
-	if (compDoGcVerbose) stoCtl(StoCtl_GcFile,  osStdout);
-	else stoCtl(StoCtl_GcFile, (int) 0);  /* Put GC messagess on osStdout.  */
-	stoCtl(StoCtl_Wash,    false);	 /* Do not initialize pieces.    */
+	/* If and when to GG. */
+	stoCtl(StoCtl_GcLevel, gclevel);
+	if (compDoGcVerbose)
+		/* Put GC messages on osStdout. */
+		stoCtl(StoCtl_GcFile, osStdout);
+	else
+		stoCtl(StoCtl_GcFile, (FILE *) NULL);
+	/* Do not initialize pieces. */
+	stoCtl(StoCtl_Wash, false);
 
 	obInit();
 	dbInit();
@@ -1214,14 +1216,12 @@ void
 compPhasePutJava(EmitInfo finfo, Foam foam)
 {
 	JavaCode java;
-	FileName fileName;
 	String fnstring;
 
 	phStart(PH_PutJava);
 
 	fnstring = emitGetFileIdName(finfo);
 	if (emitIsOutputNeededOrWarn(finfo, FTYPENO_JAVA)) {
-		JavaCode jc = genJavaUnit(foam, fnstring);
 		java = genJavaUnit(foam, fnstring);
 		emitTheJava(finfo, java);
 		jcoFree(java);

@@ -590,7 +590,7 @@ spstackPrintLine(FILE *fout, SrcPos spos)
 	Length	n, nu;
 	Bool	splitLine = false;
 	String	fFmt  = "\"%s\", line %d: ";
-	int	LINE_LENGTH = 80;
+#define LINE_LENGTH 80
 
 	/*
 	 * Get the source line.

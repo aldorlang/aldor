@@ -140,21 +140,21 @@ gen1ImplicitExport(Syme syme, FoamTag repTag)
 
 
 	/* Is this something we know about? */
-	for (i = gfTag = 0;(i < GFI_LIMIT) && !gfTag; i++)
-	{
+	for (i = gfTag = 0; i < GFI_LIMIT && !gfTag; i++) {
 		struct gf_impl_info *e = &gfImplicitInfoTable[i];
 
-		if (e->type != hash) continue;
-		if (!strEqual(e->name, gen0ProgName)) continue;
+		if (e->type != hash)
+			continue;
+		if (!strEqual(e->name, gen0ProgName))
+			continue;
 		gfTag = i + 1;
 	}
 
 
 	/* Did we recognise it? */
-	if (!gfTag)
-	{
+	if (!gfTag) {
 		bug("[%s] %s#%ld not recognised\n",
-			"gen1ImplicitExport", gen0ProgName, hash);
+		    "gen1ImplicitExport", gen0ProgName, hash);
 		return (Foam)NULL;
 	}
 	else
@@ -226,29 +226,28 @@ gen1ImplicitExport(Syme syme, FoamTag repTag)
 
 
 	/* Generate code for the body of this export */
-	switch (gfTag)
-	{
-	   case GFI_PackedArrayNew:
+	switch (gfTag) {
+	case GFI_PackedArrayNew:
 		gen0ImplicitPANew(pars, repTag);
 		break;
-	   case GFI_PackedArrayGet:
+	case GFI_PackedArrayGet:
 		gen0ImplicitPAGet(pars, repTag);
 		break;
-	   case GFI_PackedArraySet:
+	case GFI_PackedArraySet:
 		gen0ImplicitPASet(pars, repTag);
 		break;
-	   case GFI_PackedRecordSet:
+	case GFI_PackedRecordSet:
 		gen0ImplicitPRSet(pars, repTag);
 		break;
-	   case GFI_PackedRecordGet:
+	case GFI_PackedRecordGet:
 		gen0ImplicitPRGet(pars, repTag);
 		break;
-	   case GFI_PackedRepSize:
+	case GFI_PackedRepSize:
 		gen0ImplicitPRSize(pars, repTag);
 		break;
-	   default:
-		bug("[%s] GFI tag #%d not recognised\n",
-			"gen1ImplicitExport", gfTag);
+	default:
+		bug("[%s] GFI tag #" LENGTH_FMT " not recognised\n",
+		    "gen1ImplicitExport", gfTag);
 	}
 
 
@@ -263,8 +262,8 @@ gen1ImplicitExport(Syme syme, FoamTag repTag)
 	 * This means we use `rtype' in gen0ProgFiniEmpty()
 	 * rather than `retType' which we would do normally.
 	 */
- 	gen0UseStackedFormat(int0); /* These two lines provide a format */
- 	gen0ProgPushFormat(int0);   /* for the lexical argument `op'   */
+	gen0UseStackedFormat(int0); /* These two lines provide a format */
+	gen0ProgPushFormat(int0);   /* for the lexical argument `op'   */
 	gen0ProgFiniEmpty(foam, retType, retfmt);
 #endif
 
@@ -274,8 +273,10 @@ gen1ImplicitExport(Syme syme, FoamTag repTag)
 	foamOptInfo(foam) = inlInfoNew(NULL, foam, NULL, false);
 
 
+#if 0
 	/* Compute side-effects of this foam */
-	/* gen0ComputeSideEffects(foam); */
+	gen0ComputeSideEffects(foam); 
+#endif
 
 
 	/* Restore the saved state before returning */

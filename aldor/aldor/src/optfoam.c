@@ -525,7 +525,6 @@ local int
 flogFormatter(OStream stream, Pointer p)
 {
 	FlowGraph flog = (FlowGraph) p;
-	char *sep;
 	int c=0;
 	int i;
 	

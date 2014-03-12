@@ -36,10 +36,15 @@ extern Bool terrorAuditPoss	    (Bool verbose, AbSyn absyn);
 extern Bool terrorAuditBottomUp	    (Bool verbose, AbSyn absyn);
 extern Bool terrorAuditTopDown	    (Bool verbose, AbSyn absyn);
 
-#define tuniInappropriateTPoss		((TPoss) 12L)    
-#define tuniNoValueTPoss		((TPoss) 4L)
-#define tuniUnknownTPoss		((TPoss) 8L)
-#define tuniErrorTPoss			((TPoss) 14L)
+#define tuniInappropriateTPossVal	12L
+#define tuniNoValueTPossVal		4L
+#define tuniUnknownTPossVal		8L
+#define tuniErrorTPossVal		14L
+
+#define tuniInappropriateTPoss		((TPoss) tuniInappropriateTPossVal)
+#define tuniNoValueTPoss		((TPoss) tuniNoValueTPossVal)
+#define tuniUnknownTPoss		((TPoss) tuniUnknownTPossVal)
+#define tuniErrorTPoss			((TPoss) tuniErrorTPossVal)
 
 #define tuniIsInappropriate(tposs)	((tposs) == tuniInappropriateTPoss)
 #define tuniIsNoValue(tposs)		((tposs) == tuniNoValueTPoss)

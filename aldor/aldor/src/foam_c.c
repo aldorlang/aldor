@@ -1819,7 +1819,7 @@ fiStrHash(FiWord s)
  *
  *****************************************************************************/
 
-local FiFluid	fiPushFluid _of_((void));
+local FiFluid	fiPushFluid (void);
 FiFluidStack fiGlobalFluidStack;
 
 FiFluid 
@@ -1967,15 +1967,15 @@ fiUnwind(FiWord target, FiWord value)
 
 typedef struct {
 	FiFluidStack chain;
-} fintState;
+} fiState;
 
 void *
 fiSaveFIState(void)
 {
 #if OLDWAY
-	fintState *state = (fintState *) stoAlloc(OB_Other, sizeof(*state));
+	fiState *state = (fiState *) stoAlloc(OB_Other, sizeof(*state));
 #else
-	fintState *state = (fintState *)FI_ALLOC(sizeof(*state), CENSUS_SaveState);
+	fiState *state = (fiState *)FI_ALLOC(sizeof(*state), CENSUS_SaveState);
 #endif
 	state->chain = fiGlobalFluidStack;
 
@@ -1985,7 +1985,7 @@ fiSaveFIState(void)
 void
 fiRestoreFIState(void *state)
 {
-	fiGlobalFluidStack = ((fintState *) state)->chain;
+	fiGlobalFluidStack = ((fiState *) state)->chain;
 #if OLDWAY
 	stoFree(state);
 #else
@@ -2047,7 +2047,8 @@ so it is not possible to throw an exception.\n", (char *) problem);
 	}
 #else
 	/*fiExceptionHandler must have been set to fintRaiseException in fint.c */
-	if ((void *)*fiExceptionHandler) (*fiExceptionHandler)((char *)problem, NULL);
+	if (fiExceptionHandler)
+		fiExceptionHandler ((char *)problem, NULL);
 	else {
 		(void) printf("Aldor runtime (interpreter): should never happen : fiExceptionHandler corrupted\nExiting...");
 		exit(2);
@@ -2132,7 +2133,7 @@ fiStoATracer(FiSInt code, FiClos clos)
 void
 fiStoCTracer(FiSInt code, FiWord fun)
 {
-	stoSetTracer(code, (FiPtr)fun);
+	stoSetTracer(code, (StoTraceFun)fun);
 }
 
 

@@ -16,11 +16,12 @@
  * 	   
  */
 
+#include "gf_rtime.h"
+#include "lib.h"
+#include "of_hfold.h"
 #include "of_inlin.h"
 #include "of_util.h"
-#include "gf_rtime.h"
 #include "stab.h"
-#include "lib.h"
 #include "strops.h"
 
 Bool	hfoldDebug	= false;
@@ -57,7 +58,7 @@ static OptInfo	hfoldProgInfo;
 static Stab	hfoldStab;
 static int	hfoldNumLocals;
 
-Foam
+void
 hfoldUnit(Foam unit)
 {
 	Foam defs, formats;
@@ -74,7 +75,6 @@ hfoldUnit(Foam unit)
 			hfoldProg(def->foamDef.rhs);
 	}
 	assert(foamAudit(unit));
-	return unit;
 }
 
 local void

@@ -17,8 +17,8 @@
  *
  *****************************************************************************/
 
-extern void	exitSuccess	(void);
-extern void	exitFailure	(void);
+extern void	exitSuccess	(void) chk_noreturn;
+extern void	exitFailure	(void) chk_noreturn;
 	/*
 	 * Exit from program with an appropriate return code.
 	 */
@@ -35,12 +35,12 @@ extern ExitFun	exitSetHandler	(ExitFun);
  * :: Bugs
  *
  *****************************************************************************/
-extern void	bugWarning	(String fmt, ...);
+extern void	bugWarning	(String fmt, ...) chk_fmt (1, 2);
 
-extern void	bug		(String fmt, ...);
+extern void	bug		(String fmt, ...) chk_fmt (1, 2) chk_noreturn;
 
 #define		bugUnimpl(m)	_bug("Unimplemented %s (line %d in file %s).",m)
-#define		bugBadCase(no)	_bug("Bad case %d (line %d in file %s).", no)
+#define		bugBadCase(no)	_bug("Bad case %d (line %d in file %s).", (int) no)
 #define		_bug(fmt,a)	bug(fmt, a, __LINE__, __FILE__)
 
 /******************************************************************************
@@ -113,7 +113,7 @@ extern void	lisort		(Pointer base, Length n, Length sz,
  *****************************************************************************/
 
 #define	hashCombine(h1, h2) \
-	(((h1) ^ ((h1) << 8)) + ((h2) + 200041) & 0x3FFFFFFF)
+	((((h1) ^ ((h1) << 8)) + ((h2) + 200041)) & 0x3FFFFFFF)
 
 extern int hashCombinePair(int h1, int h2);
 
@@ -170,7 +170,7 @@ extern int      bfFirst1 (int nb,UByte *t);
  *
  ****************************************************************************/
 
-extern void	prompt		(FILE *fin, FILE *fout, String fmt, ...);
+extern void	prompt		(FILE *fin, FILE *fout, String fmt, ...) chk_fmt (3, 4);
 	/*
 	 * If fin is interactive print the prompt on fout using
 	 * printf-style formatting.

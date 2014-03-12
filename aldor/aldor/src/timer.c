@@ -15,7 +15,7 @@
 #define tmCpuTime osCpuTime
 
 TmTimer
-tmAlloc()
+tmAlloc(void)
 {
 	TmTimer tm = (TmTimer) stoAlloc(OB_Other, sizeof(*tm));
 	tm->time  = 0;

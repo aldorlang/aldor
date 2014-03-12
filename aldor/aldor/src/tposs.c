@@ -219,13 +219,13 @@ tpossPrint(FILE *fout, TPoss tp)
 	{
 		case 0:
 			return fprintf(fout, "[]");
-		case (UAInt) tuniInappropriateTPoss:
+		case tuniInappropriateTPossVal:
 			return fprintf(fout, "(inappropriate)");
-		case (UAInt) tuniNoValueTPoss:
+		case tuniNoValueTPossVal:
 			return fprintf(fout, "(no value)");
-		case (UAInt) tuniUnknownTPoss:
+		case tuniUnknownTPossVal:
 			return fprintf(fout, "(unknown)");
-		case (UAInt) tuniErrorTPoss:
+		case tuniErrorTPossVal:
 			return fprintf(fout, "(error)");
 		default:
 			return listPrint(TForm)(fout, tp->possl, tfPrint);
@@ -239,13 +239,13 @@ tpossOStreamWrite(OStream ostream, TPoss tp)
 	{
 		case 0:
 			return ostreamPrintf(ostream, "[]");
-		case (UAInt) tuniInappropriateTPoss:
+		case tuniInappropriateTPossVal:
 			return ostreamPrintf(ostream, "(inappropriate)");
-		case (UAInt) tuniNoValueTPoss:
+		case tuniNoValueTPossVal:
 			return ostreamPrintf(ostream, "(no value)");
-		case (UAInt) tuniUnknownTPoss:
+		case tuniUnknownTPossVal:
 			return ostreamPrintf(ostream, "(unknown)");
-		case (UAInt) tuniErrorTPoss:
+		case tuniErrorTPossVal:
 			return ostreamPrintf(ostream, "(error)");
 		default:
 			return ostreamPrintf(ostream, "[TP: %d %pTFormList]", tp->possc, tp->possl);

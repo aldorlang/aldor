@@ -1,4 +1,20 @@
 #include "testlib.h"
+
+#include "ablogic.h"
+#include "cmdline.h"
+#include "comsg.h"
+#include "debug.h"
+#include "macex.h"
+#include "opsys.h"
+#include "optfoam.h"
+#include "phase.h"
+#include "scobind.h"
+#include "sexpr.h"
+#include "spesym.h"
+#include "stab.h"
+#include "tform.h"
+#include "tinfer.h"
+
 #include <stdlib.h>
 #include <stdarg.h>
 

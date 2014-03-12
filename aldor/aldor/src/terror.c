@@ -2037,7 +2037,6 @@ terrorPrintSymeList(Buffer obuf, String prefix, SymeList msymes)
 local void
 terrorPutConditionallyDefinedExports(Buffer obuf, Stab stab, SymeList mods, AbSyn ab, SymeList symes)
 {
-	SymeList usymes;
 	SymeList iter;
 
 	iter = listCopy(Syme)(symes);

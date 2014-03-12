@@ -1,6 +1,7 @@
-#include "testlib.h"
 #include "debug.h"
 #include "int.h"
+#include "opsys.h"
+#include "testlib.h"
 
 local void testLongIs32(void);
 local void verifyAIntEqual(void);

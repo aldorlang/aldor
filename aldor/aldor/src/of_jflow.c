@@ -1102,7 +1102,6 @@ jflowSpecializeBlock2(int val, BBlock bb, int exit,
 {
 	FlowGraph flog = bb->graph;
 	BBlockList bbsToCheck;
-	BBlock	newb;
 	BBlock *cloneArray;
 	Bitv    cloned = bitvNew(class);
 	int	i, j, pos, bbpos;
@@ -1132,7 +1131,6 @@ jflowSpecializeBlock2(int val, BBlock bb, int exit,
 	pos = 0;
 	for (i=0; i <= bitvMax(class, cloned); i++) {
 		BBlock bb, clone;
-		int j;
 		if (!bitvTest(class, cloned, i))
 			continue;
 		bb = flogBlock(flog, i);

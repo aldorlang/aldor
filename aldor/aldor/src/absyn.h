@@ -959,7 +959,7 @@ extern Hash	abHashSefo		(AbSyn);
 extern Hash	abHashList		(AbSynList);
 extern Hash	abHashModDeclares	(AbSyn);
 extern void	abSubSymbol		(AbSyn, Symbol, Symbol);
-extern AbSyn	abFrSyme		(Syme);
+extern AbSyn	abFrSyme		(Syme) chk_nonnull((1));
 
 extern int	abPrint			(FILE *, AbSyn);
 extern int	abPrintDb		(AbSyn);

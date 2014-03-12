@@ -1,4 +1,5 @@
 #include "axltop.h"
+#include "genc.h"
 #include "gencpp.h"
 #include "stab.h"
 #include "store.h"
@@ -21,15 +22,6 @@
 #endif
 
 local String itoa_(int);
-
-/* ---------- Extra structure ----------- */
-/* Also defined in genc.c */
-struct ccSpecCharId_info {
-  int		ch;
-  String          str;
-}; 
-
-extern struct ccSpecCharId_info ccSpecCharIdTable[];
 
 /* ----------- GLOBAL OBJECTS ----------- */
 
@@ -2353,7 +2345,7 @@ String GenCppBodyForMethods(TForm tf, String name, Class *cl) {
     strFree(str_tmp);
   }
   else if (returnIsFnPtr) {
-    str_tmp = outputCppFnPtrParms(tfMapRet(tf),cl,theTRUE,theFALSE,!BL_UsePercent,!BL_Export, int0);
+    str_tmp = outputCppFnPtrParms(tfMapRet(tf),cl,theTRUE,theFALSE,!BL_UsePercent,!BL_Export, NULL);
     if (!str_tmp) { strFree(result); return NULL; }
     result = STRCAT(result,"(");
     result = STRCAT(result,str_tmp);

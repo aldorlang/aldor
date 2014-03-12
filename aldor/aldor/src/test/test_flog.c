@@ -17,16 +17,18 @@ flogTest()
 
 local void testBBCopy()
 {
-	Foam body, bodyCopy;
+	Foam body, bodyCopy, prog, locals;
+	FlowGraph flog;
+	BBlock entry;
 	
 	body = foamNewSeq(foamNewSet(foamNewLoc(int0), foamNewSInt(int0)), foamNewReturn(foamNewEmptyValues()), NULL);
 	bodyCopy = foamCopy(body);
 
 	testTrue("copy works ok!", foamEqual(body, bodyCopy));
 
-	Foam prog = foamNewProgEmpty();
-	Foam locals = foamNewDDecl(FOAM_DDecl_Local, 
-				   foamNewDecl(FOAM_SInt, strCopy("control"), emptyFormatSlot), NULL);
+	prog = foamNewProgEmpty();
+	locals = foamNewDDecl(FOAM_DDecl_Local, 
+			      foamNewDecl(FOAM_SInt, strCopy("control"), emptyFormatSlot), NULL);
 
 	prog->foamProg.locals = locals;
 	prog->foamProg.body = body;
@@ -36,15 +38,12 @@ local void testBBCopy()
 	prog->foamProg.levels = foamNewEmptyDEnv();
 	foamOptInfo(prog) = inlInfoNew(NULL, prog, NULL, false);
 
-	FlowGraph flog;
-	
 	flog = flogFrProg(prog, FLOG_MultipleExits);
 
 	testTrue("Blocks", flogBlockC(flog) > 0);
-	BBlock entry = flog->block0;
+	entry = flog->block0;
 	testIntEqual("exits", 0, bbExitC(entry));
 	testTrue("code preserved..", foamEqual(bodyCopy, entry->code));
 	
 	cmdDebugReset();
 }
-

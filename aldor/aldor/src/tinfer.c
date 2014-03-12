@@ -425,6 +425,8 @@ tiCheckSymeConditionalImplementation(Stab stab, Syme syme, Syme implSyme)
 	AbSynList implCondition = symeDefinitionConditions(implSyme);
 	AbSynList tmp;
 	SefoList tmpSefo;
+	AbLogic implAbLog, conditionAbLog;
+	Bool result;
 
 	if (implCondition == listNil(AbSyn))
 		return true;
@@ -440,17 +442,20 @@ tiCheckSymeConditionalImplementation(Stab stab, Syme syme, Syme implSyme)
 		tiTopDown(stab, car(tmp), tfUnknown);
 	}
 
-	AbLogic implAbLog = ablogFalse();
+	implAbLog = ablogFalse();
 	for (tmp = implCondition; tmp != listNil(AbSyn); tmp = cdr(tmp)) {
 		implAbLog = ablogOr(ablogFrSefo(car(tmp)), implAbLog);
 	}
-	AbLogic conditionAbLog = ablogTrue();
+	conditionAbLog = ablogTrue();
 	for (tmpSefo = condition; tmpSefo != listNil(Sefo); tmpSefo = cdr(tmpSefo)) {
 		conditionAbLog = ablogAnd(ablogFrSefo(car(tmpSefo)), conditionAbLog);
 	}
 
-	Bool result = ablogImplies(conditionAbLog,
-				   ablogAnd(abCondKnown != NULL ? abCondKnown : ablogTrue(), implAbLog));
+	result = ablogImplies(conditionAbLog,
+			      ablogAnd(abCondKnown != NULL
+				       ? abCondKnown
+				       : ablogTrue(),
+				       implAbLog));
 
 	return result;
 }

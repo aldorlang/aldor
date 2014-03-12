@@ -679,7 +679,7 @@ local AbSyn
 abnDocumented(AbSyn ab)
 {
 	AbSyn	oab, odoc, abid, abinner;
-	Doc	pre, post = 0, doc;
+	Doc	pre = 0, post = 0, doc;
 	SrcPos  opos;
 	/* Extract the pre-doc. */
 

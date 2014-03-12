@@ -14,13 +14,12 @@
  * that we just do it ourselves.
  */
 
-#ifndef _ASSERT_DECL
-#define _ASSERT_DECL
-#  if defined(CC_no_prototype)
-      void _do_assert();
-#  else
-      void _do_assert(char *str, char *file, int line);
-#  endif
+#include "features.h0"
+
+#ifndef DO_ASSERT_IS_DECLARED
+#define DO_ASSERT_IS_DECLARED
+void _abort_if_fatal_assert(void) chk_noreturn;
+void _do_assert(char *str, char *file, int line) chk_noreturn;
 #endif
 
 #if defined(QASSERT)
@@ -36,11 +35,9 @@ extern int	_fatal_assert;
 #  define assert(c)
 #else
 
-#  if defined(CC_no_token_paste)
-#    define assert(c) if(_dont_assert || (c)) ; \
-		      else _do_assert(_a_msg("c"),__FILE__,__LINE__)
-#  else
-#    define assert(c) if(_dont_assert || (c)) ; \
-		      else _do_assert(_a_msg(#c), __FILE__,__LINE__)
-#  endif
+#  define assert(c)					\
+     do {						\
+       if (!(c))					\
+         _do_assert(_a_msg(#c),__FILE__,__LINE__);	\
+     } while (0)
 #endif

@@ -40,7 +40,7 @@ FiWord	* pGlo10l;
 FiWord    Glo10;
 
 void
-testLink()
+testLink(void)
 {
 	fiExportGlobal("glo1", glo1);
 	fiImportGlobal("glo1", pGlo1);
