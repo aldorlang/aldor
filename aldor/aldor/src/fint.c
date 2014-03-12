@@ -6075,10 +6075,10 @@ fintWhere(int level)
 
 	while (n != level && bp0 != stackBase) {
 		(void)fprintf(dbOut, "#%d %lx in <%s> at unit [%s]\n",
-			l++,
-			(ULong)stackFrameIp(bp0),
-			stackFrameProg(bp0)->name,
-			stackFrameProg(bp0)->unit->name);
+			      l++,
+			      (ULong)stackFrameIp(bp0),
+			      stackFrameProg(bp0)->name,
+			      stackFrameProg(bp0)->unit->name);
 		bp0 = stackFrameBp(bp0);
 		n += 1;
 	}
@@ -6136,7 +6136,7 @@ local Bool
 fintExecMainUnit(void)
 {
 	union dataObj	expr;
-	dataType	type;
+	dataType	type = 0;
 	UByte		denv;
 	int		nFluids;
 	FiBool ok;
@@ -6180,11 +6180,10 @@ fintExecMainUnit(void)
 
 	denv = progInfoDEnv(prog)[0];
 
-	if (fintUnitLexsCount(unit, denv)) {
-	      lev0 = fintAlloc(union dataObj, fintUnitLexsCount(unit, denv));
-	}
+	if (fintUnitLexsCount(unit, denv))
+		lev0 = fintAlloc(union dataObj, fintUnitLexsCount(unit, denv));
 	else
-	      lev0 = NULL;
+		lev0 = NULL;
 
 	fintEnvPush(lexEnv, lev0, NULL);
 
@@ -6211,20 +6210,20 @@ fintExecMainUnit(void)
 			(void)loadOtherUnits();
 			/*	 * hack 03450 */
 			handler = shDataObjFindBis((AInt) FOAM_Clos,
-						"aldorUnhandledException",
-						FOAM_Proto_Foam);
+						   "aldorUnhandledException",
+						   FOAM_Proto_Foam);
 			if (handler) {
-			  if (fintExntraceMode == 1 ) {
-			    FILE *oldDbOut = dbOut;
-			    dbOut = osStderr;
-			    fprintf(dbOut, "Aldor runtime (interpreter): backtrace:\n");
-			    fintWhere(FINT_BACKTRACE_CUTOFF);
-			    fprintf(dbOut, "\n");
-			    dbOut = oldDbOut;
-			  };
+				if (fintExntraceMode == 1 ) {
+					FILE *oldDbOut = dbOut;
+					dbOut = osStderr;
+					fprintf(dbOut, "Aldor runtime (interpreter): backtrace:\n");
+					fintWhere(FINT_BACKTRACE_CUTOFF);
+					fprintf(dbOut, "\n");
+					dbOut = oldDbOut;
+				};
 
-			  dexn.fiWord = exn;
-			  (void)fintDoCall1(&handler->dataObj, &ret, &dexn);
+				dexn.fiWord = exn;
+				(void)fintDoCall1(&handler->dataObj, &ret, &dexn);
 			}
 		}
 	}

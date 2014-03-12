@@ -550,45 +550,45 @@ foamEqual1(int mods, Foam f1, Foam f2)
 	for (si = fi = 0; si < foamArgc(f1); si++, fi++) {
 		if (argf[fi] == '*') fi--;
 		switch (argf[fi]) {
-		  case 'C':
-			  if (!foamEqual0(mods, foamArgv(f1)[si].code,
-					  foamArgv(f2)[si].code))
+		case 'C':
+			if (!foamEqual0(mods, foamArgv(f1)[si].code,
+					foamArgv(f2)[si].code))
 				return false;
 			break;
-		  case 't':
-		  case 'o':
-		  case 'p':
-		  case 'D':
-		  case 'b':
-		  case 'h':
-		  case 'w':
-		  case 'i':
-		  case 'L':
-		  case 'X':
-		  case 'F':
+		case 't':
+		case 'o':
+		case 'p':
+		case 'D':
+		case 'b':
+		case 'h':
+		case 'w':
+		case 'i':
+		case 'L':
+		case 'X':
+		case 'F':
 			if (foamArgv(f1)[si].data != foamArgv(f2)[si].data)
 				return false;
 			break;
-		  case 'f':
+		case 'f':
 			if (foamArgv(f1)[si].sfloat != foamArgv(f2)[si].sfloat)
 				return false;
 			break;
-		  case 's':
+		case 's':
 			if (!strEqual(foamArgv(f1)[si].str,
 				      foamArgv(f2)[si].str))
 				return false;
 			break;
-		  case 'n':
+		case 'n':
 			if (!bintEQ(foamArgv(f1)[si].bint,
 				    foamArgv(f2)[si].bint))
 				return false;
 			break;
-		  case 'd':
+		case 'd':
 			if (*((DFloat *) foamArgv(f1)) !=
 			    *((DFloat *) foamArgv(f2)))
 				return false;
 			break;
-		  default:
+		default:
 			bugBadCase(argf[si]);
 			break;
 		}
@@ -611,31 +611,31 @@ foamHash(Foam foam)
 		if (argf[fi] == '*') fi--;
 		h ^= (h << 8);
 		switch (argf[fi]) {
-		  case 'C':
+		case 'C':
 			h += foamHash(foamArgv(foam)[si].code);
 			break;
-		  case 't':
-		  case 'o':
-		  case 'p':
-		  case 'D':
-		  case 'b':
-		  case 'h':
-		  case 'w':
-		  case 'i':
-		  case 'L':
-		  case 'X':
-		  case 'F':
-		  case 'f':
+		case 't':
+		case 'o':
+		case 'p':
+		case 'D':
+		case 'b':
+		case 'h':
+		case 'w':
+		case 'i':
+		case 'L':
+		case 'X':
+		case 'F':
+		case 'f':
 			h += foamArgv(foam)[si].data;
 			break;
-		  case 's':
+		case 's':
 			h += strHash(foamArgv(foam)[si].str);
 			break;
-		  case 'd':
-		  case 'n':
+		case 'd':
+		case 'n':
 			/*!! Hash for biginit and double */
 			break;
-		  default:
+		default:
 			bugBadCase(argf[si]);
 			break;
 		}
@@ -3192,7 +3192,8 @@ foamExprTypeCallbackStd(void *ptr, Foam expr)
 	FoamBox locals = stdArgs->locals;
 	FoamBox formatBox = stdArgs->formatBox;
 	FoamBox globals = stdArgs->globals;
-	Foam decl;
+	Foam decl = NULL;
+
 	switch (foamTag(expr)) {
 	case FOAM_Loc: {
 		AInt index = expr->foamLoc.index;
@@ -3206,46 +3207,46 @@ foamExprTypeCallbackStd(void *ptr, Foam expr)
 		decl = foamGetDecl(expr->foamGlo.index, formats->foamDFmt.argv[globalsSlot], globals);
 		break;
 	case FOAM_Fluid:
-		  decl = formats->foamDFmt.argv[fluidsSlot]->
-			  foamDDecl.argv[expr->foamFluid.index];
-		  break;
+		decl = formats->foamDFmt.argv[fluidsSlot]->
+			foamDDecl.argv[expr->foamFluid.index];
+		break;
 	case FOAM_Const:
 		decl = formats->foamDFmt.argv[constsSlot]->
 			foamDDecl.argv[expr->foamConst.index];
 		break;
 	case FOAM_Lex: {
- 		Foam 	ddecl;
- 		int 	index;
+		Foam	ddecl;
+		int	index;
 		
 		index = prog->foamProg.levels->foamDEnv.argv[expr->foamLex.level];
 		ddecl = foamGetDDecl(index, formats, formatBox);
 		decl = ddecl->foamDDecl.argv[expr->foamLex.index];
 		break;
-	  }
- 	  case FOAM_RElt: {
-		  int	index = expr->foamRElt.format;
-		  Foam	ddecl = foamGetDDecl(index, formats, formatBox);
-		  decl = ddecl->foamDDecl.argv[expr->foamRElt.field];
-		  break;
-	  }
- 	  case FOAM_IRElt: {
-		  int	index = expr->foamIRElt.format;
-		  Foam	ddecl = foamGetDDecl(index, formats, formatBox);
-		  decl = foamTRDDeclIDecl(ddecl, expr->foamIRElt.field); /* use foamIRDeclIdx() */
-		  break;
-	  }
- 	  case FOAM_TRElt: {
-		  int	index = expr->foamIRElt.format;
-		  Foam	ddecl = foamGetDDecl(index, formats, formatBox);
-		  decl = foamTRDDeclTDecl(ddecl, expr->foamTRElt.field); /* use foamTRDeclIdx() */
-		  break;
-	  }
- 	  case FOAM_EElt: {
-		  int	index = expr->foamEElt.env;
-		  Foam	ddecl = foamGetDDecl(index, formats, formatBox);
-		  decl = ddecl->foamDDecl.argv[expr->foamEElt.lex];
-		  break;
-	  }
+	}
+	case FOAM_RElt: {
+		int	index = expr->foamRElt.format;
+		Foam	ddecl = foamGetDDecl(index, formats, formatBox);
+		decl = ddecl->foamDDecl.argv[expr->foamRElt.field];
+		break;
+	}
+	case FOAM_IRElt: {
+		int	index = expr->foamIRElt.format;
+		Foam	ddecl = foamGetDDecl(index, formats, formatBox);
+		decl = foamTRDDeclIDecl(ddecl, expr->foamIRElt.field); /* use foamIRDeclIdx() */
+		break;
+	}
+	case FOAM_TRElt: {
+		int	index = expr->foamIRElt.format;
+		Foam	ddecl = foamGetDDecl(index, formats, formatBox);
+		decl = foamTRDDeclTDecl(ddecl, expr->foamTRElt.field); /* use foamTRDeclIdx() */
+		break;
+	}
+	case FOAM_EElt: {
+		int	index = expr->foamEElt.env;
+		Foam	ddecl = foamGetDDecl(index, formats, formatBox);
+		decl = ddecl->foamDDecl.argv[expr->foamEElt.lex];
+		break;
+	}
 	}
 
 	return decl;

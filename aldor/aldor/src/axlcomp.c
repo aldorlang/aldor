@@ -212,7 +212,7 @@ compSEvalLoop(FILE *in, FILE *out)
 	compInit();
 
 	sxiReadEvalPrintLoop(in, out,
-		             compIsDebug ? SXRW_SrcPos : SXRW_NoSrcPos);
+			     compIsDebug ? SXRW_SrcPos : SXRW_NoSrcPos);
 	compFini();
 	return 0;
 }
@@ -226,9 +226,9 @@ compInteractiveLoop(int argc, char **argv, FILE *fin, FILE *fout)
 	AbSyn		ab;
 	Stab		stab;
 	Foam		foam;
-	Bool		readingInitFile	= true, tmpHistory;
+	Bool		readingInitFile = true, tmpHistory;
 	Bool		endOfInput = false; 
-	FILE		* fin0 = fin;
+	FILE		*fin0 = fin;
 
 	compInit();
 

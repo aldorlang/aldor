@@ -27,16 +27,16 @@
  * actual value to be inlined.
  *
  * We maintain two separate bounds for the maximum size of a program to be
- * inlined.  The first is used by all programs except ones with the 
+ * inlined.  The first is used by all programs except ones with the
  * INL_InlineMe bit set; for these programs, we use the larger limit.
  * Currently we only set that bit for generator functions.
  *
- * This program also handles inlining of operation that were originally 
- * exported from domains which were parameters to other domains.  
+ * This program also handles inlining of operation that were originally
+ * exported from domains which were parameters to other domains.
  * For example, when we use the type Complex(DoubleFloat)  we can inline
  * all the operations from the DoubleFloat domain as well as the operation
  * from Complex(DoubleFloat).  This is done by computing substitution lists
- * for the exporters of the operation from paramterized domains.  
+ * for the exporters of the operation from paramterized domains.
  *
  * To Do:
  * 	Inline operations from default packages.
@@ -52,7 +52,7 @@
  *		of programs we want to inline, and dynamically compute
  *		a bound that won't make the inlined unit to huge.  There
  *		should always be a minmum size of at least 1 so that
- *		operations which are just calls to builtins will always be 
+ *		operations which are just calls to builtins will always be
  *		inlined.
  *	Inline based more on whether envirnonment merging will take place.
  *		The biggest payoff from inlining comes when we can merge
@@ -60,7 +60,7 @@
  *		Thus we need to give higher weight to functions which create
  *		heap storage that we can merge.
  *	Inline from Basic
- *		The scope binder should set the inline bit on syme.  
+ *		The scope binder should set the inline bit on syme.
  *		currently the inliner walks the inline declarations to
  *		determine when we have permission to inline, but it doesn't
  *		understand "inline from Basic".
@@ -133,7 +133,7 @@
 typedef Foam InlProgInfo;  /* InlProgInfo is a foamProg without children */
 
 /*
- * Elements of a association list of format numbers with their library of 
+ * Elements of a association list of format numbers with their library of
  * origin.
  */
 typedef struct formatInfo {
@@ -245,8 +245,8 @@ int	inlRejectInfo;
 extern void	inlPrintRejectCause	(String);
 extern void	inlPrintUninlinedCalls	(InlPriCall, PriQKey);
 
-/* 
- * Debug flags. lots. 
+/*
+ * Debug flags. lots.
  * inline, inlCall and inlCallInfo: General 'is X inlined' questions
  * Others give more detail on prog transforms and construction.
  */
@@ -399,7 +399,7 @@ local Bool	inlSameDEnv		(Foam denv1, Foam denv2);
 
 extern Bool	inlIsEvil		(Foam);
 /*
- * value tracking 
+ * value tracking
  */
 local Foam	inlGetVarTableEnv	(Foam foam, Foam cenv);
 local Foam	inlCanonEElt		(Foam);
@@ -533,7 +533,7 @@ extern int optInlineRoof;
 		}
 
 		if (!inlInlinePriCall(priCall, priority)) break;
-   	        
+
 	}
 
 	if (DEBUG(inlCallInfo)) {
@@ -680,7 +680,7 @@ inlProgram(Foam prog, int n)
 		inlProg->priq	   = priqNew(30);
 
 		/* the inlProg is in prog.hdr.info.opt */
-		inlInlineProgWithPriq(prog); 
+		inlInlineProgWithPriq(prog);
 
 		if (inlProg->changed)
 			inlMakeFlatFlog(inlProg->flog);
@@ -745,7 +745,7 @@ inlPrintPriqElt(PriQKey priority, PriQElt elt)
 	foamPrintDb(call);
 }
 
-local void 
+local void
 inlPrintPriq()
 {
 	fprintf(dbOut,"\n------------------ Start of the queue ---------------------\n");
@@ -761,7 +761,7 @@ local InlProgInfo
 inlGetProgInfoFrProg(Foam foam)
 {
 	Foam prog;
-	
+
 	assert(foamTag(foam) == FOAM_Prog);
 
 	if (foam == inlProg->prog) {
@@ -881,7 +881,7 @@ inlPriqGetConstCallInfo(Foam op, Bool *isLocal)
 }
 
 local InlProgInfo
-inlPriqGetCallInfo(Foam call, Bool * pIsLocal)
+inlPriqGetCallInfo(Foam call, Bool *pIsLocal)
 {
 	Foam 	op, val, progInfo = NULL;
 	Syme	syme = NULL;
@@ -959,7 +959,7 @@ inlPriqGetCallInfo(Foam call, Bool * pIsLocal)
 	/* Don't inline getters */
 	if (foamProgIsGetter(progInfo))	{
 		inlRejectInfo = INL_REJ_Getter;
-		return NULL; 
+		return NULL;
 	}
 
 	/* !! This could be improved: only if declare fluids */
@@ -967,20 +967,20 @@ inlPriqGetCallInfo(Foam call, Bool * pIsLocal)
 		inlRejectInfo = INL_REJ_Fluids;
 		return NULL;
 	}
-	 
+
 	/* Uncomment this if, for some reason, you don't want to inline
 	 * external ocalls */
-/* 	if (!foamProgHasNoOCalls(progInfo) && !*pIsLocal) { 	*/
-/* 		inlRejectInfo = INL_REJ_OCalls; 		*/
-/* 		return NULL; 					*/
-/* 	} 							*/
-
-
+#if 0
+	if (!foamProgHasNoOCalls(progInfo) && !*pIsLocal) {
+		inlRejectInfo = INL_REJ_OCalls;
+		return NULL;
+	}
+#endif
 
 	if (foamProgDontInlineMe(progInfo)) {
 		inlRejectInfo = INL_REJ_DontInlineMe;
 		return NULL;
-	}	
+	}
 
 	return progInfo;
 }
@@ -1003,7 +1003,7 @@ inlGetSpaceFactor(Foam call, InlProgInfo progInfo)
 		parv = call->foamOCall.argv;
 		totParams = foamArgc(call) - 3;
 	}
-	
+
 	if (totParams == 0) return 1;
 
 	for (i = 0; i < totParams; i++) {
@@ -1040,7 +1040,7 @@ inlPriqGetPriority(int depth, Foam call, int * psize, Foam * pinfo)
 	PriQKey		priority, size, spaceFactor;
 	ULong		expectedCalls;
 	PriQKey		timeFactor;
-	Bool		isLocal;
+	Bool		isLocal = false;
 
 	expectedCalls = 1L << (depth * InlLoopMagicNumber);
 	if (expectedCalls <= 0 || expectedCalls > InlInnerLoopMaxIter)
@@ -1051,7 +1051,7 @@ inlPriqGetPriority(int depth, Foam call, int * psize, Foam * pinfo)
 	progInfo = inlPriqGetCallInfo(call, &isLocal);
 
 	*pinfo = progInfo;
-	
+
 	if (!progInfo)
 		return -1;
 
@@ -1059,14 +1059,14 @@ inlPriqGetPriority(int depth, Foam call, int * psize, Foam * pinfo)
 	    inlProg->constNum == 0 &&
 	    !genIsRuntime()) {
 		inlRejectInfo = INL_REJ_LocalInConst0;
-		return -1; 
+		return -1;
 	}
 
 	if (genIsRuntime()) {
 		if (!isLocal) return 0;
 
-		if (foamTag(call) == FOAM_CCall 
-		    && (foamTag(call->foamCCall.op) == FOAM_Lex 
+		if (foamTag(call) == FOAM_CCall
+		    && (foamTag(call->foamCCall.op) == FOAM_Lex
 	     		|| foamTag(call->foamCCall.op) == FOAM_EElt))
 				return 0;
 	}
@@ -1091,10 +1091,12 @@ inlPriqGetPriority(int depth, Foam call, int * psize, Foam * pinfo)
  * I used it in the process of trimming the inliner. I didn't remove because
  * could be useful if we decide to trim again the inliner.
  */
-/*		if (foamProgHasConsts(progInfo)) 		*/
-/*			spaceFactor += 2; 			*/
-/*		if (!foamProgHasNoOCalls(progInfo))		*/
-/*			spaceFactor += 2;			*/
+#if 0
+		if (foamProgHasConsts(progInfo))
+			spaceFactor += 2;
+		if (!foamProgHasNoOCalls(progInfo))
+			spaceFactor += 2;
+#endif
 
 	}
 	else {
@@ -1107,7 +1109,7 @@ inlPriqGetPriority(int depth, Foam call, int * psize, Foam * pinfo)
 			return 0;
 		}
 	}
-	
+
 	/* 3 is a random namber --- this is how much we like
 	 * programs that don't touch their environment.
 	 * In general, we love them to death.
@@ -1126,16 +1128,16 @@ inlPriqGetPriority(int depth, Foam call, int * psize, Foam * pinfo)
  * such kind of analysis because the inaccuracy of estimated time-cost may
  * cause wrong inliner behaviour.
  */
+#if 0
+	time = ((PriQKey) inlProg->prog->foamProg.time) -
+		((PriQKey) expectedCalls) *
+		((1 - timeFactor) * ((PriQKey) progInfo->foamProg.time) +
+					 ((PriQKey) InlCallMagicNumber));
 
-/*	time = ((PriQKey) inlProg->prog->foamProg.time) -		  */
-/*		((PriQKey) expectedCalls) *				  */
-/*		((1 - timeFactor) * ((PriQKey) progInfo->foamProg.time) + */
-/*		 			((PriQKey) InlCallMagicNumber));  */
-/*									  */
-/*	if (time < 0) time = 0.01;					  */
-/*									  */
-/*	priority = size * time;						  */
-/*									  */
+	if (time < 0) time = 0.01;
+
+	priority = size * time;
+#endif
 
 	priority = (size * timeFactor) / expectedCalls;
 
@@ -1188,7 +1190,7 @@ inlAddCallToPriq(Foam call, Foam * stmtp, int depth, BBlock bb)
 		if (priority!= -1) {
 			fprintf(dbOut, "++++ %s (serial: %d, depth: %d, size: %d, mask: %x) ",
 				string,
-				inlCallInfoSerial, depth, size, 
+				inlCallInfoSerial, depth, size,
 				(unsigned) progInfo->foamProg.infoBits);
 			fprintf(dbOut, "Added to Queue ++++ (priority=%f)\n",
 				priority);
@@ -1205,8 +1207,8 @@ local void
 inlPriqBuildFrExpr(Foam foam, Foam * stmtp, int depth, BBlock bb)
 {
 	/* don't recurse into forces */
-	if (foamTag(foam) == FOAM_CCall && 
-	    inlIsForcer((foam)->foamCCall.op)) 
+	if (foamTag(foam) == FOAM_CCall &&
+	    inlIsForcer((foam)->foamCCall.op))
 		return;
 
 	foamIter(foam, arg, {
@@ -1214,7 +1216,7 @@ inlPriqBuildFrExpr(Foam foam, Foam * stmtp, int depth, BBlock bb)
      	});
 
 	if (foamTag(foam) == FOAM_CCall ||
-	    foamTag(foam) == FOAM_OCall) 
+	    foamTag(foam) == FOAM_OCall)
 		inlAddCallToPriq(foam, stmtp, depth, bb);
 }
 
@@ -1232,7 +1234,7 @@ inlPriqBuildFrBlock(BBlock bb, int depth)
 				    seq->foamSeq.argv + i,
 				    depth, bb);
 
-}				   
+}
 
 local void
 inlAddNewCallsToPriq0(Foam foam, Foam * parv, int npars, Foam * stmtp,
@@ -1241,7 +1243,7 @@ inlAddNewCallsToPriq0(Foam foam, Foam * parv, int npars, Foam * stmtp,
 	int i;
 
 	/* don't recurse into forces */
-	if (foamTag(foam) == FOAM_CCall && 
+	if (foamTag(foam) == FOAM_CCall &&
 	    inlIsForcer((foam)->foamCCall.op)) {
 		return;
      	}
@@ -1387,11 +1389,11 @@ inlInlinePriCall(InlPriCall priCall, PriQKey priority)
 	}
 
 	inlinedCall = inlCall(*callPtr, stmtPtr != callPtr);
-	
+
 	if (inlinedCall == *callPtr) return true;
 
 	inlProg->prog->foamProg.size += priCall->size;
-	
+
 	if (callPtr == stmtPtr) {
 		if (otIsVar(inlinedCall) ||
 	    	    (foamTag(inlinedCall) == FOAM_Values &&
@@ -1405,7 +1407,7 @@ inlInlinePriCall(InlPriCall priCall, PriQKey priority)
 
 	*stmtPtr = inlInsertSeq(*stmtPtr);
 
-	
+
 
 	if (DEBUG(inlCallInfo)) {
 		if (syme)
@@ -1413,7 +1415,7 @@ inlInlinePriCall(InlPriCall priCall, PriQKey priority)
 		fprintf(dbOut, " Inlined)\n");
 	}
 
-	inlAddNewCallsToPriq(stmtPtr, parv, npars, 
+	inlAddNewCallsToPriq(stmtPtr, parv, npars,
 			     priCall->block->iextra, priCall->block);
 
 	return true;
@@ -1455,7 +1457,7 @@ inlInsertSeq(Foam foam)
 
 	listIter(Foam, stmt, inlProg->seqBody, {
 		newSeq->foamSeq.argv[i++] = stmt;
-		});	
+		});
 
 	listFree(Foam)(inlProg->seqBody);
 
@@ -1692,7 +1694,7 @@ inlCall(Foam call, Bool valueMode)
 	if (foamTag(op) != FOAM_Clos && (syme = foamSyme(op)) != NULL)
 		ncall = inlInlineSymeCall(call, argv, env, syme, valueMode);
 
-	if (ncall != call) 
+	if (ncall != call)
 		;
 
 	/* Inline direct open calls. */
@@ -1713,13 +1715,13 @@ inlCall(Foam call, Bool valueMode)
 		if (inlConstTrace == -1 ||
 		    inlConstTrace == inlProg->constNum) {
 			fprintf(dbOut, "<<inlCall:  ");
-			foamPrint(dbOut, call); 	
-			fprintf(dbOut, "\n  ->\n");	
-			foamPrint(dbOut, ncall);	
+			foamPrint(dbOut, call);
+			fprintf(dbOut, "\n  ->\n");
+			foamPrint(dbOut, ncall);
 			fnewline(dbOut);
 		}
 	}
-	
+
 	if (!valueMode && !foamHasSideEffect(ncall)) {
 		foamFree(ncall);
 		ncall = foamNewNOp();
@@ -1752,7 +1754,7 @@ inlInlineSymeCall(Foam call, Foam *argv, Foam env, Syme syme, Bool valueMode)
 	inlInlinee->syme = syme;
 
 	code = inlGetFoam(syme);
-	if (!code) Return(call); 
+	if (!code) Return(call);
 
 	if (symeIsLocalConst(syme) && foamOptInfo(code) &&
 	    foamOptInfo(code)->inlState != INL_Inlined)
@@ -1880,7 +1882,7 @@ inlInlineBody(Foam code, Foam call, Foam *argv, Foam env,
 	paramCount = (int *) stoAlloc(OB_Other, paramArgc * sizeof(int));
 	paramArgv  = (Foam *) stoAlloc(OB_Other, paramArgc * sizeof(Foam));
 	for(i=0; i<paramArgc; i++) paramCount[i] = 0;
-	inlGetProgInfo(code->foamProg.body, paramCount, &hasOCall, 
+	inlGetProgInfo(code->foamProg.body, paramCount, &hasOCall,
 		       &usesInnerEnvironment);
 
 	if (usesInnerEnvironment) {
@@ -1892,12 +1894,12 @@ inlInlineBody(Foam code, Foam call, Foam *argv, Foam env,
 		}
 	}
 
-#if 0		
+#if 0
 	if (!usesInnerEnvironment)
 		env = foamNewCast(FOAM_Env, foamNewNil());
 #endif
 	/* Determine whether inliner and inlinee have the same parent. */
-	inlInlinee->sameParent = 
+	inlInlinee->sameParent =
 		foamOptInfo(code) &&
 		foamOptInfo(code)->stab && inlProg->stab &&
 		!foamOptInfo(code)->isGener &&
@@ -1910,7 +1912,7 @@ inlInlineBody(Foam code, Foam call, Foam *argv, Foam env,
 	noLocalEnv = (inlInlinee->denv->foamDEnv.argv[0] == emptyFormatSlot);
 	inlInlinee->noLocalEnv = noLocalEnv;
 
-	if (inlInlineeIsLocal() 
+	if (inlInlineeIsLocal()
 	    && !inlProg->isGener
 	    && inlSameDEnv(inlInlinee->denv,inlProg->denv)) {
 		env = noLocalEnv ? foamNewEnv(1) : foamNewEnv(int0);
@@ -1969,7 +1971,7 @@ inlInlineBody(Foam code, Foam call, Foam *argv, Foam env,
 			inlProg->prog->foamProg.size += 3;
 		}
 	}
-		
+
 	/* Integrate the inlinee into the inliner. */
 	foam = inlInlineProg(code, paramArgv, localArgv, valueMode);
 
@@ -1987,7 +1989,7 @@ inlInlineBody(Foam code, Foam call, Foam *argv, Foam env,
 		stoFree(paramCount);
 		stoFree(paramArgv);
 	}
-	
+
 	if (inlInlinee->parentEnv) foamFree(inlInlinee->parentEnv);
 
 	return foam;
@@ -2023,8 +2025,8 @@ inlAddEnv(Foam envLoc, Foam env, Bool usesInner)
 
 	if (parentEnv
 	    && usesInner
-	    && !inlInlinee->sameParent 
-	    && foamTag(parentEnv) != FOAM_Env 
+	    && !inlInlinee->sameParent
+	    && foamTag(parentEnv) != FOAM_Env
 	    && !inlIsLocalEnv(parentEnv)) {
 
 		inlAddStmt(foamNewEEnsure(foamCopy(parentEnv)));
@@ -2039,7 +2041,7 @@ inlParentEnv(Foam envLoc, Foam env)
 {
 	Foam parent;
 
-	if (foamTag(env) == FOAM_Env) 
+	if (foamTag(env) == FOAM_Env)
 		parent = foamNewEnv(env->foamEnv.level + 1);
 	else if (foamTag(env) == FOAM_PushEnv)
 		parent = foamCopy(env->foamPushEnv.parent);
@@ -2058,13 +2060,13 @@ inlParentEnv(Foam envLoc, Foam env)
  * Get parameter and lexical usage information from a foam prog.
  */
 local void
-inlGetProgInfo(Foam foam, int *paramCount, Bool *hasOCall, 
+inlGetProgInfo(Foam foam, int *paramCount, Bool *hasOCall,
 	       Bool *hasInnerEnv)
 {
 	FoamTag		tag	 = foamTag (foam);
 	int		i;
 
-	foamIter(foam, arg, 
+	foamIter(foam, arg,
 		 inlGetProgInfo(*arg, paramCount, hasOCall, hasInnerEnv));
 	switch (tag) {
 	  case FOAM_Par:
@@ -2080,8 +2082,8 @@ inlGetProgInfo(Foam foam, int *paramCount, Bool *hasOCall,
 		*hasOCall = true;
 		break;
 	  case FOAM_Env:
-		/* Have to be over-conservative as (Env 0) can be 
-		 * aliased and referenced deeply 
+		/* Have to be over-conservative as (Env 0) can be
+		 * aliased and referenced deeply
 		 */
 		*hasInnerEnv = true;
 		break;
@@ -2152,7 +2154,7 @@ inlInlineProg(Foam code, Foam *paramArgv, Foam *localArgv, Bool valueMode)
 		if (rc > 1) lv = listNMap(Foam)(foamCopy, lv);
 		if (lv && !cdr(lv))
 			retVal = car(lv);
-		else 
+		else
 			retVal = foamNewOfList(FOAM_Values, lv);
 		listFree(Foam)(lv);
 	}
@@ -2232,7 +2234,7 @@ inlMakeNewGlobals(Foam unit)
 
 /*
  * Reindex a global variable from a foreign unit, and add it to the
- * global assoc list. 
+ * global assoc list.
  */
 local int
 inlTransformGlobal(Foam glo)
@@ -2454,7 +2456,7 @@ inlIsForcer(Foam foam)
 	RuntimeCallInfo	info;
 	if (foamTag(foam) != FOAM_Glo)
 		return false;
-	info = gen0GetRuntimeCallInfo(fboxNth(inlUnit->globals, 
+	info = gen0GetRuntimeCallInfo(fboxNth(inlUnit->globals,
 					      foam->foamGlo.index));
 	return rtCallIsForce(info);
 }
@@ -2605,7 +2607,7 @@ inlGetLocalConst(AInt n)
 	assert(foamTag(prog) == FOAM_Prog);
 
 	/* don't return the code if we are in the middle of inlining it. */
-	if (info->inlState != INL_Inlined) 
+	if (info->inlState != INL_Inlined)
 		return NULL;
 
 	return inlSetInlinee(NULL, prog);
@@ -2676,7 +2678,7 @@ inlUpdateConstProg(Foam prog)
 	levels = prog->foamProg.levels->foamDEnv.argv;
 	inlUpdateConstBody(prog->foamProg.body);
 	foamOptInfo(prog) = inlInfoNew0(NULL, prog, NULL, false, true);
-	
+
 #ifdef NEW_FORMATS
 	inlUpdateDDecl(inlInlineeDecl(paramsSlot, prog->foamProg.params-1));
 #else
@@ -2711,7 +2713,7 @@ inlUpdateDDecl(Foam ddecl)
 		decl = ddecl->foamDDecl.argv[i];
 		if (decl->foamDecl.type == FOAM_Rec
 		    || decl->foamDecl.type == FOAM_TR)
-			decl->foamDecl.format = 
+			decl->foamDecl.format =
 				inlGetFormat(decl->foamDecl.format);
 		if (sigDecl && decl->foamDecl.type == FOAM_Clos)
 			decl->foamDecl.format = inlGetFormat(decl->foamDecl.format);
@@ -2738,7 +2740,7 @@ inlUpdateConstBody(Foam body)
 	  case FOAM_EElt:
 		body->foamEElt.env = inlGetFormat(body->foamEElt.env);
 		break;
-	  case FOAM_MFmt:	
+	  case FOAM_MFmt:
 		body->foamMFmt.format =  inlGetFormat(body->foamEElt.env);
 		break;
 	  case FOAM_Rec:
@@ -2850,7 +2852,7 @@ inlGetProgInfoFrSyme(Syme syme)
 
 	if (!genHasConstNum(syme))
 		return NULL;
-	
+
 	if (!inlIsConstProgSyme(syme))
 		return NULL;
 
@@ -2901,7 +2903,7 @@ inlGetExternalProgHdr(Syme syme)
 
 /* "limit" is the percentage limit; ex. 150 means 150%
  * "base" is the original value;
- * "value" is the new value; this function check if "value" is under 
+ * "value" is the new value; this function check if "value" is under
  * "(limit" * InlOverGrowthFactor)%
  * with respect to "base"
  */
@@ -2914,9 +2916,9 @@ inlIsUnderLimit(AInt base, AInt value, int limit)
 }
 
 /* $$ Think the possibility of using a new bit: DontInlineMe, that can be
- * generally used by #pragma DONT_INLINE 
+ * generally used by #pragma DONT_INLINE
  */
-Bool 
+Bool
 inlIsEvil(Foam foam)
 {
 	Foam body;
@@ -2925,7 +2927,7 @@ inlIsEvil(Foam foam)
 	body = foam->foamProg.body;
 	for (i=0; i<foamArgc(body); i++) {
 		Foam stmt = body->foamSeq.argv[i];
-		if (foamTag(stmt) == FOAM_Return) 
+		if (foamTag(stmt) == FOAM_Return)
 			stmt = stmt->foamReturn.value;
 		if (foamTag(stmt) == FOAM_Glo) {
 			idx = inlTransformGlobal(stmt);
@@ -2939,7 +2941,7 @@ inlIsEvil(Foam foam)
 /*
  * See if Syme is declared inlinable.
  */
-Bool 
+Bool
 inlInlinable(Stab stab, Syme syme)
 {
 	Bool result = inlInlinable0(stab, syme, true);
@@ -2975,7 +2977,7 @@ inlInlinable0(Stab stab, Syme syme, Bool top)
 			l = top ? symeInlined(syme) : listNil(Syme);
 			for (; l && result; l = cdr(l))
 				result = inlInlinable0(stab, car(l), false);
-						
+
 			return result;
 		}
 
@@ -3012,9 +3014,9 @@ inlSymeIsInlinable(Stab stab, Syme syme)
 	TFormUsesList	tful;
 
 	if (symeExtension(syme))
-		return inlSymeIsInlinable(stab, symeExtension(syme)); 
+		return inlSymeIsInlinable(stab, symeExtension(syme));
 
-	if ( (symeIsExport(syme) || symeIsExtend(syme)) && 
+	if ( (symeIsExport(syme) || symeIsExtend(syme)) &&
 	     symeLib(syme)) {
 		Syme	isyme = symeCopy(syme);
 		TForm	tf = tfLibrary(libLibrarySyme(symeLib(syme)));
@@ -3097,7 +3099,7 @@ inlIsSideEffecting(Foam param)
 	FoamTag		tag;
 	Foam		op;
 	InlProgInfo	prog;
-	
+
 	tag = foamTag(param);
 	switch (tag) {
 	  case FOAM_Set:
@@ -3136,7 +3138,7 @@ inlIsConstProgSyme(Syme syme)
  ****************************************************************************/
 
 /*
- * Transform an expression for use in an inlined program.  paramArg and 
+ * Transform an expression for use in an inlined program.  paramArg and
  * localArgv are vectors of values to use for paramters and locals.
  */
 local Foam
@@ -3352,7 +3354,7 @@ inlSet(Foam set)
 		return foamNewNOp();
 	}
 	tag = foamTag(set);
-	
+
 	for(i=0; i<foamArgc(lhs)-1; i++) {
 		iLhs = lhs->foamValues.argv[i];
 		iRhs = rhs->foamValues.argv[i];
@@ -3434,13 +3436,13 @@ inlReturn(Foam ret)
 				inlAddStmt(foamNewDef(foamCopy(car(lv)),
 						      rv->foamValues.argv[i]));
 			}
-		
+
 		}
 		if (foamTag(rv) == FOAM_Clos &&
 		    foamTag(rv->foamClos.prog) == FOAM_Const)
 		{
 			foamSyme(rv) = inlInlinee->syme;
-		} 
+		}
 	}
 
 	inlProg->prog->foamProg.size += 1;
@@ -3527,21 +3529,21 @@ inlFoamEnvElt(Foam lex)
 	Foam	newFoam;
 
 	format = inlGetFormat(inlInlinee->denv->foamDEnv.argv[level]);
-	
+
 	if (inlInlinee->noLocalEnv)
 		level--;
 	assert(level >= 0);
 
-	if (foamTag(inlInlinee->env) == FOAM_Env) 
+	if (foamTag(inlInlinee->env) == FOAM_Env)
 		newFoam = foamNewLex(level + inlInlinee->env->foamEnv.level,
 		       index);
-	else if (inlInlinee->parentEnv && level > 0) 
-		newFoam = foamNewEElt(format, 
+	else if (inlInlinee->parentEnv && level > 0)
+		newFoam = foamNewEElt(format,
 				      foamCopy(inlInlinee->parentEnv),
 				      level - 1,
 				      index);
 	else
-		newFoam = foamNewEElt(format, 
+		newFoam = foamNewEElt(format,
 				      foamCopy(inlInlinee->env),
 				      level,
 				      index);
@@ -3643,7 +3645,7 @@ inlGetTypeFrDecl(Foam decl, FoamTag *ptype, int *pformat)
 	*ptype = type;
 	if (type == FOAM_Rec || type == FOAM_Env || type == FOAM_TR)
 		*pformat = inlGetFormat(format);
-	else 
+	else
 		*pformat = format;
 }
 
@@ -3698,7 +3700,7 @@ inlExprType(Foam expr, AInt *fmt)
 	return foamExprTypeG0(expr, inlProg->prog,
 			     inlUnit->unit->foamUnit.formats,
 			     inlProg->locals->fbox,
-			     inlUnit->formats, inlUnit->globals, 
+			     inlUnit->formats, inlUnit->globals,
 			     fmt);
 }
 
@@ -3721,7 +3723,7 @@ inlCanonEElt(Foam foam)
 	env = foam->foamEElt.ref;
 	depth = foam->foamEElt.level;
 
-        while (depth > 0) {		
+        while (depth > 0) {
 		next = inlGetPushEnvFrVar(env);
 		if (!next) break;
 		assert(foamTag(next) == FOAM_PushEnv);
@@ -3739,10 +3741,10 @@ inlCanonEElt(Foam foam)
 		next = foamNewLex(depth,
 				  foam->foamEElt.lex);
 	}
-	else if (env == foam->foamEElt.ref) 
+	else if (env == foam->foamEElt.ref)
 		return foam;
 	else
-		next = foamNewEElt(foam->foamEElt.env, foamCopy(env), depth, 
+		next = foamNewEElt(foam->foamEElt.env, foamCopy(env), depth,
 				   foam->foamEElt.lex);
 
 	foamSyme(next) = foamSyme(foam);
@@ -3779,7 +3781,7 @@ inlCanonEEnv(Foam foam)
 		assert(level >= 0); /* bug 1168 */
 		next = foamNewEEnv(level, foamCopy(env->foamEEnv.env));
 	}
-	else if (env == foam->foamEEnv.env) 
+	else if (env == foam->foamEEnv.env)
 		return foam;
 	else if (depth == 0)
 		next = foamCopy(env);
@@ -3887,7 +3889,7 @@ inlSubstitutedSyme(Syme syme)
 
 	oldExporter = symeExporter(syme);
 	/* Bail if we don't know where this came from */
-	if (!oldExporter) return NULL; 
+	if (!oldExporter) return NULL;
 
 	newExporter = tformSubst(inlInlinee->sigma, oldExporter);
 	tfFollow(newExporter);
@@ -3918,7 +3920,7 @@ inlSymeSubstSelf(Syme syme, TForm tfex)
 				  listCons(Syme)(syme, listNil(Syme)));
 	nsyme = symes->first;
 	nsyme = tfHasDomImport(tfex, symeId(nsyme), symeType(nsyme));
-	
+
 	return nsyme;
 }
 
@@ -3968,7 +3970,7 @@ inlPrintRejectCause(String call)
 
 	if (inlConstTrace != -1 &&
 	    inlConstTrace != inlProg->constNum) return;
-        
+
 	switch (inlRejectInfo) {
 	case INL_REJ_Unknown: str = "Unknown"; break;
 	case INL_REJ_NotConstSyme: str = "NotConstSyme"; break;
@@ -4004,18 +4006,18 @@ inlPrintUninlinedCalls(InlPriCall pric, PriQKey pri)
 
 	fprintf(dbOut, "(Over limit in prog: %d, originalSize = %d, limit = %d\n", inlProg->constNum, inlProg->originalSize, inlSizeLimit);
 
-       foamPrintDb(pric->call);
-       fprintf(dbOut, "(priority = %f, size = %d)\n", 
-	       pri, (int)pric->size);
+	foamPrintDb(pric->call);
+	fprintf(dbOut, "(priority = %f, size = %d)\n",
+		pri, (int)pric->size);
 
-       inlPrintPriq();
-       while (priqCount(inlProg->priq)) {
-	       priCall =(InlPriCall) priqExtractMin(inlProg->priq, &priority);
+	inlPrintPriq();
+	while (priqCount(inlProg->priq)) {
+		priCall =(InlPriCall) priqExtractMin(inlProg->priq, &priority);
 
-	       foamPrintDb(priCall->call);
-	       fprintf(dbOut, "(priority = %f, size = %d)\n", 
-		       priority, (int)priCall->size);
-       }
+		foamPrintDb(priCall->call);
+		fprintf(dbOut, "(priority = %f, size = %d)\n",
+			priority, (int)priCall->size);
+	}
 
 	fprintf(dbOut, "limit end)\n");
 }
