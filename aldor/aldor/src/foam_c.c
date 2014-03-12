@@ -2047,7 +2047,8 @@ so it is not possible to throw an exception.\n", (char *) problem);
 	}
 #else
 	/*fiExceptionHandler must have been set to fintRaiseException in fint.c */
-	if ((void *)*fiExceptionHandler) (*fiExceptionHandler)((char *)problem, NULL);
+	if (fiExceptionHandler)
+		fiExceptionHandler ((char *)problem, NULL);
 	else {
 		(void) printf("Aldor runtime (interpreter): should never happen : fiExceptionHandler corrupted\nExiting...");
 		exit(2);
@@ -2132,7 +2133,7 @@ fiStoATracer(FiSInt code, FiClos clos)
 void
 fiStoCTracer(FiSInt code, FiWord fun)
 {
-	stoSetTracer(code, (FiPtr)fun);
+	stoSetTracer(code, (StoTraceFun)fun);
 }
 
 

@@ -7,14 +7,18 @@ local void ostreamFileWriteChar(OStream os, char c);
 local int ostreamFileWriteString(OStream os, const char *s, int n);
 local void ostreamFileClose(OStream os);
 
-_OStreamOps ostreamFileOps = { ostreamFileWriteChar, ostreamFileWriteString, ostreamFileClose };
+struct ostreamOps ostreamFileOps = {
+	ostreamFileWriteChar,
+	ostreamFileWriteString,
+	ostreamFileClose,
+};
 
 OStream 
 ostreamNewFrFile(FILE *file)
 {
 	OStream s = (OStream) stoAlloc(OB_Other, sizeof(*s));
 	s->ops = &ostreamFileOps;
-	s->data = file;
+	s->data.obj = file;
 	return s;
 }
 
@@ -22,20 +26,20 @@ void
 ostreamInitFrFile(OStream os, FILE *file)
 {
 	os->ops = &ostreamFileOps;
-	os->data = file;
+	os->data.obj = file;
 }
 
 local void 
 ostreamFileWriteChar(OStream os, char c)
 {
-	FILE *file = (FILE*) os->data;
+	FILE *file = (FILE*) os->data.obj;
 	fputc(c, file);
 }
 
 local int
 ostreamFileWriteString(OStream os, const char *s, int n)
 {
-	FILE *file = (FILE*) os->data;
+	FILE *file = (FILE*) os->data.obj;
 	if (n == -1) {
 		fputs(s, file);
 		n = strlen(s);
@@ -73,10 +77,14 @@ local void ostreamNullWriteChar(OStream os, char c);
 local int ostreamNullWriteString(OStream os, const char *s, int n);
 local void ostreamNullClose(OStream os);
 
-_OStreamOps ostreamDevNullOps = { ostreamNullWriteChar, ostreamNullWriteString, ostreamNullClose };
+struct ostreamOps ostreamDevNullOps = {
+	ostreamNullWriteChar,
+	ostreamNullWriteString,
+	ostreamNullClose,
+};
 
 OStream 
-ostreamNewFrDevNull()
+ostreamNewFrDevNull(void)
 {
 	OStream s = (OStream) stoAlloc(OB_Other, sizeof(*s));
 	s->ops = &ostreamDevNullOps;
@@ -107,28 +115,32 @@ local void ostreamBufferWriteChar(OStream os, char c);
 local int ostreamBufferWriteString(OStream os, const char *s, int n);
 local void ostreamBufferClose(OStream os);
 
-_OStreamOps ostreamBufferOps = { ostreamBufferWriteChar, ostreamBufferWriteString, ostreamBufferClose };
+struct ostreamOps ostreamBufferOps = {
+	ostreamBufferWriteChar,
+	ostreamBufferWriteString,
+	ostreamBufferClose,
+};
 
 OStream 
 ostreamNewFrBuffer(Buffer b)
 {
 	OStream s = (OStream) stoAlloc(OB_Other, sizeof(*s));
 	s->ops = &ostreamBufferOps;
-	s->data = b;
+	s->data.obj = b;
 	return s;
 }
 
 local void 
 ostreamBufferWriteChar(OStream os, char c)
 {
-	Buffer b = (Buffer) os->data;
+	Buffer b = (Buffer) os->data.obj;
 	bufPutc(b, c);
 }
 
 local int
 ostreamBufferWriteString(OStream os, const char *s, int n)
 {
-	Buffer b = (Buffer) os->data;
+	Buffer b = (Buffer) os->data.obj;
 	if (n == -1) {
 		return bufPuts(b, s);
 	}

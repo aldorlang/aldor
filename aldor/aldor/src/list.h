@@ -28,7 +28,7 @@
 	ListOpsStruct(Type);					\
 	extern struct ListOpsStructName(Type) const *ListOps(Type)
 
-# define CREATE_LIST(Type)  \
+# define CREATE_LIST(Type)					\
 	struct ListOpsStructName(Type) const *ListOps(Type) =	\
 		(struct ListOpsStructName(Type) const *) &ptrlistOps
 

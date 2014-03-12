@@ -4504,7 +4504,7 @@ stoSetAldorTracer(int code, Pointer clos)
  * called from C.
  */
 void
-stoSetTracer(int code, Pointer fun)
+stoSetTracer(int code, StoTraceFun fun)
 {
 	if (code >= OB_MAX)
 		bug("Too many object types");
@@ -4512,7 +4512,7 @@ stoSetTracer(int code, Pointer fun)
 	if (!stoObRegistered[code])
 		bug("Object type not registered");
 
-	stoObCTracer[code] = (StoTraceFun)fun;
+	stoObCTracer[code] = fun;
 }
 
 

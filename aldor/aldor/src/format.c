@@ -26,10 +26,10 @@ local int    fmtIPrint(Format format, OStream stream, int n);
 int
 fnewline(FILE *fout)
 {
-	int     i;
+	int	i;
 	fputc('\n', fout);
 	for (i = 0; i < findent; i++) fputc(' ', fout);
-	return findent + 1; 
+	return findent + 1;
 }
 
 String
@@ -87,7 +87,7 @@ avprintf(const char *fmt, va_list argp)
 int
 afvprintf(FILE *fout, const char *fmt, va_list argp)
 {
-	struct _OStream os;
+	struct ostream os;
 	int cc;
 
 	ostreamInitFrFile(&os, fout);
@@ -101,14 +101,14 @@ afvprintf(FILE *fout, const char *fmt, va_list argp)
  * xprintf is like printf but takes a function to actually put the characters.
  *
  * Given a null function pointer, xprintf computes the number of characters
- * without doing output.  
+ * without doing output.
  * The XPutFun consumes a string and returns the count of emitted characters.
  */
 
 int
 xprintf(XPutFun putfun, const char *fmt, ...)
 {
-	int     cc;
+	int	cc;
 	va_list argp;
 	va_start(argp, fmt);
 	cc = vxprintf(putfun, fmt, argp);
@@ -118,50 +118,54 @@ xprintf(XPutFun putfun, const char *fmt, ...)
 
 
 struct fbuf {
-	int     width, prec;            /* -1 if none */
-	char    size,  conv;            /* 0  if none */
-	char    fmt[100];	        /* A string containing it. */
-	int     len;                    /* Current length of buf. */
+	int	width, prec;		/* -1 if none */
+	char	size,  conv;		/* 0  if none */
+	char	fmt[100];		/* A string containing it. */
+	int	len;			/* Current length of buf. */
 };
 
 
-local void 
-xputFunWriteChar(OStream o,char c)
+local void
+xputFunWriteChar(OStream o, char c)
 {
-	if (o->data)
-		((XPutFun) o->data)(&c, 1);
+	if (o->data.fun)
+		o->data.fun (&c, 1);
 }
 
 local int
 xputFunWriteString(OStream o, const char *str, int n)
 {
-	if (o->data)
-		return ((XPutFun) o->data)(str, n);
+	if (o->data.fun)
+		return o->data.fun (str, n);
 	else
 		return n == -1 ? strlen(str): n;
 }
 
-local void 
+local void
 xputFunClose(OStream o)
 {
 }
 
-_OStreamOps ostreamXPutFunOps = { xputFunWriteChar, xputFunWriteString, xputFunClose };
+struct ostreamOps ostreamXPutFunOps = {
+	xputFunWriteChar,
+	xputFunWriteString,
+	xputFunClose,
+};
 
 int
 vxprintf(XPutFun putfun, const char *fmt, va_list argp)
 {
-	struct _OStream os;
+	struct ostream os;
 	int cc;
 
-	os.ops  = &ostreamXPutFunOps;
-	os.data = (void *) putfun;
+	os.ops = &ostreamXPutFunOps;
+	os.data.fun = putfun;
 	cc = ostreamVPrintf(&os, fmt, argp);
 
 	return cc;
 }
 
-int 
+int
 ostreamPrintf(OStream ostream, const char *fmt, ...)
 {
 	va_list argp;
@@ -177,9 +181,9 @@ ostreamPrintf(OStream ostream, const char *fmt, ...)
 int
 ostreamVPrintf(OStream ostream, const char *fmt, va_list argp)
 {
-	int             c, r, w, cc;
-	struct fbuf     fb;
-	char    	*f, arg_buf[256];
+	int		c, r, w, cc;
+	struct fbuf	fb;
+	char		*f, arg_buf[256];
 
 	for (cc = 0; *fmt; ) {
 
@@ -244,7 +248,7 @@ ostreamVPrintf(OStream ostream, const char *fmt, va_list argp)
 
 		/* Conversion character */
 		fb.fmt[fb.len++] = fb.conv = *fmt++;
-		fb.fmt[fb.len]   = 0;
+		fb.fmt[fb.len]	 = 0;
 
 		/************************************************************
 		 * Perform the formatting on the indicated parameter
@@ -282,7 +286,7 @@ ostreamVPrintf(OStream ostream, const char *fmt, va_list argp)
 		if (fb.conv == 'o'){
 			Format format = fmtMatch(fmt);
 			if (format == NULL) {
-				w  = fb.width + fb.prec + 30;       /* over estimate */
+				w  = fb.width + fb.prec + 30;	    /* over estimate */
 				f = (w < sizeof(arg_buf)) ? fb.fmt : "<too wide to format>";
 				sprintf(arg_buf, f, va_arg(argp, int));
 				cc += ostreamWrite(ostream, arg_buf, -1);
@@ -296,7 +300,7 @@ ostreamVPrintf(OStream ostream, const char *fmt, va_list argp)
 		if (fb.conv == 'p') {
 			Format format = fmtMatch(fmt);
 			if (format == NULL) {
-				w  = fb.width + fb.prec + 30;       /* over estimate */
+				w  = fb.width + fb.prec + 30;	    /* over estimate */
 				f = (w < sizeof(arg_buf)) ? fb.fmt : "<too wide to format>";
 				sprintf(arg_buf, f, va_arg(argp, Pointer));
 				cc += ostreamWrite(ostream, arg_buf, -1);
@@ -309,7 +313,7 @@ ostreamVPrintf(OStream ostream, const char *fmt, va_list argp)
 		}
 		/* Remaining formats are short unless width or prec is given */
 
-		w  = fb.width + fb.prec + 30;       /* over estimate */
+		w  = fb.width + fb.prec + 30;	    /* over estimate */
 		f = (w < sizeof(arg_buf)) ? fb.fmt : "<too wide to format>";
 
 		switch (fb.conv) {
@@ -323,11 +327,11 @@ ostreamVPrintf(OStream ostream, const char *fmt, va_list argp)
 				sprintf(arg_buf,f,va_arg(argp, long));
 			else if (fb.size == 'z')
 				sprintf(arg_buf,f,va_arg(argp, Length));
-			else 
+			else
 				sprintf(arg_buf,f,va_arg(argp, int));
 			break;
 		case 'e': case 'E': case 'f': case 'g': case 'G':
-			if (fb.size == 'L') 
+			if (fb.size == 'L')
 				sprintf(arg_buf,f,va_arg(argp, long double));
 			else
 				sprintf(arg_buf,f,va_arg(argp, double));
@@ -350,13 +354,13 @@ CREATE_LIST(Format);
 
 static FormatList fmtRegisteredFormats = listNil(Format);
 
-void 
+void
 fmtRegister(const char *name, PFormatFn fn)
 {
 	fmtRegisterFull(name, fn, true);
 }
 
-void 
+void
 fmtRegisterFull(const char *name, PFormatFn fn, Bool nullOk)
 {
 	Format format = (Format) stoAlloc(OB_Other, sizeof(*format));
@@ -387,7 +391,7 @@ fmtMatch(const char *fmtTxt)
 
 	if (fmtTxt[0] == '\0')
 		return NULL;
-	
+
 	list = fmtRegisteredFormats;
 	while (list != listNil(Format)) {
 		Format format = car(list);
@@ -398,11 +402,11 @@ fmtMatch(const char *fmtTxt)
 			longestMatch = strlen(match->name);
 		}
 	}
+
 	return match;
-	
 }
 
-static int 
+static int
 fmtPPrint(Format format, OStream stream, Pointer ptr)
 {
 	assert(format != NULL);
@@ -412,7 +416,7 @@ fmtPPrint(Format format, OStream stream, Pointer ptr)
 	return format->pfn(stream, ptr);
 }
 
-static int 
+static int
 fmtIPrint(Format format, OStream stream, int n)
 {
 	assert(format != NULL);
