@@ -19,7 +19,7 @@
  ****************************************************************************/
 
 extern void	osInit			(void);
-extern void	osExit			(int) noreturn;
+extern void	osExit			(int) chk_noreturn;
 extern Bool	osIsGUI			(void);
 extern void	osDisplayMessage	(char *);
 

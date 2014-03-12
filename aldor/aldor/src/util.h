@@ -17,8 +17,8 @@
  *
  *****************************************************************************/
 
-extern void	exitSuccess	(void) noreturn;
-extern void	exitFailure	(void) noreturn;
+extern void	exitSuccess	(void) chk_noreturn;
+extern void	exitFailure	(void) chk_noreturn;
 	/*
 	 * Exit from program with an appropriate return code.
 	 */
@@ -37,7 +37,7 @@ extern ExitFun	exitSetHandler	(ExitFun);
  *****************************************************************************/
 extern void	bugWarning	(String fmt, ...) chk_fmt (1, 2);
 
-extern void	bug		(String fmt, ...) chk_fmt (1, 2) noreturn;
+extern void	bug		(String fmt, ...) chk_fmt (1, 2) chk_noreturn;
 
 #define		bugUnimpl(m)	_bug("Unimplemented %s (line %d in file %s).",m)
 #define		bugBadCase(no)	_bug("Bad case %d (line %d in file %s).", (int) no)

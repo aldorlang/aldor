@@ -18,8 +18,8 @@
 
 #ifndef DO_ASSERT_IS_DECLARED
 #define DO_ASSERT_IS_DECLARED
-void _abort_if_fatal_assert(void) noreturn;
-void _do_assert(char *str, char *file, int line) noreturn;
+void _abort_if_fatal_assert(void) chk_noreturn;
+void _do_assert(char *str, char *file, int line) chk_noreturn;
 #endif
 
 #if defined(QASSERT)
