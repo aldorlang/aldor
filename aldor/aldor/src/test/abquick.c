@@ -114,7 +114,7 @@ abqParseLinesAsSeq(StringList lines)
 	{
 		String tmp;
 		SrcLine line;
-		int indent;
+		int indent = 0;
 		char *p = car(lines);
 		lines = cdr(lines);
 		while (*p == ' ') { p++; indent++; }
