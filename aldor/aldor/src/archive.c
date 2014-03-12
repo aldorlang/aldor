@@ -1098,6 +1098,7 @@ local void
 arReadNumber(Archive ar, Offset *plong, int len, int base)
 {
 	char *endp;
+	assert(len < sizeof ar_buffer);
 
 	/* First read the text */
 	arReadText(ar, ar_buffer, len);
