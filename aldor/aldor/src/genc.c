@@ -1006,7 +1006,7 @@ gc0GetterDecl(String name)
 local CCode
 gc0ArgcDecl(void)
 {
-	return ccoDecl(ccoType(ccoExtern(), ccoTypeIdOf("long")),
+	return ccoDecl(ccoType(ccoExtern(), ccoTypeIdOf("int")),
 		       ccoIdOf("mainArgc"));
 }
 
