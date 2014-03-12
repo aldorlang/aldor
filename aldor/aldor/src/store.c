@@ -387,8 +387,7 @@ static Bool     markingStats    = false;
  *
  *****************************************************************************/
 
-static _TmTimer stoGcTimer;
-extern TmTimer gcTimer		(void);
+static struct tmTimer gcTimer;
 
 /*****************************************************************************
  *
@@ -588,9 +587,9 @@ stoCertifyReally(int loc, Bool flag)
 }
 
 TmTimer
-gcTimer()
+stoGcTimer(void)
 {
-  	return &stoGcTimer;
+	return &gcTimer;
 }
 
 /****************************************************************************
@@ -3276,8 +3275,8 @@ stoInit(void)
 
 	stoIsInit     =	 pgMap != 0;
 	
-	stoGcTimer.time = 0;
-	stoGcTimer.live = 0;
+	gcTimer.time = 0;
+	gcTimer.live = 0;
 
 	return stoIsInit;
 }
@@ -3655,7 +3654,7 @@ stoGc(void)
 	if (stoMustTag) {
 		static Bool inGc = false;
 		if (inGc) return;
-		tmStart(gcTimer());
+		tmStart(stoGcTimer());
 		if (DEBUG(sto)) {
 			if (doShow) {
 				/* Census taking is special */
@@ -3681,7 +3680,7 @@ stoGc(void)
 				stoShowDetail(doShow);
 			}
 		}
-		tmStop(gcTimer());
+		tmStop(stoGcTimer());
 	}
 }
 
@@ -4905,8 +4904,8 @@ int  stoMarkObject		(Pointer p)	{ return 0; }
 int  stoWritablePointer		(Pointer p)	{ return POINTER_IS_UNKNOWN; }
 int  stoCtl			(int cmd, ...)	{ return 0; }
 
-static _TmTimer stoGcTimer;
-TmTimer gcTimer			(void) { return &stoGcTimer; }
+static struct tmTimer gcTimer;
+TmTimer stoGcTimer		(void) { return &gcTimer; }
 
 
 /*

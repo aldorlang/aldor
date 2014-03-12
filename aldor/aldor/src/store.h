@@ -10,6 +10,7 @@
 #define _STORE_H_
 
 #include "cport.h"
+#include "timer.h"
 
 /*
  * Martin's experimental stuff
@@ -54,6 +55,8 @@ extern int		stoWritablePointer	(Pointer);
 extern void		stoSetAldorTracer	(int, Pointer);
 extern void		stoSetTracer		(int, StoTraceFun);
 extern int		stoMarkObject		(Pointer);
+
+extern TmTimer		stoGcTimer		(void);
 
 /*
  * Control storage management behaviour.

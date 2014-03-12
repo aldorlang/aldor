@@ -4954,8 +4954,7 @@ fintEval_(DataObj retDataObj)
 				    (String) expr3.fiArr);
 			break;
 		case FINT_FOREIGN_gcTimer: {
-			extern TmTimer gcTimer(void);
-			retDataObj->fiWord = (FiWord) gcTimer();
+			retDataObj->fiWord = (FiWord) stoGcTimer();
 			break;
 			}
 		case FINT_FOREIGN_fiRaiseException: {

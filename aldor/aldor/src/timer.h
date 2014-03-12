@@ -4,23 +4,22 @@
  *
  *****************************************************************************/
 
-#ifndef _TIMER_H_
-#define _TIMER_H_
+#ifndef TIMER_H_
+#define TIMER_H_
  
 #include "axlgen.h"
 #include "foam_c.h"
 
-typedef struct {
+typedef struct tmTimer {
 	FiWord time;
 	FiWord start;
 	FiWord live;
-} *TmTimer, _TmTimer;
+} *TmTimer;
 
-extern TmTimer tmAlloc();
-extern void tmFree(TmTimer tm);
-extern FiSInt tmRead(TmTimer tm);
-extern void tmStart(TmTimer tm);
-extern void tmStop(TmTimer tm);
+extern TmTimer	tmAlloc	(void);
+extern void	tmFree	(TmTimer tm);
+extern FiSInt	tmRead	(TmTimer tm);
+extern void	tmStart	(TmTimer tm);
+extern void	tmStop	(TmTimer tm);
 
-#endif /*_TIMER_H_*/
-
+#endif /* TIMER_H_ */
