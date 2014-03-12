@@ -18,9 +18,9 @@
  *
  ****************************************************************************/
 
-local   void	exitDefaultHandler  (int status);
+local void	exitDefaultHandler	(int status);
 
-static ExitFun 	exitHandler   	= exitDefaultHandler;
+static ExitFun	exitHandler	= exitDefaultHandler;
 
 void
 exitSuccess(void)
@@ -85,7 +85,7 @@ bug(String fmt, ...)
 	va_start(argp, fmt); vprintf(fmt, argp); va_end(argp);
 	printf("\n");
 
-	assert(false);
+	_abort_if_fatal_assert();
 }
 
 /*****************************************************************************
@@ -111,8 +111,8 @@ binPrime(ULong nbits)
 int
 cielLg(ULong n)
 {
-	register int    i;
-	register ULong  p;
+	register int	i;
+	register ULong	p;
 
 	for (i = 0, p = 1; ; i++, p <<= 1)
 		if (n <= p) return i;
@@ -142,7 +142,7 @@ bite(String buf, String str, int sep)
 #define _pa(i)	((Pointer) (((char *) a) + (i)*sz))
 
 void
-lisort(Pointer a, Length n, Length sz, 
+lisort(Pointer a, Length n, Length sz,
        int (*cmpfn)(ConstPointer, ConstPointer))
 {
 	Length		i, j;
@@ -175,7 +175,7 @@ memswap(Pointer targ, Pointer src, Length n)
 
 	while (n-- > 0) { t = *ct; *ct = *cs; *cs = t; ct++; cs++; }
 
-        return;
+	return;
 }
 
 #define memchunk	32000	/* Guaranteed addressible in one segment. */
@@ -238,10 +238,10 @@ memltest(Pointer p, int c, ULong l)
 
 /*
  * bfShiftUp
- *	 shifts bits up (toward lower address) by 'nsh' bit positions. 
+ *       shifts bits up (toward lower address) by 'nsh' bit positions.
  *      's' is a pointer to 'nb' bytes treated as a bit string.
- *	't' is a pointer to 'nb' bytes to hold the result.
- *	Bits shifted out are lost.  'bF' is the bit to shift in.
+ *      't' is a pointer to 'nb' bytes to hold the result.
+ *      Bits shifted out are lost.  'bF' is the bit to shift in.
  *
  *      Example:   bv = 00010001 , nsh = 2, (nb = 1), bF = 1
  *              -> br = 01000111
@@ -250,7 +250,7 @@ memltest(Pointer p, int c, ULong l)
  *              -> br = 01000000
  *
  */
-void	
+void
 bfShiftUp(int nb, UByte *br, int nsh, UByte *bv, int bF)
 {
 	int	i, ov, b, xbyte, xbit, BF;
@@ -263,10 +263,10 @@ bfShiftUp(int nb, UByte *br, int nsh, UByte *bv, int bF)
 	xbit  = nsh % CHAR_BIT;
 
 	for (i = 0; i < nb - xbyte; i++)
-		br[i] = bv[i + xbyte]; 
-	for (     ; i < nb; i++)
-		br[i] = BF; 
-	
+		br[i] = bv[i + xbyte];
+	for (	  ; i < nb; i++)
+		br[i] = BF;
+
 	ov = BF;
 	for (i = nb - 1; i >= 0; i--) {
 		b     = bv[i];
@@ -276,17 +276,17 @@ bfShiftUp(int nb, UByte *br, int nsh, UByte *bv, int bF)
 }
 
 /* bfShiftDn
- *	shifts bits down (toward higher address) by nsh bit positions. 
+ *      shifts bits down (toward higher address) by nsh bit positions.
  *      's' is a pointer to 'nb' bytes treated as a bit string.
- *	't' is a pointer to 'nb' bytest to hold the result.
- *	Bits shifted out are lost. 
- *	'b1' is the first bit to shift in the top.
- *	'b0' is shifted in for the subsequent bits.
+ *      't' is a pointer to 'nb' bytest to hold the result.
+ *      Bits shifted out are lost.
+ *      'b1' is the first bit to shift in the top.
+ *      'b0' is shifted in for the subsequent bits.
  *
  * NOTE: 'b1' (the first bit to shift) is usefull because some floating point
- *	representations have an implicit normalization bit.
+ *      representations have an implicit normalization bit.
  */
-void	
+void
 bfShiftDn(int nb, UByte *br, int nsh, UByte *bv, int b0, int b1)
 {
 	int	i, ov, b, xbyte, xbit, B0, B1;
@@ -300,7 +300,7 @@ bfShiftDn(int nb, UByte *br, int nsh, UByte *bv, int b0, int b1)
 	xbit  = nsh % CHAR_BIT;
 
 	for (i = nb - 1; i >= xbyte; i--)
-		br[i] = bv[i - xbyte]; 
+		br[i] = bv[i - xbyte];
 	for (i = 0; i < xbyte && i < nb; i++)
 		br[i] = (i == xbyte-1) ? B1 : B0;
 
@@ -313,22 +313,22 @@ bfShiftDn(int nb, UByte *br, int nsh, UByte *bv, int b0, int b1)
 }
 
 /* bfFirst1
- *	finds the bit index of the lowest address 1-bit in 't'.
- *	The most significant bit of t[0] is bit 0 and the least
- *	significant bit of t[nb-1] is bit nb * CHAR_BIT - 1.
- * 
+ *      finds the bit index of the lowest address 1-bit in 't'.
+ *      The most significant bit of t[0] is bit 0 and the least
+ *      significant bit of t[nb-1] is bit nb * CHAR_BIT - 1.
+ *
  *      Returns -1 if there is no 1-bit.
- */ 
+ */
 int
 bfFirst1(int nb, UByte *bv)
 {
 	int	xbyte, xbit;
-	
+
 	for (xbyte = 0; xbyte < nb; xbyte++)
 		if (bv[xbyte]) break;
 
 	if (xbyte == nb) return -1;
-	
+
 	for (xbit = 0; xbit < CHAR_BIT; xbit++)
 		if (bv[xbyte] & (1 << (CHAR_BIT - xbit - 1))) break;
 
@@ -369,22 +369,22 @@ fputcTimes(int c, int n, FILE *fout)
 int
 fputsUntab(String s, int tabstop, FILE *fout)
 {
-        int     cc;
-        for (cc = 0; *s; s++) {
-                if (*s != '\t') {
-                        fputc(*s, fout); cc++;
-                }
-                else {
-                        fputc(' ', fout); cc++;
-                        while (cc % tabstop != 0) {
-                                fputc(' ', fout); cc++;
-                        }
-                }
-        }
+	int	cc;
+	for (cc = 0; *s; s++) {
+		if (*s != '\t') {
+			fputc(*s, fout); cc++;
+		}
+		else {
+			fputc(' ', fout); cc++;
+			while (cc % tabstop != 0) {
+				fputc(' ', fout); cc++;
+			}
+		}
+	}
 	return cc;
 }
 
-Bool     cmdFloatRepFlag = false;    /* Decrease double precision -Wfloatrep */
+Bool	 cmdFloatRepFlag = false;    /* Decrease double precision -Wfloatrep */
 
 String
 DFloatSprint(String buf, DFloat d)
@@ -435,7 +435,7 @@ ubPrintUByteBits(UByte ub)
 	putchar('.');
 }
 
-/* NOTE: use the macro: ubPrintBits(x) to print the bit mask for `x'. 
+/* NOTE: use the macro: ubPrintBits(x) to print the bit mask for `x'.
  */
 void
 ubPrintBits0(int n, UByte *ub)
@@ -483,15 +483,15 @@ hashCombinePair(int i1, int i2)
 		BInt b2 = bintNew(z2);
 		BInt bb = bintPlus(bintShift(bintNew(zzh), 32),
 				   bintNew(zzl));
-		BInt tmp = bintOpAndFree(bintPlus, 
+		BInt tmp = bintOpAndFree(bintPlus,
 					 bintTimes(bi1, b1),
 					 bintTimes(bi2, b2));
 		BInt tmp2 = bintOpAndFree(bintTimes, tmp, bb);
 		BInt a = bintShift(tmp2, -32);
 		BInt al = bintShiftRem(a, 30);
-		
+
 		assert(bintIsSmall(al));
-		
+
 		return bintSmall(al);
 	}
 	else {
@@ -499,8 +499,8 @@ hashCombinePair(int i1, int i2)
 	}
 }
 
-/* Used this for digging out random numbers:
-
+/* Used this for digging out random numbers: */
+#if 0
 long gcd(long a, long b)
 {
 	if (a < 0) a = -a;
@@ -531,13 +531,13 @@ int main(int argc, char *argv[])
 		}
 	}
 }
-*/
+#endif
 
-  /*****************************************************************************
-   *
-   * :: Strings
-   *
-   ****************************************************************************/
+/*****************************************************************************
+ *
+ * :: Strings
+ *
+ ****************************************************************************/
 
 
 /*
@@ -549,7 +549,7 @@ int main(int argc, char *argv[])
 ULong
 ulongSmallIntFrString(String start, unsigned int ndigs, unsigned int radix)
 {
-	char 	*junk;
+	char	*junk;
 	ULong	ires;
 	ULong	slen;
 #define radixBits (sizeof(ULong) << 3)
@@ -580,4 +580,3 @@ ulongSmallIntFrString(String start, unsigned int ndigs, unsigned int radix)
 	/* Return the result */
 	return ires;
 }
-
