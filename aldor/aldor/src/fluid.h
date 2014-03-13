@@ -99,7 +99,7 @@ extern void		 fluidUnwind	(int toCell, Bool isLongJmp);
 /*
  * Introduction of individual fluids.
  */
-#define fluidSave(var)  __##var
+#define fluidSave(var)  fluidSave_##var
 
 #define fluid(V)	fluidSave(V) = ( \
 	fluidStack = (fluidLevel==fluidLimit) ? fluidGrow() : fluidStack,    \
