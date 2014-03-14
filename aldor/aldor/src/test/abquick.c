@@ -197,6 +197,32 @@ tfqTypeForm(Stab stab, String str)
 	return tiGetTForm(stab, absyn);
 }
 
+void
+tfqTypeInfer(Stab stab, String str)
+{
+	AbSyn absyn = abqParse(str);
+	abPutUse(absyn, AB_Use_NoValue);
+
+	scopeBind(stab, absyn);
+	typeInfer(stab, absyn);
+
+	testTrue("Declare is sefo", abIsSefo(absyn));
+	testIntEqual("Error Count", 0, comsgErrorCount());
+}
+
+void
+tfqTypeInferFails(Stab stab, String str)
+{
+	AbSyn absyn = abqParse(str);
+	int nErrors = comsgErrorCount();
+	abPutUse(absyn, AB_Use_NoValue);
+
+	scopeBind(stab, absyn);
+	typeInfer(stab, absyn);
+
+	testTrue("Error produced", comsgErrorCount() > nErrors);
+}
+
 Syme
 uniqueMeaning(Stab stab, String s)
 {

@@ -38,6 +38,7 @@ void testTinfer9();
 void testTinferMutualReference();
 void testTinferValueConditional();
 void testTinferValueConditionalAliased();
+void testTinferImport();
 
 AbSyn stdtypes();
 
@@ -65,6 +66,7 @@ void tinferTest()
 	TEST(testTinferMutualReference);
 
 	TEST(testTinferValueConditional);
+	TEST(testTinferImport);
 	/*TEST(testTinferValueConditionalAliased);*/
 	fini();
 }
@@ -575,6 +577,20 @@ testTinferValueConditional()
 
 	testTrue("Declare is sefo", abIsSefo(absyn));
 	testIntEqual("Error Count", 0, comsgErrorCount());
+
+	finiFile();
+}
+
+void
+testTinferImport()
+{
+	initFile();
+	stdscope(stabFile());
+
+	tfqTypeInfer(stabFile(), "T: with == add");
+	tfqTypeInferFails(stabFile(), "f(): T == { import from 'a' }");
+	tfqTypeInferFails(stabFile(), "f(): T == { import from 'a', 'b' }");
+	tfqTypeInferFails(stabFile(), "f(): T == { inline from 'a', 'b' }");
 
 	finiFile();
 }
