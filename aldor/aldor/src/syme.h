@@ -554,4 +554,11 @@ extern Hash		gen0SymeTypeCode	(Syme);
 #define symeSetCondChecked(s)	symeSetXBit(s, SYME_XBIT_CONDCHECKED)
 #define symeClrCondChecked(s)	symeClrXBit(s, SYME_XBIT_CONDCHECKED)
 
+/*
+ * :: SymeList functions
+ *
+ */
+
+SymeList symeListSubListById(SymeList symes, Symbol sym);
+
 #endif	/* !_SYME_H_ */
