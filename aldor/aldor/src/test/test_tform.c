@@ -8,6 +8,7 @@
 local void testTFormFormat(void);
 local void testTFormSyntaxConditions(void);
 local void testTFormFormatOne(String name, String expect, TForm tf);
+local void testEnum();
 
 /* XXX: from test_tinfer.c */
 void init(void);
@@ -21,6 +22,7 @@ tformTest(void)
 	init();
 	TEST(testTFormFormat);
 	TEST(testTFormSyntaxConditions);
+	TEST(testEnum);
 	fini();
 }
 
@@ -71,5 +73,27 @@ testTFormSyntaxConditions(void)
 	cond = listList(AbSyn)(1, test(has(id("X"), id("Y"))));
 	tfSyntaxConditions(stabFile(), tf, tfCondEltNew(stab, cond));
 	
+	finiFile();
+}
+
+local void
+testEnum()
+{
+	initFile();
+	stdscope(stabFile());
+
+	TForm e_x = tfqTypeForm(stabFile(), "'x'");
+
+	SymeList symes = tfGetDomExports(e_x);
+	SymeList xSymes = symeListSubListById(symes, symInternConst("x"));
+	testIntEqual("1", 1, listLength(Syme)(xSymes));
+	Syme x = car(xSymes);
+	testTrue("teq", tformEqual(symeType(x), e_x));
+
+	TForm e_y = tfqTypeForm(stabFile(), "'y'");
+	testFalse("neq", tformEqual(e_x, e_y));
+	TForm e_y2 = tfEnum(stabFile(), id("x"));
+	testTrue("teq", tformEqual(e_y, e_y2));
+
 	finiFile();
 }

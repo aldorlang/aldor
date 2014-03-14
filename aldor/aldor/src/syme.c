@@ -1573,6 +1573,24 @@ symeListWrSExpr(FILE * file, String libName, SymeList symes, ULong sxioMode)
 	Return(cc);
 }
 
+/*
+ * :: SymeList functions
+ *
+ * These might eventually be replaced by a table keyed by symbols
+ */
+
+SymeList
+symeListSubListById(SymeList symes, Symbol sym)
+{
+	SymeList result = listNil(Syme);
+	while (symes != listNil(Syme)) {
+		if (symeId(car(symes)) == sym)
+			result = listCons(Syme)(car(symes), result);
+		symes = cdr(symes);
+	}
+	return result;
+}
+
 
 void gen0SetFoamKind(Syme syme, FoamTag kind)
 {
