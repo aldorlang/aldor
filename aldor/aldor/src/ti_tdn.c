@@ -1736,6 +1736,11 @@ titdnForeign(Stab stab, AbSyn absyn, TForm type)
 local Bool
 titdnImport(Stab stab, AbSyn absyn, TForm type)
 {
+	if (!tfSatReturn(tfNone(), type)) {
+		terrorNotUniqueType(ALDOR_E_TinExprMeans,
+				    absyn, type, abTPoss(absyn));
+		return false;
+	}
 	abTUnique(absyn) = tfNone();
 	return true;
 }
@@ -1749,6 +1754,11 @@ titdnImport(Stab stab, AbSyn absyn, TForm type)
 local Bool
 titdnInline(Stab stab, AbSyn absyn, TForm type)
 {
+	if (!tfSatReturn(tfNone(), type)) {
+		terrorNotUniqueType(ALDOR_E_TinExprMeans,
+				    absyn, type, abTPoss(absyn));
+		return false;
+	}
 	abTUnique(absyn) = type;
 	return true;
 }

@@ -1,16 +1,21 @@
 #include "ablogic.h"
 #include "abnorm.h"
 #include "abquick.h"
+#include "abuse.h"
+#include "comsg.h"
 #include "format.h"
 #include "linear.h"
 #include "macex.h"
 #include "parseby.h"
 #include "scan.h"
+#include "scobind.h"
+#include "sefo.h"
 #include "srcline.h"
 #include "stab.h"
 #include "strops.h"
 #include "symbol.h"
 #include "testlib.h"
+#include "tinfer.h"
 #include "ti_sef.h"
 
 local AbSyn abqParseSrcLines(SrcLineList sll);
@@ -152,14 +157,73 @@ stdtypes()
 	String Boolean_txt = "Boolean: with == add";
 	String Join_txt = "Join(T: Tuple Category): Category == with";
 	String Record_txt = "Record(T: Tuple Type): with == add";
+	String Enumeration_txt = "Enumeration(T: Tuple Type): with == add";
 
-	StringList lines = listList(String)(9, Type_txt, Category_txt, Cross_txt,
-					    Tuple_txt, Map_txt, Boolean_txt, Join_txt, 
-					    Generator_txt, Record_txt);
+	StringList lines = listList(String)(10, Type_txt, Category_txt, Cross_txt,
+					    Tuple_txt, Map_txt, Boolean_txt, Join_txt,
+					    Generator_txt, Record_txt, Enumeration_txt);
 	AbSynList code = abqParseLines(lines);
 	AbSyn absyn = abNewSequenceL(sposNone, code);
 
 	return absyn;
+}
+
+void
+stdscope(Stab stab)
+{
+	String B_imp = "import from Boolean";
+	StringList lines = listList(String)(1, B_imp);
+	AbSyn absyn = abNewSequenceL(sposNone, listCons(AbSyn)(stdtypes(),
+							       abqParseLines(lines)));
+	abPutUse(absyn, AB_Use_NoValue);
+	abPrintDb(absyn);
+	scopeBind(stab, absyn);
+	typeInfer(stab, absyn);
+
+	testTrue("Declare is sefo", abIsSefo(absyn));
+	testIntEqual("Error Count", 0, comsgErrorCount());
+}
+
+TForm
+tfqTypeForm(Stab stab, String str)
+{
+	AbSyn absyn = abqParse(str);
+	abPutUse(absyn, AB_Use_NoValue);
+	abPrintDb(absyn);
+	scopeBind(stab, absyn);
+	typeInfer(stab, absyn);
+
+	testTrue("Declare is sefo", abIsSefo(absyn));
+	testIntEqual("Error Count", 0, comsgErrorCount());
+
+	return tiGetTForm(stab, absyn);
+}
+
+void
+tfqTypeInfer(Stab stab, String str)
+{
+	int nErrors = comsgErrorCount();
+	AbSyn absyn = abqParse(str);
+	abPutUse(absyn, AB_Use_NoValue);
+
+	scopeBind(stab, absyn);
+	typeInfer(stab, absyn);
+
+	testTrue("Declare is sefo", abIsSefo(absyn));
+	testIntEqual("Error Count", nErrors, comsgErrorCount());
+}
+
+void
+tfqTypeInferFails(Stab stab, String str)
+{
+	AbSyn absyn = abqParse(str);
+	int nErrors = comsgErrorCount();
+	abPutUse(absyn, AB_Use_NoValue);
+
+	scopeBind(stab, absyn);
+	typeInfer(stab, absyn);
+
+	testTrue("Error produced", comsgErrorCount() > nErrors);
 }
 
 Syme

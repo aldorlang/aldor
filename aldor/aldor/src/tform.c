@@ -3686,7 +3686,7 @@ tfJoinExportToList(SymeList mods, SymeList symes, Syme syme2, Sefo cond)
 			symeAddTwin(syme1, syme2);
 		}
 	}
-
+	tfImportDEBUG(dbOut, ".. Joining (%d) %pSyme %pAbSyn\n", merge, syme2, cond);
 	return merge;
 }
 

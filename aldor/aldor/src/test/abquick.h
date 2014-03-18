@@ -67,8 +67,13 @@ AbSynList abqParseLines(StringList lines);
 AbSyn abqParseLinesAsSeq(StringList lines);
 
 AbSyn stdtypes();
+void stdscope(Stab);
 
 Syme uniqueMeaning(Stab stab, String s);
 Sefo sefo(AbSyn absyn);
+
+TForm tfqTypeForm(Stab stab, String str);
+void  tfqTypeInfer(Stab stab, String str);
+void  tfqTypeInferFails(Stab stab, String str);
 
 #endif

@@ -14,6 +14,7 @@
 local void testTfSatEmbed();
 local void testTfSatEmbedExcept();
 local void testTfSatRec();
+local void testTfSatEnum();
 extern int tfsDebug;
 
 void
@@ -23,6 +24,7 @@ tfsatTest()
 	TEST(testTfSatEmbed);
 	TEST(testTfSatEmbedExcept);
 	TEST(testTfSatRec);
+	TEST(testTfSatEnum);
 	fini();
 }
 
@@ -190,5 +192,29 @@ testTfSatRec()
 
 	testTrue("def eq", tfSatisfies(rtf, stf));
 
+	finiFile();
+}
+
+local void
+testTfSatEnum()
+{
+	String T_def = "T: with == add";
+	StringList lines;
+	AbSynList code;
+	AbSyn absyn;
+	TForm tf1, tf2;
+	Stab stab;
+	initFile();
+	stdscope(stabFile());
+
+	lines = listList(String)(1, T_def);
+
+	code = listCons(AbSyn)(stdtypes(), abqParseLines(lines));
+	absyn = abNewSequenceL(sposNone, code);
+	stab = stabFile();
+	tf1 = tfqTypeForm(stabFile(), "'x'");
+	tf2 = tfqTypeForm(stabFile(), "'y'");
+
+	testFalse("enum0", tfSatisfies(tf1, tf2));
 	finiFile();
 }
