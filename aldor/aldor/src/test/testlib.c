@@ -28,12 +28,14 @@ extern int fluidLevel;
 void 
 showTest(char *name, void (*fn)(void))
 {
+	int wasFailed = failed;
 	int localFluidLevel = fluidLevel;
 	printf("(Starting test %s\n", name);
 	fn();
 	testIntEqual("fluidlevel", localFluidLevel, fluidLevel);
 
-	printf(" Test %s complete)\n", name);
+	printf(" Test %s %s)\n", name,
+	       (wasFailed == failed) ? "complete" : "FAILED");
 }
 
 void

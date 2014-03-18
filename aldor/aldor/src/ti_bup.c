@@ -400,7 +400,10 @@ tibup0Within(Stab stab, AbSyn absyn, SymeList bsymes, Bool doDefault)
 			if (abSyme(id) && symeIsExport(abSyme(id)))
 				xsymes = listCons(Syme)(abSyme(id), xsymes);
 		}
-
+		else if (abTag(argv[i]) == AB_Import
+			|| abTag(argv[i]) == AB_Inline) {
+			typeInferAs(stab, argv[i], tfNone());
+		}
 		/* Category expression. */
 		else {
 			typeInferAs(stab, argv[i], tfCategory);

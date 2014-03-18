@@ -1,9 +1,10 @@
 #include "abquick.h"
 #include "axlobs.h"
 #include "format.h"
+#include "sefo.h"
 #include "stab.h"
-#include "testlib.h"
 #include "strops.h"
+#include "testlib.h"
 
 local void testTFormFormat(void);
 local void testTFormSyntaxConditions(void);
@@ -79,20 +80,24 @@ testTFormSyntaxConditions(void)
 local void
 testEnum()
 {
+	TForm e_x, e_y, e_y2;
+	SymeList symes, xSymes;
+	Syme x;
+
 	initFile();
 	stdscope(stabFile());
 
-	TForm e_x = tfqTypeForm(stabFile(), "'x'");
+	e_x = tfqTypeForm(stabFile(), "'x'");
 
-	SymeList symes = tfGetDomExports(e_x);
-	SymeList xSymes = symeListSubListById(symes, symInternConst("x"));
+	symes = tfGetDomExports(e_x);
+	xSymes = symeListSubListById(symes, symInternConst("x"));
 	testIntEqual("1", 1, listLength(Syme)(xSymes));
-	Syme x = car(xSymes);
+	x = car(xSymes);
 	testTrue("teq", tformEqual(symeType(x), e_x));
 
-	TForm e_y = tfqTypeForm(stabFile(), "'y'");
+	e_y = tfqTypeForm(stabFile(), "'y'");
 	testFalse("neq", tformEqual(e_x, e_y));
-	TForm e_y2 = tfEnum(stabFile(), id("x"));
+	e_y2 = tfEnum(stabFile(), id("x"));
 	testTrue("teq", tformEqual(e_y, e_y2));
 
 	finiFile();

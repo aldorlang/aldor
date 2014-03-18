@@ -1,20 +1,22 @@
 #include "ablogic.h"
 #include "abnorm.h"
 #include "abquick.h"
+#include "abuse.h"
+#include "comsg.h"
 #include "format.h"
 #include "linear.h"
 #include "macex.h"
 #include "parseby.h"
 #include "scan.h"
+#include "scobind.h"
+#include "sefo.h"
 #include "srcline.h"
 #include "stab.h"
 #include "strops.h"
 #include "symbol.h"
 #include "testlib.h"
-#include "ti_sef.h"
-#include "format.h"
-#include "sefo.h"
 #include "tinfer.h"
+#include "ti_sef.h"
 
 local AbSyn abqParseSrcLines(SrcLineList sll);
 
@@ -195,6 +197,33 @@ tfqTypeForm(Stab stab, String str)
 	testIntEqual("Error Count", 0, comsgErrorCount());
 
 	return tiGetTForm(stab, absyn);
+}
+
+void
+tfqTypeInfer(Stab stab, String str)
+{
+	int nErrors = comsgErrorCount();
+	AbSyn absyn = abqParse(str);
+	abPutUse(absyn, AB_Use_NoValue);
+
+	scopeBind(stab, absyn);
+	typeInfer(stab, absyn);
+
+	testTrue("Declare is sefo", abIsSefo(absyn));
+	testIntEqual("Error Count", nErrors, comsgErrorCount());
+}
+
+void
+tfqTypeInferFails(Stab stab, String str)
+{
+	AbSyn absyn = abqParse(str);
+	int nErrors = comsgErrorCount();
+	abPutUse(absyn, AB_Use_NoValue);
+
+	scopeBind(stab, absyn);
+	typeInfer(stab, absyn);
+
+	testTrue("Error produced", comsgErrorCount() > nErrors);
 }
 
 Syme
