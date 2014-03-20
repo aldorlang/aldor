@@ -4007,6 +4007,22 @@ tfGetCatExports(TForm cat)
 	else
 		tfAddCatExports(cat, tfGetThdExports(tfGetCategory(cat)));
 
+	if (DEBUG(tfCat)) {
+		SymeList symes = tfCatExports(cat);
+		if (symes) {
+			afprintf(dbOut, " Exports for %pTForm: [\n", cat);
+			while (symes != listNil(Syme)) {
+				Syme syme = car(symes);
+				symes = cdr(symes);
+
+				afprintf(dbOut,
+					 "  %s Def: %s %pAbSynList\n", symeString(syme), symeHasDefault(syme) ? "DEF" : "",
+					 symeCondition(syme));
+			}
+			afprintf(dbOut, " ]\n", cat);
+		}
+	}
+
 	tfCatDEBUG(dbOut, ")\n");
 
 	tfAuditExportList(tfCatExports(cat));

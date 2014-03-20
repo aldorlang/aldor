@@ -103,3 +103,6 @@ CLEANFILES += union-print/union-print-aldormain.c union-print/union-print.c unio
 check_PROGRAMS += trec/trec
 trec_trec_SOURCES = trec/trec-aldormain.c trec/trec.c
 CLEANFILES += trec/trec-aldormain.c trec/trec.c trec/trec.ao
+check_PROGRAMS += pol2/pol2
+pol2_pol2_SOURCES = pol2/pol2-aldormain.c pol2/pol2.c
+CLEANFILES += pol2/pol2-aldormain.c pol2/pol2.c pol2/pol2.ao
