@@ -2968,7 +2968,7 @@ gj0CastWordToObj(JavaCode jc, FoamTag type, AInt fmt)
 	case FOAM_Ptr:
 		return jc;
 	case FOAM_Arr:
-		return jcApplyMethodV(jc, jcId(strCopy("toArray")), 0);
+		return jcApplyV(jcMemRef(gj0Id(GJ_FoamWord), jcId(strCopy("U.toArray"))), 1, jc);
 	default:
 		return jcCast(gj0TypeFrFmt(type, fmt), jc);
 	}
