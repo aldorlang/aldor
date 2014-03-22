@@ -901,6 +901,7 @@ compIsMoreAfterSyntax(EmitInfo finfo)
 		emitIsOutputNeeded(finfo, FTYPENO_C)	  ||
 		emitIsOutputNeeded(finfo, FTYPENO_CPP)	  ||
 		emitIsOutputNeeded(finfo, FTYPENO_LISP)	    ||
+		emitIsOutputNeeded(finfo, FTYPENO_JAVA)	    ||
 		emitIsOutputNeeded(finfo, FTYPENO_EXEC);
 }
 
