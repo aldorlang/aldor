@@ -1614,6 +1614,8 @@ gj0SeqSelectMulti(GjSeqStore store, Foam foam)
 
 	gj0SeqStoreEnsureBody(store);
 	gj0SeqStoreAddStmt(store, jcSwitch(tst, body));
+	gj0SeqStoreAddStmt(store,  jcStatement(jcContinue(0)));
+
 }
 
 

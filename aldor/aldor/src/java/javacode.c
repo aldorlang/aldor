@@ -1306,7 +1306,7 @@ jcContinue(JavaCode label)
 	if (label == 0)
 		return jcKeyword(symInternConst("continue"));
 	else
-		return jcSpaceSeqV(2, jcKeyword(symInternConst("break")), label);
+		return jcSpaceSeqV(2, jcKeyword(symInternConst("continue")), label);
 }
 
 JavaCode
