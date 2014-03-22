@@ -92,6 +92,10 @@ public class Foam {
 		throw new HaltException(r);
 	}
 
+	public static Object throwException(RuntimeException e) {
+		throw e;
+	}
+
     public static int ptrToSInt(Object o) {
 		throw new RuntimeException();
 	}

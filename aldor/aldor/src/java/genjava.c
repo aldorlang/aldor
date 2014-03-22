@@ -176,6 +176,7 @@ enum gjId {
 	GJ_Object,
 	GJ_String,
 	GJ_BigInteger,
+	GJ_NullPointerException,
 	
 	GJ_ContextVar,
 	GJ_Main,
@@ -2356,7 +2357,25 @@ gj0RElt(Foam foam)
 	AInt fmt = foam->foamRElt.format;
 	AInt idx = foam->foamRElt.field;
 	Foam ref = foam->foamRElt.expr;
-	Foam ddecl = gjContext->formats->foamDFmt.argv[fmt];
+	Foam innerRef = ref;
+	Foam ddecl;
+	foamDereferenceCast(innerRef);
+	if (foamTag(innerRef) == FOAM_Nil) {
+		JavaCode exception, value;
+		Foam decl;
+		ddecl = gjContext->formats->foamDFmt.argv[fmt];
+		decl = ddecl->foamDDecl.argv[idx];
+		/* call throwException(new NullPointerException())
+		   and cast to ... */
+		exception = jcConstructV(gj0Id(GJ_NullPointerException), 1,
+					 jcLiteralString(strCopy("RElt")));
+		value = jcCast(gj0TypeFrFmt(decl->foamDecl.type, decl->foamDecl.format),
+			       jcApplyV(jcMemRef(gj0Id(GJ_Foam), jcId(strCopy("throwException"))),
+					1, exception));
+
+		return value;
+	}
+	ddecl = gjContext->formats->foamDFmt.argv[fmt];
 	
 	return gj0RecElt(gj0Gen(ref), ddecl, idx);
 }
@@ -3304,6 +3323,7 @@ struct gjIdInfo gjIdInfo[] = {
 	{GJ_Object,     0, "Object"},
 	{GJ_String,     0, "String"},
 	{GJ_BigInteger, "java.math", "BigInteger"},
+	{GJ_NullPointerException, 0, "NullPointerException"},
 
 	{GJ_ContextVar, 0, "ctxt"},
 	{GJ_Main,       0, "main"},
