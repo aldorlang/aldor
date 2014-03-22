@@ -29,6 +29,7 @@
 #include "archive.h"
 #include "comsg.h"
 #include "strops.h"
+#include "java/genjava.h"
 
 String		cmdName		    = "aldor";    /* Could use argv[0]. */
 String		cmdInitFile	    = "aldorinit.as";
@@ -71,6 +72,7 @@ local int	cmdDoOptDeveloper (String arg);
 local int	cmdDoOptDebug     (String arg);
 local int	cmdDoOptGo	  (String arg);
 
+local void	cmdHandleJavaOption(String opt);
 static StringList cmdIncDirs;
 static StringList cmdLibDirs;
 static StringList cmdLibKeys;
@@ -232,7 +234,7 @@ cmdIsOption(int opt)
 	case '-':
 
 	case 'A': case 'B': case 'C': case 'D': case 'E': case 'F':
-	case 'G': case 'H': case 'I':           case 'K': case 'L':
+	case 'G': case 'H': case 'I': case 'J': case 'K': case 'L':
 	case 'M': case 'N': case 'O': case 'P': case 'Q': case 'R':
 	case 'S':           case 'U': case 'V': case 'W': case 'X':
 	case 'Y': case 'Z':
@@ -251,7 +253,8 @@ cmdIsArgOption(int opt)
 {
 	switch (toupper(opt)) {
 	case 'A': case 'B': case 'C': case 'D': case 'E':
-	case 'F': case 'G': case 'H': case 'I': case 'K':
+	case 'F': case 'G': case 'H': case 'I': case 'J':
+	case 'K':
 	case 'L': case 'M': case 'N': case 'P': case 'Q': 
         case 'R': case 'S': case 'U': case 'W': case 'Y': 
 	case 'Z':
@@ -297,6 +300,9 @@ cmdHandleOption(int opt, String arg)
 		break;
 	  case 'I':
 		cmdIncDirs = listCons(String)(arg, cmdIncDirs);
+		break;
+	  case 'J':
+		cmdHandleJavaOption(arg);
 		break;
 	  case 'Y':
 		cmdLibDirs = listCons(String)(arg, cmdLibDirs);
@@ -355,6 +361,16 @@ cmdHandleOption(int opt, String arg)
 	}
 }
  
+local void
+cmdHandleJavaOption(String opt)
+{
+	if (strEqual(opt, "main")) {
+		gjGenSetMain(true);
+	}
+	if (strEqual(opt, "no-main")) {
+		gjGenSetMain(false);
+	}
+}
  
 /*****************************************************************************
  *
