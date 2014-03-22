@@ -417,12 +417,13 @@ gen0MakeDefaultHash()
 	else {
 		GenFoamState saved;
 		Foam 	     foam, clos;
-		
+		GenFoamTag   oldTag = gen0State->tag;
+
 		clos = gen0ProgClosEmpty();
 		foam = gen0ProgInitEmpty("defhash0", NULL);
 		
 		saved = gen0ProgSaveState(PT_ExFn);
-		
+		gen0State->tag = GF_Lambda;
 		hashCode = gen0SefoHashExporter(exp);
 		
 		gen0AddStmt(foamNewReturn(hashCode), NULL);
@@ -433,6 +434,7 @@ gen0MakeDefaultHash()
 		foamOptInfo(foam) = inlInfoNew(NULL, foam, NULL, false);
 		
 		gen0ProgRestoreState(saved);
+		gen0State->tag = oldTag;
 		
 		return clos;
 	}
