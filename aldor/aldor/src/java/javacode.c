@@ -223,7 +223,7 @@ local JSExprFn jcStringSExpr;
 local JavaCodeList jc0CreateModifiers(int modifiers);
 local void jc0PrintWithParens(JavaCodePContext ctxt, JavaCodeClass oclss, JavaCode arg);
 local Bool jc0NeedsParens(JavaCodeClass c1, JavaCodeClass c2);
-local String jc0EscapeString(String s);
+local String jc0EscapeString(String s, Bool terminal);
 local Bool jcBlockHdrIndent(JavaCode code);
 local JavaCode jcBinaryOp(JavaCodeClass c, JavaCode lhs, JavaCode rhs);
 
@@ -644,7 +644,7 @@ local SExpr
 jcCommentSExpr(JavaCode code)
 {
 	SExpr  h = sxiFrSymbol(symIntern(jcoClass(code)->name));
-	String s = jc0EscapeString(jcoLiteral(code));
+	String s = jc0EscapeString(jcoLiteral(code), false);
 	SExpr sx = sxiFrString(s);
 	strFree(s);
 	return sxiList(2, h, sx);
@@ -696,7 +696,14 @@ JavaCode
 jcLiteralString(String s)
 {
 	return jcoNewLiteral(jc0ClassObj(JCO_CLSS_String), 
-			     jc0EscapeString(s));
+			     jc0EscapeString(s, false));
+}
+
+JavaCode
+jcLiteralStringWithTerminalChar(String s)
+{
+	return jcoNewLiteral(jc0ClassObj(JCO_CLSS_String),
+			     jc0EscapeString(s, true));
 }
 
 JavaCode 
@@ -735,7 +742,7 @@ jcStringSExpr(JavaCode code)
 {
 	String s  = jcoLiteral(code);
 	SExpr  sx;
-	s = jc0EscapeString(s);
+	s = jc0EscapeString(s, false);
 	sx = sxiFrString(s);
 	strFree(s);
 	return sx;
@@ -1554,7 +1561,7 @@ jc0CollectImports(Table tbl, JavaCode code)
  * Returns a newly allocated string with properly escaped characters.
  */
 local String 
-jc0EscapeString(String s)
+jc0EscapeString(String s, Bool addTerminalChar)
 {
 	Buffer buf;
 	buf = bufNew();
@@ -1577,6 +1584,10 @@ jc0EscapeString(String s)
 			break;
 		}
 		s++;
+	}
+	if (addTerminalChar) {
+		bufPutc(buf, '\\');
+		bufPutc(buf, '0');
 	}
 
 	return bufLiberate(buf);

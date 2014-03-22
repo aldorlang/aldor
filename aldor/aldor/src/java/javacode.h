@@ -87,6 +87,7 @@ extern JavaCode jcComment(String comment);
 extern JavaCode jcImportedId(String pkg, String name);
 extern JavaCode jcImportedStaticId(String pkg, String name);
 extern JavaCode jcLiteralString(String s);
+extern JavaCode jcLiteralStringWithTerminalChar(String s);
 extern JavaCode jcLiteralChar(String s);
 extern JavaCode jcLiteralInteger(AInt i);
 extern JavaCode jcLiteralIntegerFrString(String s);

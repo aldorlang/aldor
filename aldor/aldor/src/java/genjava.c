@@ -2300,7 +2300,7 @@ gj0ArrChar(Foam foam)
 		str[i] = foam->foamArr.eltv[i];
 	str[i] = '\0';
 	
-	return jcApplyMethodV(jcLiteralString(str), jcId(strCopy("toCharArray")), 0);
+	return jcApplyMethodV(jcLiteralStringWithTerminalChar(str), jcId(strCopy("toCharArray")), 0);
 }
 
 
