@@ -2,13 +2,16 @@ package foamj;
 
 import java.math.BigInteger;
 import java.lang.Math;
+import java.io.PrintStream;
 
 public class Foam {
     public final static int RTE = 1;
     public final static int PlatformOS = 1;
 
 	public static void fputc(Word cw, Word w) {
-		System.out.println("FPuts: " + cw + " " + w);
+	    PrintStream ps = (PrintStream) Word.U.toArray(w);
+	    char c = (char) cw.toSInt();
+	    ps.write(c);
 	}
 
 	public static Word fgetss(Word w1, Word w2, Word w3, Word w4) {
@@ -20,8 +23,11 @@ public class Foam {
 	}
 
 	public static void fputs(Word s, Word w) {
-		System.out.println("FPuts: " + s + " " + w);
-		//w.append(new String((char[]) s.toArray()));
+	    PrintStream ps = (PrintStream) Word.U.toArray(s);
+	    char[] arr = (char[])w.toArray();
+	    for (char c: arr) {
+		ps.write(c);
+	    }
 	}
     
     // string, int, int, stream -> int
@@ -40,18 +46,16 @@ public class Foam {
 	}
 
 	public static Word stdoutFile() {
-		//return System.out;
-	    return Word.U.fromSInt(999);
+	    return Word.U.fromArray(System.out);
 	}
 	
 	public static Word stderrFile() {
 		//return System.out;
-	    return Word.U.fromSInt(999);
+	    return Word.U.fromArray(System.err);
 	}
 
 	public static Word stdinFile() {
-		//return System.out;
-	    return Word.U.fromSInt(999);
+	    return Word.U.fromArray(System.in);
 	}
 
 	public static Word fopen(Word w1, Word w2) {
@@ -59,7 +63,9 @@ public class Foam {
 	}
 
 	public static Word fflush(Word w1) {
-		throw new RuntimeException();
+	    PrintStream ps = (PrintStream) Word.U.toArray(w1);
+	    ps.flush();
+	    return w1;
 	}
 
     public static void lungetc(Word w1, Word w2) {
