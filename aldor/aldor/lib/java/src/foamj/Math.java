@@ -38,8 +38,18 @@ public class Math {
 		return result;
 	}
 
-    public static int hashCombine(int h1, int h2) {
-	return ((h1 ^ (h1 << 8)) + (h2 + 20041) & 0x3FFFFFFF);
+    public static int hashCombine(int i1, int i2) {
+	long z1  = 0x419ac241;
+	long z2  = 0x5577f8e1;
+	long zzh = 0x440badfc;
+	long zzl = 0x05072367;
+	long zz = (zzh << 32) + zzl;
+	long h1 = i1 & ((1L<<32)-1);
+	long h2 = i2 & ((1L<<32)-1);
+
+	int tmp = (int)(((z1*h1 + z2*h2) * zz) >> 32);
+	return tmp & 0x3FFFFFFF;
+
     }
 
 	public static boolean isZero(BigInteger b)  {
