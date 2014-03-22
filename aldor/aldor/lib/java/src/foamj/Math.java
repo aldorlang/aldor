@@ -32,7 +32,10 @@ public class Math {
 	}
 
 	public static MultiRecord divide(int i1, int i2) {
-		throw new RuntimeException();
+		MultiRecord result = new MultiRecord(divideFormat);
+		result.setField(0, "quo", Value.U.fromSInt(i1 / i2));
+		result.setField(1, "rem", Value.U.fromSInt(i1 % i2));
+		return result;
 	}
 
     public static int hashCombine(int h1, int h2) {
