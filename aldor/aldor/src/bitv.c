@@ -104,8 +104,10 @@ bitvManyNew(BitvClass class, Length n)
 	Bitv 	*bvv = (Bitv *) stoAlloc(OB_Other, bitvOffset(n,n));
 	int	i;
 
-	for (i = 0; i < n; i++)
+	for (i = 0; i < n; i++) {
 		bvv[i] = (Bitv)((char *) bvv + bitvOffset(n, i));
+		bitvClearAll(class, bvv[i]);
+	}
 	return bvv;
 }
 

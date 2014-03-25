@@ -87,12 +87,33 @@ Foam		dvLocalsDecl;
 int		dvGeneration;
 int		dvThisConst;
 
-#define dvNewIndex(format, index) (dvFormatUsage[format][index].newIndex)
-#define dvUsage(format, index) (dvFormatUsage[format][index].used)
+local UShort
+dvNewIndex(int format, UShort index)
+{
+	assert(index != SYME_NUMBER_UNASSIGNED);
+	return dvFormatUsage[format][index].newIndex;
+}
 
-#define dvMarkFormat(format, index, val) 			 \
-	Statement(if (dvUsage(format,index)  < (val) )	 \
-		  dvUsage(format,index) = (val))
+local UShort
+dvUsage(int format, UShort index)
+{
+	assert(index != SYME_NUMBER_UNASSIGNED);
+	return dvFormatUsage[format][index].used;
+}
+
+local void
+dvSetUsage(int format, UShort index, int used)
+{
+	assert(index != SYME_NUMBER_UNASSIGNED);
+	dvFormatUsage[format][index].used = used;
+}
+
+local void
+dvMarkFormat(int format, UShort index, int val)
+{
+	if (dvUsage(format, index) < val)
+		dvSetUsage(format, index, val);
+}
 
 #define DvMaxPasses	10
 
