@@ -85,7 +85,7 @@ public class Math {
 		return b1.compareTo(b2) < 0;
 	}
 	public static boolean le(BigInteger b1, BigInteger b2) {
-		return b1.compareTo(b2) < 0;
+		return b1.compareTo(b2) <= 0;
 	}
 
 	public static BigInteger prev(BigInteger b) {
