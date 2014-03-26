@@ -37,6 +37,7 @@ AXLTESTS =	\
 	union-print \
 	trec	    \
 	pol2	\
+	iter	\
 	#
 
 BROKEN =	\
