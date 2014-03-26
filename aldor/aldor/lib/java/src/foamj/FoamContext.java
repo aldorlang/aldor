@@ -5,14 +5,24 @@ import java.lang.reflect.InvocationTargetException;
 
 public class FoamContext {
 	
-	public void startFoam(FoamClass c) {
-		c.run();
+        public void startFoam(FoamClass c, String[] args) {
+	    Word[] mainArgv = new Word[1];
+	    mainArgv[0] = Word.U.fromArray(literalCharArray(c.getClass().getName()));
+	    Globals.setGlobal("mainArgc", Word.U.fromSInt(1).toValue());
+	    Globals.setGlobal("mainArgv", Word.U.fromArray(mainArgv).toValue());
+	    c.run();
 	}
-	
-	public FoamClass loadClass(String name) {
-		return null;
+
+	private static char[] literalCharArray(String s) {
+	    char[] arr = new char[s.length()+1];
+	    for (int i=0; i<s.length(); i++)
+		arr[i] = s.charAt(i);
+	    arr[s.length()] = '\0';
+
+	    return arr;
 	}
-	
+
+
 	@SuppressWarnings("unchecked")
 	public Clos createLoadFn(final String name) {
 		Fn loader = new Fn("constructor-"+name) {

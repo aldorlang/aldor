@@ -3262,7 +3262,9 @@ gj0ClassMainMethod(String className)
 	s2 = jcInitialisation(0, gj0Id(GJ_FoamClass), jcoCopy(instance), 
 			      jcConstructV(jcId(strCopy(className)), 
 					   1, jcoCopy(ctxt)));
-	s3 = jcApplyMethodV(jcoCopy(instance), jcId(strCopy("run")), 0);
+
+	s3 = jcApplyMethodV(jcoCopy(ctxt), jcId(strCopy("startFoam")), 2,
+			    jcoCopy(instance), jcId(strCopy("args")));
 
 	body = jcNLSeqV(3, jcStatement(s1), jcStatement(s2), jcStatement(s3));
 	modifiers = JCO_MOD_Public | JCO_MOD_Static;
