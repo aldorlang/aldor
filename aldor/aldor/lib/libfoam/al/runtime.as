@@ -358,7 +358,12 @@ rtLazyCatFrFn(fn: ()->CatObj): CatObj == {
 }
 
 rtLazyDomFrInit(fn: InitFn, n: SingleInteger): Domain == {
-	ifn(): Domain == fn(n) pretend Domain;
+	ifn(): Domain ==  {
+	       import from Pointer;
+	       d := fn(n) pretend Domain;
+	       Nil?(Domain)(d) => ERROR("No Domain found");
+	       d
+        }
 	rtLazyDomFrFn(ifn);
 }
 

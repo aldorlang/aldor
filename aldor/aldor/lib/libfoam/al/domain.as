@@ -97,17 +97,20 @@ Domain: Conditional with {
 	}
 
 	fill!(dom: %, val: %): () == {
+		Nil?(DispatchVector)(dispatcher(val)) => never;
 		rep(dom).dispatcher := dispatcher(val);
 		rep(dom).domainRep  := domainRep(val);
 	}
 
 	reFill!(dom: %, dv: DispatchVector, rp: DomainRep): () == {
+		Nil?(DispatchVector)(dv) => never;
 		rep(dom).dispatcher := dv;
 		rep(dom).domainRep  := rp;
 	}
 
 #if ExtendReplace
 	copy (td: %) : % ==
+		Nil?(DispatchVector)(dispatcher(td)) => never;
 		per [dispatcher td, domainRep td];
 
 	ncopy (dst: %, src: %) : () == {
