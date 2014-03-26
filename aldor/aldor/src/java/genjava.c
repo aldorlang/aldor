@@ -3794,10 +3794,10 @@ struct gjBVal_info gjBValInfoTable[] = {
 	{FOAM_BVal_SIntXOr,      GJ_Op,     JCO_OP_XOr},
 	{FOAM_BVal_SIntHashCombine,GJ_Apply,0, "foamj.Math", "hashCombine"},
 
-	{FOAM_BVal_WordTimesDouble, GJ_NotImpl},
-	{FOAM_BVal_WordDivideDouble,GJ_NotImpl},
-	{FOAM_BVal_WordPlusStep,    GJ_NotImpl},
-	{FOAM_BVal_WordTimesStep,   GJ_NotImpl},
+	{FOAM_BVal_WordTimesDouble, GJ_Apply,   0,"foamj.Math",      "wordTimesDouble"},
+	{FOAM_BVal_WordDivideDouble,GJ_Apply,   0,"foamj.Math",      "wordDivideDouble"},
+	{FOAM_BVal_WordPlusStep,    GJ_Apply,   0,"foamj.Math",      "wordPlusStep"},
+	{FOAM_BVal_WordTimesStep,   GJ_Apply,   0,"foamj.Math",      "wordTimesStep"},
 
 	{FOAM_BVal_BInt0,        GJ_Const, 0,   "BigInteger",   "ZERO"},
 	{FOAM_BVal_BInt1,        GJ_Const, 0,   "BigInteger",   "ONE"},

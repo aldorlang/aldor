@@ -124,8 +124,13 @@ public class Math {
 	}
 	            
 	
-	public static int formatSInt(int v, Object s, int c) {
-		throw new RuntimeException();
+	public static int formatSInt(int v, Object dest, int c) {
+	    String s = "" + v;
+	    char[] arr = (char[]) dest;
+	    for (int i=0; i<c; i++) {
+		arr[c+i] = s.charAt(i);
+	    }
+	    return c+s.length();
 	}
 	
 	public static BigInteger sIPower(BigInteger b1, int b2) {
@@ -152,6 +157,22 @@ public class Math {
 		throw new RuntimeException();
     }
 
+
+    public static MultiRecord wordTimesDouble(Word w1, Word w2) {
+	throw new RuntimeException();
+    }
+
+    public static MultiRecord wordDivideDouble(Word w1, Word w2, Word w3) {
+	throw new RuntimeException();
+    }
+
+    public static MultiRecord wordPlusStep(Word w1, Word w2, Word w3) {
+	throw new RuntimeException();
+    }
+
+    public static MultiRecord wordTimesStep(Word w1, Word w2, Word w3, Word w4) {
+	throw new RuntimeException();
+    }
 
     public static float sfloAssemble(boolean sign, int i, Word w) {
 	throw new RuntimeException();
