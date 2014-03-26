@@ -277,3 +277,32 @@ extend Byte:Join(OutputType, InputType) == add {
 	(p:TextWriter) << (b:%):TextWriter	== p << b::Z;
 	<< (p:TextReader):%			== lowByte((<< p)@Z);
 }
+
+#if ALDORTEST
+---------------------- test --------------------------
+#include "aldor"
+#include "aldortest"
+
+testParseInt(f: Literal -> MachineInteger): () == {
+    import from Assert MachineInteger;
+    import from StringBuffer;
+    import from IntegerTypeTools MachineInteger;
+
+    i: MachineInteger := f("100" pretend Literal);
+    assertTrue(zero?(i-100));
+
+    for n in -100..100 repeat {
+        sb: StringBuffer := new();
+	(sb::TextWriter) << n;
+	nn := scan(sb::TextReader);
+	assertEquals(n, nn);
+    }
+}
+
+
+-- pass integer as a function to avoid compiler inlining
+-- the call.
+testParseInt(integer$MachineInteger);
+
+
+#endif

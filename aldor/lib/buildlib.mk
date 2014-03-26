@@ -57,6 +57,10 @@ AM_V_ALDORTEST = $(am__v_ALDORTEST_$(V))
 am__v_ALDORTEST_ = $(am__v_ALDORTEST_$(AM_DEFAULT_VERBOSITY))
 am__v_ALDORTEST_0 = @
 
+AM_V_ALDORTESTJ = $(am__v_ALDORTESTJ_$(V))
+am__v_ALDORTESTJ_ = $(am__v_ALDORTESTJ_$(AM_DEFAULT_VERBOSITY))
+am__v_ALDORTESTJ_0 = @
+
 # Check the makefile
 
 .PRECIOUS: Makefile
@@ -200,8 +204,9 @@ $(addsuffix .java, $(javalibrary)): %.java: %.ao
 	$(aldorexedir)/aldor $(aldor_common_args) -Fjava $*.ao
 
 $(addsuffix .class, $(javalibrary)): %.class: $(libraryname).classlib
+# FIXME: -g here is ropey
 $(libraryname).classlib: $(addsuffix .java, $(javalibrary))
-	$(AM_V_JAVAC)javac -cp $(aldorlibdir)/java/src/foamj.jar $^
+	$(AM_V_JAVAC)javac -g -cp $(aldorlibdir)/java/src/foamj.jar $^
 	@touch $@
 
 $(libraryname).jar: $(addsuffix .class, $(javalibrary)) $(top_srcdir)/lib/buildlib.mk
@@ -231,16 +236,19 @@ $(aldortests): %.aldortest: Makefile
 			-I$(top_srcdir)/lib/aldor/include -Y$(top_builddir)/lib/aldor/src \
 			-Y$(librarylibdir) -I$(libraryincdir) -ginterp -DALDORTEST \
 			$*.test.as; \
+	$(CHECK_TEST_STATUS) \
+	)
+
+CHECK_TEST_STATUS = \
 	 status=$$?; \
 	 exstatus=$(filter $*, $(XFAIL));	\
 	 if ! [ "$$exstatus" = "" ] ; then \
 	     if [ $$status = 0 ] ; then echo XPASS: $*; exit 1; else echo XFAIL: $*; exit 0; fi;  \
 	 fi;\
 	 if [ $$status = 0 ] ; then echo PASS: $*; else echo FAIL: $*; fi; \
-	 exit $$status)
+	 exit $$status;
 
 .PHONY: $(aldortests)
-check: $(aldortests)
 
 aldortestexecs := $(patsubst %,%.aldortest.exe,$(library))
 aldortooldir = $(abs_top_builddir)/aldor/subcmd/unitools
@@ -260,6 +268,30 @@ $(aldortestexecs): %.aldortest.exe: Makefile
 			-I$(top_srcdir)/lib/aldor/include -Y$(top_builddir)/lib/aldor/src \
 			-Y$(librarylibdir) -I$(libraryincdir) -fx=$@ -DALDORTEST \
 			$*.test.as; )
+
+ifneq ($(javalibrary),)
+aldortestjavas := $(patsubst %,%.aldortest-java,$(library))
+
+$(aldortestjavas): %.aldortest-java: Makefile %.as
+	$(AM_V_ALDORTESTJ) \
+        (if grep -q '^#if ALDORTEST' $(srcdir)/$*.as; then \
+	 echo "   ALDORTESTJ $*"; \
+	 sed -n -e '/^#if ALDORTEST/,/^#endif/p' < $(srcdir)/$*.as > $*_jtest.as; \
+	 $(DBG) $(aldorexedir)/aldor -Q3 -WD+libConst -WD+ret $(aldor_common_args) -Y$(aldorlibdir)/libfoam/al \
+		-Y$(foamdir) -Y$(foamlibdir) -l$(libraryname) $(patsubst %,-l%,$(librarydeps)) \
+		-I$(top_srcdir)/lib/aldor/include -Y$(top_builddir)/lib/aldor/src \
+		-Y$(librarylibdir) -I$(libraryincdir) -DALDORTEST \
+		-Fjava -fc -Ffm -Jmain $*_jtest.as; \
+	 javac -g -cp $(aldorlibdir)/java/src/foamj.jar $*_jtest.java; \
+	 java -cp .:$(aldorlibdir)/java/src/foamj.jar:$(aldorlibdir)/libfoam/al/foam.jar:$(top_builddir)/lib/$(libraryname)/src/$(libraryname).jar:$(top_builddir)/lib/aldor/src/aldor.jar $*_jtest; \
+	 $(CHECK_TEST_STATUS) \
+	 fi;)
+
+.PHONY: $(aldortestjavas)
+endif
+
+check: $(aldortests) $(aldortestjavas)
+
 # 
 # :: Automake requires this little lot
 #

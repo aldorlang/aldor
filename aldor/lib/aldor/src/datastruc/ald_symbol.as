@@ -58,6 +58,7 @@ is created at each call.}
 \Signature{()}{\%}
 \Retval{Returns a new symbol.}
 #endif
+symbols: () -> H;
 } == add {
 	Rep == String;
 
@@ -74,6 +75,8 @@ is created at each call.}
 	(p:TextWriter) << (s:%):TextWriter	== { import from Rep;p << rep s}
 	(p:BinaryWriter) << (s:%):BinaryWriter	== { import from Rep;p << rep s}
 	local address(s:%):Pointer		== s pretend Pointer;
+
+	symbols(): H == stable;
 
 	-- use address-based hashing in order to speed-up symbol-table lookup
 	hash(s:%):Z		== { import from Pointer; address(s)::Z }
@@ -100,3 +103,17 @@ is created at each call.}
 
 }
 
+#if ALDORTEST
+#include "aldor"
+import from Assert Symbol;
+import from Symbol;
+import from String;
+
+test(): () == {
+   a := -"fred";
+   a2 := -("fr" + "ed");
+   assertEquals(a, a2);
+}
+
+test();
+#endif
