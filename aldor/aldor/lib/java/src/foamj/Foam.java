@@ -25,8 +25,8 @@ public class Foam {
 	public static void fputs(Word s, Word w) {
 	    PrintStream ps = (PrintStream) Word.U.toArray(s);
 	    char[] arr = (char[])w.toArray();
-	    for (char c: arr) {
-		ps.write(c);
+	    for (int i=0; i<arr.length-1; i++) {
+		ps.write(arr[i]);
 	    }
 	}
     
@@ -36,11 +36,11 @@ public class Foam {
 	    int start = w2.toSInt();
 	    int limit = w3.toSInt();
 	    if (limit == -1) {
-		System.out.println(new String(arr).substring(start));
-		return Word.U.fromSInt(arr.length - start);
+		System.out.print(new String(arr).substring(start));
+		return Word.U.fromSInt(arr.length -1 - start);
 	    }
 	    else {
-		System.out.println(new String(arr, start, limit-start));
+		System.out.print(new String(arr, start, limit-start));
 		return Word.U.fromSInt(limit-start);
 	    }
 	}
@@ -50,7 +50,6 @@ public class Foam {
 	}
 	
 	public static Word stderrFile() {
-		//return System.out;
 	    return Word.U.fromArray(System.err);
 	}
 
@@ -289,9 +288,12 @@ public class Foam {
 	public static double arrToDFlo(Object o) { throw new RuntimeException(); }
 	public static int arrToSInt(Object o) { 
 	    char[] arr  = (char[]) o;
-	    return Integer.parseInt(new String(arr));
+	    return Integer.parseInt(new String(arr, 0, arr.length-1));
 	}
-	public static BigInteger arrToBInt(Object o) { throw new RuntimeException(); }
+	public static BigInteger arrToBInt(Object o) {
+	    char[] arr  = (char[]) o;
+	    return new BigInteger(new String(arr, 0, arr.length-1));
+	}
 
 
     public static Word powf(Word w1, Word w2) {
