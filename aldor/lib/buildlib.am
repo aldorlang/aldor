@@ -11,4 +11,12 @@ lib$(libraryname).al: $(foreach i,$(SUBDIRS),$i/_sublib_$(libraryname).al)
 	   rm $$(ar t $$l);	\
 	done
 
+$(libraryname).jar: $(foreach i, $(JAVA_SUBDIRS),$i/$(libraryname).jar)
+	$(AM_V_JAR) set -x;		\
+	rm -rf jar;		\
+	mkdir jar;		\
+	for i in $(foreach j, $(JAVA_SUBDIRS),$j/$(libraryname).jar); \
+		do (cd jar; jar xf ../$$i); done;  		\
+	(cd jar; jar cf ../$@ .)
+
 CLEANFILES = lib$(libraryname).al

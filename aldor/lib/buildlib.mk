@@ -48,12 +48,17 @@ AM_V_JAVAC = $(am__v_JAVAC_$(V))
 am__v_JAVAC_ = $(am__v_JAVAC_$(AM_DEFAULT_VERBOSITY))
 am__v_JAVAC_0 = @echo "  JAVAC " $@;
 
+AM_V_JAR = $(am__v_JAR_$(V))
+am__v_JAR_ = $(am__v_JAR_$(AM_DEFAULT_VERBOSITY))
+am__v_JAR = @echo "  JAR " $@;
+
 # ALDORTEST - don't echo anything as the build rule will show the test name
 AM_V_ALDORTEST = $(am__v_ALDORTEST_$(V))
 am__v_ALDORTEST_ = $(am__v_ALDORTEST_$(AM_DEFAULT_VERBOSITY))
 am__v_ALDORTEST_0 = @
 
 # Check the makefile
+
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status 
 	@case '$?' in \
@@ -199,8 +204,16 @@ $(libraryname).classlib: $(addsuffix .java, $(javalibrary))
 	$(AM_V_JAVAC)javac -cp $(aldorlibdir)/java/src/foamj.jar $^
 	@touch $@
 
-$(libraryname).jar: $(addsuffix .class, $(javalibrary))
-	$(AM_V_JAR)jar -cf $@ $(addsuffix *.class, $(javalibrary))
+$(libraryname).jar: $(addsuffix .class, $(javalibrary)) $(top_srcdir)/lib/buildlib.mk
+	$(AM_V_JAR) \
+	rm -f $@;	\
+	rm -rf jar;	\
+	mkdir jar;	\
+	jar cf $@ $(addsuffix *.class, $(javalibrary))
+	for i in $(foreach i, $(SUBDIRS), $i/$(libraryname).jar); do \
+		(cd jar; jar xf ../$$i);				\
+		jar uf ../$@ -C jar .; done;				\
+	rm -rf jar
 
 all: $(libraryname).jar				\
 	$(addsuffix .java,$(javalibrary))	\
