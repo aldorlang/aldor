@@ -483,6 +483,9 @@ dvMarkEInfo(Foam foam)
 	  case FOAM_EEnv:
 		dvMarkEInfo(foam->foamEEnv.env);
 		break;
+	  case FOAM_Glo:
+		dvMarkExprUsage(foam);
+		break;
 	  default:	
 		break;
 	}
