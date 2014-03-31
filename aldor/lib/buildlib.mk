@@ -283,10 +283,10 @@ $(aldortestjavas): %.aldortest-exec-java: Makefile %.as
         (if grep -q '^#if ALDORTEST' $(srcdir)/$*.as; then \
 	 echo "   ALDORTESTJ $*"; \
 	 sed -n -e '/^#if ALDORTEST/,/^#endif/p' < $(srcdir)/$*.as > $*_jtest.as; \
-	 $(DBG) $(aldorexedir)/aldor -Q3 -WD+libConst -WD+ret $(aldor_common_args) -Y$(aldorlibdir)/libfoam/al \
+	 $(DBG) $(aldorexedir)/aldor $(aldor_common_args) -Y$(aldorlibdir)/libfoam/al \
 		-Y$(foamdir) -Y$(foamlibdir) -l$(libraryname) $(patsubst %,-l%,$(librarydeps)) \
 		-I$(top_srcdir)/lib/aldor/include -Y$(top_builddir)/lib/aldor/src \
-		-Y$(librarylibdir) -I$(libraryincdir) -DALDORTEST \
+		-Y$(librarylibdir) -I$(libraryincdir) -DALDORTEST $$(cat $*_jtest.as | grep ^aldoroptions: | sed -e 's/aldoroptions://') \
 		-Fjava -fc -Ffm -Jmain $*_jtest.as; \
 	 javac -g -cp $(aldorlibdir)/java/src/foamj.jar $*_jtest.java; \
 	 java -cp .:$(aldorlibdir)/java/src/foamj.jar:$(aldorlibdir)/libfoam/al/foam.jar:$(top_builddir)/lib/$(libraryname)/src/$(libraryname).jar:$(top_builddir)/lib/aldor/src/aldor.jar $*_jtest; \
