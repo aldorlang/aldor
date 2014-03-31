@@ -2235,13 +2235,8 @@ gj0Nil(Foam foam)
 local JavaCode 
 gj0Default(Foam foam, String prefix) 
 {
-	SExpr sx = foamToSExpr(foam);
-	String s = sxiFormat(sx);
-	String whole;
-	prefix = strNConcat(prefix, " ");
-	whole = strNConcat(prefix, s);
-	strFree(s);
-	return jcSpaceSeqV(2, jcNull(), jcComment(whole));
+	bug(aStrPrintf("Java not implemented: %s %pFoam\n", prefix, foam));
+	return NULL; /* Not reached */
 }
 
 local FoamTag
