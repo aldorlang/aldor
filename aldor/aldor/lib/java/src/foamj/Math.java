@@ -4,6 +4,8 @@ import java.math.BigInteger;
 
 public class Math {
     private static final Format divideFormat = new Format(2);
+    private static final Format wordTimesFormat = new Format(2);
+    private static final Format wordDivideFormat = new Format(3);
     public static final int ROUND_ZERO = 0;
     public static final int ROUND_NEAREST = 1;
     public static final int ROUND_UP = 2;
@@ -159,11 +161,29 @@ public class Math {
 
 
     public static MultiRecord wordTimesDouble(Word w1, Word w2) {
-	throw new RuntimeException();
+	int i1 = w1.toSInt();
+	int i2 = w2.toSInt();
+	long lprod = (long) i1 * (long) i2;
+	MultiRecord pair = new MultiRecord(wordTimesFormat);
+	pair.setField(0, "hi", Value.U.fromSInt((int) (lprod >> 32)));
+	pair.setField(1, "lo", Value.U.fromSInt((int) (lprod & ((1L<<32)-1))));
+
+	return pair;
     }
 
     public static MultiRecord wordDivideDouble(Word w1, Word w2, Word w3) {
-	throw new RuntimeException();
+	long h = (long) w1.toSInt();
+	long l = (long) w2.toSInt();
+	long d = (long) w3.toSInt();
+	long full = (h << 32) + l;
+	long lquo = full/d;
+	long rem = full % d;
+	MultiRecord result = new MultiRecord(wordDivideFormat);
+	result.setField(0, "hi", Value.U.fromSInt((int) (lquo >> 32)));
+	result.setField(1, "lo", Value.U.fromSInt((int) (lquo & ((1L<<32)-1))));
+	result.setField(2, "rem", Value.U.fromSInt((int) rem));
+
+	return result;
     }
 
     public static MultiRecord wordPlusStep(Word w1, Word w2, Word w3) {

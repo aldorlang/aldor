@@ -284,8 +284,15 @@ public class Foam {
 		throw new RuntimeException(w.toString());
 	}
 	
-	public static float arrToSFlo(Object o) { throw new RuntimeException(); }
-	public static double arrToDFlo(Object o) { throw new RuntimeException(); }
+	public static float arrToSFlo(Object o) {
+	    char[] arr  = (char[]) o;
+	    return new Float(new String(arr, 0, arr.length-1));
+
+	}
+	public static double arrToDFlo(Object o) {
+	    char[] arr  = (char[]) o;
+	    return new Double(new String(arr, 0, arr.length-1));
+	}
 	public static int arrToSInt(Object o) { 
 	    char[] arr  = (char[]) o;
 	    return Integer.parseInt(new String(arr, 0, arr.length-1));
