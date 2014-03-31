@@ -35,6 +35,13 @@ public interface Value {
     Env toEnv();
 
 	public class U {
+	    static public Record toRecord(Value value) {
+		if (value == null)
+		    return null;
+		else
+		    return value.toRecord();
+	    }
+
 		public static Value fromBool(boolean b) { return new Bool(b); }
 		public static Value fromSInt(int x) { return new SInt(x); }
 		public static Value fromArray(Object x) { return new Array(x); }

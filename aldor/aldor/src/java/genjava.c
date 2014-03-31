@@ -130,6 +130,7 @@ local JavaCode     gj0TypeFrFmt(AInt id, AInt fmt);
 local JavaCode     gj0TypeObjToValue(JavaCode val, FoamTag type, AInt fmt);
 local JavaCode     gj0TypeValueToObj(JavaCode val, FoamTag type, AInt fmt);
 local JavaCode     gj0TypeValueToArr(JavaCode value, AInt fmt);
+local JavaCode     gj0TypeValueToRec(JavaCode value, AInt fmt);
 
 local FoamTag      gj0FoamExprType(Foam foam);
 local FoamTag      gj0FoamExprTypeWFmt(Foam foam, AInt *fmt);
@@ -1172,7 +1173,7 @@ gj0TypeValueToObj(JavaCode val, FoamTag type, AInt fmt)
 	case FOAM_Bool:
 		return jcApplyMethodV(val, jcId(strCopy("toBool")), 0);
 	case FOAM_Rec:
-		return jcApplyMethodV(val, jcId(strCopy("toRecord")), 0);
+		return gj0TypeValueToRec(val, fmt);
 	case FOAM_Arr:
 		return gj0TypeValueToArr(val, fmt);
 	case FOAM_Ptr:
@@ -1191,9 +1192,21 @@ local JavaCode
 gj0TypeValueToArr(JavaCode value, AInt fmt)
 {
 	JavaCode arrobj = jcApplyMethodV(value, jcId(strCopy("toArray")), 0);
-	return jcCast(jcArrayOf(gj0TypeFrFmt(fmt, 0)), arrobj);
+	if (fmt == 0)
+		return arrobj;
+	else
+		return jcCast(jcArrayOf(gj0TypeFrFmt(fmt, 0)), arrobj);
 }
 
+local JavaCode
+gj0TypeValueToRec(JavaCode val, AInt fmt)
+{
+	JavaCode record = jcApplyMethodV(jcMemRef(gj0Id(GJ_FoamValue),
+						  jcId(strCopy("U"))),
+					 jcId(strCopy("toRecord")), 1,
+					 val);
+	return record;
+}
 
 local JavaCode
 gj0TypeObjToValue(JavaCode val, FoamTag type, AInt fmt)
