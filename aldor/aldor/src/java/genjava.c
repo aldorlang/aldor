@@ -1454,7 +1454,13 @@ gj0Seq(Foam seq)
 	int i;
 	
 	for (i=0; i != -1; i = foamSeqNextReachable(seq, i)) {
+		Foam stmt = seq->foamSeq.argv[i];
+
 		gj0SeqGen(seqs, seq->foamSeq.argv[i]);
+		if (foamInfo(foamTag(stmt)).properties & FOAMP_SeqExit
+		    && gj0SeqBucketIsPrefix(car(seqs->buckets))) {
+			break;
+		}
 	}
 
 	code = gj0SeqStoreToJava(seqs);
@@ -1678,7 +1684,7 @@ gj0SeqStoreEnsureBody(GjSeqStore store)
 		store->buckets = listSingleton(GjSeqBucket)(gj0SeqBucketNew(GJ_SEQ_Init));
 		return;
 	}
-	if (car(store->buckets)->label == GJ_SEQ_Prefix) {
+	if (gj0SeqBucketIsPrefix(car(store->buckets))) {
 		store->buckets = listCons(GjSeqBucket)(gj0SeqBucketNew(GJ_SEQ_Init),
 						       store->buckets);
 		return;
