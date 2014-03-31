@@ -3755,7 +3755,7 @@ struct gjBVal_info gjBValInfoTable[] = {
 	{FOAM_BVal_SInt0,        GJ_LitInt,  0,"0" },		      
 	{FOAM_BVal_SInt1,        GJ_LitInt,  0,"1" },		      
 	{FOAM_BVal_SIntMin,      GJ_LitInt,  0,"0"},		      
-	{FOAM_BVal_SIntMax,      GJ_Const,       0,"Byte", "MAX_VALUE"},
+	{FOAM_BVal_SIntMax,      GJ_Const,       0,"Integer", "MAX_VALUE"},
 
 	{FOAM_BVal_SIntIsZero,   GJ_Op, JCO_OP_Equals, "0"},
 	{FOAM_BVal_SIntIsNeg,    GJ_Op, JCO_OP_LT,     "0"},
