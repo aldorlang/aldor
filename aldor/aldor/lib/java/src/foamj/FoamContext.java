@@ -2,9 +2,10 @@ package foamj;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class FoamContext {
-	
+    ConcurrentHashMap<String, Clos> loadFns = new ConcurrentHashMap<>();
         public void startFoam(FoamClass c, String[] args) {
 	    Word[] mainArgv = new Word[1];
 	    mainArgv[0] = Word.U.fromArray(literalCharArray(c.getClass().getName()));
@@ -25,35 +26,40 @@ public class FoamContext {
 
 	@SuppressWarnings("unchecked")
 	public Clos createLoadFn(final String name) {
-		Fn loader = new Fn("constructor-"+name) {
-			public Value ocall(Env env, Value... vals) {
-				Class<FoamClass> c;
-				try {
-					c = (Class<FoamClass>) ClassLoader.getSystemClassLoader().loadClass(name);
-					Constructor<FoamClass> cons = c.getConstructor(FoamContext.class);
-					FoamClass fc = cons.newInstance(FoamContext.this);
-					fc.run();
-				} catch (ClassNotFoundException e) {
-					throw new RuntimeException(e);
-				} catch (SecurityException e) {
-					throw new RuntimeException(e);
-				} catch (NoSuchMethodException e) {
-					throw new RuntimeException(e);
-				} catch (IllegalArgumentException e) {
-					throw new RuntimeException(e);
-				} catch (InstantiationException e) {
-					throw new RuntimeException(e);
-				} catch (IllegalAccessException e) {
-					throw new RuntimeException(e);
-				} catch (InvocationTargetException e) {
-					throw new RuntimeException(e);
-				}
-				return null;
+	    if (loadFns.get(name) != null)
+		return loadFns.get(name);
+	    Fn loader = new Fn("constructor-"+name) {
+		    boolean called = false;
+		    public Value ocall(Env env, Value... vals) {
+			if (called)
+			    return null;
+			called = true;
+			Class<FoamClass> c;
+			try {
+			    c = (Class<FoamClass>) ClassLoader.getSystemClassLoader().loadClass(name);
+			    Constructor<FoamClass> cons = c.getConstructor(FoamContext.class);
+			    FoamClass fc = cons.newInstance(FoamContext.this);
+			    fc.run();
+			} catch (ClassNotFoundException e) {
+			    throw new RuntimeException(e);
+			} catch (SecurityException e) {
+			    throw new RuntimeException(e);
+			} catch (NoSuchMethodException e) {
+			    throw new RuntimeException(e);
+			} catch (IllegalArgumentException e) {
+			    throw new RuntimeException(e);
+			} catch (InstantiationException e) {
+			    throw new RuntimeException(e);
+			} catch (IllegalAccessException e) {
+			    throw new RuntimeException(e);
+			} catch (InvocationTargetException e) {
+			    throw new RuntimeException(e);
 			}
-			
+			return null;
+		    }
 		};
-		return new Clos(null, loader);
+	    Clos clos = new Clos(null, loader);
+	    loadFns.put(name, clos);
+	    return clos;
 	}
-	
-	
 }
