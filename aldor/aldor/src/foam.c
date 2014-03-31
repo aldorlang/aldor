@@ -1037,6 +1037,10 @@ foamAuditCastExpr(Foam foam)
 	if (type == FOAM_Ptr && exprType == FOAM_SInt) {
 		foamAuditBadType(foam);
 	}
+
+	if (type == FOAM_BInt && foamTag(foam->foamCast.expr) == FOAM_Arr) {
+		foamAuditBadType(foam);
+	}
 }
 
 
