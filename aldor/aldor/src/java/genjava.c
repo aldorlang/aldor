@@ -178,6 +178,7 @@ enum gjId {
 	GJ_String,
 	GJ_BigInteger,
 	GJ_NullPointerException,
+	GJ_ClassCastException,
 	
 	GJ_ContextVar,
 	GJ_Main,
@@ -2968,6 +2969,14 @@ gj0CastFmt(Foam foam, AInt cfmt)
 		return jc;
 	else if (iType == FOAM_Nil)
 		return jcNull();
+	else if (iType == FOAM_Clos && type == FOAM_Rec) {
+		JavaCode exception = jcConstructV(gj0Id(GJ_ClassCastException), 1,
+						  jcLiteralString(aStrPrintf("%s to %s", foamStr(iType), foamStr(type))));
+		JavaCode throw = jcApplyV(jcMemRef(gj0Id(GJ_Foam), jcId(strCopy("throwException"))),
+					  1, exception);
+		return jcCast(gj0TypeFrFmt(type, 0), throw);
+
+	}
 	else  {
 		return gj0Default(foam,
 			   strPrintf("No cast: %s, %s", foamStr(type), foamStr(iType)));
@@ -3340,6 +3349,7 @@ struct gjIdInfo gjIdInfo[] = {
 	{GJ_String,     0, "String"},
 	{GJ_BigInteger, "java.math", "BigInteger"},
 	{GJ_NullPointerException, 0, "NullPointerException"},
+	{GJ_ClassCastException, 0, "ClassCastException"},
 
 	{GJ_ContextVar, 0, "ctxt"},
 	{GJ_Main,       0, "main"},
