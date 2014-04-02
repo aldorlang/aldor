@@ -1707,17 +1707,15 @@ gen0ApplySyme(FoamTag type, Syme syme, SImpl impl,
 {
 	Foam	foam;
 	Foam    *args;
-	AInt    otype = type;
+	AInt    mtype;
 
+	mtype = gen0TfMapType(syme, symeType(syme), type, NULL); 
 	if (symeIsBuiltin(syme))
 		foam = gen0ApplyBuiltin(syme, argc, &args);
 
 	else if (symeIsForeign(syme))
 		foam = gen0ApplyForeign(type, syme, argc, &args);
-	
 	else if (symeIsImport(syme)) {
-		otype = type;
-		type = gen0Type(tfMapRet(symeType(symeOriginal(syme))), NULL);
 		foam = gen0CCall(type, syme, argc, &args);
 	}
 	else if (gen0IsOpenCallable(syme, impl) &&
@@ -1728,7 +1726,7 @@ gen0ApplySyme(FoamTag type, Syme syme, SImpl impl,
                           called. */
 		foam = gen0CCall(type, syme, argc, &args);
 
-	if (type != otype)
+	if (type != mtype)
 		foam = foamNewCast(type, foam);
 
 	*pargv = args;
