@@ -900,6 +900,9 @@ inlPriqGetCallInfo(Foam call, Bool *pIsLocal)
 
 	if (foamTag(call) == FOAM_CCall) {
 		op	= call->foamCCall.op;
+		while (foamTag(op) == FOAM_Cast)
+			op = op->foamCast.expr;
+
 		val	= inlGetClosFrVar(op);
 	}
 	else {
@@ -1679,6 +1682,8 @@ inlCall(Foam call, Bool valueMode)
 
 	if (foamTag(call) == FOAM_CCall) {
 		op	= call->foamCCall.op;
+		if (foamTag(op) == FOAM_Cast)
+			op = op->foamCast.expr;
 		argv	= call->foamCCall.argv;
 		env	= inlGetVarTableEnv(op, NULL);
 		val	= inlGetClosFrVar(op);
