@@ -1716,15 +1716,15 @@ gen0ApplySyme(FoamTag type, Syme syme, SImpl impl,
 	else if (symeIsForeign(syme))
 		foam = gen0ApplyForeign(type, syme, argc, &args);
 	else if (symeIsImport(syme)) {
-		foam = gen0CCall(type, syme, argc, &args);
+		foam = gen0CCall(mtype, syme, argc, &args);
 	}
 	else if (gen0IsOpenCallable(syme, impl) &&
 		 listIsSingleton(gen0State->envFormatStack))
-		foam = gen0OCall(type, syme, argc, &args);
+		foam = gen0OCall(mtype, syme, argc, &args);
 	else
 		/* BDS -- syme->id->str gives the name of the function being 
                           called. */
-		foam = gen0CCall(type, syme, argc, &args);
+		foam = gen0CCall(mtype, syme, argc, &args);
 
 	if (type != mtype)
 		foam = foamNewCast(type, foam);
