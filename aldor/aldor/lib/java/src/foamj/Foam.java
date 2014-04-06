@@ -308,7 +308,7 @@ public class Foam {
     }
 
     public static Word randomSeed() {
-	return Word.U.fromSInt(0);
+	return Word.U.fromSInt(1000);
     }
 
     public static void stoGc() {
