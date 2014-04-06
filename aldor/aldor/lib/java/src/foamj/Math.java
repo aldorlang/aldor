@@ -145,14 +145,18 @@ public class Math {
 		throw new RuntimeException();
 	}
 
-	public static BigInteger shiftUp(BigInteger b1, int b2)  {
-		throw new RuntimeException();
+	public static BigInteger shiftUp(BigInteger b1, int n)  {
+	    return b1.shiftLeft(n);
 	}
-	public static BigInteger shiftDn(BigInteger b1, int b2)  {
-		throw new RuntimeException();
+
+	public static BigInteger shiftDn(BigInteger b1, int n)  {
+	    return b1.shiftRight(n);
 	}
-	public static BigInteger shiftRem(BigInteger b1, BigInteger b2) {
-		throw new RuntimeException();
+
+	public static BigInteger shiftRem(BigInteger b1, int n) {
+	    BigInteger allOnes = BigInteger.ONE.shiftLeft(n).subtract(BigInteger.ONE);
+
+	    return b1.and(allOnes);
 	}
 
     public static int timesModInv(int a, int b, int c, double d) {
