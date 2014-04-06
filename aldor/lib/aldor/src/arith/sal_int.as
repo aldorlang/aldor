@@ -201,3 +201,40 @@ extend AldorInteger: IntegerType with { export from IntegerSegment % } == add {
 		x;
 	}
 }
+
+#if ALDORTEST
+
+#include "aldor"
+#include "aldortest"
+
+macro I == Integer;
+
+local random():Boolean == { import from I; random 100; }
+
+local random(m:I):Boolean == {
+      import from Assert MachineInteger;
+      import from MachineInteger;
+      s: Set Integer := [random()$I for x in 1..m];
+      assertTrue(#s > machine(m quo 3)); -- Not a terribly strong test, but catches some silliness.
+      true;
+}
+
+local plusTest(): () == {
+      import from Assert I;
+      import from I;
+      for i in 1..10 repeat {
+           r1: I := random();
+           r2: I := random();
+           assertEquals(r1+r2, r2+r1);
+           assertEquals(r1+0, r1);
+           assertEquals(0, r1*0);
+           assertEquals(r1, r1*1);
+           assertEquals(-r1, r1 * (-1));
+      }
+}
+
+stderr << "Testing sal__random..." << newline;
+aldorTest("random", random);
+plusTest();
+stderr << newline;
+#endif
