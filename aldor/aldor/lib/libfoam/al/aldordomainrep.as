@@ -184,6 +184,10 @@ AldorDomainRep: Conditional with {
 		rep(dom).names    := nams;
 		rep(dom).types    := typs;
 		rep(dom).exports  := expts;
+		for i in 1..#nams repeat {
+		    rep(dom).names(i) := 0;
+		    rep(dom).types(i) := 0;
+		}
 	}
 
 

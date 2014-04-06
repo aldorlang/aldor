@@ -120,6 +120,10 @@ AldorCatRep: Conditional with {
 		rep(cat).names    := nams;
 		rep(cat).types    := typs;
 		rep(cat).exports  := expts;
+		for i in 1..#nams repeat {
+		    rep(cat).names(i) := 0;
+		    rep(cat).types(i) := 0;
+		}
 	}
 
 	addParents!(cat: %, prnts: Array CatObj): () == {
