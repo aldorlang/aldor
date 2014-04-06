@@ -418,7 +418,7 @@ extern void		symeSetConstNumX	(Syme, AInt);
 #define	symeSetExtension(s,v)		symeSetField(s, SYFI_Extension, v)
 /*#define	symeSetExtension(s,v)		symeXSetExtension(s, v)*/
 
-#define	symeSetCondition(s,v)		symeSetField(s, SYFI_Condition, v)
+extern void symeSetCondition(Syme syme, SefoList sefoList);
 #define	symeSetTwins(s,v)		symeSetField(s, SYFI_Twins, v)
 #define	symeSetDepths(s,v)		symeSetField(s, SYFI_Depths, v)
 #define	symeSetMark(s,v)		symeSetField(s, SYFI_Mark, v)

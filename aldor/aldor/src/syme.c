@@ -642,6 +642,13 @@ symeTransferImplInfo(Syme to, Syme from)
 	symeMergeImpl(to, symeImpl(from));
 }
 
+void
+symeSetCondition(Syme syme, SefoList sefoList)
+{
+	symeSetField(syme, SYFI_Condition, sefoList);
+}
+
+
 /******************************************************************************
  *
  * :: Implementation handling.
@@ -1130,9 +1137,10 @@ symeCheckCondition(Syme syme)
 			symeSetCheckCondIncomplete(syme);
 		}
 		else if (result == 2) {
+			/* This might be incorrect, as condition lists are
+			   shared across symeCopy */
 			symeSetCondition(syme,
 					 listFreeCons(Sefo)(symeCondition(syme)));
-
 			continue;
 		}
 
