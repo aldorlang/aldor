@@ -3024,6 +3024,7 @@ gen0HasCatBit(Foam dom, AbSyn cat)
 				foamCopy(dom),
 				 foamNewSInt(gen0StrHash("%%")), 
 				 gen0SefoHash(cat, cat));
+	foamPure(foam) = true;
 	return foam;
 }
 
@@ -3071,6 +3072,7 @@ gen0HasImport(Foam dom, Syme syme)
 				foamCopy(dom),
 				foamNewSInt(gen0StrHash(str)),
 				gen0TypeHash(tf, tf, str));
+	foamPure(foam) = true;
 
 	return foamNewCast(FOAM_Word, foam);
 }	
