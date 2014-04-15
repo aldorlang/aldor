@@ -29,6 +29,7 @@
 #include "spesym.h"
 #include "debug.h"
 #include "optfoam.h"
+#include "tfsat.h"
 
 local AbSyn shexpParse(String);
 
