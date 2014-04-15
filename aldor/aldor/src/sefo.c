@@ -3667,11 +3667,7 @@ slcAddSyme(Lib lib, Syme syme)
 	lib->symec += 1;
 	if (libSymeIsTop(lib, syme)) lib->topc += 1;
 
-	if (DEBUG(sefoClose)) {
-		fprintf(dbOut, "+syme:");
-		fnewline(dbOut);
-		symePrintDb(syme);
-	}
+	sefoCloseDEBUG(dbOut, "+syme: [%d] %pSyme\n", symeHash(syme), syme);
 }
 
 local void
@@ -3680,11 +3676,7 @@ slcAddType(Lib lib, TForm tf)
 	lib->types = listCons(TForm)(tf, lib->types);
 	lib->typec += 1;
 
-	if (DEBUG(sefoClose)) {
-		fprintf(dbOut, "+type:");
-		fnewline(dbOut);
-		tformPrintDb(tf);
-	}
+	sefoCloseDEBUG(dbOut, "+type: %pTForm\n", tf);
 }
 
 local void
