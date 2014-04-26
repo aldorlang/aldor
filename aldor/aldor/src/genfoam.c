@@ -6245,9 +6245,9 @@ gen0ForIter(AbSyn absyn, FoamList *forl, FoamList *itl)
 	*/
         if (abTag(absyn->abFor.lhs) == AB_Comma) {
                 call = foamNewEmpty(FOAM_CCall, 2);
-                call->foamCCall.type = FOAM_Rec;
+                call->foamCCall.type = FOAM_Word;
                 call->foamCCall.op   = foamCopy(valueFun);
-                call = gen0CrossToMulti(call, tfGeneratorArg(gen0AbContextType(absyn)));
+                call = gen0CrossToMulti(foamNewCast(FOAM_Rec, call), tfGeneratorArg(gen0AbContextType(absyn)));
                 gen0MultiAssign(FOAM_Set, absyn->abFor.lhs, call);
         }
         else {

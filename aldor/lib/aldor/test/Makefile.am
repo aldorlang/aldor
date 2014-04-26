@@ -38,6 +38,7 @@ AXLTESTS =	\
 	trec	    \
 	pol2	\
 	iter	\
+	iter2	\
 	#
 
 BROKEN =	\
