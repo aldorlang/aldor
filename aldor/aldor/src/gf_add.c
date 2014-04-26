@@ -1113,7 +1113,7 @@ gen0TryForceLazy(Foam self, Syme syme, Foam lazy)
 	FoamList	topLines;
 	int		l1, l2;
 	AbSyn		absyn = (AbSyn)NULL;
-
+	FoamTag type = gen0Type(symeType(syme), NULL);
 
 	/* Get some labels */
 	l1 = gen0State->labelNo++;
@@ -1138,7 +1138,7 @@ gen0TryForceLazy(Foam self, Syme syme, Foam lazy)
 
 
 	/* Export not found: use a neutral value/bad pointer */
-	val = foamNewCast(FOAM_Word, foamNewSInt(int0));
+	val = foamNewCast(FOAM_Word, foamNeutralValue(type));
 	gen0AddStmt(foamNewSet(foamCopy(tmpvar), val), absyn);
 
 

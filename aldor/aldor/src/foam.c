@@ -3379,6 +3379,17 @@ foamCastIfNeeded(FoamTag wanted, FoamTag actual, Foam foam)
 	return foamNewCast(wanted, foam);
 }
 
+Foam
+foamNeutralValue(FoamTag type)
+{
+	switch (type) {
+	case FOAM_SInt:
+		return foamNewSInt(0);
+	default:
+		return foamNewCast(type, foamNewNil());
+	}
+}
+
 /*****************************************************************************
  *
  * :: Table of FOAM instruction codes
