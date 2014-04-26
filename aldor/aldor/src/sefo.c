@@ -1247,7 +1247,11 @@ symeOStreamPrint0(OStream ostream, Bool deep, Syme syme)
 	cc += ostreamPrintf(ostream, "%s", symeString(syme));
 
 	if (DEBUG(sefoPrint)) {
-		cc += ostreamPrintf(ostream, " [cn:%ld, dn:%d %ld],", symeConstNum(syme), symeDefnNum(syme), symeMark(syme));
+		cc += ostreamPrintf(ostream, " [%s.%ld%s, dn:%d %ld],",
+				    symeConstLib(syme) != NULL ? libToStringShort(symeConstLib(syme)) : "",
+				    symeConstNum(syme) == 32767 ? -1 : symeConstNum(syme),
+				    symeHasDefault(syme) ? "D":"",
+				    symeDefnNum(syme), symeMark(syme));
 	}
 
 	if (deep) {
