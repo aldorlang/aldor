@@ -202,30 +202,32 @@ endif
 
 ifneq ($(BUILD_JAVA),)
 ifneq ($(javalibrary),)
-$(addsuffix .java, $(javalibrary)): %.java: %.ao
+_javalibrary = $(filter-out $(java_blacklist), $(javalibrary))
+
+$(addsuffix .java, $(_javalibrary)): %.java: %.ao
 	$(AM_V_FOAMJ)$(DBG)	\
 	$(aldorexedir)/aldor $(aldor_common_args) -Fjava $*.ao
 
-$(addsuffix .class, $(javalibrary)): %.class: $(libraryname).classlib
+$(addsuffix .class, $(_javalibrary)): %.class: $(libraryname).classlib
 # FIXME: -g here is ropey
-$(libraryname).classlib: $(addsuffix .java, $(javalibrary))
+$(libraryname).classlib: $(addsuffix .java, $(_javalibrary))
 	$(AM_V_JAVAC)javac -g -cp $(aldorlibdir)/java/src/foamj.jar $^
 	@touch $@
 
-$(libraryname).jar: $(addsuffix .class, $(javalibrary)) $(top_srcdir)/lib/buildlib.mk
+$(libraryname).jar: $(addsuffix .class, $(_javalibrary)) $(top_srcdir)/lib/buildlib.mk
 	$(AM_V_JAR) \
 	rm -f $@;	\
 	rm -rf jar;	\
 	mkdir jar;	\
-	jar cf $@ $(addsuffix *.class, $(javalibrary))
+	jar cf $@ $(addsuffix *.class, $(_javalibrary))
 	for i in $(foreach i, $(SUBDIRS), $i/$(libraryname).jar); do \
 		(cd jar; jar xf ../$$i);				\
 		jar uf ../$@ -C jar .; done;				\
 	rm -rf jar
 
 all: $(libraryname).jar				\
-	$(addsuffix .java,$(javalibrary))	\
-	$(addsuffix .class,$(javalibrary))
+	$(addsuffix .java,$(_javalibrary))	\
+	$(addsuffix .class,$(_javalibrary))
 endif
 endif
 
@@ -274,7 +276,7 @@ $(aldortestexecs): %.aldortest.exe: Makefile
 			$*.test.as; )
 ifneq ($(BUILD_JAVA),)
 ifneq ($(javalibrary),)
-aldortestjavas := $(patsubst %,%.aldortest-exec-java,$(library))
+aldortestjavas := $(patsubst %,%.aldortest-exec-java,$(_javalibrary))
 
 $(aldortestjavas): %.aldortest-exec-java: Makefile %.as
 	$(AM_V_ALDORTESTJ) \
