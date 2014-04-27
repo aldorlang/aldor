@@ -78,8 +78,7 @@ symbols: () -> H;
 
 	symbols(): H == stable;
 
-	-- use address-based hashing in order to speed-up symbol-table lookup
-	hash(s:%):Z		== { import from Pointer; address(s)::Z }
+	hash(s:%):Z		== { hash(rep(s))::Z }
 
 	new():% == {
 		import from TextWriter, String, Partial String;
