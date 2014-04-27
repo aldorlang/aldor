@@ -3028,6 +3028,12 @@ local SymeList		tfGetCatParentsFrInner	(TForm);
 
 local SymeList		abGetCatParents		(Sefo);
 
+local void tfValidateDomExports(TForm tf);
+local void tfValidateDomExportsParam(TForm tf);
+local void tfValidateDomImports(TForm tf);
+local void tfValidateDomImportsParam(TForm tf);
+local void tfValidateCheckConstInfo(TForm tf, SymeList symes, String type);
+
 /*
  * Called on a semantic category form to get the symbol meaning for %%
  * to serve as a representation of all of the exports of the category.
@@ -3381,6 +3387,71 @@ tfGetExportError(TForm tf, String order)
 	/* "Implementation restriction:
 	   import from %s before its exports could be determined." */
 	/* comsgWarning(tfExpr(tf), ALDOR_W_TinEarlyImport, order); */
+}
+
+/*
+ * There's a few cases where we stamp a real const number on symes from categories.
+ * This leads to incorrect inlining later on.  While the underlying bug isn't fixed,
+ * the code below provides a workaround.
+ */
+local void
+tfValidateDomExports(TForm tf)
+{
+	Syme syme;
+
+	tfAuditExportList(tfDomExports(tf));
+
+	if (!tfIsId(tf))
+		return;
+	syme = tfIdSyme(tf);
+	if (syme && symeIsParam(syme)) {
+		tfValidateDomExportsParam(tf);
+	}
+}
+
+local void
+tfValidateDomImports(TForm tf)
+{
+	Syme syme;
+
+	if (!tfIsId(tf))
+		return;
+	syme = tfIdSyme(tf);
+	if (syme && symeIsParam(syme)) {
+		tfValidateDomImportsParam(tf);
+	}
+}
+
+local void
+tfValidateDomExportsParam(TForm tf)
+{
+	tfValidateCheckConstInfo(tf, tfDomExports(tf), "exports");
+}
+
+local void
+tfValidateDomImportsParam(TForm tf)
+{
+	tfValidateCheckConstInfo(tf, tfDomImports(tf), "imports");
+}
+
+local void
+tfValidateCheckConstInfo(TForm tf, SymeList symes, String type)
+{
+	while (symes != listNil(Syme)) {
+		Syme syme = car(symes);
+		symes = cdr(symes);
+
+		if (symeConstNum(syme) != SYME_NUMBER_UNASSIGNED) {
+			afprintf(dbOut, "Type: %s Syme %s.%d %pSyme %pTForm\n",
+				 type,
+				 libToStringShort(symeConstLib(syme)), symeConstNum(syme),
+				 syme, tf);
+			bugWarning("Syme with const num found in parameterised domain %s");
+			symeSetConstLib(syme, NULL);
+			symeSetConstNum(syme, SYME_NUMBER_UNASSIGNED);
+		}
+
+	}
 }
 
 Bool
@@ -3862,7 +3933,7 @@ tfMangleSymes(TForm tf, TForm cat, SymeList esymes, SymeList symes)
 
 
 			/* DEBUGGING */
-			symeRefreshDEBUG(dbOut, "\t* %d --> %d, %d --> %d [%s]\n",
+			tfImportDEBUG(dbOut, "\t* %d --> %d, %d --> %d [%s]\n",
 					 symeDefnNum(syme),
 					 symeDefnNum(csyme),
 					 symeConstNum(syme),
@@ -3965,7 +4036,7 @@ tfGetDomExports(TForm tf)
 
 	tfImportDEBUG(dbOut, ")\n");
 
-	tfAuditExportList(tfDomExports(tf));
+	tfValidateDomExports(tf);
 	return tfDomExports(tf);
 }
 
@@ -4353,6 +4424,7 @@ tfStabGetDomImports(Stab stab, TForm tf)
 		fnewline(dbOut);
 	}
 
+	tfValidateDomImports(tf);
 	return symes;
 }
 
