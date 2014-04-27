@@ -360,3 +360,24 @@ function of $T$ is taken.}
 		}
 	}
 }
+
+
+#if ALDORTEST
+#include "aldor"
+
+test(): () == {
+    import from Assert MachineInteger;
+    import from MachineInteger;
+    arr: PrimitiveArray MachineInteger := new(2, 3);
+    assertEquals(3, arr(0));
+    arr(1) := 1;
+    assertEquals(1, arr(1));
+
+    arr := [1,2,3];
+    assertEquals(1, arr(0));
+    assertEquals(2, arr(1));
+    assertEquals(3, arr(2));
+}
+
+test()
+#endif
