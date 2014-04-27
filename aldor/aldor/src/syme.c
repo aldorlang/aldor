@@ -508,7 +508,27 @@ AInt
 symeGetFieldX(Syme s, AInt f) { return symeGetField(s, f); }
 
 void
-symeSetConstNumX(Syme s, AInt n) { symeSetConstNum(s, n); }
+symeSetConstNum(Syme syme, AInt n)
+{
+	symeSetConstInfo(syme, (symeConstInfo(syme) & 0xFFFF0000) | n);
+}
+
+void
+symeSetConstFlag(Syme syme, AInt n)
+{
+	symeSetConstInfo(syme, symeConstInfo(syme) | (1<< (n+16)));
+}
+void
+symeClrConstFlag(Syme syme, AInt n)
+{
+	symeSetConstInfo(syme, symeConstInfo(syme) & ~(1<< (n+16)));
+}
+
+void
+symeSetConstInfo(Syme syme, AInt info)
+{
+	symeSetField(syme, SYFI_ConstInfo, info);
+}
 
 /******************************************************************************
  *
