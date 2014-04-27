@@ -5,7 +5,8 @@ libraryname	:= algebra
 librarydeps     := aldor
 
 #AXLCDB		:= -W check -Csmax=0 -Zdb -Qno-cc
-AXLFLAGS	:= -Z db -Q2 $(AXLCDB)
-AXLFLAGS	+= -Y $(aldorlibdir) -I $(aldorincdir) -laldor
+AXLFLAGS	:= -Z db $(AXLCDB)
+AXLFLAGS	+= -Y $(aldorlibdir) -I $(aldorincdir) -laldor -Q3
 
+javalibrary := $(library)
 include $(top_srcdir)/lib/buildlib.mk
