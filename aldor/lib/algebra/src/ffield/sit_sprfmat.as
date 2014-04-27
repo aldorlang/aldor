@@ -42,7 +42,7 @@ SmallPrimeFieldCategoryLinearAlgebra(F:SmallPrimeFieldCategory0,
 	local array(r:Z, c:Z):M == {
 		import from A;
 		a:M := new r;
-		for i in 0..prev r repeat a.i := new c;
+		for i in 0..prev r repeat a.i := new(c, 0);
 		a;
 	}
 
