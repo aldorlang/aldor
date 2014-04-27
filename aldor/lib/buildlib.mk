@@ -229,9 +229,9 @@ all: $(libraryname).jar				\
 endif
 endif
 
-aldortests := $(patsubst %,%.aldortest,$(library))
+aldortests := $(patsubst %,%.aldortest-exec-interp,$(library))
 
-$(aldortests): %.aldortest: Makefile
+$(aldortests): %.aldortest-exec-interp: Makefile
 	$(AM_V_ALDORTEST) \
          (if ! grep -q '^#if ALDORTEST' $(srcdir)/$*.as; then exit 0; fi; \
 	 echo "  ALDORTEST $*.as"; \
@@ -245,7 +245,7 @@ $(aldortests): %.aldortest: Makefile
 
 CHECK_TEST_STATUS = \
 	 status=$$?; \
-	 exstatus=$(filter $*, $(XFAIL));	\
+	 exstatus=$(filter $*, $(XFAIL) $(XFAIL_$(subst $*.aldortest-exec-,,$@))); \
 	 if ! [ "$$exstatus" = "" ] ; then \
 	     if [ $$status = 0 ] ; then echo XPASS: $*; exit 1; else echo XFAIL: $*; exit 0; fi;  \
 	 fi;\
@@ -274,9 +274,9 @@ $(aldortestexecs): %.aldortest.exe: Makefile
 			$*.test.as; )
 ifneq ($(BUILD_JAVA),)
 ifneq ($(javalibrary),)
-aldortestjavas := $(patsubst %,%.aldortest-java,$(library))
+aldortestjavas := $(patsubst %,%.aldortest-exec-java,$(library))
 
-$(aldortestjavas): %.aldortest-java: Makefile %.as
+$(aldortestjavas): %.aldortest-exec-java: Makefile %.as
 	$(AM_V_ALDORTESTJ) \
         (if grep -q '^#if ALDORTEST' $(srcdir)/$*.as; then \
 	 echo "   ALDORTESTJ $*"; \
