@@ -2969,7 +2969,8 @@ gj0CastFmt(Foam foam, AInt cfmt)
 		return jc;
 	else if (iType == FOAM_Nil)
 		return jcNull();
-	else if (iType == FOAM_Clos && type == FOAM_Rec) {
+	else if ((iType == FOAM_Clos && type == FOAM_Rec)
+		 ||(iType == FOAM_Arr && type == FOAM_SInt)) {
 		JavaCode exception = jcConstructV(gj0Id(GJ_ClassCastException), 1,
 						  jcLiteralString(aStrPrintf("%s to %s", foamStr(iType), foamStr(type))));
 		JavaCode throw = jcApplyV(jcMemRef(gj0Id(GJ_Foam), jcId(strCopy("throwException"))),
