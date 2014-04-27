@@ -5,7 +5,7 @@
 -----------------------------------------------------------------------------
 
 #include "algebra"
-
+#include "aldorio"
 #if ALDOC
 \thistype{SparseUnivariatePolynomial0}
 \History{Marc Moreno Maza}{13/05/2002}{created}
@@ -50,24 +50,13 @@ SparseUnivariatePolynomial0(R:Join(ArithmeticType, ExpressionType),
 	--% local constanta %--
 	-----------------------
 
-	local integralDomain?  == {
-		b1: Boolean == (R has IntegralDomain);
-		if b1 then {import from R pretend IntegralDomain};
-		b1;
-	}
+	local integralDomain?  == R has IntegralDomain;
+
 	local numberSystem? == (R has PrimeFieldCategory0) or _
 				(R has IntegerCategory) or _
 				(R has with {denominator:    % -> R;});
-	local orderedArithmeticType? == {
-		b2: Boolean == (R has OrderedArithmeticType);
-		if b2 then {import from R pretend OrderedArithmeticType};
-		b2;
-	}
-	local characteristicZero? == {
-		b3: Boolean == (R has CharacteristicZero);
-		if b3 then {import from R pretend CharacteristicZero};
-		b3;
-	}
+	local orderedArithmeticType? == R has OrderedArithmeticType;
+	local characteristicZero? == R has CharacteristicZero;
         local goodRing? == integralDomain? and characteristicZero?;
 
 	------------------------
@@ -651,9 +640,15 @@ macro {
 primitiveType():Boolean == {
         import from Z, Zx;
 	x := term(1,1);
+stdout << "1 X is " << x << newline;
 	p := term(1,2) - term(1,0);
+stdout << "2 X^2 -1 is " << p << newline;
 	pp := term(1,2) - term(1,0);
+stdout << "3 X^2 -1 is " << pp << newline;
 	q := term(1,2) + x - term(1,0);
+stdout << "4 X^2 +x -1 is " << q << newline;
+stdout << "2 = 3 " << (p = pp) << newline;
+stdout << "1 ~= 4 " << (p = q) << newline;
 	(p = pp) and (p ~= q);
 }
 
