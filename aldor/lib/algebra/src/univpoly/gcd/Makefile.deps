@@ -4,9 +4,6 @@ sit_heugcd_deps :=
 sit_modgcd_deps := sit_modpgcd
 sit_modpgcd_deps :=
 
-sit_gcdint.ao: $(srcdir)/sit_gcdint0.as
-sit_modpgcd.ao: $(srcdir)/sit_fullgcd.as $(srcdir)/sit_halfgcd.as $(srcdir)/sit_loggcd.as
-
 library_deps := util numbers extree extree/operators extree/parser \
 	        categories basic mat mat/gauss mat/modular mat/modular \
 	        mat/modular/compbug mat/linalg univpoly/categories \
