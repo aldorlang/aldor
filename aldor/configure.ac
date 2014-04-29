@@ -101,6 +101,7 @@ AC_CONFIG_FILES(
    lib/Makefile
 
    dnl Aldor base library.
+   lib/config.mk
    lib/aldor/Makefile
    lib/aldor/include/Makefile
    lib/aldor/src/Makefile

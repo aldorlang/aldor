@@ -15,6 +15,8 @@ asdomains	:= $(internal) $(library) $(tests)
 axdomains	:= $(axlibrary)
 alldomains	:= $(asdomains) $(axdomains)
 
+include $(top_builddir)/lib/config.mk
+
 # Aldor
 AM_V_ALDOR = $(am__v_ALDOR_$(V))
 am__v_ALDOR_ = $(am__v_ALDOR_$(AM_DEFAULT_VERBOSITY))
@@ -198,6 +200,7 @@ ifeq ($(bytecode_only),)
 all: $(addsuffix .c,$(library))
 endif
 
+ifneq ($(BUILD_JAVA),)
 ifneq ($(javalibrary),)
 $(addsuffix .java, $(javalibrary)): %.java: %.ao
 	$(AM_V_FOAMJ)$(DBG)	\
@@ -223,6 +226,7 @@ $(libraryname).jar: $(addsuffix .class, $(javalibrary)) $(top_srcdir)/lib/buildl
 all: $(libraryname).jar				\
 	$(addsuffix .java,$(javalibrary))	\
 	$(addsuffix .class,$(javalibrary))
+endif
 endif
 
 aldortests := $(patsubst %,%.aldortest,$(library))
@@ -268,7 +272,7 @@ $(aldortestexecs): %.aldortest.exe: Makefile
 			-I$(top_srcdir)/lib/aldor/include -Y$(top_builddir)/lib/aldor/src \
 			-Y$(librarylibdir) -I$(libraryincdir) -fx=$@ -DALDORTEST \
 			$*.test.as; )
-
+ifneq ($(BUILD_JAVA),)
 ifneq ($(javalibrary),)
 aldortestjavas := $(patsubst %,%.aldortest-java,$(library))
 
@@ -288,6 +292,7 @@ $(aldortestjavas): %.aldortest-java: Makefile %.as
 	 fi;)
 
 .PHONY: $(aldortestjavas)
+endif
 endif
 
 check: $(aldortests) $(aldortestjavas)
