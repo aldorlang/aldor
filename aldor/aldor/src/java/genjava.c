@@ -3362,16 +3362,20 @@ local JavaCode
 gj0Id(GjId id) 
 {
 	struct gjIdInfo *info;
+	JavaCode javaId;
 	assert(gjIdInfo[GJ_LIMIT].id == GJ_INVALID);
 
 	info = &gjIdInfo[id];
 	assert(id == info->id);
 
 	if (info->pkg != 0)
-		return jcImportedId(strCopy(info->pkg),
+		javaId = jcImportedId(strCopy(info->pkg),
 				    strCopy(info->name));
 	else
-		return jcId(strCopy(info->name));
+		javaId = jcId(strCopy(info->name));
+
+	assert(!jcoIsEmpty(javaId));
+	return javaId;
 }
 
 

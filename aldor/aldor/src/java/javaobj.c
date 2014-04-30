@@ -17,7 +17,8 @@ jcoNewNode(JavaCodeClass clss, int argc)
 	jcoTag(jc) = JCO_JAVA;
 	jcoClass(jc) = clss;
 	jcoPos(jc) = sposNone;
-	jcoArgc(jc) = argc;
+	jc->node.argc = argc;
+
 	return jc;
 }
 
@@ -32,8 +33,7 @@ jcoNewToken(JavaCodeClass clss, Symbol sym)
 	jcoTag(jco) = JCO_TOKEN;
 	jcoClass(jco) = clss;
 	jcoPos(jco) = sposNone;
-	jcoArgc(jco) = 1;
-	jcoToken(jco) = sym;
+	jco->token.symbol = sym;
 
 	return jco;
 }
@@ -47,8 +47,8 @@ jcoNewLiteral(JavaCodeClass clss, String txt)
 	jcoTag(jco) = JCO_LIT;
 	jcoClass(jco) = clss;
 	jcoPos(jco) = sposNone;
-	jcoArgc(jco) = 1;
-	jcoLiteral(jco) = txt;
+
+	jco->literal.txt = txt;
 
 	return jco;
 }
@@ -64,9 +64,10 @@ jcoNewImport(JavaCodeClass clss, String pkg, String name, Bool isImported)
 	jcoTag(jco) = JCO_IMPORT;
 	jcoClass(jco)     = clss;
 	jcoPos(jco)       = sposNone;
-	jcoImportPkg(jco) = pkg;
-	jcoImportId(jco)  = name;
-	jcoImportIsImported(jco) = isImported;
+	jco->import.pkg = pkg;
+	jco->import.id = name;
+	jcoImportSetImported(jco, isImported);
+
 	return jco;
 }
 
@@ -154,6 +155,72 @@ jcoCopy(JavaCode code)
 	}
 	assert(false);
 	return NULL;
+}
+
+/*
+ * :: Basic access
+ */
+
+extern int
+jcoArgc(JavaCode jco)
+{
+	assert(jcoIsNode(jco));
+	return jco->node.argc;
+}
+
+extern JavaCode *
+jcoArgv(JavaCode jco)
+{
+	assert(jcoIsNode(jco));
+	return jco->node.argv;
+}
+
+extern Symbol
+jcoToken(JavaCode jco)
+{
+	assert(jcoIsToken(jco));
+	return jco->token.symbol;
+}
+
+extern String
+jcoLiteral(JavaCode jco)
+{
+	assert(jcoIsLiteral(jco));
+	return jco->literal.txt;
+}
+
+extern String
+jcoImportPkg(JavaCode jco)
+{
+	assert(jcoIsImport(jco));
+	return jco->import.pkg;
+}
+
+extern String
+jcoImportId(JavaCode jco)
+{
+	assert(jcoIsImport(jco));
+	return jco->import.id;
+}
+
+extern Bool
+jcoImportIsImported(JavaCode jco)
+{
+	assert(jcoIsImport(jco));
+	return jco->import.isImported;
+}
+
+extern void
+jcoImportSetImported(JavaCode jco, Bool flg)
+{
+	assert(jcoIsImport(jco));
+	jco->import.isImported = flg;
+}
+
+extern Bool
+jcoIsEmpty(JavaCode jco)
+{
+	return jcoIsNode(jco) && jcoArgc(jco) == 0;
 }
 
 /*

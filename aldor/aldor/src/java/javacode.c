@@ -481,11 +481,11 @@ jcDeclarationPrint(JavaCodePContext ctxt, JavaCode code)
 	JavaCode retn = jcoArgv(code)[1];
 	JavaCode name = jcoArgv(code)[2];
 	
-	if (jcoArgc(mods) > 0) {
+	if (!jcoIsEmpty(mods)) {
 		jcoWrite(ctxt, mods);
 		jcoPContextWrite(ctxt, " ");
 	}
-	if (jcoArgc(retn) > 0) {
+	if (!jcoIsEmpty(retn)) {
 		jcoWrite(ctxt, retn);
 		jcoPContextWrite(ctxt, " ");
 	}
@@ -1516,7 +1516,7 @@ jcCollectImports(JavaCode code)
 		tmp = codes;
 		while (tmp != 0) {
 			JavaCode imp = car(tmp);
-			jcoImportIsImported(imp) = 1;
+			jcoImportSetImported(imp, true);
 			tmp = cdr(tmp);
 		}
 		listFree(JavaCode)(codes);
