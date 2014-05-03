@@ -161,6 +161,7 @@ libstruct_a_SOURCES =	\
 	foamsig.c	\
 	forg.c		\
 	freevar.c	\
+	formatters.c	\
 	ftype.c		\
 	gf_syme.c	\
 	lib.c		\

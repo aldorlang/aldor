@@ -46,6 +46,7 @@
 #include "abpretty.h"
 #include "srcline.h"
 #include "comsg.h"
+#include "formatters.h"
 #include "java/genjava.h"
 #include "java/javaobj.h"
 
@@ -652,6 +653,7 @@ compInit(void)
 	ssymInit();
 	stabInitGlobal();
 	tfInit();
+	fmttsInit();
 	foamInit();
 	optInit();
 	tinferInit();

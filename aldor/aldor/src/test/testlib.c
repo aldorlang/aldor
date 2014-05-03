@@ -14,6 +14,7 @@
 #include "stab.h"
 #include "tform.h"
 #include "tinfer.h"
+#include "formatters.h"
 
 #include <stdlib.h>
 #include <stdarg.h>
@@ -186,6 +187,7 @@ init()
 	dbInit();
 	stabInitGlobal();
 	tfInit();
+	fmttsInit();
 	foamInit();
 	optInit();
 	tinferInit();

@@ -30,6 +30,7 @@
 #include "debug.h"
 #include "optfoam.h"
 #include "tfsat.h"
+#include "formatters.h"
 
 local AbSyn shexpParse(String);
 
@@ -47,6 +48,7 @@ main(int argc, char *argv[])
 	dbInit();
 	stabInitGlobal();
 	tfInit();
+	fmttsInit();
 	foamInit();
 	optInit();
 	tinferInit();
