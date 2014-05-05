@@ -4,6 +4,7 @@
 extern Bool longIsInt32(long n);
 
 extern Bool aintEqual(AInt i1, AInt i2);
+extern Hash aintHash(AInt i1);
 
 #ifdef CC_long_not_int32
 #define IF_LongOver32Bits(x) Statement(x)

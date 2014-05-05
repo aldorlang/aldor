@@ -24,6 +24,7 @@
 #include "symbol.h"
 #include "strops.h"
 #include "table.h"
+#include "int.h"
 
 /*****************************************************************************
  *
@@ -39,8 +40,6 @@ local Foam	gen0LazyFunGet		(TForm, Foam);
 local Foam	gen0LazyFunGetByArgs	(Length, Length, Foam);
 local Foam	gen0LazyConstGet	(Syme, Foam, Foam, Foam);
 local Foam	gen0FindLazySig		(AIntList, FoamTag, AIntList, Foam);
-local Bool	gen0AIntEqual		(AInt, AInt);
-local Bool	gen0AIntHash		(AInt);
 local Foam	gen0MakeGetExport	(Foam, Foam, Foam);
 local Foam	gen0BuildLazyFun0	(FoamSig);
 local Foam	gen0BuildLazyFun1	(FoamSig);
@@ -556,19 +555,6 @@ gen0AddLazySig(FoamSig sig)
 	return sig;
 }
 
-
-
-local Bool
-gen0AIntEqual(AInt x, AInt y)
-{
-	return x == y;
-}
-
-local Bool
-gen0AIntHash(AInt x)
-{
-	return x;
-}
 
 local Foam
 gen0MakeGetExport(Foam dom, Foam name, Foam type)
@@ -1315,8 +1301,8 @@ static Table    gen0BuiltinTable;
 void
 gen0InitBuiltinTable()
 {
-	gen0BuiltinTable = tblNew((TblHashFun) gen0AIntHash,
-				  (TblEqFun) gen0AIntEqual);
+	gen0BuiltinTable = tblNew((TblHashFun) aintHash,
+				  (TblEqFun) aintEqual);
 }
 
 void
