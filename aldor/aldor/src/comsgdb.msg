@@ -357,6 +357,8 @@ specified in aldor.conf"
 
 ALDOR_F_EmitNoFileSupplied "No file name supplied for `%s' argument"
 
+ALDOR_F_ProtoNotSupported    "The language %s does not support the calling %s protocol"
+
 ALDOR_M_BreakEnter          "\
 Aldor compiler break ------------------------------------------------------"
 ALDOR_M_BreakExit           "\

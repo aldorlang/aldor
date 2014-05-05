@@ -4438,7 +4438,8 @@ gccGetVar(Foam foam)
 			ccode = ccoIdOf(s);
 			break;
 		default:
-			bugBadCase(decl->foamGDecl.protocol);
+			comsgFatal(NULL, ALDOR_F_ProtoNotSupported, "C",
+			     foamProtoInfo(decl->foamGDecl.protocol).str);
 			NotReached(return 0);
 		}
 		break;
