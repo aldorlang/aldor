@@ -217,7 +217,7 @@ gen0AddBody0(AbSyn ab, Stab stab, AbSyn defaultsAb)
         }
 
 	gen0IssueDCache();
-	gen0ProgAddFormat(index);
+	gen0ProgAddStateFormat(index);
 	gen0ProgFiniEmpty(foam, FOAM_Clos, int0);
 
         foamOptInfo(foam) = inlInfoNew(gen0State->stab, foam, NULL, false);
@@ -281,7 +281,7 @@ gen0AddBody1(AbSyn ab, Stab stab, AbSyn defaultsAb)
 
         gen0State->hasTemps = true;
 
-	gen0ProgAddFormat(index);
+	gen0ProgAddStateFormat(index);
 	gen0ProgFiniEmpty(foam, FOAM_Word, int0);
 
         foamOptInfo(foam) = inlInfoNew(gen0State->stab, foam, NULL, false);
@@ -385,7 +385,7 @@ gen0MakeDefaultPackage(AbSyn base, Stab stab, Bool inCatForm, Syme syme)
 
 	gen0AddStmt(foamNewReturn(foamNew(FOAM_Values, int0)), NULL);
 
-	gen0ProgAddFormat(index);
+	gen0ProgAddStateFormat(index);
 	gen0ProgFiniEmpty(foam, FOAM_NOp, int0);
 
 	foamOptInfo(foam) = inlInfoNew(gen0State->stab, foam, syme, false);

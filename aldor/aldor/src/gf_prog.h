@@ -34,7 +34,7 @@ extern void		gen0ProgFiniEmpty	(Foam, AInt, AInt);
 extern Foam		gen0ProgClosEmpty	(void);
 
 extern void		gen0ProgAddParams	(Length, String *);
-extern void		gen0ProgAddFormat	(AInt);
+extern void		gen0ProgAddStateFormat	(AInt);
 
 extern AbSyn		gen0ProgGetExporter	(void);
 extern AbSyn		gen0ProgPushExporter	(AbSyn);

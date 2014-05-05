@@ -325,7 +325,7 @@ gen0ProgAddParams(Length argc, String *argv)
 }
 
 void
-gen0ProgAddFormat(AInt index)
+gen0ProgAddStateFormat(AInt index)
 {
 	Foam	format = fboxMake(gen0State->lexPool->fbox);
 	AInt	nindex;

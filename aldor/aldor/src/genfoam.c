@@ -455,7 +455,7 @@ generateFoam(Stab stab0, AbSyn absyn, String initName)
 
 	gen0AddStmt(foamNewReturn(foamNew(FOAM_Values, int0)), NULL);
 
-	gen0ProgAddFormat(index);
+	gen0ProgAddStateFormat(index);
 	gen0IssueDCache();
 	gen0ProgFiniEmpty(foam, FOAM_NOp, int0);
 
@@ -4311,7 +4311,7 @@ gen0MakeExtendLambda(Syme syme, TForm tf)
 	gen0AddStmt(foamNewSet(var, gen0MakeExtend(syme, tfret)), NULL);
 	var = gen0CacheReturn(cache, foamCopy(var));
 	gen0AddStmt(foamNewReturn(var), NULL);
-	gen0ProgAddFormat(index);
+	gen0ProgAddStateFormat(index);
 	gen0IssueDCache();
 	gen0ProgFiniEmpty(foam, retType, int0);
 
@@ -4363,7 +4363,7 @@ gen0MakeExtendBase(Syme syme)
 #endif
 	gen0AddStmt(foamNewReturn(foamNewCast(FOAM_Clos, foamNewNil())), NULL);
 
-	gen0ProgAddFormat(index);
+	gen0ProgAddStateFormat(index);
 	gen0IssueDCache();
 	gen0ProgFiniEmpty(foam, FOAM_Clos, int0);
 
@@ -5130,7 +5130,7 @@ gen0Lambda(AbSyn absyn, Syme syme, AbSyn defaults)
 	}
 	if (val) gen0AddStmt(foamNewReturn(val), absyn);
 
-	gen0ProgAddFormat(index);
+	gen0ProgAddStateFormat(index);
 	gen0IssueDCache();
 	gen0ProgFiniEmpty(foam, retType, retfmt);
 

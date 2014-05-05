@@ -252,7 +252,7 @@ gen1ImplicitExport(Syme syme, FoamTag repTag)
 
 
 #ifdef PUSH_FORAMTS
-	gen0ProgAddFormat(index);
+	gen0ProgAddStateFormat(index);
 	gen0ProgFiniEmpty(foam, retType, retfmt);
 #else
 	/*

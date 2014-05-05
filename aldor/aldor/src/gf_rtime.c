@@ -693,7 +693,7 @@ gen0CacheClos(AbSyn ab, int nargs, Foam fnClos)
 	var = gen0CacheReturn(cache, call);
 	gen0AddStmt(foamNewReturn(var), ab);
 
-	gen0ProgAddFormat(index);
+	gen0ProgAddStateFormat(index);
 	gen0ProgFiniEmpty(foam, retType, int0);
 
         foamOptInfo(foam) = inlInfoNew(NULL, foam, NULL, false);
