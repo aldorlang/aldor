@@ -1,4 +1,6 @@
 SUBDIRS = lang base arith datastruc util gmp test
+@BUILD_JAVA_TRUE@JAVA_SUBDIRS = $(filter-out gmp, $(SUBDIRS))
+@BUILD_JAVA_TRUE@JAVA_TARGET = aldor.jar
 
 lib_LIBRARIES = libaldor.a
 
@@ -81,10 +83,9 @@ include ../../buildlib.am
 aldorincdir = $(srcdir)/../include
 
 datalibdir = $(datadir)/lib
-datalib_DATA = libaldor.al aldor_gloop.ao #aldor_gloopd.ao
+datalib_DATA = libaldor.al  aldor_gloop.ao $(JAVA_TARGET) #aldor_gloopd.ao
 
 CLEANFILES += $(datalib_DATA)
-
 
 %d.ao: %.as $(aldorexedir)/aldor libaldor.al
 	$(aldorexedir)/aldor -DDEBUG	\

@@ -70,7 +70,7 @@ of $a$ modulo $n$.}
 	import from Machine;
 	Rep == SInt;
 
-	local lhalfword:%		== shift(prev shift(1, 4 * bytes), -1);
+	local lhalfword():%		== shift(prev shift(1, 4 * bytes), -1);
 	(a:%) + (b:%):%			== per(rep a + rep b);
 	(a:%) * (b:%):%			== per(rep a * rep b);
 	(a:%) /\ (b:%):%		== per(rep a /\ rep b);
@@ -215,8 +215,8 @@ of $a$ modulo $n$.}
 		assert(0 <= b); assert(b < n);
 		a = 1 => b;
 		b = 1 => a;
-		n < lhalfword or
-			(a < lhalfword and b < lhalfword) => (a * b) mod n;
+		n < lhalfword() or
+			(a < lhalfword() and b < lhalfword()) => (a * b) mod n;
 		(nh, nl) := double_*(a pretend Word, b pretend Word);
 		(qh, ql, rm) := doubleDivide(nh, nl, n pretend Word);
 		rm pretend %;
@@ -248,7 +248,7 @@ of $a$ modulo $n$.}
 	mod_^(a:%, b:%, n:%):% == {
 		assert(0 <= a); assert(a < n);
 		b < 0 => mod_^(mod_/(1, a, n), -b, n);
-		n < lhalfword => lhmod_^(a, b, n);
+		n < lhalfword() => lhmod_^(a, b, n);
 		u:% := 1;
 		while b > 0 repeat {
 			if odd? b then u := mod_*(u, a, n);
@@ -260,7 +260,7 @@ of $a$ modulo $n$.}
 
 	-- this one guarantees that products don't overflow and remain >= 0
 	local lhmod_^(a:%, b:%, n:%):% == {
-		assert(0 <= a); assert(a < n); assert(n < lhalfword);
+		assert(0 <= a); assert(a < n); assert(n < lhalfword());
 		assert(0 <= b);
 		u:% := 1;
 		while b > 0 repeat {
@@ -277,3 +277,32 @@ extend Byte:Join(OutputType, InputType) == add {
 	(p:TextWriter) << (b:%):TextWriter	== p << b::Z;
 	<< (p:TextReader):%			== lowByte((<< p)@Z);
 }
+
+#if ALDORTEST
+---------------------- test --------------------------
+#include "aldor"
+#include "aldortest"
+
+testParseInt(f: Literal -> MachineInteger): () == {
+    import from Assert MachineInteger;
+    import from StringBuffer;
+    import from IntegerTypeTools MachineInteger;
+
+    i: MachineInteger := f("100" pretend Literal);
+    assertTrue(zero?(i-100));
+
+    for n in -100..100 repeat {
+        sb: StringBuffer := new();
+	(sb::TextWriter) << n;
+	nn := scan(sb::TextReader);
+	assertEquals(n, nn);
+    }
+}
+
+
+-- pass integer as a function to avoid compiler inlining
+-- the call.
+testParseInt(integer$MachineInteger);
+
+
+#endif

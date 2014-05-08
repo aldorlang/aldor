@@ -36,6 +36,9 @@ AXLTESTS =	\
 	tst_integer \
 	union-print \
 	trec	    \
+	pol2	\
+	iter	\
+	iter2	\
 	#
 
 BROKEN =	\
@@ -62,6 +65,7 @@ XFAIL_TESTS =		\
 	bugFree/bugFree	\
 	bugreport_5/bugreport_5	\
 	cond-defaults/cond-defaults \
+	pol2/pol2		    \
 	$(GC_XFAIL_TESTS) \
 	#
 

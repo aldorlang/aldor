@@ -28,7 +28,7 @@ jarfile := $(abs_builddir)/foamj.jar
 # Build directly to a .jar file (easier than tracking .class files)
 $(jarfile): $(buildfiles)
 	mkdir -p $(outdir)
-	(cd $(srcdir); javac -d $(outdir) $(buildfiles))
+	(cd $(srcdir); javac -g -d $(outdir) $(buildfiles))
 	(wd=$$(pwd); cd $(outdir); jar cf $@ .)
 
 all: $(jarfile)

@@ -1123,7 +1123,7 @@ sectPrepare(Page *p, Length npages, Length sz, int isFixed)
 
 	lgWordSize = 0;
 	for (i = sizeof(Pointer); i > 1; i = i>>1) lgWordSize++;
-
+	assert(npages < (1<<16));
 	szixix	       = (sz <= FixedSizeMax) ? sz : 0;
 	x->pgCount     = npages;
 	x->qmSize      = sz;

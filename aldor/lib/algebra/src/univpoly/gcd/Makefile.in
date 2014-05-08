@@ -17,4 +17,9 @@ subdir		:= $(subst $(abs_top_builddir)/,,$(abs_builddir))
 # Build starts here
 library = sit_gcdint sit_gcdintg sit_heugcd sit_modgcd sit_modpgcd
 
+java_blacklist = sit_gcdintg
+
 include $(abs_top_srcdir)/lib/algebra/src/common.mk
+
+sit_gcdint.ao: $(srcdir)/sit_gcdint0.as
+sit_modpgcd.ao: $(srcdir)/sit_fullgcd.as $(srcdir)/sit_halfgcd.as $(srcdir)/sit_loggcd.as

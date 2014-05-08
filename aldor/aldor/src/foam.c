@@ -1037,6 +1037,10 @@ foamAuditCastExpr(Foam foam)
 	if (type == FOAM_Ptr && exprType == FOAM_SInt) {
 		foamAuditBadType(foam);
 	}
+
+	if (type == FOAM_BInt && foamTag(foam->foamCast.expr) == FOAM_Arr) {
+		foamAuditBadType(foam);
+	}
 }
 
 
@@ -3373,6 +3377,17 @@ foamCastIfNeeded(FoamTag wanted, FoamTag actual, Foam foam)
 		return foam;
 
 	return foamNewCast(wanted, foam);
+}
+
+Foam
+foamNeutralValue(FoamTag type)
+{
+	switch (type) {
+	case FOAM_SInt:
+		return foamNewSInt(0);
+	default:
+		return foamNewCast(type, foamNewNil());
+	}
 }
 
 /*****************************************************************************

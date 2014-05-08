@@ -1707,28 +1707,26 @@ gen0ApplySyme(FoamTag type, Syme syme, SImpl impl,
 {
 	Foam	foam;
 	Foam    *args;
-	AInt    otype = type;
+	AInt    mtype;
 
+	mtype = gen0TfMapType(syme, symeType(syme), type, NULL); 
 	if (symeIsBuiltin(syme))
 		foam = gen0ApplyBuiltin(syme, argc, &args);
 
 	else if (symeIsForeign(syme))
 		foam = gen0ApplyForeign(type, syme, argc, &args);
-	
 	else if (symeIsImport(syme)) {
-		otype = type;
-		type = gen0Type(tfMapRet(symeType(symeOriginal(syme))), NULL);
-		foam = gen0CCall(type, syme, argc, &args);
+		foam = gen0CCall(mtype, syme, argc, &args);
 	}
 	else if (gen0IsOpenCallable(syme, impl) &&
 		 listIsSingleton(gen0State->envFormatStack))
-		foam = gen0OCall(type, syme, argc, &args);
+		foam = gen0OCall(mtype, syme, argc, &args);
 	else
 		/* BDS -- syme->id->str gives the name of the function being 
                           called. */
-		foam = gen0CCall(type, syme, argc, &args);
+		foam = gen0CCall(mtype, syme, argc, &args);
 
-	if (type != otype)
+	if (type != mtype)
 		foam = foamNewCast(type, foam);
 
 	*pargv = args;
@@ -6247,9 +6245,9 @@ gen0ForIter(AbSyn absyn, FoamList *forl, FoamList *itl)
 	*/
         if (abTag(absyn->abFor.lhs) == AB_Comma) {
                 call = foamNewEmpty(FOAM_CCall, 2);
-                call->foamCCall.type = FOAM_Rec;
+                call->foamCCall.type = FOAM_Word;
                 call->foamCCall.op   = foamCopy(valueFun);
-                call = gen0CrossToMulti(call, tfGeneratorArg(abTUnique(absyn->abFor.whole)));
+                call = gen0CrossToMulti(foamNewCast(FOAM_Rec, call), tfGeneratorArg(gen0AbContextType(absyn)));
                 gen0MultiAssign(FOAM_Set, absyn->abFor.lhs, call);
         }
         else {

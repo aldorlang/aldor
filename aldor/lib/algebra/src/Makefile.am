@@ -34,6 +34,9 @@ SUBDIRS =			\
 	multpoly/multpolytest	\
 	test
 
+@BUILD_JAVA_TRUE@JAVA_SUBDIRS = $(SUBDIRS)
+@BUILD_JAVA_TRUE@JAVA_TARGET = algebra.jar
+
 lib_LIBRARIES = libalgebra.a
 
 libalgebra_a_SOURCES =				\
@@ -259,7 +262,7 @@ libalgebra_a_SOURCES =				\
 
 
 datalibdir = $(datadir)/lib
-datalib_DATA = libalgebra.al
+datalib_DATA = libalgebra.al $(JAVA_TARGET)
 
 libraryname = algebra
 include ../../buildlib.am

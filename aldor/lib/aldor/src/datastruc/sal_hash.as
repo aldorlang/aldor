@@ -260,3 +260,47 @@ returns \emph{t} after the removal.}
 		(t:%) = (s:%):Boolean == never;
 	}
 }
+
+#if ALDORTEST
+---------------------- test extree.as --------------------------
+#include "aldor"
+#include "aldortest"
+
+test(): () == {
+    import from HashTable(String, String);
+    import from Assert String;
+    import from String;
+    import from Partial String;
+    tbl := table();
+    tbl("fred") := "bob";
+    assertEquals("bob", tbl("fred"));
+    assertFalse(failed? find("fred", tbl));
+    assertTrue(failed? find("zzz", tbl));
+
+    assertFalse(failed? find("fr" + "ed", tbl));
+}
+
+testIteration(): () == {
+    import from HashTable(Integer, Integer);
+    import from Assert Integer;
+    import from Integer;
+    tbl := table();
+    n := 3;
+    for i in 1..n repeat tbl(i) := -i;
+
+    tk := 0;
+    tv := 0;
+    for (k, v) in tbl repeat {
+        tk := tk + k;
+        tv := tv + v;
+	assertEquals(v, -k);
+    }
+    stdout << "Totals: " << tk << ",  " << tv << " " << (n*(n+1)) quo 2 << newline;
+    assertEquals(tk, n*(n+1) quo 2);
+    stdout << tk << ",  " << tv << " " << (-n*(n+1) quo 2) << newline;
+    assertEquals(tv, (-n*(n+1)) quo 2);
+}
+test();
+testIteration();
+
+#endif

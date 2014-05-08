@@ -597,3 +597,42 @@ extend TextReader: with {
 	}
 }
 
+#if ALDORTEST
+---------------------- test sal_string.as --------------------------
+#include "aldor"
+#include "aldortest"
+
+import from Assert String;
+import from Assert Integer;
+import from Assert MachineInteger;
+import from Assert Character;
+
+testIterate(): () == {
+   import from String;
+   import from MachineInteger;
+   i := 0;
+   lc := "x".0;
+   for c in "hello" repeat {
+       i := i+1;
+       lc := c;
+   }
+   assertEquals(i, 5);
+   assertEquals(lc, "o".0);
+}
+
+testBasics(): () == {
+   testConcat(a: String, b: String, r: String): () ==
+      assertEquals(r, a+b);
+   import from String;
+   import from Integer;
+   testConcat("", "", "");
+   testConcat("a", "", "a");
+   testConcat("", "b", "b");
+   testConcat("a", "b", "ab");
+}
+
+testBasics();
+testIterate();
+
+
+#endif

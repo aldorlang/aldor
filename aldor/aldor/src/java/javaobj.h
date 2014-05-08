@@ -810,14 +810,17 @@ DECLARE_LIST(JavaCode);
 #define jcoHdr(jco) ((jco)->hdr)
 #define jcoTag(jco) (jcoHdr(jco).tag)
 #define jcoClass(jco) (jcoHdr(jco).clss)
-#define jcoArgc(jco)  ((jco)->node.argc)
-#define jcoArgv(jco)  ((jco)->node.argv)
-#define jcoLiteral(jco) ((jco)->literal.txt)
-#define jcoToken(jco) ((jco)->token.symbol)
 #define jcoPos(jco) ((jco)->hdr.pos)
-#define jcoImportPkg(jco) ((jco)->import.pkg)
-#define jcoImportId(jco) ((jco)->import.id)
-#define jcoImportIsImported(jco) ((jco)->import.isImported)
+
+extern int	 jcoArgc(JavaCode jco);
+extern JavaCode *jcoArgv(JavaCode jco);
+extern Symbol	 jcoToken(JavaCode jco);
+extern String	 jcoLiteral(JavaCode jco);
+
+extern String	 jcoImportPkg(JavaCode jco);
+extern String	 jcoImportId(JavaCode jco);
+extern Bool	 jcoImportIsImported(JavaCode jco);
+extern void	 jcoImportSetImported(JavaCode jco, Bool flg);
 
 extern JavaCode jcoNewNode(JavaCodeClass class, int argc);
 extern JavaCode jcoNewToken(JavaCodeClass class, Symbol sym);
@@ -832,6 +835,7 @@ extern void     jcoFree(JavaCode code) ;
 extern SExpr    jcoSExpr(JavaCode c);
 extern Hash     jcoHash(JavaCode c);
 extern Bool     jcoEqual(JavaCode c1, JavaCode c2);
+extern Bool     jcoIsEmpty(JavaCode c);
 
 #define jcoIsLiteral(x) (jcoTag(x) == JCO_LIT)
 #define jcoIsNode(x) (jcoTag(x) == JCO_JAVA)

@@ -49,7 +49,6 @@ after the call, unless it has been assigned to the result
 of the call, as in {\tt x := pthPower!~x}.}
 #endif
 	default {
-		local copy?:Boolean == % has CopyableType;
 
 		(a:%)^(n:Integer):% == {
 			import from PthPowering %;

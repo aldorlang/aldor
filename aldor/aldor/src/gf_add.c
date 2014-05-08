@@ -417,12 +417,13 @@ gen0MakeDefaultHash()
 	else {
 		GenFoamState saved;
 		Foam 	     foam, clos;
-		
+		GenFoamTag   oldTag = gen0State->tag;
+
 		clos = gen0ProgClosEmpty();
 		foam = gen0ProgInitEmpty("defhash0", NULL);
 		
 		saved = gen0ProgSaveState(PT_ExFn);
-		
+		gen0State->tag = GF_Lambda;
 		hashCode = gen0SefoHashExporter(exp);
 		
 		gen0AddStmt(foamNewReturn(hashCode), NULL);
@@ -433,6 +434,7 @@ gen0MakeDefaultHash()
 		foamOptInfo(foam) = inlInfoNew(NULL, foam, NULL, false);
 		
 		gen0ProgRestoreState(saved);
+		gen0State->tag = oldTag;
 		
 		return clos;
 	}
@@ -1111,7 +1113,7 @@ gen0TryForceLazy(Foam self, Syme syme, Foam lazy)
 	FoamList	topLines;
 	int		l1, l2;
 	AbSyn		absyn = (AbSyn)NULL;
-
+	FoamTag type = gen0Type(symeType(syme), NULL);
 
 	/* Get some labels */
 	l1 = gen0State->labelNo++;
@@ -1136,7 +1138,7 @@ gen0TryForceLazy(Foam self, Syme syme, Foam lazy)
 
 
 	/* Export not found: use a neutral value/bad pointer */
-	val = foamNewCast(FOAM_Word, foamNewSInt(int0));
+	val = foamNewCast(FOAM_Word, foamNeutralValue(type));
 	gen0AddStmt(foamNewSet(foamCopy(tmpvar), val), absyn);
 
 
@@ -3022,6 +3024,7 @@ gen0HasCatBit(Foam dom, AbSyn cat)
 				foamCopy(dom),
 				 foamNewSInt(gen0StrHash("%%")), 
 				 gen0SefoHash(cat, cat));
+	foamPure(foam) = true;
 	return foam;
 }
 
@@ -3069,6 +3072,7 @@ gen0HasImport(Foam dom, Syme syme)
 				foamCopy(dom),
 				foamNewSInt(gen0StrHash(str)),
 				gen0TypeHash(tf, tf, str));
+	foamPure(foam) = true;
 
 	return foamNewCast(FOAM_Word, foam);
 }	

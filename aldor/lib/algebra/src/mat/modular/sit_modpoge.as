@@ -606,3 +606,35 @@ computations in--place, modifying the entries of $a$.}
 #include "sit_halfge.as"
 }
 
+#if ALDORTEST
+
+#include "algebra"
+#include "aldorio"
+
+macro {
+	I == MachineInteger;
+	Z == Integer;
+	F == SmallPrimeField 3;
+	M == DenseMatrix;
+}
+
+import from Symbol, I;
+
+local bug():() == {
+        import from Assert MachineInteger;
+        import from Assert F;
+	import from F, LinearAlgebra(F, M F);
+	m:M F := zero(8,3);
+	m(1,2) := 1;
+	m(2,3) := 1;
+	K := kernel m;
+	assertEquals(3, numberOfRows K);
+	assertEquals(1, numberOfColumns K);
+	assertEquals(1, K(1,1));
+	assertEquals(0, K(1,2));
+	assertEquals(0, K(1,3));
+}
+
+bug();
+
+#endif

@@ -31,6 +31,11 @@ public class Record extends AbstractValue implements Value, Word {
 	public Value toValue() {
 		return this;
 	}
+
+	@Override
+	public Record toRecord() {
+		return this;
+	}
 	
 	public Word asWord() {
 		return this;

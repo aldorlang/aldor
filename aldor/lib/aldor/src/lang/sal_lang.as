@@ -990,3 +990,34 @@ Machine: with {
 }
 
 
+#if ALDORTEST
+#include "aldor"
+-- aldoroptions: -Q0
+import from Machine;
+
+TestInteger: with {
+	1: %;
+        integer:	Literal -> %;
+	=: (%, %) -> Boolean;
+	+: (%, %) -> %;
+} == add {
+	Rep == SInt;
+	1:%			== per 1;
+	integer(l: Literal):%	== per convert(l pretend Arr);
+	(a:%) = (b:%):Boolean	== (rep a = rep b)::Boolean;
+	(a:%) + (b:%):%		== per(rep a + rep b);
+}
+
+import from Assert TestInteger;
+import from TestInteger;
+import from String;
+-- let's check the basics...
+test(): () == {
+    onePlusOne: TestInteger := 1+1;
+    two := 2;
+    assertTrue(onePlusOne = two);
+}
+
+test();
+
+#endif

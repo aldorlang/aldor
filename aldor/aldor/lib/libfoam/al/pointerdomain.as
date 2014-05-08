@@ -16,8 +16,11 @@ PointerDomain: Conditional with {
 	new(fn: () -> Domain): DomainRep == [fn] pretend DomainRep;
 
 	deref(d: %): Domain == {
-		if rep(d) case init then
-			rep(d).dom := rep(d).init();
+		if rep(d) case init then {
+		        nd := rep(d).init();
+			Nil?(Domain)(nd) => never;
+			rep(d).dom := nd;
+		}
 		rep(d).dom;
 	}
 

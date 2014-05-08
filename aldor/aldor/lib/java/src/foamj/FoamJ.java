@@ -189,6 +189,9 @@ public class FoamJ {
 		public Value toValue() {
 			return this;
 		}
+		public Word asWord() {
+			return this;
+		}
 	}
 
 	static public class Byte extends AbstractValue implements Value, Word {
@@ -202,6 +205,9 @@ public class FoamJ {
 
 		@Override
 		public Value toValue() {
+			return this;
+		}
+		public Word asWord() {
 			return this;
 		}
 	}

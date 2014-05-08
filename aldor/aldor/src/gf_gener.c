@@ -337,12 +337,12 @@ gen0GenerValueFun(FoamTag retType, TForm tf)
 
 	saved = gen0ProgSaveState(PT_Gener);
 
-	gen0AddStmt(foamNewReturn(yieldValVar), NULL);
+	gen0AddStmt(foamNewReturn(foamNewCast(FOAM_Word, yieldValVar)), NULL);
 
 	gen0UseStackedFormat(int0);
 	gen0ProgPushFormat(emptyFormatSlot);
 	gen0ProgPushFormat(emptyFormatSlot);
-	gen0ProgFiniEmpty(foam, retType, fmt);
+	gen0ProgFiniEmpty(foam, FOAM_Word, emptyFormatSlot);
 
 	gen0AddLexLevels(foam, 2);
 

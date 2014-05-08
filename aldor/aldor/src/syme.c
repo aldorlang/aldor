@@ -508,7 +508,27 @@ AInt
 symeGetFieldX(Syme s, AInt f) { return symeGetField(s, f); }
 
 void
-symeSetConstNumX(Syme s, AInt n) { symeSetConstNum(s, n); }
+symeSetConstNum(Syme syme, AInt n)
+{
+	symeSetConstInfo(syme, (symeConstInfo(syme) & 0xFFFF0000) | n);
+}
+
+void
+symeSetConstFlag(Syme syme, AInt n)
+{
+	symeSetConstInfo(syme, symeConstInfo(syme) | (1<< (n+16)));
+}
+void
+symeClrConstFlag(Syme syme, AInt n)
+{
+	symeSetConstInfo(syme, symeConstInfo(syme) & ~(1<< (n+16)));
+}
+
+void
+symeSetConstInfo(Syme syme, AInt info)
+{
+	symeSetField(syme, SYFI_ConstInfo, info);
+}
 
 /******************************************************************************
  *
@@ -641,6 +661,13 @@ symeTransferImplInfo(Syme to, Syme from)
 
 	symeMergeImpl(to, symeImpl(from));
 }
+
+void
+symeSetCondition(Syme syme, SefoList sefoList)
+{
+	symeSetField(syme, SYFI_Condition, sefoList);
+}
+
 
 /******************************************************************************
  *
@@ -1130,9 +1157,10 @@ symeCheckCondition(Syme syme)
 			symeSetCheckCondIncomplete(syme);
 		}
 		else if (result == 2) {
+			/* This might be incorrect, as condition lists are
+			   shared across symeCopy */
 			symeSetCondition(syme,
 					 listFreeCons(Sefo)(symeCondition(syme)));
-
 			continue;
 		}
 

@@ -1247,7 +1247,11 @@ symeOStreamPrint0(OStream ostream, Bool deep, Syme syme)
 	cc += ostreamPrintf(ostream, "%s", symeString(syme));
 
 	if (DEBUG(sefoPrint)) {
-		cc += ostreamPrintf(ostream, " [cn:%ld, dn:%d %ld],", symeConstNum(syme), symeDefnNum(syme), symeMark(syme));
+		cc += ostreamPrintf(ostream, " [%s.%ld%s, dn:%d %ld],",
+				    symeConstLib(syme) != NULL ? libToStringShort(symeConstLib(syme)) : "",
+				    symeConstNum(syme) == 32767 ? -1 : symeConstNum(syme),
+				    symeHasDefault(syme) ? "D":"",
+				    symeDefnNum(syme), symeMark(syme));
 	}
 
 	if (deep) {
@@ -3667,11 +3671,7 @@ slcAddSyme(Lib lib, Syme syme)
 	lib->symec += 1;
 	if (libSymeIsTop(lib, syme)) lib->topc += 1;
 
-	if (DEBUG(sefoClose)) {
-		fprintf(dbOut, "+syme:");
-		fnewline(dbOut);
-		symePrintDb(syme);
-	}
+	sefoCloseDEBUG(dbOut, "+syme: [%d] %pSyme\n", symeHash(syme), syme);
 }
 
 local void
@@ -3680,11 +3680,7 @@ slcAddType(Lib lib, TForm tf)
 	lib->types = listCons(TForm)(tf, lib->types);
 	lib->typec += 1;
 
-	if (DEBUG(sefoClose)) {
-		fprintf(dbOut, "+type:");
-		fnewline(dbOut);
-		tformPrintDb(tf);
-	}
+	sefoCloseDEBUG(dbOut, "+type: %pTForm\n", tf);
 }
 
 local void

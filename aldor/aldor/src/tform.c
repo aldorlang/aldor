@@ -269,6 +269,7 @@ local int aintFormatter(OStream stream, Pointer p);
 local int aintListFormatter(OStream stream, Pointer p);
 
 local int bintFormatter(OStream stream, Pointer p);
+local int symbolFormatter(OStream stream, Pointer p);
 
 /* For breakpoints */
 local void tfBreak(TForm tf);
@@ -456,6 +457,7 @@ tfInit(void)
 	fmtRegister("AIntList", aintListFormatter);
 
 	fmtRegister("BInt", bintFormatter);
+	fmtRegister("Symbol", symbolFormatter);
 	/* syme.c checks */
 
 	for (i=SYME_FIELD_START; i<SYME_FIELD_LIMIT; i++)
@@ -523,6 +525,15 @@ bintFormatter(OStream ostream, Pointer p)
 	String s = bintToString((BInt) p);
 	int c = ostreamWrite(ostream, s, -1);
 	strFree(s);
+
+	return c;
+}
+
+local int
+symbolFormatter(OStream ostream, Pointer p)
+{
+	String s = symString((Symbol) p);
+	int c = ostreamWrite(ostream, s, -1);
 
 	return c;
 }
@@ -3017,6 +3028,12 @@ local SymeList		tfGetCatParentsFrInner	(TForm);
 
 local SymeList		abGetCatParents		(Sefo);
 
+local void tfValidateDomExports(TForm tf);
+local void tfValidateDomExportsParam(TForm tf);
+local void tfValidateDomImports(TForm tf);
+local void tfValidateDomImportsParam(TForm tf);
+local void tfValidateCheckConstInfo(TForm tf, SymeList symes, String type);
+
 /*
  * Called on a semantic category form to get the symbol meaning for %%
  * to serve as a representation of all of the exports of the category.
@@ -3372,6 +3389,71 @@ tfGetExportError(TForm tf, String order)
 	/* comsgWarning(tfExpr(tf), ALDOR_W_TinEarlyImport, order); */
 }
 
+/*
+ * There's a few cases where we stamp a real const number on symes from categories.
+ * This leads to incorrect inlining later on.  While the underlying bug isn't fixed,
+ * the code below provides a workaround.
+ */
+local void
+tfValidateDomExports(TForm tf)
+{
+	Syme syme;
+
+	tfAuditExportList(tfDomExports(tf));
+
+	if (!tfIsId(tf))
+		return;
+	syme = tfIdSyme(tf);
+	if (syme && symeIsParam(syme)) {
+		tfValidateDomExportsParam(tf);
+	}
+}
+
+local void
+tfValidateDomImports(TForm tf)
+{
+	Syme syme;
+
+	if (!tfIsId(tf))
+		return;
+	syme = tfIdSyme(tf);
+	if (syme && symeIsParam(syme)) {
+		tfValidateDomImportsParam(tf);
+	}
+}
+
+local void
+tfValidateDomExportsParam(TForm tf)
+{
+	tfValidateCheckConstInfo(tf, tfDomExports(tf), "exports");
+}
+
+local void
+tfValidateDomImportsParam(TForm tf)
+{
+	tfValidateCheckConstInfo(tf, tfDomImports(tf), "imports");
+}
+
+local void
+tfValidateCheckConstInfo(TForm tf, SymeList symes, String type)
+{
+	while (symes != listNil(Syme)) {
+		Syme syme = car(symes);
+		symes = cdr(symes);
+
+		if (symeConstNum(syme) != SYME_NUMBER_UNASSIGNED) {
+			afprintf(dbOut, "Type: %s Syme %s.%d %pSyme %pTForm\n",
+				 type,
+				 libToStringShort(symeConstLib(syme)), symeConstNum(syme),
+				 syme, tf);
+			bugWarning("Syme with const num found in parameterised domain %s");
+			symeSetConstLib(syme, NULL);
+			symeSetConstNum(syme, SYME_NUMBER_UNASSIGNED);
+		}
+
+	}
+}
+
 Bool
 tfHasCatExports(TForm cat)
 {
@@ -3686,7 +3768,6 @@ tfJoinExportToList(SymeList mods, SymeList symes, Syme syme2, Sefo cond)
 			symeAddTwin(syme1, syme2);
 		}
 	}
-	tfImportDEBUG(dbOut, ".. Joining (%d) %pSyme %pAbSyn\n", merge, syme2, cond);
 	return merge;
 }
 
@@ -3852,7 +3933,7 @@ tfMangleSymes(TForm tf, TForm cat, SymeList esymes, SymeList symes)
 
 
 			/* DEBUGGING */
-			symeRefreshDEBUG(dbOut, "\t* %d --> %d, %d --> %d [%s]\n",
+			tfImportDEBUG(dbOut, "\t* %d --> %d, %d --> %d [%s]\n",
 					 symeDefnNum(syme),
 					 symeDefnNum(csyme),
 					 symeConstNum(syme),
@@ -3955,7 +4036,7 @@ tfGetDomExports(TForm tf)
 
 	tfImportDEBUG(dbOut, ")\n");
 
-	tfAuditExportList(tfDomExports(tf));
+	tfValidateDomExports(tf);
 	return tfDomExports(tf);
 }
 
@@ -4006,6 +4087,22 @@ tfGetCatExports(TForm cat)
 
 	else
 		tfAddCatExports(cat, tfGetThdExports(tfGetCategory(cat)));
+
+	if (DEBUG(tfCat)) {
+		SymeList symes = tfCatExports(cat);
+		if (symes) {
+			afprintf(dbOut, " Exports for %pTForm: [\n", cat);
+			while (symes != listNil(Syme)) {
+				Syme syme = car(symes);
+				symes = cdr(symes);
+
+				afprintf(dbOut,
+					 "  %s Def: %s %pAbSynList\n", symeString(syme), symeHasDefault(syme) ? "DEF" : "",
+					 symeCondition(syme));
+			}
+			afprintf(dbOut, " ]\n", cat);
+		}
+	}
 
 	tfCatDEBUG(dbOut, ")\n");
 
@@ -4327,6 +4424,7 @@ tfStabGetDomImports(Stab stab, TForm tf)
 		fnewline(dbOut);
 	}
 
+	tfValidateDomImports(tf);
 	return symes;
 }
 

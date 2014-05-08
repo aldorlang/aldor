@@ -1557,6 +1557,8 @@ extern Bool foamTypeIsVoid(Foam fmts, FoamTag type, AInt fmt);
 extern Bool foamTypeIsMulti(Foam fmts, FoamTag type, AInt fmt);
 extern Bool foamTypeIsValue(Foam fmts, FoamTag type, AInt fmt);
 
+extern Foam foamNeutralValue(FoamTag foam);
+
 #define foamIsBCallOf(fm,bv)	\
 	((fm) && foamTag(fm) == FOAM_BCall && (fm)->foamBCall.op == (bv))
 #define foamLocNo(fm,n) \

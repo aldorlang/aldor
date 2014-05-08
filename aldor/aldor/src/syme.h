@@ -397,12 +397,15 @@ extern TForm		symeSetType		(Syme, TForm);
 extern StabLevel	symeSetDefLevel		(Syme, StabLevel);
 extern void		symeSetLib		(Syme, Lib);
 extern Lib		symeSetConstLib		(Syme, Lib);
+extern void		symeSetConstNum		(Syme, AInt);
+extern void 		symeSetConstInfo	(Syme, AInt);
+extern void		symeSetConstFlag	(Syme, AInt);
+extern void		symeClrConstFlag	(Syme, AInt);
 
 /*
  * For debugging purposes
  */
 extern AInt		symeGetFieldX		(Syme, AInt);
-extern void		symeSetConstNumX	(Syme, AInt);
 
 #define	symeSetOrigin(s,v)		symeSetField(s, SYFI_Origin, v)
 #define	symeSetExporter(s,v)		symeSetField(s, SYFI_Exporter, v)
@@ -418,7 +421,7 @@ extern void		symeSetConstNumX	(Syme, AInt);
 #define	symeSetExtension(s,v)		symeSetField(s, SYFI_Extension, v)
 /*#define	symeSetExtension(s,v)		symeXSetExtension(s, v)*/
 
-#define	symeSetCondition(s,v)		symeSetField(s, SYFI_Condition, v)
+extern void symeSetCondition(Syme syme, SefoList sefoList);
 #define	symeSetTwins(s,v)		symeSetField(s, SYFI_Twins, v)
 #define	symeSetDepths(s,v)		symeSetField(s, SYFI_Depths, v)
 #define	symeSetMark(s,v)		symeSetField(s, SYFI_Mark, v)
@@ -430,7 +433,7 @@ extern void		symeSetConstNumX	(Syme, AInt);
 #define	symeSetClosure(s,v)		symeSetField(s, SYFI_Closure, v)
 #define	symeSetInlined(s,v)		symeSetField(s, SYFI_Inlined, v)
 #define	symeSetDVMark(s,v)		symeSetField(s, SYFI_DVMark, v)
-#define	symeSetConstInfo(s,v)		symeSetField(s, SYFI_ConstInfo, v)
+
 #define	symeSetDefnNum(s,v)		symeSetField(s, SYFI_DefnNum, v)
 #define	symeSetHashNum(s,v)		symeSetField(s, SYFI_HashNum, v)
 #define	symeSetImpl(s,v)		symeSetField(s, SYFI_SImpl, v)
@@ -447,12 +450,9 @@ extern void		symeSetConstNumX	(Syme, AInt);
 	symeSetConstNum(s, SYME_NUMBER_UNASSIGNED)
 
 #define symeConstNum(s)		(symeConstInfo(s) & 0xFFFF)
-#define symeSetConstNum(s,n)	(symeSetConstInfo(s, (symeConstInfo(s) & 0xFFFF0000) | n))
 
 #define symeConstFlags(s)	(symeConstInfo(s) >> 16)
 #define symeConstFlag(s, n)  	(symeConstInfo(s) & (1<< (n+16)))
-#define symeSetConstFlag(s, n)  (symeSetConstInfo(s, symeConstInfo(s) | (1<< (n+16))))
-#define symeClrConstFlag(s, n)  (symeSetConstInfo(s, symeConstInfo(s) & ~(1<< (n+16))))
 
 
 extern void		symeAddExtendee		(Syme, Syme);

@@ -130,6 +130,7 @@ local JavaCode     gj0TypeFrFmt(AInt id, AInt fmt);
 local JavaCode     gj0TypeObjToValue(JavaCode val, FoamTag type, AInt fmt);
 local JavaCode     gj0TypeValueToObj(JavaCode val, FoamTag type, AInt fmt);
 local JavaCode     gj0TypeValueToArr(JavaCode value, AInt fmt);
+local JavaCode     gj0TypeValueToRec(JavaCode value, AInt fmt);
 
 local FoamTag      gj0FoamExprType(Foam foam);
 local FoamTag      gj0FoamExprTypeWFmt(Foam foam, AInt *fmt);
@@ -176,6 +177,8 @@ enum gjId {
 	GJ_Object,
 	GJ_String,
 	GJ_BigInteger,
+	GJ_NullPointerException,
+	GJ_ClassCastException,
 	
 	GJ_ContextVar,
 	GJ_Main,
@@ -1171,7 +1174,7 @@ gj0TypeValueToObj(JavaCode val, FoamTag type, AInt fmt)
 	case FOAM_Bool:
 		return jcApplyMethodV(val, jcId(strCopy("toBool")), 0);
 	case FOAM_Rec:
-		return jcApplyMethodV(val, jcId(strCopy("toRecord")), 0);
+		return gj0TypeValueToRec(val, fmt);
 	case FOAM_Arr:
 		return gj0TypeValueToArr(val, fmt);
 	case FOAM_Ptr:
@@ -1190,9 +1193,21 @@ local JavaCode
 gj0TypeValueToArr(JavaCode value, AInt fmt)
 {
 	JavaCode arrobj = jcApplyMethodV(value, jcId(strCopy("toArray")), 0);
-	return jcCast(jcArrayOf(gj0TypeFrFmt(fmt, 0)), arrobj);
+	if (fmt == 0)
+		return arrobj;
+	else
+		return jcCast(jcArrayOf(gj0TypeFrFmt(fmt, 0)), arrobj);
 }
 
+local JavaCode
+gj0TypeValueToRec(JavaCode val, AInt fmt)
+{
+	JavaCode record = jcApplyMethodV(jcMemRef(gj0Id(GJ_FoamValue),
+						  jcId(strCopy("U"))),
+					 jcId(strCopy("toRecord")), 1,
+					 val);
+	return record;
+}
 
 local JavaCode
 gj0TypeObjToValue(JavaCode val, FoamTag type, AInt fmt)
@@ -1453,7 +1468,13 @@ gj0Seq(Foam seq)
 	int i;
 	
 	for (i=0; i != -1; i = foamSeqNextReachable(seq, i)) {
+		Foam stmt = seq->foamSeq.argv[i];
+
 		gj0SeqGen(seqs, seq->foamSeq.argv[i]);
+		if (foamInfo(foamTag(stmt)).properties & FOAMP_SeqExit
+		    && gj0SeqBucketIsPrefix(car(seqs->buckets))) {
+			break;
+		}
 	}
 
 	code = gj0SeqStoreToJava(seqs);
@@ -1614,6 +1635,8 @@ gj0SeqSelectMulti(GjSeqStore store, Foam foam)
 
 	gj0SeqStoreEnsureBody(store);
 	gj0SeqStoreAddStmt(store, jcSwitch(tst, body));
+	gj0SeqStoreAddStmt(store,  jcStatement(jcContinue(0)));
+
 }
 
 
@@ -1675,7 +1698,7 @@ gj0SeqStoreEnsureBody(GjSeqStore store)
 		store->buckets = listSingleton(GjSeqBucket)(gj0SeqBucketNew(GJ_SEQ_Init));
 		return;
 	}
-	if (car(store->buckets)->label == GJ_SEQ_Prefix) {
+	if (gj0SeqBucketIsPrefix(car(store->buckets))) {
 		store->buckets = listCons(GjSeqBucket)(gj0SeqBucketNew(GJ_SEQ_Init),
 						       store->buckets);
 		return;
@@ -2226,13 +2249,8 @@ gj0Nil(Foam foam)
 local JavaCode 
 gj0Default(Foam foam, String prefix) 
 {
-	SExpr sx = foamToSExpr(foam);
-	String s = sxiFormat(sx);
-	String whole;
-	prefix = strNConcat(prefix, " ");
-	whole = strNConcat(prefix, s);
-	strFree(s);
-	return jcSpaceSeqV(2, jcNull(), jcComment(whole));
+	bug(aStrPrintf("Java not implemented: %s %pFoam\n", prefix, foam));
+	return NULL; /* Not reached */
 }
 
 local FoamTag
@@ -2298,7 +2316,7 @@ gj0ArrChar(Foam foam)
 		str[i] = foam->foamArr.eltv[i];
 	str[i] = '\0';
 	
-	return jcApplyMethodV(jcLiteralString(str), jcId(strCopy("toCharArray")), 0);
+	return jcApplyMethodV(jcLiteralStringWithTerminalChar(str), jcId(strCopy("toCharArray")), 0);
 }
 
 
@@ -2354,7 +2372,25 @@ gj0RElt(Foam foam)
 	AInt fmt = foam->foamRElt.format;
 	AInt idx = foam->foamRElt.field;
 	Foam ref = foam->foamRElt.expr;
-	Foam ddecl = gjContext->formats->foamDFmt.argv[fmt];
+	Foam innerRef = ref;
+	Foam ddecl;
+	foamDereferenceCast(innerRef);
+	if (foamTag(innerRef) == FOAM_Nil) {
+		JavaCode exception, value;
+		Foam decl;
+		ddecl = gjContext->formats->foamDFmt.argv[fmt];
+		decl = ddecl->foamDDecl.argv[idx];
+		/* call throwException(new NullPointerException())
+		   and cast to ... */
+		exception = jcConstructV(gj0Id(GJ_NullPointerException), 1,
+					 jcLiteralString(strCopy("RElt")));
+		value = jcCast(gj0TypeFrFmt(decl->foamDecl.type, decl->foamDecl.format),
+			       jcApplyV(jcMemRef(gj0Id(GJ_Foam), jcId(strCopy("throwException"))),
+					1, exception));
+
+		return value;
+	}
+	ddecl = gjContext->formats->foamDFmt.argv[fmt];
 	
 	return gj0RecElt(gj0Gen(ref), ddecl, idx);
 }
@@ -2933,6 +2969,15 @@ gj0CastFmt(Foam foam, AInt cfmt)
 		return jc;
 	else if (iType == FOAM_Nil)
 		return jcNull();
+	else if ((iType == FOAM_Clos && type == FOAM_Rec)
+		 ||(iType == FOAM_Arr && type == FOAM_SInt)) {
+		JavaCode exception = jcConstructV(gj0Id(GJ_ClassCastException), 1,
+						  jcLiteralString(aStrPrintf("%s to %s", foamStr(iType), foamStr(type))));
+		JavaCode throw = jcApplyV(jcMemRef(gj0Id(GJ_Foam), jcId(strCopy("throwException"))),
+					  1, exception);
+		return jcCast(gj0TypeFrFmt(type, 0), throw);
+
+	}
 	else  {
 		return gj0Default(foam,
 			   strPrintf("No cast: %s, %s", foamStr(type), foamStr(iType)));
@@ -2968,7 +3013,7 @@ gj0CastWordToObj(JavaCode jc, FoamTag type, AInt fmt)
 	case FOAM_Ptr:
 		return jc;
 	case FOAM_Arr:
-		return jcApplyMethodV(jc, jcId(strCopy("toArray")), 0);
+		return jcApplyV(jcMemRef(gj0Id(GJ_FoamWord), jcId(strCopy("U.toArray"))), 1, jc);
 	default:
 		return jcCast(gj0TypeFrFmt(type, fmt), jc);
 	}
@@ -3241,7 +3286,9 @@ gj0ClassMainMethod(String className)
 	s2 = jcInitialisation(0, gj0Id(GJ_FoamClass), jcoCopy(instance), 
 			      jcConstructV(jcId(strCopy(className)), 
 					   1, jcoCopy(ctxt)));
-	s3 = jcApplyMethodV(jcoCopy(instance), jcId(strCopy("run")), 0);
+
+	s3 = jcApplyMethodV(jcoCopy(ctxt), jcId(strCopy("startFoam")), 2,
+			    jcoCopy(instance), jcId(strCopy("args")));
 
 	body = jcNLSeqV(3, jcStatement(s1), jcStatement(s2), jcStatement(s3));
 	modifiers = JCO_MOD_Public | JCO_MOD_Static;
@@ -3302,6 +3349,8 @@ struct gjIdInfo gjIdInfo[] = {
 	{GJ_Object,     0, "Object"},
 	{GJ_String,     0, "String"},
 	{GJ_BigInteger, "java.math", "BigInteger"},
+	{GJ_NullPointerException, 0, "NullPointerException"},
+	{GJ_ClassCastException, 0, "ClassCastException"},
 
 	{GJ_ContextVar, 0, "ctxt"},
 	{GJ_Main,       0, "main"},
@@ -3313,16 +3362,20 @@ local JavaCode
 gj0Id(GjId id) 
 {
 	struct gjIdInfo *info;
+	JavaCode javaId;
 	assert(gjIdInfo[GJ_LIMIT].id == GJ_INVALID);
 
 	info = &gjIdInfo[id];
 	assert(id == info->id);
 
 	if (info->pkg != 0)
-		return jcImportedId(strCopy(info->pkg),
+		javaId = jcImportedId(strCopy(info->pkg),
 				    strCopy(info->name));
 	else
-		return jcId(strCopy(info->name));
+		javaId = jcId(strCopy(info->name));
+
+	assert(!jcoIsEmpty(javaId));
+	return javaId;
 }
 
 
@@ -3731,7 +3784,7 @@ struct gjBVal_info gjBValInfoTable[] = {
 	{FOAM_BVal_SInt0,        GJ_LitInt,  0,"0" },		      
 	{FOAM_BVal_SInt1,        GJ_LitInt,  0,"1" },		      
 	{FOAM_BVal_SIntMin,      GJ_LitInt,  0,"0"},		      
-	{FOAM_BVal_SIntMax,      GJ_Const,       0,"Byte", "MAX_VALUE"},
+	{FOAM_BVal_SIntMax,      GJ_Const,       0,"Integer", "MAX_VALUE"},
 
 	{FOAM_BVal_SIntIsZero,   GJ_Op, JCO_OP_Equals, "0"},
 	{FOAM_BVal_SIntIsNeg,    GJ_Op, JCO_OP_LT,     "0"},
@@ -3772,10 +3825,10 @@ struct gjBVal_info gjBValInfoTable[] = {
 	{FOAM_BVal_SIntXOr,      GJ_Op,     JCO_OP_XOr},
 	{FOAM_BVal_SIntHashCombine,GJ_Apply,0, "foamj.Math", "hashCombine"},
 
-	{FOAM_BVal_WordTimesDouble, GJ_NotImpl},
-	{FOAM_BVal_WordDivideDouble,GJ_NotImpl},
-	{FOAM_BVal_WordPlusStep,    GJ_NotImpl},
-	{FOAM_BVal_WordTimesStep,   GJ_NotImpl},
+	{FOAM_BVal_WordTimesDouble, GJ_Apply,   0,"foamj.Math",      "wordTimesDouble"},
+	{FOAM_BVal_WordDivideDouble,GJ_Apply,   0,"foamj.Math",      "wordDivideDouble"},
+	{FOAM_BVal_WordPlusStep,    GJ_Apply,   0,"foamj.Math",      "wordPlusStep"},
+	{FOAM_BVal_WordTimesStep,   GJ_Apply,   0,"foamj.Math",      "wordTimesStep"},
 
 	{FOAM_BVal_BInt0,        GJ_Const, 0,   "BigInteger",   "ZERO"},
 	{FOAM_BVal_BInt1,        GJ_Const, 0,   "BigInteger",   "ONE"},

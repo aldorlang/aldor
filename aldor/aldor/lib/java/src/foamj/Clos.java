@@ -14,9 +14,9 @@ public class Clos extends AbstractValue implements Word, Value {
     }
 
     public Value call(Value ... vals) {
-    	System.out.println("(Calling: " + fn.getName() + " " + Arrays.asList(vals));
-		Value v = fn.ocall(env, vals);
-    	System.out.println(" Return: " + v + ")");
+	//System.out.println("(Calling: " + fn.getName() + " " + Arrays.asList(vals));
+	Value v = fn.ocall(env, vals);
+	//System.out.println(" Return: " + v + ")");
 		
 		return v;
     }

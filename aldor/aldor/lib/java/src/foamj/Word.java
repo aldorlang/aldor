@@ -27,8 +27,16 @@ public interface Word {
     short toHInt();
     BigInteger toBInt();
     byte toByte();
+
 	
     public class U {
+	static public Object toArray(Word word) {
+	    if (word == null)
+		return null;
+	    else
+		return word.toArray();
+	}
+
 	public static Word fromSInt(int x) { return new SInt(x); }
 	public static Word fromBInt(BigInteger x) { return new BInt(x); }
 	public static Word fromHInt(short x) { return new HInt(x); }

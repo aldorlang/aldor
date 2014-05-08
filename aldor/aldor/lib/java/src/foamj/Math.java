@@ -4,6 +4,8 @@ import java.math.BigInteger;
 
 public class Math {
     private static final Format divideFormat = new Format(2);
+    private static final Format wordTimesFormat = new Format(2);
+    private static final Format wordDivideFormat = new Format(3);
     public static final int ROUND_ZERO = 0;
     public static final int ROUND_NEAREST = 1;
     public static final int ROUND_UP = 2;
@@ -32,11 +34,24 @@ public class Math {
 	}
 
 	public static MultiRecord divide(int i1, int i2) {
-		throw new RuntimeException();
+		MultiRecord result = new MultiRecord(divideFormat);
+		result.setField(0, "quo", Value.U.fromSInt(i1 / i2));
+		result.setField(1, "rem", Value.U.fromSInt(i1 % i2));
+		return result;
 	}
 
-    public static int hashCombine(int h1, int h2) {
-	return ((h1 ^ (h1 << 8)) + (h2 + 20041) & 0x3FFFFFFF);
+    public static int hashCombine(int i1, int i2) {
+	long z1  = 0x419ac241;
+	long z2  = 0x5577f8e1;
+	long zzh = 0x440badfc;
+	long zzl = 0x05072367;
+	long zz = (zzh << 32) + zzl;
+	long h1 = i1 & ((1L<<32)-1);
+	long h2 = i2 & ((1L<<32)-1);
+
+	int tmp = (int)(((z1*h1 + z2*h2) * zz) >> 32);
+	return tmp & 0x3FFFFFFF;
+
     }
 
 	public static boolean isZero(BigInteger b)  {
@@ -72,7 +87,7 @@ public class Math {
 		return b1.compareTo(b2) < 0;
 	}
 	public static boolean le(BigInteger b1, BigInteger b2) {
-		return b1.compareTo(b2) < 0;
+		return b1.compareTo(b2) <= 0;
 	}
 
 	public static BigInteger prev(BigInteger b) {
@@ -111,8 +126,13 @@ public class Math {
 	}
 	            
 	
-	public static int formatSInt(int v, Object s, int c) {
-		throw new RuntimeException();
+	public static int formatSInt(int v, Object dest, int c) {
+	    String s = "" + v;
+	    char[] arr = (char[]) dest;
+	    for (int i=0; i<c; i++) {
+		arr[c+i] = s.charAt(i);
+	    }
+	    return c+s.length();
 	}
 	
 	public static BigInteger sIPower(BigInteger b1, int b2) {
@@ -125,20 +145,58 @@ public class Math {
 		throw new RuntimeException();
 	}
 
-	public static BigInteger shiftUp(BigInteger b1, int b2)  {
-		throw new RuntimeException();
+	public static BigInteger shiftUp(BigInteger b1, int n)  {
+	    return b1.shiftLeft(n);
 	}
-	public static BigInteger shiftDn(BigInteger b1, int b2)  {
-		throw new RuntimeException();
+
+	public static BigInteger shiftDn(BigInteger b1, int n)  {
+	    return b1.shiftRight(n);
 	}
-	public static BigInteger shiftRem(BigInteger b1, BigInteger b2) {
-		throw new RuntimeException();
+
+	public static BigInteger shiftRem(BigInteger b1, int n) {
+	    BigInteger allOnes = BigInteger.ONE.shiftLeft(n).subtract(BigInteger.ONE);
+
+	    return b1.and(allOnes);
 	}
 
     public static int timesModInv(int a, int b, int c, double d) {
 		throw new RuntimeException();
     }
 
+
+    public static MultiRecord wordTimesDouble(Word w1, Word w2) {
+	int i1 = w1.toSInt();
+	int i2 = w2.toSInt();
+	long lprod = (long) i1 * (long) i2;
+	MultiRecord pair = new MultiRecord(wordTimesFormat);
+	pair.setField(0, "hi", Value.U.fromSInt((int) (lprod >> 32)));
+	pair.setField(1, "lo", Value.U.fromSInt((int) (lprod & ((1L<<32)-1))));
+
+	return pair;
+    }
+
+    public static MultiRecord wordDivideDouble(Word w1, Word w2, Word w3) {
+	long h = (long) w1.toSInt();
+	long l = (long) w2.toSInt();
+	long d = (long) w3.toSInt();
+	long full = (h << 32) + l;
+	long lquo = full/d;
+	long rem = full % d;
+	MultiRecord result = new MultiRecord(wordDivideFormat);
+	result.setField(0, "hi", Value.U.fromSInt((int) (lquo >> 32)));
+	result.setField(1, "lo", Value.U.fromSInt((int) (lquo & ((1L<<32)-1))));
+	result.setField(2, "rem", Value.U.fromSInt((int) rem));
+
+	return result;
+    }
+
+    public static MultiRecord wordPlusStep(Word w1, Word w2, Word w3) {
+	throw new RuntimeException();
+    }
+
+    public static MultiRecord wordTimesStep(Word w1, Word w2, Word w3, Word w4) {
+	throw new RuntimeException();
+    }
 
     public static float sfloAssemble(boolean sign, int i, Word w) {
 	throw new RuntimeException();
