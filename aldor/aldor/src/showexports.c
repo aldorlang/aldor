@@ -41,6 +41,16 @@ local AbSyn shexpParse(String);
 int
 main(int argc, char *argv[])
 {
+	AbSyn arAbSyn;
+	AbSyn boolean;
+	AbSyn ab;
+	Stab stab;
+	Syme syme;
+	TForm tf;
+
+	String archive;
+	String expression;
+
 	osInit();
 	sxiInit();
 	keyInit();
@@ -65,23 +75,23 @@ main(int argc, char *argv[])
 
 	fileAddLibraryDirectory(".");
 
-	String archive = argv[1];
-	String expression = argv[2];
+	archive = argv[1];
+	expression = argv[2];
 
 	scmdHandleLibrary("LIB", archive);
 
-	AbSyn ab = shexpParse(expression);
-	Stab stab = stabFile();
-	Syme syme = stabGetArchive(symInternConst("LIB"));
-	AbSyn arAbSyn = abNewId(sposNone, symInternConst("LIB"));
-	AbSyn boolean = abNewId(sposNone, symInternConst("Boolean"));
+	ab = shexpParse(expression);
+	stab = stabFile();
+	syme = stabGetArchive(symInternConst("LIB"));
+	arAbSyn = abNewId(sposNone, symInternConst("LIB"));
+	boolean = abNewId(sposNone, symInternConst("Boolean"));
 
 	stabImportTForm(stab, tiGetTForm(stab, arAbSyn));
 	stabImportTForm(stab, tiGetTForm(stab, boolean));
 	abPutUse(ab, AB_Use_Value);
 	scopeBind(stab, ab);
 	typeInfer(stab, ab);
-	TForm tf = tiGetTForm(stab, ab);
+	tf = tiGetTForm(stab, ab);
 	aprintf("Type: %s Cat: %d\n", tfPretty(tf), tfSatCat(tf));
 	if (tfSatDom(tf)) {
 		SymeList list = tfGetCatExports(tf);
@@ -93,8 +103,9 @@ main(int argc, char *argv[])
 		}
 	}
 	else {
-		aprintf(">>> Exports\n");
+		TQualList tqList;
 		SymeList list = tfStabGetDomImports(stab, tf);
+		aprintf(">>> Exports\n");
 
 		for (; list != listNil(Syme); list = cdr(list)) {
 			Syme syme = car(list);
@@ -102,7 +113,6 @@ main(int argc, char *argv[])
 				symeDefnNum(syme), symeConstNum(syme), tfPretty(symeType(syme)));
 		}
 
-		TQualList tqList;
 		aprintf(">>> Cascades\n");
 		tqList = tfGetDomCascades(tf);
 
@@ -117,6 +127,8 @@ main(int argc, char *argv[])
 	comsgFini();
 	macexFiniFile();
 	dbFini();
+
+	return 0;
 }
 
 local AbSyn
