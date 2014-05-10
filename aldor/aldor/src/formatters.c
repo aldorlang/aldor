@@ -6,6 +6,9 @@
 #include "bigint.h"
 #include "ostream.h"
 #include "format.h"
+#include "sefo.h"
+#include "tposs.h"
+#include "strops.h"
 
 local int tfFormatter(OStream stream, Pointer p);
 local int tfListFormatter(OStream stream, Pointer p);
