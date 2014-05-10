@@ -1,36 +1,35 @@
 
 AC_DEFUN([ALDOR_ERROR_ON_WARN],
+ALDOR_STRICT_COMPILE
 [AC_MSG_CHECKING(what extra warning flags to pass to the C compiler)
-if test ${GCC}x = yesx
-then
   warnFLAGS=
-  CFLAGS="${CFLAGS} -Wno-unused"
-  # other flags...
-  # These next two are included in the GNOME_COMPILE_WARNINGS
-  #warnFLAGS="${warnFLAGS} -Wmissing-prototypes"
-  #warnFLAGS="${warnFLAGS} -Wmissing-declarations"
-  #warnFLAGS="${warnFLAGS} -Werror-implicit-function-declaration" # In -Wall
+  STRICTCFLAGS="${CFLAGS} -Wno-unused"
 
-  #error_on_warning_as_default="yes"
+  error_on_warning_as_default="yes"
 
   AC_ARG_ENABLE(error-on-warning,
     [AS_HELP_STRING([--disable-error-on-warning],[disable treating compile warnings as errors])],
     [case "${enableval}" in
-       yes) warnFLAGS="${warnFLAGS} -Werror" ; gnc_error_on_warning=yes ;;
-       no)  gnc_error_on_warning=no ;;
+       yes) aldor_error_on_warning=yes ;;
+       no)  aldor_error_on_warning=no ;;
        *) AC_MSG_ERROR(bad value ${enableval} for --enable-error-on-warning) ;;
      esac],
     [ if test "${error_on_warning_as_default}" = "yes"; then
-        warnFLAGS="${warnFLAGS} -Werror";
-        gnc_error_on_warning=auto
+        aldor_error_on_warning=auto-yes
       else
-        gnc_error_on_warning=no
+        aldor_error_on_warning=auto-no
       fi
     ])
 
-  CFLAGS="${warnFLAGS} ${CFLAGS}"
-else
-  warnFLAGS=none
-fi
-AC_MSG_RESULT($warnFLAGS)
+  case "${aldor_error_on_warning}" in
+    *yes)
+         STRICTCFLAGS=${cfgSTRICTCFLAGS};;
+    *no)
+         STRICTCFLAGS=;;
+    *);;
+  esac
+AC_SUBST(STRICTCFLAGS)
+AC_MSG_RESULT($aldor_error_on_warning - ${STRICTCFLAGS})
 ])
+
+

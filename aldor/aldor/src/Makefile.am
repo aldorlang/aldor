@@ -1,5 +1,7 @@
 #SUBDIRS = . java
 
+AM_CFLAGS=$(STRICTCFLAGS)
+
 libexec_PROGRAMS = aldor
 bin_PROGRAMS = javagen
 noinst_PROGRAMS = aldortest structtest gentest showexp
@@ -37,12 +39,12 @@ javagen_SOURCES =	\
 
 javagen_LDADD = libphase.a libstruct.a libgen.a libport.a -lm
 javagen_LDFLAGS =
-javagen_CFLAGS = -g
+javagen_CFLAGS = -g $(STRICTCFLAGS)
 
 showexp_SOURCES = showexports.c
 showexp_LDADD = libphase.a libstruct.a libgen.a libport.a -lm
 showexp_LDFLAGS =
-showexp_CFLAGS = -g
+showexp_CFLAGS = -g $(STRICTCFLAGS)
 
 aldor_SOURCES =		\
 	axlcomp.c	\
@@ -50,9 +52,9 @@ aldor_SOURCES =		\
 	main.c
 aldor_LDADD = libphase.a libstruct.a libgen.a libport.a -lm
 aldor_LDFLAGS = $(build_id)
-aldor_CFLAGS  = -g
+aldor_CFLAGS  = -g $(STRICTCFLAGS)
 
-aldortest_CFLAGS = -DTEST_STAND_ALONE -DTEST_ALL -save-temps
+aldortest_CFLAGS = -DTEST_STAND_ALONE -DTEST_ALL -save-temps $(STRICTCFLAGS)
 aldortest_SOURCES = test.c
 aldortest_LDADD = libtest.a libstruct.a libgen.a libport.a -lm
 aldortest_LDFLAGS = 
@@ -62,7 +64,7 @@ libport_a_SOURCES =	\
 	opsys.c		\
 	stdc.c
 
-libtest_a_CFLAGS  = -DTEST_ALL
+libtest_a_CFLAGS  = -DTEST_ALL $(STRICTCFLAGS)
 libtest_a_SOURCES =	\
 	bigint_t.c	\
 	bitv_t.c	\
@@ -294,7 +296,7 @@ testall_SOURCES =	\
 	axlcomp.c
 testall_LDADD = libphase.a libstruct.a libgen.a libport.a -lm
 testall_LDFLAGS = 
-testall_CFLAGS = -save-temps
+testall_CFLAGS = -save-temps $(STRICTCFLAGS)
 #
 # Special rules
 #
