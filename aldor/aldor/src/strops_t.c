@@ -15,6 +15,7 @@ void testString(void) { }
 #include "axlgen.h"
 #include "opsys.h"
 #include "strops.h"
+#include "util.h"
 
 String
 testStrVPrintf(const char *fmt, ...)
@@ -28,7 +29,7 @@ testStrVPrintf(const char *fmt, ...)
 }
 
 void
-testString(void)
+testMisc(void)
 {
 	String	s,s0,s1,s2,s3;
 	int	n;
@@ -90,6 +91,34 @@ testString(void)
 	strPrint(osStdout, "The rain's flat by `\\/' gum!, he \"said\". \012",
 		'`', '\'', '!', "!x%x");
 	printf("\n");
+}
+
+#define CHECK(x) {if (!(x)) bug("Test failed %s %d", __FILE__, __LINE__);}
+
+void
+testSplit(void)
+{
+	String lhs, rhs;
+
+	strSplitLast(strCopy("a.b.c"), '.', &lhs, &rhs);
+	CHECK(strEqual("a.b", lhs));
+	CHECK(strEqual("c", rhs));
+
+	strSplitLast(strCopy("a.b."), '.', &lhs, &rhs);
+	CHECK(strEqual("a.b", lhs));
+	CHECK(strEqual("", rhs));
+
+	strSplitLast(strCopy("b"), '.', &lhs, &rhs);
+	CHECK(lhs == NULL);
+	CHECK(strEqual("b", rhs));
+
+}
+
+void
+testString(void)
+{
+	testMisc();
+	testSplit();
 }
 
 #endif

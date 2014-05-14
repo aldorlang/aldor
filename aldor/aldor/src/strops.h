@@ -87,4 +87,8 @@ extern int		strPrint	(FILE *, String,
 
 extern char *strLastIndexOf(String s, char c);
 
+/* Break s into left and right components around the last character.
+   Will free s */
+extern void strSplitLast(String s, char c, String *lhs, String *rhs);
+
 #endif /* !_STROPS_H_ */

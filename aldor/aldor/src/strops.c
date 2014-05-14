@@ -416,3 +416,18 @@ strLastIndexOf(String s, char c)
 	}
 	return lastP;
 }
+
+void
+strSplitLast(String s0, char c, String *plhs, String *prhs)
+{
+	String s = s0; /* Copy ptr in case of aliasing */
+	char *lastC = strLastIndexOf(s, c);
+	if (lastC == NULL) {
+		*plhs = 0;
+		*prhs = s;
+		return;
+	}
+	*plhs = strnCopy(s, lastC - s);
+	*prhs = strCopy(lastC+1);
+	strFree(s);
+}
