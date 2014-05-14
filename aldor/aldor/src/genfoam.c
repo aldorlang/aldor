@@ -5808,6 +5808,8 @@ gen0VarsForeign(Syme syme)
 	AInt		index;
 	String		name;
 
+	assert(symeIsForeign(syme));
+
  	if (symeUnused(syme)) return;
 
 	if (tfIsMap(tf))
@@ -5820,8 +5822,6 @@ gen0VarsForeign(Syme syme)
 	}
 	else
 		rtype = FOAM_Nil;
-
-	assert(symeIsForeign(syme));
 
 	if (forg->file)
 		name = strPrintf("%s-%s", symeString(syme), forg->file);
