@@ -907,4 +907,12 @@ extern Bool		tfDomHasImplicit(TForm);
 extern Bool		tfCatHasImplicit(TForm);
 extern Syme		tfImplicitExport(Stab, SymeList, Syme);
 
+/*****************************************************************************
+ *
+ * :: Java Stuff
+ *
+ ****************************************************************************/
+
+extern Bool tfIsJavaImport(TForm tf);
+
 #endif /* !_TFORM_H_ */

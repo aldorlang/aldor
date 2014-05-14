@@ -8119,6 +8119,35 @@ tfConditionalStab(TForm tf)
 
 /******************************************************************************
  *
+ * :: Java
+ *
+ *****************************************************************************/
+
+Bool
+tfIsJavaImport(TForm tf)
+{
+	Syme syme;
+	tfFollow(tf);
+
+	if (!tfIsGeneral(tf))
+		return false;
+	if (!tfIsId(tf))
+		return false;
+
+	syme = tfIdSyme(tf);
+
+	if (!symeIsForeign(syme))
+		return false;
+
+	if (symeForeign(syme)->protocol != FOAM_Proto_Java)
+		return false;
+
+	return true;
+}
+
+
+/******************************************************************************
+ *
  * :: Table of information about type form tags
  *
  *****************************************************************************/

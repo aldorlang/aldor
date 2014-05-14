@@ -383,6 +383,11 @@ extern void		symeAddHash		(Syme, Hash);
 	(symeIsParam(syme) || symeIsLexConst(syme) || symeIsSelf(syme) || \
 	 (symeIsExport(syme) && !symeTop(syme)))
 
+extern Bool		symeIsJavaApply		(Syme);
+extern Bool		symeIsJavaConstructor	(Syme);
+extern Bool		symeIsJavaImport	(Syme);
+extern String 		symeJavaApplyName	(Syme);
+
 /*
  * Field modifiers.
  */

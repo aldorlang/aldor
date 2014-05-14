@@ -671,6 +671,62 @@ symeSetCondition(Syme syme, SefoList sefoList)
 
 /******************************************************************************
  *
+ * :: Java stuff
+ *
+ *****************************************************************************/
+Bool
+symeIsJavaImport(Syme syme)
+{
+	TForm tf;
+
+	if (!symeIsImport(syme))
+		return false;
+
+	tf = symeExporter(syme);
+	return tfIsJavaImport(tf);
+}
+
+Bool
+symeIsJavaApply(Syme syme)
+{
+	if (symeId(syme) != ssymApply)
+		return false;
+	if (!symeIsJavaImport(syme))
+		return false;
+	/* And the first argument is '%' */
+	return true;
+}
+
+Bool
+symeIsJavaConstructor(Syme syme)
+{
+	if (symeId(syme) != ssymTheNew)
+		return false;
+	if (!symeIsJavaImport(syme))
+		return false;
+	/* And that it returns '%' */
+	return true;
+}
+
+String
+symeJavaApplyName(Syme syme)
+{
+	TForm enumArg, tf;
+	tf = symeType(syme);
+	tfFollow(tf);
+
+	assert(tfIsMap(tf));
+
+	enumArg = tfMapArgN(tf, 1);
+	tfFollow(enumArg);
+	if (!tfIsEnum(enumArg))
+		return "apply";
+	
+	return symString(tfEnumId(enumArg, 0));
+}
+
+/******************************************************************************
+ *
  * :: Implementation handling.
  *
  *****************************************************************************/
