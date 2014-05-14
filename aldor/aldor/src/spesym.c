@@ -76,6 +76,7 @@ Symbol	ssymArrow,
 	ssymTheInteger,
 	ssymTheGenerator,
 	ssymThePrint,
+	ssymTheNew,
 	ssymTheRawRecord,
 	ssymTheRecord,
 	ssymTheString,
@@ -91,6 +92,7 @@ Symbol	ssymBasic,
 	ssymForeign,
 	ssymC,
 	ssymFortran,
+	ssymJava,
 	ssymLisp,
 	ssymMachine;
 
@@ -212,6 +214,7 @@ ssymInit(void)
 	ssymTheInteger	 = symIntern("integer");
 	ssymTheGenerator = symIntern("generator");
 	ssymThePrint	 = symIntern("print");
+	ssymTheNew	 = symIntern("new");
 	ssymTheRawRecord = symIntern("rawrecord");
 	ssymTheRecord    = symIntern("record");
 	ssymTheString	 = symIntern("string");
@@ -227,6 +230,7 @@ ssymInit(void)
 	ssymForeign      = symIntern("Foreign");
 	ssymC	         = symIntern("C");
 	ssymFortran      = symIntern("Fortran");
+	ssymJava         = symIntern("Java");
 	ssymLisp         = symIntern("Lisp");
 	ssymMachine      = symIntern("Machine");
 

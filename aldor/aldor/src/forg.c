@@ -81,6 +81,9 @@ forgFrAbSyn(AbSyn origin)
 	else if (psym == ssymLisp)
 		ptag = FOAM_Proto_Lisp;
 
+	else if (psym == ssymJava)
+		ptag = FOAM_Proto_Java;
+
 	else {
 		comsgWarning(origin, ALDOR_W_ScoNotProtocol);
 		ptag = FOAM_Proto_Other;
