@@ -146,6 +146,14 @@ Lisp: ForeignLanguage == add;
 +++ Overview: Undocumented
 Fortran: ForeignLanguage == add;
 
++++ Java is the type which provides operations implemented in Java
++++ to an Aldor program.
++++
++++ Author: pab
++++
++++ Overview: Undocumented
+Java: ForeignLanguage == add;
+
 +++ Foreign(Lang) is the type which provides operations implemented in other
 +++ programming languages to an Aldor program.
 +++
