@@ -64,7 +64,6 @@
 
 Bool	genfDebug	= false;
 Bool	genfHashDebug	= false;
-Bool	genfConstDebug	= false;
 
 extern Bool genfExportDebug;	/* (from gf_add.c) */
 #define genfExportDEBUG		DEBUG_IF(genfExport)	afprintf
@@ -7773,9 +7772,7 @@ gen0MakeBuiltinExports()
 			val = foamNewClos(foamNewEnv(int0), foamNewConst(progId));
 		def = foamNewDef(foamNewGlo(glId), val);
 		gen0ProgList = listCons(Foam)(def, gen0ProgList);
-		if (DEBUG(genfConst)) {
-			genfNumProg(gen0NumProgs, "builtin");
-		}
+
 		gen0NumProgs++;
 	}
 }

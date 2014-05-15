@@ -19,8 +19,6 @@ extern Bool genfDebug, genfHashDebug, genfConstDebug;
 #define genfHashDEBUG		if (DEBUG(genfHash))	afprintf
 #define genfConstDEBUG		if (DEBUG(genfConst))	afprintf
 
-#define genfNumProg(_d,_s)	fprintf(dbOut, "numProgs[%d] = %s\n", (_d), (_s))
-
 /*
  * Structure describing the domains that have been brought into scope at a
  * given Foam lambda level. Works on constant domains only.

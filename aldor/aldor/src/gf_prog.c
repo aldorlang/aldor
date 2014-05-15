@@ -253,10 +253,6 @@ gen0ProgInitEmpty(String name, AbSyn absyn)
 {
 	Foam	foam, decl;
 
-	if (DEBUG(genfConst)) {
-		genfNumProg(gen0NumProgs, name);
-	}
-
 #ifdef NEW_FORMATS
 	foam = foamNewProg(int0,int0,int0,int0,int0,emptyFormatSlot,NULL,NULL,NULL,NULL);
 #else
