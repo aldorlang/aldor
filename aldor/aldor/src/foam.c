@@ -246,13 +246,20 @@ Foam
 foamNewPCall(AInt protocol, AInt type, Foam op, ...)
 {
 	FoamList args;
-	Foam foam;
 	va_list argp;
-	int i;
 
 	va_start(argp, op);
 	args = listListv(Foam)(argp);
 	va_end(argp);
+
+	return foamNewPCallOfList(protocol, type, op, args);
+}
+
+Foam
+foamNewPCallOfList(AInt protocol, AInt type, Foam op, FoamList args)
+{
+	Foam foam;
+	int i;
 
 	foam = foamNewEmpty(FOAM_PCall, foamPCallSlotc + listLength(Foam)(args));
 	foam->foamPCall.protocol = protocol;

@@ -1016,6 +1016,7 @@ struct foamCast {
 };
 
 extern Foam foamNewPCall(AInt protocol, AInt type, Foam op, ...);
+extern Foam foamNewPCallOfList(AInt protocol, AInt type, Foam op, FoamList args);
 
 struct foamPCall {
 	struct foamHdr		hdr;
