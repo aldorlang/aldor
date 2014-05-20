@@ -105,6 +105,7 @@ libgen_a_SOURCES =	\
 	debug.c		\
 	dnf.c		\
 	dword.c		\
+	errorset.c	\
 	file.c		\
 	fluid.c		\
 	fname.c		\
