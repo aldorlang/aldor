@@ -11,6 +11,8 @@
 #include "store.h"
 #include "strops.h"
 
+CREATE_LIST(String);
+
 String
 strAlloc(Length n)
 {

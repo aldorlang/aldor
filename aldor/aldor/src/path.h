@@ -12,7 +12,7 @@
 #include "cport.h"
 #include "list.h"
 
-DECLARE_LIST(String);
+#include "strops.h"
 
 typedef StringList	PathList;
 

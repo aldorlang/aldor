@@ -15,8 +15,6 @@
 #include "store.h"
 #include "strops.h"
 
-CREATE_LIST(String);
-
 PathList	incDirectoryList = 0;	/* include directory search path */
 PathList	libDirectoryList = 0;	/* library directory search path */
 PathList	binDirectoryList = 0;	/* execute directory search path */

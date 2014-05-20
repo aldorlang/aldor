@@ -15,6 +15,9 @@
 #define _STROPS_H_
 
 #include "cport.h"
+#include "list.h"
+
+DECLARE_LIST(String);
 
 extern String           strOfChars      (char *);
 #define                 strChars(s)     (s)

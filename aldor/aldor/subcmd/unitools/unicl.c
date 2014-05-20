@@ -173,9 +173,6 @@ static ConfigItemList uclOptions;
 
 static int dbgLevel;
 
-/* Needed to keep linker happy */
-CREATE_LIST(String);
-
 /*************************************************************************************
  *
  * :: State
