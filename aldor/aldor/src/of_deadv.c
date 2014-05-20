@@ -265,7 +265,8 @@ dvMarkUnitUsage(Foam unit)
 
 	/* And the additional globals */
 	for (i=1; i < foamArgc(unit->foamUnit.defs); i++) 
-		if (foamTag(dvDefs[i]->foamDef.lhs) == FOAM_Glo)
+		if (foamTag(dvDefs[i]->foamDef.lhs) != FOAM_Const
+		    || foamTag(dvDefs[i]->foamDef.rhs) != FOAM_Prog)
 			dvMarkExprUsage(dvDefs[i]);
 }
 
@@ -843,8 +844,10 @@ dvRenumberProgs(Foam unit)
 		if (foamTag(lhs) == FOAM_Glo) {
 			dvDefs[i] = dvRenumberStmt(dvDefs[i]);
 		}
-		if (foamTag(prog) != FOAM_Prog) continue;
-		dvRenumberProg(prog);
+		if (foamTag(prog) == FOAM_Prog)
+			dvRenumberProg(prog);
+		else
+			dvRenumberStmt(prog);
 	}
 }
 
