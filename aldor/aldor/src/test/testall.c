@@ -37,6 +37,7 @@ main(int argc, char *argv[])
 	if (testShouldRun("float")) floatTestSuite();
 	if (testShouldRun("int")) intTestSuite();
 	if (testShouldRun("bigint")) bintTestSuite();
+	if (testShouldRun("errorset")) errorSetTestSuite();
 	if (testShouldRun("bitv")) bitvTestSuite();
 	if (testShouldRun("list")) listTestSuite();
 	if (testShouldRun("fname")) fnameTest();

@@ -267,6 +267,7 @@ testsuite =			\
 	test/test_absyn.c 	\
 	test/test_bigint.c 	\
 	test/test_bitv.c 	\
+	test/test_errorset.c	\
 	test/test_float.c	\
 	test/test_flog.c	\
 	test/test_fname.c 	\

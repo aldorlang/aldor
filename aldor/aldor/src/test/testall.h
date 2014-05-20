@@ -8,6 +8,7 @@ void absynTest(void);
 void bigintTestSuite(void);
 void bintTestSuite(void);
 void bitvTestSuite(void);
+void errorSetTestSuite(void);
 void floatTestSuite(void);
 void flogTest(void);
 void fnameTest(void);
