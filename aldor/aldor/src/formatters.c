@@ -9,6 +9,7 @@
 #include "sefo.h"
 #include "tposs.h"
 #include "strops.h"
+#include "errorset.h"
 
 local int tfFormatter(OStream stream, Pointer p);
 local int tfListFormatter(OStream stream, Pointer p);
@@ -29,8 +30,13 @@ local int ptrListFormatter(OStream stream, Pointer p);
 local int aintFormatter(OStream stream, Pointer p);
 local int aintListFormatter(OStream stream, Pointer p);
 
+local int stringFormatter(OStream stream, Pointer p);
+local int stringListFormatter(OStream stream, Pointer p);
+
 local int bintFormatter(OStream stream, Pointer p);
 local int symbolFormatter(OStream stream, Pointer p);
+
+local int errorSetFormatter(OStream stream, Pointer p);
 
 void
 fmttsInit()
@@ -54,8 +60,13 @@ fmttsInit()
 	fmtRegister("AInt", aintFormatter);
 	fmtRegister("AIntList", aintListFormatter);
 
+	fmtRegister("String", stringFormatter);
+	fmtRegister("StringList", stringListFormatter);
+
 	fmtRegister("BInt", bintFormatter);
 	fmtRegister("Symbol", symbolFormatter);
+
+	fmtRegister("ErrorSet", errorSetFormatter);
 }
 
 
@@ -108,6 +119,15 @@ aintFormatter(OStream ostream, Pointer p)
 
 	return c;
 }
+
+
+local int
+stringFormatter(OStream ostream, Pointer p)
+{
+	String string = (String) p;
+	return ostreamWrite(ostream, string, -1);
+}
+
 
 local int
 bintFormatter(OStream ostream, Pointer p)
@@ -162,6 +182,18 @@ tpossFormatter(OStream ostream, Pointer p)
 }
 
 local int
+errorSetFormatter(OStream ostream, Pointer p)
+{
+	ErrorSet errorSet = (ErrorSet) p;
+	int i;
+
+	i = ostreamPrintf(ostream, "[E: %pStringList]", errorSet->list);
+
+	return i;
+}
+
+
+local int
 tfListFormatter(OStream ostream, Pointer p)
 {
 	TFormList list = (TFormList) p;
@@ -199,6 +231,13 @@ ptrListFormatter(OStream ostream, Pointer p)
 local int
 aintListFormatter(OStream ostream, Pointer p)
 {
-	AbSynList list = (AbSynList) p;
-	return listFormat(AbSyn)(ostream, "AInt", list);
+	AIntList list = (AIntList) p;
+	return listFormat(AInt)(ostream, "AInt", list);
+}
+
+local int
+stringListFormatter(OStream ostream, Pointer p)
+{
+	StringList list = (StringList) p;
+	return listFormat(String)(ostream, "String", list);
 }
