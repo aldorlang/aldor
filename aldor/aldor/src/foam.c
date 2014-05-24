@@ -42,6 +42,7 @@
 #include "symcoinfo.h"
 #include "util.h"
 #include "xfloat.h"
+#include "intset.h"
 
 #define FOAM_NARY	(-1)	/* Identifies tags with N-ary data argument. */
 
@@ -800,6 +801,7 @@ local void	foamAuditBadRuntime	(Foam foam);
 local void	foamAuditBadCast  	(Foam foam);
 local void	foamAuditBadDecl  	(Foam foam);
 local void	foamAuditBadType  	(Foam foam);
+local void	foamAuditBadEnv  	(Foam foam);
 
 Foam	faUnit;
 Foam	faProg;
@@ -848,6 +850,7 @@ local Bool	foamAuditCast		= false;
 local Bool	foamAudit0		(Foam);
 local Bool	foamAuditTypeCheck	(Foam);
 local void	foamAuditCastExpr	(Foam foam);
+local void      foamAuditDEnv		(Foam foam);
 
 local Bool	faTypeCheckingValues	(Foam, Foam, AInt);
 local Bool	faTypeCheckingFmtIsEnv	(Foam, AInt);
@@ -1032,6 +1035,10 @@ foamAuditExpr(Foam foam)
 	case FOAM_Decl:
 		foamAuditDecl(foam);
 		break;
+	case FOAM_DEnv:
+		foamAuditDEnv(foam);
+		break;
+
 	  default:
 		break;
 	}
@@ -1080,6 +1087,25 @@ foamAuditCastExpr(Foam foam)
 	if (type == FOAM_BInt && foamTag(foam->foamCast.expr) == FOAM_Arr) {
 		foamAuditBadType(foam);
 	}
+}
+
+local void
+foamAuditDEnv(Foam foam)
+{
+	IntSet is;
+	int i;
+
+	is = intSetNew(foamArgc(faFormats));
+	for (i=0; i<foamDEnvArgc(foam); i++) {
+		AInt fmt = foam->foamDEnv.argv[i];
+		if (fmt < 0 || fmt > foamArgc(faFormats))
+			foamAuditBadEnv(foam);
+		if (fmt != emptyFormatSlot && fmt != 0 && intSetMember(is, fmt)) {
+			foamAuditBadEnv(foam);
+		}
+		intSetAdd(is, fmt);
+	}
+	intSetFree(is);
 }
 
 
@@ -1435,6 +1461,13 @@ foamAuditBadType(Foam foam)
 {
 	foamPrint(stderr, foam);
 	bug("\nBad type %d:\n", faConstNum);
+}
+
+local void
+foamAuditBadEnv(Foam foam)
+{
+	foamPrint(stderr, foam);
+	bug("\nBad env %d:\n", faConstNum);
 }
 
 local void

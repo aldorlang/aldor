@@ -727,6 +727,8 @@ struct foamDEnv {
 	AInt                    argv[NARY];
 };
 
+#define foamDEnvArgc(foam) foamArgc(foam)
+
 struct foamDFmt {
 	struct foamHdr          hdr;
 	Foam                    argv[NARY];
