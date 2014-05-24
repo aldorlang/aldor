@@ -1132,7 +1132,7 @@ gj0TypeFrFmt(AInt id, AInt fmt)
 		if (fmt != 0)
 			return jcArrayOf(gj0TypeFrFmt(fmt, 0));
 		else
-			return jcId(strCopy("Object"));
+			return gj0Id(GJ_Object);
 	case FOAM_Values:
 		return gj0Id(GJ_Multi);
 
