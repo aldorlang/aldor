@@ -11,6 +11,7 @@
 
 #include "gf_util.h"
 
+extern Bool	gen0IsLazyConst		(TForm tf);
 extern void 	gen0IssueLazyFunctions	(void);
 extern void 	gen0InitImport		(Syme);
 extern Foam 	gen0GetDomainLex	(TForm);
@@ -22,8 +23,6 @@ extern Foam	gen0GetLazyBuiltin	(String, AInt, Length, Length);
 extern void 	gen0InitGVectTable	(void);
 extern void 	gen0IssueGVectFns	(void);
 extern void 	gen0FiniGVectTable	(void);
-
-#define		gen0IsLazyConst(tf)	!(tfIsAnyMap(tf) || tfSatType(tf))
 
 typedef struct _GenSaveState {
 	GenFoamState state;

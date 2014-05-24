@@ -354,6 +354,14 @@ gen0GetDomImport(Syme syme, Foam dom)
 	return call;
 }
 
+Bool
+gen0IsLazyConst(TForm tf)
+{
+	tfFollow(tf);
+
+	return !(tfIsAnyMap(tf) || tfSatType(tf));
+}
+
 /*****************************************************************************
  *
  * :: Internal helper routines
