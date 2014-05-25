@@ -3446,7 +3446,8 @@ tfValidateCheckConstInfo(TForm tf, SymeList symes, String type)
 				 type,
 				 libToStringShort(symeConstLib(syme)), symeConstNum(syme),
 				 syme, tf);
-			bugWarning("Syme with const num found in parameterised domain %s");
+			bugWarning("Syme with const num found in parameterised domain %s",
+				   abPretty(tfExpr(tf)));
 			symeSetConstLib(syme, NULL);
 			symeSetConstNum(syme, SYME_NUMBER_UNASSIGNED);
 		}
