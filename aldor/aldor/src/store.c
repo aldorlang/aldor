@@ -6,14 +6,6 @@
  *
  ****************************************************************************/
 
-#if __APPLE__
-# define STO_USE_ONCE 1
-#endif
-
-#if 0 && !defined(FOAM_RTS)
-# define STO_USE_MALLOC
-#endif
-
 /*
  *   Select one of:
  *	STO_USE_BTREE	B-Tree based quick fit.
@@ -66,7 +58,13 @@
  * If no other allocator is specified, used the B-Tree based by default.
  */
 #if !defined(STO_USE_BTREE)&& !defined(STO_USE_ONCE)&& !defined(STO_USE_MALLOC) && !defined(STO_USE_BOEHM)
-#  define STO_USE_BTREE
+#  if __APPLE__
+#   define STO_USE_ONCE 1
+#  elif 0 && !defined(FOAM_RTS)
+#    define STO_USE_MALLOC
+#  else
+#    define STO_USE_BTREE
+#  endif
 #endif
 
 #include "axlgen0.h"

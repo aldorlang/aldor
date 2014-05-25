@@ -2249,7 +2249,7 @@ gj0Nil(Foam foam)
 local JavaCode 
 gj0Default(Foam foam, String prefix) 
 {
-	bug(aStrPrintf("Java not implemented: %s %pFoam\n", prefix, foam));
+	bug("%s", aStrPrintf("Java not implemented: %s %pFoam\n", prefix, foam));
 	return NULL; /* Not reached */
 }
 

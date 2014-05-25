@@ -481,7 +481,7 @@ bloopGetCommand(void)
 	char	*s;
 
 	if (!bloopInterface)
-		prompt(fin, fout, comsgString(ALDOR_M_BreakMsgPrompt));
+		prompt(fin, fout, "%s", comsgString(ALDOR_M_BreakMsgPrompt));
 	else
 		prompt(fin, fout, "(ready \"\")\n");
 
