@@ -400,6 +400,9 @@ dvMarkExprUsage(Foam expr)
 		switch (gdecl->foamGDecl.protocol) {
 		  case FOAM_Proto_Fortran:	/*FALLTHROUGH*/
 		  case FOAM_Proto_C:		/*FALLTHROUGH*/
+		  case FOAM_Proto_Java:		/*FALLTHROUGH*/
+		  case FOAM_Proto_JavaMethod:	/*FALLTHROUGH*/
+		  case FOAM_Proto_JavaConstructor:	/*FALLTHROUGH*/
 		  	dvMarkWholeFormat(gdecl->foamGDecl.format);
 			break;
 		  default:
