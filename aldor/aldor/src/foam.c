@@ -3634,7 +3634,8 @@ struct foamDDecl_info	foamDDeclInfoTable[] = {
  { FOAM_DDecl_Consts, 		0, "Consts" }, 
  { FOAM_DDecl_Global, 		0, "Globals" },  
  { FOAM_DDecl_FortranSig,       0, "FortranSig" },
- { FOAM_DDecl_CSig,             0, "CSig" }
+ { FOAM_DDecl_CSig,             0, "CSig" },
+ { FOAM_DDecl_JavaSig,          0, "JavaSig" },
 };
 
 /*****************************************************************************
