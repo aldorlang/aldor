@@ -3058,6 +3058,8 @@ gj0CastObjToWord(JavaCode val, FoamTag type, AInt fmt)
 					      jcId(strCopy("U"))),
 				     jcId(strCopy("fromArray")),
 				     listSingleton(JavaCode)(val));
+	case FOAM_Ptr:
+		return jcCast(gj0Id(GJ_FoamWord), val);
 	case FOAM_Rec:
 		return jcApplyMethod(jcMemRef(gj0Id(GJ_FoamWord),
 					      jcId(strCopy("U"))),
