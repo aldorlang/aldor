@@ -3384,6 +3384,9 @@ gj0Id(GjId id)
  * :: PCall
  */
 local JavaCode gj0PCallOther(Foam foam);
+local JavaCode gj0PCallJavaMethod(Foam foam);
+local JavaCode gj0PCallJavaConstructor(Foam foam);
+local JavaCode gj0PCallJavaStatic(Foam foam);
 
 local JavaCode
 gj0PCall(Foam foam)
@@ -3392,10 +3395,14 @@ gj0PCall(Foam foam)
 	case FOAM_Proto_Other:
 	case FOAM_Proto_C:
 		return gj0PCallOther(foam);
+	case FOAM_Proto_JavaMethod:
+		return gj0PCallJavaMethod(foam);
+	case FOAM_Proto_JavaConstructor:
+		return gj0PCallJavaConstructor(foam);
+	case FOAM_Proto_Java:
+		return gj0PCallJavaStatic(foam);
 	default:
-		return gj0Default(foam, 
-				  strPrintf("Protocol: %s", 
-					    foamProtoStr(foam->foamPCall.protocol)));
+		return jcSpaceSeqV(2, jcNull(), jcComment(strPrintf("%pFoam", foam)));
 	}
 }
 
@@ -3415,6 +3422,76 @@ gj0PCallOther(Foam foam)
 	return jcApplyMethod(gj0Id(GJ_Foam), jcId(strCopy(decl->foamGDecl.id)),
 			     args);
 }
+
+local JavaCode
+gj0PCallJavaMethod(Foam foam)
+{
+	JavaCodeList args;
+	JavaCode target;
+	Foam decl, op;
+	String type, opName, pkg;
+
+	op = foam->foamPCall.op;
+
+	assert(foamTag(op) == FOAM_Glo);
+
+	assert(foamPCallArgc(foam) > 0);
+
+	decl = gjContextGlobal(op->foamGlo.index);
+	args = gj0GenList(foam->foamPCall.argv+1, foamPCallArgc(foam)-1);
+	target = gj0Gen(foam->foamPCall.argv[0]);
+
+	strSplitLast(strCopy(decl->foamGDecl.id), '.', &type, &opName);
+	assert(type != 0);
+	strSplitLast(type, '.', &pkg, &type);
+
+	return jcApplyMethod(jcCast(jcImportedId(pkg, type), target),
+			     jcId(opName),
+			     args);
+}
+
+local JavaCode
+gj0PCallJavaConstructor(Foam foam)
+{
+	JavaCodeList args;
+	Foam decl, op;
+	String type, pkg;
+
+	op = foam->foamPCall.op;
+
+	assert(foamTag(op) == FOAM_Glo);
+
+	assert(foamPCallArgc(foam) > 1);
+
+	decl = gjContextGlobal(op->foamGlo.index);
+	args = gj0GenList(foam->foamPCall.argv, foamPCallArgc(foam));
+
+	strSplitLast(strCopy(decl->foamGDecl.id), '.', &pkg, &type);
+
+	return jcConstruct(jcImportedId(pkg, type), args);
+}
+
+
+local JavaCode
+gj0PCallJavaStatic(Foam foam)
+{
+	JavaCodeList args;
+	Foam decl, op;
+	String id, type, pkg;
+
+	op = foam->foamPCall.op;
+
+	assert(foamTag(op) == FOAM_Glo);
+
+	decl = gjContextGlobal(op->foamGlo.index);
+	args = gj0GenList(foam->foamPCall.argv, foamPCallArgc(foam));
+
+	strSplitLast(strCopy(decl->foamGDecl.id), '.', &type, &id);
+	strSplitLast(type, '.', &pkg, &type);
+
+	return jcApply(jcMemRef(jcImportedId(pkg, type), jcId(id)), args);
+}
+
 
 /*
  * :: BCall
