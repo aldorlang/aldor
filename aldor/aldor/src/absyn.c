@@ -222,7 +222,7 @@ abNewOrAll(SrcPos pos, AbSynList absyn)
 {
 	if (cdr(absyn) == listNil(AbSyn))
 		return car(absyn);
-	return abNewOr(pos, car(absyn), abNewAndAll(pos, cdr(absyn)));
+	return abNewOr(pos, car(absyn), abNewOrAll(pos, cdr(absyn)));
 }
 
 void
