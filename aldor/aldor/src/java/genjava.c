@@ -3430,11 +3430,10 @@ gj0PCallOther(Foam foam)
 
 	op = foam->foamPCall.op;
 
-	if (foamTag(op) != FOAM_Glo) {
-		assert(0);
-	}
+	assert(foamTag(op) == FOAM_Glo);
+
 	decl = gjContextGlobal(op->foamGlo.index);
-	args = gj0GenList(foam->foamPCall.argv, foamArgc(foam)-3);
+	args = gj0GenList(foam->foamPCall.argv, foamPCallArgc(foam));
 	return jcApplyMethod(gj0Id(GJ_Foam), jcId(strCopy(decl->foamGDecl.id)),
 			     args);
 }
