@@ -258,8 +258,6 @@ gen0ProgInitEmpty(String name, AbSyn absyn)
 #else
 	foam = foamNewProg(int0,int0,int0,int0,int0,NULL,NULL,NULL,NULL,NULL);
 #endif
-	gen0ProgList = listCons(Foam)(foam, gen0ProgList);
-	gen0NumProgs += 1;
 
 #ifdef MODS
 	name = gen0InitialiserName(name);
@@ -267,11 +265,21 @@ gen0ProgInitEmpty(String name, AbSyn absyn)
 	name = strCopy(name);
 #endif
 	decl = foamNewDecl(FOAM_Prog, name, emptyFormatSlot);
-	gen0DeclList = listCons(Foam)(decl, gen0DeclList);
+	gen0ConstAdd(decl, foam);
 
 	if (absyn) foamPos(foam) = abPos(absyn);
 	return foam;
 }
+
+void
+gen0ConstAdd(Foam decl, Foam prog)
+{
+	/** FIXME: Better names needed here */
+	gen0ProgList = listCons(Foam)(prog, gen0ProgList);
+	gen0DeclList = listCons(Foam)(decl, gen0DeclList);
+	gen0NumProgs += 1;
+}
+
 
 /*
  * Collect the fields of a prog.
@@ -324,6 +332,12 @@ void
 gen0ProgAddStateFormat(AInt index)
 {
 	Foam	format = fboxMake(gen0State->lexPool->fbox);
+	gen0ProgAddFormat(index, format);
+}
+
+void
+gen0ProgAddFormat(AInt index, Foam format)
+{
 	AInt	nindex;
 
 	if (foamDDeclArgc(format) == 0)
@@ -336,6 +350,7 @@ gen0ProgAddStateFormat(AInt index)
 
 	gen0AddFormat(index, nindex);
 }
+
 
 /*****************************************************************************
  *

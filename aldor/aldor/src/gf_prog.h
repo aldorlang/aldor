@@ -35,6 +35,7 @@ extern Foam		gen0ProgClosEmpty	(void);
 
 extern void		gen0ProgAddParams	(Length, String *);
 extern void		gen0ProgAddStateFormat	(AInt);
+extern void		gen0ProgAddFormat	(AInt index, Foam format);
 
 extern AbSyn		gen0ProgGetExporter	(void);
 extern AbSyn		gen0ProgPushExporter	(AbSyn);
@@ -51,5 +52,7 @@ extern AInt		gen0AddParam		(Foam);
 extern AInt		gen0AddLocal		(Foam);
 extern AInt		gen0AddLex		(Foam);
 extern AInt		gen0AddLexNth		(Foam, AInt, AInt);
+
+extern void 		gen0ConstAdd		(Foam, Foam);
 
 #endif /* !_GF_PROG_H_ */
