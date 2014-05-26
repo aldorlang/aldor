@@ -237,11 +237,11 @@ $(aldortests): %.aldortest-exec-interp: Makefile
 	$(AM_V_ALDORTEST) \
          (if ! grep -q '^#if ALDORTEST' $(srcdir)/$*.as; then exit 0; fi; \
 	 echo "  ALDORTEST $*.as"; \
-	 sed -n -e '/^#if ALDORTEST/,/^#endif/p' < $(srcdir)/$*.as > $*.test.as; \
+	 sed -n -e '/^#if ALDORTEST/,/^#endif/p' < $(srcdir)/$*.as > $*_test.as; \
 	 $(DBG) $(aldorexedir)/aldor $(aldor_common_args) -Y$(aldorlibdir)/libfoam/al \
 			-I$(top_srcdir)/lib/aldor/include -Y$(top_builddir)/lib/aldor/src \
 			-Y$(librarylibdir) -I$(libraryincdir) -ginterp -DALDORTEST \
-			$*.test.as; \
+			$*_test.as; \
 	$(CHECK_TEST_STATUS) \
 	)
 
@@ -265,7 +265,7 @@ $(aldortestexecs): %.aldortest.exe: Makefile
 	$(AM_V_ALDORTEST) \
          (if ! grep -q '^#if ALDORTEST' $(srcdir)/$*.as; then touch $@; fi; \
 	 echo "  ALDORTEST $*.as"; \
-	 sed -n -e '/^#if ALDORTEST/,/^#endif/p' < $(srcdir)/$*.as > $*.test.as; \
+	 sed -n -e '/^#if ALDORTEST/,/^#endif/p' < $(srcdir)/$*.as > $*_test.as; \
 	 $(DBG) $(aldorexedir)/aldor $(aldor_common_args) -Y$(aldorlibdir)/libfoam/al \
 		        -Ccc=$(aldortooldir)/unicl	\
 		      -Y$(foamdir) -Y			\
@@ -273,7 +273,7 @@ $(aldortestexecs): %.aldortest.exe: Makefile
 		        -Cargs="-Wconfig=$(aldorsrcdir)/aldor.conf -I$(aldorsrcdir) -Wv=2 $(UNICLFLAGS)" \
 			-I$(top_srcdir)/lib/aldor/include -Y$(top_builddir)/lib/aldor/src \
 			-Y$(librarylibdir) -I$(libraryincdir) -fx=$@ -DALDORTEST \
-			$*.test.as; )
+			$*_test.as; )
 ifneq ($(BUILD_JAVA),)
 ifneq ($(javalibrary),)
 aldortestjavas := $(patsubst %,%.aldortest-exec-java,$(_javalibrary))

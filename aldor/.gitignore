@@ -25,3 +25,6 @@ Makefile
 *.o
 .deps
 .dirstamp
+*.trs
+*.classlib
+*.jar
