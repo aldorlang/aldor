@@ -3403,6 +3403,7 @@ local JavaCode gj0PCallOther(Foam foam);
 local JavaCode gj0PCallJavaMethod(Foam foam);
 local JavaCode gj0PCallJavaConstructor(Foam foam);
 local JavaCode gj0PCallJavaStatic(Foam foam);
+local JavaCodeList gj0PCallCastArgs(Foam op, JavaCodeList args);
 
 local JavaCode
 gj0PCall(Foam foam)
@@ -3462,7 +3463,7 @@ gj0PCallJavaMethod(Foam foam)
 
 	return jcApplyMethod(jcCast(jcImportedId(pkg, type), target),
 			     jcId(opName),
-			     args);
+			     gj0PCallCastArgs(op, args));
 }
 
 local JavaCode
@@ -3483,7 +3484,7 @@ gj0PCallJavaConstructor(Foam foam)
 
 	strSplitLast(strCopy(decl->foamGDecl.id), '.', &pkg, &type);
 
-	return jcConstruct(jcImportedId(pkg, type), args);
+	return jcConstruct(jcImportedId(pkg, type), gj0PCallCastArgs(op, args));
 }
 
 
@@ -3504,7 +3505,31 @@ gj0PCallJavaStatic(Foam foam)
 	strSplitLast(strCopy(decl->foamGDecl.id), '.', &type, &id);
 	strSplitLast(type, '.', &pkg, &type);
 
-	return jcApply(jcMemRef(jcImportedId(pkg, type), jcId(id)), args);
+	return jcApply(jcMemRef(jcImportedId(pkg, type), jcId(id)),
+		       gj0PCallCastArgs(op, args));
+}
+
+local JavaCodeList
+gj0PCallCastArgs(Foam op, JavaCodeList argsIn)
+{
+	JavaCodeList args = argsIn;
+	Foam glo = gjContextGlobals->foamDDecl.argv[op->foamGlo.index];
+	Foam ddecl = gjContext->formats->foamDFmt.argv[glo->foamGDecl.format];
+	int i = 0;
+
+	/* Cast java-valued arguments - all other types are not converted */
+	while (args != listNil(JavaCode)) {
+		Foam decl = ddecl->foamDDecl.argv[i];
+		String pkg, type;
+		if (decl->foamDecl.type == FOAM_Ptr) {
+			strSplitLast(strCopy(decl->foamGDecl.id), '.', &pkg, &type);
+			car(args) = jcCast(jcImportedId(pkg, type), car(args));
+		}
+		args = cdr(args);
+		i++;
+	}
+
+	return argsIn;
 }
 
 

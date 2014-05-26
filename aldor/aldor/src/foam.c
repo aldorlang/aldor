@@ -858,6 +858,8 @@ local Bool	foamAudit0		(Foam);
 local Bool	foamAuditTypeCheck	(Foam);
 local void	foamAuditCastExpr	(Foam foam);
 local void      foamAuditDEnv		(Foam foam);
+local void      foamAuditPCall		(Foam foam);
+local void	foamAuditPCallJava	(Foam foam);
 
 local Bool	faTypeCheckingValues	(Foam, Foam, AInt);
 local Bool	faTypeCheckingFmtIsEnv	(Foam, AInt);
@@ -1045,7 +1047,9 @@ foamAuditExpr(Foam foam)
 	case FOAM_DEnv:
 		foamAuditDEnv(foam);
 		break;
-
+	case FOAM_PCall:
+		foamAuditPCall(foam);
+		break;
 	  default:
 		break;
 	}
@@ -1115,6 +1119,39 @@ foamAuditDEnv(Foam foam)
 	intSetFree(is);
 }
 
+local void
+foamAuditPCall(Foam foam)
+{
+	AInt proto = foam->foamPCall.protocol;
+	switch (proto) {
+	case FOAM_Proto_Java:
+	case FOAM_Proto_JavaMethod:
+	case FOAM_Proto_JavaConstructor:
+		foamAuditPCallJava(foam);
+		break;
+	default:
+		break;
+	}
+
+}
+
+local void
+foamAuditPCallJava(Foam foam)
+{
+	Foam op, glo, ddecl;
+	int extra;
+
+	op = foam->foamPCall.op;
+	if (foamTag(op) != FOAM_Glo)
+		foamAuditBadType(foam);
+	glo = faGlobalsv[op->foamGlo.index];
+	ddecl = faFormats->foamDFmt.argv[glo->foamGDecl.format];
+
+	/* Methods have an implicit argument. */
+	extra = foam->foamPCall.protocol == FOAM_Proto_JavaMethod ? 1 : 0;
+	if (foamDDeclArgc(ddecl) + extra != foamPCallArgc(foam))
+		foamAuditBadType(foam);
+}
 
 /**************************************************************************
  * NOTE: This procedure doesn't perform type checking on subtrees,
