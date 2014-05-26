@@ -123,7 +123,6 @@ local AInt           gen0FortranMFmtNumber        (TFormList);
 
 local Bool	   gen0AbSynHasConstHash  (AbSyn);
 local Bool	   gen0AbSynHasConstHash0 (AbSyn);
-local AInt	   gen0AddRealFormat	  (Foam);
 local Foam	   gen0ApplySyme	  (FoamTag, Syme, SImpl, Length, Foam **);
 local Foam	   gen0ApplyBuiltin	  (Syme, Length, Foam **);
 local Foam	   gen0ApplyForeign	  (FoamTag, Syme, Length, Foam **);
@@ -8071,7 +8070,7 @@ gen0GetRealFormat(AInt fmt0)
  * Add a real format to the list.
  * Use an existing format if available.
  */
-local AInt
+AInt
 gen0AddRealFormat(Foam ddecl)
 {
 	FoamList	fl;

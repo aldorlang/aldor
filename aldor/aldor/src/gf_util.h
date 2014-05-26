@@ -213,6 +213,8 @@ extern Foam		gen0GetGlobal		(AInt);
 extern int		gen0AddGlobal		(Foam);
 extern Foam             gen0BuiltinCCall	(FoamTag, String, String, 
 						 Length, ...);
+extern AInt		gen0AddRealFormat	(Foam);
+
 extern void      	gen0DefSequence		(AbSyn absyn);
 extern Foam		gen0ExtendSyme		(Syme);
 extern void		gen0IncLexLevels	(Foam, AInt);
