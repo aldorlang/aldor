@@ -36,6 +36,7 @@
 #include "gf_fortran.h"
 #include "gf_gener.h"
 #include "gf_imps.h"
+#include "gf_java.h"
 #include "gf_prog.h"
 #include "gf_reference.h"
 #include "gf_rtime.h"
@@ -568,6 +569,7 @@ gen0GenFoamInit()
 	gen0RealFormatNum	= FOAM_FORMAT_START;
 
 	gen0InitGVectTable();
+	gfjInit();
 }
 
 local void
@@ -594,6 +596,7 @@ gen0GenFoamFini()
 	listFree(AInt)(formatRealList);
 
 	gen0FiniGVectTable();
+	gfjFini();
 }
 
 void

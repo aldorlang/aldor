@@ -12,6 +12,7 @@
  */
 #include "gf_add.h"
 #include "gf_imps.h"
+#include "gf_java.h"
 #include "gf_prog.h"
 #include "gf_rtime.h"
 #include "gf_util.h"
@@ -88,6 +89,8 @@ gen0InitImport(Syme syme)
 
 	if (tfIsLibrary(exporter)) 
 		call = gen0GetLibImport(syme, exporter);
+	else if (tfIsJavaImport(exporter))
+		call = gfjGetImport(syme);
 	else
 		call = gen0GetDomImport(syme, gen0GetDomain(exporter, idx));
 

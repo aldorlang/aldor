@@ -213,6 +213,7 @@ libphase_a_SOURCES =	\
 	gf_gener.c	\
 	gf_implicit.c	\
 	gf_imps.c	\
+	gf_java.c	\
 	gf_prog.c	\
 	gf_reference.c	\
 	gf_rtime.c	\
