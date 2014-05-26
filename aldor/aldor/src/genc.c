@@ -242,14 +242,14 @@ local	CCode	gc0ExportToFortran(String, Foam, Foam, FtnFunParam, int);
 local	CCode	gc0ExportFtnString(CCode, Bool, CCodeList *, CCodeList *,
 				CCodeList *, CCodeList *, int *, int *);
 local	CCodeList	gc0ExportInit	(String, Foam, int);
-local	CCode	gc0FunFoamCall	(Foam, int, int);
-local	CCode	gc0FunCCall0	(Foam, int, int);
-local	CCode	gc0FunOCall0	(Foam, int, int);
-local	CCode	gc0FunPCall0	(Foam, int, int);
+local	CCode	gc0FunFoamCall	(Foam, int);
+local	CCode	gc0FunCCall0	(Foam, int);
+local	CCode	gc0FunOCall0	(Foam, int);
+local	CCode	gc0FunPCall0	(Foam, int);
 local	CCode	gc0FiCFun	(FoamTag, int, FoamTag *, CCode, int); 
 local   CCode 	gc0UnNestCall	(CCode, CCode);
 local   CCode   gc0GetTmp       (CCode);
-local	CCode	gc0FunBCall	(Foam, int, int);
+local	CCode	gc0FunBCall	(Foam, int);
 
 local	CCode	gc0SeqStmt	(Foam, int);
 local	CCode	gc0Cop		(FoamBValTag, Foam, CCodeTag);
@@ -3004,16 +3004,16 @@ gccExpr(Foam foam)
 		cc = gccRecNew(foam);
 		break;
 	  case FOAM_BCall:
-		cc = gc0FunBCall(foam, foamArgc(foam)-1, emptyFormatSlot);
+		cc = gc0FunBCall(foam, emptyFormatSlot);
 		break;
 	  case FOAM_CCall:
-		cc = gc0FunFoamCall(foam, foamArgc(foam)-2, emptyFormatSlot);
+		cc = gc0FunFoamCall(foam, emptyFormatSlot);
 		break;
 	  case FOAM_OCall:
-		cc = gc0FunFoamCall(foam, foamArgc(foam)-3, emptyFormatSlot);
+		cc = gc0FunFoamCall(foam, emptyFormatSlot);
 		break;
 	  case FOAM_PCall:
-		cc = gc0FunFoamCall(foam, foamArgc(foam)-3, emptyFormatSlot);
+		cc = gc0FunFoamCall(foam, emptyFormatSlot);
 		break;
 	  case FOAM_MFmt:
 		cc = gccMFmt(foam);
@@ -3780,16 +3780,16 @@ gccMFmt(Foam foam)
 
 	switch (foamTag(expr)) {
 	  case FOAM_BCall:
-		cc = gc0FunBCall(expr, foamArgc(expr)-1,    fmt);
+		cc = gc0FunBCall(expr, fmt);
 		break;
 	  case FOAM_CCall:
-		cc = gc0FunFoamCall(expr, foamArgc(expr)-2, fmt);
+		cc = gc0FunFoamCall(expr, fmt);
 		break;
 	  case FOAM_OCall:
-		cc = gc0FunFoamCall(expr, foamArgc(expr)-3, fmt);
+		cc = gc0FunFoamCall(expr, fmt);
 		break;
 	  case FOAM_PCall:
-		cc = gc0FunFoamCall(expr, foamArgc(expr)-3, fmt);
+		cc = gc0FunFoamCall(expr, fmt);
 		break;
 	  case FOAM_Catch:
 		/* Only allowed (Set (Values ...) (MFmt f (Catch ...))) */
@@ -5092,7 +5092,7 @@ gc0SeqStmt(Foam foam, int n)
 }
 
 local CCode
-gc0FunBCall(Foam foam, int argc, int returnKind)
+gc0FunBCall(Foam foam, int returnKind)
 {
 	return gc0Builtin(foamBValInfo(foam->foamBCall.op).tag, foam);
 }
@@ -5233,7 +5233,7 @@ gc0Cop(FoamBValTag tag, Foam foam, CCodeTag ctag)
 }
 
 local CCode
-gc0FunFoamCall(Foam foam, int argc, int returnKind)
+gc0FunFoamCall(Foam foam, int returnKind)
 {
 	FoamTag		type;
 	AInt		oformat = emptyFormatSlot;
@@ -5247,7 +5247,7 @@ gc0FunFoamCall(Foam foam, int argc, int returnKind)
 	  case FOAM_CCall:
 		type = foam->foamCCall.type;
 		gcvCallNesting = GC_CCall;
-		call = gc0FunCCall0(foam, argc, returnKind);
+		call = gc0FunCCall0(foam, returnKind);
 		break;
 	  case FOAM_OCall:
 		type = foam->foamOCall.type;
@@ -5256,13 +5256,13 @@ gc0FunFoamCall(Foam foam, int argc, int returnKind)
 		oformat =  gcvDefs->foamDDef.argv[idx]->foamDef.rhs->foamProg.format;
 		if (gcvCallNesting < GC_OCall)
 			gcvCallNesting = GC_OCall;
-		call = gc0FunOCall0(foam, argc, returnKind);
+		call = gc0FunOCall0(foam, returnKind);
 		break;
 	  case FOAM_PCall:
 		type = foam->foamPCall.type;
 		if (gcvCallNesting < GC_OCall)
 			gcvCallNesting = GC_OCall;
-		call = gc0FunPCall0(foam, argc, returnKind);
+		call = gc0FunPCall0(foam, returnKind);
 		break;
 	  default:
 		call = NULL;
@@ -5286,15 +5286,17 @@ gc0FunFoamCall(Foam foam, int argc, int returnKind)
 }
 
 local CCode
-gc0FunCCall0(Foam foam, int argc, int returnFmt)
+gc0FunCCall0(Foam foam, int returnFmt)
 {
 	CCodeList	code = listNil(CCode);
 	CCode		ccArgs, ccCall, ccId;
 	FoamTag	       *argTypes;
 	Foam		cfoam;
-	int		i;
+	int		i, argc;
 
 	assert(foamTag(foam) == FOAM_CCall);
+
+	argc = foamCCallArgc(foam);
 	gc0AddLine(code, gc0TypeId(foam->foamCCall.type, emptyFormatSlot));
 	
 	ccId = gccId(foam->foamCCall.op);
@@ -5323,18 +5325,18 @@ gc0FunCCall0(Foam foam, int argc, int returnFmt)
 }
 
 local CCode
-gc0FunOCall0(Foam foam, int argc, int returnKind)
+gc0FunOCall0(Foam foam, int returnKind)
 {
 	CCodeList	code = listNil(CCode);
 	CCode		ccArgs;
 	Foam		decl, pdecls;
-	int		i, idx;
+	int		i, idx, argc;
 
 	/* Call to function in the same unit */
 	assert(foamTag(foam) == FOAM_OCall);
 	assert(foamTag(foam->foamOCall.op) == FOAM_Const);
 
-
+	argc = foamOCallArgc(foam);
 	/* Which one? !!! FIXME use proper macros for gcvDefs ... */
 	idx = foam->foamOCall.op->foamConst.index;
 	assert(foamTag(gcvDefs->foamDDef.argv[idx]->foamDef.rhs) == FOAM_Prog);
@@ -5361,13 +5363,15 @@ gc0FunOCall0(Foam foam, int argc, int returnKind)
 }
 
 local CCode
-gc0FunPCall0(Foam foam, int argc, int returnKind)
+gc0FunPCall0(Foam foam, int returnKind)
 {
 	CCodeList	l, code = listNil(CCode);
 	CCode		ccArgs, ccPCall;
-	int		i, listl;
+	int		i, listl, argc;
 
 	assert(foamTag(foam) == FOAM_PCall);
+	argc = foamPCallArgc(foam);
+
 	if (foam->foamPCall.protocol == FOAM_Proto_Fortran) {
 		ccPCall = gccFortranPCall(NULL,(int) 0, foam, &code);
 		if (code) {
