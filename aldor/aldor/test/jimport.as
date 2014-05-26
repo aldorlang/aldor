@@ -45,7 +45,6 @@ test2(): () == {
 }
 
 test3(): () == {
-#if 0
     import from SingleInteger;
 
     b1: BitSet := new(5);
@@ -55,7 +54,7 @@ test3(): () == {
     check(not b1.equals(b2));
     b1._and(b2);
     check(b1.equals(new(5)));
-#endif
+    check(not b1.equals(b2));
 }
 
 test1();
