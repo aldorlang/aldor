@@ -105,6 +105,7 @@ local JavaCode gj0BCall(Foam call);
 local JavaCode gj0PCall(Foam call);
 
 local JavaCode gj0MFmt(Foam mfmt);
+local JavaCode gj0Const(Foam foam);
 
 local JavaCode gj0PRef(Foam foam);
 local JavaCode gj0PRefSet(Foam lhs, Foam rhs);
@@ -437,6 +438,8 @@ gj0Gen(Foam foam)
 		return gj0CProg(foam);
 	case FOAM_PRef:
 		return gj0PRef(foam);
+	case FOAM_Const:
+		return gj0Const(foam);
 	default: 
 		return gj0Default(foam, strPrintf("Tag: %s", foamStr(foamTag(foam))));
 	}
@@ -2667,6 +2670,17 @@ gj0PRefSet(Foam lhs, Foam rhs)
 			      jcLiteralInteger(lhs->foamPRef.idx),
 			      gj0Gen(rhs));
 }
+
+/*
+ * :: Consts
+ */
+
+local JavaCode
+gj0Const(Foam foam)
+{
+	return gj0Nil(foam);
+}
+
 
 /*
  * :: Record formats
