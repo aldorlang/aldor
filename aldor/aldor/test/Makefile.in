@@ -34,6 +34,7 @@ fmtests := rectest enumtest clos strtable1
 ctests  := rectest enumtest
 otests  := enumtest
 xtests := enumtest
+jruntests := jimport
 
 x_extra := rtexns
 
@@ -42,6 +43,8 @@ x_extra := rtexns
 simple_j_AXLFLAGS=-Q2
 
 badtests := opt1
+
+jimport_opts := -Q3
 # opt1 fails because the optimise decides to inline the recursive call
 # (it shouldn't, but spotting the call is a bit tricky).
 
@@ -74,9 +77,9 @@ $(patsubst %, out/c/%.c, $(_ctests)): out/c/%.c: out/ao/%.ao
 $(patsubst %, out/java/%.java, $(_jtests)): $(aldorexedir)/javagen
 $(patsubst %, out/java/%.java, $(_jtests)): out/java/%.java: out/fm/%.fm
 	mkdir -p $$(dirname $@)
-	(cd $(builddir)/out/fm; $(aldorexedir)/javagen \
+	$(DBG_J) $(aldorexedir)/aldor $(nfile) \
 		$(if $(filter $(_jruntests), $*), -Jmain,) \
-		$*.fm > ../java/$*.java)
+		-Fjava=$(builddir)/$@ $<
 
 javaopts=-cp $(abs_top_builddir)/aldor/lib/java/src/foamj.jar
 
@@ -130,6 +133,15 @@ $(patsubst %, %.exe, $(_xtests)): %.exe: %.o rtexns.o
 		      -Fx=$@ out/ao/$*.ao rtexns.o
 
 #		      -Fmain=bobthebuilder.c		\
+
+$(patsubst %, %-javatest,$(jruntests)): %-javatest: out/java/%.class
+	java -cp out/java:$(abs_top_builddir)/aldor/lib/java/src/foamj.jar:$(abs_top_builddir)/aldor/lib/libfoam/al/foam.jar:$(abs_top_builddir)/aldor/lib/libfoamlib/al/foamlib.jar: $*
+
+check-java: $(patsubst %,%-javatest,$(jruntests))
+
+.PHONY: check-java
+
+check: check-java
 
 really-all: \
      $(patsubst %,out/ap/%.ap,$(_aptests)) \
