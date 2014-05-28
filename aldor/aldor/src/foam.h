@@ -704,6 +704,7 @@ struct foamDecl {
 
 #define foamNewEmptyDDecl(u) foamNew(FOAM_DDecl, 1, (AInt) u)
 extern Foam foamNewDDecl(AInt usage, ...);
+extern Foam foamNewDDeclOfList(AInt usage, FoamList args);
 
 struct foamDDecl {
 	struct foamHdr          hdr;

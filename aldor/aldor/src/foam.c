@@ -337,14 +337,21 @@ Foam
 foamNewDDecl(AInt usage, ...)
 {
 	FoamList foamList;
-	Foam foam;
 	va_list argp;
-	int i;
 
 	va_start(argp, usage);
 	foamList = listListv(Foam)(argp);
 	va_end(argp);
-	assert(foamDDeclSlotc == 1);
+
+	return foamNewDDeclOfList(usage, foamList);
+}
+
+Foam
+foamNewDDeclOfList(AInt usage, FoamList foamList)
+{
+	Foam foam;
+	int i;
+	assert(foamDDeclSlotc == 1); /* Will blow up if a field is added */
 
 	foam = foamNew(FOAM_DDecl, foamDDeclSlotc + listLength(Foam)(foamList));
 	foam->foamDDecl.usage = usage;
