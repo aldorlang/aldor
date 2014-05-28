@@ -1700,7 +1700,7 @@ foamToSExpr0(Foam foam)
 	case FOAM_Lex:
 		i = foam->foamLex.level;
 		j = foam->foamLex.index;
-		if (fexFmtc != 0) {
+		if (fexFmtc != 0 && i < fexLexc) {
 			i = fexLexv[i];
 			if (j < foamArgc(fexFmtv[i]))
 			    idstr = fexFmtv[i]->foamDDecl.argv[j]->foamDecl.id;
