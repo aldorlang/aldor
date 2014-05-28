@@ -8122,6 +8122,7 @@ tfConditionalStab(TForm tf)
  * :: Java
  *
  *****************************************************************************/
+local void tfJavaCheckArg(ErrorSet errors, TForm arg);
 
 Bool
 tfIsJavaImport(TForm tf)
@@ -8142,6 +8143,68 @@ tfIsJavaImport(TForm tf)
 	if (symeForeign(syme)->protocol != FOAM_Proto_Java)
 		return false;
 
+	return true;
+}
+
+void
+tfJavaCheckArgs(ErrorSet errors, TForm tf)
+{
+	Length argc = tfAsMultiArgc(tf);
+	int i;
+
+	for (i=0; i<argc; i++) {
+		TForm arg = tfAsMultiArgN(tf, argc, i);
+		SymeList sl;
+
+		if (!errorSetPrintf(errors, !tfIsNotDomain(arg), "Position %d must be a domain", i)) {
+			continue;
+		}
+		tfJavaCheckArg(errors, arg);
+	}
+
+	return;
+}
+
+local void
+tfJavaCheckArg(ErrorSet errors, TForm arg)
+{
+		Syme enc, dec;
+
+		if (tfIsSelf(arg))
+			return;
+		if (tfIsJavaImport(arg))
+			return;
+
+		enc = tfGetDomExport(arg, symString(ssymTheJava), tfIsJavaEncoder);
+		dec = tfGetDomExport(arg, symString(ssymTheJavaDecoder), tfIsJavaDecoder);
+		errorSetPrintf(errors, dec != NULL, "The domain %s must export java: %% -> ?",
+			       abPretty(tfExpr(arg)));
+		errorSetPrintf(errors, enc != NULL, "The domain %s must export avaj: ? -> %%",
+			       abPretty(tfExpr(arg)));
+}
+
+
+Bool
+tfIsJavaEncoder(TForm tf)
+{
+	tfFollow(tf);
+	/* Should be looking for % -> builtin */
+	if (!tfIsMap(tf))
+		return false;
+	if (!tfIsSelf(tfMapArg(tf)))
+		return false;
+	return true;
+}
+
+Bool
+tfIsJavaDecoder(TForm tf)
+{
+	tfFollow(tf);
+
+	if (!tfIsMap(tf))
+		return false;
+	if (!tfIsSelf(tfMapRet(tf)))
+		return false;
 	return true;
 }
 

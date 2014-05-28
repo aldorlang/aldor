@@ -8,14 +8,17 @@
 #include "abuse.h"
 #include "scobind.h"
 #include "tinfer.h"
+#include "sefo.h"
 
 local void testJavaType1(void);
+local void testValidation(void);
 
 void
 javaTestSuite()
 {
 	init();
 	TEST(testJavaType1);
+	TEST(testValidation);
 	fini();
 }
 
@@ -33,7 +36,7 @@ testJavaType1()
 	abPutUse(imp, AB_Use_NoValue);
 	scopeBind(stabFile(), imp);
 	typeInfer(stabFile(), imp);
-	
+
 	tf = tfqTypeForm(stabFile(), "Runnable");
 	symes = symeListSubListById(tfGetDomImports(tf), ssymApply);
 	testIntEqual("len", 1, listLength(Syme)(symes));
@@ -53,3 +56,21 @@ testJavaType1()
 	finiFile();
 }
 
+local void
+testValidation()
+{
+	TForm tf;
+	SymeList symes;
+	AbSyn imp;
+
+	initFile();
+	stdscope(stabFile());
+
+	imp = abqParse("import Bad1: with { apply: () -> (); } from Foreign Java \"java.util\"");
+	abPutUse(imp, AB_Use_NoValue);
+	scopeBind(stabFile(), imp);
+	typeInfer(stabFile(), imp);
+	
+	testFalse("NotSefo", abIsSefo(imp->abImport.what));
+
+}

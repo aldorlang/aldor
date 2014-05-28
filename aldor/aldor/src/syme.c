@@ -725,6 +725,41 @@ symeJavaApplyName(Syme syme)
 	return symString(tfEnumId(enumArg, 0));
 }
 
+ErrorSet
+symeIsJavaExport(Syme syme)
+{
+	TForm tf = symeType(syme);
+	ErrorSet errors = errorSetNew();
+
+	if (!tfIsMap(tf)) {
+		errorSetAdd(errors, "expected a map");
+		return errors;
+	}
+
+	if (symeId(syme) == ssymApply) {
+		TForm inner;
+		errorSetCheck(errors,
+			      tfMapArgc(tf) > 0 && tfIsSelf(tfMapArgN(tf, 0)),
+			      "apply must have % as first argument");
+		errorSetCheck(errors,
+			      tfMapArgc(tf) == 2 && tfIsEnum(tfMapArgN(tf, 1)),
+			      "apply must have enumeration as second and final argument");
+		inner = tfMapRet(tf);
+		tfFollow(inner);
+		if (errorSetCheck(errors,
+				  tfIsMap(inner), "apply must return a map")) {
+			tfJavaCheckArgs(errors, tfMapArg(inner));
+			tfJavaCheckArgs(errors, tfMapRet(inner));
+		}
+	}
+	if (symeId(syme) ==  ssymTheNew) {
+		errorSetCheck(errors, tfMapRetc(tf) == 1 && tfIsSelf(tfMapRetN(tf, 0)),
+			      "new must return %");
+		tfJavaCheckArgs(errors, tfMapArg(tf));
+	}
+	return errors;
+}
+
 /******************************************************************************
  *
  * :: Implementation handling.

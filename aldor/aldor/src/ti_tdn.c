@@ -1719,19 +1719,110 @@ titdnFor(Stab stab, AbSyn absyn, TForm type)
  *
  ***************************************************************************/
 
+local Bool titdnForeignJava(Stab stab, AbSyn absyn);
+local Bool titdnForeignJavaDeclare(Stab stab, AbSyn decl);
+
 local Bool
 titdnForeign(Stab stab, AbSyn absyn, TForm type)
 {
+	ForeignOrigin forg = forgFrAbSyn(absyn->abForeign.origin);
+	Bool ok;
 	titdn(stab, absyn->abForeign.what, tfUnknown);
+
+	switch (forg->protocol) {
+	case FOAM_Proto_Java:
+		ok = titdnForeignJava(stab, absyn->abForeign.what);
+		break;
+	default:
+		ok = true;
+		break;
+	}
+	if (!ok) {
+		return false;
+	}
+
 	abTUnique(absyn) = type;
 	return true;
 }
+
+local Bool
+titdnForeignJava(Stab stab, AbSyn what)
+{
+	AbSyn inner;
+	int i;
+	Bool ok;
+
+	switch (abTag(what)) {
+	case AB_Sequence:
+		ok = true;
+		for (i=0; i<abArgc(what); i++) {
+			ok = ok && titdnForeignJava(stab, what->abSequence.argv[i]);
+		}
+		return ok;
+	case AB_Declare:
+		return titdnForeignJavaDeclare(stab, what);
+	case AB_Id:
+		return false;
+	default:
+		return false;
+	}
+	return true;
+}
+
+local Bool
+titdnForeignJavaDeclare(Stab stab, AbSyn decl)
+{
+	TForm tf;
+	Syme syme;
+	SymeList l;
+	assert(abTag(decl) == AB_Declare);
+
+	syme = abSyme(decl->abDeclare.id);
+	if (syme == NULL)
+		return true; /* Error is elsewhere - not here */
+	tf = symeType(syme);
+
+	l = tfGetCatExports(tf);
+
+	while (l != listNil(Syme)) {
+		ErrorSet errors;
+		Syme syme = car(l);
+		Bool bad;
+		l = cdr(l);
+		errors = symeIsJavaExport(syme);
+
+		if (errorSetHasErrors(errors)) {
+			/* This isn't the most efficient, but if the list has more than
+			 * a few elements something is badly wrong anyway */
+			StringList tmp = errorSetErrors(errors);
+			String s = strPrintf("%s: %s cannot be used as a java function:\n",
+					     symeString(syme),
+					     abPretty(tfExpr(symeType(syme))));
+			while (tmp != listNil(String)) {
+				s = strNConcat(s, "\t");
+				s = strNConcat(s, car(tmp));
+				s = strNConcat(s, "\n");
+				tmp = cdr(tmp);
+			}
+			errorSetFree(errors);
+			comsgError(decl, ALDOR_E_ExplicitMsg, s);
+
+			abState(decl) = AB_State_Error;
+			return false;
+		}
+		errorSetFree(errors);
+
+	}
+	return true;
+}
+
 
 /****************************************************************************
  *
  * :: Import:  import ... from D
  *
  ***************************************************************************/
+
 
 local Bool
 titdnImport(Stab stab, AbSyn absyn, TForm type)

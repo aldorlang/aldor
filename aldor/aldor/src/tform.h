@@ -12,6 +12,7 @@
 #include "axlobs.h"
 #include "foam.h"
 #include "tfcond.h"
+#include "errorset.h"
 
 extern SymeList tfSetSymesFn(TForm, SymeList);
 
@@ -914,5 +915,7 @@ extern Syme		tfImplicitExport(Stab, SymeList, Syme);
  ****************************************************************************/
 
 extern Bool tfIsJavaImport(TForm tf);
-
+extern void tfJavaCheckArgs(ErrorSet errors, TForm tf);
+extern Bool tfIsJavaEncoder(TForm tf);
+extern Bool tfIsJavaDecoder(TForm tf);
 #endif /* !_TFORM_H_ */

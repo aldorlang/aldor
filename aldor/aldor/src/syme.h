@@ -13,6 +13,7 @@
 #include "forg.h"
 #include "msg.h"
 #include "lib.h"
+#include "errorset.h"
 
 /******************************************************************************
  *
@@ -387,6 +388,7 @@ extern Bool		symeIsJavaApply		(Syme);
 extern Bool		symeIsJavaConstructor	(Syme);
 extern Bool		symeIsJavaImport	(Syme);
 extern String 		symeJavaApplyName	(Syme);
+extern ErrorSet         symeIsJavaExport	(Syme);
 
 /*
  * Field modifiers.
