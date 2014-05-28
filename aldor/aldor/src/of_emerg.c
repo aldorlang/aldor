@@ -329,19 +329,19 @@ emMarkUsage(Foam expr)
 		Foam	env = expr->foamOCall.env;
 		emMarkLocal(env);
 		argv = expr->foamOCall.argv;
-		argc = foamArgc(expr) - 3;
+		argc = foamOCallArgc(expr);
 		break; }
 	case FOAM_CCall:
 		argv = expr->foamCCall.argv;
-		argc = foamArgc(expr) - 2;
+		argc = foamCCallArgc(expr);
 		break;
 	case FOAM_PCall:
 		argv = expr->foamPCall.argv;
-		argc = foamArgc(expr) - 3;
+		argc = foamPCallArgc(expr);
 		break;
 	case FOAM_BCall:
 		argv = expr->foamBCall.argv;
-		argc = foamArgc(expr) - 1;
+		argc = foamBCallArgc(expr);
 		break;
 	case FOAM_Clos:
 		emMarkClos(expr);
