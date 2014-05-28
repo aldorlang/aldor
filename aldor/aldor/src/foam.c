@@ -243,6 +243,38 @@ foamNewProgEmpty()
 }
 
 Foam
+foamNewCCall(AInt type, Foam op, ...)
+{
+	FoamList args;
+	va_list argp;
+
+	va_start(argp, op);
+	args = listListv(Foam)(argp);
+	va_end(argp);
+
+	return foamNewCCallOfList(type, op, args);
+}
+
+Foam
+foamNewCCallOfList(AInt type, Foam op, FoamList args)
+{
+	Foam foam;
+	int i;
+
+	foam = foamNewEmpty(FOAM_CCall, foamCCallSlotc + listLength(Foam)(args));
+	foam->foamCCall.type = type;
+	foam->foamCCall.op = op;
+
+	i = 0;
+	while (args != listNil(Foam)) {
+		foam->foamCCall.argv[i++] = car(args);
+		args = listFreeCons(Foam)(args);
+	}
+
+	return foam;
+}
+
+Foam
 foamNewPCall(AInt protocol, AInt type, Foam op, ...)
 {
 	FoamList args;

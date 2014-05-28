@@ -1052,6 +1052,8 @@ struct foamCCall {
 
 #define foamCCallSlotc (2)
 #define foamCCallArgc(foam) (foamArgc(foam) - foamCCallSlotc )
+extern Foam foamNewCCall(AInt type, Foam foam, ...);
+extern Foam foamNewCCallOfList(AInt type, Foam op, FoamList args);
 
 struct foamOCall {
 	struct foamHdr          hdr;

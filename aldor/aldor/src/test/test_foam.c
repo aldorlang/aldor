@@ -44,6 +44,14 @@ testCall()
 	foam = foamNewPCall(FOAM_Proto_C, FOAM_NOp, foamNewGlo(int0), NULL);
 	testIntEqual("argc", 0, foamPCallArgc(foam));
 	testIntEqual("protocol", FOAM_Proto_C, foam->foamPCall.protocol);
+
+	foam = foamNewCCall(FOAM_Word, foamNewGlo(int0), NULL);
+	testIntEqual("argc", 0, foamCCallArgc(foam));
+	testTrue("op", foamEqual(foamNewGlo(int0), foam->foamCCall.op));
+
+	foam = foamNewCCall(FOAM_Word, foamNewGlo(int0), foamNewPar(1), NULL);
+	testIntEqual("argc", 1, foamCCallArgc(foam));
+	testTrue("op", foamEqual(foamNewPar(1), foam->foamCCall.argv[0]));
 }
 
 local void
