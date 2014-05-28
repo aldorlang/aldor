@@ -27,9 +27,92 @@ main(int argc, char **argv)
 #endif
 
 
+/*
+ * The diagnostic suite
+ */
+
+#ifdef TEST_ALL
+extern void	testShow	(void);
+
+extern void	testCPort	(void);
+extern void	testOpsys	(void);
+
+extern void	testStore1a	(void);
+extern void	testStore1b	(void);
+extern void	testStore1c	(void);
+extern void	testStore1d	(void);
+extern void	testStore2	(void);
+extern void	testStore3	(void);
+
+extern void	testUtil	(void);
+extern void	testFloat	(void);
+extern void	testFluid	(void);
+extern void	testFormat	(void);
+
+extern void	testBigint	(void);
+extern void	testBitv	(void);
+extern void	testBtree	(void);
+extern void	testBuffer	(void);
+extern void	testDnf		(void);
+extern void	testFname	(void);
+extern void	testList	(void);
+extern void	testPriq	(void);
+extern void	testString	(void);
+extern void	testSymbol	(void);
+extern void	testTable	(void);
+extern void	testXFloat	(void);
+
+extern void	testCCode	(void);
+extern void	testMsg		(void);
+extern void	testFile	(void);
+
+extern void	testLink	(void);
+#endif
+
 struct test {
-  	char	* name;
+	char	*name;
 	void	(*fun)(void);
+};
+
+static struct test suite[] = {
+#ifdef TEST_ALL
+	/* name         function   */
+	{"show",	testShow},
+
+	{"cport",	testCPort},
+	{"opsys",	testOpsys},
+
+	{"store1a",	testStore1a},
+	{"store1b",	testStore1b},
+	{"store1c",	testStore1c},
+	{"store1d",	testStore1d},
+	{"store2",	testStore2},
+	{"store3",	testStore3},
+
+	{"util",	testUtil},
+	{"float", 	testFloat},
+	{"fluid",	testFluid},
+	{"format",	testFormat},
+
+	{"bigint",	testBigint},
+	{"bitv",	testBitv},
+	{"btree",	testBtree},
+	{"buffer",	testBuffer},
+	{"dnf",		testDnf},
+	{"fname",	testFname},
+	{"list",	testList},
+	{"priq",	testPriq},
+	{"string",	testString},
+	{"symbol",	testSymbol},
+	{"table",	testTable},
+	{"xfloat",	testXFloat},
+
+	{"ccode",	testCCode},
+	{"msg",		testMsg},
+	{"file",	testFile},
+	{"link",	testLink},
+#endif
+	{0,		0}
 };
 
 void	testStartNetStore (void);
@@ -55,24 +138,22 @@ testSelfStoHandler(int errnum)
 void
 testSelf(String testName)
 {
-	int	            i;
-	StoErrorFun	    h0;
-	extern struct test  suite[];
-
+	int		i;
+	StoErrorFun	h0;
 
 	/* Run with default error handlers. */
 	h0 = stoSetHandler(testSelfStoHandler);
 
-  	if (strcmp(testName, "all") == 0) {
-	  	for (i=0; suite[i].name != 0; i++)
+	if (strcmp(testName, "all") == 0) {
+		for (i=0; suite[i].name != 0; i++)
 			testRun(suite[i].name, suite[i].fun);
 	}
 	else {
-	  	for (i=0; suite[i].name != 0; i++)
-		  	if (strcmp(testName, suite[i].name) == 0) break;
+		for (i=0; suite[i].name != 0; i++)
+			if (strcmp(testName, suite[i].name) == 0) break;
 
 		if (suite[i].name == 0)
-		  	printf("\nTest \"%s\" not found.\n", testName);
+			printf("\nTest \"%s\" not found.\n", testName);
 		else
 			testRun(suite[i].name, suite[i].fun);
 	}
@@ -116,90 +197,6 @@ testShowNetStore(void)
 	printf("Net store allocated is %ld\n", allocD - freeD - gcD);
 }
 
-
-/*
- * The diagnostic suite
- */
-
-#ifdef TEST_ALL
-extern void	testShow	(void);
-
-extern void	testCPort	(void);
-extern void	testOpsys	(void);
-
-extern void	testStore1a	(void);
-extern void	testStore1b	(void);
-extern void	testStore1c	(void);
-extern void	testStore1d	(void);
-extern void	testStore2	(void);
-extern void	testStore3	(void);
-	
-extern void	testUtil	(void);
-extern void	testFloat	(void);
-extern void	testFluid	(void);
-extern void	testFormat	(void);
-
-
-extern void	testBigint	(void);
-extern void	testBitv	(void);
-extern void	testBtree	(void);
-extern void	testBuffer	(void);
-extern void	testDnf		(void);
-extern void	testFname	(void);
-extern void	testList	(void);
-extern void	testPriq	(void);
-extern void	testString	(void);
-extern void	testSymbol	(void);
-extern void	testTable	(void);
-extern void	testXFloat	(void);
-
-extern void	testCCode	(void);
-extern void	testMsg		(void);
-extern void	testFile	(void);
-
-extern void	testLink	(void);
-#endif
-
-struct test suite[] = {
-#ifdef TEST_ALL
-   	/* name         function   */
-	{"show",	testShow},
-
-	{"cport",	testCPort},
-	{"opsys",	testOpsys},
-
-  	{"store1a",	testStore1a},
-  	{"store1b",	testStore1b},
-  	{"store1c",	testStore1c},
-	{"store1d",	testStore1d},
-  	{"store2",	testStore2},
-  	{"store3",	testStore3},
-
-   	{"util",	testUtil},
-	{"float", 	testFloat},
-   	{"fluid",	testFluid},
-   	{"format",	testFormat},
-
-	{"bigint",	testBigint},
-	{"bitv",	testBitv},
-   	{"btree",	testBtree},
-	{"buffer",	testBuffer},
-	{"dnf",		testDnf},
-   	{"fname",	testFname},
-   	{"list",	testList},
-   	{"priq",	testPriq},
-   	{"string",	testString},
-   	{"symbol",	testSymbol},
-   	{"table",	testTable},
-   	{"xfloat",	testXFloat},
-
-	{"ccode",	testCCode},
-   	{"msg",		testMsg},
-   	{"file",	testFile},
-	{"link",	testLink},
-#endif
-  	{0,		0}
-};
 
 void
 testShow(void)
