@@ -4,10 +4,6 @@
 
 local void testList();
 
-/* XXX: from test_tinfer.c */
-void init(void);
-void fini(void);
-
 void
 listTestSuite()
 {

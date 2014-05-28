@@ -17,11 +17,6 @@ local void testAblog();
 local void testAblogSefo();
 local void testDnf();
 
-/* XXX: from test_tinfer.c */
-void init(void);
-void fini(void);
-void initFile(void);
-
 void ablogTest()
 {
 	init();
