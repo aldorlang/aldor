@@ -4013,6 +4013,7 @@ struct gjSpecCharId_info {
 struct gjSpecCharId_info gjSpecCharIdTable[];
 
 CString gjCharIds[CHAR_MAX];
+#define STDCHAR_MAX 127
 
 local void
 gj0NameInit() 
@@ -4022,7 +4023,7 @@ gj0NameInit()
 	while (p->c != '\0') {
 		/* Identifiers must never contain UTF-8 encoded unicode
 		 * characters or extended ASCII. */
-		assert(p->c >= 0 && p->c < CHAR_MAX);
+		assert(p->c >= 0 && p->c <= STDCHAR_MAX);
 		gjCharIds[p->c] = p->s;
 		p++;
 	}
