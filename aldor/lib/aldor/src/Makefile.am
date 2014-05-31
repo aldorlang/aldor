@@ -25,6 +25,7 @@ libaldor_a_SOURCES =	\
 	arith/sal_sfloat.c	\
 	base/ald_pfunc.c	\
 	base/sal_base.c	\
+	base/sal_base0.c	\
 	base/sal_bstream.c	\
 	base/sal_byte.c	\
 	base/sal_char.c	\

@@ -1,4 +1,5 @@
-sal_base_deps :=
+sal_base0_deps :=
+sal_base_deps := sal_base0
 sal_tstream_deps := sal_base
 sal_bstream_deps := sal_base
 sal_serial_deps := sal_base sal_bstream
