@@ -34,7 +34,6 @@ AXLTESTS =	\
 	hang	\
 	ret-exit \
 	tst_integer \
-	union-print \
 	trec	    \
 	pol2	\
 	iter	\
@@ -42,6 +41,7 @@ AXLTESTS =	\
 	#
 
 BROKEN =	\
+	union-print \
 	RepRecordError	\
 	avl-set	\
 	avl-set2	\
