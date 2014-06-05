@@ -17,6 +17,7 @@ local void testTFormSyntaxConditions(void);
 local void testTFormFormatOne(String name, String expect, TForm tf);
 local void testDependentExport(void);
 local void testEnum();
+local void testMachineInt();
 
 /* XXX: from test_tinfer.c */
 void init(void);
@@ -32,6 +33,7 @@ tformTest(void)
 	TEST(testTFormSyntaxConditions);
 	TEST(testEnum);
 	TEST(testDependentExport);
+	TEST(testMachineInt);
 	fini();
 }
 
@@ -146,4 +148,14 @@ testDependentExport()
 
 
 	finiFile();
+}
+
+local void
+testMachineInt()
+{
+	initFile();
+	stdscope(stabFile());
+
+	tfqTypeInfer(stabFile(), "MachineInteger: with == add; default x: MachineInteger");
+	testTrue("xx", tfMachineInteger != tfUnknown);
 }
