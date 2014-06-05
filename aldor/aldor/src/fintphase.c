@@ -287,11 +287,11 @@ fintWrapVerbose(AbSyn ab)
 		/* Definitions are printed specially. */;
 
 	else if ((tfHasPrintFlag = tfHasPrint(stab, type)) == true) {
-		/* (print << ab)$type */
+		/* (stdout << ab)$type */
 		op = abNewQualify(sposNone, abNewId(sposNone, ssymPrint),
 				  tfExpr(type));
 		ab = abNewApply2(sposNone, op,
-				 abNewId(sposNone, ssymThePrint), ab);
+				 abNewId(sposNone, ssymTheStdout), ab);
 
 		(void)typeInferAs(stab, ab, tfUnknown);
 		abState(ab) = AB_State_HasUnique;
