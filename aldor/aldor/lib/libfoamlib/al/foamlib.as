@@ -161,6 +161,7 @@ SingleInteger ==> MachineInteger;
 }
 #endif
 
+print ==> stdout;
 #if ImportString
 {
 	import {

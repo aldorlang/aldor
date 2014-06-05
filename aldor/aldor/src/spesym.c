@@ -77,7 +77,7 @@ Symbol	ssymArrow,
 	ssymTheJava,
 	ssymTheJavaDecoder,
 	ssymTheGenerator,
-	ssymThePrint,
+	ssymTheStdout,
 	ssymTheNew,
 	ssymTheRawRecord,
 	ssymTheRecord,
@@ -217,10 +217,10 @@ ssymInit(void)
 	ssymTheJava	 = symIntern("java");
 	ssymTheJavaDecoder = symIntern("avaj");
 	ssymTheGenerator = symIntern("generator");
-	ssymThePrint	 = symIntern("print");
 	ssymTheNew	 = symIntern("new");
 	ssymTheRawRecord = symIntern("rawrecord");
 	ssymTheRecord    = symIntern("record");
+	ssymTheStdout	 = symIntern("stdout");
 	ssymTheString	 = symIntern("string");
 	ssymTheTest	 = symIntern("test");
 	ssymTheTrailingArray = symIntern("trailing");
