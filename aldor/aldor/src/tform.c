@@ -366,7 +366,7 @@ tfInitBasicTypes(TForm tf)
 
 	tfBoolean	= tfNewBuiltin(tf, ssymBoolean);
 	tfTextWriter	= tfNewBuiltin(tf, ssymTextWriter);
-	tfSingleInteger	= tfNewBuiltin(tf, ssymSingleInteger);
+	tfMachineInteger= tfNewBuiltin(tf, ssymMachineInteger);
 
 	isInit = true;
 }
@@ -393,7 +393,7 @@ tfInit(void)
 
 	tfBoolean	= tfUnknown;
 	tfTextWriter	= tfUnknown;
-	tfSingleInteger = tfUnknown;
+	tfMachineInteger = tfUnknown;
 
 	for (i = TF_START; i < TF_LIMIT; i++)
 		tformInfo(i).hash = strHash(tformInfo(i).str);
@@ -874,6 +874,8 @@ tfpId(Stab stab, AbSyn ab)
 		tfBoolean = tf;
 	if (sym == ssymTextWriter && tfTextWriter == tfUnknown)
 		tfTextWriter = tf;
+	if (sym == ssymMachineInteger && tfMachineInteger == tfUnknown)
+		tfMachineInteger = tf;
 
 	return tf;
 }
@@ -5193,7 +5195,7 @@ tfSymesFrTrailingArray(Stab stab, TForm tf, Sefo sefo)
 	if (!tfIsMulti(itf)) itf = tfMulti(1, itf);
 	if (!tfIsMulti(atf)) atf = tfMulti(1, atf);
 	tfc = tfNewEmpty(TF_Multiple, 3);
-	tfc->argv[0] = tfSingleInteger;
+	tfc->argv[0] = tfMachineInteger;
 	tfc->argv[1] = tfCrossFrMulti(itf);
 	tfc->argv[2] = tfCrossFrMulti(atf);
 	tfSetStab(tfc, abStab(sefo));
@@ -5254,17 +5256,17 @@ tfSymesFrTrailingArray(Stab stab, TForm tf, Sefo sefo)
 		if (!si || !argi) continue;
 		assert(abTag(argi) == AB_Id);
 		/*
-		 * apply: (me, SingleInteger, 'ni') -> Ai
-		 * set!:  (me, SingleInteger, 'ni', Ii) -> Ai
+		 * apply: (me, MachineInteger, 'ni') -> Ai
+		 * set!:  (me, MachineInteger, 'ni', Ii) -> Ai
 		 */
 		tfe = tfEnum(stab, argi);
 		
-		tfm  = tfMap(tfMulti(3, me, tfSingleInteger, tfe), tfi);
+		tfm  = tfMap(tfMulti(3, me, tfMachineInteger, tfe), tfi);
 		syme = tfNewRepSyme(stab, ssymApply, tfm, code);
 		symes = listCons(Syme)(syme, symes);
 		
 		if (!listMemq(Syme)(tfSymes(tf), si)) {
-			tfm  = tfMap(tfMulti(4, me, tfSingleInteger, tfe, tfi), tfi);
+			tfm  = tfMap(tfMulti(4, me, tfMachineInteger, tfe, tfi), tfi);
 			syme = tfNewRepSyme(stab, ssymSetBang, tfm, code);
 			symes = listCons(Syme)(syme, symes);
 		}
@@ -5859,7 +5861,7 @@ TForm	tfCategory;
 TForm	tfDomain;
 TForm	tfBoolean;
 TForm	tfTextWriter;
-TForm	tfSingleInteger;
+TForm	tfMachineInteger;
 
 /* Is tf the type of a domain? */
 Bool

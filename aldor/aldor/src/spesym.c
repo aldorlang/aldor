@@ -36,6 +36,7 @@ Symbol	ssymBoolean,
 	ssymGenerator,
 	ssymJoin,
 	ssymLiteral,
+	ssymMachineInteger,
 	ssymMap,
 	ssymMeet,
 	ssymPackedMap,
@@ -46,7 +47,6 @@ Symbol	ssymBoolean,
 	ssymReference,
 	ssymSelf,
 	ssymSelfSelf,
-	ssymSingleInteger,
 	ssymTest,
 	ssymTextWriter,
 	ssymTrailingArray,
@@ -176,6 +176,7 @@ ssymInit(void)
 	ssymGenerator    = symIntern("Generator");
 	ssymJoin         = symIntern("Join");
 	ssymLiteral      = symIntern("Literal");
+	ssymMachineInteger= symIntern("MachineInteger");
 	ssymMap          = symIntern("Map");
 	ssymMeet         = symIntern("Meet");
 	ssymPackedMap    = symIntern("PackedMap");
@@ -186,7 +187,6 @@ ssymInit(void)
 	ssymReference    = symIntern("Ref");
 	ssymSelf         = symIntern("%");
 	ssymSelfSelf     = symIntern("%%");
-	ssymSingleInteger= symIntern("SingleInteger");
 	ssymTest         = symIntern("Test");
 	ssymTextWriter   = symIntern("TextWriter");
 	ssymTrailingArray= symIntern("TrailingArray");

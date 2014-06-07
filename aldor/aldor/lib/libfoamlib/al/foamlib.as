@@ -141,6 +141,8 @@ macro {
 #endif
 
 
+SingleInteger ==> MachineInteger;
+
 #if LibraryAxlLib
 #if BuildAxlLib
 #else
@@ -193,3 +195,4 @@ macro {
 	import from FormattedOutput;
 }
 #endif
+

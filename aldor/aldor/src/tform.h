@@ -497,9 +497,9 @@ extern Bool		tfIsBooleanFn		(TForm);
 extern TForm		tfTextWriter;
 
 /*
- * tfSingleInteger	Type used in trailing arrays (and elsewhere)
+ * tfMachineInteger	Type used in trailing arrays (and elsewhere)
  */
-extern TForm tfSingleInteger;
+extern TForm tfMachineInteger;
 
 /*
  * tfGeneral		Type form with no special structure.
