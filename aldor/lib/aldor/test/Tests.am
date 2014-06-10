@@ -109,3 +109,6 @@ CLEANFILES += iter/iter-aldormain.c iter/iter.c iter/iter.ao
 check_PROGRAMS += iter2/iter2
 iter2_iter2_SOURCES = iter2/iter2-aldormain.c iter2/iter2.c
 CLEANFILES += iter2/iter2-aldormain.c iter2/iter2.c iter2/iter2.ao
+check_PROGRAMS += incl/incl
+incl_incl_SOURCES = incl/incl-aldormain.c incl/incl.c
+CLEANFILES += incl/incl-aldormain.c incl/incl.c incl/incl.ao
