@@ -34,7 +34,7 @@ am__v_ALDOR_0 = @echo "  ALDOR " $@;
 
 %.c: %.as $(ALDOR)
 	@$(MKDIR_P) $(@D)
-	$(AM_V_ALDOR)$(DBG) $(ALDOR) $(ALDORFLAGS) $($(*F)_AXLFLAGS) -Y$(@D) -Fao=$(@:.c=.ao) -Fc=$@ $<
+	$(AM_V_ALDOR)$(DBG) $(ALDOR) $(ALDORFLAGS) $($(*F)_AXLFLAGS) -Y$(@D) -Fao=$(@:.c=.ao) -Ffm=$(@:.c=.fm) -Fc=$@ $<
 
 %-aldormain.c: %.as $(ALDOR)
 	@$(MKDIR_P) $(@D)
