@@ -34,3 +34,6 @@ ald_symtab_deps := ald_symbol sal_hash
 sal_fold_deps := sal_list
 
 ald_flags_deps := sal_list sal_barray
+
+sal_langx_deps := sal_list sal_string
+sal_union_deps := sal_string sal_langx

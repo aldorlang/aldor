@@ -112,3 +112,6 @@ CLEANFILES += iter2/iter2-aldormain.c iter2/iter2.c iter2/iter2.ao
 check_PROGRAMS += incl/incl
 incl_incl_SOURCES = incl/incl-aldormain.c incl/incl.c
 CLEANFILES += incl/incl-aldormain.c incl/incl.c incl/incl.ao
+check_PROGRAMS += union-print/union-print
+union_print_union_print_SOURCES = union-print/union-print-aldormain.c union-print/union-print.c
+CLEANFILES += union-print/union-print-aldormain.c union-print/union-print.c union-print/union-print.ao
