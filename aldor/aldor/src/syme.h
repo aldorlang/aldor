@@ -492,6 +492,7 @@ extern Syme		symeNewArchive	(Symbol,TForm,StabLevel,Archive);
 extern Syme		symeNewBuiltin	(Symbol,TForm,StabLevel,FoamBValTag);
 extern Syme		symeNewForeign	(Symbol,TForm,StabLevel,ForeignOrigin);
 
+extern Syme		symeClone(Syme);
 /*
  * Syme conditions.
  */

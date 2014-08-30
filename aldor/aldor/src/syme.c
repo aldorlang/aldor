@@ -1022,6 +1022,14 @@ symeNewTemp(Symbol id, TForm type, StabLevel level)
 	return syme;
 }
 
+Syme
+symeClone(Syme syme)
+{
+	Symbol id = symGen();
+	return symeNew(symeKind(syme), id, symeType(syme), symeDefLevel(syme));
+}
+
+
 /*****************************************************************************
  *
  * :: symeFillType
