@@ -199,7 +199,7 @@ tfqTypeForm(Stab stab, String str)
 	return tiGetTForm(stab, absyn);
 }
 
-void
+Sefo
 tfqTypeInfer(Stab stab, String str)
 {
 	int nErrors = comsgErrorCount();
@@ -211,6 +211,8 @@ tfqTypeInfer(Stab stab, String str)
 
 	testTrue("Declare is sefo", abIsSefo(absyn));
 	testIntEqual("Error Count", nErrors, comsgErrorCount());
+
+	return (Sefo) absyn;
 }
 
 void
