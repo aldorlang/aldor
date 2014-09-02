@@ -650,15 +650,22 @@ tibup0ApplyJoin(Stab stab, AbSyn absyn, TForm type,
  */
 
 local void
+tibup0ApplyFTypeTPoss(Stab stab, AbSyn absyn, TForm type,
+		      TPoss opTypes, Length argc, AbSynGetter argf,
+		      TPoss *popTypes, TPoss *pretTypes);
+
+local void
+tibup0ApplyFTypeUTPoss(Stab stab, AbSyn absyn, TForm type,
+		      TPoss opTypes, Length argc, AbSynGetter argf,
+		      TPoss *popTypes, TPoss *pretTypes);
+
+local void
 tibup0ApplyFType(Stab stab, AbSyn absyn, TForm type,
 		 AbSyn op, Length argc, AbSynGetter argf)
 {
-	SatMask		mask = tfSatBupMask(), result;
-	Length		i;
-	TPossIterator	it;
-	TPoss		opTypes  = abReferTPoss(op);
-	TPoss		nopTypes = tpossEmpty();
-	TPoss		retTypes = tpossEmpty();
+	Length i;
+	TPoss  opTypes  = abReferTPoss(op);
+	TPoss  nopTypes, retTypes;
 
 	if (abIsTheId(op, ssymJoin) && tpossIsUnique(opTypes) &&
 	    tfSatisfies(tfMapRet(tpossUnique(opTypes)), tfCategory)) {
@@ -671,28 +678,13 @@ tibup0ApplyFType(Stab stab, AbSyn absyn, TForm type,
 		tibup(stab, argf(absyn, i), tfUnknown);
 
 	/* Filter opTypes based on the argument and return types. */
-	for (tpossITER(it, opTypes); tpossMORE(it); tpossSTEP(it)) {
-		TForm	opType = tpossELT(it), retType;
-		AbSub	sigma;
-
-		opType = tfDefineeType(opType);
-		if (!tfIsAnyMap(opType)) continue;
-
-		retType = tfMapRet(opType);
-		sigma	= absNew(stab);
-
-		result = tfSatMapArgs(mask, sigma, opType, absyn, argc, argf);
-
-		if (tfSatSucceed(result)) {
-			retType = tformSubst(sigma, retType);
-			result = tfSat(mask, retType, type);
-			if (tfSatSucceed(result)) {
-				nopTypes = tpossAdd1(nopTypes, opType);
-				retTypes = tpossAdd1(retTypes, retType);
-			}
-		}
-
-		absFreeDeeply(sigma);
+	if (!tpossHasAnyUTForm(opTypes)) {
+		tibup0ApplyFTypeTPoss(stab, absyn, type, opTypes, argc, argf,
+				      &nopTypes, &retTypes);
+	}
+	else {
+		tibup0ApplyFTypeUTPoss(stab, absyn, type, opTypes, argc, argf,
+				      &nopTypes, &retTypes);
 	}
 
 	/* If the op and the parts had meaning, then give an error. */
@@ -723,6 +715,82 @@ tibup0ApplyFType(Stab stab, AbSyn absyn, TForm type,
 
 	abResetTPoss(absyn, retTypes);
 	tpossFree(opTypes);
+}
+
+local void
+tibup0ApplyFTypeTPoss(Stab stab, AbSyn absyn, TForm type,
+		      TPoss opTypes, Length argc, AbSynGetter argf,
+		      TPoss *pnopTypes, TPoss *pretTypes)
+{
+	SatMask		mask = tfSatBupMask(), result;
+	TPossIterator	it;
+	TPoss		nopTypes = tpossEmpty();
+	TPoss		retTypes = tpossEmpty();
+
+	for (tpossITER(it, opTypes); tpossMORE(it); tpossSTEP(it)) {
+		TForm	opType = tpossELT(it), retType;
+		AbSub	sigma;
+
+		opType = tfDefineeType(opType);
+		if (!tfIsAnyMap(opType)) continue;
+
+		retType = tfMapRet(opType);
+		sigma	= absNew(stab);
+
+		result = tfSatMapArgs(mask, sigma, opType, absyn, argc, argf);
+
+		if (tfSatSucceed(result)) {
+			retType = tformSubst(sigma, retType);
+			result = tfSat(mask, retType, type);
+			if (tfSatSucceed(result)) {
+				nopTypes = tpossAdd1(nopTypes, opType);
+				retTypes = tpossAdd1(retTypes, retType);
+			}
+		}
+
+		absFreeDeeply(sigma);
+	}
+
+	*pnopTypes = nopTypes;
+	*pretTypes = retTypes;
+}
+
+local void
+tibup0ApplyFTypeUTPoss(Stab stab, AbSyn absyn, TForm type,
+		      TPoss opTypes, Length argc, AbSynGetter argf,
+		      TPoss *pnopTypes, TPoss *pretTypes)
+{
+	SatMask		mask = tfSatBupMask(), result;
+	TPossIterator	it;
+	TPoss		nopTypes = tpossEmpty();
+	TPoss		retTypes = tpossEmpty();
+
+	for (tpossITER(it, opTypes); tpossMORE(it); tpossSTEP(it)) {
+		TForm	opType = tpossELT(it), retType;
+		AbSub	sigma;
+
+		opType = tfDefineeType(opType);
+		if (!tfIsAnyMap(opType)) continue;
+
+		retType = tfMapRet(opType);
+		sigma	= absNew(stab);
+
+		result = tfSatMapArgs(mask, sigma, opType, absyn, argc, argf);
+
+		if (tfSatSucceed(result)) {
+			retType = tformSubst(sigma, retType);
+			result = tfSat(mask, retType, type);
+			if (tfSatSucceed(result)) {
+				nopTypes = tpossAdd1(nopTypes, opType);
+				retTypes = tpossAdd1(retTypes, retType);
+			}
+		}
+
+		absFreeDeeply(sigma);
+	}
+
+	*pnopTypes = nopTypes;
+	*pretTypes = retTypes;
 }
 
 /****************************************************************************
