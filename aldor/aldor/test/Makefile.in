@@ -34,7 +34,7 @@ fmtests := rectest enumtest clos strtable1
 ctests  := rectest enumtest
 otests  := enumtest
 xtests := enumtest
-jruntests := jimport
+@BUILD_JAVA_TRUE@jruntests := jimport
 
 x_extra := rtexns
 
