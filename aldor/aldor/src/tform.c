@@ -4123,6 +4123,32 @@ tfGetCatExportsFrMeet(TForm cat)
  *
  *****************************************************************************/
 
+Bool
+tfHasCatExport(TForm tf, Symbol sym)
+{
+	SymeList sl;
+
+	for (sl = tfGetCatExports(tf); sl; sl = cdr(sl)) {
+		Syme syme = car(sl);
+		if (symeId(syme) == sym)
+			return true;
+	}
+	return false;
+}
+
+Bool
+tfHasDomExport(TForm tf, Symbol sym)
+{
+	SymeList sl;
+
+	for (sl = tfGetDomExports(tf); sl; sl = cdr(sl)) {
+		Syme syme = car(sl);
+		if (symeId(syme) == sym)
+			return true;
+	}
+	return false;
+}
+
 Syme
 tfHasDomExportMod(TForm tf, SymeList mods, Symbol sym, TForm type)
 {
@@ -4149,6 +4175,21 @@ tfHasDomImport(TForm tf, Symbol sym, TForm type)
 	}
 	return NULL;
 }
+
+SymeList
+tfGetDomImportsById(TForm tf, Symbol sym)
+{
+	SymeList	sl;
+	SymeList	sel = listNil(Syme);
+
+	for (sl = tfGetDomImports(tf); sl; sl = cdr(sl)) {
+		Syme syme = car(sl);
+		if (symeId(syme) == sym)
+			sel = listCons(Syme)(syme, sel);
+	}
+	return listNReverse(Syme)(sel);
+}
+
 
 local Syme
 tfGetBuiltinSyme(TForm tf, Symbol sym)

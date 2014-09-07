@@ -352,6 +352,8 @@ extern Bool		tfHasCatExports		(TForm);
 extern Bool		tfHasThdExports		(TForm);
 extern Bool		tfHasCatExportsFrWith	(Sefo);
 
+extern Bool		tfHasCatExport		(TForm, Symbol);
+
 extern TForm		tfCatExportsPending	(TForm);
 extern TForm		tfThdExportsPending	(TForm);
 
@@ -368,9 +370,11 @@ extern TQualList	tfGetThdCascades	(TForm);
 
 extern SymeList		tfStabGetDomImports	(Stab, TForm);
 extern SymeList		tfGetDomImports		(TForm);
+extern SymeList		tfGetDomImportsById	(TForm, Symbol);
 extern SymeList		tfGetCatImportsFrWith	(Sefo, SymeList);
 extern Syme		tfHasDomExportMod	(TForm,SymeList,Symbol,TForm);
 extern Syme		tfHasDomImport		(TForm, Symbol, TForm);
+extern Bool		tfHasDomExport		(TForm, Symbol);
 
 extern Bool		tfTagHasSymes		(TFormTag);
 extern Bool		tfSymeInducesDependency (Syme, TForm);
