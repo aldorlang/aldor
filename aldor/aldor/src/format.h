@@ -59,5 +59,5 @@ extern void   fmtRegisterI(const char *name, IFormatFn fn);
 extern void   fmtRegisterFull(const char *name, PFormatFn fn, Bool nullOk);
 extern Format fmtMatch(const char *fmtTxt);
 extern void   fmtUnregister(Format format);
-extern void   fmtUnregisterAll();
+extern void   fmtUnregisterAll(void);
 #endif

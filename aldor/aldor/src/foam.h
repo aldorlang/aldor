@@ -644,7 +644,7 @@ struct foamRRec {
 		(AInt)(ib), (AInt)0, (AInt)0, (AInt)0 , p, l, fl, le, b)
 #endif
 
-extern Foam foamNewProgEmpty();
+extern Foam foamNewProgEmpty(void);
 
 struct foamProg {
 	struct foamHdr          hdr;
