@@ -402,6 +402,8 @@ cstrParseCommaified(char *opts, int *pargc, char ***pargv)
 
 static int (*cfgCondFn)(String);
 
+local void cfgFreeConfPath(void);
+
 void
 cfgSetCondFunc(int (*check)(String))
 {
@@ -469,7 +471,8 @@ void cfgSetConfPath(char *path)
 	}
 }
 
-void cfgFreeConfPath()
+local void
+cfgFreeConfPath(void)
 {
 	if (cfgPath) strFree(car(cfgPath));
 	listFree(String)(cfgPath);
