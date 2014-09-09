@@ -2,27 +2,31 @@ SUBDIRS = al
 
 aldorsrcdir = $(top_srcdir)/aldor/src
 
+runtime_CFLAGS = -I $(aldorsrcdir)
+
 runtime_ALDOR = al/runtime.c
 runtime_CSOURCES =			\
-	$(aldorsrcdir)/btree.c		\
-	$(aldorsrcdir)/compopt.c	\
-	$(aldorsrcdir)/dword.c		\
-	$(aldorsrcdir)/foam_c.c		\
-	$(aldorsrcdir)/foam_cfp.c	\
-	$(aldorsrcdir)/foamopt.c	\
-	$(aldorsrcdir)/opsys.c		\
-	$(aldorsrcdir)/output.c		\
-	$(aldorsrcdir)/stdc.c		\
-	$(aldorsrcdir)/store.c		\
-	$(aldorsrcdir)/table.c		\
-	$(aldorsrcdir)/timer.c		\
-	$(aldorsrcdir)/util.c		\
-	$(aldorsrcdir)/xfloat.c  	
+	btree.c		\
+	compopt.c	\
+	dword.c		\
+	foam_c.c		\
+	foam_cfp.c	\
+	foamopt.c	\
+	opsys.c		\
+	output.c		\
+	stdc.c		\
+	store.c		\
+	table.c		\
+	timer.c		\
+	util.c		\
+	xfloat.c
 
 AM_CFLAGS = -I$(aldorsrcdir) -DFOAM_RTS
 
 lib_LIBRARIES =
 
+$(runtime_CSOURCES): %.c: $(aldorsrcdir)/%.c
+	cp $< $@
 
 #############################################################################
 # :: Built-in bigint
@@ -36,6 +40,11 @@ libfoam_a_SOURCES =			\
 	$(runtime_ALDOR)		\
 	$(runtime_CSOURCES)
 
+bigint.c: $(aldorsrcdir)/bigint.c
+	cp $< $@
+
+foam_i.c: $(aldorsrcdir)/foam_i.c
+	cp $< $@
 
 #############################################################################
 # :: GMP for bigint
