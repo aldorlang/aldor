@@ -16,5 +16,6 @@ subdir		:= $(subst $(abs_top_builddir)/,,$(abs_builddir))
 
 # Build starts here
 library = sit_modpoge sit_zcrtla 
+sit_modpoge.ao: $(srcdir)/sit_halfge.as
 
 include $(abs_top_srcdir)/lib/algebra/src/common.mk
