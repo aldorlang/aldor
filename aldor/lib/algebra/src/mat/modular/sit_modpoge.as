@@ -5,6 +5,7 @@
 -- Copyright (c) Swiss Federal Polytechnic Institute Zurich, 1996
 -----------------------------------------------------------------------------
 #include "algebra"
+#include "aldorio"
 
 #if ALDOC
 \thistype{ModulopGaussElimination}
@@ -631,10 +632,39 @@ local bug():() == {
 	assertEquals(3, numberOfRows K);
 	assertEquals(1, numberOfColumns K);
 	assertEquals(1, K(1,1));
-	assertEquals(0, K(1,2));
-	assertEquals(0, K(1,3));
+	assertEquals(0, K(2,1));
+	assertEquals(0, K(3,1));
 }
 
 bug();
+
+local test(r: Z, c: Z, p: I): () == {
+        import from Assert MachineInteger;
+	Fp ==> SmallPrimeField p;
+        import from Assert Fp;
+	import from Vector Fp;
+	import from Fp, LinearAlgebra(Fp, M Fp);
+	for j in 1..10@Z repeat {
+		m: M Fp := random(5,5);
+		K := kernel m;
+                (nrk, nck) := dimensions K;
+	        for i in 1..10@Z repeat {
+			v: M Fp := random(nck, 1);
+			assertTrue(zero?(m * (K * v)));
+	        }
+       }
+}
+
+tt(): () == {
+      import from AldorInteger;
+      test(5,5,3::I);
+      test(10,10,3::I);
+      test(7,8,3::I);
+
+      test(5,5,19::I);
+      test(10,10,19::I);
+      test(7,8,19::I)
+}
+tt();
 
 #endif

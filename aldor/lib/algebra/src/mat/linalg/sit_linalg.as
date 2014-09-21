@@ -5,6 +5,7 @@
 -----------------------------------------------------------------------------
 
 #include "algebra"
+#include "aldorio"
 
 macro {
 	B == Boolean;
@@ -368,6 +369,9 @@ and generate the full kernel if $ker?$ is \true.}
 			import from I;
 			(ra, ca) := dimensions a;
 			(rb, cb) := dimensions b;
+			ra ~= rb => {
+			    error("Number of rows must match");
+			}
 			assert(ra = rb);
 			if zero? ra then { a := zero(1, ca); b := zero(1, cb) }
 			laring? => lasolve(a, b);
