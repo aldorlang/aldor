@@ -1443,6 +1443,7 @@ local void gj0SeqGenDefault(GjSeqStore store, Foam foam);
 local void gj0SeqSelectMulti(GjSeqStore store, Foam foam);
 local void gj0SeqIf(GjSeqStore store, Foam foam);
 local void gj0SeqBCall(GjSeqStore store, Foam foam);
+local void gj0SeqValues(GjSeqStore store, Foam foam);
 
 local JavaCode gj0SeqSwitchId();
 
@@ -1534,6 +1535,9 @@ gj0SeqGen(GjSeqStore seqs, Foam foam)
 		break;
 	case FOAM_Cast:
 		gj0SeqGen(seqs, foam->foamCast.expr);
+		break;
+	case FOAM_Values:
+		gj0SeqValues(seqs, foam);
 		break;
 	default:
 		gj0SeqGenDefault(seqs, foam);
@@ -1654,6 +1658,17 @@ gj0SeqBCall(GjSeqStore seqs, Foam foam)
 	jc = jcStatement(gj0Gen(foam));
 	
 	gj0SeqStoreAddHalt(seqs, jc);
+}
+
+local void
+gj0SeqValues(GjSeqStore store, Foam foam)
+{
+	int i;
+	for (i=0; i < foamArgc(foam); i++) {
+		FoamTag tag = foamTag(foam->foamValues.argv[i]);
+		if (tag != FOAM_Loc && tag != FOAM_Lex)
+			bug("Odd foam found");
+	}
 }
 
 local void
