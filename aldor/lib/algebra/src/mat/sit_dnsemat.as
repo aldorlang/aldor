@@ -7,6 +7,7 @@
 -----------------------------------------------------------------------------
 
 #include "algebra"
+#include "aldorio"
 
 macro {
 	I == MachineInteger;
@@ -532,6 +533,25 @@ macro {
 	M == DenseMatrix Z;
 }
 
+local testConstruction(): () == {
+    import from Assert Integer;
+    import from Assert MachineInteger;
+    import from MachineInteger;
+    import from Z, V;
+    m: M := [[1,2,3]];
+    (nr, nc) := dimensions m;
+    stdout << "Rows: " << nr << " Cols: " << nc << " --> " << m << newline;
+--    assertEquals(1, nr);
+--    assertEquals(3, nc);
+
+    m := [[1,2,3],[4,5,6]];
+    (nr, nc) := dimensions m;
+    stdout << "Rows: " << nr << " Cols: " << nc << " --> " << m << newline;
+--    assertEquals(2, nr);
+--    assertEquals(3, nc);
+
+}
+
 local basic():Boolean == {
 	import from Z, V, M, MachineInteger;
 
@@ -557,6 +577,8 @@ local kernel():Boolean == {
 	(numberOfColumns a - r) ~= numberOfColumns ns => false;
 	r = 2 and zero?(a * ns);
 }
+
+testConstruction();
 
 stdout << "Testing sit__dnsemat..." << endnl;
 aldorTest("basic operations", basic);

@@ -126,6 +126,7 @@
 		d:Z := 1;
 		st:A := new(n, next ca);
 		r:Z := 0;
+		r1 := 0;
 		ca1 := prev ca; cb1 := prev cb;
 		n1 := prev n; p1 := prev p;
 		loops:Z := 0;
