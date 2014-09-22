@@ -34,10 +34,10 @@ $(runtime_CSOURCES): %.c: $(aldorsrcdir)/%.c
 
 lib_LIBRARIES += libfoam.a
 
-libfoam_a_SOURCES =			\
-	$(aldorsrcdir)/bigint.c		\
-	$(aldorsrcdir)/foam_i.c		\
-	$(runtime_ALDOR)		\
+libfoam_a_SOURCES =		\
+	bigint.c		\
+	foam_i.c		\
+	$(runtime_ALDOR)	\
 	$(runtime_CSOURCES)
 
 bigint.c: $(aldorsrcdir)/bigint.c
@@ -57,7 +57,7 @@ endif
 # TODO: get rid of bigint.c in here
 libfoam_gmp_a_SOURCES =			\
 	../../contrib/gmp/fm_gmp.c	\
-	$(aldorsrcdir)/bigint.c		\
+	bigint.c		\
 	$(runtime_ALDOR)		\
 	$(runtime_CSOURCES)
 
