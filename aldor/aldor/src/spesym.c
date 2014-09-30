@@ -167,64 +167,64 @@ ssymInit(void)
 	/*
 	 * Symbols for Aldor types we care about.
 	 */
-	ssymBoolean      = symIntern("Boolean");
-	ssymCategory     = symIntern("Category");
-	ssymCross        = symIntern("Cross");
-	ssymDelayed      = symIntern("Delayed");
-	ssymEnum         = symIntern("Enumeration");
-	ssymExit         = symIntern("Exit");
-	ssymGenerator    = symIntern("Generator");
-	ssymJoin         = symIntern("Join");
-	ssymLiteral      = symIntern("Literal");
+	ssymBoolean       = symIntern("Boolean");
+	ssymCategory      = symIntern("Category");
+	ssymCross         = symIntern("Cross");
+	ssymDelayed       = symIntern("Delayed");
+	ssymEnum          = symIntern("Enumeration");
+	ssymExit          = symIntern("Exit");
+	ssymGenerator     = symIntern("Generator");
+	ssymJoin          = symIntern("Join");
+	ssymLiteral       = symIntern("Literal");
 	ssymMachineInteger= symIntern("MachineInteger");
-	ssymMap          = symIntern("Map");
-	ssymMeet         = symIntern("Meet");
-	ssymPackedMap    = symIntern("PackedMap");
-	ssymPointer      = symIntern("Pointer");
-	ssymRaw          = symIntern("Raw");
-	ssymRawRecord    = symIntern("RawRecord");
-	ssymRecord       = symIntern("Record");
-	ssymReference    = symIntern("Ref");
-	ssymSelf         = symIntern("%");
-	ssymSelfSelf     = symIntern("%%");
-	ssymTest         = symIntern("Test");
-	ssymTextWriter   = symIntern("TextWriter");
-	ssymTrailingArray= symIntern("TrailingArray");
-	ssymThird        = symIntern("Third");
-	ssymTuple        = symIntern("Tuple");
-	ssymType         = symIntern("Type");
-	ssymUnion        = symIntern("Union");
-	ssymVariable     = symIntern("?");
+	ssymMap           = symIntern("Map");
+	ssymMeet          = symIntern("Meet");
+	ssymPackedMap     = symIntern("PackedMap");
+	ssymPointer       = symIntern("Pointer");
+	ssymRaw           = symIntern("Raw");
+	ssymRawRecord     = symIntern("RawRecord");
+	ssymRecord        = symIntern("Record");
+	ssymReference     = symIntern("Ref");
+	ssymSelf          = symIntern("%");
+	ssymSelfSelf      = symIntern("%%");
+	ssymTest          = symIntern("Test");
+	ssymTextWriter    = symIntern("TextWriter");
+	ssymTrailingArray = symIntern("TrailingArray");
+	ssymThird         = symIntern("Third");
+	ssymTuple         = symIntern("Tuple");
+	ssymType          = symIntern("Type");
+	ssymUnion         = symIntern("Union");
+	ssymVariable      = symIntern("?");
 
 	/*
 	 * Symbols for operation names we care about.
 	 */
-	ssymArrow        = symIntern("->");
-	ssymApply	 = symIntern("apply");
-	ssymBrace	 = symIntern("brace");
-	ssymBracket	 = symIntern("bracket");
-	ssymCoerce	 = symIntern("coerce");
-	ssymEquals	 = symIntern("=");
-	ssymNotEquals	 = symIntern("~=");
-	ssymPackedArrow  = symIntern("->*");
-	ssymPrint	 = symIntern("<<");
-	ssymSetBang	 = symIntern("set!");
-	ssymTheCase	 = symIntern("case");
-	ssymTheDispose   = symIntern("dispose!");
-	ssymTheExplode   = symIntern("explode");
-	ssymTheFloat	 = symIntern("float");
-	ssymTheInteger	 = symIntern("integer");
-	ssymTheJava	 = symIntern("java");
-	ssymTheJavaDecoder = symIntern("avaj");
-	ssymTheGenerator = symIntern("generator");
-	ssymTheNew	 = symIntern("new");
-	ssymTheRawRecord = symIntern("rawrecord");
-	ssymTheRecord    = symIntern("record");
-	ssymTheStdout	 = symIntern("stdout");
-	ssymTheString	 = symIntern("string");
-	ssymTheTest	 = symIntern("test");
-	ssymTheTrailingArray = symIntern("trailing");
-	ssymTheUnion     = symIntern("union");
+	ssymArrow         = symIntern("->");
+	ssymApply	  = symIntern("apply");
+	ssymBrace	  = symIntern("brace");
+	ssymBracket	  = symIntern("bracket");
+	ssymCoerce	  = symIntern("coerce");
+	ssymEquals	  = symIntern("=");
+	ssymNotEquals	  = symIntern("~=");
+	ssymPackedArrow   = symIntern("->*");
+	ssymPrint	  = symIntern("<<");
+	ssymSetBang	  = symIntern("set!");
+	ssymTheCase	  = symIntern("case");
+	ssymTheDispose    = symIntern("dispose!");
+	ssymTheExplode    = symIntern("explode");
+	ssymTheFloat	  = symIntern("float");
+	ssymTheInteger	  = symIntern("integer");
+	ssymTheJava	  = symIntern("java");
+	ssymTheJavaDecoder= symIntern("avaj");
+	ssymTheGenerator  = symIntern("generator");
+	ssymTheNew	  = symIntern("new");
+	ssymTheRawRecord  = symIntern("rawrecord");
+	ssymTheRecord     = symIntern("record");
+	ssymTheStdout	  = symIntern("stdout");
+	ssymTheString	  = symIntern("string");
+	ssymTheTest	  = symIntern("test");
+	ssymTheTrailingArray= symIntern("trailing");
+	ssymTheUnion      = symIntern("union");
 
 	/*
 	 * Symbols naming function interfaces.
