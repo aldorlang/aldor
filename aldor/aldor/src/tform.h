@@ -583,6 +583,7 @@ extern Length		tfMapArgc		(TForm);
 extern TForm		tfMapArgN		(TForm, Length);
 extern TForm		tfMapMultiArgN		(TForm, Length, Length);
 extern AbEmbed		tfMapMultiArgEmbed	(TForm, Length);
+extern SymeList		tfMapArgSymes		(TForm);
 
 #define			tfMapRet(tf)		tfFollowArg(tf, 1)
 extern Length		tfMapRetc		(TForm);

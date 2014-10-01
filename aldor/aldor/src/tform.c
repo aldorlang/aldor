@@ -6310,6 +6310,26 @@ tfMapArgN(TForm tf, Length n)
 	return tfAsMultiArgN(tfMapArg(tf), tfMapArgc(tf), n);
 }
 
+SymeList
+tfMapArgSymes(TForm tf)
+{
+	SymeList sl = listNil(Syme);
+	int i;
+
+	tfFollow(tf);
+	assert(tfIsMap(tf));
+
+	for (i=0; i<tfMapArgc(tf); i++) {
+		TForm argTf = tfMapArgN(tf, i);
+		if (tfIsDeclare(argTf))
+			sl = listCons(Syme)(tfDeclareSyme(argTf), sl);
+		else
+			sl = listCons(Syme)(NULL, sl);
+	}
+	return listNReverse(Syme)(sl);
+}
+
+
 /* Return the type of the nth argument value of a map of type tf
  * in an application with argc arguments.
  */
