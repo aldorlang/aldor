@@ -22,6 +22,7 @@
 #include "tconst.h"
 #include "tposs.h"
 #include "tfsat.h"
+#include "utype.h"
 
 /*
  *   Each node is given a set of possible meanings.
@@ -48,18 +49,18 @@ TPoss
 tpossEmpty(void)
 {
 	TPoss tp  = tpossAlloc();
-	tp->possl = listNil(TForm);
+	tp->possl = listNil(UTForm);
 	tp->possc = 0;
 	tp->refc  = 1;
 	return tp;
 }
 
 local void
-tpossCons(TPoss tp, TForm t)
+tpossCons(TPoss tp, UTForm t)
 {
 	assert(tp);
-	t = tfFollowOnly(t);
-	tp->possl = listCons(TForm)(t, tp->possl);
+	t = utformFollowOnly(t);
+	tp->possl = listCons(UTForm)(t, tp->possl);
 	tp->possc += 1;
 }
 
@@ -67,8 +68,23 @@ TPoss
 tpossFrTheList(TFormList l)
 {
 	TPoss tp  = tpossAlloc();
-	tp->possl = l;
 	tp->possc = listLength(TForm)(l);
+	tp->refc  = 1;
+	tp->possl = listNil(UTForm);
+	while (l != listNil(TForm)) {
+		tp->possl = listCons(UTForm)(utformNewConstant(car(l)), tp->possl);
+		l = cdr(l);
+	}
+	listNReverse(UTForm)(tp->possl);
+	return tp;
+}
+
+TPoss
+tpossFrTheUTFormList(UTFormList l)
+{
+	TPoss tp  = tpossAlloc();
+	tp->possl = l;
+	tp->possc = listLength(UTForm)(l);
 	tp->refc  = 1;
 	return tp;
 }
@@ -77,7 +93,7 @@ TPoss
 tpossSingleton(TForm t)
 {
 	TPoss tp  = tpossEmpty();
-	tpossCons(tp, t);
+	tpossCons(tp, utformNewConstant(t));
 	return tp;
 }
 
@@ -122,7 +138,7 @@ local void
 tposs0Multi(TPoss tp,Length k,TFormList tl,Length n,Pointer v,TPossGetter get)
 {
 	if (k == 0)
-		tpossCons(tp, tfMultiFrList(tl));
+		tpossCons(tp, utformNewConstant(tfMultiFrList(tl)));
 
 	else {
 		TPoss		tpk = get(v, k-1);
@@ -155,7 +171,7 @@ tpossAdd1(TPoss tp, TForm t)
 {
 	t = tfFollowOnly(t);
 	if (! tpossHas(tp, t))
-		tpossCons(tp, t);
+		tpossCons(tp, utformNewConstant(t));
 	return tp;
 }
 
@@ -176,7 +192,7 @@ tpossCopy(TPoss tp)
 	       	return NULL;
 
 	np = tpossAlloc();
-	np->possl = listCopy(TForm)(tp->possl);
+	np->possl = listCopy(UTForm)(tp->possl);
 	np->possc = tp->possc;
 	np->refc  = 1;
 	return np;
@@ -200,7 +216,7 @@ tpossFree(TPoss tp)
 	if (--tp->refc > 0) return;
 if (!debugflag)
 {
-	listFree(TForm)(tp->possl);
+	listFree(UTForm)(tp->possl);
 	stoFree((Pointer) tp);
 }
 debugflag = 0;
@@ -222,8 +238,9 @@ tpossPrint(FILE *fout, TPoss tp)
 		case tuniErrorTPossVal:
 			return fprintf(fout, "(error)");
 		default:
-			return listPrint(TForm)(fout, tp->possl, tfPrint);
+			return listPrint(UTForm)(fout, tp->possl, utformPrint);
 	}
+	return 0;
 }
 
 int
@@ -280,10 +297,10 @@ tpossIntersect(TPoss tp1, TPoss tp2)
 	for (; l1; l1 = cdr(l1)) {
 		car(l1) = tfFollowOnly(car(l1));
 		if (tpossHas(tp2, car(l1)))
-			l = listCons(TForm)(car(l1), l);
+			l = listCons(UTForm)(car(l1), l);
 	}
 
-	l = listNReverse(TForm)(l);
+	l = listNReverse(UTForm)(l);
 	return tpossFrTheList(l);
 }
 #endif
@@ -292,36 +309,36 @@ tpossIntersect(TPoss tp1, TPoss tp2)
 TPoss
 tpossIntersect(TPoss S, TPoss T)
 {
-	TFormList LS, LT, l = 0;
+	UTFormList LS, LT, l = 0;
 
 	if (S == NULL || T == NULL)
 		return NULL;
 
 	/* If T is free of duplicates, then the result will also be. */
 	for (LT = T->possl; LT; LT = cdr(LT)) {
-		car(LT) = tfFollowOnly(car(LT));
+		car(LT) = utformFollowOnly(car(LT));
 		for (LS = S->possl; LS; LS = cdr(LS)) {
-			car(LS) = tfFollowOnly(car(LS));
-			if (tfSatisfies(car(LS), car(LT))) {
-				l = listCons(TForm)(car(LT), l);
+			car(LS) = utformFollowOnly(car(LS));
+			if (utfSatisfies(car(LS), car(LT))) {
+				l = listCons(UTForm)(car(LT), l);
 				break;
 			}
-			if (tfSatisfies(car(LT), car(LS))) {
-				if (!listMember(TForm)(l, car(LS), tfEqual))
-					l = listCons(TForm)(car(LS), l);
+			if (utfSatisfies(car(LT), car(LS))) {
+				if (!listMember(UTForm)(l, car(LS), utformEqual))
+					l = listCons(UTForm)(car(LS), l);
 			}
 		}
 	}
 
-	l = listNReverse(TForm)(l);
-	return tpossFrTheList(l);
+	l = listNReverse(UTForm)(l);
+	return tpossFrTheUTFormList(l);
 }
 
 TPoss
 tpossUnion(TPoss tp1, TPoss tp2)
 {
-	TFormList l1;
-	TFormList l; 
+	UTFormList l1;
+	UTFormList l;
 
 	if (tp1 == NULL)
 		return tp2;
@@ -329,34 +346,56 @@ tpossUnion(TPoss tp1, TPoss tp2)
 		return tp1;
 
 	l1 = tp1->possl;
-	l = listReverse(TForm)(tp2->possl);	/* Reversed copy */
+	l = listReverse(UTForm)(tp2->possl);	/* Reversed copy */
 
 	for (; l1; l1 = cdr(l1)) {
-		car(l1) = tfFollowOnly(car(l1));
-		if (!tpossHas(tp2, car(l1)))
-			l = listCons(TForm)(car(l1), l);
+		car(l1) = utformFollowOnly(car(l1));
+		/* const or fail here could be: if only one utf, then keep both
+		 * otherwise utfEquality */
+		if (!tpossHas(tp2, utformConstOrFail(car(l1))))
+			l = listCons(UTForm)(car(l1), l);
 	}
 
-	l = listNReverse(TForm)(l);
-	return tpossFrTheList(l);
+	l = listNReverse(UTForm)(l);
+	return tpossFrTheUTFormList(l);
 }
 
 TForm
 tpossUnique(TPoss tp)
 {
-	car(tp->possl) = tfFollowOnly(car(tp->possl));
+	car(tp->possl) = utformFollowOnly(car(tp->possl));
+	return utformConstOrFail(car(tp->possl));
+}
+
+UTForm
+tpossUniqueUTForm(TPoss tp)
+{
+	car(tp->possl) = utformFollowOnly(car(tp->possl));
 	return car(tp->possl);
 }
 
 Bool
 tpossHas(TPoss tp, TForm t)
 {
+	UTFormList l;
+
 	if (tp == NULL)
 		return false;
-	if (listMemq(TForm)(tp->possl, t))
-		return true;
+	l = tp->possl;
+	while (l != listNil(UTForm)) {
+		if (t == utformConstOrFail(car(l)))
+			return true;
+		l = cdr(l);
+	}
 
-	return listMember(TForm)(tp->possl, t, tfEqual);
+	l = tp->possl;
+	while (l != listNil(UTForm)) {
+		if (tfEqual(t, utformConstOrFail(car(l))))
+			return true;
+		l = cdr(l);
+	}
+
+	return false;
 }
 
 local Bool
@@ -387,7 +426,7 @@ tpossIsPending(TPoss tp, TForm t)
 Bool
 tpossHasSatisfier(TPoss tp, TForm t)
 {
-	TFormList l;
+	UTFormList l;
 
 	if (tp == NULL)
 		return false;
@@ -396,7 +435,7 @@ tpossHasSatisfier(TPoss tp, TForm t)
 		return true;
 
 	for (l = tp->possl; l; l = cdr(l))
-		if (tfSatValues(car(l), t))
+		if (tfSatValues(utformConstOrFail(car(l)), t))
 			return true;
 
 	return false;
@@ -405,7 +444,7 @@ tpossHasSatisfier(TPoss tp, TForm t)
 TForm
 tpossSelectSatisfier(TPoss tp, TForm t)
 {
-	TFormList l;
+	UTFormList l;
 	TForm	  r = 0;
 
 	if (tp == NULL)
@@ -413,46 +452,47 @@ tpossSelectSatisfier(TPoss tp, TForm t)
 
 	for (l = tp->possl; l; l = cdr(l)) {
 /*		car(l) = tfFollowOnly(car(l));	    */
-		if (tfSatValues(car(l), t)) {
+		if (tfSatValues(utformConstOrFail(car(l)), t)) {
 			if (r) return 0;
-			r = car(l);
+			r = utformConstOrFail(car(l));
 		}
 	}
 	return r;
 }
 
-local TForm
-tpossJoin(TForm S, TForm T)
+local UTForm
+tpossJoin(UTForm S, UTForm T)
 {
-	return tfIsThird(S) ? S : T;
+	return tfIsThird(utformConstOrFail(S)) ? S : T;
 }
 
 TPoss
 tpossSatisfies(TPoss S, TPoss T)
 {
-	TFormList LS, LT, l = 0;
+	UTFormList LS, LT, l = 0;
 
 	if (S == NULL || T == NULL) 
 		return NULL;
 
 	/* If T is free of duplicates, then the result will also be. */
 	for (LT = T->possl; LT; LT = cdr(LT)) {
-		car(LT) = tfFollowOnly(car(LT));
+		car(LT) = utformFollowOnly(car(LT));
 		for (LS = S->possl; LS; LS = cdr(LS)) {
-			TForm	s = car(LS), t = car(LT);
-			if (tfSatBit(tfSatBupMask(), s, t))
-				l = listCons(TForm)(tpossJoin(s, t), l);
+			TForm	stf = utformConstOrFail(car(LS));
+			TForm   ttf = utformConstOrFail(car(LT));
+			if (tfSatBit(tfSatBupMask(), stf, ttf))
+				l = listCons(UTForm)(tpossJoin(car(LS), car(LT)), l);
 		}
 	}
 
-	l = listNReverse(TForm)(l);
-	return tpossFrTheList(l);
+	l = listNReverse(UTForm)(l);
+	return tpossFrTheUTFormList(l);
 }
 
 TPoss
 tpossSatisfiesType(TPoss S, TForm T)
 {
-	TFormList LS, l = 0;
+	UTFormList LS, l = 0;
 
 	if (S == NULL)
 		return NULL;
@@ -463,11 +503,11 @@ tpossSatisfiesType(TPoss S, TForm T)
 		return tpossRefer(S);
 
 	for (LS = S->possl; LS; LS = cdr(LS))
-		if (tfSatisfies(car(LS), T))
-			l = listCons(TForm)(car(LS), l);
+		if (tfSatisfies(utformConstOrFail(car(LS)), T))
+			l = listCons(UTForm)(car(LS), l);
 
-	l = listNReverse(TForm)(l);
-	return tpossFrTheList(l);
+	l = listNReverse(UTForm)(l);
+	return tpossFrTheUTFormList(l);
 }
 
 Bool
@@ -479,7 +519,9 @@ tpossHasMapType(TPoss tp)
 		return false;
 
 	for (tpossITER(tit, tp); tpossMORE(tit); tpossSTEP(tit)) {
-		TForm tf = tpossELT(tit);
+		UTForm utf = tpossUELT(tit);
+		TForm tf = utformTForm(utf);
+		/* Should also accept 'Ax, x' here */
 		tf = tfDefineeType(tf);
 		if (tfIsAnyMap(tf) || tfIsMapSyntax(tf))
 			return true;

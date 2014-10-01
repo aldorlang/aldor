@@ -1,14 +1,18 @@
 #include "utype.h"
 #include "sefo.h"
 #include "tform.h"
+#include "tfsat.h"
 #include "absyn.h"
 #include "debug.h"
 #include "store.h"
 #include "format.h"
 #include "ablogic.h"
+#include "util.h"
 
 Bool utypeDebug = false;
 #define utypeDEBUG			DEBUG_IF(utype)		afprintf
+
+CREATE_LIST(UTForm);
 
 /*
  import from List(?T: with);
@@ -41,13 +45,101 @@ Bool utypeDebug = false;
 */
 
 
-static struct _UTypeResult empty = { listNil(Syme), listNil(Sefo) };
+static struct utypeResult empty = { listNil(Syme), listNil(Sefo) };
 
 /* Local */
 local UTypeResult utypeResultMerge(UTypeResult res1, UTypeResult res2);
 local UTypeResult utypeResultExtend(UTypeResult result, Syme symeToAdd, Sefo sefoToAdd);
 local UTypeResult utypeUnifySefo(UType ut1, UType ut2, Sefo sefo1, Sefo sefo2);
 local UTypeResult utypeUnifyId(UType ut1, UType ut2, Syme syme1, Sefo sefo2);
+
+UTForm
+utformNew(SymeList freevars, TForm tform)
+{
+	UTForm utform = (UTForm) stoAlloc(OB_Other, sizeof(*utform));
+	utform->tf = tform;
+	utform->vars = freevars;
+	utform->typeInfo = ablogFalse();
+	return utform;
+}
+
+void
+utformFree(UTForm utform)
+{
+	tfFree(utform->tf);
+	listFree(Syme)(utform->vars);
+	ablogFree(utform->typeInfo);
+}
+
+TForm
+utformConstOrFail(UTForm utform)
+{
+	if (utfIsConstant(utform))
+		return utform->tf;
+	else
+		bug("Expected a constant type form here");
+	return 0;
+}
+
+UTForm
+utformNewConstant(TForm tf)
+{
+	return utformNew(listNil(Syme), tf);
+}
+
+TForm
+utformTForm(UTForm utf)
+{
+	return utf->tf;
+}
+
+UTForm
+utformFollowOnly(UTForm utf)
+{
+	TForm tf = utf->tf;
+	tf = tfFollowOnly(tf);
+	if (tf != utf->tf)
+		return utformNew(listCopy(Syme)(utf->vars), tf);
+	return utf;
+}
+
+Bool
+utfIsUnknown(UTForm utf)
+{
+	return tfIsUnknown(utf->tf);
+}
+
+Bool
+utfIsConstant(UTForm utf)
+{
+	return utf->vars == listNil(Syme);
+}
+
+SymeList
+utformVars(UTForm utf)
+{
+	return utf->vars;
+}
+
+int
+utformPrint(FILE *file, UTForm utf)
+{
+	return tfPrint(file, utformConstOrFail(utf));
+}
+
+Bool
+utfSatisfies(UTForm utfS, UTForm utfT)
+{
+	return tfSatisfies(utformConstOrFail(utfS), utformConstOrFail(utfT));
+}
+
+Bool
+utformEqual(UTForm utf1, UTForm utf2)
+{
+	return tfEqual(utformConstOrFail(utf1),
+		       utformConstOrFail(utf2));
+}
+
 
 UType
 utypeNew(SymeList freevars, Sefo sefo)

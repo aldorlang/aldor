@@ -821,6 +821,7 @@ tibupId(Stab stab, AbSyn absyn, TForm type)
 	else if (abSyme(absyn))
 		tp = tpossSingleton(symeType(abSyme(absyn)));
 	else {
+		TPoss utp;
 		/*
 		 * Get all possible types for this symbol which satisfy
 		 * the current context. Unfortunately this includes types
@@ -852,7 +853,7 @@ tibupId(Stab stab, AbSyn absyn, TForm type)
 	 * information from.
 	 */
 
-	if (tpossCount(tp) == 1 && tfIsUnknown(tpossUnique(tp)))
+	if (tpossCount(tp) == 1 && utfIsUnknown(tpossUniqueUTForm(tp)))
 		tp = tpossEmpty();
 	if (tpossCount(tp) == 0)
 		tibup0IdComplain(absyn);

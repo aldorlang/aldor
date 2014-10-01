@@ -7994,6 +7994,24 @@ tfConditionalStab(TForm tf)
 	return tfConditions(tf)->conditions->first->stab;
 }
 
+
+
+/******************************************************************************
+ *
+ * :: Universally qualified types
+ *
+ *****************************************************************************/
+
+TForm
+tfUType(SymeList symes, TForm tf)
+{
+	TForm utf = tfNewNode(TF_UType, 1, tf);
+	utf->symes = symes;
+	return utf;
+
+}
+
+
 /******************************************************************************
  *
  * :: Java
@@ -8138,6 +8156,7 @@ struct tform_info tformInfoTable[] = {
 	{TF_Variable,	"Variable",     "Variable",     0, 1},
 	{TF_With,	"With",         "With",         0, 2},
 	{TF_Except,	"Except",       "Except",       0, 2},
+	{TF_UType,	"UType",        "UType",        0, 1},
 
 	{TF_LIMIT,	"LIMIT",        "LIMIT",        0, 0}
 };

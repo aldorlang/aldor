@@ -66,6 +66,7 @@ enum tformTag {
 	TF_Variable,
 	TF_With,
         TF_Except,
+        TF_UType,
     TF_NODE_LIMIT,
     TF_LIMIT = TF_NODE_LIMIT
 };
@@ -726,6 +727,18 @@ extern TForm		tfSubst			(AbSub, TForm);
 #define			tfSubstArg(tf)		tfFollowArg(tf, 0)
 #define			tfIsSubstOf(tf,fin)	\
 	(tfIsSubst(fin) && tfSubstArg(fin) == (tf))
+
+/*
+ * tfSubst		Type which has a pending substitution.
+ *
+ *	Substitution is allowed to create lazy type forms whose ultimate
+ *	value is determined by performing the substitution specified by
+ *	tf->sigma on tf->argv[0].
+ */
+extern TForm		tfUType			(SymeList, TForm);
+#define			tfIsUType(tf)		(tfTag(tf) == TF_UType)
+#define			tfUTypeArg(tf)		tfFollowArg(tf, 0)
+extern SymeList		tfUTypeVars(TForm);
 
 /*
  * tfSyntax		Type which has not been semantically analyzed.

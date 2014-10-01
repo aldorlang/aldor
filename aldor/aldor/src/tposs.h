@@ -11,9 +11,10 @@
 
 #include "axlobs.h"
 #include "tform.h"
+#include "utype.h"
 
 struct tposs {
-	TFormList	possl;
+	UTFormList	possl;
 	int		possc;
 	int		refc;
 };
@@ -26,6 +27,9 @@ extern TPoss	tpossFrSymes		(SymeList);
 extern TPoss	tpossDeclare		(Syme, TPoss);
 extern TPoss	tpossMulti		(Length, Pointer, TPossGetter);
 extern TPoss	tpossAdd1		(TPoss, TForm);
+extern TPoss    tpossFrTheUTFormList	(UTFormList);
+extern UTForm   tpossUniqueUTForm	(TPoss);
+
 
 extern TPoss	tpossRefer		(TPoss);
 extern TPoss	tpossCopy		(TPoss);
@@ -96,12 +100,13 @@ extern Bool	tpossIsHaving		(TPoss tp, TFormPredicate pred);
  * }
  */
 typedef struct {
-	TFormList	possl;
+	UTFormList	possl;
 } TPossIterator;
 
 #define tpossITER(ip,p)	((ip).possl = (p ? (p)->possl : NULL))
 #define tpossMORE(ip)   ((ip).possl)
 #define tpossSTEP(ip)	((ip).possl = cdr((ip).possl))
-#define tpossELT(ip)	car((ip).possl)
+#define tpossELT(ip)	utformConstOrFail(car((ip).possl))
+#define tpossUELT(ip)	(car((ip).possl))
 
 #endif /* !_TPOSS_H_ */

@@ -766,7 +766,7 @@ tfSatArg(SatMask mask, AbSyn ab, TForm T)
 local SatMask
 tfSatArgPoss(SatMask mask, AbSyn Sab, TForm T)
 {
-	TFormList	l;
+	UTFormList	l;
 	SatMask		result;
 	TPoss S = abTPoss(Sab);
 
@@ -779,7 +779,7 @@ tfSatArgPoss(SatMask mask, AbSyn Sab, TForm T)
 	}
 
 	for (l = S->possl; l; l = cdr(l)) {
-		result = tfSat1(mask, Sab, car(l), T);
+		result = tfSat1(mask, Sab, utformConstOrFail(car(l)), T);
 		if (tfSatSucceed(result))
 			return result;
 	}
