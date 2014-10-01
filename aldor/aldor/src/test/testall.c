@@ -41,6 +41,7 @@ main(int argc, char *argv[])
 	if (testShouldRun("bitv")) bitvTestSuite();
 	if (testShouldRun("list")) listTestSuite();
 	if (testShouldRun("fname")) fnameTest();
+	if (testShouldRun("archive")) archiveTestSuite();
 	if (testShouldRun("foam")) foamTest();
 	if (testShouldRun("format")) formatTest();
 	if (testShouldRun("flog")) flogTest();
