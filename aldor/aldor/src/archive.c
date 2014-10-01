@@ -787,6 +787,15 @@ arEqual(Archive ar1, Archive ar2)
 	return fnameEqual(ar1->name, ar2->name);
 }
 
+local FileName arFileNameFrPath(String name);
+local FileName
+arFileNameFrPath(String name)
+{
+	FileName fname = fnameParse(name);
+	fnameSetType(fname, FTYPE_AR_INT);
+	return fname;
+}
+
 Archive
 arFrString(String name)
 {
@@ -804,7 +813,10 @@ arFrString(String name)
 
 	if ((fn = fileRdFind(libSearchPath(), name, FTYPE_AR_INT)) != 0)
 		ar = arRead(fn);
-	else {  
+	else if (fileIsOpenable((fn = arFileNameFrPath(name)), "r")) {
+		ar = arRead(fn);
+	}
+	else {
 		comsgWarning(NULL, ALDOR_W_CantUseArchive, name);
 		ar = 0;
 	}
