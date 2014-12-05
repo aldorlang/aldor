@@ -3091,6 +3091,7 @@ abGetCatParents(Sefo sefo)
 			if (symeEqual(car(symes), dsyme)) {
 				xsyme = car(symes);
 				symeSetDefault(xsyme);
+				symeSetSrcPos(xsyme, symeSrcPos(dsyme));
 			}
 
 		/* If the default is inherited, use the default syme. */
@@ -4315,6 +4316,7 @@ tfGetCatImportsFrWith(Sefo sefo, SymeList bsymes)
 			if (symeEqual(car(symes), dsyme)) {
 				xsyme = car(symes);
 				symeSetDefault(xsyme);
+				symeSetSrcPos(xsyme, symeSrcPos(dsyme));
 			}
 
 		/* If the default is inherited, use the default syme. */
