@@ -97,6 +97,7 @@ aldor_args = $(aldor_common_args)		\
 	-l$(Libraryname)Lib=$(libraryname)_$*	\
 	-DBuild$(Libraryname)Lib		\
 	$(AXLFLAGS) $($*_AXLFLAGS)		\
+	-Fasy=$*.asy				\
 	-Fao=$*.ao				\
 	$(filter %$*.as,$^)			\
 	$(filter %$*.ax,$^)
