@@ -430,6 +430,7 @@ tibup0Within(Stab stab, AbSyn absyn, SymeList bsymes, Bool doDefault)
 			if (symeEqual(car(symes), dsyme)) {
 				xsyme = car(symes);
 				symeSetDefault(xsyme);
+				symeSetSrcPos(xsyme, symeSrcPos(dsyme));
 			}
 
 		/* If the default is inherited, use the default syme. */
