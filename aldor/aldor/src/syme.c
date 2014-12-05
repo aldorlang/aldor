@@ -654,7 +654,7 @@ symeTransferImplInfo(Syme to, Syme from)
 	/* If no const info, then why bother? */
 	symeSetConstInfo(to, symeConstInfo(from));
 	symeSetConstLib(to, symeConstLib(from));
-
+	symeSetSrcPos(to, symeSrcPos(from));
 	symeDEBUG(dbOut, "Transfer: %d %d %d [%pSyme --> %pSyme]\n",
 		  symeHashNum(from), symeDefnNum(from),
 		  symeConstNum(from), from, to);
@@ -1599,6 +1599,15 @@ symeSExprAList(Syme syme)
 		al = sxiACons("condition", sxi, al);
 	}
 
+	/* 8. Position */
+	if (symeSrcPos(syme) != sposNone) {
+		al = sxiACons("srcpos", sxiFrInteger(sposLine(symeSrcPos(syme))), al);
+	}
+
+	if (symeConstNum(syme) != -1) {
+		al = sxiACons("constNum", sxiFrInteger(sposLine(symeConstNum(syme))), al);
+	}
+
 	return sxNReverse(al);
 }
 
@@ -1854,4 +1863,5 @@ struct symeFieldInfo symeFieldInfo[] = {
 	{ SYFI_ExtraBits,	"extraBits",	(AInt) (int)       0 },
 	{ SYFI_ConditionContext,"conditionContext",(AInt) (AbSyn) NULL },
 	{ SYFI_DefinitionConditions,"definedConditions",(AInt) listNil(AbSyn) },
+	{ SYFI_SrcPos,"srcpos",(SrcPos) listNil(AbSyn) },
 };

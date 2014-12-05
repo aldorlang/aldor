@@ -325,6 +325,7 @@ tisef0Within(Stab stab, Sefo sefo, SymeList bsymes)
 			if (symeEqual(car(symes), dsyme)) {
 				xsyme = car(symes);
 				symeSetDefault(xsyme);
+				symeSetSrcPos(xsyme, symeSrcPos(dsyme));
 			}
 
 		/* If the default is inherited, use the default syme. */

@@ -3551,6 +3551,7 @@ scobindAddMeaning(AbSyn ab, Symbol sym, Stab stab, SymeTag kind,
 	if (scobindNeedsMeaning(ab, tf)) {
 		Syme	syme = scobindDefMeaning(stab,kind,sym,tf,data);
 		scobindSetMeaning(ab, syme);
+		symeSetSrcPos(syme, abPos(ab));
 	}
 }
 
