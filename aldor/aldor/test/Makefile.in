@@ -30,7 +30,7 @@ foamsrcdir = $(abs_top_srcdir)/aldor/lib/libfoam
 foamdir = $(abs_top_builddir)/aldor/lib/libfoam
 
 aptests := exquo
-fmtests := rectest enumtest clos strtable1 
+fmtests := rectest enumtest clos strtable1 simple
 ctests  := rectest enumtest
 otests  := enumtest
 xtests := enumtest
@@ -50,8 +50,8 @@ jimport_opts := -Q3
 
 opt1_AXLFLAGS=-Y$(foamdir)/al -I $(foamsrcdir)/al -lRuntimeLib=foam -Q9
 strtable1_AXLFLAGS=-Y$(foamdir)/al -I $(foamsrcdir)/al -lRuntimeLib=foam -Q9
-
 clos_AXLFLAGS := -Q2
+simple_AXLFLAGS=-Fasy -WD+syme -O
 
 _aptests := $(sort $(aptests))
 _ctests  := $(sort $(ctests)  $(otests))
@@ -97,7 +97,7 @@ $(patsubst %, %.o, $(_otests)): %.o: out/ao/%.ao
 
 $(patsubst %, out/ap/%.ap, $(_aptests)): out/ap/%.ap: $(srcdir)/%.as
 	mkdir -p $$(dirname $@)
-	$(aldorexedir)/aldor $(nfile) -I$(foamsrclibdir)/al \
+	$(DBG) $(aldorexedir)/aldor $(nfile) -I$(foamsrclibdir)/al \
 			      -Fap=$(builddir)/$@ $<
 
 define aldor_args
