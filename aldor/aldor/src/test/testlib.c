@@ -96,7 +96,7 @@ testTrue(String testName, Bool flg)
 	if (flg) {
 		return;
 	}
-	testFail(testName, "failed; expected true, got %d", flg);
+	testFail(testName, "failed; expected true, got %oBool", flg);
 }
 
 void
@@ -106,7 +106,7 @@ testFalse(String testName, Bool flg)
 	if (!flg) {
 		return;
 	}
-	testFail(testName, "failed; expected false, got %d", flg);
+	testFail(testName, "failed; expected false, got %oBool", flg);
 }
 
 void
