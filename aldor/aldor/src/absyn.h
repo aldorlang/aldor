@@ -892,6 +892,8 @@ extern struct ab_info	abInfoTable[];
 
 #define			abIsExit(a)		abHasTag(a, AB_Exit)
 
+#define			abIsDeclare(a)		abHasTag(a, AB_Declare)
+
 #define			abIsDefine(a)		abHasTag(a, AB_Define)
 #define			abDefineDecl(a)		((a)->abDefine.lhs)
 #define			abDefineVal(a)		((a)->abDefine.rhs)
@@ -1129,7 +1131,15 @@ extern AbSyn	abNewDocTextOfList	(TokenList);
 		 * Construct a document text node from a list of doc tokens.
 		 */
 
+/*
+ * :: Wildcards
+ */
+extern Bool	abIsWildcardImport	(AbSyn);
+extern AbSynList abWildcardImports	(AbSyn);
 
+/*
+ * :: Switch for every AbSyn type
+ */
 #define AB_SWITCH(ab, fun, args)				\
 	switch (abTag(ab)) {					\
 	case AB_Id:		fun##Id		args; break;	\

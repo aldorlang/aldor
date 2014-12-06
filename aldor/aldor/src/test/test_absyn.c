@@ -9,6 +9,8 @@ local void testAbSynFormatList();
 local void testAbParse();
 local void testExquo();
 local void testAbContains();
+local void testAbIsWildcard();
+local void testAbWildcards();
 local void testAbSynFormatOne(String name, String expect, AbSyn absyn);
 
 void
@@ -20,6 +22,8 @@ absynTest()
 	TEST(testAbParse);
 	TEST(testExquo);
 	TEST(testAbContains);
+	TEST(testAbIsWildcard);
+	TEST(testAbWildcards);
 	fini();
 }
 
@@ -108,4 +112,57 @@ testAbContains()
 	ab2 = abqParse("A has B");
 	testTrue("1", abContains(ab2, id("A")));
 
+}
+
+local void
+testAbIsWildcard()
+{
+	AbSyn ab;
+	ab = abqScopeBind("F(X: Type)");
+	testTrue("1", abIsWildcardImport(ab));
+
+	ab = abqScopeBind("F()");
+	testFalse("2", abIsWildcardImport(ab));
+
+	ab = abqScopeBind("never");
+	testFalse("3", abIsWildcardImport(ab));
+
+	ab = abqScopeBind("F()");
+	testFalse("4", abIsWildcardImport(ab));
+
+	ab = abqScopeBind("F(String, X: Ring)");
+	testTrue("5", abIsWildcardImport(ab));
+
+	ab = abqScopeBind("F(X: Ring)(Y: Foo X)");
+	testTrue("6", abIsWildcardImport(ab));
+
+	ab = abqScopeBind("F(X: Ring)()");
+	testTrue("7", abIsWildcardImport(ab));
+
+	ab = abqScopeBind("F(ZZZ, K: Ring)");
+	testTrue("8", abIsWildcardImport(ab));
+
+}
+
+local void
+testAbWildcards()
+{
+	AbSynList lst;
+	AbSyn ab;
+	
+	ab = abqScopeBind("F(X: Ring)");
+	lst = abWildcardImports(ab);
+	testIntEqual("1", 1, listLength(AbSyn)(lst));
+
+	ab = abqScopeBind("F(X: Ring, Y: Ring)");
+	lst = abWildcardImports(ab);
+	testIntEqual("2", 2, listLength(AbSyn)(lst));
+
+	ab = abqScopeBind("F(X: Ring)(Y: Ring)");
+	lst = abWildcardImports(ab);
+	testIntEqual("3", 2, listLength(AbSyn)(lst));
+
+	ab = abqScopeBind("F(X: Ring)()");
+	lst = abWildcardImports(ab);
+	testIntEqual("3", 1, listLength(AbSyn)(lst));
 }

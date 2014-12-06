@@ -1999,6 +1999,63 @@ abDefineeTypeOrElse(AbSyn ab, AbSyn failed)
 
 /*****************************************************************************
  *
+ * :: Wildcard imports
+ *
+ * Check should really be 'is the id something like '?x'
+ *
+ ****************************************************************************/
+
+Bool
+abIsWildcardImport(AbSyn ab)
+{
+	int i;
+
+	if (!abIsApply(ab)) {
+		return false;
+	}
+	if (abIsApply(abApplyOp(ab))
+	    && abIsWildcardImport(abApplyOp(ab))) {
+		return true;
+	}
+
+	if (abStab(ab) == NULL) {
+		return false;
+	}
+	if (abIsRecordOrUnion(abApplyOp(ab))) {
+		return false;
+	}
+	if (abApplyArgc(ab) == 0) {
+		return false;
+	}
+	for (i=0; i<abApplyArgc(ab); i++) {
+		if (abIsDeclare(abApplyArg(ab, i))) {
+			return true;
+		}
+	}
+	return false;
+}
+
+AbSynList
+abWildcardImports(AbSyn ab) {
+	AbSynList lst = listNil(AbSyn);
+	int i;
+	assert(abIsWildcardImport(ab));
+
+	for (i=0; i<abApplyArgc(ab); i++) {
+		if (abIsDeclare(abApplyArg(ab, i))) {
+			lst = listCons(AbSyn)(abApplyArg(ab, i), lst);
+		}
+	}
+	lst = listNReverse(AbSyn)(lst);
+	if (abIsApply(abApplyOp(ab))) {
+		lst = listNConcat(AbSyn)(abWildcardImports(abApplyOp(ab)), lst);
+	}
+	return lst;
+}
+
+
+/*****************************************************************************
+ *
  * :: Debugging facilities
  *
  ****************************************************************************/

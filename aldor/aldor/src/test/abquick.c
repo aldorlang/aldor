@@ -94,6 +94,16 @@ abqParse(String txt)
 	return abqParseSrcLines(listList(SrcLine)(1, srcLine));
 }
 
+AbSyn
+abqScopeBind(String txt)
+{
+	SrcLine srcLine = slineNew(sposNone, 0, txt);
+
+	AbSyn ab = abqParseSrcLines(listList(SrcLine)(1, srcLine));
+	scopeBind(stabFile(), ab);
+	return ab;
+}
+
 local AbSyn
 abqParseSrcLines(SrcLineList sll)
 {
