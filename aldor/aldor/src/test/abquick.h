@@ -66,6 +66,8 @@ AbSyn abqParse(String txt);
 AbSynList abqParseLines(StringList lines);
 AbSyn abqParseLinesAsSeq(StringList lines);
 
+AbSyn abqScopeBind(String txt);
+
 AbSyn stdtypes();
 void stdscope(Stab);
 
