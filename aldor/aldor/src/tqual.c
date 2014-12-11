@@ -18,6 +18,7 @@
 #include "comsg.h"
 #include "strops.h"
 #include "symcoinfo.h"
+#include "debug.h"
 
 Bool	tqDebug		= false;
 
@@ -138,6 +139,14 @@ tqFree(TQual tq)
 	if (tqIsQualified(tq))
 		tqFreeQual(tq);
 	stoFree(tq);
+}
+
+int
+tqPrintDb(TQual tq)
+{
+	int rc = tqPrint(dbOut, tq);
+	fnewline(dbOut);
+	return rc;
 }
 
 int
