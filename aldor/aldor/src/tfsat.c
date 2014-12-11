@@ -2121,9 +2121,6 @@ utfSat1(SatMask mask, AbSyn Sab, UTForm S, UTForm T)
 	uS = utypeResultApplyTForm(unify, S);
 	uT = utypeResultApplyTForm(unify, T);
 	result =  tfSat1(mask, Sab, utformTForm(uS), utformTForm(uT));
-	afprintf(dbOut, "%pUTForm %pUTForm --> %d\n", S, T, tfSatSucceed(result));
-	afprintf(dbOut, "Sigma: %pUTypeResult\n", unify);
-	afprintf(dbOut, "S: %pUTForm\nT: %pUTForm\n", uS, uT);
 
 	return utfSatResult(result, TFS_Unify, unify);
 }
