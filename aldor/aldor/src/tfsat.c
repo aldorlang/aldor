@@ -1922,7 +1922,8 @@ utfSatResult(SatMask mask, SatMask moreMask, UTypeResult result)
 	umask->result = result;
 
 	utfSatMaskInstances++;
-
+	if (tfSatSucceed(umask->mask) && result == NULL)
+		bug("oops");
 	return umask;
 }
 
@@ -1935,13 +1936,13 @@ utfSatResultFail(SatMask mask, SatMask moreMask)
 local USatMask
 utfSatTrue(SatMask mask)
 {
-	return utfSatResult(tfSatTrue(mask), 0, utypeResultEmpty());
+	return utfSatResult(tfSatTrue(mask), TFS_Succeed, utypeResultEmpty());
 }
 
 local USatMask
 utfSatFalse(SatMask mask)
 {
-	return utfSatResult(tfSatFalse(mask), 0, utypeResultFailed());
+	return utfSatResult(tfSatFalse(mask), TFS_Fail, utypeResultFailed());
 }
 
 Bool
