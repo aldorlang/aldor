@@ -388,3 +388,22 @@ tqSetStatus(TQual tq, TQualStatus status)
 	return old;
 }
 
+
+/*
+ * UType imports.
+ */
+
+Bool
+tqIsWildcard(TQual tq)
+{
+	TForm base = tqBase(tq);
+
+	return tfIsWildcardImport(base);
+}
+
+TForm
+tqWildcardImporter(TQual tq)
+{
+	return tfWildcardImporter(tqBase(tq));
+}
+

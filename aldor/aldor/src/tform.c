@@ -8021,6 +8021,45 @@ tfConditionalStab(TForm tf)
  * :: Universally qualified types
  *
  *****************************************************************************/
+local AbSyn	abWildcardImporter	(AbSyn);
+
+
+Bool
+tfIsWildcardImport(TForm tf)
+{
+	tfFollow(tf);
+	if (!tfIsGeneral(tf)) {
+		return false;
+	}
+	return abIsWildcardImport(tfExpr(tf));
+}
+
+SymeList
+tfWildcardSymes(TForm tf)
+{
+	AbSynList lst;
+	SymeList declSymes = listNil(Syme);
+	lst = abWildcardImports(tfExpr(tf));
+	tfFollow(tf);
+
+	while (lst != listNil(AbSyn)) {
+		AbSyn ab = car(lst);
+		lst = cdr(lst);
+		declSymes = listCons(Syme)(abSyme(ab->abDeclare.id), declSymes);
+	}
+	return declSymes;
+}
+
+TForm
+tfWildcardImporter(TForm tf)
+{
+	Stab stab = abStab(tfExpr(tf));
+	AbSyn ab = abWildcardImporter(tfExpr(tf));
+	tiTopFns()->tiSefo(stab, ab);
+
+	return tiTopFns()->tiGetTopLevelTForm(NULL, ab);
+}
+
 
 TForm
 tfUType(SymeList symes, TForm tf)
@@ -8031,6 +8070,33 @@ tfUType(SymeList symes, TForm tf)
 
 }
 
+local AbSyn
+abWildcardImporter(AbSyn ab)
+{
+	AbSyn theCopy;
+	int i;
+	assert(abIsApply(ab));
+
+	theCopy = abNewEmpty(AB_Apply, abArgc(ab));
+	if (!abIsId(abApplyOp(ab))) {
+		bug("Missing case");
+	}
+
+	abApplyOp(theCopy) = sefoCopy(abApplyOp(ab));
+	for (i=0; i<abApplyArgc(ab); i++) {
+		AbSyn arg = abApplyArg(ab, i);
+		if (!abIsDeclare(abApplyArg(ab, i))) {
+			abApplyArg(theCopy, i) = sefoCopy(arg);
+		}
+		else {
+			Syme syme = abSyme(arg->abDeclare.id);
+			abApplyArg(theCopy, i) = abFrSyme(syme);
+		}
+
+	}
+
+	return theCopy;
+}
 
 /******************************************************************************
  *

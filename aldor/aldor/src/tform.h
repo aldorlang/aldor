@@ -928,6 +928,16 @@ extern Syme		tfImplicitExport(Stab, SymeList, Syme);
 
 /*****************************************************************************
  *
+ * :: Wildcard imports
+ *
+ ****************************************************************************/
+
+extern Bool		tfIsWildcardImport(TForm tf);
+extern SymeList		tfWildcardSymes(TForm tf);
+extern TForm		tfWildcardImporter(TForm tf);
+
+/*****************************************************************************
+ *
  * :: Java Stuff
  *
  ****************************************************************************/
