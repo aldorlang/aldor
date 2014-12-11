@@ -9,6 +9,7 @@
 #include "abpretty.h"
 #include "axlobs.h"
 #include "comsg.h"
+#include "debug.h"
 #include "format.h"
 #include "lib.h"
 #include "sefo.h"
@@ -18,6 +19,7 @@
 #include "strops.h"
 #include "symcoinfo.h"
 #include "tqual.h"
+
 
 Bool	tqDebug		= false;
 
@@ -138,6 +140,14 @@ tqFree(TQual tq)
 	if (tqIsQualified(tq))
 		tqFreeQual(tq);
 	stoFree(tq);
+}
+
+int
+tqPrintDb(TQual tq)
+{
+	int rc = tqPrint(dbOut, tq);
+	fnewline(dbOut);
+	return rc;
 }
 
 int
