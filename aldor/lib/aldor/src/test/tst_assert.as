@@ -31,6 +31,8 @@ Assert(T: with): with {
     if T has PrimitiveType then {
       assertEquals: (T, T) -> ();
       assertEquals: (String, T, T) -> ();
+      assertNotEquals: (T, T) -> ();
+      assertNotEquals: (String, T, T) -> ();
     }
 
     export from GeneralAssert;
@@ -48,6 +50,13 @@ Assert(T: with): with {
 
       assertEquals(s: String, a: T, b: T): () == if not(a = b) then {
          fail(s + ": expected " + string(T)(a) + " got " + string(T)(b) + " " + string(Boolean)(a=b));
+      }
+      assertNotEquals(a: T, b: T): () == if (a = b) then {
+         fail("didn't expect " + string(T)(a) + " got " + string(T)(b) + " " + string(Boolean)(a=b));
+	 }
+
+      assertNotEquals(s: String, a: T, b: T): () == if (a = b) then {
+         fail(s + ": didn't expect " + string(T)(a) + " got " + string(T)(b) + " " + string(Boolean)(a=b));
       }
     }
 
