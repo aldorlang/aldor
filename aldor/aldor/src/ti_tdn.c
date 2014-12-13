@@ -23,6 +23,7 @@
 #include "ablogic.h"
 #include "abpretty.h"
 #include "comsg.h"
+#include "sefo.h"
 
 /*
  * To do:
@@ -1484,13 +1485,19 @@ titdnIf(Stab stab, AbSyn absyn, TForm type)
 	else	/* Normalise the test for other contexts */
 		nTest = abExpandDefs(stab, test);
 
-	ablogAndPush(&abCondKnown, &saveCond, nTest, true); /* test, true); */
-	titdn(stab, thenAlt, type);
-	ablogAndPop (&abCondKnown, &saveCond);
+	if (abIsSefo(nTest)) {
+		ablogAndPush(&abCondKnown, &saveCond, nTest, true); /* test, true); */
+		titdn(stab, thenAlt, type);
+		ablogAndPop (&abCondKnown, &saveCond);
 
-	ablogAndPush(&abCondKnown, &saveCond, nTest, false); /* test, false); */
-	titdn(stab, elseAlt, type);
-	ablogAndPop (&abCondKnown, &saveCond);
+		ablogAndPush(&abCondKnown, &saveCond, nTest, false); /* test, false); */
+		titdn(stab, elseAlt, type);
+		ablogAndPop (&abCondKnown, &saveCond);
+	}
+	else {
+		titdn(stab, thenAlt, type);
+		titdn(stab, elseAlt, type);
+	}
 
 	/*
 	 * We can't use tpossUnique(abtposs) here because otherwise we
