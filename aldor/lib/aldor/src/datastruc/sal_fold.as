@@ -75,3 +75,74 @@ Fold2(T: with, R: with): FoldingTransformationCategory2(T, R) with {
   }
 }
 
+BooleanFold: with {
+    /: ('_and', List Boolean) -> Boolean;
+    /: ('_and', Generator Boolean) -> Boolean;
+
+    /: ('_or', List Boolean) -> Boolean;
+    /: ('_or', Generator Boolean) -> Boolean;
+    export from '_and', '_or';
+}
+== add {
+   (/)(x: '_and', l: List Boolean): Boolean == _and/(generator l);
+   (/)(x: '_and', l: Generator Boolean): Boolean == {
+	for b in l repeat if not b then return false;
+	return true;
+   }
+
+   (/)(x: '_or', l: List Boolean): Boolean == _or/(generator l);
+   (/)(x: '_or', l: Generator Boolean): Boolean == {
+	for b in l repeat if b then return true;
+	return false;
+   }
+
+}
+
+
+#if ALDORTEST
+#include "aldor"
+#include "aldorio"
+
+testSum(): () == {
+    import from Assert Integer;
+    import from Integer;
+    import from Fold Integer;
+    for n in 1..10 repeat
+        assertEquals(n * (n+1) quo 2, (+)/(x for x in  1..n));
+}
+
+
+testBoolean(): () == {
+   import from BooleanFold;
+   import from Assert Boolean;
+   import from List Boolean;
+
+   assertTrue(_and/[]);
+   assertTrue(_and/[true]);
+   assertTrue(_and/[true, true]);
+   assertTrue(_and/[true, true, true]);
+   assertFalse(_and/[true, false, true]);
+
+   assertFalse(_or/[]);
+   assertFalse(_or/[false]);
+   assertTrue(_or/[false, true]);
+   assertTrue(_or/[true, false, true]);
+}
+
+testLazyBoolean(): () == {
+   import from BooleanFold;
+   import from Assert Boolean;
+   import from Integer;
+
+   local qq := 0;
+   _or/((qq := qq + 1; even?(x) ) for x in 1..10);
+   assertTrue(qq = 2);
+   qq := 0;
+   _and/((qq := qq + 1; x rem 3 > 0 ) for x in 1..10);
+   assertTrue(qq = 3);
+}
+
+testSum();
+testLazyBoolean();
+testBoolean();
+#endif
