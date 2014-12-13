@@ -2158,6 +2158,8 @@ sefoEqualMods(Sefo sefo)
 		case AB_Test: {
 			if (tfEqual(abTUnique(sefo), tfBoolean))
 				sefo = sefo->abTest.cond;
+			else
+				changed = false;
 			break;
 		}
 
