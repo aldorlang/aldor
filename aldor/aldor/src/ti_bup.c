@@ -2270,15 +2270,20 @@ tibupIf(Stab stab, AbSyn absyn, TForm type)
 	 */
 	nTest = abExpandDefs(stab, test);
 
+	if (abIsSefo(nTest)) {
+		ablogAndPush(&abCondKnown, &saveCond, nTest, true); /* test, true); */
+		tibup(stab, thenAlt, type);
+		ablogAndPop (&abCondKnown, &saveCond);
 
+		ablogAndPush(&abCondKnown, &saveCond, nTest, false); /* test, false); */
+		tibup(stab, elseAlt, abIsNothing(elseAlt) ? tfUnknown : type);
+		ablogAndPop (&abCondKnown, &saveCond);
+	}
+	else {
+		tibup(stab, thenAlt, type);
+		tibup(stab, elseAlt, abIsNothing(elseAlt) ? tfUnknown : type);
+	}
 	/* Analyze the branches in the presence of the condition. */
-	ablogAndPush(&abCondKnown, &saveCond, nTest, true); /* test, true); */
-	tibup(stab, thenAlt, type);
-	ablogAndPop (&abCondKnown, &saveCond);
-
-	ablogAndPush(&abCondKnown, &saveCond, nTest, false); /* test, false); */
-	tibup(stab, elseAlt, abIsNothing(elseAlt) ? tfUnknown : type);
-	ablogAndPop (&abCondKnown, &saveCond);
 
 	/* No value required. */
 	if (abUse(absyn) == AB_Use_NoValue)
