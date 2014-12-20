@@ -67,7 +67,7 @@ typedef struct trejectInfo * TRejectInfo;
 local TReject		trAlloc			(Syme, TForm);
 local void		trFree			(TReject);
 
-local void		trInfoFrSymes		(TRejectInfo, SymeList);
+local void		trInfoFrStab		(TRejectInfo, Stab, AbLogic, Symbol);
 local void		trInfoFrTPoss		(TRejectInfo, TPoss);
 local void		trInfoFrTUnique		(TRejectInfo, TForm);
 
@@ -102,13 +102,15 @@ trFree(TReject tr)
 }
 
 local void
-trInfoFrSymes(TRejectInfo trInfo, SymeList symes)
+trInfoFrStab(TRejectInfo trInfo, Stab stab, AbLogic cond, Symbol sym)
 {
+	SymeList	symes;
 	TReject *	trArr;
-	Length		nsymes = listLength(Syme)(symes);
+	Length		nsymes;
 	Length 		i = 0;
 
-
+	symes = stabGetMeanings(stab, cond, sym);
+	nsymes = listLength(Syme)(symes);
 	trArr =  (TReject *) stoAlloc((unsigned) OB_Other,
 				      sizeof(TReject) * nsymes);
 
@@ -1193,7 +1195,7 @@ terrorImplicitSetBang(Stab stab, AbSyn ab, Length argc, AbSynGetter argf,
  * Here we assume this. 
  * !!! FIXME (ablogFalse)
  */
-	trInfoFrSymes(&trInfoStruct, stabGetMeanings(stab, ablogFalse(), ssymSetBang));
+	trInfoFrStab(&trInfoStruct, stab, ablogFalse(), ssymSetBang);
 
 	fillTRejectInfo(&trInfoStruct, type, ab, stab, argc, argf);
 	sortSetBangTRejectInfo(&trInfoStruct);
@@ -1735,8 +1737,8 @@ noMeaningsForOperator(Buffer obuf, TForm type, AbSyn ab, AbSyn op, Stab stab,
 	}
 
 	if (abTag(op) == AB_Id)
-		trInfoFrSymes(&trInfoStruct,	    /* vvv FIXME */
-			      stabGetMeanings(stab, ablogFalse(), op->abId.sym));
+		trInfoFrStab(&trInfoStruct,	    /* vvv FIXME */
+			     stab, ablogFalse(), op->abId.sym);
 	else if (abState(op) == AB_State_HasPoss ||
 		 abState(op) == AB_State_Error)
 		trInfoFrTPoss(&trInfoStruct, abGoodTPoss(op));
