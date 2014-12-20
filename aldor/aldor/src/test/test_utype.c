@@ -194,5 +194,17 @@ testUtfSat()
 
 	mask = utfSat(tfSatBupMask(), arrayOfX, utformNewConstant(tfUnknown));
 	testTrue("", utfSatSucceed(mask));
+
+	mask = utfSat(tfSatBupMask(),  utformNew(listSingleton(Syme)(paramCopy1),
+						tfMap(tiGetTForm(stabFile(), abFrSyme(paramCopy1)),
+						      tiGetTForm(stabFile(), abFrSyme(paramCopy1)))),
+		      utformNewConstant(tfqTypeForm(stabFile(), "Int -> Array Int")));
+	testFalse("X -> X", utfSatSucceed(mask));
+
+	mask = utfSat(tfSatBupMask(), utformNew(listList(Syme)(2, paramCopy1, paramCopy2),
+						tfMap(tiGetTForm(stabFile(), abFrSyme(paramCopy1)),
+						      tiGetTForm(stabFile(), abFrSyme(paramCopy2)))),
+		      utformNewConstant(tfqTypeForm(stabFile(), "Int -> Array Int")));
+	testTrue("X->Y", utfSatSucceed(mask));
 }
 
