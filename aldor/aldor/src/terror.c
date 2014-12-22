@@ -38,7 +38,7 @@ extern void		tiTopDown		(Stab, AbSyn, TForm);
 struct treject {
 	int		why;
 	Syme		syme;
-	TForm		tf;
+	UTForm		utf;
 	Length		parN;
 	Length		argN;
 };
@@ -60,11 +60,12 @@ typedef struct trejectInfo * TRejectInfo;
 
 #define			trWhy(tr)		((tr)->why)
 #define			trSyme(tr)		((tr)->syme)
-#define			trType(tr)		((tr)->tf)
+#define			trType(tr)		utformConstOrFail(trUType(tr))
+#define			trUType(tr)		((tr)->utf)
 #define			trParN(tr)		((tr)->parN)
 #define			trArgN(tr)		((tr)->argN)
 
-local TReject		trAlloc			(Syme, TForm);
+local TReject		trAlloc			(Syme, UTForm);
 local void		trFree			(TReject);
 
 local void		trInfoFrStab		(TRejectInfo, Stab, AbLogic, Symbol);
@@ -80,15 +81,15 @@ local void terrorPutConditionallyDefinedExports(Buffer obuf, Stab stab, SymeList
  **************************************************************************/
 
 local TReject
-trAlloc(Syme syme, TForm tf)
+trAlloc(Syme syme, UTForm utf)
 {
 	TReject		tr;
 
-	tfFollow(tf);
+	tfFollowFn(utformTForm(utf));
 	tr = (TReject) stoAlloc((unsigned) OB_Other, sizeof(*tr));
 
 	tr->syme	= syme;
-	tr->tf		= tf;
+	tr->utf		= utf;
 	tr->parN	= 0;
 	tr->argN	= 0;
 
@@ -102,27 +103,42 @@ trFree(TReject tr)
 }
 
 local void
-trInfoFrStab(TRejectInfo trInfo, Stab stab, AbLogic cond, Symbol sym)
+trInfoFrStab(TRejectInfo trInfo, Stab stab, AbLogic abCondKnown, Symbol sym)
 {
 	SymeList	symes;
 	TReject *	trArr;
 	Length		nsymes;
 	Length 		i = 0;
+	WildImportList  wimps;
 
-	symes = stabGetMeanings(stab, cond, sym);
+	symes = stabGetMeanings(stab, abCondKnown, sym);
 	nsymes = listLength(Syme)(symes);
-	trArr =  (TReject *) stoAlloc((unsigned) OB_Other,
-				      sizeof(TReject) * nsymes);
 
-	for (; symes; symes = cdr(symes)) {
-		Syme	syme = car(symes);
-		TForm	type = symeType(syme);
+	if (symes != listNil(Syme)) {
+		trArr =  (TReject *) stoAlloc((unsigned) OB_Other,
+					      sizeof(TReject) * nsymes);
 
-		trArr[i++] = trAlloc(syme, type);
+		for (; symes; symes = cdr(symes)) {
+			Syme	syme = car(symes);
+			TForm	type = symeType(syme);
+
+			trArr[i++] = trAlloc(syme, utformNewConstant(type));
+		}
+		assert(i == nsymes);
+		trInfo->argv = trArr;
+		trInfo->argc = nsymes;
 	}
-	assert(i == nsymes);
-	trInfo->argv = trArr;
-	trInfo->argc = nsymes;
+	else {
+		wimps = stabGetWildcardMeanings(stab, abCondKnown, sym);
+
+		trArr = (TReject *) stoAlloc(OB_Other,
+					     sizeof(TReject) * listLength(WildImport)(wimps));
+		for (; wimps; wimps = cdr(wimps)) {
+			trArr[i++] = trAlloc(NULL, wimpType(car(wimps)));
+		}
+		trInfo->argv = trArr;
+		trInfo->argc = i;
+	}
 }
 
 local void
@@ -139,7 +155,7 @@ trInfoFrTPoss(TRejectInfo trInfo, TPoss tp)
 	for (tpossITER(it, tp); tpossMORE(it); tpossSTEP(it)) {
 		TForm	type = tpossELT(it);
 
-		trArr[i++] = trAlloc(NULL, type);
+		trArr[i++] = trAlloc(NULL, utformNewConstant(type));
 	}
 	assert(i == ntposs);
 	trInfo->argv = trArr;
@@ -152,7 +168,7 @@ trInfoFrTUnique(TRejectInfo trInfo, TForm tf)
 	TReject * trArr = (TReject *) stoAlloc((unsigned) OB_Other,
 					       sizeof(TReject));
 
-	*trArr = trAlloc(NULL, tf);
+	*trArr = trAlloc(NULL, utformNewConstant(tf));
 
 	trInfo->argv = trArr;
 	trInfo->argc = 1;
@@ -1536,6 +1552,7 @@ bputBadArgType0(TRejectInfo trInfo, Stab stab, Buffer obuf, AbSyn ab, AbSyn op,
 {
 	String	fmt = comsgString(ALDOR_X_TinNoArgumentMatch);
 	String	fmtParType;
+	UTForm  uopType;
 	TForm	opType, argType, parType, defType;
 	AbSyn   abArgi;
 	int 	i, j;
@@ -1555,7 +1572,11 @@ bputBadArgType0(TRejectInfo trInfo, Stab stab, Buffer obuf, AbSyn ab, AbSyn op,
 		    trArgN(tr) != trArgN(trFirst(trInfo)))
 			break;
 
-		opType  = tfDefineeType(trType(tr));
+		uopType  = utfDefineeType(trUType(tr));
+		if (!utfIsConstant(uopType)) {
+			continue;
+		}
+		opType = utformConstOrFail(uopType);
 		if (tfIsDeclare(opType))
 			opType = tfDeclareType(opType);
 		argc0   = tfMapHasDefaults(opType) ? tfMapArgc(opType) : argc;
@@ -1680,26 +1701,28 @@ local void
 analyseRejectionCause(TReject tr, Stab stab, AbSyn ab, Length argc,
 		      AbSynGetter argf, TForm type)
 {
-	SatMask		mask = tfSatTErrorMask(), result;
-	TForm		opType = trType(tr);
+	UTForm		opType = trUType(tr);
+	USatMask	result;
+	SatMask		resultMask;
+	SatMask		mask = tfSatTErrorMask();
 
-	opType = tfDefineeType(opType);
+	opType = utfDefineeType(opType);
 
-	if (!tfIsAnyMap(opType)) return;
+	if (!utformIsAnyMap(opType)) return;
 
-	result = tfSatMap(mask, stab, opType, type, ab, argc, argf);
-
-	if (tfSatFailedBadArgType(result)) {
-		trParN(tr) = tfSatParN(result);
-		trArgN(tr) = tfSatArgN(ab, argc, argf, trParN(tr), opType);
+	result = utfSatMap(mask, stab, opType, utformNewConstant(type), ab, argc, argf);
+	resultMask = utfSatMaskMask(result);
+	if (tfSatFailedBadArgType(resultMask)) {
+		trParN(tr) = tfSatParN(resultMask);
+		trArgN(tr) = utfSatArgN(ab, argc, argf, trParN(tr), opType);
 		trWhy(tr) = TR_BadArgType;
 	}
-	else if (tfSatFailedArgMissing(result)) {
-		trParN(tr) = tfSatParN(result);
+	else if (tfSatFailedArgMissing(resultMask)) {
+		trParN(tr) = tfSatParN(resultMask);
 		trWhy(tr) = TR_ArgMissing;
 	}
-	else if (tfSatFailedEmbedFail(result) |
-		 tfSatFailedDifferentArity(result))
+	else if (tfSatFailedEmbedFail(resultMask) |
+		 tfSatFailedDifferentArity(resultMask))
 		trWhy(tr) = TR_EmbedFail;
 	else
 		trWhy(tr) = TR_BadFnType;
