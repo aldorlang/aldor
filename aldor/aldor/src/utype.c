@@ -163,6 +163,12 @@ utfIsMulti(UTForm utf)
 	return tfIsMulti(utformTForm(utf));
 }
 
+Bool
+utfIsDeclare(UTForm utf)
+{
+	return tfIsDeclare(utformTForm(utf));
+}
+
 
 SymeList
 utformVars(UTForm utf)

@@ -32,6 +32,7 @@ Bool   utfIsPending(UTForm utf);
 UTForm utfMapRet(UTForm tf);
 UTForm utfMapArg(UTForm tf);
 Bool   utfIsMulti(UTForm tf);
+Bool   utfIsDeclare(UTForm tf);
 
 UTForm utfDefineeType(UTForm utf);
 Syme   utfDefineeSyme		(UTForm);
