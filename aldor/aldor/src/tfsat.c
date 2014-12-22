@@ -2193,7 +2193,7 @@ utfSatMap(SatMask mask, Stab stab, UTForm S, UTForm T,
 		unifyResult = utypeResultMerge(result->result, retResult->result);
 		retMask = tfSatEmbed(utfSatMaskMask(result)) | utfSatMaskMask(retResult);
 		if (utypeResultIsFail(unifyResult))
-			retMask = retMask | TFS_BadArgType;
+			retMask = retMask | TFS_UnifyFail;
 		retResult = utfSatResult(mask, retMask,
 					 unifyResult);
 
