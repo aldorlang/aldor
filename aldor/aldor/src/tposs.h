@@ -90,6 +90,11 @@ extern Bool	tpossIsHaving		(TPoss tp, TFormPredicate pred);
 		 * Is there any type form in tp which satisfies the predicate?
 		 */
 
+extern Bool	tpossHasAnyUTForm(TPoss tp);
+		/*
+		 * Are any types in tp universally qualified
+		 */
+
 /*
  * Abstract iteration over type possibility sets:
  *

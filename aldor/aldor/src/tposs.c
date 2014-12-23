@@ -529,6 +529,25 @@ tpossHasMapType(TPoss tp)
 	return false;
 }
 
+Bool
+tpossHasAnyUTForm(TPoss tp)
+{
+	TPossIterator	tit;
+
+	if (tp == NULL)
+		return false;
+
+	for (tpossITER(tit, tp); tpossMORE(tit); tpossSTEP(tit)) {
+		UTForm utf = tpossUELT(tit);
+
+		if (!utfIsConstant(utf))
+			return true;
+	}
+	return false;
+}
+
+
+
 TPoss
 tpossGeneratorArg(TPoss tpit)
 {
