@@ -392,20 +392,32 @@ Bool
 tpossHas(TPoss tp, TForm t)
 {
 	UTFormList l;
+	Bool needsConstT = false;
+	UTForm utfT = NULL;
 
 	if (tp == NULL)
 		return false;
 	l = tp->possl;
 	while (l != listNil(UTForm)) {
-		if (t == utformConstOrFail(car(l)))
+		if (utfIsConstant(car(l)) && t == utformConstOrFail(car(l)))
 			return true;
+		else if (!utfIsConstant(car(l))) {
+			needsConstT = true;
+		}
 		l = cdr(l);
 	}
-
+	if (needsConstT) {
+		utfT = utformNewConstant(t);
+	}
 	l = tp->possl;
 	while (l != listNil(UTForm)) {
-		if (tfEqual(t, utformConstOrFail(car(l))))
+		if (utfIsConstant(car(l)) && tfEqual(t, utformConstOrFail(car(l))))
 			return true;
+		else if (!utfIsConstant(car(l))) {
+			if (utformCanUnify(utfT, car(l))) {
+				return true;
+			}
+		}
 		l = cdr(l);
 	}
 
