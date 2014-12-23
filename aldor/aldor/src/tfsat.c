@@ -1935,6 +1935,12 @@ utfSatResultFree(USatMask mask)
 	stoFree(mask);
 }
 
+SatMask
+utfSatMaskMask(USatMask mask)
+{
+	return mask->mask;
+}
+
 
 local USatMask
 utfSatResultFail(SatMask mask, SatMask moreMask)
@@ -2160,6 +2166,52 @@ utfSat(SatMask mask, UTForm S, UTForm T)
 {
 	return utfSat1(mask, NULL, S, T);
 }
+
+USatMask
+utfSatMap(SatMask mask, Stab stab, UTForm S, UTForm T,
+	  AbSyn ab, Length argc, AbSynGetter argf)
+{
+	USatMask	result;
+	UTForm		Sret;
+	AbSub		sigma;
+
+	assert(utformIsAnyMap(S));
+	Sret = utfMapRet(S);
+
+	sigma = absNew(stab);
+
+	result = utfSatMapArgs(mask, sigma, S, ab, argc, argf);
+	if (utfSatSucceed(result)) {
+		UTypeResult unifyResult;
+		USatMask    retResult;
+		SatMask     retMask;
+
+		Sret = utformSubst(sigma, Sret);
+
+		retResult = utfSat1(mask, ab, Sret, T);
+		unifyResult = utypeResultMerge(result->result, retResult->result);
+		retMask = tfSatEmbed(utfSatMaskMask(result)) | utfSatMaskMask(retResult);
+		if (utypeResultIsFail(unifyResult))
+			retMask = retMask | TFS_BadArgType;
+		retResult = utfSatResult(mask, retMask,
+					 unifyResult);
+
+		if (utfSatSucceed(result) && tfSatCommit(mask) && utfIsConstant(Sret))
+			abTUnique(ab) = utformConstOrFail(Sret);
+	}
+
+	absFreeDeeply(sigma);
+
+	return result;
+
+}
+
+Length
+utfSatArgN(AbSyn ab, Length argc, AbSynGetter argf, Length parN, UTForm S)
+{
+	return tfSatArgN(ab, argc, argf, parN, utformTForm(S));
+}
+
 
 /******************************************************************************
  *

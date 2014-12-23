@@ -38,8 +38,9 @@ extern Bool		tfSatFailedBadArgType	 (SatMask);
 extern Bool		tfSatFailedDifferentArity(SatMask);
 
 extern Length		tfSatParN		(SatMask);
-extern Length		tfSatArgN		(AbSyn, Length, AbSynGetter,
-						 Length, TForm);
+extern Length		tfSatArgN		(AbSyn, Length, AbSynGetter, Length, TForm);
+extern Length		utfSatArgN		(AbSyn, Length, AbSynGetter,
+						 Length, UTForm);
 
 extern AbEmbed		tfSatAbEmbed		(SatMask);
 extern AbEmbed		tfSatEmbedType		(TForm, TForm);
@@ -129,6 +130,8 @@ typedef struct usatmask {
 	UTypeResult result;
 } *USatMask;
 
+SatMask  utfSatMaskMask(USatMask);
+
 USatMask utfSatArg(SatMask mask, AbSyn ab, UTForm T);
 
 USatMask utfSatMapArgs(SatMask mask, AbSub sigma, UTForm S,
@@ -136,6 +139,8 @@ USatMask utfSatMapArgs(SatMask mask, AbSub sigma, UTForm S,
 
 USatMask utfSatAsMulti(SatMask mask, AbSub sigma, UTForm S, UTForm TScope,
 		      AbSyn ab, Length argc, AbSynGetter argf);
+USatMask  utfSatMap(SatMask, Stab, UTForm, UTForm,
+		    AbSyn, Length, AbSynGetter);
 USatMask utfSat1(SatMask mask, AbSyn Sab, UTForm S, UTForm T);
 USatMask utfSat(SatMask mask, UTForm S, UTForm T);
 Bool	 utfSatSucceed(USatMask);
