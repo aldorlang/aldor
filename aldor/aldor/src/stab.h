@@ -12,6 +12,7 @@
 #include "axlobs.h"
 #include "syme.h"
 #include "tform.h"
+#include "wildimp.h"
 
 /******************************************************************************
  *
@@ -116,6 +117,7 @@ struct stabEntry {
 	SymeList *	symev;
 	TPoss *		possv;
 	SymeList        pending;
+	WildImportList	wimps;
 };
 
 /******************************************************************************
@@ -153,6 +155,7 @@ extern Syme		symeListHasExtension	(SymeList, Syme);
 extern Syme		symeListHasExtendee	(SymeList, Syme);
 
 extern SymeList		stabGetMeanings		(Stab, AbLogic, Symbol);
+extern WildImportList	stabGetWildcardMeanings	(Stab, AbLogic, Symbol);
 extern TPoss		stabGetTypes		(Stab, AbLogic, Symbol);
 
 extern Syme		stabGetSelf		(Stab);

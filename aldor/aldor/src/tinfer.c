@@ -717,6 +717,30 @@ tiGetMeaning(Stab stab, AbSyn absyn, TForm type)
 
 	}
 
+	if (psymec == 0) {
+		WildImportList wimps = stabGetWildcardMeanings(stab, abCondKnown, abIdSym(absyn));
+		SymeList symes = listNil(Syme);
+		while (wimps != listNil(WildImport)) {
+			WildImport candidate = car(wimps);
+			UTForm utf = wimpType(candidate);
+			USatMask result = utfSat(tfSatBupMask(), utf, utformNewConstant(type));
+			if (utfSatSucceed(result)) {
+				AbSub sigma = utypeResultSigma(result->result);
+				symes = listCons(Syme)(symeSubst(sigma, wimpSyme(candidate)), symes);
+			}
+			wimps = cdr(wimps);
+		}
+
+		if (listLength(Syme)(symes) == 1) {
+			nsymes = listCons(Syme)(car(symes), nsymes);
+			nsyme = car(symes);
+			psyme = nsyme;
+			psymec++;
+			nsymec++;
+		}
+
+	}
+
 	syme = NULL;
 	if (psymec == 1 && !tfIsUnknown(symeType(psyme)))
 		syme = psyme;

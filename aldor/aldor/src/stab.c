@@ -25,6 +25,7 @@
 #include "comsg.h"
 #include "table.h"
 #include "strops.h"
+#include "utype.h"
 
 Bool	stabDebug	= false;
 Bool	stabImportDebug	= false;
@@ -53,11 +54,15 @@ local Bool		stabEntryIsGeneric	(StabEntry);
 
 local SymeList		stabEntryAllSymes	(StabEntry);
 local SymeList		stabEntryGetSymes	(StabEntry, AbLogic);
+local WildImportList	stabEntryGetWildcardSymes(StabEntry, AbLogic);
 local SymeList		stabEntryCacheSymes	(StabEntry, AbLogic);
 
 local TPoss		stabEntryAllTypes	(StabEntry);
 local TPoss		stabEntryGetTypes	(StabEntry, AbLogic);
 local TPoss		stabEntryCacheTypes	(StabEntry, Length);
+
+local void		stabEntryAddWildcardSyme(StabEntry, Syme, UTForm);
+local TPoss		stabEntryWildcardTPoss	(StabEntry);
 
 CREATE_LIST(TFormUses);
 
@@ -269,6 +274,7 @@ stabEntryNew(void)
 	stent->symev	= (SymeList *) (stent->condv + argc);
 	stent->possv	= (TPoss *)    (stent->symev + argc);
 	stent->pending  = listNil(Syme);
+	stent->wimps    = listNil(WildImport);
 
 	for (i = 0; i < argc; i += 1) {
 		stent->condv[i] = NULL;
@@ -296,7 +302,7 @@ stabEntryCopy(StabEntry stent)
 		nstent->possv[i] = tpossCopy(stent->possv[i]);
 	}
 	nstent->pending = listCopy(Syme)(stent->pending);
-
+	nstent->wimps = listCopy(WildImport)(stent->wimps);
 	return nstent;
 }
 
@@ -374,6 +380,14 @@ stabEntryAddSyme(StabEntry stent, Syme syme)
 		if (!stabEntryIsGeneric(stent))
 			stabEntryPutSyme(stent, 1, syme);
 	}
+}
+
+local void
+stabEntryAddWildcardSyme(StabEntry stent, Syme syme, UTForm exporter)
+{
+	stabEntryClearCache(stent);
+	afprintf(dbOut, "Adding wildcard to %p: %pSyme %p %pUTForm\n", stent, syme, exporter, exporter);
+	stent->wimps = listCons(WildImport)(wimpNew(syme, exporter), stent->wimps);
 }
 
 local Bool
@@ -512,10 +526,38 @@ local TPoss
 stabEntryCacheTypes(StabEntry stent, Length i)
 {
 	assert(i < stent->argc);
-	if (stent->possv[i] == NULL)
-		stent->possv[i] = tpossFrSymes(stent->symev[i]);
+	if (stent->possv[i] == NULL) {
+		TPoss tposs = tpossFrSymes(stent->symev[i]);
+		if (stent->wimps != listNil(WildImport)) {
+			tposs = tpossUnion(tposs, stabEntryWildcardTPoss(stent));
+		}
+		stent->possv[i] = tposs;
+	}
 	return tpossRefer(stent->possv[i]);
 }
+
+local TPoss
+stabEntryWildcardTPoss(StabEntry stent)
+{
+	TPoss tposs = tpossEmpty();
+
+	if (stent->wimps) {
+		WildImportList wimps = stent->wimps;
+		while (wimps != listNil(WildImport)) {
+			WildImport wimp = car(wimps);
+			tpossAdd1UTForm(tposs, wimpType(wimp));
+			wimps = cdr(wimps);
+		}
+	}
+	return tposs;
+}
+
+local WildImportList
+stabEntryGetWildcardSymes(StabEntry stent, AbLogic abl)
+{
+	return stent->wimps;
+}
+
 
 /****************************************************************************
  *
@@ -977,6 +1019,14 @@ stabGetMeanings(Stab stab, AbLogic abl, Symbol sym)
 	return stent ? stabEntryGetSymes(stent, abl) : listNil(Syme);
 }
 
+WildImportList
+stabGetWildcardMeanings(Stab stab, AbLogic abl, Symbol sym)
+{
+	StabEntry stent = stabGetEntry(stab, sym, true);
+	return stent ? stabEntryGetWildcardSymes(stent, abl) : listNil(WildImport);
+}
+
+
 TPoss
 stabGetTypes(Stab stab, AbLogic abl, Symbol sym)
 {
@@ -1235,6 +1285,19 @@ stabPutMeanings(Stab stab, SymeList symes)
 		symeSetDefLevel(syme, car(stab));
 	}
 }
+
+void
+stabPutWildcards(Stab stab, SymeList symes, UTForm exporter)
+{
+	while (symes != listNil(Syme)) {
+		Syme syme = car(symes);
+		Symbol sym = symeId(syme);
+		StabEntry stent = stabGetEntry(stab, sym, false);
+		stabEntryAddWildcardSyme(stent, syme, exporter);
+		symes = cdr(symes);
+	}
+}
+
 
 Syme
 stabDefParam(Stab stab, Symbol id, TForm tform)
@@ -1706,7 +1769,7 @@ stabImportFrom(Stab stab, TQual tq)
 {
 	SymeList	dsymes;
 	TForm		origin = tqBase(tq);
-
+	UTForm 		worigin = NULL;
 
 	/* Carefully follow this tform */
 	tfFollow(origin);
@@ -1726,6 +1789,12 @@ stabImportFrom(Stab stab, TQual tq)
 		origin = base;
 	}
 
+
+	if (tqIsWildcard(tq)) {
+		origin = tqWildcardImporter(tq);
+		worigin = utformNew(tfWildcardSymes(tqBase(tq)), origin);
+		afprintf(dbOut, "Using origin type: %pTForm\n", origin);
+	}
 
 	/* Don't import a tform if has already been imported */
 	if (stabIsImportedTForm(stab, origin))
@@ -1779,7 +1848,12 @@ stabImportFrom(Stab stab, TQual tq)
 		if (dsymes) stabMakeImportedTForm(stab, origin);
 	}
 
-	stabPutMeanings(stab, dsymes);
+	if (tqIsWildcard(tq)) {
+		stabPutWildcards(stab, dsymes, worigin);
+	}
+	else {
+		stabPutMeanings(stab, dsymes);
+	}
 
 	stabImportDEBUG(dbOut, "... imported: %pSymeCList\n", dsymes);
 
