@@ -61,6 +61,7 @@ main(int argc, char *argv[])
 	if (testShouldRun("tfsat")) tfsatTest();
 	if (testShouldRun("retype")) retypeTest();
 	if (testShouldRun("genfoam")) genfoamTestSuite();
+	if (testShouldRun("utype")) utypeTestSuite();
 
 	testIntEqual("fluidlevel", 0, fluidLevel);
 

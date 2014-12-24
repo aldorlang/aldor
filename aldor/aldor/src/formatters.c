@@ -10,6 +10,7 @@
 #include "tposs.h"
 #include "strops.h"
 #include "errorset.h"
+#include "utype.h"
 
 local int tfFormatter(OStream stream, Pointer p);
 local int tfListFormatter(OStream stream, Pointer p);
@@ -39,6 +40,9 @@ local int symbolFormatter(OStream stream, Pointer p);
 local int errorSetFormatter(OStream stream, Pointer p);
 
 local int boolFormatter(OStream ostream, int p);
+
+local int utypeFormatter(OStream stream, Pointer p);
+local int utypeResultFormatter(OStream stream, Pointer p);
 
 void
 fmttsInit()
@@ -71,6 +75,9 @@ fmttsInit()
 	fmtRegister("Symbol", symbolFormatter);
 
 	fmtRegister("ErrorSet", errorSetFormatter);
+
+	fmtRegister("UType", utypeFormatter);
+	fmtRegister("UTypeResult", utypeResultFormatter);
 }
 
 
@@ -257,5 +264,21 @@ boolFormatter(OStream ostream, int p)
 	else {
 		return ostreamPrintf(ostream, "%s", flg ? "true": "false");
 	}
+}
 
+local int
+utypeFormatter(OStream ostream, Pointer p)
+{
+	UType utype = (UType) p;
+	return ostreamPrintf(ostream, "[UT: %pSymeList %pSefo]", utypeVars(utype), utypeSefo(utype));
+}
+
+local int
+utypeResultFormatter(OStream ostream, Pointer p)
+{
+	UTypeResult utypeResult = (UTypeResult) p;
+	if (utypeResultIsFail(utypeResult))
+		return ostreamPrintf(ostream, "[UTR: Fail]");
+	return ostreamPrintf(ostream, "[UTR: %pSymeList %pSefoList]",
+			     utypeResult->symes, utypeResult->sefos);
 }

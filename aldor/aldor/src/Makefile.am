@@ -185,7 +185,9 @@ libstruct_a_SOURCES =	\
 	token.c		\
 	tposs.c		\
 	tqual.c		\
+	utype.c		\
 	version.c
+
 #libstruct_a_LIBADD = libgen.a libport.a
 structtest_SOURCES = structtest.c
 structtest_LDADD = libstruct.a libgen.a libport.a -lm
@@ -290,7 +292,8 @@ testsuite =			\
 	test/test_tform.c	\
 	test/test_tibup.c	\
 	test/test_tfsat.c	\
-	test/test_tinfer.c
+	test/test_tinfer.c	\
+	test/test_utype.c
 
 testall_SOURCES =	\
 	$(testsuite)	\

@@ -31,5 +31,6 @@ void tformTest(void);
 void tfsatTest(void);
 void tibupTest(void);
 void tinferTest(void);
+void utypeTestSuite(void);
 
 #endif
