@@ -6,24 +6,22 @@
  * Universally quantified types
  */
 
-typedef struct utform {
+struct utform {
 	TForm tf;
 	SymeList vars;
 	AbLogic typeInfo;
-} *UTForm;
+};
 
-typedef struct utype {
+struct utype {
 	Sefo sefo;
 	SymeList vars;
 	AbLogic typeInfo;
-} *UType;
+};
 
 typedef struct utypeResult {
 	SymeList symes;
 	SefoList sefos;
 } *UTypeResult;
-
-DECLARE_LIST(UTForm);
 
 UTForm utformNew	(SymeList freevars, TForm tform);
 UTForm utformNewConstant(TForm tform);
