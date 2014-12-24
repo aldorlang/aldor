@@ -2011,6 +2011,10 @@ utfSatAsMulti(SatMask mask, AbSub sigma, UTForm S, UTForm TScope,
 {
 	USatMask result = utfSatTrue(mask);
 	int i;
+
+	if (tfAsMultiEmbed(utformTForm(S), argc) == AB_Embed_Fail)
+		return utfSatResultFail(mask, TFS_EmbedFail);
+
 	for (i=0; i<argc; i++) {
 		AbSyn	abi;
 		UTForm	tfi;
@@ -2109,15 +2113,28 @@ utfSat1(SatMask mask, AbSyn Sab, UTForm S, UTForm T)
 	UTForm uT;
 	SatMask result;
 
-	if (utfIsConstant(T)) {
+	if (utfIsConstant(S) && utfIsConstant(T)) {
 		result = tfSat1(mask, Sab, utformTForm(S), utformTForm(T));
 		if (tfSatSucceed(result))
 			return utfIsConstant(S)
 				? utfSatTrue(result)
 				: utfSatResult(result, TFS_Unify, utypeResultEmpty());
+		else
+			return utfSatResultFail(mask, result);
+	}
+	else if (utfIsConstant(T)) {
+		return utfSatResult(tfSat1(mask, Sab, utformTForm(S), utformTForm(T)), 0, utypeResultEmpty());
+	}
+	else if (utfIsConstant(S)) {
+		if (tfIsUnknown(utformTForm(S)))
+			return utfSatFalse(mask);
 	}
 
 	unify = utformUnify(S, T);
+	if (utypeResultIsFail(unify)) {
+		return utfSatResultFail(mask, TFS_BadArgType);
+	}
+
 	uS = utypeResultApplyTForm(unify, S);
 	uT = utypeResultApplyTForm(unify, T);
 	result =  tfSat1(mask, Sab, utformTForm(uS), utformTForm(uT));

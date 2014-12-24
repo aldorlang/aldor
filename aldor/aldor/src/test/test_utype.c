@@ -70,6 +70,7 @@ test0()
 	testIntEqual("t2", 1, listLength(Syme)(res->symes));
 
 #define ListOf(x) apply1(abFrSyme(listSyme), x)
+
 	sefo1 = sefo(ListOf(abFrSyme(paramCopy1)));
 	sefo2 = sefo(ListOf(abFrSyme(paramCopy2)));
 
@@ -101,8 +102,7 @@ test0()
 	finiFile();
 }
 
-
-local void
+local void 
 test1() {
 	Sefo sefo1, sefo2;
 	Syme param, listSyme, paramSyme, paramCopy1, paramCopy2 ;
@@ -119,3 +119,29 @@ test1() {
 
 	finiFile();
 }
+
+local void
+test2()
+{
+	Sefo sefo1, sefo2;
+	Syme param, listSyme, paramSyme, paramCopy1, paramCopy2 ;
+	AbSub sigma;
+	UTypeResult res;
+
+	initFile();
+	stdscope(stabFile());
+
+	tfqTypeInfer(stabFile(), "List(T: Type): with { one: T -> %; cons: (T, %) -> %} == add { one(t: T): % == never; cons(x: T, l: %): % == never}");
+	tfqTypeInfer(stabFile(), "Monoid: Category == with { 1: %; *: (%, %) -> % }");
+	tfqTypeInfer(stabFile(), "Int: Monoid == add { 1: % == never; (a: %) * (b: %): % == never}");
+
+	tfqTypeInfer(stabFile(), "f(x: Int): () == { import from List(X: with); one(x)}");
+/*	tfqTypeInfer(stabFile(), "f(x: Int): List Int == one(x)"); TOFIX: Needs tpossUnify */
+
+	tfqTypeInfer(stabFile(), "f(x: Int): () == { import from List(X: with); one(one(x))}");
+	tfqTypeInfer(stabFile(), "f(x: Int): () == { import from List(X: with); cons(x, one(x))}");
+
+	finiFile();
+
+}
+
