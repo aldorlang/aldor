@@ -74,7 +74,8 @@ extern Stab		stabFindLevel		(Stab, Syme);
  *	TFS_MultiToUnary		(S) -> S
  *	TFS_UnaryToTuple		S -> Tuple(S)
  *	TFS_UnaryToCross		S -> Cross(S)
- *	TFS_UnaryToMulti		S -> (S)
+
+ *	TFS_Unify			ForAll(x, S) -> S'
  *
  *	(error return modes)
  *	TFS_Fail
@@ -111,15 +112,17 @@ extern Stab		stabFindLevel		(Stab, Syme);
 #define	TFS_UnaryToCross	(((SatMask) 1) << 16)
 #define	TFS_UnaryToMulti	(((SatMask) 1) << 17)
 
-#define	TFS_Fail		(((SatMask) 1) << 18)
-#define	TFS_ExportsMissing	(((SatMask) 1) << 19)
-#define	TFS_EmbedFail		(((SatMask) 1) << 20)
-#define	TFS_ArgMissing		(((SatMask) 1) << 21)
-#define	TFS_BadArgType		(((SatMask) 1) << 22)
-#define	TFS_DifferentArity	(((SatMask) 1) << 23)
+#define	TFS_Unify		(((SatMask) 1) << 18)
+
+#define	TFS_Fail		(((SatMask) 1) << 19)
+#define	TFS_ExportsMissing	(((SatMask) 1) << 20)
+#define	TFS_EmbedFail		(((SatMask) 1) << 21)
+#define	TFS_ArgMissing		(((SatMask) 1) << 22)
+#define	TFS_BadArgType		(((SatMask) 1) << 23)
+#define	TFS_DifferentArity	(((SatMask) 1) << 24)
 
 
-#define	TFS_BitsWidth		24
+#define	TFS_BitsWidth		25
 #define	TFS_BitsMask		((((SatMask) 1) << TFS_BitsWidth) - 1)
 
 #define	TFS_ModeMask		(\
@@ -170,6 +173,7 @@ extern Stab		stabFindLevel		(Stab, Syme);
 #define			tfSatSigma(m)		((m) & TFS_Sigma)
 #define			tfSatInfo(m)		((m) & TFS_Info)
 #define			tfSatUseConditions(m)	((m) & TFS_Conditions)
+#define			tfSatUnify(m)		((m) & TFS_Unify)
 
 #define			tfSatAllow(m,c)		((m) & (c))
 
