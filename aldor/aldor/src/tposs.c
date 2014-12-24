@@ -87,14 +87,8 @@ tpossFrSymes(SymeList symes)
 	TPoss	tp = tpossEmpty();
 	for (; symes; symes = cdr(symes))
 	{
-/*
-		if (car(symes)->type != NULL)
-		{
-*/
-			tpossAdd1(tp, symeType(car(symes)));
-/*
-		}
-*/
+		Syme syme = car(symes);
+		tpossAdd1(tp, symeType(syme));
 	}
 	return tp;
 }
