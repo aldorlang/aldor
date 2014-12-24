@@ -2152,7 +2152,7 @@ utfSat1(SatMask mask, AbSyn Sab, UTForm S, UTForm T)
 
 	unify = utformUnify(S, T);
 	if (utypeResultIsFail(unify)) {
-		return utfSatResultFail(mask, TFS_BadArgType);
+		return utfSatResultFail(mask, TFS_UnifyFail);
 	}
 
 	uS = utypeResultApplyTForm(unify, S);
