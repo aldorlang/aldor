@@ -2,6 +2,7 @@
 #include "format.h"
 #include "testlib.h"
 #include "strops.h"
+#include "formatters.h"
 
 local void testFormat1();
 local void testFormat2();
@@ -9,6 +10,7 @@ local void testFormat3();
 local void testFormat4();
 local void testFormat5();
 local void testFormat6();
+local void testFormatBool();
 
 void
 formatTest()
@@ -19,6 +21,7 @@ formatTest()
 	TEST(testFormat4);
 	TEST(testFormat5);
 	TEST(testFormat6);
+	TEST(testFormatBool);
 }
 
 int
@@ -98,3 +101,13 @@ testFormat6()
 	testStringEqual("test2", "Hello: [-1]", s);
 }
 
+local void
+testFormatBool()
+{
+	char *s;
+	fmttsInit();
+
+	testStringEqual("", "[true]", strPrintf("[%oBool]", true));
+	testStringEqual("", "[false]", strPrintf("[%oBool]", false));
+	testStringEqual("", "[Bool[123]]", strPrintf("[%oBool]", 123));
+}
