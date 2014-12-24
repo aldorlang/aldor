@@ -53,5 +53,6 @@ Sefo utypeSefo(UType utype);
 
 Bool utypeResultIsFail(UTypeResult res);
 Bool utypeResultIsEmpty(UTypeResult res);
+int utypeResultOStreamPrint(OStream ostream, UTypeResult utypeResult);
 
 #endif

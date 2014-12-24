@@ -124,7 +124,10 @@ utformVars(UTForm utf)
 int
 utformPrint(FILE *file, UTForm utf)
 {
-	return tfPrint(file, utformConstOrFail(utf));
+	if (utfIsConstant(utf))
+		return tfPrint(file, utformTForm(utf));
+	else
+		return afprintf(file, "<ForAll %pSymeList: %pTForm>", utf->vars, utf->tf);
 }
 
 Bool
@@ -253,6 +256,45 @@ utypeResultFree(UTypeResult result)
 	listFreeDeeply(Syme)(result->symes, symeFree);
 	/*listFreeDeeply(Sefo)(result->sefos, abFree);*/
 	stoFree(result);
+}
+
+int
+utypeResultPrint(FILE *fout, UTypeResult utypeResult)
+{
+	struct ostream ostream;
+	int n;
+
+	ostreamInitFrFile(&ostream, fout);
+	n = utypeResultOStreamPrint(&ostream, utypeResult);
+	ostreamClose(&ostream);
+
+	return n;
+}
+
+int
+utypeResultOStreamPrint(OStream ostream, UTypeResult utypeResult)
+{
+	SymeList symeList;
+	SefoList sefoList;
+	String sep = "";
+	int acc = 0;
+
+	if (utypeResultIsFail(utypeResult))
+		return ostreamPrintf(ostream, "[UTR: Fail]");
+	acc += ostreamPrintf(ostream, "[UTR: ");
+	symeList = utypeResult->symes;
+	sefoList = utypeResult->sefos;
+
+	while (symeList != listNil(Syme)) {
+		Syme syme = car(symeList);
+		Sefo sefo = car(sefoList);
+		acc += ostreamPrintf(ostream, "%s%pSyme --> %pSefo", sep, syme, sefo);
+		sep = ", ";
+		symeList = cdr(symeList);
+		sefoList = cdr(sefoList);
+	}
+	acc += ostreamPrintf(ostream, "]");
+	return acc;
 }
 
 
