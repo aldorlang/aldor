@@ -58,6 +58,10 @@ typedef struct _InvInfo *	   InvInfo;
 typedef union _SImpl *		   SImpl;
 
 typedef struct uvar *		   UVar;
+typedef struct utform * 	   UTForm;
+typedef struct utype *		   UType;
+typedef struct utypeResult *	   UTypeResult;
+
 
 #if EDIT_1_0_n1_AB
 typedef struct foamuses_struct *   FoamUses;
@@ -93,6 +97,7 @@ DECLARE_LIST(Foam);
 DECLARE_LIST(CCode);
 DECLARE_LIST(UdInfo);
 DECLARE_LIST(DepDag);
+DECLARE_LIST(UTForm);
 
 DECLARE_LIST(SymeList);
 

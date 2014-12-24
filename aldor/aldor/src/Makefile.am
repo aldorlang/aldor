@@ -199,6 +199,9 @@ libstruct_a_SOURCES =	\
 	token.c		\
 	tposs.c		\
 	tqual.c		\
+	utform.c	\
+	utype.c		\
+	utyperes.c	\
 	uvar.c		\
 	version.c
 #libstruct_a_LIBADD = libgen.a libport.a
