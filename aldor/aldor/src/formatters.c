@@ -50,9 +50,13 @@ local int errorSetFormatter(OStream stream, Pointer p);
 local int javaCodeFormatter(OStream stream, Pointer p);
 
 
+local int boolFormatter(OStream ostream, int p);
+
 void
 fmttsInit()
 {
+	fmtRegisterI("Bool", boolFormatter);
+
 	fmtRegister("TForm", tfFormatter);
 	fmtRegister("TFormList", tfListFormatter);
 
@@ -306,4 +310,18 @@ stringListFormatter(OStream ostream, Pointer p)
 {
 	StringList list = (StringList) p;
 	return listFormat(String)(ostream, "String", list);
+}
+
+local int
+boolFormatter(OStream ostream, int p)
+{
+	Bool flg = p;
+
+	if (flg < 0 || flg > 1)	{
+		return ostreamPrintf(ostream, "Bool[%d]", flg);
+	}
+	else {
+		return ostreamPrintf(ostream, "%s", flg ? "true": "false");
+	}
+
 }
