@@ -123,9 +123,9 @@ extern Stab		stabFindLevel		(Stab, Syme);
 #define	TFS_ArgMissing		(((SatMask) 1) << 22)
 #define	TFS_BadArgType		(((SatMask) 1) << 23)
 #define	TFS_DifferentArity	(((SatMask) 1) << 24)
+#define	TFS_UnifyFail		(((SatMask) 1) << 25)
 
-
-#define	TFS_BitsWidth		25
+#define	TFS_BitsWidth		26
 #define	TFS_BitsMask		((((SatMask) 1) << TFS_BitsWidth) - 1)
 
 #define	TFS_ModeMask		(\
@@ -155,7 +155,8 @@ extern Stab		stabFindLevel		(Stab, Syme);
 				TFS_EmbedFail		| \
 				TFS_ArgMissing		| \
 				TFS_BadArgType		| \
-				TFS_DifferentArity	)
+				TFS_DifferentArity	| \
+				TFS_UnifyFail     	)
 
 #define	TFS_ParnMask		(~TFS_BitsMask)
 
