@@ -46,6 +46,7 @@ SymeList utformVars(UTForm utf);
 
 UTForm utformSubst(AbSub sigma, UTForm utf);
 UTypeResult utformUnify(UTForm ut1, UTForm ut2);
+Bool utformCanUnify(UTForm ut1, UTForm ut2);
 
 Bool utfIsUnknown(UTForm S);
 Bool utfIsConstant(UTForm S);

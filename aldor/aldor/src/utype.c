@@ -224,11 +224,59 @@ utfExpr(UTForm utf)
 	return utypeNew(listCopy(Syme)(utformVars(utf)), tfExpr(utformTForm(utf)));
 }
 
+Bool
+utformCanUnify(UTForm ut1, UTForm ut2)
+{
+	UTypeResult res = utformUnify(ut1, ut2);
+	Bool ret;
+	ret = !utypeResultIsFail(res);
+	utypeResultFree(res);
+
+	return ret;
+}
+
+local UTypeResult utformUnifyInner(UTForm ut1, UTForm ut2, TForm tf1, TForm tf2);
 
 UTypeResult
 utformUnify(UTForm ut1, UTForm ut2)
 {
-	return utypeUnify(utfExpr(ut1), utfExpr(ut2));
+	return utformUnifyInner(ut1, ut2, utformTForm(ut1), utformTForm(ut2));
+}
+
+static int ucount=0;
+local UTypeResult
+utformUnifyInner(UTForm ut1, UTForm ut2, TForm tf1, TForm tf2)
+{
+	UTypeResult result;
+	int i;
+	int serial = ucount++;
+
+	tfFollow(tf1);
+	tfFollow(tf2);
+
+	utypeDEBUG(dbOut, "(Unify %d: %pTForm %pTForm\n", serial, tf1, tf2);
+
+	if (tfTag(tf1) != tfTag(tf2)) {
+		utypeDEBUG(dbOut, "Unify %d: Failed)\n", serial);
+		return utypeResultFailed();
+	}
+
+	if (tfIsGeneral(tf1) && tfIsGeneral(tf2)) {
+		result = utypeUnifySefo(utfExpr(ut1), utfExpr(ut2), tfExpr(tf1), tfExpr(tf2));
+		utypeDEBUG(dbOut, "Unify %d: %pUTypeResult)\n", serial, result);
+		return result;
+	}
+	if (tf1->argc != tf2->argc) {
+		utypeDEBUG(dbOut, "Unify %d: Failed argc)\n", serial);
+		return utypeResultFailed();
+	}
+	result = utypeResultEmpty();
+	for (i=0; i < tf1->argc && !utypeResultIsFail(result); i++) {
+		UTypeResult utrI = utformUnifyInner(ut1, ut2, tfArgv(tf1)[i], tfArgv(tf2)[i]);
+		result = utypeResultMerge(result, utrI);
+	}
+	utypeDEBUG(dbOut, "Unify %d: %pUTypeResult)\n", serial, result);
+	return result;
 }
 
 
@@ -526,6 +574,35 @@ utypeResultApply(UTypeResult result, UType utype)
 	return utypeNew(freevars, sefoSubst(sigma, utypeSefo(utype)));
 }
 
+UTForm
+utypeResultApplyTForm(UTypeResult result, UTForm utf)
+{
+	SymeList freevars;
+	AbSub sigma;
+	SymeList symes;
+	assert(!utypeResultIsFail(result));
+
+	if (utfIsConstant(utf))
+		return utf;
+
+	sigma = utypeResultSigma(result);
+
+	freevars = listNil(Syme);
+	symes = utformVars(utf);
+
+	while (symes != listNil(Syme)) {
+		Syme syme = car(symes);
+		symes = cdr(symes);
+		if (listMemq(Syme)(result->symes, syme))
+			continue;
+		else if (listMember(Syme)(result->symes, syme, symeEqual))
+			continue;
+		freevars = listCons(Syme)(syme, freevars);
+	}
+
+	return utformNew(freevars, tfSubst(sigma, utformTForm(utf)));
+}
+
 AbSub
 utypeResultSigma(UTypeResult result)
 {
@@ -553,15 +630,6 @@ utformFromType(UType type)
 {
 	return utformNew(listCopy(Syme)(utypeVars(type)),
 			 tfFullFrAbSyn(stabFile(), utypeSefo(type)));
-}
-
-
-UTForm
-utypeResultApplyTForm(UTypeResult result, UTForm utf)
-{
-	UType usefo = utypeResultApply(result, utfExpr(utf));
-
-	return utformFromType(usefo);
 }
 
 int
