@@ -11,7 +11,6 @@
 
 #include "axlobs.h"
 #include "tform.h"
-#include "utype.h"
 
 struct tposs {
 	UTFormList	possl;
@@ -27,6 +26,7 @@ extern TPoss	tpossFrSymes		(SymeList);
 extern TPoss	tpossDeclare		(Syme, TPoss);
 extern TPoss	tpossMulti		(Length, Pointer, TPossGetter);
 extern TPoss	tpossAdd1		(TPoss, TForm);
+extern TPoss	tpossAdd1UTForm		(TPoss, UTForm);
 extern TPoss    tpossFrTheUTFormList	(UTFormList);
 extern UTForm   tpossUniqueUTForm	(TPoss);
 

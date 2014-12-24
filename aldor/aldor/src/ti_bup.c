@@ -27,7 +27,7 @@
 #include "comsg.h"
 #include "strops.h"
 #include "table.h"
-
+#include "utype.h"
 
 /*****************************************************************************
  *

@@ -21,6 +21,7 @@
 #include "absub.h"
 #include "ablogic.h"
 #include "comsg.h"
+#include "utype.h"
 
 Bool	tfsDebug	= false;
 Bool	tfsMultiDebug	= false;
