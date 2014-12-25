@@ -22,6 +22,8 @@
 #include "ablogic.h"
 #include "comsg.h"
 #include "utype.h"
+#include "store.h"
+#include "util.h"
 
 Bool	tfsDebug	= false;
 Bool	tfsMultiDebug	= false;
@@ -1902,6 +1904,234 @@ tfSatParentsFilter(SymeList osymes, SymeList nsymes)
 	return listNReverse(Syme)(rsymes);
 }
 
+/******************************************************************************
+ *
+ * :: Universally quantified types
+ *
+ *****************************************************************************/
+
+static int utfSatMaskInstances;
+
+local USatMask utfSatArgPoss(SatMask mask, AbSyn Sab, UTForm T);
+
+local USatMask
+utfSatResult(SatMask mask, SatMask moreMask, UTypeResult result)
+{
+	USatMask umask = (USatMask) stoAlloc(OB_Other, sizeof(*umask));
+	umask->mask = tfSatResult(mask, moreMask);
+	umask->result = result;
+
+	utfSatMaskInstances++;
+
+	return umask;
+}
+
+local USatMask
+utfSatResultFail(SatMask mask, SatMask moreMask)
+{
+	return utfSatResult(mask, moreMask, utypeResultFailed());
+}
+
+local USatMask
+utfSatTrue(SatMask mask)
+{
+	return utfSatResult(tfSatTrue(mask), 0, utypeResultEmpty());
+}
+
+local USatMask
+utfSatFalse(SatMask mask)
+{
+	return utfSatResult(tfSatFalse(mask), 0, utypeResultFailed());
+}
+
+Bool
+utfSatSucceed(USatMask umask)
+{
+	return tfSatSucceed(umask->mask);
+}
+
+Bool
+utfSatPending(USatMask umask)
+{
+	return tfSatPending(umask->mask);
+}
+
+UTypeResult
+utfSatMaskLiberate(USatMask umask)
+{
+	UTypeResult result = umask->result;
+	umask->result = utypeResultFailed();
+	utfSatMaskFree(umask);
+	return result;
+}
+
+USatMask
+utfSatMaskCombine(USatMask mask1, USatMask mask2)
+{
+	if (utfSatSucceed(mask1) && utfSatSucceed(mask2)) {
+		SatMask resultMask = mask1->mask;
+		UTypeResult result1 = utfSatMaskLiberate(mask1);
+		UTypeResult result2 = utfSatMaskLiberate(mask2);
+		UTypeResult newResult = utypeResultMerge(result1, result2);
+
+		return utfSatResult(resultMask, 0, newResult);
+	}
+	utfSatMaskFree(mask2);
+	return mask1;
+}
+
+void
+utfSatMaskFree(USatMask umask)
+{
+	utypeResultFree(umask->result);
+	stoFree(umask);
+	utfSatMaskInstances--;
+	if (utfSatMaskInstances < 0)
+		bug("Double free");
+}
+
+local USatMask
+utfSatParNFail(USatMask result, int n)
+{
+	result->mask = tfSatParNFail(result->mask, n);
+	return result;
+}
+
+USatMask
+utfSatMapArgs(SatMask mask, AbSub sigma, UTForm S,
+	      AbSyn ab, Length argc, AbSynGetter argf)
+{
+	return utfSatAsMulti(mask, sigma, utfMapArg(S), S, ab, argc, argf);
+}
+
+USatMask
+utfSatAsMulti(SatMask mask, AbSub sigma, UTForm S, UTForm TScope,
+	      AbSyn ab, Length argc, AbSynGetter argf)
+{
+	USatMask result = utfSatTrue(mask);
+	int i;
+	for (i=0; i<argc; i++) {
+		AbSyn	abi;
+		UTForm	tfi;
+		Syme	syme;
+		USatMask maski = utfSatTrue(mask);
+		Bool def;
+		Length ai;
+		tfi = utfAsMultiArgN(S, argc, i);
+		abi = utfAsMultiSelectArg(ab, argc, i, argf, tfi, &def, &ai);
+
+		if (!abi) {
+			utfSatMaskFree(result);
+			result = utfSatResultFail(mask, TFS_ArgMissing);
+			result = utfSatParNFail(result, i);
+			break;
+		}
+		syme = utfDefineeSyme(tfi);
+		tfi = utfDefineeType(tfi);
+		tfi = utformSubst(sigma, tfi);
+
+		if (!tfSatSigma(mask)) {
+			maski = utfSatArg(mask, abi, tfi);
+			if (!utfSatSucceed(maski)) {
+				utfSatMaskFree(result);
+				result = utfSatResultFail(mask, TFS_BadArgType);
+				result = utfSatParNFail(result, i);
+				break;
+			}
+			if (utfSatPending(maski)) {
+				utfSatMaskFree(result);
+				result = utfSatResultFail(mask, TFS_Pending);
+			}
+			else {
+				result = utfSatMaskCombine(result, maski);
+			}
+		}
+	}
+	afprintf(dbOut, "%pUTForm %pUTForm --> %d\n", S, TScope, utfSatSucceed(result));
+
+	return result;
+}
+
+USatMask
+utfSatArg(SatMask mask, AbSyn ab, UTForm T)
+{
+	USatMask result;
+
+	mask &= ~TFS_AnyToNone;
+
+	/* We'd rather not use pending embeddings to decide argc questions. */
+	if (utfIsMulti(T) && utfIsPending(T))
+		mask &= ~TFS_Pending;
+
+	switch (abState(ab)) {
+	case AB_State_HasPoss:
+		result = utfSatArgPoss(mask, ab, T);
+		break;
+
+	case AB_State_HasUnique:
+		result = utfSat1(mask, ab, utformNewConstant(abTUnique(ab)), T);
+		break;
+
+	default:
+		result = utfSatFalse(mask);
+		break;
+	}
+
+	return result;
+}
+
+
+local USatMask
+utfSatArgPoss(SatMask mask, AbSyn Sab, UTForm T)
+{
+	TPossIterator it;
+	USatMask result;
+	TPoss S = abTPoss(Sab);
+
+	for (tpossITER(it, S); tpossMORE(it); tpossSTEP(it)) {
+		UTForm	utf = tpossUELT(it);
+		result = utfSat1(mask, Sab, utf, T);
+		if (utfSatSucceed(result)) {
+			afprintf(dbOut, "SatArgPoss: %pAbSyn %pUTForm --> %d\n",
+				 Sab, T, utfSatSucceed(result));
+			return result;
+		}
+	}
+	return utfSatFalse(mask);
+}
+
+USatMask
+utfSat1(SatMask mask, AbSyn Sab, UTForm S, UTForm T)
+{
+	UTypeResult unify;
+	UTForm uS;
+	UTForm uT;
+	SatMask result;
+
+	if (utfIsConstant(T)) {
+		result = tfSat1(mask, Sab, utformTForm(S), utformTForm(T));
+		if (tfSatSucceed(result))
+			return utfIsConstant(S)
+				? utfSatTrue(result)
+				: utfSatResult(result, TFS_Unify, utypeResultEmpty());
+	}
+
+	unify = utformUnify(S, T);
+	uS = utypeResultApplyTForm(unify, S);
+	uT = utypeResultApplyTForm(unify, T);
+	result =  tfSat1(mask, Sab, utformTForm(uS), utformTForm(uT));
+	afprintf(dbOut, "%pUTForm %pUTForm --> %d\n", S, T, tfSatSucceed(result));
+	afprintf(dbOut, "Sigma: %pUTypeResult\n", unify);
+	afprintf(dbOut, "S: %pUTForm\nT: %pUTForm\n", uS, uT);
+
+	return utfSatResult(result, TFS_Unify, unify);
+}
+
+USatMask
+utfSat(SatMask mask, UTForm S, UTForm T)
+{
+	return utfSat1(mask, NULL, S, T);
+}
 
 /******************************************************************************
  *

@@ -10,6 +10,7 @@
 #define _TFSAT_H_
 
 #include "axlobs.h"
+#include "utype.h"
 
 /******************************************************************************
  *
@@ -106,7 +107,6 @@ extern SatMask          tfSat1          (SatMask mask, AbSyn Sab, TForm S, TForm
 
 extern AbSub		tfSatSubList	(AbSyn);
 
-
 /******************************************************************************
  *
  * :: tfSatMulti
@@ -117,5 +117,30 @@ extern SatMask		tfSatMapArgs	(SatMask, AbSub, TForm,
 					 AbSyn, Length, AbSynGetter);
 extern SatMask 		tfSatAsMulti 	(SatMask, AbSub, TForm, TForm,
 					 AbSyn, Length, AbSynGetter);
+
+
+/******************************************************************************
+ *
+ * :: utfSat
+ *
+ *****************************************************************************/
+typedef struct usatmask {
+	SatMask mask;
+	UTypeResult result;
+} *USatMask;
+
+USatMask utfSatArg(SatMask mask, AbSyn ab, UTForm T);
+
+USatMask utfSatMapArgs(SatMask mask, AbSub sigma, UTForm S,
+		      AbSyn ab, Length arg, AbSynGetter argf);
+
+USatMask utfSatAsMulti(SatMask mask, AbSub sigma, UTForm S, UTForm TScope,
+		      AbSyn ab, Length argc, AbSynGetter argf);
+USatMask utfSat1(SatMask mask, AbSyn Sab, UTForm S, UTForm T);
+USatMask utfSat(SatMask mask, UTForm S, UTForm T);
+Bool	 utfSatSucceed(USatMask);
+Bool	 utfSatPending(USatMask);
+void	 utfSatMaskFree(USatMask);
+
 
 #endif /* !_TFSAT_H_ */
