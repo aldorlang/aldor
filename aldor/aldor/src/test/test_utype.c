@@ -7,9 +7,14 @@
 #include "absub.h"
 #include "debug.h"
 #include "testall.h"
+#include "tinfer.h"
+#include "tfsat.h"
 
 local void test0();
 local void test1();
+local void test2();
+local void testUtfSat();
+
 extern Bool utypeDebug;
 
 void
@@ -17,6 +22,7 @@ utypeTestSuite(void)
 {
 	init();
 	TEST(test0);
+	TEST(testUtfSat);
 	TEST(test1);
 	fini();
 }
@@ -143,5 +149,50 @@ test2()
 
 	finiFile();
 
+}
+
+local void
+testUtfSat()
+{
+	UTForm arrayOfX;
+	Sefo sefo1, sefo2;
+	SymeList varList;
+	Syme param, arraySyme, intSyme, paramSyme, paramCopy1, paramCopy2;
+	AbSub sigma;
+	UTypeResult res;
+	USatMask mask;
+
+	initFile();
+	stdscope(stabFile());
+
+	tfqTypeInfer(stabFile(), "Monoid: Category == with { 1: %; *: (%, %) -> % }");
+	tfqTypeInfer(stabFile(), "Int: Monoid == add { 1: % == never; (a: %) * (b: %): % == never}");
+	tfqTypeInfer(stabFile(), "Array(T: with): with { empty: () -> %; } == add { empty(): % == never}");
+
+	/* lhs: {Array(T): T: with} */
+	arraySyme  = uniqueMeaning(stabFile(), "Array");
+	intSyme  = uniqueMeaning(stabFile(), "Int");
+	paramSyme = tfDeclareSyme(tfMapArgN(symeType(arraySyme), 0));
+	paramCopy1 = symeClone(paramSyme);
+	paramCopy2 = symeClone(paramSyme);
+
+#define ArrayOf(x) apply1(abFrSyme(arraySyme), x)
+	sefo1 = sefo(ArrayOf(abFrSyme(paramCopy1)));
+	varList = listSingleton(Syme)(paramCopy1);
+	arrayOfX = utformNew(varList, tiGetTForm(stabFile(), sefo1));
+	mask = utfSat(tfSatBupMask(),
+		      arrayOfX,
+		      utformNewConstant(tfqTypeForm(stabFile(), "Int")));
+	testFalse("", utfSatSucceed(mask));
+
+	mask = utfSat(tfSatBupMask(), arrayOfX,
+		     utformNewConstant(tfqTypeForm(stabFile(), "Array Int")));
+	testTrue("", utfSatSucceed(mask));
+	mask = utfSat(tfSatBupMask(), arrayOfX,
+		     utformNewConstant(tfqTypeForm(stabFile(), "Array Array Int")));
+	testTrue("", utfSatSucceed(mask));
+
+	mask = utfSat(tfSatBupMask(), arrayOfX, utformNewConstant(tfUnknown));
+	testTrue("", utfSatSucceed(mask));
 }
 

@@ -1927,6 +1927,15 @@ utfSatResult(SatMask mask, SatMask moreMask, UTypeResult result)
 	return umask;
 }
 
+local void
+utfSatResultFree(USatMask mask)
+{
+	utfSatMaskInstances--;
+	utypeResultFree(mask->result);
+	stoFree(mask);
+}
+
+
 local USatMask
 utfSatResultFail(SatMask mask, SatMask moreMask)
 {
@@ -2123,7 +2132,11 @@ utfSat1(SatMask mask, AbSyn Sab, UTForm S, UTForm T)
 			return utfSatResultFail(mask, result);
 	}
 	else if (utfIsConstant(T)) {
-		return utfSatResult(tfSat1(mask, Sab, utformTForm(S), utformTForm(T)), 0, utypeResultEmpty());
+		USatMask uresult = utfSatResult(mask,
+				      tfSat1(mask, Sab, utformTForm(S), utformTForm(T)),
+				      utypeResultEmpty());
+		if (utfSatSucceed(uresult))
+			return uresult;
 	}
 	else if (utfIsConstant(S)) {
 		if (tfIsUnknown(utformTForm(S)))
