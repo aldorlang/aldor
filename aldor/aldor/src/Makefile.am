@@ -186,6 +186,7 @@ libstruct_a_SOURCES =	\
 	tposs.c		\
 	tqual.c		\
 	utype.c		\
+	wildimp.c	\
 	version.c
 
 #libstruct_a_LIBADD = libgen.a libport.a
