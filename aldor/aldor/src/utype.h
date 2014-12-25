@@ -55,4 +55,8 @@ Bool utypeResultIsFail(UTypeResult res);
 Bool utypeResultIsEmpty(UTypeResult res);
 int utypeResultOStreamPrint(OStream ostream, UTypeResult utypeResult);
 
+int utfPrintDb(UTForm);
+int utypePrintDb(UType);
+int utypeResultPrintDb(UTypeResult);
+
 #endif

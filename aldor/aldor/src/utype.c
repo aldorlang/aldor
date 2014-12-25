@@ -8,6 +8,7 @@
 #include "format.h"
 #include "ablogic.h"
 #include "util.h"
+#include "debug.h"
 
 Bool utypeDebug = false;
 #define utypeDEBUG			DEBUG_IF(utype)		afprintf
@@ -403,3 +404,22 @@ utypeUnifyId(UType ut1, UType ut2, Syme syme1, Sefo sefo2)
 		return utypeResultOne(syme1, sefo2);
 	}
 }
+
+int
+utfPrintDb(UTForm utf)
+{
+	return afprintf(dbOut, "%pUTForm\n", utf);
+}
+
+int
+utypePrintDb(UType utype)
+{
+	return afprintf(dbOut, "%pUType\n", utype);
+}
+
+int
+utypeResultPrintDb(UTypeResult result)
+{
+	return afprintf(dbOut, "%pUTypeResult\n", result);
+}
+
