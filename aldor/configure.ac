@@ -14,8 +14,13 @@ AM_MAINTAINER_MODE([enable])
 
 # Checks for programs
 AC_PROG_LEX
-AC_PROG_YACC
-
+AC_CHECK_PROGS(YACC,byacc yacc 'bison -y',[${am_missing_run} yacc])
+if test "x$LEX" = ":" ];
+then
+	LEX="$SHELL $missing_dir/missing lex"
+	AC_SUBST([LEX_OUTPUT_ROOT], [lex.yy])
+        AC_SUBST([LEXLIB], [''])
+fi
 GC=aldor
 # Check for GMP
 AC_CHECK_HEADER([gmp.h],
