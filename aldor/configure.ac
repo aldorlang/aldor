@@ -15,6 +15,7 @@ AM_MAINTAINER_MODE([enable])
 # Checks for programs
 AC_PROG_LEX
 AC_PROG_YACC
+AC_PROG_RANLIB
 
 GC=aldor
 # Check for GMP
