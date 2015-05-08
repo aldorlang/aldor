@@ -891,8 +891,10 @@ osSetSignalHandlers(OsSignalHandler *posigfn,int *sigv,OsSignalHandler nsigfn)
 OsSignalHandler
 osSetSignalHandlers(OsSignalHandler *posigfn,int *sigv,OsSignalHandler nsigfn)
 {
-	struct sigaction oldaction = { 0 };
-	struct sigaction newaction = { 0 };
+	struct sigaction oldaction;
+	struct sigaction newaction;
+	memset(&oldaction, 0, sizeof(oldaction));
+	memset(&newaction, 0, sizeof(newaction));
 
 	newaction.sa_handler = nsigfn ? nsigfn : SIG_DFL;
 
