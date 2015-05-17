@@ -148,6 +148,8 @@ List(T:Type): ListType T == add {
 
 	bracket(t:Tuple T):% == {
 		import from Z;
+		length(t) = 0 => empty;
+		length(t) = 1 => cons(element(t, 1), empty);
 		l := empty;
 		for n in length(t)..1 by -1 repeat l := cons(element(t, n), l);
 		l;
