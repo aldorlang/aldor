@@ -262,7 +262,7 @@ aldortooldir = $(abs_top_builddir)/aldor/subcmd/unitools
 foamdir = $(abs_top_builddir)/aldor/lib/libfoam
 foamlibdir = $(abs_top_builddir)/aldor/lib/libfoamlib
 
-$(aldortestexecs): %.aldortest.exe: Makefile
+$(aldortestexecs): %.aldortest.exe: Makefile %.as
 	$(AM_V_ALDORTEST) \
          (if ! grep -q '^#if ALDORTEST' $(srcdir)/$*.as; then touch $@; fi; \
 	 echo "  ALDORTEST $*.as"; \
