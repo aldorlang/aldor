@@ -68,6 +68,7 @@ libaldor_a_SOURCES =	\
 	datastruc/sal_string.c	\
 	datastruc/sal_table.c	\
 	datastruc/sal_union.c	\
+	datastruc/sal_map.c	\
 	lang/sal_lang.c	\
 	test/tst_assert.c	\
 	util/ald_trace.c	\
