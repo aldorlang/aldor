@@ -37,3 +37,5 @@ ald_flags_deps := sal_list sal_barray
 
 sal_langx_deps := sal_list sal_string
 sal_union_deps := sal_string sal_langx
+
+sal_map_deps := sal_list
