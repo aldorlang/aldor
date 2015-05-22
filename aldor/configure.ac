@@ -127,6 +127,7 @@ AC_CONFIG_FILES(
    lib/algebra/src/categories/Makefile
    lib/algebra/src/basic/Makefile
    lib/algebra/src/basic/compbug/Makefile
+   lib/algebra/src/logic/Makefile
    lib/algebra/src/mat/Makefile
    lib/algebra/src/mat/gauss/Makefile
    lib/algebra/src/mat/modular/Makefile

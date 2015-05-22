@@ -1,0 +1,20 @@
+@SET_MAKE@
+VPATH = @srcdir@
+
+# For AM_V_*
+AM_DEFAULT_VERBOSITY = @AM_DEFAULT_VERBOSITY@
+
+builddir	:= @builddir@
+abs_builddir	:= @abs_builddir@
+top_builddir	:= @top_builddir@
+abs_top_builddir:= @abs_top_builddir@
+srcdir		:= @srcdir@
+abs_srcdir	:= @abs_srcdir@
+top_srcdir	:= @top_srcdir@
+abs_top_srcdir	:= @abs_top_srcdir@
+subdir		:= $(subst $(abs_top_builddir)/,,$(abs_builddir))
+
+# Build starts here
+library = sit_logiccat sit_idxatom sit_bit
+
+include $(abs_top_srcdir)/lib/algebra/src/common.mk
