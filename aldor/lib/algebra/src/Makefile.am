@@ -153,6 +153,7 @@ libalgebra_a_SOURCES =				\
 	fraction/sit_vecquot.c			\
 	logic/sit_bit.c				\
 	logic/sit_idxatom.c			\
+	logic/sit_lexpr.c			\
 	logic/sit_logiccat.c			\
 	mat/gauss/sit_dfge.c			\
 	mat/gauss/sit_ff2ge.c			\
