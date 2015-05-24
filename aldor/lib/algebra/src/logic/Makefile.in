@@ -15,6 +15,6 @@ abs_top_srcdir	:= @abs_top_srcdir@
 subdir		:= $(subst $(abs_top_builddir)/,,$(abs_builddir))
 
 # Build starts here
-library = sit_logiccat sit_idxatom sit_bit
+library = sit_logiccat sit_idxatom sit_bit sit_lexpr
 
 include $(abs_top_srcdir)/lib/algebra/src/common.mk
