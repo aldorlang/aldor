@@ -13,8 +13,10 @@ BooleanAlgebra: Category == ExpressionType with {
 
    false: %;
    true: %;
-}
 
+   true?: % -> Boolean;
+   false?: % -> Boolean;
+}
 
 -- Test the basic axioms for Atoms
 -- not very interesting, but anyways..
