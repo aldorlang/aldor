@@ -9,7 +9,10 @@ Bit: BooleanAlgebra with {
    import from Rep;
    true: % == per true;
    false: % == per false;
-   
+
+   true?(a: %): Boolean == rep a;
+   false?(a: %): Boolean == not rep a;
+
    _and(a: %, b: %): % == per(rep a and rep b);
    _or(a: %, b: %): % == per(rep a or rep b);
    _not(a: %): % == per not rep a;
