@@ -53,6 +53,7 @@ libaldor_a_SOURCES =	\
 	datastruc/sal_fstruc.c	\
 	datastruc/sal_fold.c	\
 	datastruc/sal_hash.c	\
+	datastruc/sal_hashset.c	\
 	datastruc/sal_kntry.c	\
 	datastruc/sal_langx.c	\
 	datastruc/sal_list.c	\
