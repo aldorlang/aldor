@@ -80,10 +80,10 @@ aldor_common_args :=				\
 	-Mno-ALDOR_W_WillObsolete		\
 	-Wcheck -Waudit
 
-DBG := $(if $(filter 1,$(DBG)), gdb --args, $(DBG))
+AM_DBG := $(if $(filter 1,$(DBG)), gdb --args, $(DBG))
 $(addsuffix .c, $(library)): %.c: %.ao %.dep
 	$(AM_V_AO2C)				\
-	$(DBG) $(aldorexedir)/aldor			\
+	$(AM_DBG) $(aldorexedir)/aldor			\
 	  $(aldor_common_args)			\
 	  -Fc=$(builddir)/$@			\
 	  $<	
@@ -114,7 +114,7 @@ $(addsuffix .ao, $(alldomains)): %.ao: $(SUBLIB_DEPEND).al
 	rm -f $*.c $*.ao;							\
 	cp $(SUBLIB_DEPEND).al lib$(libraryname)_$*.al;				\
 	ar r lib$(libraryname)_$*.al $(addsuffix .ao, $(shell $(UNIQ) $*.dep));	\
-	$(DBG) $(aldorexedir)/aldor $(aldor_args);				\
+	$(AM_DBG) $(aldorexedir)/aldor $(aldor_args);				\
 	rm lib$(libraryname)_$*.al
 
 $(SUBLIB_DEPEND).al: $(foreach l,$(library_deps),$(librarylibdir)/$l/$(SUBLIB).al)
@@ -142,7 +142,7 @@ $(addsuffix .gloop, $(alldomains)): %.gloop:
 	rm -f $*.c $*.ao;							\
 	cp $(SUBLIB_DEPEND).al lib$(libraryname)_$*.al;				\
 	ar r lib$(libraryname)_$*.al $(addsuffix .ao, $(shell $(UNIQ) $*.dep));	\
-	$(DBG) $(aldorexedir)/aldor -gloop 	\
+	$(AM_DBG) $(aldorexedir)/aldor -gloop 	\
 	  $(aldor_common_args) 			\
 	  -Y.					\
 	  -Y$(aldorlibdir)/libfoam/al		\
@@ -205,7 +205,7 @@ ifneq ($(javalibrary),)
 _javalibrary = $(filter-out $(java_blacklist), $(javalibrary))
 
 $(addsuffix .java, $(_javalibrary)): %.java: %.ao
-	$(AM_V_FOAMJ)$(DBG)	\
+	$(AM_V_FOAMJ)$(AM_DBG)	\
 	$(aldorexedir)/aldor $(aldor_common_args) -Fjava $*.ao
 
 $(addsuffix .class, $(_javalibrary)): %.class: $(libraryname).classlib
@@ -238,7 +238,7 @@ $(aldortests): %.aldortest-exec-interp: Makefile
          (if ! grep -q '^#if ALDORTEST' $(srcdir)/$*.as; then exit 0; fi; \
 	 echo "  ALDORTEST $*.as"; \
 	 sed -n -e '/^#if ALDORTEST/,/^#endif/p' < $(srcdir)/$*.as > $*_test.as; \
-	 $(DBG) $(aldorexedir)/aldor $(aldor_common_args) -Y$(aldorlibdir)/libfoam/al \
+	 $(AM_DBG) $(aldorexedir)/aldor $(aldor_common_args) -Y$(aldorlibdir)/libfoam/al \
 			-I$(top_srcdir)/lib/aldor/include -Y$(top_builddir)/lib/aldor/src \
 			-Y$(librarylibdir) -I$(libraryincdir) -ginterp -DALDORTEST \
 			$*_test.as; \
@@ -266,7 +266,7 @@ $(aldortestexecs): %.aldortest.exe: Makefile
          (if ! grep -q '^#if ALDORTEST' $(srcdir)/$*.as; then touch $@; fi; \
 	 echo "  ALDORTEST $*.as"; \
 	 sed -n -e '/^#if ALDORTEST/,/^#endif/p' < $(srcdir)/$*.as > $*_test.as; \
-	 $(DBG) $(aldorexedir)/aldor $(aldor_common_args) -Y$(aldorlibdir)/libfoam/al \
+	 $(AM_DBG) $(aldorexedir)/aldor $(aldor_common_args) -Y$(aldorlibdir)/libfoam/al \
 		        -Ccc=$(aldortooldir)/unicl	\
 		      -Y$(foamdir) -Y			\
 		      -Y$(foamlibdir) -l$(libraryname) $(patsubst %,-l%,$(librarydeps))  \
@@ -283,7 +283,7 @@ $(aldortestjavas): %.aldortest-exec-java: Makefile %.as
         (if grep -q '^#if ALDORTEST' $(srcdir)/$*.as; then \
 	 echo "   ALDORTESTJ $*"; \
 	 sed -n -e '/^#if ALDORTEST/,/^#endif/p' < $(srcdir)/$*.as > $*_jtest.as; \
-	 $(DBG) $(aldorexedir)/aldor $(aldor_common_args) -Y$(aldorlibdir)/libfoam/al \
+	 $(AM_DBG) $(aldorexedir)/aldor $(aldor_common_args) -Y$(aldorlibdir)/libfoam/al \
 		-Y$(foamdir) -Y$(foamlibdir) -l$(libraryname) $(patsubst %,-l%,$(librarydeps)) \
 		-I$(top_srcdir)/lib/aldor/include -Y$(top_builddir)/lib/aldor/src \
 		-Y$(librarylibdir) -I$(libraryincdir) -DALDORTEST $$(cat $*_jtest.as | grep ^aldoroptions: | sed -e 's/aldoroptions://') \
