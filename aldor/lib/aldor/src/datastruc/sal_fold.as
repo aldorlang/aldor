@@ -56,7 +56,6 @@ Fold2(T: with, R: with): FoldingTransformationCategory2(T, R) with {
   (c: Cross((T,R) -> R, R)) / (g: Generator T): R == { (f, init) := c; fper(f, init)/g }
 
   (folder: %) / (l: List T): R == {
-     empty? l => never;
      (f, init) := rep folder;
      acc := init;
      for elt in l repeat {
@@ -111,6 +110,14 @@ testSum(): () == {
         assertEquals(n * (n+1) quo 2, (+)/(x for x in  1..n));
 }
 
+testFoldInit(): () == {
+    import from List Integer;
+    import from Fold2(Integer, Integer);
+    import from Assert Integer;
+    import from Integer;
+    assertEquals(22, (+, 22)/[]);
+    assertEquals(23, (+, 22)/[1]);
+}
 
 testBoolean(): () == {
    import from BooleanFold;
