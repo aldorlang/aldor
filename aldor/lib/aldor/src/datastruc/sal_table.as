@@ -170,6 +170,17 @@ and returns {\em v}.}
 That space grows when needed as elements are inserted in the table.}
 \alseealso{\alexp{[]}}
 #endif
+#if ALDOC
+\alpage{bracket}
+\Usage{\name()\\ \name~n}
+\Signature{\altype{Generator} \altype{Cross}(K, V)}{\%}
+\Params{{\em g} & \% & a generator of key-value pairs\\}
+}
+\Retval{Returns a new table containing the specified pairs}
+\alseealso{\alexp{[]}}
+#endif
+        bracket: Generator Cross(K, V) -> %;
+
 	default {
 		local leftBracket:Ch	== { import from String; char "[" }
 		local rightBracket:Ch	== { import from String; char "]" }
@@ -183,6 +194,14 @@ That space grows when needed as elements are inserted in the table.}
 				t.k := v;
 			}
 			t;
+		}
+
+		[g: Generator Cross(K, V)]: % == {
+		        t := table();
+			for (k, v) in g repeat {
+			    t.k := v;
+			}
+			t
 		}
 
 		apply(t:%, k:K):V == {
