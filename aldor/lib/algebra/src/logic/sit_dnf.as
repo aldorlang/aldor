@@ -130,30 +130,21 @@ Dnf: BooleanAlgebra with {
     }
 
     normalForm(inexpr: LogicExpression): % == {
-        stdout << "(Norm " << inexpr << newline;
         e := removeNegations(inexpr);
         e := distribution(e);
         dnf := dnfFromNormalForm e;
-        stdout << "  " << dnf << "  Norm)" << newline;
         dnf
     }
 
     dnfFromNormalForm(e: LogicExpression): % == {
         import from List LogicExpression;
-        --stdout << "Convert " << clause? e << " expr: " << e << newline;
         clause? e => per [clause e];
         or? e => per [clause term for term in terms e];
         stdout << "Not in normal form " << e << newline;
         never;
     }
 
-    removeNegations(e: LogicExpression): LogicExpression == {
-        stdout << "(N " << e << newline;
-        e := removeNegations1 e;
-        stdout << e << " )" << newline;
-        e
-    }
-    local removeNegations1(e: LogicExpression): LogicExpression == {
+    local removeNegations(e: LogicExpression): LogicExpression == {
         import from List LogicExpression;
         import from List IndexedAtom;
         import from IndexedAtom;
@@ -170,12 +161,6 @@ Dnf: BooleanAlgebra with {
     }
 
     distribution(e: LogicExpression): LogicExpression == {
-        stdout << "(D: " << e << newline;
-        d := distribution1(e);
-        stdout << " " << d << "D)" << newline;
-        return d;
-    }
-    distribution1(e: LogicExpression): LogicExpression == {
         import from List LogicExpression;
         import from LogicExpression;
         import from Fold2(LogicExpression, List LogicExpression);
@@ -200,7 +185,6 @@ Dnf: BooleanAlgebra with {
 
     distribution0(e: LogicExpression): LogicExpression == {
         import from List LogicExpression;
-        stdout << "Dist: " << e << " C: " << clause? e << " " << or? e << newline;
         not? e => {
             stdout << "Remove negation failed " << newline;
             never;
@@ -212,7 +196,6 @@ Dnf: BooleanAlgebra with {
         empty? rest eT => never;
         t0 := first eT;
         r := rest eT;
-        stdout << "Dist: " << t0 << " " << r << newline;
         and? t0 => {
             -- or(and(t00, t0R), r) ==> and(or(t00, r), or(t0R, r))
             t00 := first terms t0;
