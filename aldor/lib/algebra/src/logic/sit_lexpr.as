@@ -93,11 +93,14 @@ OrClause: Join(ExpressionType, TotallyOrderedType, HashType) with {
 AndClause: Join(ExpressionType, TotallyOrderedType, HashType) with {
     clause: IndexedAtom -> %;
     _and: Tuple % -> Partial %;
+    _and: Generator % -> Partial %;
     atom: % -> Partial IndexedAtom;
     atoms: % -> List IndexedAtom;
 
     true: () -> %;
     true?: % -> Boolean;
+
+    implies?: (%, %) -> Boolean;
 }
 == add {
     Rep ==> List IndexedAtom;
@@ -153,6 +156,37 @@ AndClause: Join(ExpressionType, TotallyOrderedType, HashType) with {
 	   acc := retract pacc;
        }
        [acc]
+    }
+
+    _and(g: Generator %): Partial % == {
+       import from MachineInteger;
+       acc: % := true();
+       for term in g repeat {
+	   pacc := and2(acc, term);
+	   failed? pacc => return failed;
+	   acc := retract pacc;
+       }
+       [acc]
+    }
+
+
+    implies?(lhs: %, rhs: %): Boolean == {
+        import from IndexedAtom;
+        lhsList := rep lhs;
+        rhsList := rep rhs;
+	while not empty? rhsList and not empty? lhsList repeat {
+	    if first lhsList = first rhsList then {
+	        lhsList := rest lhsList;
+	        rhsList := rest rhsList;
+	    }
+	    else if first lhsList < first rhsList then {
+	        lhsList := rest lhsList;
+	    }
+	    else {
+	        return false;
+	    }
+	}
+	return empty? rhsList;
     }
 
     (a: %) = (b: %): Boolean == rep a = rep b;
@@ -673,11 +707,26 @@ testEvaluate(): () ==
    assertEquals(false, eval _and(expression atom 1, expression negate atom 2));
 
 
+testImplies(): () ==
+    import from AndClause
+    import from IndexedAtom
+    import from Partial AndClause
+    import from Assert AndClause
+    import from Integer
+    cl := retract _and(clause atom 1, clause atom 3)
+
+    assertTrue(implies?(cl, cl))
+    assertTrue(implies?(cl,  clause atom 1))
+    assertTrue(implies?(cl,  clause atom 3))
+    assertFalse(implies?(cl, clause atom 4))
+    assertFalse(implies?(cl, clause atom 2))
+    assertFalse(implies?(cl, clause negate atom 1))
+
 test()
 test2()
 testOrClauseOrder()
 testSSet()
 
 testEvaluate()
-
+testImplies()
 #endif
