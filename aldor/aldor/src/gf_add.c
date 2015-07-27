@@ -2658,7 +2658,7 @@ gen0Enum(AbSyn absyn)
 
 	for (i = 0; i < argc; i += 1) {
 		AbSyn	arg = abDefineeId(argv[i]);
-		elt = gen0CharArray(arg->abId.sym->str);
+		elt = foamNewCast(FOAM_Word, gen0CharArray(arg->abId.sym->str));
 		gen0AddStmt(gen0ASet(elts, (AInt) i, FOAM_Word, elt), absyn);
 	}
 
