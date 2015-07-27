@@ -3807,7 +3807,6 @@ tfGetDomExports(TForm tf)
 		    tfIsTrailingArray(tf) || tfIsUnion(tf))
 			tfSetDomExports(tf, listCopy(Syme)(tfSymes(tf)));
 		tfGetDomSelf(tf);
-		tfGetDomCascades(tf);
 		cat = tfGetCategory(tf);
 		tfFollow(cat);
 
@@ -3829,6 +3828,7 @@ tfGetDomExports(TForm tf)
 			exps = tfMangleSymes(tf, cat, exps, vexps);
 		}
 		tfAddDomExports(tf, exps);
+		tfGetDomCascades(tf);
 	}
 
 	/*
