@@ -1513,7 +1513,7 @@ bputBadFnType0(TRejectInfo trInfo, Buffer obuf, TForm type, String fmtOp)
 
 	for ( i = 0; i < trInfo->argc &&
 	     trWhy(trInfo->argv[i]) == TR_BadFnType; i++) {
-		TForm tfRet = tfMapRet(trType(trInfo->argv[i]));
+		TForm tfRet = tfMapRet(tfDefineeType(trType(trInfo->argv[i])));
 		tfRet = tfDefineeType(tfRet);
 		tpossAdd1(retTypes, tfRet);
 	}
