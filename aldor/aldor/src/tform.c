@@ -647,6 +647,12 @@ tf0MapRetFrPending(Stab stab, TForm tf)
 	return tf;
 }
 
+Syme
+tfpIdSyme(Stab stab, Symbol sym)
+{
+	return tfp0IdSyme(stab, NULL, sym);
+}
+
 local Syme
 tfp0IdSyme(Stab stab, Syme syme, Symbol sym)
 {

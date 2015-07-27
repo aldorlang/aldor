@@ -129,6 +129,10 @@ tiCanSefo(Sefo sefo)
 	Bool	result = true;
 	Length	i;
 
+	if (abIsId(sefo) && abIdSym(sefo) == ssymType && abSyme(sefo) == NULL) {
+		abSetSyme(sefo, tfpIdSyme(stabFile(), abIdSym(sefo)));
+	}
+
 	if (abIsApply(sefo))
 		tisef0ApplySpecialSyme(stabFile(), sefo);
 
