@@ -275,6 +275,7 @@ extern TForm		tfMeaning		(Stab, AbSyn, TForm);
 extern void		tfSetMeaningArgs	(TForm);
 
 extern Syme		tfpOpSyme		(Stab, Symbol, Length);
+extern Syme		tfpIdSyme		(Stab, Symbol);
 
 /*
  * Type form syntax.
