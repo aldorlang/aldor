@@ -277,7 +277,8 @@ $(aldortestexecs): %.aldortest.exe: Makefile %.as
 			$*_test.as; )
 ifneq ($(BUILD_JAVA),)
 ifneq ($(javalibrary),)
-aldortestjavas := $(patsubst %,%.aldortest-exec-java,$(_javalibrary))
+aldortestjavas := $(patsubst %,%.aldortest-exec-java, \
+			$(filter-out $(java_test_blacklist), $(_javalibrary)))
 
 $(aldortestjavas): %.aldortest-exec-java: Makefile %.as
 	$(AM_V_ALDORTESTJ) \
