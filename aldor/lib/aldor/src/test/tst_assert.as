@@ -33,6 +33,7 @@ Assert(T: with): with {
       assertEquals: (String, T, T) -> ();
       assertNotEquals: (T, T) -> ();
       assertNotEquals: (String, T, T) -> ();
+      equalityAxioms: (T, T, T) -> ();
     }
 
     export from GeneralAssert;
@@ -57,6 +58,18 @@ Assert(T: with): with {
 
       assertNotEquals(s: String, a: T, b: T): () == if (a = b) then {
          fail(s + ": didn't expect " + string(T)(a) + " got " + string(T)(b) + " " + string(Boolean)(a=b));
+      }
+
+      equalityAxioms(a: T, b: T, c: T): () == {
+          import from List List T, List T;
+	  import from Integer;
+	  toString := string(List T);
+          for l in [[a], [b], [c]] repeat
+	      if not (l.0 = l.0) then fail("reflexive");
+          for l in [[a, b], [a, c], [b, c]] repeat
+	      ( (l.1 = l.2) ~= (l.2 = l.1) ) => fail("commutative");
+	  for l in [[a,b,c], [a,c,b], [b,a,c], [b,c,a], [c,a,b],[c,b,a]] repeat
+	      (l.1 = l.2) and (l.2 = l.3) and not (l.1=l.3) => fail("transitive");
       }
     }
 
