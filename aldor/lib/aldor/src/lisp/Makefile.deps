@@ -1,0 +1,3 @@
+library_deps := lang base arith datastruc util
+
+sal_sexpr_deps :=
