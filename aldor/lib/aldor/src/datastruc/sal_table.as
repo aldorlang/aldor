@@ -72,6 +72,10 @@ slot is given by a unique key from {\em K}.}
 then]
 \category{\altype{SerializableType}}\\
 \end{exports}
+\begin{exports}
+[if $V$ has \altype{PrimitiveType} then]
+\category{\altype{PrimitiveType}}\\
+\end{exports}
 #endif
 
 define TableType(K:PrimitiveType, V:Type): Category ==
@@ -80,7 +84,9 @@ define TableType(K:PrimitiveType, V:Type): Category ==
 	if K has OutputType and V has OutputType then OutputType;
 	if K has SerializableType and V has SerializableType then
 							SerializableType;
+	if V has PrimitiveType then PrimitiveType;
 	bracket: Tuple Cross(K, V) -> %;
+	bracket: Generator Cross(K, V) -> %;
 #if ALDOC
 \alpage{[]}
 \Usage{[$(k_1, v_1),\dots,(k_n, v_n)$]}
@@ -284,6 +290,18 @@ That space grows when needed as elements are inserted in the table.}
 				}
 				p << rightBracket;
 			}
+		}
+		if V has PrimitiveType then {
+		    (a: %) = (b: %): Boolean == {
+		        import from BooleanFold;
+			import from Partial V;
+			import from K, V, MachineInteger;
+			check(k: K): Boolean == {
+			    failed? find(k, b) => false;
+			    a.k = b.k
+			}
+		        numberOfEntries a = numberOfEntries b and (_and)/(check k for k in keys a)
+		    }
 		}
 	}
 }
