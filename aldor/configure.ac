@@ -155,6 +155,11 @@ AC_CONFIG_FILES(
    lib/algebra/src/test/Makefile
    lib/algebra/test/Makefile
 
+   dnl Aldor compiler library
+   lib/comp/Makefile
+   lib/comp/src/Makefile
+   lib/comp/src/tform/Makefile
+
    dnl AxiomXL base library.
    lib/axllib/Makefile
    lib/axllib/include/Makefile
