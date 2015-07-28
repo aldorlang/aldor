@@ -300,7 +300,26 @@ testIteration(): () == {
     stdout << tk << ",  " << tv << " " << (-n*(n+1) quo 2) << newline;
     assertEquals(tv, (-n*(n+1)) quo 2);
 }
+
+testEquality(): () == {
+    C ==> Cross(Integer, String);
+    import from Integer;
+    import from HashTable(Integer, String);
+    import from Assert HashTable(Integer, String);
+    local tbl1, tbl2, tbl3: HashTable(Integer, String);
+    tbl1 := [(1, "hello")@C];
+    tbl2 := [(1, "bye")@C];
+    tbl3 := [(1, "hello"), (2, "bye")];
+    assertNotEquals(tbl1, tbl2);
+    assertNotEquals(tbl1, tbl3);
+    equalityAxioms(table(), tbl1, tbl2);
+    equalityAxioms(table(), tbl1, tbl3);
+}
+
+
 test();
 testIteration();
+testEquality();
+
 
 #endif

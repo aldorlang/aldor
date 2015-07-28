@@ -13,8 +13,8 @@ sal_parray_deps := sal_fstruc sal_list
 sal_array_deps   :=sal_bstruc sal_parray
 sal_pkarray_deps := sal_parray
 sal_string_deps := sal_data sal_list sal_parray sal_pkarray sal_array
-sal_table_deps  := sal_bdata sal_string
-sal_hash_deps   := sal_table sal_list sal_kntry 
+sal_table_deps  := sal_bdata sal_string sal_fold
+sal_hash_deps   := sal_table sal_list sal_kntry
 
 sal_barray_deps := sal_pkarray
 sal_memblk_deps := sal_array sal_barray
