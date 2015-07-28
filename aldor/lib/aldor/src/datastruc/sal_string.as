@@ -191,6 +191,7 @@ when using C--functions in \salli clients.}
 	++ of length `len' beginning at position `start'.
         substring: (%, Z) -> %;
         substring: (%, Z, Z) -> %;
+	literal: % -> Literal;
 #if ALDOC
 \alpage{substring}
 \Usage{\name(s, n)\\ \name(s, n, m)}
@@ -224,6 +225,7 @@ of \emph{s}, while \name(s,n,m) returns a copy of the substring of length
 	firstIndex:Z			== 0;
 	local quote:Ch			== char "_"";
 	string(l:Literal):%		== string(l pretend Pointer);
+	literal(s: %): Literal          == s pretend Literal;
         substring(s: %, pos: Z): %	== substring(s, pos, #s - pos);
 	data(s:%):PackedPrimitiveArray Ch	== rep s;
 
