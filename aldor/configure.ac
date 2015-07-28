@@ -174,5 +174,10 @@ AC_CONFIG_FILES(
    lib/ax0/src/Makefile
    lib/ax0/src/al/Makefile
    lib/ax0/test/Makefile
+
+   dnl Aldor compiler library
+   lib/comp/Makefile
+   lib/comp/src/Makefile
+   lib/comp/src/tform/Makefile
 )
 AC_OUTPUT
