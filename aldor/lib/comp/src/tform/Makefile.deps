@@ -1,6 +1,6 @@
 library_deps := 
 
-bs_deps :=
+bs_deps := id
 tform_deps := bs
 tform_types_deps := tform
 tform_syntax_deps := tform

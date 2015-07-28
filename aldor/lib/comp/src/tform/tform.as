@@ -4,15 +4,15 @@
 #pile
 
 TFormAttrs: with
-    import from String
-    create: (s: String == "", sx: SExpression == nil) -> %
-    string: % -> String
+    import from Id
+    create: (s: Id == id "", sx: SExpression == nil) -> %
+    id: % -> Id
     sx: % -> SExpression
 == add
-    Rep == Record(s: String, sx: SExpression)
+    Rep == Record(s: Id, sx: SExpression)
     import from Rep
-    create(s: String == "", sx: SExpression): % == per [s, sx]
-    string(a: %): String == rep(a).s
+    create(s: Id == id "", sx: SExpression): % == per [s, sx]
+    id(a: %): Id == rep(a).s
     sx(a: %): SExpression == rep(a).sx
 
 TForm: Join(OutputType, PrimitiveType) with
@@ -47,13 +47,13 @@ TForm: Join(OutputType, PrimitiveType) with
     	   per [bindings, D, args, a]
    
     (tf1: %) = (tf2: %): Boolean ==
-        import from String
+        import from Id
         name$(tag tf1) = name$(tag tf2) => tfEquals(tf1, tf2)$(tag tf1)
 	false
 
 
     (o: TextWriter) << tf: TextWriter ==
-        import from String
+        import from Id
         o << "{" << name$(tag tf) << " ";
 	info(o, tf)$(tag tf)
 	o << args tf << " " << "}"
@@ -61,7 +61,7 @@ TForm: Join(OutputType, PrimitiveType) with
 TFormTagCat: Category == with
     name: String
     tfEquals: (TForm, TForm) -> Boolean
-    tfFreeVars: TForm -> List(String)
+    tfFreeVars: TForm -> List(Id)
     info: (TextWriter, TForm) -> ();
     default 
         info(tx: TextWriter, tf: TForm): () == {}
