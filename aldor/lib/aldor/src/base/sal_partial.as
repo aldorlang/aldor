@@ -78,6 +78,15 @@ Partial(T:Type): with {
 \Params{{\em x} & \% & a partial element\\ }
 \Retval{Returns the element x converted to an element of T, provided that
 x is not \failed.}
+	valueOr: (%, T) -> T;
+#endif
+#if ALDOC
+\alpage{valueOr}
+\Usage{\name~x}
+\Signature{\%}{T}
+\Params{{\em x} & \% & a partial element\\ }
+\Retval{Returns the element x converted to an element of T, provided that
+x is not \failed.}
 #endif
 } == add {
 	Rep == Record(val:T);
@@ -94,6 +103,8 @@ x is not \failed.}
 		assert(~failed? x);
 		rep(x).val;
 	}
+
+	valueOr(x: %, def: T): T == if failed? x then def else retract x;
 
 	if T has PrimitiveType then {
 		(x:%) = (y:%):Boolean == {
