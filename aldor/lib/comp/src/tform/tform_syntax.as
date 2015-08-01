@@ -5,13 +5,16 @@
 
 TFormTagId: TFormTagCat with
     id: Id -> TForm
+    id?: TForm -> Boolean
 == add
     import from List TForm, TFormAttrs, Id
 
     name: String == "id"
+    id?(tf: TForm): Boolean == kind tf = name
+    type?(): Boolean == false
     tfEquals(t1: TForm, t2: TForm): Boolean == id attrs t1 = id attrs t2
 
-    tfFreeVars(cx: TForm): List Id == []
+    tfFreeVars(tf: TForm): List Id == [id attrs tf]
 
     id(name: Id): TForm ==
         import from BindingSet, TFormAttrs
@@ -20,20 +23,28 @@ TFormTagId: TFormTagCat with
     info(o: TextWriter, tid: TForm): () ==
         o << id attrs tid
 
+    tfSubst(tf: TForm, sigma: Subst): TForm ==
+        lookup(sigma, id attrs tf, tf)
+
 TFormTagApply: TFormTagCat with
-    apply: (Id, List TForm) -> TForm
+    apply: (TForm, List TForm) -> TForm
+    apply?: TForm -> Boolean
 == add
-    import from List TForm, TFormAttrs, Id
+    import from List TForm
 
     name: String == "apply"
+    type?(): Boolean == false
+    apply?(tf: TForm): Boolean == kind tf = name
     tfEquals(t1: TForm, t2: TForm): Boolean ==
-        id(attrs t1) = id(attrs t2) and args t1 = args t2
+        args t1 = args t2
 
-    tfFreeVars(cx: TForm): List Id == []
+    tfFreeVars(tf: TForm): List Id ==
+        import from Fold2(List Id, List Id), List Id
+        reverse!((append!, [])/(freeVars arg for arg in args tf))
 
-    apply(id: Id, tfs: List TForm): TForm ==
-        import from BindingSet, TFormAttrs
-        new(TFormTagApply, tfs, empty(), create(id))
+    apply(op: TForm, tfs: List TForm): TForm ==
+        new(TFormTagApply, cons(op, tfs))
 
-    info(o: TextWriter, tid: TForm): () ==
-        o << id attrs tid
+    tfSubst(tf: TForm, sigma: Subst): TForm ==
+        l := [subst(elt, sigma) for elt in args tf]
+        apply(first l, rest l)

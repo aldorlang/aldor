@@ -15,8 +15,27 @@ TFormAttrs: with
     id(a: %): Id == rep(a).s
     sx(a: %): SExpression == rep(a).sx
 
+Subst: with
+    create: (Id, TForm) -> %
+    create: List Cross(Id, TForm) -> %
+    lookup: (%, Id, TForm) -> TForm
+    export from List Cross(Id, TForm)
+== add
+    Rep == HashTable(Id, TForm)
+    import from Rep
+
+    create(l: List Cross(Id, TForm)): % == per [pair for pair in l]
+    create(id: Id, tf: TForm): % == per [(id, tf)@Cross(Id, TForm)]
+    lookup(sigma: %, id: Id, alt: TForm): TForm ==
+        import from Partial TForm
+        x := find(id, rep(sigma))
+	failed? x => alt
+	retract x
+
+
 TForm: Join(OutputType, PrimitiveType) with
     args: % -> List %
+    argCount: % -> Integer
     bindings: % -> BindingSet
     attrs: % -> TFormAttrs
 
@@ -24,7 +43,11 @@ TForm: Join(OutputType, PrimitiveType) with
     new: (TFormTagCat, List TForm, BindingSet) -> %
     new: (TFormTagCat, List TForm, BindingSet, TFormAttrs) -> %
 
+    tag: % -> TFormTagCat
     kind: % -> String
+    freeVars: % -> List Id
+    subst: (%, Subst) -> %
+
 == add
     Rep == Record(bindings: BindingSet, tag: TFormTagCat, args: List TForm, attrs: TFormAttrs);
     import from Rep
@@ -32,10 +55,15 @@ TForm: Join(OutputType, PrimitiveType) with
     default tf, tf1, tf2: %
 
     args tf: List % == rep(tf).args
+    argCount tf: Integer ==
+        import from MachineInteger
+	coerce #args tf
     tag tf: TFormTagCat == rep(tf).tag
     bindings tf: BindingSet == rep(tf).bindings
     attrs tf: TFormAttrs == rep(tf).attrs
     kind tf: String == name$(tag tf)
+    freeVars tf: List Id == tfFreeVars(tf)$(tag tf)
+    subst(tf, sigma: Subst): % == tfSubst(tf, sigma)$(tag tf)
 
     new(D: TFormTagCat, args: List TForm): % ==
     	   new(D, args, empty()$BindingSet)
@@ -60,7 +88,9 @@ TForm: Join(OutputType, PrimitiveType) with
 
 TFormTagCat: Category == with
     name: String
+    type?: () -> Boolean
     tfEquals: (TForm, TForm) -> Boolean
+    tfSubst: (TForm, Subst) -> TForm
     tfFreeVars: TForm -> List(Id)
     info: (TextWriter, TForm) -> ();
     default 
