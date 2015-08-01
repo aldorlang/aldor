@@ -8,6 +8,7 @@ BindingSet: Join(PrimitiveType, OutputType) with
     bracket: Generator Cross(Id, Integer) -> %
     keys: % -> Generator Id
     path: (%, Id) -> List Integer
+    member?: (Id, %) -> Boolean
 == add
     Rep == HashTable(Id, List Integer)
     import from Rep, Integer, List Integer, List Id, Id
@@ -30,6 +31,10 @@ BindingSet: Join(PrimitiveType, OutputType) with
     keys(bs: %): Generator Id == keys rep bs
     path(bs: %, s: Id): List Integer == rep(bs).s
 
+    member?(id: Id, bs: %): Boolean ==
+        import from Partial List AldorInteger
+        not failed? find(id, rep bs)
+
 #if ALDORTEST
 #include "aldor"
 #include "aldorio"
@@ -49,7 +54,10 @@ test2(): () ==
     import from Assert List Integer
 
     l: List Cross(Id, Integer) := [("a", 1), ("b", 2)]
-    stdout << [x for x in l] << newline
+    bs: BindingSet := [x for x in l]
+    assertTrue(member?("a", bs))
+    assertTrue(member?("b", bs))
+    assertFalse(member?("x", bs))
 
 test()
 test2()
