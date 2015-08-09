@@ -58,6 +58,7 @@ TForm: Join(OutputType, PrimitiveType) with
     freeVars: % -> List Id
     subst: (%, Subst) -> %
 
+    lookup: (%, List MachineInteger) -> %
 == add
     Rep == Record(bindings: BindingSet, tag: TFormTagCat, args: List TForm, attrs: TFormAttrs);
     import from Rep
@@ -89,6 +90,10 @@ TForm: Join(OutputType, PrimitiveType) with
         name$(tag tf1) = name$(tag tf2) => tfEquals(tf1, tf2)$(tag tf1)
 	false
 
+    lookup(tf, path: List MachineInteger): % ==
+        empty? path => tf
+	n: MachineInteger := first path
+	lookup((args tf).n, rest path)
 
     (o: TextWriter) << tf: TextWriter ==
         import from Id
