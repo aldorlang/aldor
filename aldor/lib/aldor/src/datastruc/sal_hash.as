@@ -90,8 +90,8 @@ returns \emph{t} after the removal.}
 	table(n:Z):%		== newTable(0, n);
 	remember(f:K -> V):%	== { import from Z; newTable(0, 8, 1, f); }
 	forget(f:K -> V):%	== { import from Z; newTable(0, 8, -1, f); }
-	empty?(t:%):Boolean	== { import from Z; zero?(#t) }
-	#(t:%):Z		== { import from A L KV; #(htable t) }
+	empty?(t:%):Boolean	== { import from Z; zero? numberOfEntries t }
+	#(t:%):Z		== { import from A L KV; #(htable t) } -- NOTE: THIS DOES NOT DO WHAT YOU EXPECT! (array size, not numberOfEntries)
 	numberOfEntries(t:%):Z	== { import from Rep; rep(t).nentr; }
 	local htable(t:%):A L KV== { import from Rep; rep(t).tbl; }
 	local index(t:%, k:K):Z	== hash(k) mod (#t);
@@ -317,9 +317,25 @@ testEquality(): () == {
 }
 
 
+testSizing(): () == {
+    import from HashTable(MachineInteger, String);
+    import from MachineInteger, String;
+    import from Assert MachineInteger;
+    tbl := table();
+    assertTrue(empty? tbl);
+    assertEquals(0, numberOfEntries tbl);
+    tbl.1 := "hello";
+    assertEquals(1, numberOfEntries tbl);
+    tbl.1 := "bye";
+    assertEquals(1, numberOfEntries tbl);
+    remove!(1, tbl);
+    assertEquals(0, numberOfEntries tbl);
+    assertTrue(empty? tbl);
+}
+
 test();
 testIteration();
 testEquality();
-
+testSizing();
 
 #endif
