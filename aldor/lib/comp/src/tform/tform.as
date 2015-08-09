@@ -15,15 +15,17 @@ TFormAttrs: with
     id(a: %): Id == rep(a).s
     sx(a: %): SExpression == rep(a).sx
 
-Subst: with
+Subst: OutputType with
     create: (Id, TForm) -> %
     create: List Cross(Id, TForm) -> %
     lookup: (%, Id, TForm) -> TForm
+    empty?: % -> Boolean
+
     export from List Cross(Id, TForm)
 == add
     Rep == HashTable(Id, TForm)
     import from Rep
-
+    empty?(sigma: %): Boolean == empty? rep sigma
     create(l: List Cross(Id, TForm)): % == per [pair for pair in l]
     create(id: Id, tf: TForm): % == per [(id, tf)@Cross(Id, TForm)]
     lookup(sigma: %, id: Id, alt: TForm): TForm ==
@@ -32,6 +34,14 @@ Subst: with
 	failed? x => alt
 	retract x
 
+    (o: TextWriter) << (sigma: %): TextWriter ==
+        import from Id, TForm
+        sep := ""
+	o << "{"
+        for (k, v) in rep sigma repeat
+	    o << sep << k << " --> " << v
+	    sep := ","
+        o << "}"
 
 TForm: Join(OutputType, PrimitiveType) with
     args: % -> List %
