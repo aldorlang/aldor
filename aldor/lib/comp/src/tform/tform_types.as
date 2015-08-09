@@ -40,7 +40,6 @@ TFormTagComma: TFormTagCat with
 
         l := [g]
         bs: BindingSet := [(declareId tf, n) for tf in l for n in 1@Integer.. | declare? tf]
-        stdout << "BS: " << bs << newline
         new(TFormTagComma, [undeclare tf for tf in l], bs)
 
     tfSubst(tf: TForm, sigma: Subst): TForm ==
