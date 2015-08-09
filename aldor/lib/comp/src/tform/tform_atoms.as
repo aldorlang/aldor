@@ -19,6 +19,20 @@ TFormTagType: TFormTagCat with
 
     tfSubst(tf: TForm, sigma: Subst): TForm == tf
 
+TFormTagCategory: TFormTagCat with
+    category: () -> TForm
+    theCategory?: TForm -> Boolean
+== add
+    import from List TForm, TForm
+    name: String == "Category"
+    type?(): Boolean == true
+
+    category(): TForm == new(TFormTagCategory, [])
+    theCategory?(tf: TForm): Boolean == kind tf = name
+    tfEquals(t1: TForm, t2: TForm): Boolean == true
+
+    tfFreeVars(tf: TForm): List Id == []
+    tfSubst(tf: TForm, sigma: Subst): TForm == tf
 
 TFormTagExit: TFormTagCat with
     exit: () -> TForm

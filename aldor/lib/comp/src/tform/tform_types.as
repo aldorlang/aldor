@@ -33,14 +33,14 @@ TFormTagComma: TFormTagCat with
     comma(t: Tuple TForm): TForm == comma(tf for tf in [t])
     comma(g: Generator TForm): TForm ==
         import from TFormTagDeclare
-        import from Integer, TFormAttrs, List Id
-
+        import from TFormAttrs, List Id
+	import from List MachineInteger
         id(tf: TForm): Id == id attrs(tf)
         undeclare(tf: TForm): TForm == if declare? tf then args(tf).1 else tf
 
         l := [g]
-        bs: BindingSet := [(declareId tf, n) for tf in l for n in 1@Integer.. | declare? tf]
-        new(TFormTagComma, [undeclare tf for tf in l], bs)
+        bs: BindingSet := [(declareId tf, [n]) for tf in l for n in 1.. | declare? tf]
+        new(TFormTagComma, l, bs)
 
     tfSubst(tf: TForm, sigma: Subst): TForm ==
         comma(subst(arg, sigma) for arg in args tf)

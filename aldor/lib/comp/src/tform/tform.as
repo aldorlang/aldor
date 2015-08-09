@@ -51,7 +51,7 @@ TForm: Join(OutputType, PrimitiveType) with
 
     new: (TFormTagCat, List TForm) -> %
     new: (TFormTagCat, List TForm, BindingSet) -> %
-    new: (TFormTagCat, List TForm, BindingSet, TFormAttrs) -> %
+    new: (TFormTagCat, List TForm, bs: BindingSet == empty(), attrs: TFormAttrs) -> %
 
     tag: % -> TFormTagCat
     kind: % -> String
@@ -104,9 +104,11 @@ TForm: Join(OutputType, PrimitiveType) with
 TFormTagCat: Category == with
     name: String
     type?: () -> Boolean
+    category?: () -> Boolean
     tfEquals: (TForm, TForm) -> Boolean
     tfSubst: (TForm, Subst) -> TForm
     tfFreeVars: TForm -> List(Id)
     info: (TextWriter, TForm) -> ();
     default 
         info(tx: TextWriter, tf: TForm): () == {}
+        category?(): Boolean == false
