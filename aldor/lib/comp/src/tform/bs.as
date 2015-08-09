@@ -4,6 +4,7 @@
 
 BindingSet: Join(PrimitiveType, OutputType) with
     empty: () -> %
+    empty?: % -> Boolean
     one: Id -> %
     bracket: Generator Cross(Id, Integer) -> %
     keys: % -> Generator Id
@@ -14,6 +15,8 @@ BindingSet: Join(PrimitiveType, OutputType) with
     import from Rep, Integer, List Integer, List Id, Id
 
     empty(): % == per table()
+    empty?(bs: %): Boolean ==
+        empty? rep bs
     one(name: Id): % ==
         pair := (name, [1])
 	per [pair]
@@ -59,6 +62,13 @@ test2(): () ==
     assertTrue(member?("b", bs))
     assertFalse(member?("x", bs))
 
+test3(): () ==
+    import from BindingSet, Id, List MachineInteger, MachineInteger
+    import from Assert List MachineInteger
+    assertTrue(empty? empty())
+    assertFalse(empty? one("hello"))
+
 test()
 test2()
+test3()
 #endif
