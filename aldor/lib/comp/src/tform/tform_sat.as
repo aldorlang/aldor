@@ -18,6 +18,7 @@ SatResult: with
     failure?: % -> Boolean
     embedding: % -> SatEmbed
     _and: (%, %) -> %
+    _or: (%, %) -> %
 == add
     Rep == Boolean
 
@@ -33,6 +34,11 @@ SatResult: with
         failure? r1 => r1
         failure? r2 => r2
         succeed()
+
+    _or(r1: %, r2: %): % ==
+        success? r1 => r1
+        success? r2 => r2
+        failed()
 
 TFormSatisfaction: with
     satisfies: (SatOptions, TForm, TForm) -> SatResult
