@@ -2,6 +2,7 @@ sit_logiccat_deps :=
 sit_idxatom_deps := sit_logiccat
 sit_bit_deps := sit_logiccat
 sit_lexpr_deps := sit_idxatom
+sit_dnf_deps := sit_lexpr
 
 library_deps := util numbers extree extree/operators extree/parser	\
 	        categories basic 
