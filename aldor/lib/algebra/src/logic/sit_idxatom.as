@@ -1,6 +1,6 @@
 #include "algebra"
 
-IndexedAtom: LogicAtom with {
+IndexedAtom: Join(HashType, LogicAtom) with {
 	atom: Integer -> %;
 	index: % -> Integer;
 	negate: % -> %;
@@ -30,6 +30,7 @@ IndexedAtom: LogicAtom with {
 
    isNegation?(a: %, b: %): Boolean == rep(a) = -rep(b);
 
+   hash(a: %): MachineInteger == hash rep a;
 }
 
 #if ALDORTEST
