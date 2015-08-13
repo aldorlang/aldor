@@ -82,6 +82,8 @@ SExpression: Join(OutputType, PrimitiveType) with
     cons: (%, %) -> %
     first: % -> %
     rest: % -> %
+    bracket: Generator % -> %
+    append: (%, %) -> %
 == add 
     Rep == Union(SYM: SourcedSymbol, INT: Integer, STR: String, CONS: Cons, NIL: Boolean)
     import from Rep
@@ -101,6 +103,8 @@ SExpression: Join(OutputType, PrimitiveType) with
 
     first sx: % == first rep(sx).CONS
     rest sx: % == rest rep(sx).CONS
+
+    setRest!(sx, r: SExpression): () == setRest!(rep(sx).CONS, r)
 
     cons(sx1, sx2): % ==
         per [cons(sx1, sx2)]
@@ -124,6 +128,22 @@ SExpression: Join(OutputType, PrimitiveType) with
 	sym? sx => writeSymbol(o, rep(sx).SYM)
 	nil? sx => o << "()"
 	never
+
+    bracket(g: Generator %): % ==
+        l := nil
+	last := nil
+	for sx in g repeat
+	    if last = nil then
+	        l := cons(sx, nil)
+		last := l
+	    else
+	        next: % := cons(sx, nil)
+	        setRest!(last, next)
+		last := next
+	return l
+
+    append(sx1, sx2): % ==
+        if nil? sx1 then sx2 else cons(first sx1, append(rest sx1, sx2))
 
     local writeList(o: TextWriter, sx): TextWriter ==
         o << "("
@@ -434,5 +454,27 @@ test2(): () ==
     sx := read(symSource, rdr)
     stdout << sx << newline
 
+testBracket(): () ==
+    import from Assert SExpression
+    import from Integer
+    sx: SExpression := [sexpr x for x in 1..3]
+    assertEquals(sexpr 1, first sx)
+    assertEquals(sexpr 2, first rest sx)
+    assertEquals(sexpr 3, first rest rest sx)
+    assertEquals(nil, rest rest rest sx)
+
+testAppend(): () ==
+    import from Assert SExpression
+    import from Integer
+    sx1: SExpression := cons(sexpr 1, nil)
+    sx2: SExpression := cons(sexpr 2, nil)
+    assertEquals(sexpr 1, first append(nil, sx1))
+    assertEquals(nil, first rest append(nil, sx1))
+    assertEquals(sexpr 1, first append(sx1, nil))
+    assertEquals(sexpr 1, first append(sx1, sx2))
+    assertEquals(sexpr 2, first rest append(sx1, sx2))
+    
 test2()
+testBracket()
+
 #endif
