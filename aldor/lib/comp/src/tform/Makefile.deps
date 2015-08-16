@@ -1,4 +1,4 @@
-library_deps := 
+library_deps := util
 
 bs_deps :=
 tform_deps := bs
