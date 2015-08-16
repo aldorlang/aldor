@@ -178,6 +178,7 @@ AC_CONFIG_FILES(
    dnl Aldor compiler library
    lib/comp/Makefile
    lib/comp/src/Makefile
+   lib/comp/src/util/Makefile
    lib/comp/src/tform/Makefile
 )
 AC_OUTPUT

@@ -1,5 +1,6 @@
 # These need to be in dependency order.
-SUBDIRS =			\
+SUBDIRS =	\
+	util	\
 	tform	
 
 
