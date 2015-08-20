@@ -14,6 +14,7 @@ SatEmbed == 'crossToTuple,tupleToCross,none'
 SatResult: with
     succeed: () -> %
     failed: () -> %
+    test: % -> Boolean
     success?: % -> Boolean
     failure?: % -> Boolean
     embedding: % -> SatEmbed
@@ -27,6 +28,7 @@ SatResult: with
 
     embedding(r: %): SatEmbed == none
 
+    test(r: %): Boolean == rep r
     success?(r: %): Boolean == rep r
     failure?(r: %): Boolean == not rep r
 
