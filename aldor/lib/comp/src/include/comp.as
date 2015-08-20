@@ -12,3 +12,4 @@
 #assert LibraryComp
 
 #include "aldor"
+inline from CompLib
