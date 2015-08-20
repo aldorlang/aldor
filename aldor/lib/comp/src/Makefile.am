@@ -1,6 +1,7 @@
 # These need to be in dependency order.
 SUBDIRS =	\
 	util	\
+	absyn	\
 	tform	
 
 
