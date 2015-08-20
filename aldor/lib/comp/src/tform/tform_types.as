@@ -6,6 +6,7 @@
 TFormTagComma: TFormTagCat with
     comma: Tuple TForm -> TForm
     comma: Generator TForm -> TForm
+    comma: Tuple TForm -> TForm
     comma?: TForm -> Boolean
 == add
     import from List TForm
