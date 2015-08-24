@@ -62,7 +62,7 @@ _ctests  := $(sort $(ctests)  $(otests))
 _jruntests := $(sort $(jruntests))
 _jtests  := $(sort $(jtests) $(_jruntests))
 _xtests  := $(sort $(xtests))
-_fmtests := $(sort $(fmtests) $(_jtests))
+_fmtests := $(sort $(fmtests) $(_jtests) $(_ctests))
 _otests  := $(sort $(otests) $(x_extra))
 _ctests  := $(sort $(ctests)  $(_otests))
 _aotests := $(sort $(_fmtests) $(_ctests) $(_xtests))
@@ -137,10 +137,10 @@ $(patsubst %, %.exe, $(_xtests)): %.exe: %.o rtexns.o
 
 #		      -Fmain=bobthebuilder.c		\
 
-$(patsubst %, %-javatest,$(jruntests)): %-javatest: out/java/%.class
+$(patsubst %, %-javatest,$(_jruntests)): %-javatest: out/java/%.class
 	java -cp out/java:$(abs_top_builddir)/aldor/lib/java/src/foamj.jar:$(abs_top_builddir)/aldor/lib/libfoam/al/foam.jar:$(abs_top_builddir)/aldor/lib/libfoamlib/al/foamlib.jar: $*
 
-check-java: $(patsubst %,%-javatest,$(jruntests))
+check-java: $(patsubst %,%-javatest,$(_jruntests))
 
 .PHONY: check-java
 
@@ -149,13 +149,13 @@ check: check-java
 really-all: \
      $(patsubst %,out/ap/%.ap,$(_aptests)) \
      $(patsubst %,out/ao/%.cmd,$(_aotests)) \
-     $(patsubst %,out/fm/%.fm,$(fmtests)) \
-     $(patsubst %,out/c/%.c,$(ctests)) \
-     $(patsubst %,out/java/%.java,$(jtests)) \
-     $(patsubst %,out/java/%.class,$(jtests)) \
-     $(patsubst %,out/java/%.class,$(jruntests)) \
-     $(patsubst %,%.o,$(otests))  \
-     $(patsubst %,%.exe,$(xtests))
+     $(patsubst %,out/fm/%.fm,$(_fmtests)) \
+     $(patsubst %,out/c/%.c,$(_ctests)) \
+     $(patsubst %,out/java/%.java,$(_jtests)) \
+     $(patsubst %,out/java/%.class,$(_jtests)) \
+     $(patsubst %,out/java/%.class,$(_jruntests)) \
+     $(patsubst %,%.o,$(_otests))  \
+     $(patsubst %,%.exe,$(_xtests))
 
 
 .PHONY: all
