@@ -241,6 +241,7 @@ $(aldortests): %.aldortest-exec-interp: Makefile
 	 $(AM_DBG) $(aldorexedir)/aldor $(aldor_common_args) -Y$(aldorlibdir)/libfoam/al \
 			-I$(top_srcdir)/lib/aldor/include -Y$(top_builddir)/lib/aldor/src \
 			-Y$(librarylibdir) -I$(libraryincdir) -ginterp -DALDORTEST \
+			$($*_test_AXLFLAGS) \
 			$*_test.as; \
 	$(CHECK_TEST_STATUS) \
 	)
@@ -287,7 +288,9 @@ $(aldortestjavas): %.aldortest-exec-java: Makefile %.as
 		-Y$(foamdir) -Y$(foamlibdir) -l$(libraryname) $(patsubst %,-l%,$(librarydeps)) \
 		-I$(top_srcdir)/lib/aldor/include -Y$(top_builddir)/lib/aldor/src \
 		-Y$(librarylibdir) -I$(libraryincdir) -DALDORTEST $$(cat $*_jtest.as | grep ^aldoroptions: | sed -e 's/aldoroptions://') \
-		-Fjava -fc -Ffm -Jmain $*_jtest.as; \
+		-Fjava -fc -Ffm -Jmain \
+		$($*_test_AXLFLAGS) \
+		$*_jtest.as; \
 	 javac -g -cp $(aldorlibdir)/java/src/foamj.jar $*_jtest.java; \
 	 java -cp .:$(aldorlibdir)/java/src/foamj.jar:$(aldorlibdir)/libfoam/al/foam.jar:$(top_builddir)/lib/$(libraryname)/src/$(libraryname).jar:$(top_builddir)/lib/aldor/src/aldor.jar $*_jtest; \
 	 $(CHECK_TEST_STATUS) \
