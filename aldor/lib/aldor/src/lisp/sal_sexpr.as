@@ -496,4 +496,15 @@ test2()
 testBracket()
 testAppend()
 
+import from Integer
+nada: SExpression := cons(sexpr 1, sexpr 2)
+testAppend2(): SExpression ==
+    l := nada
+    l2 := if cons? l then a := cons(sexpr 22, nil) else nil
+    append(l2, l)
+
+nada: SExpression := nil
+
+testAppend2()
+
 #endif
