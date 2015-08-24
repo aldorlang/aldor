@@ -20,8 +20,6 @@ library = sal_sexpr
 @BUILD_JAVA_TRUE@javalibrary := $(library)
 java_test_blacklist := sal_sexpr
 
-sal_sexpr.asy:
+include $(abs_top_srcdir)/lib/aldor/src/common.mk
 
 sal_sexpr.aldortest.exe sal_sexpr.aldortest-exec-interp sal_sexpr.aldortest-exec-java: sal_sexpr.asy
-
-include $(abs_top_srcdir)/lib/aldor/src/common.mk
