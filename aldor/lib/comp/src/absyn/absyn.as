@@ -4,15 +4,16 @@
 
 AbSynTag: Join(HashType, OutputType) with
     name: % -> String
-    tag: String -> %
+    tag: (n: MachineInteger, String) -> %
 == add
-    Rep == Record(name: String)
+    Rep == Record(n: MachineInteger, name: String)
     import from Rep
     
-    tag(a: String): % == per [a]
+    tag(n: MachineInteger, a: String): % == per [n, a]
     name(tag: %): String == (rep tag).name
-    hash(tag: %): MachineInteger == hash rep(tag).name
-    (a: %) = (b: %): Boolean == name a = name b
+    hash(tag: %): MachineInteger == hash rep(tag).n
+    (a: %) = (b: %): Boolean == rep(a).n = rep(b).n
+
     (o: TextWriter) << (tag: %): TextWriter == o << name tag;
     
 AbSynTags: with
@@ -29,19 +30,19 @@ AbSynTags: with
     sequence: AbSynTag
     _with: AbSynTag
 == add
-    import from String
-    _add: AbSynTag == tag "add"
-    apply: AbSynTag == tag "apply"
-    comma: AbSynTag == tag "comma"
-    declare: AbSynTag == tag "declare"
-    _define: AbSynTag == tag "define"
-    id: AbSynTag == tag "id"
-    _if: AbSynTag == tag "if"
-    label: AbSynTag == tag "label"
-    lambda: AbSynTag == tag "lambda"
-    literal: AbSynTag == tag "literal"
-    sequence: AbSynTag == tag "sequence"
-    _with: AbSynTag == tag "with"
+    import from String, MachineInteger
+    _add: AbSynTag == tag(1, "add")
+    apply: AbSynTag == tag(2, "apply")
+    comma: AbSynTag == tag(3, "comma")
+    declare: AbSynTag == tag(4, "declare")
+    _define: AbSynTag == tag(5, "define")
+    id: AbSynTag == tag(6, "id")
+    _if: AbSynTag == tag(7, "if")
+    label: AbSynTag == tag(8, "label")
+    lambda: AbSynTag == tag(9, "lambda")
+    literal: AbSynTag == tag(10, "literal")
+    sequence: AbSynTag == tag(11, "sequence")
+    _with: AbSynTag == tag(12, "with")
 
 -- FIXME: Can't be local as it's used in exported types
 AbField(X: with): with
