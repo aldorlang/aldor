@@ -317,6 +317,7 @@ mostlyclean:
 	rm -f $(addsuffix .fm,$(alldomains))
 	rm -f *.java
 	rm -f *.class
+	rm -f *.exe
 
 clean: mostlyclean
 	rm -f $(SUBLIB).al
