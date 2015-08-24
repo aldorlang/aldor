@@ -85,22 +85,25 @@ SExpression: Join(OutputType, PrimitiveType) with
     bracket: Generator % -> %
     append: (%, %) -> %
 == add 
-    Rep == Union(SYM: SourcedSymbol, INT: Integer, STR: String, CONS: Cons, NIL: Boolean)
+    Rep == Union(SYM: SourcedSymbol, INT: Integer, STR: String, CONS: Cons)
     import from Rep
     default sx, sx1, sx2: %
-    nil: % == per [false]
+    nil: % == (nil$Pointer) pretend %
+    nil(): % == (nil$Pointer) pretend %
     
     sexpr(sym: SourcedSymbol): % == per [sym]
     sexpr(n: Integer): % == per [n]
     sexpr(str: String): % == per [str]
     sexpr(cons: Cons): % == per [cons]
 
-    cons? sx: Boolean == rep(sx) case CONS
-    sym? sx: Boolean == rep(sx) case SYM
-    int? sx: Boolean == rep(sx) case INT
-    str? sx: Boolean == rep(sx) case STR
-    nil? sx: Boolean == rep(sx) case NIL
-
+    cons? sx: Boolean == not nil? sx and rep(sx) case CONS
+    sym? sx: Boolean == not nil? sx and rep(sx) case SYM
+    int? sx: Boolean == not nil? sx and rep(sx) case INT
+    str? sx: Boolean == not nil? sx and rep(sx) case STR
+    nil? sx: Boolean == {
+        import from Pointer;
+        (rep(sx) pretend Pointer) = nil
+    }
     first sx: % == first rep(sx).CONS
     rest sx: % == rest rep(sx).CONS
 
@@ -122,28 +125,46 @@ SExpression: Join(OutputType, PrimitiveType) with
 	false
 
     (o: TextWriter) << (sx: %): TextWriter ==
+	nil? sx => o << "()"
         cons? sx => writeList(o, sx)
 	int? sx => o << rep(sx).INT
 	str? sx => writeString(o, rep(sx).STR)
 	sym? sx => writeSymbol(o, rep(sx).SYM)
-	nil? sx => o << "()"
 	never
 
     bracket(g: Generator %): % ==
-        l := nil
-	last := nil
+        l := nil()
+	last := nil()
 	for sx in g repeat
-	    if last = nil then
-	        l := cons(sx, nil)
+	    if last = nil() then
+	        l := cons(sx, nil())
 		last := l
 	    else
-	        next: % := cons(sx, nil)
+	        next: % := cons(sx, nil())
 	        setRest!(last, next)
 		last := next
 	return l
 
+    -- this is needed (by append) to avoid a of_emerge bug which
+    -- merges a potentially null reference.
+    local copyList(sx): (SExpression, SExpression) ==
+        nil? sx => never
+	last: % := cons(first sx, nil())
+	result := last
+	sx := rest sx
+	while cons? sx repeat
+	    next: % := cons(first sx, nil())
+	    setRest!(last, next)
+	    last := next
+	    sx := rest sx
+	if not nil? sx then never
+	(result, last)
+
     append(sx1, sx2): % ==
-        if nil? sx1 then sx2 else cons(first sx1, append(rest sx1, sx2))
+        nil? sx1 => sx2
+	(result, lastPair) := copyList(sx1)
+	setRest!(lastPair, sx2)
+	result
 
     local writeList(o: TextWriter, sx): TextWriter ==
         o << "("
@@ -388,11 +409,9 @@ SExpressionReader: with
 	stdout << " SExprread End)" << newline
 	xx	
 
-#if ALDORTEST
+#if ALDORTEST1
 #include "aldor"
 #include "aldorio"
-#pile
-
 readOne(symSource: SymbolSource, s: String): Partial SExpression ==
     import from SExpressionReader
     sb: StringBuffer := new()
@@ -469,12 +488,12 @@ testAppend(): () ==
     sx1: SExpression := cons(sexpr 1, nil)
     sx2: SExpression := cons(sexpr 2, nil)
     assertEquals(sexpr 1, first append(nil, sx1))
-    assertEquals(nil, first rest append(nil, sx1))
+    assertEquals(nil, rest append(nil, sx1))
     assertEquals(sexpr 1, first append(sx1, nil))
     assertEquals(sexpr 1, first append(sx1, sx2))
     assertEquals(sexpr 2, first rest append(sx1, sx2))
-    
 test2()
 testBracket()
+testAppend()
 
 #endif
