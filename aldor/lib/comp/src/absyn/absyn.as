@@ -151,6 +151,16 @@ AbSynApply: with
     applyOp ab: AbSyn == first children ab
     applyArgs ab: List AbSyn == rest children ab
 
+AbSynDeclare: with
+   declareId: AbSyn -> Id
+   declareType: AbSyn -> AbSyn
+== add
+    import from List AbSyn
+    default ab: AbSyn
+
+    declareId ab: Id == ab.id
+    declareType ab: AbSyn == first children ab
+
 #if ALDORTEST
 #include "comp"
 #include "aldorio"
