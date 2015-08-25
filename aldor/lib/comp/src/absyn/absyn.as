@@ -76,7 +76,9 @@ AbSynFields: with
 AbSyn: OutputType with
     _add: () -> % -- FIXME!
     apply: Tuple % -> %
+    apply: Generator % -> %
     comma: Tuple % -> %
+    comma: Generator % -> %
     declare: (%, %) -> %
     _define: (%, %) -> %
     id: Id -> %
@@ -118,6 +120,8 @@ AbSyn: OutputType with
     _define(lhs: %, rhs: %): % == per [_define, table(), [lhs, rhs]]
     comma(t: Tuple %): % == per [comma, table(), [t]]
     apply(t: Tuple %): % == per [apply, table(), [t]]
+    comma(t: Generator %): % == per [comma, table(), [t]]
+    apply(t: Generator %): % == per [apply, table(), [t]]
     label(id: Id, ab: %): % == per [label, tbl(id), [ab]]
     lambda(type: AbSyn, ret: AbSyn, body: AbSyn): % == per [lambda, table(), [type, ret, body]]
     _with(): % == per [_with, table(), []]
