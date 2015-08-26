@@ -45,6 +45,7 @@ BindingSet: Join(PrimitiveType, OutputType) with
 #pile
 
 string(l: Literal): Id == id string l
+
 test(): () ==
     import from BindingSet, Id, List MachineInteger, MachineInteger
     import from Assert List MachineInteger
