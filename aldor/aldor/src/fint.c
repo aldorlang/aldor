@@ -3190,6 +3190,7 @@ fintEvalBCall(DataObj retDataObj)
 	case FOAM_BVal_Halt:
 
 		(void)fintEval(&expr1);
+		fintWhere(0);
 		switch ((int)expr1.fiSInt) {
 		case FOAM_Halt_BadDependentType:
 		  fiRaiseException((FiWord)"(Aldor error) Bad use of a dependent type");
