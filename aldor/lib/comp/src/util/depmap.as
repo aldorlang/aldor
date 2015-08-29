@@ -6,22 +6,31 @@ Field(X: with): PrimitiveType with
     fieldEquals: (%, Y: with, Field Y) -> Boolean
     name: % -> String
     any: % -> AnyField
-    field: String -> %
+    field: (String) -> %
+    field: (String, X) -> %
+    default?: % -> Boolean
+    defaultValue: % -> X
+
     apply: (DepTable, %) -> X
     set!: (DepTable, %, X) -> ()
     field?: (DepTable, %) -> Boolean
 == add
-   import from String
-   Rep == String
+   Rep == Record(name: String, dflt: Partial X)
+   import from Rep
+   import from Partial X
 
-   field(x: String): % == per x
+   field(x: String): % == per [x, failed]
+   field(x: String, dflt: X): % == per [x, [dflt]]
    (a: %) = (b: %): Boolean == name a = name b
 
    fieldEquals(f: %, Y: with, f2: Field Y): Boolean ==
        name f = name(f2)$Field(Y) -- BUG: $ isn't needed
 
-   name(f: %): String == rep f
+   name(f: %): String == rep(f).name
    any(f: %): AnyField == new(X, f)
+   default?(f: %): Boolean == not failed? rep(f).dflt
+   defaultValue(f: %): X == retract rep(f).dflt
+
    apply(t: DepTable, f: %): X == field(t, X, f)
    set!(t: DepTable, f: %, value: X): () == add!(t, X, f, value)
    field?(t: DepTable, f: %): Boolean == field?(t, any f)
@@ -29,6 +38,7 @@ Field(X: with): PrimitiveType with
 -- Can we lose this???
 AnyField: HashType with
     new: (xT: with, Field xT) -> %
+    default?: % -> Boolean
 == add
     Rep ==> Cross(cT: with, Field cT)
     import from String
@@ -43,6 +53,9 @@ AnyField: HashType with
     	name rep a
 	
     hash(a: %): MachineInteger == hash name a
+    default?(a: %): Boolean ==
+        default?(qT: with, f: Field qT): Boolean == default? f
+        default?(rep a)
 
 -- TODO: Lose!
 Something: with
@@ -69,13 +82,18 @@ DepTable: with
     Rep == HashTable(AnyField, Something)
     import from Rep
     import from AnyField, Something
+    import from Partial Something
 
     table(): % == per table()
     field?(tbl: %, f: AnyField): Boolean ==
-        import from Partial Something
+	default? f => true
         not failed? find(f, rep tbl)
 
     field(tbl: %, T: with, f: Field T): T ==
+        default? f =>
+	    thingOrFailed := find(any f, rep tbl)
+	    failed? thingOrFailed => defaultValue f
+	    value(retract thingOrFailed, T, f)
         thing := (rep(tbl)).(any f)
 	value(thing, T, f)
 	
@@ -104,4 +122,15 @@ foo(): () ==
     stdout << field?(tbl, wheels) << newline
 
 foo()
+
+foo2(): () ==
+    import from String, DepTable
+    import from Assert String
+    tbl: DepTable := table()
+    middleName: Field String := field("middleName", "")
+    assertTrue(field?(tbl, middleName))
+    assertEquals("", tbl.middleName)
+
+foo2()
+
 #endif
