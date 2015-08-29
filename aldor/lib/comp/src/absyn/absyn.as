@@ -48,11 +48,13 @@ AbSynTags: with
 AbField(X: with): with
     apply: (AbSyn, Field X) -> X
     set!: (AbSyn, Field X, X) -> ()
+    field?: (AbSyn, Field X) -> Boolean
     export from Field X
 == add
     import from Field X
     apply(ab: AbSyn, f: Field X): X == fields(ab).f
     set!(ab: AbSyn, f: Field X, value: X): () == fields(ab).f := value
+    field?(ab: AbSyn, f: Field X): Boolean == field?(fields(ab), f)
 
 AbSynFields: with
     id: Field Id
