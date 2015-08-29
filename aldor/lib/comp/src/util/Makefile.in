@@ -15,6 +15,6 @@ abs_top_srcdir	:= @abs_top_srcdir@
 subdir		:= $(subst $(abs_top_builddir)/,,$(abs_builddir))
 
 # Build starts here
-library = id depmap
+library = id depmap typedpointer
 
 include $(abs_top_srcdir)/lib/comp/src/common.mk

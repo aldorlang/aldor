@@ -3,3 +3,4 @@ library_deps :=
 
 depmap_deps :=
 id_deps :=
+typedpointer_deps :=
