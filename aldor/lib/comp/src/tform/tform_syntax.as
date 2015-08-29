@@ -6,6 +6,7 @@
 TFormTagId: TFormTagCat with
     id: Id -> TForm
     id?: TForm -> Boolean
+    idName: TForm -> Id
 == add
     import from List TForm, TFormAttrs, Id
 
@@ -19,6 +20,8 @@ TFormTagId: TFormTagCat with
     id(name: Id): TForm ==
         import from BindingSet, TFormAttrs
         new(TFormTagId, [], empty(), create(name))
+
+    idName(tf: TForm): Id == id attrs tf
 
     info(o: TextWriter, tid: TForm): () ==
         o << id attrs tid
