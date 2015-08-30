@@ -8,3 +8,4 @@ tform_syntax_deps := tform
 tform_map_deps := tform
 tform_cat_deps := tform
 tform_sat_deps := tform_types tform_atoms tform_syntax tform_map tform_cat
+tform_abmeaning_deps := tform_types tform_atoms tform_syntax tform_map tform_cat

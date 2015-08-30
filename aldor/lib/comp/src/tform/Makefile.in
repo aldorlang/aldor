@@ -15,6 +15,7 @@ abs_top_srcdir	:= @abs_top_srcdir@
 subdir		:= $(subst $(abs_top_builddir)/,,$(abs_builddir))
 
 # Build starts here
-library = bs tform tform_atoms tform_types tform_map tform_cat tform_syntax tform_sat
+library = bs tform tform_atoms tform_types tform_map tform_cat	\
+	  tform_syntax tform_sat tform_abmeaning
 
 include $(abs_top_srcdir)/lib/comp/src/common.mk
