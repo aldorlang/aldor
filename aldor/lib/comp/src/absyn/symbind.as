@@ -3,13 +3,12 @@
 #pile
 
 SymbolTableBinder: with
-    bind: AbSyn -> SymbolTable
+    bind: (SymbolTable, AbSyn) -> SymbolTable
 == add
     import from List AbSyn
     import from SymbolTable
 
-    bind(whole: AbSyn): SymbolTable ==
-        root: SymbolTable := root()$SymbolTable
+    bind(root: SymbolTable, whole: AbSyn): SymbolTable ==
 	bind(whole, new(root, file))
 	root
 	

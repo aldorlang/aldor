@@ -187,8 +187,10 @@ testAbSyn(): () ==
     	             _define(declare("a", "Integer"), literal "22"),
     	    	     apply("f", "a"));
     stdout << absyn << newline
-    root := bind(absyn)$SymbolTableBinder
-    stdout << root << newline
+    local file, rootTbl: SymbolTable
+    rootTbl := root()$SymbolTable
+    file := bind(rootTbl, absyn)$SymbolTableBinder
+    stdout << file << newline
 
     -- Foo(X: with, l: List X): MachineInteger == #l
     absyn := sequence(_define(declare("Foo", apply("Map", comma(declare("X", _with()),
@@ -199,10 +201,10 @@ testAbSyn(): () ==
 							  "MachineInteger",
 				     label("Foo", apply("size", "l")))))
     stdout << absyn << newline
-    root := bind(absyn)$SymbolTableBinder
-    stdout << root << newline
+    rootTbl := root()$SymbolTable
+    file := bind(rootTbl, absyn)$SymbolTableBinder
+    stdout << file << newline
 
 testAbSyn()
 
 #endif
-    
