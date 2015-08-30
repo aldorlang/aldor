@@ -36,7 +36,6 @@ TFormTagWith: TFormTagCat with
     withId(tf: TForm): Id == id attrs tf
 
     tfFreeVars(tf: TForm): List Id == [id for id in freeVars tf  | id ~= withId tf]
-    tfSubst(tf: TForm, sigma: Subst): TForm == _with(withId tf, subst(withType tf, sigma))
     tfAbSyn(tf: TForm): AbSyn == never
 
 TFormTagJoin: TFormTagCat with
@@ -63,7 +62,6 @@ TFormTagJoin: TFormTagCat with
         import from Fold2(List Id, List Id), List Id
         reverse!((append!, [])/(freeVars arg for arg in args tf))
 
-    tfSubst(tf: TForm, sigma: Subst): TForm == join(subst(arg, sigma) for arg in joinArgs tf)
     tfAbSyn(tf: TForm): AbSyn == never
 
 TFormTagNamedCat: TFormTagCat with
@@ -92,8 +90,5 @@ TFormTagNamedCat: TFormTagCat with
            and namedCategoryTForm tf1 = namedCategoryTForm tf2
 
     tfFreeVars(tf: TForm): List Id == tfFreeVars namedCategoryTForm tf
-
-    tfSubst(tf: TForm, sigma: Subst): TForm ==
-        namedCategory(namedCategoryId tf, subst(namedCategoryTForm tf, sigma))
 
     tfAbSyn(tf: TForm): AbSyn == never

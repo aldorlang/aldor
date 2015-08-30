@@ -43,9 +43,6 @@ TFormTagComma: TFormTagCat with
         bs: BindingSet := [(declareId tf, [n]) for tf in l for n in 1.. | declare? tf]
         new(TFormTagComma, l, bs)
 
-    tfSubst(tf: TForm, sigma: Subst): TForm ==
-        comma(subst(arg, sigma) for arg in args tf)
-
     tfAbSyn(tf: TForm): AbSyn == comma(absyn(tfn)$TForm for tfn in args tf)
 
 TFormTagDeclare: TFormTagCat with
@@ -66,8 +63,6 @@ TFormTagDeclare: TFormTagCat with
     declare(id: Id, tf: TForm): TForm == new(TFormTagDeclare, [tf], empty(), create(id))
 
     info(o: TextWriter, decl: TForm): () == o << declareId decl
-
-    tfSubst(tf: TForm, sigma: Subst): TForm == declare(declareId tf, subst(first args tf, sigma))
 
     tfAbSyn(tf: TForm): AbSyn == never
 
@@ -93,7 +88,6 @@ TFormTagTuple: TFormTagCat with
     tfFreeVars(cx: TForm): List Id == []
 
     tuple(tf: TForm): TForm == new(TFormTagTuple, [tf])
-    tfSubst(tf: TForm, sigma: Subst): TForm == tuple(subst(first args tf, sigma))
 
     tfAbSyn(tf: TForm): AbSyn == never
 
@@ -148,6 +142,8 @@ testSubstitution(): () ==
     import from Assert TForm, Subst, TForm, List TForm
     import from TFormTagApply, TFormTagId, TFormTagComma
     import from TFormTagTuple, TFormTagDeclare
+    import from TFormSubst
+
     Type := type()$TFormTagType
     Int := id("Int")
 
@@ -157,7 +153,7 @@ testSubstitution(): () ==
     fx := apply(f, [x])
     fy := apply(f, [y])
 
-    theSubst := create("x", id("y"))
+    theSubst := create("x", id("y")$AbSyn)
     assertEquals(Type, subst(Type, theSubst))
     assertEquals(fy, subst(fx, theSubst))
     assertEquals(fy, subst(fy, theSubst))

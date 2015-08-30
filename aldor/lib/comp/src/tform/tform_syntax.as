@@ -26,9 +26,6 @@ TFormTagId: TFormTagCat with
     info(o: TextWriter, tid: TForm): () ==
         o << id attrs tid
 
-    tfSubst(tf: TForm, sigma: Subst): TForm ==
-        lookup(sigma, id attrs tf, tf)
-
     tfAbSyn(tf: TForm): AbSyn == id idName tf
 
 TFormTagApply: TFormTagCat with
@@ -49,9 +46,5 @@ TFormTagApply: TFormTagCat with
 
     apply(op: TForm, tfs: List TForm): TForm ==
         new(TFormTagApply, cons(op, tfs))
-
-    tfSubst(tf: TForm, sigma: Subst): TForm ==
-        l := [subst(elt, sigma) for elt in args tf]
-        apply(first l, rest l)
 
     tfAbSyn(tf: TForm): AbSyn == never

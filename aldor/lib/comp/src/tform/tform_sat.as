@@ -53,6 +53,7 @@ TFormSatisfaction: with
     import from List TForm
     import from Id
     import from Integer
+    import from TFormSubst
 
     satisfies(opts: SatOptions, S: TForm, T: TForm): SatResult ==
         import from Fold SatResult
@@ -64,7 +65,7 @@ TFormSatisfaction: with
 
         satisfiesComma(S: TForm, T: TForm): SatResult ==
             empty? bindings T => satisfiesArgs(S, T)
-            sigma: Subst := create [(key, lookup(S, path(bindings T, key))) for key in keys bindings T]
+            sigma: Subst := create [(key, absyn lookup(S, path(bindings T, key))) for key in keys bindings T]
             T0 := comma( (if declare? t then id declareId t else t) for t in args T)
             substT := subst(T0, sigma)
             satisfies(S, substT)
@@ -77,7 +78,7 @@ TFormSatisfaction: with
             argResult := satisfies(argT, argS)
             failure? argResult => argResult
             empty? bindings T => satisfies(mapRets S, mapRets T)
-            sigma: Subst := create [(key, lookup(S, path(bindings T, key))) for key in keys bindings T]
+            sigma: Subst := create [(key, absyn lookup(S, path(bindings T, key))) for key in keys bindings T]
             substRetT := subst(mapRets T, sigma)
             satisfies(mapRets S, substRetT)
 

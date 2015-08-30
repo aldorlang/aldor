@@ -15,34 +15,6 @@ TFormAttrs: with
     id(a: %): Id == rep(a).s
     sx(a: %): SExpression == rep(a).sx
 
-Subst: OutputType with
-    create: (Id, TForm) -> %
-    create: List Cross(Id, TForm) -> %
-    lookup: (%, Id, TForm) -> TForm
-    empty?: % -> Boolean
-
-    export from List Cross(Id, TForm)
-== add
-    Rep == HashTable(Id, TForm)
-    import from Rep
-    empty?(sigma: %): Boolean == empty? rep sigma
-    create(l: List Cross(Id, TForm)): % == per [pair for pair in l]
-    create(id: Id, tf: TForm): % == per [(id, tf)@Cross(Id, TForm)]
-    lookup(sigma: %, id: Id, alt: TForm): TForm ==
-        import from Partial TForm
-        x := find(id, rep(sigma))
-	failed? x => alt
-	retract x
-
-    (o: TextWriter) << (sigma: %): TextWriter ==
-        import from Id, TForm
-        sep := ""
-	o << "{"
-        for (k, v) in rep sigma repeat
-	    o << sep << k << " --> " << v
-	    sep := ","
-        o << "}"
-
 TForm: Join(OutputType, PrimitiveType) with
     args: % -> List %
     argCount: % -> Integer
@@ -56,7 +28,6 @@ TForm: Join(OutputType, PrimitiveType) with
     tag: % -> TFormTagCat
     kind: % -> String
     freeVars: % -> List Id
-    subst: (%, Subst) -> %
 
     same?: (%, %) -> Boolean
     lookup: (%, List MachineInteger) -> %
@@ -79,7 +50,6 @@ TForm: Join(OutputType, PrimitiveType) with
     attrs tf: TFormAttrs == rep(tf).attrs
     kind tf: String == name$(tag tf)
     freeVars tf: List Id == tfFreeVars(tf)$(tag tf)
-    subst(tf, sigma: Subst): % == tfSubst(tf, sigma)$(tag tf)
 
     new(D: TFormTagCat, args: List TForm): % ==
     	   new(D, args, empty()$BindingSet)
@@ -126,7 +96,6 @@ TFormTagCat: Category == with
     category?: () -> Boolean
         ++ 'category?()' is true if this tform must be a category
     tfEquals: (TForm, TForm) -> Boolean
-    tfSubst: (TForm, Subst) -> TForm
     tfFreeVars: TForm -> List(Id)
     info: (TextWriter, TForm) -> ();
     tfAbSyn: TForm -> AbSyn;

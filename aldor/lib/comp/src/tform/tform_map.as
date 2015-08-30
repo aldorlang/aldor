@@ -39,9 +39,6 @@ TFormTagMap: TFormTagCat with
         theBindings := bindings tf
         [v for v in append!(copy fvArgs, fvRets) | not member?(v, theBindings)]
 
-    tfSubst(tf: TForm, sigma: Subst): TForm ==
-        map(subst(mapArgs tf, sigma), subst(mapRets tf, sigma))
-
     tfAbSyn(tf: TForm): AbSyn == never
 
 #if ALDORTEST
@@ -57,7 +54,7 @@ test(): () ==
     import from TForm, List TForm
     import from TFormTagMap, TFormTagId, TFormTagComma
     import from TFormTagDeclare, TFormTagApply
-    import from Id, Subst
+    import from Id, Subst, TFormSubst
     -- (x: Int, M x) -> (y: Int, K(x, y))
     theMap := map(comma(declare(id("x"), id("Int")), apply(id("M"), [id("x")])),
                comma(declare(id "y", id "Int"), apply(id("K"), [id("y"), id("x")])))
