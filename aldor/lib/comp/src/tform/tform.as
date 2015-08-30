@@ -58,6 +58,7 @@ TForm: Join(OutputType, PrimitiveType) with
     freeVars: % -> List Id
     subst: (%, Subst) -> %
 
+    same?: (%, %) -> Boolean
     lookup: (%, List MachineInteger) -> %
 == add
     Rep == Record(bindings: BindingSet, tag: TFormTagCat, args: List TForm, attrs: TFormAttrs);
@@ -85,10 +86,15 @@ TForm: Join(OutputType, PrimitiveType) with
     new(D: TFormTagCat, args: List TForm, bindings: BindingSet, a: TFormAttrs): % ==
     	   per [bindings, D, args, a]
    
-    (tf1: %) = (tf2: %): Boolean ==
+    same?(tf1, tf2): Boolean ==
+        import from TypedPointer TForm
+        pointer tf1 = pointer tf2
+
+    (tf1) = (tf2): Boolean ==
         import from Id
+	same?(tf1, tf2) => true
         name$(tag tf1) = name$(tag tf2) => tfEquals(tf1, tf2)$(tag tf1)
-	false
+  	false
 
     lookup(tf, path: List MachineInteger): % ==
         empty? path => tf
