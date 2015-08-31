@@ -9,8 +9,9 @@ SymbolTableBinder: with
     import from SymbolTable
 
     bind(root: SymbolTable, whole: AbSyn): SymbolTable ==
-	bind(whole, new(root, file))
-	root
+        tbl := new(root, file)
+	bind(whole, tbl)
+	tbl
 	
     bind(ab: AbSyn, tbl: SymbolTable): () ==
         stdout << "(Bind " << name tag ab << newline
