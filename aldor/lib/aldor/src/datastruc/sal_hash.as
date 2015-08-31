@@ -256,9 +256,9 @@ returns \emph{t} after the removal.}
 	}
 
 	-- TEMPORARY: COMPILER INSISTS ON THAT FUNCTION (WHY?)
-	if Cross(K, V) has HashType then {
-		(t:%) = (s:%):Boolean == never;
-	}
+--	if Cross(K, V) has HashType then {
+--		(t:%) = (s:%):Boolean == never;
+--	}
 }
 
 #if ALDORTEST
