@@ -33,9 +33,11 @@ TForm: Join(OutputType, PrimitiveType) with
     lookup: (%, List MachineInteger) -> %
 
     absyn: % -> AbSyn
+    fields: % -> DepTable
 == add
     Rep == Record(bindings: BindingSet, tag: TFormTagCat,
                   args: List TForm, attrs: TFormAttrs,
+		  fields: DepTable,
 		  absyn: Partial AbSyn == failed);
     import from Rep
     import from TFormAttrs
@@ -51,6 +53,8 @@ TForm: Join(OutputType, PrimitiveType) with
     kind tf: String == name$(tag tf)
     freeVars tf: List Id == tfFreeVars(tf)$(tag tf)
 
+    fields(tf: %): DepTable == rep(tf).fields
+
     new(D: TFormTagCat, args: List TForm): % ==
     	   new(D, args, empty()$BindingSet)
 
@@ -58,8 +62,8 @@ TForm: Join(OutputType, PrimitiveType) with
     	   new(D, args, bindings, create())
 
     new(D: TFormTagCat, args: List TForm, bindings: BindingSet, a: TFormAttrs): % ==
-    	   per [bindings, D, args, a]
-   
+        per [bindings, D, args, a, table(), failed]
+
     same?(tf1, tf2): Boolean ==
         import from TypedPointer TForm
         pointer tf1 = pointer tf2
