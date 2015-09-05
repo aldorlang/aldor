@@ -86,6 +86,7 @@ TypeInfer: with
 
     bupApply(stab: SymbolTable, ab: AbSyn): () ==
         import from AbSynApply, Subst, TFormTagMap
+	import from TFormSubst
         for abn in children ab repeat
 	    bottomUp(stab, abn)
         op := applyOp ab
@@ -93,8 +94,9 @@ TypeInfer: with
 	opPoss := tposs op.state
 	resultTPoss := empty()
 	for tf in opPoss repeat
-	   result := satisfiesMapArgs(std(), create[], abArgs, mapArgs tf)
-	   if result then add!(resultTPoss, mapRets tf)
+            sigma: Subst := create []
+	    result := satisfiesMapArgs(std(), sigma, abArgs, mapArgs tf)
+	    if result then add!(resultTPoss, subst(mapRets tf, sigma))
 	setTPoss(ab.state, resultTPoss)
 
     bupDeclare(stab: SymbolTable, ab: AbSyn): () ==
@@ -219,6 +221,6 @@ test3(): () ==
     assertTrue(comma? tf)
     assertEquals(comma(apply(id "G", [id "a"])), tf)
 
---test3()
+test3()
 
 #endif

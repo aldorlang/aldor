@@ -141,13 +141,20 @@ TFormSatisfaction: with
     -- way too simple (default args, dependent types, tuple/cross embedding)
     satisfiesMapArgs(opts: SatOptions, sigma: Subst, Sargs: List AbSyn, T: TForm): SatResult ==
         import from MachineInteger, AbSyn
-	stdout << "MapArgs: " << Sargs << " satisfies: " << T << newline
+        abMapArg(path: List MachineInteger): AbSyn ==
+	    # path > 1 => error "odd path"
+	    Sargs.(first path)
         not comma? T => failed()
 	# Sargs ~= # args T => failed()
+	if empty? bindings T then
+	    substT := T
+	else
+	    add!(sigma, [(key, abMapArg(path(bindings T, key))) for key in keys bindings T])
+	    T0 := comma((if declare? t then declareTForm t else t) for t in args T)
+	    substT := subst(T0, sigma)
 	i := 1$MachineInteger
 	while i < # Sargs repeat
-            stdout << "MapArgs(" << i << "): " << Sargs.i << " satisfies: " << args(T).i << newline
-	    if failure? satisfiesArg(opts, Sargs.i, args(T).i) then return failed()
+	    if failure? satisfiesArg(opts, Sargs.i, args(substT).i) then return failed()
 	    i := i + 1
 	succeed()
 
