@@ -3,6 +3,7 @@ library_deps := util absyn
 bs_deps :=
 subst_deps :=
 tform_deps := bs
+syme_deps := tform
 tform_types_deps := tform
 tform_atoms_deps := tform
 tform_syntax_deps := tform
