@@ -144,6 +144,7 @@ s(x: String): String == x
 
 test(): () ==
     import from List AbSyn
+    import from AbState
     absyn := sequence(apply("f", "a"))
 
     rootSymbolTable: SymbolTable := root()
@@ -151,7 +152,7 @@ test(): () ==
     stab := bind(rootSymbolTable, absyn)
 
     bottomUp(stab, absyn)
-    assertTrue empty? first(children absyn).tposs
+    assertTrue empty? tposs first(children absyn).state
 
 test2(): () ==
     import from TFormTagComma, TFormTagMap, TFormTagId
@@ -159,6 +160,7 @@ test2(): () ==
     import from Assert TForm
     import from TForm
     import from Partial TForm, TFormTagComma
+    import from AbState
 
     rootSymbolTable: SymbolTable := root()
 
@@ -170,28 +172,28 @@ test2(): () ==
     stab := bind(rootSymbolTable, ab)
 
     bottomUp(stab, ab)
-    assertFalse(failed? unique ab.tposs)
-    tf: TForm := retract unique ab.tposs
+    assertTrue(unique? ab.state)
+    tf: TForm := unique ab.state
     assertTrue(comma? tf)
     assertEquals(comma(id "String"), tf)
 
     ab := apply("g", "a", "a")
     stab := bind(rootSymbolTable, ab)
     bottomUp(stab, ab)
-    assertFalse(failed? unique ab.tposs)
-    tf: TForm := retract unique ab.tposs
+    assertTrue(unique? ab.state)
+    tf: TForm := unique ab.state
     assertTrue(comma? tf)
     assertEquals(comma(id "String"), tf)
 
     ab := apply("f")
     stab := bind(rootSymbolTable, ab)
     bottomUp(stab, ab)
-    assertTrue empty? ab.tposs
+    assertTrue empty? tposs ab.state
 
     ab := apply("f", "a", "a")
     stab := bind(rootSymbolTable, ab)
     bottomUp(stab, ab)
-    assertTrue empty? ab.tposs
+    assertTrue empty? tposs ab.state
 
 test()
 test2()
@@ -202,6 +204,7 @@ test3(): () ==
     import from Assert TForm
     import from TForm, List TForm
     import from Partial TForm, TFormTagComma
+    import from AbState
 
     rootSymbolTable: SymbolTable := root()
 
@@ -216,8 +219,8 @@ test3(): () ==
     stab := bind(rootSymbolTable, ab)
     bottomUp(stab, ab)
 
-    assertFalse(failed? unique ab.tposs)
-    tf: TForm := retract unique ab.tposs
+    assertTrue(unique? ab.state)
+    tf: TForm := unique ab.state
     assertTrue(comma? tf)
     assertEquals(comma(apply(id "G", [id "a"])), tf)
 
