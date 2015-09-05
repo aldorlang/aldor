@@ -44,6 +44,8 @@ SatResult: with
 
 TFormSatisfaction: with
     satisfies: (SatOptions, TForm, TForm) -> SatResult
+    satisfiesMapArgs: (SatOptions, Subst, List AbSyn, TForm) -> SatResult
+
     export from SatOptions, SatResult
 == add
     import from TFormTagApply, TFormTagId, TFormTagComma, TFormTagExit
@@ -54,10 +56,10 @@ TFormSatisfaction: with
     import from Id
     import from Integer
     import from TFormSubst
+    import from Fold SatResult
+    import from SatResult
 
     satisfies(opts: SatOptions, S: TForm, T: TForm): SatResult ==
-        import from Fold SatResult
-        import from SatResult
 
         satisfiesArgs(S: TForm, T: TForm): SatResult ==
             argCount S ~= argCount T => failed()
@@ -135,6 +137,27 @@ TFormSatisfaction: with
             --stdout << " Sat: " << success? r << ")" << newline
             r
         satisfies(S, T)
+
+    -- way too simple (default args, dependent types, tuple/cross embedding)
+    satisfiesMapArgs(opts: SatOptions, sigma: Subst, Sargs: List AbSyn, T: TForm): SatResult ==
+        import from MachineInteger, AbSyn
+	stdout << "MapArgs: " << Sargs << " satisfies: " << T << newline
+        not comma? T => failed()
+	# Sargs ~= # args T => failed()
+	i := 1$MachineInteger
+	while i < # Sargs repeat
+            stdout << "MapArgs(" << i << "): " << Sargs.i << " satisfies: " << args(T).i << newline
+	    if failure? satisfiesArg(opts, Sargs.i, args(T).i) then return failed()
+	    i := i + 1
+	succeed()
+
+    satisfiesArg(opts: SatOptions, ab: AbSyn, T: TForm): SatResult ==
+        import from TiAbSynFields, AbState
+	import from TPoss
+        not field?(ab, state) =>
+	    stdout << "Error: Not checked " << ab << newline
+	    failed()
+        (_or)/(satisfies(opts, tf, T) for tf in tposs(ab.state))
 
 #if ALDORTEST
 #include "comp.as"
