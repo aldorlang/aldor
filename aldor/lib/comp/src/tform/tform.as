@@ -51,7 +51,7 @@ TForm: Join(OutputType, PrimitiveType) with
 
     new: (TFormTagCat, List TForm) -> %
     new: (TFormTagCat, List TForm, BindingSet) -> %
-    new: (TFormTagCat, List TForm, BindingSet, TFormAttrs) -> %
+    new: (TFormTagCat, List TForm, bs: BindingSet == empty(), attrs: TFormAttrs) -> %
 
     tag: % -> TFormTagCat
     kind: % -> String
@@ -106,9 +106,12 @@ TFormTagCat: Category == with
     type?: () -> Boolean
         ++ 'type?()' is true if the tform must represent a type.  ie. X satisfies Type
 	++ some tags represent types in some cases, but not all.  eg. Id.
+    category?: () -> Boolean
+        ++ 'category?()' is true if this tform must be a category
     tfEquals: (TForm, TForm) -> Boolean
     tfSubst: (TForm, Subst) -> TForm
     tfFreeVars: TForm -> List(Id)
     info: (TextWriter, TForm) -> ();
     default 
         info(tx: TextWriter, tf: TForm): () == {}
+        category?(): Boolean == false
