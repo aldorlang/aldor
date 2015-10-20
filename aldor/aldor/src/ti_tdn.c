@@ -384,7 +384,7 @@ titdn0ApplyFType(Stab stab, AbSyn absyn, TForm type, AbSyn op,
 	SatMask		mask = tfSatBupMask();
 	Length		nopc, popc, parmc;
 	TForm		nopt, popt, opType;
-	TPoss		opTypes, nopTypes, fopTypes;
+	TPoss		opTypes, nopTypes;
 	TPossIterator	it;
 	Bool		result;
 
@@ -395,7 +395,6 @@ titdn0ApplyFType(Stab stab, AbSyn absyn, TForm type, AbSyn op,
 
 	opTypes  = abReferTPoss(op);	/* Original list of possible types */
 	nopTypes = tpossEmpty();	/* Possible (non-pending) types */
-	fopTypes = tpossEmpty();	/* Possible unconditional types */
 	nopc = 0;			/* Number of non-pending matches */
 	popc = 0;			/* Number of all possible matches */
 	nopt = tfUnknown;		/* Non-pending op type */
