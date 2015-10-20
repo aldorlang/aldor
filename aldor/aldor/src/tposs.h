@@ -75,6 +75,11 @@ extern Bool	tpossHasMapType		(TPoss);
 		/*
 		 * Does the type possibility set contain a mapping type?
 		 */
+extern Bool	tpossHasNonMapType	(TPoss);
+                /*
+		 * Does the type possibility set contain a non-mapping type?
+		 */
+
 
 extern TPoss	tpossGeneratorArg	(TPoss tp);
 		/*

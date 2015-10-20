@@ -493,6 +493,23 @@ tpossHasMapType(TPoss tp)
 	return false;
 }
 
+Bool
+tpossHasNonMapType(TPoss tp)
+{
+	TPossIterator	tit;
+
+	if (tp == NULL)
+		return false;
+
+	for (tpossITER(tit, tp); tpossMORE(tit); tpossSTEP(tit)) {
+		TForm tf = tpossELT(tit);
+		tf = tfDefineeType(tf);
+		if (!tfIsAnyMap(tf) && !tfIsMapSyntax(tf))
+			return true;
+	}
+	return false;
+}
+
 TPoss
 tpossGeneratorArg(TPoss tpit)
 {
