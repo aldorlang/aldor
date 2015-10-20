@@ -162,11 +162,10 @@ comes into the current scope.
 \head{section}{Apply}{asugLangTiesApply}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-In the absence of an explicit function named \ttin{a}, the application
-\ttin{a(b)} is treated as a call to the function \ttin{apply} with the
-first argument being taken to be \ttin{a}, and the remaining arguments
-being taken from the arguments to the original application.
-Example:
+The application \ttin{a(b)} may be treated as a call to the function
+\ttin{apply} with the first argument being taken to be \ttin{a}, and
+the remaining arguments being taken from the arguments to the original
+application.  Example:
 
 \verb^    ^{\tt f(a,b,c)} becomes {\tt apply(f,a,b,c)}
 
@@ -187,7 +186,9 @@ achieve this, a matrix domain would export a function with signature:
 \end{verbatim}
 \end{small}
 
-The function is defined in the normal way.
+The function is defined in the normal way.  This use of apply is
+treated as a normal function call, so for example if an export 'mat'
+is in scope, then the one matching the function call context will be selected.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \head{section}{Set!}{asugLangTiesSetBang}
