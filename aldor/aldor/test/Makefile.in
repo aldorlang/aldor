@@ -31,7 +31,7 @@ foamdir = $(abs_top_builddir)/aldor/lib/libfoam
 
 aptests := exquo
 fmtests := rectest enumtest clos strtable1 simple apply
-ctests  := rectest enumtest
+ctests  := rectest enumtest multinever
 otests  := enumtest
 xtests := enumtest
 @BUILD_JAVA_TRUE@jruntests := jimport
@@ -52,6 +52,7 @@ opt1_AXLFLAGS=-Y$(foamdir)/al -I $(foamsrcdir)/al -lRuntimeLib=foam -Q9
 strtable1_AXLFLAGS=-Y$(foamdir)/al -I $(foamsrcdir)/al -lRuntimeLib=foam -Q9
 clos_AXLFLAGS := -Q2
 simple_AXLFLAGS=-Fasy -WD+syme -O
+multinever_AXLFLAGS = -Q9
 
 _aptests := $(sort $(aptests))
 _ctests  := $(sort $(ctests)  $(otests))
