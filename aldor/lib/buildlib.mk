@@ -177,9 +177,9 @@ $(addsuffix .dep,$(alldomains) $(SUBLIB)):
 	if test ! -f $@; then			\
 	   mv $@_tmp $@;			\
 	elif diff $@ $@_tmp > /dev/null; then	\
-	   mv $@_tmp $@;			\
-	else					\
 	   rm $@_tmp;				\
+	else					\
+	   mv $@_tmp $@;			\
 	fi
 
 $(foreach l,$(alldomains), $(eval $(call dep_template,$(l))))
