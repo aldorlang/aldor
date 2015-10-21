@@ -16,6 +16,8 @@ local void testTiBupCollect1();
 local void testTiBupCollect2();
 local void testTiTdnPretend();
 local void testTiTdnMultiToCrossEmbed();
+local void testTiBupApplyMixed();
+local void testTiBupApplyImplicit();
 
 /* XXX: from test_tinfer.c */
 void init(void);
@@ -31,6 +33,8 @@ tibupTest()
 	TEST(testTiBupCollect2);
 	TEST(testTiTdnPretend);
 	TEST(testTiTdnMultiToCrossEmbed);
+	TEST(testTiBupApplyMixed);
+	TEST(testTiBupApplyImplicit);
 	fini();
 }
 
@@ -176,6 +180,79 @@ testTiTdnPretend()
 
 	finiFile();
 }
+
+extern int tipBupDebug;
+extern int tfsDebug;
+
+local void
+testTiBupApplyMixed()
+{
+	String Boolean_imp = "import from Boolean";
+	String E_def = "E: with == add";
+	String F_def = "F: with { apply: (%, %) -> () } == add { apply(f: %, g: %): () == never }";
+	String f1_def = "f: F == never";
+	String f2_def = "f(): E == never";
+
+	StringList lines = listList(String)(5, Boolean_imp, E_def, F_def, f1_def, f2_def);
+	AbSynList absynList = listCons(AbSyn)(stdtypes(), abqParseLines(lines));
+	AbSyn absyn = abNewSequenceL(sposNone, absynList);
+
+	AbSyn case1 = abqParse("f(f)");
+	Stab stab;
+
+	initFile();
+	stab = stabFile();
+
+	abPutUse(absyn, AB_Use_NoValue);
+	scopeBind(stab, absyn);
+	typeInfer(stab, absyn);
+
+	tfsDebug = tipBupDebug = 1;
+	scopeBind(stab, case1);
+	tiBottomUp(stab, case1, tfUnknown);
+
+	testIntEqual("fn", 1, tpossCount(abTPoss(case1)));
+
+	tiTopDown(stab, case1, tfNone());
+	testIntEqual("Unique", AB_State_HasUnique, abState(case1));
+}
+
+
+
+local void
+testTiBupApplyImplicit()
+{
+	String Boolean_imp = "import from Boolean";
+	String E_def = "E: with == add";
+	String S_def = "S: with { apply: (%, E) -> () } == add { apply(f: %, e: E): () == never }";
+	String s_def = "s: S == never";
+	String e_def = "e: E == never";
+
+	StringList lines = listList(String)(5, Boolean_imp, E_def, S_def, s_def, e_def);
+	AbSynList absynList = listCons(AbSyn)(stdtypes(), abqParseLines(lines));
+	AbSyn absyn = abNewSequenceL(sposNone, absynList);
+
+	AbSyn case1 = abqParse("s e");
+	Stab stab;
+
+	initFile();
+	stab = stabFile();
+
+	abPutUse(absyn, AB_Use_NoValue);
+	scopeBind(stab, absyn);
+	typeInfer(stab, absyn);
+
+	tfsDebug = tipBupDebug = 1;
+	scopeBind(stab, case1);
+	tiBottomUp(stab, case1, tfUnknown);
+
+	testIntEqual("fn", 1, tpossCount(abTPoss(case1)));
+
+	tiTopDown(stab, case1, tfNone());
+	testIntEqual("Unique", AB_State_HasUnique, abState(case1));
+
+}
+
 
 /*
 This should really work, but at the moment a4 and a8 give incorrect results.
