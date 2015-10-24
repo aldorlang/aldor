@@ -106,6 +106,8 @@ $(addsuffix .dep,$(axdomains)): %.dep: %.ax Makefile.in Makefile.deps
 $(addsuffix .ao, $(asdomains)): %.ao: %.as
 $(addsuffix .ao, $(axdomains)): %.ao: %.ax
 
+$(addsuffix .ao, $(alldomains)): %.ao: $(foreach x,$(librarydeps),$(top_builddir)/lib/$(x)/src/lib$(x).al)
+
 SUBLIB		:= _sublib_$(libraryname)
 SUBLIB_DEPEND	:= _sublib_depend_$(libraryname)
 
