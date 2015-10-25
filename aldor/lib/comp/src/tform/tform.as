@@ -60,8 +60,12 @@ TForm: Join(OutputType, PrimitiveType) with
 
     same?: (%, %) -> Boolean
     lookup: (%, List MachineInteger) -> %
+
+    absyn: % -> AbSyn
 == add
-    Rep == Record(bindings: BindingSet, tag: TFormTagCat, args: List TForm, attrs: TFormAttrs);
+    Rep == Record(bindings: BindingSet, tag: TFormTagCat,
+                  args: List TForm, attrs: TFormAttrs,
+		  absyn: Partial AbSyn == failed);
     import from Rep
     import from TFormAttrs
     default tf, tf1, tf2: %
@@ -96,6 +100,13 @@ TForm: Join(OutputType, PrimitiveType) with
         name$(tag tf1) = name$(tag tf2) => tfEquals(tf1, tf2)$(tag tf1)
   	false
 
+    absyn(tf: %): AbSyn ==
+        import from Partial AbSyn
+        not failed? rep(tf).absyn => retract rep(tf).absyn
+        tfAsAbSyn := tfAbSyn(tf)$(tag tf)
+	rep(tf).absyn := [tfAsAbSyn]
+	tfAsAbSyn
+
     lookup(tf, path: List MachineInteger): % ==
         empty? path => tf
 	n: MachineInteger := first path
@@ -118,6 +129,7 @@ TFormTagCat: Category == with
     tfSubst: (TForm, Subst) -> TForm
     tfFreeVars: TForm -> List(Id)
     info: (TextWriter, TForm) -> ();
+    tfAbSyn: TForm -> AbSyn;
     default 
         info(tx: TextWriter, tf: TForm): () == {}
         category?(): Boolean == false

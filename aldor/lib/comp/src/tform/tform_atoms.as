@@ -1,6 +1,8 @@
 #include "comp.as"
 #pile
 
+import from Id
+
 TFormTagType: TFormTagCat with
     type: () -> TForm
     type?: TForm -> Boolean
@@ -18,6 +20,7 @@ TFormTagType: TFormTagCat with
     type?(tf: TForm): Boolean == kind tf = name
 
     tfSubst(tf: TForm, sigma: Subst): TForm == tf
+    tfAbSyn(tf: TForm): AbSyn == id id "Type"
 
 TFormTagCategory: TFormTagCat with
     category: () -> TForm
@@ -33,6 +36,7 @@ TFormTagCategory: TFormTagCat with
 
     tfFreeVars(tf: TForm): List Id == []
     tfSubst(tf: TForm, sigma: Subst): TForm == tf
+    tfAbSyn(tf: TForm): AbSyn == id id "Category"
 
 TFormTagExit: TFormTagCat with
     exit: () -> TForm
@@ -52,6 +56,7 @@ TFormTagExit: TFormTagCat with
     tfFreeVars(cx: TForm): List Id == []
 
     tfSubst(tf: TForm, sigma: Subst): TForm == tf
+    tfAbSyn(tf: TForm): AbSyn == id id "Exit"
 
 
 

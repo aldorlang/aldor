@@ -46,6 +46,8 @@ TFormTagComma: TFormTagCat with
     tfSubst(tf: TForm, sigma: Subst): TForm ==
         comma(subst(arg, sigma) for arg in args tf)
 
+    tfAbSyn(tf: TForm): AbSyn == comma(absyn(tfn)$TForm for tfn in args tf)
+
 TFormTagDeclare: TFormTagCat with
     declare: (Id, TForm) -> TForm
     declare?: TForm -> Boolean
@@ -66,6 +68,8 @@ TFormTagDeclare: TFormTagCat with
     info(o: TextWriter, decl: TForm): () == o << declareId decl
 
     tfSubst(tf: TForm, sigma: Subst): TForm == declare(declareId tf, subst(first args tf, sigma))
+
+    tfAbSyn(tf: TForm): AbSyn == never
 
     declareId(tf: TForm): Id == id attrs tf
     declareTForm(tf: TForm): TForm == first args tf
@@ -90,6 +94,8 @@ TFormTagTuple: TFormTagCat with
 
     tuple(tf: TForm): TForm == new(TFormTagTuple, [tf])
     tfSubst(tf: TForm, sigma: Subst): TForm == tuple(subst(first args tf, sigma))
+
+    tfAbSyn(tf: TForm): AbSyn == never
 
 #if ALDORTEST
 #include "aldor"

@@ -29,6 +29,8 @@ TFormTagId: TFormTagCat with
     tfSubst(tf: TForm, sigma: Subst): TForm ==
         lookup(sigma, id attrs tf, tf)
 
+    tfAbSyn(tf: TForm): AbSyn == id idName tf
+
 TFormTagApply: TFormTagCat with
     apply: (TForm, List TForm) -> TForm
     apply?: TForm -> Boolean
@@ -51,3 +53,5 @@ TFormTagApply: TFormTagCat with
     tfSubst(tf: TForm, sigma: Subst): TForm ==
         l := [subst(elt, sigma) for elt in args tf]
         apply(first l, rest l)
+
+    tfAbSyn(tf: TForm): AbSyn == never

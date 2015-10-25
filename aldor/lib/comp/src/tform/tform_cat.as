@@ -37,6 +37,7 @@ TFormTagWith: TFormTagCat with
 
     tfFreeVars(tf: TForm): List Id == [id for id in freeVars tf  | id ~= withId tf]
     tfSubst(tf: TForm, sigma: Subst): TForm == _with(withId tf, subst(withType tf, sigma))
+    tfAbSyn(tf: TForm): AbSyn == never
 
 TFormTagJoin: TFormTagCat with
     join: Tuple TForm -> TForm
@@ -63,6 +64,7 @@ TFormTagJoin: TFormTagCat with
         reverse!((append!, [])/(freeVars arg for arg in args tf))
 
     tfSubst(tf: TForm, sigma: Subst): TForm == join(subst(arg, sigma) for arg in joinArgs tf)
+    tfAbSyn(tf: TForm): AbSyn == never
 
 TFormTagNamedCat: TFormTagCat with
    namedCategory: (Id, TForm) -> TForm
@@ -93,3 +95,5 @@ TFormTagNamedCat: TFormTagCat with
 
     tfSubst(tf: TForm, sigma: Subst): TForm ==
         namedCategory(namedCategoryId tf, subst(namedCategoryTForm tf, sigma))
+
+    tfAbSyn(tf: TForm): AbSyn == never

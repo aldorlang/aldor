@@ -42,6 +42,8 @@ TFormTagMap: TFormTagCat with
     tfSubst(tf: TForm, sigma: Subst): TForm ==
         map(subst(mapArgs tf, sigma), subst(mapRets tf, sigma))
 
+    tfAbSyn(tf: TForm): AbSyn == never
+
 #if ALDORTEST
 #include "comp.as"
 #include "aldorio.as"
