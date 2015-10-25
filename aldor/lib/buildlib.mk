@@ -121,15 +121,17 @@ $(addsuffix .ao, $(alldomains)): %.ao: $(SUBLIB_DEPEND).al
 	rm lib$(libraryname)_$*.al
 
 $(SUBLIB_DEPEND).al: $(foreach l,$(library_deps),$(librarylibdir)/$l/$(SUBLIB).al)
-	$(AM_V_AR)set -e;		\
+	$(AM_V_AR)set -x; set -e;		\
 	ar cr $@;			\
 	for l in $+; do 		\
 	   if [ ! -f $$l ]; then	\
 	      echo "missing $$l";	\
 	      exit 1;			\
 	   fi;				\
+	   ar tv $$l;			\
 	   ar x $$l;			\
 	   ar r $@ $$(ar t $$l);	\
+	   ar tv $@;			\
 	   rm $$(ar t $$l);		\
         done
 
