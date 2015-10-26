@@ -120,10 +120,10 @@ $(addsuffix .ao, $(alldomains)): %.ao: $(SUBLIB_DEPEND).al
 	$(AM_DBG) $(aldorexedir)/aldor $(aldor_args);				\
 	rm lib$(libraryname)_$*.al
 
-$(SUBLIB_DEPEND).al: $(foreach l,$(library_deps),$(librarylibdir)/$l/$(SUBLIB).al)
+$(SUBLIB_DEPEND).al: $(foreach l,$(library_deps),$(librarylibdir)/$l/$(SUBLIB).al) Makefile.deps
 	$(AM_V_AR)set -e;		\
 	ar cr $@;			\
-	for l in $+; do 		\
+	for l in $(filter %.al,$+); do	\
 	   if [ ! -f $$l ]; then	\
 	      echo "missing $$l";	\
 	      exit 1;			\
