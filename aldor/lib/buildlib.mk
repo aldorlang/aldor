@@ -54,6 +54,10 @@ AM_V_JAR = $(am__v_JAR_$(V))
 am__v_JAR_ = $(am__v_JAR_$(AM_DEFAULT_VERBOSITY))
 am__v_JAR = @echo "  JAR " $@;
 
+AM_V_LINT = $(am__v_LINT_$(V))
+am__v_LINT_ = $(am__v_LINT_$(AM_DEFAULT_VERBOSITY))
+am__v_LINT_0 = @echo "  LINT " $@;
+
 # ALDORTEST - don't echo anything as the build rule will show the test name
 AM_V_ALDORTEST = $(am__v_ALDORTEST_$(V))
 am__v_ALDORTEST_ = $(am__v_ALDORTEST_$(AM_DEFAULT_VERBOSITY))
@@ -119,6 +123,11 @@ $(addsuffix .ao, $(alldomains)): %.ao: $(SUBLIB_DEPEND).al
 	ar r lib$(libraryname)_$*.al $(addsuffix .ao, $(shell $(UNIQ) $*.dep));	\
 	$(AM_DBG) $(aldorexedir)/aldor $(aldor_args);				\
 	rm lib$(libraryname)_$*.al
+
+$(addsuffix .lint, $(alldomains)): %.lint: %.as
+$(addsuffix .lint, $(alldomains)): %.lint:
+	$(AM_V_LINT)set -e		\
+	$(top_srcdir)/lib/as-lint.sh $*.as
 
 $(SUBLIB_DEPEND).al: $(foreach l,$(library_deps),$(librarylibdir)/$l/$(SUBLIB).al) Makefile.deps
 	$(AM_V_AR)set -x; set -e;		\
@@ -201,6 +210,7 @@ $(SUBLIB).al:
 
 all: Makefile $(SUBLIB).al
 all: $(addsuffix .fm,$(library))
+all: $(addsuffix .lint,$(library))
 ifeq ($(bytecode_only),)
 all: $(addsuffix .c,$(library))
 endif
