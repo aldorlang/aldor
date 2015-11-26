@@ -32,5 +32,6 @@ void tfsatTest(void);
 void tibupTest(void);
 void tinferTest(void);
 void tpossTest(void);
+void tsetTestSuite(void);
 
 #endif

@@ -40,6 +40,7 @@ main(int argc, char *argv[])
 	if (testShouldRun("errorset")) errorSetTestSuite();
 	if (testShouldRun("bitv")) bitvTestSuite();
 	if (testShouldRun("list")) listTestSuite();
+	if (testShouldRun("tset")) tsetTestSuite();
 	if (testShouldRun("fname")) fnameTest();
 	if (testShouldRun("archive")) archiveTestSuite();
 	if (testShouldRun("foam")) foamTest();
