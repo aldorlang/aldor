@@ -130,6 +130,7 @@ libgen_a_SOURCES =	\
 	strops.c	\
 	symbol.c	\
 	table.c		\
+	ttable.c	\
 	termtype.c	\
 	test.c		\
 	textansi.c	\
@@ -291,7 +292,8 @@ testsuite =			\
 	test/test_tibup.c	\
 	test/test_tfsat.c	\
 	test/test_tinfer.c	\
-	test/test_tposs.c
+	test/test_tposs.c	\
+	test/test_tset.c
 
 testall_SOURCES =	\
 	$(testsuite)	\
