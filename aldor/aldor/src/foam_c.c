@@ -2335,7 +2335,7 @@ fiImportGlobalFun(String name, Ptr * p)
 	}
 	else if (glInfo->size > -1)   {  /* already exported */ 
 		*p = glInfo->data;
-		linkDEBUG(stdout, "resolved with (%p) %p\n", glInfo, glInfo->data);
+		linkDEBUG(stdout, "resolved with (%p) %p\n", (void*) glInfo, (void*) glInfo->data);
 	}
 	else {
 		FiLinkList	l = (FiLinkList) FI_ALLOC(sizeof(fiConsCell), CENSUS_GlobalInfo);
