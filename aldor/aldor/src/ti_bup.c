@@ -1194,11 +1194,10 @@ tibupApply(Stab stab, AbSyn absyn, TForm type)
 
 		abSetImplicit(absyn, imp);
 		tibup(stab, imp, tfUnknown);
-		afprintf(dbOut, "TP1: %pTPoss\n", abTPoss(imp));
 
 		tibup0ApplyFilter(stab, absyn, type, abTPoss(imp),
 				  imp, abArgc(absyn), abArgf, &impOpTypes, &impRetTypes);
-		afprintf(dbOut, "Filter: %pTPoss %pTPoss\n", impOpTypes, impRetTypes);
+
 		if (tpossCount(impOpTypes) > 0) {
 			TPoss tmp2 = retTypes;
 			retTypes = tpossUnion(retTypes, impRetTypes);
