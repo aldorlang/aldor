@@ -2537,7 +2537,7 @@ sefoFreeVars0(TForm *pa, TForm parent, Sefo sefo)
 
 	if (DEBUG(sefoFree)) {
 		sfvPrint(dbOut);
-		fprintf(dbOut, " sefoFree[%d]: %p)\n", (int) serial, *pa);
+		fprintf(dbOut, " sefoFree[%d]: %p)\n", (int) serial, (void*) *pa);
 	}
 }
 
