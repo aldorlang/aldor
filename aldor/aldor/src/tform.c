@@ -183,6 +183,15 @@ local void		tfExtendFinishTwins	(Stab, Syme);
 
 /******************************************************************************
  *
+ * :: Type imports and exports
+ *
+ *****************************************************************************/
+
+local void		tfSetDomImports		(TForm, SymeList);
+local void		tfSetDomExports		(TForm, SymeList);
+
+/******************************************************************************
+ *
  * :: Debugging facilities
  *
  *****************************************************************************/
@@ -3622,7 +3631,9 @@ tfAddDomExports(TForm tf, SymeList symes)
 
 	nsymes = tfJoinExportLists(mods, tfDomExports(tf), symes, NULL);
 
-	return tfSetDomExports(tf, nsymes);
+	tfSetDomExports(tf, nsymes);
+
+	return nsymes;
 }
 
 local SymeList
@@ -3633,7 +3644,9 @@ tfAddCatExports(TForm tf, SymeList symes)
 
 	nsymes = tfJoinExportLists(mods, tfCatExports(tf), symes, NULL);
 
-	return tfSetCatExports(tf, nsymes);
+	tfSetCatExports(tf, nsymes);
+
+	return nsymes;
 }
 
 local SymeList
@@ -3644,7 +3657,9 @@ tfAddThdExports(TForm tf, SymeList symes)
 
 	nsymes = tfJoinExportLists(mods, tfThdExports(tf), symes, NULL);
 
-	return tfSetThdExports(tf, nsymes);
+	tfSetThdExports(tf, nsymes);
+
+	return nsymes;
 }
 
 local SymeList
@@ -3661,7 +3676,9 @@ tfAddHasExports(TForm tf, TForm cat)
 	nsymes = tfGetCatExports(cat);
 	nsymes = tfJoinExportLists(mods, tfDomExports(tf), nsymes, cond);
 
-	return tfSetDomExports(tf, nsymes);
+	tfSetDomExports(tf, nsymes);
+
+	return nsymes;
 }
 
 /*
@@ -4088,7 +4105,9 @@ tfGetCatExportsFrIf(TForm cat)
 	esymes = tfGetCatExports(tfIfElse(cat));
 	symes = tfJoinExportLists(mods, symes, esymes, cond);
 
-	return tfSetCatExports(cat, symes);
+	tfSetCatExports(cat, symes);
+
+	return symes;
 }
 
 local SymeList
@@ -4103,7 +4122,9 @@ tfGetCatExportsFrJoin(TForm cat)
 		symes = tfJoinExportLists(mods, symes, nsymes, NULL);
 	}
 
-	return tfSetCatExports(cat, symes);
+	tfSetCatExports(cat, symes);
+
+	return symes;
 }
 
 local SymeList
@@ -4120,7 +4141,9 @@ tfGetCatExportsFrMeet(TForm cat)
 		symes = tfMeetExportLists(mods, symes, nsymes, NULL);
 	}
 
-	return tfSetCatExports(cat, symes);
+	tfSetCatExports(cat, symes);
+
+	return symes;
 }
 
 /******************************************************************************
@@ -4170,6 +4193,61 @@ tfGetBuiltinSyme(TForm tf, Symbol sym)
 	}
 	return syme0;
 }
+
+/******************************************************************************
+ *
+ * :: Type imports and exports
+ *
+ *****************************************************************************/
+
+extern SymeList
+tfDomImports(TForm tf)
+{
+	return tf->domImports;
+}
+
+extern void
+tfSetDomImports(TForm tf, SymeList symeList)
+{
+	tf->domImports = symeList;
+}
+
+extern SymeList
+tfDomExports(TForm tf)
+{
+	return tf->domExports;
+}
+
+extern void
+tfSetDomExports(TForm tf, SymeList symeList)
+{
+	tf->domExports = symeList;
+}
+
+extern SymeList
+tfCatExports(TForm tf)
+{
+	return tf->catExports;
+}
+
+extern void
+tfSetCatExports(TForm tf, SymeList symeList)
+{
+	tf->catExports = symeList;
+}
+
+extern SymeList
+tfThdExports(TForm tf)
+{
+	return tf->thdExports;
+}
+
+extern void
+tfSetThdExports(TForm tf, SymeList symeList)
+{
+	tf->thdExports = symeList;
+}
+
 
 /*
  * Called on a domain to get the symbol meanings to include
@@ -6798,7 +6876,7 @@ tfWithFrSymes(SymeList symes)
 {
 	TForm	tf;
 	tf = tfNewNode(TF_With, 2, tfNone(), tfNone());
-	tfCatExports(tf) = symes;
+	tfSetCatExports(tf, symes);
 	tfSetMeaning(tf);
 	return tf;
 }
@@ -6829,7 +6907,7 @@ tfThird(SymeList symes)
 {
 	TForm	tf;
 	tf = tfNewNode(TF_Third, 1, tfNone());
-	tfThdExports(tf) = symes;
+	tfSetThdExports(tf, symes);
 	tfSetMeaning(tf);
 	return tf;
 }
