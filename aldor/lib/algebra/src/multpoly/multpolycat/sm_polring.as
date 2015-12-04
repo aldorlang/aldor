@@ -143,7 +143,7 @@ define PolynomialRing(R:Join(ArithmeticType, ExpressionType),
 	   } 
            if R has CommutativeRing then {
               monicDivide(a: %, b: %, v: V): (%, %) == {
-                  import from SUP(%);
+                  import from SUP(% pretend CommutativeRing);
                   supb := univariate(SUP(%))(b,v);
                   assert(not ground? supb);
                   assert(unit? leadingCoefficient(supb));
