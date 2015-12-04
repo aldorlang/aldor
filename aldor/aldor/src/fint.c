@@ -6068,7 +6068,7 @@ fintWhere(int level)
 
 	if (prog)
 		(void)fprintf(dbOut, "#%d %8p in <%s> at unit [%s]\n", int0,
-			      bp, prog->name, prog->unit->name);
+			      (void*) bp, prog->name, prog->unit->name);
 	else
 		(void)fprintf(dbOut, "(Unknown current prog)\n");
 
