@@ -3265,8 +3265,7 @@ tformSubst0(AbSub sigma, TForm tf)
 			tfGetCatSelf(tf);
 			tfParents(final) = parentListSubst0(sigma, symes);
 			if (tfCatExports(tf))
-				tfCatExports(final) =
-					listCopy(Syme)(tfParents(final));
+				tfSetCatExports(final, listCopy(Syme)(tfParents(final)));
 			tfCascades(final) =
 				tqualListSubst0(sigma, tfGetCatCascades(tf));
 			tfHasCascades(final) = true;
@@ -4461,7 +4460,7 @@ tformFrBuffer(Lib lib, Buffer buf)
 	if (tfIsWith(tf)) {
 		SymeList symes;
 		int n;
-		tfCatExports(tf) = symeListFrBuffer(lib, buf);
+		tfSetCatExports(tf, symeListFrBuffer(lib, buf));
 		n = bufGetHInt(buf);
 		symes = tfCatExports(tf);
 		if (n != listLength(Syme)(symes)) {
@@ -4474,7 +4473,7 @@ tformFrBuffer(Lib lib, Buffer buf)
 		}
 	}
 	if (tfIsThird(tf))
-		tfThdExports(tf) = symeListFrBuffer(lib, buf);
+		tfSetThdExports(tf, symeListFrBuffer(lib, buf));
 
 	tfSetFVars(tf, fvFrSymes(symeListFrBuffer(lib, buf)));
 

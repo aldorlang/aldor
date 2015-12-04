@@ -185,23 +185,19 @@ typedef Bool	(*TFormPredicate)	(TForm);
 #define			tfParents(tf)		((tf)->parents)
 #define			tfSymes(tf)		((tf)->symes)
 
-#define			tfDomExports(tf)	((tf)->domExports)
-#define			tfCatExports(tf)	((tf)->catExports)
-#define			tfThdExports(tf)	((tf)->thdExports)
+extern SymeList 	tfDomImports		(TForm);
+extern SymeList		tfDomExports		(TForm);
+extern SymeList		tfCatExports		(TForm);
+extern SymeList 	tfThdExports		(TForm);
 
-#define			tfDomImports(tf)	((tf)->domImports)
+extern void		tfSetCatExports		(TForm, SymeList);
+extern void		tfSetThdExports		(TForm, SymeList);
 
 #define			tfSetStab(tf,st)	((tf)->stab = (st))
 #define			tfSetSelf(tf,sl)	((tf)->self = (sl))
 #define			tfSetSelfSelf(tf,sl)	((tf)->selfself = (sl))
 #define			tfSetParents(tf,sl)	((tf)->parents = (sl))
 #define			tfSetSymes(tf,sl)	((tf)->symes = (sl))
-
-#define			tfSetDomExports(tf,sl)	(tfDomExports(tf) = (sl))
-#define			tfSetCatExports(tf,sl)	(tfCatExports(tf) = (sl))
-#define			tfSetThdExports(tf,sl)	(tfThdExports(tf) = (sl))
-
-#define			tfSetDomImports(tf,sl)	(tfDomImports(tf) = (sl))
 
 #define			tfConsts(tf)		((tf)->consts)
 
