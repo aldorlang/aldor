@@ -4356,7 +4356,7 @@ tfGetDomImports(TForm tf)
 	 * compiled. This allows inner symbols to escape their stab
 	 * levels and jump directly to the top.
 	 */
-	return tfStabGetDomImports(stabFile(), tf);
+	return symeSetList(tfStabGetDomImportSet(stabFile(), tf));
 }
 
 
