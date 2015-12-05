@@ -2758,7 +2758,7 @@ tibupQualify(Stab stab, AbSyn absyn, TForm type)
 	}
 	else {
 		symes  = listNil(Syme);
-		msymes = tfGetDomImports(tforg);
+		msymes = tfGetDomImportsByName(tforg, sym);
 		for ( ; msymes; msymes = cdr(msymes)) {
 			Syme syme = car(msymes);
 			if (sym != symeId(syme))

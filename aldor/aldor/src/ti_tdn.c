@@ -2014,11 +2014,12 @@ titdnQualify(Stab stab, AbSyn absyn, TForm type)
 	}
 	else {
 		symes  = listNil(Syme);
-		msymes = tfGetDomImports(tforg);
-		for ( ; msymes; msymes = cdr(msymes))
-			if (symeId(car(msymes)) == sym 
-			    && ablogIsListKnown(symeCondition(car(msymes))))
+		msymes = tfGetDomImportsByName(tforg, sym);
+		for ( ; msymes; msymes = cdr(msymes)) {
+			assert(symeId(car(msymes)) == sym);
+			if (ablogIsListKnown(symeCondition(car(msymes))))
 				symes = listCons(Syme)(car(msymes), symes);
+		}
 		fsymes = symes;
 	}
 

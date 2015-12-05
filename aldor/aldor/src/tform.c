@@ -4174,9 +4174,10 @@ tfHasDomImport(TForm tf, Symbol sym, TForm type)
 {
 	SymeList	sl;
 
-	for (sl = tfGetDomImports(tf); sl; sl = cdr(sl)) {
+	for (sl = tfGetDomImportsByName(tf, sym); sl; sl = cdr(sl)) {
 		Syme syme = car(sl);
-		if (symeId(syme) == sym && tformEqual(symeType(syme), type))
+		assert(symeId(syme) == sym);
+		if (tformEqual(symeType(syme), type))
 			return syme;
 	}
 	return NULL;
@@ -4359,6 +4360,23 @@ tfGetDomImports(TForm tf)
 	return symeSetList(tfStabGetDomImportSet(stabFile(), tf));
 }
 
+SymeSet
+tfGetDomImportSet(TForm tf)
+{
+	/*
+	 * This use of stabFile() is extremely unfortunate because it
+	 * associates the tform with the top-level of the file being
+	 * compiled. This allows inner symbols to escape their stab
+	 * levels and jump directly to the top.
+	 */
+	return tfStabGetDomImportSet(stabFile(), tf);
+}
+
+SymeList
+tfGetDomImportsByName(TForm tf, Symbol sym)
+{
+	return symeSetSymesForSymbol(tfStabGetDomImportSet(stabFile(), tf), sym);
+}
 
 SymeList
 tfGetCatImportsFrWith(Sefo sefo, SymeList bsymes)

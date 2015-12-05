@@ -367,6 +367,8 @@ extern TQualList	tfGetThdCascades	(TForm);
 extern SymeSet		tfStabGetDomImportSet	(Stab, TForm);
 extern SymeList		tfStabGetDomImports	(Stab, TForm);
 extern SymeList		tfGetDomImports		(TForm);
+extern SymeSet		tfGetDomImportSet	(TForm);
+extern SymeList		tfGetDomImportsByName	(TForm, Symbol);
 extern SymeList		tfGetCatImportsFrWith	(Sefo, SymeList);
 extern Syme		tfHasDomExportMod	(TForm,SymeList,Symbol,TForm);
 extern Syme		tfHasDomImport		(TForm, Symbol, TForm);

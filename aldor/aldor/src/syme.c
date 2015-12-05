@@ -1093,17 +1093,19 @@ local void
 symeFillFrExporter(Syme isyme, TForm exporter)
 {
 	Stab		stab;
+	SymeSet		symeSet;
 	SymeList	symes;
 
 	assert(symeLib(isyme));
 	stab = symeLib(isyme)->stab;
 
 	tiTopFns()->tiTfSefo(stab, exporter);
-
-	for (symes = tfGetDomImports(exporter); symes; symes = cdr(symes)) {
+	symeSet = tfGetDomImportSet(exporter);
+	symes = symeSetSymesForSymbol(symeSet, symeId(isyme));
+	for (symes = tfGetDomImportsByName(exporter, symeId(isyme)); symes; symes = cdr(symes)) {
 		Syme	syme = car(symes);
-		if (symeId(syme) == symeId(isyme) &&
-		    symeTypeCode(syme) == symeTypeCode(isyme)) {
+		assert(symeId(syme) == symeId(isyme));
+		if (symeTypeCode(syme) == symeTypeCode(isyme)) {
 			/* Lazy domain imports know where they came from. */
 			if (symeIsLazy(syme)) symeFillFrLibrary(syme);
 			symeSetType(isyme, symeType(syme));
