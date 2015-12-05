@@ -1224,6 +1224,12 @@ stabAddMeaning(Stab stab, Syme syme)
 }
 
 void
+stabPutMeaningSet(Stab stab, SymeSet symeSet)
+{
+	stabPutMeanings(stab, symeSetList(symeSet));
+}
+
+void
 stabPutMeanings(Stab stab, SymeList symes)
 {
 	SymeList	l;
@@ -1704,8 +1710,8 @@ stabGetExportedSymes(Stab stab)
 TQualList
 stabImportFrom(Stab stab, TQual tq)
 {
-	SymeList	dsymes;
-	TForm		origin = tqBase(tq);
+	SymeSet	dsymes;
+	TForm	origin = tqBase(tq);
 
 
 	/* Carefully follow this tform */
@@ -1743,11 +1749,11 @@ stabImportFrom(Stab stab, TQual tq)
 	stabImportRemark(stab, tqQual(tq), origin);
 
 	if (tqIsForeign(tq))
-		dsymes = tqGetForeignImports(stab, tq);
+		dsymes = symeSetFrSymes(tqGetForeignImports(stab, tq));
 	else if (tqIsBuiltin(tq))
-		dsymes = tqGetBuiltinImports(stab, tq);
+		dsymes = symeSetFrSymes(tqGetBuiltinImports(stab, tq));
 	else if (tqIsQualified(tq))
-		dsymes = tqGetQualImports(tq);
+		dsymes = symeSetFrSymes(tqGetQualImports(tq));
 	else {
 		Stab nstab = stab;
 
@@ -1769,19 +1775,19 @@ stabImportFrom(Stab stab, TQual tq)
 
 
 		/* Get the domain imports of origin */
-		dsymes = tfStabGetDomImports(nstab, origin);
+		dsymes = tfStabGetDomImportSet(nstab, origin);
 
 
 		/*
 		 * It doesn't matter which stab we chose to get domain
 		 * imports from, we are importing into the local one.
 		 */
-		if (dsymes) stabMakeImportedTForm(stab, origin);
+		if (!symeSetIsEmpty(dsymes)) stabMakeImportedTForm(stab, origin);
 	}
 
-	stabPutMeanings(stab, dsymes);
+	stabPutMeaningSet(stab, dsymes);
 
-	stabImportDEBUG(dbOut, "... imported: %pSymeCList\n", dsymes);
+	stabImportDEBUG(dbOut, "... imported: %pSymeSet\n", dsymes);
 
 	if (!tqIsQualified(tq))
 		return tfGetDomCascades(origin);

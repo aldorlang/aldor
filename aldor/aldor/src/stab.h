@@ -166,6 +166,7 @@ extern void		stabUseMeaning		(Stab, Syme);
 extern Bool		stabHasMeaning		(Stab, Syme);
 extern Syme		stabAddMeaning		(Stab, Syme);
 extern void		stabPutMeanings		(Stab, SymeList);
+extern void		stabPutMeaningSet	(Stab, SymeSet);
 
 extern Syme		stabDefParam		(Stab, Symbol, TForm);
 extern Syme		stabDefLexConst		(Stab, Symbol, TForm);
