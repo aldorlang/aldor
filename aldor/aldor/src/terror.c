@@ -1254,7 +1254,7 @@ bputAllValidMeanings(Buffer obuf, Stab stab, AbSyn ab, Length argc,
 	SatMask		mask = tfSatTErrorMask(), result;
 	SymeList	symes;
 
-	for (symes = tfGetDomImports(tf); symes; symes = cdr(symes)) {
+	for (symes = tfGetDomImportsByName(tf, idSym); symes; symes = cdr(symes)) {
 		Syme syme = car(symes);
 		TForm opType;
 
