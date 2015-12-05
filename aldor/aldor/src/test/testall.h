@@ -27,6 +27,7 @@ void scobindTest(void);
 void srcposTest(void);
 void stabTest(void);
 void symeTest(void);
+void symeSetTestSuite(void);
 void tformTest(void);
 void tfsatTest(void);
 void tibupTest(void);
