@@ -289,6 +289,7 @@ testsuite =			\
 	test/test_srcpos.c	\
 	test/test_stab.c	\
 	test/test_syme.c	\
+	test/test_symeset.c	\
 	test/test_tform.c	\
 	test/test_tibup.c	\
 	test/test_tfsat.c	\

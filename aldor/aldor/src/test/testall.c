@@ -58,6 +58,7 @@ main(int argc, char *argv[])
 	if (testShouldRun("tform")) tformTest();
 	if (testShouldRun("scobind")) scobindTest();
 	if (testShouldRun("syme")) symeTest();
+	if (testShouldRun("symeset")) symeSetTestSuite();
 	if (testShouldRun("tibup")) tibupTest();
 	if (testShouldRun("tfsat")) tfsatTest();
 	if (testShouldRun("retype")) retypeTest();
