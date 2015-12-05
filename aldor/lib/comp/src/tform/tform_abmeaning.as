@@ -36,7 +36,7 @@ AbSynMeaning: with
 
     meaningId(ab): TForm ==
         import from TFormTagId
-        id(ab.id)
+        id(id ab)
 
     meaningAdd(ab): TForm == error "Add not implemented"
     meaningWith(ab): TForm == error " not implemented"
@@ -51,7 +51,7 @@ test(): () ==
     import from AbSynMeaning
     import from Assert TForm
     import from TFormTagId
-    ab: AbSyn := id "fred"
+    ab: AbSyn := var "fred"
     tf := meaning ab
     assertEquals(id "fred", tf)
 

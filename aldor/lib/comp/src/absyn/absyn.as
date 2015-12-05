@@ -44,35 +44,6 @@ AbSynTags: with
     sequence: AbSynTag == tag(11, "sequence")
     _with: AbSynTag == tag(12, "with")
 
--- FIXME: Can't be local as it's used in exported types
-AbField(X: with): with
-    apply: (AbSyn, Field X) -> X
-    set!: (AbSyn, Field X, X) -> ()
-    field?: (AbSyn, Field X) -> Boolean
-    export from Field X
-== add
-    import from Field X
-    apply(ab: AbSyn, f: Field X): X == fields(ab).f
-    set!(ab: AbSyn, f: Field X, value: X): () == fields(ab).f := value
-    field?(ab: AbSyn, f: Field X): Boolean == field?(fields(ab), f)
-
-AbSynFields: with
-    id: Field Id
-    literal: Field String
-    symbolTable: Field SymbolTable
-
-    symbolTable: (ab: AbSyn, parent: SymbolTable) -> SymbolTable;
-
-    export from AbField Id, AbField String, AbField SymbolTable
-== add
-    import from String
-    id: Field Id == field "id"
-    literal: Field String == field "literal"
-    symbolTable: Field SymbolTable == field "symbolTable"
-
-    symbolTable(ab: AbSyn, parent: SymbolTable): SymbolTable ==
-        if field?(fields ab, symbolTable) then ab.symbolTable else parent
-
 AbSyn: OutputType with
     _add: () -> % -- FIXME!
     apply: Tuple % -> %
@@ -81,7 +52,7 @@ AbSyn: OutputType with
     comma: Generator % -> %
     declare: (%, %) -> %
     _define: (%, %) -> %
-    id: Id -> %
+    var: Id -> %
     label: (Id, %) -> %
     lambda: (AbSyn, AbSyn, AbSyn) -> %
     literal: String -> %
@@ -91,12 +62,18 @@ AbSyn: OutputType with
     fields: % -> DepTable
     tag: % -> AbSynTag
     children: % -> List %
-    
-    export from AbSynTags, AbSynTag, AbSynFields
+
+    id: % -> Id
+    literal: % -> String
+    symbolTable: % -> SymbolTable
+    symbolTable: (%, SymbolTable) -> SymbolTable
+    set!: (%, 'symbolTable', SymbolTable) -> ();
+
+    export from AbSynTags, AbSynTag, 'symbolTable'
 == add
     Rep ==> Record(tag: AbSynTag, fields: DepTable, children: List %)
     import from Rep
-    import from AbSynTags, AbSynTag, DepTable, List %, Something, AbSynFields
+    import from AbSynTags, AbSynTag, DepTable, List %
     import from Field Id
 
     tag(ab: %): AbSynTag == rep(ab).tag
@@ -113,7 +90,19 @@ AbSyn: OutputType with
 	t.literal := text
 	t
 
-    id(anId: Id): % == per [id, tbl anId, []]
+    local id: Field Id == field "id"
+    local literal: Field String == field "literal"
+    local symbolTable: Field SymbolTable == field "symbolTable"
+    set!(absyn: %, a: 'symbolTable', tbl: SymbolTable): () ==
+        rep(absyn).fields.symbolTable := tbl
+
+    id(absyn: %): Id == (fields absyn).id
+    literal(absyn: %): String == (fields absyn).literal
+    symbolTable(absyn: %): SymbolTable == (fields absyn).symbolTable
+    symbolTable(absyn: %, parent: SymbolTable): SymbolTable ==
+        if field?((fields absyn), symbolTable) then symbolTable absyn else parent
+
+    var(anId: Id): % == per [id, tbl anId, []]
     literal(text: String): % == per [id, tbl text, []]
     declare(val: %, type: %): % == per [declare, table(), [val, type]]
     sequence(t: Tuple %): % == per [sequence, table(), [t]]
@@ -158,7 +147,7 @@ AbSynDeclare: with
     import from List AbSyn
     default ab: AbSyn
 
-    declareId ab: Id == ab.id
+    declareId ab: Id == id(ab)
     declareType ab: AbSyn == first children ab
 
 #if ALDORTEST
@@ -166,12 +155,8 @@ AbSynDeclare: with
 #include "aldorio"
 #pile
 
-import from Id
-string(s: Literal): AbSyn ==
-    import from Id
-    id id string s
-
-string(s: Literal): Id == id string s
+string(s: Literal): Id == id(string(s))$Id
+string(s: Literal): AbSyn == var(string(s)@Id)
 
 import from AbSyn, SymbolTable
 test0(): () ==

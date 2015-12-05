@@ -143,6 +143,7 @@ testSubstitution(): () ==
     import from TFormTagApply, TFormTagId, TFormTagComma
     import from TFormTagTuple, TFormTagDeclare
     import from TFormSubst
+    import from AbSyn
 
     Type := type()$TFormTagType
     Int := id("Int")
@@ -153,7 +154,7 @@ testSubstitution(): () ==
     fx := apply(f, [x])
     fy := apply(f, [y])
 
-    theSubst := create("x", id("y")$AbSyn)
+    theSubst := create("x", var("y"))
     assertEquals(Type, subst(Type, theSubst))
     assertEquals(fy, subst(fx, theSubst))
     assertEquals(fy, subst(fy, theSubst))

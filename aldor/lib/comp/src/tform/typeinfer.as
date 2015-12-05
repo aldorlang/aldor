@@ -60,7 +60,6 @@ TypeInfer: with
     import from AbSynTags
     import from TPoss
     import from List AbSyn
-    import from TiAbSynFields
     import from TiSymbolTable
     import from AbState
 
@@ -72,11 +71,10 @@ TypeInfer: with
 	myCount := bupCount
         stdout << "(Bup: " << myCount << ab << newline
 	bottomUp0(stab, ab)
-        stdout << " Bup: " << myCount << tposs ab.state << ")" << newline
+        stdout << " Bup: " << myCount << tposs state ab << ")" << newline
 	bupDepth := bupDepth - 1
 
     local bottomUp0(stab: SymbolTable, ab: AbSyn): () ==
-        if not field?(ab, state) then ab.state := abstate()
         tag ab = apply => bupApply(stab, ab)
         tag ab = comma => bupComma(stab, ab)
         tag ab = declare => bupDeclare(stab, ab)
@@ -91,13 +89,13 @@ TypeInfer: with
 	    bottomUp(stab, abn)
         op := applyOp ab
 	abArgs := applyArgs ab
-	opPoss := tposs op.state
+	opPoss := tposs state op
 	resultTPoss := empty()
 	for tf in opPoss repeat
             sigma: Subst := create []
 	    result := satisfiesMapArgs(std(), sigma, abArgs, mapArgs tf)
 	    if result then add!(resultTPoss, subst(mapRets tf, sigma))
-	setTPoss(ab.state, resultTPoss)
+	setTPoss(state ab, resultTPoss)
 
     bupDeclare(stab: SymbolTable, ab: AbSyn): () ==
         bupGeneric(stab, ab)
@@ -106,18 +104,18 @@ TypeInfer: with
         import from List TPoss
         for abn in children ab repeat
 	    bottomUp(stab, abn)
-	setTPoss(ab.state, crossProduct [tposs abn.state for abn in children ab])
+	setTPoss(state ab, crossProduct [tposs state abn for abn in children ab])
 
     bupId(stab: SymbolTable, ab: AbSyn): () ==
         import from TiSymbolTable
 	import from SymbolTable
-	theId := ab.id
-        setTPoss(ab.state, lookup(stab, theId))
+	theId := id ab
+        setTPoss(state ab, lookup(stab, theId))
 
     bupGeneric(stab: SymbolTable, ab: AbSyn): () ==
         import from TFormTagComma
         for abn in children ab repeat bottomUp(stab, abn)
-	setTPoss(ab.state, [comma()])
+	setTPoss(state ab, [comma()])
 
 --------------------
 
@@ -126,24 +124,23 @@ TypeInfer: with
 #include "aldorio"
 #pile
 
-import from AbSyn, SymbolTable
+import from SymbolTable
 import from SymbolTableBinder
 import from TiSymbolTable
 import from Assert TForm
-import from TiAbSynFields
 import from TPoss
 import from TypeInfer
 
 string(s: Literal): AbSyn ==
     import from Id
-    id string s
+    var string s
 
 string(s: Literal): Id == id string s
 
 s(x: String): String == x
 
 test(): () ==
-    import from List AbSyn
+    import from List AbSyn, AbSyn
     import from AbState
     absyn := sequence(apply("f", "a"))
 
@@ -152,7 +149,7 @@ test(): () ==
     stab := bind(rootSymbolTable, absyn)
 
     bottomUp(stab, absyn)
-    assertTrue empty? tposs first(children absyn).state
+    assertTrue empty? tposs state first(children absyn)
 
 test2(): () ==
     import from TFormTagComma, TFormTagMap, TFormTagId
@@ -160,7 +157,7 @@ test2(): () ==
     import from Assert TForm
     import from TForm
     import from Partial TForm, TFormTagComma
-    import from AbState
+    import from AbState, AbSyn
 
     rootSymbolTable: SymbolTable := root()
 
@@ -172,28 +169,28 @@ test2(): () ==
     stab := bind(rootSymbolTable, ab)
 
     bottomUp(stab, ab)
-    assertTrue(unique? ab.state)
-    tf: TForm := unique ab.state
+    assertTrue(unique? state ab)
+    tf: TForm := unique state ab
     assertTrue(comma? tf)
     assertEquals(comma(id "String"), tf)
 
     ab := apply("g", "a", "a")
     stab := bind(rootSymbolTable, ab)
     bottomUp(stab, ab)
-    assertTrue(unique? ab.state)
-    tf: TForm := unique ab.state
+    assertTrue(unique? state.ab)
+    tf: TForm := unique state.ab
     assertTrue(comma? tf)
     assertEquals(comma(id "String"), tf)
 
     ab := apply("f")
     stab := bind(rootSymbolTable, ab)
     bottomUp(stab, ab)
-    assertTrue empty? tposs ab.state
+    assertTrue empty? tposs state.ab
 
     ab := apply("f", "a", "a")
     stab := bind(rootSymbolTable, ab)
     bottomUp(stab, ab)
-    assertTrue empty? tposs ab.state
+    assertTrue empty? tposs state.ab
 
 test()
 test2()
@@ -204,7 +201,7 @@ test3(): () ==
     import from Assert TForm
     import from TForm, List TForm
     import from Partial TForm, TFormTagComma
-    import from AbState
+    import from AbState, AbSyn
 
     rootSymbolTable: SymbolTable := root()
 
@@ -219,8 +216,8 @@ test3(): () ==
     stab := bind(rootSymbolTable, ab)
     bottomUp(stab, ab)
 
-    assertTrue(unique? ab.state)
-    tf: TForm := unique ab.state
+    assertTrue(unique? state ab)
+    tf: TForm := unique state ab
     assertTrue(comma? tf)
     assertEquals(comma(apply(id "G", [id "a"])), tf)
 

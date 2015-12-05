@@ -26,7 +26,7 @@ TFormTagId: TFormTagCat with
     info(o: TextWriter, tid: TForm): () ==
         o << id attrs tid
 
-    tfAbSyn(tf: TForm): AbSyn == id idName tf
+    tfAbSyn(tf: TForm): AbSyn == var idName tf
 
 TFormTagApply: TFormTagCat with
     apply: (TForm, List TForm) -> TForm

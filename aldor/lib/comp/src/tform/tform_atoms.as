@@ -19,7 +19,7 @@ TFormTagType: TFormTagCat with
     type(): TForm == new(TFormTagType, [])
     type?(tf: TForm): Boolean == kind tf = name
 
-    tfAbSyn(tf: TForm): AbSyn == id id "Type"
+    tfAbSyn(tf: TForm): AbSyn == var id "Type"
 
 TFormTagCategory: TFormTagCat with
     category: () -> TForm
@@ -34,7 +34,7 @@ TFormTagCategory: TFormTagCat with
     tfEquals(t1: TForm, t2: TForm): Boolean == true
 
     tfFreeVars(tf: TForm): List Id == []
-    tfAbSyn(tf: TForm): AbSyn == id id "Category"
+    tfAbSyn(tf: TForm): AbSyn == var id "Category"
 
 TFormTagExit: TFormTagCat with
     exit: () -> TForm
@@ -53,7 +53,7 @@ TFormTagExit: TFormTagCat with
 
     tfFreeVars(cx: TForm): List Id == []
 
-    tfAbSyn(tf: TForm): AbSyn == id id "Exit"
+    tfAbSyn(tf: TForm): AbSyn == var id "Exit"
 
 
 

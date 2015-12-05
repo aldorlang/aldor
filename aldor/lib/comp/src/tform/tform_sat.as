@@ -159,12 +159,9 @@ TFormSatisfaction: with
 	succeed()
 
     satisfiesArg(opts: SatOptions, ab: AbSyn, T: TForm): SatResult ==
-        import from TiAbSynFields, AbState
+        import from AbState
 	import from TPoss
-        not field?(ab, state) =>
-	    stdout << "Error: Not checked " << ab << newline
-	    failed()
-        (_or)/(satisfies(opts, tf, T) for tf in tposs(ab.state))
+        (_or)/(satisfies(opts, tf, T) for tf in tposs(state ab))
 
 #if ALDORTEST
 #include "comp.as"

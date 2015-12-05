@@ -97,7 +97,7 @@ TPoss: OutputType with
 
 string(s: Literal): AbSyn ==
     import from Id
-    id string s
+    var string s
 
 string(s: Literal): Id == id string s
 

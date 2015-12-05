@@ -21,13 +21,13 @@ SymbolTableBinder: with
 
     bindLambda(ab: AbSyn, tbl: SymbolTable): () ==
         ab.symbolTable := new(tbl, lambda)
-	for abn in children ab repeat bind(abn, ab.symbolTable)
+	for abn in children ab repeat bind(abn, symbolTable ab)
 
     bindDeclarationsAndDefinitions(ab: AbSyn, tbl: SymbolTable): () ==
         tag ab = _define => bindDefine(ab, tbl)
         tag ab = declare => bindDeclare(ab, tbl)
 	for abn in children ab repeat bindDeclarationsAndDefinitions(abn, symbolTable(ab, tbl)) 
 
-    bindDefine(def: AbSyn, tbl: SymbolTable): () == never
-    bindDeclare(def: AbSyn, tbl: SymbolTable): () == never
+    bindDefine(def: AbSyn, tbl: SymbolTable): () == {}
+    bindDeclare(def: AbSyn, tbl: SymbolTable): () == {}
 
