@@ -32,6 +32,7 @@
 #include "comsg.h"
 #include "strops.h"
 #include "bigint.h"
+#include "symeset.h"
 
 Bool	tfDebug			= false;
 Bool	tfExprDebug		= false;
@@ -187,9 +188,10 @@ local void		tfExtendFinishTwins	(Stab, Syme);
  *
  *****************************************************************************/
 
-local void		tfSetDomImports		(TForm, SymeList);
+local void		tfSetDomImports		(TForm, SymeSet);
 local void		tfSetDomExports		(TForm, SymeList);
 
+local SymeSet 		tfStabCreateDomImportSet(Stab stab, TForm tf);
 /******************************************************************************
  *
  * :: Debugging facilities
@@ -276,7 +278,7 @@ tfNewEmpty(TFormTag tag, Length argc)
 	tf->catExports	= listNil(Syme);
 	tf->thdExports	= listNil(Syme);
 
-	tf->domImports	= listNil(Syme);
+	tf->domImports	= NULL;
 
 	tf->consts	= listNil(TConst);
 	tf->queries	= listNil(TForm);
@@ -425,7 +427,7 @@ tfFree(TForm tf)
 	listFree(Syme)(tf->self);
 
 	/* A type form does not own its domExports. */
-	listFree(Syme)(tf->domImports);
+	symeSetFree(tf->domImports);
 
 	stoFree((Pointer) tf);
 }
@@ -2385,8 +2387,8 @@ tfCopyQueries(TForm to, TForm from)
 	if (tfDomExports(to))
 		tfSetDomExports(to, listNil(Syme));
 	if (tfDomImports(to)) {
-		listFree(Syme)(tfDomImports(to));
-		tfSetDomImports(to, listNil(Syme));
+		symeSetFree(tfDomImports(to));
+		tfSetDomImports(to, NULL);
 	}
 
 	return tfQueries(to);
@@ -3242,7 +3244,8 @@ tfValidateDomExportsParam(TForm tf)
 local void
 tfValidateDomImportsParam(TForm tf)
 {
-	tfValidateCheckConstInfo(tf, tfDomImports(tf), "imports");
+	if (tfDomImports(tf))
+		tfValidateCheckConstInfo(tf, symeSetList(tfDomImports(tf)), "imports");
 }
 
 local void
@@ -4186,7 +4189,7 @@ tfGetBuiltinSyme(TForm tf, Symbol sym)
 	Syme		syme0 = NULL;
 
 	assert(tfDomImports(tf));
-	for (symes = tfDomImports(tf); symes; symes = cdr(symes)) {
+	for (symes = symeSetList(tfDomImports(tf)); symes; symes = cdr(symes)) {
 		Syme	syme = car(symes);
 		if (symeId(syme) == sym)
 			syme0 = syme;
@@ -4200,16 +4203,16 @@ tfGetBuiltinSyme(TForm tf, Symbol sym)
  *
  *****************************************************************************/
 
-extern SymeList
+extern SymeSet
 tfDomImports(TForm tf)
 {
 	return tf->domImports;
 }
 
 extern void
-tfSetDomImports(TForm tf, SymeList symeList)
+tfSetDomImports(TForm tf, SymeSet symeSet)
 {
-	tf->domImports = symeList;
+	tf->domImports = symeSet;
 }
 
 extern SymeList
@@ -4255,17 +4258,43 @@ tfSetThdExports(TForm tf, SymeList symeList)
  * tfGetDomImports() to reduce the chance of polluting the
  * top-level stab for the current file.
  */
+
+local Bool
+tfImportsPending(TForm tf)
+{
+	return symeSetList(tfDomImports(tf)) == listNil(Syme);
+}
+
 SymeList
 tfStabGetDomImports(Stab stab, TForm tf)
 {
-	SymeList	xsymes, symes;
+	return symeSetList(tfStabGetDomImportSet(stab, tf));
+}
 
+SymeSet
+tfStabGetDomImportSet(Stab stab, TForm tf)
+{
 	tf = tfDefineeType(tf);
 	
 	tf = tfIgnoreExceptions(tf);
 
-	if (tfDomImports(tf))
+	if (tfDomImports(tf) && !tfImportsPending(tf))
 		return tfDomImports(tf);
+	if (tfDomImports(tf)) {
+		symeSetFree(tfDomImports(tf));
+		tfSetDomImports(tf, NULL);
+	}
+	tfStabCreateDomImportSet(stab, tf);
+	
+	return tfDomImports(tf);
+}
+
+local SymeSet
+tfStabCreateDomImportSet(Stab stab, TForm tf)
+{
+
+	SymeSet  symeSet;
+	SymeList xsymes, symes;
 
 	if (DEBUG(tfImport)) {
 		fprintf(dbOut, "(tfStabGetDomImports:  from ");
@@ -4293,7 +4322,9 @@ tfStabGetDomImports(Stab stab, TForm tf)
 
 	symes = symeListCheckCondition(symes);
 
-	tfSetDomImports(tf, symes);
+	symeSet = symeSetFrSymes(symes);
+
+	tfSetDomImports(tf, symeSet);
 
 	if (tfIsBasicLib(tf))
 		tfInitBasicTypes(tf);
@@ -4306,7 +4337,8 @@ tfStabGetDomImports(Stab stab, TForm tf)
 	}
 
 	tfValidateDomImports(tf);
-	return symes;
+
+	return symeSetFrSymes(symes);
 }
 
 /*

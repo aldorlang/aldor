@@ -13,6 +13,7 @@
 #include "foam.h"
 #include "tfcond.h"
 #include "errorset.h"
+#include "symeset.h"
 
 extern SymeList tfSetSymesFn(TForm, SymeList);
 
@@ -141,7 +142,7 @@ struct tform {
 	SymeList		catExports;	/* Exports from categories. */
 	SymeList		thdExports;	/* Exports from 3d-order. */
 
-	SymeList		domImports;	/* Imports with % replaced. */
+	SymeSet			domImports;	/* Imports with % replaced. */
 
 	TConstList		consts;		/* Promises of satisfaction. */
 	TFormList		queries;	/* Questions asked: D has C. */
@@ -185,7 +186,7 @@ typedef Bool	(*TFormPredicate)	(TForm);
 #define			tfParents(tf)		((tf)->parents)
 #define			tfSymes(tf)		((tf)->symes)
 
-extern SymeList 	tfDomImports		(TForm);
+extern SymeSet	 	tfDomImports		(TForm);
 extern SymeList		tfDomExports		(TForm);
 extern SymeList		tfCatExports		(TForm);
 extern SymeList 	tfThdExports		(TForm);
@@ -363,6 +364,7 @@ extern TQualList	tfGetDomCascades	(TForm);
 extern TQualList	tfGetCatCascades	(TForm);
 extern TQualList	tfGetThdCascades	(TForm);
 
+extern SymeSet		tfStabGetDomImportSet	(Stab, TForm);
 extern SymeList		tfStabGetDomImports	(Stab, TForm);
 extern SymeList		tfGetDomImports		(TForm);
 extern SymeList		tfGetCatImportsFrWith	(Sefo, SymeList);
