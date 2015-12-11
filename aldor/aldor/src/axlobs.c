@@ -88,6 +88,7 @@ struct ob_info	obInfo[] = {
 	{OB_Foam,	"OB_Foam",	1},
 	{OB_Lib,	"OB_Lib",	1},
 	{OB_Archive,	"OB_Archive",	1},
+	{OB_SymeSet,	"OB_SymeSet",	1},
 	{ -1, NULL, 1}
 };
 

@@ -20,6 +20,7 @@
 #define _SYMBOL_H_
 
 #include "axlobs.h"
+#include "ttable.h"
 
 struct symbol {
 	MostAlignedType *info;	  /* Used as desired, initialized to 0 */
@@ -42,5 +43,6 @@ extern void	symClear		(void);
 extern int	symPrint		(FILE *, Symbol);
 extern void	symMap			(void (*symfun)(Symbol));
 
+DECLARE_TSET(Symbol);
 
 #endif /* !_SYMBOL_H_ */

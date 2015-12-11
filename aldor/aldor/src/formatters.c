@@ -2,6 +2,7 @@
 #include "formatters.h"
 #include "axlobs.h"
 #include "syme.h"
+#include "symeset.h"
 #include "freevar.h"
 #include "bigint.h"
 #include "ostream.h"
@@ -18,6 +19,7 @@ local int tpossFormatter(OStream stream, Pointer p);
 local int fvFormatter(OStream stream, Pointer p);
 
 local int symeFormatter(OStream stream, Pointer p);
+local int symeSetFormatter(OStream stream, Pointer p);
 local int symeListFormatter(OStream stream, Pointer p);
 local int symeListListFormatter(OStream stream, Pointer p);
 
@@ -48,6 +50,7 @@ fmttsInit()
 	fmtRegister("TPoss", tpossFormatter);
 
 	fmtRegister("Syme", symeFormatter);
+	fmtRegister("SymeSet", symeSetFormatter);
 	fmtRegister("SymeList", symeListFormatter);
 	fmtRegister("SymeListList", symeListListFormatter);
 
@@ -192,6 +195,12 @@ errorSetFormatter(OStream ostream, Pointer p)
 	return i;
 }
 
+local int
+symeSetFormatter(OStream ostream, Pointer p)
+{
+	SymeSet symeSet = (SymeSet) p;
+	return symeSetFormat(ostream, symeSet);
+}
 
 local int
 tfListFormatter(OStream ostream, Pointer p)
