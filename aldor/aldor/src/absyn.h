@@ -1200,5 +1200,38 @@ extern AbSyn	abNewDocTextOfList	(TokenList);
 	default:		bugBadCase	(abTag(ab));	\
 	}
 
+#define AB_SEQ_ITER(absyn, argc, argv) \
+    Statement(switch (abTag(absyn)) {	\
+	case AB_Nothing:			\
+		argc = 0;			\
+		argv = 0;			\
+		break;				\
+	case AB_Sequence:			\
+		argc = abArgc(absyn);		\
+		argv = abArgv(absyn);		\
+		break;				\
+	default:				\
+		argc = 1;			\
+		argv = &absyn;			\
+		break;				\
+	    })
+
+
+#define AB_COMMA_ITER(absyn, argc, argv) \
+    Statement(switch (abTag(absyn)) {	\
+	case AB_Nothing:			\
+		argc = 0;			\
+		argv = 0;			\
+		break;				\
+	case AB_Comma:			\
+		argc = abArgc(absyn);		\
+		argv = abArgv(absyn);		\
+		break;				\
+	default:				\
+		argc = 1;			\
+		argv = &absyn;			\
+		break;				\
+	    })
+
 
 #endif /* !_ABSYN_H_ */

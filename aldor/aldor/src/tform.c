@@ -2786,20 +2786,7 @@ tfGetCatSelfFrWith(Sefo sefo)
 	Sefo		*argv;
 	TForm		cat;
 
-	switch (abTag(sefo)) {
-	case AB_Nothing:
-		argc = 0;
-		argv = 0;
-		break;
-	case AB_Sequence:
-		argc = abArgc(sefo);
-		argv = abArgv(sefo);
-		break;
-	default:
-		argc = 1;
-		argv = &sefo;
-		break;
-	}
+	AB_SEQ_ITER(sefo, argc, argv);
 
 	symes = listNil(Syme);
 	for (i = 0; i < argc; i++) {
@@ -2811,7 +2798,6 @@ tfGetCatSelfFrWith(Sefo sefo)
 		/* Defaults package. */
 		else if (abTag(argv[i]) == AB_Default)
 			continue;
-
 		/* Explicit declaration. */
 		else if (id && abTag(argv[i]) != AB_Id)
 			continue;
@@ -3046,20 +3032,7 @@ abGetCatParents(Sefo sefo)
 	Sefo		id;
 	TForm		cat;
 
-	switch (abTag(sefo)) {
-	case AB_Nothing:
-		argc = 0;
-		argv = 0;
-		break;
-	case AB_Sequence:
-		argc = abArgc(sefo);
-		argv = abArgv(sefo);
-		break;
-	default:
-		argc = 1;
-		argv = &sefo;
-		break;
-	}
+	AB_SEQ_ITER(sefo, argc, argv);
 
 	xsymes = isymes = dsymes = listNil(Syme);
 	for (i = 0; i < argc; i++) {
@@ -3363,20 +3336,7 @@ tfCatExportsPendingFrWith(Sefo sefo)
 	Sefo		*argv;
 	TForm		pending;
 
-	switch (abTag(sefo)) {
-	case AB_Nothing:
-		argc = 0;
-		argv = 0;
-		break;
-	case AB_Sequence:
-		argc = abArgc(sefo);
-		argv = abArgv(sefo);
-		break;
-	default:
-		argc = 1;
-		argv = &sefo;
-		break;
-	}
+	AB_SEQ_ITER(sefo, argc, argv);
 
 	for (i = 0; i < argc; i += 1) {
 		AbSyn	id = abDefineeIdOrElse(argv[i], NULL);
@@ -4389,20 +4349,7 @@ tfGetCatImportsFrWith(Sefo sefo, SymeList bsymes)
 
 	/*!! assert(tfHasCatExportsFrWith(sefo)); */
 
-	switch (abTag(sefo)) {
-	case AB_Nothing:
-		argc = 0;
-		argv = 0;
-		break;
-	case AB_Sequence:
-		argc = abArgc(sefo);
-		argv = abArgv(sefo);
-		break;
-	default:
-		argc = 1;
-		argv = &sefo;
-		break;
-	}
+	AB_SEQ_ITER(sefo, argc, argv);
 
 	xsymes = isymes = dsymes = listNil(Syme);
 	for (i = 0; i < argc; i++) {
@@ -4563,20 +4510,7 @@ tfGetCatConstantsFrWith(Sefo sefo)
 	Length		i, argc;
 	Sefo		*argv;
 
-	switch (abTag(sefo)) {
-	case AB_Nothing:
-		argc = 0;
-		argv = 0;
-		break;
-	case AB_Sequence:
-		argc = abArgc(sefo);
-		argv = abArgv(sefo);
-		break;
-	default:
-		argc = 1;
-		argv = &sefo;
-		break;
-	}
+	AB_SEQ_ITER(sefo, argc, argv);
 
 	for (i = 0; i < argc; i++) {
 		Sefo	id = abDefineeIdOrElse(argv[i], NULL);
