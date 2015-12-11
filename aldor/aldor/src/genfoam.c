@@ -933,20 +933,7 @@ genExport(AbSyn absyn)
 
         if (!sym) return 0;
 
-	switch (abTag(what)) {
-	case AB_Nothing:
-		argc = 0;
-		argv = 0;
-		break;
-	case AB_Sequence:
-		argc = abArgc(what);
-		argv = abArgv(what);
-		break;
-	default:
-		argc = 1;
-		argv = &what;
-		break;
-	}
+	AB_SEQ_ITER(what, argc, argv);
 
 	for (i = 0; i < argc; i += 1) {
 		AbSyn ab = argv[i];
@@ -5513,20 +5500,7 @@ gen0PLambdaParam(Syme syme)
 
 	/* printf("BDS: Entered gen0PLambdaParam\n"); */
 
-	switch (abTag(param)) {
-	case AB_Nothing:
-		argc = 0;
-		argv = 0;
-		break;
-	case AB_Comma:
-		argc = abArgc(param);
-		argv = abArgv(param);
-		break;
-	default:
-		argc = 1;
-		argv = &param;
-		break;
-	}
+	AB_COMMA_ITER(param, argc, argv);
 
 	for (i = 0; i < argc; i += 1) {
 		AbSyn	argi = abDefineeId(argv[i]);
@@ -8196,21 +8170,8 @@ gen0DbgFnEntry(AbSyn fn)
 	gen0DebugIssueStmt(GenDebugFnEntry, name,
 			   lineNo, type, foamNewSInt(inDom), 
 			   foamNewBool(true));
-	
-	switch (abTag(params)) {
-	  case AB_Nothing:
-		argc = 0;
-		argv = NULL;
-		break;
-	  case AB_Comma:
-		argc = abArgc(params);
-		argv = abArgv(params);
-		break;
-	  default:
-		argc = 1;
-		argv = &params;
-		break;
-	}
+
+	AB_COMMA_ITER(params, argc, argv);
 
 	for (i=0; i<argc; i++) {
 		Syme syme = abSyme(abDefineeId(argv[i]));
@@ -8348,22 +8309,7 @@ gen1DbgFnEntry(TForm tf, Syme syme, AbSyn fn)
 
 
 	/* Obtain a consistent view of the parameters */
-	switch (abTag(params))
-	{
-	  case AB_Nothing:
-		argc = 0;
-		argv = NULL;
-		break;
-	  case AB_Comma:
-		argc = abArgc(params);
-		argv = abArgv(params);
-		break;
-	  default:
-		argc = 1;
-		argv = &params;
-		break;
-	}
-
+	AB_COMMA_ITER(params, argc, argv);
 
 	/* Generate a call to the debugger function-entry hook */
 	result = gen0TempLocal(FOAM_Word);

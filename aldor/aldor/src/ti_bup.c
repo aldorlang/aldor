@@ -358,20 +358,7 @@ tibup0Within(Stab stab, AbSyn absyn, SymeList bsymes, Bool doDefault)
 	TForm		tf;
 	Bool		pending = false;
 
-	switch (abTag(absyn)) {
-	case AB_Nothing:
-		argc = 0;
-		argv = 0;
-		break;
-	case AB_Sequence:
-		argc = abArgc(absyn);
-		argv = abArgv(absyn);
-		break;
-	default:
-		argc = 1;
-		argv = &absyn;
-		break;
-	}
+	AB_SEQ_ITER(absyn, argc, argv);
 
 	xsymes = isymes = dsymes = ssymes = listNil(Syme);
 	for (i = 0; i < argc; i += 1) {
@@ -464,7 +451,6 @@ tibup0DefaultBody(Stab stab, AbSyn absyn, Bool doDef)
 	AbSyn *argv;
 	int    argc, i;
 	
-
 	switch (abTag(absyn)) {
 	  case AB_Sequence:
 		argc = abArgc(absyn);

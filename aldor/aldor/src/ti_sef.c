@@ -271,20 +271,7 @@ tisef0Within(Stab stab, Sefo sefo, SymeList bsymes)
 	AbSyn		*argv;
 	TForm		tf;
 
-	switch (abTag(sefo)) {
-	case AB_Nothing:
-		argc = 0;
-		argv = 0;
-		break;
-	case AB_Sequence:
-		argc = abArgc(sefo);
-		argv = abArgv(sefo);
-		break;
-	default:
-		argc = 1;
-		argv = &sefo;
-		break;
-	}
+	AB_SEQ_ITER(sefo, argc, argv);
 
 	xsymes = isymes = dsymes = ssymes = listNil(Syme);
 	for (i = 0; i < argc; i += 1) {
