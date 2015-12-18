@@ -4299,7 +4299,7 @@ tfStabCreateDomImportSet(Stab stab, TForm tf)
 
 	tfValidateDomImports(tf);
 
-	return symeSetFrSymes(symes);
+	return symeSet;
 }
 
 /*
