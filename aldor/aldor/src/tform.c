@@ -277,6 +277,7 @@ tfNewEmpty(TFormTag tag, Length argc)
 	tf->domExports	= listNil(Syme);
 	tf->catExports	= listNil(Syme);
 	tf->thdExports	= listNil(Syme);
+	tf->domExportNames = NULL;
 
 	tf->domImports	= NULL;
 
@@ -3734,6 +3735,26 @@ tfMangleSymes(TForm tf, TForm cat, SymeList esymes, SymeList symes)
 	return esymes;
 }
 
+SymbolTSet
+tfGetDomExportNames(TForm tf)
+{
+	SymeList exports;
+	SymbolTSet symbols;
+
+	if (tfDomExportNames(tf))
+		return tfDomExportNames(tf);
+
+	exports = tfGetDomExports(tf);
+
+	symbols = tsetCreate(Symbol)();
+
+	while (exports != listNil(Syme)) {
+		tsetAdd(Symbol)(symbols, symeId(car(exports)));
+		exports = cdr(exports);
+	}
+
+	return symbols;
+}
 
 /*
  * Called on a domain to get the symbol meanings which are
@@ -4188,6 +4209,18 @@ tfSetDomExports(TForm tf, SymeList symeList)
 	tf->domExports = symeList;
 }
 
+extern SymbolTSet
+tfDomExportNames(TForm tf)
+{
+	return tf->domExportNames;
+}
+
+extern void
+tfSetDomExportNames(TForm tf, SymbolTSet symbols)
+{
+	tf->domExportNames = symbols;
+}
+
 extern SymeList
 tfCatExports(TForm tf)
 {
@@ -4335,7 +4368,13 @@ tfGetDomImportSet(TForm tf)
 SymeList
 tfGetDomImportsByName(TForm tf, Symbol sym)
 {
-	return symeSetSymesForSymbol(tfStabGetDomImportSet(stabFile(), tf), sym);
+	return tfStabGetDomImportsByName(stabFile(), tf, sym);
+}
+
+SymeList
+tfStabGetDomImportsByName(Stab stab, TForm tf, Symbol sym)
+{
+	return symeSetSymesForSymbol(tfStabGetDomImportSet(stab, tf), sym);
 }
 
 SymeList
