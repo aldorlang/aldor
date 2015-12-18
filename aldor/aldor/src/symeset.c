@@ -4,6 +4,8 @@
 #include "ttable.h"
 #include "format.h"
 
+static SymeSet theEmptySymeSet;
+
 SymeSet
 symeSetFrSymes(SymeList symes)
 {
@@ -20,6 +22,14 @@ symeSetFrSymes(SymeList symes)
 	}
 
 	return set;
+}
+
+SymeSet
+symeSetEmpty()
+{
+	if (theEmptySymeSet == NULL)
+		theEmptySymeSet = symeSetFrSymes(listNil(Syme));
+	return theEmptySymeSet;
 }
 
 void
