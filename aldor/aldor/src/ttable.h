@@ -46,5 +46,5 @@ struct TSetOpsStructName(Type) {			\
 DECLARE_TSET(Pointer);
 
 extern const struct TSetOpsStructName(Pointer) ptrTSetOps;
-					       int ccc;
+
 #endif
