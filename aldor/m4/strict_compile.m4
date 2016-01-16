@@ -2,7 +2,7 @@
 
 AC_DEFUN([ALDOR_STRICT_COMPILE],
   [AC_MSG_CHECKING(Strict options for C compiler)
-  cfgSTRICTCFLAGS="-pedantic -std=c89 -Wall -Wextra -Werror -Wno-empty-body -Wno-enum-compare -Wno-missing-field-initializers -Wno-sign-compare -Wno-unused -Wno-unused-parameter -Wno-error=format -Wno-error=type-limits -Wno-error=strict-aliasing"
+  cfgSTRICTCFLAGS="-pedantic -std=c99 -Wall -Wextra -Werror -Wno-empty-body -Wno-enum-compare -Wno-missing-field-initializers -Wno-sign-compare -Wno-unused -Wno-unused-parameter -Wno-error=format -Wno-error=type-limits -Wno-error=strict-aliasing"
 
    if test "${CC}x" = gccx
    then
