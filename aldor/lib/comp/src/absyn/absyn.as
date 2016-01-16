@@ -70,6 +70,7 @@ AbSyn: OutputType with
     set!: (%, 'symbolTable', SymbolTable) -> ();
 
     export from AbSynTags, AbSynTag, 'symbolTable'
+    export from AbSynDeclare
 == add
     Rep ==> Record(tag: AbSynTag, fields: DepTable, children: List %)
     import from Rep
@@ -141,14 +142,23 @@ AbSynApply: with
     applyArgs ab: List AbSyn == rest children ab
 
 AbSynDeclare: with
-   declareId: AbSyn -> Id
-   declareType: AbSyn -> AbSyn
+   declareId: % -> Id
+   declareType: % -> AbSyn
+   asDeclare: AbSyn -> %
+   toAbSyn: % -> AbSyn
 == add
     import from List AbSyn
-    default ab: AbSyn
+    Rep == AbSyn
+    import from Rep
 
-    declareId ab: Id == id(ab)
-    declareType ab: AbSyn == first rest children ab
+    default decl: %
+    asDeclare(ab: AbSyn): % ==
+        tag ab ~= declare => never
+        per ab
+    toAbSyn decl: AbSyn == rep decl
+
+    declareId decl: Id == id(rep decl)
+    declareType decl: AbSyn == first rest children rep decl
 
 #if ALDORTEST
 #include "comp"

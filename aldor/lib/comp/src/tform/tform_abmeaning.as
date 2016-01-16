@@ -14,7 +14,7 @@ AbSynMeaning: with
 	tag ab = apply => meaningApply(ab)
 	tag ab = _add => meaningAdd(ab)
 	tag ab = comma => meaningComma(ab)
-	tag ab = declare => meaningDeclare(ab)
+	tag ab = declare => meaningDeclare(asDeclare ab)
 	tag ab = id => meaningId(ab)
 	tag ab = _with => meaningWith(ab)
 	error("unknown tag " + name tag ab)
@@ -29,10 +29,10 @@ AbSynMeaning: with
         import from TFormTagComma
         comma(meaning(abn) for abn in children ab)
 
-    meaningDeclare(ab): TForm ==
+    meaningDeclare(decl: AbSynDeclare): TForm ==
         import from TFormTagDeclare, AbSynDeclare
-	id  := declareId ab
-	declare(abFrSyme(syme ab), meaning(declareType(ab)))
+	id  := declareId decl
+	declare(abFrSyme(syme toAbSyn decl), meaning(declareType(decl)))
 
     abFrSyme(syme: Syme): AbSyn == never
 
