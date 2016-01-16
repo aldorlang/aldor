@@ -5,6 +5,7 @@
 AbSynTag: Join(HashType, OutputType) with
     name: % -> String
     tag: (n: MachineInteger, String) -> %
+    case: (%, %) -> Boolean
 == add
     Rep == Record(n: MachineInteger, name: String)
     import from Rep
@@ -13,6 +14,7 @@ AbSynTag: Join(HashType, OutputType) with
     name(tag: %): String == (rep tag).name
     hash(tag: %): MachineInteger == hash rep(tag).n
     (a: %) = (b: %): Boolean == rep(a).n = rep(b).n
+    (a: %) case (b: %): Boolean == a = b
 
     (o: TextWriter) << (tag: %): TextWriter == o << name tag;
     
@@ -22,6 +24,7 @@ AbSynTags: with
     comma: AbSynTag
     declare: AbSynTag
     _define: AbSynTag
+    _for: AbSynTag
     id: AbSynTag
     _if: AbSynTag
     label: AbSynTag
@@ -36,6 +39,7 @@ AbSynTags: with
     comma: AbSynTag == tag(3, "comma")
     declare: AbSynTag == tag(4, "declare")
     _define: AbSynTag == tag(5, "define")
+    _for: AbSynTag == tag(5, "for")
     id: AbSynTag == tag(6, "id")
     _if: AbSynTag == tag(7, "if")
     label: AbSynTag == tag(8, "label")

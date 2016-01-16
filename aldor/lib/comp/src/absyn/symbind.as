@@ -7,27 +7,45 @@ SymbolTableBinder: with
 == add
     import from List AbSyn
     import from SymbolTable
-
+    default ab: AbSyn
+    default tbl: SymbolTable
+    -- Several passes;
+    -- 1. Identify scopes
+    -- 2. find definitions & declarations in each scope
+    -- 3. Conditional information at each scope level
     bind(root: SymbolTable, whole: AbSyn): SymbolTable ==
         tbl := new(root, file)
-	bind(whole, tbl)
+	addTables(whole, tbl)
+	bindDefinitionsAndDeclarations(whole, tbl)
+	bindConditions(whole, tbl)
 	tbl
-	
-    bind(ab: AbSyn, tbl: SymbolTable): () ==
+
+    addTables(ab, tbl): () ==
         stdout << "(Bind " << name tag ab << newline
-        tag ab = lambda => bindLambda(ab, tbl)
-	for abn in children ab repeat bind(abn, tbl)
+	select tag ab in
+            lambda => tbl := addTables(ab, tbl, lambda)
+            _for => tbl := addTables(ab, tbl, _for)
+            _if => tbl := addTables(ab, tbl, _if)
+            comma => tbl := addTables(ab, tbl, comma)
+	for abn in children ab repeat addTables(abn, tbl)
         stdout << " Bind)" << newline
 
-    bindLambda(ab: AbSyn, tbl: SymbolTable): () ==
-        ab.symbolTable := new(tbl, lambda)
-	for abn in children ab repeat bind(abn, symbolTable ab)
+    addTables(ab: AbSyn, tbl: SymbolTable, tag: SymbolTableType): SymbolTable ==
+        ab.symbolTable := new(tbl, tag)
+	for abn in children ab repeat addTables(abn, symbolTable(abn, tbl))
+	symbolTable(ab, tbl)
 
-    bindDeclarationsAndDefinitions(ab: AbSyn, tbl: SymbolTable): () ==
-        tag ab = _define => bindDefine(ab, tbl)
-        tag ab = declare => bindDeclare(ab, tbl)
-	for abn in children ab repeat bindDeclarationsAndDefinitions(abn, symbolTable(ab, tbl)) 
+    bindDefinitionsAndDeclarations(ab: AbSyn, tbl: SymbolTable): () ==
+        select tag ab in
+	    _define => bindDefine(ab, tbl)
+	    declare => bindDefine(ab, tbl)
+	for abn in children ab repeat
+	    bindDefinitionsAndDeclarations(abn, symbolTable(abn, tbl))
 
-    bindDefine(def: AbSyn, tbl: SymbolTable): () == {}
-    bindDeclare(def: AbSyn, tbl: SymbolTable): () == {}
+    bindDefine(ab: AbSyn, tbl: SymbolTable): () == return
 
+    bindDeclare(ab, tbl): () ==
+	return
+
+    bindConditions(ab, tbl): () ==
+	return

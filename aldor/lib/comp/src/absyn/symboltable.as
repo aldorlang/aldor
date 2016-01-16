@@ -16,14 +16,22 @@ SymbolTableType: Join(PrimitiveType, OutputType) with
 SymbolTableTypes: with
     topLevel: SymbolTableType
     file: SymbolTableType
+
     comma: SymbolTableType
+    _for: SymbolTableType
+    _if: SymbolTableType
     lambda: SymbolTableType
+    scope: SymbolTableType
 == add
     import from String
     topLevel: SymbolTableType == type "topLevel"
     file: SymbolTableType == type "file"
+
     comma: SymbolTableType == type "comma"
+    _for: SymbolTableType == type "for"
+    _if: SymbolTableType == type "if"
     lambda: SymbolTableType == type "lambda"
+    scope: SymbolTableType == type "scope"
 
 StabField(X: with): with
     apply: (SymbolTable, Field X) -> X
@@ -71,6 +79,7 @@ SymbolTableLevel: Join(PrimitiveType, OutputType) with
     newLevel: SymbolTableType -> %
     fields: % -> DepTable
     addChild!: (%, %) -> ()
+    export from SymbolTableType
 == add
     Rep == Record(t: SymbolTableType, fields: DepTable, children: List %)
     import from Rep
