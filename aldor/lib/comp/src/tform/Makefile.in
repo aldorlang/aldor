@@ -16,7 +16,7 @@ subdir		:= $(subst $(abs_top_builddir)/,,$(abs_builddir))
 
 # Build starts here
 library = bs subst tform syme tform_atoms tform_types tform_map		\
-	  tform_cat tform_syntax tposs abstate tform_subst tform_sat	\
-	  tform_abmeaning typeinfer tiabsyn
+	  tform_cat tform_syntax tposs0 tposs abstate abstate1		\
+	  tform_subst tform_sat tform_abmeaning typeinfer tiabsyn
 
 include $(abs_top_srcdir)/lib/comp/src/common.mk

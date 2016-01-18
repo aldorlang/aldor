@@ -2,7 +2,7 @@
 #include "aldorio"
 #pile
 
-TPoss: OutputType with
+extend TPoss: OutputType with
     empty: () -> %
     empty?: %  -> Boolean
     add!: (%, TForm) -> ()

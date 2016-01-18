@@ -1,14 +1,13 @@
 #include "comp"
 #pile
 
-AbState: OutputType with
+AbState: with
     abstate: () -> %
-    unique?: % -> Boolean
     final?: % -> Boolean
     error?: % -> Boolean
     tposs?: % -> Boolean
     tposs: % -> TPoss
-    unique: % -> TForm
+    final: % -> TForm
 
     setFinal: (%, TForm) -> ()
     setTPoss: (%, TPoss) -> ()
@@ -23,17 +22,11 @@ AbState: OutputType with
 
     abstate(): % == per [NONE, [false]]
 
-    unique? state: Boolean == rep(state).flg = FINAL or (rep(state).flg = POSS and unique? rep(state).type.tposs)
     final? state: Boolean == rep(state).flg = FINAL
     error? state: Boolean == rep(state).flg = ERROR
     tposs? state: Boolean == rep(state).flg = POSS
     tposs state: TPoss == rep(state).type.tposs
-
-    unique state: TForm ==
-        import from Partial TForm
-        rep(state).flg = FINAL => rep(state).type.tf
-	rep(state).flg = POSS => retract unique rep(state).type.tposs
-	never
+    final state: TForm == rep(state).type.tf
 
     setFinal(state, tform: TForm): () ==
         rep(state).flg ~= POSS and rep(state).flg ~= NONE => error("Can't set type")
@@ -46,10 +39,3 @@ AbState: OutputType with
 	rep(state).type.tposs := tp
 
     setError(state): () == rep(state).flg := ERROR
-
-    (o: TextWriter) << state: TextWriter ==
-        o << "{ "
-	if final? state then o << "Final " << unique state
-	else if error? state then o << "Error " << tposs state
-	else o << "None"
-	o << "}"
