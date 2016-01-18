@@ -38,9 +38,10 @@ TFormTagComma: TFormTagCat with
 	import from List MachineInteger
         id(tf: TForm): Id == id attrs(tf)
         undeclare(tf: TForm): TForm == if declare? tf then args(tf).1 else tf
-
         l := [g]
         bs: BindingSet := [(declareId tf, [n]) for tf in l for n in 1.. | declare? tf]
+	import from String
+	stdout << "Creating bindings for " << l << " --> " << bs << newline
         new(TFormTagComma, l, bs)
 
     tfAbSyn(tf: TForm): AbSyn == comma(absyn(tfn)$TForm for tfn in args tf)
@@ -59,24 +60,28 @@ TFormTagDeclare: TFormTagCat with
 
     tfEquals(def1: TForm, def2: TForm): Boolean ==
         import from Syme
-        declareSyme def1 = declareSyme def2 and args def1 = args def2
+        --declareSyme def1 = declareSyme def2 and args def1 = args def2
+        declareId def1 = declareId def2 and args def1 = args def2
 
     tfFreeVars(decl: TForm): List Id == freeVars first args decl
 
     type?(): Boolean == true
     declare?(tf: TForm): Boolean == kind tf = name
-    declare(ab: AbSyn, tf: TForm): TForm == new(TFormTagDeclare, [tf], empty(), create(id "", ab))
-    declare(anId: Id, tf: TForm): TForm == declare(var anId, tf)
+    declare(ab: AbSyn, tf: TForm): TForm ==
+        new(TFormTagDeclare, [tf], empty(), create(id ab, ab))
+    declare(anId: Id, tf: TForm): TForm ==
+        if string anId = "" then error("not an id")
+        declare(var anId, tf)
 
-    info(o: TextWriter, decl: TForm): () == o << declareId decl
+    info(o: TextWriter, decl: TForm): () == o << "id: " << declareId decl
 
     tfAbSyn(tf: TForm): AbSyn ==
         declare(absyn attrs tf, absyn declareTForm tf)
 
     declareId(tf: TForm): Id == id attrs tf
-    declareSyme(tf: TForm): Syme == never -- (absyn attrs tf).syme
+    declareSyme(tf: TForm): Syme == syme absyn attrs tf
     declareTForm(tf: TForm): TForm == first args tf
-    declareLhs(tf: TForm): AbSyn == never
+    declareLhs(tf: TForm): AbSyn == absyn attrs tf
 
 TFormTagTuple: TFormTagCat with
     tuple: TForm -> TForm
@@ -125,7 +130,6 @@ test2(): () ==
     Type := type()$TFormTagType
     Int := id("Int")
     decl := declare("x", Int)
-    stdout << decl << newline
     fx := apply(id("f"), [id("x")])
     c := comma(decl, fx)
     assertEquals(fx, fx)
@@ -177,6 +181,5 @@ testSubstitution(): () ==
 test()
 test2()
 testFreeVariables()
-stdout << "FIXME FIXME" << newline
---testSubstitution()
+testSubstitution()
 #endif

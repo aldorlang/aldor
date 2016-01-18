@@ -19,15 +19,21 @@ TFormSubst: with
     substTf: Field(HashTable(PtrTForm, PtrTForm)) == field("substTf")
 
     subst(tf: TForm, sigma: Subst): TForm ==
+	import from String
+        stdout << "(Subst: " << tf << " " << sigma << newline
+	xx := subst0(tf, sigma)
+	stdout << " --> " << xx << ")" << newline
+	xx
+
+    local subst0(tf: TForm, sigma: Subst): TForm ==
         id? tf => substId(tf, sigma)
 	comma? tf => comma(subst(arg, sigma) for arg in args tf)
-	declare? tf => declare(declareLhs tf, subst(first args tf, sigma))
+	declare? tf => declare(declareLhs tf, subst(declareTForm tf, sigma))
 	tuple? tf => tuple(subst(first args tf, sigma))
 	apply? tf => (apply(first l, rest l) where l := [subst(elt, sigma) for elt in args tf])
 	map? tf => map(subst(mapArgs(tf), sigma), subst(mapRets(tf), sigma))
 	type? tf => tf
 	stdout << ("Unknown tag " + kind tf) << newline
-	import from String
 	error("Unknown tag " + kind tf)
 
 

@@ -1,4 +1,5 @@
 #include "comp.as"
+#include "aldorio.as"
 #pile
 
 AbSynMeaning: with
@@ -9,6 +10,12 @@ AbSynMeaning: with
     default ab: AbSyn
 
     meaning(ab): TForm ==
+	import from String
+	stdout << "(meaning " << ab << newline
+	xx := meaning0 ab
+	stdout << " --> " << xx << ")" << newline
+        xx
+    meaning0(ab): TForm ==
         -- assumption is that ab is in a reasonable state, and
 	-- conversion is simply syntactic
 	tag ab = apply => meaningApply(ab)

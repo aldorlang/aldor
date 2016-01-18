@@ -11,7 +11,9 @@ Id: Join(HashType, OutputType) with
 == add
     Rep ==> String
 
-    id(s: String): % == per s
+    id(s: String): % ==
+        if s = "" then error "Empty ids not allowed"
+        per s
     string(id: %): String == rep id
 
     (o: TextWriter) << (id: %): TextWriter == o << rep(id)

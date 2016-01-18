@@ -31,7 +31,11 @@ Subst: OutputType with
 	fields.absynForId := initialAbSynForId
 	per [fields]
 
-    create(l: List Cross(Id, AbSyn)): % == initialMap([pair for pair in l])
+    create(l: List Cross(Id, AbSyn)): % ==
+        import from Id
+	for (id, ab) in l repeat
+	    if string id = "" then error("not an id")
+        initialMap([pair for pair in l])
     create(id: Id, ab: AbSyn): % == initialMap([(id, ab)@Cross(Id, AbSyn)])
 
     add!(sigma: %, l: List Cross(Id, AbSyn)): () ==

@@ -5,7 +5,7 @@
 
 TFormAttrs: with
     import from Id
-    create: (s: Id == id "", ab: AbSyn == sequence()) -> %
+    create: (s: Id == id "<none>", ab: AbSyn == sequence()) -> %
     id: % -> Id
     absyn: % -> AbSyn
 == add
@@ -90,7 +90,7 @@ TForm: Join(OutputType, PrimitiveType) with
         import from Id
         o << "{" << name$(tag tf) << " ";
 	info(o, tf)$(tag tf)
-	o << args tf << " " << "}"
+	o << " - " << args tf << " " << "}"
 
 TFormTagCat: Category == with
     name: String

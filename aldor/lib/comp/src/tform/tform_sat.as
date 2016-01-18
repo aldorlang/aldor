@@ -71,9 +71,10 @@ TFormSatisfaction: with
 
         satisfiesComma(S: TForm, T: TForm): SatResult ==
             empty? bindings T => satisfiesArgs(S, T)
-	    for key in keys bindings T repeat stdout << "tf: " << lookup(S, path(bindings T, key)) << newline
             sigma: Subst := create [(key, absyn lookup(S, path(bindings T, key))) for key in keys bindings T]
+	    stdout << "Sigma: " << sigma << newline
             T0 := comma( (if declare? t then id declareId t else t) for t in args T)
+	    stdout << "T0: " << sigma << newline
             substT := subst(T0, sigma)
             satisfies(S, substT)
 
@@ -207,7 +208,7 @@ test(): () ==
 
     -- (x: Int) -> F x satisfies (y: Int) -> F y
     --
---test()
+test()
 
 
 testCategories(): () ==
@@ -254,6 +255,6 @@ testCategories(): () ==
     assertTrue(failure? satisfies(std(), Monoid, Group))
     assertTrue(success? satisfies(std(), Group, Group))
 
---testCategories()
+testCategories()
 
 #endif
