@@ -134,10 +134,9 @@ AbSyn: OutputType with
     	import from SExpression
         o << sexpr ab
 
-
 AbSynApply: with
-   applyOp: AbSyn -> AbSyn
-   applyArgs: AbSyn -> List AbSyn
+    applyOp: AbSyn -> AbSyn
+    applyArgs: AbSyn -> List AbSyn
 == add
     import from List AbSyn
     default ab: AbSyn
@@ -146,10 +145,10 @@ AbSynApply: with
     applyArgs ab: List AbSyn == rest children ab
 
 AbSynDeclare: with
-   declareId: % -> Id
-   declareType: % -> AbSyn
-   asDeclare: AbSyn -> %
-   toAbSyn: % -> AbSyn
+    declareId: % -> Id
+    declareType: % -> AbSyn
+    asDeclare: AbSyn -> %
+    toAbSyn: % -> AbSyn
 == add
     import from List AbSyn
     Rep == AbSyn
