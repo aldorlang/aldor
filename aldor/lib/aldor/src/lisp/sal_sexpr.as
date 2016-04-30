@@ -2,28 +2,6 @@
 #include "aldorio"
 #pile
 
-SymbolSource: with 
-   symbol: (%, String) -> SourcedSymbol
-   new: () -> %;
-== add 
-    Rep == HashTable(String, SourcedSymbol)
-    import from Rep
-    default src: %;
-    
-    new(): % ==
-        per remember( (a: String): SourcedSymbol +-> a pretend SourcedSymbol);
-
-    symbol(src, str: String): SourcedSymbol == rep(src).str;
-
-SourcedSymbol: PrimitiveType with
-    name: % -> String
-== add
-    Rep == String
-    default sym, sym1, sym2: %
-
-    name(sym): String == rep sym;
-    sym1 = sym2: Boolean == rep sym1 = rep sym2
-
 local Cons: PrimitiveType with
     cons: (SExpression, SExpression) -> %
     first: % -> SExpression
@@ -68,7 +46,7 @@ CharSets: with
     numberPart? c: Boolean == digit? c
 
 SExpression: Join(OutputType, PrimitiveType) with
-    sexpr: SourcedSymbol -> %
+    sexpr: Symbol -> %
     sexpr: Integer -> %
     sexpr: String -> %
     sexpr: Cons -> %
@@ -83,15 +61,27 @@ SExpression: Join(OutputType, PrimitiveType) with
     first: % -> %
     rest: % -> %
     bracket: Generator % -> %
+    bracket: Tuple % -> %
     append: (%, %) -> %
+
+    sym: % -> Symbol
+    int: % -> Integer
+    str: % -> String
+
+    first: % -> %
+    rest: % -> %
 == add 
-    Rep == Union(SYM: SourcedSymbol, INT: Integer, STR: String, CONS: Cons)
+    Rep == Union(SYM: Symbol, INT: Integer, STR: String, CONS: Cons)
     import from Rep
     default sx, sx1, sx2: %
     nil: % == (nil$Pointer) pretend %
     nil(): % == (nil$Pointer) pretend %
-    
-    sexpr(sym: SourcedSymbol): % == per [sym]
+
+    sym(sx: %): Symbol == rep(sx).SYM
+    int(sx: %): Integer == rep(sx).INT
+    str(sx: %): String == rep(sx).STR
+
+    sexpr(sym: Symbol): % == per [sym]
     sexpr(n: Integer): % == per [n]
     sexpr(str: String): % == per [str]
     sexpr(cons: Cons): % == per [cons]
@@ -131,6 +121,14 @@ SExpression: Join(OutputType, PrimitiveType) with
 	str? sx => writeString(o, rep(sx).STR)
 	sym? sx => writeSymbol(o, rep(sx).SYM)
 	never
+
+    bracket(t: Tuple %): % ==
+        import from MachineInteger
+	length(t) = 0 => nil
+	length(t) = 1 => cons(element(t, 1), nil)
+	l: % := nil
+	for n in length(t)..1 by -1 repeat l := cons(element(t, n), l)
+	l
 
     bracket(g: Generator %): % ==
         l := nil()
@@ -180,7 +178,7 @@ SExpression: Join(OutputType, PrimitiveType) with
     local writeString(o: TextWriter, s: String): TextWriter ==
         o << "_"" << s << "_""
 
-    local writeSymbol(o: TextWriter, s: SourcedSymbol): TextWriter ==
+    local writeSymbol(o: TextWriter, s: Symbol): TextWriter ==
         o << name s
 
 LStream(T: Type): Category == with
@@ -256,7 +254,7 @@ FnLStream(T: Type): LStream T with
 
 
 SExpressionReader: with
-    read: (SymbolSource, TextReader) -> Partial SExpression;
+    read: (TextReader) -> Partial SExpression;
 == add
     Token == Record(type: 'sym,number,str,ws,oparen,cparen,dot,error', txt: String);
     import from Token
@@ -266,14 +264,13 @@ SExpressionReader: with
         s := tstream rdr
         if hasNext? s then readOneToken! s else failed
 
-    read(symSrc: SymbolSource, rdr: TextReader): Partial SExpression ==
+    read(rdr: TextReader): Partial SExpression ==
         import from TextLStream
         import from FnLStream Token
         s := tstream rdr
         tokstrm := tstream((): Partial Token +-> {stdout << "C:ReadOne" << newline;
 		   	       	       	          readOneToken! s});
-        symSource: SymbolSource := new()
-        sxMaybe: Partial SExpression := read(symSource, tokstrm)
+        sxMaybe: Partial SExpression := read(tokstrm)
 	sxMaybe
     
     readOneToken!(s: TextLStream): Partial Token ==
@@ -341,8 +338,8 @@ SExpressionReader: with
 	stdout << "Returning symbol " << text << newline
 	[sym, text]
 
-    read(symSource: SymbolSource, s: FnLStream Token): Partial SExpression ==
-        import from SExpression
+    read(s: FnLStream Token): Partial SExpression ==
+        import from SExpression, Symbol
         skipWhitespace!(): () ==
             while hasNext? s and peek(s).type = ws repeat
 	        stdout << "Skip " << peek(s).txt << newline
@@ -400,7 +397,7 @@ SExpressionReader: with
 	    else if tok.type = cparen then failed
 	    else if tok.type = str then [sexpr tok.txt]
 	    else if tok.type = sym then
-	        [sexpr symbol(symSource, tok.txt)]
+	        [sexpr (-tok.txt)]
 	    else if tok.type = number then [sexpr integer literal tok.txt]
 	    else
 	        failed
@@ -412,52 +409,58 @@ SExpressionReader: with
 #if ALDORTEST1
 #include "aldor"
 #include "aldorio"
-readOne(symSource: SymbolSource, s: String): Partial SExpression ==
+readOne(s: String): Partial SExpression ==
     import from SExpressionReader
     sb: StringBuffer := new()
     sb::TextWriter << s
-    read(symSource, sb::TextReader)
+    read(sb::TextReader)
 
 test(): () ==
     import from Partial SExpression
     import from SExpression
     import from Assert SExpression
     import from Integer
-    symSource: SymbolSource := new()
-    sxMaybe := readOne(symSource, "foo")
+    import from Symbol
+
+    sxMaybe := readOne("foo")
     assertFalse failed? sxMaybe
-    foo := sexpr symbol(symSource, "foo")
+    foo := sexpr (-"foo")
     assertEquals(foo, retract sxMaybe)
 
-    sxMaybe := readOne(symSource, "23")
+    sxMaybe := readOne("23")
     stdout << "SX: " << sxMaybe << newline
     assertFalse failed? sxMaybe
     assertEquals(sexpr 23, retract sxMaybe)
 
-    sxMaybe := readOne(symSource, "_"hello_"")
+    sxMaybe := readOne( "_"hello_"")
     stdout << "SX: " << sxMaybe << newline
     assertFalse failed? sxMaybe
     assertEquals(sexpr "hello", retract sxMaybe)
 
-    sxMaybe := readOne(symSource, "(foo)")
+    sxMaybe := readOne("(foo)")
     stdout << "SX: " << sxMaybe << newline
     assertFalse failed? sxMaybe
     assertEquals(cons(foo, nil), retract sxMaybe)
 
-    sxMaybe := readOne(symSource, "(foo 2)")
+    sxMaybe := readOne("(foo 2)")
     stdout << "SX: " << sxMaybe << newline
     assertFalse failed? sxMaybe
     assertEquals(cons(foo, cons(sexpr 2, nil)), retract sxMaybe)
 
-    sxMaybe := readOne(symSource, "(foo . 2)")
+    sxMaybe := readOne("(foo . 2)")
     stdout << "SX: " << sxMaybe << newline
     assertFalse failed? sxMaybe
     assertEquals(cons(foo, sexpr 2), retract sxMaybe)
 
-    sxMaybe := readOne(symSource, "|+->|")
+    sxMaybe := readOne("|+->|")
     stdout << "SX: " << sxMaybe << newline
     assertFalse failed? sxMaybe
-    assertEquals(sexpr symbol(symSource, "+->"), retract sxMaybe)
+    assertEquals(sexpr (-"+->"), retract sxMaybe)
+
+    sxMaybe := readOne("(foo () 2)")
+    stdout << "SX: " << sxMaybe << newline
+    assertFalse failed? sxMaybe
+    assertEquals([sexpr(-"foo"), [], sexpr 2], retract sxMaybe)
 
 test()
 
@@ -466,11 +469,10 @@ test2(): () ==
     import from SExpression
     import from SExpressionReader
     import from Partial SExpression
-    symSource: SymbolSource := new()
 
     rdr := open("sal__sexpr.asy")::TextReader
     
-    sx := read(symSource, rdr)
+    sx := read(rdr)
     stdout << sx << newline
 
 testBracket(): () ==
