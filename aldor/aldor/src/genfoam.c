@@ -651,14 +651,12 @@ genFoamValAs(TForm tf, AbSyn ab)
 {
 	Foam foam = genFoamVal(ab);
 	if (tfIsExit(gen0AbType(ab))) {
-		if (foamTag(foam) == FOAM_Nil)
-			return foam;
-
 		if (tfIsMulti(tf) && tfMultiArgc(tf) > 0) {
 			Foam fakeValue;
 			int i;
 
-			gen0AddStmt(foam, ab);
+			if (foamHasSideEffect(foam))
+				gen0AddStmt(foam, ab);
 
 			fakeValue = foamNewEmpty(FOAM_Values, tfMultiArgc(tf));
 			for (i = 0; i < tfMultiArgc(tf); i++) {
@@ -1598,17 +1596,16 @@ gen0MakeApplyArgs(Syme syme, AbSyn absyn, Length *valc)
 		assert(!ftnfixedret);
 		vals[0] = gen0EmbedApply(argc, argv, op, abEmbedApply(op));
 	}
-	else if (argc == 1 && tfIsMulti(gen0AbContextType(argv[0]))) {
+	else if (argc == 1 && *valc == 0) {
+		genFoamStmt(argv[0]);
+	}
+	else if (argc == 1 && tfIsMulti(gen0AbContextType(tfMapSelectArg(opTf, absyn, 0)))) {
 		assert(!extraArg);
-		if (*valc == 0)
-			genFoamStmt(argv[0]);
-		else {
-			Foam	val = genFoamVal(argv[0]);
-			assert(foamTag(val) == FOAM_Values);
-			assert(foamArgc(val) == *valc);
-			for (i = 0; i < *valc; i += 1)
-				vals[i] = val->foamValues.argv[i];
-		}
+		Foam	val = genFoamVal(argv[0]);
+		assert(foamTag(val) == FOAM_Values);
+		assert(foamArgc(val) == *valc);
+		for (i = 0; i < *valc; i += 1)
+			vals[i] = val->foamValues.argv[i];
 	}
 	else if (ftnfixedret)
 	{
