@@ -19,12 +19,16 @@ testArchive()
 {
 	Archive ar;
 	FileName fname = fnameParse("arch-test/foo.al");
-	system("mkdir arch-test");
-	system("ar r arch-test/foo.al Makefile");
+	int status;
+	status = system("mkdir arch-test");
+	testIntEqual("", 0, status);
+	status = system("ar r arch-test/foo.al Makefile");
+	testIntEqual("", 0, status);
 
 	ar = arFrString("arch-test/foo.al");
 	testIsNotNull("t0", ar);
 
-	system("rm -rf arch-test");
+	status = system("rm -rf arch-test");
+	testIntEqual("", 0, status);
 }
 
