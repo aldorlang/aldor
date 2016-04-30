@@ -43,6 +43,21 @@ FoldingTransformationCategory2(T: with, R: with): Category == with {
     /: (%, Generator T) -> R;
 }
 
+Fold2(T: with): FoldingTransformationCategory2(T, T) with {
+	 /: (Cross((T,T) -> T, T), List T) -> T;
+	 /: (Cross((T,T) -> T, T), Generator T) -> T;
+	 folder: ((T,T) -> T, T) -> %
+}
+== add {
+         Rep == Fold2(T, T);
+	 import from Rep;
+	 (/)(c: Cross((T,T) -> T, T), l: List T): T == folder(c)@%/l;
+	 (/)(c: Cross((T,T) -> T, T), g: Generator T): T == folder(c)@%/g;
+	 folder(f: (T,T) -> T, init: T): % == per folder(f, init);
+	 (/)(f: %, l: List T): T == rep(f)/l;
+	  (/)(f: %, g: Generator T): T == rep(f)/g;
+}
+
 Fold2(T: with, R: with): FoldingTransformationCategory2(T, R) with {
 	 /: (Cross(f: (T,R) -> R, R), List T) -> R;
 	 /: (Cross(f: (T,R) -> R, R), Generator T) -> R;
@@ -116,6 +131,14 @@ testSum(): () == {
         assertEquals(n * (n+1) quo 2, (+)/(x for x in  1..n));
 }
 
+testFoldInit(): () == {
+    import from List Integer;
+    import from Fold2(Integer, Integer);
+    import from Assert Integer;
+    import from Integer;
+    assertEquals(22, (+, 22)/[]);
+    assertEquals(23, (+, 22)/[1]);
+}
 
 testFold(): () == {
     import from Fold Integer;
