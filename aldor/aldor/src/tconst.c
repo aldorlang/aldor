@@ -15,6 +15,7 @@
 #include "tconst.h"
 #include "tfsat.h"
 #include "tform.h"
+#include "ablogic.h"
 
 Bool	tcDebug		= false;
 
@@ -79,7 +80,7 @@ tcFini(void)
 void
 tcSatPush(TForm S, TForm T)
 {
-	tcNewSat(NULL, S, T, NULL);
+	tcNewSat(NULL, NULL, S, T, NULL);
 }
 
 void
@@ -89,7 +90,7 @@ tcSatPop(void)
 }
 
 TConst
-tcAlloc(TConstTag tag, TForm owner, Length argc, va_list argp)
+tcAlloc(TConstTag tag, TForm owner, AbLogic known, AbSyn ab0, Length argc, va_list argp)
 {
 	TConst		tc;
 	Length		i;
@@ -103,8 +104,10 @@ tcAlloc(TConstTag tag, TForm owner, Length argc, va_list argp)
 	tc->pos		= NULL;
 	tc->parent	= NULL;
 	tc->id		= NULL;
+	tc->known       = known;
 	tc->serial	= ++tcSerialNum;
 	tc->owner	= owner;
+	tc->ab0 	= ab0;
 	tc->argc	= argc;
 	tc->argv	= (argc ? (TForm *) (tc + 1) : NULL);
 
@@ -215,13 +218,13 @@ tcPrint(FILE *f, TConst tc)
 }
 
 void
-tcNew(TConstTag tag, TForm owner, AbSyn id, Length argc, ...)
+tcNew(TConstTag tag, TForm owner, AbLogic known, AbSyn id, AbSyn ab0, Length argc, ...)
 {
 	TConst	tc;
 	va_list	argp;
 
 	va_start(argp, argc);
-	tc = tcAlloc(tag, owner, argc, argp);
+	tc = tcAlloc(tag, owner, known, ab0, argc, argp);
 	va_end(argp);
 
 	tc->id = id;
@@ -238,9 +241,15 @@ tcNew(TConstTag tag, TForm owner, AbSyn id, Length argc, ...)
 }
 
 void
-tcNewSat(TForm owner, TForm S, TForm T, AbSyn a)
+tcNewSat(TForm owner, AbLogic known, TForm S, TForm T, AbSyn a)
 {
-	tcNew(TC_Satisfies, owner, a, 2, S, T);
+	tcNew(TC_Satisfies, owner, ablogCopy(known), a, NULL, 2, S, T);
+}
+
+void
+tcNewSat1(TForm owner, AbLogic known, AbSyn ab0, TForm S, TForm T, AbSyn a)
+{
+	tcNew(TC_Satisfies, owner, ablogCopy(known), a, ab0, 2, S, T);
 }
 
 void
@@ -281,12 +290,17 @@ void
 tcCheck(TConst tc)
 {
 	Bool	result;
-
+	AbLogic known;
+	extern AbLogic abCondKnown;
+	
 	listPush(TConst, tc, tcStack);
 
 	switch (tcTag(tc)) {
 	case TC_Satisfies:
-		result = tfSatisfies(tcArgv(tc)[0], tcArgv(tc)[1]);
+		known = abCondKnown;
+		abCondKnown = tcKnown(tc);
+		result = tfSatisfies1(tc->ab0, tcArgv(tc)[0], tcArgv(tc)[1]);
+		abCondKnown = known;
 		break;
 	default:
 		bugBadCase(tcTag(tc));

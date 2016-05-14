@@ -22,6 +22,7 @@
 #include "tconst.h"
 #include "tposs.h"
 #include "tfsat.h"
+#include "ablogic.h"
 
 /*
  *   Each node is given a set of possible meanings.
@@ -376,11 +377,11 @@ tpossIsPending(TPoss tp, TForm t)
 		tcSatPush(S, t);
 
 		if (tfIsPending(S)) {
-			tcNewSat(S, S, t, NULL);
+			tcNewSat(S, ablogFalse(), S, t, NULL);
 			result = true;
 		}
 		if (tfIsPending(t)) {
-			tcNewSat(t, S, t, NULL);
+			tcNewSat(t, ablogFalse(), S, t, NULL);
 			result = true;
 		}
 
