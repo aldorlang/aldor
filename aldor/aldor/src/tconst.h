@@ -35,9 +35,11 @@ struct tconst {
 	BPack(TConstTag)	tag;		/* What kind of constraint. */
 	AbSyn			pos;		/* Where to report errors. */
 	AbSyn			id;		/* const checked on behalf of id */
+	AbLogic                 known;          /* Conditional context at point */
 	TConst			parent;		/* Traceback parent. */
 	Length			serial;		/* Serial number. */
 	TForm			owner;		/* TForm which checks it. */
+	AbSyn			ab0;		/* Random piece of absyn. */
 	Length			argc;		/* Number of arguments. */
 	TForm			*argv;		/* Additional arguments. */
 };
@@ -58,6 +60,7 @@ struct tconst {
 #define			tcOwner(tc)		((tc)->owner)
 #define			tcArgc(tc)		((tc)->argc)
 #define			tcArgv(tc)		((tc)->argv)
+#define			tcKnown(tc)		((tc)->known)
 
 #define			tcSetParent(tc, p)	(tcParent(tc) = (p))
 
@@ -69,7 +72,7 @@ extern void		tcFini			(void);
 extern void		tcSatPush		(TForm, TForm);
 extern void		tcSatPop		(void);
 
-extern TConst		tcAlloc			(TConstTag, TForm, Length,
+extern TConst		tcAlloc			(TConstTag, TForm, AbLogic, AbSyn, Length,
 						 va_list);
 extern void		tcFree			(TConst);
 extern void		tcPush			(TConst);
@@ -78,9 +81,10 @@ extern Bool		tcEq			(TConst, TConst);
 extern Bool		tcEqual			(TConst, TConst);
 extern int		tcPrint			(FILE *, TConst);
 
-extern void		tcNew			(TConstTag, TForm, AbSyn, 
+extern void		tcNew			(TConstTag, TForm, AbLogic, AbSyn, AbSyn,
 						 Length, ...);
-extern void		tcNewSat		(TForm, TForm, TForm, AbSyn);
+extern void		tcNewSat		(TForm, AbLogic, TForm, TForm, AbSyn);
+extern void		tcNewSat1		(TForm, AbLogic, AbSyn, TForm, TForm, AbSyn);
 extern void		tcMove			(TForm, TForm);
 
 extern void		tfCheckConsts		(TForm);

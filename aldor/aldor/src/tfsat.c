@@ -199,6 +199,7 @@ local SatMask		tfSatCAT		(SatMask, TForm S);
 local SatMask		tfSatTYPE		(SatMask, TForm S);
 
 local SatMask		tfSatUsePending		(SatMask, TForm S, TForm T);
+local SatMask 		tfSatUsePending1	(SatMask, AbSyn, TForm, TForm);
 local SatMask		tfSatEvery		(SatMask, TForm S, TForm T);
 local SatMask		tfSatEach		(SatMask, TForm S, TForm T);
 local SatMask		tfSatMap0		(SatMask, TForm S, TForm T);
@@ -453,6 +454,13 @@ tfSatisfies(TForm S, TForm T)
 {
 	SatMask		mask = TFS_Commit | TFS_UsualMask;
 	return tfSatBit(mask, S, T);
+}
+
+Bool
+tfSatisfies1(AbSyn Sab, TForm S, TForm T)
+{
+	SatMask		mask = TFS_Commit | TFS_UsualMask | TFS_Conditions;
+	return tfSatSucceed(tfSat1(mask, Sab, S, T));
 }
 
 Bool
@@ -772,7 +780,7 @@ tfSatArgPoss(SatMask mask, AbSyn Sab, TForm T)
 
 	if (tfSatAllow(mask, TFS_Pending) && tpossIsUnique(S)) {
 		tcSatPush(tpossUnique(S), T);
-		result = tfSatUsePending(mask, tpossUnique(S), T);
+		result = tfSatUsePending1(mask, Sab, tpossUnique(S), T);
 		tcSatPop();
 		if (tfSatSucceed(result))
 			return result;
@@ -983,6 +991,13 @@ tfSat1(SatMask mask, AbSyn Sab, TForm S, TForm T)
 		if (tfSatSucceed(tfSatDOM(mask, S))) {
  			if (tfSatUseConditions(mask) && abCondKnown != NULL
 			    && Sab != NULL) {
+				if (tfIsPending(S)) {
+					if (tfSatAllow(mask, TFS_Pending)) {
+						result = tfSatUsePending1(mask,
+									  Sab, S, T);
+						return result;
+					}
+				}
 				TForm tf = ablogImpliedType(abCondKnown, Sab, S);
 				if (tf != NULL) {
 					tfsDEBUG(dbOut, "Swapping type: %pTForm to %pTForm\n", S, tf);
@@ -1127,20 +1142,26 @@ tfSatTYPE(SatMask mask, TForm S)
 local SatMask
 tfSatUsePending(SatMask mask, TForm S, TForm T)
 {
+	return tfSatUsePending1(mask, NULL, S, T);
+}
+
+local SatMask
+tfSatUsePending1(SatMask mask, AbSyn Sab, TForm S, TForm T)
+{
 	SatMask		result;
 
 	if (tfIsPending(S)) {
 		tfSatSetPendingFail(S);
 		result = tfSatResult(mask, TFS_Pending);
 		if (tfSatCommit(mask))
-			tcNewSat(S, S, T, NULL);
+			tcNewSat1(S, abCondKnown, Sab, S, T, NULL);
 		return result;
 	}
 	if (tfIsPending(T)) {
 		tfSatSetPendingFail(T);
 		result = tfSatResult(mask, TFS_Pending);
 		if (tfSatCommit(mask))
-			tcNewSat(T, S, T, NULL);
+			tcNewSat1(T, abCondKnown, Sab, S, T, NULL);
 		return result;
 	}
 
@@ -1568,7 +1589,7 @@ tfSatCatExports(SatMask mask, AbSyn Sab, TForm S, TForm T)
 		result = tfSatResult(mask, TFS_Pending);
 		tfSatSetPendingFail(p);
 		if (tfSatCommit(mask))
-			tcNewSat(p, S, T, tfSatInfo(mask) ? symeLazyCheckData : NULL);
+			tcNewSat(p, abCondKnown, S, T, tfSatInfo(mask) ? symeLazyCheckData : NULL);
 	}
 
 	return result;
@@ -1602,7 +1623,7 @@ tfSatThdExports(SatMask mask, TForm S, TForm T)
 		result = tfSatResult(mask, TFS_Pending);
 		tfSatSetPendingFail(p);
 		if (tfSatCommit(mask))
-			tcNewSat(p, S, T, tfSatInfo(mask) ? symeLazyCheckData : NULL);
+			tcNewSat(p, abCondKnown, S, T, tfSatInfo(mask) ? symeLazyCheckData : NULL);
 	}
 
 	return result;
