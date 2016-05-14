@@ -210,12 +210,10 @@ TextLStream: LStream Character with
         rep(str).atEof => never
         if not hasCurr? str then readOne str
 	rep(str).atEof => never
-	stdout << "Peek: " << rep(str).curr << newline
 	rep(str).curr
 
     hasNext?(str): Boolean ==
         if not hasCurr? str then readOne str
-	stdout << "Char::HasNext: " << not rep(str).atEof << newline;
         not rep(str).atEof
     
     next!(str): () ==
@@ -234,7 +232,6 @@ FnLStream(T: Type): LStream T with
     local readOne!(str): () ==
         item := rep(str).readOne!()
 	if failed? item then rep(str).atEos := true
-        stdout << "S::readOne " << failed? item << newline;
 	rep(str).curr := item
 	
     peek(str): T ==
@@ -243,13 +240,11 @@ FnLStream(T: Type): LStream T with
 	retract rep(str).curr
 
     hasNext?(str): Boolean ==
-    	stdout << "S::hasNext: atEos " << rep(str).atEos << " wantsNext: " << failed? rep(str).curr  << newline;
 	rep(str).atEos => false
         if failed? rep(str).curr then readOne!(str)
         not rep(str).atEos
     
     next!(str): () ==
-    	stdout << "S::next!" << newline;
         rep(str).curr := failed
 
 
@@ -327,7 +322,6 @@ SExpressionReader: with
 	while hasNext? s and numberPart? peek s repeat
 	    text := text + peek(s)::String
 	    next! s
-	stdout << "Returning number " << text << newline
 	[number, text]
 
     readSymbol(s: TextLStream): Token ==
@@ -335,34 +329,30 @@ SExpressionReader: with
 	while hasNext? s and symPart? peek s repeat
 	    text := text + peek(s)::String
 	    next! s
-	stdout << "Returning symbol " << text << newline
 	[sym, text]
 
     read(s: FnLStream Token): Partial SExpression ==
         import from SExpression, Symbol
         skipWhitespace!(): () ==
             while hasNext? s and peek(s).type = ws repeat
-	        stdout << "Skip " << peek(s).txt << newline
 	        next! s
 
         readList(): Partial SExpression ==
-	    stdout << "RL: " << newline
 	    not hasNext? s => failed
-	    peek(s).type = cparen => [nil]
+	    peek(s).type = cparen =>
+	        next! s
+	        [nil]
 	    tmp := read()
 	    failed? tmp => failed
 	    head: Cons := cons(retract tmp, nil)
 	    last := head
-	    stdout << "RL::Head: " << tmp << newline
 	    done := false
 	    while not done repeat
 	        skipWhitespace!()
 		if not hasNext? s then return failed
 	        if peek(s).type = dot then
-		    stdout << "Dot " << newline
 		    next! s
 		    final := read()
-		    stdout << "Final " << final << newline
 		    failed? final => return failed
 		    setRest!(last, retract final)
 		    done := true
@@ -378,21 +368,12 @@ SExpressionReader: with
             return [sexpr head]
 	    
         read(): Partial SExpression ==
-	   stdout << " (read::read " << newline
-	   aa := read1()
-	   stdout << " read::read " << aa << ")" << newline
-	   aa
-        read1(): Partial SExpression ==
 	    import from Integer
-	    stdout << "read::hasNext: " << hasNext? s << newline
             skipWhitespace!()
-	    stdout << "read::hasNext: " << hasNext? s << newline
 	    not hasNext? s =>
-	    	stdout << "..." << newline
 	        failed
             tok := peek s;
 	    next! s
-	    stdout << "Text: " << tok.txt << newline
 	    if tok.type = oparen then readList()
 	    else if tok.type = cparen then failed
 	    else if tok.type = str then [sexpr tok.txt]
@@ -401,14 +382,13 @@ SExpressionReader: with
 	    else if tok.type = number then [sexpr integer literal tok.txt]
 	    else
 	        failed
-	stdout << "(Sexprread Start " << newline
-        xx := read()
-	stdout << " SExprread End)" << newline
-	xx	
+        read()
 
-#if ALDORTEST1
+#if ALDORTEST
 #include "aldor"
 #include "aldorio"
+#pile
+
 readOne(s: String): Partial SExpression ==
     import from SExpressionReader
     sb: StringBuffer := new()
