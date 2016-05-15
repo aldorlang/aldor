@@ -46,6 +46,8 @@ FoldingTransformationCategory2(T: with, R: with): Category == with {
 Fold2(T: with, R: with): FoldingTransformationCategory2(T, R) with {
 	 /: (Cross(f: (T,R) -> R, R), List T) -> R;
 	 /: (Cross(f: (T,R) -> R, R), Generator T) -> R;
+	 /: (Cross(f: (R, T) -> R, R), List T) -> R;
+	 /: (Cross(f: (R, T) -> R, R), Generator T) -> R;
 	 folder: ((T, R) -> R, R) -> %
 } == add {
   Rep ==> Cross((T, R) -> R, R);
@@ -54,6 +56,10 @@ Fold2(T: with, R: with): FoldingTransformationCategory2(T, R) with {
 
   (c: Cross((T,R) -> R, R)) / (l: List T): R == { (f, init) := c; fper(f, init)/l }
   (c: Cross((T,R) -> R, R)) / (g: Generator T): R == { (f, init) := c; fper(f, init)/g }
+  (c: Cross((R,T) -> R, R)) / (l: List T): R == { (f, r) := c; (swapArgs f, r)/l }
+  (c: Cross((R,T) -> R, R)) / (g: Generator T): R == { (f, r) := c; (swapArgs f, r)/g }
+
+  local swapArgs(f: (R, T) -> R)(t: T, r: R): R == f(r, t);
 
   (folder: %) / (l: List T): R == {
      empty? l => never;
