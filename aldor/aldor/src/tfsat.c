@@ -356,6 +356,10 @@ tfSatEmbedType(TForm tf1, TForm tf2)
 	/* Ignore exceptions for the purposes of embedding as well */
 	tf2 = tfIgnoreExceptions(tf2);
 
+	// FIXME: This is for examples like Union(x: Cross(A, B))
+	// Need to figure out what the best thing here is..
+	tf1 = tfDefineeType(tf1);
+
 	t1 = tfTag(tf1);
 	t2 = tfTag(tf2);
 
