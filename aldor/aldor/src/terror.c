@@ -1371,6 +1371,7 @@ bputBadArgType(TRejectInfo trInfo, Buffer obuf, AbSyn ab, Length argc,
 	for ( ; trInfo->i < trInfo->argc &&
 	     trWhy(trCurrent(trInfo)) == TR_BadArgType;
 	     trInfo->i++) {
+		Length iargc;
 		tr = trCurrent(trInfo);
 		abArgi = argf(ab, trArgN(tr));
 
@@ -1379,8 +1380,8 @@ bputBadArgType(TRejectInfo trInfo, Buffer obuf, AbSyn ab, Length argc,
 
 		bputTReject(obuf, tr, fmtOp);
 
-		argc = tfMapHasDefaults(opType) ? tfMapArgc(opType) : argc;
-		parType = tfAsMultiArgN(tf, argc, trParN(tr));
+		iargc = tfMapHasDefaults(opType) ? tfMapArgc(opType) : argc;
+		parType = tfAsMultiArgN(tf, iargc, trParN(tr));
 		fmtParType = fmtTForm(parType);
 		
 		/* "rejected because arg .. did not match ... */
