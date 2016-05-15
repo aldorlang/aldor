@@ -70,6 +70,9 @@ SExpression: Join(OutputType, PrimitiveType) with
 
     first: % -> %
     rest: % -> %
+
+    nth: (%, Integer) -> %
+    generator: % -> Generator %
 == add 
     Rep == Union(SYM: Symbol, INT: Integer, STR: String, CONS: Cons)
     import from Rep
@@ -163,6 +166,15 @@ SExpression: Join(OutputType, PrimitiveType) with
 	(result, lastPair) := copyList(sx1)
 	setRest!(lastPair, sx2)
 	result
+
+    nth(sx, n: Integer): % == if n = 0 then first sx else nth(rest sx, n-1)
+
+    generator(sx): Generator % == generate {
+        while cons? sx repeat {
+	    yield first sx;
+	    sx := rest sx
+	}
+    }
 
     local writeList(o: TextWriter, sx): TextWriter ==
         o << "("
