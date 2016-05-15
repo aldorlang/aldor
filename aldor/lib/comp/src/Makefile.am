@@ -2,7 +2,8 @@
 SUBDIRS =	\
 	util	\
 	absyn	\
-	tform	
+	tform   \
+	types
 
 
 @BUILD_JAVA_TRUE@JAVA_SUBDIRS = $(SUBDIRS)
@@ -11,7 +12,7 @@ SUBDIRS =	\
 lib_LIBRARIES = libcomp.a
 
 libcomp_a_SOURCES =	\
-	tform/tform.c
+	absyn/absyn.c
 
 datalibdir = $(datadir)/lib
 datalib_DATA = libcomp.al $(JAVA_TARGET)

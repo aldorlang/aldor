@@ -48,7 +48,7 @@ SatResult: OutputType with
 
 TFormSatisfaction: with
     satisfies: (SatOptions, TForm, TForm) -> SatResult
-    satisfiesMapArgs: (SatOptions, Subst, List AbSyn, TForm) -> SatResult
+    satisfiesMapArgs: (SatOptions, XSubst, List AbSyn, TForm) -> SatResult
 
     export from SatOptions, SatResult
 == add
@@ -71,7 +71,7 @@ TFormSatisfaction: with
 
         satisfiesComma(S: TForm, T: TForm): SatResult ==
             empty? bindings T => satisfiesArgs(S, T)
-            sigma: Subst := create [(key, absyn lookup(S, path(bindings T, key))) for key in keys bindings T]
+            sigma: XSubst := create [(key, absyn lookup(S, path(bindings T, key))) for key in keys bindings T]
 	    stdout << "Sigma: " << sigma << newline
             T0 := comma( (if declare? t then id declareId t else t) for t in args T)
 	    stdout << "T0: " << sigma << newline
@@ -87,7 +87,7 @@ TFormSatisfaction: with
             argResult := satisfies(argT, argS)
             failure? argResult => argResult
             empty? bindings T => satisfies(mapRets S, mapRets T)
-            sigma: Subst := create [(key, absyn lookup(S, path(bindings T, key))) for key in keys bindings T]
+            sigma: XSubst := create [(key, absyn lookup(S, path(bindings T, key))) for key in keys bindings T]
             substRetT := subst(mapRets T, sigma)
             satisfies(mapRets S, substRetT)
 
@@ -146,7 +146,7 @@ TFormSatisfaction: with
         satisfies(S, T)
 
     -- way too simple (default args, dependent types, tuple/cross embedding)
-    satisfiesMapArgs(opts: SatOptions, sigma: Subst, Sargs: List AbSyn, T: TForm): SatResult ==
+    satisfiesMapArgs(opts: SatOptions, sigma: XSubst, Sargs: List AbSyn, T: TForm): SatResult ==
         import from MachineInteger, AbSyn
         abMapArg(path: List MachineInteger): AbSyn ==
 	    # path > 1 => error "odd path"

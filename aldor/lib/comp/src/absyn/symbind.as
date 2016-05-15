@@ -15,8 +15,10 @@ SymbolTableBinder: with
     -- 3. Conditional information at each scope level
     bind(root: SymbolTable, whole: AbSyn): SymbolTable ==
         tbl := new(root, file)
+	stdout << "hello" << newline
 	addTables(whole, tbl)
 	bindDefinitionsAndDeclarations(whole, tbl)
+	bindImports(whole, tbl)
 	bindConditions(whole, tbl)
 	tbl
 
@@ -42,6 +44,13 @@ SymbolTableBinder: with
 	for abn in children ab repeat
 	    bindDefinitionsAndDeclarations(abn, symbolTable(abn, tbl))
 
+    bindImports(ab: AbSyn, tbl: SymbolTable): () ==
+        select tag ab in
+	    _import => bindImport(ab, tbl)
+	    ab -- just a null statement
+	for abn in children ab repeat
+	    bindImports(abn, symbolTable(abn, tbl))
+
     bindDefine(ab: AbSyn, tbl: SymbolTable): () == return
 
     bindDeclare(ab, tbl): () ==
@@ -49,3 +58,7 @@ SymbolTableBinder: with
 
     bindConditions(ab, tbl): () ==
 	return
+
+    bindImport(ab, tbl): () ==
+        import from AbSynImport
+	addImport!(tbl, importOrigin(asImport ab))

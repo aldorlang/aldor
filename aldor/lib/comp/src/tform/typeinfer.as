@@ -8,7 +8,7 @@ TiSymbolTable: with
 
     lookup: (SymbolTable, Id) -> TPoss
     lookup: (SymbolTable, Id) -> List Syme
-    export from StabField HashTable(Id, SymbolTableEntry)
+
     export from HashTable(Id, SymbolTableEntry)
     export from SymbolTableEntry
     export from SymbolTable
@@ -99,7 +99,7 @@ TypeInfer: with
 	bupGeneric(stab, ab)
 
     bupApply(stab: SymbolTable, ab: AbSyn): () ==
-        import from AbSynApply, Subst, TFormTagMap
+        import from AbSynApply, XSubst, TFormTagMap
 	import from TFormSubst
         for abn in children ab repeat
 	    bottomUp(stab, abn)
@@ -107,7 +107,7 @@ TypeInfer: with
 	opPoss := tposs state op
 	resultTPoss := empty()
 	for tf in opPoss repeat
-            sigma: Subst := create []
+            sigma: XSubst := create []
 	    result := satisfiesMapArgs(std(), sigma, applyArgs ab, mapArgs tf)
 	    if result then add!(resultTPoss, subst(mapRets tf, sigma))
 	setTPoss(state ab, resultTPoss)
@@ -193,7 +193,7 @@ TypeInfer: with
 	resultTPoss := empty()
 	retTPoss := empty()
 	for opTf in opTPoss repeat
-            sigma: Subst := create []
+            sigma: XSubst := create []
 	    result := satisfiesMapArgs(std(), sigma, applyArgs ab, mapArgs opTf)
 	    stdout << opTf << " " << result << "  " << sigma << newline
 	    retTf: TForm := subst(mapRets opTf, sigma)

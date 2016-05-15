@@ -1,5 +1,4 @@
 library_deps := util
 
-absyn_deps := symboltable
-symboltable_deps := 
-symbind_deps := symboltable absyn
+absyn_deps :=
+symbind_deps := absyn

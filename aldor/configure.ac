@@ -181,5 +181,6 @@ AC_CONFIG_FILES(
    lib/comp/src/util/Makefile
    lib/comp/src/absyn/Makefile
    lib/comp/src/tform/Makefile
+   lib/comp/src/types/Makefile
 )
 AC_OUTPUT

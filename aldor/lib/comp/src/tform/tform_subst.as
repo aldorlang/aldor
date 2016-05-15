@@ -3,7 +3,7 @@
 #pile
 
 TFormSubst: with
-    subst: (tf: TForm, sigma: Subst) -> TForm
+    subst: (tf: TForm, sigma: XSubst) -> TForm
 == add
     PtrTForm == TypedPointer TForm
     import from TFormTagApply, TFormTagId, TFormTagComma
@@ -13,19 +13,19 @@ TFormSubst: with
     import from HashTable(PtrTForm, PtrTForm)
     import from AbSynMeaning
     import from String
-    import from Subst
+    import from XSubst
     import from List TForm
     
     substTf: Field(HashTable(PtrTForm, PtrTForm)) == field("substTf")
 
-    subst(tf: TForm, sigma: Subst): TForm ==
+    subst(tf: TForm, sigma: XSubst): TForm ==
 	import from String
         stdout << "(Subst: " << tf << " " << sigma << newline
 	xx := subst0(tf, sigma)
 	stdout << " --> " << xx << ")" << newline
 	xx
 
-    local subst0(tf: TForm, sigma: Subst): TForm ==
+    local subst0(tf: TForm, sigma: XSubst): TForm ==
         id? tf => substId(tf, sigma)
 	comma? tf => comma(subst(arg, sigma) for arg in args tf)
 	declare? tf => declare(declareLhs tf, subst(declareTForm tf, sigma))
@@ -37,7 +37,7 @@ TFormSubst: with
 	error("Unknown tag " + kind tf)
 
 
-    local substId(tf: TForm, sigma: Subst): TForm ==
+    local substId(tf: TForm, sigma: XSubst): TForm ==
         import from Partial AbSyn
  	id := idName tf
         absynMaybe := find(sigma, id)

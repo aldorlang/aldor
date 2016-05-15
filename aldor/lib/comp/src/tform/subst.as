@@ -1,7 +1,7 @@
 #include "comp.as"
 #pile
 
-Subst: OutputType with
+XSubst: OutputType with
     create: (Id, AbSyn) -> %
     create: (List Cross(Id, AbSyn)) -> %
     add!: (%, List Cross(Id, AbSyn)) -> ()

@@ -1,0 +1,5 @@
+library_deps := util
+
+winfer_deps :=
+tt_deps := winfer
+winterp_deps := winfer

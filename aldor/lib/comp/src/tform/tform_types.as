@@ -153,7 +153,7 @@ testFreeVariables(): () ==
     --assertEquals(["f", "Int"], freeVars c)
 
 testSubstitution(): () ==
-    import from Assert TForm, Subst, TForm, List TForm
+    import from Assert TForm, XSubst, TForm, List TForm
     import from TFormTagApply, TFormTagId, TFormTagComma
     import from TFormTagTuple, TFormTagDeclare
     import from TFormSubst
