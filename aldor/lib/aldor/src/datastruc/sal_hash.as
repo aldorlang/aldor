@@ -87,7 +87,7 @@ returns \emph{t} after the removal.}
 	Rep == Record(nentr:Z, tbl:A L KV, defType:Z, defFun: K -> V);
 
 	table():%		== { import from Z; table 8 };
-	table(n:Z):%		== newTable(0, n);
+	table(n:Z):%		== newTable(0, max(1, n));
 	remember(f:K -> V):%	== { import from Z; newTable(0, 8, 1, f); }
 	forget(f:K -> V):%	== { import from Z; newTable(0, 8, -1, f); }
 	empty?(t:%):Boolean	== { import from Z; zero? numberOfEntries t }
@@ -135,6 +135,7 @@ returns \emph{t} after the removal.}
 	-- sz = number of slots in the table
 	local newTable(n:Z, sz:Z, type:Z, func:K -> V):% == {
 		import from A L KV, L KV, Rep;
+		zero? sz => never;
 		per [n, new(sz, empty), type, func];
 	}
 
@@ -276,8 +277,11 @@ test(): () == {
     assertEquals("bob", tbl("fred"));
     assertFalse(failed? find("fred", tbl));
     assertTrue(failed? find("zzz", tbl));
-
     assertFalse(failed? find("fr" + "ed", tbl));
+
+    tbl := table();
+    assertTrue(failed? find("xx", tbl));
+
 }
 
 testIteration(): () == {
