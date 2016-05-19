@@ -229,6 +229,12 @@ memltest(Pointer p, int c, ULong l)
 	return true;
 }
 
+Bool
+ptrEqFn(Pointer p, Pointer q)
+{
+	return ptrEqual(p, q);
+}
+
 
 /*****************************************************************************
  *

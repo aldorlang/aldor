@@ -133,6 +133,8 @@ extern Bool	memltest	(Pointer p, int c,     ULong l);
 	 *		 are all equal to c.
 	 */
 
+extern Bool	ptrEqFn		(Pointer p, Pointer q);
+
 /******************************************************************************
  *
  * :: Bit-fiddling
