@@ -46,7 +46,7 @@ CharSets: with
     numberStart? c: Boolean == digit? c
     numberPart? c: Boolean == digit? c
 
-SExpression: Join(OutputType, PrimitiveType) with
+SExpression: Join(InputType, OutputType, PrimitiveType) with
     sexpr: Symbol -> %
     sexpr: Integer -> %
     sexpr: String -> %
@@ -193,6 +193,10 @@ SExpression: Join(OutputType, PrimitiveType) with
 
     local writeSymbol(o: TextWriter, s: Symbol): TextWriter ==
         o << name s
+
+    <<(rdr: TextReader): % ==
+        import from SExpressionReader, Partial %
+	retract read rdr
 
 LStream(T: Type): Category == with
     peek: % -> T
