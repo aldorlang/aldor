@@ -4,6 +4,8 @@
 
 Exp: PrimitiveType with
     SExpressionType
+    InputType
+
     case: (%, 'var') -> Boolean
     case: (%, 'lit') -> Boolean
     case: (%, 'abs') -> Boolean
@@ -131,7 +133,9 @@ Exp: PrimitiveType with
         stdout << "Parse: " << sx << newline
         import from Lit, Symbol, Integer
 	int? sx => per [litInteger toString int sx]
-        sym? sx => per [sym sx]
+        sym? sx =>
+	    sym sx = -"true" or sym sx = -"false" => per [litBoolean name sym sx]
+	    per [sym sx]
 	cons? sx =>
 	    if sym? first sx and special? sym first sx then
 	        parseSpecial(sx)
@@ -177,6 +181,10 @@ Exp: PrimitiveType with
         import from List Cross(Symbol, %), Integer
         per [bind == [(sym first def, parse(nth(def, 1))) for def in sx]]
 
+    (<<)(rdr: TextReader): % ==
+        sx: SExpression := << rdr
+	parse sx
+
 Lit: PrimitiveType with
     SExpressionType
     case: (%, 'int') -> Boolean
@@ -186,6 +194,7 @@ Lit: PrimitiveType with
 
     litBoolean: String -> %
     litInteger: String -> %
+    export from 'int', 'bool'
 == add
     Rep == Union(int: String, bool: String)
     import from Rep, 'int','bool'
@@ -561,8 +570,7 @@ import from String, Partial SExpression, SExpression
 import from Symbol
 
 testLetRec(): () ==
-    prog := retract readOne "(letrec ((x 1) (y 2)) x)"
-    e: Exp := parse prog
+    e: Exp := fromString "(letrec ((x 1) (y 2)) x)"
     (defs, body) := letrec e
     assertTrue(e case letrec)
     assertTrue(defs case bind)
@@ -605,22 +613,13 @@ testSubst(): () ==
 
 testSubst()
 
-readOne(s: String): Partial SExpression ==
-    import from SExpressionReader
-    sb: StringBuffer := new()
-    sb::TextWriter << s
-    read(sb::TextReader)
-
 test1(): () ==
-    prog := retract readOne("v")
-    e: Exp := parse prog
+    e: Exp := fromString "v"
     assertTrue(e case var);
     assertTrue(var e = -"v");
 
 test2(): () ==
-    prog := retract readOne "(lambda x (inc x))"
-    stdout << "Prog : " << prog << newline
-    e: Exp := parse prog
+    e: Exp := fromString "(lambda x (inc x))"
     stdout << "Parsed: " << e << newline
     assertTrue(e case abs)
     (var, body) := abs e
@@ -628,9 +627,8 @@ test2(): () ==
     assertTrue(body case app)
 
 test3(): () ==
-    prog := retract readOne "(let ((x 22)) x)"
-    stdout << "Prog : " << prog << newline
-    e: Exp := parse prog
+    prog := "(let ((x 22)) x)"
+    e: Exp := fromString prog
     stdout << "Parsed: " << e << newline
     assertTrue(e case _let)
     (var, def, body) := _let e 
@@ -640,38 +638,38 @@ test3(): () ==
 
 test4(): () ==
     import from WTypeInfer, TypeEnv, Exp, TType
-    prog := parse retract readOne "(lambda x x)"
+    prog: Exp := fromString "(lambda x x)"
     (subst, tp) := ti(empty(), prog)
     assertTrue(tp case map)
 
 
 test5(): () ==
     import from WTypeInfer, TypeEnv, Exp, TType
-    prog := parse retract readOne "(lambda x 2)"
+    prog: Exp := fromString "(lambda x 2)"
     (subst, tp) := ti(empty(), prog)
     assertTrue(tp case map)
 
 test6(): () ==
     import from WTypeInfer, TypeEnv, Exp, TType
-    prog := parse retract readOne "(let ((x 0)) (lambda y x))"
+    prog: Exp := fromString "(let ((x 0)) (lambda y x))"
     (subst, tp) := ti(empty(), prog)
     assertTrue(tp case map)
 
 test7(): () ==
     import from WTypeInfer, TypeEnv, Exp, TType
-    prog := parse retract readOne "(let ((f (lambda x 1))) (f 0))"
+    prog: Exp := fromString "(let ((f (lambda x 1))) (f 0))"
     (subst, tp) := ti(empty(), prog)
     assertTrue(tp case int)
 
 test8(): () ==
     import from WTypeInfer, TypeEnv, Exp, TType
-    prog := parse retract readOne "(let ((f (lambda x 1))) (let ((g 3)) (f g))))"
+    prog: Exp := fromString "(let ((f (lambda x 1))) (let ((g 3)) (f g))))"
     (subst, tp) := ti(empty(), prog)
     assertTrue(tp case int)
 
 test9(): () ==
     import from WTypeInfer, TypeEnv, Exp, TType
-    prog := parse retract readOne "(lambda a (let ((x (lambda b (let ((y (lambda c (a 1)))) (y 2))))) (x 3)))"
+    prog: Exp := fromString "(lambda a (let ((x (lambda b (let ((y (lambda c (a 1)))) (y 2))))) (x 3)))"
     (subst, tp) := ti(empty(), prog)
     rr := apply(subst, tp)
     stdout << "Result: " << rr << newline
@@ -679,7 +677,7 @@ test9(): () ==
 
 test10(): () ==
     import from WTypeInfer, TypeEnv, Exp, TType
-    prog := parse retract readOne "(lambda a (lambda b (b (a (a b)))))"
+    prog: Exp := fromString "(lambda a (lambda b (b (a (a b)))))"
     (subst, tp) := ti(empty(), prog)
     rr := apply(subst, tp)
     stdout << "Result: " << rr << newline
@@ -701,7 +699,7 @@ run()
 
 testIf1(): () ==
     import from WTypeInfer, TypeEnv, Exp, TType
-    prog := parse retract readOne "(lambda a (lambda b (if a b 1)))"
+    prog: Exp := fromString "(lambda a (lambda b (if a b 1)))"
     (subst, tp) := ti(empty(), prog)
     rr := apply(subst, tp)
     stdout << "Result: " << rr << newline
@@ -712,13 +710,13 @@ testLetRec()
 
 testLetRec2(): () ==
     import from WTypeInfer, TypeEnv, Exp, TType
-    prog := parse retract readOne "(letrec () 1)"
+    prog: Exp := fromString "(letrec () 1)"
     (subst, tp) := ti(empty(), prog)
     assertEquals(subst.tp, int)
 
 testLetRec3(): () ==
     import from WTypeInfer, TypeEnv, Exp, TType
-    prog := parse retract readOne "(letrec ((x 1)) x)"
+    prog: Exp := fromString"(letrec ((x 1)) x)"
     (subst, tp) := ti(empty(), prog)
     assertEquals(subst.tp, int)
 
@@ -731,31 +729,31 @@ exampleEnv(): TypeEnv ==
 
 testLetRec4(): () ==
     import from WTypeInfer, TypeEnv, Exp, TType
-    prog := parse retract readOne "(letrec ((x 1)) x)"
+    prog: Exp := fromString "(letrec ((x 1)) x)"
     (subst, tp) := ti(empty(), prog)
     assertEquals(subst.tp, int)
 
 testLetRec5(): () ==
     import from WTypeInfer, TypeEnv, Exp, TType
-    prog := parse retract readOne "(letrec ((x 1) (y 2)) ((add x) y))"
+    prog: Exp := fromString "(letrec ((x 1) (y 2)) ((add x) y))"
     (subst, tp) := ti(exampleEnv(), prog)
     assertEquals(subst.tp, int)
 
 testLetRec6(): () ==
     import from WTypeInfer, TypeEnv, Exp, TType
-    prog := parse retract readOne "(letrec ((factorial (lambda a (negate (factorial (dec a)))))) (factorial 4))"
+    prog: Exp := fromString "(letrec ((factorial (lambda a (negate (factorial (dec a)))))) (factorial 4))"
     (subst, tp) := ti(exampleEnv(), prog)
     assertEquals(subst.tp, int)
 
 testLetRec7(): () ==
     import from WTypeInfer, TypeEnv, Exp, TType
-    prog := parse retract readOne "(letrec ((x y) (y 3)) x)"
+    prog: Exp := fromString "(letrec ((x y) (y 3)) x)"
     (subst, tp) := ti(empty(), prog)
     assertEquals(subst.tp, int)
 
 testLetRec8(): () ==
     import from WTypeInfer, TypeEnv, Exp, TType
-    prog := parse retract readOne "(letrec ((f (lambda x (g x))) (g (lambda x (dec (f x))))) (f 2))"
+    prog: Exp := fromString "(letrec ((f (lambda x (g x))) (g (lambda x (dec (f x))))) (f 2))"
     (subst, tp) := ti(exampleEnv(), prog)
     assertEquals(subst.tp, int)
 
