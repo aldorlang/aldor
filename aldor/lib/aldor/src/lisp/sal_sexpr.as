@@ -35,7 +35,8 @@ CharSets: with
         [char "+", char "-",
 	 char "*", char "/",
 	 char "<", char ">",
-	 char "%", char "$"]
+	 char "%", char "$",
+	 char "?"]
     
     symStart?(c): Boolean == letter? c or member?(c, symStarts)
     whitespace?(c): Boolean == c = space or c = newline or c = tab
@@ -453,6 +454,11 @@ test(): () ==
     stdout << "SX: " << sxMaybe << newline
     assertFalse failed? sxMaybe
     assertEquals([sexpr(-"foo"), [], sexpr 2], retract sxMaybe)
+
+    sxMaybe := readOne("symbol?")
+    stdout << "SX: " << sxMaybe << newline
+    assertFalse failed? sxMaybe
+    assertEquals(sexpr(-"symbol?"), retract sxMaybe)
 
 test()
 
