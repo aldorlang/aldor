@@ -280,8 +280,7 @@ SExpressionReader: with
         import from TextLStream
         import from FnLStream Token
         s := tstream rdr
-        tokstrm := tstream((): Partial Token +-> {stdout << "C:ReadOne" << newline;
-		   	       	       	          readOneToken! s});
+        tokstrm := tstream((): Partial Token +->  readOneToken! s)
         sxMaybe: Partial SExpression := read(tokstrm)
 	sxMaybe
     
