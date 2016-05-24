@@ -30,5 +30,8 @@ define InputType: Category == with {
 \Retval{$<<$ s reads an element of the current type in text format
 from the stream s and returns the element read.}
 #endif
+
+	export from InputTypeFunctions %;
 }
 
+InputTypeFunctions(T: with): with == add;

@@ -611,6 +611,21 @@ extend OutputTypeFunctions(T: OutputType): with {
 	}
 }
 
+extend InputTypeFunctions(T: InputType): with {
+        fromString: String -> T
+}
+== add {
+        import from TextReader;
+        fromString(txt: String): T == {
+		sb: StringBuffer := new();
+		sb::TextWriter << txt;
+		res: T := << sb::TextReader;
+		free! sb;
+		res
+	}
+}
+
+
 #if ALDORTEST
 ---------------------- test sal_string.as --------------------------
 #include "aldor"
@@ -645,8 +660,16 @@ testBasics(): () == {
    testConcat("a", "b", "ab");
 }
 
+testToFromString(): () == {
+    import from MachineInteger;
+    assertEquals(12, fromString("12"));
+    assertEquals("0", toString(fromString("0")@MachineInteger));
+    assertEquals(99, fromString(toString(99)));
+}
+
+
 testBasics();
 testIterate();
-
+testToFromString();
 
 #endif
