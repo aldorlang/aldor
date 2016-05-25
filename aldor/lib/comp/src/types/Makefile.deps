@@ -1,5 +1,5 @@
 library_deps := util
 
-winfer_deps :=
+winfer_deps := exp
 tt_deps := winfer
-winterp_deps := winfer
+winterp_deps := exp
