@@ -96,7 +96,7 @@ public class Foam {
 	}
 
     public static int ptrToSInt(Object o) {
-		throw new RuntimeException();
+	return System.identityHashCode(o);
 	}
 
     public static Word sintToPtr(int o) {
