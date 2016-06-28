@@ -1,5 +1,10 @@
 library_deps := util
 
-winfer_deps := exp
+exp_deps :=
+subst_deps :=
+ttypes_deps :=
+winfer_deps := exp ttypes
+cinfer_deps := exp ttypes
 tt_deps := winfer
+cc_deps := cinfer
 winterp_deps := exp

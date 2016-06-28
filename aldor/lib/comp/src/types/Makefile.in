@@ -15,6 +15,6 @@ abs_top_srcdir	:= @abs_top_srcdir@
 subdir		:= $(subst $(abs_top_builddir)/,,$(abs_builddir))
 
 # Build starts here
-library = exp winfer winterp tt
+library = exp ttypes winfer cinfer winterp tt cc
 
 include $(abs_top_srcdir)/lib/comp/src/common.mk

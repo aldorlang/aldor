@@ -152,7 +152,7 @@ Exp: PrimitiveType with
 
     local parseSpecial(sx: SExpression): % ==
         import from Symbol, Integer
-        stdout << "Special: " << sym first sx << " " << sx << newline
+        stdout << "Special: " << first sx << newline
 	op := sym first sx
 	op = -"lambda" =>
 	    per [abs == (sym first rest sx, parse first rest rest sx)]

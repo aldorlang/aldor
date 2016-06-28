@@ -2,211 +2,6 @@
 #include "aldorio.as"
 #pile
 
-TypeFns(T: PrimitiveType): Category == with
-    ftv: T -> Set Symbol
-    apply: (Subst, T) -> T
-
-TType: PrimitiveType with
-    SExpressionType
-    TypeFns %
-    case: (%, 'tvar') -> Boolean
-    case: (%, 'int') -> Boolean
-    case: (%, 'bool') -> Boolean
-    case: (%, 'map') -> Boolean
-
-    tvar: % -> Symbol
-    map: % -> (%, %)
-
-    typeMap: (%, %) -> %
-    typeTVar: Symbol -> %
-    bool: %
-    int: %
-    export from 'tvar','int','bool','map'
-== add
-    Rep ==> Union(tvar: Symbol, prim: 'int,bool', map: Cross(%, %))
-    import from Rep, 'int,bool'
-    import from 'tvar','int','bool','map'
-
-    typeMap(op: %, arg: %): % == per [(op, arg)@Cross(%, %)]
-    typeTVar(sym: Symbol): % == per [sym]
-    int: % == per [int]
-    bool: % == per [bool]
-
-    (type: %) case (v: 'tvar'): Boolean == rep(type) case tvar
-    (type: %) case (v: 'int'): Boolean == rep(type) case prim and rep(type).prim = int
-    (type: %) case (v: 'bool'): Boolean == rep(type) case prim and rep(type).prim = bool
-    (type: %) case (v: 'map'): Boolean == rep(type) case map
-
-    tvar(type: %): Symbol == rep(type).tvar
-    map(type: %): (%, %) == rep(type).map
-
-    (a: %) = (b: %): Boolean == 
-        a case tvar and b case tvar => tvar a = tvar b
-	a case int and b case int => true
-	a case bool and b case bool => true
-	a case map and b case map =>
-	    (aop, aarg) := map a
-	    (bop, barg) := map b
-	    aop = bop and aarg = barg
-	false
-	
-    ftv(t: %): Set Symbol == select t in
-        tvar => [tvar t]
-	int => empty
-	bool => empty
-	map =>
-	    (op, arg) := map t
-	    union(ftv op, ftv arg)
-	never
-
-    apply(s: Subst, t: %): % ==
-        import from Partial %
-        select t in 
-            tvar =>
-	        vv := lookup(s, tvar t)
-		if failed? vv then t else retract vv
-	    map =>
-	        (op, arg) := map t
-	        typeMap(apply(s, op), apply(s, arg))
-	    t
-
-
-    sexpression(t: %): SExpression ==
-        import from Symbol
-        select t in
-	    tvar => [sexpr(-"tvar"), sexpr tvar t]
-	    int => [sexpr(-"int")]
-	    bool => [sexpr(-"bool")]
-	    map =>
-	        (op, arg) := map t
-	        [sexpr(-"map"), sexpression op, sexpression arg]
-	    never
-
--- A scheme is a type, plus a set of bound variables
-Scheme: PrimitiveType with
-    SExpressionType
-    TypeFns %
-    vars: % -> Set Symbol
-    type: % -> TType
-
-    scheme: (Set Symbol, TType) -> %
-    scheme: (TType) -> %
-    instantiate: % -> TType
-== add
-    Rep == Record(vars: Set Symbol, type: TType)
-    import from Rep
-    import from State
-    
-    vars(scheme: %): Set Symbol == rep(scheme).vars
-    type(scheme: %): TType == rep(scheme).type
-
-    scheme(t: TType): % == scheme([], t)
-    scheme(s: Set Symbol, t: TType): % == per [s, t]
-
-    ftv(scheme: %): Set Symbol == [sym for sym in ftv type scheme | not member?(sym, vars scheme)]
-    apply(sigma: Subst, s: %): % == scheme(vars s, apply(remove(vars s, sigma), type s))
-
-    instantiate(scheme: %): TType ==
-        import from Subst
-        sigma := subst((var, newTypeVar()) for var in vars scheme)
-	apply(sigma, type scheme)
-
-    (a: %) = (b: %): Boolean == never
-
-    sexpression(scheme: %): SExpression ==
-        import from TType, Symbol, Set Symbol
-	sx: SExpression := sexpression(type(scheme))$TType
-        [sexpr(-"scheme"), [sexpr v for v in vars scheme], sexpression(type(scheme))]
-	
-Subst: PrimitiveType with
-    SExpressionType
-    null: %
-    *: (%, %) -> %
-    lookup: (%, Symbol) -> Partial TType
-    remove: (Set Symbol, %) -> %
-    substOne: (Symbol, TType) -> %
-    subst: Generator Cross(Symbol, TType) -> %
-    subst: Tuple Cross(Symbol, TType) -> %
-== add
-    Rep == HashTable(Symbol, TType)
-    import from Rep
-    null: % == per []
-
-    substOne(s: Symbol, type: TType): % == per [(s, type)@Cross(Symbol, TType)]
-    subst(g: Generator Cross(Symbol, TType)): % == per [g]
-    subst(t: Tuple Cross(Symbol, TType)): % ==
-        l: List Cross(Symbol, TType) := [t]
-        per [c for c in l]
-
-    (s1: %) * (s2: %): % ==
-        import from TType
-        tbl := [(var, apply(s1, type)) for (var, type) in rep s2]
-	for (var, type) in rep s1 repeat tbl.var := type
-	per tbl
-	
-    lookup(sigma: %, s: Symbol): Partial TType ==
-        find(s, rep(sigma))
-
-    remove(syms: Set Symbol, sigma: %): % ==
-        import from Partial TType
-        commonSyms := [sym for sym in syms | not failed? find(sym, rep(sigma))]
-	empty? commonSyms => sigma
-	per [(k, v) for (k, v) in rep(sigma) | not member?(k, commonSyms)]
-
-    (a: %) = (b: %): Boolean == rep(a) = rep(b)
-
-    sexpression(sigma: %): SExpression ==
-        import from Symbol, TType
-        cons(sexpr(-"subst"), [[sexpr sym, sexpression type] for (sym, type) in rep sigma])
-	
-TypeEnv: PrimitiveType with
-    SExpressionType
-    TypeFns %
-    remove: (%, Symbol) -> %
-    generalise: (%, TType) -> Scheme
-    lookup: (%, Symbol) -> Partial Scheme
-    empty: () -> %
-    singleton: (Symbol, Scheme) -> %
-    union: (%, %) -> %
-== add
-    Rep == HashTable(Symbol, Scheme)
-    import from Rep, Scheme
-    import from Fold2 Set Symbol
-
-    empty(): % == per []
-    singleton(s: Symbol, type: Scheme): % ==
-        pair := (s, type)
-        per [pair]
-    remove(env: %, sym: Symbol): % == per [(var, sch) for (var, sch) in rep env | var ~= sym]
-
-    lookup(env: %, sym: Symbol): Partial Scheme ==
-        stdout << "Lookup " << sym << " " << env << newline
-        find(sym, rep(env))
-
-    generalise(env: %, type: TType): Scheme ==
-        vars: Set Symbol := [sym for sym in ftv type| not member?(sym, ftv env)]
-        scheme(vars, type)
-
-    apply(sigma: Subst, env: %): % == per [(var, apply(sigma, sch)) for (var, sch) in rep(env)]
-    ftv(env: %): Set Symbol == (union, empty)/(ftv type for (k, type) in rep(env))
-
-    union(e1: %, e2: %): % ==
-        import from Generator Cross(Symbol, Scheme)
-        import from List Generator Cross(Symbol, Scheme)
-        per [concat [generator rep e1, generator rep e2]]
-
-    (a: %) = (b: %): Boolean == rep(a) = rep(b)
-    
-    sexpression(env: %): SExpression == -- sexpr "env"
-        import from Symbol
-	cons(sexpr(-"env"),
-     	     [[sexpr sym, sexpression val] for (sym, val) in rep env])
-
-State: with
-    newTypeVar: () -> TType
-== add
-    import from Symbol
-    newTypeVar(): TType == typeTVar new()
 
 WTypeInfer: with
     ti: (TypeEnv, Exp) -> (Subst, TType)
@@ -219,25 +14,6 @@ WTypeInfer: with
         (s, t) := ti(env, e)
 	apply(s, t)
 
-    unify(t1: TType, t2: TType): Subst ==
-        t1 case map and t2 case map =>
-            (op1, arg1) := map t1
-            (op2, arg2) := map t2
-	    s1 := unify(op1, op2)
-	    s2 := unify(apply(s1, arg1), apply(s1, arg2))
-	    s1 * s2 -- NB: Possibly wrong!
-        t1 case tvar => varBind(tvar t1, t2)
-        t2 case tvar => varBind(tvar t2, t1)
-	t1 case int and t2 case int => null
-	t1 case bool and t2 case bool => null
-	error "Failed to unify"
-
-    varBind(sym: Symbol, type: TType): Subst ==
-        import from Set Symbol
-        type case tvar and tvar type = sym => null
-        member?(sym, ftv type) => error("already bound: " + toString sym + toString type)
-	substOne(sym, type)
-
     tiLit(e: TypeEnv, lit: Lit): (Subst, TType) ==
         select lit in
 	    int => (null, int)
@@ -245,9 +21,9 @@ WTypeInfer: with
 	    never
 
     ti(env: TypeEnv, exp: Exp): (Subst, TType) ==
-        stdout << "(ti: " << env << " " << exp << newline
+--        stdout << "(ti: " << env << " " << exp << newline
 	(x, y) := ti1(env, exp)
-	stdout << exp << " --> " << x << " " << y << ")" << newline
+--	stdout << exp << " --> " << x << " " << y << ")" << newline
 	(x, y)
 	
     ti1(env: TypeEnv, exp: Exp): (Subst, TType) ==
@@ -265,15 +41,20 @@ WTypeInfer: with
 		env2 := remove(env, n)
 		env3 := union(env, singleton(n, scheme(tv)))
 		(s1, t1) := ti(env3, body)
-		(s1, typeMap(apply(s1, tv), t1))
+		stdout << "abs: " << tv << newline
+		stdout << "abs: " << t1 << newline
+		stdout << "abs: " << s1 << newline
+		stdout << "abs: " << s1 typeMap(s1 tv, t1) << newline
+		(s1, typeMap(s1 tv, t1))
 	    app =>
 	        tv := newTypeVar()
 	        (e1, e2) := app exp
 	        (s1, t1) := ti(env, e1)
 		(s2, t2) := ti(apply(s1, env), e2)
 		s3 := unify(apply(s2, t1), typeMap(t2, tv))
+		stdout << "app " << s3 tv << newline
+		stdout << "app " << s3 * s2 * s1 << newline
 		(s3 * s2 * s1, apply(s3, tv))
-
 	    _if =>
 	        (tst, conseq, anti) := _if exp
 		(stst, ttst) := ti(env, tst)
@@ -296,6 +77,7 @@ WTypeInfer: with
 		(santi, tanti) := ti(env, anti)
 		sfinal := unify(apply(sconseq, tconseq), apply(santi, tanti))
 		stdout << "Final " << sfinal << newline
+		stdout << "Final type " << tanti << newline
 		(sfinal * santi * sconseq * stst2 * stst, tanti)
 	    _let =>
 	        (x, e1, e2) := _let exp
@@ -331,19 +113,20 @@ WTypeInfer: with
 
 		stdout << "Full: " << fullSubst << newline
                 for (var, type) in varTypes repeat
-		    stdout << var << ": " << type << newline
-		    stdout << var << ": " << fullSubst.type << newline
+		    stdout << "Subst result " << var << ": " << type << newline
+		    stdout << "Subst result " << var << ": " << fullSubst.type << newline
 		
 		for (tvar, var, decl) in typevars repeat
 		    s := unify(fullSubst.tvar, fullSubst.(varTypes.var))
-		    stdout << var << " U: " << s << newline
+		    stdout << "Unify: " << var << " U: " << s << newline
 		    fullSubst := s * fullSubst
 		    stdout << var << " " << fullSubst.tvar << newline
 		    
-		fullEnv := (union, env0)/(singleton(var, generalise(env0, fullSubst tvar)) for (tvar, var, decl) in typevars)
+		fullEnv := (union, env0)/(singleton(var, generalise(fullSubst env0, fullSubst tvar)) for (tvar, var, decl) in typevars)
 		stdout << "Full Subst: " << fullSubst << newline
 		stdout << "Full Env: " << fullEnv << newline
 		(sfinal, tfinal) := ti(fullSubst.fullEnv, body)
+		(sfinal * fullSubst, sfinal fullSubst tfinal)
 	    never
 
 #if ALDORTEST
@@ -419,7 +202,6 @@ test3(): () ==
     (var, def, body) := _let e 
     assertTrue(var = -"x")
     assertTrue(body case var)
-
 
 test4(): () ==
     import from WTypeInfer, TypeEnv, Exp, TType
@@ -506,11 +288,18 @@ testLetRec3(): () ==
     assertEquals(subst.tp, int)
 
 exampleEnv(): TypeEnv ==
-    import from Fold2 TypeEnv, Symbol, Scheme, TType, List TypeEnv
+    import from Fold2 TypeEnv, Symbol, Scheme, TType, List TypeEnv, Set Symbol, Symbol
+    any := typeTVar(-"A")
+    listAny := typeApp(typeId(-"List"), any)
     (union, empty())/[singleton(-"add", scheme(typeMap(int, typeMap(int, int)))),
     	    	      singleton(-"negate", scheme(typeMap(int, int))),
     	    	      singleton(-"dec", scheme(typeMap(int, int))),
-    	    	      singleton(-"zero?", scheme(typeMap(int, bool)))]
+		      singleton(-"zero?", scheme(typeMap(int, bool))),
+		      singleton(-"cons", scheme([-"A"], typeMap(any, typeMap(listAny, listAny)))),
+		      singleton(-"nil?", scheme([-"A"], typeMap(listAny, bool))),
+		      singleton(-"nil", scheme([-"A"], listAny)),
+		      singleton(-"first", scheme([-"A"], typeMap(listAny, any))),
+		      singleton(-"rest", scheme([-"A"], typeMap(listAny, listAny)))]
 
 testLetRec4(): () ==
     import from WTypeInfer, TypeEnv, Exp, TType
@@ -549,5 +338,37 @@ testLetRec5()
 testLetRec6()
 testLetRec7()
 testLetRec8()
+
+testLambda(): () ==
+    import from WTypeInfer, TypeEnv, Exp, TType, Subst
+    prog: Exp := fromString "(lambda x (x 0))"
+    (subst, tp) := ti(exampleEnv(), prog)
+    stdout << "Subst " << subst << newline
+    stdout << "tp " << tp << newline
+testLambda()
+
+testLambda2(): () ==
+    import from WTypeInfer, TypeEnv, Exp, TType, Subst
+    prog: Exp := fromString "(lambda fn (letrec ((m (lambda l (if (nil? l) nil ((cons (fn (first l))) (m (rest l))))))) m))"
+    (subst, tp) := ti(exampleEnv(), prog)
+    stdout << "Subst " << subst << newline
+    stdout << "tp " << subst tp << newline
+testLambda2()
+
+testLambda0(): () ==
+    import from WTypeInfer, TypeEnv, Exp, TType, Subst
+    prog: Exp := fromString "(lambda x ((cons x) nil))"
+    (subst, tp) := ti(exampleEnv(), prog)
+    stdout << "Subst " << subst << newline
+    stdout << "tp " << tp << newline
+--testLambda0()
+
+testLambda3(): () ==
+    import from WTypeInfer, TypeEnv, Exp, TType, Subst
+    prog: Exp := fromString "(letrec ((copy (lambda l (if (nil? l) nil ((cons (first l)) (copy (rest l))))))) copy)"
+    (subst, tp) := ti(exampleEnv(), prog)
+    stdout << "Subst " << subst << newline
+    stdout << "tp " << tp << newline
+--testLambda3()
 
 #endif
