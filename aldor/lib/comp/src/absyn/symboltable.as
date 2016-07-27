@@ -62,9 +62,10 @@ SymbolTable: OutputType with
     root?(tbl): Boolean == failed? rep(tbl).parent
     children(tbl): List % == rep(tbl).children
 
-    sexpr(tbl, s: SymbolSource == new()): SExpression ==
-        cons(sexpr symbol(s, name type tbl),
-                 [sexpr(child, s) for child in rep(tbl).children])
+    sexpr(tbl): SExpression ==
+        import from Symbol
+        cons(sexpr (-name type tbl),
+                 [sexpr(child) for child in rep(tbl).children])
 
     (o: TextWriter) << (tbl: %): TextWriter ==
     	import from SExpression
