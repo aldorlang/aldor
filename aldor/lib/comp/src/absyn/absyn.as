@@ -51,8 +51,8 @@ AbField(X: with): with
     export from Field X
 == add
     import from Field X
-    apply(ab: AbSyn, f: Field X): X == tbl(ab).f
-    set!(ab: AbSyn, f: Field X, value: X): () == tbl(ab).f := value
+    apply(ab: AbSyn, f: Field X): X == fields(ab).f
+    set!(ab: AbSyn, f: Field X, value: X): () == fields(ab).f := value
 
 AbSynFields: with
     id: Field Id
@@ -69,7 +69,7 @@ AbSynFields: with
     symbolTable: Field SymbolTable == field "symbolTable"
 
     symbolTable(ab: AbSyn, parent: SymbolTable): SymbolTable ==
-        if field?(tbl ab, symbolTable) then ab.symbolTable else parent
+        if field?(fields ab, symbolTable) then ab.symbolTable else parent
 
 AbSyn: OutputType with
     _add: () -> % -- FIXME!
@@ -84,19 +84,19 @@ AbSyn: OutputType with
     sequence: Tuple % -> %
     _with: () -> % -- FIXME!
 
-    tbl: % -> DepTable
+    fields: % -> DepTable
     tag: % -> AbSynTag
     children: % -> List %
     
     export from AbSynTags, AbSynTag, AbSynFields
 == add
-    Rep ==> Record(tag: AbSynTag, tbl: DepTable, children: List %)
+    Rep ==> Record(tag: AbSynTag, fields: DepTable, children: List %)
     import from Rep
     import from AbSynTags, AbSynTag, DepTable, List %, Something, AbSynFields
     import from Field Id
 
     tag(ab: %): AbSynTag == rep(ab).tag
-    tbl(ab: %): DepTable == rep(ab).tbl
+    fields(ab: %): DepTable == rep(ab).fields
     children(ab: %): List % == rep(ab).children
 
     local tbl(anId: Id): DepTable ==
@@ -125,8 +125,8 @@ AbSyn: OutputType with
         import from List String, Symbol
         import from Id
         body := [sexpr(abn) for abn in rep(ab).children]
-	attrs := if field?(rep(ab).tbl, any(id)) then cons(sexpr (-string rep(ab).tbl.id), nil) else nil
-	attrs := if field?(rep(ab).tbl, any(literal)) then cons(sexpr rep(ab).tbl.literal, nil) else attrs
+	attrs := if field?(rep(ab).fields, any(id)) then cons(sexpr (-string rep(ab).fields.id), nil) else nil
+	attrs := if field?(rep(ab).fields, any(literal)) then cons(sexpr rep(ab).fields.literal, nil) else attrs
         sx := cons(sexpr (-name rep(ab).tag), append(attrs, body))
 	sx
 
