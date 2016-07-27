@@ -123,13 +123,11 @@ AbSyn: OutputType with
 
     sexpr(ab: AbSyn): SExpression ==
         import from List String, Symbol
-        stdout << "(" << name tag ab << " " << [name tag abn for abn in children ab]
         import from Id
         body := [sexpr(abn) for abn in rep(ab).children]
 	attrs := if field?(rep(ab).tbl, any(id)) then cons(sexpr (-string rep(ab).tbl.id), nil) else nil
 	attrs := if field?(rep(ab).tbl, any(literal)) then cons(sexpr rep(ab).tbl.literal, nil) else attrs
         sx := cons(sexpr (-name rep(ab).tag), append(attrs, body))
-	stdout << ")" << newline
 	sx
 
     (o: TextWriter) << (ab: %): TextWriter ==
