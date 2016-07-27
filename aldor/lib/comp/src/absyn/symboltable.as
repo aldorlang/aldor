@@ -29,38 +29,63 @@ StabField(X: with): with
     apply: (SymbolTable, Field X) -> X
     set!: (SymbolTable, Field X, X) -> ()
 == add
-    import from Field X
-    apply(tbl: SymbolTable, f: Field X): X == fields(tbl).f
-    set!(tbl: SymbolTable, f: Field X, x: X): () == fields(tbl).f := x
+    import from Field X, SymbolTableLevel
+    apply(tbl: SymbolTable, f: Field X): X == fields(level tbl).f
+    set!(tbl: SymbolTable, f: Field X, x: X): () == fields(level tbl).f := x
 
 SymbolTable: OutputType with
-    type: % -> SymbolTableType
+    level: % -> SymbolTableLevel
+    fields: % -> DepTable
     parent: % -> %
-    children: % -> List %
+    type: % -> SymbolTableType
     root?: % -> Boolean
-
     root: () -> %
     new: (%, SymbolTableType) -> %
-    fields: % -> DepTable
+
     export from SymbolTableTypes
 == add
-    Rep == Record(t: SymbolTableType, fields: DepTable, parent: Partial %, children: List %)
+    Rep == Record(parent: Partial %, lvl: SymbolTableLevel)
+    import from Rep
+    import from SymbolTableTypes
+    default tbl, prnt: %
+
+    root? tbl: Boolean == failed? rep(tbl).parent
+    root(): % == per [failed, newLevel(topLevel)]
+    fields tbl: DepTable == fields level tbl
+    type tbl: SymbolTableType == type level tbl
+    parent tbl: % == retract rep(tbl).parent
+    level tbl: SymbolTableLevel == rep(tbl).lvl
+    fields tbl: DepTable == fields rep(tbl).lvl
+
+    new(tbl, type: SymbolTableType): % ==
+        lvl := newLevel(type)
+	addChild!(level tbl, lvl)
+	per [[tbl], lvl]
+
+    (o: TextWriter) << tbl: TextWriter == o << level tbl
+
+SymbolTableLevel: Join(PrimitiveType, OutputType) with
+    type: % -> SymbolTableType
+    children: % -> List %
+
+    newLevel: SymbolTableType -> %
+    fields: % -> DepTable
+    addChild!: (%, %) -> ()
+== add
+    Rep == Record(t: SymbolTableType, fields: DepTable, children: List %)
     import from Rep
     import from DepTable, SymbolTableTypes
     default tbl, prnt: %
 
-    root(): % == per [topLevel, table(), failed, []]
     fields(tbl): DepTable == rep(tbl).fields
     
-    new(prnt, type: SymbolTableType): % ==
-        lvl := per [type, table(), [prnt], []]
-	rep(prnt).children := cons(lvl, rep(prnt).children)
-	lvl
+    newLevel(type: SymbolTableType): % ==
+        per [type, table(), []]
 
     type(tbl): SymbolTableType == rep(tbl).t
-    parent(tbl): % == retract rep(tbl).parent
-    root?(tbl): Boolean == failed? rep(tbl).parent
     children(tbl): List % == rep(tbl).children
+
+    addChild!(lvl: %, child: %): () == rep(lvl).children := cons(child, rep(lvl).children)
 
     sexpr(tbl): SExpression ==
         import from Symbol
@@ -70,4 +95,8 @@ SymbolTable: OutputType with
     (o: TextWriter) << (tbl: %): TextWriter ==
     	import from SExpression
         o << sexpr tbl
+
+    (tbl1: %) = (tbl2: %): Boolean ==
+        import from TypedPointer %
+	pointer tbl1 = pointer tbl2
 
