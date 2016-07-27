@@ -376,18 +376,14 @@ testSchema(): () ==
     list := typeTVar(-"List")
     tv := typeTVar(-"A")
     scheme := scheme([-"A"], typeApp(list, tv))
-    stdout << "ftv scheme: " << ftv scheme
-    stdout << "vars: " << vars scheme
-    stdout << "ftv type: " << ftv type scheme
     assertEquals([-"List"], ftv scheme)
+
 testSchema()
 
 testLet(): () ==
     import from CTypeInfer, TypeEnv, Exp, TType, Subst
     prog: Exp := fromString "(let ((x 1)) x)"
     (subst, tp) := ti(exampleEnv(), prog)
-    stdout << "Subst " << subst << newline
-    stdout << "LET " << tp << newline
     assertEquals(subst tp, int);
 
 testLet()
@@ -406,8 +402,6 @@ testLambda2(): () ==
     import from CTypeInfer, TypeEnv, Exp, TType, Subst
     prog: Exp := fromString "(lambda fn (letrec ((m (lambda l (if (nil? l) nil ((cons (fn (first l))) (m (rest l))))))) m))"
     (subst, tp) := ti(exampleEnv(), prog)
-    stdout << "Subst " << subst << newline
-    stdout << "tp " << subst tp << newline
     tv1 := newTypeVar()$State
     tv2 := newTypeVar()$State
     list := typeId(-"List")
