@@ -215,7 +215,7 @@ local SatMask		tfSatExports	(SatMask,SymeList,SymeList,SymeList);
 local SatMask		tfSatExport	(SatMask,SymeList,AbSyn Stf, SymeList S,Syme t);
 local SatMask		tfSatParents	(SatMask,SymeList, AbSyn, SymeList,SymeList);
 
-local Bool		tfSatConditions		(SymeList, Syme, Syme);
+local SatMask		tfSatConditions		(SatMask, SymeList, Syme, Syme);
 local Bool		sefoListMemberMod	(SymeList, Sefo, SefoList);
 local void		tfSatPushMapConds	(TForm);
 local void		tfSatPopMapConds	(TForm);
@@ -1705,11 +1705,18 @@ tfSatExport(SatMask mask, SymeList mods, AbSyn Sab, SymeList S, Syme t)
 
 	/* First round.. try "normally" */
 	for (symes = S; !tfSatSucceed(result) && symes; symes = cdr(symes)) {
+		SatMask satConditions;
 		Syme	s = car(symes);
 
-		if (symeEqualModConditions(mods, s, t) &&
-		    tfSatConditions(mods, s, t)) {
+		if (!symeEqualModConditions(mods, s, t))
+			continue;
+		satConditions = tfSatConditions(mask, mods, s, t);
+		if (tfSatSucceed(satConditions)) {
 			result = tfSatTrue(mask);
+			tryHarder = false;
+		}
+		else if (tfSatPending(satConditions)) {
+			result = tfSatPending(mask);
 			tryHarder = false;
 		}
 	}
@@ -1756,11 +1763,12 @@ tfSatExport(SatMask mask, SymeList mods, AbSyn Sab, SymeList S, Syme t)
 
 extern TForm		tiGetTForm		(Stab, AbSyn);
 
-local Bool
-tfSatConditions(SymeList mods, Syme s, Syme t)
+local SatMask
+tfSatConditions(SatMask mask, SymeList mods, Syme s, Syme t)
 {
 	SefoList	Sconds = symeCondition(s);
 	SefoList	Tconds = symeCondition(t);
+	SatMask		result = tfSatTrue(mask);
 
 	for (; Sconds; Sconds = cdr(Sconds)) {
 		Sefo	cond = car(Sconds);
@@ -1781,13 +1789,18 @@ tfSatConditions(SymeList mods, Syme s, Syme t)
 			tfdom = abGetCategory(cond->abHas.expr);
 			cat   = cond->abHas.property;
 			tfcat = abTForm(cat) ? abTForm(cat) : tiTopFns()->tiGetTopLevelTForm(NULL, cat);
+			result = tfSat(mask, tfdom, tfcat);
 
-			if (tfSatisfies(tfdom, tfcat))
+			if (tfSatSucceed(result))
 				continue;
+			else if (tfSatPending(result)) {
+				result = tfSatResult(mask, TFS_Pending);
+				continue;
+			}
 		}
-		return false;
+		return tfSatFalse(mask);
 	}
-	return true;
+	return result;
 }
 
 local Bool
