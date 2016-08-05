@@ -148,7 +148,7 @@ AbSynDeclare: with
     default ab: AbSyn
 
     declareId ab: Id == id(ab)
-    declareType ab: AbSyn == first children ab
+    declareType ab: AbSyn == first rest children ab
 
 #if ALDORTEST
 #include "comp"

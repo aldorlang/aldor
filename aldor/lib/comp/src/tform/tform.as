@@ -5,15 +5,15 @@
 
 TFormAttrs: with
     import from Id
-    create: (s: Id == id "", sx: SExpression == nil) -> %
+    create: (s: Id == id "", ab: AbSyn == sequence()) -> %
     id: % -> Id
-    sx: % -> SExpression
+    absyn: % -> AbSyn
 == add
-    Rep == Record(s: Id, sx: SExpression)
+    Rep == Record(s: Id, ab: AbSyn)
     import from Rep
-    create(s: Id == id "", sx: SExpression): % == per [s, sx]
+    create(s: Id == id "", ab: AbSyn == sequence()): % == per [s, ab]
     id(a: %): Id == rep(a).s
-    sx(a: %): SExpression == rep(a).sx
+    absyn(a: %): AbSyn == rep(a).ab
 
 TForm: Join(OutputType, PrimitiveType) with
     args: % -> List %

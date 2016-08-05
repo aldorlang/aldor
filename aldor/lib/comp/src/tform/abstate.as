@@ -1,7 +1,7 @@
 #include "comp"
 #pile
 
-AbState: with
+AbState: OutputType with
     abstate: () -> %
     unique?: % -> Boolean
     final?: % -> Boolean
@@ -47,3 +47,9 @@ AbState: with
 
     setError(state): () == rep(state).flg := ERROR
 
+    (o: TextWriter) << state: TextWriter ==
+        o << "{ "
+	if final? state then o << "Final " << unique state
+	else if error? state then o << "Error " << tposs state
+	else o << "None"
+	o << "}"

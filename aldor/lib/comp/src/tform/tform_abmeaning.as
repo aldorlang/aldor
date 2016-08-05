@@ -32,7 +32,9 @@ AbSynMeaning: with
     meaningDeclare(ab): TForm ==
         import from TFormTagDeclare, AbSynDeclare
 	id  := declareId ab
-	declare(declareId ab, meaning(declareType(ab)))
+	declare(abFrSyme(syme ab), meaning(declareType(ab)))
+
+    abFrSyme(syme: Syme): AbSyn == never
 
     meaningId(ab): TForm ==
         import from TFormTagId

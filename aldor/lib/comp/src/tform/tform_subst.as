@@ -21,7 +21,7 @@ TFormSubst: with
     subst(tf: TForm, sigma: Subst): TForm ==
         id? tf => substId(tf, sigma)
 	comma? tf => comma(subst(arg, sigma) for arg in args tf)
-	declare? tf => declare(declareId tf, subst(first args tf, sigma))
+	declare? tf => declare(declareLhs tf, subst(first args tf, sigma))
 	tuple? tf => tuple(subst(first args tf, sigma))
 	apply? tf => (apply(first l, rest l) where l := [subst(elt, sigma) for elt in args tf])
 	map? tf => map(subst(mapArgs(tf), sigma), subst(mapRets(tf), sigma))

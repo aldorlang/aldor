@@ -82,6 +82,7 @@ Syme: Join(HashType, OutputType) with
 	tbl.kind := theKind
 	tbl.id := theId
 	tbl.level := theLevel
+	tbl.type := theTf
 	per tbl
 	
     newExport(id: Id, tf: TForm, lvl: SymbolTableLevel): % == newSyme(EXPORT, id, tf, lvl)

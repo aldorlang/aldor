@@ -81,6 +81,8 @@ TPoss: OutputType with
 	for ll in g repeat x := append!(copy ll, x)
 	x
 
+    filter(tp: %, fn: TForm -> Boolean): TPoss == [tf for tf in tp | fn(tf)]
+
     (o: TextWriter) << (tp: %): TextWriter ==
         o << "(";
 	sep := ""

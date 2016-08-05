@@ -11,7 +11,7 @@ SatOptions: with
 
 SatEmbed == 'crossToTuple,tupleToCross,none'
 
-SatResult: with
+SatResult: OutputType with
     succeed: () -> %
     failed: () -> %
     test: % -> Boolean
@@ -42,6 +42,10 @@ SatResult: with
         success? r2 => r2
         failed()
 
+    (o: TextWriter) << (r: %): TextWriter ==
+        import from String
+        o << (if r then "True" else "False")
+
 TFormSatisfaction: with
     satisfies: (SatOptions, TForm, TForm) -> SatResult
     satisfiesMapArgs: (SatOptions, Subst, List AbSyn, TForm) -> SatResult
@@ -67,6 +71,7 @@ TFormSatisfaction: with
 
         satisfiesComma(S: TForm, T: TForm): SatResult ==
             empty? bindings T => satisfiesArgs(S, T)
+	    for key in keys bindings T repeat stdout << "tf: " << lookup(S, path(bindings T, key)) << newline
             sigma: Subst := create [(key, absyn lookup(S, path(bindings T, key))) for key in keys bindings T]
             T0 := comma( (if declare? t then id declareId t else t) for t in args T)
             substT := subst(T0, sigma)
@@ -75,6 +80,7 @@ TFormSatisfaction: with
         satisfiesMap(S: TForm, T: TForm): SatResult ==
             -- A -> B sat X -> Y iff X sat A and B sat Y
             -- eg. R -> Z sat N -> R
+	    stdout << "SatMap "<< S << " " << T << newline
             argS := mapArgs S
             argT := mapArgs T
             argResult := satisfies(argT, argS)
@@ -132,9 +138,9 @@ TFormSatisfaction: with
             category?()$(tag rS) and category?()$(tag T) => satisfiesCategory(rS, T)
             failed()
         satisfies(S: TForm, T: TForm): SatResult ==
-            --stdout << "(Sat: " << S << " --> " << T << newline
+            stdout << "(Sat: " << S << " --> " << T << newline
             r := innerSatisfies(S, T)
-            --stdout << " Sat: " << success? r << ")" << newline
+            stdout << " Sat: " << success? r << ")" << newline
             r
         satisfies(S, T)
 
@@ -201,7 +207,7 @@ test(): () ==
 
     -- (x: Int) -> F x satisfies (y: Int) -> F y
     --
-test()
+--test()
 
 
 testCategories(): () ==
@@ -248,6 +254,6 @@ testCategories(): () ==
     assertTrue(failure? satisfies(std(), Monoid, Group))
     assertTrue(success? satisfies(std(), Group, Group))
 
-testCategories()
+--testCategories()
 
 #endif
