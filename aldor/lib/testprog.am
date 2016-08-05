@@ -48,7 +48,9 @@ TESTS = $(check_PROGRAMS)
 
 include Tests.am
 $(srcdir)/Tests.am: $(srcdir)/Makefile.am $(abs_top_srcdir)/lib/testprog.am
+	echo $(libraries) $(foreach i,$(libraries), $(abs_top_builddir)/lib/src/$(i)/lib$(i).a)
 	truncate -s0 $@
+	echo "LDADD=$(foreach i,$(libraries), $(abs_top_builddir)/lib/$(i)/src/lib$(i).a) $(abs_top_builddir)/aldor/lib/libfoam/libfoam.a $(abs_top_builddir)/aldor/lib/libfoamlib/libfoamlib.a -lm" >> $@
 	for test in $(AXLTESTS); do			\
 	  ctest=`echo $$test | sed -e 's/-/_/g'`;	\
 	  echo "check_PROGRAMS += $$test/$$test" >> $@;	\
@@ -57,4 +59,3 @@ $(srcdir)/Tests.am: $(srcdir)/Makefile.am $(abs_top_srcdir)/lib/testprog.am
 	done
 
 AM_CPPFLAGS = -I$(aldorsrcdir)
-AM_LDFLAGS = -L$(foamlibdir) $(addprefix -L,$(librarylibdirs)) $(addprefix -l,$(libraries)) -lfoam -lm
