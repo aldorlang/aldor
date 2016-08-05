@@ -1,3 +1,4 @@
+LDADD= /home/pab/Work/aldorgit/build/lib/axllib/src/libaxllib.a /home/pab/Work/aldorgit/build/aldor/lib/libfoam/libfoam.a /home/pab/Work/aldorgit/build/aldor/lib/libfoamlib/libfoamlib.a -lm
 check_PROGRAMS += 1test/1test
 1test_1test_SOURCES = 1test/1test-aldormain.c 1test/1test.c
 CLEANFILES += 1test/1test-aldormain.c 1test/1test.c 1test/1test.ao
