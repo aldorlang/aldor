@@ -16,9 +16,9 @@ subdir		:= $(subst $(abs_top_builddir)/,,$(abs_builddir))
 
 # Build starts here
 library = ald_pfunc sal_base sal_base0 sal_bstream sal_byte sal_char	\
-	  sal_copy sal_gener sal_htype sal_itype sal_manip sal_order	\
-	  sal_otype sal_partial sal_serial sal_syntax sal_torder	\
-	  sal_tstream							\
+	  sal_copy sal_gener sal_htype sal_iterable sal_itype		\
+	  sal_manip sal_order sal_otype sal_partial sal_serial		\
+	  sal_syntax sal_torder sal_tstream
 
 @BUILD_JAVA_TRUE@javalibrary := $(library)
 
