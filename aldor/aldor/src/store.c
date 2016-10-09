@@ -3054,7 +3054,7 @@ stoShowMixedSizeSections(void)
 			if (!pc->isFirst)
 				fprintf(osStderr, "(%ld)\n",
 					pc->nbytesPrev/qmsize);
-			fprintf(osStderr, "%p=(%d){", pc, nq);
+			fprintf(osStderr, "%p=(%d){", (void*) pc, nq);
 			if (pc->isFree)
 				fprintf(osStderr, "F/");
 			else
@@ -4315,7 +4315,7 @@ stoShowDetail(int stoDetail)
 	if (stoDetail & STO_SHOW_MEMMAP)
 	{
                 fprintf(osStderr, "| Heap....... [%p..%p) %ldK\n",
-                        heapStart, heapEnd,
+                        (void *) heapStart, (void *) heapEnd,
                         ptrDiff(heapEnd, heapStart)/1024);
 
                 for (mm=osMemMap(OSMEM_DDATA); (*mm)->use != OSMEM_END; mm++)
