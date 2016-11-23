@@ -1195,10 +1195,11 @@ void sxiCommentChk(void)
 	sxiCommentBufStart();
 	str = sxiCommentBufChars();
 	if (!strIsPrefix("line", str))
-		return; if (DEBUG(sexpr)) {
-				if (strIsPrefix("line", str))
-					fprintf(dbOut, "!!! %s\n", str);
-			}
+		return;
+	if (DEBUG(sexpr)) {
+		if (strIsPrefix("line", str))
+			fprintf(dbOut, "!!! %s\n", str);
+	}
 	blno = bufNew();
 	bglno = bufNew();
 	bfn = bufNew();
