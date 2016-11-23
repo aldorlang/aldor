@@ -2199,7 +2199,7 @@ localStrHash(register String s)
 
 	while ((c = *s++) != 0) {
 		h ^= (h << 8);
-		h += (charToAscii(c) + 200041);
+		h += (c + 200041);
 		h &= 0x3FFFFFFF;
 	}
 	return h;

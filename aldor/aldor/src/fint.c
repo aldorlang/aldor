@@ -4216,7 +4216,7 @@ fintEval_(DataObj retDataObj)
 		for (n = 0; n < argc; n++) {
 			fintGetSInt(i);
 			/* fintASetElem(type, retDataObj, n, expr); !!*/
-			((char *)(retDataObj->fiArr))[n] = charFrAscii(i);
+			((char *)(retDataObj->fiArr))[n] = i;
 		}
 		((char *)(retDataObj->fiArr))[argc] = '\0';
 
@@ -5987,7 +5987,6 @@ fintRdChars(int cc)
 
 	s = strAlloc(cc);
 	(void)fintGetChars(s, cc);
-	s = strnFrAscii(s,cc);
 
 	return s;
 }

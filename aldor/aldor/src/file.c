@@ -270,7 +270,6 @@ fileRdChars(FILE *file, int cc)
 
 	s = strAlloc(cc);
 	FILE_GET_CHARS(file, s, cc);
-	s = strnFrAscii(s,cc);
 
 	return s;
 }
@@ -278,7 +277,7 @@ fileRdChars(FILE *file, int cc)
 int
 fileWrChars(FILE *file, int cc, String s)
 {
-	FILE_PUT_CHARS(file, strnToAsciiStatic(s,cc), cc);
+	FILE_PUT_CHARS(file, s, cc);
 
 	return cc;
 }
@@ -294,7 +293,7 @@ fileGetChars(FILE *file, String s, int ssize)
 	/* Convert from ASCII to the native char. set. */
 	c = fgetc(file);
 	for( k = 0; (k < ssize) && (c != EOF) && (c != 0); k += 1 ) {
-		s[k] = charFrAscii(c);
+		s[k] = c;
 		c = fgetc(file);
 	}
 

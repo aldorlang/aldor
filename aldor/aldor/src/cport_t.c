@@ -36,23 +36,6 @@ testBytes(void)
 }
 
 /*
- * Tests the invertability of the EBCDIC-to-ASCII tables.
- */
-
-void
-testCharacterTables(void)
-{
-	int i;
-	for ( i = 0; i < 256; i += 1 ) {
-		if( charToAscii(charFrAscii(i)) != i ) printf( "%d\n", i );
-		if( charFrAscii(charToAscii(i)) != i ) printf( "%d\n", i );
-	}
-	printf("^ : %d -> %d\n", '^', charToAscii('^'));
-	printf("~ : %d -> %d\n", '~', charToAscii('~'));
-	printf("| : %d -> %d\n", '|', charToAscii('|'));
-}
-
-/*
  * Main test function for C portability code.
  */
 
@@ -60,7 +43,6 @@ void
 testCPort(void)
 {
 	testBytes();
-	testCharacterTables();
 }
 
 #endif /* TEST_CPORT || TEST_ALL */
