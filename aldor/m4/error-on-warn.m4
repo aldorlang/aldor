@@ -3,7 +3,7 @@ AC_DEFUN([ALDOR_ERROR_ON_WARN],
 ALDOR_STRICT_COMPILE
 [AC_MSG_CHECKING(what extra warning flags to pass to the C compiler)
   warnFLAGS=
-  STRICTCFLAGS="${CFLAGS} -Wno-unused"
+  STRICTCFLAGS="${CFLAGS}"
 
   error_on_warning_as_default="yes"
 
