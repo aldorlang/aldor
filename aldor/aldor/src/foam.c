@@ -1188,7 +1188,7 @@ foamAuditTypeCheck(Foam foam)
 		lhs = foam->foamSet.lhs;
 		rhs = foam->foamSet.rhs;
 
-		if (!foamIsRef(lhs) && !foamTag(lhs) == FOAM_Values) {
+		if (!foamIsRef(lhs) && (foamTag(lhs) != FOAM_Values)) {
 			faTypeCheckingFailure(foam, "lhs is not an l-value");
 			return false;
 		}
