@@ -769,7 +769,7 @@ extern void		fiRegisterStateFns	(void *(*)(), void (*)(void *));
 	}							\
 	else {	/* should look for additional protects	*/	\
 		fiRestoreState(state);				\
-		if (!state->target == (FiWord) state) {		\
+		if (state->target != (FiWord) state) {		\
 			fiUnwind(state->target, state->value);	\
 		}						\
 		exn = state->value;				\
@@ -789,7 +789,7 @@ extern void		fiRegisterStateFns	(void *(*)(), void (*)(void *));
 	}							\
 	else {	/* should look for additional protects	*/	\
 		fiRestoreState(state);				\
-		if (!state->target == (FiWord) state) {		\
+		if (state->target != (FiWord) state) {		\
 			fiUnwind(state->target, state->value);	\
 		}						\
 		exn = state->value;				\

@@ -109,7 +109,7 @@ macexFiniFile()
 local void
 initMacDef(void)
 {
-	if (!fintMode == FINT_LOOP) macDefs = 0;
+	if (fintMode != FINT_LOOP) macDefs = 0;
 }
  
  
