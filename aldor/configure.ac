@@ -98,6 +98,7 @@ AC_CONFIG_FILES(
    aldor/tools/Makefile
    aldor/tools/unix/Makefile
    aldor/tools/unix/aldor
+   aldor/tools/unix/gdb-aldor
    lib/Makefile
 
    dnl Aldor base library.

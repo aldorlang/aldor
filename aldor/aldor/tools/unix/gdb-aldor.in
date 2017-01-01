@@ -1,0 +1,29 @@
+#!/bin/sh
+
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libexecdir=@libexecdir@
+includedir=@includedir@
+datadir=@datadir@
+
+EXEEXT=@EXEEXT@
+
+if [ x$1 = x--print-confvar ]; then
+   eval "echo \${$2}"
+   exit
+fi
+
+if [ x$PRINT_CONFVAR != x ]; then
+   eval "echo \${$PRINT_CONFVAR}"
+   exit
+fi
+
+ALDOR=$libexecdir/aldor$EXEEXT
+if test ! -f $ALDOR; then
+   echo "Error: unable to locate Aldor installation"
+   exit 1
+fi
+
+export ALDORROOT=$prefix
+
+gdb --args $ALDOR "$@"

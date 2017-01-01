@@ -1,5 +1,5 @@
 # Install aldor wrapper script.
-bin_SCRIPTS = aldor
+bin_SCRIPTS = aldor gdb-aldor
 
 
 #tooldir= $(abs_top_builddir)/build/tools
