@@ -255,6 +255,24 @@ symeEq(Syme syme1, Syme syme2)
 	return syme1 == syme2;
 }
 
+Bool
+symeEqualWithAnnotation(Syme syme1, Syme syme2)
+{
+	if (syme1 == syme2) {
+		return true;
+	}
+	if (symeKind(syme1) != symeKind(syme2)) {
+		return false;
+	}
+
+	if (symeDefLevel(syme1) != symeDefLevel(syme2)) {
+		return false;
+	}
+
+	return symeEqual(syme1, syme2);
+}
+
+
 /*
  * symeHash is a macro and we sometimes need a function.
  */

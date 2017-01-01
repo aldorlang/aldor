@@ -511,6 +511,11 @@ extern SymeList	        symeListMakeLazyConditions	(SymeList);
 extern Bool 		symeUseIdentifier	(AbSyn, Syme);
 
 /*
+ * Pickier equal - used when producing annotations
+ */
+extern Bool		symeEqualWithAnnotation(Syme, Syme);
+
+/*
  * Syme SExpr I/O.
  */
 
