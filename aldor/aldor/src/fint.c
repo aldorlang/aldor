@@ -3643,7 +3643,7 @@ fintEval_(DataObj retDataObj)
 				      prog0->name,
 				      prog0->unit->name);
 			for (k = 0; k < argc; k++)
-				(void)fprintf(dbOut, "%p ", parValue(k).fiPtr);
+				(void)fprintf(dbOut, "%p ", (void *) parValue(k).fiPtr);
 			(void)fprintf(dbOut, ")\n");
 		}
 
