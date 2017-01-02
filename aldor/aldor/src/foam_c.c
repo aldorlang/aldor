@@ -2281,7 +2281,7 @@ fiExportGlobalFun(String name, Ptr p, int size)
 {
 	GlobalLinkInfo		glInfo;
 
-	linkDEBUG(stdout, "Exporting %s %p %d\n", name, p, size);
+	linkDEBUG(stdout, "Exporting %s %p %d\n", name, (void *) p, size);
 
 	tblGlobalsInit();
 
