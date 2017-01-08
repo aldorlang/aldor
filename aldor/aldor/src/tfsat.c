@@ -1780,6 +1780,8 @@ tfSatExport(SatMask mask, SymeList mods, AbSyn Sab, SymeList S, Syme t)
 
 extern TForm		tiGetTForm		(Stab, AbSyn);
 
+static SatMask tfSatConditionOnSelf(SatMask mask, SymeList mods, Syme s, Sefo property);
+
 local SatMask
 tfSatConditions(SatMask mask, SymeList mods, Syme s, Syme t)
 {
@@ -1803,6 +1805,12 @@ tfSatConditions(SatMask mask, SymeList mods, Syme s, Syme t)
 		if (abTag(cond) ==  AB_Has) {
 			TForm tfdom, tfcat;
 			AbSyn cat;
+			if (abIsTheId(cond->abHas.expr, ssymSelf)) {
+				if (tfSatSucceed(tfSatConditionOnSelf(mask, mods, s, cond->abHas.property)))
+					continue;
+				else
+					return tfSatFalse(mask);
+			}
 			tfdom = abGetCategory(cond->abHas.expr);
 			cat   = cond->abHas.property;
 			tfcat = abTForm(cat) ? abTForm(cat) : tiTopFns()->tiGetTopLevelTForm(NULL, cat);
@@ -1819,6 +1827,18 @@ tfSatConditions(SatMask mask, SymeList mods, Syme s, Syme t)
 	}
 	return result;
 }
+
+SatMask
+tfSatConditionOnSelf(SatMask mask, SymeList mods, Syme s, Sefo property)
+{
+	/* This looks for "if % has X then X"..
+	 * Ideally, should look for "if % has T then X" and see if T => X */
+	if (sefoEqualMod(mods, tfExpr(symeType(s)), property)) {
+		return tfSatTrue(mask);
+	}
+	return tfSatFalse(mask);
+}
+
 
 local Bool
 sefoListMemberMod(SymeList mods, Sefo sefo, SefoList sefos)
