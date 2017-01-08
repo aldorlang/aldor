@@ -1698,6 +1698,23 @@ tfSatExport(SatMask mask, SymeList mods, AbSyn Sab, SymeList S, Syme t)
 	int serialThis = serialNo++;
 	AbSub sigma;
 
+	/* Check for % explicitly
+	* More exactly, as long as Sab is %, find % from t; if it corresponds to Sab or mods,
+	* then we have the thing we want.
+	* This fixes up cases like Rng: C == with Module(%); Module(X: Rng) == ...
+	*/
+	if (Sab && tfHasSelf(symeType(t))
+	    && abIsTheId(Sab, ssymSelf)) {
+		for (symes = tfSelf(symeType(t)); !tfSatSucceed(result) && symes; symes = cdr(symes)) {
+			if (listMemq(Syme)(mods, car(symes))) {
+				result = tfSatTrue(mask);
+			}
+		}
+		if (tfSatSucceed(result)) {
+			return result;
+		}
+	}
+
 	tfsExportDEBUG(dbOut, "tfSatExport[%d]:: Start S: %pAbSyn\n", serialThis, Sab);
 
 	if (symeHasDefault(t) && !symeIsSelfSelf(t))
