@@ -78,7 +78,7 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 aldor_common_args :=				\
 	-Nfile=$(aldorsrcdir)/aldor.conf 	\
 	-Mno-ALDOR_W_WillObsolete		\
-	-Wcheck -Waudit
+	-Wcheck -Waudit $(AXLFLAGS)
 
 AM_DBG := $(if $(filter 1,$(DBG)), gdb --args, $(DBG))
 $(addsuffix .c, $(library)): %.c: %.ao %.dep
@@ -96,7 +96,7 @@ aldor_args = $(aldor_common_args)		\
 	-I$(libraryincdir)			\
 	-l$(Libraryname)Lib=$(libraryname)_$*	\
 	-DBuild$(Libraryname)Lib		\
-	$(AXLFLAGS) $($*_AXLFLAGS)		\
+	$($*_AXLFLAGS)				\
 	-Fasy=$*.asy				\
 	-Fao=$*.ao				\
 	$(filter %$*.as,$^)			\
@@ -152,7 +152,7 @@ $(addsuffix .gloop, $(alldomains)): %.gloop:
 	  -I$(libraryincdir)			\
 	  -l$(Libraryname)Lib=$(libraryname)_$*	\
 	  -DBuild$(Libraryname)Lib		\
-	  $(AXLFLAGS) $($*_AXLFLAGS)		\
+	  $($*_AXLFLAGS)			\
 
 .PHONY: help
 help:
