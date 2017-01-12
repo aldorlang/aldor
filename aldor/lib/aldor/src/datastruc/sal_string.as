@@ -597,6 +597,18 @@ extend TextReader: with {
 	}
 }
 
+extend OutputTypeFunctions(T: OutputType): with {
+        toString: T -> String
+}
+== add {
+        import from TextWriter;
+	toString(t: T): String == {
+	        sb: StringBuffer := new();
+		(sb::TextWriter) << t;
+		string sb
+	}
+}
+
 #if ALDORTEST
 ---------------------- test sal_string.as --------------------------
 #include "aldor"
@@ -631,8 +643,15 @@ testBasics(): () == {
    testConcat("a", "b", "ab");
 }
 
+testToString(): () == {
+    import from String;
+    import from Integer;
+    assertEquals("1234", toString 1234);
+}
+
 testBasics();
 testIterate();
+testToString();
 
 
 #endif

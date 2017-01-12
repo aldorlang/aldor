@@ -55,8 +55,11 @@ f(stdout) << space;
 \end{ttyout}
 \end{alex}
 #endif
+	export from OutputTypeFunctions %;
 	default {
 		(<<)(a:%)(port:TextWriter):TextWriter == port << a;
 	}
 }
+
+OutputTypeFunctions(T: with): with == add
 
