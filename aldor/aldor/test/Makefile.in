@@ -21,6 +21,9 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	    cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ ;; \
 	esac;
 
+AM_DBG := $(if $(filter 1,$(DBG)), gdb --args, $(DBG))
+AM_DBG_J := $(if $(filter 1,$(DBG_J)), gdb --args, $(DBG_J))
+
 aldorsrcdir = $(abs_top_srcdir)/aldor/src
 aldorexedir = $(abs_top_builddir)/aldor/src
 aldortooldir = $(abs_top_builddir)/aldor/subcmd/unitools
@@ -77,7 +80,7 @@ $(patsubst %, out/c/%.c, $(_ctests)): out/c/%.c: out/ao/%.ao
 $(patsubst %, out/java/%.java, $(_jtests)): $(aldorexedir)/javagen
 $(patsubst %, out/java/%.java, $(_jtests)): out/java/%.java: out/fm/%.fm
 	mkdir -p $$(dirname $@)
-	$(DBG_J) $(aldorexedir)/aldor $(nfile) \
+	$(AM_DBG_J) $(aldorexedir)/aldor $(nfile) \
 		$(if $(filter $(_jruntests), $*), -Jmain,) \
 		-Fjava=$(builddir)/$@ $<
 
@@ -97,7 +100,7 @@ $(patsubst %, %.o, $(_otests)): %.o: out/ao/%.ao
 
 $(patsubst %, out/ap/%.ap, $(_aptests)): out/ap/%.ap: $(srcdir)/%.as
 	mkdir -p $$(dirname $@)
-	$(aldorexedir)/aldor $(nfile) -I$(foamsrclibdir)/al \
+	$(AM_DBG) $(aldorexedir)/aldor $(nfile) -I$(foamsrclibdir)/al \
 			      -Fap=$(builddir)/$@ $<
 
 define aldor_args
@@ -116,7 +119,7 @@ $(patsubst %, out/ap/%.ap, $(_aotests)): out/ap/%.ap: %.as
 
 $(patsubst %, out/ao/%.ao, $(_aotests)): out/ao/%.ao: %.as
 	mkdir -p $$(dirname $@)
-	$(DBG) $(aldorexedir)/aldor $($*_opts) $(aldor_args)
+	$(AM_DBG) $(aldorexedir)/aldor $($*_opts) $(aldor_args)
 
 $(patsubst %, out/ao/%.cmd, $(_aotests)): out/ao/%.cmd: %.as
 	mkdir -p $$(dirname $@)
@@ -124,7 +127,7 @@ $(patsubst %, out/ao/%.cmd, $(_aotests)): out/ao/%.cmd: %.as
 
 $(patsubst %, %.exe, $(_xtests)): %.exe: %.o rtexns.o
 	rm -f $@
-	$(DBG) $(aldorexedir)/aldor $(nfile) 		\
+	$(AM_DBG) $(aldorexedir)/aldor $(nfile) 		\
 		      -Ccc=$(aldortooldir)/unicl	\
 		      -Y$(foamdir)			\
 		      -Y$(foamlibdir)			\
