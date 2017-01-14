@@ -11,9 +11,12 @@
 #include "strops.h"
 #include "symbol.h"
 #include "table.h"
+#include "ttable.h"
 
 static Table	symbolPool = 0;
 static long	genSymCount = 0;
+
+CREATE_TSET(Symbol);
 
 void
 symClear(void)

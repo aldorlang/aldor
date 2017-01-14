@@ -177,6 +177,7 @@ libstruct_a_SOURCES =	\
 	srcline.c	\
 	stab.c		\
 	syme.c		\
+	symeset.c	\
 	symcoinfo.c	\
 	tconst.c	\
 	tfcond.c	\
