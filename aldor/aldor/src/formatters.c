@@ -10,12 +10,15 @@
 #include "tposs.h"
 #include "strops.h"
 #include "errorset.h"
+#include "tconst.h"
 
 local int tfFormatter(OStream stream, Pointer p);
 local int tfListFormatter(OStream stream, Pointer p);
 
 local int tpossFormatter(OStream stream, Pointer p);
 local int fvFormatter(OStream stream, Pointer p);
+
+local int tconstFormatter(OStream stream, Pointer p);
 
 local int symeFormatter(OStream stream, Pointer p);
 local int symeListFormatter(OStream stream, Pointer p);
@@ -38,6 +41,7 @@ local int symbolFormatter(OStream stream, Pointer p);
 
 local int errorSetFormatter(OStream stream, Pointer p);
 
+
 void
 fmttsInit()
 {
@@ -46,6 +50,8 @@ fmttsInit()
 
 	fmtRegister("FreeVar", fvFormatter);
 	fmtRegister("TPoss", tpossFormatter);
+
+	fmtRegister("TConst", tconstFormatter);
 
 	fmtRegister("Syme", symeFormatter);
 	fmtRegister("SymeList", symeListFormatter);
@@ -192,6 +198,16 @@ errorSetFormatter(OStream ostream, Pointer p)
 	return i;
 }
 
+local int
+tconstFormatter(OStream ostream, Pointer p)
+{
+	TConst tc = (TConst) p;
+	int i;
+
+	i = ostreamPrintf(ostream, "[TC: %pTForm %pTForm]", tc->argv[0], tc->argv[1]);
+
+	return i;
+}
 
 local int
 tfListFormatter(OStream ostream, Pointer p)
