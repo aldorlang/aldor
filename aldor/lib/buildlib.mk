@@ -291,7 +291,7 @@ $(aldortestjavas): %.aldortest-exec-java: Makefile %.as
 		-Y$(foamdir) -Y$(foamlibdir) -l$(libraryname) $(patsubst %,-l%,$(librarydeps)) \
 		-I$(top_srcdir)/lib/aldor/include -Y$(top_builddir)/lib/aldor/src \
 		-Y$(librarylibdir) -I$(libraryincdir) -DALDORTEST $$(cat $*_jtest.as | grep ^aldoroptions: | sed -e 's/aldoroptions://') \
-		-Fjava -fc -Ffm -Jmain \
+		-Fjava -Ffm -Jmain \
 		$($*_test_AXLFLAGS) \
 		$*_jtest.as; \
 	 javac -g -cp $(aldorlibdir)/java/src/foamj.jar $*_jtest.java; \
