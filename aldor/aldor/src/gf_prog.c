@@ -60,13 +60,9 @@ gen0BuildFunction(ProgType pt, String name, AbSyn expr)
 
 	gen0ProgPushFormat(emptyFormatSlot);
 	gen0IssueDCache();
-#ifdef ORIGINAL_WORKING_VERSION
-	/* Delete this version */
-	tag = gen0Type(gen0AbType(expr), &fmt);
-#else
-	/* This fixes a bug with embeddings */
+
 	tag = gen0Type(gen0AbContextType(expr), &fmt);
-#endif
+
 	gen0ProgFiniEmpty(foam, tag, fmt);
 
 	gen0AddLexLevels(foam, 1);
