@@ -5,6 +5,6 @@ libraryname	:= aldor
 librarydeps     :=
 
 #AXLCDB		:= -W check -Csmax=0 -Zdb -Qno-cc
-AXLFLAGS	:= -Z db -Q3 $(AXLCDB)
+AXLFLAGS	:= -Q3 $(AXLCDB)
 
 include $(top_srcdir)/lib/buildlib.mk
