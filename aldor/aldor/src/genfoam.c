@@ -140,6 +140,8 @@ local Foam	   gen0CrossToTuple	  (Foam, TForm);
 local Foam	   gen0Define		  (AbSyn);
 local Foam	   gen0DefineRhs	  (AbSyn, AbSyn, AbSyn);
 local Foam	   gen0Embed		  (Foam, AbSyn, TForm, AbEmbed);
+local Foam	   gen0EmbedExit	  (Foam, AbSyn, TForm);
+local Foam	   gen0NilValue		  (TForm);
 local Symbol	   gen0ExportingTo	  (AbSyn absyn);
 local void	   gen0ExportToBuiltin	  (AbSyn fun);
 local void	   gen0ExportToC	  (AbSyn fun);
@@ -650,23 +652,24 @@ Foam
 genFoamValAs(TForm tf, AbSyn ab)
 {
 	Foam foam = genFoamVal(ab);
+	return gen0EmbedExit(foam, ab, tf);
+}
+
+local Foam
+gen0EmbedExit(Foam foam, AbSyn ab, TForm tf)
+{
 	if (tfIsExit(gen0AbType(ab))) {
 		if (tfIsMulti(tf) && tfMultiArgc(tf) > 0) {
-			Foam fakeValue;
-			int i;
-
-			if (foamHasSideEffect(foam))
+			if (foam != NULL && foamHasSideEffect(foam))
 				gen0AddStmt(foam, ab);
 
-			fakeValue = foamNewEmpty(FOAM_Values, tfMultiArgc(tf));
-			for (i = 0; i < tfMultiArgc(tf); i++) {
-				FoamTag type = gen0Type(tfMultiArgN(tf, i), NULL);
-				fakeValue->foamValues.argv[i] = foamNewCast(type, foamNewNil());
-			}
-
-			return fakeValue;
+			return gen0NilValue(tf);
 		}
 		else {
+			FoamTag expectedType = gen0Type(tf, NULL);
+			if (expectedType != FOAM_Word && foam != NULL) {
+				foam = foamNewCast(expectedType, foam);
+			}
 			return foam;
 		}
 	}
@@ -674,6 +677,25 @@ genFoamValAs(TForm tf, AbSyn ab)
 		return foam;
 	}
 }
+
+local Foam
+gen0NilValue(TForm tf)
+{
+	if (!tfIsMulti(tf)) {
+		return foamNewNil();
+	}
+	else {
+		Foam fakeValue = foamNewEmpty(FOAM_Values, tfMultiArgc(tf));
+		int i;
+
+		for (i = 0; i < tfMultiArgc(tf); i++) {
+			FoamTag type = gen0Type(tfMultiArgN(tf, i), NULL);
+			fakeValue->foamValues.argv[i] = foamNewCast(type, foamNewNil());
+		}
+		return fakeValue;
+	}
+}
+
 
 Foam
 genFoamType(AbSyn ab)
@@ -4927,6 +4949,8 @@ gen0Sequence(TForm tf, AbSyn *argv, Length argc, Length i)
 
 		if (j == argc - 1) {
 			Foam	result = gen0TempValue(s);
+			if (gen0ValueMode)
+				result = gen0EmbedExit(result, s, tf);
 			if (flag) gen0ResetImportPlace(topLines);
 			return result;
 		}
@@ -5108,11 +5132,9 @@ gen0Lambda(AbSyn absyn, Syme syme, AbSyn defaults)
 
 
 	if (!val && !gen0ProgHasReturn()) {
-		if (tfMapRetc(tf) == 0)
-			val = foamNewEmpty(FOAM_Values, int0);
-		else
-			val = foamNewNil();
+		val = gen0NilValue(tfMapRet(tf));
 	}
+
 	if (val) gen0AddStmt(foamNewReturn(val), absyn);
 
 	gen0ProgAddStateFormat(index);
