@@ -19,6 +19,8 @@ Makefile
 *.class
 *.al
 *.ao
+*.asy
+*.abn
 *.dep
 *.fm
 *.log
