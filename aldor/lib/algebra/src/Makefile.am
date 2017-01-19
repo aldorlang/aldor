@@ -27,7 +27,6 @@ SUBDIRS =			\
 	polyfactorp		\
 	ffield			\
 	polyfactor0		\
-	multpoly/exponent	\
 	multpoly/multpolycat	\
 	multpoly/multpolydom	\
 	multpoly/multpolypkg	\
