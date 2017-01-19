@@ -43,3 +43,5 @@ unicl_CFLAGS = -I $s $(AM_CFLAGS)
 noinst_PROGRAMS = platform
 
 platform_CFLAGS = -I $s $(AM_CFLAGS)
+
+CLEANFILES=$(libport_a_SOURCES)
