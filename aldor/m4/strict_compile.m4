@@ -8,7 +8,7 @@ AC_DEFUN([ALDOR_CC_OPTION],
 
 AC_DEFUN([ALDOR_STRICT_COMPILE],
 
-  [ALDOR_CC_OPTION(-Wno-error=shift-negative-value,cfg_no_shift_negative_value)
+  [ALDOR_CC_OPTION(-Wno-shift-negative-value,cfg_no_shift_negative_value)
    ALDOR_CC_OPTION(-Wno-sign-compare,cfg_no_sign_compare)
    AC_MSG_CHECKING(Strict options for C compiler)
 
