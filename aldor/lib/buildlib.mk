@@ -91,6 +91,7 @@ $(addsuffix .c, $(library)): %.c: %.ao %.dep
 ifndef Libraryname
 Libraryname := $(shell echo '$(libraryname)' | sed -e 's/^[a-z]/\u&/')
 endif
+
 aldor_args = $(aldor_common_args)		\
 	-Y.					\
 	-I$(libraryincdir)			\
@@ -99,6 +100,7 @@ aldor_args = $(aldor_common_args)		\
 	$($*_AXLFLAGS)				\
 	-Fasy=$*.asy				\
 	-Fao=$*.ao				\
+	-Fabn=$*.abn				\
 	$(filter %$*.as,$^)			\
 	$(filter %$*.ax,$^)
 
@@ -108,6 +110,7 @@ $(addsuffix .ao, $(asdomains)): %.ao: %.as
 $(addsuffix .ao, $(axdomains)): %.ao: %.ax
 
 $(addsuffix .ao, $(alldomains)): %.ao: $(foreach x,$(librarydeps),$(top_builddir)/lib/$(x)/src/lib$(x).al)
+$(addsuffix .abn, $(alldomains)): %.abn: %.ao
 
 SUBLIB		:= _sublib_$(libraryname)
 SUBLIB_DEPEND	:= _sublib_depend_$(libraryname)
@@ -322,6 +325,7 @@ mostlyclean:
 	rm -f *.java
 	rm -f *.class
 	rm -f *.exe
+	rm -f *.abn
 	rm -f *.asy
 
 clean: mostlyclean
