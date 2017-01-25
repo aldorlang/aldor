@@ -1373,7 +1373,8 @@ faTypeCheckingFmtIsEnv(Foam foam, AInt format)
 		return true;
 
 	if (faFormatsv[format]->foamDDecl.usage != FOAM_DDecl_LocalEnv &&
-	    faFormatsv[format]->foamDDecl.usage != FOAM_DDecl_NonLocalEnv) {
+	    faFormatsv[format]->foamDDecl.usage != FOAM_DDecl_NonLocalEnv &&
+	     format != envUsedSlot) {
 		faTypeCheckingFailure(foam,
 				      "NOT environment format used in environment context");
 		return false;
