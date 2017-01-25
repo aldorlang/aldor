@@ -13,6 +13,7 @@
 #define FTYPE_SRC          "as"
 #define FTYPE_INCLUDED     "ai"
 #define FTYPE_ABSYN        "ap"
+#define FTYPE_ANNABS       "abn"
 #define FTYPE_OLDABSYN     "ax"
 #define FTYPE_INTERMED     "ao"
 #define FTYPE_FOAMEXPR     "fm"
@@ -42,6 +43,7 @@ enum ftypeNo {
 	FTYPENO_INTERMED,
 	FTYPENO_FOAMEXPR,
 	FTYPENO_SYMEEXPR,
+	FTYPENO_ANNABS,
         FTYPENO_LOCK,
 	FTYPENO_LISP,
 	FTYPENO_C,

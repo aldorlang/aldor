@@ -53,6 +53,7 @@ extern Bool	sposIsMacroExpanded (SrcPos);
 extern SrcPos	sposMacroExpanded   (SrcPos);
 
 extern void     sposGrowGloLineTbl  (FileName fname, Length flno, Length glno);
+extern SExpr    sposToSExpr(SrcPos);
 
 /*
  * :: SrcPosStack

@@ -150,6 +150,7 @@ libstruct_a_SOURCES =	\
 	abpretty.c	\
 	absub.c		\
 	absyn.c		\
+	annabs.c	\
 	archive.c	\
 	axlobs.c	\
 	compcfg.c	\
@@ -268,6 +269,7 @@ testsuite =			\
 	test/test_ablogic.c 	\
 	test/test_abnorm.c	\
 	test/test_absyn.c 	\
+	test/test_annabs.c 	\
 	test/test_archive.c	\
 	test/test_bigint.c 	\
 	test/test_bitv.c 	\
@@ -307,6 +309,9 @@ testall_SOURCES =	\
 testall_LDADD = libphase.a libstruct.a libgen.a libport.a -lm
 testall_LDFLAGS = 
 testall_CFLAGS = -save-temps $(STRICTCFLAGS)
+
+CFLAGS=-O0 -g
+
 #
 # Special rules
 #

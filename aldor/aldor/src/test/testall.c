@@ -61,6 +61,7 @@ main(int argc, char *argv[])
 	if (testShouldRun("symeset")) symeSetTestSuite();
 	if (testShouldRun("tibup")) tibupTest();
 	if (testShouldRun("tfsat")) tfsatTest();
+	if (testShouldRun("annabs")) annotateAbSynTest();
 	if (testShouldRun("retype")) retypeTest();
 	if (testShouldRun("genfoam")) genfoamTestSuite();
 	if (testShouldRun("tposs")) tpossTest();

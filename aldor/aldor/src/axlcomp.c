@@ -9,6 +9,7 @@
 #include "abcheck.h"
 #include "abnorm.h"
 #include "abuse.h"
+#include "annabs.h"
 #include "axltop.h"
 #include "bloop.h"
 #include "ccomp.h"
@@ -1098,6 +1099,11 @@ compPhaseTInfer(EmitInfo finfo, Stab stab, AbSyn ab)
 	phStart(PH_TInfer);
 
 	typeInfer(stab, ab);		/* annotates the tree in-place */
+
+	if (emitIsOutputNeededOrWarn(finfo, FTYPENO_ANNABS)) {
+		SExpr sexpr = abToAnnotatedSExpr(ab);
+		emitTheAnnotatedAbSyn(finfo, sexpr);
+	}
 
 	phEnd((PhPrFun) abPrint, (PhPrFun) abPrettyPrint, (Pointer) ab);
 	return ab;
