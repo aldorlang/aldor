@@ -47,8 +47,6 @@
  * penalty of a 48K table in static data.
  */
 
-#define _DEFAULT_SOURCE 1 /* strncasecmp */
-
 #include "debug.h"
 #include "opsys.h"
 #include "store.h"
@@ -3600,21 +3598,20 @@ stoShowArgs(char *detail)
 		/* How long is the word? */
 		l = detail - w;
 
-
 		/* Do we recognise it? */
 		if      (!strncmp(w,"pages",l))    r |= STO_SHOW_PAGES;
-		else if (!strncasecmp(w,"memory",l))   r |= STO_SHOW_MEMORY;
-		else if (!strncasecmp(w,"overhead",l)) r |= STO_SHOW_OVERHEAD;
-		else if (!strncasecmp(w,"reserved",l)) r |= STO_SHOW_RESERVED;
-		else if (!strncasecmp(w,"fixed",l))    r |= STO_SHOW_FIXED;
-		else if (!strncasecmp(w,"mixed",l))    r |= STO_SHOW_MIXED;
-		else if (!strncasecmp(w,"pagemap",l))  r |= STO_SHOW_PAGEMAP;
-		else if (!strncasecmp(w,"pagekey",l))  r |= STO_SHOW_PAGEKEY;
-		else if (!strncasecmp(w,"memmap",l))   r |= STO_SHOW_MEMMAP;
-		else if (!strncasecmp(w,"census",l))   r |= STO_SHOW_CENSUS;
-		else if (!strncasecmp(w,"usage",l))    r |= STO_SHOW_USAGE;
-		else if (!strncasecmp(w,"all",l))      r |= STO_SHOW_ALL;
-		else if (!strncasecmp(w,"show",l))
+		else if (!strncmp(w,"memory",l))   r |= STO_SHOW_MEMORY;
+		else if (!strncmp(w,"overhead",l)) r |= STO_SHOW_OVERHEAD;
+		else if (!strncmp(w,"reserved",l)) r |= STO_SHOW_RESERVED;
+		else if (!strncmp(w,"fixed",l))    r |= STO_SHOW_FIXED;
+		else if (!strncmp(w,"mixed",l))    r |= STO_SHOW_MIXED;
+		else if (!strncmp(w,"pagemap",l))  r |= STO_SHOW_PAGEMAP;
+		else if (!strncmp(w,"pagekey",l))  r |= STO_SHOW_PAGEKEY;
+		else if (!strncmp(w,"memmap",l))   r |= STO_SHOW_MEMMAP;
+		else if (!strncmp(w,"census",l))   r |= STO_SHOW_CENSUS;
+		else if (!strncmp(w,"usage",l))    r |= STO_SHOW_USAGE;
+		else if (!strncmp(w,"all",l))      r |= STO_SHOW_ALL;
+		else if (!strncmp(w,"show",l))
 		{
 			(void)fprintf(osStderr,
 	"\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n\n",
