@@ -8,8 +8,8 @@ AC_DEFUN([ALDOR_CC_OPTION],
 
 AC_DEFUN([ALDOR_STRICT_COMPILE],
 
-  [ALDOR_CC_OPTION(-Wno-shift-negative-value,cfg_no_shift_negative_value,int main() { return 1 << -1; })
-   ALDOR_CC_OPTION(-Wno-sign-compare,cfg_no_sign_compare)
+  [ALDOR_CC_OPTION(-Wno-error=shift-negative-value,cfg_no_shift_negative_value,int main() { return -1 << 1; })
+   ALDOR_CC_OPTION(-Wno-error=sign-compare,cfg_no_sign_compare)
    AC_MSG_CHECKING(Strict options for C compiler)
 
    cfgSTRICTCFLAGS="-pedantic -std=c99 -Wall -Wextra -Werror -Wno-empty-body -Wno-enum-compare -Wno-missing-field-initializers -Wno-unused -Wno-unused-parameter -Wno-error=format -Wno-error=type-limits -Wno-error=strict-aliasing -Wno-unused $cfg_no_sign_compare $cfg_no_shift_negative_value "
