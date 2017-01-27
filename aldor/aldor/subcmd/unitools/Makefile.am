@@ -1,8 +1,9 @@
 # Aldor portability layer
 noinst_LIBRARIES = libport.a
 s = $(srcdir)/../../src
+l = ../../src
 
-libport_a_CFLAGS = -I $s
+libport_a_CFLAGS = -I $s -I $l $(AM_CFLAGS)
 
 libport_a_SOURCES =	\
 	bigint.c	\
@@ -36,12 +37,12 @@ bin_PROGRAMS = unicl
 
 unicl_SOURCES = unicl.c
 unicl_LDADD = libport.a -lm
-unicl_CFLAGS = -I $s $(AM_CFLAGS)
+unicl_CFLAGS = -I $s -I $l $(AM_CFLAGS)
 
 
 # Print platform information
 noinst_PROGRAMS = platform
 
-platform_CFLAGS = -I $s $(AM_CFLAGS)
+platform_CFLAGS = -I $s -I $l $(AM_CFLAGS)
 
 CLEANFILES=$(libport_a_SOURCES)

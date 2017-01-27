@@ -1,0 +1,12 @@
+#ifndef _OPSYS_PORT_H
+#define _OPSYS_PORT_H
+
+/* This isn't the nicest way of ensuring that sbrk() shows up without warnings
+   - really ought to come up with another solution. */
+
+#define _ALL_SOURCE 1   /* For RS/6000 - should come before cport.h include. */
+#define _POSIX_SOURCE 1 /* For Linux/BSD. */
+
+#define @SBRK_OPT@
+
+#endif

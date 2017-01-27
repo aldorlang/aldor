@@ -6,11 +6,7 @@
  *
  ****************************************************************************/
 
-
-#define _ALL_SOURCE 1   /* For RS/6000 - should come before cport.h include. */
-#define _POSIX_SOURCE 1 /* For Linux/BSD. */
-#define _DEFAULT_SOURCE 1  /* sbrk */
-
+#include "opsys_port.h"
 #include "cport.h"
 #include "editlevels.h"
 #include "opsys.h"

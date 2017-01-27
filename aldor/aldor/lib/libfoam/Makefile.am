@@ -2,7 +2,7 @@ SUBDIRS = al
 
 aldorsrcdir = $(top_srcdir)/aldor/src
 
-runtime_CFLAGS = -I $(aldorsrcdir)
+runtime_CFLAGS = -I $(aldorsrcdir) -I ../../src
 
 runtime_ALDOR = al/runtime.c
 runtime_CSOURCES =			\
@@ -21,7 +21,7 @@ runtime_CSOURCES =			\
 	util.c		\
 	xfloat.c
 
-AM_CFLAGS = -I$(aldorsrcdir) -DFOAM_RTS
+AM_CFLAGS = -I$(aldorsrcdir) -I ../../src -DFOAM_RTS
 
 lib_LIBRARIES =
 
