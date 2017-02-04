@@ -142,7 +142,7 @@ $(patsubst %, out/java/%.class, $(_jtests)): out/java/%.class: out/java/%.java
 $(patsubst %, %.o, $(_otests)): %.o: out/ao/%.ao
 	$(AM_V_ALDOR_OBJ)		\
 	mkdir -p $$(dirname $@);	\
-	$(aldorexedir)/aldor $(nfile) 	\
+	$(AM_DBG) $(aldorexedir)/aldor $(nfile) 	\
 			      -Ccc=$(aldortooldir)/unicl	\
 			      -Cargs="-Wconfig=$(aldorsrcdir)/aldor.conf $(UNICLFLAGS) -I$(aldorsrcdir)" \
 			      -Fo=$(builddir)/$@ $<
