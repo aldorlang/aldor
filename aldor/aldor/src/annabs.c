@@ -44,7 +44,6 @@ local AInt abcGetSyme(AbAnnotationBucket bucket, Syme syme);
 local AInt abcAddSyme(AbAnnotationBucket bucket, Syme syme);
 local void abcSetSymeSExpr(AbAnnotationBucket bucket, AInt idx, SExpr sx);
 
-local void  abAnnotateInferMissing(Stab stab, AbSyn absyn);
 local SExpr abAnnotateSymeRef(Syme syme, AbAnnotationBucket bucket);
 local SExpr abAnnotateSyme(Syme syme, AbAnnotationBucket bucket);
 
@@ -147,66 +146,12 @@ abToAnnotatedSExpr(AbSyn whole)
 	AbAnnotationBucket bucket = abcNew();
 	SExpr sexpr;
 
-	abAnnotateInferMissing(stabFile(), whole);
 	sexpr = abAnnotatedSExpr(whole, bucket);
 	sexpr = sxCons(sexpr, abcSExpr(bucket));
 	abcFree(bucket);
 	
 	return sexpr;
 }
-
-
-local void
-abAnnotateInferMissing(Stab stab, AbSyn absyn) {
-	AbSyn lhs;
-	int i;
-
-	if (absyn == NULL)
-		return;
-
-	if (abStab(absyn))
-		stab = abStab(absyn);
-	/*
-	if (abState(absyn) == AB_State_AbSyn) {
-		tiBottomUp(stab, absyn, tfUnknown);
-		tiTopDown(stab, absyn, tfUnknown);
-	}
-	*/
-	switch (abTag(absyn)) {
-	case AB_Id:
-	case AB_IdSy:
-	case AB_LitInteger:
-	case AB_LitString:
-	case AB_LitFloat:
-		break;
-	case AB_Foreign:
-		//abAnnotateInferMissing(stab, absyn->abForeign.what);
-		break;
-	case AB_Label:
-		abAnnotateInferMissing(stab, absyn->abLabel.expr);
-		break;
-	case AB_Assign:
-		lhs = absyn->abAssign.lhs;
-		if (abImplicit(lhs) != NULL) {
-			abAnnotateInferMissing(stab, absyn->abAssign.rhs);
-			for (i=0; i<abArgc(lhs); i++) {
-				abAnnotateInferMissing(stab, abArgv(lhs)[i]);
-			}
-		}
-		else {
-			for (i=0; i<abArgc(absyn); i++) {
-				abAnnotateInferMissing(stab, abArgv(absyn)[i]);
-			}
-		}
-		break;
-	default:
-		for (i=0; i<abArgc(absyn); i++) {
-			abAnnotateInferMissing(stab, abArgv(absyn)[i]);
-		}
-	}
-	
-}
-
 
 local SExpr
 abAnnotatedSExpr(AbSyn ab, AbAnnotationBucket bucket)
