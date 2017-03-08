@@ -148,6 +148,8 @@ List(T:Type): ListType T == add {
 
 	bracket(t:Tuple T):% == {
 		import from Z;
+		length(t) = 0 => empty;
+		length(t) = 1 => cons(element(t, 1), empty);
 		l := empty;
 		for n in length(t)..1 by -1 repeat l := cons(element(t, n), l);
 		l;
@@ -692,3 +694,27 @@ local CompilerBugWorkAround(T:Type):with {
 	}
 }
 
+#if ALDORTEST
+#include "aldor"
+#include "aldortest"
+
+testSmallLists(): () == {
+    import from Assert List Integer;
+    import from Assert Integer;
+    import from List Integer;
+    import from Integer;
+    none: List Integer := [];
+    assertTrue(empty? none);
+    one := [1];
+    assertFalse(empty? one);
+    assertEquals(1, first one);
+    two := [2,1];
+    assertFalse(empty? two);
+    assertEquals(2, first two);
+    assertEquals(one, rest two);
+}
+
+
+testSmallLists();
+
+#endif

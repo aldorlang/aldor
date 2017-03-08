@@ -1,3 +1,4 @@
+LDADD= ../../../lib/aldor/src/libaldor.a ../../../aldor/lib/libfoam/libfoam.a ../../../aldor/lib/libfoamlib/libfoamlib.a -lm
 check_PROGRAMS += bug1332/bug1332
 bug1332_bug1332_SOURCES = bug1332/bug1332-aldormain.c bug1332/bug1332.c
 CLEANFILES += bug1332/bug1332-aldormain.c bug1332/bug1332.c bug1332/bug1332.ao

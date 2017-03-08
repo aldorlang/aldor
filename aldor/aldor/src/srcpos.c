@@ -15,6 +15,7 @@
 #include "util.h"
 #include "srcpos.h"
 #include "strops.h"
+#include "sexpr.h"
 
 /*
  * The "fields" are
@@ -655,3 +656,13 @@ spstackPrintDb(SrcPosStack sposStk)
 	}
 }
 
+SExpr
+sposToSExpr(SrcPos spos)
+{
+	FileName fileName = sposFile(spos);
+	SExpr fileSx = fileName == NULL ? sxNil: sxiFrString(fnameName(fileName));
+
+	return sxiList(3, fileSx,
+		       sxiFrInteger(sposLine(spos)),
+		       sxiFrInteger(sposChar(spos)));
+}

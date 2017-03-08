@@ -32,9 +32,11 @@ AM_V_ALDOR = $(am__v_ALDOR_$(V))
 am__v_ALDOR_ = $(am__v_ALDOR_$(AM_DEFAULT_VERBOSITY))
 am__v_ALDOR_0 = @echo "  ALDOR " $@;
 
+AM_DBG := $(if $(filter 1,$(DBG)), gdb --args, $(DBG))
+
 %.c: %.as $(ALDOR)
 	@$(MKDIR_P) $(@D)
-	$(AM_V_ALDOR)$(DBG) $(ALDOR) $(ALDORFLAGS) $($(*F)_AXLFLAGS) -Y$(@D) -Fao=$(@:.c=.ao) -Ffm=$(@:.c=.fm) -Fc=$@ $<
+	$(AM_V_ALDOR)$(AM_DBG) $(ALDOR) $(ALDORFLAGS) $($(*F)_AXLFLAGS) -Y$(@D) -Fao=$(@:.c=.ao) -Ffm=$(@:.c=.fm) -Fc=$@ $<
 
 %-aldormain.c: %.as $(ALDOR)
 	@$(MKDIR_P) $(@D)
@@ -47,6 +49,7 @@ TESTS = $(check_PROGRAMS)
 include Tests.am
 $(srcdir)/Tests.am: $(srcdir)/Makefile.am $(abs_top_srcdir)/lib/testprog.am
 	truncate -s0 $@
+	echo "LDADD=$(foreach i,$(libraries), ${top_builddir}/lib/$(i)/src/lib$(i).a) ${top_builddir}/aldor/lib/libfoam/libfoam.a ${top_builddir}/aldor/lib/libfoamlib/libfoamlib.a -lm" >> $@
 	for test in $(AXLTESTS); do			\
 	  ctest=`echo $$test | sed -e 's/-/_/g'`;	\
 	  echo "check_PROGRAMS += $$test/$$test" >> $@;	\
@@ -55,4 +58,3 @@ $(srcdir)/Tests.am: $(srcdir)/Makefile.am $(abs_top_srcdir)/lib/testprog.am
 	done
 
 AM_CPPFLAGS = -I$(aldorsrcdir)
-AM_LDFLAGS = -L$(foamlibdir) $(addprefix -L,$(librarylibdirs)) $(addprefix -l,$(libraries)) -lfoam -lm

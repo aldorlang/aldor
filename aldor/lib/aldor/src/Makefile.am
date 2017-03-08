@@ -1,4 +1,4 @@
-SUBDIRS = lang base arith datastruc util gmp test
+SUBDIRS = lang base arith datastruc util gmp lisp test
 @BUILD_JAVA_TRUE@JAVA_SUBDIRS = $(filter-out gmp, $(SUBDIRS))
 @BUILD_JAVA_TRUE@JAVA_TARGET = aldor.jar
 
@@ -53,6 +53,7 @@ libaldor_a_SOURCES =	\
 	datastruc/sal_fstruc.c	\
 	datastruc/sal_fold.c	\
 	datastruc/sal_hash.c	\
+	datastruc/sal_hashset.c	\
 	datastruc/sal_kntry.c	\
 	datastruc/sal_langx.c	\
 	datastruc/sal_list.c	\
@@ -68,7 +69,9 @@ libaldor_a_SOURCES =	\
 	datastruc/sal_string.c	\
 	datastruc/sal_table.c	\
 	datastruc/sal_union.c	\
+	datastruc/sal_map.c	\
 	lang/sal_lang.c	\
+	lisp/sal_sexpr.c	\
 	test/tst_assert.c	\
 	util/ald_trace.c	\
 	util/eio_rsto.c	\

@@ -108,6 +108,7 @@ emitSelect(String arg)
 	else if (ftypeIs(ft,FTYPENO_INTERMED)) ftn = FTYPENO_INTERMED;
 	else if (ftypeIs(ft,FTYPENO_FOAMEXPR)) ftn = FTYPENO_FOAMEXPR;
 	else if (ftypeIs(ft,FTYPENO_SYMEEXPR)) ftn = FTYPENO_SYMEEXPR;
+	else if (ftypeIs(ft,FTYPENO_ANNABS))   ftn = FTYPENO_ANNABS;
 
 	else if (ftypeEqual(ft, "lsp"))        ftn = FTYPENO_LISP;
 	else if (ftypeEqual(ft, "java"))       ftn = FTYPENO_JAVA;
@@ -693,6 +694,7 @@ emitIsGeneratedFile(FileName fn)
 	case FTYPENO_OBJECT:
 	case FTYPENO_JAVA:
 	case FTYPENO_EXEC:
+	case FTYPENO_ANNABS:
 		return true;
 	default:
 		return false;
@@ -940,6 +942,26 @@ emitTheSymbolExpr(EmitInfo finfo, SymeList symes, AbSyn macs)
 	emitInfoInUse(finfo, FTYPENO_SYMEEXPR) = false;
 	emitSetDone(FTYPENO_SYMEEXPR);
 }
+
+/*
+ * Emit lisp-readable symbol meaning information to the .asy file.
+ */
+void
+emitTheAnnotatedAbSyn(EmitInfo finfo, SExpr whole)
+{
+	FILE	*fout;
+	FileName fn;
+
+	fn = emitFileName(finfo, FTYPENO_ANNABS);
+	emitInfoInUse(finfo, FTYPENO_ANNABS) = true;
+	fout = fileWrOpen(fn);
+	sxiWrite(fout, whole, SXRW_Default);
+
+	fclose(fout);
+	emitInfoInUse(finfo, FTYPENO_ANNABS) = false;
+	emitSetDone(FTYPENO_ANNABS);
+}
+
 
 /*
  * Emit lisp-readable Foam codes to the .fm file.

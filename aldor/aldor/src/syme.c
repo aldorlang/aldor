@@ -255,6 +255,24 @@ symeEq(Syme syme1, Syme syme2)
 	return syme1 == syme2;
 }
 
+Bool
+symeEqualWithAnnotation(Syme syme1, Syme syme2)
+{
+	if (syme1 == syme2) {
+		return true;
+	}
+	if (symeKind(syme1) != symeKind(syme2)) {
+		return false;
+	}
+
+	if (symeDefLevel(syme1) != symeDefLevel(syme2)) {
+		return false;
+	}
+
+	return symeEqual(syme1, syme2);
+}
+
+
 /*
  * symeHash is a macro and we sometimes need a function.
  */
@@ -654,7 +672,7 @@ symeTransferImplInfo(Syme to, Syme from)
 	/* If no const info, then why bother? */
 	symeSetConstInfo(to, symeConstInfo(from));
 	symeSetConstLib(to, symeConstLib(from));
-
+	symeSetSrcPos(to, symeSrcPos(from));
 	symeDEBUG(dbOut, "Transfer: %d %d %d [%pSyme --> %pSyme]\n",
 		  symeHashNum(from), symeDefnNum(from),
 		  symeConstNum(from), from, to);
@@ -1093,17 +1111,19 @@ local void
 symeFillFrExporter(Syme isyme, TForm exporter)
 {
 	Stab		stab;
+	SymeSet		symeSet;
 	SymeList	symes;
 
 	assert(symeLib(isyme));
 	stab = symeLib(isyme)->stab;
 
 	tiTopFns()->tiTfSefo(stab, exporter);
-
-	for (symes = tfGetDomImports(exporter); symes; symes = cdr(symes)) {
+	symeSet = tfGetDomImportSet(exporter);
+	symes = symeSetSymesForSymbol(symeSet, symeId(isyme));
+	for (symes = tfGetDomImportsByName(exporter, symeId(isyme)); symes; symes = cdr(symes)) {
 		Syme	syme = car(symes);
-		if (symeId(syme) == symeId(isyme) &&
-		    symeTypeCode(syme) == symeTypeCode(isyme)) {
+		assert(symeId(syme) == symeId(isyme));
+		if (symeTypeCode(syme) == symeTypeCode(isyme)) {
 			/* Lazy domain imports know where they came from. */
 			if (symeIsLazy(syme)) symeFillFrLibrary(syme);
 			symeSetType(isyme, symeType(syme));
@@ -1599,6 +1619,15 @@ symeSExprAList(Syme syme)
 		al = sxiACons("condition", sxi, al);
 	}
 
+	/* 8. Position */
+	if (symeSrcPos(syme) != sposNone) {
+		al = sxiACons("srcpos", sxiFrInteger(sposLine(symeSrcPos(syme))), al);
+	}
+
+	if (symeConstNum(syme) != -1) {
+		al = sxiACons("constNum", sxiFrInteger(sposLine(symeConstNum(syme))), al);
+	}
+
 	return sxNReverse(al);
 }
 
@@ -1854,4 +1883,5 @@ struct symeFieldInfo symeFieldInfo[] = {
 	{ SYFI_ExtraBits,	"extraBits",	(AInt) (int)       0 },
 	{ SYFI_ConditionContext,"conditionContext",(AInt) (AbSyn) NULL },
 	{ SYFI_DefinitionConditions,"definedConditions",(AInt) listNil(AbSyn) },
+	{ SYFI_SrcPos,"srcpos",(SrcPos) listNil(AbSyn) },
 };

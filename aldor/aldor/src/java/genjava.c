@@ -4155,7 +4155,7 @@ gj0NameInit()
 	while (p->c != '\0') {
 		/* Identifiers must never contain UTF-8 encoded unicode
 		 * characters or extended ASCII. */
-		assert(p->c >= 0 && p->c <= STDCHAR_MAX);
+		assert(p->c <= STDCHAR_MAX);
 		gjCharIds[p->c] = p->s;
 		p++;
 	}

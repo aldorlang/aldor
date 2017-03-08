@@ -1373,7 +1373,8 @@ faTypeCheckingFmtIsEnv(Foam foam, AInt format)
 		return true;
 
 	if (faFormatsv[format]->foamDDecl.usage != FOAM_DDecl_LocalEnv &&
-	    faFormatsv[format]->foamDDecl.usage != FOAM_DDecl_NonLocalEnv) {
+	    faFormatsv[format]->foamDDecl.usage != FOAM_DDecl_NonLocalEnv &&
+	     format != envUsedSlot) {
 		faTypeCheckingFailure(foam,
 				      "NOT environment format used in environment context");
 		return false;
@@ -2213,10 +2214,6 @@ foamFrBuffer(Buffer buf)
 			break;
 		case 'w':
 			n = bufGetSInt(buf);
-			if (isArr) {
-				if (foam->foamArr.baseType == FOAM_Char)
-					n = charFrAscii(n);
-			}
 			foamArgv(foam)[si].data = n;
 			break;
 		case 'X':
@@ -2343,10 +2340,6 @@ foamProgHdrFrBuffer(Buffer buf)
 			break;
 		case 'w':
 			n = bufGetSInt(buf);
-			if (isArr) {
-				if (foam->foamArr.baseType == FOAM_Char)
-					n = charFrAscii(n);
-			}
 			foamArgv(foam)[si].data = n;
 			break;
 		case 'X':
@@ -2549,10 +2542,6 @@ foamToBuffer(Buffer buf, Foam foam)
 		case 'w':
 			assert(bufIsSInt(foamArgv(foam)[si].data));
 			n = foamArgv(foam)[si].data;
-			if (isArr) {
-				if (foam->foamArr.baseType == FOAM_Char)
-					n = charToAscii(n);
-			}
 			bufPutSInt(buf, n);
 			break;
 		case 'X':

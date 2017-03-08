@@ -32,9 +32,9 @@ extern Bool	genfoamConstDebug;
 
 local Foam	gen1ImplicitExport	(Syme, FoamTag);
 local void	gen0ImplicitPANew	(FoamList, FoamTag);
-local void	gen0ImplicitPAGet	(FoamList, FoamTag);
+local void	gen0ImplicitPAGet	(FoamList, FoamTag, FoamTag);
 local void	gen0ImplicitPASet	(FoamList, FoamTag);
-local void	gen0ImplicitPRGet	(FoamList, FoamTag);
+local void	gen0ImplicitPRGet	(FoamList, FoamTag, FoamTag);
 local void	gen0ImplicitPRSet	(FoamList, FoamTag);
 local void	gen0ImplicitPRSize	(FoamList, FoamTag);
 local FoamTag	gen1ImplicitType	(TForm);
@@ -231,7 +231,7 @@ gen1ImplicitExport(Syme syme, FoamTag repTag)
 		gen0ImplicitPANew(pars, repTag);
 		break;
 	case GFI_PackedArrayGet:
-		gen0ImplicitPAGet(pars, repTag);
+		gen0ImplicitPAGet(pars, retType, repTag);
 		break;
 	case GFI_PackedArraySet:
 		gen0ImplicitPASet(pars, repTag);
@@ -240,7 +240,7 @@ gen1ImplicitExport(Syme syme, FoamTag repTag)
 		gen0ImplicitPRSet(pars, repTag);
 		break;
 	case GFI_PackedRecordGet:
-		gen0ImplicitPRGet(pars, repTag);
+		gen0ImplicitPRGet(pars, retType, repTag);
 		break;
 	case GFI_PackedRepSize:
 		gen0ImplicitPRSize(pars, repTag);
@@ -314,7 +314,7 @@ gen0ImplicitPANew(FoamList pars, FoamTag repTag)
  * Construct the body of PackedArrayGet: (Arr, SInt) -> %
  */
 local void
-gen0ImplicitPAGet(FoamList pars, FoamTag repTag)
+gen0ImplicitPAGet(FoamList pars, FoamTag retType, FoamTag repTag)
 {
 	Foam		parArr, parElt, foam;
 
@@ -334,8 +334,8 @@ gen0ImplicitPAGet(FoamList pars, FoamTag repTag)
 	foam = foamNewAElt(repTag, parElt, parArr);
 
 
-	/* Cast to uniform type */
-	foam = foamNewCast(FOAM_Word, foam);
+	/* Cast to return type */
+	foam = foamNewCast(retType, foam);
 
 
 	/* Return the array element selected */
@@ -392,7 +392,7 @@ gen0ImplicitPASet(FoamList pars, FoamTag repTag)
  * Construct the body of PackedRecordGet: Ptr -> %
  */
 local void
-gen0ImplicitPRGet(FoamList pars, FoamTag repTag)
+gen0ImplicitPRGet(FoamList pars, FoamTag retType, FoamTag repTag)
 {
 	Foam		par, foam;
 
@@ -407,8 +407,8 @@ gen0ImplicitPRGet(FoamList pars, FoamTag repTag)
 	foam = foamNewAElt(repTag, foamNewSInt(int0), par);
 
 
-	/* Cast to uniform type */
-	foam = foamNewCast(FOAM_Word, foam);
+	/* Cast to return type */
+	foam = foamNewCast(retType, foam);
 
 
 	/* Return the value extracted */

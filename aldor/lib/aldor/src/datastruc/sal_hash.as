@@ -87,11 +87,11 @@ returns \emph{t} after the removal.}
 	Rep == Record(nentr:Z, tbl:A L KV, defType:Z, defFun: K -> V);
 
 	table():%		== { import from Z; table 8 };
-	table(n:Z):%		== newTable(0, n);
+	table(n:Z):%		== newTable(0, max(1, n));
 	remember(f:K -> V):%	== { import from Z; newTable(0, 8, 1, f); }
 	forget(f:K -> V):%	== { import from Z; newTable(0, 8, -1, f); }
-	empty?(t:%):Boolean	== { import from Z; zero?(#t) }
-	#(t:%):Z		== { import from A L KV; #(htable t) }
+	empty?(t:%):Boolean	== { import from Z; zero? numberOfEntries t }
+	#(t:%):Z		== { import from A L KV; #(htable t) } -- NOTE: THIS DOES NOT DO WHAT YOU EXPECT! (array size, not numberOfEntries)
 	numberOfEntries(t:%):Z	== { import from Rep; rep(t).nentr; }
 	local htable(t:%):A L KV== { import from Rep; rep(t).tbl; }
 	local index(t:%, k:K):Z	== hash(k) mod (#t);
@@ -135,6 +135,7 @@ returns \emph{t} after the removal.}
 	-- sz = number of slots in the table
 	local newTable(n:Z, sz:Z, type:Z, func:K -> V):% == {
 		import from A L KV, L KV, Rep;
+		zero? sz => never;
 		per [n, new(sz, empty), type, func];
 	}
 
@@ -256,9 +257,9 @@ returns \emph{t} after the removal.}
 	}
 
 	-- TEMPORARY: COMPILER INSISTS ON THAT FUNCTION (WHY?)
-	if Cross(K, V) has HashType then {
-		(t:%) = (s:%):Boolean == never;
-	}
+--	if Cross(K, V) has HashType then {
+--		(t:%) = (s:%):Boolean == never;
+--	}
 }
 
 #if ALDORTEST
@@ -276,8 +277,11 @@ test(): () == {
     assertEquals("bob", tbl("fred"));
     assertFalse(failed? find("fred", tbl));
     assertTrue(failed? find("zzz", tbl));
-
     assertFalse(failed? find("fr" + "ed", tbl));
+
+    tbl := table();
+    assertTrue(failed? find("xx", tbl));
+
 }
 
 testIteration(): () == {
@@ -300,7 +304,53 @@ testIteration(): () == {
     stdout << tk << ",  " << tv << " " << (-n*(n+1) quo 2) << newline;
     assertEquals(tv, (-n*(n+1)) quo 2);
 }
+
+testCreation(): () == {
+    import from Assert Integer;
+    import from Integer;
+    t1: HashTable(Integer, Integer) := [(n, n*2) for n in 1..3];
+
+    assertEquals(2, t1.1);
+    assertEquals(4, t1.2);
+    assertEquals(6, t1.3);
+}
+
+testEquality(): () == {
+    C ==> Cross(Integer, String);
+    import from Integer;
+    import from HashTable(Integer, String);
+    import from Assert HashTable(Integer, String);
+    local tbl1, tbl2, tbl3: HashTable(Integer, String);
+    tbl1 := [(1, "hello")@C];
+    tbl2 := [(1, "bye")@C];
+    tbl3 := [(1, "hello"), (2, "bye")];
+    assertNotEquals(tbl1, tbl2);
+    assertNotEquals(tbl1, tbl3);
+    equalityAxioms(table(), tbl1, tbl2);
+    equalityAxioms(table(), tbl1, tbl3);
+}
+
+
+testSizing(): () == {
+    import from HashTable(MachineInteger, String);
+    import from MachineInteger, String;
+    import from Assert MachineInteger;
+    tbl := table();
+    assertTrue(empty? tbl);
+    assertEquals(0, numberOfEntries tbl);
+    tbl.1 := "hello";
+    assertEquals(1, numberOfEntries tbl);
+    tbl.1 := "bye";
+    assertEquals(1, numberOfEntries tbl);
+    remove!(1, tbl);
+    assertEquals(0, numberOfEntries tbl);
+    assertTrue(empty? tbl);
+}
+
 test();
 testIteration();
+testCreation();
+testEquality();
+testSizing();
 
 #endif

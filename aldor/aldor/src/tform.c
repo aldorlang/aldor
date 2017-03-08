@@ -32,6 +32,7 @@
 #include "comsg.h"
 #include "strops.h"
 #include "bigint.h"
+#include "symeset.h"
 
 Bool	tfDebug			= false;
 Bool	tfExprDebug		= false;
@@ -183,6 +184,16 @@ local void		tfExtendFinishTwins	(Stab, Syme);
 
 /******************************************************************************
  *
+ * :: Type imports and exports
+ *
+ *****************************************************************************/
+
+local void		tfSetDomImports		(TForm, SymeSet);
+local void		tfSetDomExports		(TForm, SymeList);
+
+local SymeSet 		tfStabCreateDomImportSet(Stab stab, TForm tf);
+/******************************************************************************
+ *
  * :: Debugging facilities
  *
  *****************************************************************************/
@@ -266,8 +277,9 @@ tfNewEmpty(TFormTag tag, Length argc)
 	tf->domExports	= listNil(Syme);
 	tf->catExports	= listNil(Syme);
 	tf->thdExports	= listNil(Syme);
+	tf->domExportNames = NULL;
 
-	tf->domImports	= listNil(Syme);
+	tf->domImports	= NULL;
 
 	tf->consts	= listNil(TConst);
 	tf->queries	= listNil(TForm);
@@ -416,7 +428,7 @@ tfFree(TForm tf)
 	listFree(Syme)(tf->self);
 
 	/* A type form does not own its domExports. */
-	listFree(Syme)(tf->domImports);
+	symeSetFree(tf->domImports);
 
 	stoFree((Pointer) tf);
 }
@@ -645,6 +657,12 @@ tf0MapRetFrPending(Stab stab, TForm tf)
 		return NULL;
 
 	return tf;
+}
+
+Syme
+tfpIdSyme(Stab stab, Symbol sym)
+{
+	return tfp0IdSyme(stab, NULL, sym);
 }
 
 local Syme
@@ -2370,8 +2388,8 @@ tfCopyQueries(TForm to, TForm from)
 	if (tfDomExports(to))
 		tfSetDomExports(to, listNil(Syme));
 	if (tfDomImports(to)) {
-		listFree(Syme)(tfDomImports(to));
-		tfSetDomImports(to, listNil(Syme));
+		symeSetFree(tfDomImports(to));
+		tfSetDomImports(to, NULL);
 	}
 
 	return tfQueries(to);
@@ -2769,20 +2787,7 @@ tfGetCatSelfFrWith(Sefo sefo)
 	Sefo		*argv;
 	TForm		cat;
 
-	switch (abTag(sefo)) {
-	case AB_Nothing:
-		argc = 0;
-		argv = 0;
-		break;
-	case AB_Sequence:
-		argc = abArgc(sefo);
-		argv = abArgv(sefo);
-		break;
-	default:
-		argc = 1;
-		argv = &sefo;
-		break;
-	}
+	AB_SEQ_ITER(sefo, argc, argv);
 
 	symes = listNil(Syme);
 	for (i = 0; i < argc; i++) {
@@ -2794,7 +2799,6 @@ tfGetCatSelfFrWith(Sefo sefo)
 		/* Defaults package. */
 		else if (abTag(argv[i]) == AB_Default)
 			continue;
-
 		/* Explicit declaration. */
 		else if (id && abTag(argv[i]) != AB_Id)
 			continue;
@@ -3029,20 +3033,7 @@ abGetCatParents(Sefo sefo)
 	Sefo		id;
 	TForm		cat;
 
-	switch (abTag(sefo)) {
-	case AB_Nothing:
-		argc = 0;
-		argv = 0;
-		break;
-	case AB_Sequence:
-		argc = abArgc(sefo);
-		argv = abArgv(sefo);
-		break;
-	default:
-		argc = 1;
-		argv = &sefo;
-		break;
-	}
+	AB_SEQ_ITER(sefo, argc, argv);
 
 	xsymes = isymes = dsymes = listNil(Syme);
 	for (i = 0; i < argc; i++) {
@@ -3085,6 +3076,7 @@ abGetCatParents(Sefo sefo)
 			if (symeEqual(car(symes), dsyme)) {
 				xsyme = car(symes);
 				symeSetDefault(xsyme);
+				symeSetSrcPos(xsyme, symeSrcPos(dsyme));
 			}
 
 		/* If the default is inherited, use the default syme. */
@@ -3226,7 +3218,8 @@ tfValidateDomExportsParam(TForm tf)
 local void
 tfValidateDomImportsParam(TForm tf)
 {
-	tfValidateCheckConstInfo(tf, tfDomImports(tf), "imports");
+	if (tfDomImports(tf))
+		tfValidateCheckConstInfo(tf, symeSetList(tfDomImports(tf)), "imports");
 }
 
 local void
@@ -3344,20 +3337,7 @@ tfCatExportsPendingFrWith(Sefo sefo)
 	Sefo		*argv;
 	TForm		pending;
 
-	switch (abTag(sefo)) {
-	case AB_Nothing:
-		argc = 0;
-		argv = 0;
-		break;
-	case AB_Sequence:
-		argc = abArgc(sefo);
-		argv = abArgv(sefo);
-		break;
-	default:
-		argc = 1;
-		argv = &sefo;
-		break;
-	}
+	AB_SEQ_ITER(sefo, argc, argv);
 
 	for (i = 0; i < argc; i += 1) {
 		AbSyn	id = abDefineeIdOrElse(argv[i], NULL);
@@ -3615,7 +3595,9 @@ tfAddDomExports(TForm tf, SymeList symes)
 
 	nsymes = tfJoinExportLists(mods, tfDomExports(tf), symes, NULL);
 
-	return tfSetDomExports(tf, nsymes);
+	tfSetDomExports(tf, nsymes);
+
+	return nsymes;
 }
 
 local SymeList
@@ -3626,7 +3608,9 @@ tfAddCatExports(TForm tf, SymeList symes)
 
 	nsymes = tfJoinExportLists(mods, tfCatExports(tf), symes, NULL);
 
-	return tfSetCatExports(tf, nsymes);
+	tfSetCatExports(tf, nsymes);
+
+	return nsymes;
 }
 
 local SymeList
@@ -3637,7 +3621,9 @@ tfAddThdExports(TForm tf, SymeList symes)
 
 	nsymes = tfJoinExportLists(mods, tfThdExports(tf), symes, NULL);
 
-	return tfSetThdExports(tf, nsymes);
+	tfSetThdExports(tf, nsymes);
+
+	return nsymes;
 }
 
 local SymeList
@@ -3654,7 +3640,9 @@ tfAddHasExports(TForm tf, TForm cat)
 	nsymes = tfGetCatExports(cat);
 	nsymes = tfJoinExportLists(mods, tfDomExports(tf), nsymes, cond);
 
-	return tfSetDomExports(tf, nsymes);
+	tfSetDomExports(tf, nsymes);
+
+	return nsymes;
 }
 
 /*
@@ -3747,6 +3735,26 @@ tfMangleSymes(TForm tf, TForm cat, SymeList esymes, SymeList symes)
 	return esymes;
 }
 
+SymbolTSet
+tfGetDomExportNames(TForm tf)
+{
+	SymeList exports;
+	SymbolTSet symbols;
+
+	if (tfDomExportNames(tf))
+		return tfDomExportNames(tf);
+
+	exports = tfGetDomExports(tf);
+
+	symbols = tsetCreate(Symbol)();
+
+	while (exports != listNil(Syme)) {
+		tsetAdd(Symbol)(symbols, symeId(car(exports)));
+		exports = cdr(exports);
+	}
+
+	return symbols;
+}
 
 /*
  * Called on a domain to get the symbol meanings which are
@@ -3800,7 +3808,6 @@ tfGetDomExports(TForm tf)
 		    tfIsTrailingArray(tf) || tfIsUnion(tf))
 			tfSetDomExports(tf, listCopy(Syme)(tfSymes(tf)));
 		tfGetDomSelf(tf);
-		tfGetDomCascades(tf);
 		cat = tfGetCategory(tf);
 		tfFollow(cat);
 
@@ -3822,6 +3829,7 @@ tfGetDomExports(TForm tf)
 			exps = tfMangleSymes(tf, cat, exps, vexps);
 		}
 		tfAddDomExports(tf, exps);
+		tfGetDomCascades(tf);
 	}
 
 	/*
@@ -4081,7 +4089,9 @@ tfGetCatExportsFrIf(TForm cat)
 	esymes = tfGetCatExports(tfIfElse(cat));
 	symes = tfJoinExportLists(mods, symes, esymes, cond);
 
-	return tfSetCatExports(cat, symes);
+	tfSetCatExports(cat, symes);
+
+	return symes;
 }
 
 local SymeList
@@ -4096,7 +4106,9 @@ tfGetCatExportsFrJoin(TForm cat)
 		symes = tfJoinExportLists(mods, symes, nsymes, NULL);
 	}
 
-	return tfSetCatExports(cat, symes);
+	tfSetCatExports(cat, symes);
+
+	return symes;
 }
 
 local SymeList
@@ -4113,7 +4125,9 @@ tfGetCatExportsFrMeet(TForm cat)
 		symes = tfMeetExportLists(mods, symes, nsymes, NULL);
 	}
 
-	return tfSetCatExports(cat, symes);
+	tfSetCatExports(cat, symes);
+
+	return symes;
 }
 
 /******************************************************************************
@@ -4141,9 +4155,10 @@ tfHasDomImport(TForm tf, Symbol sym, TForm type)
 {
 	SymeList	sl;
 
-	for (sl = tfGetDomImports(tf); sl; sl = cdr(sl)) {
+	for (sl = tfGetDomImportsByName(tf, sym); sl; sl = cdr(sl)) {
 		Syme syme = car(sl);
-		if (symeId(syme) == sym && tformEqual(symeType(syme), type))
+		assert(symeId(syme) == sym);
+		if (tformEqual(symeType(syme), type))
 			return syme;
 	}
 	return NULL;
@@ -4156,7 +4171,7 @@ tfGetBuiltinSyme(TForm tf, Symbol sym)
 	Syme		syme0 = NULL;
 
 	assert(tfDomImports(tf));
-	for (symes = tfDomImports(tf); symes; symes = cdr(symes)) {
+	for (symes = symeSetList(tfDomImports(tf)); symes; symes = cdr(symes)) {
 		Syme	syme = car(symes);
 		if (symeId(syme) == sym)
 			syme0 = syme;
@@ -4164,23 +4179,116 @@ tfGetBuiltinSyme(TForm tf, Symbol sym)
 	return syme0;
 }
 
+/******************************************************************************
+ *
+ * :: Type imports and exports
+ *
+ *****************************************************************************/
+
+extern SymeSet
+tfDomImports(TForm tf)
+{
+	return tf->domImports;
+}
+
+extern void
+tfSetDomImports(TForm tf, SymeSet symeSet)
+{
+	tf->domImports = symeSet;
+}
+
+extern SymeList
+tfDomExports(TForm tf)
+{
+	return tf->domExports;
+}
+
+extern void
+tfSetDomExports(TForm tf, SymeList symeList)
+{
+	tf->domExports = symeList;
+}
+
+extern SymbolTSet
+tfDomExportNames(TForm tf)
+{
+	return tf->domExportNames;
+}
+
+extern void
+tfSetDomExportNames(TForm tf, SymbolTSet symbols)
+{
+	tf->domExportNames = symbols;
+}
+
+extern SymeList
+tfCatExports(TForm tf)
+{
+	return tf->catExports;
+}
+
+extern void
+tfSetCatExports(TForm tf, SymeList symeList)
+{
+	tf->catExports = symeList;
+}
+
+extern SymeList
+tfThdExports(TForm tf)
+{
+	return tf->thdExports;
+}
+
+extern void
+tfSetThdExports(TForm tf, SymeList symeList)
+{
+	tf->thdExports = symeList;
+}
+
+
 /*
  * Called on a domain to get the symbol meanings to include
  * in the current scope. Use this in preference to the older
  * tfGetDomImports() to reduce the chance of polluting the
  * top-level stab for the current file.
  */
+
+local Bool
+tfImportsPending(TForm tf)
+{
+	return symeSetList(tfDomImports(tf)) == listNil(Syme);
+}
+
 SymeList
 tfStabGetDomImports(Stab stab, TForm tf)
 {
-	SymeList	xsymes, symes;
+	return symeSetList(tfStabGetDomImportSet(stab, tf));
+}
 
+SymeSet
+tfStabGetDomImportSet(Stab stab, TForm tf)
+{
 	tf = tfDefineeType(tf);
 	
 	tf = tfIgnoreExceptions(tf);
 
-	if (tfDomImports(tf))
+	if (tfDomImports(tf) && !tfImportsPending(tf))
 		return tfDomImports(tf);
+	if (tfDomImports(tf)) {
+		symeSetFree(tfDomImports(tf));
+		tfSetDomImports(tf, NULL);
+	}
+	tfStabCreateDomImportSet(stab, tf);
+	
+	return tfDomImports(tf);
+}
+
+local SymeSet
+tfStabCreateDomImportSet(Stab stab, TForm tf)
+{
+
+	SymeSet  symeSet;
+	SymeList xsymes, symes;
 
 	if (DEBUG(tfImport)) {
 		fprintf(dbOut, "(tfStabGetDomImports:  from ");
@@ -4208,7 +4316,9 @@ tfStabGetDomImports(Stab stab, TForm tf)
 
 	symes = symeListCheckCondition(symes);
 
-	tfSetDomImports(tf, symes);
+	symeSet = symeSetFrSymes(symes);
+
+	tfSetDomImports(tf, symeSet);
 
 	if (tfIsBasicLib(tf))
 		tfInitBasicTypes(tf);
@@ -4221,7 +4331,8 @@ tfStabGetDomImports(Stab stab, TForm tf)
 	}
 
 	tfValidateDomImports(tf);
-	return symes;
+
+	return symeSet;
 }
 
 /*
@@ -4239,9 +4350,32 @@ tfGetDomImports(TForm tf)
 	 * compiled. This allows inner symbols to escape their stab
 	 * levels and jump directly to the top.
 	 */
-	return tfStabGetDomImports(stabFile(), tf);
+	return symeSetList(tfStabGetDomImportSet(stabFile(), tf));
 }
 
+SymeSet
+tfGetDomImportSet(TForm tf)
+{
+	/*
+	 * This use of stabFile() is extremely unfortunate because it
+	 * associates the tform with the top-level of the file being
+	 * compiled. This allows inner symbols to escape their stab
+	 * levels and jump directly to the top.
+	 */
+	return tfStabGetDomImportSet(stabFile(), tf);
+}
+
+SymeList
+tfGetDomImportsByName(TForm tf, Symbol sym)
+{
+	return tfStabGetDomImportsByName(stabFile(), tf, sym);
+}
+
+SymeList
+tfStabGetDomImportsByName(Stab stab, TForm tf, Symbol sym)
+{
+	return symeSetSymesForSymbol(tfStabGetDomImportSet(stab, tf), sym);
+}
 
 SymeList
 tfGetCatImportsFrWith(Sefo sefo, SymeList bsymes)
@@ -4254,20 +4388,7 @@ tfGetCatImportsFrWith(Sefo sefo, SymeList bsymes)
 
 	/*!! assert(tfHasCatExportsFrWith(sefo)); */
 
-	switch (abTag(sefo)) {
-	case AB_Nothing:
-		argc = 0;
-		argv = 0;
-		break;
-	case AB_Sequence:
-		argc = abArgc(sefo);
-		argv = abArgv(sefo);
-		break;
-	default:
-		argc = 1;
-		argv = &sefo;
-		break;
-	}
+	AB_SEQ_ITER(sefo, argc, argv);
 
 	xsymes = isymes = dsymes = listNil(Syme);
 	for (i = 0; i < argc; i++) {
@@ -4309,6 +4430,7 @@ tfGetCatImportsFrWith(Sefo sefo, SymeList bsymes)
 			if (symeEqual(car(symes), dsyme)) {
 				xsyme = car(symes);
 				symeSetDefault(xsyme);
+				symeSetSrcPos(xsyme, symeSrcPos(dsyme));
 			}
 
 		/* If the default is inherited, use the default syme. */
@@ -4427,20 +4549,7 @@ tfGetCatConstantsFrWith(Sefo sefo)
 	Length		i, argc;
 	Sefo		*argv;
 
-	switch (abTag(sefo)) {
-	case AB_Nothing:
-		argc = 0;
-		argv = 0;
-		break;
-	case AB_Sequence:
-		argc = abArgc(sefo);
-		argv = abArgv(sefo);
-		break;
-	default:
-		argc = 1;
-		argv = &sefo;
-		break;
-	}
+	AB_SEQ_ITER(sefo, argc, argv);
 
 	for (i = 0; i < argc; i++) {
 		Sefo	id = abDefineeIdOrElse(argv[i], NULL);
@@ -6790,7 +6899,7 @@ tfWithFrSymes(SymeList symes)
 {
 	TForm	tf;
 	tf = tfNewNode(TF_With, 2, tfNone(), tfNone());
-	tfCatExports(tf) = symes;
+	tfSetCatExports(tf, symes);
 	tfSetMeaning(tf);
 	return tf;
 }
@@ -6821,7 +6930,7 @@ tfThird(SymeList symes)
 {
 	TForm	tf;
 	tf = tfNewNode(TF_Third, 1, tfNone());
-	tfThdExports(tf) = symes;
+	tfSetThdExports(tf, symes);
 	tfSetMeaning(tf);
 	return tf;
 }

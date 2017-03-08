@@ -23,6 +23,7 @@
 #include "ablogic.h"
 #include "abpretty.h"
 #include "comsg.h"
+#include "sefo.h"
 
 /*
  * To do:
@@ -383,7 +384,7 @@ titdn0ApplyFType(Stab stab, AbSyn absyn, TForm type, AbSyn op,
 	SatMask		mask = tfSatBupMask();
 	Length		nopc, popc, parmc;
 	TForm		nopt, popt, opType;
-	TPoss		opTypes, nopTypes, fopTypes;
+	TPoss		opTypes, nopTypes;
 	TPossIterator	it;
 	Bool		result;
 
@@ -394,7 +395,6 @@ titdn0ApplyFType(Stab stab, AbSyn absyn, TForm type, AbSyn op,
 
 	opTypes  = abReferTPoss(op);	/* Original list of possible types */
 	nopTypes = tpossEmpty();	/* Possible (non-pending) types */
-	fopTypes = tpossEmpty();	/* Possible unconditional types */
 	nopc = 0;			/* Number of non-pending matches */
 	popc = 0;			/* Number of all possible matches */
 	nopt = tfUnknown;		/* Non-pending op type */
@@ -831,23 +831,131 @@ titdnComma(Stab stab, AbSyn absyn, TForm type)
 local Bool
 titdnApply(Stab stab, AbSyn absyn, TForm type)
 {
-	AbSyn		op = abApplyOp(absyn);
-	TPoss		tp;
-
-	tipApplyDEBUG(dbOut, "Entering titdnApply\n");
-
+	SatMask	mask = tfSatBupMask();
+	AbSyn op = abApplyOp(absyn);
+	TPoss opTypes, nopTypes;
+	TPossIterator it;
+	Bool  isImplicit = false;
+	Length nopc, popc, parmc;
+	TForm  nopt, popt, opType;
+	Bool   result;
 	if (abState(op) == AB_State_Error)
 		return false;
 
-	tp = abTPoss(op);
+	nopc = 0;			/* Number of non-pending matches */
+	popc = 0;			/* Number of all possible matches */
+	nopt = tfUnknown;		/* Non-pending op type */
+	popt = tfUnknown;		/* Any possible op type */
+	opType = NULL;
 
-	if (tpossHasMapType(tp) || tpossCount(tp) == 0)
-		return titdn0ApplyFType(stab, absyn, type, op,
-					abApplyArgc(absyn), abApplyArgf);
-	else
-		return titdn0ApplySym(stab, absyn, type, ssymApply,
-				      abArgc(absyn), abArgf, NULL);
+	opTypes = abReferTPoss(op);
+	nopTypes = tpossEmpty();
+	if (abIsTheId(op, ssymJoin) && tpossIsUnique(opTypes) &&
+	    tfSatisfies(tfMapRet(tpossUnique(opTypes)), tfCategory))
+		return titdn0ApplyJoin(stab, absyn, type, op, abArgc(absyn), abApplyArgf);
+
+	/* At this point, the mapping is either in the implicit part,
+	 * or in the operator position.  Let's look at the operator
+	 * first.
+	 */
+	for (tpossITER(it, opTypes); tpossMORE(it); tpossSTEP(it)) {
+		TForm	opType = tpossELT(it);
+		SatMask	result;
+
+		opType = tfDefineeType(opType);
+		if (!tfIsAnyMap(opType))
+			continue;
+
+		result = tfSatMap(mask, stab, opType, type, absyn, abApplyArgc(absyn), abApplyArgf);
+		if (tfSatSucceed(result)) {
+			if (!tfSatPending(result)) {
+				nopc += 1;
+				nopt = opType;
+				nopTypes = tpossAdd1(nopTypes, opType);
+			}
+			popc += 1;
+			popt = opType;
+		}
+	}
+	/* And now the implicit part */
+	if (abImplicit(absyn) != NULL) {
+		AbSyn implicitApply = abImplicit(absyn);
+		TPoss implicitOpTypes = abTPoss(implicitApply);
+		isImplicit = true;
+		for (tpossITER(it, implicitOpTypes); tpossMORE(it); tpossSTEP(it)) {
+			TForm	opType = tpossELT(it);
+			SatMask	result;
+
+			opType = tfDefineeType(opType);
+			assert(tfIsAnyMap(opType));
+
+			result = tfSatMap(mask, stab, opType, type, absyn, abArgc(absyn), abArgf);
+			if (tfSatSucceed(result)) {
+				if (!tfSatPending(result)) {
+					nopc += 1;
+					nopt = opType;
+					nopTypes = tpossAdd1(nopTypes, opType);
+				}
+				popc += 1;
+				popt = opType;
+			}
+		}
+	}
+
+	if (popc == 1) {
+		/* We found one thing.. must be this one */
+		opType = popt;
+		result = true;
+	}
+	else if (nopc == 1) {
+		/* We found one non-pending one, and possibly some others.  Let's use it */
+		opType = nopt;
+		result = true;
+	}
+	else if (nopc == 0 && popc > 0) {
+		/* All pending, and more than one of them.  Error - not analyzed */
+		terrorApplyNotAnalyzed(absyn, op, popt);
+		result = false;
+	}
+	else {
+		/* Anything else - error */
+		terrorApplyFType(absyn, type, nopTypes, op, stab, abApplyArgc(absyn), abApplyArgf);
+		result = false;
+	}
+
+	tpossFree(opTypes);
+	tpossFree(nopTypes);
+
+	if (!result) return false;
+
+	if (isImplicit) {
+		AbSyn imp = abImplicit(absyn);
+		int parmc;
+		titdn(stab, imp, opType);
+
+		parmc = tfMapHasDefaults(opType) ? tfMapArgc(opType) : abArgc(absyn);
+		abAddTContext(imp, tfMapMultiArgEmbed(opType, parmc));
+
+		mask = tfSatTdnMask();
+		result = tfSatMap(mask, stab, opType, type, absyn, abArgc(absyn), abArgf);
+	}
+	else {
+		int parmc;
+		abFree(abImplicit(absyn));
+		abSetImplicit(absyn, NULL);
+		titdn(stab, op, opType);
+
+		parmc = tfMapHasDefaults(opType) ? tfMapArgc(opType) : abApplyArgc(absyn);
+		abAddTContext(op, tfMapMultiArgEmbed(opType, parmc));
+
+		mask = tfSatTdnMask();
+		result = tfSatMap(mask, stab, opType, type, absyn, abApplyArgc(absyn), abApplyArgf);
+	}
+	/* We return false rarely (eg titdn0FarValue failure). */
+	return tfSatSucceed(result);
 }
+
+
 
 /****************************************************************************
  *
@@ -1484,13 +1592,19 @@ titdnIf(Stab stab, AbSyn absyn, TForm type)
 	else	/* Normalise the test for other contexts */
 		nTest = abExpandDefs(stab, test);
 
-	ablogAndPush(&abCondKnown, &saveCond, nTest, true); /* test, true); */
-	titdn(stab, thenAlt, type);
-	ablogAndPop (&abCondKnown, &saveCond);
+	if (abIsSefo(nTest)) {
+		ablogAndPush(&abCondKnown, &saveCond, nTest, true); /* test, true); */
+		titdn(stab, thenAlt, type);
+		ablogAndPop (&abCondKnown, &saveCond);
 
-	ablogAndPush(&abCondKnown, &saveCond, nTest, false); /* test, false); */
-	titdn(stab, elseAlt, type);
-	ablogAndPop (&abCondKnown, &saveCond);
+		ablogAndPush(&abCondKnown, &saveCond, nTest, false); /* test, false); */
+		titdn(stab, elseAlt, type);
+		ablogAndPop (&abCondKnown, &saveCond);
+	}
+	else {
+		titdn(stab, thenAlt, type);
+		titdn(stab, elseAlt, type);
+	}
 
 	/*
 	 * We can't use tpossUnique(abtposs) here because otherwise we
@@ -1900,11 +2014,12 @@ titdnQualify(Stab stab, AbSyn absyn, TForm type)
 	}
 	else {
 		symes  = listNil(Syme);
-		msymes = tfGetDomImports(tforg);
-		for ( ; msymes; msymes = cdr(msymes))
-			if (symeId(car(msymes)) == sym 
-			    && ablogIsListKnown(symeCondition(car(msymes))))
+		msymes = tfGetDomImportsByName(tforg, sym);
+		for ( ; msymes; msymes = cdr(msymes)) {
+			assert(symeId(car(msymes)) == sym);
+			if (ablogIsListKnown(symeCondition(car(msymes))))
 				symes = listCons(Syme)(car(msymes), symes);
+		}
 		fsymes = symes;
 	}
 

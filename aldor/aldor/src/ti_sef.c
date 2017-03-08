@@ -129,6 +129,10 @@ tiCanSefo(Sefo sefo)
 	Bool	result = true;
 	Length	i;
 
+	if (abIsId(sefo) && abIdSym(sefo) == ssymType && abSyme(sefo) == NULL) {
+		abSetSyme(sefo, tfpIdSyme(stabFile(), abIdSym(sefo)));
+	}
+
 	if (abIsApply(sefo))
 		tisef0ApplySpecialSyme(stabFile(), sefo);
 
@@ -267,20 +271,7 @@ tisef0Within(Stab stab, Sefo sefo, SymeList bsymes)
 	AbSyn		*argv;
 	TForm		tf;
 
-	switch (abTag(sefo)) {
-	case AB_Nothing:
-		argc = 0;
-		argv = 0;
-		break;
-	case AB_Sequence:
-		argc = abArgc(sefo);
-		argv = abArgv(sefo);
-		break;
-	default:
-		argc = 1;
-		argv = &sefo;
-		break;
-	}
+	AB_SEQ_ITER(sefo, argc, argv);
 
 	xsymes = isymes = dsymes = ssymes = listNil(Syme);
 	for (i = 0; i < argc; i += 1) {
@@ -325,6 +316,7 @@ tisef0Within(Stab stab, Sefo sefo, SymeList bsymes)
 			if (symeEqual(car(symes), dsyme)) {
 				xsyme = car(symes);
 				symeSetDefault(xsyme);
+				symeSetSrcPos(xsyme, symeSrcPos(dsyme));
 			}
 
 		/* If the default is inherited, use the default syme. */

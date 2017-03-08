@@ -54,6 +54,7 @@ extern TForm 		tfsEmbedResult		(TForm, AbEmbed);
  * which requires an object of type T.
  */
 extern Bool		tfSatisfies	(TForm S, TForm T);
+extern Bool		tfSatisfies1	(AbSyn Sab, TForm S, TForm T);
 
 /*
  * Return true if any object of type S is valid in a value context which

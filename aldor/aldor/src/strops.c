@@ -259,7 +259,7 @@ strHash(register String s)
 
 	while ((c = *s++) != 0) {
 		h ^= (h << 8);
-		h += (charToAscii(c) + 200041);
+		h += (c + 200041);
 		h &= 0x3FFFFFFF;
 	}
 	return h;
@@ -273,7 +273,7 @@ strSmallHash(register String s)
 
 	while ((c = *s++) != 0) {
 		h ^= (h << 8);
-		h += (charToAscii(c) + 200041);
+		h += (c + 200041);
 		h &= 0x5FFFFCB;
 	}
 	return h;
@@ -287,7 +287,7 @@ strAHash(register String s)
 
 	while ((c = *s++) != 0) {
 		h ^= (h << 8);
-		h += (toupper(charToAscii(c)) + 200041);
+		h += (toupper(c) + 200041);
 		h &= 0x3FFFFFFF;
 	}
 	return h;
@@ -341,42 +341,6 @@ strReplace(String txt, String orig, String repl)
 	bufAdd1(buf, '\0');
 	s = bufLiberate(buf);
 	return s;
-}
-
-/*
- * Convert a string to Ascii from the native character set.
- *
- * The result may share memory with either the first argument,
- * or with a static buffer internal to this function.
- * As a result, the result should be copied to some more stable
- * storage area by the caller, if necessary.
- */
-
-String
-strnToAsciiStatic(String s, Length sz)
-{
-	static Buffer buf = 0;
-
-	if (!buf) buf = bufNew(); bufNeed(buf, sz);
-	return strToAscii(s, bufChars(buf), sz);
-}
-
-/*
- * Convert a string from Ascii to the native character set.
- *
- * The result may share memory with either the first argument,
- * or with a static buffer internal to this function.
- * As a result, the result should be copied to some more stable
- * storage area by the caller, if necessary.
- */
-
-String
-strnFrAsciiStatic(String s, Length sz)
-{
-	static Buffer buf = 0;
-
-	if (!buf) buf = bufNew(); bufNeed(buf, sz);
-	return strFrAscii(s, bufChars(buf), sz);
 }
 
 int

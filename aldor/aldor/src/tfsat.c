@@ -199,6 +199,7 @@ local SatMask		tfSatCAT		(SatMask, TForm S);
 local SatMask		tfSatTYPE		(SatMask, TForm S);
 
 local SatMask		tfSatUsePending		(SatMask, TForm S, TForm T);
+local SatMask 		tfSatUsePending1	(SatMask, AbSyn, TForm, TForm);
 local SatMask		tfSatEvery		(SatMask, TForm S, TForm T);
 local SatMask		tfSatEach		(SatMask, TForm S, TForm T);
 local SatMask		tfSatMap0		(SatMask, TForm S, TForm T);
@@ -214,7 +215,7 @@ local SatMask		tfSatExports	(SatMask,SymeList,SymeList,SymeList);
 local SatMask		tfSatExport	(SatMask,SymeList,AbSyn Stf, SymeList S,Syme t);
 local SatMask		tfSatParents	(SatMask,SymeList, AbSyn, SymeList,SymeList);
 
-local Bool		tfSatConditions		(SymeList, Syme, Syme);
+local SatMask		tfSatConditions		(SatMask, SymeList, Syme, Syme);
 local Bool		sefoListMemberMod	(SymeList, Sefo, SefoList);
 local void		tfSatPushMapConds	(TForm);
 local void		tfSatPopMapConds	(TForm);
@@ -355,6 +356,10 @@ tfSatEmbedType(TForm tf1, TForm tf2)
 	/* Ignore exceptions for the purposes of embedding as well */
 	tf2 = tfIgnoreExceptions(tf2);
 
+	// FIXME: This is for examples like Union(x: Cross(A, B))
+	// Need to figure out what the best thing here is..
+	tf1 = tfDefineeType(tf1);
+
 	t1 = tfTag(tf1);
 	t2 = tfTag(tf2);
 
@@ -453,6 +458,13 @@ tfSatisfies(TForm S, TForm T)
 {
 	SatMask		mask = TFS_Commit | TFS_UsualMask;
 	return tfSatBit(mask, S, T);
+}
+
+Bool
+tfSatisfies1(AbSyn Sab, TForm S, TForm T)
+{
+	SatMask		mask = TFS_Commit | TFS_UsualMask | TFS_Conditions;
+	return tfSatSucceed(tfSat1(mask, Sab, S, T));
 }
 
 Bool
@@ -772,7 +784,7 @@ tfSatArgPoss(SatMask mask, AbSyn Sab, TForm T)
 
 	if (tfSatAllow(mask, TFS_Pending) && tpossIsUnique(S)) {
 		tcSatPush(tpossUnique(S), T);
-		result = tfSatUsePending(mask, tpossUnique(S), T);
+		result = tfSatUsePending1(mask, Sab, tpossUnique(S), T);
 		tcSatPop();
 		if (tfSatSucceed(result))
 			return result;
@@ -983,6 +995,13 @@ tfSat1(SatMask mask, AbSyn Sab, TForm S, TForm T)
 		if (tfSatSucceed(tfSatDOM(mask, S))) {
  			if (tfSatUseConditions(mask) && abCondKnown != NULL
 			    && Sab != NULL) {
+				if (tfIsPending(S)) {
+					if (tfSatAllow(mask, TFS_Pending)) {
+						result = tfSatUsePending1(mask,
+									  Sab, S, T);
+						return result;
+					}
+				}
 				TForm tf = ablogImpliedType(abCondKnown, Sab, S);
 				if (tf != NULL) {
 					tfsDEBUG(dbOut, "Swapping type: %pTForm to %pTForm\n", S, tf);
@@ -1127,20 +1146,26 @@ tfSatTYPE(SatMask mask, TForm S)
 local SatMask
 tfSatUsePending(SatMask mask, TForm S, TForm T)
 {
+	return tfSatUsePending1(mask, NULL, S, T);
+}
+
+local SatMask
+tfSatUsePending1(SatMask mask, AbSyn Sab, TForm S, TForm T)
+{
 	SatMask		result;
 
 	if (tfIsPending(S)) {
 		tfSatSetPendingFail(S);
 		result = tfSatResult(mask, TFS_Pending);
 		if (tfSatCommit(mask))
-			tcNewSat(S, S, T, NULL);
+			tcNewSat1(S, abCondKnown, Sab, S, T, NULL);
 		return result;
 	}
 	if (tfIsPending(T)) {
 		tfSatSetPendingFail(T);
 		result = tfSatResult(mask, TFS_Pending);
 		if (tfSatCommit(mask))
-			tcNewSat(T, S, T, NULL);
+			tcNewSat1(T, abCondKnown, Sab, S, T, NULL);
 		return result;
 	}
 
@@ -1568,7 +1593,7 @@ tfSatCatExports(SatMask mask, AbSyn Sab, TForm S, TForm T)
 		result = tfSatResult(mask, TFS_Pending);
 		tfSatSetPendingFail(p);
 		if (tfSatCommit(mask))
-			tcNewSat(p, S, T, tfSatInfo(mask) ? symeLazyCheckData : NULL);
+			tcNewSat(p, abCondKnown, S, T, tfSatInfo(mask) ? symeLazyCheckData : NULL);
 	}
 
 	return result;
@@ -1602,7 +1627,7 @@ tfSatThdExports(SatMask mask, TForm S, TForm T)
 		result = tfSatResult(mask, TFS_Pending);
 		tfSatSetPendingFail(p);
 		if (tfSatCommit(mask))
-			tcNewSat(p, S, T, tfSatInfo(mask) ? symeLazyCheckData : NULL);
+			tcNewSat(p, abCondKnown, S, T, tfSatInfo(mask) ? symeLazyCheckData : NULL);
 	}
 
 	return result;
@@ -1673,6 +1698,23 @@ tfSatExport(SatMask mask, SymeList mods, AbSyn Sab, SymeList S, Syme t)
 	int serialThis = serialNo++;
 	AbSub sigma;
 
+	/* Check for % explicitly
+	* More exactly, as long as Sab is %, find % from t; if it corresponds to Sab or mods,
+	* then we have the thing we want.
+	* This fixes up cases like Rng: C == with Module(%); Module(X: Rng) == ...
+	*/
+	if (Sab && tfHasSelf(symeType(t))
+	    && abIsTheId(Sab, ssymSelf)) {
+		for (symes = tfSelf(symeType(t)); !tfSatSucceed(result) && symes; symes = cdr(symes)) {
+			if (listMemq(Syme)(mods, car(symes))) {
+				result = tfSatTrue(mask);
+			}
+		}
+		if (tfSatSucceed(result)) {
+			return result;
+		}
+	}
+
 	tfsExportDEBUG(dbOut, "tfSatExport[%d]:: Start S: %pAbSyn\n", serialThis, Sab);
 
 	if (symeHasDefault(t) && !symeIsSelfSelf(t))
@@ -1680,11 +1722,18 @@ tfSatExport(SatMask mask, SymeList mods, AbSyn Sab, SymeList S, Syme t)
 
 	/* First round.. try "normally" */
 	for (symes = S; !tfSatSucceed(result) && symes; symes = cdr(symes)) {
+		SatMask satConditions;
 		Syme	s = car(symes);
 
-		if (symeEqualModConditions(mods, s, t) &&
-		    tfSatConditions(mods, s, t)) {
+		if (!symeEqualModConditions(mods, s, t))
+			continue;
+		satConditions = tfSatConditions(mask, mods, s, t);
+		if (tfSatSucceed(satConditions)) {
 			result = tfSatTrue(mask);
+			tryHarder = false;
+		}
+		else if (tfSatPending(satConditions)) {
+			result = tfSatPending(mask);
 			tryHarder = false;
 		}
 	}
@@ -1731,11 +1780,14 @@ tfSatExport(SatMask mask, SymeList mods, AbSyn Sab, SymeList S, Syme t)
 
 extern TForm		tiGetTForm		(Stab, AbSyn);
 
-local Bool
-tfSatConditions(SymeList mods, Syme s, Syme t)
+static SatMask tfSatConditionOnSelf(SatMask mask, SymeList mods, Syme s, Sefo property);
+
+local SatMask
+tfSatConditions(SatMask mask, SymeList mods, Syme s, Syme t)
 {
 	SefoList	Sconds = symeCondition(s);
 	SefoList	Tconds = symeCondition(t);
+	SatMask		result = tfSatTrue(mask);
 
 	for (; Sconds; Sconds = cdr(Sconds)) {
 		Sefo	cond = car(Sconds);
@@ -1753,17 +1805,40 @@ tfSatConditions(SymeList mods, Syme s, Syme t)
 		if (abTag(cond) ==  AB_Has) {
 			TForm tfdom, tfcat;
 			AbSyn cat;
+			if (abIsTheId(cond->abHas.expr, ssymSelf)) {
+				if (tfSatSucceed(tfSatConditionOnSelf(mask, mods, s, cond->abHas.property)))
+					continue;
+				else
+					return tfSatFalse(mask);
+			}
 			tfdom = abGetCategory(cond->abHas.expr);
 			cat   = cond->abHas.property;
 			tfcat = abTForm(cat) ? abTForm(cat) : tiTopFns()->tiGetTopLevelTForm(NULL, cat);
+			result = tfSat(mask, tfdom, tfcat);
 
-			if (tfSatisfies(tfdom, tfcat))
+			if (tfSatSucceed(result))
 				continue;
+			else if (tfSatPending(result)) {
+				result = tfSatResult(mask, TFS_Pending);
+				continue;
+			}
 		}
-		return false;
+		return tfSatFalse(mask);
 	}
-	return true;
+	return result;
 }
+
+SatMask
+tfSatConditionOnSelf(SatMask mask, SymeList mods, Syme s, Sefo property)
+{
+	/* This looks for "if % has X then X"..
+	 * Ideally, should look for "if % has T then X" and see if T => X */
+	if (sefoEqualMod(mods, tfExpr(symeType(s)), property)) {
+		return tfSatTrue(mask);
+	}
+	return tfSatFalse(mask);
+}
+
 
 local Bool
 sefoListMemberMod(SymeList mods, Sefo sefo, SefoList sefos)

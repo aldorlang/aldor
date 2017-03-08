@@ -18,6 +18,12 @@ typedef Bool    (*PointerListEltEqFun)  (Pointer, Pointer);
 typedef int     (*PointerListEltPrFun)  (FILE *, Pointer);
 typedef Bool	(*PointerListEltSatFun)	(Pointer);
 
+local Bool
+ptrEqEqual(PointerListEltEqFun eq, Pointer a, Pointer b)
+{
+	if (a == b) return true;
+	return eq != NULL && (*eq)(a, b);
+}
 /*
  * Create a new list with unique element x.
  */
@@ -441,7 +447,7 @@ ptrlistPosition(PointerList l, Pointer x, PointerListEltEqFun eq)
 {
 	Length     i;
 	for (i = 0; l; l = l->rest, i++)
-		if ((*eq)(l->first, x)) return i;
+		if (ptrEqEqual(eq, l->first, x)) return i;
 	return -1;
 }
 
@@ -473,10 +479,10 @@ ptrlistNRemove(PointerList l, Pointer x, PointerListEltEqFun eq)
 	PointerList	p, t;
 
 	if (!l) return l;
-	if ((*eq)(l->first, x)) return ptrlistFreeCons(l);
+	if (ptrEqEqual(eq, l->first, x)) return ptrlistFreeCons(l);
 
 	for (p = l, t = l->rest; t; p = t, t = t->rest) {
-		if ((*eq)(t->first, x))  {
+		if (ptrEqEqual(eq, t->first, x))  {
 			p->rest = ptrlistFreeCons(t);		
 			break;
 		}

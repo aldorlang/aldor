@@ -72,6 +72,10 @@ slot is given by a unique key from {\em K}.}
 then]
 \category{\altype{SerializableType}}\\
 \end{exports}
+\begin{exports}
+[if $V$ has \altype{PrimitiveType} then]
+\category{\altype{PrimitiveType}}\\
+\end{exports}
 #endif
 
 define TableType(K:PrimitiveType, V:Type): Category ==
@@ -80,6 +84,7 @@ define TableType(K:PrimitiveType, V:Type): Category ==
 	if K has OutputType and V has OutputType then OutputType;
 	if K has SerializableType and V has SerializableType then
 							SerializableType;
+	if V has PrimitiveType then PrimitiveType;
 	bracket: Tuple Cross(K, V) -> %;
 #if ALDOC
 \alpage{[]}
@@ -170,6 +175,17 @@ and returns {\em v}.}
 That space grows when needed as elements are inserted in the table.}
 \alseealso{\alexp{[]}}
 #endif
+#if ALDOC
+\alpage{bracket}
+\Usage{\name()\\ \name~n}
+\Signature{\altype{Generator} \altype{Cross}(K, V)}{\%}
+\Params{{\em g} & \% & a generator of key-value pairs\\}
+}
+\Retval{Returns a new table containing the specified pairs}
+\alseealso{\alexp{[]}}
+#endif
+        bracket: Generator Cross(K, V) -> %;
+
 	default {
 		local leftBracket:Ch	== { import from String; char "[" }
 		local rightBracket:Ch	== { import from String; char "]" }
@@ -183,6 +199,14 @@ That space grows when needed as elements are inserted in the table.}
 				t.k := v;
 			}
 			t;
+		}
+
+		[g: Generator Cross(K, V)]: % == {
+		        t := table();
+			for (k, v) in g repeat {
+			    t.k := v;
+			}
+			t
 		}
 
 		apply(t:%, k:K):V == {
@@ -265,6 +289,18 @@ That space grows when needed as elements are inserted in the table.}
 				}
 				p << rightBracket;
 			}
+		}
+		if V has PrimitiveType then {
+		    (a: %) = (b: %): Boolean == {
+		        import from BooleanFold;
+			import from Partial V;
+			import from K, V, MachineInteger;
+			check(k: K): Boolean == {
+			    failed? find(k, b) => false;
+			    a.k = b.k
+			}
+		        numberOfEntries a = numberOfEntries b and (_and)/(check k for k in keys a)
+		    }
 		}
 	}
 }

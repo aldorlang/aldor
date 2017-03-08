@@ -732,7 +732,7 @@ void
 lpLoopPrintDb(Loop loop)
 {
 	fprintf(dbOut, "Loop (%p):  headerBlock = %d\n",
-		loop, loop->header->label);
+		(void*) loop, loop->header->label);
 
 	assert(loop->bitvClass);
 	assert(bitvClassSize(loop->bitvClass) >= listLength(BBlock)(loop->blockList));

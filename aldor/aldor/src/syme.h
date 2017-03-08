@@ -103,6 +103,7 @@ enum symeField {
 	SYFI_ExtraBits,			/* More syme bits */
 	SYFI_ConditionContext,		/* Context in which to infer condition */
 	SYFI_DefinitionConditions,       /* Contexts in which this symbol is defined */
+        SYFI_SrcPos,
     SYME_FIELD_LIMIT
 };
 
@@ -343,6 +344,7 @@ extern Lib		symeConstLib		(Syme);
 #define symeExtraBits(s)	((AInt)     symeGetField(s, SYFI_ExtraBits))
 #define symeConditionContext(s)	((SymeCContext)     symeGetField(s, SYFI_ConditionContext))
 #define symeDefinitionConditions(s) ((AbSynList) symeGetField (s, SYFI_DefinitionConditions))
+#define symeSrcPos(s) ((SrcPos) symeGetField (s, SYFI_SrcPos))
 
 #define			symeIsLabel(s)		(symeKind(s) == SYME_Label)
 #define			symeIsParam(s)		(symeKind(s) == SYME_Param)
@@ -447,6 +449,7 @@ extern void symeSetCondition(Syme syme, SefoList sefoList);
 #define symeSetExtraBits(s,v)		symeSetField(s, SYFI_ExtraBits, v)
 #define symeSetConditionContext(s,v)	symeSetField(s, SYFI_ConditionContext, v)
 #define symeSetDefinitionConditions(s, v) symeSetField (s, SYFI_DefinitionConditions, v)
+#define symeSetSrcPos(s, v) symeSetField (s, SYFI_SrcPos, v)
 
 #define			symeSetBit(s,b)		(symeBits(s) |= (b))
 #define			symeClrBit(s,b)		(symeBits(s) &= ~(b))
@@ -506,6 +509,11 @@ extern SymeList 	symeListCheckAddConditions	(SymeList);
 extern SymeList	        symeListMakeLazyConditions	(SymeList);
 
 extern Bool 		symeUseIdentifier	(AbSyn, Syme);
+
+/*
+ * Pickier equal - used when producing annotations
+ */
+extern Bool		symeEqualWithAnnotation(Syme, Syme);
 
 /*
  * Syme SExpr I/O.

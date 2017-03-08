@@ -109,7 +109,7 @@ of the call, as in {\tt x := \name!(x, y)}.}
 	(l:%) + (n:Z):%			== per(rep(l) + n);
 	union(l:%, x:T):%		== union!(copy l, x);
 	union(l1:%, l2:%):%		== union!(copy l1, l2);
-	intersection(l1:%, l2:%):%	== intersection!(copy l1, l2);
+--	intersection(l1:%, l2:%):%	== intersection!(copy l1, l2);
 	(l1:%) - (l2:%):%		== minus!(copy l1, l2);
 	map(f:T -> T)(l:%):%		== map!(f)(copy l);
 	copy!(m:%, l:%):%		== per copy!(rep m, rep l);
@@ -148,11 +148,16 @@ of the call, as in {\tt x := \name!(x, y)}.}
 		per l;
 	}
 
+	intersection(l1: %, l2: %): % == [elt for elt in l1 | member?(elt, l2)];
+	--intersection(l1: %, l2: %): % == intersection!(copy l1, l2);
 	intersection!(l1:%, l2:%):% == {
 		empty? l1 or empty? l2 => empty;
 		x := first(l := rep l1);
 		ll := per rest l;
-		member?(x, l2) => per setRest!(l, rep intersection!(ll, l2));
+		member?(x, l2) => {
+		    setRest!(l, rep intersection!(ll, l2));
+		    l1;
+		}
 		intersection!(ll, l2);
 	}
 
@@ -242,3 +247,19 @@ of the call, as in {\tt x := \name!(x, y)}.}
 		}
 	}
 }
+
+#if ALDORTEST
+#include "aldor"
+#pile
+
+test(): () ==
+    import from Assert Set String, String
+    s1: Set String := ["a"]
+    s2: Set String := ["b", "a"]
+    assertEquals(s1, intersection(s1, s2))
+    s3: Set String := ["a", "b"]
+    assertEquals(s1, intersection(s1, s3))
+
+test()
+
+#endif

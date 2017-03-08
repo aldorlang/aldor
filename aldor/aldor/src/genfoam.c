@@ -140,6 +140,8 @@ local Foam	   gen0CrossToTuple	  (Foam, TForm);
 local Foam	   gen0Define		  (AbSyn);
 local Foam	   gen0DefineRhs	  (AbSyn, AbSyn, AbSyn);
 local Foam	   gen0Embed		  (Foam, AbSyn, TForm, AbEmbed);
+local Foam	   gen0EmbedExit	  (Foam, AbSyn, TForm);
+local Foam	   gen0NilValue		  (TForm);
 local Symbol	   gen0ExportingTo	  (AbSyn absyn);
 local void	   gen0ExportToBuiltin	  (AbSyn fun);
 local void	   gen0ExportToC	  (AbSyn fun);
@@ -650,25 +652,24 @@ Foam
 genFoamValAs(TForm tf, AbSyn ab)
 {
 	Foam foam = genFoamVal(ab);
+	return gen0EmbedExit(foam, ab, tf);
+}
+
+local Foam
+gen0EmbedExit(Foam foam, AbSyn ab, TForm tf)
+{
 	if (tfIsExit(gen0AbType(ab))) {
-		if (foamTag(foam) == FOAM_Nil)
-			return foam;
-
 		if (tfIsMulti(tf) && tfMultiArgc(tf) > 0) {
-			Foam fakeValue;
-			int i;
+			if (foam != NULL && foamHasSideEffect(foam))
+				gen0AddStmt(foam, ab);
 
-			gen0AddStmt(foam, ab);
-
-			fakeValue = foamNewEmpty(FOAM_Values, tfMultiArgc(tf));
-			for (i = 0; i < tfMultiArgc(tf); i++) {
-				FoamTag type = gen0Type(tfMultiArgN(tf, i), NULL);
-				fakeValue->foamValues.argv[i] = foamNewCast(type, foamNewNil());
-			}
-
-			return fakeValue;
+			return gen0NilValue(tf);
 		}
 		else {
+			FoamTag expectedType = gen0Type(tf, NULL);
+			if (expectedType != FOAM_Word && foam != NULL) {
+				foam = foamNewCast(expectedType, foam);
+			}
 			return foam;
 		}
 	}
@@ -676,6 +677,25 @@ genFoamValAs(TForm tf, AbSyn ab)
 		return foam;
 	}
 }
+
+local Foam
+gen0NilValue(TForm tf)
+{
+	if (!tfIsMulti(tf)) {
+		return foamNewNil();
+	}
+	else {
+		Foam fakeValue = foamNewEmpty(FOAM_Values, tfMultiArgc(tf));
+		int i;
+
+		for (i = 0; i < tfMultiArgc(tf); i++) {
+			FoamTag type = gen0Type(tfMultiArgN(tf, i), NULL);
+			fakeValue->foamValues.argv[i] = foamNewCast(type, foamNewNil());
+		}
+		return fakeValue;
+	}
+}
+
 
 Foam
 genFoamType(AbSyn ab)
@@ -933,20 +953,7 @@ genExport(AbSyn absyn)
 
         if (!sym) return 0;
 
-	switch (abTag(what)) {
-	case AB_Nothing:
-		argc = 0;
-		argv = 0;
-		break;
-	case AB_Sequence:
-		argc = abArgc(what);
-		argv = abArgv(what);
-		break;
-	default:
-		argc = 1;
-		argv = &what;
-		break;
-	}
+	AB_SEQ_ITER(what, argc, argv);
 
 	for (i = 0; i < argc; i += 1) {
 		AbSyn ab = argv[i];
@@ -1611,17 +1618,16 @@ gen0MakeApplyArgs(Syme syme, AbSyn absyn, Length *valc)
 		assert(!ftnfixedret);
 		vals[0] = gen0EmbedApply(argc, argv, op, abEmbedApply(op));
 	}
-	else if (argc == 1 && tfIsMulti(gen0AbContextType(argv[0]))) {
+	else if (argc == 1 && *valc == 0) {
+		genFoamStmt(argv[0]);
+	}
+	else if (argc == 1 && tfIsMulti(gen0AbContextType(tfMapSelectArg(opTf, absyn, 0)))) {
 		assert(!extraArg);
-		if (*valc == 0)
-			genFoamStmt(argv[0]);
-		else {
-			Foam	val = genFoamVal(argv[0]);
-			assert(foamTag(val) == FOAM_Values);
-			assert(foamArgc(val) == *valc);
-			for (i = 0; i < *valc; i += 1)
-				vals[i] = val->foamValues.argv[i];
-		}
+		Foam	val = genFoamVal(argv[0]);
+		assert(foamTag(val) == FOAM_Values);
+		assert(foamArgc(val) == *valc);
+		for (i = 0; i < *valc; i += 1)
+			vals[i] = val->foamValues.argv[i];
 	}
 	else if (ftnfixedret)
 	{
@@ -4943,6 +4949,8 @@ gen0Sequence(TForm tf, AbSyn *argv, Length argc, Length i)
 
 		if (j == argc - 1) {
 			Foam	result = gen0TempValue(s);
+			if (gen0ValueMode)
+				result = gen0EmbedExit(result, s, tf);
 			if (flag) gen0ResetImportPlace(topLines);
 			return result;
 		}
@@ -5124,11 +5132,9 @@ gen0Lambda(AbSyn absyn, Syme syme, AbSyn defaults)
 
 
 	if (!val && !gen0ProgHasReturn()) {
-		if (tfMapRetc(tf) == 0)
-			val = foamNewEmpty(FOAM_Values, int0);
-		else
-			val = foamNewNil();
+		val = gen0NilValue(tfMapRet(tf));
 	}
+
 	if (val) gen0AddStmt(foamNewReturn(val), absyn);
 
 	gen0ProgAddStateFormat(index);
@@ -5513,20 +5519,7 @@ gen0PLambdaParam(Syme syme)
 
 	/* printf("BDS: Entered gen0PLambdaParam\n"); */
 
-	switch (abTag(param)) {
-	case AB_Nothing:
-		argc = 0;
-		argv = 0;
-		break;
-	case AB_Comma:
-		argc = abArgc(param);
-		argv = abArgv(param);
-		break;
-	default:
-		argc = 1;
-		argv = &param;
-		break;
-	}
+	AB_COMMA_ITER(param, argc, argv);
 
 	for (i = 0; i < argc; i += 1) {
 		AbSyn	argi = abDefineeId(argv[i]);
@@ -8196,21 +8189,8 @@ gen0DbgFnEntry(AbSyn fn)
 	gen0DebugIssueStmt(GenDebugFnEntry, name,
 			   lineNo, type, foamNewSInt(inDom), 
 			   foamNewBool(true));
-	
-	switch (abTag(params)) {
-	  case AB_Nothing:
-		argc = 0;
-		argv = NULL;
-		break;
-	  case AB_Comma:
-		argc = abArgc(params);
-		argv = abArgv(params);
-		break;
-	  default:
-		argc = 1;
-		argv = &params;
-		break;
-	}
+
+	AB_COMMA_ITER(params, argc, argv);
 
 	for (i=0; i<argc; i++) {
 		Syme syme = abSyme(abDefineeId(argv[i]));
@@ -8348,22 +8328,7 @@ gen1DbgFnEntry(TForm tf, Syme syme, AbSyn fn)
 
 
 	/* Obtain a consistent view of the parameters */
-	switch (abTag(params))
-	{
-	  case AB_Nothing:
-		argc = 0;
-		argv = NULL;
-		break;
-	  case AB_Comma:
-		argc = abArgc(params);
-		argv = abArgv(params);
-		break;
-	  default:
-		argc = 1;
-		argv = &params;
-		break;
-	}
-
+	AB_COMMA_ITER(params, argc, argv);
 
 	/* Generate a call to the debugger function-entry hook */
 	result = gen0TempLocal(FOAM_Word);

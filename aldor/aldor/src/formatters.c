@@ -2,6 +2,7 @@
 #include "formatters.h"
 #include "axlobs.h"
 #include "syme.h"
+#include "symeset.h"
 #include "freevar.h"
 #include "bigint.h"
 #include "ostream.h"
@@ -10,6 +11,7 @@
 #include "tposs.h"
 #include "strops.h"
 #include "errorset.h"
+#include "tconst.h"
 
 local int tfFormatter(OStream stream, Pointer p);
 local int tfListFormatter(OStream stream, Pointer p);
@@ -17,7 +19,10 @@ local int tfListFormatter(OStream stream, Pointer p);
 local int tpossFormatter(OStream stream, Pointer p);
 local int fvFormatter(OStream stream, Pointer p);
 
+local int tconstFormatter(OStream stream, Pointer p);
+
 local int symeFormatter(OStream stream, Pointer p);
+local int symeSetFormatter(OStream stream, Pointer p);
 local int symeListFormatter(OStream stream, Pointer p);
 local int symeListListFormatter(OStream stream, Pointer p);
 
@@ -38,6 +43,7 @@ local int symbolFormatter(OStream stream, Pointer p);
 
 local int errorSetFormatter(OStream stream, Pointer p);
 
+
 void
 fmttsInit()
 {
@@ -47,7 +53,10 @@ fmttsInit()
 	fmtRegister("FreeVar", fvFormatter);
 	fmtRegister("TPoss", tpossFormatter);
 
+	fmtRegister("TConst", tconstFormatter);
+
 	fmtRegister("Syme", symeFormatter);
+	fmtRegister("SymeSet", symeSetFormatter);
 	fmtRegister("SymeList", symeListFormatter);
 	fmtRegister("SymeListList", symeListListFormatter);
 
@@ -192,6 +201,23 @@ errorSetFormatter(OStream ostream, Pointer p)
 	return i;
 }
 
+local int
+tconstFormatter(OStream ostream, Pointer p)
+{
+	TConst tc = (TConst) p;
+	int i;
+
+	i = ostreamPrintf(ostream, "[TC: %pTForm %pTForm]", tc->argv[0], tc->argv[1]);
+
+	return i;
+}
+
+local int
+symeSetFormatter(OStream ostream, Pointer p)
+{
+	SymeSet symeSet = (SymeSet) p;
+	return symeSetFormat(ostream, symeSet);
+}
 
 local int
 tfListFormatter(OStream ostream, Pointer p)

@@ -78,7 +78,7 @@ local int 		dgSortClassify		(DefGroup);
 local DefSet		dgSeqToDefSet		(AbSyn, SymeList);
 local DefGroup		dgMakeFixGroup		(DefGroupList);
 local DefGroup		dgStmtToDef		(AbSyn, int);
-local void		dgAbGetUsedSymes	(AbSyn, DefGroup);
+local void		dgAbGetUsedSymes	(AbSyn, DefGroup, Bool);
 local DefGroupTag	dgGetTag		(AbSyn);
 local Bool		dgSymeIsLocal		(Syme);
 local DefGroup		dgNewGroup		(DefGroupTag, AbSyn);
@@ -653,7 +653,7 @@ dgStmtToDef(AbSyn absyn, int i)
 {
 	DefGroup dg = dgNewGroup(dgGetTag(absyn), absyn);
 	
-	dgAbGetUsedSymes(absyn, dg);
+	dgAbGetUsedSymes(absyn, dg, true);
 	if (dg->tag == DG_Cond) {
 		listFree(Syme)(dg->defines);
 		dg->defines = listNil(Syme);
@@ -663,8 +663,10 @@ dgStmtToDef(AbSyn absyn, int i)
 }
 
 
+local Bool dgAbIsTopLevel(AbSyn ab);
+
 local void
-dgAbGetUsedSymes(AbSyn ab, DefGroup dg)
+dgAbGetUsedSymes(AbSyn ab, DefGroup dg, Bool topLevel)
 {
 	Syme	syme;
 	int	i, argc;
@@ -688,12 +690,13 @@ dgAbGetUsedSymes(AbSyn ab, DefGroup dg)
 		for (i = 0; i < argc; i++) {
 			syme = abSyme(abDefineeId(argv[i]));
 			if (!syme) continue;
-			dg->defines = listCons(Syme)(syme, dg->defines);
+			if (topLevel)
+				dg->defines = listCons(Syme)(syme, dg->defines);
 		}
 
 
 		/* Now find all the symes used from the rhs */
-		dgAbGetUsedSymes(ab->abDefine.rhs, dg);
+		dgAbGetUsedSymes(ab->abDefine.rhs, dg, topLevel);
 		break;
 
 	  case AB_LitInteger:
@@ -710,17 +713,28 @@ dgAbGetUsedSymes(AbSyn ab, DefGroup dg)
 		if ( (syme = abImplicitSyme(ab)) != NULL && dgSymeIsLocal(syme))
 			dg->usedSymes = listCons(Syme)(syme, dgUses(dg));
 		for (i=0; i<abArgc(ab); i++)
-			dgAbGetUsedSymes(abArgv(ab)[i], dg);
+			dgAbGetUsedSymes(abArgv(ab)[i], dg, topLevel);
 		break;
 	  default:
 		if ((syme = abSyme(ab)) != NULL && dgSymeIsLocal(syme)) {
 			dg->usedSymes = listCons(Syme)(syme, dgUses(dg));
 		}
 		for (i=0; i<abArgc(ab); i++)
-			dgAbGetUsedSymes(abArgv(ab)[i], dg);
+			dgAbGetUsedSymes(abArgv(ab)[i], dg, topLevel && dgAbIsTopLevel(ab));
 		break;
 	}
-		
+}
+
+local Bool
+dgAbIsTopLevel(AbSyn ab)
+{
+	switch (abTag(ab)) {
+	case AB_Apply:
+	case AB_Where:
+		return false;
+	default:
+		return true;
+	}
 }
 
 local DefGroupTag

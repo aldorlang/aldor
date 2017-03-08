@@ -1,3 +1,4 @@
+LDADD= ../../../lib/axldem/src/libaxldem.a  ../../../lib/axllib/src/libaxllib.a ../../../aldor/lib/libfoam/libfoam.a ../../../aldor/lib/libfoamlib/libfoamlib.a -lm
 check_PROGRAMS += bug1089/bug1089
 bug1089_bug1089_SOURCES = bug1089/bug1089-aldormain.c bug1089/bug1089.c
 CLEANFILES += bug1089/bug1089-aldormain.c bug1089/bug1089.c bug1089/bug1089.ao

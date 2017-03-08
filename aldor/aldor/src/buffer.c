@@ -469,7 +469,6 @@ bufRdChars(Buffer buf, int cc)
 
 	s = strAlloc(cc);
 	bufGetChars(buf, s, cc);
-	s = strnFrAscii(s,cc);
 
 	return s;
 }
@@ -477,7 +476,7 @@ bufRdChars(Buffer buf, int cc)
 int
 bufWrChars(Buffer buf, int cc, String s)
 {
-	bufPutChars(buf, strnToAsciiStatic(s,cc), cc);
+	bufPutChars(buf, s, cc);
 
 	return cc;
 }
@@ -498,7 +497,6 @@ bufRdString(Buffer buf)
 	cc = bufGetSInt(buf);
 	s = strAlloc(cc);
 	bufGetChars(buf, s, cc);
-	s = strnFrAscii(s,cc);
 
 	return s;
 }
@@ -509,7 +507,7 @@ bufWrString(Buffer buf, String s)
 	int cc = strLength(s) + 1;
 
 	bufPutSInt(buf, cc);
-	bufPutChars(buf, strnToAsciiStatic(s,cc), cc);
+	bufPutChars(buf, s, cc);
 
 	return SINT_BYTES + cc;
 }
@@ -518,7 +516,7 @@ String
 bufGetString(Buffer buf)
 {
 	String	s = strCopy(bufGets(buf));
-	return strnFrAscii(s, strLength(s) + 1);
+	return s;
 }
 
 

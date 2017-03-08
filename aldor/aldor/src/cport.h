@@ -595,42 +595,6 @@ extern Pointer	ptrFrLong(long);
 
 /*****************************************************************************
  *
- * :: Character set conversion
- *
- * The following macros are used to ensure portable data formats for Aldor
- * library files across different platforms.
- *
- ****************************************************************************/
-
-#ifdef CC_ebcdic_chars
-
-extern short __ebcdic[];
-extern short __ascii[];
-
-#  define charToAscii(e)	(__ascii[(e)])
-#  define charFrAscii(a)	(__ebcdic[(a)])
-
-extern String strToAscii(String, String, int);
-extern String strFrAscii(String, String, int);
-
-#  define strnToAscii(e,cc)	strToAscii(e,e,cc)
-#  define strnFrAscii(a,cc)	strFrAscii(a,a,cc)
-
-#else
-
-#  define charToAscii(e)	(e)
-#  define charFrAscii(a)	(a)
-
-#  define strToAscii(e,a,cc)	(e)
-#  define strFrAscii(a,e,cc)	(a)
-
-#  define strnToAscii(e,cc)	(e)
-#  define strnFrAscii(a,cc)	(a)
-
-#endif /* !CC_ebcdic_chars */
-
-/*****************************************************************************
- *
  * :: Floating-point characteristics
  *
  ****************************************************************************/

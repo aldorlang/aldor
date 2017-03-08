@@ -64,6 +64,8 @@ of $+,-,\ast,/,\land$, while modInverse(a, b) returns the inverse
 of $a$ modulo $n$.}
 \Remarks{Those operations require that $0 \le a, b < n$.}
 #endif
+	hashCombine: (%, %) -> %;
+
 	export from IntegerSegment %;
 } == add {
 
@@ -269,6 +271,11 @@ of $a$ modulo $n$.}
 			b := shift(b, -1);
 		}
 		u;
+	}
+
+	hashCombine(acc: %, b: %): % == {
+	    -- this needs to be "better", see util.c
+	    acc * 31 + b
 	}
 }
 

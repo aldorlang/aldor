@@ -4,212 +4,255 @@ import java.math.BigInteger;
 
 public class FoamJ {
 
-	 /**
-	 * Array type - rely on casting to retract to base type
-	 * @author pab
-	 *
-	 */
-	static class Array extends AbstractValue implements Value, Word {
-		private Object arr;
-		Array(Object arr) {
-			this.arr = arr;
-		}	
+    /**
+     * Array type - rely on casting to retract to base type
+     *
+     * @author pab
+     */
+    static class Array extends AbstractValue implements Value, Word {
+        private Object arr;
 
-		public Object toArray() {
-			return arr;
-		}
+        Array(Object arr) {
+            this.arr = arr;
+        }
 
-		@Override
-		public Value toValue() { return this; }
-		public Word asWord() {
-			return this;
-		}
+        public Object toArray() {
+            return arr;
+        }
 
-	    public String toString() {
-	    	return "A"+arr.toString() + "]";
-	    }
+        @Override
+        public Value toValue() {
+            return this;
+        }
 
-	}
+        public Word asWord() {
+            return this;
+        }
 
-	/**
-	 * a.
-	 * T1 = (Add (Cast SInt x) 1)
-	 * -->
-	 * t1 = x.toInteger() + 1;
-	 * ..
-	 * T2 = (Cast Word (Add (Cast SInt x) 1))
-	 * -->
-	 * t1 = Word.U.fromSInt(x.toSInt() + 1);
-	 */
-	static public class SInt extends AbstractValue implements Value, Word {
-		private int value;
+        public String toString() {
+            return "A" + arr.toString() + "]";
+        }
 
-		public SInt(int x) {
-			this.value = x;
-		}
+    }
 
-		public int  toSInt() { return value; }
+    /**
+     * a.
+     * T1 = (Add (Cast SInt x) 1)
+     * -->
+     * t1 = x.toInteger() + 1;
+     * ..
+     * T2 = (Cast Word (Add (Cast SInt x) 1))
+     * -->
+     * t1 = Word.U.fromSInt(x.toSInt() + 1);
+     */
+    static public class SInt extends AbstractValue implements Value, Word {
+        private int value;
 
-		@Override
-		public Value toValue() {
-			return this;
-		}
-		
-		public Word asWord() {
-			return this;
-		}
-	    public String toString() { return ""+value; }
-	}
+        public SInt(int x) {
+            this.value = x;
+        }
 
-	static public class HInt extends AbstractValue implements Value, Word {
-		private short value;
+        public int toSInt() {
+            return value;
+        }
 
-		public HInt(short x) {
-			this.value = x;
-		}
+        @Override
+        public Value toValue() {
+            return this;
+        }
 
-		public short  toHInt() { return value; }
+        public Word asWord() {
+            return this;
+        }
 
-		@Override
-		public Value toValue() {
-			return this;
-		}
-		
-		public Word asWord() {
-			return this;
-		}
-	    public String toString() { return ""+value; }
-	}
+        public String toString() {
+            return "" + value;
+        }
+    }
 
-	static public class SFlo extends AbstractValue implements Value, Word {
-		private float value;
+    static public class HInt extends AbstractValue implements Value, Word {
+        private short value;
 
-		public SFlo(float x) {
-			this.value = x;
-		}
+        public HInt(short x) {
+            this.value = x;
+        }
 
-		public float  toSFlo() { return value; }
+        public short toHInt() {
+            return value;
+        }
 
-		@Override
-		public Value toValue() {
-			return this;
-		}
-		
-		public Word asWord() {
-			return this;
-		}
-	    public String toString() { return ""+value; }
-	}
+        @Override
+        public Value toValue() {
+            return this;
+        }
 
-	static public class DFlo extends AbstractValue implements Value, Word {
-		private double value;
+        public Word asWord() {
+            return this;
+        }
 
-		public DFlo(double x) {
-			this.value = x;
-		}
+        public String toString() {
+            return "" + value;
+        }
+    }
 
-		public double  toDFlo() { return value; }
+    static public class SFlo extends AbstractValue implements Value, Word {
+        private float value;
 
-		@Override
-		public Value toValue() {
-			return this;
-		}
-		
-		public Word asWord() {
-			return this;
-		}
-	    public String toString() { return ""+value; }
-	}
+        public SFlo(float x) {
+            this.value = x;
+        }
 
-	static public class BInt extends AbstractValue implements Value, Word {
-		private BigInteger value;
+        public float toSFlo() {
+            return value;
+        }
 
-		public BInt(BigInteger x) {
-			this.value = x;
-		}
+        @Override
+        public Value toValue() {
+            return this;
+        }
 
-		public BigInteger toBInt() { return value; }
+        public Word asWord() {
+            return this;
+        }
 
-		public Word asWord() {return this;}
-		@Override
-		public Value toValue() {
-			return this;
-		}
-	}
+        public String toString() {
+            return "" + value;
+        }
+    }
 
-	static public class Bool extends AbstractValue implements Value, Word {
-		private boolean value;
+    static public class DFlo extends AbstractValue implements Value, Word {
+        private double value;
 
-		public Bool(boolean b) {
-			this.value = b;
-		}
+        public DFlo(double x) {
+            this.value = x;
+        }
 
-		public boolean toBool() { return value; }
+        public double toDFlo() {
+            return value;
+        }
 
-		@Override
-		public Value toValue() {
-			return this;
-		}
-		public Word asWord() {
-			return this;
-		}
+        @Override
+        public Value toValue() {
+            return this;
+        }
 
-	    public String toString() { return ""+value; }
-	}
+        public Word asWord() {
+            return this;
+        }
 
-	static public class Char extends AbstractValue implements Value, Word {
-		private char value;
+        public String toString() {
+            return "" + value;
+        }
+    }
 
-		public Char(char b) {
-			this.value = b;
-		}
+    static public class BInt extends AbstractValue implements Value, Word {
+        private BigInteger value;
 
-		public char toChar() { return value; }
+        public BInt(BigInteger x) {
+            this.value = x;
+        }
 
-		@Override
-		public Value toValue() {
-			return this;
-		}
-		public Word asWord() {
-			return this;
-		}
-	}
+        public BigInteger toBInt() {
+            return value;
+        }
+
+        public Word asWord() {
+            return this;
+        }
+
+        @Override
+        public Value toValue() {
+            return this;
+        }
+    }
+
+    static public class Bool extends AbstractValue implements Value, Word {
+        private boolean value;
+
+        public Bool(boolean b) {
+            this.value = b;
+        }
+
+        public boolean toBool() {
+            return value;
+        }
+
+        @Override
+        public Value toValue() {
+            return this;
+        }
+
+        public Word asWord() {
+            return this;
+        }
+
+        public String toString() {
+            return "" + value;
+        }
+    }
+
+    static public class Char extends AbstractValue implements Value, Word {
+        private char value;
+
+        public Char(char b) {
+            this.value = b;
+        }
+
+        public char toChar() {
+            return value;
+        }
+
+        @Override
+        public Value toValue() {
+            return this;
+        }
+
+        public Word asWord() {
+            return this;
+        }
+    }
 
 
-	static public class Ptr extends AbstractValue implements Value, Word {
-		private Object value;
+    static public class Ptr extends AbstractValue implements Value, Word {
+        private Object value;
 
-		public Ptr(Object b) {
-			this.value = b;
-		}
+        public Ptr(Object b) {
+            this.value = b;
+        }
 
-		public Object toPtr() { return value; }
+        public Object toPtr() {
+            return value;
+        }
 
-		@Override
-		public Value toValue() {
-			return this;
-		}
-		public Word asWord() {
-			return this;
-		}
-	}
+        @Override
+        public Value toValue() {
+            return this;
+        }
 
-	static public class Byte extends AbstractValue implements Value, Word {
-		private byte value;
+        public Word asWord() {
+            return this;
+        }
+    }
 
-		public Byte(byte b) {
-			this.value = b;
-		}
+    static public class Byte extends AbstractValue implements Value, Word {
+        private byte value;
 
-		public byte toByte() { return value; }
+        public Byte(byte b) {
+            this.value = b;
+        }
 
-		@Override
-		public Value toValue() {
-			return this;
-		}
-		public Word asWord() {
-			return this;
-		}
-	}
+        public byte toByte() {
+            return value;
+        }
+
+        @Override
+        public Value toValue() {
+            return this;
+        }
+
+        public Word asWord() {
+            return this;
+        }
+    }
 
 }

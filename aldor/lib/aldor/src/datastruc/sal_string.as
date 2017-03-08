@@ -191,6 +191,7 @@ when using C--functions in \salli clients.}
 	++ of length `len' beginning at position `start'.
         substring: (%, Z) -> %;
         substring: (%, Z, Z) -> %;
+	literal: % -> Literal;
 #if ALDOC
 \alpage{substring}
 \Usage{\name(s, n)\\ \name(s, n, m)}
@@ -224,6 +225,7 @@ of \emph{s}, while \name(s,n,m) returns a copy of the substring of length
 	firstIndex:Z			== 0;
 	local quote:Ch			== char "_"";
 	string(l:Literal):%		== string(l pretend Pointer);
+	literal(s: %): Literal          == s pretend Literal;
         substring(s: %, pos: Z): %	== substring(s, pos, #s - pos);
 	data(s:%):PackedPrimitiveArray Ch	== rep s;
 
@@ -597,6 +599,33 @@ extend TextReader: with {
 	}
 }
 
+extend OutputTypeFunctions(T: OutputType): with {
+        toString: T -> String
+}
+== add {
+        import from TextWriter;
+	toString(t: T): String == {
+	        sb: StringBuffer := new();
+		(sb::TextWriter) << t;
+		string sb
+	}
+}
+
+extend InputTypeFunctions(T: InputType): with {
+        fromString: String -> T
+}
+== add {
+        import from TextReader;
+        fromString(txt: String): T == {
+		sb: StringBuffer := new();
+		sb::TextWriter << txt;
+		res: T := << sb::TextReader;
+		free! sb;
+		res
+	}
+}
+
+
 #if ALDORTEST
 ---------------------- test sal_string.as --------------------------
 #include "aldor"
@@ -631,8 +660,22 @@ testBasics(): () == {
    testConcat("a", "b", "ab");
 }
 
+testToString(): () == {
+    import from String;
+    import from Integer;
+    assertEquals("1234", toString 1234);
+}
+
+testToFromString(): () == {
+    import from MachineInteger;
+    assertEquals(12, fromString("12"));
+    assertEquals("0", toString(fromString("0")@MachineInteger));
+    assertEquals(99, fromString(toString(99)));
+}
+
 testBasics();
 testIterate();
-
+testToString();
+testToFromString();
 
 #endif

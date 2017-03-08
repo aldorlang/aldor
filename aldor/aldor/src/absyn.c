@@ -1693,12 +1693,14 @@ abTransferSemantics(AbSyn from, AbSyn to)
 		abState(to) = abState(from);
 		abTPoss(to) = tpossRefer(abTPoss(from));
 		break;
-
 	case AB_State_HasUnique:
 		abState(to) = abState(from);
 		abTUnique(to) = abTUnique(from);
 		break;
-
+	case AB_State_Error:
+		abState(to) = abState(from);
+		abTPoss(to) = tpossRefer(abTPoss(from));
+		break;
 	default:
 		break;
 	}

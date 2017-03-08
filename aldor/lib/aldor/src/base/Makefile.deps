@@ -6,6 +6,7 @@ sal_serial_deps := sal_base sal_bstream
 sal_otype_deps := sal_base sal_tstream
 sal_itype_deps := sal_base sal_tstream
 sal_gener_deps := sal_base
+sal_iterable_deps := sal_gener
 sal_htype_deps := sal_base
 sal_syntax_deps := sal_base
 sal_order_deps := sal_base 

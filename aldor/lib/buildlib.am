@@ -1,6 +1,10 @@
 aldorsrcdir = $(abs_top_srcdir)/aldor/src
 aldorexedir = $(top_builddir)/aldor/src
 
+AM_V_LIBJAR = $(am__v_LIBJAR_$(V))
+am__v_LIBJAR_ = $(am__v_LIBJAR_$(AM_DEFAULT_VERBOSITY))
+am__v_LIBJAR_0 = @echo "  LIBJAR   " $@;
+
 AM_CFLAGS = -I$(aldorsrcdir)
 
 lib$(libraryname).al: $(foreach i,$(SUBDIRS),$i/_sublib_$(libraryname).al)
@@ -12,7 +16,7 @@ lib$(libraryname).al: $(foreach i,$(SUBDIRS),$i/_sublib_$(libraryname).al)
 	done
 
 $(libraryname).jar: $(foreach i, $(JAVA_SUBDIRS),$i/$(libraryname).jar)
-	$(AM_V_JAR) set -x;		\
+	$(AM_V_LIBJAR)		\
 	rm -rf jar;		\
 	mkdir jar;		\
 	for i in $(foreach j, $(JAVA_SUBDIRS),$j/$(libraryname).jar); \

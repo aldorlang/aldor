@@ -14,6 +14,7 @@
 #include "syme.h"
 #include "strops.h"
 #include "fbox.h"
+#include "tform.h"
 
 /*****************************************************************************
  *
@@ -55,18 +56,19 @@ gen0BuildFunction(ProgType pt, String name, AbSyn expr)
 
 	saved = gen0ProgSaveState(pt);
 
-	ret = genFoamVal(expr);
-	if (ret) gen0AddStmt(foamNewReturn(ret), expr);
-
+	if (tfIsNone(gen0AbContextType(expr))) {
+		genFoamStmt(expr);
+		gen0AddStmt(foamNewReturn(foamNew(FOAM_Values, (Length) 0)), expr);
+	}
+	else {
+		ret = genFoamValAs(gen0AbContextType(expr), expr);
+		if (ret) gen0AddStmt(foamNewReturn(ret), expr);
+	}
 	gen0ProgPushFormat(emptyFormatSlot);
 	gen0IssueDCache();
-#ifdef ORIGINAL_WORKING_VERSION
-	/* Delete this version */
-	tag = gen0Type(gen0AbType(expr), &fmt);
-#else
-	/* This fixes a bug with embeddings */
+
 	tag = gen0Type(gen0AbContextType(expr), &fmt);
-#endif
+
 	gen0ProgFiniEmpty(foam, tag, fmt);
 
 	gen0AddLexLevels(foam, 1);

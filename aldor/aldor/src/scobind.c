@@ -1753,8 +1753,9 @@ scobindDeclareId(AbSyn id, AbSyn type, AbSyn val, DeclContext context)
 	if (dtype && !abEqualModDeclares(type, dtype))
 		comsgWarning(id, ALDOR_W_ScoVarDefault, symString(sym));
 
-	/* Check the value against any previous value which was given. */
-	if (val && oval && !abEqual(val, oval)) {
+	/* Check the value against any previous value which was given (extends get a free pass). */
+	if (val && oval && !abEqual(val, oval)
+		&& context != SCO_Sig_Extend) {
 		/*!! comsgError(id, ALDOR_E_ScoVal, symString(sym)); */
 		return di;
 	}
@@ -3551,6 +3552,7 @@ scobindAddMeaning(AbSyn ab, Symbol sym, Stab stab, SymeTag kind,
 	if (scobindNeedsMeaning(ab, tf)) {
 		Syme	syme = scobindDefMeaning(stab,kind,sym,tf,data);
 		scobindSetMeaning(ab, syme);
+		symeSetSrcPos(syme, abPos(ab));
 	}
 }
 

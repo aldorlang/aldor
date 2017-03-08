@@ -117,7 +117,8 @@ DECLARE_LIST(SymeList);
 # define OB_Foam		(OB_AXLGEN_LIMIT + 12)
 # define OB_Lib			(OB_AXLGEN_LIMIT + 13)
 # define OB_Archive		(OB_AXLGEN_LIMIT + 14)
-# define OB_LIMIT		(OB_AXLGEN_LIMIT + 15)
+# define OB_SymeSet		(OB_AXLGEN_LIMIT + 15)
+# define OB_LIMIT		(OB_AXLGEN_LIMIT + 16)
 
 /*
  * Structure containing information about each type.

@@ -1,3 +1,4 @@
+LDADD= ../../../lib/algebra/src/libalgebra.a  ../../../lib/aldor/src/libaldor.a ../../../aldor/lib/libfoam/libfoam.a ../../../aldor/lib/libfoamlib/libfoamlib.a -lm
 check_PROGRAMS += Trandom/Trandom
 Trandom_Trandom_SOURCES = Trandom/Trandom-aldormain.c Trandom/Trandom.c
 CLEANFILES += Trandom/Trandom-aldormain.c Trandom/Trandom.c Trandom/Trandom.ao

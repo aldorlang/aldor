@@ -184,7 +184,7 @@ emMergeUnit(Foam unit)
  * For each program definition in a unit, merge it.
  */
 
-int emDebugDefNo = 1; /* this is useful when debugging a perticular prog */
+int emDebugDefNo = -1; /* this is useful when debugging a perticular prog */
 
 local void
 emMergeDefs(Foam defs)
@@ -196,9 +196,9 @@ emMergeDefs(Foam defs)
 
 /* #if 0*/ /* enable this if you want to see in-out foam when debugging */
 		if (DEBUG(emerge)) {  
-			if (emDefNo == emDebugDefNo) {
+			if (emDebugDefNo == -1 || emDefNo == emDebugDefNo) {
 				fprintf(dbOut, "Prog--index%d--count%d<<\n",emDefNo,emCount); 
-				foamWrSExpr(dbOut, def,SXRW_Default);
+				foamPrintDb(def);
 			}
 		}
 /* #endif */
@@ -209,9 +209,9 @@ emMergeDefs(Foam defs)
 
 /* #if 0*/ /* enable this if you want to see in-out foam when debugging */
 		if (DEBUG(emerge)) {
-			if (emDefNo == emDebugDefNo) {
+			if (emDebugDefNo == -1 || emDefNo == emDebugDefNo) {
 				fprintf(dbOut, "Prog--index%d--count%d>>\n",emDefNo,emCount); 
-				foamWrSExpr(dbOut, def,SXRW_Default);
+				foamPrintDb(def);
 			}
 		}
 /* #endif */
@@ -229,7 +229,7 @@ emMergeProg(Foam prog)
 	EmUsageState  *  usedArray;
 	emLocalUsage	 = emMakeUsageVec(prog->foamProg.locals);
 	emOrigNumLocals	 = foamDDeclArgc(prog->foamProg.locals);
-	
+
 	/* previously on ER ... , no seriously, this keeps all the used 
 	   tags from the previous marking run */
 	usedArray = (EmUsageState *) stoAlloc(OB_Other, (emOrigNumLocals+1) * sizeof(EmUsageState));

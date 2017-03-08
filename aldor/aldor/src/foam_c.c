@@ -2199,7 +2199,7 @@ localStrHash(register String s)
 
 	while ((c = *s++) != 0) {
 		h ^= (h << 8);
-		h += (charToAscii(c) + 200041);
+		h += (c + 200041);
 		h &= 0x3FFFFFFF;
 	}
 	return h;
@@ -2281,7 +2281,7 @@ fiExportGlobalFun(String name, Ptr p, int size)
 {
 	GlobalLinkInfo		glInfo;
 
-	linkDEBUG(stdout, "Exporting %s %p %d\n", name, p, size);
+	linkDEBUG(stdout, "Exporting %s %p %d\n", name, (void *) p, size);
 
 	tblGlobalsInit();
 
@@ -2335,7 +2335,7 @@ fiImportGlobalFun(String name, Ptr * p)
 	}
 	else if (glInfo->size > -1)   {  /* already exported */ 
 		*p = glInfo->data;
-		linkDEBUG(stdout, "resolved with (%p) %p\n", glInfo, glInfo->data);
+		linkDEBUG(stdout, "resolved with (%p) %p\n", (void*) glInfo, (void*) glInfo->data);
 	}
 	else {
 		FiLinkList	l = (FiLinkList) FI_ALLOC(sizeof(fiConsCell), CENSUS_GlobalInfo);

@@ -30,3 +30,27 @@ extend Union(T: Tuple Type): with {
     }
 
 }
+
+#if ALDORTEST
+#include "aldor"
+#pile
+foo(): () ==
+    U == Union(x: String)
+    import from Assert String, String
+    import from U
+    s := [x == "hello"]
+    assertEquals(s.x, "hello")
+
+foo2(): () ==
+    U == Union(x: Cross(String, String))
+    import from Assert String, String
+    import from U
+    u := [x == ("hello", "mum")]
+    (a, b) := u.x
+    assertEquals(a, "hello")
+    assertEquals(b, "mum")
+
+foo()
+foo2()
+
+#endif

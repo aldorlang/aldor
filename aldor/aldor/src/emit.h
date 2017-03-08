@@ -88,6 +88,7 @@ extern void	emitTheAbSyn	    	(EmitInfo, AbSyn);
 extern void	emitTheIntermed	    	(EmitInfo, SymeList, Foam, AbSyn);
 extern void	emitTheDependencies    	(EmitInfo);
 extern void	emitTheSymbolExpr    	(EmitInfo, SymeList, AbSyn);
+extern void	emitTheAnnotatedAbSyn  	(EmitInfo, SExpr);
 extern void	emitTheFoamExpr	    	(EmitInfo, Foam);
 extern void	emitTheLisp	    	(EmitInfo, SExpr);
 extern void	emitTheC    	    	(EmitInfo, CCodeList);

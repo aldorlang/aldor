@@ -358,20 +358,7 @@ tibup0Within(Stab stab, AbSyn absyn, SymeList bsymes, Bool doDefault)
 	TForm		tf;
 	Bool		pending = false;
 
-	switch (abTag(absyn)) {
-	case AB_Nothing:
-		argc = 0;
-		argv = 0;
-		break;
-	case AB_Sequence:
-		argc = abArgc(absyn);
-		argv = abArgv(absyn);
-		break;
-	default:
-		argc = 1;
-		argv = &absyn;
-		break;
-	}
+	AB_SEQ_ITER(absyn, argc, argv);
 
 	xsymes = isymes = dsymes = ssymes = listNil(Syme);
 	for (i = 0; i < argc; i += 1) {
@@ -430,6 +417,7 @@ tibup0Within(Stab stab, AbSyn absyn, SymeList bsymes, Bool doDefault)
 			if (symeEqual(car(symes), dsyme)) {
 				xsyme = car(symes);
 				symeSetDefault(xsyme);
+				symeSetSrcPos(xsyme, symeSrcPos(dsyme));
 			}
 
 		/* If the default is inherited, use the default syme. */
@@ -463,7 +451,6 @@ tibup0DefaultBody(Stab stab, AbSyn absyn, Bool doDef)
 	AbSyn *argv;
 	int    argc, i;
 	
-
 	switch (abTag(absyn)) {
 	  case AB_Sequence:
 		argc = abArgc(absyn);
@@ -534,6 +521,10 @@ tibup0DefaultBody(Stab stab, AbSyn absyn, Bool doDef)
  *
  ***************************************************************************/
 
+local Bool tibup0ApplyGiveMessage(AbSyn absyn, Length argc, AbSynGetter argf);
+local void tibup0ApplyFilter(Stab stab, AbSyn absyn, TForm type, TPoss opTypes,
+			     AbSyn op, Length argc, AbSynGetter argf,
+			     TPoss *nopTypes, TPoss *retTypes);
 /*
  * ab ==> m(i,...)	 ->  tibup0Apply(stab, ab, 'apply,    n+1, [m,i,...])
  * ab ==> m(i,...) := x	 ->  tibup0Apply(stab, ab, 'set!,     n+2, [m,i,...,x])
@@ -652,12 +643,11 @@ local void
 tibup0ApplyFType(Stab stab, AbSyn absyn, TForm type,
 		 AbSyn op, Length argc, AbSynGetter argf)
 {
-	SatMask		mask = tfSatBupMask(), result;
 	Length		i;
 	TPossIterator	it;
 	TPoss		opTypes  = abReferTPoss(op);
-	TPoss		nopTypes = tpossEmpty();
-	TPoss		retTypes = tpossEmpty();
+	TPoss		nopTypes;
+	TPoss		retTypes;
 
 	if (abIsTheId(op, ssymJoin) && tpossIsUnique(opTypes) &&
 	    tfSatisfies(tfMapRet(tpossUnique(opTypes)), tfCategory)) {
@@ -668,6 +658,57 @@ tibup0ApplyFType(Stab stab, AbSyn absyn, TForm type,
 
 	for (i = 0; i < argc; i += 1)
 		tibup(stab, argf(absyn, i), tfUnknown);
+
+	tibup0ApplyFilter(stab, absyn, type, opTypes, op, argc, argf, &nopTypes, &retTypes);
+
+	/* If the op and the parts had meaning, then give an error. */
+	if (tpossCount(nopTypes) == 0) {
+		Bool giveMsg = tpossCount(opTypes) > 0
+			|| tibup0ApplyGiveMessage(absyn, argc, argf);
+
+		if (giveMsg) {
+			abState(absyn) = AB_State_Error;
+			abState(op) = AB_State_Error;
+		}
+		else {
+			if (tpossCount( opTypes ) == 0)
+				abState(absyn) = AB_State_Error;
+
+			abResetTPoss(op, nopTypes);
+		}
+	}
+	else
+		abResetTPoss(op, nopTypes);
+
+	abResetTPoss(absyn, retTypes);
+	tpossFree(opTypes);
+}
+
+local Bool
+tibup0ApplyGiveMessage(AbSyn absyn, Length argc, AbSynGetter argf)
+{
+	Bool	giveMsg = true;
+	int i;
+
+	for (i = 0; giveMsg && i < argc; i += 1) {
+		AbSyn	argi = argf(absyn, i);
+		if (abState(argi) == AB_State_Error ||
+		    (abState(argi) == AB_State_HasPoss &&
+		     tpossCount(abTPoss(argi)) == 0))
+			giveMsg = false;
+	}
+
+	return giveMsg;
+}
+
+local void
+tibup0ApplyFilter(Stab stab, AbSyn absyn, TForm type, TPoss opTypes,
+		  AbSyn op, Length argc, AbSynGetter argf, TPoss *pnopTypes, TPoss *pretTypes)
+{
+	SatMask		mask = tfSatBupMask(), result;
+	TPossIterator	it;
+	TPoss nopTypes = tpossEmpty();
+	TPoss retTypes = tpossEmpty();
 
 	/* Filter opTypes based on the argument and return types. */
 	for (tpossITER(it, opTypes); tpossMORE(it); tpossSTEP(it)) {
@@ -693,35 +734,8 @@ tibup0ApplyFType(Stab stab, AbSyn absyn, TForm type,
 
 		absFreeDeeply(sigma);
 	}
-
-	/* If the op and the parts had meaning, then give an error. */
-	if (tpossCount(nopTypes) == 0) {
-		Bool	giveMsg = (tpossCount(opTypes) > 0);
-
-		for (i = 0; giveMsg && i < argc; i += 1) {
-			AbSyn	argi = argf(absyn, i);
-			if (abState(argi) == AB_State_Error ||
-			    (abState(argi) == AB_State_HasPoss &&
-			    tpossCount(abTPoss(argi)) == 0))
-				giveMsg = false;
-		}
-
-		if (giveMsg) {
-			abState(absyn) = AB_State_Error;
-			abState(op) = AB_State_Error;
-		}
-		else {
-			if (tpossCount( opTypes ) == 0)
-				abState(absyn) = AB_State_Error;
-
-			abResetTPoss(op, nopTypes);
-		}
-	}
-	else
-		abResetTPoss(op, nopTypes);
-
-	abResetTPoss(absyn, retTypes);
-	tpossFree(opTypes);
+	*pnopTypes = nopTypes;
+	*pretTypes = retTypes;
 }
 
 /****************************************************************************
@@ -1135,21 +1149,81 @@ tibupComma(Stab stab, AbSyn absyn, TForm type)
 local void
 tibupApply(Stab stab, AbSyn absyn, TForm type)
 {
-	AbSyn		op = abApplyOp(absyn);
-	TPoss		tp;
+	AbSyn op = abApplyOp(absyn);
+	AbSyn imp = NULL;
+	TPoss opTypes;
+	TPoss nopTypes;
+	TPoss retTypes;
+	TPoss impOpTypes;
+	TPoss impRetTypes;
+	int i;
 
-	tibup(stab, op, tfUnknown);
+	tibup(stab, abApplyOp(absyn), tfUnknown);
 
-	tp = abReferTPoss(op);
+	opTypes = abReferTPoss(op);
 
-	if (tpossHasMapType(tp) || tpossCount(tp) == 0)
-		tibup0ApplyFType(stab, absyn, type,
-				 op, abApplyArgc(absyn), abApplyArgf);
-	else
-		tibup0ApplySym(stab, absyn, type,
-			       ssymApply, abArgc(absyn), abArgf, NULL);
+	if (abIsTheId(op, ssymJoin) && tpossIsUnique(opTypes) &&
+	    tfSatisfies(tfMapRet(tpossUnique(opTypes)), tfCategory)) {
+		tibup0ApplyJoin(stab, absyn, type, op, abApplyArgc(absyn), abApplyArgf);
+		tpossFree(opTypes);
+		return;
+	}
 
-	tpossFree(tp);
+	for (i = 0; i < abApplyArgc(absyn); i += 1)
+		tibup(stab, abApplyArg(absyn, i), tfUnknown);
+
+	tibup0ApplyFilter(stab, absyn, type, opTypes,
+			  op, abApplyArgc(absyn), abApplyArgf, &nopTypes, &retTypes);
+
+	if (tpossHasNonMapType(opTypes)) {
+		imp = abNewId(abPos(absyn), ssymApply);
+
+		abSetImplicit(absyn, imp);
+		tibup(stab, imp, tfUnknown);
+
+		tibup0ApplyFilter(stab, absyn, type, abTPoss(imp),
+				  imp, abArgc(absyn), abArgf, &impOpTypes, &impRetTypes);
+
+		if (tpossCount(impOpTypes) > 0) {
+			TPoss tmp2 = retTypes;
+			retTypes = tpossUnion(retTypes, impRetTypes);
+			tpossFree(tmp2);
+		}
+		else {
+			abFree(imp);
+			imp = NULL;
+			abSetImplicit(absyn, NULL);
+		}
+	}
+
+	/* If the op and the parts had meaning, then give an error. */
+	if (tpossCount(retTypes) == 0) {
+		Bool giveMsg = tpossCount(opTypes) > 0
+			|| tibup0ApplyGiveMessage(absyn, abApplyArgc(absyn), abApplyArgf);
+
+		if (giveMsg) {
+			abState(absyn) = AB_State_Error;
+			abState(op) = AB_State_Error;
+		}
+		else {
+			if (tpossCount( opTypes ) == 0)
+				abState(absyn) = AB_State_Error;
+
+			if (!imp)
+				abResetTPoss(op, nopTypes);
+			if (imp)
+				abResetTPoss(imp, impOpTypes);
+		}
+	}
+	else {
+		if (!imp)
+			abResetTPoss(op, nopTypes);
+		if (imp)
+			abResetTPoss(imp, impOpTypes);
+	}
+
+	abResetTPoss(absyn, retTypes);
+	tpossFree(opTypes);
 }
 
 /****************************************************************************
@@ -1281,6 +1355,7 @@ tibup0InferLhs(Stab stab, AbSyn absyn, AbSyn lhs, AbSyn rhs, TPoss tprhs)
 		trhsv= &trhs;
 	}
 	else if (abTag(lhs) == AB_Comma) {
+		trhs = tfDefineeType(trhs);
 		rhs = NULL;
 		if (tfIsCross(trhs) && tfCrossArgc(trhs) == lhsc)
 			trhsv = tfCrossArgv(trhs);
@@ -2059,15 +2134,8 @@ tibup0RefImps(Stab stab, AbSyn absyn, TForm type)
 	 */
 	/* If the op and the parts had no meaning, then give an error. */
 	if (tpossCount(nopTypes) == 0) {
-		Bool	giveMsg = (tpossCount(opTypes) > 0);
-
-		for (i = 0; giveMsg && i < abArgc(absyn); i += 1) {
-			AbSyn	argi = abArgf(absyn, i);
-			if (abState(argi) == AB_State_Error ||
-			    (abState(argi) == AB_State_HasPoss &&
-			    tpossCount(abTPoss(argi)) == 0))
-				giveMsg = false;
-		}
+		Bool giveMsg = tpossCount(opTypes) > 0
+			|| tibup0ApplyGiveMessage(absyn, abArgc(absyn), abApplyArgf);
 
 		if (giveMsg) {
 			abState(absyn) = AB_State_Error;
@@ -2269,15 +2337,20 @@ tibupIf(Stab stab, AbSyn absyn, TForm type)
 	 */
 	nTest = abExpandDefs(stab, test);
 
+	if (abIsSefo(nTest)) {
+		ablogAndPush(&abCondKnown, &saveCond, nTest, true); /* test, true); */
+		tibup(stab, thenAlt, type);
+		ablogAndPop (&abCondKnown, &saveCond);
 
+		ablogAndPush(&abCondKnown, &saveCond, nTest, false); /* test, false); */
+		tibup(stab, elseAlt, abIsNothing(elseAlt) ? tfUnknown : type);
+		ablogAndPop (&abCondKnown, &saveCond);
+	}
+	else {
+		tibup(stab, thenAlt, type);
+		tibup(stab, elseAlt, abIsNothing(elseAlt) ? tfUnknown : type);
+	}
 	/* Analyze the branches in the presence of the condition. */
-	ablogAndPush(&abCondKnown, &saveCond, nTest, true); /* test, true); */
-	tibup(stab, thenAlt, type);
-	ablogAndPop (&abCondKnown, &saveCond);
-
-	ablogAndPush(&abCondKnown, &saveCond, nTest, false); /* test, false); */
-	tibup(stab, elseAlt, abIsNothing(elseAlt) ? tfUnknown : type);
-	ablogAndPop (&abCondKnown, &saveCond);
 
 	/* No value required. */
 	if (abUse(absyn) == AB_Use_NoValue)
@@ -2672,7 +2745,7 @@ tibupQualify(Stab stab, AbSyn absyn, TForm type)
 	}
 	else {
 		symes  = listNil(Syme);
-		msymes = tfGetDomImports(tforg);
+		msymes = tfGetDomImportsByName(tforg, sym);
 		for ( ; msymes; msymes = cdr(msymes)) {
 			Syme syme = car(msymes);
 			if (sym != symeId(syme))

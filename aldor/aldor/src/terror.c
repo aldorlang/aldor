@@ -1254,7 +1254,7 @@ bputAllValidMeanings(Buffer obuf, Stab stab, AbSyn ab, Length argc,
 	SatMask		mask = tfSatTErrorMask(), result;
 	SymeList	symes;
 
-	for (symes = tfGetDomImports(tf); symes; symes = cdr(symes)) {
+	for (symes = tfGetDomImportsByName(tf, idSym); symes; symes = cdr(symes)) {
 		Syme syme = car(symes);
 		TForm opType;
 
@@ -1371,6 +1371,7 @@ bputBadArgType(TRejectInfo trInfo, Buffer obuf, AbSyn ab, Length argc,
 	for ( ; trInfo->i < trInfo->argc &&
 	     trWhy(trCurrent(trInfo)) == TR_BadArgType;
 	     trInfo->i++) {
+		Length iargc;
 		tr = trCurrent(trInfo);
 		abArgi = argf(ab, trArgN(tr));
 
@@ -1379,8 +1380,8 @@ bputBadArgType(TRejectInfo trInfo, Buffer obuf, AbSyn ab, Length argc,
 
 		bputTReject(obuf, tr, fmtOp);
 
-		argc = tfMapHasDefaults(opType) ? tfMapArgc(opType) : argc;
-		parType = tfAsMultiArgN(tf, argc, trParN(tr));
+		iargc = tfMapHasDefaults(opType) ? tfMapArgc(opType) : argc;
+		parType = tfAsMultiArgN(tf, iargc, trParN(tr));
 		fmtParType = fmtTForm(parType);
 		
 		/* "rejected because arg .. did not match ... */
@@ -1513,7 +1514,7 @@ bputBadFnType0(TRejectInfo trInfo, Buffer obuf, TForm type, String fmtOp)
 
 	for ( i = 0; i < trInfo->argc &&
 	     trWhy(trInfo->argv[i]) == TR_BadFnType; i++) {
-		TForm tfRet = tfMapRet(trType(trInfo->argv[i]));
+		TForm tfRet = tfMapRet(tfDefineeType(trType(trInfo->argv[i])));
 		tfRet = tfDefineeType(tfRet);
 		tpossAdd1(retTypes, tfRet);
 	}

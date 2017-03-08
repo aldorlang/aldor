@@ -87,6 +87,7 @@ AC_CONFIG_FILES(
    aldor/subcmd/unitools/Makefile
    aldor/subcmd/testaldor/Makefile
    aldor/src/Makefile
+   aldor/src/opsys_port.h
    aldor/lib/Makefile
    aldor/lib/libfoamlib/Makefile
    aldor/lib/libfoamlib/al/Makefile
@@ -98,6 +99,7 @@ AC_CONFIG_FILES(
    aldor/tools/Makefile
    aldor/tools/unix/Makefile
    aldor/tools/unix/aldor
+   aldor/tools/unix/gdb-aldor
    lib/Makefile
 
    dnl Aldor base library.
@@ -109,6 +111,7 @@ AC_CONFIG_FILES(
    lib/aldor/src/base/Makefile
    lib/aldor/src/arith/Makefile
    lib/aldor/src/datastruc/Makefile
+   lib/aldor/src/lisp/Makefile
    lib/aldor/src/test/Makefile
    lib/aldor/src/util/Makefile
    lib/aldor/src/gmp/Makefile
@@ -126,6 +129,7 @@ AC_CONFIG_FILES(
    lib/algebra/src/categories/Makefile
    lib/algebra/src/basic/Makefile
    lib/algebra/src/basic/compbug/Makefile
+   lib/algebra/src/logic/Makefile
    lib/algebra/src/mat/Makefile
    lib/algebra/src/mat/gauss/Makefile
    lib/algebra/src/mat/modular/Makefile

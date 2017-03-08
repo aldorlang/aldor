@@ -13,6 +13,7 @@
 #include "foam.h"
 #include "tfcond.h"
 #include "errorset.h"
+#include "symeset.h"
 
 extern SymeList tfSetSymesFn(TForm, SymeList);
 
@@ -141,7 +142,9 @@ struct tform {
 	SymeList		catExports;	/* Exports from categories. */
 	SymeList		thdExports;	/* Exports from 3d-order. */
 
-	SymeList		domImports;	/* Imports with % replaced. */
+	SymeSet			domImports;	/* Imports with % replaced. */
+
+	SymbolTSet              domExportNames; /* Symbols exported */
 
 	TConstList		consts;		/* Promises of satisfaction. */
 	TFormList		queries;	/* Questions asked: D has C. */
@@ -185,23 +188,21 @@ typedef Bool	(*TFormPredicate)	(TForm);
 #define			tfParents(tf)		((tf)->parents)
 #define			tfSymes(tf)		((tf)->symes)
 
-#define			tfDomExports(tf)	((tf)->domExports)
-#define			tfCatExports(tf)	((tf)->catExports)
-#define			tfThdExports(tf)	((tf)->thdExports)
+extern SymeSet	 	tfDomImports		(TForm);
+extern SymeList		tfDomExports		(TForm);
+extern SymbolTSet	tfDomExportNames	(TForm);
+extern SymeList		tfCatExports		(TForm);
+extern SymeList 	tfThdExports		(TForm);
 
-#define			tfDomImports(tf)	((tf)->domImports)
+extern void		tfSetCatExports		(TForm, SymeList);
+extern void		tfSetThdExports		(TForm, SymeList);
+extern void		tfSetDomExportNames	(TForm, SymbolTSet);
 
 #define			tfSetStab(tf,st)	((tf)->stab = (st))
 #define			tfSetSelf(tf,sl)	((tf)->self = (sl))
 #define			tfSetSelfSelf(tf,sl)	((tf)->selfself = (sl))
 #define			tfSetParents(tf,sl)	((tf)->parents = (sl))
 #define			tfSetSymes(tf,sl)	((tf)->symes = (sl))
-
-#define			tfSetDomExports(tf,sl)	(tfDomExports(tf) = (sl))
-#define			tfSetCatExports(tf,sl)	(tfCatExports(tf) = (sl))
-#define			tfSetThdExports(tf,sl)	(tfThdExports(tf) = (sl))
-
-#define			tfSetDomImports(tf,sl)	(tfDomImports(tf) = (sl))
 
 #define			tfConsts(tf)		((tf)->consts)
 
@@ -275,6 +276,7 @@ extern TForm		tfMeaning		(Stab, AbSyn, TForm);
 extern void		tfSetMeaningArgs	(TForm);
 
 extern Syme		tfpOpSyme		(Stab, Symbol, Length);
+extern Syme		tfpIdSyme		(Stab, Symbol);
 
 /*
  * Type form syntax.
@@ -356,6 +358,7 @@ extern TForm		tfCatExportsPending	(TForm);
 extern TForm		tfThdExportsPending	(TForm);
 
 extern SymeList		tfGetDomExports		(TForm);
+extern SymbolTSet	tfGetDomExportNames	(TForm);
 extern SymeList		tfGetCatExports		(TForm);
 extern SymeList		tfGetThdExports		(TForm);
 
@@ -366,8 +369,12 @@ extern TQualList	tfGetDomCascades	(TForm);
 extern TQualList	tfGetCatCascades	(TForm);
 extern TQualList	tfGetThdCascades	(TForm);
 
+extern SymeSet		tfStabGetDomImportSet	(Stab, TForm);
+extern SymeList		tfStabGetDomImportsByName(Stab, TForm, Symbol);
 extern SymeList		tfStabGetDomImports	(Stab, TForm);
 extern SymeList		tfGetDomImports		(TForm);
+extern SymeSet		tfGetDomImportSet	(TForm);
+extern SymeList		tfGetDomImportsByName	(TForm, Symbol);
 extern SymeList		tfGetCatImportsFrWith	(Sefo, SymeList);
 extern Syme		tfHasDomExportMod	(TForm,SymeList,Symbol,TForm);
 extern Syme		tfHasDomImport		(TForm, Symbol, TForm);

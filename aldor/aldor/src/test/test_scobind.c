@@ -5,10 +5,13 @@
 #include "testlib.h"
 #include "ablogic.h"
 #include "symbol.h"
+#include "abuse.h"
+#include "comsg.h"
 
 local void testScobind(void);
 local void testScobindCondition(void);
 local void testScobindConditionMulti(void);
+local void testScobindExtends(void);
 
 /* XXX: from test_tinfer.c */
 void init(void);
@@ -23,6 +26,7 @@ scobindTest(void)
 	TEST(testScobind);
 	TEST(testScobindCondition);
 	TEST(testScobindConditionMulti);
+	TEST(testScobindExtends);
 	fini();
 }
 
@@ -101,4 +105,22 @@ scobindTestCheckUnique(Stab stab, Symbol sym)
 	SymeList sl = stabGetMeanings(stab, ablogFalse(), sym);
 	testIntEqual("unique", 1, listLength(Syme)(sl));
 	testPointerEqual("name", sym, symeId(car(sl)));
+}
+
+local void
+testScobindExtends()
+{
+	AbSyn ab1;
+	CoMsg message;
+
+	initFile();
+	Stab stabGlobal = stabNewGlobal();
+	Stab stabFile = stabNewFile(stabGlobal);
+	Stab stab = stabFile;
+
+	ab1 = abqParse("E1: Category == with Foo;\nextend E1: Category == with");
+	abPutUse(ab1, AB_Use_NoValue);
+	scopeBind(stabFile, ab1);
+	testIntEqual("Error count", 0, comsgErrorCount());
+	finiFile();
 }

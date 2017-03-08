@@ -70,7 +70,8 @@ gfjImportApply(Syme syme)
 	gen0AddParam(foamNewDecl(FOAM_Word, strCopy("this"), emptyFormatSlot));
 
 	gen0AddStmt(foamNewDef(foamNewLex(int0, int0), foamNewPar(int0)), NULL);
-	gen0AddStmt(foamNewReturn(foamNewClos(foamNewEnv(int0), foamNewConst(innerConstNum))), NULL);
+	gen0AddStmt(foamNewReturn(foamNewCast(FOAM_Word,
+					      foamNewClos(foamNewEnv(int0), foamNewConst(innerConstNum)))), NULL);
 
 	gen0ProgAddFormat(fmtNum, 
 			  foamNewDDecl(FOAM_DDecl_LocalEnv, 

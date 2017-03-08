@@ -130,6 +130,7 @@ libgen_a_SOURCES =	\
 	strops.c	\
 	symbol.c	\
 	table.c		\
+	ttable.c	\
 	termtype.c	\
 	test.c		\
 	textansi.c	\
@@ -149,6 +150,7 @@ libstruct_a_SOURCES =	\
 	abpretty.c	\
 	absub.c		\
 	absyn.c		\
+	annabs.c	\
 	archive.c	\
 	axlobs.c	\
 	compcfg.c	\
@@ -176,6 +178,7 @@ libstruct_a_SOURCES =	\
 	srcline.c	\
 	stab.c		\
 	syme.c		\
+	symeset.c	\
 	symcoinfo.c	\
 	tconst.c	\
 	tfcond.c	\
@@ -266,6 +269,8 @@ testsuite =			\
 	test/test_ablogic.c 	\
 	test/test_abnorm.c	\
 	test/test_absyn.c 	\
+	test/test_annabs.c 	\
+	test/test_archive.c	\
 	test/test_bigint.c 	\
 	test/test_bitv.c 	\
 	test/test_errorset.c	\
@@ -286,10 +291,13 @@ testsuite =			\
 	test/test_srcpos.c	\
 	test/test_stab.c	\
 	test/test_syme.c	\
+	test/test_symeset.c	\
 	test/test_tform.c	\
 	test/test_tibup.c	\
 	test/test_tfsat.c	\
-	test/test_tinfer.c
+	test/test_tinfer.c	\
+	test/test_tposs.c	\
+	test/test_tset.c
 
 testall_SOURCES =	\
 	$(testsuite)	\
@@ -301,6 +309,9 @@ testall_SOURCES =	\
 testall_LDADD = libphase.a libstruct.a libgen.a libport.a -lm
 testall_LDFLAGS = 
 testall_CFLAGS = -save-temps $(STRICTCFLAGS)
+
+CFLAGS=-O0 -g
+
 #
 # Special rules
 #

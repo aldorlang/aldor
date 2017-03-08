@@ -40,7 +40,9 @@ main(int argc, char *argv[])
 	if (testShouldRun("errorset")) errorSetTestSuite();
 	if (testShouldRun("bitv")) bitvTestSuite();
 	if (testShouldRun("list")) listTestSuite();
+	if (testShouldRun("tset")) tsetTestSuite();
 	if (testShouldRun("fname")) fnameTest();
+	if (testShouldRun("archive")) archiveTestSuite();
 	if (testShouldRun("foam")) foamTest();
 	if (testShouldRun("format")) formatTest();
 	if (testShouldRun("flog")) flogTest();
@@ -56,10 +58,13 @@ main(int argc, char *argv[])
 	if (testShouldRun("tform")) tformTest();
 	if (testShouldRun("scobind")) scobindTest();
 	if (testShouldRun("syme")) symeTest();
+	if (testShouldRun("symeset")) symeSetTestSuite();
 	if (testShouldRun("tibup")) tibupTest();
 	if (testShouldRun("tfsat")) tfsatTest();
+	if (testShouldRun("annabs")) annotateAbSynTest();
 	if (testShouldRun("retype")) retypeTest();
 	if (testShouldRun("genfoam")) genfoamTestSuite();
+	if (testShouldRun("tposs")) tpossTest();
 
 	testIntEqual("fluidlevel", 0, fluidLevel);
 

@@ -3190,6 +3190,7 @@ fintEvalBCall(DataObj retDataObj)
 	case FOAM_BVal_Halt:
 
 		(void)fintEval(&expr1);
+		fintWhere(0);
 		switch ((int)expr1.fiSInt) {
 		case FOAM_Halt_BadDependentType:
 		  fiRaiseException((FiWord)"(Aldor error) Bad use of a dependent type");
@@ -3643,7 +3644,7 @@ fintEval_(DataObj retDataObj)
 				      prog0->name,
 				      prog0->unit->name);
 			for (k = 0; k < argc; k++)
-				(void)fprintf(dbOut, "%p ", parValue(k).fiPtr);
+				(void)fprintf(dbOut, "%p ", (void *) parValue(k).fiPtr);
 			(void)fprintf(dbOut, ")\n");
 		}
 
@@ -4216,7 +4217,7 @@ fintEval_(DataObj retDataObj)
 		for (n = 0; n < argc; n++) {
 			fintGetSInt(i);
 			/* fintASetElem(type, retDataObj, n, expr); !!*/
-			((char *)(retDataObj->fiArr))[n] = charFrAscii(i);
+			((char *)(retDataObj->fiArr))[n] = i;
 		}
 		((char *)(retDataObj->fiArr))[argc] = '\0';
 
@@ -5987,7 +5988,6 @@ fintRdChars(int cc)
 
 	s = strAlloc(cc);
 	(void)fintGetChars(s, cc);
-	s = strnFrAscii(s,cc);
 
 	return s;
 }
@@ -6068,7 +6068,7 @@ fintWhere(int level)
 
 	if (prog)
 		(void)fprintf(dbOut, "#%d %8p in <%s> at unit [%s]\n", int0,
-			      bp, prog->name, prog->unit->name);
+			      (void*) bp, prog->name, prog->unit->name);
 	else
 		(void)fprintf(dbOut, "(Unknown current prog)\n");
 

@@ -1,6 +1,9 @@
 # ..From autoconf
 @SET_MAKE@
 
+# For AM_V_*
+AM_DEFAULT_VERBOSITY = @AM_DEFAULT_VERBOSITY@
+
 VPATH = @srcdir@
 abs_top_builddir = @abs_top_builddir@
 srcdir = @srcdir@
@@ -8,6 +11,46 @@ top_builddir = @top_builddir@
 builddir = @builddir@
 abs_top_srcdir = @abs_top_srcdir@
 subdir = aldor/test
+
+AM_V_ALDOR = $(am__v_ALDOR_$(V))
+am__v_ALDOR_ = $(am__v_ALDOR_$(AM_DEFAULT_VERBOSITY))
+am__v_ALDOR_0 = @echo "  ALDOR   " $@;
+
+AM_V_ALDOR_AP = $(am__v_ALDOR_AP_$(V))
+am__v_ALDOR_AP_ = $(am__v_ALDOR_AP_$(AM_DEFAULT_VERBOSITY))
+am__v_ALDOR_AP_0 = @echo "  ALDOR-AP   " $@;
+
+AM_V_ALDOR_EXE = $(am__v_ALDOR_EXE_$(V))
+am__v_ALDOR_EXE_ = $(am__v_ALDOR_EXE_$(AM_DEFAULT_VERBOSITY))
+am__v_ALDOR_EXE_0 = @echo "  ALDOR-EXE   " $@;
+
+AM_V_ALDOR_OBJ = $(am__v_ALDOR_OBJ_$(V))
+am__v_ALDOR_OBJ_ = $(am__v_ALDOR_OBJ_$(AM_DEFAULT_VERBOSITY))
+am__v_ALDOR_OBJ_0 = @echo "  ALDOR-OBJ   " $@;
+
+AM_V_ALDOR_GENC = $(am__v_ALDOR_GENC_$(V))
+am__v_ALDOR_GENC_ = $(am__v_ALDOR_GENC_$(AM_DEFAULT_VERBOSITY))
+am__v_ALDOR_GENC_0 = @echo "  ALDOR-GENC   " $@;
+
+AM_V_ALDOR_FM = $(am__v_ALDOR_FM_$(V))
+am__v_ALDOR_FM_ = $(am__v_ALDOR_GENC_$(AM_DEFAULT_VERBOSITY))
+am__v_ALDOR_FM_0 = @echo "  ALDOR-FM   " $@;
+
+AM_V_ALDOR_CMD = $(am__v_ALDOR_CMD_$(V))
+am__v_ALDOR_CMD_ = $(am__v_ALDOR_CMD_$(AM_DEFAULT_VERBOSITY))
+am__v_ALDOR_CMD_0 = @echo "  ALDOR-CMD   " $@;
+
+AM_V_ALDOR_JAVA = $(am__v_ALDOR_JAVA_$(V))
+am__v_ALDOR_JAVA_ = $(am__v_ALDOR_JAVA_$(AM_DEFAULT_VERBOSITY))
+am__v_ALDOR_JAVA_0 = @echo "  ALDOR-JAVA   " $@;
+
+AM_V_JAVAC = $(am__v_JAVAC_$(V))
+am__v_JAVAC_ = $(am__v_JAVAC_$(AM_DEFAULT_VERBOSITY))
+am__v_JAVAC_0 = @echo "  JAVAC   " $@;
+
+AM_V_ALDOR_JAVATEST = $(am__v_ALDOR_JAVATEST_$(V))
+am__v_ALDOR_JAVATEST = $(am__v_ALDOR_JAVATEST_$(AM_DEFAULT_VERBOSITY))
+am__v_ALDOR_JAVATEST_0 = @echo "  ALDOR-JAVATEST   " $@;
 
 all: really-all
 
@@ -21,6 +64,9 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	    cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ ;; \
 	esac;
 
+AM_DBG := $(if $(filter 1,$(DBG)), gdb --args, $(DBG))
+AM_DBG_J := $(if $(filter 1,$(DBG_J)), gdb --args, $(DBG_J))
+
 aldorsrcdir = $(abs_top_srcdir)/aldor/src
 aldorexedir = $(abs_top_builddir)/aldor/src
 aldortooldir = $(abs_top_builddir)/aldor/subcmd/unitools
@@ -30,8 +76,8 @@ foamsrcdir = $(abs_top_srcdir)/aldor/lib/libfoam
 foamdir = $(abs_top_builddir)/aldor/lib/libfoam
 
 aptests := exquo
-fmtests := rectest enumtest clos strtable1 
-ctests  := rectest enumtest
+fmtests := rectest enumtest clos strtable1 simple apply
+ctests  := rectest enumtest multinever maptuple
 otests  := enumtest
 xtests := enumtest
 @BUILD_JAVA_TRUE@jruntests := jimport
@@ -50,8 +96,9 @@ jimport_opts := -Q3
 
 opt1_AXLFLAGS=-Y$(foamdir)/al -I $(foamsrcdir)/al -lRuntimeLib=foam -Q9
 strtable1_AXLFLAGS=-Y$(foamdir)/al -I $(foamsrcdir)/al -lRuntimeLib=foam -Q9
-
 clos_AXLFLAGS := -Q2
+simple_AXLFLAGS=-O
+multinever_AXLFLAGS = -Q9
 
 _aptests := $(sort $(aptests))
 _ctests  := $(sort $(ctests)  $(otests))
@@ -59,7 +106,7 @@ _ctests  := $(sort $(ctests)  $(otests))
 _jruntests := $(sort $(jruntests))
 _jtests  := $(sort $(jtests) $(_jruntests))
 _xtests  := $(sort $(xtests))
-_fmtests := $(sort $(fmtests) $(_jtests))
+_fmtests := $(sort $(fmtests) $(_jtests) $(_ctests))
 _otests  := $(sort $(otests) $(x_extra))
 _ctests  := $(sort $(ctests)  $(_otests))
 _aotests := $(sort $(_fmtests) $(_ctests) $(_xtests))
@@ -67,37 +114,43 @@ _aotests := $(sort $(_fmtests) $(_ctests) $(_xtests))
 nfile := -Nfile=$(aldorsrcdir)/aldor.conf
 
 $(patsubst %, out/fm/%.fm, $(_fmtests)): out/fm/%.fm: out/ao/%.ao
-	mkdir -p $$(dirname $@)
+	$(AM_V_ALDOR_FM)		\
+	mkdir -p $$(dirname $@);	\
 	$(aldorexedir)/aldor $(nfile) -Ffm=$(builddir)/$@ $<
 
 $(patsubst %, out/c/%.c, $(_ctests)): out/c/%.c: out/ao/%.ao
-	mkdir -p $$(dirname $@)
+	$(AM_V_ALDOR_GENC)		\
+	mkdir -p $$(dirname $@);	\
 	$(aldorexedir)/aldor $(nfile) -Fc=$(builddir)/$@ $<
 
 $(patsubst %, out/java/%.java, $(_jtests)): $(aldorexedir)/javagen
 $(patsubst %, out/java/%.java, $(_jtests)): out/java/%.java: out/fm/%.fm
-	mkdir -p $$(dirname $@)
-	$(DBG_J) $(aldorexedir)/aldor $(nfile) \
+	$(AM_V_ALDOR_JAVA)		\
+	mkdir -p $$(dirname $@);	\
+	$(AM_DBG_J) $(aldorexedir)/aldor $(nfile) \
 		$(if $(filter $(_jruntests), $*), -Jmain,) \
 		-Fjava=$(builddir)/$@ $<
 
 javaopts=-cp $(abs_top_builddir)/aldor/lib/java/src/foamj.jar
 
 $(patsubst %, out/java/%.class, $(_jtests)): out/java/%.class: out/java/%.java
+	$(AM_V_JAVAC) \
 	(cd $(builddir)/out/java; javac $(javaopts) $*.java)
 
 # Create .o files locally as unicl creates files in the
 # current directory...
 $(patsubst %, %.o, $(_otests)): %.o: out/ao/%.ao
-	mkdir -p $$(dirname $@)
-	$(aldorexedir)/aldor $(nfile) 	\
+	$(AM_V_ALDOR_OBJ)		\
+	mkdir -p $$(dirname $@);	\
+	$(AM_DBG) $(aldorexedir)/aldor $(nfile) 	\
 			      -Ccc=$(aldortooldir)/unicl	\
 			      -Cargs="-Wconfig=$(aldorsrcdir)/aldor.conf $(UNICLFLAGS) -I$(aldorsrcdir)" \
 			      -Fo=$(builddir)/$@ $<
 
 $(patsubst %, out/ap/%.ap, $(_aptests)): out/ap/%.ap: $(srcdir)/%.as
-	mkdir -p $$(dirname $@)
-	$(aldorexedir)/aldor $(nfile) -I$(foamsrclibdir)/al \
+	$(AM_V_ALDOR_AP)		\
+	mkdir -p $$(dirname $@);	\
+	$(AM_DBG) $(aldorexedir)/aldor $(nfile) -I$(foamsrclibdir)/al \
 			      -Fap=$(builddir)/$@ $<
 
 define aldor_args
@@ -111,20 +164,24 @@ define aldor_args
 endef
 
 $(patsubst %, out/ap/%.ap, $(_aotests)): out/ap/%.ap: %.as
-	mkdir -p $$(dirname $@)
+	$(AM_V_ALDOR_AP)		\
+	mkdir -p $$(dirname $@);	\
 	$(aldorexedir)/aldor $(nfile) -Fap=$@ $(srcdir)/$*.as
 
 $(patsubst %, out/ao/%.ao, $(_aotests)): out/ao/%.ao: %.as
-	mkdir -p $$(dirname $@)
-	$(DBG) $(aldorexedir)/aldor $($*_opts) $(aldor_args)
+	$(AM_V_ALDOR)			\
+	mkdir -p $$(dirname $@);	\
+	$(AM_DBG) $(aldorexedir)/aldor $($*_opts) $(aldor_args)
 
 $(patsubst %, out/ao/%.cmd, $(_aotests)): out/ao/%.cmd: %.as
-	mkdir -p $$(dirname $@)
+	$(AM_V_ALDOR_CMD)	 \
+	mkdir -p $$(dirname $@); \
 	echo run '$(aldor_args)' > $@
 
 $(patsubst %, %.exe, $(_xtests)): %.exe: %.o rtexns.o
-	rm -f $@
-	$(DBG) $(aldorexedir)/aldor $(nfile) 		\
+	$(AM_V_ALDOR_EXE)				\
+	rm -f $@;					\
+	$(AM_DBG) $(aldorexedir)/aldor $(nfile) 	\
 		      -Ccc=$(aldortooldir)/unicl	\
 		      -Y$(foamdir)			\
 		      -Y$(foamlibdir)			\
@@ -134,10 +191,11 @@ $(patsubst %, %.exe, $(_xtests)): %.exe: %.o rtexns.o
 
 #		      -Fmain=bobthebuilder.c		\
 
-$(patsubst %, %-javatest,$(jruntests)): %-javatest: out/java/%.class
+$(patsubst %, %-javatest,$(_jruntests)): %-javatest: out/java/%.class
+	$(AM_V_ALDOR_JAVATEST)	\
 	java -cp out/java:$(abs_top_builddir)/aldor/lib/java/src/foamj.jar:$(abs_top_builddir)/aldor/lib/libfoam/al/foam.jar:$(abs_top_builddir)/aldor/lib/libfoamlib/al/foamlib.jar: $*
 
-check-java: $(patsubst %,%-javatest,$(jruntests))
+check-java: $(patsubst %,%-javatest,$(_jruntests))
 
 .PHONY: check-java
 
@@ -146,13 +204,13 @@ check: check-java
 really-all: \
      $(patsubst %,out/ap/%.ap,$(_aptests)) \
      $(patsubst %,out/ao/%.cmd,$(_aotests)) \
-     $(patsubst %,out/fm/%.fm,$(fmtests)) \
-     $(patsubst %,out/c/%.c,$(ctests)) \
-     $(patsubst %,out/java/%.java,$(jtests)) \
-     $(patsubst %,out/java/%.class,$(jtests)) \
-     $(patsubst %,out/java/%.class,$(jruntests)) \
-     $(patsubst %,%.o,$(otests))  \
-     $(patsubst %,%.exe,$(xtests))
+     $(patsubst %,out/fm/%.fm,$(_fmtests)) \
+     $(patsubst %,out/c/%.c,$(_ctests)) \
+     $(patsubst %,out/java/%.java,$(_jtests)) \
+     $(patsubst %,out/java/%.class,$(_jtests)) \
+     $(patsubst %,out/java/%.class,$(_jruntests)) \
+     $(patsubst %,%.o,$(_otests))  \
+     $(patsubst %,%.exe,$(_xtests))
 
 
 .PHONY: all

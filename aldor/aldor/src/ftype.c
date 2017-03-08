@@ -16,6 +16,7 @@ ftypeNo(String ftype)
 	if (ftypeEqual(ftype, FTYPE_SRC))	return FTYPENO_SRC;
 	if (ftypeEqual(ftype, FTYPE_INCLUDED))	return FTYPENO_INCLUDED;
 	if (ftypeEqual(ftype, FTYPE_ABSYN))	return FTYPENO_ABSYN;
+	if (ftypeEqual(ftype, FTYPE_ANNABS))	return FTYPENO_ANNABS;
 	if (ftypeEqual(ftype, FTYPE_OLDABSYN))	return FTYPENO_OLDABSYN;
 	if (ftypeEqual(ftype, FTYPE_INTERMED))	return FTYPENO_INTERMED;
 	if (ftypeEqual(ftype, FTYPE_FOAMEXPR))	return FTYPENO_FOAMEXPR;
@@ -43,6 +44,7 @@ ftypeString(FTypeNo ftype)
 	case FTYPENO_SRC:	return FTYPE_SRC;
 	case FTYPENO_INCLUDED:	return FTYPE_INCLUDED;
 	case FTYPENO_ABSYN:	return FTYPE_ABSYN;
+	case FTYPENO_ANNABS:	return FTYPE_ANNABS;
 	case FTYPENO_OLDABSYN:	return FTYPE_OLDABSYN;
 	case FTYPENO_INTERMED:	return FTYPE_INTERMED;
 	case FTYPENO_FOAMEXPR:	return FTYPE_FOAMEXPR;

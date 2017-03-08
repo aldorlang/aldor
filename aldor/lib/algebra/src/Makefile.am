@@ -8,6 +8,7 @@ SUBDIRS =			\
 	categories		\
 	basic			\
 	basic/compbug		\
+	logic			\
 	mat			\
 	mat/gauss		\
 	mat/modular		\
@@ -27,7 +28,6 @@ SUBDIRS =			\
 	polyfactorp		\
 	ffield			\
 	polyfactor0		\
-	multpoly/exponent	\
 	multpoly/multpolycat	\
 	multpoly/multpolydom	\
 	multpoly/multpolypkg	\
@@ -151,6 +151,11 @@ libalgebra_a_SOURCES =				\
 	fraction/sit_quotcat.c			\
 	fraction/sit_uflgqot.c			\
 	fraction/sit_vecquot.c			\
+	logic/sit_bit.c				\
+	logic/sit_dnf.c				\
+	logic/sit_idxatom.c			\
+	logic/sit_lexpr.c			\
+	logic/sit_logiccat.c			\
 	mat/gauss/sit_dfge.c			\
 	mat/gauss/sit_ff2ge.c			\
 	mat/gauss/sit_ffge.c			\
