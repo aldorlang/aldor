@@ -19,3 +19,11 @@ library := sit_extree sit_optools
 otherfiles := alg_leaf alg_op
 
 include $(abs_top_srcdir)/lib/algebra/src/common.mk
+
+install-data:
+	$(MKDIR_P) $(DESTDIR)$(datarootdir)/aldor/lib/$(libraryname)/$(libsubdir)
+	for i in $(otherfiles); do \
+		if test -f $(abs_srcdir)/$$i.as; then \
+			$(INSTALL_DATA) $(abs_srcdir)/$$i.as $(DESTDIR)$(datarootdir)/aldor/lib/$(libraryname)/$(libsubdir)/$$i.as; \
+		fi; \
+	done

@@ -15,6 +15,8 @@ asdomains	:= $(internal) $(library) $(tests)
 axdomains	:= $(axlibrary)
 alldomains	:= $(asdomains) $(axdomains)
 
+libsubdir	:= $(subst $(abs_libdir)/,,$(abs_builddir)/.)
+
 include $(top_builddir)/lib/config.mk
 
 # Aldor
@@ -336,9 +338,24 @@ distclean: clean
 	rm Makefile
 maintainer-clean: distclean
 
+install-data:
+	$(MKDIR_P) $(DESTDIR)$(datarootdir)/aldor/lib/$(libraryname)/$(libsubdir)
+	for i in $(library); do \
+		if test -f $(abs_srcdir)/$$i.as; then \
+			$(INSTALL_DATA) $(abs_srcdir)/$$i.as $(DESTDIR)$(datarootdir)/aldor/lib/$(libraryname)/$(libsubdir)/$$i.as; \
+		fi; \
+		if test -f $$i.abn; then \
+			$(INSTALL_DATA) $$i.abn $(DESTDIR)$(datarootdir)/aldor/lib/$(libraryname)/$(libsubdir)/$$i.abn; \
+		fi; \
+	done
+
+uninstall:
+	rm -rf $(datarootdir)/lib/$(libraryname)/$(libsubdir)
+
+install: install-data install-exec
 
 EMPTY_AUTOMAKE_TARGETS  = dvi pdf ps info html tags ctags
-EMPTY_AUTOMAKE_TARGETS += install install-data install-exec uninstall
+EMPTY_AUTOMAKE_TARGETS += install-exec uninstall
 EMPTY_AUTOMAKE_TARGETS += install-dvi install-html install-info install-ps install-pdf
 EMPTY_AUTOMAKE_TARGETS += installdirs
 EMPTY_AUTOMAKE_TARGETS += check installcheck
