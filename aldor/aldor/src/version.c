@@ -23,6 +23,6 @@
 CString	verName		= "Aldor";
 
 int	verMajorVersion	=  1;
-int	verMinorVersion	=  2;
+int	verMinorVersion	=  3;
 int	verMinorFreeze	=  0;
 CString	verPatchLevel	= VCSVERSION;
