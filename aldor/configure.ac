@@ -58,26 +58,7 @@ AC_SUBST([LIBTOOL_DEPS])
 # Enable extra warnings and -Werror if supported.
 ALDOR_ERROR_ON_WARN
 
-# Force git build id.
-git_build_id=0
-AC_ARG_ENABLE([git-build-id],
-              [AS_HELP_STRING([--enable-git-build-id],
-                              [Force git sha1 hash as build id])],
-              [git_build_id=],
-              [git_build_id=`cd $srcdir; git status --porcelain 2>&1`])
-
-# Git SHA1 hash as ld build-id.
-AC_MSG_CHECKING([build id])
-if test -z "$git_build_id"; then
-   VCSVERSION=`cd $srcdir; git rev-parse HEAD`
-   build_id="-Wl,--build-id=0x$VCSVERSION"
-   AC_MSG_RESULT([git: $VCSVERSION])
-else
-   VCSVERSION=`date +%Y%m%d`
-   AC_MSG_RESULT([date: $VCSVERSION])
-fi
-AC_SUBST([VCSVERSION])
-AC_SUBST([build_id])
+ALDOR_GIT_BUILD_ID
 
 # Generate Makefiles
 AC_CONFIG_FILES(
