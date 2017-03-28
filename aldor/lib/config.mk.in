@@ -1,2 +1,8 @@
 @BUILD_JAVA_TRUE@BUILD_JAVA=1
 @BUILD_JAVA_FALSE@BUILD_JAVA=
+
+prefix          := @prefix@
+datarootdir     := @datarootdir@
+MKDIR_P         := @MKDIR_P@
+INSTALL         := @INSTALL@
+INSTALL_DATA    := @INSTALL_DATA@
