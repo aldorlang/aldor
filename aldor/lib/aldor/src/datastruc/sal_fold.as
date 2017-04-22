@@ -8,6 +8,11 @@ FoldingTransformationCategory(T: with): Category == with {
 Fold(T: with): FoldingTransformationCategory(T) with {
 	 /: (f: (T,T) -> T, List T) -> T;
 	 /: (f: (T,T) -> T, Generator T) -> T;
+	 foldl: (f: (T,T) -> T, List T) -> T;
+	 foldl: (f: (T,T) -> T, Generator T) -> T;
+	 foldr: (f: (T,T) -> T, List T) -> T;
+	 foldr: (f: (T,T) -> T, Generator T) -> T;
+
 	 folder: ((T, T) -> T) -> %
 } == add {
   Rep ==> (T, T) -> T;
@@ -16,6 +21,15 @@ Fold(T: with): FoldingTransformationCategory(T) with {
 
   (f: (T,T) -> T) / (l: List T): T == (per f)/l;
   (f: (T,T) -> T) / (g: Generator T): T == (per f)/g;
+
+  foldl(f: (T,T) -> T, l: List T): T == f/l;
+  foldr(f: (T,T) -> T, l: List T): T == ((a: T, b: T): T +-> f(b, a))/(reverse l);
+
+  foldl(f: (T,T) -> T, g: Generator T): T == f/g;
+  foldr(f: (T,T) -> T, g: Generator T): T == {
+     import from List T;
+     f/reverse [g];
+  }
 
   (folder: %) / (l: List T): T == {
      empty? l => never;
@@ -149,6 +163,19 @@ testFold(): () == {
     assertEquals(6, (+)/(x for x in 1..3));
 }
 
+testFoldR(): () == {
+-- foldl: a + b + c -->     (a + b) + c
+-- foldr: a + b + c --> a + (b + c)
+    import from Fold Integer;
+    import from List Integer;
+    import from Integer;
+    import from Assert Integer;
+    f(n: Integer, m: Integer): Integer == 2*n + m;
+    assertEquals(9, foldr(f, [1,2,3])$Fold(Integer));
+    assertEquals(11, foldl(f, [1,2,3])$Fold(Integer));
+}
+
+
 testFold2(): () == {
     import from Fold2(Integer, SortedSet Integer);
     import from SortedSet Integer;
@@ -193,6 +220,7 @@ testLazyBoolean(): () == {
 
 testSum();
 testFold();
+testFoldR();
 testFold2();
 testLazyBoolean();
 testBoolean();
