@@ -3,6 +3,8 @@ script: dpkg-buildpackage -b -us -uc
 
 install:
    - sudo apt-get install libgmp-dev
+   - sudo apt-get install fakeroot
+   - sudo apt-get install debhelper
 
 # whitelist
 branches:
