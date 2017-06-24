@@ -35,7 +35,7 @@ extend List(T:Type): with { <<: (TextWriter, %) -> TextWriter } == add {
 }
 
 extend Array(T:Type): with { <<: (TextWriter, %) -> TextWriter } == add {
-	if not(T has PrimitiveType) then {
+	if not(T has OutputType) then {
 		(p:TextWriter) << (a:%):TextWriter == {
 			import from String, MachineInteger;
 			zero?(n := #a) => p << "[]";
