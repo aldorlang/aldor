@@ -14,6 +14,7 @@
 #include "loops.h"
 #include "optfoam.h"
 #include "strops.h"
+#include "int.h"
 
 Bool	inuProgDebug	= false;
 
@@ -434,10 +435,11 @@ inuAnalyseProg(Foam foam, int constNum)
 			InlUnknownCallsMagicNumber;
 
 	flogIter(optInfo->flog, bb, {
-		timeCost += (1 << (bb->iextra * InlLoopMagicNumber));
+			int loops = bb->iextra > 5 ? 5 : bb->iextra;
+			timeCost = aintAbsorbingSum(TIME_MAX, timeCost, (1 << (loops * InlLoopMagicNumber)));
 	});
 
-	foam->foamProg.time = timeCost > TIME_MAX ? TIME_MAX : timeCost;
+	foam->foamProg.time = timeCost;
 
 	foamProgSetHasInlineInfo(foam);
 }
