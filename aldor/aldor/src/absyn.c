@@ -1095,6 +1095,22 @@ abCopyApplyArg(AbSyn ab)
 	return ab;
 }
 
+AbSyn
+abNewDefineLhs(Symbol sym, AbSynList params)
+{
+	AbSynList pl, revParams;
+	AbSyn abd;
+
+	abd = abNewId(sposNone, sym);
+	revParams = listReverse(AbSyn)(params);
+	for (pl = revParams; pl; pl = cdr(pl))
+		abd = abNewApplyOfComma(abd, car(pl));
+	listFree(AbSyn)(revParams);
+
+	return abd;
+}
+
+
 /*
  * Return a singleton, otherwise alloc node and fill.
  */
