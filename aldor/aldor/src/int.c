@@ -28,3 +28,10 @@ aintHash(AInt n)
 	return n;
 }
 
+AInt
+aintAbsorbingSum(AInt max, AInt i1, AInt i2)
+{
+	assert(i1 >= 0);
+	assert(i2 >= 0);
+	return max - i2 > i1 ? i1 + i2: max;
+}

@@ -5,6 +5,7 @@
 
 local void testLongIs32(void);
 local void verifyAIntEqual(void);
+local void verifyAIntAbsorbingSum(void);
 
 void
 intTestSuite()
@@ -13,6 +14,7 @@ intTestSuite()
 	dbInit();
 	TEST(testLongIs32);
 	TEST(verifyAIntEqual);
+	TEST(verifyAIntAbsorbingSum);
 	dbFini();
 }
 
@@ -40,4 +42,15 @@ verifyAIntEqual()
 {
 	testFalse("t1", aintEqual(0, 1));
 	testTrue("t1", aintEqual(0, 0));
+}
+
+
+local void
+verifyAIntAbsorbingSum()
+{
+	testTrue("t1", aintAbsorbingSum(100, 99, 1) == 100);
+	testTrue("t2", aintAbsorbingSum(100, 99, 0) == 99);
+	testTrue("t3", aintAbsorbingSum(100, 99, 10) == 100);
+
+	testTrue("t4", aintAbsorbingSum(1<<30, (1<<30) - 10, 20) == 1<<30);
 }
