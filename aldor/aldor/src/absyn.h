@@ -1123,7 +1123,10 @@ extern AbSyn	abOneOrNewOfList	(AbSynTag t, AbSynList args);
 		/*
 		 * Return a singleton or make a node from a list of many parts.
 		 */
-
+extern AbSyn	abNewDefineLhs		(Symbol sym, AbSynList params);
+		/*
+		 * Return a new form for the define lhs (eg Foo(X: I)(Y: I))
+		 */
 extern AbSyn	abNewDocTextOfList	(TokenList);
 		/*
 		 * Construct a document text node from a list of doc tokens.
