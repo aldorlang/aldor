@@ -1614,11 +1614,7 @@ tiTfThird1(Stab stab, TFormUses tfu, TForm tf, AbSynList params)
 		AbSynList	pl;
 		Stab		nstab = (abStab(abw) ? abStab(abw) : stab);
 
-		abd = abNewId(sposNone, sym);
-		params = listNReverse(AbSyn)(params);
-		for (pl = params; pl; pl = cdr(pl))
-			abd = abNewApplyOfComma(abd, car(pl));
-		params = listNReverse(AbSyn)(params);
+		abd = abNewDefineLhs(sym, params);
 		tfd = tiGetTForm(stab, abd);
 		pp = symeNewExport(ssymSelfSelf, tfd, car(nstab));
 		symeSetDefault(pp);
@@ -1735,11 +1731,7 @@ tiTfCategory1(Stab stab, TFormUses tfu, TForm tf, AbSynList params)
 
 		if (asyme) {
 			Stab	istab = (params ? stab : nstab);
-			abd = abNewId(sposNone, sym);
-			params = listNReverse(AbSyn)(params);
-			for (pl = params; pl; pl = cdr(pl))
-				abd = abNewApplyOfComma(abd, car(pl));
-			params = listNReverse(AbSyn)(params);
+			abd = abNewDefineLhs(sym, params);
 			tfd = tfSyntaxFrAbSyn(istab, abd);
 			tfd = tfDefineOfType(tfd);
 			xsyme = stabDefExtend(nstab, ssymSelf, tfd);
