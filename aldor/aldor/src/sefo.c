@@ -2588,11 +2588,13 @@ tformFreeVars0(TForm *pa, TForm parent, TForm tf)
 
 	if (tfIsSubst(tf) && tfFVars(tf) == NULL) {
 		TForm	arg = tfSubstArg(tf);
+
 		if (sstTFormIsMarked(arg)) {
 			*pa = sfvCommonAncestor(*pa, arg);
 			return;
 		}
 		tformFreeVars(arg);
+		abSubFreeVars(tfSubstSigma(tf));
 		tfSetFVars(tf, freeVarSubst0(tfSubstSigma(tf), tfFVars(arg)));
 		sefoFreeDEBUG(dbOut, "FV(subst) %pTForm = %pFreeVar\n",
 			      tf, tf->fv);
