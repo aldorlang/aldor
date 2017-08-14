@@ -5,7 +5,7 @@
 --
 -- Copyright (c) Manuel Bronstein 1998
 -- Copyright (c) INRIA 1998, Version 29-10-98
--- Logiciel Salli ©INRIA 1998, dans sa version du 29/10/1998
+-- Logiciel Salli ï¿½INRIA 1998, dans sa version du 29/10/1998
 -----------------------------------------------------------------------------
 
 #include "aldor"
@@ -207,6 +207,10 @@ $x < y \iff f(x,y)$. The comparison function $f$ is optional if
 $T$ has \altype{TotallyOrderedType}, in which case the order
 function of $T$ is taken.}
 #endif
+	if T has PrimitiveType then {
+		linearReverseSearch: (T, %) -> (Boolean, Z, T);
+		linearReverseSearch: (T, %, Z) -> (Boolean, Z, T);
+	}
 	default {
 		import from PT;
 
@@ -275,6 +279,22 @@ function of $T$ is taken.}
 				p := data a;	-- optimizes code generation
 				for n in start-firstIndex..prev(#a) repeat {
 					p.n=t => return(true,n+firstIndex,p.n);
+				}
+				(false, prev firstIndex, t);
+			}
+			linearReverseSearch(t:T, a:%):(Boolean, Z, T) == {
+				p := data a;	-- optimizes code generation
+				for n in prev(#a) + firstIndex..firstIndex by -1 repeat {
+					p.n=t => return(true,n,p.n);
+				}
+				(false, prev firstIndex, t);
+			}
+
+			linearReverseSearch(t:T, a:%, end:Z):(Boolean, Z, T) == {
+				assert(end >= firstIndex);
+				p := data a;	-- optimizes code generation
+				for n in end..firstIndex by -1 repeat {
+					p.n=t => return(true,n,p.n);
 				}
 				(false, prev firstIndex, t);
 			}
