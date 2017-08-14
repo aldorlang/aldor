@@ -36,7 +36,8 @@ CharSets: with
 	 char "*", char "/",
 	 char "<", char ">",
 	 char "%", char "$",
-	 char "?"]
+	 char "~", char "?",
+	 char "=", char "#" ]
     
     symStart?(c): Boolean == letter? c or member?(c, symStarts)
     whitespace?(c): Boolean == c = space or c = newline or c = tab
@@ -302,16 +303,17 @@ SExpressionReader: with
 	c = char "_"" => [readString s]
 	symStart? c => [readSymbol s]
 	numberStart? c => [readNumber s]
+	stdout << "Unknown token prefix " << c << newline
 	failed
 
     readString(s: TextLStream): Token ==
-        done := false
         text := ""
 	next! s
         while hasNext? s and peek s ~= char "_"" repeat
 	    text := text + peek(s)::String
 	    next! s
 	not hasNext? s => [error, "eof inside string"]
+	next! s
 	[str, text]
 
     readWhitespace(s: TextLStream): Token ==
@@ -354,22 +356,29 @@ SExpressionReader: with
 	        next! s
 
         readList(): Partial SExpression ==
-	    not hasNext? s => failed
+	    not hasNext? s =>
+		stdout << "no next" << newline
+		failed
 	    peek(s).type = cparen =>
 	        next! s
 	        [nil]
 	    tmp := read()
-	    failed? tmp => failed
+	    failed? tmp =>
+		stdout << "failed rec call" << newline
+		failed
 	    head: Cons := cons(retract tmp, nil)
 	    last := head
 	    done := false
 	    while not done repeat
 	        skipWhitespace!()
-		if not hasNext? s then return failed
+		not hasNext? s =>
+		    stdout << "no next" << newline
+		    return failed
 	        if peek(s).type = dot then
 		    next! s
 		    final := read()
-		    failed? final => return failed
+		    failed? final =>
+		        return failed
 		    setRest!(last, retract final)
 		    done := true
 		else if peek(s).type = cparen then
@@ -387,16 +396,20 @@ SExpressionReader: with
 	    import from Integer
             skipWhitespace!()
 	    not hasNext? s =>
+		stdout << "no next" << newline
 	        failed
             tok := peek s;
 	    next! s
 	    if tok.type = oparen then readList()
-	    else if tok.type = cparen then failed
+	    else if tok.type = cparen then
+	        stdout << "cparen" << newline
+		failed
 	    else if tok.type = str then [sexpr tok.txt]
 	    else if tok.type = sym then
 	        [sexpr (-tok.txt)]
 	    else if tok.type = number then [sexpr integer literal tok.txt]
 	    else
+	        stdout << "gawd knows" << tok.type << newline
 	        failed
         read()
 
