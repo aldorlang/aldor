@@ -1,3 +1,21 @@
+/* Some issues:
+1.   Rep == Record(c: Cross(T: TFormSubType, T))
+
+    import from Rep
+    anyTForm(T: TFormSubType, t: T): % == per [pair(T, t)]
+
+    local unwrap(atf: %): (T: TFormSubType, t: T) ==
+        pp: Cross(T: TFormSubType, t: T) == rep(atf).c
+        pp
+
+    local pair(T: TFormSubType, t: T): (T1: TFormSubType, t: T1)  == (T, t)
+
+    -- local functions aren't needed
+
+2. Rep == Foo -> Bar
+     maps are not equal to defined constants
+*/
+
 /*****************************************************************************
  *
  * tform.c: Type forms.
