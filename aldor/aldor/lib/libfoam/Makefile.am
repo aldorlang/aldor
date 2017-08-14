@@ -6,6 +6,7 @@ runtime_CFLAGS = -I $(aldorsrcdir) -I ../../src
 
 runtime_ALDOR = al/runtime.c
 runtime_CSOURCES =			\
+	aldorlib.c	\
 	btree.c		\
 	compopt.c	\
 	dword.c		\

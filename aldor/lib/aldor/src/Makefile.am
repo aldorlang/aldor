@@ -79,6 +79,8 @@ libaldor_a_SOURCES =	\
 	util/sal_agat.c	\
 	util/sal_cmdline.c	\
 	util/sal_file.c	\
+	util/sal_fname.c	\
+	util/sal_dir.c	\
 	util/sal_timer.c	\
 	util/sal_util.c	\
 	util/sal_version.c

@@ -15,11 +15,13 @@ abs_top_srcdir	:= @abs_top_srcdir@
 subdir		:= $(subst $(abs_top_builddir)/,,$(abs_builddir))
 
 # Build starts here
-library = ald_trace eio_rsto rtexns sal_agat sal_cmdline sal_file	\
-	  sal_timer sal_version
+library = ald_trace eio_rsto rtexns sal_agat sal_cmdline sal_file sal_dir \
+	  sal_timer sal_version sal_fname
+
+java_exclude = sal_dir
 
 XFAIL=sal_cmdline
 
-@BUILD_JAVA_TRUE@javalibrary := $(library)
+@BUILD_JAVA_TRUE@javalibrary := $(filter-out $(java_exclude), $(library))
 
 include $(abs_top_srcdir)/lib/aldor/src/common.mk

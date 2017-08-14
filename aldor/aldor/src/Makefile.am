@@ -16,6 +16,7 @@ include_HEADERS =	\
 	basic.typ	\
 	cconfig.h	\
 	foam_c.h	\
+	aldorlib.h	\
 	foamopt.h	\
 	optcfg.h	\
 	platform.h
@@ -96,6 +97,7 @@ libtest_a_SOURCES =	\
 
 # Foam stuff does not belong!
 libgen_a_SOURCES =	\
+	aldorlib.c	\
 	bigint.c	\
 	bitv.c		\
 	btree.c		\

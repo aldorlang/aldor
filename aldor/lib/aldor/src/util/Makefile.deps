@@ -1,3 +1,4 @@
 rtexns_deps := ald_trace
-
+sal_dir_deps := sal_fname
 library_deps := lang base arith datastruc
+sal_fname_deps := sal_file
