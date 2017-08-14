@@ -1612,7 +1612,7 @@ bputBadArgType0(TRejectInfo trInfo, Stab stab, Buffer obuf, AbSyn ab, AbSyn op,
 		}
 		else
 			bufPrintf(obuf, fmt, argN+1, fmtOp);
-		bufPrintf(obuf, "\n");
+		/*bufPrintf(obuf, "\n");*/
 
 		if (comsgOkDetails()) {
 			abArgi = argf(ab, trArgN(trFirst(trInfo)));
