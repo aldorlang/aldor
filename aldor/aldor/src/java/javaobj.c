@@ -54,7 +54,7 @@ jcoNewLiteral(JavaCodeClass clss, String txt)
 }
 
 
-JavaCode 
+JavaCode
 jcoNewImport(JavaCodeClass clss, String pkg, String name, Bool isImported) 
 {
 	JavaCode	jco;
