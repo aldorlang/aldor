@@ -622,10 +622,10 @@ jcComment(String comment)
 local void
 jcJavaDocPrint(JavaCodePContext ctxt, JavaCode code)
 {
-	String s = strReplace(jcoLiteral(code), "\n", "\n *");
-	jcoPContextWrite(ctxt, "/** ");
+	String s = strReplace(jcoLiteral(code), "\n", "\n * ");
+	jcoPContextWrite(ctxt, "/**\n * ");
 	jcoPContextWrite(ctxt, s);
-	jcoPContextWrite(ctxt, "*/");
+	jcoPContextWrite(ctxt, "\n */");
 	strFree(s);
 }
 
