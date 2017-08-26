@@ -467,6 +467,7 @@ enum foamDDeclTag {
 	FOAM_DDecl_FortranSig,
 	FOAM_DDecl_CSig,
 	FOAM_DDecl_JavaSig,
+	FOAM_DDecl_JavaClass,
    FOAM_DDECL_LIMIT
 };
 	
