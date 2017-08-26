@@ -666,6 +666,19 @@ jcImportedStaticId(String pkg, String name)
 	return jcoNewImport(jc0ClassObj(JCO_CLSS_ImportedStatic), pkg, name, false);
 }
 
+String
+jcImportedIdName(JavaCode id)
+{
+	return jcoImportId(id);
+}
+
+String
+jcImportedIdPkg(JavaCode id)
+{
+	return jcoImportPkg(id);
+}
+
+
 local void 
 jcImportPrint(JavaCodePContext ctxt, JavaCode code)
 {
@@ -851,6 +864,12 @@ JavaCode
 jcId(String name) 
 {
 	return jcoNewLiteral(jc0ClassObj(JCO_CLSS_Id), name);
+}
+
+String
+jcIdName(JavaCode id)
+{
+	return jcoLiteral(id);
 }
 
 local SExpr 

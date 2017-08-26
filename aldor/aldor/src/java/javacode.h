@@ -157,5 +157,9 @@ extern SExpr        jcNodeSExpr(JavaCode code);
 extern void         jcNodePrint(JavaCodePContext ctxt, JavaCode code);
 
 extern Bool         jcIsLegalClassName(String word);
+extern String       jcImportedIdName(JavaCode);
+extern String       jcImportedIdPkg(JavaCode);
+
+extern String       jcIdName(JavaCode);
 
 #endif
