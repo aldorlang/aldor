@@ -291,7 +291,7 @@ gj0CollectImports(JavaCode clss)
 	JavaCodeList tmp = imps;
 	while (tmp) {
 		JavaCode id = car(tmp);
-		JavaCode stmt = jcStatement(jcSpaceSeqV(2, jcId(strCopy("import")), id));
+		JavaCode stmt = jcStatement(jcImport(id));;
 		ids = listCons(JavaCode)(stmt, ids);
 		tmp = cdr(tmp);
 	}
