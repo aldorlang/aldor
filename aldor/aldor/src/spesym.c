@@ -74,8 +74,8 @@ Symbol	ssymArrow,
 	ssymTheExplode,
 	ssymTheFloat,
 	ssymTheInteger,
-	ssymTheJava,
-	ssymTheJavaDecoder,
+	ssymTheToJava,
+	ssymTheFromJava,
 	ssymTheGenerator,
 	ssymTheStdout,
 	ssymTheNew,
@@ -214,8 +214,8 @@ ssymInit(void)
 	ssymTheExplode    = symIntern("explode");
 	ssymTheFloat	  = symIntern("float");
 	ssymTheInteger	  = symIntern("integer");
-	ssymTheJava	  = symIntern("java");
-	ssymTheJavaDecoder= symIntern("avaj");
+	ssymTheToJava	  = symIntern("toJava");
+	ssymTheFromJava   = symIntern("fromJava");
 	ssymTheGenerator  = symIntern("generator");
 	ssymTheNew	  = symIntern("new");
 	ssymTheRawRecord  = symIntern("rawrecord");

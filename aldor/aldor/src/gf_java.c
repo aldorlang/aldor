@@ -262,7 +262,7 @@ gfjProgAddParams(TForm tf)
  * :: Java representation
  *
  * Java objects are represented as Foam Arrays - these become Object in java.
- * Aldor types used in Java imports are assumed to have java and ajav methods
+ * Aldor types used in Java imports are assumed to have toJava and fromJava methods
  * which convert to and from java respectively.
  */
 local FoamTag
@@ -272,7 +272,7 @@ gfjPCallFoamType(TForm tf)
 		return FOAM_Arr;
 	}
 	else {
-		Syme javaToSelf = tfGetDomImport(tf, symString(ssymTheJavaDecoder), 
+		Syme javaToSelf = tfGetDomImport(tf, symString(ssymTheFromJava),
 						 tfIsJavaDecoder);
 		TForm convTf = symeType(javaToSelf);
 		tfFollow(convTf);
@@ -289,7 +289,7 @@ gfjPCallFoamToJava(TForm tf, Foam foam)
 	}
 	else {
 		Syme selfToJava = tfGetDomImport(tf, 
-						 symString(ssymTheJava), 
+						 symString(ssymTheToJava),
 						 tfIsJavaEncoder);
 		FoamTag type = gen0Type(tfMapRetN(symeType(selfToJava), 0), NULL);
 		Foam call;
@@ -308,7 +308,7 @@ gfjPCallJavaToFoam(TForm tf, Foam foam)
 	}
 	else {
 		Syme javaToSelf = tfGetDomImport(tf, 
-						 symString(ssymTheJavaDecoder), 
+						 symString(ssymTheFromJava),
 						 tfIsJavaDecoder);
 		Foam call;
 		call = gen0ExtendSyme(javaToSelf);
