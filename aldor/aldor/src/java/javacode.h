@@ -99,6 +99,9 @@ extern JavaCode jcReturnVoid();
 extern JavaCode jcBreak(JavaCode label);
 extern JavaCode jcContinue(JavaCode label);
 
+extern JavaCode jcPackage(JavaCode pkgName);
+extern JavaCode jcImport(JavaCode type);
+
 extern JavaCode jcBlock(JavaCode l);
 extern JavaCode jcBlockNoNL(JavaCode body);
 extern JavaCode jcIf(JavaCode test, JavaCode stmt);

@@ -1331,6 +1331,22 @@ jcCasePrint(JavaCodePContext ctxt, JavaCode code)
 }
 
 /*
+ * :: Import, Package
+ */
+
+JavaCode
+jcImport(JavaCode arg)
+{
+	return jcSpaceSeqV(2, jcKeyword(symInternConst("import")), arg);
+}
+
+JavaCode
+jcPackage(JavaCode arg)
+{
+	return jcSpaceSeqV(2, jcKeyword(symInternConst("package")), arg);
+}
+
+/*
  * :: Throw, catch
  */
 
