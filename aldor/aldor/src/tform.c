@@ -8136,11 +8136,11 @@ tfJavaCheckArg(ErrorSet errors, TForm arg)
 		if (tfIsJavaImport(arg))
 			return;
 
-		enc = tfGetDomExport(arg, symString(ssymTheJava), tfIsJavaEncoder);
-		dec = tfGetDomExport(arg, symString(ssymTheJavaDecoder), tfIsJavaDecoder);
-		errorSetPrintf(errors, dec != NULL, "The domain %s must export java: %% -> ?",
+		enc = tfGetDomExport(arg, symString(ssymTheToJava), tfIsJavaEncoder);
+		dec = tfGetDomExport(arg, symString(ssymTheFromJava), tfIsJavaDecoder);
+		errorSetPrintf(errors, dec != NULL, "The domain %s must export toJava: %% -> ?",
 			       abPretty(tfExpr(arg)));
-		errorSetPrintf(errors, enc != NULL, "The domain %s must export avaj: ? -> %%",
+		errorSetPrintf(errors, enc != NULL, "The domain %s must export fromJava: ? -> %%",
 			       abPretty(tfExpr(arg)));
 }
 

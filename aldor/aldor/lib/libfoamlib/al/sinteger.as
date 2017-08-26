@@ -27,8 +27,8 @@ extend SingleInteger: Join(
 	mod_/:  (%,%,%)-> %;
 	mod_^:	(%,%,%)-> %;
 
-	java: % -> BSInt;
-	avaj: BSInt -> %;
+	toJava: % -> BSInt;
+	fromJava: BSInt -> %;
 
 	coerce: % -> String;
 	export from Segment %;
@@ -48,8 +48,8 @@ extend SingleInteger: Join(
 
 	#: Integer == (convert rep max - convert rep min + 1)::Integer;
 
-	java(i: %): BSInt == rep i;
-	avaj(i: BSInt): % == per i;
+	toJava(i: %): BSInt == rep i;
+	fromJava(i: BSInt): % == per i;
 
 	integer   (l:Literal): %  == per convert (l pretend BArr);
 	zero?	  (i: %): Boolean == zero?     (rep i)::Boolean;
