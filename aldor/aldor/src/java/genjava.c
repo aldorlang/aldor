@@ -2572,7 +2572,7 @@ local JavaCode
 gj0EInfo(Foam foam)
 {
 	JavaCode stmt;
-	Foam env = foam->foamEInfo.env;;
+	Foam env = foam->foamEInfo.env;
 
 	stmt = jcApplyMethodV(gj0Gen(env),
 			      jcId(strCopy("getInfo")),
@@ -2584,7 +2584,7 @@ local JavaCode
 gj0EInfoSet(Foam foam, Foam rhs)
 {
 	JavaCode stmt;
-	Foam env = foam->foamEInfo.env;;
+	Foam env = foam->foamEInfo.env;
 
 	stmt = jcApplyMethodV(gj0Gen(env),
 			      jcId(strCopy("setInfo")),
