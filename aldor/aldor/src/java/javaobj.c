@@ -10,16 +10,16 @@ local void jco0Indent(JavaCodePContext ctxt);
 JavaCode 
 jcoNewNode(JavaCodeClass clss, int argc) 
 {
-	JavaCode jc = (JavaCode) (stoAlloc( (int) OB_JCode, 
+	JavaCode jco = (JavaCode) (stoAlloc( (int) OB_JCode,
 					    fullsizeof(struct jcoNode, argc, JavaCode)));
 	assert(clss);
 
-	jcoTag(jc) = JCO_JAVA;
-	jcoClass(jc) = clss;
-	jcoPos(jc) = sposNone;
-	jc->node.argc = argc;
+	jcoTag(jco) = JCO_JAVA;
+	jcoClass(jco) = clss;
+	jcoPos(jco) = sposNone;
+	jco->node.argc = argc;
 
-	return jc;
+	return jco;
 }
 
 JavaCode 
