@@ -32,6 +32,8 @@ macro {
 	H	== HashTable(String, String);
 }
 
+local rootTable: H == table();
+
 Symbol: Join(HashType, InputType, OutputType, SerializableType) with {
 	-:  String -> %;
 #if ALDOC
@@ -63,7 +65,7 @@ symbols: () -> H;
 	Rep == String;
 
 	-- This hash-table makes this type non-reentrant
-	local stable:H		== table();
+	local stable:H		== rootTable;
 	local enter(s:String):%	== { stable.s := s; per s }
 	local root:String	== "%v";
 	local buffer:String	== { import from Z; new 21 } -- enough for 2^64
