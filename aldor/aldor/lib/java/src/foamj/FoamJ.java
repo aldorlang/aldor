@@ -6,8 +6,6 @@ public class FoamJ {
 
     /**
      * Array type - rely on casting to retract to base type
-     *
-     * @author pab
      */
     static class Array extends AbstractValue implements Value, Word {
         private Object arr;
