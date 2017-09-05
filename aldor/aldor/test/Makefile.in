@@ -48,8 +48,8 @@ AM_V_JAVAC = $(am__v_JAVAC_$(V))
 am__v_JAVAC_ = $(am__v_JAVAC_$(AM_DEFAULT_VERBOSITY))
 am__v_JAVAC_0 = @echo "  JAVAC   " $@;
 
-AM_V_ALDOR_JAVATEST = $(am__v_ALDOR_JAVATEST_$(V))
-am__v_ALDOR_JAVATEST = $(am__v_ALDOR_JAVATEST_$(AM_DEFAULT_VERBOSITY))
+AM_V_ALDOR_JAVATEST    = $(am__v_ALDOR_JAVATEST_$(V))
+am__v_ALDOR_JAVATEST_  = $(am__v_ALDOR_JAVATEST_$(AM_DEFAULT_VERBOSITY))
 am__v_ALDOR_JAVATEST_0 = @echo "  ALDOR-JAVATEST   " $@;
 
 all: really-all
