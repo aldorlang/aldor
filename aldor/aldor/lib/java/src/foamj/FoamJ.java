@@ -36,6 +36,37 @@ public class FoamJ {
     }
 
     /**
+     * JavaObj type - rely on casting to retract to base type
+     *
+     * @author pab
+     */
+    static public class JavaObj<T> extends AbstractValue implements Value, Word {
+        private T obj;
+
+        JavaObj(T obj) {
+            this.obj = obj;
+        }
+
+        public T toJavaObj() {
+            return obj;
+        }
+
+        @Override
+        public Value toValue() {
+            return this;
+        }
+
+        public Word asWord() {
+            return this;
+        }
+
+        public String toString() {
+            return obj.toString();
+        }
+
+    }
+
+    /**
      * a.
      * T1 = (Add (Cast SInt x) 1)
      * -->

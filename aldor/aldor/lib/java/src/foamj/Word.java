@@ -19,6 +19,8 @@ public interface Word {
 
     Object toArray();
 
+    <T> T toJavaObj();
+
     char toChar();
 
     float toSFlo();
@@ -40,6 +42,13 @@ public interface Word {
                 return word.toArray();
         }
 
+	static public <T> T toJavaObj(Word word) {
+            if (word == null)
+                return null;
+            else
+                return word.toJavaObj();
+        }
+
         public static Word fromSInt(int x) {
             return new SInt(x);
         }
@@ -54,6 +63,10 @@ public interface Word {
 
         public static Word fromArray(Object x) {
             return new Array(x);
+        }
+
+        public static <T> Word fromJavaObj(T t) {
+            return new JavaObj<T>(t);
         }
 
         public static Word fromBool(boolean b) {

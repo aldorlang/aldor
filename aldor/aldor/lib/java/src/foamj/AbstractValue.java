@@ -31,6 +31,10 @@ public abstract class AbstractValue implements Value {
         throw new CastException(this);
     }
 
+    public <T> T toJavaObj() {
+        throw new CastException(this);
+    }
+
     public Record toRecord() {
         throw new CastException(this);
     }
