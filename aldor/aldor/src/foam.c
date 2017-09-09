@@ -1070,6 +1070,10 @@ foamAuditDecl(Foam decl)
 		if (fmt >= FOAM_DATA_LIMIT && fmt != FOAM_BInt)
 			foamAuditBadDecl(decl);
 		break;
+	case FOAM_JavaObj:
+		if (fmt >= faNumFormats)
+			foamAuditBadDecl(decl);
+		break;
 	case FOAM_Rec:
 		/*
 		  TODO: Fix implicit exports so that they don't
@@ -3571,6 +3575,7 @@ struct foam_info foamInfoTable[] = {
  {FOAM_PopEnv,	    0,"PopEnv",       0,        "", 	0},
  {FOAM_MFmt,	    0,"MFmt",         2,        "iC", 	0},
  {FOAM_RRFmt,	    0,"RRFmt",        1,        "C", 	0},
+ {FOAM_JavaObj,	    0,"JavaObj",      0,        "", 	0},
 
 /* ========> FFO_ORIGIN (start of multi-format instructions) <======== */
 

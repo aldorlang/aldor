@@ -157,6 +157,9 @@ local String gj0NameFrString(String fmName);
 local JavaCodeList gj0ClassHeader(String className);
 local String       gj0InitVar(AInt idx);
 
+local JavaCode     gj0TypeFrJavaObj(Foam format);
+
+
 enum gjId {
 	GJ_INVALID = -1,
 
@@ -1138,11 +1141,23 @@ gj0TypeFrFmt(AInt id, AInt fmt)
 			return gj0Id(GJ_Object);
 	case FOAM_Values:
 		return gj0Id(GJ_Multi);
-
+	case FOAM_JavaObj:
+		if (fmt != 0 && fmt != emptyFormatSlot)
+			return gj0TypeFrJavaObj(gjContext->formats->foamDFmt.argv[fmt]);
+		else
+			return gj0Id(GJ_Object);
 	default:
 		return jcId(strCopy(foamStr(id)));
 	}
 }
+
+local JavaCode
+gj0TypeFrJavaObj(Foam format)
+{
+	String txt = format->foamDDecl.argv[0]->foamDecl.id;
+	return jcImportedIdFrString(txt);
+}
+
 
 local JavaCode
 gj0TypeValueToObj(JavaCode val, FoamTag type, AInt fmt)
@@ -1268,6 +1283,10 @@ gj0TypeObjToValue(JavaCode val, FoamTag type, AInt fmt)
 					       jcId(strCopy("U"))),
 				      jcId(strCopy("fromByte")), 1,
 				      val);
+	case FOAM_JavaObj:
+		return jcSpaceSeqV(2,
+				   jcComment(strPrintf("asWord %d %d", type, fmt)),
+				   val);
 	case FOAM_Env:
 	case FOAM_Clos:
 	case FOAM_Rec:
@@ -2971,7 +2990,7 @@ local JavaCode gj0CastObjToPtr(JavaCode jc, FoamTag type, AInt fmt);
 local JavaCode
 gj0Cast(Foam foam)
 {
-	return gj0CastFmt(foam, -1);
+	return gj0CastFmt(foam, emptyFormatSlot);
 }
 
 local JavaCode
@@ -2992,7 +3011,7 @@ gj0CastFmt(Foam foam, AInt cfmt)
 		return gj0CastObjToPtr(jc, iType, fmt);
 	}
 	else if (iType == FOAM_Word) {
-		return gj0CastWordToObj(jc, type, fmt);
+		return gj0CastWordToObj(jc, type, cfmt);
 	}
 	else if (iType == type)
 		return jc;
@@ -3042,7 +3061,13 @@ gj0CastWordToObj(JavaCode jc, FoamTag type, AInt fmt)
 	case FOAM_Ptr:
 		return jc;
 	case FOAM_Arr:
-		return jcApplyV(jcMemRef(gj0Id(GJ_FoamWord), jcId(strCopy("U.toArray"))), 1, jc);
+		return jcApplyMethodV(jcMemRef(gj0Id(GJ_FoamWord),
+					       jcId(strCopy("U"))),
+				      jcId(strCopy("toArray")), 1, jc);
+	case FOAM_JavaObj:
+		return jcApplyMethodV(jcMemRef(gj0Id(GJ_FoamWord),
+					      jcId(strCopy("U"))),
+				      jcId(strCopy("toJavaObj")), 1, jc);
 	default:
 		return jcCast(gj0TypeFrFmt(type, fmt), jc);
 	}
@@ -3109,6 +3134,11 @@ gj0CastObjToWord(JavaCode val, FoamTag type, AInt fmt)
 		return jcApplyMethod(jcMemRef(gj0Id(GJ_FoamWord),
 					      jcId(strCopy("U"))),
 				     jcId(strCopy("fromDFlo")),
+				     listSingleton(JavaCode)(val));
+	case FOAM_JavaObj:
+		return jcApplyMethod(jcMemRef(gj0Id(GJ_FoamWord),
+					      jcId(strCopy("U"))),
+				     jcId(strCopy("fromJavaObj")),
 				     listSingleton(JavaCode)(val));
 	case FOAM_Nil:
 		return val;
@@ -3508,7 +3538,7 @@ gj0PCallJavaStatic(Foam foam)
 {
 	JavaCodeList args;
 	Foam decl, op;
-	String id, type, pkg;
+	String id, type;
 
 	op = foam->foamPCall.op;
 
@@ -3518,9 +3548,9 @@ gj0PCallJavaStatic(Foam foam)
 	args = gj0GenList(foam->foamPCall.argv, foamPCallArgc(foam));
 
 	strSplitLast(strCopy(decl->foamGDecl.id), '.', &type, &id);
-	strSplitLast(type, '.', &pkg, &type);
+	JavaCode typeId = jcImportedIdFrString(type);
 
-	return jcApply(jcMemRef(jcImportedId(pkg, type), jcId(id)),
+	return jcApply(jcMemRef(typeId, jcId(id)),
 		       gj0PCallCastArgs(op, args));
 }
 
@@ -3661,15 +3691,8 @@ gj0BCallApply(Foam foam)
 	inf = gj0BCallBValInfo(foam->foamBCall.op);
 	args = gj0GenList(foam->foamBCall.argv, foamArgc(foam)-1);
 
-	p = strLastIndexOf(inf->c1, '.');
-	if (p == NULL)
-		tgtClss = jcId(strCopy(inf->c1));
-	else {
-		String pkg = strCopy(inf->c1);
-		String id = strCopy(p+1);
-		pkg[p-inf->c1] = '\0';
-		tgtClss = jcImportedId(pkg, id);
-	}
+	tgtClss = jcImportedIdFrString(inf->c1);
+
 	return jcApplyMethod(tgtClss, jcId(strCopy(inf->c2)), args);
 }
 

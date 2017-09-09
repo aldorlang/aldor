@@ -159,6 +159,7 @@ extern void         jcNodePrint(JavaCodePContext ctxt, JavaCode code);
 extern Bool         jcIsLegalClassName(String word);
 extern String       jcImportedIdName(JavaCode);
 extern String       jcImportedIdPkg(JavaCode);
+extern JavaCode     jcImportedIdFrString(String str);
 
 extern String       jcIdName(JavaCode);
 
