@@ -80,13 +80,14 @@ fmtests := rectest enumtest clos strtable1 simple apply
 ctests  := rectest enumtest multinever maptuple
 otests  := enumtest
 xtests := enumtest
-@BUILD_JAVA_TRUE@jruntests := jimport
+@BUILD_JAVA_TRUE@jruntests := jimport jimport_opt
 
 x_extra := rtexns
 
 @BUILD_JAVA_TRUE@jtests  := simple_j enumtest run_j
 
 simple_j_AXLFLAGS=-Q2
+jimport_opt_AXLFLAGS=-Q9 -Qinline-all
 
 badtests := opt1
 
@@ -192,8 +193,7 @@ $(patsubst %, %.exe, $(_xtests)): %.exe: %.o rtexns.o
 #		      -Fmain=bobthebuilder.c		\
 
 $(patsubst %, %-javatest,$(_jruntests)): %-javatest: out/java/%.class
-	$(AM_V_ALDOR_JAVATEST)	\
-	java -cp out/java:$(abs_top_builddir)/aldor/lib/java/src/foamj.jar:$(abs_top_builddir)/aldor/lib/libfoam/al/foam.jar:$(abs_top_builddir)/aldor/lib/libfoamlib/al/foamlib.jar: $*
+	$(AM_V_ALDOR_JAVATEST) java -cp out/java:$(abs_top_builddir)/aldor/lib/java/src/foamj.jar:$(abs_top_builddir)/aldor/lib/libfoam/al/foam.jar:$(abs_top_builddir)/aldor/lib/libfoamlib/al/foamlib.jar: $*
 
 check-java: $(patsubst %,%-javatest,$(_jruntests))
 
