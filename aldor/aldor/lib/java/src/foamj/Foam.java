@@ -438,4 +438,15 @@ public class Foam {
         return Math.atan2(a, b);
     }
 
+    public static Word stringToJavaString(Word w) {
+        char[] arr = (char[]) w.toArray();
+        return new FoamJ.JavaObj<String>(new String(arr, 0, arr.length-1));
+    }
+
+    public static Word javaStringToString(Word w) {
+        String s = (String) w.toJavaObj();
+        Word arr = Word.U.fromArray(("" + s + "\0").toCharArray());
+        return  arr;
+    }
+
 }

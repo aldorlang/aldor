@@ -36,6 +36,10 @@ AC_ARG_ENABLE([java],
               [BUILD_JAVA=false],
               [BUILD_JAVA=true])
 
+AC_ARG_WITH([java-junit],
+             [AS_HELP_STRING([--with-java-junit], [specify location of junit jar file])],
+	     [JUNIT_JAR=$withval], [JUNIT_JAR=/usr/share/java/junit4.jar])
+
 AM_CONDITIONAL(BUILD_JAVA, test $JAVAC != no -a $BUILD_JAVA = true)
 
 AC_ARG_WITH([boehm-gc],
@@ -58,6 +62,8 @@ AC_SUBST([LIBTOOL_DEPS])
 # Enable extra warnings and -Werror if supported.
 ALDOR_ERROR_ON_WARN
 
+ALDOR_JAVA_TESTS
+
 ALDOR_GIT_BUILD_ID
 
 # Generate Makefiles
@@ -70,12 +76,14 @@ AC_CONFIG_FILES(
    aldor/src/Makefile
    aldor/src/opsys_port.h
    aldor/lib/Makefile
+
    aldor/lib/libfoamlib/Makefile
    aldor/lib/libfoamlib/al/Makefile
    aldor/lib/libfoam/Makefile
    aldor/lib/libfoam/al/Makefile
    aldor/lib/java/Makefile
    aldor/lib/java/src/Makefile
+   aldor/lib/java/test/Makefile
    aldor/test/Makefile
    aldor/tools/Makefile
    aldor/tools/unix/Makefile
