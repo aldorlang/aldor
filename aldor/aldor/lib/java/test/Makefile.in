@@ -1,0 +1,74 @@
+# ..From autoconf
+@SET_MAKE@
+
+VPATH = @srcdir@
+abs_top_builddir = @abs_top_builddir@
+srcdir = @srcdir@
+top_builddir = @top_builddir@
+builddir = @builddir@
+abs_builddir = @abs_builddir@
+abs_top_srcdir = @abs_top_srcdir@
+subdir = aldor/lib/java/test
+HAS_JUNIT = @HAS_JUNIT@
+JUNIT_JAR = @JUNIT_JAR@
+
+.PRECIOUS: Makefile
+Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
+	@case '$?' in \
+	  *config.status*) \
+	    cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh;; \
+	  *) \
+	    echo ' cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ '; \
+	    cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ ;; \
+	esac;
+
+buildfiles := $(shell cd $(srcdir); find foamj -type f -name \*Test.java)
+_tests := $(patsubst %,test-%,$(subst /,.,$(subst .java,,$(buildfiles))))
+tests := $(if $(HAS_JUNIT),$(_tests))
+
+outdir := $(abs_builddir)/classes
+jarfile := $(abs_builddir)/foamj-test.jar
+
+.PHONY: $(tests)
+
+$(tests): test-%: $(jarfile)
+	java -cp $(jarfile):$(abs_builddir)/../src/foamj.jar:$(JUNIT_JAR) \
+	         org.junit.runner.JUnitCore $*
+
+test-junit: $(tests)
+.PHONY: test-junit
+
+check: test-junit
+
+# Build directly to a .jar file (easier than tracking .class files)
+$(jarfile): $(buildfiles)
+	mkdir -p $(outdir)
+	(cd $(srcdir); javac -cp $(abs_builddir)/../src/foamj.jar:$(JUNIT_JAR) -g -d $(outdir) $(buildfiles))
+	(cd $(outdir); jar cf $@ .)
+
+all:
+	echo $<
+
+# 
+# :: Automake requires this little lot
+#
+mostlyclean: 
+	rm -rf $(outdir)
+	rm -f $(jarfile)
+
+clean: mostlyclean
+
+distclean: clean 
+	rm Makefile
+maintainer-clean: distclean
+
+
+EMPTY_AUTOMAKE_TARGETS  = dvi pdf ps info html tags ctags
+EMPTY_AUTOMAKE_TARGETS += install install-data install-exec uninstall
+EMPTY_AUTOMAKE_TARGETS += install-dvi install-html install-info install-ps install-pdf
+EMPTY_AUTOMAKE_TARGETS += installdirs
+EMPTY_AUTOMAKE_TARGETS += check installcheck
+
+.PHONY: $(EMPTY_AUTOMAKE_TARGETS)
+$(EMPTY_AUTOMAKE_TARGETS):
+
