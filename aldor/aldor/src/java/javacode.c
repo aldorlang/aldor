@@ -1664,3 +1664,17 @@ jcIsId(String word)
 
 	return true;
 }
+
+JavaCode
+jcImportedIdFrString(String str)
+{
+	String p = strLastIndexOf(str, '.');
+	if (p == NULL) {
+		return jcId(strCopy(str));
+	}
+	else {
+		String pkg = strnCopy(str, p - str);
+		String id = strCopy(p+1);
+		return jcImportedId(pkg, id);
+	}
+}

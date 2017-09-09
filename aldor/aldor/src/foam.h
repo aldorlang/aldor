@@ -74,6 +74,7 @@ enum foamTag {
 			FOAM_PopEnv,
 			FOAM_MFmt,	 /* Indicate multiple values */
 			FOAM_RRFmt,	 /* Raw record (dynamic) format */
+	                FOAM_JavaObj,       /* Java things */
 
 		FOAM_CONTROL_LIMIT,
 

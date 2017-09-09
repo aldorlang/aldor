@@ -75,6 +75,9 @@ local void	dvElimUnusedFormats	(Foam unit);
 local void	dvRemoveNops		(Foam ufoam);
 local void	dvRemoveSeqNops		(Foam seq);
 
+local void dvMarkTypeFormats(Foam unit);
+local void dvMarkType(Foam decl);
+
 Bool dvChanged;
 
 DvUsage		*dvFormatUsage;
@@ -149,6 +152,7 @@ dvElim(Foam unit)
 		dvChanged = false;
 		dvSetupUnit(unit);
 		dvMarkUnitUsage(unit);
+		dvMarkTypeFormats(unit);
 		dvElimUnused(unit);
 		count++;
 
@@ -254,6 +258,7 @@ dvMakeUsageVec(Foam ddecl)
  * Top of recursive descent of the foam tree, starting at the file
  * initialization program.
  */
+
 local void
 dvMarkUnitUsage(Foam unit)
 {
@@ -268,6 +273,45 @@ dvMarkUnitUsage(Foam unit)
 		if (foamTag(dvDefs[i]->foamDef.lhs) != FOAM_Const
 		    || foamTag(dvDefs[i]->foamDef.rhs) != FOAM_Prog)
 			dvMarkExprUsage(dvDefs[i]);
+}
+
+local void
+dvMarkTypeFormats(Foam unit)
+{
+	int i, j;
+	for (i=0; i<foamArgc(unit->foamUnit.formats); i++) {
+		Foam ddecl = unit->foamUnit.formats->foamDFmt.argv[i];
+		for (j=0; j<foamDDeclArgc(ddecl); j++) {
+			if (dvUsage(i, j) == DV_Keep)
+				dvMarkType(ddecl->foamDDecl.argv[j]);
+		}
+	}
+
+	for (i=0; i<foamArgc(unit->foamUnit.defs); i++) {
+		Foam prog = dvDefs[i]->foamDef.rhs;
+		Foam ddecl;
+
+		if (foamTag(prog) != FOAM_Prog) continue;
+		if (foamOptInfo(prog)->dvState != DV_Checked) continue;
+
+		ddecl = prog->foamProg.locals;
+		for (j=0; j<foamDDeclArgc(ddecl); j++) {
+			dvMarkType(ddecl->foamDDecl.argv[j]);
+		}
+		ddecl = prog->foamProg.params;
+		for (j=0; j<foamDDeclArgc(ddecl); j++) {
+			dvMarkType(ddecl->foamDDecl.argv[j]);
+		}
+	}
+}
+
+local void
+dvMarkType(Foam decl)
+{
+	int j;
+	if (decl->foamDecl.type == FOAM_JavaObj) {
+		dvMarkWholeFormat(decl->foamDecl.format);
+	}
 }
 
 
