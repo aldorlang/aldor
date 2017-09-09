@@ -58,6 +58,9 @@ JavaCode
 jcoNewImport(JavaCodeClass clss, String pkg, String name, Bool isImported) 
 {
 	JavaCode	jco;
+	assert(pkg != NULL);
+	assert(name != NULL);
+
 	jco = (JavaCode) stoAlloc((int) OB_JCode, sizeof(struct jcoImport));
 	assert(clss && pkg && name);
 
