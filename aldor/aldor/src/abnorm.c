@@ -880,7 +880,7 @@ abn0Import(AbSyn ab, AbSyn what, AbSyn where)
 
 
 	/* Replace the import with a foreign */
-	ab = abNewForeign(abPos(oab), what, where);
+	ab = abNewForeignImport(abPos(oab), what, where);
 
 
 	/* Release storage associated with the original node */

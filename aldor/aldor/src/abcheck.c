@@ -31,7 +31,7 @@ local void	abCheckExport		(AbSyn);
 local void	abCheckExtend		(AbSyn);
 local void	abCheckFluid		(AbSyn);
 local void	abCheckFor		(AbSyn);
-local void	abCheckForeign		(AbSyn);
+local void	abCheckForeignImport	(AbSyn);
 local void	abCheckFree		(AbSyn);
 local void	abCheckImport		(AbSyn);
 local void	abCheckLambda		(AbSyn);
@@ -142,8 +142,8 @@ abCheck(AbSyn absyn)
 		abCheckFor(absyn);
 		break;
 
-	case AB_Foreign:
-		abCheckForeign(absyn);
+	case AB_ForeignImport:
+		abCheckForeignImport(absyn);
 		break;
 
 	case AB_Free:
@@ -650,14 +650,14 @@ abCheckFor0_old(AbSyn var)
 
 /*****************************************************************************
  *
- * :: abCheckForeign
+ * :: abCheckForeignImport
  *
  ****************************************************************************/
 
 local void
-abCheckForeign(AbSyn absyn)
+abCheckForeignImport(AbSyn absyn)
 {
-	AbSyn	what	= absyn->abForeign.what;
+	AbSyn	what	= absyn->abForeignImport.what;
 	AbSyn	*argv	= abArgvAs(AB_Sequence, what);
 	Length	i, argc = abArgcAs(AB_Sequence, what);
 

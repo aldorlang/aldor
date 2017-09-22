@@ -143,9 +143,9 @@ abPutUse(AbSyn absyn, AbUse context)
 		for (i = 0; i < abArgc(absyn); i++)
 			abPutUse(absyn->abFree.argv[i], AB_Use_Declaration);
 		break;
-	  case AB_Foreign:
-		abPutUse(absyn->abForeign.what,   AB_Use_Declaration);
-		abPutUse(absyn->abForeign.origin, AB_Use_Type);
+	  case AB_ForeignImport:
+		abPutUse(absyn->abForeignImport.what,   AB_Use_Declaration);
+		abPutUse(absyn->abForeignImport.origin, AB_Use_Type);
 		break;
 	  case AB_Builtin:
 		abPutUse(absyn->abBuiltin.what, AB_Use_Declaration);
