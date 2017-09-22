@@ -116,7 +116,7 @@ local Bool	titdnExtend	(Stab, AbSyn, TForm);
 local Bool	titdnFix	(Stab, AbSyn, TForm);
 local Bool	titdnFluid	(Stab, AbSyn, TForm);
 local Bool	titdnFor	(Stab, AbSyn, TForm);
-local Bool	titdnForeign	(Stab, AbSyn, TForm);
+local Bool	titdnForeignImport(Stab, AbSyn, TForm);
 local Bool	titdnFree	(Stab, AbSyn, TForm);
 local Bool	titdnGenerate	(Stab, AbSyn, TForm);
 local Bool	titdnGoto	(Stab, AbSyn, TForm);
@@ -1837,15 +1837,15 @@ local Bool titdnForeignJava(Stab stab, AbSyn absyn);
 local Bool titdnForeignJavaDeclare(Stab stab, AbSyn decl);
 
 local Bool
-titdnForeign(Stab stab, AbSyn absyn, TForm type)
+titdnForeignImport(Stab stab, AbSyn absyn, TForm type)
 {
-	ForeignOrigin forg = forgFrAbSyn(absyn->abForeign.origin);
+	ForeignOrigin forg = forgFrAbSyn(absyn->abForeignImport.origin);
 	Bool ok;
-	titdn(stab, absyn->abForeign.what, tfUnknown);
+	titdn(stab, absyn->abForeignImport.what, tfUnknown);
 
 	switch (forg->protocol) {
 	case FOAM_Proto_Java:
-		ok = titdnForeignJava(stab, absyn->abForeign.what);
+		ok = titdnForeignJava(stab, absyn->abForeignImport.what);
 		break;
 	default:
 		ok = true;
@@ -2788,8 +2788,8 @@ titdnError(Stab stab, AbSyn absyn, TForm type)
 			titdnError(stab, absyn->abFor.test, tfBoolean);
 			titdnError(stab, absyn->abFor.lhs, tfUnknown);
 			break;
-		case AB_Foreign:
-			titdnError(stab, absyn->abForeign.what, tfUnknown);
+		case AB_ForeignImport:
+			titdnError(stab, absyn->abForeignImport.what, tfUnknown);
 			break;
 		case AB_Import:
 			titdnError(stab, absyn->abImport.what, tfUnknown);

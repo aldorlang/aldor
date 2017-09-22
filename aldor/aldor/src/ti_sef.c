@@ -81,7 +81,7 @@ local void	tisefExtend	(Stab, Sefo);
 local void	tisefFix	(Stab, Sefo);
 local void	tisefFluid	(Stab, Sefo);
 local void	tisefFor	(Stab, Sefo);
-local void	tisefForeign	(Stab, Sefo);
+local void	tisefForeignImport(Stab, Sefo);
 local void	tisefFree	(Stab, Sefo);
 local void	tisefGenerate	(Stab, Sefo);
 local void	tisefReference	(Stab, Sefo);
@@ -1017,12 +1017,12 @@ tisefFor(Stab stab, Sefo sefo)
 
 /****************************************************************************
  *
- * :: Foreign:	import ... from Foreign(...)
+ * :: ForeignImport:	import ... from Foreign(...)
  *
  ***************************************************************************/
 
 local void
-tisefForeign(Stab stab, Sefo sefo)
+tisefForeignImport(Stab stab, Sefo sefo)
 {
 	tisef0Generic(stab, sefo);
 }

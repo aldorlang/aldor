@@ -102,7 +102,7 @@ local Foam	genNever	    (AbSyn);
 local Foam	genWhere	    (AbSyn);
 local Foam	genExport	    (AbSyn);
 local Foam	genSelect	    (AbSyn);
-local Foam	genForeign	    (AbSyn);
+local Foam	genForeignImport    (AbSyn);
 local Foam	genRestrict	    (AbSyn);
 
 /*****************************************************************************
@@ -895,8 +895,8 @@ genFoam(AbSyn absyn)
 	case AB_Nothing:
 	case AB_Inline:
 		break;
-	case AB_Foreign:
-		genForeign(absyn);
+	case AB_ForeignImport:
+		genForeignImport(absyn);
 		break;
 	case AB_Has:
 		foam = genHas(absyn);
@@ -1067,9 +1067,9 @@ gen0ExportToC(AbSyn absyn)
  * Generate Foreign inclusion hints.
  */
 local Foam
-genForeign(AbSyn absyn)
+genForeignImport(AbSyn absyn)
 {
-	AbSyn		origin = absyn->abForeign.origin;
+	AbSyn		origin = absyn->abForeignImport.origin;
 	ForeignOrigin	forg;
 	Foam		decl;
 

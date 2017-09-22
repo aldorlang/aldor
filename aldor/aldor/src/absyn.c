@@ -1551,7 +1551,7 @@ struct ab_info abInfoTable[] = {
 	{AB_Fix,	 0, 0,	"Fix",          KW_Fix      },
 	{AB_Fluid,	 0, 0,	"Fluid",        KW_Fluid    },
 	{AB_For,	 0, 0,	"For",          KW_For      },
-	{AB_Foreign,	 0, 0,	"Foreign",      TK_LIMIT    },
+	{AB_ForeignImport,0, 0,	"ForeignImport",TK_LIMIT    },
 	{AB_Free,	 0, 0,	"Free",         KW_Free     },
 	{AB_Generate,	 0, 0,	"Generate",     KW_Generate },
 	{AB_Goto,	 0, 0,	"Goto",         KW_Goto     },
