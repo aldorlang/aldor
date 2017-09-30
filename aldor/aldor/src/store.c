@@ -830,7 +830,7 @@ pgmapExtend(Length count, PgKind kind)
 	PgInfo	*oend;
 	Length	i;
 
-	if (!pgmapNeed(pgMapSize + count)) return 0;;
+	if (!pgmapNeed(pgMapSize + count)) return 0;
 
 	oend = pgMap + pgMapSize;
 
