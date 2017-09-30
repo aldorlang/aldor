@@ -69,6 +69,7 @@ enum abSynTag {
 	AB_Fluid,
 	AB_For,
 	AB_ForeignImport,
+	AB_ForeignExport,
 	AB_Free,
 	AB_Generate,
 	AB_Goto,
@@ -151,6 +152,7 @@ typedef Enum(abSynTag)	AbSynTag;
 # define abNewFix(p,b)		abNew(AB_Fix,		p,1, b)
 # define abNewFor(p,v,i,c)	abNew(AB_For,		p,3, v,i,c)
 # define abNewForeignImport(p,w,o) abNew(AB_ForeignImport,p,2, w,o)
+# define abNewForeignExport(p,w,o) abNew(AB_ForeignExport,p,2, w,o)
 # define abNewFree(p,b)		abNew(AB_Free,		p,1, b)
 # define abNewGenerate(p,n,e)	abNew(AB_Generate,	p,2, n,e)
 # define abNewGoto(p,l)		abNew(AB_Goto,		p,1, l)
@@ -503,6 +505,12 @@ struct abForeignImport {
 	AbSyn			origin;
 };
 
+struct abForeignExport {
+	struct abHdr		hdr;
+	AbSyn			what;
+	AbSyn			dest;
+};
+
 struct abFree {
 	struct abHdr		hdr;
 	AbSyn			argv[NARY];
@@ -771,6 +779,7 @@ union abSyn {
 	struct abFluid		abFluid;
 	struct abFor		abFor;
 	struct abForeignImport	abForeignImport;
+	struct abForeignExport	abForeignExport;
 	struct abFree		abFree;
 	struct abGenerate	abGenerate;
 	struct abGoto		abGoto;
@@ -1165,6 +1174,7 @@ extern AbSyn	abNewDocTextOfList	(TokenList);
 	case AB_Fluid:		fun##Fluid	args; break;	\
 	case AB_For:		fun##For	args; break;	\
 	case AB_ForeignImport:	fun##ForeignImport args; break;	\
+	case AB_ForeignExport:	fun##ForeignExport args; break;	\
 	case AB_Free:		fun##Free	args; break;	\
 	case AB_Generate:	fun##Generate	args; break;	\
 	case AB_Goto:		fun##Goto	args; break;	\

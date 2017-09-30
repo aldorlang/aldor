@@ -117,6 +117,7 @@ local Bool	titdnFix	(Stab, AbSyn, TForm);
 local Bool	titdnFluid	(Stab, AbSyn, TForm);
 local Bool	titdnFor	(Stab, AbSyn, TForm);
 local Bool	titdnForeignImport(Stab, AbSyn, TForm);
+local Bool	titdnForeignExport(Stab, AbSyn, TForm);
 local Bool	titdnFree	(Stab, AbSyn, TForm);
 local Bool	titdnGenerate	(Stab, AbSyn, TForm);
 local Bool	titdnGoto	(Stab, AbSyn, TForm);
@@ -1930,6 +1931,22 @@ titdnForeignJavaDeclare(Stab stab, AbSyn decl)
 	return true;
 }
 
+/****************************************************************************
+ *
+ * :: export:  export ... to D
+ *
+ ***************************************************************************/
+
+local Bool
+titdnForeignExport(Stab stab, AbSyn absyn, TForm type)
+{
+	AbSyn	what	= absyn->abForeignExport.what;
+
+	titdn(stab, absyn->abForeignExport.what, tfUnknown);
+
+	abTUnique(absyn) = type;
+	return true;
+}
 
 /****************************************************************************
  *
@@ -2790,6 +2807,9 @@ titdnError(Stab stab, AbSyn absyn, TForm type)
 			break;
 		case AB_ForeignImport:
 			titdnError(stab, absyn->abForeignImport.what, tfUnknown);
+			break;
+		case AB_ForeignExport:
+			titdnError(stab, absyn->abForeignExport.what, tfUnknown);
 			break;
 		case AB_Import:
 			titdnError(stab, absyn->abImport.what, tfUnknown);
