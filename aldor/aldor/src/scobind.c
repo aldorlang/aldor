@@ -253,6 +253,7 @@ local void		scobindExtend		(AbSyn);
 local void		scobindFluid		(AbSyn);
 local void		scobindFor		(AbSyn);
 local void		scobindForeignImport	(AbSyn);
+local void		scobindForeignExport	(AbSyn);
 local void		scobindFree		(AbSyn);
 local void		scobindImport		(AbSyn);
 local void		scobindInline		(AbSyn);
@@ -616,6 +617,7 @@ scobindValue(AbSyn absyn)
 	case AB_Fluid: 
 	case AB_For:
 	case AB_ForeignImport:
+	case AB_ForeignExport:
 	case AB_Free:
 	case AB_Import:
 	case AB_Inline:
@@ -772,6 +774,10 @@ scobindContext(AbSyn absyn)
 
 	case AB_ForeignImport:
 		scobindForeignImport(absyn);
+		break;
+
+	case AB_ForeignExport:
+		scobindForeignExport(absyn);
 		break;
 
 	case AB_Free:
@@ -2377,6 +2383,25 @@ scobindExportId(AbSyn id, AbSyn type, AbSyn val)
 	scobindSetSigUse(declInfo, SCO_Sig_Export, id);
 	scobindAddMeaning(id, sym, scoStab, SYME_Export, abTForm(type),
 			  (AInt) doc);
+}
+
+/******************************************************************************
+ *
+ * :: scobindForeignExport
+ *
+ *****************************************************************************/
+
+local void
+scobindForeignExport(AbSyn ab)
+{
+	AbSyn	dest	= ab->abForeignExport.dest;
+	AbSyn	what	= ab->abForeignExport.what;
+
+	scoIsInExport = true;
+
+	scobindLOF(what, SCO_Sig_Local);
+	
+	scoIsInExport = false;
 }
 
 /******************************************************************************

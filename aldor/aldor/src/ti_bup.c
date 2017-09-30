@@ -130,6 +130,7 @@ local void	tibupFix	(Stab, AbSyn, TForm);
 local void	tibupFluid	(Stab, AbSyn, TForm);
 local void	tibupFor	(Stab, AbSyn, TForm);
 local void	tibupForeignImport(Stab, AbSyn, TForm);
+local void	tibupForeignExport(Stab, AbSyn, TForm);
 local void	tibupFree	(Stab, AbSyn, TForm);
 local void	tibupGenerate	(Stab, AbSyn, TForm);
 local void	tibupReference	(Stab, AbSyn, TForm);
@@ -2653,6 +2654,19 @@ local void
 tibupForeignImport(Stab stab, AbSyn absyn, TForm type)
 {
 	tibup(stab, absyn->abForeignImport.what, tfUnknown);
+	abTPoss(absyn) = tpossSingleton(tfNone());
+}
+
+/****************************************************************************
+ *
+ * :: Foreign:	import ... from Foreign(...)
+ *
+ ***************************************************************************/
+
+local void
+tibupForeignExport(Stab stab, AbSyn absyn, TForm type)
+{
+	tibup(stab, absyn->abForeignExport.what, tfUnknown);
 	abTPoss(absyn) = tpossSingleton(tfNone());
 }
 

@@ -82,6 +82,7 @@ local void	tisefFix	(Stab, Sefo);
 local void	tisefFluid	(Stab, Sefo);
 local void	tisefFor	(Stab, Sefo);
 local void	tisefForeignImport(Stab, Sefo);
+local void	tisefForeignExport(Stab, Sefo);
 local void	tisefFree	(Stab, Sefo);
 local void	tisefGenerate	(Stab, Sefo);
 local void	tisefReference	(Stab, Sefo);
@@ -1013,6 +1014,18 @@ tisefFor(Stab stab, Sefo sefo)
 {
 	tisef0Generic(stab, sefo);
 	tisef0ApplySymIfNeeded(stab,sefo,1,abForIterArgf,NULL,tfIsGeneratorFn);
+}
+
+/****************************************************************************
+ *
+ * :: ForeignExport:	export ... from Foreign(...)
+ *
+ ***************************************************************************/
+
+local void
+tisefForeignExport(Stab stab, Sefo sefo)
+{
+	tisef0Generic(stab, sefo);
 }
 
 /****************************************************************************

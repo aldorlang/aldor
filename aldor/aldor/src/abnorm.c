@@ -990,6 +990,9 @@ abn0ImportSeq(AbSyn ab)
  * generated statement looks like [Export [With ...] id].
  */
 
+local AbSyn abnExportTo(AbSyn ab);
+local AbSyn abnExportToForeign(AbSyn ab);
+
 local AbSyn
 abnExport(AbSyn ab)
 {
@@ -1000,7 +1003,7 @@ abnExport(AbSyn ab)
 	int   i, n = abArgc(ab->abExport.origin);
 
 	if (!abHasTag(dest, AB_Nothing))
-	  	return ab;
+		return abnExportTo(ab);
 
 	if (abHasTag(dest, AB_Nothing) && abHasTag(origin, AB_Nothing))
 		return ab;
@@ -1034,6 +1037,38 @@ abnExport(AbSyn ab)
 
 	abTag(origin) = AB_Sequence;
 	return origin;
+}
+
+local AbSyn
+abnExportTo(AbSyn ab)
+{
+	AbSyn dest   = ab->abExport.destination;
+
+	if (abIsTheId(dest, ssymForeign)) {
+		return abnExportToForeign(ab);
+	}
+	else if (abIsApplyOf(dest, ssymForeign)) {
+		return abnExportToForeign(ab);
+	}
+	else {
+		return ab;
+	}
+}
+
+local AbSyn
+abnExportToForeign(AbSyn ab)
+{
+	AbSyn what   = ab->abExport.what;
+	AbSyn dest   = ab->abExport.destination;
+	AbSyn origin = ab->abExport.origin;
+	SrcPos pos = abPos(ab);
+
+	if (!abIsNothing(origin))
+		return ab;
+
+	abFreeNode(ab);
+
+	return abNewForeignExport(pos, what, dest);
 }
 
 /*****************************************************************************

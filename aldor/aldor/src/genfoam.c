@@ -103,6 +103,7 @@ local Foam	genWhere	    (AbSyn);
 local Foam	genExport	    (AbSyn);
 local Foam	genSelect	    (AbSyn);
 local Foam	genForeignImport    (AbSyn);
+local Foam	genForeignExport    (AbSyn);
 local Foam	genRestrict	    (AbSyn);
 
 /*****************************************************************************
@@ -897,6 +898,9 @@ genFoam(AbSyn absyn)
 	case AB_ForeignImport:
 		genForeignImport(absyn);
 		break;
+	case AB_ForeignExport:
+		genForeignExport(absyn);
+		break;
 	case AB_Has:
 		foam = genHas(absyn);
 		break;
@@ -1096,6 +1100,36 @@ genForeignImport(AbSyn absyn)
 
 	gen0AddGlobal(decl);
 	return (Foam)NULL;
+}
+
+/*
+ * Generate Foreign inclusion hints.
+ */
+local Foam
+genForeignExport(AbSyn absyn)
+{
+	AbSyn what   = absyn->abForeignExport.what;
+	AbSyn dest   = absyn->abForeignExport.dest;
+	AbSyn *argv;
+	Symbol sym = gen0ExportingTo(dest);
+	int argc, i;
+
+	AB_SEQ_ITER(what, argc, argv);
+
+	for (i = 0; i < argc; i += 1) {
+		AbSyn ab = argv[i];
+		genFoamStmt(ab);
+		if (sym == ssymBuiltin)
+			gen0ExportToBuiltin(ab);
+		else if (sym == ssymC)
+			gen0ExportToC(ab);
+		else if (sym == ssymFortran)
+			gen0ExportToFortran(ab);
+		else
+			comsgFatal(ab, ALDOR_F_Bug, "Export not implemented");
+	}
+	return 0;
+	
 }
 
 local Foam
