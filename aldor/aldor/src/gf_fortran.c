@@ -1248,7 +1248,7 @@ gen0ReadPointerTo(FoamTag tag, Foam foam)
 	   case FOAM_SFlo:
 		return gen0ReadFloatRecValue(tmpfoam);
 	   case FOAM_DFlo:
-		return gen0DoubleValue(tmpfoam);;
+		return gen0DoubleValue(tmpfoam);
 	   default:
 		return tmpfoam;
 	}
@@ -1273,7 +1273,7 @@ gen0WritePointerTo(FoamTag tag, Foam dst, Foam foam)
 	   case FOAM_SFlo:
 		return gen0WriteFloatRecValue(dst, tmpfoam);
 	   case FOAM_DFlo:
-		return gen0WriteDoubleValue(dst, tmpfoam);;
+		return gen0WriteDoubleValue(dst, tmpfoam);
 	   default:
 		return dst;
 	}
