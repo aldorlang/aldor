@@ -338,7 +338,7 @@ local AInt
 gfjPCallDecl(TForm tf)
 {
 	FoamList decls;
-	Foam ddecl;
+	Foam ddecl, retdecl;
 	int i;
 
 	decls = listNil(Foam);
@@ -349,7 +349,9 @@ gfjPCallDecl(TForm tf)
 		decls = listCons(Foam)(decl, decls);
 	}
 
-	ddecl = foamNewDDeclOfList(FOAM_DDecl_JavaSig, listNReverse(Foam)(decls));
+	retdecl = gfjPCallDeclArg(tfMapRet(tf));
+	ddecl = foamNewDDeclOfList(FOAM_DDecl_JavaSig,
+				   listCons(Foam)(retdecl, listNReverse(Foam)(decls)));
 
 	return gen0AddRealFormat(ddecl);
 

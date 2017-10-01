@@ -1153,7 +1153,8 @@ foamAuditPCallJava(Foam foam)
 
 	/* Methods have an implicit argument. */
 	extra = foam->foamPCall.protocol == FOAM_Proto_JavaMethod ? 1 : 0;
-	if (foamDDeclArgc(ddecl) + extra != foamPCallArgc(foam))
+	/* dock one for return type */
+	if (foamDDeclArgc(ddecl) + extra - 1 != foamPCallArgc(foam))
 		foamAuditBadType(foam);
 }
 

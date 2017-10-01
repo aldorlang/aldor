@@ -3560,7 +3560,10 @@ gj0PCallCastArgs(Foam op, JavaCodeList argsIn)
 	JavaCodeList args = argsIn;
 	Foam glo = gjContextGlobals->foamDDecl.argv[op->foamGlo.index];
 	Foam ddecl = gjContext->formats->foamDFmt.argv[glo->foamGDecl.format];
-	int i = 0;
+	int i = 1;
+
+	assert(ddecl->foamDDecl.usage == FOAM_DDecl_JavaSig);
+	assert(foamDDeclArgc(ddecl) == listLength(JavaCode)(argsIn));
 
 	/* Cast java-valued arguments - all other types are not converted */
 	while (args != listNil(JavaCode)) {
