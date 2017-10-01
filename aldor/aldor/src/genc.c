@@ -321,7 +321,6 @@ local	int	gc0IsNewHeader		(String);
 local 	void 	gc0AddHeaderIfNeeded	(String);
 
 local   CCode	gc0ModuleInitFun	(String, int);	
-local 	Bool 	gc0IsGloExported	(int);
 local   CCode	gc0ListOf		(CCodeTag, CCodeList);
 local   void    gc0AddLineFun		(CCodeList *, CCode);
 local	Bool	gc0IsReturn		(CCode);
@@ -1147,9 +1146,8 @@ gc0CreateGloList(String name)
 		
 		/* Handle Exports to C/Fortran */
 		
-		if (gc0IsGloExported(i) &&
-		    (gdecl->foamGDecl.protocol == FOAM_Proto_C || 
-		     gdecl->foamGDecl.protocol == FOAM_Proto_Fortran)) {
+		if (foamGDeclIsExportOf(FOAM_Proto_C, gdecl)
+		    || foamGDeclIsExportOf(FOAM_Proto_Fortran, gdecl)) {
 			Foam fakedecl;
 			CCode cco;
 
@@ -4411,7 +4409,7 @@ gccGetVar(Foam foam)
 		case FOAM_Proto_Foam:
 		case FOAM_Proto_Init:
 
-			if (!gc0IsGloExported(idx)) {
+			if (!foamGDeclIsExport(decl)) {
 				ccode = gc0MultVarId("pG", idx, s);
 				ccode = ccoParen(ccoPreStar(ccode));
 			}
@@ -4423,13 +4421,13 @@ gccGetVar(Foam foam)
 				s = strCopy(s);
 				s = gc0StompOffIncludeFile(s, FOAM_Proto_C);
 			}
-			if (gc0IsGloExported(idx))
+			if (foamGDeclIsExport(decl))
 			  ccode = gc0MultVarId("G", idx, s);
 			else
 			  ccode = ccoIdOf(s);
 			break;
 		case FOAM_Proto_Fortran:
-			if (gc0IsGloExported(idx))
+			if (foamGDeclIsExport(decl))
 				ccode = gc0MultVarId("G", idx, s);
 			else {
 				s = gc0GenFortranName(s);
@@ -6653,15 +6651,6 @@ gc0ModuleInitFun(String modName, int n)
 {
 	return gc0MultVarId(gcFiInitModulePrefix, n, modName);
 }
-
-local Bool 
-gc0IsGloExported(int i)
-{
-	Foam decl = gcvGlo->foamDDecl.argv[i];
-	
-	return (decl->foamGDecl.dir == FOAM_GDecl_Export);
-}
-
 
 void
 ccodeListPrintDb(CCodeList cl)
