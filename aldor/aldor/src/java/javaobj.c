@@ -7,11 +7,20 @@ CREATE_LIST(JavaCode);
 
 local void jco0Indent(JavaCodePContext ctxt);
 
+local JavaCode jcoAlloc(int sz);
+
+local JavaCode jcoAlloc(int sz)
+{
+	JavaCode jco = (JavaCode) (stoAlloc(OB_JCode, sz));
+
+	return jco;
+}
+
+
 JavaCode 
 jcoNewNode(JavaCodeClass clss, int argc) 
 {
-	JavaCode jco = (JavaCode) (stoAlloc( (int) OB_JCode,
-					    fullsizeof(struct jcoNode, argc, JavaCode)));
+	JavaCode jco = jcoAlloc(fullsizeof(struct jcoNode, argc, JavaCode));
 	assert(clss);
 
 	jcoTag(jco) = JCO_JAVA;
@@ -29,7 +38,7 @@ jcoNewToken(JavaCodeClass clss, Symbol sym)
 
 	assert(clss && sym);
 
-	jco = (JavaCode) stoAlloc((int) OB_JCode, sizeof(struct jcoToken));
+	jco = jcoAlloc(sizeof(struct jcoToken));
 	jcoTag(jco) = JCO_TOKEN;
 	jcoClass(jco) = clss;
 	jcoPos(jco) = sposNone;
@@ -43,7 +52,8 @@ jcoNewLiteral(JavaCodeClass clss, String txt)
 {
 	JavaCode	jco;
 	assert(clss && txt);
-	jco = (JavaCode) stoAlloc((int) OB_JCode, sizeof(struct jcoLiteral));
+	jco = jcoAlloc(sizeof(struct jcoLiteral));
+
 	jcoTag(jco) = JCO_LIT;
 	jcoClass(jco) = clss;
 	jcoPos(jco) = sposNone;
@@ -61,7 +71,7 @@ jcoNewImport(JavaCodeClass clss, String pkg, String name, Bool isImported)
 	assert(pkg != NULL);
 	assert(name != NULL);
 
-	jco = (JavaCode) stoAlloc((int) OB_JCode, sizeof(struct jcoImport));
+	jco = jcoAlloc(sizeof(struct jcoImport));
 	assert(clss && pkg && name);
 
 	jcoTag(jco) = JCO_IMPORT;
