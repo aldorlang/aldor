@@ -683,6 +683,9 @@ struct foamClos {
 					     (AInt)FOAM_Nil,f, \
 					     (AInt)(pr),(AInt)(dir))
 #define foamGDeclSetRType(fm,ty)	((fm)->foamGDecl.rtype = (ty))
+extern Bool foamGDeclIsImport(Foam);
+extern Bool foamGDeclIsExport(Foam);
+extern Bool foamGDeclIsExportOf(AInt, Foam);
 
 struct foamGDecl {
 	struct foamHdr          hdr;
