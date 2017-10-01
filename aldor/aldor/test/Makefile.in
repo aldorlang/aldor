@@ -169,6 +169,7 @@ $(patsubst %, out/ap/%.ap, $(_aotests)): out/ap/%.ap: %.as
 	mkdir -p $$(dirname $@);	\
 	$(aldorexedir)/aldor $(nfile) -Fap=$@ $(srcdir)/$*.as
 
+$(patsubst %, out/ao/%.ao, $(_aotests)): $(aldorexedir)/aldor
 $(patsubst %, out/ao/%.ao, $(_aotests)): out/ao/%.ao: %.as
 	$(AM_V_ALDOR)			\
 	mkdir -p $$(dirname $@);	\
