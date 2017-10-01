@@ -2075,6 +2075,31 @@ foamFrString(String s)
 
 /*****************************************************************************
  *
+ * :: FOAM_GDecl
+ *
+ ****************************************************************************/
+
+Bool
+foamGDeclIsExport(Foam foam)
+{
+	return foam->foamGDecl.dir == FOAM_GDecl_Export;
+}
+
+Bool
+foamGDeclIsImport(Foam foam)
+{
+	return foam->foamGDecl.dir == FOAM_GDecl_Import;
+}
+
+Bool
+foamGDeclIsExportOf(AInt tag, Foam foam)
+{
+	return foamGDeclIsExport(foam) && foam->foamGDecl.protocol == tag;
+}
+
+
+/*****************************************************************************
+ *
  * :: Byte code conversion to/from Buffer
  *
  *****************************************************************************/
