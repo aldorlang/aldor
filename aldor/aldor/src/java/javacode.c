@@ -655,16 +655,25 @@ jcCommentSExpr(JavaCode code)
  */
 
 JavaCode
-jcImportedId(String pkg, String name)
+jcImportedIdFrString(String str)
 {
-	return jcoNewImport(jc0ClassObj(JCO_CLSS_ImportedId), pkg, name, false);
+	String p = strLastIndexOf(str, '.');
+	if (p == NULL) {
+		return jcId(strCopy(str));
+	}
+	else {
+		String pkg = strnCopy(str, p - str);
+		String id = strCopy(p+1);
+		return jcImportedId(pkg, id);
+	}
 }
 
 JavaCode
-jcImportedStaticId(String pkg, String name)
+jcImportedId(String pkg, String name)
 {
-	return jcoNewImport(jc0ClassObj(JCO_CLSS_ImportedStatic), pkg, name, false);
+	return jcoNewImport(jc0ClassObj(JCO_CLSS_ImportedId), pkg, listNil(String), name, false);
 }
+
 
 String
 jcImportedIdName(JavaCode id)
@@ -678,6 +687,42 @@ jcImportedIdPkg(JavaCode id)
 	return jcoImportPkg(id);
 }
 
+
+JavaCode
+jcImportedStaticId(String pkg, String clss, String name)
+{
+	assert(strLastIndexOf(clss, '.') == NULL);
+	assert(strLastIndexOf(name, '.') == NULL);
+
+	return jcoNewImport(jc0ClassObj(JCO_CLSS_ImportedStatic), pkg,
+			    listSingleton(String)(clss), name, false);
+}
+
+JavaCode
+jcImportedStaticIdFrString(String str)
+{
+	String p = strLastIndexOf(str, '.');
+	String id = strCopy(p+1);
+	String pkgClss = strnCopy(str, p - str);
+	String dclss   = strLastIndexOf(pkgClss, '.');
+	String clss    = strCopy(dclss+1);
+	String pkg     = strnCopy(pkgClss, dclss - pkgClss);
+
+	return jcImportedStaticId(pkg, clss, id);
+}
+
+String
+jcImportedStaticIdClass(JavaCode importedId)
+{
+	return car(jcoImportPath(importedId));
+}
+
+
+String
+jcImportedStaticIdPkg(JavaCode importedId)
+{
+	return jcoImportPkg(importedId);
+}
 
 local void 
 jcImportPrint(JavaCodePContext ctxt, JavaCode code)
@@ -1663,18 +1708,4 @@ jcIsId(String word)
 	}
 
 	return true;
-}
-
-JavaCode
-jcImportedIdFrString(String str)
-{
-	String p = strLastIndexOf(str, '.');
-	if (p == NULL) {
-		return jcId(strCopy(str));
-	}
-	else {
-		String pkg = strnCopy(str, p - str);
-		String id = strCopy(p+1);
-		return jcImportedId(pkg, id);
-	}
 }

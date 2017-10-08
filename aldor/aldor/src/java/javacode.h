@@ -85,7 +85,7 @@ extern JavaCodeList jcCollectImports(JavaCode code);
 extern JavaCode jcDocumented(String comment, JavaCode code);
 extern JavaCode jcComment(String comment);
 extern JavaCode jcImportedId(String pkg, String name);
-extern JavaCode jcImportedStaticId(String pkg, String name);
+extern JavaCode jcImportedStaticId(String pkg, String clss, String name);
 extern JavaCode jcLiteralString(String s);
 extern JavaCode jcLiteralStringWithTerminalChar(String s);
 extern JavaCode jcLiteralChar(String s);
@@ -157,9 +157,15 @@ extern SExpr        jcNodeSExpr(JavaCode code);
 extern void         jcNodePrint(JavaCodePContext ctxt, JavaCode code);
 
 extern Bool         jcIsLegalClassName(String word);
+extern JavaCode     jcIdFrImported(JavaCode id);
+extern JavaCode     jcImportedIdFrString(String str);
 extern String       jcImportedIdName(JavaCode);
 extern String       jcImportedIdPkg(JavaCode);
-extern JavaCode     jcImportedIdFrString(String str);
+
+extern JavaCode     jcImportedStaticIdFrString(String str);
+extern String       jcImportedStaticIdName(JavaCode);
+extern String       jcImportedStaticIdClass(JavaCode);
+extern String       jcImportedStaticIdPkg(JavaCode);
 
 extern String       jcIdName(JavaCode);
 
