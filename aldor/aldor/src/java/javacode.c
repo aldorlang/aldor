@@ -459,10 +459,20 @@ jcDeclaration(int modifiers,
 	return jcoNewFrList(jc0ClassObj(JCO_CLSS_Declaration), l);
 }
 
-JavaCode 
-jcParamDecl(int modifiers, 
-	    JavaCode type,
-	      JavaCode id)
+JavaCode
+jcMemberDecl(int modifiers, JavaCode type, JavaCode id)
+{
+	return jcDeclaration(modifiers, type, id, 0, 0, 0);
+}
+
+JavaCode
+jcParamDecl(int modifiers, JavaCode type, JavaCode id)
+{
+	return jcDeclaration(modifiers, type, id, 0, 0, 0);
+}
+
+JavaCode
+jcLocalDecl(int modifiers, JavaCode type, JavaCode id)
 {
 	return jcDeclaration(modifiers, type, id, 0, 0, 0);
 }

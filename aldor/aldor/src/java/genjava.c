@@ -3197,7 +3197,7 @@ gj0ClassFields()
 	int i;
 
 	/* private FoamContext ctxt;*/
-	ctxtDecl = jcParamDecl(JCO_MOD_Private,
+	ctxtDecl = jcMemberDecl(JCO_MOD_Private,
 			       gj0Id(GJ_FoamContext), gj0Id(GJ_ContextVar));
 	
 	vars = listNil(JavaCode);
@@ -3206,7 +3206,7 @@ gj0ClassFields()
 		
 		if (decl->foamGDecl.protocol != FOAM_Proto_Init)
 			continue;
-		declJ = jcParamDecl(JCO_MOD_Private,
+		declJ = jcMemberDecl(JCO_MOD_Private,
 				    gj0TypeFrFmt(FOAM_Clos, 0),
 				    jcId(gj0InitVar(i)));
 		vars = listCons(JavaCode)(jcStatement(declJ), vars);
