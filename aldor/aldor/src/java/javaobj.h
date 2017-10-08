@@ -793,6 +793,7 @@ struct jcoLiteral {
 struct jcoImport {
         struct jcoHdr hdr;
         String pkg;
+	StringList path;
 	String id;
 	Bool   isImported;
 };
@@ -819,13 +820,14 @@ extern String	 jcoLiteral(JavaCode jco);
 
 extern String	 jcoImportPkg(JavaCode jco);
 extern String	 jcoImportId(JavaCode jco);
+extern StringList jcoImportPath(JavaCode jco);
 extern Bool	 jcoImportIsImported(JavaCode jco);
 extern void	 jcoImportSetImported(JavaCode jco, Bool flg);
 
 extern JavaCode jcoNewNode(JavaCodeClass class, int argc);
 extern JavaCode jcoNewToken(JavaCodeClass class, Symbol sym);
 extern JavaCode jcoNewLiteral(JavaCodeClass class, String str);
-extern JavaCode jcoNewImport(JavaCodeClass class, String pkg, String id, Bool flg);
+extern JavaCode jcoNewImport(JavaCodeClass class, String pkg, StringList path, String id, Bool flg);
 extern JavaCode jcoNew(JavaCodeClass class, int argc, ...);
 extern JavaCode jcoNewP(JavaCodeClass clss, int argc, va_list argp);
 extern JavaCode jcoNewFrList(JavaCodeClass class, JavaCodeList lst);

@@ -65,7 +65,7 @@ jcoNewLiteral(JavaCodeClass clss, String txt)
 
 
 JavaCode
-jcoNewImport(JavaCodeClass clss, String pkg, String name, Bool isImported) 
+jcoNewImport(JavaCodeClass clss, String pkg, StringList path, String name, Bool isImported)
 {
 	JavaCode	jco;
 	assert(pkg != NULL);
@@ -77,8 +77,9 @@ jcoNewImport(JavaCodeClass clss, String pkg, String name, Bool isImported)
 	jcoTag(jco) = JCO_IMPORT;
 	jcoClass(jco)     = clss;
 	jcoPos(jco)       = sposNone;
-	jco->import.pkg = pkg;
-	jco->import.id = name;
+	jco->import.pkg   = pkg;
+	jco->import.path  = path;
+	jco->import.id    = name;
 	jcoImportSetImported(jco, isImported);
 
 	return jco;
@@ -155,7 +156,10 @@ jcoCopy(JavaCode code)
 		return jcoNewToken(jcoClass(code), jcoToken(code));
 	if (jcoIsImport(code))
 		return jcoNewImport(jcoClass(code), 
-				    jcoImportPkg(code), jcoImportId(code),
+				    jcoImportPkg(code),
+				    listCopyDeeply(String)(jcoImportPath(code),
+							   (ListCopier(String)) strCopy),
+				    jcoImportId(code),
 				    jcoImportIsImported(code));
 	if (jcoIsNode(code)) {
 		JavaCodeList l = listNil(JavaCode);
@@ -207,6 +211,13 @@ jcoImportPkg(JavaCode jco)
 {
 	assert(jcoIsImport(jco));
 	return jco->import.pkg;
+}
+
+extern StringList
+jcoImportPath(JavaCode jco)
+{
+	assert(jcoIsImport(jco));
+	return jco->import.path;
 }
 
 extern String
