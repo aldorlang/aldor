@@ -78,7 +78,9 @@ extern JavaCode jcDeclaration(int modifiers,
 			      JavaCode id, JavaCodeList genArgs,
 			      JavaCode args,
 			      JavaCodeList exns);
+extern JavaCode jcMemberDecl(int modifiers, JavaCode type, JavaCode id);
 extern JavaCode jcParamDecl(int modifiers, JavaCode type, JavaCode id);
+extern JavaCode jcLocalDecl(int modifiers, JavaCode type, JavaCode id);
 extern JavaCode jcInitialisation(int modifiers, JavaCode type, 
 				 JavaCode id, JavaCode value);
 
