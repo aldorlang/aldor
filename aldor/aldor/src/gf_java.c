@@ -8,6 +8,7 @@
 #include "strops.h"
 #include "symbol.h"
 #include "spesym.h"
+#include "util.h"
 
 local AInt gfjFindConst(Syme syme);
 local Foam gfjImportApply(Syme syme);
@@ -16,6 +17,8 @@ local Foam gfjImportConstructor(Syme syme);
 local Foam gfjImportStaticCall(Syme syme);
 local FoamList gfjProgAddParams(TForm tf);
 
+local TForm gfjPCallArgBaseJavaType(TForm tf);
+local TForm gfjPCallRetBaseJavaType(TForm tf);
 local FoamTag gfjPCallFoamType(TForm tf, AInt *pfmt);
 local Foam gfjPCallFoamToJava(TForm tf, Foam foam);
 local Foam gfjPCallJavaToFoam(TForm tf, Foam foam);
@@ -344,7 +347,7 @@ gfjPCallDecl(TForm tf)
 	decls = listNil(Foam);
 
 	for (i=0; i<tfMapArgc(tf); i++) {
-		TForm tfi = tfMapArgN(tf, i);
+		TForm tfi = gfjPCallArgBaseJavaType(tfMapArgN(tf, i));
 		Foam decl = gfjPCallDeclArg(tfi);
 		decls = listCons(Foam)(decl, decls);
 	}
@@ -355,6 +358,42 @@ gfjPCallDecl(TForm tf)
 
 	return gen0AddRealFormat(ddecl);
 
+}
+
+local TForm
+gfjPCallArgBaseJavaType(TForm tf)
+{
+	int i = 0;
+	while (i<5) {
+		Syme enc = tfGetDomExport(tf, symString(ssymTheFromJava), tfIsJavaDecoder);
+		if (enc == NULL) {
+			return tf;
+		}
+		TForm retType = tfMapArg(symeType(enc));
+		tf = retType;
+		i++;
+	}
+
+	bug("Recursive fromJava?");
+	return NULL;
+}
+
+local TForm
+gfjPCallRetBaseJavaType(TForm tf)
+{
+	int i = 0;
+	while (i<5) {
+		Syme enc = tfGetDomExport(tf, symString(ssymTheToJava), tfIsJavaEncoder);
+		if (enc == NULL) {
+			return tf;
+		}
+		TForm retType = tfMapRet(symeType(enc));
+		tf = retType;
+		i++;
+	}
+
+	bug("Recursive toJava?");
+	return NULL;
 }
 
 local Foam
