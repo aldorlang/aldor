@@ -32,6 +32,7 @@
 	struct ListOpsStructName(Type) const *ListOps(Type) =	\
 		(struct ListOpsStructName(Type) const *) &ptrlistOps
 
+#define ListCopier(Type) Type (*)(Type)
 
 /*
  * Various list operations.
@@ -138,9 +139,9 @@ Statement({							\
 		Bool		(*IsLonger)	(List(Type), Length);		\
 		List(Type)	(*Copy)		(List(Type));			\
 		List(Type)	(*CopyTo)	(List(Type), List(Type));	\
-		List(Type)	(*CopyDeeply)	(List(Type), Type (*f)(Type));	\
+		List(Type)	(*CopyDeeply)	(List(Type), ListCopier(Type)); \
 		List(Type)	(*CopyDeeplyTo) (List(Type), List(Type),	\
-						 Type (*f) (Type) );		\
+						 ListCopier(Type));	        \
 		List(Type)	(*Map)		(Type (*f)(Type), List(Type));	\
 		List(Type)	(*NMap)		(Type (*f)(Type), List(Type));	\
 		List(Type)	(*Reverse)	(List(Type));			\
