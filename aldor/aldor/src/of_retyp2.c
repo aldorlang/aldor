@@ -50,6 +50,8 @@ local void retAddUse(RetContext context, FoamTag type, AInt fmt, Foam foam);
 local void retRetypeProg(RetContext context, Foam prog);
 local void retMarkCasts(RetContext context, Foam prog);
 local void retMarkExpr(RetContext context, Foam foam);
+local void retMarkPCallJava(RetContext context, Foam foam);
+local void retMarkPCall(RetContext context, Foam foam);
 local Bool retRearrangeProg(RetContext context);
 local Foam retRearrangeExpr(RetContext context, Foam expr, Bool isLhs);
 local Foam retRearrangeSet(RetContext context, Foam set);
@@ -65,6 +67,7 @@ rtcInit(Foam unit)
 {
 	RetContext context = (RetContext) stoAlloc(OB_Other, sizeof(*context));
 	context->formats = unit->foamUnit.formats;
+	context->globals = unit->foamUnit.formats->foamDFmt.argv[globalsSlot];
 	context->locDecls = NULL;
 	context->parDecls = NULL;
 	context->parLocs = NULL;
@@ -80,7 +83,7 @@ rtcNewProg(RetContext global, Foam prog, int nLocals)
 	int i;
 
 	RetContext context = (RetContext) stoAlloc(OB_Other, sizeof(*context));
-	
+
 	context->locDecls = (Foam *) stoAlloc(OB_Other, nLocals * sizeof(Foam));
 	context->parDecls = (Foam *) stoAlloc(OB_Other, nParams * sizeof(Foam));
 	context->parLocs = NULL;
@@ -88,6 +91,7 @@ rtcNewProg(RetContext global, Foam prog, int nLocals)
 	context->nLocals = nLocals;
 
 	context->formats = global->formats;
+	context->globals = global->globals;
 	context->prog = prog;
 	for (i = 0; i < nLocals; i++) {
 		context->locDecls[i] = foamCopy(context->prog->foamProg.locals->foamDDecl.argv[i]);
@@ -419,14 +423,55 @@ retMarkExpr(RetContext context, Foam foam)
 			retAddUse(context, FOAM_Rec, foam->foamRElt.format, retLocal(foam));
 		}
 		break;
+	case FOAM_PCall:
+		retMarkPCall(context, foam);
+		break;
 	case FOAM_Set:
 	case FOAM_Def:
 		break;
-		
+
 	default:
 		break;
 	}
 }
+
+local void
+retMarkPCall(RetContext context, Foam foam)
+{
+	switch (foam->foamPCall.protocol) {
+	case FOAM_Proto_Java:
+	case FOAM_Proto_JavaMethod:
+	case FOAM_Proto_JavaConstructor:
+		retMarkPCallJava(context, foam);
+	default:
+		break;
+	}
+}
+
+local void
+retMarkPCallJava(RetContext context, Foam foam)
+{
+	Foam op = foam->foamPCall.op;
+
+	if (foamTag(op) != FOAM_Glo) {
+		return;
+	}
+
+	Foam gdecl = context->globals->foamDDecl.argv[op->foamGlo.index];
+	Foam ddecl = context->formats->foamDFmt.argv[gdecl->foamGDecl.format];
+
+	for (int i=0; i<foamPCallArgc(foam); i++) {
+		Foam arg = foam->foamPCall.argv[i];
+		if (retIsLocal(arg)) {
+			retAddUse(context,
+				  ddecl->foamDDecl.argv[i+1]->foamDecl.type,
+				  ddecl->foamDDecl.argv[i+1]->foamDecl.format,
+				  retLocal(arg));
+		}
+	}
+}
+
+
 
 Bool
 rtcRearrangeProg(RetContext context)
