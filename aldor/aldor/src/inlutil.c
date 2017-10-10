@@ -32,6 +32,8 @@ Bool	inuProgDebug	= false;
 
 #define inuReachingDef(foam)	((Foam) udReachingDefs(foam))
 
+local Foam inuDereferencePeep(Foam orig);
+
 /* Make one step through the use/def chain. */
 local Foam
 inuDereference(Foam foam)
@@ -73,11 +75,34 @@ inuDereferenceSyme(Foam foam)
 local Foam
 inuDereferenceClos(Foam foam)
 {
-	while (foam && foamTag(foam) != FOAM_Clos && inuIsVar(foam))
+	while (foam && foamTag(foam) != FOAM_Clos && inuIsVar(foam)) {
 		foam = inuDereference(foam);
+		foam = inuDereferencePeep(foam);
+	}
 
 	return (foam && foamTag(foam) == FOAM_Clos) ? foam : NULL;
 }
+
+local Foam
+inuDereferencePeep(Foam orig)
+{
+	Foam foam = orig;
+	Foam ret = orig;
+
+	if (foam && foamTag(foam) == FOAM_Cast &&
+	    foam->foamCast.type == FOAM_Clos) {
+		foam = foam->foamCast.expr;
+		while (foamTag(foam) == FOAM_Cast) {
+			foam = foam->foamCast.expr;
+		}
+		if (foamTag(foam) == FOAM_Clos) {
+			ret = foam;
+		}
+	}
+
+	return ret;
+}
+
 
 /*****************************************************************************
  *
