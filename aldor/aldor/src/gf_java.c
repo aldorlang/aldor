@@ -2,6 +2,7 @@
 #include "gf_util.h"
 #include "gf_prog.h"
 #include "gf_java.h"
+#include "gf_syme.h"
 #include "of_inlin.h"
 #include "tform.h"
 #include "sefo.h"
@@ -22,7 +23,7 @@ local TForm gfjPCallRetBaseJavaType(TForm tf);
 local FoamTag gfjPCallFoamType(TForm tf, AInt *pfmt);
 local Foam gfjPCallFoamToJava(TForm tf, Foam foam);
 local Foam gfjPCallJavaToFoam(TForm tf, Foam foam);
-local AInt gfjPCallDecl(TForm tf);
+local AInt gfjPCallDecl(TForm tf, TForm this);
 local Foam gfjPCallDeclArg(TForm tf);
 
 local AInt gj0ClassDDecl(ForeignOrigin origin, String clsName);
@@ -86,7 +87,7 @@ gfjImportApply(Syme syme)
 	gen0ProgFiniEmpty(prog, FOAM_Word, emptyFormatSlot);
         foamOptInfo(prog) = inlInfoNew(NULL, prog, NULL, false);
 	gen0ProgRestoreState(saved);
-	
+	genSetConstNum(syme, -1, constNum, true);
 	return foamNewClos(foamNewEnv(int0), foamNewConst(constNum));
 }
 
@@ -116,7 +117,8 @@ gfjImportApplyInner(Syme syme, AInt fmtNum)
 	globName = (forg->file ? strPrintf("%s.%s.%s", 
 					   forg->file, symeString(esyme), symeJavaApplyName(syme))
 		    : strPrintf("%s.%s", symeString(esyme), symeJavaApplyName(syme)));
-	gdecl = foamNewGDecl(FOAM_Word, globName, gfjPCallDecl(innerTf),
+	gdecl = foamNewGDecl(FOAM_Word, globName,
+			     gfjPCallDecl(innerTf, tfMapArgN(symeType(syme), 0)),
 			     FOAM_GDecl_Import, FOAM_Proto_JavaMethod);
 	gnum = gen0AddGlobal(gdecl);
 	fnName  = strPrintf("%s-inner", symeJavaApplyName(syme));
@@ -179,7 +181,7 @@ gfjImportConstructor(Syme syme)
 			     symString(tfIdSym(exporter)));
 	constNum = gen0NumProgs;
 	
-	gdecl = foamNewGDecl(FOAM_Word, globName, gfjPCallDecl(symeType(syme)),
+	gdecl = foamNewGDecl(FOAM_Word, globName, gfjPCallDecl(symeType(syme), NULL),
 			     FOAM_GDecl_Import, FOAM_Proto_JavaConstructor);
 	gnum = gen0AddGlobal(gdecl);
 
@@ -201,6 +203,7 @@ gfjImportConstructor(Syme syme)
         foamOptInfo(prog) = inlInfoNew(NULL, prog, NULL, false);
 	gen0ProgRestoreState(saved);
 
+	genSetConstNum(syme, -1, constNum, true);
 	return foamNewClos(foamNewEnv(int0), foamNewConst(constNum));
 }
 
@@ -232,7 +235,7 @@ gfjImportStaticCall(Syme syme)
 	
 	constNum = gen0NumProgs;
 	
-	gdecl = foamNewGDecl(FOAM_Word, globName, gfjPCallDecl(symeType(syme)),
+	gdecl = foamNewGDecl(FOAM_Word, globName, gfjPCallDecl(symeType(syme), NULL),
 			     FOAM_GDecl_Import, FOAM_Proto_Java);
 	gnum = gen0AddGlobal(gdecl);
 
@@ -253,6 +256,7 @@ gfjImportStaticCall(Syme syme)
         foamOptInfo(prog) = inlInfoNew(NULL, prog, NULL, false);
 	gen0ProgRestoreState(saved);
 
+	genSetConstNum(syme, -1, constNum, true);
 	return foamNewClos(foamNewEnv(int0), foamNewConst(constNum));
 }
 
@@ -338,13 +342,19 @@ gfjPCallJavaToFoam(TForm tf, Foam foam)
 }
 
 local AInt
-gfjPCallDecl(TForm tf)
+gfjPCallDecl(TForm tf, TForm this)
 {
 	FoamList decls;
 	Foam ddecl, retdecl;
 	int i;
 
 	decls = listNil(Foam);
+
+	if (this != NULL) {
+		TForm tfThis = gfjPCallArgBaseJavaType(this);
+		Foam decl = gfjPCallDeclArg(tfThis);
+		decls = listCons(Foam)(decl, decls);
+	}
 
 	for (i=0; i<tfMapArgc(tf); i++) {
 		TForm tfi = gfjPCallArgBaseJavaType(tfMapArgN(tf, i));
@@ -406,9 +416,10 @@ gfjPCallDeclArg(TForm tf)
 	if (tfIsJavaImport(tf)) {
 		Syme syme = tfIdSyme(tf);
 		ForeignOrigin forg = symeForeign(syme);
-		String id = (forg->file == NULL ? strCopy(symeString(syme))
-			     : strPrintf("%s.%s", forg->file, symeString(syme)));
-		decl = foamNewDecl(FOAM_Ptr, id, emptyFormatSlot);
+		String name = forg->file == NULL ? strCopy(symeString(syme))
+			: strPrintf("%s.%s", forg->file, symeString(syme));
+		AInt fmt = gj0ClassDDecl(forg, symeString(syme));
+		decl = foamNewDecl(FOAM_JavaObj, name, fmt);
 	}
 	else {
 		FoamTag type;
