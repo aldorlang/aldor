@@ -3235,6 +3235,12 @@ inlTransformExpr(Foam expr, Foam *paramArgv, Foam *localArgv)
 		/* Fall through and transform as before */
 	}
 
+	if (foamTag(expr) == FOAM_EElt &&
+	    foamTag(expr->foamEElt.ref) == FOAM_Env) {
+		expr = foamNewLex(expr->foamEElt.level + expr->foamEElt.ref->foamEnv.level,
+				  expr->foamEElt.lex);
+		tag = FOAM_Lex;
+	}
 
 	/* Recursive depth-first transformation of the expression */
 	foamIter(expr, arg, *arg = inlTransformExpr(*arg,paramArgv,localArgv));
@@ -3250,7 +3256,7 @@ inlTransformExpr(Foam expr, Foam *paramArgv, Foam *localArgv)
 			localArgv[expr->foamLoc.index]->foamLoc.index;
 		break;
 	  case FOAM_Lex:
-		nexpr = inlLex(nexpr);
+		nexpr = inlLex(expr);
 		break;
 	  case FOAM_Env:
 		nexpr = inlEnv(nexpr);
