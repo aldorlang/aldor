@@ -1151,10 +1151,8 @@ foamAuditPCallJava(Foam foam)
 	glo = faGlobalsv[op->foamGlo.index];
 	ddecl = faFormats->foamDFmt.argv[glo->foamGDecl.format];
 
-	/* Methods have an implicit argument. */
-	extra = foam->foamPCall.protocol == FOAM_Proto_JavaMethod ? 1 : 0;
 	/* dock one for return type */
-	if (foamDDeclArgc(ddecl) + extra - 1 != foamPCallArgc(foam))
+	if (foamDDeclArgc(ddecl) - 1 != foamPCallArgc(foam))
 		foamAuditBadType(foam);
 }
 
