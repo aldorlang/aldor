@@ -19,6 +19,7 @@ void	retypeUnit	(Foam);
 
 typedef struct retypeContext {
 	Foam formats;
+	Foam globals;
 	Foam prog;
 	int  nLocals;
 	Foam *locDecls;
