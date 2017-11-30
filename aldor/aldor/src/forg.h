@@ -15,5 +15,5 @@ typedef struct foreign_origin * ForeignOrigin;
 
 extern ForeignOrigin    forgFrAbSyn	(AbSyn);
 extern Bool   		forgEqual	(ForeignOrigin, ForeignOrigin);
-
+extern void             forgFree        (ForeignOrigin);
 #endif

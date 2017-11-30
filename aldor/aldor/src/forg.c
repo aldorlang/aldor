@@ -98,3 +98,10 @@ forgEqual(ForeignOrigin f1, ForeignOrigin f2)
 	return f1->protocol == f2->protocol && strEqual(f1->file, f2->file);
 }
 
+void
+forgFree(ForeignOrigin forg)
+{
+	/* Not possible to free these as there is a
+	 * pre-initialised cache, and some last-value caching
+	 */
+}
