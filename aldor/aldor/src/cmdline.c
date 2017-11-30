@@ -57,7 +57,7 @@ int		cmdFileCount	    = 0;
  *
  * These are still available:
  *
- *                    J                   T              
+ *                                        T              
  */
 
 local void	cmdUseError	  (Msg fmt, String opt);
