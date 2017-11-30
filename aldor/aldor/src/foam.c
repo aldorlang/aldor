@@ -2074,6 +2074,29 @@ foamFrString(String s)
 
 /*****************************************************************************
  *
+ * :: FOAM_Arr
+ *
+ ****************************************************************************/
+
+String
+foamArrToString(Foam foam)
+{
+	int	i, arrSize;
+	String	str;
+	assert(foam->foamArr.baseType == FOAM_Char);
+
+	arrSize = foamArgc(foam);
+	str = strAlloc(arrSize);
+	for (i = 0; i < arrSize - 1; i++)
+		str[i] = foam->foamArr.eltv[i];
+	str[i] = '\0';
+
+	return str;
+}
+
+
+/*****************************************************************************
+ *
  * :: FOAM_GDecl
  *
  ****************************************************************************/

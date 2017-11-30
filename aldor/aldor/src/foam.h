@@ -623,6 +623,8 @@ struct foamArr {
 	AInt                    eltv[NARY];
 };
 
+extern String foamArrToString(Foam);
+
 struct foamRec {
 	struct foamHdr          hdr;
 	AInt                    format;

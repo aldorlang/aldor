@@ -4002,14 +4002,8 @@ gccBInt(Foam foam)
 local CCode
 gccArr(Foam foam)
 {
-	int	i, arrSize;
-	String	str;
+	String	str = foamArrToString(foam);
 
-	arrSize = foamArgc(foam);
-	str = strAlloc(arrSize);
-	for (i = 0; i < arrSize - 1; i++)
-		str[i] = foam->foamArr.eltv[i];
-	str[i] = '\0';
 	return ccoStringOf(str);
 }
 
