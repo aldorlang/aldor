@@ -37,7 +37,8 @@ CharSets: with
 	 char "<", char ">",
 	 char "%", char "$",
 	 char "~", char "?",
-	 char "=", char "#" ]
+	 char "=", char "#",
+	 char "^", char "__", char ":"]
     
     symStart?(c): Boolean == letter? c or member?(c, symStarts)
     whitespace?(c): Boolean == c = space or c = newline or c = tab
@@ -269,7 +270,7 @@ FnLStream(T: Type): LStream T with
 SExpressionReader: with
     read: (TextReader) -> Partial SExpression;
 == add
-    Token == Record(type: 'sym,number,str,ws,oparen,cparen,dot,error', txt: String);
+    Token == Record(type: 'sym,number,str,ws,oparen,cparen,dot,quote,error', txt: String);
     import from Token
     import from CharSets
     readOneToken(rdr: TextReader): Partial Token ==
@@ -300,6 +301,9 @@ SExpressionReader: with
 	c = char "." =>
 	    next! s
 	    [[dot, c::String]]
+	c = char "'" =>
+	    next! s
+	    [[quote, c::String]]
 	c = char "_"" => [readString s]
 	symStart? c => [readSymbol s]
 	numberStart? c => [readNumber s]
@@ -310,8 +314,11 @@ SExpressionReader: with
         text := ""
 	next! s
         while hasNext? s and peek s ~= char "_"" repeat
+	    if peek s = char "\" then
+	        next! s
 	    text := text + peek(s)::String
 	    next! s
+	    not hasNext? s => [error, "eof inside string"]
 	not hasNext? s => [error, "eof inside string"]
 	next! s
 	[str, text]
@@ -330,6 +337,8 @@ SExpressionReader: with
 	next! s
         text := ""
 	while peek s ~= char "|" repeat
+	    if peek(s) = char "\" then
+	        next! s
 	    text := text + peek(s)::String
 	    next! s
 	next! s
@@ -380,6 +389,10 @@ SExpressionReader: with
 		    failed? final =>
 		        return failed
 		    setRest!(last, retract final)
+		    skipWhitespace!()
+		    if peek(s).type ~= cparen then
+		        return failed
+		    next! s
 		    done := true
 		else if peek(s).type = cparen then
 		    done := true
@@ -391,6 +404,11 @@ SExpressionReader: with
 		    setRest!(last, sexpr nextCell)
 		    last := nextCell
             return [sexpr head]
+
+	readQuoted(): Partial SExpression ==
+	    sx := read()
+	    failed? sx => failed
+	    [[sexpr(-"QUOTE"), retract sx]]
 	    
         read(): Partial SExpression ==
 	    import from Integer
@@ -405,6 +423,7 @@ SExpressionReader: with
 	        stdout << "cparen" << newline
 		failed
 	    else if tok.type = str then [sexpr tok.txt]
+	    else if tok.type = quote then readQuoted()
 	    else if tok.type = sym then
 	        [sexpr (-tok.txt)]
 	    else if tok.type = number then [sexpr integer literal tok.txt]
@@ -475,6 +494,36 @@ test(): () ==
     stdout << "SX: " << sxMaybe << newline
     assertFalse failed? sxMaybe
     assertEquals(sexpr(-"symbol?"), retract sxMaybe)
+
+    sxMaybe := readOne("_"hello\_"_"")
+    stdout << "strsx: " << sxMaybe << newline
+    assertFalse failed? sxMaybe
+    assertEquals(sexpr("hello_""), retract sxMaybe)
+
+    sxMaybe := readOne("_"\\_"")
+    stdout << "strsx: " << sxMaybe << newline
+    assertFalse failed? sxMaybe
+    assertEquals(sexpr("\"), retract sxMaybe)
+
+    sxMaybe := readOne("|\||")
+    stdout << "strsx: " << sxMaybe << newline
+    assertFalse failed? sxMaybe
+    assertEquals(sexpr(-"|"), retract sxMaybe)
+
+    sxMaybe := readOne("|__\|__|")
+    stdout << "strsx: " << sxMaybe << newline
+    assertFalse failed? sxMaybe
+    assertEquals(sexpr(-"__|__"), retract sxMaybe)
+
+    sxMaybe := readOne("'x")
+    stdout << "strsx: " << sxMaybe << newline
+    assertFalse failed? sxMaybe
+    assertEquals([sexpr(-"QUOTE"), sexpr(-"x")], retract sxMaybe)
+
+    sxMaybe := readOne("(((foo) . 1) ((bar) . 2))")
+    stdout << "strsx: " << sxMaybe << newline
+    assertFalse failed? sxMaybe
+    assertEquals([cons([sexpr(-"foo")], sexpr 1), cons([sexpr(-"bar")], sexpr 2)], retract sxMaybe)
 
 test()
 
