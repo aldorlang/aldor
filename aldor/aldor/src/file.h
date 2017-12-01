@@ -32,6 +32,7 @@ extern String		fileContentsString      (FileName);
 extern void		fileFreeContentsString	(String);
 extern void     	fileRemove      	(FileName);
 extern void     	fileRename      	(FileName, FileName);
+extern void     	fileEnsureDirectory    	(FileName);
 
 # define		fileRdOpen(fn)       	fileMustOpen(fn,osIoRdMode)
 # define		fileWrOpen(fn)       	fileMustOpen(fn,osIoWrMode)
