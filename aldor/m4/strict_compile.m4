@@ -18,7 +18,7 @@ AC_DEFUN([ALDOR_STRICT_COMPILE],
 		    $cfg_no_sign_compare $cfg_no_shift_negative_value"
    case "${CC}" in
        gcc*)
-             cfgSTRICTCFLAGS="${cfgSTRICTCFLAGS} -Wno-error=clobbered"
+             cfgSTRICTCFLAGS="${cfgSTRICTCFLAGS} -Wno-error=clobbered -Wno-implicit-fallthrough"
 	     ;;
        clang*)
              cfgSTRICTCFLAGS="${cfgSTRICTCFLAGS} -fcolor-diagnostics -Wno-error=enum-conversion \
