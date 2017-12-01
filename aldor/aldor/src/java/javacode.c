@@ -353,7 +353,7 @@ jcClass(int modifiers, String comment,
 			       5,
 			       jcSpaceSeq(jcmods),
 			       id, superclass, 
-			       jcCommaSeq(extendList),
+			       extendList == listNil(JavaCode) ? NULL : jcCommaSeq(extendList),
 			       jcNLSeq(body));
 	if (comment == NULL) 
 		return clss;
