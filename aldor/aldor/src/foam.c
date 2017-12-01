@@ -1146,6 +1146,11 @@ foamAuditPCallJava(Foam foam)
 	int extra;
 
 	op = foam->foamPCall.op;
+	if (foamTag(op) == FOAM_Arr) {
+		if (op->foamArr.baseType != FOAM_Char)
+			bug("incorrect type for java pcall");
+		return;
+	}
 	if (foamTag(op) != FOAM_Glo)
 		foamAuditBadType(foam);
 	glo = faGlobalsv[op->foamGlo.index];
