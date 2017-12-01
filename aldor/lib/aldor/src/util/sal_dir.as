@@ -27,10 +27,10 @@ Directory: with
 	[ptr]
 
     readName(dir: %): Partial String ==
-        import from Partial Pointer
+        import from Partial Pointer, String
         ent := read dir
 	failed? ent => failed
-        [direntName(retract read dir) pretend String]
+        [copy(direntName(retract ent) pretend String)]
 
     close(dir: %): () == closedir(dir pretend Pointer)
 
