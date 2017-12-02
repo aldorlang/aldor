@@ -85,5 +85,22 @@ Assert(T: with): with {
 
 }
 
+Assert(F: (X: Type) -> BoundedFiniteDataStructureType X, D: Type): with {
+    assertSizeEquals: (MachineInteger, F D) -> ();
+    if D has PrimitiveType then {
+        assertMember: (D, F D) -> ()
+    }
+    export from Assert F D
+}
+== add {
+    import from Assert D, Assert F D, Assert MachineInteger, MachineInteger;
+
+    assertSizeEquals(n: MachineInteger, a: F D): () == assertEquals(n, #a)$Assert(MachineInteger);
+
+    if D has PrimitiveType then {
+        assertMember(d: D, a: F D): () == assertTrue(member?(d, a))$GeneralAssert
+    }
+}
+
 import from MachineInteger, RandomNumberGenerator;
 seed(randomGenerator(0), 1);
