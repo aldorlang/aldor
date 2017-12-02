@@ -2227,7 +2227,9 @@ gen0RtSefoHashId(Sefo sf, Sefo osf)
 		}
 		hash = gen0RtDomainHash(genFoamType(sf));
 	}
-
+	else if (abTForm(sf) && tfIsJavaImport(abTForm(sf))) {
+		hash = foamNewSInt(gen0StrHash(symeString(syme)));
+	}
 	else if (kind == FOAM_LIMIT) {
 		if (DEBUG(genfHash)) {
 			fprintf(dbOut, "Ugh: Found weird syme: ");
