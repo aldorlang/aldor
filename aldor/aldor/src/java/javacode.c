@@ -763,14 +763,17 @@ jcImportedStaticIdName(JavaCode importedId)
 {
 	return jcImportedIdName(importedId);
 }
+
 local void 
 jcImportPrint(JavaCodePContext ctxt, JavaCode code)
 {
 	if (jcoImportIsImported(code))
 		jcoPContextWrite(ctxt, jcoImportId(code));
 	else {
-		jcoPContextWrite(ctxt, jcoImportPkg(code));
-		jcoPContextWrite(ctxt, ".");
+		if (strlen(jcoImportPkg(code)) != 0) {
+			jcoPContextWrite(ctxt, jcoImportPkg(code));
+			jcoPContextWrite(ctxt, ".");
+		}
 		jcoPContextWrite(ctxt, jcoImportId(code));
 	}
 }
@@ -779,10 +782,14 @@ local SExpr
 jcImportSExpr(JavaCode code)
 {
 	SExpr sym = sxiFrSymbol(symIntern(jcoClass(code)->name));
+	if (jcoImportPkg(code) == NULL) {
+		return sxiList(2, sym, sxiFrString(jcoImportId(code)));
+	}
 	return sxiList(3, sym, 
 		       sxiFrString(jcoImportPkg(code)),
 		       sxiFrString(jcoImportId(code)));
 }
+
 
 /*
  * :: String literals
