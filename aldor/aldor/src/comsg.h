@@ -80,7 +80,7 @@ extern int	comsgErrorCount	  (void);
 /*
  * Add messages.
  */
-extern void	comsgFatal	  (AbSyn,  Msg fmt, ...);
+extern void	comsgFatal	  (AbSyn,  Msg fmt, ...) chk_noreturn;
 extern void	comsgError	  (AbSyn,  Msg fmt, ...);
 extern void	comsgWarning	  (AbSyn,  Msg fmt, ...);
 extern void	comsgRemark	  (AbSyn,  Msg fmt, ...);
@@ -88,7 +88,7 @@ extern void 	comsgWarnPos	  (SrcPos, Msg fmt, ...);
 /*
  * Varargs versions
  */
-extern void	comsgVFatal	  (AbSyn,  Msg fmt, va_list);
+extern void	comsgVFatal	  (AbSyn,  Msg fmt, va_list) chk_noreturn;
 extern CoMsg	comsgVError	  (AbSyn,  Msg fmt, va_list);
 extern CoMsg	comsgVWarning	  (AbSyn,  Msg fmt, va_list);
 extern CoMsg	comsgVRemark	  (AbSyn,  Msg fmt, va_list);
