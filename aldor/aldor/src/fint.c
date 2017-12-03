@@ -1555,6 +1555,7 @@ fintStmt(DataObj retDataObj)
 		}
 
 		fintSet(type, loc, expr);
+		break;
 	}
 		/* fall through */
 	case FOAM_Free:
