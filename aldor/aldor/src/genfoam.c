@@ -681,6 +681,7 @@ gen0EmbedExit(Foam foam, AbSyn ab, TForm tf)
 local Foam
 gen0NilValue(TForm tf)
 {
+	tf = tfIgnoreExceptions(tf);
 	if (!tfIsMulti(tf)) {
 		return foamNewNil();
 	}
