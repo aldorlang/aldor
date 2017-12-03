@@ -606,7 +606,7 @@ abPPClipped0(Buffer buf, AbSyn ab, long *pmaxchars)
 	case AB_Default:
 		if (abIsNothing(abArgv(ab)[0]))
 			break;
-		
+		/* Fall through */
 	default:
 	    {
 		TokenTag tTag = abInfo(abTag(ab)).tokenTag;
