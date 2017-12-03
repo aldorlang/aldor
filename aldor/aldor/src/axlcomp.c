@@ -542,7 +542,9 @@ compFilesLoop(int argc, char **argv)
 				comsgFatal(NULL, ALDOR_F_BadFType, argv[i],
 					   fnameType(fn), FTYPE_SRC);
 			}
-			/* Fall through. */
+			if (!isSolo) fprintf(osStdout, "\n%s:\n", argv[i]);
+			nErrors = compSourceFile(compFinfov[i]);
+			break;
 		case FTYPENO_NONE:
 		case FTYPENO_SRC:
 		case FTYPENO_INCLUDED:
