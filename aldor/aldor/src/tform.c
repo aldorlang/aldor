@@ -5691,7 +5691,7 @@ tfDefineeSymbol(TForm tf)
 				tf = tfMultiArgN(tf, int0);
 				break;
 			}
-			/* else fall through to default case. */
+			/* fall through */
 		default:
 			return NULL;
 		}
