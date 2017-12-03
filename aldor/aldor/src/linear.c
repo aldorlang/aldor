@@ -22,6 +22,7 @@
 #include "store.h"
 #include "fint.h"
 #include "comsg.h"
+#include "util.h"
 
 Bool	linDebug	= false;
 #define linDEBUG	DEBUG_IF(lin)	afprintf
@@ -579,6 +580,7 @@ lntFrTL_DoLine(TokenList *ptl)
 				else if (depthDontPileNo)
 					break;
 #endif
+				/* Fall through */
 		default:
 			lnt = lntFrTL_1Tok(&tl0);
 			ll  = listCons(LNodeTree)(lnt, ll);
