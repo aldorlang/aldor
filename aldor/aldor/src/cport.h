@@ -505,8 +505,7 @@ typedef double	MostAlignedType;
  ****************************************************************************/
 
 # define NotReached(stat)	\
-  {(void)printf("Not supposed to reach line %d in file: %s\n",__LINE__, __FILE__); \
-   stat;}
+  {(void)bug("Not supposed to reach line %d in file: %s\n",__LINE__, __FILE__);}
 
 /*****************************************************************************
  *
