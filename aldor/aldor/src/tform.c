@@ -8107,6 +8107,29 @@ tfIsJavaImport(TForm tf)
 	return true;
 }
 
+Bool
+tfJavaCanExport(TForm self, TForm tf)
+{
+	Bool result = true;
+
+	tfFollow(tf);
+
+	if (!tfIsMap(tf)) {
+		return false;
+	}
+	ErrorSet errorSink = errorSetNew();
+	tfJavaCheckArgs(errorSink, self, tfMapArg(tf));
+	tfJavaCheckArgs(errorSink, self, tfMapRet(tf));
+
+	if (errorSetHasErrors(errorSink)) {
+		result = false;
+	}
+	errorSetFree(errorSink);
+
+	return result;
+}
+
+
 void
 tfJavaCheckArgs(ErrorSet errors, TForm self, TForm tf)
 {
@@ -8168,9 +8191,10 @@ tfIsJavaDecoder(TForm tf)
 		return false;
 	if (!tfIsSelf(tfMapRet(tf)))
 		return false;
+	if (tfMapRetc(tf) != 1)
+		return false;
 	return true;
 }
-
 
 /******************************************************************************
  *
