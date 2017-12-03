@@ -8083,7 +8083,7 @@ tfConditionalStab(TForm tf)
  * :: Java
  *
  *****************************************************************************/
-local void tfJavaCheckArg(ErrorSet errors, TForm arg);
+local void tfJavaCheckArg(ErrorSet errors, TForm self, TForm arg);
 
 Bool
 tfIsJavaImport(TForm tf)
@@ -8108,7 +8108,7 @@ tfIsJavaImport(TForm tf)
 }
 
 void
-tfJavaCheckArgs(ErrorSet errors, TForm tf)
+tfJavaCheckArgs(ErrorSet errors, TForm self, TForm tf)
 {
 	Length argc = tfAsMultiArgc(tf);
 	int i;
@@ -8120,20 +8120,22 @@ tfJavaCheckArgs(ErrorSet errors, TForm tf)
 		if (!errorSetPrintf(errors, !tfIsNotDomain(arg), "Position %d must be a domain", i)) {
 			continue;
 		}
-		tfJavaCheckArg(errors, arg);
+		tfJavaCheckArg(errors, self, arg);
 	}
 
 	return;
 }
 
 local void
-tfJavaCheckArg(ErrorSet errors, TForm arg)
+tfJavaCheckArg(ErrorSet errors, TForm self, TForm arg)
 {
 		Syme enc, dec;
 
 		if (tfIsSelf(arg))
 			return;
 		if (tfIsJavaImport(arg))
+			return;
+		if (self && tfEqual(self, arg))
 			return;
 
 		enc = tfGetDomExport(arg, symString(ssymTheToJava), tfIsJavaEncoder);

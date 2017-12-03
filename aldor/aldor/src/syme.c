@@ -766,14 +766,14 @@ symeIsJavaExport(Syme syme)
 		tfFollow(inner);
 		if (errorSetCheck(errors,
 				  tfIsMap(inner), "apply must return a map")) {
-			tfJavaCheckArgs(errors, tfMapArg(inner));
-			tfJavaCheckArgs(errors, tfMapRet(inner));
+			tfJavaCheckArgs(errors, 0, tfMapArg(inner));
+			tfJavaCheckArgs(errors, 0, tfMapRet(inner));
 		}
 	}
 	if (symeId(syme) ==  ssymTheNew) {
 		errorSetCheck(errors, tfMapRetc(tf) == 1 && tfIsSelf(tfMapRetN(tf, 0)),
 			      "new must return %");
-		tfJavaCheckArgs(errors, tfMapArg(tf));
+		tfJavaCheckArgs(errors, 0, tfMapArg(tf));
 	}
 	return errors;
 }

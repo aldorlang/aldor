@@ -922,7 +922,7 @@ extern Syme		tfImplicitExport(Stab, SymeList, Syme);
  ****************************************************************************/
 
 extern Bool tfIsJavaImport(TForm tf);
-extern void tfJavaCheckArgs(ErrorSet errors, TForm tf);
+extern void tfJavaCheckArgs(ErrorSet errors, TForm self, TForm tf);
 extern Bool tfIsJavaEncoder(TForm tf);
 extern Bool tfIsJavaDecoder(TForm tf);
 #endif /* !_TFORM_H_ */
