@@ -1143,7 +1143,7 @@ ccoIsWantingElse(CCode cco)
 		switch (ccoTag(cco)) {
 		case CCO_If:
 			if (!ccoArgv(cco)[2]) return true;
-			/* Seep through. */
+			/* fall through. */
 		case CCO_Switch:
 		case CCO_While:
 		case CCO_For:
