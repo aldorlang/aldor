@@ -41,6 +41,8 @@ public interface Value {
 
     Env toEnv();
 
+    <T> T toJavaObj();
+
     public class U {
         static public Record toRecord(Value value) {
             if (value == null)
@@ -88,5 +90,9 @@ public interface Value {
         public static Value fromHInt(short o) {
             return new HInt(o);
         }
+
+	public static <T> Value fromJavaObj(T obj) {
+	    return new JavaObj<T>(obj);
+	}
     }
 }
