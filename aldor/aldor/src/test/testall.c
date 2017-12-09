@@ -44,6 +44,7 @@ main(int argc, char *argv[])
 	if (testShouldRun("fname")) fnameTest();
 	if (testShouldRun("archive")) archiveTestSuite();
 	if (testShouldRun("foam")) foamTest();
+	if (testShouldRun("forg")) forgTest();
 	if (testShouldRun("format")) formatTest();
 	if (testShouldRun("flog")) flogTest();
 	if (testShouldRun("java")) javaTestSuite();

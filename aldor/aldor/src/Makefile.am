@@ -54,6 +54,7 @@ aldor_LDADD = libphase.a libstruct.a libgen.a libport.a -lm
 aldor_LDFLAGS = $(build_id)
 aldor_CFLAGS  = -g $(STRICTCFLAGS)
 
+#aldortest_CFLAGS = -DTEST_STAND_ALONE -DTEST_ALL -save-temps $(STRICTCFLAGS)
 aldortest_CFLAGS = -DTEST_STAND_ALONE -DTEST_ALL -save-temps $(STRICTCFLAGS)
 aldortest_SOURCES = test.c
 aldortest_LDADD = libtest.a libstruct.a libgen.a libport.a -lm
@@ -278,6 +279,7 @@ testsuite =			\
 	test/test_flog.c	\
 	test/test_fname.c 	\
 	test/test_foam.c 	\
+	test/test_forg.c	\
 	test/test_format.c	\
 	test/test_genfoam.c	\
 	test/test_jflow.c	\
