@@ -125,6 +125,7 @@ struct _libSectInfo libSectInfoTable[] = {
 	{LIB_Twins,	"twins",  "twins"},
 	{LIB_Extend,	"extend", "ext"},
 	{LIB_Doc,	"doc",    "doc"},
+	{LIB_Foreign,	"foreign","forgn"},
 	{LIB_Id,	"fileid", "id"},
 	{LIB_Macros,	"macros", "macros"}
 };
@@ -1297,6 +1298,7 @@ local void	libPutSymeSymes		(Lib);
 local void	libPutSymeTwins		(Lib);
 local void	libPutSymeExts		(Lib);
 local void	libPutSymeDocs		(Lib);
+local void	libPutSymeForeign	(Lib);
 local void	libPutSymev		(Lib);
 
 extern void	libCheckSymes		(Lib);
@@ -1350,6 +1352,9 @@ libPutSymes(Lib lib, SymeList symes, Foam foam)
 
 	/* Compute the doc offset information. */
 	libPutSymeDocs(lib);
+
+	/* Compute the foreign origin information. */
+	libPutSymeForeign(lib);
 
 	/* Produce the constant-sized information section. */
 	libPutSymev(lib);
@@ -1832,6 +1837,36 @@ libPutSymeDocs(Lib lib)
 	libPutSection(lib, LIB_Doc, buf);
 }
 
+local void
+libPutSymeForeign(Lib lib)
+{
+	UShort	i, symec = lib->symec;
+	Buffer	buf = libAddSection(lib, LIB_Foreign);
+        Table   tbl = tblNew((TblHashFun) forgHash, (TblEqFun) forgEqual);
+
+	if (!buf) return;
+
+	for (i=0; i < symec; i++) {
+		Syme	syme = lib->symev[i];
+		ForeignOrigin forg;
+		Length pos;
+
+		if (symeKind(syme) != SYME_Foreign) continue;
+		forg = symeForeign(syme);
+		if (forg == NULL) continue;
+		bufPutHInt(buf, i);
+		pos = (Length) tblElt(tbl, (TblKey) forg, (TblElt) 0x7FFFFFFF);
+		bufPutSInt(buf, pos);
+		if (pos == 0x7FFFFFFF)
+			forgToBuffer(buf, forg);
+		tblSetElt(tbl, (TblKey) forg, (TblElt) (UAInt) i);
+	}
+	bufPutHInt(buf, symec);
+	tblFree(tbl);
+	libPutSection(lib, LIB_Foreign, buf);
+}
+
+
 /*****************************************************************************
  *
  * lib0GetSymes	- first pass for libGetSymes
@@ -1850,6 +1885,7 @@ local void	lib0GetSymeSymes	(Lib);
 local void	lib0GetSymeTwins	(Lib);
 local void	lib0GetSymeExts		(Lib);
 local void	lib0GetSymeDocs		(Lib);
+local void	lib0GetSymeForeign	(Lib);
 local void	lib0FiniSymev		(Lib);
 
 local SymeList
@@ -1924,6 +1960,10 @@ lib0GetSymes(Lib lib)
 	/* Retrieve the docs. */
 	/* This pass sets up triggers for symeComment(lib->symev[i]). */
 	lib0GetSymeDocs(lib);
+
+	/* Retrieve the docs. */
+	/* This pass sets up triggers for symeForeign(lib->symev[i]). */
+	lib0GetSymeForeign(lib);
 
 	/* Retrieve the syme list from the vector. */
 	/* This pass fills in lib->symes. */
@@ -2309,6 +2349,24 @@ lib0GetSymeDocs(Lib lib)
 }
 
 local void
+lib0GetSymeForeign(Lib lib)
+{
+	UShort	i, topc = lib->topc;
+	Buffer	buf = libGetSection(lib, LIB_Foreign, true);
+
+	for (libGetSymeIndex(buf, i); i < topc; libGetSymeIndex(buf, i)) {
+		Syme	syme = lib->symev[i];
+		ForeignOrigin forg;
+		int	pos;
+
+		symeSetFieldTrigger(syme, SYFI_Foreign);
+		pos = bufGetSInt(buf);
+		if (pos == 0x7FFFFFFF)
+			forgBufferSkip(buf);
+	}
+}
+
+local void
 lib0FiniSymev(Lib lib)
 {
 	UShort	i, topc = lib->topc;
@@ -2341,6 +2399,7 @@ local void	lib1GetSymeSymes	(Lib);
 local void	lib1GetSymeTwins	(Lib);
 local void	lib1GetSymeExts		(Lib);
 local void	lib1GetSymeDocs		(Lib);
+local void	lib1GetSymeForeign	(Lib);
 local void	lib1GetSymeTypec	(Lib);
 local void	lib1FillTypeNumbers	(Lib, int);
 
@@ -2390,6 +2449,10 @@ lib1GetSymes(Lib lib)
 	/* Retrieve the docs. */
 	/* This pass fills in symeComment(lib->symev[i]). */
 	lib1GetSymeDocs(lib);
+
+	/* Retrieve the foreign origins. */
+	/* This pass fills in symeForeign(lib->symev[i]). */
+	lib1GetSymeForeign(lib);
 
 	if (DEBUG(lib)) {
 		fprintf(dbOut, "lib1GetSymes: %s", fnameUnparse(lib->name));
@@ -2741,6 +2804,28 @@ lib1GetSymeDocs(Lib lib)
 			doc = symeComment(lib->symev[pos]);
 	
 		symeSetComment(syme,doc);
+	}
+}
+
+
+local void
+lib1GetSymeForeign(Lib lib)
+{
+	UShort	i, symec = lib->symec;
+	Buffer	buf = libGetSection(lib, LIB_Foreign, true);
+
+	for (libGetSymeIndex(buf, i); i < symec; libGetSymeIndex(buf, i)) {
+		Syme	syme = lib->symev[i];
+		ForeignOrigin forg;
+		int	pos;
+
+		pos = bufGetSInt(buf);
+		if (pos == 0x7FFFFFFF)
+			forg = forgFrBuffer(buf);
+		else
+			forg = symeForeign(lib->symev[pos]);
+		assert(symeIsForeign(syme));
+		symeSetForeign(syme, forg);
 	}
 }
 

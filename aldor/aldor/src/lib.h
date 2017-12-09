@@ -40,6 +40,7 @@ enum libSectName {
 	LIB_Twins,			/* Syme twins. */
 	LIB_Extend,			/* Extendee syme lists. */
 	LIB_Doc,			/* Documentation. */
+	LIB_Foreign,			/* ForeignOrigin table. */
 	LIB_Id,				/* Name of the library. */
         LIB_Macros,			/* Macros exported */
     LIB_NAME_LIMIT
