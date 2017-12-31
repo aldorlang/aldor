@@ -34,6 +34,9 @@ enum jc_clss_enum {
 	JCO_CLSS_Switch,    
 	JCO_CLSS_Case,    
 	JCO_CLSS_Block,
+	JCO_CLSS_Try,
+	JCO_CLSS_Catch,
+	JCO_CLSS_Finally,
 
 	JCO_CLSS_ArrRef,
 	JCO_CLSS_MemRef,
@@ -193,6 +196,7 @@ local JWriteFn jcApplyPrint;
 local JWriteFn jcARefPrint;
 local JWriteFn jcBinOpPrint; 
 local JWriteFn jcBlockHdrPrint; 
+local JWriteFn jcBlockKeywordPrint;
 local JWriteFn jcBlockPrint;
 local JWriteFn jcCasePrint; 
 local JWriteFn jcCastPrint; 
@@ -288,6 +292,9 @@ static struct jclss jcClss[] = {
 	{ JCO_CLSS_Switch,     jcBlockHdrPrint, jcNodeSExpr,  "switch", "switch"},
 	{ JCO_CLSS_Case,       jcCasePrint,     jcNodeSExpr,  "case", "case"},
 	{ JCO_CLSS_Block,      jcBlockPrint,    jcNodeSExpr,  "block"},
+	{ JCO_CLSS_Try,        jcBlockKeywordPrint, jcNodeSExpr,  "try", "try"},
+	{ JCO_CLSS_Catch,      jcBlockHdrPrint, jcNodeSExpr,  "catch", "catch"},
+	{ JCO_CLSS_Finally,    jcBlockKeywordPrint, jcNodeSExpr,  "finally", "finally"},
 
 	{ JCO_CLSS_ArrRef,     jcARefPrint,  jcNodeSExpr, "arrayref", 0, 20, JCO_NONE},
 	{ JCO_CLSS_MemRef,     jcBinOpPrint, jcNodeSExpr, "memref", ".", 20, JCO_NONE},
@@ -1444,6 +1451,32 @@ jcCasePrint(JavaCodePContext ctxt, JavaCode code)
 	jcoPContextWrite(ctxt, ": ");
 }
 
+JavaCode
+jcTryCatch(JavaCode body, JavaCode catch, JavaCode finally)
+{
+	return jcTry(body, listSingleton(JavaCode)(catch), finally);
+}
+
+JavaCode
+jcTry(JavaCode body, JavaCodeList catches, JavaCode finally)
+{
+	JavaCodeList lst = listNil(JavaCode);
+	lst = listCons(JavaCode)(jcoNew(jc0ClassObj(JCO_CLSS_Try), 1, body), lst);
+	lst = listNConcat(JavaCode)(lst, catches);
+	if (finally != NULL) {
+		lst = listNConcat(JavaCode)(lst,
+					    listSingleton(JavaCode)(jcoNew(jc0ClassObj(JCO_CLSS_Finally),
+									   1, finally)));
+	}
+	return jcNLSeq(lst);
+}
+
+JavaCode
+jcCatch(JavaCode decl, JavaCode body)
+{
+	return jcoNew(jc0ClassObj(JCO_CLSS_Catch), 2, decl, body);
+}
+
 /*
  * :: Import, Package
  */
@@ -1507,6 +1540,23 @@ jcBlockHdrPrint(JavaCodePContext ctxt, JavaCode code)
 	if (needsIndent)
 		jcoPContextNewlineIndent(ctxt);
 	jcoWrite(ctxt, jcoArgv(code)[1]);
+	if (needsIndent)
+		jcoPContextNewlineUnindent(ctxt);
+
+}
+
+local void
+jcBlockKeywordPrint(JavaCodePContext ctxt, JavaCode code)
+{
+	Bool needsIndent;
+	char *key = (char *) jcoClass(code)->txt;
+	jcoPContextWrite(ctxt, key);
+	jcoPContextWrite(ctxt, " ");
+
+	needsIndent = jcBlockHdrIndent(jcoArgv(code)[0]);
+	if (needsIndent)
+		jcoPContextNewlineIndent(ctxt);
+	jcoWrite(ctxt, jcoArgv(code)[0]);
 	if (needsIndent)
 		jcoPContextNewlineUnindent(ctxt);
 
