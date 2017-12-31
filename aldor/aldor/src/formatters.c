@@ -5,6 +5,7 @@
 #include "symeset.h"
 #include "freevar.h"
 #include "bigint.h"
+#include "java/javacode.h"
 #include "ostream.h"
 #include "format.h"
 #include "sefo.h"
@@ -42,6 +43,7 @@ local int bintFormatter(OStream stream, Pointer p);
 local int symbolFormatter(OStream stream, Pointer p);
 
 local int errorSetFormatter(OStream stream, Pointer p);
+local int javaCodeFormatter(OStream stream, Pointer p);
 
 
 void
@@ -76,6 +78,7 @@ fmttsInit()
 	fmtRegister("Symbol", symbolFormatter);
 
 	fmtRegister("ErrorSet", errorSetFormatter);
+	fmtRegister("JavaCode", javaCodeFormatter);
 }
 
 
@@ -201,6 +204,16 @@ errorSetFormatter(OStream ostream, Pointer p)
 	return i;
 }
 
+local int
+javaCodeFormatter(OStream ostream, Pointer p)
+{
+	JavaCode jco = (JavaCode) p;
+	int c;
+
+	c = ostreamPrintf(ostream, "%pSExpr", jcoSExpr(jco));
+
+	return c;
+}
 local int
 tconstFormatter(OStream ostream, Pointer p)
 {
