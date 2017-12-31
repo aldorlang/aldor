@@ -49,6 +49,7 @@ main(int argc, char *argv[])
 	if (testShouldRun("flog")) flogTest();
 	if (testShouldRun("java")) javaTestSuite();
 	if (testShouldRun("jflow")) jflowTest();
+	if (testShouldRun("jcode")) jcodeTest();
 	if (testShouldRun("tinfer")) tinferTest();
 	if (testShouldRun("stab")) stabTest();
 	if (testShouldRun("srcpos")) srcposTest();

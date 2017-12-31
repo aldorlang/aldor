@@ -286,6 +286,7 @@ testsuite =			\
 	test/test_genfoam.c	\
 	test/test_jflow.c	\
 	test/test_java.c	\
+	test/test_jcode.c	\
 	test/test_int.c		\
 	test/test_list.c	\
 	test/test_ostream.c	\
