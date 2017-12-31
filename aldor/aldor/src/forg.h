@@ -13,8 +13,6 @@ struct foreign_origin {
 	String		file;
 };
 
-typedef struct foreign_origin * ForeignOrigin;
-
 extern ForeignOrigin	forgNew		(FoamProtoTag, String);
 extern ForeignOrigin    forgFrAbSyn	(AbSyn);
 extern Bool   		forgEqual	(ForeignOrigin, ForeignOrigin);

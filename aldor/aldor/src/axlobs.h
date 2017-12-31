@@ -62,6 +62,8 @@ typedef struct foamuses_struct *   FoamUses;
 typedef struct ssa_struct *        SSA;
 typedef struct domtree_struct *    DominatorTree;
 #endif
+typedef struct foreign_origin * ForeignOrigin;
+
 
 
 /*
