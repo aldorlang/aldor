@@ -1626,30 +1626,37 @@ jc0ModifierSymbol(int idx)
 
 
 local Bool jc0ImportEq(JavaCode c1, JavaCode c2);
-local void jc0CollectImports(Table tbl, JavaCode code);
+local void jc0CollectImports(Table tbl, Table nameTbl, JavaCode code);
 
 JavaCodeList 
 jcCollectImports(JavaCode code)
 {
 	Table tbl = tblNew((TblHashFun) jcoHash, (TblEqFun) jc0ImportEq);
+	Table nameTbl = tblNew((TblHashFun) strHash, (TblEqFun) strEqual);
 	TableIterator it;
 	JavaCodeList resList = listNil(JavaCode);
 
-	jc0CollectImports(tbl, code);
+	jc0CollectImports(tbl, nameTbl, code);
 
 	for (tblITER(it, tbl); tblMORE(it); tblSTEP(it)) {
 		JavaCode id = (JavaCode) tblKEY(it);
 		JavaCodeList codes = (JavaCodeList) tblELT(it);
 		JavaCodeList tmp;
-		JavaCode cp = jcImportedId(jcoImportPkg(id), jcoImportId(id));
-		resList = listCons(JavaCode)(cp, resList);
-		tmp = codes;
-		while (tmp != 0) {
-			JavaCode imp = car(tmp);
-			jcoImportSetImported(imp, true);
-			tmp = cdr(tmp);
+		JavaCode copy = jcImportedId(jcoImportPkg(id), jcoImportId(id));
+		JavaCodeList usages = (JavaCodeList) tblElt(nameTbl, jcoImportId(id), listNil(JavaCode));
+		if (cdr(usages) != listNil(JavaCode)) {
+			continue;
 		}
-		listFree(JavaCode)(codes);
+		else {
+			resList = listCons(JavaCode)(copy, resList);
+			tmp = codes;
+			while (tmp != 0) {
+				JavaCode imp = car(tmp);
+				jcoImportSetImported(imp, true);
+				tmp = cdr(tmp);
+			}
+			listFree(JavaCode)(codes);
+		}
 	}
 	return resList;
 }
@@ -1669,7 +1676,7 @@ jc0ImportEq(JavaCode c1, JavaCode c2)
 
 
 local void 
-jc0CollectImports(Table tbl, JavaCode code) 
+jc0CollectImports(Table tbl, Table nameTbl, JavaCode code)
 {
 	if (code == 0)
 		return;
@@ -1678,11 +1685,17 @@ jc0CollectImports(Table tbl, JavaCode code)
 		JavaCode key = code;
 		l = listCons(JavaCode)(code, l);
 		tblSetElt(tbl, key, l);
+
+		String name = jcoImportId(code);
+		JavaCodeList ids = (JavaCodeList) tblElt(nameTbl, name, listNil(JavaCode));
+		if (!listMember(JavaCode)(ids, code, jc0ImportEq)) {
+			tblSetElt(nameTbl, name, (TblElt) listCons(JavaCode)(code, ids));
+		}
 	}
 	if (jcoIsNode(code)) {
 		int i=0;
 		for (i=0; i<jcoArgc(code); i++) {
-			jc0CollectImports(tbl, jcoArgv(code)[i]);
+			jc0CollectImports(tbl, nameTbl, jcoArgv(code)[i]);
 		}
 	}
 }
