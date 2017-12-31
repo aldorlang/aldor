@@ -268,7 +268,7 @@ static struct jclss jcClss[] = {
 	{ JCO_CLSS_CommaSeq,   jcSequencePrint,jcNodeSExpr, "commaseq", ", "},
 	{ JCO_CLSS_SpaceSeq,   jcSequencePrint,jcNodeSExpr, "spaceseq", " "},
 	{ JCO_CLSS_NLSeq,      jcSequencePrint,jcNodeSExpr, "nlseq", "\n"},
-	{ JCO_CLSS_Seq,        jcSequencePrint,jcNodeSExpr, "seq"},
+	{ JCO_CLSS_Seq,        jcSequencePrint,jcNodeSExpr, "seq", ""},
 	{ JCO_CLSS_Parens,     jcParenPrint,   jcNodeSExpr, "paren", "()", 15, JCO_NONE },
 	{ JCO_CLSS_Braces,     jcParenPrint,   jcNodeSExpr, "braces", "{}", 15, JCO_NONE },
 	{ JCO_CLSS_SqBrackets, jcParenPrint,   jcNodeSExpr, "sqbracket", "[]", 15, JCO_NONE },
@@ -555,6 +555,23 @@ jcApplyPrint(JavaCodePContext ctxt, JavaCode code)
 {
 	jcoWrite(ctxt, jcoArgv(code)[0]);
 	jcoWrite(ctxt, jcoArgv(code)[1]);
+}
+
+JavaCode
+jcGenericMethodName(JavaCode methodName, JavaCodeList genArgs)
+{
+	return jcSeqV(2, jcABrackets(jcCommaSeq(genArgs)));
+}
+
+JavaCode
+jcGenericMethodNameV(JavaCode methodName, int n, ...)
+{
+	JavaCode jc;
+	va_list argp;
+	va_start(argp, n);
+	jc = jcSeqV(2, jcABrackets(jcCommaSeqP(n, argp)), methodName);
+	va_end(argp);
+	return jc;
 }
 
 
@@ -935,6 +952,17 @@ jcIdPrint(JavaCodePContext ctxt, JavaCode code)
 	jcoPContextWrite(ctxt, name);
 }
 
+
+/*
+ * :: Generic id
+ */
+JavaCode
+jcGenericId(JavaCode root, JavaCodeList genArgs)
+{
+	return jcSeqV(2, root, jcABrackets(jcCommaSeq(genArgs)));
+}
+
+
 /*
  * :: Constructor Call
  */
@@ -1294,6 +1322,23 @@ JavaCode
 jcCommaSeqP(int n, va_list argp) 
 {
 	return jcoNewP(jc0ClassObj(JCO_CLSS_CommaSeq), n, argp);
+}
+
+JavaCode
+jcSeq(JavaCodeList lst)
+{
+	return jcoNewFrList(jc0ClassObj(JCO_CLSS_Seq), lst);
+}
+
+JavaCode
+jcSeqV(int n, ...)
+{
+	va_list argp;
+	JavaCode jc;
+	va_start(argp, n);
+	jc = jcoNewP(jc0ClassObj(JCO_CLSS_Seq), n, argp);
+	va_end(argp);
+	return jc;
 }
 
 JavaCode

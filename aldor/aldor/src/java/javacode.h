@@ -56,6 +56,8 @@ extern JavaCode jcThis();
 extern JavaCode jcTrue();
 extern JavaCode jcFalse();
 
+extern JavaCode jcGenericId(JavaCode root, JavaCodeList genArgs);
+
 extern JavaCode jcClass(int modifiers, String comment, 
 		     JavaCode id, JavaCode superclass,
 		     JavaCodeList implList, JavaCodeList body);
@@ -120,6 +122,8 @@ extern JavaCode jcMemRef(JavaCode lhs, JavaCode rhs);
 extern JavaCode jcCast(JavaCode type, JavaCode val);
 
 extern JavaCode jcStatement(JavaCode stmt);
+extern JavaCode jcSeq(JavaCodeList lst);
+extern JavaCode jcSeqV(int n, ...);
 extern JavaCode jcCommaSeq(JavaCodeList lst);
 extern JavaCode jcCommaSeqP(int n, va_list l);
 extern JavaCode jcSpaceSeq(JavaCodeList lst);
@@ -137,6 +141,9 @@ extern JavaCode jcApplyV(JavaCode c, int n, ...);
 extern JavaCode jcApplyP(JavaCode c, int n, va_list argp);
 extern JavaCode jcApplyMethod(JavaCode obj, JavaCode id, JavaCodeList args);
 extern JavaCode jcApplyMethodV(JavaCode obj, JavaCode id, int n, ...);
+
+extern JavaCode jcGenericMethodName(JavaCode methodName, JavaCodeList genArgs);
+extern JavaCode jcGenericMethodNameV(JavaCode methodName, int n, ...);
 
 extern JavaCode jcNAry(JavaCode t);
 extern JavaCode jcArrayOf(JavaCode t);
