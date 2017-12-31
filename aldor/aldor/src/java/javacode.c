@@ -1655,9 +1655,6 @@ jc0EscapeString(String s, Bool addTerminalChar)
 		case '\\':
 			bufPuts(buf, "\\\\");
 			break;
-		case '\'':
-			bufPuts(buf, "\\\\");
-			break;
 		case '\n':
 			bufPuts(buf, "\\\n");
 			break;
