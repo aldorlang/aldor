@@ -67,7 +67,7 @@ FileName : FileNameCategory == add
 	    stdout << "coerce " << s << " " << flg1 << flg2 << newline
 	    if flg1 and flg2 and lastDot > lastSlash then
 	        filename(substring(s, 0, lastSlash),
-		         substring(s, lastSlash+1, lastDot),
+		         substring(s, lastSlash+1, lastDot - lastSlash - 1),
 			 substring(s, lastDot + 1))
             else if flg2 then
 	        filename("", substring(s, 0, lastDot), substring(s, lastDot + 1))
@@ -92,3 +92,25 @@ FileName : FileNameCategory == add
         new(d: String, pref: String, e: String): % == filename(d, pref, e)
 
 	(o: TextWriter) << (f: %): TextWriter == o << "{fn: " << directory f << "/" << name f << "." << extension f << "}"
+
+#if ALDORTEST
+---------------------- test sal_command.as --------------------------
+#include "aldor"
+#include "aldortest"
+#pile
+
+local testFile(): () ==
+    import from Assert String
+    fname: FileName := "/foo/bar/wibble.txt"::FileName
+    assertEquals("/foo/bar", directory fname);
+    assertEquals("wibble", name fname);
+    assertEquals("txt", extension fname);
+
+    fname: FileName := "wibble.txt"::FileName
+    assertEquals("", directory fname);
+    assertEquals("wibble", name fname);
+    assertEquals("txt", extension fname);
+
+testFile()
+
+#endif
