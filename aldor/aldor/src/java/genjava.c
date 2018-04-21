@@ -1555,6 +1555,10 @@ gj0SeqGen(GjSeqStore seqs, Foam foam)
 	case FOAM_Cast:
 		gj0SeqGen(seqs, foam->foamCast.expr);
 		break;
+	case FOAM_Loc:
+	case FOAM_Lex:
+	case FOAM_Glo:
+		break;
 	case FOAM_Values:
 		gj0SeqValues(seqs, foam);
 		break;
