@@ -20,6 +20,7 @@ DECLARE_LIST(FoamSig);
 
 void	foamSigFree	(FoamSig);
 Bool	foamSigEqual	(FoamSig, FoamSig);
+Bool	foamSigEqualModFmt(FoamSig, FoamSig);
 FoamSig foamSigNew      (AIntList inArgs, FoamTag retType, int nRets, FoamTag *rets);
 Hash    foamSigHash     (FoamSig s);
 
