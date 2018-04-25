@@ -977,6 +977,7 @@ extern int	abPrintClippedDb	(AbSyn, int maxNodes);
 extern int      abOStreamPrint          (OStream, AbSyn ab);
 
 extern SExpr	abToSExpr		(AbSyn);
+extern SExpr	abToSExprElided		(AbSyn);
 extern AbSyn	abFrSExpr		(SExpr);
 
 extern AbSyn	abRdSExpr		(FILE *, FileName *, int *lno);

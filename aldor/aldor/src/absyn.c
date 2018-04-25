@@ -1258,6 +1258,17 @@ abPosSpan(AbSyn ab, SrcPos *pmin, SrcPos *pmax)
  * :: AbSyn/SExpr conversion
  *
  *****************************************************************************/
+static Bool abElideInnerExpressions;
+
+SExpr
+abToSExprElided(AbSyn ab)
+{
+	SExpr sx;
+	abElideInnerExpressions = true;
+	sx = abToSExpr(ab);
+	abElideInnerExpressions = false;
+	return sx;
+}
 
 SExpr
 abToSExpr(AbSyn ab)
@@ -1308,6 +1319,20 @@ abToSExpr(AbSyn ab)
 		sx = sxNReverse(sx);
 		break;
 		}
+	  case AB_Add:
+	  case AB_With: {
+		if (abElideInnerExpressions) {
+			sx = sxCons(abInfo(abTag(ab)).sxsym, sxNil);
+		}
+		else {
+			sx  = sxCons(abInfo(abTag(ab)).sxsym, sxNil);
+			for (ai = 0; ai < abArgc(ab); ai++)
+				sx = sxCons(abToSExpr(abArgv(ab)[ai]), sx);
+			sx = sxNReverse(sx);
+		}
+		break;
+	  }
+
 	  default:
 		sx  = sxCons(abInfo(abTag(ab)).sxsym, sxNil);
 		for (ai = 0; ai < abArgc(ab); ai++)
