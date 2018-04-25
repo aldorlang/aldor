@@ -1867,7 +1867,7 @@ gj0SeqBucketToJava(GjSeqBucket bucket)
 
 	if (bucket->label == GJ_SEQ_Halt) {
 		if (listLength(JavaCode)(l) > 1) 
-			car(l) = jcIf(jcFalse(), car(l));
+			car(l) = jcIf(jcTrue(), car(l));
 	}
 
 	return l;
