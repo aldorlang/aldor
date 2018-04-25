@@ -1629,13 +1629,13 @@ symeSExprAList(Syme syme)
 		type = tfMapRet(type);
 
 	/* 5. Category exports */
-	if (!symeIsSelfSelf(syme) && tfSatCat(type)) {
+	if (!symeIsSelfSelf(syme) && !symeIsParam(syme) && tfSatCat(type)) {
 		sxi = symeListToSExpr(tfGetThdExports(type), false);
 		al = sxiACons("catExports", sxi, al);
 	}
 
 	/* 6. Domain exports */
-	else if (!symeIsSelfSelf(syme) && tfSatDom(type)) {
+	else if (!symeIsSelfSelf(syme) && !symeIsParam(syme) && tfSatDom(type)) {
 		sxi = symeListToSExpr(tfGetCatExports(type), false);
 		al = sxiACons("domExports", sxi, al);
 	}
@@ -1709,7 +1709,7 @@ symeToSExpr(Syme syme)
 	sx  = sxCons(sxi, sx);
 
 	/* Symbol type */
-	sxi = abToSExpr(tfExpr(type));
+	sxi = abToSExprElided(tfExpr(type));
 	sx  = sxCons(sxi, sx);
 
 	/* Create an Alist for remaining data */
