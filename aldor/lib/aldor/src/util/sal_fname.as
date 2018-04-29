@@ -60,7 +60,10 @@ FileName : FileNameCategory == add
 	default f, f1, f2: %
         f1 = f2: Boolean           == never
 
-        coerce(f : %) : String     == directory(f) + "/" + name(f) + "." + extension(f)
+        coerce(f : %) : String     ==
+		 filePart := name(f) + (if extension f = "" then "" else ("." + extension(f)))
+		 if directory(f) = "" then filePart else directory(f) + "/" + filePart
+
         coerce(s : String) : %     ==
 	    (flg1, lastSlash, c) := linearReverseSearch(char "/", s)
 	    (flg2, lastDot, c) := linearReverseSearch(char ".", s)
@@ -110,6 +113,12 @@ local testFile(): () ==
     assertEquals("", directory fname);
     assertEquals("wibble", name fname);
     assertEquals("txt", extension fname);
+
+    fname: FileName := "wibble"::FileName
+    assertEquals("", directory fname);
+    assertEquals("wibble", name fname);
+    assertEquals("", extension fname);
+    assertEquals("wibble", fname::String)
 
 testFile()
 
