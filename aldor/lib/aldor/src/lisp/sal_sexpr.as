@@ -37,7 +37,7 @@ CharSets: with
 	 char "<", char ">",
 	 char "%", char "$",
 	 char "~", char "?",
-	 char "=", char "#",
+	 char "=",
 	 char "^", char "__", char ":"]
     
     symStart?(c): Boolean == letter? c or member?(c, symStarts)
@@ -270,9 +270,10 @@ FnLStream(T: Type): LStream T with
 SExpressionReader: with
     read: (TextReader) -> Partial SExpression;
 == add
-    Token == Record(type: 'sym,number,str,ws,oparen,cparen,dot,quote,error', txt: String);
+    Token == Record(type: 'sym,number,str,ws,oparen,cparen,dot,quote,error,getref,setref', txt: String);
     import from Token
     import from CharSets
+
     readOneToken(rdr: TextReader): Partial Token ==
         import from TextLStream
         s := tstream rdr
@@ -306,6 +307,7 @@ SExpressionReader: with
 	    [[quote, c::String]]
 	c = char "\" =>
             [readBackslashEscaped s]
+	c = char "#" => [readReference s]
 	c = char "_"" => [readString s]
 	symStart? c => [readSymbol s]
 	numberStart? c => [readNumber s]
@@ -326,6 +328,17 @@ SExpressionReader: with
 	next! s
 	[str, string buffer]
 
+    readReference(s: TextLStream): Token ==
+        next! s
+	text := ""
+	while hasNext? s and digit? peek s repeat
+	    text := text + peek(s)::String
+	    next! s
+	peek s = char "=" =>
+	   next! s
+	   return [setref, text]
+	if peek s = char "#" then next! s
+	[getref, text]
 
     readWhitespace(s: TextLStream): Token ==
         buffer: StringBuffer := new()
@@ -375,6 +388,11 @@ SExpressionReader: with
 
     read(s: FnLStream Token): Partial SExpression ==
         import from SExpression, Symbol
+	tbl: HashTable(String, SExpression) := table()
+	setref!(id: String, psx: Partial SExpression): Partial SExpression ==
+	    if not failed? psx then tbl.id := retract psx
+	    psx
+	getref(id: String): Partial SExpression == find(id, tbl)
         skipWhitespace!(): () ==
             while hasNext? s and peek(s).type = ws repeat
 	        next! s
@@ -442,6 +460,10 @@ SExpressionReader: with
 	    else if tok.type = sym then
 	        [sexpr (-tok.txt)]
 	    else if tok.type = number then [sexpr integer literal tok.txt]
+	    else if tok.type = setref then
+	        setref!(tok.txt, read())
+	    else if tok.type = getref then
+	        getref(tok.txt)
 	    else
 	        stdout << "gawd knows" << tok.type << newline
 	        failed
@@ -592,11 +614,29 @@ testGenerator(): () ==
     sum := (+)/(int elt for elt in sx)
     assertEquals(6, sum)
 
+testReadRef(): () ==
+    import from Assert SExpression
+    import from Partial SExpression, SExpression, Symbol
+    sxMaybe := readOne("(#1=(a) #1)")
+    assertFalse failed? sxMaybe
+    a: SExpression := [sexpr.(-"a")]
+    assertEquals([a, a], retract sxMaybe)
+
+testReadRef2(): () ==
+    import from Assert SExpression
+    import from Partial SExpression, SExpression, Symbol
+    sxMaybe := readOne("(#1=(a) #1#)")
+    assertFalse failed? sxMaybe
+    a: SExpression := [sexpr.(-"a")]
+    assertEquals([a, a], retract sxMaybe)
+
 test2()
 testBracket()
 testAppend()
 testNth()
 testGenerator()
+testReadRef()
+testReadRef2()
 
 import from Integer
 nada: SExpression := cons(sexpr 1, sexpr 2)
