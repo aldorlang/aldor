@@ -3787,6 +3787,10 @@ tfGetDomExports(TForm tf)
 
 	tf = tfIgnoreExceptions(tf);
 
+	if (tfHasSelf(tf) && tfIsId(tf) && symeExtension(tfIdSyme(tf))) {
+		return tfGetDomExports(tfFrSyme(stabFile(), symeExtensionFull(tfIdSyme(tf))));
+	}
+
 	if (tfDomExports(tf) || tfIsUnknown(tf) || tfIsNone(tf))
 		return tfDomExports(tf);
 
