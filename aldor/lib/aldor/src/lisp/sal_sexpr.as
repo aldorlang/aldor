@@ -313,38 +313,43 @@ SExpressionReader: with
 	failed
 
     readString(s: TextLStream): Token ==
-        text := ""
+        buffer: StringBuffer := new()
+        writer: TextWriter := coerce buffer
 	next! s
         while hasNext? s and peek s ~= char "_"" repeat
 	    if peek s = char "\" then
 	        next! s
-	    text := text + peek(s)::String
+            writer << peek(s)
 	    next! s
 	    not hasNext? s => [error, "eof inside string"]
 	not hasNext? s => [error, "eof inside string"]
 	next! s
-	[str, text]
+	[str, string buffer]
+
 
     readWhitespace(s: TextLStream): Token ==
+        buffer: StringBuffer := new()
+        writer: TextWriter := coerce buffer
         import from Character
-        text := peek(s)::String
+        writer << peek s
 	next! s
 	while whitespace? peek s repeat
-	    text := text + peek(s)::String
+	    writer << peek s
 	    next! s
-	[ws, text]
+	[ws, string buffer]
 
     readEscaped(s: TextLStream): Token ==
         import from Character
+        buffer: StringBuffer := new()
+        writer: TextWriter := coerce buffer
 	next! s
-        text := ""
 	while peek s ~= char "|" repeat
 	    if peek(s) = char "\" then
 	        next! s
-	    text := text + peek(s)::String
+	    writer << peek s
 	    next! s
 	next! s
-	[sym, text]
+	[escsym, string buffer]
 
     readBackslashEscaped(s: TextLStream): Token ==
         next! s
@@ -353,18 +358,20 @@ SExpressionReader: with
 	[sym, text]
 
     readNumber(s: TextLStream): Token ==
-        text := ""
+        buffer: StringBuffer := new()
+        writer: TextWriter := coerce buffer
 	while hasNext? s and numberPart? peek s repeat
-	    text := text + peek(s)::String
+	    writer << peek(s)
 	    next! s
-	[number, text]
+	[number, string buffer]
 
     readSymbol(s: TextLStream): Token ==
-        text := ""
+        buffer: StringBuffer := new()
+        writer: TextWriter := coerce buffer
 	while hasNext? s and symPart? peek s repeat
-	    text := text + peek(s)::String
+	    writer << peek(s)
 	    next! s
-	[sym, text]
+	[sym, string buffer]
 
     read(s: FnLStream Token): Partial SExpression ==
         import from SExpression, Symbol
