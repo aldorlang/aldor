@@ -3686,16 +3686,16 @@ struct foam_info foamInfoTable[] = {
  ****************************************************************************/
 
 struct foamProto_info foamProtoInfoTable[] = {
- {FOAM_Proto_Foam,   0,"Foam"},
- {FOAM_Proto_Fortran,0,"Fortran"},
- {FOAM_Proto_C,	     0,"C"},
- {FOAM_Proto_Java,   0,"Java"},
- {FOAM_Proto_JavaConstructor,   0,"JavaConstructor"},
- {FOAM_Proto_JavaMethod,	0,"JavaMethod"},
- {FOAM_Proto_Lisp,   0,"Lisp"},
- {FOAM_Proto_Init,   0,"Init"},
- {FOAM_Proto_Include,0,"Include"},
- {FOAM_Proto_Other,  0,"Other"}
+	{FOAM_Proto_Foam,    	     0,"Foam",            FOAM_Proto_Foam},
+	{FOAM_Proto_Fortran, 	     0,"Fortran", 	  FOAM_Proto_Fortran},
+	{FOAM_Proto_C,		     0,"C",               FOAM_Proto_C},
+	{FOAM_Proto_Java,	     0,"Java",	          FOAM_Proto_Java},
+	{FOAM_Proto_JavaConstructor, 0,"JavaConstructor", FOAM_Proto_Java},
+	{FOAM_Proto_JavaMethod,	     0,"JavaMethod",      FOAM_Proto_Java},
+	{FOAM_Proto_Lisp,   	     0,"Lisp",            FOAM_Proto_Lisp},
+	{FOAM_Proto_Init,   	     0,"Init",            FOAM_Proto_Init},
+	{FOAM_Proto_Include,	     0,"Include",         FOAM_Proto_Include},
+	{FOAM_Proto_Other,  	     0,"Other",           FOAM_Proto_Other}
 };
 
 /*****************************************************************************

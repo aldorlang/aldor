@@ -1322,6 +1322,7 @@ struct foamProto_info {
 	FoamProtoTag		tag;
 	SExpr			sxsym;
 	String			str;
+	FoamProtoTag            base;
 };
 
 struct foamDDecl_info {
@@ -1344,6 +1345,7 @@ extern struct foamDDecl_info foamDDeclInfoTable[];
 #define foamBValStr(tag)    (foamBValInfo(tag).str)
 #define foamBValRetType(tag)(foamBValInfo(tag).retType)
 #define foamProtoStr(tag)   (foamProtoInfo(tag).str)
+#define foamProtoBase(tag)  (foamProtoInfo(tag).base)
 
 #define foamSExpr(tag)      (foamInfo(tag).sxsym)
 #define foamBValSExpr(tag)  (foamBValInfo(tag).sxsym) 
