@@ -192,6 +192,8 @@ when using C--functions in \salli clients.}
         substring: (%, Z) -> %;
         substring: (%, Z, Z) -> %;
 	literal: % -> Literal;
+	upper: % -> %;
+	lower: % -> %;
 #if ALDOC
 \alpage{substring}
 \Usage{\name(s, n)\\ \name(s, n, m)}
@@ -429,6 +431,22 @@ of \emph{s}, while \name(s,n,m) returns a copy of the substring of length
 			a.n ~= b.n => return false;
 		}
 		true;
+	}
+
+	upper(s: %): % == {
+		empty? s => "";
+		n: Z := #s;
+		s := new(n);
+		for i in 0..prev n repeat s.i := upper s.i;
+		s
+	}
+
+	lower(s: %): % == {
+		empty? s => "";
+		n: Z := #s;
+		s := new(n);
+		for i in 0..prev n repeat s.i := lower s.i;
+		s
 	}
 
 	(p:TextWriter) << (s:%):TextWriter == {
@@ -671,6 +689,16 @@ testToFromString(): () == {
     assertEquals(12, fromString("12"));
     assertEquals("0", toString(fromString("0")@MachineInteger));
     assertEquals(99, fromString(toString(99)));
+}
+
+testUpper(): () == {
+    import from MachineInteger, String;
+    assertEquals("hello", lower "HELLO");
+    assertEquals("HELLO", lower "hello");
+    assertEquals("h", lower "H");
+    assertEquals("abcdef", lower "AbCdEf");
+    assertEquals("", lower "");
+    assertEquals("", upper "");
 }
 
 testBasics();

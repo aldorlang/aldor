@@ -270,7 +270,7 @@ FnLStream(T: Type): LStream T with
 SExpressionReader: with
     read: (TextReader) -> Partial SExpression;
 == add
-    Token == Record(type: 'sym,number,str,ws,oparen,cparen,dot,quote,error,getref,setref', txt: String);
+    Token == Record(type: 'sym,escsym,number,str,ws,oparen,cparen,dot,quote,error,getref,setref', txt: String);
     import from Token
     import from CharSets
 
@@ -368,7 +368,7 @@ SExpressionReader: with
         next! s
         text := peek(s)::String
         next! s
-	[sym, text]
+	[escsym, text]
 
     readNumber(s: TextLStream): Token ==
         buffer: StringBuffer := new()
@@ -458,12 +458,17 @@ SExpressionReader: with
 	    else if tok.type = str then [sexpr tok.txt]
 	    else if tok.type = quote then readQuoted()
 	    else if tok.type = sym then
+	        [sexpr (-[upper x for x in tok.txt])]
+	    else if tok.type = escsym then
 	        [sexpr (-tok.txt)]
 	    else if tok.type = number then [sexpr integer literal tok.txt]
 	    else if tok.type = setref then
 	        setref!(tok.txt, read())
 	    else if tok.type = getref then
 	        getref(tok.txt)
+	    else if tok.type = error then
+                stdout << "Error " << tok.txt << newline
+		failed
 	    else
 	        stdout << "gawd knows" << tok.type << newline
 	        failed
@@ -489,7 +494,7 @@ test(): () ==
 
     sxMaybe := readOne("foo")
     assertFalse failed? sxMaybe
-    foo := sexpr (-"foo")
+    foo := sexpr (-"FOO")
     assertEquals(foo, retract sxMaybe)
 
     sxMaybe := readOne("23")
@@ -525,12 +530,12 @@ test(): () ==
     sxMaybe := readOne("(foo () 2)")
     stdout << "SX: " << sxMaybe << newline
     assertFalse failed? sxMaybe
-    assertEquals([sexpr(-"foo"), [], sexpr 2], retract sxMaybe)
+    assertEquals([sexpr(-"FOO"), [], sexpr 2], retract sxMaybe)
 
     sxMaybe := readOne("symbol?")
     stdout << "SX: " << sxMaybe << newline
     assertFalse failed? sxMaybe
-    assertEquals(sexpr(-"symbol?"), retract sxMaybe)
+    assertEquals(sexpr(-"SYMBOL?"), retract sxMaybe)
 
     sxMaybe := readOne("_"hello\_"_"")
     stdout << "strsx: " << sxMaybe << newline
@@ -555,12 +560,12 @@ test(): () ==
     sxMaybe := readOne("'x")
     stdout << "strsx: " << sxMaybe << newline
     assertFalse failed? sxMaybe
-    assertEquals([sexpr(-"QUOTE"), sexpr(-"x")], retract sxMaybe)
+    assertEquals([sexpr(-"QUOTE"), sexpr(-"X")], retract sxMaybe)
 
-    sxMaybe := readOne("(((foo) . 1) ((bar) . 2))")
+    sxMaybe := readOne("(((foo) . 1) ((|bar|) . 2))")
     stdout << "strsx: " << sxMaybe << newline
     assertFalse failed? sxMaybe
-    assertEquals([cons([sexpr(-"foo")], sexpr 1), cons([sexpr(-"bar")], sexpr 2)], retract sxMaybe)
+    assertEquals([cons([sexpr(-"FOO")], sexpr 1), cons([sexpr(-"bar")], sexpr 2)], retract sxMaybe)
 
 test()
 
@@ -619,7 +624,7 @@ testReadRef(): () ==
     import from Partial SExpression, SExpression, Symbol
     sxMaybe := readOne("(#1=(a) #1)")
     assertFalse failed? sxMaybe
-    a: SExpression := [sexpr.(-"a")]
+    a: SExpression := [sexpr.(-"A")]
     assertEquals([a, a], retract sxMaybe)
 
 testReadRef2(): () ==
@@ -627,7 +632,7 @@ testReadRef2(): () ==
     import from Partial SExpression, SExpression, Symbol
     sxMaybe := readOne("(#1=(a) #1#)")
     assertFalse failed? sxMaybe
-    a: SExpression := [sexpr.(-"a")]
+    a: SExpression := [sexpr.(-"A")]
     assertEquals([a, a], retract sxMaybe)
 
 test2()
@@ -661,13 +666,13 @@ testFileStuff(): () ==
     infile := open("foo.lsp", fileRead)
     r := infile::TextReader
     sx: SExpression := << r
-    assertEquals(sx, [sexpr(-"hello"), sexpr(-"world")]@SExpression)
+    assertEquals(sx, [sexpr(-"HELLO"), sexpr(-"WORLD")]@SExpression)
 
     infile := open("foo.lsp", fileRead)
     r := infile::TextReader
     setPosition!(infile, 14)
     sx: SExpression := << r
-    assertEquals(sx, [sexpr(-"goodbye"), sexpr(-"world")]@SExpression)
+    assertEquals(sx, [sexpr(-"GOODBYE"), sexpr(-"WORLD")]@SExpression)
 
 testFileStuff()
 
