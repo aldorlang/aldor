@@ -346,6 +346,9 @@ install-data:
 		if test -f $$i.abn; then \
 			$(INSTALL_DATA) $$i.abn $(DESTDIR)$(datarootdir)/aldor/lib/$(libraryname)/$(libsubdir)/$$i.abn; \
 		fi; \
+		if test -f $$i.asy; then \
+			$(INSTALL_DATA) $$i.asy $(DESTDIR)$(datarootdir)/aldor/lib/$(libraryname)/$(libsubdir)/$$i.asy; \
+		fi; \
 	done
 
 uninstall:
