@@ -22,6 +22,7 @@
  * :: Annotated SExpression
  *
  ****************************************************************************/
+static Bool abcElideInnerExpressions;
 
 SExpr abToAnnotatedSExpr(AbSyn whole);
 
@@ -121,6 +122,18 @@ abcSetSymeSExpr(AbAnnotationBucket bucket, AInt idx, SExpr sx)
 	tblSetElt(bucket->symeSxForIndex, (TblElt) idx, sx);
 }
 
+local SExpr
+abAnnotatedSExprElided(AbSyn ab, AbAnnotationBucket bucket)
+{
+	SExpr sx;
+	Bool current = abcElideInnerExpressions;
+	abcElideInnerExpressions = true;
+	sx = abAnnotatedSExpr(ab, bucket);
+	abcElideInnerExpressions = current;
+	return sx;
+}
+
+
 
 local SExpr
 abcSExpr(AbAnnotationBucket bucket)
@@ -198,6 +211,19 @@ abAnnotatedSExpr(AbSyn ab, AbAnnotationBucket bucket)
 		sx = sxNReverse(sx);
 		break;
 		}
+	  case AB_Add:
+	  case AB_With: {
+		if (abcElideInnerExpressions) {
+			sx = sxCons(abInfo(abTag(ab)).sxsym, sxNil);
+		}
+		else {
+			sx  = sxCons(abInfo(abTag(ab)).sxsym, sxNil);
+			for (ai = 0; ai < abArgc(ab); ai++)
+				sx = sxCons(abAnnotatedSExpr(abArgv(ab)[ai], bucket), sx);
+			sx = sxNReverse(sx);
+		}
+		break;
+	  }
 	  default:
 		sx  = sxCons(abInfo(abTag(ab)).sxsym, sxNil);
 		for (ai = 0; ai < abArgc(ab); ai++)
@@ -402,7 +428,7 @@ abAnnotateSefo(Sefo sefo, AbAnnotationBucket bucket)
 	AInt idx = abcGetSefo(bucket, sefo);
 	if (idx == -1) {
 		AInt newIdx = abcAddSefo(bucket, sefo);
-		SExpr sx = abAnnotatedSExpr(sefo, bucket);
+		SExpr sx = abAnnotatedSExprElided(sefo, bucket);
 		abcSetSefoSExpr(bucket, newIdx, sx);
 		return sxCons(sxiFrSymbol(symInternConst("ref")), sxiFrInteger(newIdx));
 	}
