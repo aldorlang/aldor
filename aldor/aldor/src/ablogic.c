@@ -182,7 +182,10 @@ ablogFormatter(OStream ostream, Pointer p)
 {
 	int c;
 
-	c = ablogWrite(ostream, p);
+	if (p == NULL)
+		c = ostreamWrite(ostream, "<NULL>", -1);
+	else
+		c = ablogWrite(ostream, p);
 
 	return c;
 }
@@ -348,7 +351,6 @@ ablogFrSefo(Sefo sefo)
 	}
 	return rr;
 }
-
 
 /*****************************************************************************
  *
