@@ -536,7 +536,7 @@ extern Hash		gen0SymeTypeCode	(Syme);
 #define		SYME_XBIT_IMPLICIT	0x0001	/* Implicit */
 #define		SYME_XBIT_MULTICOND	0x0002	/* Multi-value cond */
 #define		SYME_XBIT_CONDINCOMPLETE 0x0004	/* we gave up in symeCheckCondition */
-#define		SYME_XBIT_CONDCHECKED	0x0004	/* symeCheckCondition has been called */
+#define		SYME_XBIT_CONDCHECKED	0x0008	/* symeCheckCondition has been called */
 
 #define	symeGetXBit(s,b)	(symeExtraBits(s) & (b))
 #define	symeSetXBit(s,b) 	symeSetExtraBits(s, symeExtraBits(s) | (b));
