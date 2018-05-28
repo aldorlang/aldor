@@ -73,6 +73,8 @@ extern Bool		tiTfDoDefault		(Sefo);
 extern void		tiTfImportCascades	(Stab stab, TQualList tq);
 extern SymeList		tiAddSymes		(Stab, AbSyn, TForm, TForm, SymeList *);
 extern TForm		tiGetTForm		(Stab, AbSyn);
+extern TForm		tiGetTFormContext	(Stab, AbLogic, AbSyn);
+
 extern Syme		tiGetMeaning		(Stab, AbSyn, TForm);
 extern Syme		tiGetExtendee		(Stab, AbSyn, TForm);
 extern Bool		tiUnaryToRaw		(Stab, AbSyn, TForm);

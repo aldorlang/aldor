@@ -1815,7 +1815,7 @@ tfSatConditions(SatMask mask, SymeList mods, Syme s, Syme t)
 			}
 			tfdom = abGetCategory(cond->abHas.expr);
 			cat   = cond->abHas.property;
-			tfcat = abTForm(cat) ? abTForm(cat) : tiTopFns()->tiGetTopLevelTForm(NULL, cat);
+			tfcat = abTForm(cat) ? abTForm(cat) : tiTopFns()->tiGetTopLevelTForm(ablogTrue(), cat);
 			result = tfSat(mask, tfdom, tfcat);
 
 			if (tfSatSucceed(result))

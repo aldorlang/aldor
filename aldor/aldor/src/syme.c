@@ -1350,6 +1350,11 @@ abIsFullyInstantiated(Sefo ab)
 	return result;
 }
 
+/*
+ * 0 => Failed
+ * 1 => SatPending
+ * 2 => Success
+ */
 local int
 symeCheckHas(SymeCContext conditionContext, Sefo dom, Sefo cat)
 {
@@ -1366,7 +1371,7 @@ symeCheckHas(SymeCContext conditionContext, Sefo dom, Sefo cat)
 	if (tiTopFns()->tiCanSefo(cat)) {
 		tiTopFns()->tiSefo(stabFile(), cat);
 	}
-	tfcat = abTForm(cat) ? abTForm(cat) : tiTopFns()->tiGetTopLevelTForm(NULL, cat);
+	tfcat = abTForm(cat) ? abTForm(cat) : tiTopFns()->tiGetTopLevelTForm(ablogTrue(), cat);
 
 	/* D has C iff typeof(D) satisfies C. */
 	result = tfSat(tfSatBupMask(), tfdom, tfcat);
@@ -1548,7 +1553,7 @@ symeCheckIdentifier(AbSyn ab, Syme syme)
 		cat = cond->abHas.property;
 
 		tfdom = abGetCategory(dom);
-		tfcat = abTForm(cat) ? abTForm(cat) : tiTopFns()->tiGetTopLevelTForm(NULL, cat);
+		tfcat = abTForm(cat) ? abTForm(cat) : tiTopFns()->tiGetTopLevelTForm(ablogTrue(), cat);
 
 		/* D has C iff typeof(D) satisfies C. */
 		result = tfSat(tfSatTdnInfoMask(), tfdom, tfcat);

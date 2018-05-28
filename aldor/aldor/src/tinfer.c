@@ -202,7 +202,7 @@ local Bool		tiTopEqual		(TFormUses, TFormUses);
  ****************************************************************************/
 
 local Bool	tqShouldImport	  (TQual);
-local TForm     tiGetTopLevelTForm(SymeCContext context, AbSyn type);
+local TForm     tiGetTopLevelTForm(AbLogic context, AbSyn type);
 local Bool 	tiCheckSymeConditionalImplementation(Stab stab, Syme syme, Syme implSyme);
 
 void
@@ -605,10 +605,8 @@ tiAddSymes(Stab astab, AbSyn capsule, TForm base, TForm context, SymeList *p)
 	return dsymes;
 }
 
-TForm tiGetTFormContext(Stab stab, SymeCContext context, AbSyn type);
-
 local TForm 
-tiGetTopLevelTForm(SymeCContext context, AbSyn type)
+tiGetTopLevelTForm(AbLogic context, AbSyn type)
 {
 	TForm tf;
 
@@ -624,11 +622,11 @@ tiGetTopLevelTForm(SymeCContext context, AbSyn type)
 TForm
 tiGetTForm(Stab stab, AbSyn type)
 {
-	return tiGetTFormContext(stab, NULL, type);
+	return tiGetTFormContext(stab, ablogTrue(), type);
 }
 
 TForm
-tiGetTFormContext(Stab stab, SymeCContext context, AbSyn type)
+tiGetTFormContext(Stab stab, AbLogic context, AbSyn type)
 {
 	TForm	tf, ntf;
 
@@ -648,8 +646,9 @@ tiGetTFormContext(Stab stab, SymeCContext context, AbSyn type)
 		abTransferSemantics(type, tfGetExpr(tf));
 	}
 
-	if (!tfIsMeaning(tf)) 
-		tfMergeConditions(tf, stab, tfCondEltNew(stab, context));
+	if (!tfIsMeaning(tf)) {
+		tfMergeConditions(tf, stab, tfCondEltNewKnown(stab, context));
+	}
 	
 	ntf = typeInferTForm(stab, tf);
 	tfTransferSemantics(ntf, tf);
@@ -1916,9 +1915,11 @@ tiTfBottomUp1(Stab stab, TFormUses tfu, TForm tf)
 local AbLogic
 tiTfCondition(Stab stab, TForm tf)
 {
+	Scope("tiTfCondition");
 	AbSynList condition = tfConditionalAbSyn(tf);
 	AbSyn	absyn = tfGetExpr(tf);
 	AbLogic rule = ablogTrue();
+	AbLogic fluid(abCondKnown);
 
 	while (condition != listNil(AbSyn)) {
 		Stab cstab = stab;/*tfConditionalStab(tf);*/
@@ -1933,12 +1934,15 @@ tiTfCondition(Stab stab, TForm tf)
 			condition = cdr(condition);
 			continue;
 		}
+		abCondKnown = rule;
 		tiBottomUp(cstab, ab, tfUnknown);
 		tiTopDown (cstab, ab, tfUnknown);
 		rule = ablogAnd(rule, ablogFrSefo(ab));
 		condition = cdr(condition);
 	}
-	return rule;
+	TfCond conds = tfConditions(tf);
+
+	Return(rule);
 }
 
 /* Audit the bottom-up type analysis phase. */

@@ -7736,7 +7736,7 @@ tfFrSymbol(Symbol sym)
 
 	/* There can only be one ... */
 	if (symes && !cdr(symes))
-		return tiTopFns()->tiGetTopLevelTForm(NULL, abFrSyme(car(symes)));
+		return tiTopFns()->tiGetTopLevelTForm(ablogTrue(), abFrSyme(car(symes)));
 	else
 		return (TForm)NULL;
 }
@@ -7770,7 +7770,7 @@ tfFrSymbolPair(Symbol functor, Symbol argument)
 	if (!fsymes || !asymes)
 		return tfUnknown; /* Please don't return (TForm)NULL */
 	else
-		return tiTopFns()->tiGetTopLevelTForm(NULL, ab);
+		return tiTopFns()->tiGetTopLevelTForm(ablogTrue(), ab);
 }
 
 /*****************************************************************************

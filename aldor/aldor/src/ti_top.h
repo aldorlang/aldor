@@ -9,7 +9,7 @@ typedef struct _tiTopLevel {
 	void    (*tiBottomUp)		(Stab, AbSyn, TForm);
 	void    (*tiTopDown)		(Stab, AbSyn, TForm);
 	Bool    (*tiCanSefo)		(Sefo);
-	TForm   (*tiGetTopLevelTForm)	(SymeCContext, AbSyn);
+	TForm   (*tiGetTopLevelTForm)	(AbLogic, AbSyn);
 
 	Bool	(*tiUnaryToRaw)		(Stab, AbSyn, TForm);
 	Bool	(*tiRawToUnary)		(Stab, AbSyn, TForm);

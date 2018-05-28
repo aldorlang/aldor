@@ -3124,8 +3124,8 @@ tibupHas(Stab stab, AbSyn absyn, TForm type)
 	 * ensure that tfBoolean has been imported into every
 	 * scope that needs it before we get this far.
 	 */
-	tiGetTForm(stab, expr);
-	tiGetTForm(stab, prop);
+	tiGetTFormContext(stab, abCondKnown, expr);
+	tiGetTFormContext(stab, abCondKnown, prop);
 	if (tfBoolean == tfUnknown) comsgFatal(absyn, ALDOR_F_BugNoBoolean);
 	tibup0Generic(stab, absyn, tfBoolean);
 
