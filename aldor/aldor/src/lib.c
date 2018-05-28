@@ -2701,7 +2701,7 @@ lib1GetSymeExtensions(Lib lib)
 
 	for (i=0; i<lib->symec; i++) {
 		Syme syme = lib->symev[i];
-		Syme ext = symeExtension(syme);
+		Syme ext = (Syme) symeGetFieldFn(syme, SYFI_Extension);
 		if ( ((UAInt) ext) & 1)
 			symeSetExtension(syme, lib->symev[ ((UAInt) ext) >> 1]);
 	}

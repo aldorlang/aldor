@@ -320,6 +320,9 @@ extern SymeList		symeTwins		(Syme);
 extern StabLevel	symeDefLevel		(Syme);
 extern SymeList		symeInlined		(Syme);
 extern Lib		symeConstLib		(Syme);
+extern Syme             symeExtension		(Syme);
+extern Syme             symeExtensionFull	(Syme);
+extern Syme             symeExtensionFirst	(Syme);
 
 #define	symeOrigin(s)		((Pointer)  symeGetField(s, SYFI_Origin))
 #define	symeLibrary(s)		((Lib)      symeGetField(s, SYFI_Library))
@@ -327,7 +330,6 @@ extern Lib		symeConstLib		(Syme);
 #define	symeBuiltin(s)		((FoamBValTag) symeGetField(s, SYFI_Builtin))
 #define	symeForeign(s)		((ForeignOrigin) symeGetField(s, SYFI_Foreign))
 #define	symeFoam(s)		((Foam)     symeGetField(s, SYFI_Foam))
-#define	symeExtension(s)	((Syme)     symeGetField(s, SYFI_Extension))
 #define	symeDepths(s)		((AIntList) symeGetField(s, SYFI_Depths))
 #define	symeMark(s)		((SefoMark) symeGetLocal(s, SYFI_Mark))
 #define	symeLibNum(s)		((UShort)   symeGetField(s, SYFI_LibNum))
@@ -427,8 +429,9 @@ extern AInt		symeGetFieldX		(Syme, AInt);
 #define	symeSetFoam(s,v)		symeSetField(s, SYFI_Foam, v)
 #define	symeSetOriginal(s,v)		symeSetField(s, SYFI_Original, v)
 
-#define	symeSetExtension(s,v)		symeSetField(s, SYFI_Extension, v)
-/*#define	symeSetExtension(s,v)		symeXSetExtension(s, v)*/
+//#define	symeSetExtension(s,v)		symeSetField(s, SYFI_Extension, v)
+#define	symeSetExtension(s,v)		symeXSetExtension(s, (AInt) v)
+extern void symeXSetExtension(Syme, AInt);
 
 extern void symeSetCondition(Syme syme, SefoList sefoList);
 #define	symeSetTwins(s,v)		symeSetField(s, SYFI_Twins, v)

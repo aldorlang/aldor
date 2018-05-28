@@ -2012,8 +2012,8 @@ symeExtendEqual0(SymeList mods, Syme syme1, Syme syme2)
 
 	/* Check the extension, if any. */
 
-	e1 = symeExtension(syme1);
-	e2 = symeExtension(syme2);
+	e1 = symeExtensionFirst(syme1);
+	e2 = symeExtensionFirst(syme2);
 
 	if (e1 || e2) {
 		Bool	result;

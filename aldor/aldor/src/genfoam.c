@@ -4553,7 +4553,7 @@ gen0ParamIndex(Syme param)
 Foam
 gen0ExtendSyme(Syme syme)
 {
-	while (symeExtension(syme)) syme = symeExtension(syme);
+	while (symeExtensionFirst(syme)) syme = symeExtensionFirst(syme);
 	return gen0Syme(syme);
 }
 
@@ -6014,7 +6014,7 @@ gen0MaxLevel(AbSyn ab)
 	{
 		Syme	syme = abSyme(ab);
 		if (!syme) break;
-		while (symeExtension(syme)) syme = symeExtension(syme);
+		while (symeExtensionFirst(syme)) syme = symeExtensionFirst(syme);
 		if (symeLib(syme) && (symeIsExport(syme) ||
 				      symeIsExtend(syme)))
 			level = 1;

@@ -296,7 +296,7 @@ symeType(Syme syme)
 	TForm	tf;
 
 	/* Use the type of the extension if present. */
-	ext = symeExtension(syme);
+	ext = symeExtensionFirst(syme);
 	if (ext) return symeType(ext);
 
 	/* Trigger symes from other libraries. */
@@ -380,6 +380,33 @@ symeCondition(Syme syme)
 	/* Ignore the conditions if needed for syme equality tests. */
 	if (symePopConds(syme)) return listNil(Sefo);
 	return (SefoList) symeGetField(syme, SYFI_Condition);
+}
+
+Syme
+symeExtension(Syme syme)
+{
+	Syme ext = symeExtensionFirst(syme);
+	if (ext && ((Syme) symeExtensionFirst(ext)) != NULL) {
+		afprintf(dbOut, "More extensions for %pSyme\n", syme);
+	}
+	return ext;
+}
+
+Syme
+symeExtensionFirst(Syme syme)
+{
+	Syme ext = (Syme) symeGetField(syme, SYFI_Extension);
+	return ext;
+}
+
+Syme
+symeExtensionFull(Syme syme)
+{
+	Syme ext = symeExtensionFirst(syme);
+	if (ext == NULL) {
+		return syme;
+	}
+	return symeExtensionFull(ext);
 }
 
 local SymeList
@@ -1820,11 +1847,10 @@ symeXSImpl(Syme s)
  *
  *****************************************************************************/
 
-int
+void
 symeXSetExtension(Syme s, AInt v)
 {
 	symeSetField(s, SYFI_Extension, v);
-	return 0;
 }
 
 
