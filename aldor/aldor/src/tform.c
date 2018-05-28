@@ -2058,7 +2058,7 @@ tfPendingFrSyntax(Stab stab, AbSyn ab, TForm tf)
 		TForm tfp = tfPending(stab, ab);
 		/* This test is probably too weak */
 		if (!tfIsId(tfp))
-			tfSetConditions(tfp, tfConditions(tf));
+			tfSetConditions(tfFollowOnly(tfp), tfConditions(tf));
 		tfForwardFrSyntax(tf, tfFollowOnly(tfp));
 	}
 	else if (tfIsAnyMap(tf)) {
