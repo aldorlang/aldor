@@ -35,6 +35,9 @@ symeSetEmpty()
 void
 symeSetFree(SymeSet symeSet)
 {
+	if (symeSet == NULL) {
+		return;
+	}
 	tsetFree(Symbol)(symeSet->names);
 	listFree(Syme)(symeSet->symes);
 	stoFree(symeSet);
