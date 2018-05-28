@@ -1692,6 +1692,7 @@ local SatMask
 tfSatExport(SatMask mask, SymeList mods, AbSyn Sab, SymeList S, Syme t)
 {
 	SatMask		result = tfSatFalse(mask);
+	TForm           substT;
 	SymeList	symes;
 	Bool tryHarder = true;
 	static int serialNo = 0;
@@ -1743,9 +1744,6 @@ tfSatExport(SatMask mask, SymeList mods, AbSyn Sab, SymeList S, Syme t)
 	if (!tryHarder)
 		return result;
 
-	if (!symeIsSelfSelf(t))
-		return result;
-
 	if (Sab == NULL)
 		return result;
 
@@ -1758,22 +1756,26 @@ tfSatExport(SatMask mask, SymeList mods, AbSyn Sab, SymeList S, Syme t)
 	sigma = absFrSymes(stabFile(), mods, Sab);
 	tfsExportDEBUG(dbOut, "tfSatExport[%d]:: Incoming S: %pAbSyn\n", serialThis, Sab);
 
+	substT = tfSubst(sigma, symeType(t));
 	for (symes = S; !tfSatSucceed(result) && symes; symes = cdr(symes)) {
 		Syme	s = car(symes);
 		TForm   substS;
 		Bool    weakEq;
-		if (!symeIsSelfSelf(s))
+		if (symeId(s) != symeId(t)) {
 			continue;
+		}
 
 		substS = tfSubst(sigma, symeType(s));
-		weakEq = abEqualModDeclares(tfExpr(substS), tfExpr(symeType(t)));
+		weakEq = abEqualModDeclares(tfExpr(substS), tfExpr(substT));
 		tfsExportDEBUG(dbOut, "tfsatExport[%d]::CompareTF: [%pTForm], [%pTForm] = %d\n",
-			       serialThis, substS, symeType(t), weakEq);
+			       serialThis, substS, substT, weakEq);
 
 		if (weakEq) {
 			result = tfSatTrue(mask);
 		}
+		tfFree(substS);
 	}
+	tfFree(substT);
 
 	return result;
 }
