@@ -8062,6 +8062,8 @@ tfConditionalAbSyn(TForm tf)
 		return listNil(AbSyn);
 	if (tfConditions(tf)->containsEmpty) 
 		return listNil(AbSyn);
+	if (tfConditions(tf)->conditions == listNil(TfCondElt))
+		return listNil(AbSyn);
 
 	if (DEBUG(tf)) {
 		TfCondEltList list;
