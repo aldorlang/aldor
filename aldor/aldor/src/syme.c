@@ -1278,11 +1278,16 @@ symeListCheckJoinSymes(Syme syme1, Syme syme2)
 		symeTransferImplInfo(syme1, syme2);
 	}
 }
-
+/*
+ * False => Condition evaluates to false
+ * True => Condition either pending or true
+ */
 Bool
 symeCheckCondition(Syme syme)
 {
 	symeSetCondChecked(syme);
+	symeClrCheckCondIncomplete(syme);
+
 	while (symeCondition(syme)) {
 		Sefo	cond = car(symeCondition(syme));
 		Sefo	dom, cat;
@@ -1314,14 +1319,13 @@ symeCheckCondition(Syme syme)
 		if (!abIsFullyInstantiated(dom)) {
 			return true;
 		}
-		if (abTForm(dom) && tfEqual(abTForm(dom), symeExporter(syme)))
+		if (abTForm(dom) && tfEqual(abTForm(dom), symeExporter(syme))) {
 			return true;
+		}
 
-		symeClrCheckCondIncomplete(syme);
 		return false;
 	}
 
-	symeClrCheckCondIncomplete(syme);
 	return true;
 }
 
