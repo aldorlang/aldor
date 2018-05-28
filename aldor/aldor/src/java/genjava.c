@@ -4,6 +4,7 @@
 #include "foamsig.h"
 #include "intset.h"
 #include "javacode.h"
+#include "javasig.h"
 #include "sexpr.h"
 #include "store.h"
 #include "syme.h"
@@ -3564,15 +3565,16 @@ gj0PCallCastArgs(Foam op, JavaCodeList argsIn)
 	JavaCodeList args = argsIn;
 	Foam glo = gjContextGlobals->foamDDecl.argv[op->foamGlo.index];
 	Foam ddecl = gjContext->formats->foamDFmt.argv[glo->foamGDecl.format];
-	int i = 1;
+	int i = 0;
 
 	assert(ddecl->foamDDecl.usage == FOAM_DDecl_JavaSig);
-	assert(foamDDeclArgc(ddecl) == listLength(JavaCode)(argsIn));
+	assert(javaSigArgc(ddecl) == listLength(JavaCode)(argsIn));
 
 	/* Cast java-valued arguments - all other types are not converted */
 	while (args != listNil(JavaCode)) {
-		Foam decl = ddecl->foamDDecl.argv[i];
+		Foam decl = javaSigArgN(ddecl, i);
 		String pkg, type;
+		// FIXME: This is probably not needed
 		if (decl->foamDecl.type == FOAM_Ptr) {
 			strSplitLast(strCopy(decl->foamGDecl.id), '.', &pkg, &type);
 			car(args) = jcCast(jcImportedId(pkg, type), car(args));

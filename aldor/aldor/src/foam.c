@@ -35,6 +35,7 @@
 #include "foamsig.h"
 #include "format.h"
 #include "int.h"
+#include "javasig.h"
 #include "opsys.h"
 #include "sexpr.h"
 #include "store.h"
@@ -1156,8 +1157,10 @@ foamAuditPCallJava(Foam foam)
 	glo = faGlobalsv[op->foamGlo.index];
 	ddecl = faFormats->foamDFmt.argv[glo->foamGDecl.format];
 
-	/* dock one for return type */
-	if (foamDDeclArgc(ddecl) - 1 != foamPCallArgc(foam))
+	if (ddecl->foamDDecl.usage != FOAM_DDecl_JavaSig)
+		foamAuditBadType(foam);
+
+	if (javaSigArgc(ddecl) != foamPCallArgc(foam))
 		foamAuditBadType(foam);
 }
 

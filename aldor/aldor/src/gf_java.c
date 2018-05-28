@@ -3,6 +3,7 @@
 #include "gf_prog.h"
 #include "gf_java.h"
 #include "gf_syme.h"
+#include "javasig.h"
 #include "of_inlin.h"
 #include "tform.h"
 #include "sefo.h"
@@ -345,7 +346,7 @@ local AInt
 gfjPCallDecl(TForm tf, TForm this)
 {
 	FoamList decls;
-	Foam ddecl, retdecl;
+	Foam ddecl, retdecl, exndecl;
 	int i;
 
 	decls = listNil(Foam);
@@ -363,11 +364,11 @@ gfjPCallDecl(TForm tf, TForm this)
 	}
 
 	retdecl = gfjPCallDeclArg(tfMapRet(tf));
-	ddecl = foamNewDDeclOfList(FOAM_DDecl_JavaSig,
-				   listCons(Foam)(retdecl, listNReverse(Foam)(decls)));
+	exndecl = foamNewDecl(FOAM_NOp, strCopy(""), emptyFormatSlot);
+
+	ddecl = javaSigNew(retdecl, exndecl, listNReverse(Foam)(decls));
 
 	return gen0AddRealFormat(ddecl);
-
 }
 
 local TForm

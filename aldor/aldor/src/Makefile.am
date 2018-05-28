@@ -34,7 +34,6 @@ javagen_SOURCES =	\
 	java/genjava.c	\
 	java/javacode.c	\
 	java/javaobj.c	\
-	java/javasig.c	\
 	java/main.c	\
 	axlcomp.c	\
 	cmdline.c
@@ -173,6 +172,7 @@ libstruct_a_SOURCES =	\
 	formatters.c	\
 	ftype.c		\
 	gf_syme.c	\
+	javasig.c	\
 	lib.c		\
 	loops.c		\
 	output.c	\
@@ -214,7 +214,6 @@ libphase_a_SOURCES =	\
 	genfoam.c	\
 	genlisp.c	\
 	java/genjava.c	\
-	java/javasig.c	\
 	gf_add.c	\
 	gf_excpt.c	\
 	gf_fortran.c	\

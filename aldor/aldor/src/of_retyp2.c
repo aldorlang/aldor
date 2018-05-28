@@ -1,5 +1,6 @@
 #include "foam.h"
 #include "debug.h"
+#include "javasig.h"
 #include "of_peep.h"
 #include "of_retyp.h"
 #include "of_util.h"
@@ -464,8 +465,10 @@ retMarkPCallJava(RetContext context, Foam foam)
 		Foam arg = foam->foamPCall.argv[i];
 		if (retIsLocal(arg)) {
 			retAddUse(context,
-				  ddecl->foamDDecl.argv[i+1]->foamDecl.type,
-				  ddecl->foamDDecl.argv[i+1]->foamDecl.format,
+				  javaSigArgN(ddecl, i)->foamDecl.type,
+				  javaSigArgN(ddecl, i)->foamDecl.format,
+				  //ddecl->foamDDecl.argv[i+1]->foamDecl.type,
+				  //ddecl->foamDDecl.argv[i+1]->foamDecl.format,
 				  retLocal(arg));
 		}
 	}
