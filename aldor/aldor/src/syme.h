@@ -266,7 +266,7 @@ extern AInt		symeSetFieldVal;
 	(symeLocalFieldv(s)[symeIndex(s,f)] = (v))
 
 #define			symeGetField(s,f)	\
-	(symeModBit(f) && !symeHasField(s,f) ? symeFieldDefault(f) : \
+	(f < bitsizeof(int) && !symeHasField(s,f) ? symeFieldDefault(f) : \
 	 symeHasLocal(s,f) ? symeGetLocal(s,f) : symeGetFieldFn(s,f))
 
 #define			symeSetField(s,f,v)	\
