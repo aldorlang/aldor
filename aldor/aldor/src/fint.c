@@ -1556,6 +1556,7 @@ fintStmt(DataObj retDataObj)
 
 		fintSet(type, loc, expr);
 	}
+		/* fall through */
 	case FOAM_Free:
                 (void)fintEval(&expr);
                 fintFree0(expr.fiPtr);
@@ -4198,6 +4199,7 @@ fintEval_(DataObj retDataObj)
 			break;
 		case FOAM_SInt:
 			retDataObj->fiArr = (Ptr) fiArrNew_SInt(argc+1);
+			break;
 		case FOAM_SFlo:
 			retDataObj->fiArr = (Ptr) fiArrNew_SFlo(argc+1);
 			break;
