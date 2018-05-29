@@ -3795,9 +3795,11 @@ gccMFmt(Foam foam)
 		/* Only allowed (Set (Values ...) (MFmt f (Catch ...))) */
 		bug("gccMFmt: Catch in MFmt missed by gc0Set");
 		NotReached(cc = 0);
+		break;
 	  default:
 		bugBadCase(foamTag(expr));
 		NotReached(cc = 0);
+		break;
 	}
 	return cc;
 }
