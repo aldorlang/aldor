@@ -80,7 +80,7 @@ fmtests := rectest enumtest clos strtable1 simple apply
 ctests  := rectest enumtest multinever maptuple
 otests  := enumtest
 xtests := enumtest
-@BUILD_JAVA_TRUE@jruntests := jimport jimport_opt jimp0
+@BUILD_JAVA_TRUE@jruntests := jimport jimp0
 
 x_extra := rtexns
 
