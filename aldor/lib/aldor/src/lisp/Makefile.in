@@ -18,7 +18,8 @@ subdir		:= $(subst $(abs_top_builddir)/,,$(abs_builddir))
 library = sal_sexpr
 
 @BUILD_JAVA_TRUE@javalibrary := $(library)
-java_test_blacklist := sal_sexpr
+
+#java_test_blacklist := sal_sexpr
 
 include $(abs_top_srcdir)/lib/aldor/src/common.mk
 

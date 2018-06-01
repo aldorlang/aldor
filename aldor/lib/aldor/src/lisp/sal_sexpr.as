@@ -304,6 +304,8 @@ SExpressionReader: with
 	c = char "'" =>
 	    next! s
 	    [[quote, c::String]]
+	c = char "\" =>
+            [readBackslashEscaped s]
 	c = char "_"" => [readString s]
 	symStart? c => [readSymbol s]
 	numberStart? c => [readNumber s]
@@ -342,6 +344,12 @@ SExpressionReader: with
 	    text := text + peek(s)::String
 	    next! s
 	next! s
+	[sym, text]
+
+    readBackslashEscaped(s: TextLStream): Token ==
+        next! s
+        text := peek(s)::String
+        next! s
 	[sym, text]
 
     readNumber(s: TextLStream): Token ==
@@ -532,11 +540,12 @@ test2(): () ==
     import from SExpression
     import from SExpressionReader
     import from Partial SExpression
+    import from Assert SExpression
 
     rdr := open("sal__sexpr.asy")::TextReader
     
     sx := read(rdr)
-    stdout << sx << newline
+    assertFalse(failed? sx)
 
 testBracket(): () ==
     import from Assert SExpression
@@ -592,5 +601,27 @@ testAppend2(): SExpression ==
 nada: SExpression := nil
 
 testAppend2()
+
+testFileStuff(): () ==
+    import from SExpression, Symbol, MachineInteger
+    import from Assert SExpression
+    file: File := open("foo.lsp", fileWrite)
+    w: TextWriter := file::TextWriter
+    w <<  [sexpr(-"hello"), sexpr(-"world")]@SExpression << newline
+    w <<  [sexpr(-"goodbye"), sexpr(-"world")]@SExpression << newline
+    close! file
+
+    infile := open("foo.lsp", fileRead)
+    r := infile::TextReader
+    sx: SExpression := << r
+    assertEquals(sx, [sexpr(-"hello"), sexpr(-"world")]@SExpression)
+
+    infile := open("foo.lsp", fileRead)
+    r := infile::TextReader
+    setPosition!(infile, 14)
+    sx: SExpression := << r
+    assertEquals(sx, [sexpr(-"goodbye"), sexpr(-"world")]@SExpression)
+
+testFileStuff()
 
 #endif
