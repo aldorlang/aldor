@@ -1254,6 +1254,7 @@ gj0TypeObjToValue(JavaCode val, FoamTag type, AInt fmt)
 					       jcId(strCopy("U"))),
 				      jcId(strCopy("fromArray")), 1,
 				      val);
+	case FOAM_Nil:
 	case FOAM_Ptr:
 		return jcApplyMethodV(jcMemRef(gj0Id(GJ_FoamValue),
 					       jcId(strCopy("U"))),
@@ -2015,6 +2016,7 @@ gj0TypeAbbrev(FoamTag tag)
 		return "N";
 	case FOAM_Char:
 		return "L";
+	case FOAM_Nil:
 	case FOAM_Ptr:
 		return "P";
 	case FOAM_SFlo:
