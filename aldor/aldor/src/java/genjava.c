@@ -2793,8 +2793,11 @@ gj0FoamSigFrCCall(Foam ccall)
 
 	inArgList = listNil(AInt);
 	foamIter(ccall, elt, {
-			FoamTag type = gj0FoamExprType(*elt);
-			inArgList = listCons(AInt)(type, inArgList);
+			AInt fmt;
+			FoamTag type = gj0FoamExprTypeWFmt(*elt, &fmt);
+			AInt val = type + (fmt << 8);
+			assert(val != 0);
+			inArgList = listCons(AInt)(val, inArgList);
 		});
 	/* FIXME: Not sure how to get return types. */
 
@@ -2853,7 +2856,7 @@ gj0CCallStubAdd(FoamSigList list, FoamSig sig)
 	FoamSigList tmp = list;
 	while (tmp) {
 		FoamSig osig = car(tmp);
-		if (foamSigEqual(sig, osig))
+		if (foamSigEqualModFmt(sig, osig))
 			break;
 		tmp = cdr(tmp);
 	}
@@ -2887,9 +2890,11 @@ gj0CCallStubGenFrSig(FoamSig sig)
 	paramList = listNil(JavaCode);
 	idx = 0;
 	while (argList != listNil(AInt)) {
-		AInt type = car(argList);
+		AInt typeAndFmt = car(argList);
+		AInt type = typeAndFmt & 0xFF;
+		AInt fmt = typeAndFmt >> 8;
 		String   id   = gj0CCallStubParam(idx+1);
-		JavaCode decl = jcParamDecl(0, gj0TypeFrFmt(type, 0), 
+		JavaCode decl = jcParamDecl(0, gj0TypeFrFmt(type, fmt),
 					    jcId(strCopy(id)));
 		JavaCode asValue = gj0TypeObjToValue(jcId(strCopy(id)), type, 0);
 
@@ -2975,7 +2980,8 @@ gj0CCallStubName(FoamSig call)
 	suffix = strNConcat(suffix, "x");
 	tmp = call->inArgs;
 	while (tmp != listNil(AInt)) {
-		suffix=strNConcat(suffix, gj0TypeAbbrev(car(tmp)));
+		AInt type = car(tmp) & 0xFF;
+		suffix=strNConcat(suffix, gj0TypeAbbrev(type));
 		tmp = cdr(tmp);
 	}
 
