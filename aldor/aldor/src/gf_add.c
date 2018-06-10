@@ -2258,6 +2258,9 @@ gen0RtSefoHashApply(Sefo sf, Sefo osf)
 {
 	if (gen0RtSefoIsSpecialOp(sf))
 		return gen0RtSefoHashSpecialApply(sf);
+	else if (abTForm(sf) && tfIsJavaImport(abTForm(sf))) {
+		return foamNewSInt(999);
+	}
 	else
 		return gen0RtSefoHashStdApply(sf, osf);
 }
