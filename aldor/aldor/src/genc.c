@@ -637,6 +637,7 @@ gc0ExternDecls(String name)
 		  /* Some formats must not have a typedef */
 		  case FOAM_DDecl_FortranSig:	/*FALLTHROUGH*/
 		  case FOAM_DDecl_CSig:		/*FALLTHROUGH*/
+		  case FOAM_DDecl_JavaClass:	/*FALLTHROUGH*/
 			break;
 		  default:
 			gc0LFmtDef(i);
@@ -654,6 +655,8 @@ gc0ExternDecls(String name)
 		  /* Some formats must not have a typedef */
 		  case FOAM_DDecl_FortranSig:	/*FALLTHROUGH*/
 		  case FOAM_DDecl_CSig:		/*FALLTHROUGH*/
+		  case FOAM_DDecl_JavaClass:	/*FALLTHROUGH*/
+		  case FOAM_DDecl_JavaSig:	/*FALLTHROUGH*/
 			break;
 		  default:
 			gc0LFmtDecl(i, foamArgv(gcvFmt)[i].code);
@@ -1270,6 +1273,7 @@ gc0FluidDecl(int i)
  ****************************************************************************/
 
 local CCodeList gc0DeclList(int n, Foam *argv);
+local Bool      gc0ProgIsC(Foam foam);
 
 static CCodeList gc0DeclStmts;
 
@@ -1291,6 +1295,8 @@ gc0ConstDecl(int idx)
 
 	val = progDef->foamDef.rhs;
 	if (foamTag(val) != FOAM_Prog) return ;
+
+	if (!gc0ProgIsC(val)) return;
 
 	decl = gcvConst->foamDDecl.argv[idx];
 	str = decl->foamDecl.id;
@@ -1327,6 +1333,30 @@ gc0ConstDecl(int idx)
 	gc0AddLine(gc0DeclStmts, ccoDecl(ccoType(ccClass, gc0TypeId(val->foamProg.retType, val->foamProg.format)), ccProto));
 #endif
 }
+
+local Bool
+gc0ProgIsC(Foam foam)
+{
+	int i;
+	if (foam->foamProg.retType == FOAM_JavaObj) {
+		return false;
+	}
+
+	for (int i=0; i<foamDDeclArgc(foam->foamProg.params); i++) {
+		Foam param = foam->foamProg.params->foamDDecl.argv[i];
+		if (param->foamDecl.type == FOAM_JavaObj) {
+			return false;
+		}
+	}
+	for (int i=0; i<foamDDeclArgc(foam->foamProg.locals); i++) {
+		Foam param = foam->foamProg.locals->foamDDecl.argv[i];
+		if (param->foamDecl.type == FOAM_JavaObj) {
+			return false;
+		}
+	}
+	return true;
+}
+
 
 local void
 gc0InitDeclList()
