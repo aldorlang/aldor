@@ -1,5 +1,7 @@
 SUBDIRS = al
 
+@BUILD_JAVA_TRUE@JAVA_TARGET = al/foam.jar
+
 aldorsrcdir = $(top_srcdir)/aldor/src
 
 runtime_CFLAGS = -I $(aldorsrcdir) -I ../../src
@@ -68,4 +70,4 @@ libfoam_gmp_a_SOURCES =			\
 #############################################################################
 
 datalibdir = $(datadir)/lib
-datalib_DATA = al/libfoam.al
+datalib_DATA = al/libfoam.al $(JAVA_TARGET)
