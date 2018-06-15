@@ -1,6 +1,7 @@
 #include "comsg.h"
 #include "debug.h"
 #include "flog.h"
+#include "fbox.h"
 #include "foamsig.h"
 #include "intset.h"
 #include "javacode.h"
@@ -104,6 +105,8 @@ local JavaCode gj0CCall(Foam call);
 local JavaCode gj0OCall(Foam call);
 local JavaCode gj0BCall(Foam call);
 local JavaCode gj0PCall(Foam call);
+local Bool     gj0PCallThrowsException(Foam foam);
+local JavaCode gj0PCallCatchException(JavaCode code);
 
 local JavaCode gj0MFmt(Foam mfmt);
 local JavaCode gj0Const(Foam foam);
@@ -179,9 +182,13 @@ enum gjId {
 	GJ_Format,
 	GJ_EnvRecord,
 
+	GJ_JavaException,
+	GJ_FoamUserException,
+
 	GJ_Object,
 	GJ_String,
 	GJ_BigInteger,
+	GJ_LangException,
 	GJ_NullPointerException,
 	GJ_ClassCastException,
 	
@@ -553,7 +560,7 @@ local void         gj0ProgInitVars(IntSet set, Foam body);
 local JavaCode     gj0ProgDecl(Foam ddecl, int idx, Bool isSet);
 local JavaCode     gj0ProgDeclDefaultValue(Foam decl);
 local void         gj0SeqHaltFlush(Foam foam);
-
+local Foam         gj0FlattenProg(Foam rhs);
 
 local JavaCode
 gj0Prog(Foam lhs, Foam rhs)
@@ -561,7 +568,8 @@ gj0Prog(Foam lhs, Foam rhs)
 	GjProgResult r;
 	JavaCode code;
 	assert(foamTag(rhs) == FOAM_Prog);
-	
+
+	rhs = gj0FlattenProg(rhs);
 	gj0ProgInit(lhs, rhs);
 	r = gj0ProgMain(rhs);
 	code = gj0ProgResultToJava(r);
@@ -1070,6 +1078,124 @@ gj0ProgFnMethodBody(Foam lhs, Foam prog)
 
 	return jcNLSeq(ret);
 }
+
+/*
+ * :: Flatten
+ */
+
+/*
+ * Idea here is that java pcalls which can throw exceptions have to be
+ * at top level.  So we need to scan the prog and lift anything
+ * embedded in an expression.
+ */
+
+typedef struct gjFlattenResult {
+	FoamList stmts;
+	FoamBox  locals;
+} *GjFlattenResult;
+
+local Foam gj0FlattenStmt(GjFlattenResult changes, Foam expr);
+local Foam gj0FlattenExpr(GjFlattenResult changes, Foam expr, Bool topLevel);
+
+local GjFlattenResult gj0FlattenNewResult(Foam prog);
+local Foam gj0FlattenNewLocal(GjFlattenResult changes, Foam pcall);
+local void gj0FlattenAddStmt(GjFlattenResult changes, Foam stmt);
+
+local Foam
+gj0FlattenProg(Foam prog)
+{
+	GjFlattenResult changes;
+	Foam seq;
+	int i;
+
+	assert(foamTag(prog) == FOAM_Prog);
+	if (!foamFindFirst(gj0PCallThrowsException, prog)) {
+		return prog;
+	}
+
+	changes = gj0FlattenNewResult(prog);
+	seq = prog->foamProg.body;
+
+	for (i=0; i<foamArgc(seq); i++) {
+		gj0FlattenAddStmt(changes, gj0FlattenStmt(changes, seq->foamSeq.argv[i]));
+	}
+
+	prog->foamProg.locals = fboxMake(changes->locals);
+	prog->foamProg.body   = foamNewOfList(FOAM_Seq, listNReverse(Foam)(changes->stmts));
+
+	return prog;
+}
+
+local Foam
+gj0FlattenStmt(GjFlattenResult changes, Foam expr)
+{
+	return gj0FlattenExpr(changes, expr, true);
+}
+
+local Foam
+gj0FlattenExpr(GjFlattenResult changes, Foam expr, Bool topLevel)
+{
+	if (topLevel) {
+		switch (foamTag(expr)) {
+		case FOAM_Set:
+		case FOAM_Def:
+		case FOAM_PCall:
+			if (gj0PCallThrowsException(expr)) {
+				topLevel = true;
+			}
+			break;
+		default:
+			topLevel = false;
+		}
+	}
+
+	foamIter(expr, psubexpr, {
+			*psubexpr = gj0FlattenExpr(changes, *psubexpr, topLevel);
+		});
+
+	if (!topLevel && gj0PCallThrowsException(expr)) {
+		Foam loc = gj0FlattenNewLocal(changes, expr);
+		Foam def = foamNewDef(loc, expr);
+		return loc;
+	}
+	return expr;
+}
+
+local GjFlattenResult
+gj0FlattenNewResult(Foam prog)
+{
+	GjFlattenResult result;
+
+	result = (GjFlattenResult) stoAlloc(OB_Other, sizeof(*result));
+	result->stmts = listNil(Foam);
+	result->locals = fboxNew(prog->foamProg.locals);
+
+	return result;
+}
+
+local Foam
+gj0FlattenNewLocal(GjFlattenResult changes, Foam pcall)
+{
+	Foam gdecl, sig, newdecl, def, retdecl;
+	int idx;
+	gdecl = gjContextGlobal(pcall->foamPCall.op->foamGlo.index);
+	retdecl  = javaSigRet(gjContext->formats->foamDFmt.argv[gdecl->foamGDecl.format]);
+
+	newdecl = foamNewDecl(retdecl->foamDecl.type, strCopy("val"), retdecl->foamDecl.format);
+	idx = fboxAdd(changes->locals, newdecl);
+
+	def = foamNewDef(foamNewLoc(idx), pcall);
+	gj0FlattenAddStmt(changes, def);
+
+	return foamNewLoc(idx);
+}
+
+local void
+gj0FlattenAddStmt(GjFlattenResult changes, Foam stmt)
+{
+	changes->stmts = listCons(Foam)(stmt, changes->stmts);
+}
+
 
 
 /*
@@ -3420,9 +3546,13 @@ struct gjIdInfo gjIdInfo[] = {
 	{GJ_Format,     "foamj", "Format"},
 	{GJ_EnvRecord,  "foamj", "EnvRecord"},
 
+	{GJ_JavaException, "foamj", "JavaException"},
+	{GJ_FoamUserException, "foamj", "FoamUserException"},
+
 	{GJ_Object,     0, "Object"},
 	{GJ_String,     0, "String"},
 	{GJ_BigInteger, "java.math", "BigInteger"},
+	{GJ_LangException, 0, "Exception"},
 	{GJ_NullPointerException, 0, "NullPointerException"},
 	{GJ_ClassCastException, 0, "ClassCastException"},
 
@@ -3593,6 +3723,46 @@ gj0PCallCastArgs(Foam op, JavaCodeList argsIn)
 
 	return argsIn;
 }
+
+
+
+local Bool
+gj0PCallThrowsException(Foam foam)
+{
+	if (foamTag(foam) != FOAM_PCall)
+		return false;
+	switch (foam->foamPCall.protocol) {
+	case FOAM_Proto_Java:
+	case FOAM_Proto_JavaMethod:
+	case FOAM_Proto_JavaConstructor:
+		break;
+	default:
+		return false;
+	}
+
+	Foam op = foam->foamPCall.op;
+	if (foamTag(op) != FOAM_Glo)
+		return false;
+	Foam gdecl = gjContextGlobal(op->foamGlo.index);
+	Foam fmt = gjContext->formats->foamDFmt.argv[gdecl->foamDecl.format];
+
+	if (javaSigExn(fmt)->foamDecl.type != FOAM_NOp) {
+		return true;
+	}
+	return false;
+}
+
+local JavaCode
+gj0PCallCatchException(JavaCode code)
+{
+	code = jcTryCatch(jcBlock(jcStatement(code)),
+			  jcCatch(jcLocalDecl(0, gj0Id(GJ_LangException), jcId(strCopy("exn"))),
+				  jcBlock(jcStatement(jcThrow(jcConstructV(gj0Id(GJ_JavaException), 1,
+									   jcId(strCopy("exn"))))))),
+			  NULL);
+	return code;
+}
+
 
 
 /*
