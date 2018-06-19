@@ -12,45 +12,22 @@ builddir = @builddir@
 abs_top_srcdir = @abs_top_srcdir@
 subdir = aldor/test
 
-AM_V_ALDOR = $(am__v_ALDOR_$(V))
-am__v_ALDOR_ = $(am__v_ALDOR_$(AM_DEFAULT_VERBOSITY))
-am__v_ALDOR_0 = @echo "  ALDOR   " $@;
+define am_auto_template
+AM_V_$(1)    = $$(am__v_$(1)_$$(V))
+am__v_$(1)_  = $$(am__v_$(1)_$$(AM_DEFAULT_VERBOSITY))
+am__v_$(1)_0 = @echo "  $(subst _,-,$(1))   " $$@;
+endef
 
-AM_V_ALDOR_AP = $(am__v_ALDOR_AP_$(V))
-am__v_ALDOR_AP_ = $(am__v_ALDOR_AP_$(AM_DEFAULT_VERBOSITY))
-am__v_ALDOR_AP_0 = @echo "  ALDOR-AP   " $@;
+STEPS := ALDOR ALDOR_AP ALDOR_CMD ALDOR_EXE ALDOR_FM ALDOR_GENC		\
+	 ALDOR_JAVATEST ALDOR_OBJ JAVAC ALDOR_JAVA JAVA_CP JUNIT
 
-AM_V_ALDOR_EXE = $(am__v_ALDOR_EXE_$(V))
-am__v_ALDOR_EXE_ = $(am__v_ALDOR_EXE_$(AM_DEFAULT_VERBOSITY))
-am__v_ALDOR_EXE_0 = @echo "  ALDOR-EXE   " $@;
+$(foreach rule,$(STEPS),$(eval $(call am_auto_template,$(rule))))
 
-AM_V_ALDOR_OBJ = $(am__v_ALDOR_OBJ_$(V))
-am__v_ALDOR_OBJ_ = $(am__v_ALDOR_OBJ_$(AM_DEFAULT_VERBOSITY))
-am__v_ALDOR_OBJ_0 = @echo "  ALDOR-OBJ   " $@;
-
-AM_V_ALDOR_GENC = $(am__v_ALDOR_GENC_$(V))
-am__v_ALDOR_GENC_ = $(am__v_ALDOR_GENC_$(AM_DEFAULT_VERBOSITY))
-am__v_ALDOR_GENC_0 = @echo "  ALDOR-GENC   " $@;
-
-AM_V_ALDOR_FM = $(am__v_ALDOR_FM_$(V))
-am__v_ALDOR_FM_ = $(am__v_ALDOR_GENC_$(AM_DEFAULT_VERBOSITY))
-am__v_ALDOR_FM_0 = @echo "  ALDOR-FM   " $@;
-
-AM_V_ALDOR_CMD = $(am__v_ALDOR_CMD_$(V))
-am__v_ALDOR_CMD_ = $(am__v_ALDOR_CMD_$(AM_DEFAULT_VERBOSITY))
-am__v_ALDOR_CMD_0 = @echo "  ALDOR-CMD   " $@;
-
-AM_V_ALDOR_JAVA = $(am__v_ALDOR_JAVA_$(V))
-am__v_ALDOR_JAVA_ = $(am__v_ALDOR_JAVA_$(AM_DEFAULT_VERBOSITY))
-am__v_ALDOR_JAVA_0 = @echo "  ALDOR-JAVA   " $@;
-
-AM_V_JAVAC = $(am__v_JAVAC_$(V))
-am__v_JAVAC_ = $(am__v_JAVAC_$(AM_DEFAULT_VERBOSITY))
-am__v_JAVAC_0 = @echo "  JAVAC   " $@;
-
-AM_V_ALDOR_JAVATEST    = $(am__v_ALDOR_JAVATEST_$(V))
-am__v_ALDOR_JAVATEST_  = $(am__v_ALDOR_JAVATEST_$(AM_DEFAULT_VERBOSITY))
-am__v_ALDOR_JAVATEST_0 = @echo "  ALDOR-JAVATEST   " $@;
+define am_auto_template
+AM_V_$(1)    = $$(am__v_$(1)_$$(V))
+am__v_$(1)_  = $$(am__v_$(1)_$$(AM_DEFAULT_VERBOSITY))
+am__v_$(1)_0 = @echo "  $(1)   " $@;
+endef
 
 all: really-all
 
