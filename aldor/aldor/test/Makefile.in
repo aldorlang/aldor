@@ -58,11 +58,11 @@ fmtests := rectest enumtest clos strtable1 simple apply
 ctests  := rectest enumtest multinever maptuple
 otests  := enumtest
 xtests := enumtest
+@BUILD_JAVA_TRUE@junittests :=
 @BUILD_JAVA_TRUE@jruntests := jimport jimp0
+@BUILD_JAVA_TRUE@jtests  := simple_j enumtest run_j
 
 x_extra := rtexns
-
-@BUILD_JAVA_TRUE@jtests  := simple_j enumtest run_j
 
 simple_j_AXLFLAGS=-Q2
 jimport_opt_AXLFLAGS=-Q9 -Qinline-all
@@ -84,6 +84,7 @@ _ctests  := $(sort $(ctests)  $(otests))
 
 _jruntests := $(sort $(jruntests))
 _jtests  := $(sort $(jtests) $(_jruntests))
+_junittests := $(sort $(junittests))
 _xtests  := $(sort $(xtests))
 _fmtests := $(sort $(fmtests) $(_jtests) $(_ctests))
 _otests  := $(sort $(otests) $(x_extra))
@@ -112,9 +113,29 @@ $(patsubst %, out/java/%.java, $(_jtests)): out/java/%.java: out/fm/%.fm
 
 javaopts=-cp $(abs_top_builddir)/aldor/lib/java/src/foamj.jar
 
+define java_import_dependency_template
+out/java/$1.class: $(patsubst %,out/java/%.java,$(subst .,/,$($(1)_srcjava)))
+endef
+
+define junit_class_dependency_template
+out/java/$1.class: $(patsubst %,out/java/%.java,$(subst .,/,$($(1)_classes)))
+endef
+
+$(foreach jtest,$(_jtests), $(eval $(call java_import_dependency_template,$(jtest))))
+$(foreach junit,$(_junittests), $(eval $(call junit_class_dependency_template,$(junit))))
+
+allsrcjava := $(foreach jtest,$(_jtests),$(patsubst %,out/java/%.java,$(subst .,/,$($(jtest)_srcjava))))
+
+$(allsrcjava): out/java/%.java: $(srcdir)/%.java
+	$(AM_V_JAVA_CP) \
+	(mkdir -p $(dir $@); cp $(srcdir)/$*.java $@)
+
 $(patsubst %, out/java/%.class, $(_jtests)): out/java/%.class: out/java/%.java
 	$(AM_V_JAVAC) \
-	(cd $(builddir)/out/java; javac $(javaopts) $*.java)
+	(cd $(builddir)/out/java;  \
+	 javac $(javaopts) $*.java \
+			   $(addsuffix .java,$(subst .,/,$($*_extjava) $($*_srcjava))) \
+	)
 
 # Create .o files locally as unicl creates files in the
 # current directory...
