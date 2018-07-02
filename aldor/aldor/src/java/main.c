@@ -49,7 +49,7 @@ generate(String name)
 	JavaCodePContext ctxt;
 
 	lastElt[strlen(lastElt)-3] = '\0';
-	jc = genJavaUnit(f, lastElt);
+	jc = genJavaUnit(f, lastElt)->first;
 	foamFree(f);
 
 	printf("/*...\n");

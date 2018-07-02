@@ -33,7 +33,8 @@ local String gj0ClassDocumentation(Foam foam, String name);
 local JavaCodeList gj0CollectImports(JavaCode clss);
 local JavaCodeList gj0DDef(Foam foam);
 local JavaCode gj0Gen(Foam foam);
-local JavaCode gj0Gen(Foam foam);
+local JavaCode gj0Gen0(Foam foam);
+local JavaCode gj0GenFmt(Foam foam, AInt fmt);
 local JavaCodeList gj0GenList(Foam *p, AInt n);
 local JavaCode gj0Def(Foam foam);
 local JavaCode gj0Default(Foam foam, String s);
@@ -47,7 +48,10 @@ local JavaCode gj0Loc(Foam seq);
 local JavaCode gj0LocSet(Foam ref, Foam rhs);
 local JavaCode gj0Glo(Foam ref);
 local JavaCode gj0GloSet(Foam ref, Foam rhs);
+local JavaCode gj0GloSetJava(Foam lhs, Foam rhs);
 local JavaCode gj0GloRegister(Foam lhs, Foam rhs);
+local JavaCode gj0GloJavaId(AInt id);
+local JavaCode gj0GloJavaMethodId(AInt id);
 local JavaCode gj0Nil(Foam foam);
 
 local JavaCode gj0Throw(Foam foam);
@@ -123,10 +127,13 @@ local JavaCodeList gj0ProgExceptions();
 local int          gj0ProgModifiers();
 local String       gj0ProgMethodName(Foam var);
 local String       gj0ProgFnName(int idx);
+local void         gj0ProgAddStub(FoamSig sigList);
 local void         gj0ProgAddStubs(FoamSigList sigList);
 local JavaCodeList gj0ProgDeclarations(Foam ddecl, Foam body);
 
+local String       gj0JavaSigName(CString prefix, Foam fmt, int idx);
 local String       gj0Name(CString prefix, Foam fmt, int idx);
+local String       gj0JavaSigName(CString prefix, Foam fmt, int idx);
 local JavaCode     gj0ProgRetnType(Foam rhs);
 local JavaCode     gj0TopConst(Foam lhs, Foam rhs);
 
@@ -140,13 +147,12 @@ local JavaCode     gj0TypeValueToRec(JavaCode value, AInt fmt);
 local FoamTag      gj0FoamExprType(Foam foam);
 local FoamTag      gj0FoamExprTypeWFmt(Foam foam, AInt *fmt);
 
-local FoamSigList  gj0CCallStubAdd(FoamSigList list, FoamSig sig);
-
 local FoamSig      gj0FoamSigFrCCall(Foam ccall);
 local JavaCodeList gj0CCallStubGen(FoamSigList sigs);
 local FoamSigList  gj0CCallStubAdd(FoamSigList l, FoamSig sig);
 local JavaCode     gj0CCallStubGenFrSig(FoamSig sig);
 local String       gj0CCallStubName(FoamSig call);
+local JavaCode     gj0CCallSig(FoamSig sig, JavaCode op, JavaCodeList args);
 
 local JavaCode     gj0SeqNode(JavaCodeList l);
 local Bool         gj0IsSeqNode(JavaCode jc);
@@ -163,6 +169,18 @@ local String       gj0InitVar(AInt idx);
 
 local JavaCode     gj0TypeFrJavaObj(Foam format);
 
+local JavaCodeList gj0ExportClassCreateAll(void);
+local JavaCode     gj0ExportClassCreate(JavaCode className, AIntList decls);
+local JavaCode     gj0ExportClassName(String id);
+local JavaCode     gj0ExportMethodName(String id);
+local JavaCodeList gj0ExportClassMethods(JavaCode className, AIntList decls);
+local JavaCode     gj0ExportClassMethod(AInt id);
+local JavaCodeList gj0ExportClassInternalMethods(void);
+local JavaCode     gj0ExportClassInternalMethod(int i);
+local JavaCodeList gj0ExportClassMemberVars(void);
+
+local JavaCodeList gj0ExportClassMethodParams(Foam sig, AInt proto);
+local JavaCodeList gj0ExportClassMethodArgs(Foam sig, AInt proto);
 
 enum gjId {
 	GJ_INVALID = -1,
@@ -174,6 +192,7 @@ enum gjId {
 	GJ_FoamEnv,
 	GJ_FoamClass,
 	GJ_FoamContext,
+	GJ_FoamHelper,
 
 	GJ_FoamFn,
 	GJ_FoamValue,
@@ -181,6 +200,7 @@ enum gjId {
 	GJ_FoamGlobals,
 	GJ_Format,
 	GJ_EnvRecord,
+	GJ_AldorObject,
 
 	GJ_JavaException,
 	GJ_FoamUserException,
@@ -194,6 +214,8 @@ enum gjId {
 	
 	GJ_ContextVar,
 	GJ_Main,
+	GJ_class,
+	GJ_Instance,
 
 	GJ_LIMIT
 };
@@ -210,6 +232,7 @@ struct gjArgs {
 	String name;
 	Bool   createMain;
 	int    lineWidth;
+	String pkg;
 };
 
 typedef struct gjArgs GjArgs;
@@ -234,7 +257,7 @@ struct gjContext {
 	int multVarIdx;
 	/* in codegen */
 	AInt mfmt;
-	AInt afmt;
+	AInt contextFmt;
 };
 
 #define gjContextGlobals (gjContext->formats->foamDFmt.argv[globalsSlot])
@@ -253,34 +276,54 @@ Bool	genJavaDebug	= false;
 
 /* Functions... */
 
-JavaCode 
+JavaCodeList
 genJavaUnit(Foam foam, String name)
 {
-	JavaCodeList imps, code, mainImpl, interfaces, fmts, body;
-	JavaCode clss;
+	JavaCodeList imps, javaExportDecls, javaExportMeths, code, stubs;
+	JavaCodeList mainImpl, interfaces, fmts, body;
+	JavaCodeList exportedClassFiles;
+	JavaCode clss, mainFile;
 	String className, comment;
 	
 	gjArgs->name = name;
+	gjArgs->pkg  = "aldorcode";
 	gjInit(foam, name);
 
 	className = gj0ClassName(foam, name);
 	if (!jcIsLegalClassName(className)) {
 		comsgFatal(NULL, ALDOR_F_BadJavaFileName, className);
 	}
+	strFree(className);
+
 	code = gj0DDef(foam->foamUnit.defs);
 	mainImpl = gj0ClassHeader(name);
+	javaExportDecls = gj0ExportClassMemberVars();
+	javaExportMeths = gj0ExportClassInternalMethods();
+	stubs = gj0CCallStubGen(gjContext->ccallStubSigList);
+
 	comment = gj0ClassDocumentation(foam, name);
 
 	fmts = gj0FmtInits();
-	body = listNConcat(JavaCode)(fmts, mainImpl);
+
+	body = listNil(JavaCode);
+	body = listNConcat(JavaCode)(body, fmts);
+	body = listNConcat(JavaCode)(body, javaExportDecls);
+	body = listNConcat(JavaCode)(body, mainImpl);
 	body = listNConcat(JavaCode)(body, code);
+	body = listNConcat(JavaCode)(body, javaExportMeths);
+	body = listNConcat(JavaCode)(body, stubs);
 	
 	interfaces = listSingleton(JavaCode)(gj0Id(GJ_FoamClass));
 	clss = jcClass(JCO_MOD_Public, comment, 
-		       jcId(className), NULL, interfaces, body);
+		       jcId(gj0ClassName(foam, name)), NULL, interfaces, body);
 
 	imps = gj0CollectImports(clss);
-	return jcFile(NULL, jcId(className), imps, clss);
+
+	mainFile = jcFile(gjArgs->pkg == NULL ? NULL : jcId(strCopy(gjArgs->pkg)),
+			  jcId(gj0ClassName(foam, name)), imps, clss);
+	exportedClassFiles = gj0ExportClassCreateAll();
+
+	return listCons(JavaCode)(mainFile, exportedClassFiles);
 }
 
 /*
@@ -302,7 +345,7 @@ gj0CollectImports(JavaCode clss)
 	JavaCodeList tmp = imps;
 	while (tmp) {
 		JavaCode id = car(tmp);
-		JavaCode stmt = jcStatement(jcImport(id));;
+		JavaCode stmt = jcStatement(jcImport(id));
 		ids = listCons(JavaCode)(stmt, ids);
 		tmp = cdr(tmp);
 	}
@@ -326,6 +369,7 @@ gjInit(Foam foam, String name)
 	gjContext->gloRegList = listNil(JavaCode);
 	gjContext->fmtSet = intSetNew(foamArgc(gjContext->formats));
 	gjContext->mfmt = 0;
+	gjContext->contextFmt = 0;
 }
 
 local String 
@@ -337,7 +381,7 @@ gj0ClassName(Foam foam, String name)
 local String 
 gj0ClassDocumentation(Foam foam, String name) 
 {
-	return strPrintf("Generated by genjava - %s\n", name);
+	return strPrintf("Generated by genjava - %s", name);
 }
 
 
@@ -357,14 +401,351 @@ gj0DDef(Foam foam)
 	
 	lst  = listNReverse(JavaCode)(lst);
 
-	stubs = gj0CCallStubGen(gjContext->ccallStubSigList);
-	lst = listNConcat(JavaCode)(lst, stubs);
-
 	return lst;
 }
 
+local JavaCodeList
+gj0ExportClassCreateAll()
+{
+	Foam globals = gjContextGlobals;
+	AIntList exportedMethods = listNil(AInt);
+	AIntList list;
+	JavaCodeList allClasses = listNil(JavaCode);
+	int i;
+	Table tbl;
+
+	tbl = tblNew((TblHashFun) jcoHash, (TblEqFun) jcoEqual);
+	for (i=0; i<foamDDeclArgc(globals); i++) {
+		Foam decl = globals->foamDDecl.argv[i];
+		if (foamGDeclIsExportOf(FOAM_Proto_Java, decl)
+		    || foamGDeclIsExportOf(FOAM_Proto_JavaConstructor, decl)
+		    || foamGDeclIsExportOf(FOAM_Proto_JavaMethod, decl)) {
+			exportedMethods = listCons(AInt)(i, exportedMethods);
+		}
+	}
+
+	list = exportedMethods;
+	while (list != listNil(AInt)) {
+		JavaCode class;
+		AInt id = car(list);
+		Foam decl = globals->foamDDecl.argv[id];
+		list = cdr(list);
+		class = gj0ExportClassName(decl->foamGDecl.id);
+		tblSetElt(tbl, class, listCons(AInt)(id,
+						     tblElt(tbl, class, listNil(AInt))));
+	}
+
+	TableIterator it;
+	for (tblITER(it, tbl); tblMORE(it); tblSTEP(it)) {
+		JavaCode className = tblKEY(it);
+		AIntList ids = tblELT(it);
+
+		JavaCode clss = gj0ExportClassCreate(className, ids);
+		allClasses = listCons(JavaCode)(clss, allClasses);
+	}
+
+	return allClasses;
+}
+
+local JavaCode
+gj0ExportClassCreate(JavaCode classId, AIntList ids)
+{
+	/*
+	 * class Foo {
+	 *     Object rep;
+	 *     Foo(Word w) {
+	 *        this.rep = w;
+	 *     }
+	 * }
+	 */
+	JavaCodeList body, imports, methods;
+	JavaCode file, clss, constructor, rep;
+	JavaCode className = jcId(jcImportedIdName(classId));
+	JavaCode repVar = jcId(strCopy("rep"));
+
+	constructor = jcConstructor(JCO_MOD_Public, NULL,
+				    jcoCopy(className), listNil(JavaCode),
+				    listSingleton(JavaCode)(jcMemberDecl(0,
+									gj0TypeFrFmt(FOAM_Word, 0),
+									jcoCopy(repVar))),
+				    listNil(JavaCode),
+				    jcStatement(jcAssign(jcMemRef(jcThis(), jcoCopy(repVar)),
+							 jcoCopy(repVar)))
+		);
+
+	rep = jcMethod(JCO_MOD_Public, NULL, gj0Id(GJ_FoamWord), jcId(strCopy("rep")), listNil(JavaCode),
+		       listNil(JavaCode), listNil(JavaCode),
+		       jcStatement(jcReturn(jcId(strCopy("rep")))));
+
+	body = listList(JavaCode)(3,
+				  jcStatement(jcMemberDecl(JCO_MOD_Final|JCO_MOD_Private,
+							  gj0TypeFrFmt(FOAM_Word, 0),
+							  jcoCopy(repVar))),
+				  constructor,
+				  rep);
+
+	methods = gj0ExportClassMethods(className, ids);
+
+	body = listNConcat(JavaCode)(body, methods);
+
+	clss = jcClass(JCO_MOD_Public|JCO_MOD_Final,
+		       strCopy(".. ++ docco goes here"),
+		       jcoCopy(className),
+		       gj0Id(GJ_AldorObject),
+		       listNil(JavaCode), body);
+
+	imports = gj0CollectImports(clss);
+	
+	file = jcFile(jcId(strCopy(jcImportedIdPkg(classId))),
+		      jcId(strCopy(jcImportedIdName(classId))), imports, clss);
+
+	jcoFree(repVar);
+	jcoFree(classId);
+
+	return file;
+}
+
+local JavaCodeList
+gj0ExportClassMethods(JavaCode className, AIntList decls)
+{
+	JavaCodeList methods = listNil(JavaCode);
+	int i = 0;
+	while (decls != listNil(AInt)) {
+		AInt id = car(decls);
+		Foam decl = gjContextGlobals->foamDDecl.argv[id];
+		JavaCode method;
+
+		method = gj0ExportClassMethod(id);
+
+		methods = listCons(JavaCode)(method, methods);
+		decls = cdr(decls);
+		i++;
+	}
+
+	return listNReverse(JavaCode)(methods);
+}
+
+local JavaCode
+gj0ExportClassMethod(AInt i)
+{
+	/*
+	 * Generate this for "foo: (A, B) -> C
+	 *    public static C foo(A a, B b) {
+	 *        Word ret = file.fooConst(a, b);
+	 *        return "something"(ret)
+	 *    }
+	 */
+
+	Foam decl = gjContextGlobals->foamDDecl.argv[i];
+
+	Foam sig  = gjContext->formats->foamDFmt.argv[decl->foamGDecl.format];
+	AInt protocol = decl->foamGDecl.protocol;
+	JavaCode retType = gj0Type(javaSigRet(sig));
+
+	JavaCodeList params = gj0ExportClassMethodParams(sig, protocol);
+
+	JavaCodeList args = gj0ExportClassMethodArgs(sig, protocol);
+	JavaCode className = gj0ExportClassName(decl->foamDecl.id);
+	JavaCode methodName = gj0ExportMethodName(decl->foamDecl.id);
+	JavaCode instance = jcApplyMethod(gj0Id(GJ_FoamHelper), gj0Id(GJ_Instance),
+					  listSingleton(JavaCode)(jcMemRef(jcImportedId(strCopy(gjArgs->pkg),
+											strCopy(gjArgs->name)),
+									   gj0Id(GJ_class))));
+	JavaCode fnCall = jcApplyMethod(instance, gj0GloJavaMethodId(i), args);
+	JavaCode body;
+	AInt flgs;
+	
+	switch (protocol) {
+	case FOAM_Proto_JavaMethod:
+		flgs = JCO_MOD_Public|JCO_MOD_Final;
+		body = (javaSigRet(sig)->foamDecl.type == FOAM_NOp)
+			? jcStatement(fnCall)
+			: jcNLSeqV(1, jcStatement(jcReturn(fnCall)));
+		return jcMethod(flgs, strCopy("Method wrapper for... "),
+			retType, methodName, listNil(JavaCode),
+			params, listNil(JavaCode), body);
+		break;
+	case FOAM_Proto_Java:
+		flgs = JCO_MOD_Public|JCO_MOD_Static;
+		body = (javaSigRet(sig)->foamDecl.type == FOAM_NOp)
+			? jcStatement(fnCall)
+			: jcNLSeqV(1, jcStatement(jcReturn(fnCall)));
+		return jcMethod(flgs, strCopy("Method wrapper for... "),
+			retType, methodName, listNil(JavaCode),
+			params, listNil(JavaCode), body);
+		break;
+	case FOAM_Proto_JavaConstructor: {
+		flgs = JCO_MOD_Public;
+		body = jcNLSeqV(1, jcStatement(jcApplyV(jcThis(), 1, fnCall)));
+		return jcConstructor(flgs, strCopy("Method wrapper for... "),
+				     className, listNil(JavaCode),
+				     params, listNil(JavaCode), body);
+	}
+	default:
+		bug("Unknown java protocol for export");
+		break;
+	}
+}
+
+local JavaCode
+gj0ExportClassName(String id)
+{
+	JavaCode fullName  = jcImportedStaticIdFrString(id);
+	JavaCode className = jcImportedId(strCopy(jcImportedStaticIdPkg(fullName)),
+					  strCopy(jcImportedStaticIdClass(fullName)));
+
+	jcoFree(fullName);
+
+	return className;
+}
+
+local JavaCode
+gj0ExportMethodName(String id)
+{
+	JavaCode fullName  = jcImportedStaticIdFrString(id);
+	String methodName = jcImportedStaticIdName(fullName);
+
+	jcoFree(fullName);
+
+	return jcId(gj0NameFrString(methodName));
+}
+
+local JavaCodeList
+gj0ExportClassMemberVars()
+{
+	Foam globals = gjContextGlobals;
+	JavaCodeList vars = listNil(JavaCode);
+	int i;
+
+	for (i=0; i<foamDDeclArgc(globals); i++) {
+		Foam decl = globals->foamDDecl.argv[i];
+		if (foamGDeclIsExportOf(FOAM_Proto_Java, decl)
+		    || foamGDeclIsExportOf(FOAM_Proto_JavaConstructor, decl)
+		    || foamGDeclIsExportOf(FOAM_Proto_JavaMethod, decl)) {
+			JavaCode decl = jcMemberDecl(JCO_MOD_Private, gj0Id(GJ_FoamClos), gj0GloJavaId(i));
+			vars = listCons(JavaCode)(jcStatement(decl), vars);
+		}
+	}
+	return listNReverse(JavaCode)(vars);
+}
+
+local JavaCodeList
+gj0ExportClassInternalMethods()
+{
+	JavaCodeList methods = listNil(JavaCode);
+	int i;
+
+	for (i=0; i<foamDDeclArgc(gjContextGlobals); i++) {
+		Foam decl = gjContextGlobals->foamDDecl.argv[i];
+		if (foamGDeclIsExportOf(FOAM_Proto_Java, decl)
+		    || foamGDeclIsExportOf(FOAM_Proto_JavaConstructor, decl)
+		    || foamGDeclIsExportOf(FOAM_Proto_JavaMethod, decl)) {
+			JavaCode method = gj0ExportClassInternalMethod(i);
+			methods = listCons(JavaCode)(method, methods);
+		}
+	}
+	gj0ProgAddStubs(gjContext->progSigList);
+
+	return listNReverse(JavaCode)(methods);
+}
+
+local JavaCode
+gj0ExportClassInternalMethod(int index)
+{
+	Foam decl = gjContextGlobals->foamDDecl.argv[index];
+	/*
+	 * Call the global containing the exported method.
+	 * The code is a top level method, called as a static java method
+	 * hence args are given by FOAM_Proto_Java
+	 */
+	AInt protocol = decl->foamGDecl.protocol;
+	Foam sig  = gjContext->formats->foamDFmt.argv[decl->foamGDecl.format];
+	JavaCodeList params = gj0ExportClassMethodParams(sig, FOAM_Proto_Java);
+	JavaCodeList args = gj0ExportClassMethodArgs(sig, FOAM_Proto_Java);
+
+	FoamSig foamSig = javaSigCreateFoamSig(sig);
+	JavaCode base = gj0CCallSig(foamSig, gj0GloJavaId(index), args);
+	JavaCode body;
+	if (foamSig->retType == FOAM_NOp) {
+		body = jcStatement(base);
+	}
+	else if (protocol == FOAM_Proto_JavaConstructor) {
+		body = jcStatement(jcReturn(base));
+	}
+	else {
+		JavaCode call = jcCast(gj0Type(javaSigRet(sig)), base);
+		body = jcStatement(jcReturn(call));
+	}
+	JavaCode method = jcMethod(JCO_MOD_Public, 0,
+				   gj0Type(javaSigRet(sig)),
+				   gj0GloJavaMethodId(index),
+				   listNil(JavaCode),
+				   params,
+				   listNil(JavaCode),
+				   body);
+	gj0ProgAddStub(foamSig);
+
+	return method;
+}
+
+local JavaCodeList
+gj0ExportClassMethodParams(Foam sig, AInt proto)
+{
+	JavaCodeList params = listNil(JavaCode);
+	int offs = proto == FOAM_Proto_JavaMethod ? 1 : 0;
+	for (int i=0; i<javaSigArgc(sig)-offs; i++) {
+		params = listCons(JavaCode)(jcParamDecl(JCO_MOD_Final,
+							gj0Type(javaSigArgN(sig, i+offs)),
+							jcId(gj0JavaSigName("_", sig, i))),
+					    params);
+	}
+	params = listNReverse(JavaCode)(params);
+
+	return params;
+}
+
+local JavaCodeList
+gj0ExportClassMethodArgs(Foam sig, AInt proto)
+{
+	JavaCodeList args = listNil(JavaCode);
+	int offs = proto == FOAM_Proto_JavaMethod ? 1 : 0;
+
+	if (proto == FOAM_Proto_JavaMethod) {
+		args = listCons(JavaCode)(jcThis(), args);
+	}
+	for (int i=offs; i<javaSigArgc(sig); i++) {
+		args = listCons(JavaCode)(jcId(gj0JavaSigName("_", sig, i-offs)),
+					  args);
+	}
+	args = listNReverse(JavaCode)(args);
+
+	return args;
+}
+
+
+/*
+ * :: Foam operations
+ */
+
 local JavaCode
 gj0Gen(Foam foam)
+{
+	return gj0GenFmt(foam, -1);
+}
+
+local JavaCode
+gj0GenFmt(Foam foam, AInt fmt)
+{
+	JavaCode jc;
+	AInt oldFmt = gjContext->contextFmt;
+	gjContext->contextFmt = fmt;
+	jc = gj0Gen0(foam);
+	gjContext->contextFmt = oldFmt;
+	return jc;
+}
+
+local JavaCode
+gj0Gen0(Foam foam)
 {
 	switch (foamTag(foam)) {
 	case  FOAM_NOp:
@@ -755,7 +1136,7 @@ gj0ProgDeclarations(Foam ddecl, Foam body)
 	for (tblITER(it, tbl); tblMORE(it); tblSTEP(it)) {
 		JavaCode type = tblKEY(it);
 		JavaCodeList vars = listNReverse(JavaCode)(tblELT(it));
-		JavaCode decl = jcParamDecl(0, type, jcCommaSeq(vars));
+		JavaCode decl = jcLocalDecl(0, type, jcCommaSeq(vars));
 		decls = listCons(JavaCode)(jcStatement(decl), decls);
 	}
 
@@ -856,6 +1237,12 @@ gj0ProgAddStubs(FoamSigList sigList)
 					car(sigList));
 		sigList = cdr(sigList);
 	}
+}
+
+local void
+gj0ProgAddStub(FoamSig sig)
+{
+	gjContext->ccallStubSigList = gj0CCallStubAdd(gjContext->ccallStubSigList, sig);
 }
 
 local JavaCodeList
@@ -1282,7 +1669,18 @@ local JavaCode
 gj0TypeFrJavaObj(Foam format)
 {
 	String txt = format->foamDDecl.argv[0]->foamDecl.id;
-	return jcImportedIdFrString(txt);
+	if (foamDDeclArgc(format) == 1) {
+		return jcImportedIdFrString(txt);
+	}
+	else {
+		JavaCodeList genArgs = listNil(JavaCode);
+		int i;
+		for (i=1; i<foamDDeclArgc(format); i++) {
+			genArgs = listCons(JavaCode)(gj0Type(format->foamDDecl.argv[i]), genArgs);
+		}
+		return jcGenericId(jcImportedIdFrString(txt),
+				   listNReverse(JavaCode)(genArgs));
+	}
 }
 
 
@@ -1326,6 +1724,11 @@ gj0TypeValueToObj(JavaCode val, FoamTag type, AInt fmt)
 		return jcApplyMethodV(val, jcId(strCopy("toPtr")), 0);
 	case FOAM_Env:
 		return jcApplyMethodV(val, jcId(strCopy("toEnv")), 0);
+	case FOAM_JavaObj: {
+		// maybe cast to fmt
+		JavaCode jtype = gj0TypeFrFmt(type, fmt);
+		return jcApplyMethodV(val, jcGenericMethodNameV(jcId(strCopy("toJavaObj")), 1, jtype), 0);
+	}
 	default:
 		return jcCast(jcSpaceSeqV(2, gj0Id(GJ_FoamValue),
 					  jcComment(strCopy(foamStr(type)))),
@@ -1412,9 +1815,10 @@ gj0TypeObjToValue(JavaCode val, FoamTag type, AInt fmt)
 				      jcId(strCopy("fromByte")), 1,
 				      val);
 	case FOAM_JavaObj:
-		return jcSpaceSeqV(2,
-				   jcComment(strPrintf("asWord %d %d", type, fmt)),
-				   val);
+		return jcApplyMethodV(jcMemRef(gj0Id(GJ_FoamValue),
+					       jcId(strCopy("U"))),
+				      jcId(strCopy("fromJavaObj")), 1,
+				      val);
 	case FOAM_Env:
 	case FOAM_Clos:
 	case FOAM_Rec:
@@ -1426,6 +1830,7 @@ gj0TypeObjToValue(JavaCode val, FoamTag type, AInt fmt)
 	}
 
 }
+
 
 local JavaCode 
 gj0Set(Foam lhs, Foam rhs)
@@ -1531,16 +1936,54 @@ gj0GloSet(Foam lhs, Foam rhs)
 	String id;
 
 	decl = gjContextGlobal(lhs->foamGlo.index);
-	id = decl->foamDecl.id;
+	if (foamGDeclIsExportOf(FOAM_Proto_Java, decl)
+	    || foamGDeclIsExportOf(FOAM_Proto_JavaConstructor, decl)
+	    || foamGDeclIsExportOf(FOAM_Proto_JavaMethod, decl)) {
+		jc = gj0GloSetJava(lhs, rhs);
+	}
+	else {
+		id = decl->foamDecl.id;
 	
-	jc = gj0TypeObjToValue(gj0SetGenRhs(rhs, decl),
+		jc = gj0TypeObjToValue(gj0SetGenRhs(rhs, decl),
 			       decl->foamDecl.type, decl->foamDecl.format);
 
-	jc = jcApplyMethodV(gj0Id(GJ_FoamGlobals),
-			    jcId(strCopy("setGlobal")), 
-			    2, jcLiteralString(strCopy(id)), jc);
+		jc = jcApplyMethodV(gj0Id(GJ_FoamGlobals),
+				    jcId(strCopy("setGlobal")),
+				    2, jcLiteralString(strCopy(id)), jc);
+	}
 	return jc;
 }
+
+
+local JavaCode
+gj0GloSetJava(Foam lhs, Foam rhs)
+{
+	JavaCode member = gj0GloJavaId(lhs->foamGlo.index);
+	Foam decl = gjContextGlobal(lhs->foamGlo.index);
+
+	return jcAssign(jcMemRef(jcThis(), member),
+			gj0SetGenRhs(rhs, decl));
+}
+
+local JavaCode
+gj0GloJavaId(AInt id)
+{
+	Foam decl = gjContextGlobal(id);
+
+	return jcId(gj0Name("M", gjContextGlobals, id));
+}
+
+local JavaCode
+gj0GloJavaMethodId(AInt id)
+{
+	Foam decl = gjContextGlobal(id);
+	JavaCode methodName = jcImportedStaticIdFrString(decl->foamGDecl.id);
+	String name = gj0NameFrString(jcImportedStaticIdName(methodName));
+	JavaCode jc = jcId(strPrintf("_%d_%s", id, name));
+	jcoFree(methodName);
+	return jc;
+}
+
 
 
 /*
@@ -1589,8 +2032,11 @@ local void gj0SeqSelect2(GjSeqStore store, Foam foam);
 local void gj0SeqGenDefault(GjSeqStore store, Foam foam);
 local void gj0SeqSelectMulti(GjSeqStore store, Foam foam);
 local void gj0SeqIf(GjSeqStore store, Foam foam);
+local void gj0SeqSet(GjSeqStore store, Foam foam);
 local void gj0SeqBCall(GjSeqStore store, Foam foam);
+local void gj0SeqPCall(GjSeqStore store, Foam foam);
 local void gj0SeqValues(GjSeqStore store, Foam foam);
+local void gj0SeqThrow(GjSeqStore store, Foam foam);
 
 local JavaCode gj0SeqSwitchId();
 
@@ -1636,13 +2082,21 @@ gj0Seq(Foam seq)
 local JavaCode
 gj0Return(Foam r)
 {
-	if (foamTag(r->foamReturn.value) == FOAM_Values)
-		return gj0ValuesReturn(r->foamReturn.value);
+	JavaCode jc;
 
-	if (gjContext->prog->foamProg.retType == FOAM_Arr)
-		return gj0ReturnArray(r->foamReturn.value);
+	gjContext->contextFmt = gjContext->prog->foamProg.format;
+	if (foamTag(r->foamReturn.value) == FOAM_Values) {
+		jc = gj0ValuesReturn(r->foamReturn.value);
+	}
+	else if (gjContext->prog->foamProg.retType == FOAM_Arr) {
+		jc = gj0ReturnArray(r->foamReturn.value);
+	}
+	else {
+		jc = jcReturn(gj0Gen0(r->foamReturn.value));
+	}
 
-	return jcReturn(gj0Gen(r->foamReturn.value));
+	gjContext->contextFmt = -1;
+	return jc;
 }
 
 local JavaCode
@@ -1654,9 +2108,9 @@ gj0ReturnArray(Foam foam)
 
 	tag = gj0FoamExprTypeWFmt(foam, &fmt);
 	if (tag == FOAM_Arr || fmt == gjContext->prog->foamProg.format)
-		return jcReturn(gj0Gen(foam));
+		return jcReturn(gj0Gen0(foam));
 
-	v = jcCast(gj0TypeFrFmt(tag, fmt), gj0Gen(foam));
+	v = jcCast(gj0TypeFrFmt(tag, fmt), gj0Gen0(foam));
 	return jcReturn(v);
 }
 
@@ -1680,6 +2134,12 @@ gj0SeqGen(GjSeqStore seqs, Foam foam)
 	case FOAM_BCall:
 		gj0SeqBCall(seqs, foam);
 		break;
+	case FOAM_Throw:
+		gj0SeqThrow(seqs, foam);
+		break;
+	case FOAM_PCall:
+		gj0SeqPCall(seqs, foam);
+		break;
 	case FOAM_Cast:
 		gj0SeqGen(seqs, foam->foamCast.expr);
 		break;
@@ -1689,6 +2149,10 @@ gj0SeqGen(GjSeqStore seqs, Foam foam)
 		break;
 	case FOAM_Values:
 		gj0SeqValues(seqs, foam);
+		break;
+	case FOAM_Set:
+	case FOAM_Def:
+		gj0SeqSet(seqs, foam);
 		break;
 	default:
 		gj0SeqGenDefault(seqs, foam);
@@ -1810,6 +2274,47 @@ gj0SeqBCall(GjSeqStore seqs, Foam foam)
 	
 	gj0SeqStoreAddHalt(seqs, jc);
 }
+
+local void
+gj0SeqPCall(GjSeqStore seqs, Foam foam)
+{
+	JavaCode jc;
+	if (gj0PCallThrowsException(foam)) {
+		gj0SeqStoreAddStmt(seqs, gj0PCallCatchException(gj0Gen(foam)));
+		return;
+	}
+	else {
+		jc = jcStatement(gj0Gen(foam));
+		gj0SeqStoreAddStmt(seqs, jc);
+	}
+}
+
+local void
+gj0SeqThrow(GjSeqStore seqs, Foam foam)
+{
+	JavaCode jc = jcStatement(gj0Gen(foam));
+
+	gj0SeqStoreAddHalt(seqs, jc);
+}
+
+
+local void
+gj0SeqSet(GjSeqStore seqs, Foam foam)
+{
+	JavaCode code;
+
+	code = gj0Gen(foam);
+
+	if (!gj0PCallThrowsException(foam->foamSet.rhs)) {
+		gj0SeqGenDefault(seqs, foam);
+	}
+	else {
+		code = gj0PCallCatchException(code);
+		gj0SeqStoreAddStmt(seqs, code);
+	}
+
+}
+
 
 local void
 gj0SeqValues(GjSeqStore store, Foam foam)
@@ -2034,12 +2539,10 @@ gj0SeqBucketIsHalt(GjSeqBucket bucket)
 local JavaCode
 gj0Throw(Foam foam)
 {
-	SExpr sx = foamToSExpr(foam);
-	String s = sxiFormat(sx);
-	
-	sxiFree(sx);
+	JavaCode tag = gj0Gen(foam->foamThrow.tag);
+	JavaCode val = gj0Gen(foam->foamThrow.val);
 
-	return jcComment(s);
+	return jcThrow(jcConstructV(gj0Id(GJ_FoamUserException), 2, tag, val));
 }
 
 
@@ -2106,12 +2609,20 @@ gj0SeqIsBCallHalt(Foam f)
 local JavaCode
 gj0CCall(Foam call)
 {
+	FoamSig sig = gj0FoamSigFrCCall(call);
+	JavaCodeList args = gj0GenList(call->foamCCall.argv, foamCCallArgc(call));
+	JavaCode res = gj0CCallSig(sig, gj0Gen(call->foamCCall.op), args);
+	gjContext->progSigList = gj0CCallStubAdd(gjContext->progSigList, sig);
+	return res;
+}
+
+local JavaCode
+gj0CCallSig(FoamSig sig, JavaCode op, JavaCodeList args)
+{
 	JavaCode code;
 
-	FoamSig sig = gj0FoamSigFrCCall(call);
 	String id = gj0CCallStubName(sig);
-	gjContext->progSigList = gj0CCallStubAdd(gjContext->progSigList, sig);
-	code = jcApply(jcId(id), gj0GenList(&call->foamCCall.op, foamArgc(call)-1));
+	code = jcApply(jcId(id), listCons(JavaCode)(op, args));
 
 	return code;
 }
@@ -2149,6 +2660,8 @@ gj0TypeAbbrev(FoamTag tag)
 		return "S";
 	case FOAM_DFlo:
 		return "D";
+	case FOAM_JavaObj:
+		return "J";
 	default:
 		return "?";
 	}
@@ -2478,13 +2991,7 @@ local JavaCode
 gj0ArrChar(Foam foam)
 {
 	int	i, arrSize;
-	String	str;
-
-	arrSize = foamArgc(foam);
-	str = strAlloc(arrSize);
-	for (i = 0; i < arrSize - 1; i++)
-		str[i] = foam->foamArr.eltv[i];
-	str[i] = '\0';
+	String	str = foamArrToString(foam);
 	
 	return jcApplyMethodV(jcLiteralStringWithTerminalChar(str), jcId(strCopy("toCharArray")), 0);
 }
@@ -3129,7 +3636,7 @@ local JavaCode gj0CastObjToPtr(JavaCode jc, FoamTag type, AInt fmt);
 local JavaCode
 gj0Cast(Foam foam)
 {
-	return gj0CastFmt(foam, emptyFormatSlot);
+	return gj0CastFmt(foam, gjContext->contextFmt == -1 ? emptyFormatSlot : gjContext->contextFmt);
 }
 
 local JavaCode
@@ -3203,10 +3710,14 @@ gj0CastWordToObj(JavaCode jc, FoamTag type, AInt fmt)
 		return jcApplyMethodV(jcMemRef(gj0Id(GJ_FoamWord),
 					       jcId(strCopy("U"))),
 				      jcId(strCopy("toArray")), 1, jc);
-	case FOAM_JavaObj:
+	case FOAM_JavaObj: {
+		// maybe cast to fmt
+		JavaCode jtype = gj0TypeFrFmt(type, fmt);
 		return jcApplyMethodV(jcMemRef(gj0Id(GJ_FoamWord),
 					      jcId(strCopy("U"))),
-				      jcId(strCopy("toJavaObj")), 1, jc);
+				      jcGenericMethodNameV(jcId(strCopy("toJavaObj")), 1, jtype),
+				      1, jc);
+	}
 	default:
 		return jcCast(gj0TypeFrFmt(type, fmt), jc);
 	}
@@ -3537,6 +4048,7 @@ struct gjIdInfo gjIdInfo[] = {
 	{GJ_FoamEnv,    "foamj", "Env"},
 	{GJ_FoamClass,  "foamj", "FoamClass"},
 	{GJ_FoamContext,"foamj", "FoamContext"},
+	{GJ_FoamHelper, "foamj", "FoamHelper"},
 
 	{GJ_FoamFn,     "foamj", "Fn"},
 
@@ -3545,6 +4057,7 @@ struct gjIdInfo gjIdInfo[] = {
 	{GJ_FoamGlobals,"foamj", "Globals"},
 	{GJ_Format,     "foamj", "Format"},
 	{GJ_EnvRecord,  "foamj", "EnvRecord"},
+	{GJ_AldorObject,"foamj", "AldorObject"},
 
 	{GJ_JavaException, "foamj", "JavaException"},
 	{GJ_FoamUserException, "foamj", "FoamUserException"},
@@ -3558,6 +4071,8 @@ struct gjIdInfo gjIdInfo[] = {
 
 	{GJ_ContextVar, 0, "ctxt"},
 	{GJ_Main,       0, "main"},
+	{GJ_class,      0, "class"},
+	{GJ_Instance,   0, "instanceForClass"},
 	{GJ_INVALID,    0, 0 },
 };
 
@@ -3590,8 +4105,11 @@ gj0Id(GjId id)
 local JavaCode gj0PCallOther(Foam foam);
 local JavaCode gj0PCallJavaMethod(Foam foam);
 local JavaCode gj0PCallJavaConstructor(Foam foam);
+local JavaCode gj0PCallJavaConstructorGlo(Foam foam);
 local JavaCode gj0PCallJavaStatic(Foam foam);
 local JavaCodeList gj0PCallCastArgs(Foam op, JavaCodeList args);
+local JavaCodeList gj0PCallGenArgs(Foam op, int offs, Foam *argv);
+
 
 local JavaCode
 gj0PCall(Foam foam)
@@ -3631,31 +4149,54 @@ local JavaCode
 gj0PCallJavaMethod(Foam foam)
 {
 	JavaCodeList args;
-	JavaCode target;
-	Foam decl, op;
+	JavaCode result, target;
+	Foam decl, op, sig;
 	String type, opName, pkg;
 
 	op = foam->foamPCall.op;
 
-	assert(foamTag(op) == FOAM_Glo);
-
 	assert(foamPCallArgc(foam) > 0);
 
-	decl = gjContextGlobal(op->foamGlo.index);
-	args = gj0GenList(foam->foamPCall.argv+1, foamPCallArgc(foam)-1);
-	target = gj0Gen(foam->foamPCall.argv[0]);
+	if (foamTag(op) == FOAM_Arr) {
+		return jcApplyMethod(gj0Gen(foam->foamPCall.argv[0]), jcId(strCopy("rep")),
+				     listNil(JavaCode));
+	}
+	else {
+		decl = gjContextGlobal(op->foamGlo.index);
+		sig = gjContext->formats->foamDFmt.argv[decl->foamGDecl.format];
 
-	strSplitLast(strCopy(decl->foamGDecl.id), '.', &type, &opName);
-	assert(type != 0);
-	strSplitLast(type, '.', &pkg, &type);
+		target = gj0GenFmt(foam->foamPCall.argv[0], javaSigArgN(sig, 0)->foamDecl.format);
+		args   = gj0PCallGenArgs(op, 1, foam->foamPCall.argv);
 
-	return jcApplyMethod(jcCast(jcImportedId(pkg, type), target),
-			     jcId(opName),
-			     gj0PCallCastArgs(op, args));
+		strSplitLast(strCopy(decl->foamGDecl.id), '.', &type, &opName);
+		assert(type != 0);
+		strSplitLast(type, '.', &pkg, &type);
+
+		return jcApplyMethod(jcCast(jcImportedId(pkg, type), target),
+				     jcId(opName),
+				     foamTag(op) != FOAM_Glo ? args : gj0PCallCastArgs(op, args));
+	}
 }
 
 local JavaCode
 gj0PCallJavaConstructor(Foam foam)
+{
+	Foam op = foam->foamPCall.op;
+	if (foamTag(op) == FOAM_Glo) {
+		return gj0PCallJavaConstructorGlo(foam);
+	}
+	else if (foamTag(op) == FOAM_Arr) {
+		JavaCodeList args = gj0GenList(foam->foamPCall.argv, foamPCallArgc(foam));
+		return jcConstruct(jcImportedIdFrString(foamArrToString(op)), args);
+	}
+	else {
+		bug("unknown pcall");
+		return NULL;
+	}
+}
+
+local JavaCode
+gj0PCallJavaConstructorGlo(Foam foam)
 {
 	JavaCodeList args;
 	Foam decl, op;
@@ -3663,12 +4204,11 @@ gj0PCallJavaConstructor(Foam foam)
 
 	op = foam->foamPCall.op;
 
-	assert(foamTag(op) == FOAM_Glo);
-
 	assert(foamPCallArgc(foam) > 1);
 
 	decl = gjContextGlobal(op->foamGlo.index);
-	args = gj0GenList(foam->foamPCall.argv, foamPCallArgc(foam));
+	//args = gj0GenList(foam->foamPCall.argv, foamPCallArgc(foam));
+	args = gj0PCallGenArgs(op, 0, foam->foamPCall.argv);
 
 	strSplitLast(strCopy(decl->foamGDecl.id), '.', &pkg, &type);
 
@@ -3688,13 +4228,13 @@ gj0PCallJavaStatic(Foam foam)
 	assert(foamTag(op) == FOAM_Glo);
 
 	decl = gjContextGlobal(op->foamGlo.index);
-	args = gj0GenList(foam->foamPCall.argv, foamPCallArgc(foam));
+	//args = gj0GenList(foam->foamPCall.argv, foamPCallArgc(foam));
+	args = gj0PCallGenArgs(op, 0, foam->foamPCall.argv);
 
 	strSplitLast(strCopy(decl->foamGDecl.id), '.', &type, &id);
 	JavaCode typeId = jcImportedIdFrString(type);
 
-	return jcApply(jcMemRef(typeId, jcId(id)),
-		       gj0PCallCastArgs(op, args));
+	return jcApply(jcMemRef(typeId, jcId(id)), gj0PCallCastArgs(op, args));
 }
 
 local JavaCodeList
@@ -3724,6 +4264,19 @@ gj0PCallCastArgs(Foam op, JavaCodeList argsIn)
 	return argsIn;
 }
 
+local JavaCodeList
+gj0PCallGenArgs(Foam op, int offs, Foam *argv)
+{
+	Foam glo = gjContextGlobals->foamDDecl.argv[op->foamGlo.index];
+	Foam ddecl = gjContext->formats->foamDFmt.argv[glo->foamGDecl.format];
+	JavaCodeList args = listNil(JavaCode);
+	int i;
+
+	for (i=offs; i<javaSigArgc(ddecl); i++) {
+		args = listCons(JavaCode)(gj0GenFmt(argv[i], javaSigArgN(ddecl, i)->foamDecl.format), args);
+	}
+	return listNReverse(JavaCode)(args);
+}
 
 
 local Bool
@@ -3783,6 +4336,7 @@ enum gj_BCallMethod {
 	GJ_NegConst,
 	GJ_Cast,
 	GJ_Exception,
+
 	GJ_NotImpl
 };
 
@@ -4369,6 +4923,14 @@ gj0NameInit()
 		gjCharIds[p->c] = p->s;
 		p++;
 	}
+}
+
+local String
+gj0JavaSigName(CString prefix, Foam fmt, int idx)
+{
+	Foam decl = javaSigArgN(fmt, idx);
+	assert(idx < javaSigArgc(fmt));
+	return aStrPrintf("_%d_%s", idx, gj0NameFrString(decl->foamDecl.id));
 }
 
 local String

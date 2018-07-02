@@ -529,13 +529,12 @@ public class Foam {
         return Math.atan2(a, b);
     }
 
-    public static Word stringToJavaString(Word w) {
+    public static String stringToJavaString(Word w) {
         char[] arr = (char[]) w.toArray();
-        return new FoamJ.JavaObj<String>(arrToString(arr));
+        return arrToString(arr);
     }
 
-    public static Word javaStringToString(Word w) {
-        String s = (String) ((Word) w).toJavaObj();
+    public static Word javaStringToString(String s) {
         Word arr = Word.U.fromArray(("" + s + "\0").toCharArray());
         return  arr;
     }

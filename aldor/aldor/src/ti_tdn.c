@@ -1941,9 +1941,13 @@ local Bool
 titdnForeignExport(Stab stab, AbSyn absyn, TForm type)
 {
 	AbSyn	what	= absyn->abForeignExport.what;
+	AbSyn	dest	= absyn->abForeignExport.dest;
+	ForeignOrigin forg = forgFrAbSyn(dest->abApply.argv[0]);
 
-	titdn(stab, absyn->abForeignExport.what, tfUnknown);
-
+	Bool success = titdn(stab, absyn->abForeignExport.what, tfUnknown);
+	if (success && forg->protocol == FOAM_Proto_Java) {
+		stabAddForeignExport(stab, tiGetTForm(stab, what), forg);
+	}
 	abTUnique(absyn) = type;
 	return true;
 }

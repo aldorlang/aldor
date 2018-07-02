@@ -42,7 +42,7 @@ public class FoamContext {
                 called = true;
                 Class<FoamClass> c;
                 try {
-                    c = (Class<FoamClass>) ClassLoader.getSystemClassLoader().loadClass(name);
+		    c = (Class<FoamClass>) getClass().getClassLoader().loadClass("aldorcode." + name);
                     Constructor<FoamClass> cons = c.getConstructor(FoamContext.class);
                     FoamClass fc = cons.newInstance(FoamContext.this);
 		    classInstances.put(c, fc);

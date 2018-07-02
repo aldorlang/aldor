@@ -9,9 +9,8 @@ public class FoamTest {
 
     @Test
     public void testToJavaString() {
-	Word w = new FoamJ.JavaObj<String>("hello");
-	Word aldorString = Foam.javaStringToString(w);
-	Assert.assertEquals("hello", Foam.stringToJavaString(aldorString).toJavaObj());
+	Word aldorString = Foam.javaStringToString("hello");
+	Assert.assertEquals("hello", Foam.stringToJavaString(aldorString));
     }
 
     @Test

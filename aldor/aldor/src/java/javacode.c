@@ -28,6 +28,7 @@ enum jc_clss_enum {
 	JCO_CLSS_Method,    
 	JCO_CLSS_Declaration,    
 	JCO_CLSS_Statement,    
+	JCO_CLSS_File,
 	
 	JCO_CLSS_If,    
 	JCO_CLSS_While,    
@@ -214,6 +215,7 @@ local JWriteFn jcMethodPrint;
 local JWriteFn jcParenPrint;
 local JWriteFn jcSequencePrint;
 local JWriteFn jcStatementPrint;
+local JWriteFn jcFilePrint;
 local JWriteFn jcStringPrint;
 local JWriteFn jcUnaryOpPrint; 
 
@@ -286,6 +288,7 @@ static struct jclss jcClss[] = {
 	{ JCO_CLSS_Method,     jcMethodPrint,  jcNodeSExpr,    "method", 0},
 	{ JCO_CLSS_Declaration,jcDeclarationPrint, jcNodeSExpr,"declaration", 0},
 	{ JCO_CLSS_Statement,  jcStatementPrint, jcNodeSExpr,  "statement", 0},
+	{ JCO_CLSS_File,       jcFilePrint,      jcNodeSExpr,  "file", 0},
 
 	{ JCO_CLSS_If,         jcBlockHdrPrint, jcNodeSExpr,  "if", "if"},
 	{ JCO_CLSS_While,      jcBlockHdrPrint, jcNodeSExpr,  "while", "while"},
@@ -750,7 +753,6 @@ jcImportedStaticIdClass(JavaCode importedId)
 {
 	return car(jcoImportPath(importedId));
 }
-
 
 String
 jcImportedStaticIdPkg(JavaCode importedId)
@@ -1315,7 +1317,6 @@ jcCondPrint(JavaCodePContext ctxt, JavaCode code)
 	jc0PrintWithParens(ctxt, thisClss, arg3);
 }
 
-
 /*
  * :: Statements
  */
@@ -1593,11 +1594,46 @@ jcBlockHdrIndent(JavaCode code)
 JavaCode
 jcFile(JavaCode pkg, JavaCode name, JavaCodeList imports, JavaCode body)
 {
-	/* FIXME: Very temporary */
-	listNConcat(JavaCode)(imports, listSingleton(JavaCode)(body));
-	return jcNLSeq(imports);
+	JavaCodeList whole;
+	JavaCode file;
+
+	whole = listNil(JavaCode);
+	if (pkg != NULL) {
+		whole = listSingleton(JavaCode)(jcStatement(jcPackage(jcoCopy(pkg))));
+	}
+	whole = listNConcat(JavaCode)(whole, imports);
+	whole = listNConcat(JavaCode)(whole, listSingleton(JavaCode)(body));
+
+	file = jcoNew(jc0ClassObj(JCO_CLSS_File),
+		      3, name, jcoCopy(pkg), jcNLSeq(whole));
+
+	jcoFree(pkg);
+
+	return file;
 }
 
+void
+jcFilePrint(JavaCodePContext ctxt, JavaCode code)
+{
+	jcoWrite(ctxt, jcoArgv(code)[2]);
+}
+
+String
+jcFileClassName(JavaCode file)
+{
+	return jcIdName(jcoArgv(file)[0]);
+}
+
+String
+jcFilePackageName(JavaCode file)
+{
+	if (jcoArgv(file)[1] == NULL) {
+		return "";
+	}
+	else {
+		return jcIdName(jcoArgv(file)[1]);
+	}
+}
 
 /*
  * :: Generic operations

@@ -793,14 +793,15 @@ symeIsJavaExport(Syme syme)
 		tfFollow(inner);
 		if (errorSetCheck(errors,
 				  tfIsMap(inner), "apply must return a map")) {
-			tfJavaCheckArgs(errors, 0, tfMapArg(inner));
-			tfJavaCheckArgs(errors, 0, tfMapRet(inner));
+			tfJavaCheckArgs(errors, listNil(StabLevel), 0, tfMapArg(inner));
+			tfJavaCheckArgs(errors, listNil(StabLevel), 0, tfMapRet(inner));
 		}
 	}
 	if (symeId(syme) ==  ssymTheNew) {
-		errorSetCheck(errors, tfMapRetc(tf) == 1 && tfIsSelf(tfMapRetN(tf, 0)),
+		TForm retTf = tfIgnoreExceptions(tfMapRetN(tf, 0));
+		errorSetCheck(errors, tfMapRetc(tf) == 1 && tfIsSelf(retTf),
 			      "new must return %");
-		tfJavaCheckArgs(errors, 0, tfMapArg(tf));
+		tfJavaCheckArgs(errors, listNil(StabLevel), 0, tfMapArg(tf));
 	}
 	return errors;
 }

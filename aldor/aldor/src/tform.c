@@ -1440,7 +1440,6 @@ tfmExcept(Stab stab, AbSyn ab, TForm tf)
 
 	tfMeaning(stab, ab->abExcept.type,   tfExceptType(tf));
 	tfMeaning(stab, ab->abExcept.except, tfExceptExcept(tf));
-	tfGetSelf(stab, tf);
 
 	return tf;
 }
@@ -2652,6 +2651,10 @@ tfGetDomSelf(TForm tf)
 	TFormList	hl;
 
 	tf = tfDefineeType(tf);
+
+	if (tfHasSelf(tf) && tfIsId(tf) && symeExtension(tfIdSyme(tf))) {
+		return tfGetDomSelf(tfFrSyme(stabFile(), symeExtensionFull(tfIdSyme(tf))));
+	}
 
 	if (tfHasSelf(tf))
 		return tfSelf(tf);
@@ -8087,32 +8090,85 @@ tfConditionalStab(TForm tf)
  * :: Java
  *
  *****************************************************************************/
-local void tfJavaCheckArg(ErrorSet errors, TForm self, TForm arg);
+local Bool tfCheckJavaImport(ErrorSet errors, TForm tf);
+local Bool tfJavaCheckArg(ErrorSet errors, Stab stab, TForm self, TForm arg);
+local Bool abCheckJavaImport(ErrorSet errors, AbSyn ab);
+local Bool abCheckJavaImportId(ErrorSet errors, AbSyn id);
+local Bool abIsJavaImportId(AbSyn id);
+local Bool abIsJavaImportId(AbSyn id);
 
 Bool
 tfIsJavaImport(TForm tf)
+{
+	tfFollow(tf);
+
+	if (tfIsId(tf))
+		return abIsJavaImportId(tfExpr(tf));
+	else if (tfIsApply(tf) && abIsId(tfExpr(tf)->abApply.op)) {
+		return abIsJavaImportId(tfExpr(tf)->abApply.op);
+	}
+	return false;
+}
+
+local Bool
+abIsJavaImportId(AbSyn id)
+{
+	Syme syme = abSyme(id);
+	if (syme == NULL)
+		return false;
+	return symeIsForeign(syme) && symeForeign(syme)->protocol == FOAM_Proto_Java;
+}
+
+local Bool
+tfCheckJavaImport(ErrorSet errors, TForm tf)
 {
 	Syme syme;
 	tfFollow(tf);
 
 	if (!tfIsGeneral(tf))
 		return false;
-	if (!tfIsId(tf))
-		return false;
 
-	syme = tfIdSyme(tf);
+	return abCheckJavaImport(errors, tfExpr(tf));
+}
 
-	if (!symeIsForeign(syme))
-		return false;
+local Bool
+abCheckJavaImport(ErrorSet errors, AbSyn ab)
+{
+	Bool ret = false;
 
-	if (symeForeign(syme)->protocol != FOAM_Proto_Java)
-		return false;
+	if (abIsId(ab)) {
+		ret = abCheckJavaImportId(errors, ab);
+	}
+	else if (abHasTag(ab, AB_Apply)) {
+		AbSyn op = ab->abApply.op;
+		if (abCheckJavaImportId(errors, op)) {
+			int i;
+			ret = true;
+			for (i=0; ret && i<abApplyArgc(ab); i++) {
+				ret = abCheckJavaImport(errors, abApplyArg(ab, i));
+			}
+		}
+	}
 
-	return true;
+	return ret;
+}
+
+local Bool
+abCheckJavaImportId(ErrorSet errors, AbSyn id)
+{
+	Syme syme = abSyme(id);
+	Bool ret = true;;
+	if (!errorSetPrintf(errors, abIsJavaImportId(id),
+			    "%pAbSyn is not a valid java type\n", id)) {
+		ret = false;
+	}
+	afprintf(dbOut, "CheckJavaImportId: %pAbSyn %d\n", id, ret);
+
+	return ret;
 }
 
 Bool
-tfJavaCanExport(TForm self, TForm tf)
+tfJavaCanExport(Stab stab, TForm self, TForm tf)
 {
 	Bool result = true;
 
@@ -8122,8 +8178,8 @@ tfJavaCanExport(TForm self, TForm tf)
 		return false;
 	}
 	ErrorSet errorSink = errorSetNew();
-	tfJavaCheckArgs(errorSink, self, tfMapArg(tf));
-	tfJavaCheckArgs(errorSink, self, tfMapRet(tf));
+	tfJavaCheckArgs(errorSink, stab, self, tfMapArg(tf));
+	tfJavaCheckArgs(errorSink, stab, self, tfMapRet(tf));
 
 	if (errorSetHasErrors(errorSink)) {
 		result = false;
@@ -8134,43 +8190,61 @@ tfJavaCanExport(TForm self, TForm tf)
 }
 
 
-void
-tfJavaCheckArgs(ErrorSet errors, TForm self, TForm tf)
+Bool
+tfJavaCheckArgs(ErrorSet errors, Stab stab, TForm self, TForm tf)
 {
-	Length argc = tfAsMultiArgc(tf);
+	Length argc;
+	Bool flg = true;
 	int i;
 
+	tfFollow(tf);
+
+	tf = tfIgnoreExceptions(tf);
+	argc = tfAsMultiArgc(tf);
 	for (i=0; i<argc; i++) {
 		TForm arg = tfAsMultiArgN(tf, argc, i);
 		SymeList sl;
 
 		if (!errorSetPrintf(errors, !tfIsNotDomain(arg), "Position %d must be a domain", i)) {
+			flg = false;
 			continue;
 		}
-		tfJavaCheckArg(errors, self, arg);
+		flg = flg && tfJavaCheckArg(errors, stab, self, arg);
 	}
 
-	return;
+	return flg;
 }
 
-local void
-tfJavaCheckArg(ErrorSet errors, TForm self, TForm arg)
+local Bool
+tfJavaCheckArg(ErrorSet errors, Stab stab, TForm self, TForm arg)
 {
-		Syme enc, dec;
+	Syme enc, dec;
+	Bool flg = true;
 
-		if (tfIsSelf(arg))
-			return;
-		if (tfIsJavaImport(arg))
-			return;
-		if (self && tfEqual(self, arg))
-			return;
+	arg = tfIgnoreExceptions(arg);
 
-		enc = tfGetDomExport(arg, symString(ssymTheToJava), tfIsJavaEncoder);
-		dec = tfGetDomExport(arg, symString(ssymTheFromJava), tfIsJavaDecoder);
-		errorSetPrintf(errors, dec != NULL, "The domain %s must export toJava: %% -> ?",
-			       abPretty(tfExpr(arg)));
-		errorSetPrintf(errors, enc != NULL, "The domain %s must export fromJava: ? -> %%",
-			       abPretty(tfExpr(arg)));
+	if (tfIsSelf(arg))
+		return true;
+	if (tfIsJavaImport(arg))
+		return true;
+	if (self && tfEqual(self, arg))
+		return true;
+	if (stabIsForeignExport(stab, arg))
+		return true;
+
+	if (tfHasSelf(arg) && tfIsId(arg) && symeExtension(tfIdSyme(arg))) {
+		arg = tfFrSyme(stabFile(), symeExtensionFull(tfIdSyme(arg)));
+	}
+
+	enc = tfGetDomExport(arg, symString(ssymTheToJava), tfIsJavaEncoder);
+	dec = tfGetDomExport(arg, symString(ssymTheFromJava), tfIsJavaDecoder);
+	if (!errorSetPrintf(errors, dec != NULL, "The domain %s must export toJava: %% -> ?",
+			    abPretty(tfExpr(arg))))
+		flg = false;
+	if (!errorSetPrintf(errors, enc != NULL, "The domain %s must export fromJava: ? -> %%",
+			    abPretty(tfExpr(arg))))
+		flg = false;
+	return true;
 }
 
 

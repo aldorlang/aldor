@@ -14,13 +14,13 @@ extend String: with {
 	fromJava: JString -> %;
 }
 == add {
-        import {
-            javaStringToString: JString -> %;
-            stringToJavaString: % -> JString;
-	} from Foreign;
-
-	toJava(x: %): JString == stringToJavaString x;
-	fromJava(x: JString): % == javaStringToString x;
+        import Foam: with {
+            javaStringToString: JString -> Pointer;
+            stringToJavaString: Pointer -> JString;
+	} from Foreign Java "foamj";
+	import from Foam;
+	toJava(x: %): JString == stringToJavaString(x pretend Pointer);
+	fromJava(x: JString): % == javaStringToString(x) pretend %;
 }
 
 import BitSet: with {
@@ -56,9 +56,9 @@ import Month: with {
     _of: SingleInteger -> %;
 } from Foreign Java "java.time";
 
-check(f: Boolean): () == if not f then never;
+local check(f: Boolean): () == if not f then never;
 
-test1(): () == {
+local test1(): () == {
     import from SingleInteger, JMath;
     b: BitSet := new(5);
     print << "BitSet: " << b.get(0) << newline;
@@ -68,7 +68,7 @@ test1(): () == {
     check(b.get(0));
 }
 
-test2(): () == {
+local test2(): () == {
     import from SingleInteger;
 
 --    print << abs(1)$JMath << " " << abs(-1)$JMath << newline;
@@ -76,7 +76,7 @@ test2(): () == {
 --    check(1 = abs(-1)$JMath);
 }
 
-test3(): () == {
+local test3(): () == {
     import from SingleInteger;
 
     b1: BitSet := new(5);
@@ -89,7 +89,7 @@ test3(): () == {
     check(not b1.equals(b2));
 }
 
-test4(): () == {
+local test4(): () == {
     import from String;
     dd: LocalDate := now();
     stdout << fromJava(dd.toString()) << newline

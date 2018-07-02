@@ -2396,11 +2396,18 @@ scobindForeignExport(AbSyn ab)
 {
 	AbSyn	dest	= ab->abForeignExport.dest;
 	AbSyn	what	= ab->abForeignExport.what;
+	ForeignOrigin forg = forgFrAbSyn(dest->abApply.argv[0]);
 
 	scoIsInExport = true;
 
-	scobindLOF(what, SCO_Sig_Local);
+	if (forg->protocol == FOAM_Proto_Java) {
+		scobindValue(what);
+	}
+	else {
+		scobindLOF(what, SCO_Sig_Local);
+	}
 	
+
 	scoIsInExport = false;
 }
 

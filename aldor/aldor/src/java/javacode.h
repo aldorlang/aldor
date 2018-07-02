@@ -165,6 +165,8 @@ extern JavaCode jcConditional(JavaCode test, JavaCode c1, JavaCode c2);
  * :: Utility methods
  */
 extern JavaCodeList jcCollectImports(JavaCode clss);
+extern String       jcFileClassName(JavaCode file);
+extern String       jcFilePackageName(JavaCode file);
 extern SExpr        jcNodeSExpr(JavaCode code);
 extern void         jcNodePrint(JavaCodePContext ctxt, JavaCode code);
 

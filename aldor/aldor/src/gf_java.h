@@ -8,5 +8,9 @@ extern void gfjInit		(void);
 extern void gfjFini		(void);
 extern void gfjVarImport	(Syme syme, Stab stab);
 
+extern void gfjExportToJava     (AbSyn what, AbSyn dest);
+
+extern void gfjClassFormatNumber(AbSyn);
+
 #endif
 
