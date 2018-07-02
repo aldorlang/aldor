@@ -362,25 +362,24 @@ public class Foam {
 
     public static float arrToSFlo(Object o) {
         char[] arr = (char[]) o;
-        return new Float(new String(arr, 0, arr.length - 1));
+        return new Float(arrToString(arr));
 
     }
 
     public static double arrToDFlo(Object o) {
         char[] arr = (char[]) o;
-        return new Double(new String(arr, 0, arr.length - 1));
+        return new Double(arrToString(arr));
     }
 
     public static int arrToSInt(Object o) {
         char[] arr = (char[]) o;
-        return Integer.parseInt(new String(arr, 0, arr.length - 1));
+        return Integer.parseInt(arrToString(arr));
     }
 
     public static BigInteger arrToBInt(Object o) {
         char[] arr = (char[]) o;
-        return new BigInteger(new String(arr, 0, arr.length - 1));
+        return new BigInteger(arrToString(arr));
     }
-
 
     public static Word powf(Word w1, Word w2) {
         throw new RuntimeException();
@@ -532,13 +531,21 @@ public class Foam {
 
     public static Word stringToJavaString(Word w) {
         char[] arr = (char[]) w.toArray();
-        return new FoamJ.JavaObj<String>(new String(arr, 0, arr.length-1));
+        return new FoamJ.JavaObj<String>(arrToString(arr));
     }
 
     public static Word javaStringToString(Word w) {
-        String s = (String) w.toJavaObj();
+        String s = (String) ((Word) w).toJavaObj();
         Word arr = Word.U.fromArray(("" + s + "\0").toCharArray());
         return  arr;
     }
 
+    public static String arrToString(char[] arr) {
+        String s = new String(arr);
+        int idx = s.indexOf("\0");
+        if (idx == -1) {
+            return s;
+        }
+        return s.substring(0, idx);
+    }
 }
