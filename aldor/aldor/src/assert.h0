@@ -18,7 +18,6 @@
 
 #ifndef DO_ASSERT_IS_DECLARED
 #define DO_ASSERT_IS_DECLARED
-void _abort_if_fatal_assert(void);
 void _do_assert(char *str, char *file, int line);
 #endif
 
@@ -29,7 +28,6 @@ void _do_assert(char *str, char *file, int line);
 #endif
 
 extern int	_dont_assert;
-extern int	_fatal_assert;
 
 #if defined(NDEBUG)
 #  define assert(c)

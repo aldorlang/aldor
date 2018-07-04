@@ -9,14 +9,6 @@
 #include "stdc.h"
 
 int _dont_assert = 0;
-int _fatal_assert = 1;
-
-void
-_abort_if_fatal_assert(void)
-{
-	if (_fatal_assert)
-		abort();
-}
 
 void
 _do_assert(char *str, char *file, int line)
@@ -29,7 +21,7 @@ _do_assert(char *str, char *file, int line)
 	fprintf(stderr,
 		"Assertion failed, file \"%s\" line %d: %s\n",
 		file, line, str);
-	_abort_if_fatal_assert();
+	abort();
 }
 
 
