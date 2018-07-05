@@ -12,6 +12,7 @@ srcdir		:= @srcdir@
 abs_srcdir	:= @abs_srcdir@
 top_srcdir	:= @top_srcdir@
 abs_top_srcdir	:= @abs_top_srcdir@
+abs_libdir	:= $(abs_top_builddir)/lib/axllib/src/al
 subdir		:= $(subst $(abs_top_builddir)/,,$(abs_builddir))
 
 # Build starts here

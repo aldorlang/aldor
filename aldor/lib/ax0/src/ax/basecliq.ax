@@ -2,7 +2,7 @@
 (|Sequence|
    (|Import| NIL |AxiomLib|)
    (|Import| NIL |Boolean|)
-   (|Foreign| (|Declare| |dummyDefault| |Exit|) |Lisp|)
+   (|ForeignImport| (|Declare| |dummyDefault| |Exit|) |Lisp|)
    (|Export| (|Declare| |DoubleFloat| |SetCategory|) NIL NIL)
    (|Export| (|Declare| |Float| |SetCategory|) NIL NIL)
    (|Export| (|Declare| |Integer| |IntegralDomain|) NIL NIL)

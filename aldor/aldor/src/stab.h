@@ -78,9 +78,10 @@ struct stabLevel {
 		Table		table;		/* used for large lvls	*/
 	}		tformsUsed;
 
-	TFormList	tformsUnused;		/* registered but unused */
-	SymeList	boundSymes;		/* List of bound symes */
-	SymeList	extendSymes;		/* List of extend symes */
+	TFormList	tformsUnused;		/* registered but unused     */
+	SymeList	boundSymes;		/* List of bound symes       */
+	SymeList	extendSymes;		/* List of extend symes      */
+	Table           exportedTypes;          /* types exported to foreign */
 };
 
 /******************************************************************************
@@ -225,6 +226,10 @@ extern TForm	 	stabAddTFormDeclaree	(Stab, TForm, AbSyn);
 extern TForm	 	stabAddTFormQuery	(Stab, TForm, TForm);
 extern TForm	 	stabFindOuterTForm	(Stab, AbSyn);
 extern TFormUses 	stabFindTFormUses	(Stab, AbSyn);
+
+extern void             stabAddForeignExport    (Stab, TForm, ForeignOrigin);
+extern Bool             stabIsForeignExport     (Stab, TForm);
+extern ForeignOrigin    stabForeignExportLocation(Stab, TForm);
 
 /*
  * Labels

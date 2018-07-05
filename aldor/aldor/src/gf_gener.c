@@ -16,6 +16,7 @@
 #include "store.h"
 #include "tform.h"
 #include "comsg.h"
+#include "util.h"
 
 #define GenerBetterGuesses
 

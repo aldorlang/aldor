@@ -7,19 +7,28 @@ CREATE_LIST(JavaCode);
 
 local void jco0Indent(JavaCodePContext ctxt);
 
+local JavaCode jcoAlloc(int sz);
+
+local JavaCode jcoAlloc(int sz)
+{
+	JavaCode jco = (JavaCode) (stoAlloc(OB_JCode, sz));
+
+	return jco;
+}
+
+
 JavaCode 
 jcoNewNode(JavaCodeClass clss, int argc) 
 {
-	JavaCode jc = (JavaCode) (stoAlloc( (int) OB_JCode, 
-					    fullsizeof(struct jcoNode, argc, JavaCode)));
+	JavaCode jco = jcoAlloc(fullsizeof(struct jcoNode, argc, JavaCode));
 	assert(clss);
 
-	jcoTag(jc) = JCO_JAVA;
-	jcoClass(jc) = clss;
-	jcoPos(jc) = sposNone;
-	jc->node.argc = argc;
+	jcoTag(jco) = JCO_JAVA;
+	jcoClass(jco) = clss;
+	jcoPos(jco) = sposNone;
+	jco->node.argc = argc;
 
-	return jc;
+	return jco;
 }
 
 JavaCode 
@@ -29,7 +38,7 @@ jcoNewToken(JavaCodeClass clss, Symbol sym)
 
 	assert(clss && sym);
 
-	jco = (JavaCode) stoAlloc((int) OB_JCode, sizeof(struct jcoToken));
+	jco = jcoAlloc(sizeof(struct jcoToken));
 	jcoTag(jco) = JCO_TOKEN;
 	jcoClass(jco) = clss;
 	jcoPos(jco) = sposNone;
@@ -43,7 +52,8 @@ jcoNewLiteral(JavaCodeClass clss, String txt)
 {
 	JavaCode	jco;
 	assert(clss && txt);
-	jco = (JavaCode) stoAlloc((int) OB_JCode, sizeof(struct jcoLiteral));
+	jco = jcoAlloc(sizeof(struct jcoLiteral));
+
 	jcoTag(jco) = JCO_LIT;
 	jcoClass(jco) = clss;
 	jcoPos(jco) = sposNone;
@@ -54,18 +64,22 @@ jcoNewLiteral(JavaCodeClass clss, String txt)
 }
 
 
-JavaCode 
-jcoNewImport(JavaCodeClass clss, String pkg, String name, Bool isImported) 
+JavaCode
+jcoNewImport(JavaCodeClass clss, String pkg, StringList path, String name, Bool isImported)
 {
 	JavaCode	jco;
-	jco = (JavaCode) stoAlloc((int) OB_JCode, sizeof(struct jcoImport));
+	assert(pkg != NULL);
+	assert(name != NULL);
+
+	jco = jcoAlloc(sizeof(struct jcoImport));
 	assert(clss && pkg && name);
 
 	jcoTag(jco) = JCO_IMPORT;
 	jcoClass(jco)     = clss;
 	jcoPos(jco)       = sposNone;
-	jco->import.pkg = pkg;
-	jco->import.id = name;
+	jco->import.pkg   = pkg;
+	jco->import.path  = path;
+	jco->import.id    = name;
 	jcoImportSetImported(jco, isImported);
 
 	return jco;
@@ -142,7 +156,10 @@ jcoCopy(JavaCode code)
 		return jcoNewToken(jcoClass(code), jcoToken(code));
 	if (jcoIsImport(code))
 		return jcoNewImport(jcoClass(code), 
-				    jcoImportPkg(code), jcoImportId(code),
+				    jcoImportPkg(code),
+				    listCopyDeeply(String)(jcoImportPath(code),
+							   (ListCopier(String)) strCopy),
+				    jcoImportId(code),
 				    jcoImportIsImported(code));
 	if (jcoIsNode(code)) {
 		JavaCodeList l = listNil(JavaCode);
@@ -194,6 +211,13 @@ jcoImportPkg(JavaCode jco)
 {
 	assert(jcoIsImport(jco));
 	return jco->import.pkg;
+}
+
+extern StringList
+jcoImportPath(JavaCode jco)
+{
+	assert(jcoIsImport(jco));
+	return jco->import.path;
 }
 
 extern String

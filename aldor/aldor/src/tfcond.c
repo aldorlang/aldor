@@ -10,13 +10,16 @@ CREATE_LIST(TfCondElt);
 extern	Bool		tfDebug;
 #define tfCondDEBUG	DEBUG_IF(tf)	afprintf
 
+local TfCondElt tfCondEltNewFull(Stab stab, AbSynList absynList, AbLogic known);
+
 TfCond
 tfCondNew()
 {
 	TfCond tfcond = (TfCond) stoAlloc(OB_Other, sizeof(*tfcond));
 
-	tfcond->conditions = NULL;
+	tfcond->conditions = listNil(TfCondElt);
 	tfcond->containsEmpty = false;
+	tfcond->known = ablogFalse();
 
 	return tfcond;
 }
@@ -28,15 +31,28 @@ tfCondFree(TfCond cond)
 }
 
 
-TfCondElt
-tfCondEltNew(Stab stab, AbSynList absynList)
+local TfCondElt
+tfCondEltNewFull(Stab stab, AbSynList absynList, AbLogic known)
 {
 	TfCondElt tfcondElt = (TfCondElt) stoAlloc(OB_Other, sizeof(*tfcondElt));
 
 	tfcondElt->stab = stab;
 	tfcondElt->list = absynList;
+	tfcondElt->known = ablogCopy(known);
 
 	return tfcondElt;
+}
+
+TfCondElt
+tfCondEltNew(Stab stab, AbSynList absynList)
+{
+	return tfCondEltNewFull(stab, absynList, ablogFalse());
+}
+
+TfCondElt
+tfCondEltNewKnown(Stab stab, AbLogic known)
+{
+	return tfCondEltNewFull(stab, listNil(AbSyn), known);
 }
 
 void
@@ -115,12 +131,15 @@ tfCondMerge(TfCond c1, Stab stab, TfCondElt condition)
 	if (c1->containsEmpty) {
 		return c1;
 	}
-	if (condition == NULL) {
+	if (condition == NULL || ablogIsTrue(condition->known)) {
 		c1->containsEmpty = true;
 	}
-	else {
+	else if (condition->list != listNil(AbSyn)) {
 		TfCondElt conditionElt = tfCondEltNew(stab, condition->list);
 		c1->conditions = listCons(TfCondElt)(conditionElt, c1->conditions);
 	}
+
+	c1->known = ablogOr(c1->known, condition->known);
+
 	return c1;
 }

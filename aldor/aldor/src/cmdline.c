@@ -57,7 +57,7 @@ int		cmdFileCount	    = 0;
  *
  * These are still available:
  *
- *                    J                   T              
+ *                                        T              
  */
 
 local void	cmdUseError	  (Msg fmt, String opt);
@@ -877,8 +877,6 @@ cmdDoOptDeveloper(String arg)
 		_dont_assert = false;	   /* Test assertions. */
 		stoCtl(StoCtl_Wash, true); /* Initialize of store. */
 	}
-	else if (strAEqual("no-fatal", arg))
-		_fatal_assert = false;	   /* Make assertions non-fatal. */
 	else if (strAEqual("runtime", arg))
 		genSetRuntime();
 	else if (strEqual("debug", arg))

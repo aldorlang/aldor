@@ -11,6 +11,7 @@
 #include "phase.h"
 #include "spesym.h"
 #include "util.h"
+#include "forg.h"
 #include "comsg.h"
 #include "comsgdb.h"
 
@@ -31,7 +32,8 @@ local void	abCheckExport		(AbSyn);
 local void	abCheckExtend		(AbSyn);
 local void	abCheckFluid		(AbSyn);
 local void	abCheckFor		(AbSyn);
-local void	abCheckForeign		(AbSyn);
+local void	abCheckForeignImport	(AbSyn);
+local void	abCheckForeignExport	(AbSyn);
 local void	abCheckFree		(AbSyn);
 local void	abCheckImport		(AbSyn);
 local void	abCheckLambda		(AbSyn);
@@ -142,8 +144,12 @@ abCheck(AbSyn absyn)
 		abCheckFor(absyn);
 		break;
 
-	case AB_Foreign:
-		abCheckForeign(absyn);
+	case AB_ForeignImport:
+		abCheckForeignImport(absyn);
+		break;
+
+	case AB_ForeignExport:
+		abCheckForeignExport(absyn);
 		break;
 
 	case AB_Free:
@@ -650,14 +656,14 @@ abCheckFor0_old(AbSyn var)
 
 /*****************************************************************************
  *
- * :: abCheckForeign
+ * :: abCheckForeignImport
  *
  ****************************************************************************/
 
 local void
-abCheckForeign(AbSyn absyn)
+abCheckForeignImport(AbSyn absyn)
 {
-	AbSyn	what	= absyn->abForeign.what;
+	AbSyn	what	= absyn->abForeignImport.what;
 	AbSyn	*argv	= abArgvAs(AB_Sequence, what);
 	Length	i, argc = abArgcAs(AB_Sequence, what);
 
@@ -679,6 +685,27 @@ abCheckForeign(AbSyn absyn)
 			comsgError(argv[i], ALDOR_E_ChkBadForm, "import");
 		}
 	}
+}
+
+/*****************************************************************************
+ *
+ * :: abCheckForeignExport
+ *
+ ****************************************************************************/
+
+local void
+abCheckForeignExport(AbSyn absyn)
+{
+	AbSyn	what	= absyn->abForeignExport.what;
+	AbSyn	dest	= absyn->abForeignExport.dest;
+	ForeignOrigin forg = forgFrAbSyn(dest->abApply.argv[0]);
+
+	if (forg->protocol == FOAM_Proto_Java
+	    && forg->file == NULL) {
+		comsgError(dest, ALDOR_E_ChkMustExportJavaToPackage, dest);
+	}
+
+	forgFree(forg);
 }
 
 /*****************************************************************************

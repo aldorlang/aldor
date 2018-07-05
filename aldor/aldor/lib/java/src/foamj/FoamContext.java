@@ -6,6 +6,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class FoamContext {
     ConcurrentHashMap<String, Clos> loadFns = new ConcurrentHashMap<>();
+    ConcurrentHashMap<Class<? extends FoamClass>, FoamClass> classInstances = new ConcurrentHashMap<>();
 
     public void startFoam(FoamClass c, String[] args) {
         Word[] mainArgv = new Word[1];
@@ -24,6 +25,9 @@ public class FoamContext {
         return arr;
     }
 
+    public <T extends FoamClass> T instanceForClass(Class<T> clss) {
+	return (T) classInstances.get(clss);
+    }
 
     @SuppressWarnings("unchecked")
     public Clos createLoadFn(final String name) {
@@ -38,9 +42,10 @@ public class FoamContext {
                 called = true;
                 Class<FoamClass> c;
                 try {
-                    c = (Class<FoamClass>) ClassLoader.getSystemClassLoader().loadClass(name);
+		    c = (Class<FoamClass>) getClass().getClassLoader().loadClass("aldorcode." + name);
                     Constructor<FoamClass> cons = c.getConstructor(FoamContext.class);
                     FoamClass fc = cons.newInstance(FoamContext.this);
+		    classInstances.put(c, fc);
                     fc.run();
                 } catch (ClassNotFoundException e) {
                     throw new RuntimeException(e);

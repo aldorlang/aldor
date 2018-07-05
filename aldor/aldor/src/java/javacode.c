@@ -28,12 +28,16 @@ enum jc_clss_enum {
 	JCO_CLSS_Method,    
 	JCO_CLSS_Declaration,    
 	JCO_CLSS_Statement,    
+	JCO_CLSS_File,
 	
 	JCO_CLSS_If,    
 	JCO_CLSS_While,    
 	JCO_CLSS_Switch,    
 	JCO_CLSS_Case,    
 	JCO_CLSS_Block,
+	JCO_CLSS_Try,
+	JCO_CLSS_Catch,
+	JCO_CLSS_Finally,
 
 	JCO_CLSS_ArrRef,
 	JCO_CLSS_MemRef,
@@ -193,6 +197,7 @@ local JWriteFn jcApplyPrint;
 local JWriteFn jcARefPrint;
 local JWriteFn jcBinOpPrint; 
 local JWriteFn jcBlockHdrPrint; 
+local JWriteFn jcBlockKeywordPrint;
 local JWriteFn jcBlockPrint;
 local JWriteFn jcCasePrint; 
 local JWriteFn jcCastPrint; 
@@ -210,6 +215,7 @@ local JWriteFn jcMethodPrint;
 local JWriteFn jcParenPrint;
 local JWriteFn jcSequencePrint;
 local JWriteFn jcStatementPrint;
+local JWriteFn jcFilePrint;
 local JWriteFn jcStringPrint;
 local JWriteFn jcUnaryOpPrint; 
 
@@ -268,7 +274,7 @@ static struct jclss jcClss[] = {
 	{ JCO_CLSS_CommaSeq,   jcSequencePrint,jcNodeSExpr, "commaseq", ", "},
 	{ JCO_CLSS_SpaceSeq,   jcSequencePrint,jcNodeSExpr, "spaceseq", " "},
 	{ JCO_CLSS_NLSeq,      jcSequencePrint,jcNodeSExpr, "nlseq", "\n"},
-	{ JCO_CLSS_Seq,        jcSequencePrint,jcNodeSExpr, "seq"},
+	{ JCO_CLSS_Seq,        jcSequencePrint,jcNodeSExpr, "seq", ""},
 	{ JCO_CLSS_Parens,     jcParenPrint,   jcNodeSExpr, "paren", "()", 15, JCO_NONE },
 	{ JCO_CLSS_Braces,     jcParenPrint,   jcNodeSExpr, "braces", "{}", 15, JCO_NONE },
 	{ JCO_CLSS_SqBrackets, jcParenPrint,   jcNodeSExpr, "sqbracket", "[]", 15, JCO_NONE },
@@ -282,12 +288,16 @@ static struct jclss jcClss[] = {
 	{ JCO_CLSS_Method,     jcMethodPrint,  jcNodeSExpr,    "method", 0},
 	{ JCO_CLSS_Declaration,jcDeclarationPrint, jcNodeSExpr,"declaration", 0},
 	{ JCO_CLSS_Statement,  jcStatementPrint, jcNodeSExpr,  "statement", 0},
+	{ JCO_CLSS_File,       jcFilePrint,      jcNodeSExpr,  "file", 0},
 
 	{ JCO_CLSS_If,         jcBlockHdrPrint, jcNodeSExpr,  "if", "if"},
 	{ JCO_CLSS_While,      jcBlockHdrPrint, jcNodeSExpr,  "while", "while"},
 	{ JCO_CLSS_Switch,     jcBlockHdrPrint, jcNodeSExpr,  "switch", "switch"},
 	{ JCO_CLSS_Case,       jcCasePrint,     jcNodeSExpr,  "case", "case"},
 	{ JCO_CLSS_Block,      jcBlockPrint,    jcNodeSExpr,  "block"},
+	{ JCO_CLSS_Try,        jcBlockKeywordPrint, jcNodeSExpr,  "try", "try"},
+	{ JCO_CLSS_Catch,      jcBlockHdrPrint, jcNodeSExpr,  "catch", "catch"},
+	{ JCO_CLSS_Finally,    jcBlockKeywordPrint, jcNodeSExpr,  "finally", "finally"},
 
 	{ JCO_CLSS_ArrRef,     jcARefPrint,  jcNodeSExpr, "arrayref", 0, 20, JCO_NONE},
 	{ JCO_CLSS_MemRef,     jcBinOpPrint, jcNodeSExpr, "memref", ".", 20, JCO_NONE},
@@ -346,7 +356,7 @@ jcClass(int modifiers, String comment,
 			       5,
 			       jcSpaceSeq(jcmods),
 			       id, superclass, 
-			       jcCommaSeq(extendList),
+			       extendList == listNil(JavaCode) ? NULL : jcCommaSeq(extendList),
 			       jcNLSeq(body));
 	if (comment == NULL) 
 		return clss;
@@ -459,10 +469,20 @@ jcDeclaration(int modifiers,
 	return jcoNewFrList(jc0ClassObj(JCO_CLSS_Declaration), l);
 }
 
-JavaCode 
-jcParamDecl(int modifiers, 
-	    JavaCode type,
-	      JavaCode id)
+JavaCode
+jcMemberDecl(int modifiers, JavaCode type, JavaCode id)
+{
+	return jcDeclaration(modifiers, type, id, 0, 0, 0);
+}
+
+JavaCode
+jcParamDecl(int modifiers, JavaCode type, JavaCode id)
+{
+	return jcDeclaration(modifiers, type, id, 0, 0, 0);
+}
+
+JavaCode
+jcLocalDecl(int modifiers, JavaCode type, JavaCode id)
 {
 	return jcDeclaration(modifiers, type, id, 0, 0, 0);
 }
@@ -557,6 +577,23 @@ jcApplyPrint(JavaCodePContext ctxt, JavaCode code)
 	jcoWrite(ctxt, jcoArgv(code)[1]);
 }
 
+JavaCode
+jcGenericMethodName(JavaCode methodName, JavaCodeList genArgs)
+{
+	return jcSeqV(2, jcABrackets(jcCommaSeq(genArgs)));
+}
+
+JavaCode
+jcGenericMethodNameV(JavaCode methodName, int n, ...)
+{
+	JavaCode jc;
+	va_list argp;
+	va_start(argp, n);
+	jc = jcSeqV(2, jcABrackets(jcCommaSeqP(n, argp)), methodName);
+	va_end(argp);
+	return jc;
+}
+
 
 /*
  * :: Parens
@@ -622,10 +659,10 @@ jcComment(String comment)
 local void
 jcJavaDocPrint(JavaCodePContext ctxt, JavaCode code)
 {
-	String s = strReplace(jcoLiteral(code), "\n", "\n *");
-	jcoPContextWrite(ctxt, "/** ");
+	String s = strReplace(jcoLiteral(code), "\n", "\n * ");
+	jcoPContextWrite(ctxt, "/**\n * ");
 	jcoPContextWrite(ctxt, s);
-	jcoPContextWrite(ctxt, "*/");
+	jcoPContextWrite(ctxt, "\n */");
 	strFree(s);
 }
 
@@ -655,15 +692,78 @@ jcCommentSExpr(JavaCode code)
  */
 
 JavaCode
-jcImportedId(String pkg, String name)
+jcImportedIdFrString(String str)
 {
-	return jcoNewImport(jc0ClassObj(JCO_CLSS_ImportedId), pkg, name, false);
+	String p = strLastIndexOf(str, '.');
+	if (p == NULL) {
+		return jcId(strCopy(str));
+	}
+	else {
+		String pkg = strnCopy(str, p - str);
+		String id = strCopy(p+1);
+		return jcImportedId(pkg, id);
+	}
 }
 
 JavaCode
-jcImportedStaticId(String pkg, String name)
+jcImportedId(String pkg, String name)
 {
-	return jcoNewImport(jc0ClassObj(JCO_CLSS_ImportedStatic), pkg, name, false);
+	return jcoNewImport(jc0ClassObj(JCO_CLSS_ImportedId), pkg, listNil(String), name, false);
+}
+
+
+String
+jcImportedIdName(JavaCode id)
+{
+	return jcoImportId(id);
+}
+
+String
+jcImportedIdPkg(JavaCode id)
+{
+	return jcoImportPkg(id);
+}
+
+
+JavaCode
+jcImportedStaticId(String pkg, String clss, String name)
+{
+	assert(strLastIndexOf(clss, '.') == NULL);
+	assert(strLastIndexOf(name, '.') == NULL);
+
+	return jcoNewImport(jc0ClassObj(JCO_CLSS_ImportedStatic), pkg,
+			    listSingleton(String)(clss), name, false);
+}
+
+JavaCode
+jcImportedStaticIdFrString(String str)
+{
+	String p = strLastIndexOf(str, '.');
+	String id = strCopy(p+1);
+	String pkgClss = strnCopy(str, p - str);
+	String dclss   = strLastIndexOf(pkgClss, '.');
+	String clss    = strCopy(dclss+1);
+	String pkg     = strnCopy(pkgClss, dclss - pkgClss);
+
+	return jcImportedStaticId(pkg, clss, id);
+}
+
+String
+jcImportedStaticIdClass(JavaCode importedId)
+{
+	return car(jcoImportPath(importedId));
+}
+
+String
+jcImportedStaticIdPkg(JavaCode importedId)
+{
+	return jcoImportPkg(importedId);
+}
+
+String
+jcImportedStaticIdName(JavaCode importedId)
+{
+	return jcImportedIdName(importedId);
 }
 
 local void 
@@ -672,8 +772,10 @@ jcImportPrint(JavaCodePContext ctxt, JavaCode code)
 	if (jcoImportIsImported(code))
 		jcoPContextWrite(ctxt, jcoImportId(code));
 	else {
-		jcoPContextWrite(ctxt, jcoImportPkg(code));
-		jcoPContextWrite(ctxt, ".");
+		if (strlen(jcoImportPkg(code)) != 0) {
+			jcoPContextWrite(ctxt, jcoImportPkg(code));
+			jcoPContextWrite(ctxt, ".");
+		}
 		jcoPContextWrite(ctxt, jcoImportId(code));
 	}
 }
@@ -682,10 +784,14 @@ local SExpr
 jcImportSExpr(JavaCode code)
 {
 	SExpr sym = sxiFrSymbol(symIntern(jcoClass(code)->name));
+	if (jcoImportPkg(code) == NULL) {
+		return sxiList(2, sym, sxiFrString(jcoImportId(code)));
+	}
 	return sxiList(3, sym, 
 		       sxiFrString(jcoImportPkg(code)),
 		       sxiFrString(jcoImportId(code)));
 }
+
 
 /*
  * :: String literals
@@ -853,6 +959,12 @@ jcId(String name)
 	return jcoNewLiteral(jc0ClassObj(JCO_CLSS_Id), name);
 }
 
+String
+jcIdName(JavaCode id)
+{
+	return jcoLiteral(id);
+}
+
 local SExpr 
 jcIdSExpr(JavaCode code)
 {
@@ -865,6 +977,17 @@ jcIdPrint(JavaCodePContext ctxt, JavaCode code)
 	String name = jcoLiteral(code);
 	jcoPContextWrite(ctxt, name);
 }
+
+
+/*
+ * :: Generic id
+ */
+JavaCode
+jcGenericId(JavaCode root, JavaCodeList genArgs)
+{
+	return jcSeqV(2, root, jcABrackets(jcCommaSeq(genArgs)));
+}
+
 
 /*
  * :: Constructor Call
@@ -1194,7 +1317,6 @@ jcCondPrint(JavaCodePContext ctxt, JavaCode code)
 	jc0PrintWithParens(ctxt, thisClss, arg3);
 }
 
-
 /*
  * :: Statements
  */
@@ -1225,6 +1347,23 @@ JavaCode
 jcCommaSeqP(int n, va_list argp) 
 {
 	return jcoNewP(jc0ClassObj(JCO_CLSS_CommaSeq), n, argp);
+}
+
+JavaCode
+jcSeq(JavaCodeList lst)
+{
+	return jcoNewFrList(jc0ClassObj(JCO_CLSS_Seq), lst);
+}
+
+JavaCode
+jcSeqV(int n, ...)
+{
+	va_list argp;
+	JavaCode jc;
+	va_start(argp, n);
+	jc = jcoNewP(jc0ClassObj(JCO_CLSS_Seq), n, argp);
+	va_end(argp);
+	return jc;
 }
 
 JavaCode
@@ -1330,6 +1469,48 @@ jcCasePrint(JavaCodePContext ctxt, JavaCode code)
 	jcoPContextWrite(ctxt, ": ");
 }
 
+JavaCode
+jcTryCatch(JavaCode body, JavaCode catch, JavaCode finally)
+{
+	return jcTry(body, listSingleton(JavaCode)(catch), finally);
+}
+
+JavaCode
+jcTry(JavaCode body, JavaCodeList catches, JavaCode finally)
+{
+	JavaCodeList lst = listNil(JavaCode);
+	lst = listCons(JavaCode)(jcoNew(jc0ClassObj(JCO_CLSS_Try), 1, body), lst);
+	lst = listNConcat(JavaCode)(lst, catches);
+	if (finally != NULL) {
+		lst = listNConcat(JavaCode)(lst,
+					    listSingleton(JavaCode)(jcoNew(jc0ClassObj(JCO_CLSS_Finally),
+									   1, finally)));
+	}
+	return jcNLSeq(lst);
+}
+
+JavaCode
+jcCatch(JavaCode decl, JavaCode body)
+{
+	return jcoNew(jc0ClassObj(JCO_CLSS_Catch), 2, decl, body);
+}
+
+/*
+ * :: Import, Package
+ */
+
+JavaCode
+jcImport(JavaCode arg)
+{
+	return jcSpaceSeqV(2, jcKeyword(symInternConst("import")), arg);
+}
+
+JavaCode
+jcPackage(JavaCode arg)
+{
+	return jcSpaceSeqV(2, jcKeyword(symInternConst("package")), arg);
+}
+
 /*
  * :: Throw, catch
  */
@@ -1382,6 +1563,23 @@ jcBlockHdrPrint(JavaCodePContext ctxt, JavaCode code)
 
 }
 
+local void
+jcBlockKeywordPrint(JavaCodePContext ctxt, JavaCode code)
+{
+	Bool needsIndent;
+	char *key = (char *) jcoClass(code)->txt;
+	jcoPContextWrite(ctxt, key);
+	jcoPContextWrite(ctxt, " ");
+
+	needsIndent = jcBlockHdrIndent(jcoArgv(code)[0]);
+	if (needsIndent)
+		jcoPContextNewlineIndent(ctxt);
+	jcoWrite(ctxt, jcoArgv(code)[0]);
+	if (needsIndent)
+		jcoPContextNewlineUnindent(ctxt);
+
+}
+
 local Bool
 jcBlockHdrIndent(JavaCode code)
 {
@@ -1396,11 +1594,46 @@ jcBlockHdrIndent(JavaCode code)
 JavaCode
 jcFile(JavaCode pkg, JavaCode name, JavaCodeList imports, JavaCode body)
 {
-	/* FIXME: Very temporary */
-	listNConcat(JavaCode)(imports, listSingleton(JavaCode)(body));
-	return jcNLSeq(imports);
+	JavaCodeList whole;
+	JavaCode file;
+
+	whole = listNil(JavaCode);
+	if (pkg != NULL) {
+		whole = listSingleton(JavaCode)(jcStatement(jcPackage(jcoCopy(pkg))));
+	}
+	whole = listNConcat(JavaCode)(whole, imports);
+	whole = listNConcat(JavaCode)(whole, listSingleton(JavaCode)(body));
+
+	file = jcoNew(jc0ClassObj(JCO_CLSS_File),
+		      3, name, jcoCopy(pkg), jcNLSeq(whole));
+
+	jcoFree(pkg);
+
+	return file;
 }
 
+void
+jcFilePrint(JavaCodePContext ctxt, JavaCode code)
+{
+	jcoWrite(ctxt, jcoArgv(code)[2]);
+}
+
+String
+jcFileClassName(JavaCode file)
+{
+	return jcIdName(jcoArgv(file)[0]);
+}
+
+String
+jcFilePackageName(JavaCode file)
+{
+	if (jcoArgv(file)[1] == NULL) {
+		return "";
+	}
+	else {
+		return jcIdName(jcoArgv(file)[1]);
+	}
+}
 
 /*
  * :: Generic operations
@@ -1496,30 +1729,37 @@ jc0ModifierSymbol(int idx)
 
 
 local Bool jc0ImportEq(JavaCode c1, JavaCode c2);
-local void jc0CollectImports(Table tbl, JavaCode code);
+local void jc0CollectImports(Table tbl, Table nameTbl, JavaCode code);
 
 JavaCodeList 
 jcCollectImports(JavaCode code)
 {
 	Table tbl = tblNew((TblHashFun) jcoHash, (TblEqFun) jc0ImportEq);
+	Table nameTbl = tblNew((TblHashFun) strHash, (TblEqFun) strEqual);
 	TableIterator it;
 	JavaCodeList resList = listNil(JavaCode);
 
-	jc0CollectImports(tbl, code);
+	jc0CollectImports(tbl, nameTbl, code);
 
 	for (tblITER(it, tbl); tblMORE(it); tblSTEP(it)) {
 		JavaCode id = (JavaCode) tblKEY(it);
 		JavaCodeList codes = (JavaCodeList) tblELT(it);
 		JavaCodeList tmp;
-		JavaCode cp = jcImportedId(jcoImportPkg(id), jcoImportId(id));
-		resList = listCons(JavaCode)(cp, resList);
-		tmp = codes;
-		while (tmp != 0) {
-			JavaCode imp = car(tmp);
-			jcoImportSetImported(imp, true);
-			tmp = cdr(tmp);
+		JavaCode copy = jcImportedId(jcoImportPkg(id), jcoImportId(id));
+		JavaCodeList usages = (JavaCodeList) tblElt(nameTbl, jcoImportId(id), listNil(JavaCode));
+		if (cdr(usages) != listNil(JavaCode)) {
+			continue;
 		}
-		listFree(JavaCode)(codes);
+		else {
+			resList = listCons(JavaCode)(copy, resList);
+			tmp = codes;
+			while (tmp != 0) {
+				JavaCode imp = car(tmp);
+				jcoImportSetImported(imp, true);
+				tmp = cdr(tmp);
+			}
+			listFree(JavaCode)(codes);
+		}
 	}
 	return resList;
 }
@@ -1539,7 +1779,7 @@ jc0ImportEq(JavaCode c1, JavaCode c2)
 
 
 local void 
-jc0CollectImports(Table tbl, JavaCode code) 
+jc0CollectImports(Table tbl, Table nameTbl, JavaCode code)
 {
 	if (code == 0)
 		return;
@@ -1548,11 +1788,17 @@ jc0CollectImports(Table tbl, JavaCode code)
 		JavaCode key = code;
 		l = listCons(JavaCode)(code, l);
 		tblSetElt(tbl, key, l);
+
+		String name = jcoImportId(code);
+		JavaCodeList ids = (JavaCodeList) tblElt(nameTbl, name, listNil(JavaCode));
+		if (!listMember(JavaCode)(ids, code, jc0ImportEq)) {
+			tblSetElt(nameTbl, name, (TblElt) listCons(JavaCode)(code, ids));
+		}
 	}
 	if (jcoIsNode(code)) {
 		int i=0;
 		for (i=0; i<jcoArgc(code); i++) {
-			jc0CollectImports(tbl, jcoArgv(code)[i]);
+			jc0CollectImports(tbl, nameTbl, jcoArgv(code)[i]);
 		}
 	}
 }
@@ -1568,9 +1814,6 @@ jc0EscapeString(String s, Bool addTerminalChar)
 	while (*s != 0) {
 		switch (*s) {
 		case '\\':
-			bufPuts(buf, "\\\\");
-			break;
-		case '\'':
 			bufPuts(buf, "\\\\");
 			break;
 		case '\n':

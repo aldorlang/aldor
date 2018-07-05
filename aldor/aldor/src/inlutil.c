@@ -14,6 +14,7 @@
 #include "loops.h"
 #include "optfoam.h"
 #include "strops.h"
+#include "int.h"
 
 Bool	inuProgDebug	= false;
 
@@ -30,6 +31,8 @@ Bool	inuProgDebug	= false;
 				 foamTag(foam) == FOAM_Glo)
 
 #define inuReachingDef(foam)	((Foam) udReachingDefs(foam))
+
+local Foam inuDereferencePeep(Foam orig);
 
 /* Make one step through the use/def chain. */
 local Foam
@@ -72,11 +75,34 @@ inuDereferenceSyme(Foam foam)
 local Foam
 inuDereferenceClos(Foam foam)
 {
-	while (foam && foamTag(foam) != FOAM_Clos && inuIsVar(foam))
+	while (foam && foamTag(foam) != FOAM_Clos && inuIsVar(foam)) {
 		foam = inuDereference(foam);
+		foam = inuDereferencePeep(foam);
+	}
 
 	return (foam && foamTag(foam) == FOAM_Clos) ? foam : NULL;
 }
+
+local Foam
+inuDereferencePeep(Foam orig)
+{
+	Foam foam = orig;
+	Foam ret = orig;
+
+	if (foam && foamTag(foam) == FOAM_Cast &&
+	    foam->foamCast.type == FOAM_Clos) {
+		foam = foam->foamCast.expr;
+		while (foamTag(foam) == FOAM_Cast) {
+			foam = foam->foamCast.expr;
+		}
+		if (foamTag(foam) == FOAM_Clos) {
+			ret = foam;
+		}
+	}
+
+	return ret;
+}
+
 
 /*****************************************************************************
  *
@@ -434,10 +460,11 @@ inuAnalyseProg(Foam foam, int constNum)
 			InlUnknownCallsMagicNumber;
 
 	flogIter(optInfo->flog, bb, {
-		timeCost += (1 << (bb->iextra * InlLoopMagicNumber));
+			int loops = bb->iextra > 5 ? 5 : bb->iextra;
+			timeCost = aintAbsorbingSum(TIME_MAX, timeCost, (1 << (loops * InlLoopMagicNumber)));
 	});
 
-	foam->foamProg.time = timeCost > TIME_MAX ? TIME_MAX : timeCost;
+	foam->foamProg.time = timeCost;
 
 	foamProgSetHasInlineInfo(foam);
 }

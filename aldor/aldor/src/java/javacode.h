@@ -56,6 +56,8 @@ extern JavaCode jcThis();
 extern JavaCode jcTrue();
 extern JavaCode jcFalse();
 
+extern JavaCode jcGenericId(JavaCode root, JavaCodeList genArgs);
+
 extern JavaCode jcClass(int modifiers, String comment, 
 		     JavaCode id, JavaCode superclass,
 		     JavaCodeList implList, JavaCodeList body);
@@ -76,7 +78,9 @@ extern JavaCode jcDeclaration(int modifiers,
 			      JavaCode id, JavaCodeList genArgs,
 			      JavaCode args,
 			      JavaCodeList exns);
+extern JavaCode jcMemberDecl(int modifiers, JavaCode type, JavaCode id);
 extern JavaCode jcParamDecl(int modifiers, JavaCode type, JavaCode id);
+extern JavaCode jcLocalDecl(int modifiers, JavaCode type, JavaCode id);
 extern JavaCode jcInitialisation(int modifiers, JavaCode type, 
 				 JavaCode id, JavaCode value);
 
@@ -85,7 +89,7 @@ extern JavaCodeList jcCollectImports(JavaCode code);
 extern JavaCode jcDocumented(String comment, JavaCode code);
 extern JavaCode jcComment(String comment);
 extern JavaCode jcImportedId(String pkg, String name);
-extern JavaCode jcImportedStaticId(String pkg, String name);
+extern JavaCode jcImportedStaticId(String pkg, String clss, String name);
 extern JavaCode jcLiteralString(String s);
 extern JavaCode jcLiteralStringWithTerminalChar(String s);
 extern JavaCode jcLiteralChar(String s);
@@ -99,6 +103,9 @@ extern JavaCode jcReturnVoid();
 extern JavaCode jcBreak(JavaCode label);
 extern JavaCode jcContinue(JavaCode label);
 
+extern JavaCode jcPackage(JavaCode pkgName);
+extern JavaCode jcImport(JavaCode type);
+
 extern JavaCode jcBlock(JavaCode l);
 extern JavaCode jcBlockNoNL(JavaCode body);
 extern JavaCode jcIf(JavaCode test, JavaCode stmt);
@@ -106,6 +113,9 @@ extern JavaCode jcWhile(JavaCode test, JavaCode stmt);
 extern JavaCode jcSwitch(JavaCode test, JavaCodeList body);
 extern JavaCode jcCaseLabel(JavaCode arg);
 extern JavaCode jcThrow(JavaCode arg);
+extern JavaCode jcTry(JavaCode body, JavaCodeList catchers, JavaCode finally);
+extern JavaCode jcTryCatch(JavaCode body, JavaCode catch, JavaCode finally);
+extern JavaCode jcCatch(JavaCode decl, JavaCode body);
 
 extern JavaCode jcOp(JcOperation op, JavaCodeList args);
 extern JavaCode jcBinOp(JcOperation op, JavaCode e1, JavaCode e2);
@@ -117,6 +127,8 @@ extern JavaCode jcMemRef(JavaCode lhs, JavaCode rhs);
 extern JavaCode jcCast(JavaCode type, JavaCode val);
 
 extern JavaCode jcStatement(JavaCode stmt);
+extern JavaCode jcSeq(JavaCodeList lst);
+extern JavaCode jcSeqV(int n, ...);
 extern JavaCode jcCommaSeq(JavaCodeList lst);
 extern JavaCode jcCommaSeqP(int n, va_list l);
 extern JavaCode jcSpaceSeq(JavaCodeList lst);
@@ -135,6 +147,9 @@ extern JavaCode jcApplyP(JavaCode c, int n, va_list argp);
 extern JavaCode jcApplyMethod(JavaCode obj, JavaCode id, JavaCodeList args);
 extern JavaCode jcApplyMethodV(JavaCode obj, JavaCode id, int n, ...);
 
+extern JavaCode jcGenericMethodName(JavaCode methodName, JavaCodeList genArgs);
+extern JavaCode jcGenericMethodNameV(JavaCode methodName, int n, ...);
+
 extern JavaCode jcNAry(JavaCode t);
 extern JavaCode jcArrayOf(JavaCode t);
 extern JavaCode jcArrayNew(JavaCode t, JavaCode sz);
@@ -150,9 +165,22 @@ extern JavaCode jcConditional(JavaCode test, JavaCode c1, JavaCode c2);
  * :: Utility methods
  */
 extern JavaCodeList jcCollectImports(JavaCode clss);
+extern String       jcFileClassName(JavaCode file);
+extern String       jcFilePackageName(JavaCode file);
 extern SExpr        jcNodeSExpr(JavaCode code);
 extern void         jcNodePrint(JavaCodePContext ctxt, JavaCode code);
 
 extern Bool         jcIsLegalClassName(String word);
+extern JavaCode     jcIdFrImported(JavaCode id);
+extern JavaCode     jcImportedIdFrString(String str);
+extern String       jcImportedIdName(JavaCode);
+extern String       jcImportedIdPkg(JavaCode);
+
+extern JavaCode     jcImportedStaticIdFrString(String str);
+extern String       jcImportedStaticIdName(JavaCode);
+extern String       jcImportedStaticIdClass(JavaCode);
+extern String       jcImportedStaticIdPkg(JavaCode);
+
+extern String       jcIdName(JavaCode);
 
 #endif

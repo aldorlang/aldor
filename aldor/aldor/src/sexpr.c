@@ -84,7 +84,7 @@ Bool	sexprDebug	= false;
 
 local int sxiIoIsNeedingEscape(String);
 
-local void sxiRdError(int errnum, ...);
+local void sxiRdError(int errnum, ...)  chk_noreturn;
 local SExpr sxiUseError(int errnum, ...);
 local SExpr sxiDefaultHandler(SrcPos, int errnum, va_list argp);
 

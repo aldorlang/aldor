@@ -542,7 +542,9 @@ compFilesLoop(int argc, char **argv)
 				comsgFatal(NULL, ALDOR_F_BadFType, argv[i],
 					   fnameType(fn), FTYPE_SRC);
 			}
-			/* Fall through. */
+			if (!isSolo) fprintf(osStdout, "\n%s:\n", argv[i]);
+			nErrors = compSourceFile(compFinfov[i]);
+			break;
 		case FTYPENO_NONE:
 		case FTYPENO_SRC:
 		case FTYPENO_INCLUDED:
@@ -1224,16 +1226,17 @@ compPhasePutLisp(EmitInfo finfo, Foam foam)
 void
 compPhasePutJava(EmitInfo finfo, Foam foam)
 {
-	JavaCode java;
+	JavaCodeList javaFiles;
 	String fnstring;
 
 	phStart(PH_PutJava);
 
 	fnstring = emitGetFileIdName(finfo);
+
 	if (emitIsOutputNeededOrWarn(finfo, FTYPENO_JAVA)) {
-		java = genJavaUnit(foam, fnstring);
-		emitTheJava(finfo, java);
-		jcoFree(java);
+		javaFiles = genJavaUnit(foam, fnstring);
+		emitTheJava(finfo, javaFiles);
+		listFreeDeeply(JavaCode)(javaFiles, jcoFree);
 	}
 
 	phEnd((PhPrFun) 0, (PhPrFun) 0, (Pointer) NULL);

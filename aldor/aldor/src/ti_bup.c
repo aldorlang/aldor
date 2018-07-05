@@ -129,7 +129,8 @@ local void	tibupExtend	(Stab, AbSyn, TForm);
 local void	tibupFix	(Stab, AbSyn, TForm);
 local void	tibupFluid	(Stab, AbSyn, TForm);
 local void	tibupFor	(Stab, AbSyn, TForm);
-local void	tibupForeign	(Stab, AbSyn, TForm);
+local void	tibupForeignImport(Stab, AbSyn, TForm);
+local void	tibupForeignExport(Stab, AbSyn, TForm);
 local void	tibupFree	(Stab, AbSyn, TForm);
 local void	tibupGenerate	(Stab, AbSyn, TForm);
 local void	tibupReference	(Stab, AbSyn, TForm);
@@ -2650,9 +2651,22 @@ tibupFor(Stab stab, AbSyn absyn, TForm type)
  ***************************************************************************/
 
 local void
-tibupForeign(Stab stab, AbSyn absyn, TForm type)
+tibupForeignImport(Stab stab, AbSyn absyn, TForm type)
 {
-	tibup(stab, absyn->abForeign.what, tfUnknown);
+	tibup(stab, absyn->abForeignImport.what, tfUnknown);
+	abTPoss(absyn) = tpossSingleton(tfNone());
+}
+
+/****************************************************************************
+ *
+ * :: Foreign:	import ... from Foreign(...)
+ *
+ ***************************************************************************/
+
+local void
+tibupForeignExport(Stab stab, AbSyn absyn, TForm type)
+{
+	tibup(stab, absyn->abForeignExport.what, tfUnknown);
 	abTPoss(absyn) = tpossSingleton(tfNone());
 }
 
@@ -3110,8 +3124,8 @@ tibupHas(Stab stab, AbSyn absyn, TForm type)
 	 * ensure that tfBoolean has been imported into every
 	 * scope that needs it before we get this far.
 	 */
-	tiGetTForm(stab, expr);
-	tiGetTForm(stab, prop);
+	tiGetTFormContext(stab, abCondKnown, expr);
+	tiGetTFormContext(stab, abCondKnown, prop);
 	if (tfBoolean == tfUnknown) comsgFatal(absyn, ALDOR_F_BugNoBoolean);
 	tibup0Generic(stab, absyn, tfBoolean);
 

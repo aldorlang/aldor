@@ -16,6 +16,7 @@ include_HEADERS =	\
 	basic.typ	\
 	cconfig.h	\
 	foam_c.h	\
+	aldorlib.h	\
 	foamopt.h	\
 	optcfg.h	\
 	platform.h
@@ -54,6 +55,7 @@ aldor_LDADD = libphase.a libstruct.a libgen.a libport.a -lm
 aldor_LDFLAGS = $(build_id)
 aldor_CFLAGS  = -g $(STRICTCFLAGS)
 
+#aldortest_CFLAGS = -DTEST_STAND_ALONE -DTEST_ALL -save-temps $(STRICTCFLAGS)
 aldortest_CFLAGS = -DTEST_STAND_ALONE -DTEST_ALL -save-temps $(STRICTCFLAGS)
 aldortest_SOURCES = test.c
 aldortest_LDADD = libtest.a libstruct.a libgen.a libport.a -lm
@@ -95,6 +97,7 @@ libtest_a_SOURCES =	\
 
 # Foam stuff does not belong!
 libgen_a_SOURCES =	\
+	aldorlib.c	\
 	bigint.c	\
 	bitv.c		\
 	btree.c		\
@@ -169,6 +172,7 @@ libstruct_a_SOURCES =	\
 	formatters.c	\
 	ftype.c		\
 	gf_syme.c	\
+	javasig.c	\
 	lib.c		\
 	loops.c		\
 	output.c	\
@@ -278,10 +282,12 @@ testsuite =			\
 	test/test_flog.c	\
 	test/test_fname.c 	\
 	test/test_foam.c 	\
+	test/test_forg.c	\
 	test/test_format.c	\
 	test/test_genfoam.c	\
 	test/test_jflow.c	\
 	test/test_java.c	\
+	test/test_jcode.c	\
 	test/test_int.c		\
 	test/test_list.c	\
 	test/test_ostream.c	\

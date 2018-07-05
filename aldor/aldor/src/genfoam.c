@@ -102,7 +102,8 @@ local Foam	genNever	    (AbSyn);
 local Foam	genWhere	    (AbSyn);
 local Foam	genExport	    (AbSyn);
 local Foam	genSelect	    (AbSyn);
-local Foam	genForeign	    (AbSyn);
+local Foam	genForeignImport    (AbSyn);
+local Foam	genForeignExport    (AbSyn);
 local Foam	genRestrict	    (AbSyn);
 
 /*****************************************************************************
@@ -681,6 +682,7 @@ gen0EmbedExit(Foam foam, AbSyn ab, TForm tf)
 local Foam
 gen0NilValue(TForm tf)
 {
+	tf = tfIgnoreExceptions(tf);
 	if (!tfIsMulti(tf)) {
 		return foamNewNil();
 	}
@@ -894,8 +896,11 @@ genFoam(AbSyn absyn)
 	case AB_Nothing:
 	case AB_Inline:
 		break;
-	case AB_Foreign:
-		genForeign(absyn);
+	case AB_ForeignImport:
+		genForeignImport(absyn);
+		break;
+	case AB_ForeignExport:
+		genForeignExport(absyn);
 		break;
 	case AB_Has:
 		foam = genHas(absyn);
@@ -972,10 +977,19 @@ local Symbol
 gen0ExportingTo(AbSyn absyn)
 {
 	if (abIsApplyOf(absyn, ssymForeign) &&
-	    abApplyArgc(absyn) == 1 &&
-	    abTag(abApplyArg(absyn, int0)) == AB_Id)
-		return abApplyArg(absyn, int0)->abId.sym;
-	  else
+	    abApplyArgc(absyn) == 1) {
+		AbSyn fType = abApplyArg(absyn, int0);
+		if (abTag(fType) == AB_Id) {
+			return fType->abId.sym;
+		}
+		else if (abTag(fType) == AB_Apply &&
+			 abIsId(abApplyOp(fType))) {
+			return abIdSym(abApplyOp(fType));
+		}
+		else
+			return NULL;
+	}
+	else
 		return NULL;
 }
 
@@ -1066,9 +1080,9 @@ gen0ExportToC(AbSyn absyn)
  * Generate Foreign inclusion hints.
  */
 local Foam
-genForeign(AbSyn absyn)
+genForeignImport(AbSyn absyn)
 {
-	AbSyn		origin = absyn->abForeign.origin;
+	AbSyn		origin = absyn->abForeignImport.origin;
 	ForeignOrigin	forg;
 	Foam		decl;
 
@@ -1089,6 +1103,10 @@ genForeign(AbSyn absyn)
 	if (!forg->file) return (Foam)NULL;
 
 
+	/* Java stuff doesn't count */
+	if (foamProtoBase(forg->protocol) == FOAM_Proto_Java)
+		return (Foam) NULL;
+
 	/* Global declaration */
 	decl = foamNewGDecl(FOAM_Word, strCopy(forg->file), emptyFormatSlot,
 			    FOAM_GDecl_Import, FOAM_Proto_Include);
@@ -1096,6 +1114,38 @@ genForeign(AbSyn absyn)
 
 	gen0AddGlobal(decl);
 	return (Foam)NULL;
+}
+
+/*
+ * Generate Foreign inclusion hints.
+ */
+local Foam
+genForeignExport(AbSyn absyn)
+{
+	AbSyn what   = absyn->abForeignExport.what;
+	AbSyn dest   = absyn->abForeignExport.dest;
+	AbSyn *argv;
+	Symbol sym = gen0ExportingTo(dest);
+	int argc, i;
+
+	AB_SEQ_ITER(what, argc, argv);
+
+	for (i = 0; i < argc; i += 1) {
+		AbSyn ab = argv[i];
+		genFoamStmt(ab);
+		if (sym == ssymBuiltin)
+			gen0ExportToBuiltin(ab);
+		else if (sym == ssymC)
+			gen0ExportToC(ab);
+		else if (sym == ssymFortran)
+			gen0ExportToFortran(ab);
+		else if (sym == ssymJava)
+			gfjExportToJava(ab, dest);
+		else
+			comsgFatal(ab, ALDOR_F_Bug, "Export not implemented");
+	}
+	return 0;
+	
 }
 
 local Foam
@@ -4518,7 +4568,7 @@ gen0ParamIndex(Syme param)
 Foam
 gen0ExtendSyme(Syme syme)
 {
-	while (symeExtension(syme)) syme = symeExtension(syme);
+	while (symeExtensionFirst(syme)) syme = symeExtensionFirst(syme);
 	return gen0Syme(syme);
 }
 
@@ -5979,7 +6029,7 @@ gen0MaxLevel(AbSyn ab)
 	{
 		Syme	syme = abSyme(ab);
 		if (!syme) break;
-		while (symeExtension(syme)) syme = symeExtension(syme);
+		while (symeExtensionFirst(syme)) syme = symeExtensionFirst(syme);
 		if (symeLib(syme) && (symeIsExport(syme) ||
 				      symeIsExtend(syme)))
 			level = 1;
@@ -8088,6 +8138,7 @@ gen0AddRealFormat(Foam ddecl)
 local Bool
 gen0CompareFormats(Foam dd1, Foam dd2)
 {
+	FoamDDeclTag usage;
 	Length	i, argc;
 
 	assert(foamTag(dd1) == FOAM_DDecl);
@@ -8095,6 +8146,8 @@ gen0CompareFormats(Foam dd1, Foam dd2)
 
 	if (dd1->foamDDecl.usage != dd2->foamDDecl.usage)
 		return false;
+
+	usage = dd1->foamDDecl.usage;
 
 	argc = foamDDeclArgc(dd1);
 	if (foamDDeclArgc(dd2) != argc)
@@ -8113,7 +8166,9 @@ gen0CompareFormats(Foam dd1, Foam dd2)
 		 * otherwise we get problems with the
 		 * foreign Fortran interface.
 		 */
-		if (t1 == FOAM_Clos)
+		if (t1 == FOAM_Clos
+		    || usage == FOAM_DDecl_JavaClass
+		    || usage == FOAM_DDecl_JavaSig)
 		{ /* Can't merge if different signatures ... */
 			AInt f1 = d1->foamDecl.format;
 			AInt f2 = d2->foamDecl.format;

@@ -6,8 +6,6 @@ public class FoamJ {
 
     /**
      * Array type - rely on casting to retract to base type
-     *
-     * @author pab
      */
     static class Array extends AbstractValue implements Value, Word {
         private Object arr;
@@ -31,6 +29,35 @@ public class FoamJ {
 
         public String toString() {
             return "A" + arr.toString() + "]";
+        }
+
+    }
+
+    /**
+     * JavaObj type - rely on casting to retract to base type
+     */
+    static public class JavaObj<T> extends AbstractValue implements Value, Word {
+        private T obj;
+
+        JavaObj(T obj) {
+            this.obj = obj;
+        }
+
+        public T toJavaObj() {
+            return obj;
+        }
+
+        @Override
+        public Value toValue() {
+            return this;
+        }
+
+        public Word asWord() {
+            return this;
+        }
+
+        public String toString() {
+            return obj.toString();
         }
 
     }

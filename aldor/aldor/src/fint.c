@@ -698,7 +698,9 @@ enum fintForeignTag {
 	FINT_FOREIGN_fclose,
 	FINT_FOREIGN_fflush,
 	FINT_FOREIGN_fgetc,
+	FINT_FOREIGN_lfputc,
 	FINT_FOREIGN_fseek,
+	FINT_FOREIGN_fseekset,
 	FINT_FOREIGN_ftell,
 	FINT_FOREIGN_mainArgc,
 	FINT_FOREIGN_mainArgv,
@@ -872,7 +874,9 @@ fintForeign	fintForeignTable [] = {
 	DECL_FOREIGN(fclose),
 	DECL_FOREIGN(fflush),
 	DECL_FOREIGN(fgetc),
+	DECL_FOREIGN(lfputc),
 	DECL_FOREIGN(fseek),
+	DECL_FOREIGN(fseekset),
 	DECL_FOREIGN(ftell),
 	DECL_FOREIGN(mainArgc),
 	DECL_FOREIGN(mainArgv),
@@ -1555,7 +1559,9 @@ fintStmt(DataObj retDataObj)
 		}
 
 		fintSet(type, loc, expr);
+		break;
 	}
+		/* fall through */
 	case FOAM_Free:
                 (void)fintEval(&expr);
                 fintFree0(expr.fiPtr);
@@ -4198,6 +4204,7 @@ fintEval_(DataObj retDataObj)
 			break;
 		case FOAM_SInt:
 			retDataObj->fiArr = (Ptr) fiArrNew_SInt(argc+1);
+			break;
 		case FOAM_SFlo:
 			retDataObj->fiArr = (Ptr) fiArrNew_SFlo(argc+1);
 			break;
@@ -4526,6 +4533,13 @@ fintEval_(DataObj retDataObj)
 			    fputc((int)expr1.fiSInt, (FILE *) expr2.fiWord);
 			break;
 
+		case FINT_FOREIGN_lfputc:
+			fintTypedEval(&expr1, FOAM_SInt);
+			fintTypedEval(&expr2, FOAM_Word);
+			retDataObj->fiWord = (FiWord)
+			    fputc((int)expr1.fiSInt, (FILE *) expr2.fiWord);
+			break;
+
 		case FINT_FOREIGN_sqrt:
 			fintTypedEval(&expr1, FOAM_DFlo);
 			retDataObj->fiDFlo = (FiDFlo)
@@ -4651,6 +4665,15 @@ fintEval_(DataObj retDataObj)
 				fseek((FILE *)expr1.fiWord,
 					expr2.fiWord,
 					expr3.fiWord);
+			break;
+
+		case FINT_FOREIGN_fseekset:
+			fintTypedEval(&expr1, FOAM_Word);
+			fintTypedEval(&expr2, FOAM_Word);
+			retDataObj->fiSInt = (FiSInt)
+				fseek((FILE *)expr1.fiWord,
+					expr2.fiWord,
+					SEEK_SET);
 			break;
 
 		case FINT_FOREIGN_ftell:

@@ -12,6 +12,7 @@ srcdir		:= @srcdir@
 abs_srcdir	:= @abs_srcdir@
 top_srcdir	:= @top_srcdir@
 abs_top_srcdir	:= @abs_top_srcdir@
+abs_libdir	:= $(abs_top_builddir)/lib/ax0/src/al
 subdir		:= $(subst $(abs_top_builddir)/,,$(abs_builddir))
 
 VPATH		:= $(VPATH):$(top_srcdir)/lib/axllib/src/al
@@ -70,7 +71,7 @@ axllibincdir	:= $(top_srcdir)/lib/axllib/include
 libraryname	:= ax0
 Libraryname	:= Axiom
 
-AXLFLAGS	:= -Q8 -Wcheck -Wno-fatal
+AXLFLAGS	:= -Q8 -Wcheck
 AXLFLAGS	+= -I $(axllibincdir)
 
 bytecode_only	:= true

@@ -525,20 +525,20 @@ abPPClipped0(Buffer buf, AbSyn ab, long *pmaxchars)
 		}
 		break;
 
-	case AB_Foreign:
+	case AB_ForeignImport:
 		{
 		    f = f && abPPPuts(buf, "import ", pmaxchars);
 
-		    if (! abHasTag(ab->abForeign.what, AB_Sequence))
+		    if (! abHasTag(ab->abForeignImport.what, AB_Sequence))
 			    f = f && abPPIndent(buf, pmaxchars)
 				  && abPPPuts(buf, INDENTATION, pmaxchars);
 
-		    f = f && abPPClipped0(buf, ab->abForeign.what, pmaxchars);
+		    f = f && abPPClipped0(buf, ab->abForeignImport.what, pmaxchars);
 
 		    f = f && abPPIndent(buf, pmaxchars);
 		    f = f && abPPPuts(buf, "from Foreign(", pmaxchars);
-		    if (abIsNotNothing(ab->abForeign.origin))
-			    f = f && abPPClipped0(buf, ab->abForeign.origin, pmaxchars);
+		    if (abIsNotNothing(ab->abForeignImport.origin))
+			    f = f && abPPClipped0(buf, ab->abForeignImport.origin, pmaxchars);
 		    f = f && abPPPuts(buf, ")", pmaxchars);
 		}
 		break;
@@ -606,7 +606,7 @@ abPPClipped0(Buffer buf, AbSyn ab, long *pmaxchars)
 	case AB_Default:
 		if (abIsNothing(abArgv(ab)[0]))
 			break;
-		
+		/* Fall through */
 	default:
 	    {
 		TokenTag tTag = abInfo(abTag(ab)).tokenTag;

@@ -24,7 +24,7 @@ ALDORFLAGS	:=				\
 	-Nfile=$(aldorsrcdir)/aldor.conf	\
 	$(addprefix -I,$(libraryincdirs))	\
 	$(addprefix -Y,$(librarylibdirs))	\
-	-Waudit -Wcheck -Wno-fatal		\
+	-Waudit -Wcheck				\
 	$(ALFLAGS)
 
 # Aldor silent-rules

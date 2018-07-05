@@ -106,6 +106,7 @@ local Bool		tformEqual0		(SymeList, TForm, TForm);
 local Bool		sefoListEqual0		(SymeList, SefoList, SefoList);
 local Bool		symeListEqual0		(SymeList, SymeList, SymeList);
 local Bool		tformListEqual0		(SymeList,TFormList,TFormList);
+local Bool		sefoIsDefinedType	(Sefo);
 
 local Bool		symeTypeEqual0		(SymeList, Syme, Syme);
 local Bool		symeExtendEqual0	(SymeList, Syme, Syme);
@@ -1436,7 +1437,7 @@ sefoEqual(Sefo sefo1, Sefo sefo2)
 	eq = sefoEqual0(NULL, sefo1, sefo2);
 	sstDoneSefo(sefo1);
 
-	if (eq)
+	if (eq && !sefoIsDefinedType(sefo1) && !sefoIsDefinedType(sefo2))
 		assert(abHashSefo(sefo1) == abHashSefo(sefo2));
 
 	return eq;
@@ -2011,8 +2012,8 @@ symeExtendEqual0(SymeList mods, Syme syme1, Syme syme2)
 
 	/* Check the extension, if any. */
 
-	e1 = symeExtension(syme1);
-	e2 = symeExtension(syme2);
+	e1 = symeExtensionFirst(syme1);
+	e2 = symeExtensionFirst(syme2);
 
 	if (e1 || e2) {
 		Bool	result;
@@ -2587,11 +2588,13 @@ tformFreeVars0(TForm *pa, TForm parent, TForm tf)
 
 	if (tfIsSubst(tf) && tfFVars(tf) == NULL) {
 		TForm	arg = tfSubstArg(tf);
+
 		if (sstTFormIsMarked(arg)) {
 			*pa = sfvCommonAncestor(*pa, arg);
 			return;
 		}
 		tformFreeVars(arg);
+		abSubFreeVars(tfSubstSigma(tf));
 		tfSetFVars(tf, freeVarSubst0(tfSubstSigma(tf), tfFVars(arg)));
 		sefoFreeDEBUG(dbOut, "FV(subst) %pTForm = %pFreeVar\n",
 			      tf, tf->fv);

@@ -4,15 +4,13 @@
 #if defined(__GNUC__)
 #  define chk_fmt(a, b)		__attribute__((format(printf, a, b)))
 #  define chk_nonnull(x)	__attribute__((nonnull x))
-#  if defined(_ANALYSING)
-#    define chk_noreturn	__attribute__((noreturn))
-#  else
-#    define chk_noreturn
-#  endif
+#  define chk_noreturn		__attribute__((noreturn))
+#  define chk_fallthrough	__attribute__((fallthrough))
 #else
 #  define chk_fmt(a, b)
 #  define chk_noreturn
 #  define chk_nonnull(x)
+#  define chk_fallthrough
 #endif
 
 #endif /* FEATURES_H0 */

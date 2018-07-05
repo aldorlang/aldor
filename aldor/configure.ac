@@ -36,6 +36,10 @@ AC_ARG_ENABLE([java],
               [BUILD_JAVA=false],
               [BUILD_JAVA=true])
 
+AC_ARG_WITH([java-junit],
+             [AS_HELP_STRING([--with-java-junit], [specify location of junit jar file])],
+	     [JUNIT_JAR=$withval], [JUNIT_JAR=/usr/share/java/junit4.jar])
+
 AM_CONDITIONAL(BUILD_JAVA, test $JAVAC != no -a $BUILD_JAVA = true)
 
 AC_ARG_WITH([boehm-gc],
@@ -58,26 +62,9 @@ AC_SUBST([LIBTOOL_DEPS])
 # Enable extra warnings and -Werror if supported.
 ALDOR_ERROR_ON_WARN
 
-# Force git build id.
-git_build_id=0
-AC_ARG_ENABLE([git-build-id],
-              [AS_HELP_STRING([--enable-git-build-id],
-                              [Force git sha1 hash as build id])],
-              [git_build_id=],
-              [git_build_id=`cd $srcdir; git status --porcelain 2>&1`])
+ALDOR_JAVA_TESTS
 
-# Git SHA1 hash as ld build-id.
-AC_MSG_CHECKING([build id])
-if test -z "$git_build_id"; then
-   VCSVERSION=`cd $srcdir; git rev-parse HEAD`
-   build_id="-Wl,--build-id=0x$VCSVERSION"
-   AC_MSG_RESULT([git: $VCSVERSION])
-else
-   VCSVERSION=`date +%Y%m%d`
-   AC_MSG_RESULT([date: $VCSVERSION])
-fi
-AC_SUBST([VCSVERSION])
-AC_SUBST([build_id])
+ALDOR_GIT_BUILD_ID
 
 # Generate Makefiles
 AC_CONFIG_FILES(
@@ -89,12 +76,14 @@ AC_CONFIG_FILES(
    aldor/src/Makefile
    aldor/src/opsys_port.h
    aldor/lib/Makefile
+
    aldor/lib/libfoamlib/Makefile
    aldor/lib/libfoamlib/al/Makefile
    aldor/lib/libfoam/Makefile
    aldor/lib/libfoam/al/Makefile
    aldor/lib/java/Makefile
    aldor/lib/java/src/Makefile
+   aldor/lib/java/test/Makefile
    aldor/test/Makefile
    aldor/tools/Makefile
    aldor/tools/unix/Makefile

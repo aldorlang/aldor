@@ -321,7 +321,6 @@ local	int	gc0IsNewHeader		(String);
 local 	void 	gc0AddHeaderIfNeeded	(String);
 
 local   CCode	gc0ModuleInitFun	(String, int);	
-local 	Bool 	gc0IsGloExported	(int);
 local   CCode	gc0ListOf		(CCodeTag, CCodeList);
 local   void    gc0AddLineFun		(CCodeList *, CCode);
 local	Bool	gc0IsReturn		(CCode);
@@ -638,6 +637,7 @@ gc0ExternDecls(String name)
 		  /* Some formats must not have a typedef */
 		  case FOAM_DDecl_FortranSig:	/*FALLTHROUGH*/
 		  case FOAM_DDecl_CSig:		/*FALLTHROUGH*/
+		  case FOAM_DDecl_JavaClass:	/*FALLTHROUGH*/
 			break;
 		  default:
 			gc0LFmtDef(i);
@@ -655,6 +655,8 @@ gc0ExternDecls(String name)
 		  /* Some formats must not have a typedef */
 		  case FOAM_DDecl_FortranSig:	/*FALLTHROUGH*/
 		  case FOAM_DDecl_CSig:		/*FALLTHROUGH*/
+		  case FOAM_DDecl_JavaClass:	/*FALLTHROUGH*/
+		  case FOAM_DDecl_JavaSig:	/*FALLTHROUGH*/
 			break;
 		  default:
 			gc0LFmtDecl(i, foamArgv(gcvFmt)[i].code);
@@ -1052,7 +1054,7 @@ gc0GloDecl(int idx)
 		buf = strPrintf("Cannot declare %s of protocol %s.",
 				decl->foamGDecl.id,
 				foamProtoStr(decl->foamGDecl.protocol));
-		cco = ccoCppLine(ccoIdOf("error"), ccoStringOf(buf));
+		cco = ccoCppLine(ccoIdOf("warning"), ccoStringOf(buf));
 	}
 	return cco;
 }
@@ -1147,9 +1149,8 @@ gc0CreateGloList(String name)
 		
 		/* Handle Exports to C/Fortran */
 		
-		if (gc0IsGloExported(i) &&
-		    (gdecl->foamGDecl.protocol == FOAM_Proto_C || 
-		     gdecl->foamGDecl.protocol == FOAM_Proto_Fortran)) {
+		if (foamGDeclIsExportOf(FOAM_Proto_C, gdecl)
+		    || foamGDeclIsExportOf(FOAM_Proto_Fortran, gdecl)) {
 			Foam fakedecl;
 			CCode cco;
 
@@ -2300,12 +2301,18 @@ gccDef(Foam foam)
  *
  ****************************************************************************/
 
+local Bool  gc0ProgIsC(Foam foam);
+local Bool  gc0FoamIsJavaPCall(Foam foam);
+local CCode gc0ProgBody(Foam ref, Foam prog);
+local CCode gc0ProgBodyC(Foam ref, Foam prog);
+local CCode gc0ProgBodyOther(Foam ref, Foam prog);
+
 local CCode
 gc0Prog(Foam ref, Foam foam)
 {
 	Scope("gc0Prog");
 	int		type, progFmt;
-	Foam		params, locals, lexicals, body;
+	Foam		params, locals, lexicals;
 	Foam		fluids;
 	CCode		ccBody, ccParams, ccLeft, ccRight;
 	CCodeList	codeProg = listNil(CCode);
@@ -2341,7 +2348,6 @@ gc0Prog(Foam ref, Foam foam)
 	locals	 = foam->foamProg.locals;
 	lexicals = foamArgv(gcvFmt)[progFmt].code;
 	fluids	 = foam->foamProg.fluids;
-	body	 = foam->foamProg.body;
 
 	gcvProg    = foam;
 	gcvLvl	   = gcvLvl+1;
@@ -2361,8 +2367,8 @@ gc0Prog(Foam ref, Foam foam)
 	}
 	ccParams  = gc0Param(foam, params);
 	gcvIsLeaf = foamProgIsLeaf(foam);
-	ccBody	  = ccoCompound(gc0Compound(locals, body, ref, progFmt,
-					    gcvIsLeaf));
+
+	ccBody = gc0ProgBody(ref, foam);
 
 	listFreeCons(Foam)(gcvLexStk);
 
@@ -2382,11 +2388,77 @@ gc0Prog(Foam ref, Foam foam)
 	gc0AddLine(gcvInitProgCC,  ccoStat(ccoAsst(gccId(ref),
 						   ccoPreAnd(ccoCopy(ccLeft)))));
 
-
-
 	retval = ccoMany2(ccoFDef(gcvSpec, gccProgId(ref), ccParams, ccBody),
 			gc0ListOf(CCO_Many, codeProg));
 	Return(retval);
+}
+
+local CCode
+gc0ProgBody(Foam ref, Foam prog)
+{
+	if (!gc0ProgIsC(prog)) {
+		return gc0ProgBodyOther(ref, prog);
+	}
+	else {
+		return gc0ProgBodyC(ref, prog);
+	}
+}
+
+local CCode
+gc0ProgBodyC(Foam ref, Foam foam)
+{
+	Foam locals  = foam->foamProg.locals;
+	Foam body    = foam->foamProg.body;
+	AInt progFmt = foamProgIndex(foam);
+
+	CCode ccBody  = ccoCompound(gc0Compound(locals, body, ref, progFmt,
+					       gcvIsLeaf));
+	return ccBody;
+}
+
+local CCode
+gc0ProgBodyOther(Foam ref, Foam prog)
+{
+	return ccoCompound(ccoStat(gcFiHalt(ccoIdOf("100"))));
+}
+
+local Bool
+gc0ProgIsC(Foam foam)
+{
+	int i;
+	if (foam->foamProg.retType == FOAM_JavaObj) {
+		return false;
+	}
+
+	for (int i=0; i<foamDDeclArgc(foam->foamProg.params); i++) {
+		Foam param = foam->foamProg.params->foamDDecl.argv[i];
+		if (param->foamDecl.type == FOAM_JavaObj) {
+			return false;
+		}
+	}
+
+	for (int i=0; i<foamDDeclArgc(foam->foamProg.locals); i++) {
+		Foam param = foam->foamProg.locals->foamDDecl.argv[i];
+		if (param->foamDecl.type == FOAM_JavaObj) {
+			return false;
+		}
+	}
+	if (foamFindFirst(gc0FoamIsJavaPCall, foam->foamProg.body) != NULL) {
+		return false;
+	}
+
+	return true;
+}
+
+local Bool
+gc0FoamIsJavaPCall(Foam foam)
+{
+	if (foamTag(foam) != FOAM_PCall)
+		return false;
+
+	return foam->foamPCall.protocol == FOAM_Proto_Java
+		|| foam->foamPCall.protocol == FOAM_Proto_JavaConstructor
+		|| foam->foamPCall.protocol == FOAM_Proto_JavaMethod;
 }
 
 /*****************************************************************************
@@ -3795,9 +3867,11 @@ gccMFmt(Foam foam)
 		/* Only allowed (Set (Values ...) (MFmt f (Catch ...))) */
 		bug("gccMFmt: Catch in MFmt missed by gc0Set");
 		NotReached(cc = 0);
+		break;
 	  default:
 		bugBadCase(foamTag(expr));
 		NotReached(cc = 0);
+		break;
 	}
 	return cc;
 }
@@ -4002,14 +4076,8 @@ gccBInt(Foam foam)
 local CCode
 gccArr(Foam foam)
 {
-	int	i, arrSize;
-	String	str;
+	String	str = foamArrToString(foam);
 
-	arrSize = foamArgc(foam);
-	str = strAlloc(arrSize);
-	for (i = 0; i < arrSize - 1; i++)
-		str[i] = foam->foamArr.eltv[i];
-	str[i] = '\0';
 	return ccoStringOf(str);
 }
 
@@ -4405,11 +4473,11 @@ gccGetVar(Foam foam)
 	switch (foamTag(foam)) {
 	case FOAM_Glo:
 		idx = foam->foamGlo.index;
-		switch (decl->foamGDecl.protocol) {
+		switch (foamProtoBase(decl->foamGDecl.protocol)) {
 		case FOAM_Proto_Foam:
 		case FOAM_Proto_Init:
 
-			if (!gc0IsGloExported(idx)) {
+			if (!foamGDeclIsExport(decl)) {
 				ccode = gc0MultVarId("pG", idx, s);
 				ccode = ccoParen(ccoPreStar(ccode));
 			}
@@ -4421,18 +4489,21 @@ gccGetVar(Foam foam)
 				s = strCopy(s);
 				s = gc0StompOffIncludeFile(s, FOAM_Proto_C);
 			}
-			if (gc0IsGloExported(idx))
+			if (foamGDeclIsExport(decl))
 			  ccode = gc0MultVarId("G", idx, s);
 			else
 			  ccode = ccoIdOf(s);
 			break;
 		case FOAM_Proto_Fortran:
-			if (gc0IsGloExported(idx))
+			if (foamGDeclIsExport(decl))
 				ccode = gc0MultVarId("G", idx, s);
 			else {
 				s = gc0GenFortranName(s);
 				ccode = ccoIdOf(s);
 			}
+			break;
+		case FOAM_Proto_Java:
+			ccode = gc0MultVarId("J", idx, "java");
 			break;
 		case FOAM_Proto_Other:
 			ccode = ccoIdOf(s);
@@ -4712,6 +4783,7 @@ gc0ClosInit(Foam ref, Foam val)
 	CCode		ccClos, ccLeft, ccRight, type;
 
 	decl    = gc0GetDecl(ref);
+
 	if (foamTag(val) != FOAM_Clos) {
 		int fmt = decl->foamDecl.format;
 
@@ -6103,6 +6175,9 @@ gc0TypeId(AInt t, AInt fmt)
 	  case FOAM_Arb:
 		cc = ccoTypeIdOf(gcFiArb);
 		break;
+	  case FOAM_JavaObj:
+		cc = ccoTypeIdOf(gcFiWord);
+		break;
 	  default:
 		bugBadCase(t);
 		NotReached(return 0);
@@ -6651,15 +6726,6 @@ gc0ModuleInitFun(String modName, int n)
 {
 	return gc0MultVarId(gcFiInitModulePrefix, n, modName);
 }
-
-local Bool 
-gc0IsGloExported(int i)
-{
-	Foam decl = gcvGlo->foamDDecl.argv[i];
-	
-	return (decl->foamGDecl.dir == FOAM_GDecl_Export);
-}
-
 
 void
 ccodeListPrintDb(CCodeList cl)

@@ -349,7 +349,9 @@ gen0GetDomImport(Syme syme, Foam dom)
 	else if (tfSatType(tf)) {
 		/* Don't use lazy gets for imported types. */
 		call = gen0MakeGetExport(dom, name, type);
-		call = foamNewCast(fmType, call);
+		if (fmType != FOAM_Word) {
+			foamNewCast(fmType, call);
+		}
 	}
 	else 
 		call = gen0LazyConstGet(syme, dom, name, type);
@@ -471,7 +473,7 @@ gen0LazyValue(Foam var, Syme syme)
 				"runtime", 1, var);
 	foamSyme(var) = syme;
 	foamPure(foam) = true;
-	return foamNewCast(type, foam);
+	return type == FOAM_Word ? foam : foamNewCast(type, foam);
 }
 
 local Foam

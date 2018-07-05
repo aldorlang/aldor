@@ -555,6 +555,7 @@ stabNewLevel(int levno, int lamno, SrcPos spos, Bool isLargeLevel)
 
 	slev->boundSymes	= listNil(Syme);
 	slev->extendSymes	= listNil(Syme);
+	slev->exportedTypes     = NULL;
 
 	return slev;
 }
@@ -1823,6 +1824,42 @@ stabImportRemark(Stab stab, TFormList what, TForm origin)
 
 		strFree(explicits);
 	}
+}
+
+/******************************************************************************
+ *
+ * :: Foreign exports
+ *
+ *****************************************************************************/
+
+void
+stabAddForeignExport(Stab stab, TForm tf, ForeignOrigin forg)
+{
+	if (car(stab)->exportedTypes == NULL)
+		car(stab)->exportedTypes = tblNew((TblHashFun) tfHash, (TblEqFun) tfEqual);
+	tblSetElt(car(stab)->exportedTypes, tf, forg);
+}
+
+ForeignOrigin
+stabForeignExportLocation(Stab stab, TForm tf)
+{
+	while (stab != listNil(StabLevel)) {
+		if (car(stab)->exportedTypes == NULL) {
+			stab = cdr(stab);
+			continue;
+		}
+		ForeignOrigin forg = tblElt(car(stab)->exportedTypes, tf, NULL);
+		if (forg != NULL)
+			return forg;
+		stab = cdr(stab);
+	}
+	return NULL;
+}
+
+Bool
+stabIsForeignExport(Stab stab, TForm tf)
+{
+	return stabForeignExportLocation(stab, tf) != NULL;
 }
 
 /****************************************************************************

@@ -1,6 +1,15 @@
 package foamj;
 
-import java.io.PrintStream;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.lang.Math;
 import java.math.BigInteger;
 
@@ -9,7 +18,16 @@ public class Foam {
     public final static int PlatformOS = 1;
 
     public static void fputc(Word cw, Word w) {
-        PrintStream ps = (PrintStream) Word.U.toArray(w);
+        try {
+            fputc0(cw, w);
+        }
+        catch (IOException e) {
+            throw new JavaException(e);
+        }
+    }
+
+    public static void fputc0(Word cw, Word w) throws IOException {
+        OutputStream ps = (OutputStream) Word.U.toJavaObj(w);
         char c = (char) cw.toSInt();
         ps.write(c);
     }
@@ -19,11 +37,26 @@ public class Foam {
     }
 
     public static Word fgetc(Word cw) {
-        throw new RuntimeException();
+        InputStream instream = Word.U.<InputStream>toJavaObj(cw);
+        try {
+            return Word.U.fromSInt(instream.read());
+        }
+        catch (IOException e) {
+            throw new JavaException(e);
+        }
     }
 
     public static void fputs(Word s, Word w) {
-        PrintStream ps = (PrintStream) Word.U.toArray(s);
+        try {
+            fputs0(s, w);
+        }
+        catch (IOException e) {
+            throw new JavaException(e);
+        }
+    }
+
+    public static void fputs0(Word s, Word w) throws IOException{
+        OutputStream ps = (OutputStream) Word.U.toJavaObj(s);
         char[] arr = (char[]) w.toArray();
         for (int i = 0; i < arr.length - 1; i++) {
             ps.write(arr[i]);
@@ -36,7 +69,7 @@ public class Foam {
         int start = w2.toSInt();
         int limit = w3.toSInt();
         if (limit == -1) {
-            System.out.print(new String(arr).substring(start));
+            System.out.print(new String(arr, start, arr.length-1));
             return Word.U.fromSInt(arr.length - 1 - start);
         } else {
             System.out.print(new String(arr, start, limit - start));
@@ -45,24 +78,51 @@ public class Foam {
     }
 
     public static Word stdoutFile() {
-        return Word.U.fromArray(System.out);
+        return Word.U.fromJavaObj(System.out);
     }
 
     public static Word stderrFile() {
-        return Word.U.fromArray(System.err);
+        return Word.U.fromJavaObj(System.err);
     }
 
     public static Word stdinFile() {
-        return Word.U.fromArray(System.in);
+        return Word.U.fromJavaObj(System.in);
     }
 
     public static Word fopen(Word w1, Word w2) {
+        try {
+            return fopen0(w1, w2);
+        }
+        catch (IOException e) {
+            throw new JavaException(e);
+        }
+    }
+
+    private static Word fopen0(Word w1, Word w2) throws IOException {
+        char[] aname = (char[]) w1.toArray();
+        char[] aopts = (char[]) w2.toArray();
+        String name = new String(aname, 0, aname.length -1);
+        String opts = new String(aopts, 0, aopts.length -1);
+
+        if ("r".equals(opts)) {
+            InputStream instream = new FileInputStream(new File(name));
+            return Word.U.fromJavaObj(instream);
+        }
+        else if ("w".equals(opts)) {
+            OutputStream outstream = new BufferedOutputStream(new FileOutputStream(new File(name)));
+            return Word.U.fromJavaObj(outstream);
+        }
         throw new RuntimeException();
     }
 
     public static Word fflush(Word w1) {
-        PrintStream ps = (PrintStream) Word.U.toArray(w1);
-        ps.flush();
+        OutputStream ps = (OutputStream) Word.U.toJavaObj(w1);
+        try {
+            ps.flush();
+        }
+        catch (IOException e) {
+            throw new JavaException(e);
+        }
         return w1;
     }
 
@@ -71,7 +131,24 @@ public class Foam {
     }
 
     public static Word fclose(Word w1) {
-        throw new RuntimeException();
+        try {
+            return fclose0(w1);
+        }
+        catch (IOException e) {
+            throw new JavaException(e);
+        }
+
+    }
+
+    public static Word fclose0(Word w1) throws IOException {
+        Object o = Word.U.toJavaObj(w1);
+        if (o instanceof InputStream) {
+            ((InputStream) o).close();
+        }
+        if (o instanceof OutputStream) {
+            ((OutputStream) o).close();
+        }
+        return Word.U.fromSInt(0);
     }
 
     public static Word formatBInt(BigInteger a) {
@@ -285,25 +362,24 @@ public class Foam {
 
     public static float arrToSFlo(Object o) {
         char[] arr = (char[]) o;
-        return new Float(new String(arr, 0, arr.length - 1));
+        return new Float(arrToString(arr));
 
     }
 
     public static double arrToDFlo(Object o) {
         char[] arr = (char[]) o;
-        return new Double(new String(arr, 0, arr.length - 1));
+        return new Double(arrToString(arr));
     }
 
     public static int arrToSInt(Object o) {
         char[] arr = (char[]) o;
-        return Integer.parseInt(new String(arr, 0, arr.length - 1));
+        return Integer.parseInt(arrToString(arr));
     }
 
     public static BigInteger arrToBInt(Object o) {
         char[] arr = (char[]) o;
-        return new BigInteger(new String(arr, 0, arr.length - 1));
+        return new BigInteger(arrToString(arr));
     }
-
 
     public static Word powf(Word w1, Word w2) {
         throw new RuntimeException();
@@ -354,7 +430,21 @@ public class Foam {
     }
 
     public static Word fseekset(Word w1, Word w2) {
-        throw new RuntimeException();
+        try {
+            return fseekset0(w1, w2);
+        }
+        catch (IOException e) {
+            throw new JavaException(e);
+        }
+    }
+
+    private static Word fseekset0(Word w1, Word w2) throws IOException {
+        InputStream instream = Word.U.<InputStream>toJavaObj(w1);
+        int posn = w2.toSInt();
+
+        instream.read(new byte[posn]);
+
+        return Word.U.fromSInt(0);
     }
 
     public static Word fseekend(Word w1, Word w2) {
@@ -370,7 +460,8 @@ public class Foam {
     }
 
     public static Word lfputc(Word w1, Word w2) {
-        throw new RuntimeException();
+        fputc(w1, w2);
+        return w1;
     }
 
     public static Word unlink(Word w) {
@@ -438,4 +529,22 @@ public class Foam {
         return Math.atan2(a, b);
     }
 
+    public static String stringToJavaString(Word w) {
+        char[] arr = (char[]) w.toArray();
+        return arrToString(arr);
+    }
+
+    public static Word javaStringToString(String s) {
+        Word arr = Word.U.fromArray(("" + s + "\0").toCharArray());
+        return  arr;
+    }
+
+    public static String arrToString(char[] arr) {
+        String s = new String(arr);
+        int idx = s.indexOf("\0");
+        if (idx == -1) {
+            return s;
+        }
+        return s.substring(0, idx);
+    }
 }

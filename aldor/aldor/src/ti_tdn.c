@@ -116,7 +116,8 @@ local Bool	titdnExtend	(Stab, AbSyn, TForm);
 local Bool	titdnFix	(Stab, AbSyn, TForm);
 local Bool	titdnFluid	(Stab, AbSyn, TForm);
 local Bool	titdnFor	(Stab, AbSyn, TForm);
-local Bool	titdnForeign	(Stab, AbSyn, TForm);
+local Bool	titdnForeignImport(Stab, AbSyn, TForm);
+local Bool	titdnForeignExport(Stab, AbSyn, TForm);
 local Bool	titdnFree	(Stab, AbSyn, TForm);
 local Bool	titdnGenerate	(Stab, AbSyn, TForm);
 local Bool	titdnGoto	(Stab, AbSyn, TForm);
@@ -1837,15 +1838,15 @@ local Bool titdnForeignJava(Stab stab, AbSyn absyn);
 local Bool titdnForeignJavaDeclare(Stab stab, AbSyn decl);
 
 local Bool
-titdnForeign(Stab stab, AbSyn absyn, TForm type)
+titdnForeignImport(Stab stab, AbSyn absyn, TForm type)
 {
-	ForeignOrigin forg = forgFrAbSyn(absyn->abForeign.origin);
+	ForeignOrigin forg = forgFrAbSyn(absyn->abForeignImport.origin);
 	Bool ok;
-	titdn(stab, absyn->abForeign.what, tfUnknown);
+	titdn(stab, absyn->abForeignImport.what, tfUnknown);
 
 	switch (forg->protocol) {
 	case FOAM_Proto_Java:
-		ok = titdnForeignJava(stab, absyn->abForeign.what);
+		ok = titdnForeignJava(stab, absyn->abForeignImport.what);
 		break;
 	default:
 		ok = true;
@@ -1930,6 +1931,26 @@ titdnForeignJavaDeclare(Stab stab, AbSyn decl)
 	return true;
 }
 
+/****************************************************************************
+ *
+ * :: export:  export ... to D
+ *
+ ***************************************************************************/
+
+local Bool
+titdnForeignExport(Stab stab, AbSyn absyn, TForm type)
+{
+	AbSyn	what	= absyn->abForeignExport.what;
+	AbSyn	dest	= absyn->abForeignExport.dest;
+	ForeignOrigin forg = forgFrAbSyn(dest->abApply.argv[0]);
+
+	Bool success = titdn(stab, absyn->abForeignExport.what, tfUnknown);
+	if (success && forg->protocol == FOAM_Proto_Java) {
+		stabAddForeignExport(stab, tiGetTForm(stab, what), forg);
+	}
+	abTUnique(absyn) = type;
+	return true;
+}
 
 /****************************************************************************
  *
@@ -2788,8 +2809,11 @@ titdnError(Stab stab, AbSyn absyn, TForm type)
 			titdnError(stab, absyn->abFor.test, tfBoolean);
 			titdnError(stab, absyn->abFor.lhs, tfUnknown);
 			break;
-		case AB_Foreign:
-			titdnError(stab, absyn->abForeign.what, tfUnknown);
+		case AB_ForeignImport:
+			titdnError(stab, absyn->abForeignImport.what, tfUnknown);
+			break;
+		case AB_ForeignExport:
+			titdnError(stab, absyn->abForeignExport.what, tfUnknown);
 			break;
 		case AB_Import:
 			titdnError(stab, absyn->abImport.what, tfUnknown);

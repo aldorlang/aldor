@@ -74,6 +74,7 @@ enum foamTag {
 			FOAM_PopEnv,
 			FOAM_MFmt,	 /* Indicate multiple values */
 			FOAM_RRFmt,	 /* Raw record (dynamic) format */
+	                FOAM_JavaObj,    /* Java things */
 
 		FOAM_CONTROL_LIMIT,
 
@@ -467,6 +468,7 @@ enum foamDDeclTag {
 	FOAM_DDecl_FortranSig,
 	FOAM_DDecl_CSig,
 	FOAM_DDecl_JavaSig,
+	FOAM_DDecl_JavaClass,
    FOAM_DDECL_LIMIT
 };
 	
@@ -621,6 +623,8 @@ struct foamArr {
 	AInt                    eltv[NARY];
 };
 
+extern String foamArrToString(Foam);
+
 struct foamRec {
 	struct foamHdr          hdr;
 	AInt                    format;
@@ -681,6 +685,9 @@ struct foamClos {
 					     (AInt)FOAM_Nil,f, \
 					     (AInt)(pr),(AInt)(dir))
 #define foamGDeclSetRType(fm,ty)	((fm)->foamGDecl.rtype = (ty))
+extern Bool foamGDeclIsImport(Foam);
+extern Bool foamGDeclIsExport(Foam);
+extern Bool foamGDeclIsExportOf(AInt, Foam);
 
 struct foamGDecl {
 	struct foamHdr          hdr;
@@ -1315,6 +1322,7 @@ struct foamProto_info {
 	FoamProtoTag		tag;
 	SExpr			sxsym;
 	String			str;
+	FoamProtoTag            base;
 };
 
 struct foamDDecl_info {
@@ -1337,6 +1345,7 @@ extern struct foamDDecl_info foamDDeclInfoTable[];
 #define foamBValStr(tag)    (foamBValInfo(tag).str)
 #define foamBValRetType(tag)(foamBValInfo(tag).retType)
 #define foamProtoStr(tag)   (foamProtoInfo(tag).str)
+#define foamProtoBase(tag)  (foamProtoInfo(tag).base)
 
 #define foamSExpr(tag)      (foamInfo(tag).sxsym)
 #define foamBValSExpr(tag)  (foamBValInfo(tag).sxsym) 

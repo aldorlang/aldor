@@ -296,7 +296,7 @@ symeType(Syme syme)
 	TForm	tf;
 
 	/* Use the type of the extension if present. */
-	ext = symeExtension(syme);
+	ext = symeExtensionFirst(syme);
 	if (ext) return symeType(ext);
 
 	/* Trigger symes from other libraries. */
@@ -380,6 +380,33 @@ symeCondition(Syme syme)
 	/* Ignore the conditions if needed for syme equality tests. */
 	if (symePopConds(syme)) return listNil(Sefo);
 	return (SefoList) symeGetField(syme, SYFI_Condition);
+}
+
+Syme
+symeExtension(Syme syme)
+{
+	Syme ext = symeExtensionFirst(syme);
+	if (ext && ((Syme) symeExtensionFirst(ext)) != NULL) {
+		afprintf(dbOut, "More extensions for %pSyme\n", syme);
+	}
+	return ext;
+}
+
+Syme
+symeExtensionFirst(Syme syme)
+{
+	Syme ext = (Syme) symeGetField(syme, SYFI_Extension);
+	return ext;
+}
+
+Syme
+symeExtensionFull(Syme syme)
+{
+	Syme ext = symeExtensionFirst(syme);
+	if (ext == NULL) {
+		return syme;
+	}
+	return symeExtensionFull(ext);
 }
 
 local SymeList
@@ -766,14 +793,15 @@ symeIsJavaExport(Syme syme)
 		tfFollow(inner);
 		if (errorSetCheck(errors,
 				  tfIsMap(inner), "apply must return a map")) {
-			tfJavaCheckArgs(errors, tfMapArg(inner));
-			tfJavaCheckArgs(errors, tfMapRet(inner));
+			tfJavaCheckArgs(errors, listNil(StabLevel), 0, tfMapArg(inner));
+			tfJavaCheckArgs(errors, listNil(StabLevel), 0, tfMapRet(inner));
 		}
 	}
 	if (symeId(syme) ==  ssymTheNew) {
-		errorSetCheck(errors, tfMapRetc(tf) == 1 && tfIsSelf(tfMapRetN(tf, 0)),
+		TForm retTf = tfIgnoreExceptions(tfMapRetN(tf, 0));
+		errorSetCheck(errors, tfMapRetc(tf) == 1 && tfIsSelf(retTf),
 			      "new must return %");
-		tfJavaCheckArgs(errors, tfMapArg(tf));
+		tfJavaCheckArgs(errors, listNil(StabLevel), 0, tfMapArg(tf));
 	}
 	return errors;
 }
@@ -1250,11 +1278,16 @@ symeListCheckJoinSymes(Syme syme1, Syme syme2)
 		symeTransferImplInfo(syme1, syme2);
 	}
 }
-
+/*
+ * False => Condition evaluates to false
+ * True => Condition either pending or true
+ */
 Bool
 symeCheckCondition(Syme syme)
 {
 	symeSetCondChecked(syme);
+	symeClrCheckCondIncomplete(syme);
+
 	while (symeCondition(syme)) {
 		Sefo	cond = car(symeCondition(syme));
 		Sefo	dom, cat;
@@ -1286,14 +1319,13 @@ symeCheckCondition(Syme syme)
 		if (!abIsFullyInstantiated(dom)) {
 			return true;
 		}
-		if (abTForm(dom) && tfEqual(abTForm(dom), symeExporter(syme)))
+		if (abTForm(dom) && tfEqual(abTForm(dom), symeExporter(syme))) {
 			return true;
+		}
 
-		symeClrCheckCondIncomplete(syme);
 		return false;
 	}
 
-	symeClrCheckCondIncomplete(syme);
 	return true;
 }
 
@@ -1318,6 +1350,11 @@ abIsFullyInstantiated(Sefo ab)
 	return result;
 }
 
+/*
+ * 0 => Failed
+ * 1 => SatPending
+ * 2 => Success
+ */
 local int
 symeCheckHas(SymeCContext conditionContext, Sefo dom, Sefo cat)
 {
@@ -1334,7 +1371,7 @@ symeCheckHas(SymeCContext conditionContext, Sefo dom, Sefo cat)
 	if (tiTopFns()->tiCanSefo(cat)) {
 		tiTopFns()->tiSefo(stabFile(), cat);
 	}
-	tfcat = abTForm(cat) ? abTForm(cat) : tiTopFns()->tiGetTopLevelTForm(NULL, cat);
+	tfcat = abTForm(cat) ? abTForm(cat) : tiTopFns()->tiGetTopLevelTForm(ablogTrue(), cat);
 
 	/* D has C iff typeof(D) satisfies C. */
 	result = tfSat(tfSatBupMask(), tfdom, tfcat);
@@ -1516,7 +1553,7 @@ symeCheckIdentifier(AbSyn ab, Syme syme)
 		cat = cond->abHas.property;
 
 		tfdom = abGetCategory(dom);
-		tfcat = abTForm(cat) ? abTForm(cat) : tiTopFns()->tiGetTopLevelTForm(NULL, cat);
+		tfcat = abTForm(cat) ? abTForm(cat) : tiTopFns()->tiGetTopLevelTForm(ablogTrue(), cat);
 
 		/* D has C iff typeof(D) satisfies C. */
 		result = tfSat(tfSatTdnInfoMask(), tfdom, tfcat);
@@ -1601,13 +1638,13 @@ symeSExprAList(Syme syme)
 		type = tfMapRet(type);
 
 	/* 5. Category exports */
-	if (!symeIsSelfSelf(syme) && tfSatCat(type)) {
+	if (!symeIsSelfSelf(syme) && !symeIsParam(syme) && tfSatCat(type)) {
 		sxi = symeListToSExpr(tfGetThdExports(type), false);
 		al = sxiACons("catExports", sxi, al);
 	}
 
 	/* 6. Domain exports */
-	else if (!symeIsSelfSelf(syme) && tfSatDom(type)) {
+	else if (!symeIsSelfSelf(syme) && !symeIsParam(syme) && tfSatDom(type)) {
 		sxi = symeListToSExpr(tfGetCatExports(type), false);
 		al = sxiACons("domExports", sxi, al);
 	}
@@ -1681,7 +1718,7 @@ symeToSExpr(Syme syme)
 	sx  = sxCons(sxi, sx);
 
 	/* Symbol type */
-	sxi = abToSExpr(tfExpr(type));
+	sxi = abToSExprElided(tfExpr(type));
 	sx  = sxCons(sxi, sx);
 
 	/* Create an Alist for remaining data */
@@ -1820,11 +1857,10 @@ symeXSImpl(Syme s)
  *
  *****************************************************************************/
 
-int
+void
 symeXSetExtension(Syme s, AInt v)
 {
 	symeSetField(s, SYFI_Extension, v);
-	return 0;
 }
 
 

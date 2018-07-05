@@ -2227,7 +2227,9 @@ gen0RtSefoHashId(Sefo sf, Sefo osf)
 		}
 		hash = gen0RtDomainHash(genFoamType(sf));
 	}
-
+	else if (abTForm(sf) && tfIsJavaImport(abTForm(sf))) {
+		hash = foamNewSInt(gen0StrHash(symeString(syme)));
+	}
 	else if (kind == FOAM_LIMIT) {
 		if (DEBUG(genfHash)) {
 			fprintf(dbOut, "Ugh: Found weird syme: ");
@@ -2256,6 +2258,9 @@ gen0RtSefoHashApply(Sefo sf, Sefo osf)
 {
 	if (gen0RtSefoIsSpecialOp(sf))
 		return gen0RtSefoHashSpecialApply(sf);
+	else if (abTForm(sf) && tfIsJavaImport(abTForm(sf))) {
+		return foamNewSInt(999);
+	}
 	else
 		return gen0RtSefoHashStdApply(sf, osf);
 }

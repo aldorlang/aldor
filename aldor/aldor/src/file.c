@@ -63,6 +63,7 @@ fileMustOpen(FileName fn, IOMode mode)
 {
 	FILE    *stream;
 
+	fileEnsureDirectory(fn);
 	stream = fileTryOpen(fn, mode);
 	if (!stream) stream = (*fileError)(fn, mode);
 	return stream;
@@ -140,6 +141,28 @@ fileRename(FileName from, FileName to)
 	osFileRename(name1, name2);
 	strFree(name1);
 }
+
+void
+fileEnsureDirectory(FileName fileName)
+{
+	FileName name;
+	String dir = fnameDir(fileName);
+	String nameStr;
+
+	if (strLength(dir) == 0) {
+		return;
+	}
+	if (osDirIsThere(dir)) {
+		return;
+	}
+
+	name = fnameParse(dir);
+	fileEnsureDirectory(name);
+	if (!osDirIsThere(dir)) {
+		osDirCreate(dir);
+	}
+}
+
 
 /*****************************************************************************
  *

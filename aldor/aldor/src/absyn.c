@@ -1095,6 +1095,22 @@ abCopyApplyArg(AbSyn ab)
 	return ab;
 }
 
+AbSyn
+abNewDefineLhs(Symbol sym, AbSynList params)
+{
+	AbSynList pl, revParams;
+	AbSyn abd;
+
+	abd = abNewId(sposNone, sym);
+	revParams = listReverse(AbSyn)(params);
+	for (pl = revParams; pl; pl = cdr(pl))
+		abd = abNewApplyOfComma(abd, car(pl));
+	listFree(AbSyn)(revParams);
+
+	return abd;
+}
+
+
 /*
  * Return a singleton, otherwise alloc node and fill.
  */
@@ -1242,6 +1258,17 @@ abPosSpan(AbSyn ab, SrcPos *pmin, SrcPos *pmax)
  * :: AbSyn/SExpr conversion
  *
  *****************************************************************************/
+static Bool abElideInnerExpressions;
+
+SExpr
+abToSExprElided(AbSyn ab)
+{
+	SExpr sx;
+	abElideInnerExpressions = true;
+	sx = abToSExpr(ab);
+	abElideInnerExpressions = false;
+	return sx;
+}
 
 SExpr
 abToSExpr(AbSyn ab)
@@ -1292,6 +1319,20 @@ abToSExpr(AbSyn ab)
 		sx = sxNReverse(sx);
 		break;
 		}
+	  case AB_Add:
+	  case AB_With: {
+		if (abElideInnerExpressions) {
+			sx = sxCons(abInfo(abTag(ab)).sxsym, sxNil);
+		}
+		else {
+			sx  = sxCons(abInfo(abTag(ab)).sxsym, sxNil);
+			for (ai = 0; ai < abArgc(ab); ai++)
+				sx = sxCons(abToSExpr(abArgv(ab)[ai]), sx);
+			sx = sxNReverse(sx);
+		}
+		break;
+	  }
+
 	  default:
 		sx  = sxCons(abInfo(abTag(ab)).sxsym, sxNil);
 		for (ai = 0; ai < abArgc(ab); ai++)
@@ -1535,7 +1576,8 @@ struct ab_info abInfoTable[] = {
 	{AB_Fix,	 0, 0,	"Fix",          KW_Fix      },
 	{AB_Fluid,	 0, 0,	"Fluid",        KW_Fluid    },
 	{AB_For,	 0, 0,	"For",          KW_For      },
-	{AB_Foreign,	 0, 0,	"Foreign",      TK_LIMIT    },
+	{AB_ForeignImport,0, 0,	"ForeignImport",TK_LIMIT    },
+	{AB_ForeignExport,0, 0,	"ForeignExport",TK_LIMIT    },
 	{AB_Free,	 0, 0,	"Free",         KW_Free     },
 	{AB_Generate,	 0, 0,	"Generate",     KW_Generate },
 	{AB_Goto,	 0, 0,	"Goto",         KW_Goto     },

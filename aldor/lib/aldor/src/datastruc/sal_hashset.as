@@ -3,7 +3,6 @@
 HashSet(T: HashType): BoundedFiniteDataStructureType T with {
     bracket: Tuple T -> %;
     bracket: Generator T -> %;
-    contains?: (%, T) -> Boolean;
     insert!: (%, T) -> ();
     empty: () -> %;
 }
@@ -15,7 +14,7 @@ HashSet(T: HashType): BoundedFiniteDataStructureType T with {
     (a: %) = (b: %): Boolean == {
         import from MachineInteger;
         import from BooleanFold;
-        # a = #b and (_and)/(contains?(a, elt) for elt in b)
+        # a = #b and (_and)/(member?(elt, a) for elt in b)
     }
 
     generator set: Generator T == {
@@ -31,7 +30,7 @@ HashSet(T: HashType): BoundedFiniteDataStructureType T with {
         set!(rep set, e, true);
     }
     
-    contains?(set, e: T): Boolean == {
+    member?(e: T, set): Boolean == {
         import from Partial Boolean;
         not failed? find(e, rep set);
     }

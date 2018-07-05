@@ -4,6 +4,7 @@
 #include "store.h"
 #include "comsg.h"
 #include "strops.h"
+#include "util.h"
 
 /*****************************************************************************
  *
@@ -12,7 +13,6 @@
  ****************************************************************************/
 
 local ForeignOrigin	forgAlloc		(FoamProtoTag, String);
-local ForeignOrigin	forgNew			(FoamProtoTag, String);
 
 static ForeignOrigin	stdOrig[FOAM_PROTO_LIMIT - FOAM_PROTO_START];
 
@@ -27,7 +27,7 @@ forgAlloc(FoamProtoTag ptag, String file)
 	return forg;
 }
 
-local ForeignOrigin
+ForeignOrigin
 forgNew(FoamProtoTag ptag, String file)
 {
 	static Bool		stdOrigAreInit = false;
@@ -95,6 +95,65 @@ forgFrAbSyn(AbSyn origin)
 Bool
 forgEqual(ForeignOrigin f1, ForeignOrigin f2)
 {
-	return f1->protocol == f2->protocol && strEqual(f1->file, f2->file);
+	if (f1->protocol != f2->protocol)
+		return false;
+
+	if (f1->file == NULL && f2->file == NULL)
+		return true;
+	if (f1->file != NULL && f2->file != NULL)
+		return strEqual(f1->file, f2->file);
+	return false;
 }
 
+void
+forgFree(ForeignOrigin forg)
+{
+	/* Not possible to free these as there is a
+	 * pre-initialised cache, and some last-value caching
+	 */
+}
+
+AInt
+forgHash(ForeignOrigin forg)
+{
+	if (forg->file == NULL) {
+		return forg->protocol;
+	}
+	return hashCombine(forg->protocol, strHash(forg->file));
+}
+
+ForeignOrigin
+forgFrBuffer(Buffer buf)
+{
+	FoamProtoTag tag = (FoamProtoTag) bufGetHInt(buf);
+	String file = NULL;
+	Bool flg;
+	flg = bufGetByte(buf);
+	if (flg) {
+		file = bufRdString(buf);
+	}
+
+	return forgNew(tag, file);
+}
+
+void
+forgToBuffer(Buffer buf, ForeignOrigin forg)
+{
+	bufPutHInt(buf, forg->protocol);
+	bufPutByte(buf, forg->file != NULL);
+	if (forg->file != NULL) {
+		bufWrString(buf, forg->file);
+	}
+}
+
+void
+forgBufferSkip(Buffer buf)
+{
+	String text;
+	Bool flg;
+	bufGetHInt(buf);
+	flg = bufGetByte(buf);
+	if (flg) {
+		text = bufRdString(buf);
+	}
+}

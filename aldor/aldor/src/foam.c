@@ -35,6 +35,7 @@
 #include "foamsig.h"
 #include "format.h"
 #include "int.h"
+#include "javasig.h"
 #include "opsys.h"
 #include "sexpr.h"
 #include "store.h"
@@ -1070,6 +1071,10 @@ foamAuditDecl(Foam decl)
 		if (fmt >= FOAM_DATA_LIMIT && fmt != FOAM_BInt)
 			foamAuditBadDecl(decl);
 		break;
+	case FOAM_JavaObj:
+		if (fmt >= faNumFormats)
+			foamAuditBadDecl(decl);
+		break;
 	case FOAM_Rec:
 		/*
 		  TODO: Fix implicit exports so that they don't
@@ -1142,14 +1147,20 @@ foamAuditPCallJava(Foam foam)
 	int extra;
 
 	op = foam->foamPCall.op;
+	if (foamTag(op) == FOAM_Arr) {
+		if (op->foamArr.baseType != FOAM_Char)
+			bug("incorrect type for java pcall");
+		return;
+	}
 	if (foamTag(op) != FOAM_Glo)
 		foamAuditBadType(foam);
 	glo = faGlobalsv[op->foamGlo.index];
 	ddecl = faFormats->foamDFmt.argv[glo->foamGDecl.format];
 
-	/* Methods have an implicit argument. */
-	extra = foam->foamPCall.protocol == FOAM_Proto_JavaMethod ? 1 : 0;
-	if (foamDDeclArgc(ddecl) + extra != foamPCallArgc(foam))
+	if (ddecl->foamDDecl.usage != FOAM_DDecl_JavaSig)
+		foamAuditBadType(foam);
+
+	if (javaSigArgc(ddecl) != foamPCallArgc(foam))
 		foamAuditBadType(foam);
 }
 
@@ -2068,6 +2079,54 @@ foamFrString(String s)
 
 	return foam;
 }
+
+/*****************************************************************************
+ *
+ * :: FOAM_Arr
+ *
+ ****************************************************************************/
+
+String
+foamArrToString(Foam foam)
+{
+	int	i, arrSize;
+	String	str;
+	assert(foam->foamArr.baseType == FOAM_Char);
+
+	arrSize = foamArgc(foam);
+	str = strAlloc(arrSize);
+	for (i = 0; i < arrSize - 1; i++)
+		str[i] = foam->foamArr.eltv[i];
+	str[i] = '\0';
+
+	return str;
+}
+
+
+/*****************************************************************************
+ *
+ * :: FOAM_GDecl
+ *
+ ****************************************************************************/
+
+Bool
+foamGDeclIsExport(Foam foam)
+{
+	return foam->foamGDecl.dir == FOAM_GDecl_Export;
+}
+
+Bool
+foamGDeclIsImport(Foam foam)
+{
+	return foam->foamGDecl.dir == FOAM_GDecl_Import;
+}
+
+Bool
+foamGDeclIsExportOf(AInt tag, Foam foam)
+{
+	return foamGDeclIsExport(foam) && foam->foamGDecl.protocol == tag;
+}
+
 
 /*****************************************************************************
  *
@@ -3571,6 +3630,7 @@ struct foam_info foamInfoTable[] = {
  {FOAM_PopEnv,	    0,"PopEnv",       0,        "", 	0},
  {FOAM_MFmt,	    0,"MFmt",         2,        "iC", 	0},
  {FOAM_RRFmt,	    0,"RRFmt",        1,        "C", 	0},
+ {FOAM_JavaObj,	    0,"JavaObj",      0,        "", 	0},
 
 /* ========> FFO_ORIGIN (start of multi-format instructions) <======== */
 
@@ -3629,16 +3689,16 @@ struct foam_info foamInfoTable[] = {
  ****************************************************************************/
 
 struct foamProto_info foamProtoInfoTable[] = {
- {FOAM_Proto_Foam,   0,"Foam"},
- {FOAM_Proto_Fortran,0,"Fortran"},
- {FOAM_Proto_C,	     0,"C"},
- {FOAM_Proto_Java,   0,"Java"},
- {FOAM_Proto_JavaConstructor,   0,"JavaConstructor"},
- {FOAM_Proto_JavaMethod,	0,"JavaMethod"},
- {FOAM_Proto_Lisp,   0,"Lisp"},
- {FOAM_Proto_Init,   0,"Init"},
- {FOAM_Proto_Include,0,"Include"},
- {FOAM_Proto_Other,  0,"Other"}
+	{FOAM_Proto_Foam,    	     0,"Foam",            FOAM_Proto_Foam},
+	{FOAM_Proto_Fortran, 	     0,"Fortran", 	  FOAM_Proto_Fortran},
+	{FOAM_Proto_C,		     0,"C",               FOAM_Proto_C},
+	{FOAM_Proto_Java,	     0,"Java",	          FOAM_Proto_Java},
+	{FOAM_Proto_JavaConstructor, 0,"JavaConstructor", FOAM_Proto_Java},
+	{FOAM_Proto_JavaMethod,	     0,"JavaMethod",      FOAM_Proto_Java},
+	{FOAM_Proto_Lisp,   	     0,"Lisp",            FOAM_Proto_Lisp},
+	{FOAM_Proto_Init,   	     0,"Init",            FOAM_Proto_Init},
+	{FOAM_Proto_Include,	     0,"Include",         FOAM_Proto_Include},
+	{FOAM_Proto_Other,  	     0,"Other",           FOAM_Proto_Other}
 };
 
 /*****************************************************************************
@@ -3662,6 +3722,7 @@ struct foamDDecl_info	foamDDeclInfoTable[] = {
  { FOAM_DDecl_FortranSig,       0, "FortranSig" },
  { FOAM_DDecl_CSig,             0, "CSig" },
  { FOAM_DDecl_JavaSig,          0, "JavaSig" },
+ { FOAM_DDecl_JavaClass,        0, "JavaClass" },
 };
 
 /*****************************************************************************

@@ -23,8 +23,8 @@ extend Boolean: Join(
 	false: %;	++ false is the constant representing logical falsity.
 	true:  %;	++ true is the constant representing logical truth.
 
-	java: % -> BBool;
-	avaj: BBool -> %;
+	toJava: % -> BBool;
+	fromJava: BBool -> %;
 
 }
 == add {
@@ -54,8 +54,8 @@ extend Boolean: Join(
 	max(a: %, b: %): %   == a \/ b;
 	min(a: %, b: %): %   == a /\ b;
 
-	java(i: %): BBool == rep i;
-	avaj(i: BBool): % == per i;
+	toJava(i: %): BBool == rep i;
+	fromJava(i: BBool): % == per i;
 
 	test(b: %): Boolean  == b;
 

@@ -252,7 +252,8 @@ local void		scobindExport		(AbSyn);
 local void		scobindExtend		(AbSyn);
 local void		scobindFluid		(AbSyn);
 local void		scobindFor		(AbSyn);
-local void		scobindForeign		(AbSyn);
+local void		scobindForeignImport	(AbSyn);
+local void		scobindForeignExport	(AbSyn);
 local void		scobindFree		(AbSyn);
 local void		scobindImport		(AbSyn);
 local void		scobindInline		(AbSyn);
@@ -615,7 +616,8 @@ scobindValue(AbSyn absyn)
 	case AB_Extend:
 	case AB_Fluid: 
 	case AB_For:
-	case AB_Foreign:
+	case AB_ForeignImport:
+	case AB_ForeignExport:
 	case AB_Free:
 	case AB_Import:
 	case AB_Inline:
@@ -770,8 +772,12 @@ scobindContext(AbSyn absyn)
 		scobindFor(absyn);
 		break;
 
-	case AB_Foreign:
-		scobindForeign(absyn);
+	case AB_ForeignImport:
+		scobindForeignImport(absyn);
+		break;
+
+	case AB_ForeignExport:
+		scobindForeignExport(absyn);
 		break;
 
 	case AB_Free:
@@ -2381,6 +2387,32 @@ scobindExportId(AbSyn id, AbSyn type, AbSyn val)
 
 /******************************************************************************
  *
+ * :: scobindForeignExport
+ *
+ *****************************************************************************/
+
+local void
+scobindForeignExport(AbSyn ab)
+{
+	AbSyn	dest	= ab->abForeignExport.dest;
+	AbSyn	what	= ab->abForeignExport.what;
+	ForeignOrigin forg = forgFrAbSyn(dest->abApply.argv[0]);
+
+	scoIsInExport = true;
+
+	if (forg->protocol == FOAM_Proto_Java) {
+		scobindValue(what);
+	}
+	else {
+		scobindLOF(what, SCO_Sig_Local);
+	}
+	
+
+	scoIsInExport = false;
+}
+
+/******************************************************************************
+ *
  * :: scobindFluid
  *
  *****************************************************************************/
@@ -2560,15 +2592,15 @@ scobindForId(AbSyn id, AbSyn type)
 
 /******************************************************************************
  *
- * :: scobindForeign
+ * :: scobindForeignImport
  *
  *****************************************************************************/
 
 local void
-scobindForeign(AbSyn ab)
+scobindForeignImport(AbSyn ab)
 {
-	AbSyn	origin	= ab->abForeign.origin;
-	AbSyn	what	= ab->abForeign.what;
+	AbSyn	origin	= ab->abForeignImport.origin;
+	AbSyn	what	= ab->abForeignImport.what;
 	AbSyn	*argv	= abArgvAs(AB_Sequence, what);
 	Length	i, argc = abArgcAs(AB_Sequence, what);
 

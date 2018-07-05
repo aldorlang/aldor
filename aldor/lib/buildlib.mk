@@ -15,6 +15,8 @@ asdomains	:= $(internal) $(library) $(tests)
 axdomains	:= $(axlibrary)
 alldomains	:= $(asdomains) $(axdomains)
 
+libsubdir	:= $(subst $(abs_libdir)/,,$(abs_builddir)/.)
+
 include $(top_builddir)/lib/config.mk
 
 # Aldor
@@ -210,30 +212,29 @@ ifneq ($(BUILD_JAVA),)
 ifneq ($(javalibrary),)
 _javalibrary = $(filter-out $(java_blacklist), $(javalibrary))
 
-$(addsuffix .java, $(_javalibrary)): %.java: %.ao
+$(patsubst %,aldorcode/%.java, $(_javalibrary)): aldorcode/%.java: %.ao
 	$(AM_V_FOAMJ)$(AM_DBG)	\
 	$(aldorexedir)/aldor $(aldor_common_args) -Fjava $*.ao
 
-$(addsuffix .class, $(_javalibrary)): %.class: $(libraryname).classlib
+$(patsubst %,aldorcode/%.class, $(_javalibrary)): aldorcode/%.class: $(libraryname).classlib
 # FIXME: -g here is ropey
-$(libraryname).classlib: $(addsuffix .java, $(_javalibrary))
+$(libraryname).classlib: $(patsubst %,aldorcode/%.java, $(_javalibrary))
 	$(AM_V_JAVAC)javac -g -cp $(aldorlibdir)/java/src/foamj.jar $^
 	@touch $@
 
-$(libraryname).jar: $(addsuffix .class, $(_javalibrary)) $(top_srcdir)/lib/buildlib.mk
+$(libraryname).jar: $(patsubst %,aldorcode/%.class, $(_javalibrary)) $(top_srcdir)/lib/buildlib.mk
 	$(AM_V_JAR) \
 	rm -f $@;	\
 	rm -rf jar;	\
 	mkdir jar;	\
-	jar cf $@ $(addsuffix *.class, $(_javalibrary))
+	jar cf $@ $(patsubst %,aldorcode/%*.class, $(_javalibrary))
 	for i in $(foreach i, $(SUBDIRS), $i/$(libraryname).jar); do \
 		(cd jar; jar xf ../$$i);				\
 		jar uf ../$@ -C jar .; done;				\
 	rm -rf jar
 
 all: $(libraryname).jar				\
-	$(addsuffix .java,$(_javalibrary))	\
-	$(addsuffix .class,$(_javalibrary))
+	$(patsubst %,aldorcode/%.class,$(_javalibrary))
 endif
 endif
 
@@ -298,8 +299,8 @@ $(aldortestjavas): %.aldortest-exec-java: Makefile %.as
 		-Fjava -Ffm -Jmain \
 		$($*_test_AXLFLAGS) \
 		$*_jtest.as; \
-	 javac -g -cp $(aldorlibdir)/java/src/foamj.jar $*_jtest.java; \
-	 java -cp .:$(aldorlibdir)/java/src/foamj.jar:$(aldorlibdir)/libfoam/al/foam.jar:$(top_builddir)/lib/$(libraryname)/src/$(libraryname).jar:$(top_builddir)/lib/aldor/src/aldor.jar $*_jtest; \
+	 javac -g -cp $(aldorlibdir)/java/src/foamj.jar aldorcode/$*_jtest.java; \
+	 java -cp .:$(aldorlibdir)/java/src/foamj.jar:$(aldorlibdir)/libfoam/al/foam.jar:$(top_builddir)/lib/$(libraryname)/src/$(libraryname).jar:$(top_builddir)/lib/aldor/src/aldor.jar aldorcode.$*_jtest; \
 	 $(CHECK_TEST_STATUS) \
 	 fi;)
 
@@ -336,9 +337,27 @@ distclean: clean
 	rm Makefile
 maintainer-clean: distclean
 
+install-data:
+	$(MKDIR_P) $(DESTDIR)$(datarootdir)/aldor/lib/$(libraryname)/$(libsubdir)
+	for i in $(library); do \
+		if test -f $(abs_srcdir)/$$i.as; then \
+			$(INSTALL_DATA) $(abs_srcdir)/$$i.as $(DESTDIR)$(datarootdir)/aldor/lib/$(libraryname)/$(libsubdir)/$$i.as; \
+		fi; \
+		if test -f $$i.abn; then \
+			$(INSTALL_DATA) $$i.abn $(DESTDIR)$(datarootdir)/aldor/lib/$(libraryname)/$(libsubdir)/$$i.abn; \
+		fi; \
+		if test -f $$i.asy; then \
+			$(INSTALL_DATA) $$i.asy $(DESTDIR)$(datarootdir)/aldor/lib/$(libraryname)/$(libsubdir)/$$i.asy; \
+		fi; \
+	done
+
+uninstall:
+	rm -rf $(datarootdir)/lib/$(libraryname)/$(libsubdir)
+
+install: install-data install-exec
 
 EMPTY_AUTOMAKE_TARGETS  = dvi pdf ps info html tags ctags
-EMPTY_AUTOMAKE_TARGETS += install install-data install-exec uninstall
+EMPTY_AUTOMAKE_TARGETS += install-exec uninstall
 EMPTY_AUTOMAKE_TARGETS += install-dvi install-html install-info install-ps install-pdf
 EMPTY_AUTOMAKE_TARGETS += installdirs
 EMPTY_AUTOMAKE_TARGETS += check installcheck

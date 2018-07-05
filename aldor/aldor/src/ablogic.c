@@ -182,7 +182,10 @@ ablogFormatter(OStream ostream, Pointer p)
 {
 	int c;
 
-	c = ablogWrite(ostream, p);
+	if (p == NULL)
+		c = ostreamWrite(ostream, "<NULL>", -1);
+	else
+		c = ablogWrite(ostream, p);
 
 	return c;
 }
@@ -348,7 +351,6 @@ ablogFrSefo(Sefo sefo)
 	}
 	return rr;
 }
-
 
 /*****************************************************************************
  *
@@ -631,9 +633,9 @@ ablogTestProperties(Sefo test, Sefo know)
 	know = know->abHas.property;
 
 	tftest  = abTForm(test) ?
-		abTForm(test) : (tiTopFns()->tiGetTopLevelTForm)(NULL, test);
+		abTForm(test) : (tiTopFns()->tiGetTopLevelTForm)(ablogTrue(), test);
 	tfknown = abTForm(know) ?
-		abTForm(know) : (tiTopFns()->tiGetTopLevelTForm)(NULL, know);
+		abTForm(know) : (tiTopFns()->tiGetTopLevelTForm)(ablogTrue(), know);
 
 	if (DEBUG(ablog)){
 		fprintf(dbOut, "Checking: \n");

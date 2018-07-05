@@ -2269,10 +2269,11 @@ inlTransformGlobal(Foam glo)
 	decl = foamCopy(decl0);
 	decl->foamGDecl.dir = FOAM_GDecl_Import;
 
-	/* Fortran and C PCalls use formats */
-	switch (decl->foamGDecl.protocol) {
+	/* Fortran, C and Java PCalls use formats */
+	switch (foamProtoBase(decl->foamGDecl.protocol)) {
 	  case FOAM_Proto_Fortran:	/*FALLTHROUGH*/
 	  case FOAM_Proto_C:		/*FALLTHROUGH*/
+	  case FOAM_Proto_Java:		/*FALLTHROUGH*/
 		if (decl->foamGDecl.type == FOAM_Clos) {
 			AInt fmt = inlGetFormat(decl->foamGDecl.format);
 			decl->foamGDecl.format = fmt;
@@ -2709,6 +2710,7 @@ inlUpdateDDecl(Foam ddecl)
 	switch (ddecl->foamDDecl.usage) {
 	  case FOAM_DDecl_FortranSig:	/*FALLTHROUGH*/
 	  case FOAM_DDecl_CSig:		/*FALLTHROUGH*/
+	  case FOAM_DDecl_JavaSig:      /*FALLTHROUGH*/
 		sigDecl = true;
 	  default:
 		break;
@@ -2717,7 +2719,8 @@ inlUpdateDDecl(Foam ddecl)
 	for(i=0; i< foamDDeclArgc(ddecl); i++) {
 		decl = ddecl->foamDDecl.argv[i];
 		if (decl->foamDecl.type == FOAM_Rec
-		    || decl->foamDecl.type == FOAM_TR)
+		    || decl->foamDecl.type == FOAM_TR
+		    || decl->foamDecl.type == FOAM_JavaObj)
 			decl->foamDecl.format =
 				inlGetFormat(decl->foamDecl.format);
 		if (sigDecl && decl->foamDecl.type == FOAM_Clos)
@@ -3235,6 +3238,12 @@ inlTransformExpr(Foam expr, Foam *paramArgv, Foam *localArgv)
 		/* Fall through and transform as before */
 	}
 
+	if (foamTag(expr) == FOAM_EElt &&
+	    foamTag(expr->foamEElt.ref) == FOAM_Env) {
+		expr = foamNewLex(expr->foamEElt.level + expr->foamEElt.ref->foamEnv.level,
+				  expr->foamEElt.lex);
+		tag = FOAM_Lex;
+	}
 
 	/* Recursive depth-first transformation of the expression */
 	foamIter(expr, arg, *arg = inlTransformExpr(*arg,paramArgv,localArgv));
@@ -3250,7 +3259,7 @@ inlTransformExpr(Foam expr, Foam *paramArgv, Foam *localArgv)
 			localArgv[expr->foamLoc.index]->foamLoc.index;
 		break;
 	  case FOAM_Lex:
-		nexpr = inlLex(nexpr);
+		nexpr = inlLex(expr);
 		break;
 	  case FOAM_Env:
 		nexpr = inlEnv(nexpr);

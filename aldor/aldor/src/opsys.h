@@ -248,7 +248,8 @@ extern Length	osFileSize	(String fn);
 
 extern Bool	osDirIsThere	(String dn);
 extern int	osDirSwap	(String newwd, String oldwd, Length oldwdlen);
-	/*
+extern void	osDirCreate	(String dn);
+/*
 	 * osIsInteractive determines whether an input stream is interactive,
 	 *   e.g. a keyboard.
 	 *
@@ -262,6 +263,8 @@ extern int	osDirSwap	(String newwd, String oldwd, Length oldwdlen);
 	 *   the name of the original directory.  This name can then be used to
 	 *   swap back or to form file names relative to the original directory.
 	 *   Returns 0 on success and -1 on failure.
+	 *
+	 * osDirCreate: Creates a directory
 	 */
 
 /*****************************************************************************
