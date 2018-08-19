@@ -1943,13 +1943,13 @@ tfSatParents(SatMask mask, SymeList mods, AbSyn Sab, SymeList S, SymeList T)
 			newS = tfGetCatParents(symeType(oldSyme), true);
 			queue = cdr(queue);
 
-			tfsParentDEBUG(dbOut, " ->tfpSyme: %*s%d= into: %pSymeList",
+			tfsParentDEBUG(dbOut, " ->tfpSyme: %*s%d= into: %pSymeList\n",
 						tfsDepthNo, "", serialThis, newS);
 		}
 		else
 			newS = listNil(Syme);
 	}
-	tfsParentDEBUG(dbOut, " ->tfpSyme: %*s= Left: %pSymeList)",
+	tfsParentDEBUG(dbOut, " ->tfpSyme: %*s= Left: %pSymeList)\n",
 				tfsDepthNo, "", T);
 	if (T == listNil(Syme))
 		return tfSatTrue(mask);
