@@ -14,7 +14,21 @@
  *
  ****************************************************************************/
 
-# if defined(CC_noncanonical_pointer) && defined(OS_MS_DOS) && \
+Bool
+ptrEqualFn(Pointer p1, Pointer p2)
+{
+	return ptrEqual(p1, p2);
+}
+
+Hash
+ptrHashFn(Pointer p)
+{
+	Hash h = (Hash) p>>2; // Bottom bit is boring.
+
+	return h * 2654435761;
+}
+
+# if defined(CC_noncanonical_pointer) && defined(OS_MS_DOS) &&	\
          (defined(CC_BORLAND) || defined(CC_MICROSOFT))
 
 #include <dos.h>
@@ -49,6 +63,12 @@ Bool
 ptrEqual(Pointer p, Pointer q)
 {
 	return ptrCanon(p) == ptrCanon(q);
+}
+
+Hash
+ptrHash(Pointer p)
+{
+	return (Hash) p;
 }
 
 long
