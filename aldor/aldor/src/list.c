@@ -439,6 +439,20 @@ ptrlistPosq(PointerList l, Pointer x)
 }
 
 /*
+ * Return true if l1 contains every element in l2
+ */
+local Bool
+ptrlistContainsAllq(PointerList l1, PointerList l2)
+{
+	while (l2 != listNil(Pointer)) {
+		if (ptrlistPosq(l1, car(l2)) == -1)
+			return false;
+		l2 = cdr(l2);
+	}
+	return true;
+}
+
+/*
  * Return the position of e in l using `eq' as the equality test.
  * If e is not there, -1 is returned.   
  */
@@ -590,6 +604,7 @@ const struct ListOpsStructName(Pointer) ptrlistOps = {
 	ptrlistNConcat,
 	ptrlistMemq,
 	ptrlistMember,
+	ptrlistContainsAllq,
 	ptrlistPosq,
 	ptrlistPosition,                                
 	ptrlistNRemove,
