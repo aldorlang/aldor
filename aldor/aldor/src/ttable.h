@@ -2,15 +2,17 @@
 #define _TTABLE_H_
 #include "cport.h"
 #include "ostream.h"
-#include "list.h"
+#include "table.h"
+
+typedef struct tsetIter { TableIterator iter; } *ANY_TSetIter;
 
 #define TSet(Type) Type##TSet
 #define TSetIter(Type) Type##TSetIter
 #define DECLARE_TSET(Type)			\
 	typedef struct Type##_TSet {		\
-		Type##List lst;			\
+		Table table;			\
 	} *TSet(Type);				\
-	typedef Type##List Type##TSetIter;	\
+	typedef ANY_TSetIter Type##TSetIter;	\
 	TSetOpsStruct(Type);			\
 	extern struct TSetOpsStructName(Type)	\
                  const *TSetOps(Type)		\
@@ -27,6 +29,7 @@ struct TSetOpsStructName(Type) const *TSetOps(Type) =		\
 #define tsetCreate(Type) (TSetOps(Type)->Create)
 #define tsetEmpty(Type) (TSetOps(Type)->Create)
 #define tsetFree(Type) (TSetOps(Type)->Free)
+#define tsetSize(Type) (TSetOps(Type)->Size)
 #define tsetAdd(Type) (TSetOps(Type)->Add)
 #define tsetRemove(Type) (TSetOps(Type)->Remove)
 #define tsetMember(Type) (TSetOps(Type)->Member)
@@ -35,6 +38,7 @@ struct TSetOpsStructName(Type) const *TSetOps(Type) =		\
 #define tsetIterNext(Type) (TSetOps(Type)->IterNext)
 #define tsetIterElt(Type) (TSetOps(Type)->IterElt)
 #define tsetIterHasNext(Type) (TSetOps(Type)->IterHasNext)
+#define tsetIterDone(Type) (TSetOps(Type)->IterDone)
 
 #define TSetOps(Type) Type##_tsetPointer
 #define TSetOpsStructName(Type) Type##_tsetOpsStruct
@@ -43,6 +47,7 @@ struct TSetOpsStructName(Type) const *TSetOps(Type) =		\
 struct TSetOpsStructName(Type) {			\
 	TSet(Type) (*Create) (void);			\
 	void 	   (*Free)   (TSet(Type));		\
+	Length 	   (*Size)   (TSet(Type));		\
 	void 	   (*Add)    (TSet(Type), Type);	\
 	void 	   (*Remove) (TSet(Type), Type);	\
 	Bool 	   (*Member) (TSet(Type), Type);	\
@@ -52,6 +57,7 @@ struct TSetOpsStructName(Type) {			\
 	TSetIter(Type)	(*IterNext)(TSetIter(Type));		\
 	Type		(*IterElt)(TSetIter(Type));		\
 	Bool 		(*IterHasNext)(TSetIter(Type));		\
+	void 		(*IterDone)(TSetIter(Type));		\
 }
 #if 0
 	; /* for editor indentation */
