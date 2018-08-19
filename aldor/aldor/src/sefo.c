@@ -1391,6 +1391,18 @@ symeMarkTwins(Syme syme)
 	}
 }
 
+void
+symeShowTwins(Syme syme)
+{
+	SymeList	symes = symeTwins(syme);
+
+	afprintf(dbOut, "%p -> %pPtrList\n", syme, symes);
+	for (; symes; symes = cdr(symes)) {
+		Syme	twin = car(symes);
+		if (twin != syme) symeShowTwins(twin);
+	}
+}
+
 local Bool
 symeFindTwins(Syme syme)
 {
