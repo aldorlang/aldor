@@ -395,6 +395,16 @@ stabEntryGetSymes(StabEntry stent, AbLogic abl)
 	Length		i;
 	SymeList	symes;
 
+	if (abl != NULL && ablogEqual(abl, ablogFalse())) {
+		if (stent->argc == 1) {
+			return stent->symev[0];
+		}
+		else {
+			assert(ablogEqual(stent->condv[1], ablogFalse()));
+			return stent->symev[1];
+		}
+	}
+
 	stabEntryCheckConditions(stent);
 
 	/* Generic entry:  no conditional symes, return them all. */
