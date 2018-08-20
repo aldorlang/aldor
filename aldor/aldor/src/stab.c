@@ -439,7 +439,11 @@ stabEntryCheckConditions(StabEntry stent)
 	npsymes = listNil(Syme);
 	while (psymes != listNil(Syme)) {
 		Syme psyme = car(psymes);
-		symeCheckCondition(psyme);
+		psymes = cdr(psymes);
+
+		if (!symeCheckCondition(psyme)) {
+			continue;
+		}
 
 		stabDEBUG(dbOut, "Checked: %pSyme - complete: %d condition: %pAbSynList\n",
 			  psyme, symeIsCheckCondIncomplete(psyme),
@@ -451,7 +455,6 @@ stabEntryCheckConditions(StabEntry stent)
 		if (symeIsCheckCondIncomplete(psyme)) {
 			npsymes = listCons(Syme)(psyme, npsymes);
 		}
-		psymes = cdr(psymes);
 	}
 	listFree(Syme)(stent->pending);
 	stent->pending = npsymes;
