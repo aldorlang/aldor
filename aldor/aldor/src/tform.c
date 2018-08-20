@@ -4038,11 +4038,18 @@ tfGetCatExportsCond(SymeList symes0, SefoList conds0, Bool pos)
 	 * For example S has Ring and X has Algebra S
 	 */
 	for (symes = symes0; symes; symes = cdr(symes)) {
-		Syme nsyme = symeCopy(car(symes));
-		for (conds = reversedConds0; conds; conds = cdr(conds)) {
-			symeAddCondition(nsyme, car(conds), pos);
+		Syme syme = car(symes);
+		Syme nsyme;
+		if (listContainsAllq(Sefo)(symeCondition(syme), conds0)) {
+			nsymes = listCons(Syme)(syme, nsymes);
 		}
-		nsymes = listCons(Syme)(nsyme, nsymes);
+		else {
+			nsyme = symeCopy(syme);
+			for (conds = reversedConds0; conds; conds = cdr(conds)) {
+				symeAddCondition(nsyme, car(conds), pos);
+			}
+			nsymes = listCons(Syme)(nsyme, nsymes);
+		}
 	}
 	listFree(Sefo)(reversedConds0);
 
