@@ -13,6 +13,7 @@
 #include "strops.h"
 #include "errorset.h"
 #include "tconst.h"
+#include "ttable.h"
 
 local int tfFormatter(OStream stream, Pointer p);
 local int tfListFormatter(OStream stream, Pointer p);
@@ -29,6 +30,8 @@ local int symeListListFormatter(OStream stream, Pointer p);
 
 local int symeConditionFormatter(OStream stream, Pointer p);
 local int symeConditionListFormatter(OStream stream, Pointer p);
+
+local int tsetFormatter(OStream stream, Pointer p);
 
 local int ptrFormatter(OStream stream, Pointer p);
 local int ptrListFormatter(OStream stream, Pointer p);
@@ -64,6 +67,8 @@ fmttsInit()
 
 	fmtRegister("SymeC", symeConditionFormatter);
 	fmtRegister("SymeCList", symeConditionListFormatter);
+
+	fmtRegister("TSet", tsetFormatter);
 
 	fmtRegister("Ptr", ptrFormatter);
 	fmtRegister("PtrList", ptrListFormatter);
@@ -105,6 +110,27 @@ symeConditionFormatter(OStream ostream, Pointer p)
 	c = symeOStreamWrite(ostream, syme);
 	c += listFormat(AbSyn)(ostream, "AbSyn", (AbSynList) symeCondition(syme));
 
+	return c;
+}
+
+local int
+tsetFormatter(OStream ostream, Pointer p)
+{
+	PointerTSet tset = (PointerTSet) p;
+	PointerTSetIter iter;
+	String sep = "";
+	int c = 0;
+
+	c += ostreamWrite(ostream, "{", -1);
+	for (iter = tsetIter(Pointer)(tset);
+	     tsetIterHasNext(Pointer)(iter);
+	     iter = tsetIterNext(Pointer)(iter)) {
+		c += ostreamWrite(ostream, sep, -1);
+		c += ptrFormatter(ostream, tsetIterElt(Pointer)(iter));
+		sep = ", ";
+	}
+
+	c += ostreamWrite(ostream, ")", -1);
 	return c;
 }
 

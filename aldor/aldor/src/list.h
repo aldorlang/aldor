@@ -48,6 +48,7 @@
 #  define listCons(Type)		(ListOps(Type)->Cons)
 #  define listEqual(Type)		(ListOps(Type)->Equal)
 #  define listFind(Type)		(ListOps(Type)->Find)
+#  define listContainsAllq(Type)	(ListOps(Type)->ContainsAllq)
 #  define listFreeCons(Type)		(ListOps(Type)->FreeCons)
 #  define listFree(Type)		(ListOps(Type)->Free)
 #  define listFreeTo(Type)		(ListOps(Type)->FreeTo)
@@ -151,6 +152,7 @@ Statement({							\
 		Bool		(*Memq)		(List(Type), Type);		\
 		Bool		(*Member)	(List(Type), Type,		\
 						 Bool(*eq)(Type,Type) );	\
+		Bool		(*ContainsAllq)	(List(Type), List(Type)); \
 		int		(*Posq)		(List(Type), Type);		\
 		int		(*Position)	(List(Type), Type,		\
 						 Bool(*eq)(Type,Type) );	\

@@ -395,6 +395,16 @@ stabEntryGetSymes(StabEntry stent, AbLogic abl)
 	Length		i;
 	SymeList	symes;
 
+	if (abl != NULL && ablogEqual(abl, ablogFalse())) {
+		if (stent->argc == 1) {
+			return stent->symev[0];
+		}
+		else {
+			assert(ablogEqual(stent->condv[1], ablogFalse()));
+			return stent->symev[1];
+		}
+	}
+
 	stabEntryCheckConditions(stent);
 
 	/* Generic entry:  no conditional symes, return them all. */
@@ -429,7 +439,11 @@ stabEntryCheckConditions(StabEntry stent)
 	npsymes = listNil(Syme);
 	while (psymes != listNil(Syme)) {
 		Syme psyme = car(psymes);
-		symeCheckCondition(psyme);
+		psymes = cdr(psymes);
+
+		if (!symeCheckCondition(psyme)) {
+			continue;
+		}
 
 		stabDEBUG(dbOut, "Checked: %pSyme - complete: %d condition: %pAbSynList\n",
 			  psyme, symeIsCheckCondIncomplete(psyme),
@@ -441,7 +455,6 @@ stabEntryCheckConditions(StabEntry stent)
 		if (symeIsCheckCondIncomplete(psyme)) {
 			npsymes = listCons(Syme)(psyme, npsymes);
 		}
-		psymes = cdr(psymes);
 	}
 	listFree(Syme)(stent->pending);
 	stent->pending = npsymes;

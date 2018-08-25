@@ -1391,6 +1391,18 @@ symeMarkTwins(Syme syme)
 	}
 }
 
+void
+symeShowTwins(Syme syme)
+{
+	SymeList	symes = symeTwins(syme);
+
+	afprintf(dbOut, "%p -> %pPtrList\n", syme, symes);
+	for (; symes; symes = cdr(symes)) {
+		Syme	twin = car(symes);
+		if (twin != syme) symeShowTwins(twin);
+	}
+}
+
 local Bool
 symeFindTwins(Syme syme)
 {
@@ -3962,12 +3974,18 @@ tqualListClosure0(Lib lib, TQualList tquals)
 Bool
 symeListMember(Syme syme, SymeList symes, SymeEqFun eq)
 {
-	for (; symes; symes = cdr(symes)) {
+	SymeList symes0 = symes;
+	for (; symes0; symes0 = cdr(symes0)) {
 		/* The extra '==' check saves a lot of funcalls on symeEq. */
-		if (syme == car(symes))
+		if (syme == car(symes0))
 			return true;
-		if (eq != symeEq && eq(syme, car(symes)))
-			return true;
+	}
+
+	if (eq != symeEq) {
+		for (; symes; symes = cdr(symes)) {
+			if (eq(syme, car(symes)))
+				return true;
+		}
 	}
 	return false;
 }

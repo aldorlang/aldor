@@ -5,6 +5,7 @@
 local PointerTSet ptrTSetCreate	(void);
 local PointerTSet ptrTSetEmpty	(void);
 local void 	  ptrTSetFree	(PointerTSet);
+local Length 	  ptrTSetSize	(PointerTSet);
 local void 	  ptrTSetAdd	(PointerTSet, Pointer);
 local void 	  ptrTSetRemove	(PointerTSet, Pointer);
 local Bool 	  ptrTSetMember	(PointerTSet, Pointer);
@@ -13,12 +14,16 @@ local PointerTSetIter	ptrTSetIter(PointerTSet);
 local PointerTSetIter	ptrTSetIterNext(PointerTSetIter);
 local Pointer		ptrTSetIterElt(PointerTSetIter);
 local Bool		ptrTSetIterHasNext(PointerTSetIter);
+local void		ptrTSetIterDone(PointerTSetIter);
 
 local PointerTSet ptrTSetEmptyVal;
+
+CREATE_TSET(Pointer);
 
 const struct TSetOpsStructName(Pointer) ptrTSetOps = {
 	ptrTSetCreate,
 	ptrTSetFree,
+	ptrTSetSize,
 	ptrTSetAdd,
 	ptrTSetRemove,
 	ptrTSetMember,
@@ -28,77 +33,97 @@ const struct TSetOpsStructName(Pointer) ptrTSetOps = {
 	ptrTSetIterNext,
 	ptrTSetIterElt,
 	ptrTSetIterHasNext,
+	ptrTSetIterDone,
 };
 
 local PointerTSet
 ptrTSetCreate()
 {
 	PointerTSet tset = (PointerTSet) stoAlloc(OB_Other, sizeof(*tset));
-	tset->lst = listNil(Pointer);
+	tset->table = tblNew(ptrHashFn, ptrEqualFn);
 	return tset;
 }
 
 local PointerTSet
 ptrTSetEmpty()
 {
-	if (ptrTSetEmptyVal == NULL)
-		ptrTSetEmptyVal = ptrTSetCreate();
-	return ptrTSetEmptyVal;
+	return ptrTSetCreate();
 }
 
 local void
 ptrTSetFree(PointerTSet tset)
 {
-	listFree(Pointer)(tset->lst);
+	if (tset == NULL) {
+		return;
+	}
+	tblFree(tset->table);
 	stoFree(tset);
+}
+
+local Length
+ptrTSetSize(PointerTSet tset)
+{
+	return tblSize(tset->table);
 }
 
 local Bool
 ptrTSetIsEmpty(PointerTSet tset)
 {
-	return listNil(Pointer) == tset->lst;
+	return tblSize(tset->table) == 0;
 }
 
 local Bool
 ptrTSetMember(PointerTSet tset, Pointer ptr)
 {
-	return listMemq(Pointer)(tset->lst, ptr);
+	return tblElt(tset->table, ptr, NULL) != NULL;
 }
 
 local void
 ptrTSetAdd(PointerTSet tset, Pointer ptr)
 {
-	if (listMemq(Pointer)(tset->lst, ptr))
-		return;
-	tset->lst = listCons(Pointer)(ptr, tset->lst);
+	assert(ptr != NULL);
+	tblSetElt(tset->table, ptr, ptr);
 }
 
 local void
 ptrTSetRemove(PointerTSet tset, Pointer ptr)
 {
-	tset->lst = listNRemove(Pointer)(tset->lst, ptr, 0);
+	tblDrop(tset->table, ptr);
 }
 
 local PointerTSetIter
 ptrTSetIter(PointerTSet tset)
 {
-	return tset->lst;
+	PointerTSetIter tsetIter = (PointerTSetIter) stoAlloc(OB_Other, sizeof(*tsetIter));
+	tblITER(tsetIter->iter, tset->table);
+
+	return tsetIter;
 }
 
 local PointerTSetIter
-ptrTSetIterNext(PointerTSetIter iter)
+ptrTSetIterNext(PointerTSetIter tsetIter)
 {
-	return iter->rest;
+	tblSTEP(tsetIter->iter);
+	return tsetIter;
 }
 
 local Pointer
-ptrTSetIterElt(PointerTSetIter iter)
+ptrTSetIterElt(PointerTSetIter tsetIter)
 {
-	return iter->first;
+	return tblKEY(tsetIter->iter);;
 }
 
 local Bool
-ptrTSetIterHasNext(PointerTSetIter iter)
+ptrTSetIterHasNext(PointerTSetIter tsetIter)
 {
-	return iter != listNil(Pointer);
+	Bool res = tblMORE(tsetIter->iter);
+	if (!res)
+		stoFree(tsetIter);
+	return res;
+}
+
+local void
+ptrTSetIterDone(PointerTSetIter tsetIter)
+{
+	stoFree(tsetIter);
 }

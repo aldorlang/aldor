@@ -1756,7 +1756,7 @@ tfSatExport(SatMask mask, SymeList mods, AbSyn Sab, SymeList S, Syme t)
 	sigma = absFrSymes(stabFile(), mods, Sab);
 	tfsExportDEBUG(dbOut, "tfSatExport[%d]:: Incoming S: %pAbSyn\n", serialThis, Sab);
 
-	substT = tfSubst(sigma, symeType(t));
+	substT = tformSubst(sigma, symeType(t));
 	for (symes = S; !tfSatSucceed(result) && symes; symes = cdr(symes)) {
 		Syme	s = car(symes);
 		TForm   substS;
@@ -1765,7 +1765,7 @@ tfSatExport(SatMask mask, SymeList mods, AbSyn Sab, SymeList S, Syme t)
 			continue;
 		}
 
-		substS = tfSubst(sigma, symeType(s));
+		substS = tformSubst(sigma, symeType(s));
 		weakEq = abEqualModDeclares(tfExpr(substS), tfExpr(substT));
 		tfsExportDEBUG(dbOut, "tfsatExport[%d]::CompareTF: [%pTForm], [%pTForm] = %d\n",
 			       serialThis, substS, substT, weakEq);
@@ -1773,9 +1773,7 @@ tfSatExport(SatMask mask, SymeList mods, AbSyn Sab, SymeList S, Syme t)
 		if (weakEq) {
 			result = tfSatTrue(mask);
 		}
-		tfFree(substS);
 	}
-	tfFree(substT);
 
 	return result;
 }
@@ -1945,13 +1943,13 @@ tfSatParents(SatMask mask, SymeList mods, AbSyn Sab, SymeList S, SymeList T)
 			newS = tfGetCatParents(symeType(oldSyme), true);
 			queue = cdr(queue);
 
-			tfsParentDEBUG(dbOut, " ->tfpSyme: %*s%d= into: %pSymeList",
+			tfsParentDEBUG(dbOut, " ->tfpSyme: %*s%d= into: %pSymeList\n",
 						tfsDepthNo, "", serialThis, newS);
 		}
 		else
 			newS = listNil(Syme);
 	}
-	tfsParentDEBUG(dbOut, " ->tfpSyme: %*s= Left: %pSymeList)",
+	tfsParentDEBUG(dbOut, " ->tfpSyme: %*s= Left: %pSymeList)\n",
 				tfsDepthNo, "", T);
 	if (T == listNil(Syme))
 		return tfSatTrue(mask);

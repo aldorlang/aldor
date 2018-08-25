@@ -243,6 +243,9 @@
  *	Bool	ptrEqual  (Pointer, Pointer);
  *		Compare two possible non-canonical pointers.
  *
+ *	Bool	ptrHash  (Pointer);
+ *		HashCode for a pointer.
+ *
  *	long	ptrDiff	  (const char *a, const char *b);
  *		Compute the difference between possibly non-canonical pointers.
  *
@@ -513,11 +516,15 @@ typedef double	MostAlignedType;
  *
  ****************************************************************************/
 
+extern Bool     ptrEqualFn (Pointer, Pointer);
+extern Hash     ptrHashFn  (Pointer p);
+
 #ifdef CC_noncanonical_pointer
 
 extern Pointer	ptrCanon (Pointer);
 extern Pointer	ptrOff	 (const char *, long);
 extern Bool	ptrEqual (Pointer, Pointer);
+extern Bool	ptrHash  (Pointer);
 extern long	ptrDiff	 (const char *, const char *);
 extern long	ptrToLong(Pointer);
 extern Pointer	ptrFrLong(long);

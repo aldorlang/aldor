@@ -24,7 +24,7 @@ ALDOR_SBRK_OPTION
 
   case "${aldor_error_on_warning}" in
     *yes)
-         STRICTCFLAGS=${cfgSTRICTCFLAGS};;
+         STRICTCFLAGS="${cfgSTRICTCFLAGS} ${CFLAGS}";;
     *no)
          STRICTCFLAGS=;;
     *);;
