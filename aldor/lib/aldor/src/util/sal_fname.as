@@ -67,7 +67,6 @@ FileName : FileNameCategory == add
         coerce(s : String) : %     ==
 	    (flg1, lastSlash, c) := linearReverseSearch(char "/", s)
 	    (flg2, lastDot, c) := linearReverseSearch(char ".", s)
-	    stdout << "coerce " << s << " " << flg1 << flg2 << newline
 	    if flg1 and flg2 and lastDot > lastSlash then
 	        filename(substring(s, 0, lastSlash),
 		         substring(s, lastSlash+1, lastDot - lastSlash - 1),
