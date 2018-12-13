@@ -1356,7 +1356,7 @@ tibup0InferLhs(Stab stab, AbSyn absyn, AbSyn lhs, AbSyn rhs, TPoss tprhs)
 		trhsv= &trhs;
 	}
 	else if (abTag(lhs) == AB_Comma) {
-		trhs = tfDefineeType(trhs);
+		trhs = tfDefineeBaseType(trhs);
 		rhs = NULL;
 		if (tfIsCross(trhs) && tfCrossArgc(trhs) == lhsc)
 			trhsv = tfCrossArgv(trhs);

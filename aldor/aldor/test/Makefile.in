@@ -59,7 +59,7 @@ aptests := exquo
 fmtests := rectest enumtest clos strtable1 simple apply nestcond
 ctests  := rectest enumtest multinever maptuple
 otests  := enumtest
-xtests := enumtest jimport
+xtests := enumtest jimport cross
 
 @BUILD_JAVA_TRUE@jtests := simple_j enumtest run_j halt
 @HAS_JUNIT_TRUE@junittests := JExportTest JThrowTest
