@@ -4300,8 +4300,6 @@ fintEval_(DataObj retDataObj)
 
 		fintGetInt(fmt, n);
 
-		hardAssert(fintUnitLexsCount(unit, n));
-
 		retDataObj->fiRec = (FiRec)
 			fintAlloc(union dataObj, fintUnitLexsCount(unit,n));
 
