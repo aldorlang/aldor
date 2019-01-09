@@ -3872,14 +3872,14 @@ inlSubstitutedSyme(Syme syme)
 		return syme;
 
 	if (symeIsExport(syme)) {
-	  	syme = inlSymeSubstSelf(syme, symeExporter(isyme));
+		syme = inlSymeSubstSelf(syme, tfFollowFn(symeExporter(isyme)));
 		if (!syme)
 			return NULL;
 	}
 
 	if (inlInlinee->sigma == NULL)
 		inlInlinee->sigma =
-			tfSatSubList(tfGetExpr(symeExporter(isyme)));
+			tfSatSubList(tfGetExpr(tfFollowFn(symeExporter(isyme))));
 
 	if (inlInlinee->sigma == absFail())
 		return NULL;
