@@ -158,4 +158,6 @@ testMachineInt()
 
 	tfqTypeInfer(stabFile(), "MachineInteger: with == add; default x: MachineInteger");
 	testTrue("xx", tfMachineInteger != tfUnknown);
+
+	finiFile();
 }
