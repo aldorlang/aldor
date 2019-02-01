@@ -157,24 +157,35 @@ testAllPassed()
 	return failed == 0;
 }
 
+static Bool inFile = false;
+
 void
 initFile()
 {
+	if (inFile) {
+		testFail("<init>", "missing 'finiFile()'");
+	}
 	macexInitFile();
 	comsgInit();
 	scobindInitFile();
 	stabInitFile();
+	inFile = true;
 }
 
 void
 finiFile()
 {
+	if (!inFile) {
+		testFail("<init>", "missing 'initFile()'");
+	}
+
 	scobindFiniFile();
 	stabFiniFile();
 	comsgFini();
 	macexFiniFile();
 
 	cmdDebugReset();
+	inFile = false;
 }
 
 void
@@ -201,6 +212,9 @@ void
 fini()
 {
 	saveAndEmptyAllPhaseSymbolData();
+
+	if (inFile)
+		testFail("<fini>", "Missing fini");
 
 	dbFini();
 }
