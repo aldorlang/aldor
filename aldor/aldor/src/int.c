@@ -22,10 +22,22 @@ aintEqual(AInt i1, AInt i2)
 	return i1 == i2;
 }
 
+Bool
+aintPtrEqual(AIntPtr i1, AIntPtr i2)
+{
+	return i1 == i2;
+}
+
 Hash
 aintHash(AInt n)
 {
 	return n;
+}
+
+Hash
+aintPtrHash(AIntPtr n)
+{
+	return ptr2aint(n);
 }
 
 AInt
