@@ -252,8 +252,9 @@ $(aldortestexecs): %.aldortest.exe: Makefile %.as
 		      -Y$(foamlibdir) -l$(libraryname) $(patsubst %,-l%,$(librarydeps))  \
 		        -Cargs="-Wconfig=$(aldorsrcdir)/aldor.conf -I$(aldorsrcdir) $(UNICLFLAGS)" \
 			-I$(top_srcdir)/lib/aldor/include -Y$(top_builddir)/lib/aldor/src \
-			-Y$(librarylibdir) -I$(libraryincdir) -fx=$@ -DALDORTEST \
+			-Y$(librarylibdir) -I$(libraryincdir) -fx=$@ -DALDORTEST $($*_TESTAXLFLAGS) \
 			$*_test.as; )
+
 ifneq ($(BUILD_JAVA),)
 ifneq ($(javalibrary),)
 aldortestjavas := $(patsubst %,%.aldortest-exec-java, \
