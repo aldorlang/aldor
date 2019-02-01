@@ -156,7 +156,7 @@ fiEnvEnsureFun(FiEnv e)
 { 
 	FiWord tmp = (e)->info; 
 	if ((FiClos) tmp != NULL) 
-		fiCCall0(FiWord, ((FiClos) tmp));
+		fiCCall0(Ptr, ((FiClos) tmp));
 }
 
 /*****************************************************************************
