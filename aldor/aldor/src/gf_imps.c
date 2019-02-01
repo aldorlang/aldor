@@ -1314,8 +1314,8 @@ static Table    gen0BuiltinTable;
 void
 gen0InitBuiltinTable()
 {
-	gen0BuiltinTable = tblNew((TblHashFun) aintHash,
-				  (TblEqFun) aintEqual);
+	gen0BuiltinTable = tblNew((TblHashFun) aintPtrHash,
+				  (TblEqFun) aintPtrEqual);
 }
 
 void
