@@ -1936,6 +1936,7 @@ gen0ApplyImplicitSyme(FoamTag type, Syme syme, Length argc,
 	}
 	/* Gross! */
 	tf = symeType(syme);
+	tfFollow(tf);
 	assert(tfIsAnyMap(tf));
 	
 	tfargc = tfMapArgc(tf);
