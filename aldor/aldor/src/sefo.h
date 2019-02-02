@@ -143,6 +143,8 @@ extern int		tformTypecFrBuffer	(Buffer);
 extern void		tformTypepFrBuffer	(Buffer, int, int *);
 extern void		symeListFrBuffer0	(Buffer);
 
+
+extern SymeList		 sefoSymes		(Sefo);
 /*
  * Debugging
  */
