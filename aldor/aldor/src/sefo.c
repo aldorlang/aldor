@@ -4750,3 +4750,29 @@ tqualListFrBuffer0(Buffer buf)
 	for (i = 0; i < tqualc; i += 1)
 		tqualFrBuffer0(buf);
 }
+
+/*
+ * :: General stuff
+ */
+
+SymeList
+sefoSymes(Sefo sefo)
+{
+	SymeList sl = listNil(Syme);
+
+	if (abIsId(sefo) && abSyme(sefo)) {
+		sl = listSingleton(Syme)(abSyme(sefo));
+	}
+	else if (abIsId(sefo)) {
+		// skip
+	}
+	else if (abIsLeaf(sefo)) {
+		// skip
+	}
+	else {
+		for (int i=0; i<abArgc(sefo); i++) {
+			sl = listConcat(Syme)(sefoSymes(abArgv(sefo)[i]), sl);
+		}
+	}
+	return sl;
+}
