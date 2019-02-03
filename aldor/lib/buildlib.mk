@@ -291,7 +291,7 @@ aldortestjavas := $(patsubst %,%.aldortest-exec-java, \
 $(aldortestjavas): %.aldortest-exec-java: Makefile %.as
 	$(AM_V_ALDORTESTJ) \
         (if grep -q '^#if ALDORTEST' $(srcdir)/$*.as; then \
-	 echo "   ALDORTESTJ $*"; \
+	 echo "  ALDORTESTJ $*"; \
 	 sed -n -e '/^#if ALDORTEST/,/^#endif/p' < $(srcdir)/$*.as > $*_jtest.as; \
 	 $(AM_DBG) $(aldorexedir)/aldor $(aldor_common_args) -Y$(aldorlibdir)/libfoam/al \
 		-Y$(foamdir) -Y$(foamlibdir) -l$(libraryname) $(patsubst %,-l%,$(librarydeps)) \
