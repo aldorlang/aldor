@@ -102,6 +102,8 @@ extern Sefo		sefoSubst		(AbSub, Sefo);
 extern Syme		symeSubst		(AbSub, Syme);
 extern TForm		tformSubst		(AbSub, TForm);
 
+extern SefoList		sefoListSubst		(AbSub, SefoList);
+
 /*
  * symeList set operations.
  */
