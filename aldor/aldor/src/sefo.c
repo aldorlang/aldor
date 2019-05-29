@@ -2992,6 +2992,19 @@ sefoSubst(AbSub sigma, Sefo sefo)
 	return sefoSubst0(sigma, sefo);
 }
 
+SefoList
+sefoListSubst(AbSub sigma, SefoList sefoList)
+{
+	SefoList result = listNil(Sefo);
+	if (absIsEmpty(sigma)) return sefoList;
+	listIter(Sefo, sefo, sefoList, sefoFreeVars(sefo));
+	abSubFreeVars(sigma);
+
+	listIter(Sefo, sefo, sefoList, result = listCons(Sefo)(sefoSubst0(sigma, sefo), result));
+
+	return listNReverse(Sefo)(result);
+}
+
 Syme
 symeSubst(AbSub sigma, Syme syme)
 {
