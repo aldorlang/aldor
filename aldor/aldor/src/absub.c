@@ -120,6 +120,28 @@ absPrint(FILE *fout, AbSub sigma)
 }
 
 int
+absOStreamWrite(OStream os, AbSub sigma)
+{
+	int c = 0;
+	if (sigma == absFail()) {
+		return ostreamPrintf(os, "{ FAIL }");
+	}
+
+	c += ostreamPrintf(os, "{(%d) ", sigma->serialNo);
+	c += listFormat(AbBind)(os, "AbBind", sigma->l);
+	c += ostreamPrintf(os, "}");
+	return c;
+}
+
+int
+abbOStreamWrite(OStream os, AbBind bind)
+{
+	int c = 0;
+	c += ostreamPrintf(os, "%pSyme -> %pAbSyn", bind->key, bind->val);
+	return c;
+}
+
+int
 absPrintDb(AbSub sigma)
 {
 	int	rc = absPrint(dbOut, sigma);
