@@ -15,6 +15,7 @@ typedef struct SymeSet {
 	SymeList symes;
 } *SymeSet;
 
+extern SymeSet 		symeSetSingleton(Syme     syme);
 extern SymeSet 		symeSetFrSymes	(SymeList symes);
 extern SymeSet 		symeSetEmpty	(void);
 extern void    		symeSetFree	(SymeSet symeSet);
