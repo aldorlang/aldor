@@ -1,8 +1,11 @@
+#include "absub.h"
+#include "abquick.h"
 #include "axlobs.h"
 #include "format.h"
-#include "testlib.h"
-#include "strops.h"
 #include "formatters.h"
+#include "stab.h"
+#include "strops.h"
+#include "testlib.h"
 
 local void testFormat1();
 local void testFormat2();
@@ -11,10 +14,13 @@ local void testFormat4();
 local void testFormat5();
 local void testFormat6();
 local void testFormatBool();
+local void testFormatAbSub();
 
 void
 formatTest()
 {
+	init();
+
 	TEST(testFormat1);
 	TEST(testFormat2);
 	TEST(testFormat3);
@@ -22,6 +28,9 @@ formatTest()
 	TEST(testFormat5);
 	TEST(testFormat6);
 	TEST(testFormatBool);
+	TEST(testFormatAbSub);
+
+	fini();
 }
 
 int
@@ -111,3 +120,17 @@ testFormatBool()
 	testStringEqual("", "[false]", strPrintf("[%oBool]", false));
 	testStringEqual("", "[Bool[123]]", strPrintf("[%oBool]", 123));
 }
+
+local void
+testFormatAbSub()
+{
+	initFile();
+	stdscope(stabFile());
+	AbSub sigma = absNew(stabFile());
+	Syme  syme = symeNewLexVar(symInternConst("X"), tfType, car(stabFile()));
+	absExtend(syme, tfqTypeInfer(stabFile(), "Cross()"), sigma);
+	testIsNotNull("test", strPrintf("[%pAbSub]", sigma));
+	finiFile();
+}
+
+

@@ -21,6 +21,8 @@ local int tfListFormatter(OStream stream, Pointer p);
 
 local int tpossFormatter(OStream stream, Pointer p);
 local int fvFormatter(OStream stream, Pointer p);
+local int absFormatter(OStream stream, Pointer p);
+local int abbFormatter(OStream stream, Pointer p);
 
 local int tconstFormatter(OStream stream, Pointer p);
 
@@ -62,6 +64,8 @@ fmttsInit()
 
 	fmtRegister("FreeVar", fvFormatter);
 	fmtRegister("TPoss", tpossFormatter);
+	fmtRegister("AbSub", absFormatter);
+	fmtRegister("AbBind", abbFormatter);
 
 	fmtRegister("TConst", tconstFormatter);
 
@@ -220,6 +224,29 @@ tpossFormatter(OStream ostream, Pointer p)
 	int c;
 
 	c = tpossOStreamWrite(ostream, tp);
+
+	return c;
+}
+
+local int
+absFormatter(OStream ostream, Pointer p)
+{
+	AbSub tp = (AbSub) p;
+	int c;
+
+	c = absOStreamWrite(ostream, tp);
+
+	return c;
+}
+
+
+local int
+abbFormatter(OStream ostream, Pointer p)
+{
+	AbBind tp = (AbBind) p;
+	int c;
+
+	c = abbOStreamWrite(ostream, tp);
 
 	return c;
 }
