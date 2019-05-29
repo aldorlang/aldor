@@ -1132,9 +1132,9 @@ symePrintDb2(Syme syme)
 }
 
 int 
-tformOStreamWrite(OStream ostream, TForm tf)
+tformOStreamWrite(OStream ostream, Bool deep, TForm tf)
 {
-	int n = tformOStreamPrint0(ostream, false, tf);
+	int n = tformOStreamPrint0(ostream, deep, tf);
 
 	return n;
 }
@@ -1199,7 +1199,6 @@ tformListPrintDb(TFormList tforms)
  * Local functions.
  */
 
-/* The deep argument is currently unused. */
 local int
 sefoOStreamPrint0(OStream ostream, Bool deep, Sefo sefo)
 {
@@ -1288,6 +1287,11 @@ tformOStreamPrint0(OStream ostream, Bool deep, TForm tf)
 	else if (tfIsAbSyn(tf)) {
 		cc += ostreamPrintf(ostream, " ");
 		cc += sefoOStreamPrint0(ostream, deep, tfGetExpr(tf));
+	}
+	else if (tfIsSubst(tf) && deep) {
+		cc += ostreamPrintf(ostream, "%pAbSub", tf->sigma);
+		cc += ostreamPrintf(ostream, " ");
+		cc += tformOStreamPrint0(ostream, deep, tfSubstArg(tf));
 	}
 	else if (tfIsNode(tf)) {
 		Length	i;

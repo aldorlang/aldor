@@ -24,7 +24,7 @@ extern int		sefoListPrint		(FILE *, SefoList);
 extern int		symeListPrint		(FILE *, SymeList);
 extern int		tformListPrint		(FILE *, TFormList);
 
-extern int tformOStreamWrite(OStream ostream, TForm tf);
+extern int tformOStreamWrite(OStream ostream, Bool detail, TForm tf);
 extern int symeOStreamWrite(OStream ostream, Syme syme);
 extern int sefoOStreamWrite(OStream ostream, Sefo syme);
 

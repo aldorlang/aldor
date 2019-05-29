@@ -17,6 +17,7 @@
 #include "ttable.h"
 
 local int tfFormatter(OStream stream, Pointer p);
+local int tfFormatterAlt(OStream stream, int lvl, Pointer p);
 local int tfListFormatter(OStream stream, Pointer p);
 
 local int tpossFormatter(OStream stream, Pointer p);
@@ -60,6 +61,7 @@ fmttsInit()
 	fmtRegisterI("Bool", boolFormatter);
 
 	fmtRegister("TForm", tfFormatter);
+	fmtRegisterAlt("TForm", tfFormatterAlt);
 	fmtRegister("TFormList", tfListFormatter);
 
 	fmtRegister("FreeVar", fvFormatter);
@@ -201,7 +203,17 @@ tfFormatter(OStream ostream, Pointer p)
 {
 	int c;
 
-	c = tformOStreamWrite(ostream, p);
+	c = tformOStreamWrite(ostream, false, p);
+
+	return c;
+}
+
+local int
+tfFormatterAlt(OStream ostream, int lvl, Pointer p)
+{
+	int c;
+
+	c = tformOStreamWrite(ostream, true, p);
 
 	return c;
 }
@@ -350,5 +362,4 @@ boolFormatter(OStream ostream, int p)
 	else {
 		return ostreamPrintf(ostream, "%s", flg ? "true": "false");
 	}
-
 }
