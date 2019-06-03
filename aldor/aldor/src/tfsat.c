@@ -86,6 +86,36 @@ extern Stab		stabFindLevel		(Stab, Syme);
  */
 
 /*!! Remember to update tfSatAbEmbed when these change. */
+struct maskInfo {
+	String name;
+};
+struct maskInfo tfSatMaskInfo[] = {
+	{"Probe"},
+	{"Commit"},
+	{"Missing"},
+	{"Sigma"},
+	{"Info"},
+	{"Conditions"},
+	{"Pending"},
+	{"AnyToNone"},
+	{"Sefo"},
+	{"CrossToTuple"},
+	{"CrossToMulti"},
+	{"CrossToUnary"},
+	{"MultiToTuple"},
+	{"MultiToCross"},
+	{"MultiToUnary"},
+	{"UnaryToTuple"},
+	{"UnaryToCross"},
+	{"UnaryToMulti"},
+	{"Fail"},
+	{"ExportsMissing"},
+	{"EmbedFail"},
+	{"ArgMissing"},
+	{"BadArgType"},
+	{"DifferentArity"},
+	{NULL}
+};
 
 #define	TFS_Succeed		((SatMask) 0)
 
@@ -226,6 +256,8 @@ local SymeList	tfSatExportsMissing	(SatMask,SymeList,AbSyn,SymeList,SymeList);
 local SymeList	tfSatParentsFilter	(SymeList, SymeList);
 
 local void	tfSatSetPendingFail	(TForm);
+
+local String    tfSatMaskToString(SatMask mask);
 
 /******************************************************************************
  *
@@ -1974,6 +2006,30 @@ tfSatParentsFilter(SymeList osymes, SymeList nsymes)
 	return listNReverse(Syme)(rsymes);
 }
 
+local String
+tfSatMaskToString(SatMask mask)
+{
+	String sep="";
+	if (mask == TFS_Succeed) {
+		return "Success";
+	}
+	else {
+		Buffer b = bufNew();
+		OStream os = ostreamNewFrBuffer(b);
+		int i = 0;
+
+		while (tfSatMaskInfo[i].name != 0) {
+			if (mask & (1<<i)) {
+				ostreamWrite(os, sep, -1);
+				ostreamWrite(os, tfSatMaskInfo[i].name, -1);
+				sep = "|";
+			}
+			i++;
+		}
+		ostreamFree(os);
+		return bufLiberate(b);
+	}
+}
 
 /******************************************************************************
  *
