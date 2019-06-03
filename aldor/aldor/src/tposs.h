@@ -105,9 +105,11 @@ typedef struct {
 	TFormList	possl;
 } TPossIterator;
 
+extern TForm tpossELT_(TPossIterator *ip);
+
 #define tpossITER(ip,p)	((ip).possl = (p ? (p)->possl : NULL))
 #define tpossMORE(ip)   ((ip).possl)
 #define tpossSTEP(ip)	((ip).possl = cdr((ip).possl))
-#define tpossELT(ip)	car((ip).possl)
+#define tpossELT(ip)    tpossELT_(&ip)
 
 #endif /* !_TPOSS_H_ */
