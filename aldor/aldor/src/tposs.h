@@ -26,6 +26,7 @@ extern TPoss	tpossFrSymes		(SymeList);
 extern TPoss	tpossDeclare		(Syme, TPoss);
 extern TPoss	tpossMulti		(Length, Pointer, TPossGetter);
 extern TPoss	tpossAdd1		(TPoss, TForm);
+extern TPoss	tpossFrTheList		(TFormList);
 
 extern TPoss	tpossRefer		(TPoss);
 extern TPoss	tpossCopy		(TPoss);
