@@ -6487,6 +6487,22 @@ tfCross(Length argc, ...)
 }
 
 TForm
+tfCrossFrList(TFormList tfl)
+{
+	TForm	tf;
+	Length	i, argc = listLength(TForm)(tfl);
+
+	tf = tfNewEmpty(TF_Cross, argc);
+
+	for (i = 0; tfl; i += 1, tfl = cdr(tfl))
+		tfArgv(tf)[i] = car(tfl);
+
+	tfSetSymes(tf, tfSymesFrCross(tf));
+
+	return tf;
+}
+
+TForm
 tfCrossFrMulti(TForm tfm)
 {
 	TForm	tf;

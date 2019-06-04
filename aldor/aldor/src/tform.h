@@ -597,6 +597,7 @@ extern AbEmbed		tfMapMultiRetEmbed	(TForm, Length);
  */
 extern TForm		tfCross			(Length, ...);
 extern TForm		tfCrossFrMulti		(TForm);
+extern TForm		tfCrossFrList		(TFormList);
 #define			tfIsCross(tf)		(tfTag(tf) == TF_Cross)
 extern Bool		tfIsDependentCross	(TForm);
 
