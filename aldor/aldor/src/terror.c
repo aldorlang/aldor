@@ -6,25 +6,25 @@
  *
  ***************************************************************************/
 
+#include "ablogic.h"
+#include "abpretty.h"
+#include "absub.h"
+#include "comsg.h"
 #include "debug.h"
 #include "format.h"
+#include "freevar.h"
+#include "lib.h"
+#include "sefo.h"
 #include "spesym.h"
 #include "stab.h"
 #include "store.h"
-#include "terror.h"
-#include "util.h"
-#include "sefo.h"
-#include "lib.h"
-#include "tconst.h"
-#include "tposs.h"
-#include "tfsat.h"
-#include "freevar.h"
-#include "absub.h"
-#include "ablogic.h"
-#include "abpretty.h"
-#include "comsg.h"
 #include "strops.h"
 #include "table.h"
+#include "tconst.h"
+#include "tfsat.h"
+#include "terror.h"
+#include "tposs.h"
+#include "util.h"
 
 extern void		tiBottomUp		(Stab, AbSyn, TForm);
 extern void		tiTopDown		(Stab, AbSyn, TForm);
