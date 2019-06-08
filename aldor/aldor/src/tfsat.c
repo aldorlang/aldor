@@ -6,21 +6,23 @@
  *
  ****************************************************************************/
 
+#include "ablogic.h"
+#include "absub.h"
 #include "axlobs.h"
+#include "comsg.h"
 #include "debug.h"
 #include "format.h"
+#include "ostream.h"
+#include "sefo.h"
+#include "tconst.h"
+#include "tfsat.h"
+#include "tposs.h"
 #include "spesym.h"
 #include "stab.h"
+#include "store.h"
 #include "terror.h"
 #include "ti_top.h"
-#include "sefo.h"
-#include "lib.h"
-#include "tconst.h"
-#include "tposs.h"
-#include "tfsat.h"
-#include "absub.h"
-#include "ablogic.h"
-#include "comsg.h"
+#include "util.h"
 
 Bool	tfsDebug	= false;
 Bool	tfsMultiDebug	= false;
