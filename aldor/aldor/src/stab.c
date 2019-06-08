@@ -6,25 +6,25 @@
  *
  ****************************************************************************/
 
+#include "ablogic.h"
+#include "abpretty.h"
 #include "axlobs.h"
+#include "comsg.h"
 #include "debug.h"
+#include "doc.h"
 #include "fint.h"
 #include "format.h"
+#include "lib.h"
+#include "sefo.h"
 #include "simpl.h"
 #include "spesym.h"
 #include "stab.h"
 #include "store.h"
-#include "sefo.h"
-#include "lib.h"
-#include "tqual.h"
-#include "tposs.h"
-#include "tfsat.h"
-#include "ablogic.h"
-#include "abpretty.h"
-#include "doc.h"
-#include "comsg.h"
-#include "table.h"
 #include "strops.h"
+#include "table.h"
+#include "tfsat.h"
+#include "tposs.h"
+#include "tqual.h"
 
 Bool	stabDebug	= false;
 Bool	stabImportDebug	= false;
