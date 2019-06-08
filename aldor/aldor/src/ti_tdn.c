@@ -6,24 +6,25 @@
  *
  ***************************************************************************/
 
-#include "debug.h"
-#include "fluid.h"
-#include "store.h"
-#include "format.h"
-#include "simpl.h"
-#include "spesym.h"
-#include "stab.h"
-#include "terror.h"
-#include "ti_tdn.h"
-#include "tinfer.h"
-#include "util.h"
-#include "lib.h"
-#include "tposs.h"
-#include "tfsat.h"
 #include "ablogic.h"
 #include "abpretty.h"
 #include "comsg.h"
+#include "debug.h"
+#include "fluid.h"
+#include "format.h"
+#include "lib.h"
 #include "sefo.h"
+#include "simpl.h"
+#include "spesym.h"
+#include "store.h"
+#include "stab.h"
+#include "terror.h"
+#include "tfsat.h"
+#include "ti_tdn.h"
+#include "tinfer.h"
+#include "tposs.h"
+#include "util.h"
+
 
 /*
  * To do:
