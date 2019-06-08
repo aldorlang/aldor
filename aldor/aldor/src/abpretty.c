@@ -6,16 +6,15 @@
  *
  ****************************************************************************/
 
-#include "axlobs.h"
-#include "spesym.h"
-#include "syme.h"
-#include "lib.h"
-#include "tform.h"
 #include "abpretty.h"
-#include "doc.h"
+#include "axlobs.h"
 #include "comsg.h"
+#include "doc.h"
+#include "lib.h"
+#include "spesym.h"
 #include "strops.h"
-
+#include "syme.h"
+#include "tform.h"
 
 #define CONTINUED	"..."
 #define NCONTINUED	(sizeof("...") - 1)
