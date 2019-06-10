@@ -13,16 +13,16 @@
  */
 
 #include "axlobs.h"
+#include "ablogic.h"
 #include "debug.h"
 #include "format.h"
 #include "spesym.h"
 #include "store.h"
-#include "terror.h"
 #include "syme.h"
 #include "tconst.h"
-#include "tposs.h"
+#include "terror.h"
 #include "tfsat.h"
-#include "ablogic.h"
+#include "tposs.h"
 
 /*
  *   Each node is given a set of possible meanings.
