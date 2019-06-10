@@ -203,7 +203,9 @@ libstruct_a_SOURCES =	\
 	utype.c		\
 	utyperes.c	\
 	uvar.c		\
-	version.c
+	version.c	\
+	wildimp.c
+
 #libstruct_a_LIBADD = libgen.a libport.a
 structtest_SOURCES = structtest.c
 structtest_LDADD = libstruct.a libgen.a libport.a spesym.o -lm

@@ -62,6 +62,7 @@ typedef struct utform * 	   UTForm;
 typedef struct utype *		   UType;
 typedef struct utypeResult *	   UTypeResult;
 
+typedef struct wildImp *	   WildImport;
 
 #if EDIT_1_0_n1_AB
 typedef struct foamuses_struct *   FoamUses;
