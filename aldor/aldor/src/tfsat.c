@@ -824,8 +824,10 @@ tfSatArgPoss(SatMask mask, AbSyn Sab, TForm T)
 			return result;
 	}
 
-	for (l = S->possl; l; l = cdr(l)) {
-		result = tfSat1(mask, Sab, car(l), T);
+	TPossIterator ip;
+	for (tpossITER(ip, S); tpossMORE(ip); tpossSTEP(ip)) {
+		TForm s = tpossELT(ip);
+		result = tfSat1(mask, Sab, s, T);
 		if (tfSatSucceed(result))
 			return result;
 	}
