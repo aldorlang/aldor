@@ -18,6 +18,9 @@
 #include "tposs.h"
 #include "ttable.h"
 #include "usedef.h"
+#include "utform.h"
+#include "utype.h"
+#include "utyperes.h"
 
 local int tfFormatter(OStream stream, Pointer p);
 local int tfFormatterAlt(OStream stream, int lvl, Pointer p);
@@ -62,6 +65,11 @@ local int slotUsageListFormatter(OStream ostream, Pointer p);
 
 local int udInfoFormatter(OStream ostream, Pointer p);
 local int udInfoListFormatter(OStream ostream, Pointer p);
+
+local int utypeFormatter(OStream stream, Pointer p);
+local int utformFormatter(OStream stream, Pointer p);
+local int utformFormatterAlt(OStream ostream, int lvl, Pointer p);
+local int utypeResultFormatter(OStream stream, Pointer p);
 
 void
 fmttsInit()
@@ -108,7 +116,15 @@ fmttsInit()
 	fmtRegister("Symbol", symbolFormatter);
 
 	fmtRegister("ErrorSet", errorSetFormatter);
+
 	fmtRegister("JavaCode", javaCodeFormatter);
+
+	fmtRegister("UType", utypeFormatter);
+	fmtRegister("UTypeResult", utypeResultFormatter);
+
+	fmtRegister("UTForm", utformFormatter);
+	fmtRegisterAlt("UTForm", utformFormatterAlt);
+
 }
 
 
@@ -404,4 +420,31 @@ udInfoListFormatter(OStream ostream, Pointer p)
 {
 	UdInfoList list = (UdInfoList) p;
 	return listFormat(UdInfo)(ostream, "UdInfo", list);
+}
+
+local int
+utypeFormatter(OStream ostream, Pointer p)
+{
+	UType utype = (UType) p;
+	return utypeOStreamWrite(ostream, utype);
+}
+
+local int
+utformFormatter(OStream ostream, Pointer p)
+{
+	UTForm utf = (UTForm) p;
+	return utfOStreamWrite(ostream, false, utf);
+}
+
+local int
+utformFormatterAlt(OStream ostream, int lvl, Pointer p)
+{
+	UTForm utf = (UTForm) p;
+	return utfOStreamWrite(ostream, lvl > 0, utf);
+}
+
+local int
+utypeResultFormatter(OStream ostream, Pointer p)
+{
+	return utypeResultOStreamWrite(ostream, (UTypeResult) p);
 }
