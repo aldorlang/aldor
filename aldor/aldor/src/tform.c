@@ -8268,6 +8268,29 @@ tfConditionalStab(TForm tf)
 	return tfConditions(tf)->conditions->first->stab;
 }
 
+Bool
+tfIsWildcardImport(TForm tf)
+{
+	tfFollow(tf);
+	if (!tfIsGeneral(tf)) {
+		return false;
+	}
+	else if (!tfIsId(tf)) {
+		return false;
+	}
+	else if (tfIdSyme(tf) == NULL) {
+		return false;
+	}
+	else {
+		Syme syme = tfIdSyme(tf);
+		TForm type = symeType(syme);
+		if (tfIsAnyMap(type)) {
+			return true;
+		}
+	}
+	return false;
+}
+
 /******************************************************************************
  *
  * :: Java

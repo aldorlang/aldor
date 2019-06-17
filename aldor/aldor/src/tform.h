@@ -944,6 +944,7 @@ extern Bool		tfDomHasImplicit(TForm);
 extern Bool		tfCatHasImplicit(TForm);
 extern Syme		tfImplicitExport(Stab, SymeList, Syme);
 
+extern Bool		tfIsWildcardImport(TForm tf);
 /*****************************************************************************
  *
  * :: Java Stuff
