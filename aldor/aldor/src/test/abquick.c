@@ -18,6 +18,7 @@
 #include "testlib.h"
 #include "tinfer.h"
 #include "ti_sef.h"
+#include "utform.h"
 
 local AbSyn abqParseSrcLines(SrcLineList sll);
 
@@ -251,4 +252,13 @@ sefo(AbSyn absyn)
 {
 	tiSefo(stabFile(), absyn);
 	return (Sefo) absyn;
+}
+
+UTForm
+tfqAny(Stab stab)
+{
+	Syme syme = symeNewLexConst(symGen(), tfType, car(stab));
+	TForm tf = tfFrSyme(stab, syme);
+
+	return utformNew(listSingleton(Syme)(syme), tf);
 }

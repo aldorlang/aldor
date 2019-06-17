@@ -76,4 +76,6 @@ TForm tfqTypeForm(Stab stab, String str);
 Sefo  tfqTypeInfer(Stab stab, String str);
 void  tfqTypeInferFails(Stab stab, String str);
 
+UTForm tfqAny(Stab stab);
+
 #endif
