@@ -204,7 +204,7 @@ struct maskInfo tfSatMaskInfo[] = {
 #define			tfSatAllow(m,c)		((m) & (c))
 
 #define			tfSatResult(m,c)	(tfSatMode(m) | (c))
-#define			tfSatParNFail(m,n)	((m) | tfsParNBits(n))
+#define			tfSatParNFail(m, r, n)	(tfSatMode(m) | (r) | tfsParNBits(n))
 
 
 #define			tfSatTrue(m)		tfSatResult(m, TFS_Succeed)
@@ -655,8 +655,7 @@ tfSatAsMulti(SatMask mask, AbSub sigma, TForm S, TForm TScope,
 		abi  = tfAsMultiSelectArg(ab, argc, pi, argf, tfi, &def, &ai);
 
 		if (!abi) {
-			result = tfSatResult(mask, TFS_ArgMissing);
-			result = tfSatParNFail(result, pi);
+			result = tfSatParNFail(mask, TFS_ArgMissing, pi);
 			break;
 		}
 		if (!def) usedc += 1;
@@ -669,8 +668,7 @@ tfSatAsMulti(SatMask mask, AbSub sigma, TForm S, TForm TScope,
 		if (!def && !tfSatSigma(mask)) {
 			maski = tfSatArg(mask, abi, tfi);
 			if (!tfSatSucceed(maski)) {
-				result = tfSatResult(mask, TFS_BadArgType);
-				result = tfSatParNFail(result, pi);
+				result = tfSatParNFail(mask, TFS_BadArgType, pi);
 				break;
 			}
 			if (tfSatPending(maski))
@@ -710,8 +708,7 @@ tfSatAsMulti(SatMask mask, AbSub sigma, TForm S, TForm TScope,
 		/* Install the packed embedding on abi, if needed. */
 		if (tfSatCommit(mask) && packed)
 			if (!tiTopFns()->tiUnaryToRaw(absStab(sigma), abi, tfi)) {
-				result = tfSatResult(mask, TFS_BadArgType);
-				result = tfSatParNFail(result, pi);
+				result = tfSatParNFail(mask, TFS_BadArgType, pi);
 				break;
 			}
 		/*
@@ -732,8 +729,7 @@ tfSatAsMulti(SatMask mask, AbSub sigma, TForm S, TForm TScope,
 				sigma = absExtend(syme, abi, sigma);
 			}
 			else {
-				result = tfSatResult(mask, TFS_BadArgType);
-				result = tfSatParNFail(result, pi);
+				result = tfSatParNFail(mask, TFS_BadArgType, pi);
 				break;
 			}
 		}
@@ -755,8 +751,7 @@ tfSatAsMulti(SatMask mask, AbSub sigma, TForm S, TForm TScope,
 				sigma = absExtend(syme, abc, sigma);
 			}
 			else {
-				result = tfSatResult(mask, TFS_BadArgType);
-				result = tfSatParNFail(result, 1);
+				result = tfSatParNFail(mask, TFS_BadArgType, 1);
 			}
 		}
 	}
