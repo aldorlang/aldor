@@ -10,6 +10,7 @@
 #define _TFSAT_H_
 
 #include "axlobs.h"
+#include "utype.h"
 
 /******************************************************************************
  *
@@ -38,6 +39,7 @@ extern Bool		tfSatFailedDifferentArity(SatMask);
 
 extern Length		tfSatParN		(SatMask);
 extern Length		tfSatArgN		(AbSyn, Length, AbSynGetter, Length, TForm);
+extern Length		utfSatArgN		(AbSyn, Length, AbSynGetter, Length, UTForm);
 
 extern AbEmbed		tfSatAbEmbed		(SatMask);
 extern AbEmbed		tfSatEmbedType		(TForm, TForm);
@@ -106,7 +108,6 @@ extern SatMask          tfSat1          (SatMask mask, AbSyn Sab, TForm S, TForm
 
 extern AbSub		tfSatSubList	(AbSyn);
 
-
 /******************************************************************************
  *
  * :: tfSatMulti
@@ -117,5 +118,54 @@ extern SatMask		tfSatMapArgs	(SatMask, AbSub, TForm,
 					 AbSyn, Length, AbSynGetter);
 extern SatMask 		tfSatAsMulti 	(SatMask, AbSub, TForm, TForm,
 					 AbSyn, Length, AbSynGetter);
+
+
+/******************************************************************************
+ *
+ * :: utfSat
+ *
+ *****************************************************************************/
+typedef struct usatmask {
+	SatMask mask;
+	UTypeResult result;
+} *USatMask;
+
+DECLARE_LIST(USatMask);
+
+SatMask      utfSatMaskMask  (USatMask);
+UTypeResult  utfSatMaskResult(USatMask);
+
+Bool utfSatBit(SatMask mask, UTForm S, UTForm T);
+Bool utfSatisfies(UTForm utfS, UTForm utfT);
+
+SatMask utfSatType(UTForm S);
+
+Bool utfSatBit(SatMask mask, UTForm S, UTForm T);
+Bool utfSatisfies(UTForm utfS, UTForm utfT);
+
+USatMask utfSatArg(SatMask mask, AbSyn ab, UTForm T);
+
+USatMask utfSatMapArgs(SatMask mask, AbSub sigma, UTForm S,
+		      AbSyn ab, Length arg, AbSynGetter argf);
+
+USatMaskList utfSatMapArgsList(SatMask mask, AbSub sigma, UTForm S,
+				 AbSyn ab, Length arg, AbSynGetter argf);
+
+USatMask utfSatAsMulti(SatMask mask, AbSub sigma, UTForm S, UTForm TScope,
+		      AbSyn ab, Length argc, AbSynGetter argf);
+USatMaskList utfSatAsMultiList(SatMask mask, AbSub sigma, UTForm S, UTForm TScope,
+			       AbSyn ab, Length argc, AbSynGetter argf);
+USatMask  utfSatMap(SatMask, Stab, UTForm, UTForm,
+		    AbSyn, Length, AbSynGetter);
+USatMask utfSat1(SatMask mask, AbSyn Sab, UTForm S, UTForm T);
+USatMask utfSat(SatMask mask, UTForm S, UTForm T);
+Bool	 utfSatSucceed(USatMask);
+Bool	 utfSatPending(USatMask);
+void	 utfSatMaskFree(USatMask);
+
+UTForm utfSatMapArgAnyTuple(Stab stab, UTForm utf);
+UTForm utfSatMapArgAnyCross(Stab stab, Length argc, UTForm utf);
+
+int utfSatMaskFormatter(OStream stream, Pointer p);
 
 #endif /* !_TFSAT_H_ */

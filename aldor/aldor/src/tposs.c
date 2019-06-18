@@ -24,7 +24,9 @@
 #include "terror.h"
 #include "tfsat.h"
 #include "tposs.h"
+#include "unify.h"
 #include "utform.h"
+#include "utyperes.h"
 
 /*
  *   Each node is given a set of possible meanings.
@@ -185,7 +187,29 @@ tpossAdd1(TPoss tp, TForm t)
 Bool
 tpossHasUTForm(TPoss tp, UTForm t)
 {
-	return false;
+        UTFormList l;
+        UTForm s;
+
+        if (tp == NULL)
+               return false;
+        if (utfIsConstant(t)) {
+                return tpossHas(tp, utformTForm(t));
+        }
+
+        l = tp->possl;
+        while (l != listNil(UTForm)) {
+                s = car(l);
+                l = cdr(l);
+                // tpossHas({Int}, Vs.S) --> false (actually, replace Int with Vs.S)
+                // tpossHas({Vs.S}, Int) --> true
+                if (utfIsConstant(s) && utformCanUnify(s, t))
+                        continue;
+                // Can turn s into t
+                if (utformCanUnify(s, utformNewConstant(utformTForm(t))))
+                       return true;
+        }
+
+        return false;
 }
 
 TPoss
@@ -340,11 +364,11 @@ tpossIntersect(TPoss S, TPoss T)
 		car(LT) = utformFollowOnly(car(LT));
 		for (LS = S->possl; LS; LS = cdr(LS)) {
 			car(LS) = utformFollowOnly(car(LS));
-			if (tfSatisfies(utformConstOrFail(car(LS)), utformConstOrFail(car(LT)))) {
+			if (utfSatisfies(car(LS), car(LT))) {
 				l = listCons(UTForm)(car(LT), l);
 				break;
 			}
-			if (tfSatisfies(utformConstOrFail(car(LT)), utformConstOrFail(car(LS)))) {
+			if (utfSatisfies(car(LT), car(LS))) {
 				if (!listMember(UTForm)(l, car(LS), utformEqual))
 					l = listCons(UTForm)(car(LS), l);
 			}
@@ -421,8 +445,9 @@ tpossHas(TPoss tp, TForm t)
 		if (utfIsConstant(car(l)) && tfEqual(t, utformConstOrFail(car(l))))
 			return true;
 		else if (!utfIsConstant(car(l))) {
-			// true if can unify
-			return false;
+			if (utformCanUnify(utfT, car(l))) {
+				return true;
+			}
 		}
 		l = cdr(l);
 	}
@@ -499,8 +524,10 @@ tpossSelectSatisfier(TPoss tp, TForm t)
 }
 
 local UTForm
-tpossJoin(SatMask mask, UTForm S, UTForm T)
+tpossJoin(USatMask mask, UTForm S, UTForm T)
 {
+       S = utypeResultApplyTForm(mask->result, S);
+       T = utypeResultApplyTForm(mask->result, T);
 	return tfIsThird(utformConstOrFail(S)) ? S : T;
 }
 
@@ -518,8 +545,8 @@ tpossSatisfies(TPoss S, TPoss T)
 		for (LS = S->possl; LS; LS = cdr(LS)) {
 			UTForm	stf = car(LS);
 			UTForm  ttf = car(LT);
-			SatMask result = tfSat(tfSatBupMask(), utformConstOrFail(stf), utformConstOrFail(ttf));
-			if (tfSatSucceed(result)) {
+			USatMask result = utfSat(tfSatBupMask(), stf, ttf);
+			if (utfSatSucceed(result)) {
 				l = listCons(UTForm)(tpossJoin(result, stf, ttf), l);
 			}
 		}
@@ -545,7 +572,7 @@ tpossSatisfiesType(TPoss S, TForm T)
 
 	uT = utformNewConstant(T);
 	for (LS = S->possl; LS; LS = cdr(LS))
-		if (tfSatisfies(utformConstOrFail(car(LS)), utformConstOrFail(uT)))
+		if (utfSatisfies(car(LS), uT))
 			l = listCons(UTForm)(car(LS), l);
 
 	l = listNReverse(UTForm)(l);
