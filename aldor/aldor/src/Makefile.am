@@ -199,6 +199,7 @@ libstruct_a_SOURCES =	\
 	token.c		\
 	tposs.c		\
 	tqual.c		\
+	unify.c		\
 	utform.c	\
 	utype.c		\
 	utyperes.c	\

@@ -1059,7 +1059,7 @@ extern Bool
 	tipFarDebug, tipIdDebug,
 	tipLitDebug, tipEmbedDebug, tipSefDebug, tipTdnDebug, 
 	titfDebug, titfOneDebug, titfStabDebug,
-        udDfDebug, udDfiDebug, ylDebug;
+        udDfDebug, udDfiDebug, ylDebug, utypeDebug;
  
 struct dbVarInfo {
 	Bool	*pvar;
@@ -1194,6 +1194,7 @@ struct dbVarInfo dbVarInfo[] = {
 	{ & udDfDebug,		"udDf" },
 	{ & udDfiDebug,		"udDfi" },
 	{ & ylDebug,		"yl" },
+	{ & utypeDebug,		"utype" },
 	{ 0,			0}
 };
  
