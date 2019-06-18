@@ -808,7 +808,7 @@ tfSatArg(SatMask mask, AbSyn ab, TForm T)
 local SatMask
 tfSatArgPoss(SatMask mask, AbSyn Sab, TForm T)
 {
-	TFormList	l;
+	UTFormList	l;
 	SatMask		result;
 	TPoss S = abTPoss(Sab);
 
@@ -822,8 +822,8 @@ tfSatArgPoss(SatMask mask, AbSyn Sab, TForm T)
 
 	TPossIterator ip;
 	for (tpossITER(ip, S); tpossMORE(ip); tpossSTEP(ip)) {
-		TForm s = tpossELT(ip);
-		result = tfSat1(mask, Sab, s, T);
+		UTForm s = tpossUELT(ip);
+		result = tfSat1(mask, Sab, utformConstOrFail(s), T);
 		if (tfSatSucceed(result))
 			return result;
 	}
