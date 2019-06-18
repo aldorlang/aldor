@@ -179,6 +179,8 @@ finiFile()
 		testFail("<init>", "missing 'initFile()'");
 	}
 
+	saveAndEmptyAllPhaseSymbolData();
+
 	scobindFiniFile();
 	stabFiniFile();
 	comsgFini();
