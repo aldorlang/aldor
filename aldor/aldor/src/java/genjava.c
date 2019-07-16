@@ -3802,7 +3802,37 @@ gj0CastObjToWord(JavaCode val, FoamTag type, AInt fmt)
 local JavaCode
 gj0CastObjToPtr(JavaCode val, FoamTag type, AInt fmt)
 {
-	return val;
+	switch (type) {
+		// self
+	case FOAM_Ptr:
+		return val;
+		// allocated once (I think)
+	case FOAM_Arr:
+	case FOAM_Rec:
+	case FOAM_JavaObj:
+	case FOAM_Clos:
+		return val;
+		// wrapped by runtime
+	case FOAM_Word:
+		return jcApplyMethod(jcMemRef(gj0Id(GJ_FoamWord),
+					      jcId(strCopy("U"))),
+				     jcId(strCopy("toPtr")),
+				     listSingleton(JavaCode)(val));
+		// throw an error
+	case FOAM_DFlo:
+	case FOAM_SFlo:
+	case FOAM_Byte:
+	case FOAM_Char:
+	case FOAM_SInt:
+	case FOAM_Bool:
+	case FOAM_HInt:
+	case FOAM_BInt:
+		return val;
+	case FOAM_Nil:
+		return val;
+	default:
+		return val;
+	}
 }
 
 /*
