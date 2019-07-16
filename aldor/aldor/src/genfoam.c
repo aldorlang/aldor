@@ -3058,8 +3058,8 @@ gen0TrailingNew(Syme syme, TForm key, Length argc, AbSyn *argv, Foam *vals)
 
 	whole = gen0Temp0(FOAM_TR, format);
 	sz    = foamNewCast(FOAM_SInt, arg0);
-	hdr   = gen0CrossToMulti(arg1, tfMapArgN(tf, 1));
-	proto = gen0CrossToMulti(arg2, tfMapArgN(tf, 2));
+	hdr   = gen0CrossToMulti(arg1, tfDefineeMaybeType(tfMapArgN(tf, 1)));
+	proto = gen0CrossToMulti(arg2, tfDefineeMaybeType(tfMapArgN(tf, 2)));
 
 	/* Idea is to generate:
 	 * tr   := TRNew(fmt, sz)
@@ -6292,7 +6292,8 @@ gen0ForIter(AbSyn absyn, FoamList *forl, FoamList *itl)
                 call = foamNewEmpty(FOAM_CCall, 2);
                 call->foamCCall.type = FOAM_Word;
                 call->foamCCall.op   = foamCopy(valueFun);
-                call = gen0CrossToMulti(foamNewCast(FOAM_Rec, call), tfGeneratorArg(gen0AbContextType(absyn)));
+                call = gen0CrossToMulti(foamNewCast(FOAM_Rec, call),
+					tfDefineeMaybeType(tfGeneratorArg(gen0AbContextType(absyn))));
                 gen0MultiAssign(FOAM_Set, absyn->abFor.lhs, call);
         }
         else {
@@ -7464,9 +7465,10 @@ gen0CrossToMulti(Foam val, TForm tf)
 {
 	Foam	values;
 	Foam	t; 
-	int	i, size = tfCrossArgc(tf);
+	int	i, size;
 	AInt    cfmt, ftype;
 
+	size = tfCrossArgc(tf);
 	ftype = gen0Type(tf, &cfmt);
 	cfmt  = gen0CrossFormatNumber(tf);
 	t   = gen0TempLocal0(FOAM_Rec, cfmt);
