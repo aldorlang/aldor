@@ -44,4 +44,8 @@ public class Record extends AbstractValue implements Value, Word {
     public String toString() {
         return "[R: " + id + "]";
     }
+
+    public Object toPtr() {
+	return this;
+    }
 }
