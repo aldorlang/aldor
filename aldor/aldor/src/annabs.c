@@ -62,9 +62,9 @@ abcNew(void)
 {
 	AbAnnotationBucket bucket = (AbAnnotationBucket) stoAlloc((int) OB_Other, sizeof(*bucket));
 	bucket->indexForSefo = tblNew((TblHashFun) abHashSefo, (TblEqFun) sefoEqual);
-	bucket->sxForIndex = tblNew((TblHashFun) aintHash, (TblEqFun) aintEqual);
+	bucket->sxForIndex = tblNew((TblHashFun) aintPtrHash, (TblEqFun) aintPtrEqual);
 	bucket->indexForSyme = tblNew((TblHashFun) symeHashFn, (TblEqFun) symeEqualWithAnnotation);
-	bucket->symeSxForIndex = tblNew((TblHashFun) aintHash, (TblEqFun) aintEqual);
+	bucket->symeSxForIndex = tblNew((TblHashFun) aintPtrHash, (TblEqFun) aintPtrEqual);
 	bucket->nextIndex = 0;
 	bucket->nextSymeIndex = 0;
 	return bucket;

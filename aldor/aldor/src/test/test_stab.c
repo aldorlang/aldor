@@ -85,7 +85,6 @@ testTFormCascadedImport()
 	absynList = listCons(AbSyn)(stdtypes(), abqParseLines(lines));
 	absyn = abNewSequenceL(sposNone, absynList);
 
-	initFile();
 	stabImportDebug = 1;
 	tipBupDebug = 1;
 

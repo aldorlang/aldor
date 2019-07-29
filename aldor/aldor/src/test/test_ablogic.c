@@ -90,6 +90,7 @@ testAblog()
 	testTrue("10", ablogImplies(cond1, cond0));
 	testFalse("01",ablogImplies(cond0, cond1));
 	testTrue("11", ablogImplies(cond1, cond1));
+	finiFile();
 }
 
 local void testAbLogEqual(String text, Stab stab, Sefo sefo1, Sefo sefo2);
@@ -142,6 +143,7 @@ testAblogSefo()
 	testAbLogEqual("test",     stab, test(apply1(prime, d0)), apply1(prime, d0));
 	testAbLogEqual("pretend",  stab, apply1(prime, pretend(d0, D0)), apply1(prime, d0));
 	testAbLogEqual("restrict", stab, apply1(prime, restrictTo(d0, D0)), apply1(prime, d0));
+	finiFile();
 }
 
 local void

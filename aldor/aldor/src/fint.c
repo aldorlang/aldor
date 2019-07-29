@@ -4039,7 +4039,7 @@ fintEval_(DataObj retDataObj)
 				retDataObj->fiDFlo = fiUnBoxDFlo(expr.fiSInt);
 				goto castDone;
 			}
-			/* NO BREAK !*/
+			/* fall through !*/
 		case FOAM_Word:
 			switch ((int)toType) {
 			case FOAM_SInt:
@@ -4052,7 +4052,7 @@ fintEval_(DataObj retDataObj)
 				retDataObj->fiDFlo = fiUnBoxDFlo(expr.fiSInt);
 				goto castDone;
 			}
-			/* NO BREAK !*/
+			/* fall through !*/
 		default:{
 			int frSize = 0, toSize = 0;
 
@@ -4299,8 +4299,6 @@ fintEval_(DataObj retDataObj)
 		long i, bSize;
 
 		fintGetInt(fmt, n);
-
-		hardAssert(fintUnitLexsCount(unit, n));
 
 		retDataObj->fiRec = (FiRec)
 			fintAlloc(union dataObj, fintUnitLexsCount(unit,n));

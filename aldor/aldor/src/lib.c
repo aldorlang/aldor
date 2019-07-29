@@ -539,7 +539,8 @@ libLibrarySyme(Lib lib)
 {
 	String id;
 	
-	if (strEqual(libGetFileId(lib), "axiom"))
+	if (strEqual(libGetFileId(lib), "axiom")
+	    || strEqual(libGetFileId(lib), "fricas"))
 		id = libToStringShort(lib);
 	else 
 		id = libGetFileId(lib);

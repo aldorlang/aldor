@@ -47,7 +47,7 @@ struct phInfo {
 };
 
 typedef Enum(phTag)	PhTag;
-typedef void		(*PhPrFun)(FILE *, Pointer);
+typedef int		(*PhPrFun)(FILE *, Pointer);
 
 extern int	phTraceOption(String flags);
 				/*

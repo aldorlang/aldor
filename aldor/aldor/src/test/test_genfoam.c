@@ -49,6 +49,8 @@ testForeign()
 	testIntEqual("Error Count", 0, comsgErrorCount());
 
 	foam = generateFoam(stab, absyn, "test");
+
+	finiFile();
 	/* At this point, we should check that the 'test' function
 	 * calls 'fn' with a type of FOAM_Rec.  In order to do this
 	 * nicely, there should be a decent way of searching a blob of
@@ -58,4 +60,5 @@ testForeign()
 				  foam);
 	testAIntEqual(FOAM_Rec, foamExprType(foam, pcall->first->foamPCall.argv[0]))
 #endif
+
 }

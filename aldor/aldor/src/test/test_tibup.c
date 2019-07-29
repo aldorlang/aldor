@@ -215,6 +215,8 @@ testTiBupApplyMixed()
 
 	tiTopDown(stab, case1, tfNone());
 	testIntEqual("Unique", AB_State_HasUnique, abState(case1));
+
+	finiFile();
 }
 
 
@@ -251,6 +253,7 @@ testTiBupApplyImplicit()
 	tiTopDown(stab, case1, tfNone());
 	testIntEqual("Unique", AB_State_HasUnique, abState(case1));
 
+	finiFile();
 }
 
 

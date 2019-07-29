@@ -73,4 +73,5 @@ testValidation()
 	
 	testFalse("NotSefo", abIsSefo(imp->abImport.what));
 
+	finiFile();
 }

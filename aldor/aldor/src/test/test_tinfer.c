@@ -376,7 +376,7 @@ testConditionalTInfer4()
 	testTrue("Declare is sefo", abIsSefo(absyn));
 	testIntEqual("Error Count", 0, comsgErrorCount());
 
-
+	finiFile();
 }
 
 void
