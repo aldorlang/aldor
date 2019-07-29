@@ -492,12 +492,6 @@ stabEntryGetTypes(StabEntry stent, AbLogic abl)
 	TPoss		tposs;
 
 	stabEntryCheckConditions(stent);
-/*LDR*/
-#if EDIT_1_0_n2_06 != 1
-	/* Generic entry:  no conditional symes, return all types. */
-	if (stent->argc == 1)
-		return stabEntryCacheTypes(stent, int0);
-#endif
 
 	/* Generic query:  return the unconditional types. */
 	if (abl == NULL || ablogIsTrue(abl))
@@ -661,13 +655,12 @@ stabGetEntry(Stab stab0, Symbol id, Bool recurse)
 		stabDEBUG(dbOut, " ... copying");
 	}
 
-/*LDR*/
-#if 1 && EDIT_1_0_n2_06
+
 	if (DEBUG(stab)) {
 		fnewline(dbOut);
 	}
 	stabEntryGetTypes(stent, ablogFalse());
-#endif
+
 	if (DEBUG(stab)) {
 		SymeList sl = stabEntryAllSymes(stent);
 		TPoss tp = stabEntryAllTypes(stent);
