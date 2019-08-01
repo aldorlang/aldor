@@ -250,7 +250,7 @@ $(aldortestexecs): %.aldortest.exe: Makefile %.as
 		        -Ccc=$(aldortooldir)/unicl	\
 		      -Y$(foamdir) -Y			\
 		      -Y$(foamlibdir) -l$(libraryname) $(patsubst %,-l%,$(librarydeps))  \
-		        -Cargs="-Wconfig=$(aldorsrcdir)/aldor.conf -I$(aldorsrcdir) -Wv=2 $(UNICLFLAGS)" \
+		        -Cargs="-Wconfig=$(aldorsrcdir)/aldor.conf -I$(aldorsrcdir) $(UNICLFLAGS)" \
 			-I$(top_srcdir)/lib/aldor/include -Y$(top_builddir)/lib/aldor/src \
 			-Y$(librarylibdir) -I$(libraryincdir) -fx=$@ -DALDORTEST \
 			$*_test.as; )
