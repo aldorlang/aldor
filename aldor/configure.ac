@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.68])
-AC_INIT([aldor],[1.2],[aldor@xinutec.org])
+AC_INIT([aldor],[1.3.0],[aldor@xinutec.org])
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_SRCDIR([aldor/src/main.c])
 AC_CONFIG_AUX_DIR([amaux])
@@ -75,6 +75,7 @@ AC_CONFIG_FILES(
    aldor/subcmd/testaldor/Makefile
    aldor/src/Makefile
    aldor/src/opsys_port.h
+   aldor/src/version.c
    aldor/lib/Makefile
 
    aldor/lib/libfoamlib/Makefile
