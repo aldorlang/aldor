@@ -268,26 +268,30 @@ FnLStream(T: Type): LStream T with
 
 
 SExpressionReader: with
-    read: (TextReader) -> Partial SExpression;
+   read: (TextReader) -> Partial SExpression;
+   readCased: (TextReader)  -> Partial SExpression;
 == add
     Token == Record(type: 'sym,escsym,number,str,ws,oparen,cparen,dot,quote,error,getref,setref', txt: String);
     import from Token
     import from CharSets
 
-    readOneToken(rdr: TextReader): Partial Token ==
-        import from TextLStream
-        s := tstream rdr
-        if hasNext? s then readOneToken! s else failed
+    read(rdr: TextReader): Partial SExpression == read(rdr, false)
+    readCased(rdr: TextReader): Partial SExpression == read(rdr, true)
 
-    read(rdr: TextReader): Partial SExpression ==
+    local read(rdr: TextReader, cased: Boolean): Partial SExpression ==
         import from TextLStream
         import from FnLStream Token
         s := tstream rdr
         tokstrm := tstream((): Partial Token +->  readOneToken! s)
-        sxMaybe: Partial SExpression := read(tokstrm)
+        sxMaybe: Partial SExpression := read(tokstrm, cased)
 	sxMaybe
     
-    readOneToken!(s: TextLStream): Partial Token ==
+    local readOneToken(rdr: TextReader, cased: Boolean): Partial Token ==
+        import from TextLStream
+        s := tstream rdr
+        if hasNext? s then readOneToken! s else failed
+
+    local readOneToken!(s: TextLStream): Partial Token ==
         import from Character
 	not hasNext? s => failed
         c := peek s;
@@ -314,7 +318,7 @@ SExpressionReader: with
 	stdout << "Unknown token prefix " << c << newline
 	failed
 
-    readString(s: TextLStream): Token ==
+    local readString(s: TextLStream): Token ==
         buffer: StringBuffer := new()
         writer: TextWriter := coerce buffer
 	next! s
@@ -328,7 +332,7 @@ SExpressionReader: with
 	next! s
 	[str, string buffer]
 
-    readReference(s: TextLStream): Token ==
+    local readReference(s: TextLStream): Token ==
         next! s
 	text := ""
 	while hasNext? s and digit? peek s repeat
@@ -340,7 +344,7 @@ SExpressionReader: with
 	if peek s = char "#" then next! s
 	[getref, text]
 
-    readWhitespace(s: TextLStream): Token ==
+    local readWhitespace(s: TextLStream): Token ==
         buffer: StringBuffer := new()
         writer: TextWriter := coerce buffer
         import from Character
@@ -351,7 +355,7 @@ SExpressionReader: with
 	    next! s
 	[ws, string buffer]
 
-    readEscaped(s: TextLStream): Token ==
+    local readEscaped(s: TextLStream): Token ==
         import from Character
         buffer: StringBuffer := new()
         writer: TextWriter := coerce buffer
@@ -364,13 +368,13 @@ SExpressionReader: with
 	next! s
 	[escsym, string buffer]
 
-    readBackslashEscaped(s: TextLStream): Token ==
+    local readBackslashEscaped(s: TextLStream): Token ==
         next! s
         text := peek(s)::String
         next! s
 	[escsym, text]
 
-    readNumber(s: TextLStream): Token ==
+    local readNumber(s: TextLStream): Token ==
         buffer: StringBuffer := new()
         writer: TextWriter := coerce buffer
 	while hasNext? s and numberPart? peek s repeat
@@ -378,7 +382,7 @@ SExpressionReader: with
 	    next! s
 	[number, string buffer]
 
-    readSymbol(s: TextLStream): Token ==
+    local readSymbol(s: TextLStream): Token ==
         buffer: StringBuffer := new()
         writer: TextWriter := coerce buffer
 	while hasNext? s and symPart? peek s repeat
@@ -386,7 +390,7 @@ SExpressionReader: with
 	    next! s
 	[sym, string buffer]
 
-    read(s: FnLStream Token): Partial SExpression ==
+    local read(s: FnLStream Token, cased: Boolean): Partial SExpression ==
         import from SExpression, Symbol
 	tbl: HashTable(String, SExpression) := table()
 	setref!(id: String, psx: Partial SExpression): Partial SExpression ==
@@ -458,7 +462,7 @@ SExpressionReader: with
 	    else if tok.type = str then [sexpr tok.txt]
 	    else if tok.type = quote then readQuoted()
 	    else if tok.type = sym then
-	        [sexpr (-[upper x for x in tok.txt])]
+	        [if cased then sexpr tok.txt else sexpr (-[upper x for x in tok.txt])]
 	    else if tok.type = escsym then
 	        [sexpr (-tok.txt)]
 	    else if tok.type = number then [sexpr integer literal tok.txt]
