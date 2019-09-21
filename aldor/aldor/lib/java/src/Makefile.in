@@ -24,6 +24,7 @@ buildfiles := $(shell cd $(srcdir); find foamj -name \*.java)
 
 outdir := $(abs_builddir)/classes
 jarfile := $(abs_builddir)/foamj.jar
+sourcejarfile := foamj-sources.jar
 
 # Build directly to a .jar file (easier than tracking .class files)
 $(jarfile): $(buildfiles)
@@ -31,7 +32,10 @@ $(jarfile): $(buildfiles)
 	(cd $(srcdir); javac -g -d $(outdir) $(buildfiles))
 	(wd=$$(pwd); cd $(outdir); jar cf $@ .)
 
-all: $(jarfile)
+$(sourcejarfile): $(buildfiles)
+	cd $(srcdir); jar cf $(abs_builddir)/$@ $(shell cd $(srcdir); find . -type f)
+
+all: $(jarfile) $(sourcejarfile)
 	echo $<
 
 # 
@@ -40,6 +44,7 @@ all: $(jarfile)
 mostlyclean: 
 	rm -rf $(outdir)
 	rm -f $(jarfile)
+	rm -f $(sourcejarfile)
 
 clean: mostlyclean
 

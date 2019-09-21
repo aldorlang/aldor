@@ -5,6 +5,10 @@ AM_V_LIBJAR = $(am__v_LIBJAR_$(V))
 am__v_LIBJAR_ = $(am__v_LIBJAR_$(AM_DEFAULT_VERBOSITY))
 am__v_LIBJAR_0 = @echo "  LIBJAR   " $@;
 
+AM_V_LIBSRCJAR = $(am__v_LIBSRCJAR_$(V))
+am__v_LIBSRCJAR_ = $(am__v_LIBSRCJAR_$(AM_DEFAULT_VERBOSITY))
+am__v_LIBSRCJAR_0 = @echo "  LIBSRCJAR   " $@;
+
 AM_CFLAGS = -I$(aldorsrcdir)
 
 lib$(libraryname).al: $(foreach i,$(SUBDIRS),$i/_sublib_$(libraryname).al)
@@ -17,6 +21,14 @@ lib$(libraryname).al: $(foreach i,$(SUBDIRS),$i/_sublib_$(libraryname).al)
 
 $(libraryname).jar: $(foreach i, $(JAVA_SUBDIRS),$i/$(libraryname).jar)
 	$(AM_V_LIBJAR)		\
+	rm -rf jar;		\
+	mkdir jar;		\
+	for i in $(foreach j, $(JAVA_SUBDIRS),$j/$(libraryname).jar); \
+		do (cd jar; jar xf ../$$i); done;  		\
+	(cd jar; jar cf ../$@ .)
+
+$(libraryname)-sources.jar: $(foreach i, $(JAVA_SUBDIRS),$i/$(libraryname).jar)
+	$(AM_V_LIBSRCJAR)	\
 	rm -rf jar;		\
 	mkdir jar;		\
 	for i in $(foreach j, $(JAVA_SUBDIRS),$j/$(libraryname).jar); \
