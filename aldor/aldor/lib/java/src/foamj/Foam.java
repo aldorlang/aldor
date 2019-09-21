@@ -357,7 +357,7 @@ public class Foam {
     }
 
     public static void fiRaiseException(Word w) {
-        throw new RuntimeException(w.toString());
+        throw new RuntimeException(stringToJavaString(w));
     }
 
     public static float arrToSFlo(Object o) {
@@ -542,9 +542,11 @@ public class Foam {
     public static String arrToString(char[] arr) {
         String s = new String(arr);
         int idx = s.indexOf("\0");
+
         if (idx == -1) {
             return s;
         }
+
         return s.substring(0, idx);
     }
 }
