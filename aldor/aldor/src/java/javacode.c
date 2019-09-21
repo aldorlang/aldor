@@ -22,6 +22,7 @@ enum jc_clss_enum {
 	JCO_CLSS_ABrackets,
 	JCO_CLSS_ImportedId,
 	JCO_CLSS_ImportedStatic,
+	JCO_CLSS_Annotation,
 	JCO_CLSS_Class,
 	JCO_CLSS_JavaDoc,
 	JCO_CLSS_Comment,
@@ -193,6 +194,7 @@ struct javaKeyword jkKeywords[] = {
 
 typedef Enum(jc_clss_enum) JcClassId;
 
+local JWriteFn jcAnnotationPrint;
 local JWriteFn jcApplyPrint;
 local JWriteFn jcARefPrint;
 local JWriteFn jcBinOpPrint;
@@ -282,6 +284,7 @@ static struct jclss jcClss[] = {
 	{ JCO_CLSS_ImportedId, jcImportPrint,  jcImportSExpr,"importid", 0},
 	{ JCO_CLSS_ImportedStatic,
 	                       jcImportPrint,  jcImportSExpr,  "static-importid", 0},
+	{ JCO_CLSS_Annotation, jcAnnotationPrint, jcNodeSExpr, "annotation", 0},
 	{ JCO_CLSS_Class,      jcClassPrint,   jcNodeSExpr,    "class", 0},
 	{ JCO_CLSS_JavaDoc,    jcJavaDocPrint, jcCommentSExpr, "javadoc", 0},
 	{ JCO_CLSS_Comment,    jcCommentPrint, jcCommentSExpr, "comment", 0},
@@ -347,13 +350,15 @@ local JavaCodeClass jc0ClassObj(JcClassId);
 
 JavaCode
 jcClass(int modifiers, String comment,
-	 JavaCode id, JavaCode superclass,
-	 JavaCodeList extendList, JavaCodeList body)
+	JavaCodeList annotations,
+	JavaCode id, JavaCode superclass,
+	JavaCodeList extendList, JavaCodeList body)
 {
 	JavaCodeList jcmods = jc0CreateModifiers(modifiers);
 
 	JavaCode clss = jcoNew(jc0ClassObj(JCO_CLSS_Class),
-			       5,
+			       6,
+			       jcNLSeq(annotations),
 			       jcSpaceSeq(jcmods),
 			       id, superclass,
 			       extendList == listNil(JavaCode) ? NULL : jcCommaSeq(extendList),
@@ -367,12 +372,15 @@ jcClass(int modifiers, String comment,
 void
 jcClassPrint(JavaCodePContext ctxt, JavaCode clss)
 {
-	JavaCode modifiers = jcoArgv(clss)[0];
-	JavaCode id         = jcoArgv(clss)[1];
-	JavaCode superclass = jcoArgv(clss)[2];
-	JavaCode implList   = jcoArgv(clss)[3];
-	JavaCode body       = jcoArgv(clss)[4];
+	JavaCode annotations = jcoArgv(clss)[0];
+	JavaCode modifiers  = jcoArgv(clss)[1];
+	JavaCode id         = jcoArgv(clss)[2];
+	JavaCode superclass = jcoArgv(clss)[3];
+	JavaCode implList   = jcoArgv(clss)[4];
+	JavaCode body       = jcoArgv(clss)[5];
 
+	jcoWrite(ctxt, annotations);
+	jcoPContextWrite(ctxt, "\n");
 	if (modifiers != NULL && jcoArgc(modifiers) > 0) {
 		jcoWrite(ctxt, modifiers);
 		jcoPContextWrite(ctxt, " ");
@@ -521,6 +529,26 @@ jcDeclarationPrint(JavaCodePContext ctxt, JavaCode code)
 
 	}
 
+}
+
+/*
+ * :: Annotations
+ */
+
+JavaCode
+jcAnnotation(JavaCode annotationClass, JavaCodeList arguments)
+{
+	return jcoNew(jc0ClassObj(JCO_CLSS_Annotation),
+		      2, annotationClass,
+		      jcParens(jcCommaSeq(arguments)));
+}
+
+local void
+jcAnnotationPrint(JavaCodePContext ctxt, JavaCode code)
+{
+	jcoPContextWrite(ctxt, "@");
+	jcoWrite(ctxt, jcoArgv(code)[0]);
+	jcoWrite(ctxt, jcoArgv(code)[1]);
 }
 
 /*
