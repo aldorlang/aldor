@@ -6,34 +6,34 @@
 enum jc_clss_enum {
 	JCO_CLSS_START,
 	JCO_CLSS_String = JCO_CLSS_START,
-	JCO_CLSS_Character,    
-	JCO_CLSS_Integer,    
-	JCO_CLSS_Float,    
-	JCO_CLSS_Double,    
-	JCO_CLSS_Keyword,    
-	JCO_CLSS_Id,    
-	JCO_CLSS_CommaSeq,   
-	JCO_CLSS_SpaceSeq,   
-	JCO_CLSS_NLSeq,   
-	JCO_CLSS_Seq,        
-	JCO_CLSS_Parens,    
-	JCO_CLSS_Braces,    
+	JCO_CLSS_Character,
+	JCO_CLSS_Integer,
+	JCO_CLSS_Float,
+	JCO_CLSS_Double,
+	JCO_CLSS_Keyword,
+	JCO_CLSS_Id,
+	JCO_CLSS_CommaSeq,
+	JCO_CLSS_SpaceSeq,
+	JCO_CLSS_NLSeq,
+	JCO_CLSS_Seq,
+	JCO_CLSS_Parens,
+	JCO_CLSS_Braces,
 	JCO_CLSS_SqBrackets,
-	JCO_CLSS_ABrackets, 
-	JCO_CLSS_ImportedId, 
-	JCO_CLSS_ImportedStatic, 
-	JCO_CLSS_Class,      
-	JCO_CLSS_JavaDoc, 
-	JCO_CLSS_Comment,    
-	JCO_CLSS_Method,    
-	JCO_CLSS_Declaration,    
-	JCO_CLSS_Statement,    
+	JCO_CLSS_ABrackets,
+	JCO_CLSS_ImportedId,
+	JCO_CLSS_ImportedStatic,
+	JCO_CLSS_Class,
+	JCO_CLSS_JavaDoc,
+	JCO_CLSS_Comment,
+	JCO_CLSS_Method,
+	JCO_CLSS_Declaration,
+	JCO_CLSS_Statement,
 	JCO_CLSS_File,
-	
-	JCO_CLSS_If,    
-	JCO_CLSS_While,    
-	JCO_CLSS_Switch,    
-	JCO_CLSS_Case,    
+
+	JCO_CLSS_If,
+	JCO_CLSS_While,
+	JCO_CLSS_Switch,
+	JCO_CLSS_Case,
 	JCO_CLSS_Block,
 	JCO_CLSS_Try,
 	JCO_CLSS_Catch,
@@ -48,10 +48,10 @@ enum jc_clss_enum {
 
 	JCO_CLSS_Not,
 	JCO_CLSS_LogAnd,
-	JCO_CLSS_LogOr, 
+	JCO_CLSS_LogOr,
 	JCO_CLSS_And,
-	JCO_CLSS_Or, 
-	JCO_CLSS_XOr, 
+	JCO_CLSS_Or,
+	JCO_CLSS_XOr,
 	JCO_CLSS_Equals,
 	JCO_CLSS_NEquals,
 	JCO_CLSS_Assign,
@@ -192,15 +192,15 @@ struct javaKeyword jkKeywords[] = {
 };
 
 typedef Enum(jc_clss_enum) JcClassId;
-			   
+
 local JWriteFn jcApplyPrint;
 local JWriteFn jcARefPrint;
-local JWriteFn jcBinOpPrint; 
-local JWriteFn jcBlockHdrPrint; 
+local JWriteFn jcBinOpPrint;
+local JWriteFn jcBlockHdrPrint;
 local JWriteFn jcBlockKeywordPrint;
 local JWriteFn jcBlockPrint;
-local JWriteFn jcCasePrint; 
-local JWriteFn jcCastPrint; 
+local JWriteFn jcCasePrint;
+local JWriteFn jcCastPrint;
 local JWriteFn jcClassPrint;
 local JWriteFn jcCommentPrint;
 local JWriteFn jcCondPrint;
@@ -217,7 +217,7 @@ local JWriteFn jcSequencePrint;
 local JWriteFn jcStatementPrint;
 local JWriteFn jcFilePrint;
 local JWriteFn jcStringPrint;
-local JWriteFn jcUnaryOpPrint; 
+local JWriteFn jcUnaryOpPrint;
 
 local JSExprFn jcCommentSExpr;
 local JSExprFn jcIdSExpr;
@@ -246,7 +246,7 @@ Operator	Description 	                  Associativity
 10.     <<  >>  Bitwise shift left, Bitwise shift right    left-to-right
 9.      <  <=   Relational less than/less than or equal to       left-to-right
         >  >=   Relational greater than/greater than or equal to
-        instanceof      Type comparison         
+        instanceof      Type comparison
 8      ==  !=  Relational is equal to/is not equal to  left-to-right
 7      &       Bitwise AND     left-to-right
 6      ^       Bitwise exclusive OR    left-to-right
@@ -255,11 +255,11 @@ Operator	Description 	                  Associativity
 3.      ||      Logical OR      left-to-right
 2.      ?:      Ternary conditional     right-to-left
 1.      =         Assignment                                  right-to-left
-        +=  -=    Addition/subtraction assignment                
-        *=  /=    Multiplication/division assignment     
-        %=  &=    Modulus/bitwise AND assignment                 
+        +=  -=    Addition/subtraction assignment
+        *=  /=    Multiplication/division assignment
+        %=  &=    Modulus/bitwise AND assignment
         ^=  |=    Bitwise exclusive/inclusive OR assignment
-        <<=  >>=  Bitwise shift left/right assignment   
+        <<=  >>=  Bitwise shift left/right assignment
 
 */
 static struct jclss jcClss[] = {
@@ -345,26 +345,26 @@ jcInit()
 
 local JavaCodeClass jc0ClassObj(JcClassId);
 
-JavaCode 
-jcClass(int modifiers, String comment, 
+JavaCode
+jcClass(int modifiers, String comment,
 	 JavaCode id, JavaCode superclass,
 	 JavaCodeList extendList, JavaCodeList body)
 {
 	JavaCodeList jcmods = jc0CreateModifiers(modifiers);
-	
+
 	JavaCode clss = jcoNew(jc0ClassObj(JCO_CLSS_Class),
 			       5,
 			       jcSpaceSeq(jcmods),
-			       id, superclass, 
+			       id, superclass,
 			       extendList == listNil(JavaCode) ? NULL : jcCommaSeq(extendList),
 			       jcNLSeq(body));
-	if (comment == NULL) 
+	if (comment == NULL)
 		return clss;
 
 	return jcDocumented(comment, clss);
 }
 
-void 
+void
 jcClassPrint(JavaCodePContext ctxt, JavaCode clss)
 {
 	JavaCode modifiers = jcoArgv(clss)[0];
@@ -397,8 +397,8 @@ jcClassPrint(JavaCodePContext ctxt, JavaCode clss)
 /*
  * :: Methods (actually, could be 'member' instead)
  */
-JavaCode 
-jcMethod(int modifiers, String comment, 
+JavaCode
+jcMethod(int modifiers, String comment,
 			 JavaCode retnType,
 			 JavaCode id, JavaCodeList genArgs,
 			 JavaCodeList args,
@@ -406,34 +406,34 @@ jcMethod(int modifiers, String comment,
 {
 	JavaCode meth = jcoNew(jc0ClassObj(JCO_CLSS_Method),
 			       2,
-			       jcDeclaration(modifiers, retnType, 
-					     id, listNil(JavaCode), 
+			       jcDeclaration(modifiers, retnType,
+					     id, listNil(JavaCode),
 					     jcParens(jcCommaSeq(args)), exns),
 			       body);
 	return meth;
 }
 
-JavaCode 
-jcConstructor(int modifiers, String comment, 
+JavaCode
+jcConstructor(int modifiers, String comment,
 	      JavaCode id, JavaCodeList genArgs,
 	      JavaCodeList args,
 	      JavaCodeList exns, JavaCode body)
 {
 	JavaCode meth = jcoNew(jc0ClassObj(JCO_CLSS_Method),
 			       2,
-			       jcDeclaration(modifiers, jcSpaceSeqV(0), 
-					     id, listNil(JavaCode), 
+			       jcDeclaration(modifiers, jcSpaceSeqV(0),
+					     id, listNil(JavaCode),
 					     jcParens(jcCommaSeq(args)), exns),
 			       body);
 	return meth;
 }
 
-local void 
+local void
 jcMethodPrint(JavaCodePContext ctxt, JavaCode code)
 {
 	JavaCode decl = jcoArgv(code)[0];
 	JavaCode body = jcoArgv(code)[1];
-	
+
 	jcoWrite(ctxt, decl);
 	jcoPContextWrite(ctxt, " {");
 	jcoPContextNewlineIndent(ctxt);
@@ -448,8 +448,8 @@ jcMethodPrint(JavaCodePContext ctxt, JavaCode code)
  * :: Declarations
  */
 
-JavaCode 
-jcDeclaration(int modifiers, 
+JavaCode
+jcDeclaration(int modifiers,
 	      JavaCode retnType,
 	      JavaCode id, JavaCodeList genArgs,
 	      JavaCode args,
@@ -494,13 +494,13 @@ jcInitialisation(int modifiers, JavaCode type, JavaCode id, JavaCode value)
 }
 
 
-local void 
+local void
 jcDeclarationPrint(JavaCodePContext ctxt, JavaCode code)
 {
 	JavaCode mods = jcoArgv(code)[0];
 	JavaCode retn = jcoArgv(code)[1];
 	JavaCode name = jcoArgv(code)[2];
-	
+
 	if (!jcoIsEmpty(mods)) {
 		jcoWrite(ctxt, mods);
 		jcoPContextWrite(ctxt, " ");
@@ -527,13 +527,13 @@ jcDeclarationPrint(JavaCodePContext ctxt, JavaCode code)
  * :: Function application
  */
 
-JavaCode 
+JavaCode
 jcApply(JavaCode c, JavaCodeList args)
 {
 	return jcoNew(jc0ClassObj(JCO_CLSS_Apply), 2, c, jcParens(jcCommaSeq(args)));
 }
 
-JavaCode 
+JavaCode
 jcApplyV(JavaCode c, int n, ...)
 {
 	va_list  argp;
@@ -547,17 +547,17 @@ jcApplyV(JavaCode c, int n, ...)
 JavaCode
 jcApplyP(JavaCode c, int n, va_list argp)
 {
-	return jcoNew(jc0ClassObj(JCO_CLSS_Apply), 
+	return jcoNew(jc0ClassObj(JCO_CLSS_Apply),
 		      2, c, jcParens(jcCommaSeqP(n, argp)));
 }
 
-JavaCode 
+JavaCode
 jcApplyMethod(JavaCode c, JavaCode id, JavaCodeList args)
 {
 	return jcApply(jcMemRef(c, id), args);
 }
 
-JavaCode 
+JavaCode
 jcApplyMethodV(JavaCode c, JavaCode id, int n, ...)
 {
 	va_list  argp;
@@ -599,34 +599,34 @@ jcGenericMethodNameV(JavaCode methodName, int n, ...)
  * :: Parens
  */
 JavaCode
-jcParens(JavaCode args) 
+jcParens(JavaCode args)
 {
 	JavaCode jco = jcoNew(jc0ClassObj(JCO_CLSS_Parens), 1, args);
 	return jco;
 }
 
 JavaCode
-jcBraces(JavaCode args) 
+jcBraces(JavaCode args)
 {
 	JavaCode jco = jcoNew(jc0ClassObj(JCO_CLSS_Braces), 1, args);
 	return jco;
 }
 
 JavaCode
-jcSqBrackets(JavaCode args) 
+jcSqBrackets(JavaCode args)
 {
 	JavaCode jco = jcoNew(jc0ClassObj(JCO_CLSS_SqBrackets), 1, args);
 	return jco;
 }
 
 JavaCode
-jcABrackets(JavaCode args) 
+jcABrackets(JavaCode args)
 {
 	JavaCode jco = jcoNew(jc0ClassObj(JCO_CLSS_ABrackets), 1, args);
 	return jco;
 }
 
-local void 
+local void
 jcParenPrint(JavaCodePContext ctxt, JavaCode code)
 {
 	char s[2] = " ";
@@ -643,14 +643,14 @@ jcParenPrint(JavaCodePContext ctxt, JavaCode code)
  * :: Comments
  */
 JavaCode
-jcDocumented(String comment, JavaCode code) 
+jcDocumented(String comment, JavaCode code)
 {
 	JavaCode doc = jcoNewLiteral(jc0ClassObj(JCO_CLSS_JavaDoc), comment);
 	return jcNLSeqV(2, doc, code);
 }
 
 JavaCode
-jcComment(String comment) 
+jcComment(String comment)
 {
 	JavaCode jc = jcoNewLiteral(jc0ClassObj(JCO_CLSS_Comment), comment);
 	return jc;
@@ -677,7 +677,7 @@ jcCommentPrint(JavaCodePContext ctxt, JavaCode code)
 	strFree(s);
 }
 
-local SExpr 
+local SExpr
 jcCommentSExpr(JavaCode code)
 {
 	SExpr  h = sxiFrSymbol(symIntern(jcoClass(code)->name));
@@ -766,7 +766,7 @@ jcImportedStaticIdName(JavaCode importedId)
 	return jcImportedIdName(importedId);
 }
 
-local void 
+local void
 jcImportPrint(JavaCodePContext ctxt, JavaCode code)
 {
 	if (jcoImportIsImported(code))
@@ -780,14 +780,14 @@ jcImportPrint(JavaCodePContext ctxt, JavaCode code)
 	}
 }
 
-local SExpr 
+local SExpr
 jcImportSExpr(JavaCode code)
 {
 	SExpr sym = sxiFrSymbol(symIntern(jcoClass(code)->name));
 	if (jcoImportPkg(code) == NULL) {
 		return sxiList(2, sym, sxiFrString(jcoImportId(code)));
 	}
-	return sxiList(3, sym, 
+	return sxiList(3, sym,
 		       sxiFrString(jcoImportPkg(code)),
 		       sxiFrString(jcoImportId(code)));
 }
@@ -798,10 +798,10 @@ jcImportSExpr(JavaCode code)
  */
 
 
-JavaCode 
+JavaCode
 jcLiteralString(String s)
 {
-	return jcoNewLiteral(jc0ClassObj(JCO_CLSS_String), 
+	return jcoNewLiteral(jc0ClassObj(JCO_CLSS_String),
 			     jc0EscapeString(s, false));
 }
 
@@ -812,11 +812,11 @@ jcLiteralStringWithTerminalChar(String s)
 			     jc0EscapeString(s, true));
 }
 
-JavaCode 
+JavaCode
 jcLiteralChar(String s)
 {
 	String t;
-	if (s[0] == '\0') 
+	if (s[0] == '\0')
 		t = strCopy("\\0");
 	else if (s[0] == '\'')
 		t = strCopy("\\'");
@@ -843,7 +843,7 @@ jcStringPrint(JavaCodePContext ctxt, JavaCode code)
 	jcoPContextWrite(ctxt, thisClss->txt);
 }
 
-local SExpr 
+local SExpr
 jcStringSExpr(JavaCode code)
 {
 	String s  = jcoLiteral(code);
@@ -859,20 +859,20 @@ jcStringSExpr(JavaCode code)
  */
 
 
-JavaCode 
+JavaCode
 jcLiteralInteger(AInt i)
 {
 	String s = strPrintf("%d", i);
 	return jcoNewLiteral(jc0ClassObj(JCO_CLSS_Integer), s);
 }
 
-JavaCode 
+JavaCode
 jcLiteralIntegerFrString(String s)
 {
 	return jcoNewLiteral(jc0ClassObj(JCO_CLSS_Integer), s);
 }
 
-JavaCode 
+JavaCode
 jcLiteralFloatFrString(String s)
 {
 	return jcoNewLiteral(jc0ClassObj(JCO_CLSS_Float), s);
@@ -884,7 +884,7 @@ jcIntegerPrint(JavaCodePContext ctxt, JavaCode code)
 	jcoPContextWrite(ctxt, jcoLiteral(code));
 }
 
-local SExpr 
+local SExpr
 jcIntegerSExpr(JavaCode code)
 {
 	int i = atoi(jcoLiteral(code));
@@ -896,48 +896,48 @@ jcIntegerSExpr(JavaCode code)
  */
 
 
-JavaCode 
-jcKeyword(Symbol sym) 
+JavaCode
+jcKeyword(Symbol sym)
 {
 	return jcoNewToken(jc0ClassObj(JCO_CLSS_Keyword), sym);
 }
 
-JavaCode 
-jcReturn(JavaCode c) 
+JavaCode
+jcReturn(JavaCode c)
 {
 	return jcSpaceSeqV(2, jcKeyword(symInternConst("return")), c);
 }
 
-JavaCode 
-jcReturnVoid() 
+JavaCode
+jcReturnVoid()
 {
 	return jcKeyword(symInternConst("return"));
 }
 
 
-JavaCode 
-jcNull(String name) 
+JavaCode
+jcNull(String name)
 {
 	return jcKeyword(symIntern("null"));
 }
-JavaCode 
-jcTrue(String name) 
+JavaCode
+jcTrue(String name)
 {
 	return jcKeyword(symIntern("true"));
 }
-JavaCode 
-jcFalse(String name) 
+JavaCode
+jcFalse(String name)
 {
 	return jcKeyword(symIntern("false"));
 }
 
-JavaCode 
-jcThis(String name) 
+JavaCode
+jcThis(String name)
 {
 	return jcKeyword(symIntern("this"));
 }
 
-local SExpr 
+local SExpr
 jcKeywordSExpr(JavaCode code)
 {
 	return sxiFrSymbol(jcoToken(code));
@@ -953,8 +953,8 @@ jcKeywordPrint(JavaCodePContext ctxt, JavaCode code)
  * :: Ids
  */
 
-JavaCode 
-jcId(String name) 
+JavaCode
+jcId(String name)
 {
 	return jcoNewLiteral(jc0ClassObj(JCO_CLSS_Id), name);
 }
@@ -965,14 +965,14 @@ jcIdName(JavaCode id)
 	return jcoLiteral(id);
 }
 
-local SExpr 
+local SExpr
 jcIdSExpr(JavaCode code)
 {
 	return sxiFrString(jcoLiteral(code));
 }
 
-void 
-jcIdPrint(JavaCodePContext ctxt, JavaCode code) 
+void
+jcIdPrint(JavaCodePContext ctxt, JavaCode code)
 {
 	String name = jcoLiteral(code);
 	jcoPContextWrite(ctxt, name);
@@ -1049,7 +1049,7 @@ jcArrayOf(JavaCode type)
 JavaCode
 jcNAry(JavaCode type)
 {
-	return jcSpaceSeqV(2, type, 
+	return jcSpaceSeqV(2, type,
 			   jcKeyword(symInternConst("...")));
 }
 
@@ -1142,7 +1142,7 @@ struct jcOpInfo JcOpInfoTable[] = {
 	{ JCO_OP_ShiftDn,   0, JCO_CLSS_ShiftDn},
 };
 
-JavaCode 
+JavaCode
 jcOp(JcOperation op, JavaCodeList args)
 {
 	JcOpInfo inf = jc0OpInfo(op);
@@ -1164,13 +1164,13 @@ jcBinOp(JcOperation op, JavaCode e1, JavaCode e2)
 }
 
 
-local JavaCode 
+local JavaCode
 jcOpNot(JavaCodeList l)
 {
 	return jcNot(car(l));
 }
 
-local JavaCode 
+local JavaCode
 jcOpNegate(JavaCodeList l)
 {
 	return jcNegate(car(l));
@@ -1183,13 +1183,13 @@ jcOpTimesPlus(JavaCodeList args)
 	JavaCode a2 = car(cdr(args));
 	JavaCode a3 = car(cdr(cdr(args)));
 
-	return jcBinaryOp(jc0ClassObj(JCO_CLSS_Plus), 
+	return jcBinaryOp(jc0ClassObj(JCO_CLSS_Plus),
 			  jcBinaryOp(jc0ClassObj(JCO_CLSS_Times), a1, a2),
 			  a3);
 }
 
 
-local JcOpInfo 
+local JcOpInfo
 jc0OpInfo(JcOperation op)
 {
 	JcOpInfo inf = &JcOpInfoTable[op];
@@ -1202,7 +1202,7 @@ jc0OpInfo(JcOperation op)
  * :: Binary operations
  */
 
-JavaCode 
+JavaCode
 jcBinaryOp(JavaCodeClass c, JavaCode lhs, JavaCode rhs)
 {
 	JavaCode r = jcoNew(c, 2, lhs, rhs);
@@ -1210,7 +1210,7 @@ jcBinaryOp(JavaCodeClass c, JavaCode lhs, JavaCode rhs)
 }
 
 local void
-jcBinOpPrint(JavaCodePContext ctxt, JavaCode code) 
+jcBinOpPrint(JavaCodePContext ctxt, JavaCode code)
 {
 	JavaCodeClass thisClss = jcoClass(code);
 	JavaCode lhs = jcoArgv(code)[0];
@@ -1236,7 +1236,7 @@ jc0PrintWithParens(JavaCodePContext ctxt, JavaCodeClass oClss, JavaCode arg)
 }
 
 local Bool
-jc0NeedsParens(JavaCodeClass c1, JavaCodeClass c2) 
+jc0NeedsParens(JavaCodeClass c1, JavaCodeClass c2)
 {
 	if (c2->prec == 0)
 		return false;
@@ -1247,13 +1247,13 @@ jc0NeedsParens(JavaCodeClass c1, JavaCodeClass c2)
  * :: Unary operations
  */
 
-JavaCode 
+JavaCode
 jcNot(JavaCode arg)
 {
 	return jcoNew(jc0ClassObj(JCO_CLSS_Not), 1, arg);
 }
 
-JavaCode 
+JavaCode
 jcNegate(JavaCode arg)
 {
 	return jcoNew(jc0ClassObj(JCO_CLSS_Negate), 1, arg);
@@ -1295,7 +1295,7 @@ jcCastPrint(JavaCodePContext ctxt, JavaCode code)
  * Well, there's only ?:.
  */
 
-JavaCode 
+JavaCode
 jcConditional(JavaCode test, JavaCode truePart, JavaCode falsePart)
 {
 	return jcoNew(jc0ClassObj(JCO_CLSS_Conditional), 3, test, truePart, falsePart);
@@ -1321,7 +1321,7 @@ jcCondPrint(JavaCodePContext ctxt, JavaCode code)
  * :: Statements
  */
 JavaCode
-jcStatement(JavaCode stmt) 
+jcStatement(JavaCode stmt)
 {
 	return jcoNew(jc0ClassObj(JCO_CLSS_Statement), 1, stmt);
 }
@@ -1338,13 +1338,13 @@ jcStatementPrint(JavaCodePContext ctxt, JavaCode code)
  */
 
 JavaCode
-jcCommaSeq(JavaCodeList lst) 
+jcCommaSeq(JavaCodeList lst)
 {
 	return jcoNewFrList(jc0ClassObj(JCO_CLSS_CommaSeq), lst);
 }
 
 JavaCode
-jcCommaSeqP(int n, va_list argp) 
+jcCommaSeqP(int n, va_list argp)
 {
 	return jcoNewP(jc0ClassObj(JCO_CLSS_CommaSeq), n, argp);
 }
@@ -1367,19 +1367,19 @@ jcSeqV(int n, ...)
 }
 
 JavaCode
-jcNLSeq(JavaCodeList lst) 
+jcNLSeq(JavaCodeList lst)
 {
 	return jcoNewFrList(jc0ClassObj(JCO_CLSS_NLSeq), lst);
 }
 
 JavaCode
-jcSpaceSeq(JavaCodeList lst) 
+jcSpaceSeq(JavaCodeList lst)
 {
 	return jcoNewFrList(jc0ClassObj(JCO_CLSS_SpaceSeq), lst);
 }
 
 JavaCode
-jcSpaceSeqV(int n, ...) 
+jcSpaceSeqV(int n, ...)
 {
 	va_list argp;
 	JavaCode jc;
@@ -1390,7 +1390,7 @@ jcSpaceSeqV(int n, ...)
 }
 
 JavaCode
-jcNLSeqV(int n, ...) 
+jcNLSeqV(int n, ...)
 {
 	va_list argp;
 	JavaCode jc;
@@ -1400,7 +1400,7 @@ jcNLSeqV(int n, ...)
 	return jc;
 }
 
-local void 
+local void
 jcSequencePrint(JavaCodePContext ctxt, JavaCode code)
 {
 	char *theSep = jcoClass(code)->txt;
@@ -1414,19 +1414,19 @@ jcSequencePrint(JavaCodePContext ctxt, JavaCode code)
 	}
 }
 
-JavaCode 
+JavaCode
 jcBlockNoNL(JavaCode body)
 {
 	return jcoNew(jc0ClassObj(JCO_CLSS_Braces), 1, body);
 }
 
-JavaCode 
+JavaCode
 jcBlock(JavaCode body)
 {
 	return jcoNew(jc0ClassObj(JCO_CLSS_Block), 1, body);
 }
 
-local void 
+local void
 jcBlockPrint(JavaCodePContext ctxt, JavaCode code)
 {
 	jcoPContextWrite(ctxt, "{");
@@ -1434,7 +1434,7 @@ jcBlockPrint(JavaCodePContext ctxt, JavaCode code)
 	jcoWrite(ctxt, jcoArgv(code)[0]);
 	jcoPContextNewlineUnindent(ctxt);
 	jcoPContextWrite(ctxt, "}");
-	
+
 }
 
 JavaCode
@@ -1461,7 +1461,7 @@ jcCaseLabel(JavaCode label)
 	return jcoNew(jc0ClassObj(JCO_CLSS_Case), 1, label);
 }
 
-local void 
+local void
 jcCasePrint(JavaCodePContext ctxt, JavaCode code)
 {
 	jcoPContextWrite(ctxt, "case ");
@@ -1515,7 +1515,7 @@ jcPackage(JavaCode arg)
  * :: Throw, catch
  */
 
-JavaCode 
+JavaCode
 jcThrow(JavaCode arg)
 {
 	return jcSpaceSeqV(2, jcKeyword(symInternConst("throw")), arg);
@@ -1525,20 +1525,20 @@ jcThrow(JavaCode arg)
  * :: If, Switch, While
  */
 
-JavaCode 
+JavaCode
 jcIf(JavaCode test, JavaCode stmt)
 {
 	return jcoNew(jc0ClassObj(JCO_CLSS_If), 2, test, stmt);
 }
 
-JavaCode 
+JavaCode
 jcSwitch(JavaCode test, JavaCodeList bodyList)
 {
 	JavaCode block = jcBraces(jcNLSeq(bodyList));
 	return jcoNew(jc0ClassObj(JCO_CLSS_Switch), 2, test, block);
 }
 
-JavaCode 
+JavaCode
 jcWhile(JavaCode test, JavaCode stmt)
 {
 	return jcoNew(jc0ClassObj(JCO_CLSS_While), 2, test, stmt);
@@ -1553,7 +1553,7 @@ jcBlockHdrPrint(JavaCodePContext ctxt, JavaCode code)
 	jcoPContextWrite(ctxt, " (");
 	jcoWrite(ctxt, jcoArgv(code)[0]);
 	jcoPContextWrite(ctxt, ") ");
-	
+
 	needsIndent = jcBlockHdrIndent(jcoArgv(code)[1]);
 	if (needsIndent)
 		jcoPContextNewlineIndent(ctxt);
@@ -1638,8 +1638,8 @@ jcFilePackageName(JavaCode file)
 /*
  * :: Generic operations
  */
-SExpr 
-jcNodeSExpr(JavaCode code) 
+SExpr
+jcNodeSExpr(JavaCode code)
 {
 	Symbol sym = symIntern(jcoClass(code)->name);
 	SExpr whole = sxiList(1, sxiFrSymbol(sym));
@@ -1653,15 +1653,15 @@ jcNodeSExpr(JavaCode code)
 	return sxNReverse(whole);
 }
 
-extern void 
+extern void
 jcNodePrint(JavaCodePContext ctxt, JavaCode code)
 {
 	jcoPContextWrite(ctxt, "<<node>>");
 }
 
 
-void 
-jcListPrint(JavaCodePContext ctxt, JavaCode code) 
+void
+jcListPrint(JavaCodePContext ctxt, JavaCode code)
 {
 	char *theSep = (char *) jcoClass(code)->txt;
 	char *sep = "";
@@ -1679,7 +1679,7 @@ jcListPrint(JavaCodePContext ctxt, JavaCode code)
  */
 local Symbol jc0ModifierSymbol(int idx);
 
-local JavaCodeClass 
+local JavaCodeClass
 jc0ClassObj(JcClassId id)
 {
 	JavaCodeClass clss = &jcClss[id];
@@ -1704,13 +1704,13 @@ static struct jcModifierInfo jcModifierList[] = {
 	{ JCO_MOD_Volatile,  "volatile"},
 };
 
-local JavaCodeList 
+local JavaCodeList
 jc0CreateModifiers(int modifiers)
 {
 	JavaCodeList l = listNil(JavaCode);
 	int i=0, m;
 	for (m=1; m< JCO_MOD_MAX; m=m<<1) {
-		if (modifiers & m) 
+		if (modifiers & m)
 			l = listCons(JavaCode)(jcoNewToken(jc0ClassObj(JCO_CLSS_Keyword),
 							   jc0ModifierSymbol(i)), l);
 		i++;
@@ -1719,7 +1719,7 @@ jc0CreateModifiers(int modifiers)
 }
 
 local Symbol
-jc0ModifierSymbol(int idx) 
+jc0ModifierSymbol(int idx)
 {
 	struct jcModifierInfo *inf = &jcModifierList[idx];
 	if (inf->sym == NULL)
@@ -1731,7 +1731,7 @@ jc0ModifierSymbol(int idx)
 local Bool jc0ImportEq(JavaCode c1, JavaCode c2);
 local void jc0CollectImports(Table tbl, Table nameTbl, JavaCode code);
 
-JavaCodeList 
+JavaCodeList
 jcCollectImports(JavaCode code)
 {
 	Table tbl = tblNew((TblHashFun) jcoHash, (TblEqFun) jc0ImportEq);
@@ -1768,17 +1768,17 @@ local Bool
 jc0ImportEq(JavaCode c1, JavaCode c2)
 {
 	assert(jcoIsImport(c1) && jcoIsImport(c2));
-	
+
 	if (strcmp(jcoImportPkg(c1), jcoImportPkg(c2)) != 0)
 		return false;
 	if (strcmp(jcoImportId(c1), jcoImportId(c2)) != 0)
 		return false;
-	
+
 	return true;
 }
 
 
-local void 
+local void
 jc0CollectImports(Table tbl, Table nameTbl, JavaCode code)
 {
 	if (code == 0)
@@ -1806,7 +1806,7 @@ jc0CollectImports(Table tbl, Table nameTbl, JavaCode code)
 /*
  * Returns a newly allocated string with properly escaped characters.
  */
-local String 
+local String
 jc0EscapeString(String s, Bool addTerminalChar)
 {
 	Buffer buf;
