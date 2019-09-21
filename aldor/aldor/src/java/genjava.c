@@ -314,7 +314,7 @@ genJavaUnit(Foam foam, String name)
 	body = listNConcat(JavaCode)(body, stubs);
 	
 	interfaces = listSingleton(JavaCode)(gj0Id(GJ_FoamClass));
-	clss = jcClass(JCO_MOD_Public, comment, 
+	clss = jcClass(JCO_MOD_Public, comment, listNil(JavaCode),
 		       jcId(gj0ClassName(foam, name)), NULL, interfaces, body);
 
 	imps = gj0CollectImports(clss);
@@ -490,6 +490,7 @@ gj0ExportClassCreate(JavaCode classId, AIntList ids)
 
 	clss = jcClass(JCO_MOD_Public|JCO_MOD_Final,
 		       strCopy(".. ++ docco goes here"),
+		       listNil(JavaCode),
 		       jcoCopy(className),
 		       gj0Id(GJ_AldorObject),
 		       listNil(JavaCode), body);
