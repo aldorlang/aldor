@@ -190,14 +190,20 @@ finiFile()
 	inFile = false;
 }
 
+
+static Bool initted = false;
 void
 init()
 {
+	dbInit();
+
+	if (initted)
+		return;
+
 	osInit();
 	sxiInit();
 	keyInit();
 	ssymInit();
-	dbInit();
 	stabInitGlobal();
 	tfInit();
 	fmttsInit();
@@ -208,6 +214,7 @@ init()
 	sposInit();
 	ablogInit();
 	comsgInit();
+	initted = true;
 }
 
 void
