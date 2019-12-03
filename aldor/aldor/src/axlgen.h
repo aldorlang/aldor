@@ -16,6 +16,8 @@
 
 #include "axlgen0.h"
 #include "list.h"
+#include "table.h"
+#include "ttable.h"
 
 #define OB_Other		0
 #define OB_Bogus		1
@@ -42,7 +44,6 @@ typedef ULong			   SrcPos;
 typedef struct sposCell	*	   SrcPosCell;
 typedef union  sposStack           SrcPosStack;
 typedef union  SExprUnion *        SExpr;
-typedef struct table *             Table;
 typedef struct bint *              BInt;
 typedef union  ccode *             CCode;
 
