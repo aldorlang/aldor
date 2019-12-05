@@ -182,7 +182,6 @@ local SymeList		tfAddHasExports		(TForm, TForm);
 
 local SymeList		tfGetCatExportsFrParents(SymeList);
 local SymeList		tfGetCatExportsCond	(SymeList, SefoList, Bool);
-local SymeList		tfGetCatExportsFilter	(SymeList, SymeList);
 local SymeList		tfGetCatExportsFilterTable(SymeTSet, SymeList);
 
 local SymeList		tfGetCatExportsFrWith	(TForm);
@@ -4094,21 +4093,6 @@ tfGetCatExportsCond(SymeList symes0, SefoList conds0, Bool pos)
 	listFree(Sefo)(reversedConds0);
 
 	return listNReverse(Syme)(nsymes);
-}
-
-local SymeList
-tfGetCatExportsFilter(SymeList osymes, SymeList nsymes)
-{
-	SymeList	symes, rsymes = listNil(Syme);
-
-	/* Remove symes for %% which have been seen before. */
-	for (symes = nsymes; symes; symes = cdr(symes))
-		if (!(symeIsSelfSelf(car(symes)) &&
-		      symeListMember(car(symes), osymes, symeEqual)))
-			rsymes = listCons(Syme)(car(symes), rsymes);
-
-	listFree(Syme)(nsymes);
-	return listNReverse(Syme)(rsymes);
 }
 
 local SymeList
