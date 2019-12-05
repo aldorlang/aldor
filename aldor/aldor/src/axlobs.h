@@ -96,6 +96,12 @@ DECLARE_LIST(DepDag);
 DECLARE_LIST(SymeList);
 
 /*
+ * Declare necessary sets
+ */
+
+DECLARE_TSET(Syme);
+
+/*
  * Include files which give meaning to the above declarations.
  */
 #include "absyn.h"
