@@ -230,11 +230,15 @@ absLookup(Syme syme, Sefo fail, AbSub sigma)
 {
 	AbBindList	l0;
 
-	for (l0 = sigma->l; l0; l0 = cdr(l0))
-		/** if (syme == car(l0)->key) **/ /** commented by C.O. for ALMA usage**/
-		    if (symeEqual(syme, car(l0)->key)) /** code introduced by C.O. for ALMA usage**/
+	for (l0 = sigma->l; l0; l0 = cdr(l0)) {
+		if (syme == car(l0)->key) {
 			return car(l0)->val;
-
+		}
+	}
+	for (l0 = sigma->l; l0; l0 = cdr(l0)) {
+		    if (symeEqual(syme, car(l0)->key))
+			return car(l0)->val;
+	}
 	return fail;
 }
 
