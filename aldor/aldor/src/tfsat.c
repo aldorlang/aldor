@@ -255,7 +255,7 @@ local Sefo		tfSatCond		(TForm);
 local SefoList		tfSatConds		(void);
 
 local SymeList	tfSatExportsMissing	(SatMask,SymeList,AbSyn,SymeList,SymeList);
-local SymeList	tfSatParentsFilter	(SymeList, SymeList);
+local SymeList	tfSatParentsFilterTable	(SymeTSet, SymeList);
 
 local void	tfSatSetPendingFail	(TForm);
 
@@ -1952,6 +1952,7 @@ tfSatParents(SatMask mask, SymeList mods, AbSyn Sab, SymeList S, SymeList T)
 {
 	SymeList	newS = S, oldS = listNil(Syme);
 	SymeList	queue = listNil(Syme);
+	SymeTSet        oldTbl = tsetCreateCustom(Syme)(symeHashFn, symeEqual);
 
 	/* Collect all of the missing exports. */
 	mask |= TFS_Missing;
@@ -1960,14 +1961,15 @@ tfSatParents(SatMask mask, SymeList mods, AbSyn Sab, SymeList S, SymeList T)
 		       tfsDepthNo, "", S);
 
 	while (newS || queue) {
-		T = tfSatExportsMissing(mask, mods, Sab, newS, T);
+		SymeList currentS = newS;
+		T = tfSatExportsMissing(mask, mods, Sab, currentS, T);
 		if (T == listNil(Syme)) {
 		  tfsParentDEBUG(dbOut, " ->tfpSyme: %*s= No parents)\n", tfsDepthNo, "");
 			return tfSatTrue(mask);
 		}
-		newS = tfSatParentsFilter(oldS, newS);
-		oldS = listNConcat(Syme)(oldS, newS);
+		newS = tfSatParentsFilterTable(oldTbl, currentS);
 		queue = listNConcat(Syme)(queue, listCopy(Syme)(newS));
+		tsetAddAll(Syme)(oldTbl, newS);
 
 		if (queue) {
 			Syme	oldSyme = car(queue);
@@ -1992,24 +1994,27 @@ tfSatParents(SatMask mask, SymeList mods, AbSyn Sab, SymeList S, SymeList T)
 				tfsDepthNo, "", T);
 	if (T == listNil(Syme))
 		return tfSatTrue(mask);
+	tsetFree(Syme)(oldTbl);
 
 	return tfSatResult(mask, TFS_ExportsMissing);
 }
 
 local SymeList
-tfSatParentsFilter(SymeList osymes, SymeList nsymes)
+tfSatParentsFilterTable(SymeTSet tbl, SymeList nsymes)
 {
-	SymeList	symes, rsymes = listNil(Syme);
-
+	SymeList symes, rsymes = listNil(Syme);
 	/* Collect symes for %% which have not been seen before. */
 	for (symes = nsymes; symes; symes = cdr(symes))
 		if (symeIsSelfSelf(car(symes)) &&
-		    !symeListMember(car(symes), osymes, symeEqual))
+		    !tsetMember(Syme)(tbl, car(symes)))
 			rsymes = listCons(Syme)(car(symes), rsymes);
 
 	listFree(Syme)(nsymes);
 	return listNReverse(Syme)(rsymes);
+
 }
+
+
 
 local String
 tfSatMaskToString(SatMask mask)
