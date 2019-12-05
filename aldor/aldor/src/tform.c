@@ -41,6 +41,7 @@
 #include "stab.h"
 #include "store.h"
 #include "strops.h"
+#include "symbol.h"
 #include "symeset.h"
 #include "tconst.h"
 #include "tfcond.h"
@@ -50,6 +51,7 @@
 #include "tinfer.h"
 #include "tposs.h"
 #include "tqual.h"
+#include "ttable.h"
 #include "util.h"
 
 Bool	tfDebug			= false;
@@ -181,6 +183,7 @@ local SymeList		tfAddHasExports		(TForm, TForm);
 local SymeList		tfGetCatExportsFrParents(SymeList);
 local SymeList		tfGetCatExportsCond	(SymeList, SefoList, Bool);
 local SymeList		tfGetCatExportsFilter	(SymeList, SymeList);
+local SymeList		tfGetCatExportsFilterTable(SymeTSet, SymeList);
 
 local SymeList		tfGetCatExportsFrWith	(TForm);
 local SymeList		tfGetCatExportsFrIf	(TForm);
@@ -3571,20 +3574,29 @@ tfJoinExportToList(SymeList mods, SymeList symes, Syme syme2, Sefo cond)
 SymeList
 tfJoinExportLists(SymeList mods, SymeList symes1, SymeList symes2, Sefo cond)
 {
-	SymeList	result = symes1, next;
+	SymeList	result = symes1, next, lst;
+	Table		symesByName = tblNew((TblHashFun) symHashFn, (TblEqFun) symEqual);
+
+	for (lst = symes1; lst; lst = cdr(lst)) {
+		Syme syme = car(lst);
+		SymeList sl = (SymeList) tblElt(symesByName, symeId(syme), listNil(Syme));
+		tblSetElt(symesByName, symeId(syme), listCons(Syme)(syme, sl));
+	}
 
 	for (; symes2; symes2 = cdr(symes2)) {
 		Syme	syme2 = car(symes2);
+		SymeList namedSymes = tblElt(symesByName, symeId(syme2), listNil(Syme));
 
-		if (!tfJoinExportToList(mods, result, syme2, cond)) {
+		if (!tfJoinExportToList(mods, namedSymes, syme2, cond)) {
 			Syme	syme1 = symeCopy(syme2);
 			if (cond) symeAddCondition(syme1, cond, true);
 			next = listCons(Syme)(syme1, listNil(Syme));
 			result = listNConcat(Syme)(result, next);
 			symeAddTwin(syme1, syme2);
+			tblSetElt(symesByName, symeId(syme2), listCons(Syme)(syme1, namedSymes));
 		}
 	}
-
+	tblFreeDeeply(symesByName, NULL, (TblFreeEltFun) listFree(Syme));
 	return result;
 }
 
@@ -3989,7 +4001,8 @@ tfGetThdExports(TForm thd)
 local SymeList
 tfGetCatExportsFrParents(SymeList symes)
 {
-	SymeList	nsymes, osymes = listCopy(Syme)(symes);
+	SymeTSet	oldTbl = tsetCreateCustom(Syme)(symeHashFn, symeEqual);
+	SymeList	nsymes;
 	SymeList	queue = listCopy(Syme)(symes);
 	SymeList	xsymes = listNil(Syme);
 	SefoList	cond;
@@ -4018,11 +4031,11 @@ tfGetCatExportsFrParents(SymeList symes)
 			afprintf(dbOut, "tfCatExports: into %pSymeList)\n", nsymes);
 		}
 
-		nsymes = tfGetCatExportsFilter(osymes, nsymes);
-		osymes = listNConcat(Syme)(osymes, nsymes);
+		nsymes = tfGetCatExportsFilterTable(oldTbl, nsymes);
+		tsetAddAll(Syme)(oldTbl, nsymes);
 		queue = listNConcat(Syme)(listCopy(Syme)(nsymes), queue);
 	}
-	listFree(Syme)(osymes);
+	tsetFree(Syme)(oldTbl);
 
 	return listNReverse(Syme)(xsymes);
 }
@@ -4065,6 +4078,21 @@ tfGetCatExportsFilter(SymeList osymes, SymeList nsymes)
 	for (symes = nsymes; symes; symes = cdr(symes))
 		if (!(symeIsSelfSelf(car(symes)) &&
 		      symeListMember(car(symes), osymes, symeEqual)))
+			rsymes = listCons(Syme)(car(symes), rsymes);
+
+	listFree(Syme)(nsymes);
+	return listNReverse(Syme)(rsymes);
+}
+
+local SymeList
+tfGetCatExportsFilterTable(SymeTSet oldTbl, SymeList nsymes)
+{
+	SymeList	symes, rsymes = listNil(Syme);
+
+	/* Remove symes for %% which have been seen before. */
+	for (symes = nsymes; symes; symes = cdr(symes))
+		if (!(symeIsSelfSelf(car(symes)) &&
+		      tsetMember(Syme)(oldTbl, car(symes))))
 			rsymes = listCons(Syme)(car(symes), rsymes);
 
 	listFree(Syme)(nsymes);
