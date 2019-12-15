@@ -942,6 +942,8 @@ extern struct ab_info	abInfoTable[];
 			abIsTheId((op), ssymRawRecord)		\
 		)
 
+typedef Bool (*AbEqualFn)(void *, AbSyn, AbSyn);
+
 /*
  * :: General operations
  */
@@ -963,6 +965,7 @@ extern AbSyn	abMarkAsMacroExpanded	(AbSyn);
 extern Bool	abContains		(AbSyn, AbSyn);
 extern Bool	abEqual			(AbSyn, AbSyn);
 extern Bool	abEqualModDeclares	(AbSyn, AbSyn);
+extern Bool	abCompareModDeclares	(AbEqualFn, void *, AbSyn, AbSyn);
 extern Hash	abHash			(AbSyn);
 extern Hash	abHashSefo		(AbSyn);
 extern Hash	abHashList		(AbSynList);
