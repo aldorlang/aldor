@@ -1921,3 +1921,16 @@ struct symeFieldInfo symeFieldInfo[] = {
 	{ SYFI_DefinitionConditions,"definedConditions",(AInt) listNil(AbSyn) },
 	{ SYFI_SrcPos,"srcpos",(SrcPos) listNil(AbSyn) },
 };
+
+SymeList
+symeListFindNamed(SymeList symes, String name)
+{
+	Symbol sym = symIntern(name);
+	SymeList result = listNil(Syme);
+	while (symes) {
+		if (symeId(car(symes)) == sym)
+			result = listCons(Syme)(car(symes), result);
+		symes = cdr(symes);
+	}
+	return result;
+}
