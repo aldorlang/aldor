@@ -4338,14 +4338,13 @@ tfStabGetDomImportSet(Stab stab, TForm tf)
 local SymeSet
 tfStabCreateDomImportSet(Stab stab, TForm tf)
 {
-
+	static int count = 0;
+	int serialThis = count++;
 	SymeSet  symeSet;
 	SymeList xsymes, symes;
 
 	if (DEBUG(tfImport)) {
-		fprintf(dbOut, "(tfStabGetDomImports:  from ");
-		tfPrint(dbOut, tf);
-		fnewline(dbOut);
+		afprintf(dbOut, "(tfStabGetDomImports:%d: from %pTForm\n", serialThis, tf);
 	}
 
 	xsymes = tfGetDomExports(tf);
@@ -4357,8 +4356,8 @@ tfStabCreateDomImportSet(Stab stab, TForm tf)
 		while (sl != listNil(Syme)) {
 			Syme syme = car(sl);
 			TForm symeTf = symeType(syme);
-			tfDEBUG(dbOut, "Setting imported condition %s %pTForm\n", 
-				symeString(syme), symeTf);
+			tfDEBUG(dbOut, "%d: Setting imported condition %s %pTForm\n",
+				serialThis, symeString(syme), symeTf);
 			tfSetConditions(symeTf, tfConditions(tf));
 			symeSetConditionContext(syme, tfConditionalAbSyn(tf));
 			sl = cdr(sl);
@@ -4377,7 +4376,7 @@ tfStabCreateDomImportSet(Stab stab, TForm tf)
 
 	if (DEBUG(tfImport)) {
 		symeListPrintDb(symes);
-		fprintf(dbOut, ")\n");
+		fprintf(dbOut, " %d)\n", serialThis);
 		tfPrint(dbOut, tf);
 		fnewline(dbOut);
 	}
