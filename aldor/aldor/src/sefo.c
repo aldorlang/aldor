@@ -114,6 +114,7 @@ local Bool		symeOriginEqual0	(SymeList, Syme, Syme);
 
 local Bool		tformEqualCheckSymes	(TForm);
 local Sefo		sefoEqualMods		(Sefo);
+local Bool		sefoIdEqual		(void *, Sefo, Sefo);
 
 local void		sfvInitTable		(void);
 local void		sfvFiniTable		(void);
@@ -1694,6 +1695,32 @@ sefoEqual0(SymeList mods, Sefo sefo1, Sefo sefo2)
 }
 
 local Bool
+sefoIdEqual(void *ctxt, Sefo sefo1, Sefo sefo2)
+{
+	int serial;
+	Bool result;
+	sstSerialDebug += 1;
+	serial = sstSerialDebug;
+	// This is for %% type comparison.. We can't use tfEqual as
+	// that works via the parent exports.. Instead, compare ids
+	// only if they are lexical variables
+
+	sefoEqualDEBUG(dbOut, "(weak[%d]: %pAbSyn %pAbSyn\n",
+		       (int) serial, sefo1, sefo2);
+
+	if (symeIsSelf(abSyme(sefo1)) && symeIsSelf(abSyme(sefo2))) {
+		result = symeEqual0((SymeList) 0, abSyme(sefo1), abSyme(sefo2));
+	}
+	else {
+		result = abEqual(sefo1, sefo2);
+	}
+
+	sefoEqualDEBUG(dbOut, " weak[%d]: %pAbSyn %pAbSyn --> %d\n",
+		       (int) serial, sefo1, sefo2, result);
+	return result;
+}
+
+local Bool
 symeEqual0(SymeList mods, Syme syme1, Syme syme2)
 {
 	Bool	result = true;
@@ -1757,7 +1784,7 @@ symeEqual0(SymeList mods, Syme syme1, Syme syme2)
 			assert (tfIsGeneral(tf1) && tfIsGeneral(tf2));
 			result = (sefoListEqual0(mods, symeCondition(syme1),
 						 symeCondition(syme2)) &&
-				  abEqualModDeclares(tfGetExpr(tf1), tfGetExpr(tf2)));
+				  abCompareModDeclares(sefoIdEqual, mods, tfGetExpr(tf1), tfGetExpr(tf2)));
 		}
 	}
 
