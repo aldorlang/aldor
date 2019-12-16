@@ -3887,6 +3887,8 @@ tfGetDomExports(TForm tf)
 SymeList
 tfGetCatExports(TForm cat)
 {
+	static int count = 0;
+	int serialThis = count++;
 	tfFollow(cat);
 	if (tfIsDefineOfType(cat))
 		return tfGetDomExports(tfDefineVal(cat));
@@ -3903,8 +3905,7 @@ tfGetCatExports(TForm cat)
 	}
 
 	if (DEBUG(tfCat)) {
-		fprintf(dbOut, "(tfGetCatExports:  from ");
-		tfPrint(dbOut, cat);
+		afprintf(dbOut, "(tfGetCatExports:%d:  from %pTForm\n", serialThis, cat);
 	}
 
 	tfGetCatSelf(cat);
@@ -3931,20 +3932,24 @@ tfGetCatExports(TForm cat)
 	if (DEBUG(tfCat)) {
 		SymeList symes = tfCatExports(cat);
 		if (symes) {
+			int n = 0;
 			afprintf(dbOut, " Exports for %pTForm: [\n", cat);
 			while (symes != listNil(Syme)) {
 				Syme syme = car(symes);
 				symes = cdr(symes);
 
 				afprintf(dbOut,
-					 "  %s Def: %s %pAbSynList\n", symeString(syme), symeHasDefault(syme) ? "DEF" : "",
+					 "%d  %s %s %pAbSynList\n", n, symeString(syme), symeHasDefault(syme) ? "DEF" : "NO",
 					 symeCondition(syme));
+				afprintf(dbOut,
+					 "%d  %s: %pTForm\n", n, symeString(syme), symeType(syme));
+				n++;
 			}
 			afprintf(dbOut, " ]\n", cat);
 		}
 	}
 
-	tfCatDEBUG(dbOut, ")\n");
+	tfCatDEBUG(dbOut, " %d)\n", serialThis);
 
 	tfAuditExportList(tfCatExports(cat));
 	return tfCatExports(cat);
@@ -4000,6 +4005,7 @@ tfGetThdExports(TForm thd)
 local SymeList
 tfGetCatExportsFrParents(SymeList symes)
 {
+	static int count = 0;
 	SymeTSet	oldTbl = tsetCreateCustom(Syme)(symeHashFn, symeEqual);
 	SymeList	nsymes;
 	SymeList	queue = listCopy(Syme)(symes);
@@ -4007,6 +4013,7 @@ tfGetCatExportsFrParents(SymeList symes)
 	SefoList	cond;
 
 	while (queue) {
+		int serialThis = count++;
 		Syme		syme = car(queue);
 		SymeList	cell = queue;
 		queue = cdr(queue);
@@ -4018,7 +4025,8 @@ tfGetCatExportsFrParents(SymeList symes)
 		if (!symeIsSelfSelf(syme)) continue;
 
 		if (DEBUG(tfParent)) {
-			afprintf(dbOut, "(tfCatExports: expanding %pTForm %pAbSynList\n",
+			afprintf(dbOut, "(tfCatExports:%d: expanding %pTForm %pAbSynList\n",
+				 serialThis,
 				 symeType(syme), symeCondition(syme));
 		}
 
@@ -4027,7 +4035,7 @@ tfGetCatExportsFrParents(SymeList symes)
 		if (cond) nsymes = tfGetCatExportsCond(nsymes, cond, true);
 
 		if (DEBUG(tfParent)) {
-			afprintf(dbOut, "tfCatExports: into %pSymeList)\n", nsymes);
+			afprintf(dbOut, "tfCatExports:%d: into %pSymeList)\n", serialThis, nsymes);
 		}
 
 		nsymes = tfGetCatExportsFilterTable(oldTbl, nsymes);
