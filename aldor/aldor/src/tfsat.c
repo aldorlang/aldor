@@ -1697,8 +1697,8 @@ tfSatExportsMissing(SatMask mask, SymeList mods, AbSyn Sab, SymeList S, SymeList
 	for (symes = T; symes; symes = cdr(symes)) {
 		Syme	syme = car(symes);
 
-		tfsExportDEBUG(dbOut, "->tfSatExportMissing: %*s= looking for: %pSyme\n",
-			       tfsDepthNo, "", syme);
+		tfsExportDEBUG(dbOut, "->tfSatExportMissing: %*s= looking for: %pSyme %pTForm\n",
+			       tfsDepthNo, "", syme, symeType(syme));
 
 		if (tfSatSucceed(tfSatExport(mask, mods, Sab, S, syme)))
 			continue;
