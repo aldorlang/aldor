@@ -1785,7 +1785,9 @@ tfSatExport(SatMask mask, SymeList mods, AbSyn Sab, SymeList S, Syme t)
 	 * should let us match 'Foo %' with 'Foo X'.
 	 */
 	sigma = absFrSymes(stabFile(), mods, Sab);
-	tfsExportDEBUG(dbOut, "tfSatExport[%d]:: Incoming S: %pAbSyn\n", serialThis, Sab);
+
+	tfsExportDEBUG(dbOut, "(tfSatExportExtra[%d]:: Incoming S: %pAbSyn %pTForm\n",
+		       serialThis, Sab, symeType(t));
 
 	substT = tfSubst(sigma, symeType(t));
 	for (symes = S; !tfSatSucceed(result) && symes; symes = cdr(symes)) {
@@ -1798,8 +1800,6 @@ tfSatExport(SatMask mask, SymeList mods, AbSyn Sab, SymeList S, Syme t)
 
 		substS = tfSubst(sigma, symeType(s));
 		weakEq = abEqualModDeclares(tfExpr(substS), tfExpr(substT));
-		tfsExportDEBUG(dbOut, "tfsatExport[%d]::CompareTF: [%pTForm], [%pTForm] = %d\n",
-			       serialThis, substS, substT, weakEq);
 
 		if (weakEq) {
 			result = tfSatTrue(mask);
@@ -1807,6 +1807,9 @@ tfSatExport(SatMask mask, SymeList mods, AbSyn Sab, SymeList S, Syme t)
 		tfFree(substS);
 	}
 	tfFree(substT);
+
+	tfsExportDEBUG(dbOut, " tfSatExportExtra[%d]:: --> %d)\n",
+		       serialThis, tfSatSucceed(result));
 
 	return result;
 }
