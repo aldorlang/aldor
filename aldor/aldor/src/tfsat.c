@@ -1848,6 +1848,8 @@ tfSatConditions(SatMask mask, SymeList mods, Syme s, Syme t)
 	SefoList	Sconds = symeCondition(s);
 	SefoList	Tconds = symeCondition(t);
 	SatMask		result = tfSatTrue(mask);
+	static int count = 0;
+	int serial = count++;
 
 	for (; Sconds; Sconds = cdr(Sconds)) {
 		Sefo	cond = car(Sconds);
@@ -1864,24 +1866,34 @@ tfSatConditions(SatMask mask, SymeList mods, Syme s, Syme t)
 		 */
 		if (abTag(cond) ==  AB_Has) {
 			TForm tfdom, tfcat;
-			AbSyn cat;
+			AbSyn dom, cat;
+
 			if (abIsTheId(cond->abHas.expr, ssymSelf)) {
 				if (tfSatSucceed(tfSatConditionOnSelf(mask, mods, s, cond->abHas.property)))
 					continue;
 				else
 					return tfSatFalse(mask);
 			}
-			tfdom = abGetCategory(cond->abHas.expr);
+			tfsExportDEBUG(dbOut, "(%d Check condition %pSyme %pTForm %pAbSyn\n", serial, s, symeType(s), cond);
+			dom   = cond->abHas.expr;
+			tfdom = abGetCategory(dom);
 			if (tfTestSeen(tfdom, cond->abHas.property)) {
 				return tfSatFalse(mask);
 			}
-
+			if (tfSatUseConditions(mask) && abCondKnown != NULL) {
+				TForm tfdomNew = ablogImpliedType(abCondKnown, dom, tfdom);
+				if (tfdomNew != NULL) {
+					tfsExportDEBUG(dbOut, "Domain switch: %pTForm --> %pTForm\n", tfdom, tfdomNew);
+					tfdom = tfdomNew;
+				}
+			}
 			cat   = cond->abHas.property;
 			tfcat = abTForm(cat) ? abTForm(cat) : tiTopFns()->tiGetTopLevelTForm(ablogTrue(), cat);
 			tfTestPush(tfdom, cond->abHas.property);
-			result = tfSat(mask, tfdom, tfcat);
+			result = tfSat1(mask, dom, tfdom, tfcat);
 			tfTestPop(tfdom, cond->abHas.property);
 
+			tfsExportDEBUG(dbOut, " %d Check condition %pSyme %oBool)\n", serial, s, tfSatSucceed(result));
 			if (tfSatSucceed(result))
 				continue;
 			else if (tfSatPending(result)) {
