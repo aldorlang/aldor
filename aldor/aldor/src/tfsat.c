@@ -1983,18 +1983,24 @@ tfSatParents(SatMask mask, SymeList mods, AbSyn Sab, SymeList S, SymeList T)
 	SymeList	newS = S, oldS = listNil(Syme);
 	SymeList	queue = listNil(Syme);
 	SymeTSet        oldTbl = tsetCreateCustom(Syme)(symeHashFn, symeEqual);
+	int		serialThis;
+	int		iterThis;
+
+	tfsSerialNo += 1;
+	serialThis = tfsSerialNo;
 
 	/* Collect all of the missing exports. */
 	mask |= TFS_Missing;
 
-	tfsParentDEBUG(dbOut, "(->tfpSyme: %*s= source list: %pSymeList\n",
-		       tfsDepthNo, "", S);
+	tfsParentDEBUG(dbOut, "(->tfpSyme: %*s%d = source list: %pSymeList\n",
+		       tfsDepthNo, "", serialThis, S);
 
 	while (newS || queue) {
+		iterThis++;
 		SymeList currentS = newS;
 		T = tfSatExportsMissing(mask, mods, Sab, currentS, T);
 		if (T == listNil(Syme)) {
-		  tfsParentDEBUG(dbOut, " ->tfpSyme: %*s= No parents)\n", tfsDepthNo, "");
+			tfsParentDEBUG(dbOut, " ->tfpSyme: %*s%d = No parents)\n", tfsDepthNo, "", serialThis);
 			return tfSatTrue(mask);
 		}
 		newS = tfSatParentsFilterTable(oldTbl, currentS);
@@ -2003,28 +2009,30 @@ tfSatParents(SatMask mask, SymeList mods, AbSyn Sab, SymeList S, SymeList T)
 
 		if (queue) {
 			Syme	oldSyme = car(queue);
-			int	serialThis;
 
-			tfsSerialNo += 1;
-			serialThis = tfsSerialNo;
-
-			tfsParentDEBUG(dbOut, " ->tfpSyme: %*s%d= expanding: %pSyme\n",
-						tfsDepthNo, "", serialThis, oldSyme);
+			tfsParentDEBUG(dbOut, " ->tfpSyme: %*s%d.%d= expanding: %pSyme %pTForm\n",
+				       tfsDepthNo, "", serialThis, iterThis, oldSyme, symeType(oldSyme));
 
 			newS = tfGetCatParents(symeType(oldSyme), true);
 			queue = cdr(queue);
 
-			tfsParentDEBUG(dbOut, " ->tfpSyme: %*s%d= into: %pSymeList\n",
-						tfsDepthNo, "", serialThis, newS);
+			tfsParentDEBUG(dbOut, " ->tfpSyme: %*s%d.%d= into: %pSymeList\n",
+				       tfsDepthNo, "", serialThis, iterThis, newS);
 		}
 		else
 			newS = listNil(Syme);
 	}
-	tfsParentDEBUG(dbOut, " ->tfpSyme: %*s= Left: %pSymeList)\n",
-				tfsDepthNo, "", T);
+	tfsParentDEBUG(dbOut, " ->tfpSyme: %*s%d= Left: %pSymeList)\n",
+		       tfsDepthNo, "", serialThis, T);
 	if (T == listNil(Syme))
 		return tfSatTrue(mask);
 	tsetFree(Syme)(oldTbl);
+	while (T && tfsParentDebug) {
+		tfsParentDEBUG(dbOut, "%d Missing %pAbSyn %pSyme: %pTForm %pAbSynList\n", serialThis, Sab, car(T),
+			       symeType(car(T)),
+			       symeCondition(car(T)));
+		T = cdr(T);
+	}
 
 	return tfSatResult(mask, TFS_ExportsMissing);
 }
