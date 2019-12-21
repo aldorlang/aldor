@@ -1800,11 +1800,19 @@ tfSatExport(SatMask mask, SymeList mods, AbSyn Sab, SymeList S, Syme t, AbSub *l
 			continue;
 		}
 
+		if (!abHasSymbol(tfExpr(symeType(s)), ssymSelf))
+			continue;
+
 		substS = tfSubst(sigma, symeType(s));
 		weakEq = abEqualModDeclares(tfExpr(substS), tfExpr(substT));
 
 		if (weakEq) {
-			result = tfSatTrue(mask);
+			if (symeCondition(s) != listNil(Sefo)) {
+				result = tfSatConditions(mask, mods, s, t);
+			}
+			else {
+				result = tfSatTrue(mask);
+			}
 		}
 		tfFree(substS);
 	}
