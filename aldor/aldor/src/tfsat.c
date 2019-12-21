@@ -1902,12 +1902,10 @@ tfSatConditions(SatMask mask, SymeList mods, Syme s, Syme t)
 SatMask
 tfSatConditionOnSelf(SatMask mask, SymeList mods, Syme s, Sefo property)
 {
-	/* This looks for "if % has X then X"..
-	 * Ideally, should look for "if % has T then X" and see if T => X */
-	if (sefoEqualMod(mods, tfExpr(symeType(s)), property)) {
-		return tfSatTrue(mask);
-	}
-	return tfSatFalse(mask);
+	tfsExportDEBUG(dbOut, "tfsExport: Check self condition %pSyme %pTForm %pAbSyn\n", s, symeType(s), property);
+	// Might as well say true as this is an export list.. need to retain
+	// in case it becomes true on import
+	return tfSatTrue(mask);
 }
 
 
