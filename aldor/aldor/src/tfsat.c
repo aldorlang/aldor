@@ -244,7 +244,8 @@ local SatMask		tfSatCatExports		(SatMask, AbSyn Sab, TForm S, TForm T);
 local SatMask		tfSatThdExports		(SatMask, TForm S, TForm T);
 
 local SatMask		tfSatExports	(SatMask,SymeList,SymeList,SymeList);
-local SatMask		tfSatExport	(SatMask,SymeList,AbSyn Stf, SymeList S,Syme t);
+local SatMask		tfSatExport	(SatMask,SymeList,AbSyn Stf, SymeList S,Syme t, AbSub *lazy);
+local AbSub		tfSatExportLazySelfSubst(SymeList mods, Sefo Sab, AbSub *lazySelfSubst);
 local SatMask		tfSatParents	(SatMask,SymeList, AbSyn, SymeList,SymeList);
 
 local SatMask		tfSatConditions		(SatMask, SymeList, Syme, Syme);
@@ -1686,6 +1687,7 @@ local SymeList
 tfSatExportsMissing(SatMask mask, SymeList mods, AbSyn Sab, SymeList S, SymeList T)
 {
 	SymeList	symes, missing;
+	AbSub		lazySelfSubst;
 
 	if (DEBUG(tfsExport)) {
 		fprintf(dbOut, "(->tfSatExportMissing: %*s= source list: ",
@@ -1695,14 +1697,14 @@ tfSatExportsMissing(SatMask mask, SymeList mods, AbSyn Sab, SymeList S, SymeList
 	}
 
 	missing	= listNil(Syme);
-
+	lazySelfSubst = NULL;
 	for (symes = T; symes; symes = cdr(symes)) {
 		Syme	syme = car(symes);
 
 		tfsExportDEBUG(dbOut, "->tfSatExportMissing: %*s= looking for: %pSyme %pTForm\n",
 			       tfsDepthNo, "", syme, symeType(syme));
 
-		if (tfSatSucceed(tfSatExport(mask, mods, Sab, S, syme)))
+		if (tfSatSucceed(tfSatExport(mask, mods, Sab, S, syme, &lazySelfSubst)))
 			continue;
 
 		missing = listCons(Syme)(syme, missing);
@@ -1722,7 +1724,7 @@ tfSatExportsMissing(SatMask mask, SymeList mods, AbSyn Sab, SymeList S, SymeList
  * Succeed if t can be found in S.
  */
 local SatMask
-tfSatExport(SatMask mask, SymeList mods, AbSyn Sab, SymeList S, Syme t)
+tfSatExport(SatMask mask, SymeList mods, AbSyn Sab, SymeList S, Syme t, AbSub *lazySelfSubst)
 {
 	SatMask		result = tfSatFalse(mask);
 	TForm           substT;
@@ -1786,7 +1788,7 @@ tfSatExport(SatMask mask, SymeList mods, AbSyn Sab, SymeList S, Syme t)
 	 * various local values for '%', and swapping them with the value used locally
 	 * should let us match 'Foo %' with 'Foo X'.
 	 */
-	sigma = absFrSymes(stabFile(), mods, Sab);
+	sigma = tfSatExportLazySelfSubst(mods, Sab, lazySelfSubst);
 
 	tfsExportDEBUG(dbOut, "(tfSatExportExtra[%d]:: Incoming S: %pAbSyn %pTForm\n",
 		       serialThis, Sab, symeType(t));
@@ -1815,6 +1817,18 @@ tfSatExport(SatMask mask, SymeList mods, AbSyn Sab, SymeList S, Syme t)
 
 	return result;
 }
+
+AbSub
+tfSatExportLazySelfSubst(SymeList mods, Sefo Sab, AbSub *lazySelfSubst)
+{
+	AbSub sigma = *lazySelfSubst;
+	if (sigma == NULL) {
+		sigma = absFrSymes(stabFile(), mods, Sab);
+		*lazySelfSubst = sigma;
+	}
+	return sigma;;
+}
+
 
 extern TForm		tiGetTForm		(Stab, AbSyn);
 
