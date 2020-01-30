@@ -175,11 +175,15 @@ define aldor_args
 	-Fao=out/ao/$*.ao $(srcdir)/$*.as
 endef
 
+.PHONY: all-ap
+all-ap: $(patsubst %, out/ao/%.ap, $(_aotests))
 $(patsubst %, out/ap/%.ap, $(_aotests)): out/ap/%.ap: %.as
 	$(AM_V_ALDOR_AP)		\
 	mkdir -p $$(dirname $@);	\
 	$(aldorexedir)/aldor $(nfile) -Fap=$@ $(srcdir)/$*.as
 
+.PHONY: all-ao
+all-ao: $(patsubst %, out/ao/%.ao, $(_aotests))
 $(patsubst %, out/ao/%.ao, $(_aotests)): $(aldorexedir)/aldor
 $(patsubst %, out/ao/%.ao, $(_aotests)): out/ao/%.ao: %.as
 	$(AM_V_ALDOR)			\
@@ -191,6 +195,8 @@ $(patsubst %, out/ao/%.cmd, $(_aotests)): out/ao/%.cmd: %.as
 	mkdir -p $$(dirname $@); \
 	echo run '$(aldor_args)' > $@
 
+.PHONY: all-exe
+all-exe: $(patsubst %, %.exe, $(_xtests))
 $(patsubst %, %.exe, $(_xtests)): %.exe: %.o rtexns.o
 	$(AM_V_ALDOR_EXE)				\
 	rm -f $@;					\
