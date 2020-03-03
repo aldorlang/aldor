@@ -22,7 +22,8 @@ AC_DEFUN([ALDOR_STRICT_COMPILE],
 	     ;;
        clang*)
              cfgSTRICTCFLAGS="${cfgSTRICTCFLAGS} -fcolor-diagnostics -Wno-error=enum-conversion \
-				-Wno-error=tautological-compare -Wno-parentheses-equality"
+				-Wno-error=tautological-compare -Wno-parentheses-equality \
+				-Wno-error=return-type"
 	     ;;
        *)
              AC_MSG_WARN(Unknown C compiler ${CC})
