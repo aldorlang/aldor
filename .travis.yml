@@ -1,13 +1,30 @@
 language: c
-script: dpkg-buildpackage -b -us -uc
 
-install:
-   - sudo apt-get install libgmp-dev
-   - sudo apt-get install fakeroot
-   - sudo apt-get install debhelper
+jobs:
+  include:
+    - os: macos
+      script: sh ./build-macos.sh
+      compiler: clang
+
+    - os: linux
+      script: dpkg-buildpackage -b -us -uc
+      compiler: gcc
+      install:
+        - sudo apt-get install libgmp-dev
+        - sudo apt-get install fakeroot
+        - sudo apt-get install debhelper
+
+#    - os: linux
+#      compiler: clang
+#      script: dpkg-buildpackage -b -us -uc
+#      install:
+#        - sudo apt-get install libgmp-dev
+#        - sudo apt-get install fakeroot
+#        - sudo apt-get install debhelper
 
 # whitelist
 branches:
    only:
       - master
       - /.*\/staging/
+      - /.*\/travis/
