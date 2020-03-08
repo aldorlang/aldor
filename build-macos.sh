@@ -10,4 +10,4 @@ cd aldor
 
 cd ../build
 ../aldor/configure --prefix=$root/opt
-make
+make V=1
