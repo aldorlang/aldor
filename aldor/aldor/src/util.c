@@ -503,6 +503,7 @@ hashCombinePair(int i1, int i2)
 	else {
 		assert(0);/* Need a new hash function */
 	}
+	NotReached(return 0;);
 }
 
 /* Used this for digging out random numbers: */
