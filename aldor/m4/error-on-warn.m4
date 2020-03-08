@@ -1,11 +1,7 @@
 
 AC_DEFUN([ALDOR_ERROR_ON_WARN],
 ALDOR_STRICT_COMPILE
-[echo HOST OS ${host_os};
- case "${host_os}" in
-    darwin*) sbrk_opt = SBRK_NOT_NEEDED;;
-    *) ALDOR_SBRK_OPTION;;
- esac]
+ALDOR_SBRK_OPTION
 
 [AC_MSG_CHECKING(what extra warning flags to pass to the C compiler)
   warnFLAGS=
