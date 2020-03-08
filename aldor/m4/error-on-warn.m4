@@ -1,7 +1,12 @@
 
 AC_DEFUN([ALDOR_ERROR_ON_WARN],
 ALDOR_STRICT_COMPILE
-ALDOR_SBRK_OPTION
+[echo HOST OS ${host_os};
+ case "${host_os}" in
+    macos) ;;
+    *) ALDOR_SBRK_OPTION;;
+ esac]
+
 [AC_MSG_CHECKING(what extra warning flags to pass to the C compiler)
   warnFLAGS=
   STRICTCFLAGS="${CFLAGS}"
