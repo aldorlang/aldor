@@ -9,9 +9,9 @@ libport_a_SOURCES =	\
 	bigint.c	\
 	btree.c	\
 	buffer.c	\
-	cfgfile.c	\
 	compopt.c	\
 	debug.c	\
+	cfgfile.c	\
 	dword.c	\
 	file.c	\
 	fluid.c	\
@@ -46,3 +46,8 @@ noinst_PROGRAMS = platform
 platform_CFLAGS = -I $s -I $l $(AM_CFLAGS)
 
 CLEANFILES=$(libport_a_SOURCES)
+
+nm-thing:
+	nm libport.a
+
+all: nm-thing
