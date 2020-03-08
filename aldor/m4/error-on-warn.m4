@@ -3,7 +3,7 @@ AC_DEFUN([ALDOR_ERROR_ON_WARN],
 ALDOR_STRICT_COMPILE
 [echo HOST OS ${host_os};
  case "${host_os}" in
-    darwin*) ;;
+    darwin*) sbrk_opt = SBRK_NOT_NEEDED;;
     *) ALDOR_SBRK_OPTION;;
  esac]
 

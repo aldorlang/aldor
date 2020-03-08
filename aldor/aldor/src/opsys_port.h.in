@@ -7,8 +7,6 @@
 #define _ALL_SOURCE 1   /* For RS/6000 - should come before cport.h include. */
 #define _POSIX_SOURCE 1 /* For Linux/BSD. */
 
-#if "@SBRK_OPT@" != ""
 #define @SBRK_OPT@
-#endif
 
 #endif
