@@ -36,7 +36,7 @@ $(libport_a_SOURCES): %.c: $s/%.c
 bin_PROGRAMS = unicl
 
 unicl_SOURCES = unicl.c
-unicl_LDADD = libport.a -lm
+unicl_LDADD = libport.a libport_a-debug.o -lm
 unicl_CFLAGS = -I $s -I $l $(AM_CFLAGS)
 
 

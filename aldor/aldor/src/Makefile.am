@@ -58,7 +58,7 @@ aldor_CFLAGS  = -g $(STRICTCFLAGS)
 #aldortest_CFLAGS = -DTEST_STAND_ALONE -DTEST_ALL -save-temps $(STRICTCFLAGS)
 aldortest_CFLAGS = -DTEST_STAND_ALONE -DTEST_ALL -save-temps $(STRICTCFLAGS)
 aldortest_SOURCES = test.c
-aldortest_LDADD = libtest.a libstruct.a libgen.a libport.a -lm
+aldortest_LDADD = libtest.a libstruct.a libgen.a libport.a debug.o -lm
 aldortest_LDFLAGS = 
 
 libport_a_SOURCES =	\
@@ -195,7 +195,7 @@ libstruct_a_SOURCES =	\
 	version.c
 #libstruct_a_LIBADD = libgen.a libport.a
 structtest_SOURCES = structtest.c
-structtest_LDADD = libstruct.a libgen.a libport.a -lm
+structtest_LDADD = libstruct.a libgen.a libport.a spesym.o -lm
 structtest_LDFLAGS =
 
 libphase_a_SOURCES =	\
