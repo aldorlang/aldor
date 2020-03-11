@@ -10,8 +10,8 @@ libport_a_SOURCES =	\
 	btree.c	\
 	buffer.c	\
 	compopt.c	\
-	debug.c	\
 	cfgfile.c	\
+	debug.c	\
 	dword.c	\
 	file.c	\
 	fluid.c	\
@@ -36,7 +36,7 @@ $(libport_a_SOURCES): %.c: $s/%.c
 bin_PROGRAMS = unicl
 
 unicl_SOURCES = unicl.c
-unicl_LDADD = libport.a -lm
+unicl_LDADD = libport.a libport.a -lm
 unicl_CFLAGS = -I $s -I $l $(AM_CFLAGS)
 
 
