@@ -11,7 +11,7 @@
 
 Bool	phaseDebug	= false;
 
-FILE	*dbOut;
+FILE	*dbOut = NULL;
 
 void
 dbInit(void)

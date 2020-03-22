@@ -21,8 +21,11 @@
 #include <mach/mach_types.h>
 #include <mach/machine/vm_param.h>
 #include <mach/mach.h>
+#include <mach/mach_vm.h>
 #include <mach/vm_region.h>
 #include <mach/vm_map.h>
+
+#include "util.h"
 
 #define OS_PAGE_SIZE 4096 /* from mach/machine/vm_param.h */
 
@@ -271,8 +274,8 @@ next_os_vm_region(os_vm_region_t region)
 {
     vm_region_basic_info_data_t data ;
     vm_map_t this_task = mach_task_self() ;
-    vm_address_t address = ptrToLong(region->hi) ;
-    vm_size_t    size ;
+    mach_vm_address_t address = ptrToLong(region->hi) ;
+    mach_vm_size_t    size ;
     vm_region_flavor_t flavour = VM_REGION_BASIC_INFO ;
     unsigned int info_count = sizeof(data)/sizeof(int) ;
     mach_port_t object_name ;

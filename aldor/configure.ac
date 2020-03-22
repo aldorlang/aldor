@@ -6,6 +6,7 @@ AC_INIT([aldor],[1.2],[aldor@xinutec.org])
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_SRCDIR([aldor/src/main.c])
 AC_CONFIG_AUX_DIR([amaux])
+AC_CANONICAL_HOST
 
 # Automake
 AM_INIT_AUTOMAKE([foreign silent-rules parallel-tests color-tests subdir-objects])
@@ -64,6 +65,7 @@ ALDOR_ERROR_ON_WARN
 
 ALDOR_JAVA_TESTS
 
+ALDOR_LD_BUILD_ID_CHECK
 ALDOR_GIT_BUILD_ID
 
 # Generate Makefiles
