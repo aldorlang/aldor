@@ -1,8 +1,10 @@
 language: c
+os: linux
+dist: xenial
 
 jobs:
   include:
-    - os: macos
+    - os: osx
       script: sh ./build-macos.sh
       compiler: clang
 
