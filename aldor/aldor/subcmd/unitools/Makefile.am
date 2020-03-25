@@ -47,7 +47,3 @@ platform_CFLAGS = -I $s -I $l $(AM_CFLAGS)
 
 CLEANFILES=$(libport_a_SOURCES)
 
-nm-thing:
-	nm libport.a
-
-all: nm-thing
