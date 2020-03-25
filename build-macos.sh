@@ -1,8 +1,5 @@
 #!/bin/sh
 
-echo "current directory is: " $(pwd)
-echo files:
-ls
 root=`pwd`
 mkdir build
 cd aldor
@@ -10,4 +7,4 @@ cd aldor
 
 cd ../build
 ../aldor/configure --prefix=$root/opt
-make -k V=1
+make V=1
