@@ -225,6 +225,7 @@
 
 #if defined(OS_MAC_OSX)
 #  define CC_no_empty_file
+#  define CC_long_not_int32
 #  define CC_CONFIGURED
 #  endif
 
