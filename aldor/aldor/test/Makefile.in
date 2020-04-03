@@ -8,28 +8,16 @@ VPATH = @srcdir@
 abs_top_builddir = @abs_top_builddir@
 srcdir = @srcdir@
 abs_srcdir = @abs_srcdir@
+top_srcdir = @top_srcdir@
 top_builddir = @top_builddir@
 builddir = @builddir@
 abs_top_srcdir = @abs_top_srcdir@
 subdir = aldor/test
 JUNIT_JAR = @JUNIT_JAR@
 
-define am_auto_template
-AM_V_$(1)    = $$(am__v_$(1)_$$(V))
-am__v_$(1)_  = $$(am__v_$(1)_$$(AM_DEFAULT_VERBOSITY))
-am__v_$(1)_0 = @echo "  $(subst _,-,$(1))   " $$@;
-endef
-
-STEPS := ALDOR ALDOR_AP ALDOR_CMD ALDOR_EXE ALDOR_FM ALDOR_GENC		\
-	 ALDOR_JAVATEST ALDOR_OBJ JAVAC ALDOR_JAVA JAVA_CP JUNIT
-
-$(foreach rule,$(STEPS),$(eval $(call am_auto_template,$(rule))))
-
-define am_auto_template
-AM_V_$(1)    = $$(am__v_$(1)_$$(V))
-am__v_$(1)_  = $$(am__v_$(1)_$$(AM_DEFAULT_VERBOSITY))
-am__v_$(1)_0 = @echo "  $(1)   " $@;
-endef
+include $(top_srcdir)/mk/step.mk
+$(call steps,ALDOR ALDOR_AP ALDOR_CMD ALDOR_EXE ALDOR_FM ALDOR_GENC		\
+		 ALDOR_JAVATEST ALDOR_OBJ JAVAC ALDOR_JAVA JAVA_CP JUNIT)
 
 all: really-all
 

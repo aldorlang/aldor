@@ -17,6 +17,8 @@ alldomains	:= $(asdomains) $(axdomains)
 
 libsubdir	:= $(subst $(abs_libdir)/,,$(abs_builddir)/.)
 
+tooldir= $(abs_top_builddir)/aldor/tools/unix
+
 include $(top_builddir)/lib/config.mk
 
 # Aldor
@@ -83,7 +85,7 @@ aldor_common_args :=				\
 	-Wcheck -Waudit $(AXLFLAGS)
 
 AM_DBG := $(if $(filter 1,$(DBG)), gdb --args, $(DBG))
-$(addsuffix .c, $(library)): %.c: %.ao %.dep
+$(addsuffix .c, $(library)): %.c: %.ao
 	$(AM_V_AO2C)				\
 	$(AM_DBG) $(aldorexedir)/aldor			\
 	  $(aldor_common_args)			\
@@ -97,7 +99,7 @@ endif
 aldor_args = $(aldor_common_args)		\
 	-Y.					\
 	-I$(libraryincdir)			\
-	-l$(Libraryname)Lib=$(libraryname)_$*	\
+	$(if $(librarydeps) $($*_deps),-l$(Libraryname)Lib=$(libraryname)_$*,)	\
 	-DBuild$(Libraryname)Lib		\
 	$($*_AXLFLAGS)				\
 	-Fasy=$*.asy				\
@@ -117,13 +119,33 @@ $(addsuffix .abn, $(alldomains)): %.abn: %.ao
 SUBLIB		:= _sublib_$(libraryname)
 SUBLIB_DEPEND	:= _sublib_depend_$(libraryname)
 
-$(addsuffix .ao, $(alldomains)): %.ao: $(SUBLIB_DEPEND).al
-	$(AM_V_ALDOR)set -e;							\
-	rm -f $*.c $*.ao;							\
-	cp $(SUBLIB_DEPEND).al lib$(libraryname)_$*.al;				\
-	ar r lib$(libraryname)_$*.al $(addsuffix .ao, $(shell $(UNIQ) $*.dep));	\
+define top_dep_template
+$(foreach l, $($1_deps), $(call rec_dep_template,$(l)))
+endef
+define rec_dep_template
+$(foreach l, $($1_deps), $(call rec_dep_template,$(l))) $(l)
+endef
+
+uniq_0 = $(if $1,$(firstword $1) $(call uniq,$(filter-out $(firstword $1),$1)))
+uniq = $(call uniq_0,$1)
+uniq_deps = $(call uniq,$(call top_dep_template,$1))
+
+define dep_template
+$1.ao: $(addsuffix .ao,$($1_deps))
+endef
+$(foreach l,$(alldomains), $(eval $(call dep_template,$(l))))
+
+$(addsuffix .ao, $(alldomains)): $(if $(library_deps), $(SUBLIB_DEPEND).al,)
+$(addsuffix .ao, $(alldomains)): %.ao: $(addsuffix .ao,$(%_deps))
+$(addsuffix .ao, $(alldomains)): %.ao:
+	$(AM_V_ALDOR)(set -e;							\
+	rm -f $*.c $*.ao; \
+	echo libs $(library_deps) deps $($*_deps) uniq $(call uniq_deps,$*); \
+	$(tooldir)/mkaolib lib$(libraryname)_$*.al			\
+		$(if $(library_deps),$(SUBLIB_DEPEND).al,)			\
+		$(addsuffix .ao,$(call uniq_deps,$*));	\
 	$(AM_DBG) $(aldorexedir)/aldor $(aldor_args);				\
-	rm lib$(libraryname)_$*.al
+	if [ -f lib$(libraryname)_$*.al ]; then rm lib$(libraryname)_$*.al; fi)
 
 $(SUBLIB_DEPEND).al: $(foreach l,$(library_deps),$(librarylibdir)/$l/$(SUBLIB).al) Makefile.deps
 	$(AM_V_AR)set -e;		\
@@ -149,7 +171,7 @@ $(addsuffix .gloop, $(alldomains)): %.gloop:
 	$(AM_V_ALDOR)set -e;							\
 	rm -f $*.c $*.ao;							\
 	cp $(SUBLIB_DEPEND).al lib$(libraryname)_$*.al;				\
-	ar r lib$(libraryname)_$*.al $(addsuffix .ao, $(shell $(UNIQ) $*.dep));	\
+	ar r lib$(libraryname)_$*.al $(addsuffix .ao,$(call uniq_deps,$*));	\
 	$(AM_DBG) $(aldorexedir)/aldor -gloop 	\
 	  $(aldor_common_args) 			\
 	  -Y.					\
@@ -169,38 +191,12 @@ help:
 	@echo '	DBG 	- prefix for any aldor invocations'
 	@echo '	DBG=1 	- shortcut for DBG="gdb --args"'
 
-define dep_template
-$1.ao: $1.dep $(addsuffix .ao,$($1_deps))
-$1.dep: $(addsuffix .dep,$($1_deps))
-endef
-
-$(addsuffix .dep,$(alldomains) $(SUBLIB)): 
-	$(AM_V_DEP)set -e;			\
-	true > $@_tmp;				\
-	for i in $(filter %.dep, $^); do	\
-	   d=$$(basename $$i .dep);		\
-	   cat $$i >> $@_tmp;			\
-	   echo $(basename $$d) >> $@_tmp;	\
-	done;					\
-	if test ! -f $@; then			\
-	   mv $@_tmp $@;			\
-	elif diff $@ $@_tmp > /dev/null; then	\
-	   rm $@_tmp;				\
-	else					\
-	   mv $@_tmp $@;			\
-	fi
-
-$(foreach l,$(alldomains), $(eval $(call dep_template,$(l))))
-
-$(SUBLIB).dep: $(addsuffix .dep,$(library))
-$(SUBLIB).dep: Makefile.deps
-
-$(SUBLIB).al: $(SUBLIB).dep
+_all_deps := $(library)
 $(SUBLIB).al: $(addsuffix .ao,$(library))
 $(SUBLIB).al:
 	$(AM_V_AR)							\
 	rm -f $@;							\
-	ar cr $@ $(addsuffix .ao, $(shell $(UNIQ) $(@:.al=.dep)))
+	ar cr $@ $(addsuffix .ao,$(call uniq,$(foreach l,$(library), $(call rec_dep_template,$(l)) $(l))))
 
 all: Makefile $(SUBLIB).al
 all: $(addsuffix .fm,$(library))

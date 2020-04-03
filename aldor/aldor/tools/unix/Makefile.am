@@ -2,9 +2,13 @@
 bin_SCRIPTS = aldor gdb-aldor
 
 
-#tooldir= $(abs_top_builddir)/build/tools
 #tool_SCRIPTS=doaldor doas doaxiomxl docc dog++ dolatex domkmk	\
 #	     dopdflatex doranlib buildarg
+$(builddir)/mkaolib: $(srcdir)/mkaolib.sh
+	cp $(srcdir)/mkaolib.sh $@
+	chmod a+x $@
+
+all: $(builddir)/mkaolib
 
 noinst_PROGRAMS = zacc msgcat atinlay
 
