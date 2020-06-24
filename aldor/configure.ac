@@ -15,7 +15,18 @@ AM_MAINTAINER_MODE([enable])
 
 # Checks for programs
 AC_PROG_LEX
+if test "x$LEX" = x:; then
+   AC_MSG_ERROR([[lex/flex not found.
+       	        Please install lex.]])
+fi
 AC_PROG_YACC
+if test x"$YACC" = "xyacc"; then
+     AC_CHECK_PROG([YACC_EXISTS], [yacc], [yes], [no])
+       if test x"$YACC_EXISTS" != xyes; then
+           AC_MSG_ERROR([[bison/byacc/yacc not found.
+       	      Please install bison.]])
+       fi
+fi
 
 GC=aldor
 # Check for GMP
