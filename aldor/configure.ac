@@ -61,6 +61,11 @@ AC_ARG_WITH([boehm-gc],
 	     GC=boehm
              LIBS="$LIBS -lgc"])
 
+AC_ARG_ENABLE([documentation],
+            [AS_HELP_STRING([--enable-documentation], [Generate documentation - requires latex])],
+	    [],
+	    [enable_documentation=if_exists])
+
 AC_SUBST([GC])
 AM_CONDITIONAL(HAVE_ALDOR_GC, test $GC = aldor)
 AM_CONDITIONAL(HAVE_BOEHM_GC, test $GC = boehm)
@@ -75,6 +80,7 @@ AC_SUBST([LIBTOOL_DEPS])
 ALDOR_ERROR_ON_WARN
 
 ALDOR_JAVA_TESTS
+ALDOR_DOCUMENTATION_TESTS
 
 ALDOR_LD_BUILD_ID_CHECK
 ALDOR_GIT_BUILD_ID
@@ -107,6 +113,8 @@ AC_CONFIG_FILES(
    dnl Aldor base library.
    lib/config.mk
    lib/aldor/Makefile
+   lib/aldor/doc/Makefile
+   lib/aldor/doc/tex/Makefile
    lib/aldor/include/Makefile
    lib/aldor/src/Makefile
    lib/aldor/src/lang/Makefile
@@ -121,6 +129,8 @@ AC_CONFIG_FILES(
 
    dnl Mathematical library.
    lib/algebra/Makefile
+   lib/algebra/doc/Makefile
+   lib/algebra/doc/tex/Makefile
    lib/algebra/include/Makefile
    lib/algebra/src/Makefile
    lib/algebra/src/util/Makefile
