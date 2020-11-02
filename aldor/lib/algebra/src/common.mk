@@ -10,4 +10,5 @@ AXLFLAGS	:= -Z db $(AXLCDB)
 AXLFLAGS	+= -Y $(aldorlibdir) -I $(aldorincdir) -laldor -Q3
 
 javalibrary := $(library)
+withdocs := true
 include $(top_srcdir)/lib/buildlib.mk
