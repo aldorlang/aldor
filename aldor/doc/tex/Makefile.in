@@ -1,0 +1,77 @@
+@SET_MAKE@
+VPATH = @srcdir@
+
+all: dvi
+
+dvi: ../algebra.dvi
+ps: ../algebra.ps
+pdf: ../algebra.pdf
+html: ../html/html.html
+
+../algebra.ps: ../algebra.dvi algbcat.eps algpolcat.eps
+	rm -f ../algebra.ps
+	dvips -f ../algebra.dvi | psnup -2 > ../algebra.ps
+
+links:
+	echo ln -sf $(ALDORLIBROOT)/doc/tex/alltypes.tex libaldor.tex
+	echo ln -sf $(ALDORLIBROOT)/doc/tex/rtexns.tex
+	ln -sf $(ALDORLIBROOT)/lib/aldor/doc/tex/*.tex .
+	ln -sf $(ALDORLIBROOT)/lib/algebra/doc/tex/*.tex .
+
+prepare: cleanlinks links
+	(cd $(ALGEBRAROOT)/src ; make doc)
+
+../algebra.dvi: prepare alltypes.tex title.tex algebra.tex intro.tex \
+		guide.tex refer.tex algbcat.eps algpolcat.eps
+	rm -f *.aux *.ind *.idx *.toc *.ilg
+	latex algebra | grep -v Underfull | grep -v vbox
+	latex algebra | grep -v Underfull | grep -v vbox
+	makeindex algebra
+	latex algebra | grep -v Underfull | grep -v vbox
+	mv algebra.dvi ..
+
+algbcat.eps: algbcat.fig
+	fig2dev -Leps algbcat.fig algbcat.eps
+
+algpolcat.eps: algpolcat.fig
+	fig2dev -Leps algpolcat.fig algpolcat.eps
+
+algbcat.pdf: algbcat.fig
+	fig2dev -Lpdf algbcat.fig algbcat.pdf
+
+algpolcat.pdf: algpolcat.fig
+	fig2dev -Lpdf algpolcat.fig algpolcat.pdf
+
+../algebra.pdf: prepare alltypes.tex title.tex algebra.tex intro.tex \
+		guide.tex refer.tex algbcat.pdf algpolcat.pdf
+	rm -f *.aux *.ind *.idx *.toc *.ilg
+	pdflatex algebra | grep -v Underfull | grep -v vbox
+	pdflatex algebra | grep -v Underfull | grep -v vbox
+	makeindex algebra
+	pdflatex algebra | grep -v Underfull | grep -v vbox
+	mv algebra.pdf ..
+
+html.tex: prepare alltypes.tex title.tex algebra.tex intro.tex guide.tex refer.tex
+	aldoc2html -o html.tex algebra
+
+html.aux: html.tex
+	latex html 
+	latex html
+
+../html/html.html : html.aux
+	rm -fr ../html
+	latex2html html
+	mv html ..
+	rm -f html.*
+
+.PHONY: cleanlinks
+cleanlinks:
+	-rm sal_*.tex ald_*.tex rtexns.tex libaldor.tex
+
+.PHONY: clean
+clean: cleanlinks
+	-rm -f *.dvi *.aux *.log *.idx *.ilg *.ind *.toc sit_*.tex sm_*.tex
+	-rm -f alg_*.tex stamp-* *.out html.tex ../*.dvi ../*.ps ../*.pdf
+	-rm -f *.pdf *.eps
+	rm -fr ../html
+

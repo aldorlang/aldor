@@ -1,0 +1,28 @@
+@SET_MAKE@
+
+default: pdf
+
+AM_DEFAULT_VERBOSITY = @AM_DEFAULT_VERBOSITY@
+
+abs_builddir    := @abs_builddir@
+top_builddir	:= @top_builddir@
+abs_top_builddir:= @abs_top_builddir@
+srcdir		:= @srcdir@
+top_srcdir	:= @top_srcdir@
+abs_top_srcdir	:= @abs_top_srcdir@
+subdir		:= $(subst $(abs_top_builddir)/,,$(abs_builddir))
+
+librarydocdir	:= $(top_builddir)/lib/$(libraryname)/doc
+
+top_builddir	:= @top_builddir@
+abs_top_builddir:= @abs_top_builddir@
+
+doc = libaldor
+sources = libaldor.tex alltypes.tex title.tex intro.tex guide.tex refer.tex macros.tex \
+		aldoc.cls ttyverb.sty
+figs  = sallicat.fig sallidata.fig
+other =
+
+include $(abs_top_srcdir)/lib/builddoc.mk
+
+

@@ -1,0 +1,4 @@
+SUBDIRS =
+if BUILD_DOCS
+SUBDIRS+=tex
+endif
