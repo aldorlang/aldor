@@ -17,6 +17,8 @@ subdir		:= $(subst $(abs_top_builddir)/,,$(abs_builddir))
 # Build starts here
 library = alg_cansimp alg_ffield alg_frering alg_idxfrng alg_modcmp alg_primsrc alg_rescls alg_rring sit_abgroup sit_abmon sit_algebra sit_automor sit_basic sit_char0 sit_charp sit_chrem sit_comring sit_dcmprng sit_deriv sit_diffext sit_difring sit_euclid sit_field sit_freealg sit_freelar sit_freelc sit_freemod sit_fset sit_gcd sit_gexpcat sit_group sit_idxfalg sit_idxflar sit_idxflc sit_idxfmod sit_intdom sit_integer sit_intgmp sit_linarit sit_module sit_monoid sit_ncid sit_pable sit_prfcat0 sit_ptools sit_qring sit_ring sit_spf0 sit_spfcat0 sit_spzble 
 
+documentation = sit_power
+
 java_blacklist = sit_intgmp
 
 include $(abs_top_srcdir)/lib/algebra/src/common.mk

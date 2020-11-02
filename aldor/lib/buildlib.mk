@@ -8,12 +8,14 @@ aldorlibdir	:= $(top_builddir)/aldor/lib
 
 libraryincdir	:= $(top_srcdir)/lib/$(libraryname)/include
 librarylibdir	:= $(top_builddir)/lib/$(libraryname)/src
+librarydocdir	:= $(top_builddir)/lib/$(libraryname)/doc
 
 UNIQ		:= perl $(top_srcdir)/aldor/tools/unix/uniq
 
 asdomains	:= $(internal) $(library) $(tests)
 axdomains	:= $(axlibrary)
 alldomains	:= $(asdomains) $(axdomains)
+docdomains      := $(asdomains) $(documentation)
 
 libsubdir	:= $(subst $(abs_libdir)/,,$(abs_builddir)/.)
 
@@ -56,6 +58,10 @@ AM_V_JAR = $(am__v_JAR_$(V))
 am__v_JAR_ = $(am__v_JAR_$(AM_DEFAULT_VERBOSITY))
 am__v_JAR = @echo "  JAR " $@;
 
+AM_V_AS2TEX = $(am__v_AS2TEX_$(V))
+am__v_AS2TEX_ = $(am__v_AS2TEX_$(AM_DEFAULT_VERBOSITY))
+am__v_AS2TEX_0 = @echo "  AS2TEX " $@;
+
 # ALDORTEST - don't echo anything as the build rule will show the test name
 AM_V_ALDORTEST = $(am__v_ALDORTEST_$(V))
 am__v_ALDORTEST_ = $(am__v_ALDORTEST_$(AM_DEFAULT_VERBOSITY))
@@ -76,6 +82,8 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	    echo ' cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ '; \
 	    cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ ;; \
 	esac;
+
+_withdocs = $(if $(DOCS),$(withdocs),)
 
 aldor_common_args :=				\
 	-Nfile=$(aldorsrcdir)/aldor.conf 	\
@@ -144,6 +152,11 @@ $(addsuffix .fm,$(alldomains)): %.fm: %.ao
 	  $(aldor_common_args)			\
 	  -Ffm=$@ $<
 
+$(if $(_withdocs),$(patsubst %,$(librarydocdir)/tex/gen/%.tex,$(docdomains)),): $(librarydocdir)/tex/gen/%.tex: %.as
+	$(AM_V_AS2TEX)			\
+	  mkdir -p $(librarydocdir)/tex/gen;	\
+	  $(unixtooldir)/extract -mALDOC -o $@ $(srcdir)/$*.as
+
 .PHONY: $(addsuffix .gloop, $(alldomains))
 $(addsuffix .gloop, $(alldomains)): %.gloop:
 	$(AM_V_ALDOR)set -e;							\
@@ -204,6 +217,7 @@ $(SUBLIB).al:
 
 all: Makefile $(SUBLIB).al
 all: $(addsuffix .fm,$(library))
+all: $(if $(_withdocs),$(patsubst %,$(librarydocdir)/tex/gen/%.tex,$(docdomains)),)
 ifeq ($(bytecode_only),)
 all: $(addsuffix .c,$(library))
 endif
@@ -266,6 +280,7 @@ CHECK_TEST_STATUS = \
 
 aldortestexecs := $(patsubst %,%.aldortest.exe,$(library))
 aldortooldir = $(abs_top_builddir)/aldor/subcmd/unitools
+unixtooldir = $(abs_top_builddir)/aldor/tools/unix
 foamdir = $(abs_top_builddir)/aldor/lib/libfoam
 foamlibdir = $(abs_top_builddir)/aldor/lib/libfoamlib
 
@@ -331,10 +346,12 @@ mostlyclean:
 
 clean: mostlyclean
 	rm -f $(SUBLIB).al
+	rm -f $(patsubst %,$(librarydocdir)/tex/gen/%.tex,$(docdomains))
 
 distclean: clean 
 	rm -f $(addsuffix .dep,$(alldomains))
 	rm Makefile
+
 maintainer-clean: distclean
 
 install-data:
