@@ -13,6 +13,9 @@ jobs:
         - sudo apt-get install libgmp-dev
         - sudo apt-get install fakeroot
         - sudo apt-get install debhelper
+	- sudo apt-get install texlive-binaries
+	- sudo apt-get install texlive-latex-base
+	- sudo apt-get install fig2ps
 
 #    - os: linux
 #      compiler: clang
