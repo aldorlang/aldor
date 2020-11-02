@@ -1,6 +1,8 @@
 
 tooldir= $(abs_top_builddir)/aldor/tools/unix
 
+include $(top_builddir)/lib/config.mk
+
 all: pdf dvi
 
 dvi: $(doc).dvi
@@ -68,8 +70,27 @@ $(doc).pdf: $(all_deps)
 #	TEXINPUTS=. latex2html html;		\
 #	mv html_work/html html
 
+install: install-pdf install-dvi
+
+install-pdf: $(doc).pdf
+	$(MKDIR_P) $(DESTDIR)/$(datarootdir)/doc
+	$(INSTALL_DATA) $(doc).pdf $(DESTDIR)/$(datarootdir)/doc/$(doc).pdf
+
+install-dvi: $(doc).dvi
+	$(MKDIR_P) $(DESTDIR)/$(datarootdir)/doc
+	$(INSTALL_DATA) $(doc).dvi $(DESTDIR)/$(datarootdir)/doc/$(doc).dvi
+
 clean:
-	rm -rf pdf
-	rm -rf dvi
-	rm -rf html
+	rm -rf pdf $(doc).pdf
+	rm -rf dvi $(doc).dvi
+	rm -rf html_work html
 	rm -f $(patsubst %.fig,%.eps,$(figs))
+
+EMPTY_AUTOMAKE_TARGETS  = ps info html tags ctags
+EMPTY_AUTOMAKE_TARGETS += install-exec uninstall
+EMPTY_AUTOMAKE_TARGETS += install-dvi install-html install-info install-ps install-pdf
+EMPTY_AUTOMAKE_TARGETS += installdirs
+EMPTY_AUTOMAKE_TARGETS += check installcheck
+
+.PHONY: $(EMPTY_AUTOMAKE_TARGETS)
+$(EMPTY_AUTOMAKE_TARGETS):
