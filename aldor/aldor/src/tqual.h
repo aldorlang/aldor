@@ -68,6 +68,7 @@ extern TQual		tqSetUnqualified	(TQual);
 extern TQual		tqAddQual		(TQual, TForm);
 extern void		tqFree			(TQual);
 extern int		tqPrint			(FILE *, TQual);
+extern int		tqPrintDb		(TQual);
 extern TQualStatus	tqSetStatus		(TQual, TQualStatus);
 
 extern SymeList		tqGetQualImports	(TQual);

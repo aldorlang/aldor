@@ -114,6 +114,7 @@ local Bool		symeOriginEqual0	(SymeList, Syme, Syme);
 
 local Bool		tformEqualCheckSymes	(TForm);
 local Sefo		sefoEqualMods		(Sefo);
+local Bool		sefoIdEqual		(void *, Sefo, Sefo);
 
 local void		sfvInitTable		(void);
 local void		sfvFiniTable		(void);
@@ -1132,9 +1133,9 @@ symePrintDb2(Syme syme)
 }
 
 int 
-tformOStreamWrite(OStream ostream, TForm tf)
+tformOStreamWrite(OStream ostream, Bool deep, TForm tf)
 {
-	int n = tformOStreamPrint0(ostream, false, tf);
+	int n = tformOStreamPrint0(ostream, deep, tf);
 
 	return n;
 }
@@ -1199,7 +1200,6 @@ tformListPrintDb(TFormList tforms)
  * Local functions.
  */
 
-/* The deep argument is currently unused. */
 local int
 sefoOStreamPrint0(OStream ostream, Bool deep, Sefo sefo)
 {
@@ -1288,6 +1288,11 @@ tformOStreamPrint0(OStream ostream, Bool deep, TForm tf)
 	else if (tfIsAbSyn(tf)) {
 		cc += ostreamPrintf(ostream, " ");
 		cc += sefoOStreamPrint0(ostream, deep, tfGetExpr(tf));
+	}
+	else if (tfIsSubst(tf) && deep) {
+		cc += ostreamPrintf(ostream, "%pAbSub", tf->sigma);
+		cc += ostreamPrintf(ostream, " ");
+		cc += tformOStreamPrint0(ostream, deep, tfSubstArg(tf));
 	}
 	else if (tfIsNode(tf)) {
 		Length	i;
@@ -1690,6 +1695,32 @@ sefoEqual0(SymeList mods, Sefo sefo1, Sefo sefo2)
 }
 
 local Bool
+sefoIdEqual(void *ctxt, Sefo sefo1, Sefo sefo2)
+{
+	int serial;
+	Bool result;
+	sstSerialDebug += 1;
+	serial = sstSerialDebug;
+	// This is for %% type comparison.. We can't use tfEqual as
+	// that works via the parent exports.. Instead, compare ids
+	// only if they are lexical variables
+
+	sefoEqualDEBUG(dbOut, "(weak[%d]: %pAbSyn %pAbSyn\n",
+		       (int) serial, sefo1, sefo2);
+
+	if (symeIsSelf(abSyme(sefo1)) && symeIsSelf(abSyme(sefo2))) {
+		result = symeEqual0((SymeList) 0, abSyme(sefo1), abSyme(sefo2));
+	}
+	else {
+		result = abEqual(sefo1, sefo2);
+	}
+
+	sefoEqualDEBUG(dbOut, " weak[%d]: %pAbSyn %pAbSyn --> %d\n",
+		       (int) serial, sefo1, sefo2, result);
+	return result;
+}
+
+local Bool
 symeEqual0(SymeList mods, Syme syme1, Syme syme2)
 {
 	Bool	result = true;
@@ -1753,7 +1784,7 @@ symeEqual0(SymeList mods, Syme syme1, Syme syme2)
 			assert (tfIsGeneral(tf1) && tfIsGeneral(tf2));
 			result = (sefoListEqual0(mods, symeCondition(syme1),
 						 symeCondition(syme2)) &&
-				  abEqualModDeclares(tfGetExpr(tf1), tfGetExpr(tf2)));
+				  abCompareModDeclares(sefoIdEqual, mods, tfGetExpr(tf1), tfGetExpr(tf2)));
 		}
 	}
 
@@ -2986,6 +3017,19 @@ sefoSubst(AbSub sigma, Sefo sefo)
 	abSubFreeVars(sigma);
 
 	return sefoSubst0(sigma, sefo);
+}
+
+SefoList
+sefoListSubst(AbSub sigma, SefoList sefoList)
+{
+	SefoList result = listNil(Sefo);
+	if (absIsEmpty(sigma)) return sefoList;
+	listIter(Sefo, sefo, sefoList, sefoFreeVars(sefo));
+	abSubFreeVars(sigma);
+
+	listIter(Sefo, sefo, sefoList, result = listCons(Sefo)(sefoSubst0(sigma, sefo), result));
+
+	return listNReverse(Sefo)(result);
 }
 
 Syme
@@ -4745,4 +4789,30 @@ tqualListFrBuffer0(Buffer buf)
 
 	for (i = 0; i < tqualc; i += 1)
 		tqualFrBuffer0(buf);
+}
+
+/*
+ * :: General stuff
+ */
+
+SymeList
+sefoSymes(Sefo sefo)
+{
+	SymeList sl = listNil(Syme);
+
+	if (abIsId(sefo) && abSyme(sefo)) {
+		sl = listSingleton(Syme)(abSyme(sefo));
+	}
+	else if (abIsId(sefo)) {
+		// skip
+	}
+	else if (abIsLeaf(sefo)) {
+		// skip
+	}
+	else {
+		for (int i=0; i<abArgc(sefo); i++) {
+			sl = listConcat(Syme)(sefoSymes(abArgv(sefo)[i]), sl);
+		}
+	}
+	return sl;
 }

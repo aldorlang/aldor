@@ -15,13 +15,14 @@
 #include "list.h"
 #include "store.h"
 #include "strops.h"
+#include "util.h"
 
 /*
  * fnewline(fout) prints a newline and indents next line by amount findent.
  */
 int findent = 0;
-local int    fmtPPrint(Format format, OStream stream, Pointer ptr);
-local int    fmtIPrint(Format format, OStream stream, int n);
+local int    fmtPPrint(Format format, int width, char *fmt, OStream stream, Pointer ptr);
+local int    fmtIPrint(Format format, int width, char *fmt, OStream stream, int n);
 
 int
 fnewline(FILE *fout)
@@ -292,7 +293,7 @@ ostreamVPrintf(OStream ostream, const char *fmt, va_list argp)
 				cc += ostreamWrite(ostream, arg_buf, -1);
 			}
 			else {
-				cc += fmtIPrint(format, ostream, va_arg(argp, int));
+				cc += fmtIPrint(format, fb.width, fb.fmt, ostream, va_arg(argp, int));
 				fmt += strlen(format->name);
 			}
 			continue;
@@ -306,7 +307,7 @@ ostreamVPrintf(OStream ostream, const char *fmt, va_list argp)
 				cc += ostreamWrite(ostream, arg_buf, -1);
 			}
 			else {
-				cc += fmtPPrint(format, ostream, va_arg(argp, Pointer));
+				cc += fmtPPrint(format, fb.width, fb.fmt, ostream, va_arg(argp, Pointer));
 				fmt += strlen(format->name);
 			}
 			continue;
@@ -367,7 +368,10 @@ fmtRegisterFull(const char *name, PFormatFn fn, Bool nullOk)
 	assert(name[0] != '\0');
 	format->name = strCopy(name);
 	format->pfn = fn;
+	format->ifn = NULL;
 	format->nullOk = nullOk;
+	format->apfn = NULL;
+	format->aifn = NULL;
 	fmtRegisteredFormats = listCons(Format)(format, fmtRegisteredFormats);
 }
 
@@ -378,7 +382,18 @@ void fmtRegisterI(const char *name, IFormatFn ifn)
 	format->name = strCopy(name);
 	format->ifn = ifn;
 	format->nullOk = false;
+	format->apfn = NULL;
+	format->aifn = NULL;
 	fmtRegisteredFormats = listCons(Format)(format, fmtRegisteredFormats);
+}
+
+void fmtRegisterAlt(const char *name, AltPFormatFn fn)
+{
+	Format f = fmtMatch(name);
+	if (f == NULL)
+		bug("Missing format");
+
+	f->apfn = fn;
 }
 
 
@@ -407,17 +422,29 @@ fmtMatch(const char *fmtTxt)
 }
 
 static int
-fmtPPrint(Format format, OStream stream, Pointer ptr)
+fmtPPrint(Format format, int width, char *fmt, OStream stream, Pointer ptr)
 {
+	int outlvl = 0;
+	int c;
 	assert(format != NULL);
+
 	if (!format->nullOk && ptr == NULL) {
 		return ostreamPrintf(stream, "(nil)");
 	}
-	return format->pfn(stream, ptr);
+	while (*fmt != '\0') {
+		if (*fmt == '#') outlvl++;
+		fmt++;
+	}
+	if (outlvl == 0 || format->apfn == NULL)
+		c = format->pfn(stream, ptr);
+	else
+		c = format->apfn(stream, outlvl, ptr);
+
+	return c;
 }
 
 static int
-fmtIPrint(Format format, OStream stream, int n)
+fmtIPrint(Format format, int width, char *fmt, OStream stream, int n)
 {
 	assert(format != NULL);
 	return format->ifn(stream, n);

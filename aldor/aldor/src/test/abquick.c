@@ -7,6 +7,7 @@
 #include "linear.h"
 #include "macex.h"
 #include "parseby.h"
+#include "phase.h"
 #include "scan.h"
 #include "scobind.h"
 #include "sefo.h"
@@ -214,6 +215,7 @@ tfqTypeInfer(Stab stab, String str)
 	testTrue("Declare is sefo", abIsSefo(absyn));
 	testIntEqual("Error Count", nErrors, comsgErrorCount());
 
+	saveAndEmptyAllPhaseSymbolData();
 	return (Sefo) absyn;
 }
 

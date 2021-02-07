@@ -585,6 +585,7 @@ extern Length		tfMapArgc		(TForm);
 extern TForm		tfMapArgN		(TForm, Length);
 extern TForm		tfMapMultiArgN		(TForm, Length, Length);
 extern AbEmbed		tfMapMultiArgEmbed	(TForm, Length);
+extern SymeList		tfMapArgSymes		(TForm);
 
 #define			tfMapRet(tf)		tfFollowArg(tf, 1)
 extern Length		tfMapRetc		(TForm);
@@ -597,6 +598,7 @@ extern AbEmbed		tfMapMultiRetEmbed	(TForm, Length);
  */
 extern TForm		tfCross			(Length, ...);
 extern TForm		tfCrossFrMulti		(TForm);
+extern TForm		tfCrossFrList		(TFormList);
 #define			tfIsCross(tf)		(tfTag(tf) == TF_Cross)
 extern Bool		tfIsDependentCross	(TForm);
 

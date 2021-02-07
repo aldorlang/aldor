@@ -19,51 +19,23 @@ libsubdir	:= $(subst $(abs_libdir)/,,$(abs_builddir)/.)
 
 include $(top_builddir)/lib/config.mk
 
-# Aldor
-AM_V_ALDOR = $(am__v_ALDOR_$(V))
-am__v_ALDOR_ = $(am__v_ALDOR_$(AM_DEFAULT_VERBOSITY))
-am__v_ALDOR_0 = @echo "  ALDOR " $@;
+define am_silent_template
+AM_V_$(1)    = $$(am__v_$(1)_$$(V))
+am__v_$(1)_  = $$(am__v_$(1)_$$(AM_DEFAULT_VERBOSITY))
+am__v_$(1)_0 = @echo "  $(subst _,-,$(1))   " $$@;
+endef
 
-AM_V_AO2C = $(am__v_AO2C_$(V))
-am__v_AO2C_ = $(am__v_AO2C_$(AM_DEFAULT_VERBOSITY))
-am__v_AO2C_0 = @echo "  AO2C  " $@;
+define am_silent_template_quiet
+AM_V_$(1)    = $$(am__v_$(1)_$$(V))
+am__v_$(1)_  = $$(am__v_$(1)_$$(AM_DEFAULT_VERBOSITY))
+am__v_$(1)_0 = @
+endef
 
-AM_V_AO2FM = $(am__v_AO2FM_$(V))
-am__v_AO2FM_ = $(am__v_AO2FM_$(AM_DEFAULT_VERBOSITY))
-am__v_AO2FM_0 = @echo "  AO2FM " $@;
+STEPS := ALDOR AO2C AO2FM AR DEP FOAMJ JAR JAR JAVAC SRCJAR
+QUIET_STEPS := ALDORTEST ALDORTESTJ
 
-AM_V_AR = $(am__v_AR_$(V))
-am__v_AR_ = $(am__v_AR_$(AM_DEFAULT_VERBOSITY))
-am__v_AR_0 = @echo "  AR    " $@;
-
-AM_V_DEP = $(am__v_DEP_$(V))
-am__v_DEP_ = $(am__v_DEP_$(AM_DEFAULT_VERBOSITY))
-am__v_DEP_0 = @echo "  DEP   " $@;
-
-AM_V_FOAMJ = $(am__v_FOAMJ_$(V))
-am__v_FOAMJ_ = $(am__v_FOAMJ_$(AM_DEFAULT_VERBOSITY))
-am__v_FOAMJ_0 = @echo "  FOAMJ " $@;
-
-AM_V_JAR = $(am__v_JAR_$(V))
-am__v_JAR_ = $(am__v_JAR_$(AM_DEFAULT_VERBOSITY))
-am__v_JAR_0 = @echo "  JAR   " $@;
-
-AM_V_JAVAC = $(am__v_JAVAC_$(V))
-am__v_JAVAC_ = $(am__v_JAVAC_$(AM_DEFAULT_VERBOSITY))
-am__v_JAVAC_0 = @echo "  JAVAC " $@;
-
-AM_V_JAR = $(am__v_JAR_$(V))
-am__v_JAR_ = $(am__v_JAR_$(AM_DEFAULT_VERBOSITY))
-am__v_JAR = @echo "  JAR " $@;
-
-# ALDORTEST - don't echo anything as the build rule will show the test name
-AM_V_ALDORTEST = $(am__v_ALDORTEST_$(V))
-am__v_ALDORTEST_ = $(am__v_ALDORTEST_$(AM_DEFAULT_VERBOSITY))
-am__v_ALDORTEST_0 = @
-
-AM_V_ALDORTESTJ = $(am__v_ALDORTESTJ_$(V))
-am__v_ALDORTESTJ_ = $(am__v_ALDORTESTJ_$(AM_DEFAULT_VERBOSITY))
-am__v_ALDORTESTJ_0 = @
+$(foreach rule,$(STEPS),$(eval $(call am_silent_template,$(rule))))
+$(foreach rule,$(QUIET_STEPS),$(eval $(call am_silent_template_quiet,$(rule))))
 
 # Check the makefile
 
@@ -227,14 +199,26 @@ $(libraryname).jar: $(patsubst %,aldorcode/%.class, $(_javalibrary)) $(top_srcdi
 	rm -f $@;	\
 	rm -rf jar;	\
 	mkdir jar;	\
-	jar cf $@ $(patsubst %,aldorcode/%*.class, $(_javalibrary))
+	jar cf $@ $(patsubst %,aldorcode/%*.class, $(_javalibrary));  \
 	for i in $(foreach i, $(SUBDIRS), $i/$(libraryname).jar); do \
 		(cd jar; jar xf ../$$i);				\
 		jar uf ../$@ -C jar .; done;				\
 	rm -rf jar
 
-all: $(libraryname).jar				\
+$(libraryname)-sources.jar: $(patsubst %,aldorcode/%.class, $(_javalibrary)) $(top_srcdir)/lib/buildlib.mk
+	$(AM_V_SRCJAR) \
+	rm -f $@;	\
+	rm -rf sources-jar;	\
+	mkdir sources-jar;	\
+	jar cf $@ $(patsubst %,aldorcode/%*.java, $(_javalibrary)); \
+	for i in $(foreach i, $(SUBDIRS), $i/$(libraryname)-sources.jar); do \
+		(cd jar; jar xf ../$$i);				\
+		jar uf ../$@ -C sources-jar .; done;				\
+	rm -rf jar
+
+all: $(libraryname).jar	$(libraryname)-sources.jar \
 	$(patsubst %,aldorcode/%.class,$(_javalibrary))
+
 endif
 endif
 
@@ -278,10 +262,11 @@ $(aldortestexecs): %.aldortest.exe: Makefile %.as
 		        -Ccc=$(aldortooldir)/unicl	\
 		      -Y$(foamdir) -Y			\
 		      -Y$(foamlibdir) -l$(libraryname) $(patsubst %,-l%,$(librarydeps))  \
-		        -Cargs="-Wconfig=$(aldorsrcdir)/aldor.conf -I$(aldorsrcdir) -Wv=2 $(UNICLFLAGS)" \
+		        -Cargs="-Wconfig=$(aldorsrcdir)/aldor.conf -I$(aldorsrcdir) $(UNICLFLAGS)" \
 			-I$(top_srcdir)/lib/aldor/include -Y$(top_builddir)/lib/aldor/src \
-			-Y$(librarylibdir) -I$(libraryincdir) -fx=$@ -DALDORTEST \
+			-Y$(librarylibdir) -I$(libraryincdir) -fx=$@ -DALDORTEST $($*_TESTAXLFLAGS) \
 			$*_test.as; )
+
 ifneq ($(BUILD_JAVA),)
 ifneq ($(javalibrary),)
 aldortestjavas := $(patsubst %,%.aldortest-exec-java, \
@@ -290,7 +275,7 @@ aldortestjavas := $(patsubst %,%.aldortest-exec-java, \
 $(aldortestjavas): %.aldortest-exec-java: Makefile %.as
 	$(AM_V_ALDORTESTJ) \
         (if grep -q '^#if ALDORTEST' $(srcdir)/$*.as; then \
-	 echo "   ALDORTESTJ $*"; \
+	 echo "  ALDORTESTJ $*"; \
 	 sed -n -e '/^#if ALDORTEST/,/^#endif/p' < $(srcdir)/$*.as > $*_jtest.as; \
 	 $(AM_DBG) $(aldorexedir)/aldor $(aldor_common_args) -Y$(aldorlibdir)/libfoam/al \
 		-Y$(foamdir) -Y$(foamlibdir) -l$(libraryname) $(patsubst %,-l%,$(librarydeps)) \

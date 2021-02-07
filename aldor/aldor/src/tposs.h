@@ -26,6 +26,7 @@ extern TPoss	tpossFrSymes		(SymeList);
 extern TPoss	tpossDeclare		(Syme, TPoss);
 extern TPoss	tpossMulti		(Length, Pointer, TPossGetter);
 extern TPoss	tpossAdd1		(TPoss, TForm);
+extern TPoss	tpossFrTheList		(TFormList);
 
 extern TPoss	tpossRefer		(TPoss);
 extern TPoss	tpossCopy		(TPoss);
@@ -104,9 +105,11 @@ typedef struct {
 	TFormList	possl;
 } TPossIterator;
 
+extern TForm tpossELT_(TPossIterator *ip);
+
 #define tpossITER(ip,p)	((ip).possl = (p ? (p)->possl : NULL))
 #define tpossMORE(ip)   ((ip).possl)
 #define tpossSTEP(ip)	((ip).possl = cdr((ip).possl))
-#define tpossELT(ip)	car((ip).possl)
+#define tpossELT(ip)    tpossELT_(&ip)
 
 #endif /* !_TPOSS_H_ */

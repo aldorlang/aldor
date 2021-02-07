@@ -14,8 +14,7 @@ AC_ARG_ENABLE([git-build-id],
 		  no) gitid=false;;
 		  *) AC_MSG_ERROR([bad value ${enableval} for --enable-git-build-id]) ;;
 		  esac],
-	      [if test -f $srcdir/../.git/config ; then gitid=true; else gitid=false; fi]
-              [if test $gitid = true; then git_build_id=1; fi])
+	      [if test -f $srcdir/../.git/config ; then gitid=true; else gitid=false; fi])
 
 # Git SHA1 hash as ld build-id.
 AC_MSG_CHECKING([build id])

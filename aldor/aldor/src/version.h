@@ -14,9 +14,7 @@
  * is used for the patch level.
  */
 extern CString	verName;
-extern int	verMajorVersion;
-extern int	verMinorVersion;
-extern int	verMinorFreeze;
+extern CString	verVersionId;
 extern CString	verPatchLevel;
 
 #endif /* !_VERSION_H_ */

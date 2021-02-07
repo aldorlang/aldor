@@ -96,7 +96,7 @@ testTrue(String testName, Bool flg)
 	if (flg) {
 		return;
 	}
-	testFail(testName, "failed; expected true, got %d", flg);
+	testFail(testName, "failed; expected true, got %oBool", flg);
 }
 
 void
@@ -106,7 +106,7 @@ testFalse(String testName, Bool flg)
 	if (!flg) {
 		return;
 	}
-	testFail(testName, "failed; expected false, got %d", flg);
+	testFail(testName, "failed; expected false, got %oBool", flg);
 }
 
 void
@@ -179,6 +179,8 @@ finiFile()
 		testFail("<init>", "missing 'initFile()'");
 	}
 
+	saveAndEmptyAllPhaseSymbolData();
+
 	scobindFiniFile();
 	stabFiniFile();
 	comsgFini();
@@ -188,14 +190,20 @@ finiFile()
 	inFile = false;
 }
 
+
+static Bool initted = false;
 void
 init()
 {
+	dbInit();
+
+	if (initted)
+		return;
+
 	osInit();
 	sxiInit();
 	keyInit();
 	ssymInit();
-	dbInit();
 	stabInitGlobal();
 	tfInit();
 	fmttsInit();
@@ -206,6 +214,7 @@ init()
 	sposInit();
 	ablogInit();
 	comsgInit();
+	initted = true;
 }
 
 void

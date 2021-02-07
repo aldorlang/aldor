@@ -9,7 +9,10 @@
 #ifndef _TABLE_H_
 #define _TABLE_H_
 
-#include "axlgen.h"
+#include "cport.h"
+#include "ostream.h"
+
+typedef struct table *             Table;
 
 typedef Pointer         TblKey;
 typedef Pointer         TblElt;

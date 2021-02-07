@@ -1,6 +1,6 @@
 SUBDIRS = al
 
-@BUILD_JAVA_TRUE@JAVA_TARGET = al/foam.jar
+@BUILD_JAVA_TRUE@JAVA_TARGET = al/foam.jar al/foam-sources.jar
 
 aldorsrcdir = $(top_srcdir)/aldor/src
 
