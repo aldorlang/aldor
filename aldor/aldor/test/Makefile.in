@@ -60,7 +60,7 @@ x_extra := rtexns
 simple_j_AXLFLAGS=-Q2
 jimport_opt_AXLFLAGS=-Q9 -Qinline-all
 
-badtests := opt1 jcatch
+badtests := opt1 jcatch fcall
 
 jimport_opts := -Q3
 jthrow_opts := -Q3
