@@ -14,7 +14,7 @@ abs_top_srcdir = @abs_top_srcdir@
 subdir = aldor/test
 JUNIT_JAR = @JUNIT_JAR@
 
-define am_auto_template
+define am_silent_template
 AM_V_$(1)    = $$(am__v_$(1)_$$(V))
 am__v_$(1)_  = $$(am__v_$(1)_$$(AM_DEFAULT_VERBOSITY))
 am__v_$(1)_0 = @echo "  $(subst _,-,$(1))   " $$@;
@@ -23,13 +23,7 @@ endef
 STEPS := ALDOR ALDOR_AP ALDOR_CMD ALDOR_EXE ALDOR_FM ALDOR_GENC		\
 	 ALDOR_JAVATEST ALDOR_OBJ JAVAC ALDOR_JAVA JAVA_CP JUNIT
 
-$(foreach rule,$(STEPS),$(eval $(call am_auto_template,$(rule))))
-
-define am_auto_template
-AM_V_$(1)    = $$(am__v_$(1)_$$(V))
-am__v_$(1)_  = $$(am__v_$(1)_$$(AM_DEFAULT_VERBOSITY))
-am__v_$(1)_0 = @echo "  $(1)   " $@;
-endef
+$(foreach rule,$(STEPS),$(eval $(call am_silent_template,$(rule))))
 
 all: really-all
 
@@ -205,7 +199,7 @@ $(patsubst %, %.exe, $(_xtests)): %.exe: %.o rtexns.o
 		      -Y$(foamdir)			\
 		      -Y$(foamlibdir)			\
 		      -Lfoamlib				\
-		      -Cargs="-Wconfig=$(aldorsrcdir)/aldor.conf -I$(aldorsrcdir) -Wv=2 $(UNICLFLAGS)" \
+		      -Cargs="-Wconfig=$(aldorsrcdir)/aldor.conf -I$(aldorsrcdir) $(UNICLFLAGS)" \
 		      -Fx=$@ out/ao/$*.ao rtexns.o
 
 #		      -Fmain=bobthebuilder.c		\
@@ -242,7 +236,6 @@ really-all: \
      $(patsubst %,out/java/aldorcode/%.class,$(_jruntests)) \
      $(patsubst %,%.o,$(_otests))  \
      $(patsubst %,%.exe,$(_xtests))
-
 
 .PHONY: all
 
