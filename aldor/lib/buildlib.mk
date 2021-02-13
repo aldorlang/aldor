@@ -20,56 +20,11 @@ docdomains      := $(asdomains) $(documentation)
 libsubdir	:= $(subst $(abs_libdir)/,,$(abs_builddir)/.)
 
 include $(top_builddir)/lib/config.mk
+include $(top_srcdir)/mk/step.mk
 
-# Aldor
-AM_V_ALDOR = $(am__v_ALDOR_$(V))
-am__v_ALDOR_ = $(am__v_ALDOR_$(AM_DEFAULT_VERBOSITY))
-am__v_ALDOR_0 = @echo "  ALDOR " $@;
-
-AM_V_AO2C = $(am__v_AO2C_$(V))
-am__v_AO2C_ = $(am__v_AO2C_$(AM_DEFAULT_VERBOSITY))
-am__v_AO2C_0 = @echo "  AO2C  " $@;
-
-AM_V_AO2FM = $(am__v_AO2FM_$(V))
-am__v_AO2FM_ = $(am__v_AO2FM_$(AM_DEFAULT_VERBOSITY))
-am__v_AO2FM_0 = @echo "  AO2FM " $@;
-
-AM_V_AR = $(am__v_AR_$(V))
-am__v_AR_ = $(am__v_AR_$(AM_DEFAULT_VERBOSITY))
-am__v_AR_0 = @echo "  AR    " $@;
-
-AM_V_DEP = $(am__v_DEP_$(V))
-am__v_DEP_ = $(am__v_DEP_$(AM_DEFAULT_VERBOSITY))
-am__v_DEP_0 = @echo "  DEP   " $@;
-
-AM_V_FOAMJ = $(am__v_FOAMJ_$(V))
-am__v_FOAMJ_ = $(am__v_FOAMJ_$(AM_DEFAULT_VERBOSITY))
-am__v_FOAMJ_0 = @echo "  FOAMJ " $@;
-
-AM_V_JAR = $(am__v_JAR_$(V))
-am__v_JAR_ = $(am__v_JAR_$(AM_DEFAULT_VERBOSITY))
-am__v_JAR_0 = @echo "  JAR   " $@;
-
-AM_V_JAVAC = $(am__v_JAVAC_$(V))
-am__v_JAVAC_ = $(am__v_JAVAC_$(AM_DEFAULT_VERBOSITY))
-am__v_JAVAC_0 = @echo "  JAVAC " $@;
-
-AM_V_JAR = $(am__v_JAR_$(V))
-am__v_JAR_ = $(am__v_JAR_$(AM_DEFAULT_VERBOSITY))
-am__v_JAR = @echo "  JAR " $@;
-
-AM_V_AS2TEX = $(am__v_AS2TEX_$(V))
-am__v_AS2TEX_ = $(am__v_AS2TEX_$(AM_DEFAULT_VERBOSITY))
-am__v_AS2TEX_0 = @echo "  AS2TEX " $@;
-
-# ALDORTEST - don't echo anything as the build rule will show the test name
-AM_V_ALDORTEST = $(am__v_ALDORTEST_$(V))
-am__v_ALDORTEST_ = $(am__v_ALDORTEST_$(AM_DEFAULT_VERBOSITY))
-am__v_ALDORTEST_0 = @
-
-AM_V_ALDORTESTJ = $(am__v_ALDORTESTJ_$(V))
-am__v_ALDORTESTJ_ = $(am__v_ALDORTESTJ_$(AM_DEFAULT_VERBOSITY))
-am__v_ALDORTESTJ_0 = @
+$(call am_define_steps,\
+	ALDOR AO2C AO2FM AR DEP FOAMJ JAR JAVAC AS2TEX \
+	ALDORTEST ALDORTESTBLD ALDORTESTEXE ALDORTESTJ)
 
 # Check the makefile
 
