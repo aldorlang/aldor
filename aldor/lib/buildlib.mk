@@ -108,7 +108,7 @@ $(addsuffix .fm,$(alldomains)): %.fm: %.ao
 	  -Ffm=$@ $<
 
 $(if $(_withdocs),$(patsubst %,$(librarydocdir)/tex/gen/%.tex,$(docdomains)),): $(librarydocdir)/tex/gen/%.tex: %.as
-	$(AM_V_AS2TEX)set -x;			\
+	$(AM_V_AS2TEX)			\
 	  mkdir -p $(librarydocdir)/tex/gen;	\
 	  $(unixtooldir)/extract -mALDOC -o $@ $(srcdir)/$*.as
 
