@@ -17,3 +17,8 @@ AC_DEFUN([ALDOR_DOCUMENTATION_TESTS],
  fi]
  [AC_SUBST([DOCS])]
  [AM_CONDITIONAL(BUILD_DOCS,test "$DOCS" = true)])
+
+# Add check for fancyhdr package
+# .. suggest tlmgr addpkg
+
+# maybe kpsewhere fancyhdr.sty
