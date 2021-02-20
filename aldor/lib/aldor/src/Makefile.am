@@ -1,6 +1,15 @@
-SUBDIRS = lang base arith datastruc util gmp lisp test
+SUBDIRS = lang base arith datastruc util $(GMPDIR) lisp test
+
 @BUILD_JAVA_TRUE@JAVA_SUBDIRS = $(filter-out gmp, $(SUBDIRS))
 @BUILD_JAVA_TRUE@JAVA_TARGET = aldor.jar
+
+if GMP
+GMPDIR = gmp
+GMP_FILES = 	\
+	gmp/sal_fltgmp.c	\
+	gmp/sal_gmptls.c	\
+	gmp/sal_intgmp.c
+endif
 
 lib_LIBRARIES = libaldor.a
 
@@ -83,7 +92,8 @@ libaldor_a_SOURCES =	\
 	util/sal_dir.c	\
 	util/sal_timer.c	\
 	util/sal_util.c	\
-	util/sal_version.c
+	util/sal_version.c \
+	$(GMP_FILES)
 
 libraryname = aldor
 include ../../buildlib.am

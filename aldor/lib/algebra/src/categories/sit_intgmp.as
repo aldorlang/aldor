@@ -9,11 +9,11 @@
 
 extend GMPInteger: IntegerCategory == add {
 	import {
-		____gmpz__divexact: (%,%,%) -> ();
-		____gmpz__gcdext: (%,%,%,%,%) -> ();
-		____gmpz__tdiv__r: (%,%,%) -> ();
-		____gmpz__tdiv__qr: (%,%,%,%) -> ();
-	} from Foreign C;
+		mpz__divexact: (%,%,%) -> ();
+		mpz__gcdext: (%,%,%,%,%) -> ();
+		mpz__tdiv__r: (%,%,%) -> ();
+		mpz__tdiv__qr: (%,%,%,%) -> ();
+	} from Foreign C("gmp.h");
 
 #if GMP
 	-- Those 2 assume that Integer == GmpInteger
@@ -29,7 +29,7 @@ extend GMPInteger: IntegerCategory == add {
 	remainder!(a:%, b:%):% == { 
 		zero? a => 0;
 		one? a => { unit? b => 0; 1 }
-		____gmpz__tdiv__r(a, a, b); 
+		mpz__tdiv__r(a, a, b);
 		a;
 	}
 
@@ -42,14 +42,14 @@ extend GMPInteger: IntegerCategory == add {
 		}
 		if zero? q or one? q then q := new();
 		r:% := new();
-		____gmpz__tdiv__qr(q, r, a, b);
+		mpz__tdiv__qr(q, r, a, b);
 		(q, r);
 	}
 
 	quotient(x:%, y:%): % == {
 		one? y => x;
 		q:% := new();
-		____gmpz__divexact(q,x,y);
+		mpz__divexact(q,x,y);
 		q;
 	}
 
@@ -57,7 +57,7 @@ extend GMPInteger: IntegerCategory == add {
 		import from MachineInteger;
 		g:% := new();
 		s:% := new();
-		____gmpz__gcdext(g,s,NULL,a,b);
+		mpz__gcdext(g,s,NULL,a,b);
 		s := remainder!(s, b);
 		(g, s, quotient(g - a * s, b));
 	}
@@ -75,7 +75,7 @@ extend GMPInteger: IntegerCategory == add {
 		}
 		g:% := new();
 		s:% := new();
-		____gmpz__gcdext(g,s,NULL,a,b);
+		mpz__gcdext(g,s,NULL,a,b);
 		failed?(u := exactQuotient(c, g)) => failed;
 		s := remainder!(times!(s, retract u), b);
 		[s, quotient(c - a * s, b)];
@@ -87,7 +87,7 @@ extend GMPInteger: IntegerCategory == add {
 		zero?(a := a rem m) => failed;
 		g:% := new();
 		c:% := new();
-		____gmpz__gcdext(g,c,NULL,a,m);
+		mpz__gcdext(g,c,NULL,a,m);
 		failed?(u := exactQuotient(b, g)) => u;
 		[remainder!(times!(c, retract u), m)];
 	}

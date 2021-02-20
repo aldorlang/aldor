@@ -89,7 +89,6 @@ libalgebra_a_SOURCES =				\
 	categories/sit_idxfmod.c		\
 	categories/sit_intdom.c			\
 	categories/sit_integer.c		\
-	categories/sit_intgmp.c			\
 	categories/sit_linarit.c		\
 	categories/sit_module.c			\
 	categories/sit_monoid.c			\
@@ -224,7 +223,6 @@ libalgebra_a_SOURCES =				\
 	polyfactor0/sit_fhensel.c		\
 	polyfactor0/sit_zfactor.c		\
 	polyfactor0/sit_zfring.c		\
-	polyfactor0/sit_zfringg.c		\
 	polyfactorp/sit_upfactp.c		\
 	series/alg_serpoly.c			\
 	series/compbug/sit_duts.c		\
@@ -254,7 +252,6 @@ libalgebra_a_SOURCES =				\
 	univpoly/categories/sit_upolc0.c	\
 	univpoly/categories/sit_zring.c		\
 	univpoly/gcd/sit_gcdint.c		\
-	univpoly/gcd/sit_gcdintg.c		\
 	univpoly/gcd/sit_heugcd.c		\
 	univpoly/gcd/sit_modgcd.c		\
 	univpoly/gcd/sit_modpgcd.c		\
@@ -265,6 +262,12 @@ libalgebra_a_SOURCES =				\
 	univpoly/sit_upolc.c			\
 	util/alg_version.c
 
+if GMP
+libalgebra_a_SOURCES += \
+	categories/sit_intgmp.c		\
+	univpoly/gcd/sit_gcdintg.c    	\
+	polyfactor0/sit_zfringg.c
+endif
 
 datalibdir = $(datadir)/lib
 datalib_DATA = libalgebra.al $(JAVA_TARGET)

@@ -15,8 +15,13 @@ abs_top_srcdir	:= @abs_top_srcdir@
 subdir		:= $(subst $(abs_top_builddir)/,,$(abs_builddir))
 
 # Build starts here
-library = sal_fltgmp sal_gmptls sal_intgmp
+library = sal_intgmp sal_fltgmp sal_gmptls
 
-XFAIL=sal_intgmp
+interp_test_blacklist = $(library)
+java_test_blacklist   = $(library)
+exec_test_blacklist   = #sal_intgmp sal_fltgmp
+exec_test_runtime     = -Cruntime=foam,gmp
 
 include $(abs_top_srcdir)/lib/aldor/src/common.mk
+
+check: $(aldortest_run)

@@ -20,7 +20,8 @@ library = ald_trace eio_rsto rtexns sal_agat sal_cmdline sal_file sal_dir \
 
 java_exclude = sal_dir
 
-XFAIL=sal_cmdline
+exec_test_blacklist = sal_cmdline
+java_test_blacklist = sal_cmdline
 
 @BUILD_JAVA_TRUE@javalibrary := $(filter-out $(java_exclude), $(library))
 
