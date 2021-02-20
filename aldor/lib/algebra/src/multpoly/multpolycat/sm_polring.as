@@ -104,7 +104,6 @@ define PolynomialRing(R:Join(ArithmeticType, ExpressionType),
            eval(x: %, v: V, y: %): % == {
               import from SUP(%);
               sup := univariate(SUP(%))(x,v);
-              import from GMPInteger;
               zero? degree(sup) => x;
               apply(sup,y); 
            }
