@@ -2,17 +2,19 @@
 --
 --  GMP integers
 --
--- Copyright (c) Helene Prieto 2000
+-- Copyright (c) Helene Prieto 2000-2020
 -- Copyright (c) INRIA 2000, Version 9-2-2000
--- Logiciel Salli ©INRIA 2000, dans sa version du 9/2/2000
+-- Logiciel Salli Â©INRIA 2000, dans sa version du 9/2/2000
+--
+-- Updated: 2020 Peter Broadbery
 ---------------------------------------------------------------------------
 
 #include "aldor"
 
-macro {
-	Z == MachineInteger;
-	PTR == Pointer;
-}
+#pile
+macro
+    Z == MachineInteger;
+    PTR == Pointer;
 
 #if ALDOC
 \thistype{GMPInteger}
@@ -31,9 +33,9 @@ arithmetic provided by GMP.}
 \end{exports}
 #endif
 
-GMPInteger: Join(CopyableType, IntegerType) with {
-	coerce: AldorInteger -> %;
-	coerce: % -> AldorInteger;
+GMPInteger: Join(CopyableType, IntegerType) with
+    coerce: AldorInteger -> %;
+    coerce: % -> AldorInteger;
 #if ALDOC
 \alpage{coerce}
 \Usage{m::\%\\ n::\altype{AldorInteger}}
@@ -49,6 +51,7 @@ GMPInteger: Join(CopyableType, IntegerType) with {
 \Remarks{The conversion to an \altype{AldorInteger} can be
 quadratic in the number of bits of the integer, which is expensive.}
 #endif
+
 	limbs: % -> Generator Z;
 #if ALDOC
 \alpage{limbs}
@@ -70,470 +73,321 @@ if you need a complete description of $n$.}
 stored into it. Results from this function can be used only
 as parameters to explicit calls to {\tt mpz\_} functions.}
 #endif
-	export from IntegerSegment %;
-} == add {
-	Rep == PTR;
 
-	macro Rec32 == Record(al:Z, sz:Z, lmbs:PTR);
-	macro Rec64 == Record(szal:Z, lmbs:PTR);
+    export from IntegerSegment %;
+== add
+    import { int: Type; mpz__srcptr: Type; mpz__ptr: Type } from Foreign C;
+    import
+       mpz__add: (mpz__ptr, mpz__srcptr, mpz__srcptr) -> ()
+       mpz__and: (mpz__ptr, mpz__srcptr, mpz__srcptr) -> ()
+       mpz__clear: mpz__ptr -> ()
+       mpz__cmp: (mpz__srcptr, mpz__srcptr) -> int
+       mpz__com: (mpz__ptr, mpz__srcptr) -> ()
+       mpz__divexact: (mpz__ptr, mpz__srcptr, mpz__srcptr) -> ()
+       mpz__fdiv__q__2exp: (mpz__ptr, mpz__srcptr, MachineInteger) -> ()
+       mpz__gcd: (mpz__ptr, mpz__srcptr, mpz__srcptr) -> MachineInteger
+       mpz__get__si: (mpz__srcptr) -> MachineInteger
+       mpz__getlimbn: (mpz__ptr, int) -> MachineInteger
+       mpz__init: mpz__ptr -> ()
+       mpz__ior: (mpz__ptr, mpz__srcptr, mpz__srcptr) -> ()
+       mpz__mul__2exp: (mpz__ptr, mpz__srcptr, MachineInteger) -> ()
+       mpz__mul: (mpz__ptr, mpz__srcptr, mpz__srcptr) -> ()
+       mpz__pow__ui: (mpz__ptr, mpz__srcptr, int) -> ()
+       mpz__scan1: (mpz__srcptr, Z) -> Z
+       mpz__set__si: (mpz__ptr, MachineInteger) -> ()
+       mpz__set__str: (mpz__ptr, Pointer, int) -> ()
+       mpz__sign: mpz__ptr -> ()
+       mpz__sizeinbase: (mpz__srcptr, int) -> int
+       mpz__size: (mpz__ptr) -> int
+       mpz__set: (mpz__ptr, mpz__srcptr) -> int
+       mpz__sub: (mpz__ptr, mpz__srcptr, mpz__srcptr) -> ()
+       mpz__tdiv__q: (mpz__ptr, mpz__srcptr, mpz__srcptr) -> ()
+       mpz__tdiv__qr: (mpz__ptr, mpz__ptr, mpz__srcptr, mpz__srcptr) -> ()
+       mpz__tdiv__r: (mpz__ptr, mpz__srcptr, mpz__srcptr) -> ()
+       mpz__tstbit: (mpz__ptr, MachineInteger) -> int
+    from Foreign C("gmp.h")
 
-	-- Cannot use the mpz_... names because they are macros in gmp.h
-	import {
-		____gmpz__init: Rep -> ();
-		____gmpz__clear:Rep -> ();
-		____gmpz__set: (Rep, Rep) -> ();
-		____gmpz__set__si: (Rep, Z) -> ();
-		____gmpz__set__str: (Rep, PTR, Z) -> Z;
-		____gmpz__get__si: Rep -> Z;
-		____gmpz__get__ui: Rep -> Z;
-		____gmpz__add: (Rep,Rep,Rep) -> ();
-		____gmpz__add__ui: (Rep,Rep,Z) -> ();
-		____gmpz__sub: (Rep,Rep,Rep) -> ();
-		____gmpz__sub__ui: (Rep,Rep,Z) -> ();
-		____gmpz__mul: (Rep,Rep,Rep) -> ();
-		____gmpz__mul__2exp: (Rep,Rep,Z) -> ();
-		____gmpz__tdiv__q: (Rep,Rep,Rep) -> ();
-		____gmpz__tdiv__r: (Rep,Rep,Rep) -> ();
-		____gmpz__tdiv__qr: (Rep,Rep,Rep,Rep) -> ();
-		____gmpz__fdiv__q__2exp: (Rep,Rep,Z) -> ();
-		____gmpz__fdiv__r__ui: (Rep,Rep,Z) -> Z;
-		____gmpz__divexact: (Rep,Rep,Rep) -> ();
-		____gmpz__pow__ui: (Rep,Rep,Z) -> ();
-		____gmpz__gcd: (Rep,Rep,Rep) -> ();
-		____gmpz__neg: (Rep,Rep) -> ();
-		____gmpz__abs: (Rep,Rep) -> ();
-		____gmpz__cmp: (Rep,Rep) -> Z;
-		____gmpz__and: (Rep,Rep,Rep) -> ();
-		____gmpz__ior: (Rep,Rep,Rep) -> ();
-		____gmpz__com: (Rep,Rep) -> ();
-		____gmpz__scan1: (Rep,Z) -> Z;
-		____gmpz__setbit: (Rep,Z) -> ();
-		____gmpz__clrbit: (Rep,Z) -> ();
-		____gmpz__size: Rep -> Z;
-		____gmpz__sizeinbase: (Rep,Z) -> Z;
-		-- GMP 3.0 novelties:
-		____gmpz__getlimbn: (Rep, Z) -> Z;
-	} from Foreign C;
+    Rep == Pointer
+    Rec64 ==> Record(szal:Z, lmbs:PTR);
+    Rec32 ==> Record(szal:Z, sz: Z, lmbs:PTR);
+    import from MachineInteger, Rep, Rec64
+    local gmpIn(a: %): mpz__srcptr == rep(a) pretend mpz__srcptr
+    local gmpIn(a: %): mpz__ptr == rep(a) pretend mpz__ptr
+    local gmpOut(a: mpz__srcptr): % == per(a pretend Rep)
+
+    (<<)(w: BinaryWriter, n: %): BinaryWriter == never
+    (<<)(r: BinaryReader): % == never
+
+    local wordsize:Z	== bytes;
+    local b64?:Boolean	== wordsize=8;
+
+    length(n: %): MachineInteger == mpz__sizeinbase(gmpIn n, (2@MachineInteger) pretend int) pretend MachineInteger
+
+    free!(a: %): () == mpz__clear(gmpIn a)
+    next(a:%):%	== a+1
+    prev(a:%):%	== a-1
+    zero?(a: %): Boolean == a = 0
+
+    new(): % ==
+        n: % := per([0, nil]$Rec64 pretend Pointer)
+	mpz__init(gmpIn n)
+	return n
+
+    copy!(a:%, b:%):% ==
+	zero? a or one? a => copy b
+	mpz__set(gmpIn a, gmpIn b)
+	return a
+
+    copy(a:%):% ==
+	zero? a or one? a => a;
+	e:% := new();
+	mpz__set(gmpIn  e, gmpIn a);
+	return e
+
+    integer(l: Literal): % ==
+        e: % := new()
+	mpz__set__str(gmpIn e, l pretend Pointer, (10@MachineInteger) pretend int)
+	return e
 	
-	import from Z, Rep;
+    bit?(a: %, n: Z): Boolean  ==
+        c: Z := mpz__tstbit(gmpIn a,n) pretend MachineInteger
+	return c = 1;
 
-	local wordsize:Z	== bytes;
-	local b64?:Boolean	== wordsize=8;
+    (a: %) + (b: %): % ==
+	e: % := new()
+	mpz__add(gmpIn e, gmpIn a, gmpIn b)
+	return e
 
-	local nlimbs(a:%):Z	== ____gmpz__size(rep a);
+    (*)(a: %, b: %): % ==
+	e: % := new()
+	mpz__mul(gmpIn e, gmpIn a, gmpIn b)
+	return e
 
-        new():%                 == {
-		n: PTR := {
-			b64? => [0,nil]$Rec64 pretend PTR;
-			[0,0,nil]$Rec32 pretend PTR;
-		}
-                ____gmpz__init(n);
-		per n;
-	}
+    (a: %) = (b: %): Boolean ==
+	r := mpz__cmp(gmpIn a, gmpIn b)
+	(r pretend MachineInteger) = 0
 
-	local plimbs(a:%):PTR == {
-		import from Rec32, Rec64;
-		b64? => (rep(a) pretend Rec64).lmbs;
-		(rep(a) pretend Rec32).lmbs;
-	}
+    (<)(a: %, b: %): Boolean ==
+	r := mpz__cmp(gmpIn a, gmpIn b)
+	(r pretend MachineInteger) < 0
 
-	-- HACK SINCE CANNOT USE ____gmpz__sgn BECAUSE IT IS A MACRO THAT TAKES
-	-- A POINTER AND CANNOT BE USED WITH AN FiWord
-	local hi32:Z == shift(4294967295, 32);	-- 32 1's and 32 0's
-	sign(a:%):Z == {
-		import from Rec32, Rec64;
-		b64? => {
-			-- low 32 = alloc, hi 32 = size (signed)
-			sizeAlloc := (rep(a) pretend Rec64).szal;
-			zero?(sizeAlloc /\ hi32) => 0;
-			sign sizeAlloc;
-		}
-		sign((rep(a) pretend Rec32).sz);
-	}
+    (<=)(a: %, b: %): Boolean ==
+	r := mpz__cmp(gmpIn a, gmpIn b)
+	(r pretend MachineInteger) <= 0
 
-	-- GMP 3.0 Implementation
-	limbs(a:%):Generator Z == generate {
-		n := prev nlimbs a;
-		for i in 0..n repeat yield ____gmpz__getlimbn(rep a, i);
-	}
-
-	-- GMP 2.0 Implementation
-	-- limbs(a:%):Generator Z == generate {
-	-- 	macro PZ == Record(x:Z);
-	-- 	import from PZ;
-	-- 	if ~nil?(p := plimbs a) then for i in 1..nlimbs a repeat {
-	-- 		yield((p pretend PZ).x);
-	-- 		p := (p::Z + wordsize)::PTR;
-	-- 	}
-	-- }
-
-	coerce(a: Z): % == {
-		c := new();
-		____gmpz__set__si(rep c,a);
-		c;
-	}
-
-	integer(a:Literal):%	== {
-		e:% := new();
-		____gmpz__set__str(rep e, a pretend PTR, 10::Z);
-		e;
-	}
-
-	copy!(a:%, b:%):%	== {
-		zero? a or one? a => copy b;
-		____gmpz__set(rep a, rep b);
-		a;
-	}
-
-	copy(a:%): %		== {
-		zero? a or one? a => a;
-		e:% := new();
-		____gmpz__set(rep e,rep a);
-		e;
-	}
-
-	0: % 			    == {
-		h:% := new();
-		____gmpz__set__si(rep h,0);
-		h;
-	}
-
-	1: % 			    == {
-		g:% := new();
-		____gmpz__set__si(rep g,1);
-		g;
-	}
-
-	lcm(a:%,b:%):%		== {
-		ab := a * b;
-		c := gcd(a, b);
-		____gmpz__divexact(rep ab, rep ab, rep c);
-		ab;
-	}
-
-	gcd(a:%,b:%):%		== {
-		c:% := new();
-		____gmpz__gcd(rep c,rep a,rep b);
-		c;
-	}
-
-	bit?(a:%,b:Z): Boolean	== {
-		c:Z :=____gmpz__scan1(rep a,b);
-		c=b;
-	}
-
-	(a:%) quo (b:%):% 	== {
-		c:% := new();
-		____gmpz__tdiv__q(rep c,rep a,rep b);
-		c;
-	}
-
-	(a:%) < (b:%):Boolean	== {
-		r:Z := ____gmpz__cmp(rep a,rep b);
-		r < 0;
-	}
-
-	(a:%) <= (b:%):Boolean	== {
-		r:Z := ____gmpz__cmp(rep a,rep b);
-		r<= 0;
-	}
-
-	(a:%) + (b:%):%		== {
-		zero? a => b;
-		zero? b => a;
-		e:% := new();
-		____gmpz__add(rep e, rep a, rep b);
-		e;
-	}
-
-	(a:%) + (b:Z):%		== {
-		zero? b => a;
-		e:% := new();
-		if (b >= 0) then ____gmpz__add__ui(rep e,rep a, b);
-		else ____gmpz__sub__ui(rep e, rep a, -b);
-		e;
-	}
-
-	(a:%) * (b:%):%		== {
-		one? a => b;
-		one? b => a;
-		e:% := new();
-		____gmpz__mul(rep e, rep a, rep b);
-		e;
-	}
-
-	(a:%) - (b:%):%		== {
-		zero? b => a;
-		e:% := new();
-		____gmpz__sub(rep e,rep a,rep b);
-		e;
-	}
-
-	minus!(a:%):%		== {
-		zero? a => a;
-		one? a => -1;
-		____gmpz__sub(rep a, rep 0, rep a);
-		a;
-	}
-
-	-(a:%):%		== {
-		zero? a => a;
-		b:% :=  new();
-		____gmpz__sub(rep b, rep 0, rep a);
-		b;
-	}
-
-	minus!(a:%,b:%):%		== {
-		zero? a => -b;
-		one? a => 1 - b;
-		____gmpz__sub(rep a, rep a, rep b);
-		a;
-	}
-
-	add!(a:%,b:%):%		== {
-		zero? a => copy b;
-		one? a => b + 1@Z;
-		____gmpz__add(rep a,rep a,rep b);
-		a;
-	}
-
-	times!(a:%, b:%):%	== {
-		zero? a => 0;
-		one? a => copy b;
-		____gmpz__mul(rep a, rep a, rep b);
-		a;
-	}
-
-	xor(a:%,b:%):%		== {
-		e:% := new();
-		d:% :=  new();
-		f:% :=  new();
-		____gmpz__com(rep e,rep  b);
-		____gmpz__and(rep d,rep a,rep e);
-		____gmpz__com(rep f,rep a);
-		____gmpz__and(rep e,rep f,rep b);
-		____gmpz__ior( rep f,rep d,rep e);
-		free! d;
-		free! e;
-		f;
-	}
-
-	local dummy:% == new();
-	(a:%) mod (b:Z): Z	== ____gmpz__fdiv__r__ui(rep dummy, rep a, b);
-	(a:%) > (b:%):Boolean	== ~(a<=b);
-	(a:%) >= (b:%):Boolean	== ____gmpz__cmp(rep a,rep b) >= 0;
-	max(a:%,b:%):%		== {a < b => b; a};
-	min(a:%,b:%):%		== {a < b => a; b};
-	one?(a:%):Boolean	== ____gmpz__cmp(rep a, rep 1) = 0;
-	even?(a:%): Boolean	== even? ____gmpz__get__ui(rep a);
-	odd?(a:%): Boolean	== odd? ____gmpz__get__ui(rep a);
-	next(a:%):%		== a+(1@Z);
-	prev(a:%):%		== a-1;
-	machine(a:%): Z 	== ____gmpz__get__si(rep a);
-	free!(a:%): ()		== ____gmpz__clear(rep a);
-	zero?(a:%):Boolean	== zero? sign a;
-	(a:%) = (b:%):Boolean	== ____gmpz__cmp(rep a,rep b) = 0;
-	length(a:%): Z		== ____gmpz__sizeinbase(rep a, 2);
-
-	abs(a:%):%		== { 
-		b:% :=  new();
-		____gmpz__abs(rep b,rep a);
-		b;	
-	}
-
-	set(a:%,n:Z): %		== {
-		b:% :=  new();
-		____gmpz__set(rep b,rep a);
-		____gmpz__setbit(rep b, n);
-		b;
-	}
-
-	set!(a:%,n:Z): %	== {
-		zero? a or one? a => set(a, n);
-		____gmpz__setbit(rep a, n);
-		a;
-	}
-
-	clear(a:%,n:Z): %	== {
-		b:% :=  new();
-		____gmpz__set(rep b,rep a);
-		____gmpz__clrbit(rep b, n);
-		b;
-	}
+    (rem)(a: %, b: %): % ==
+        e: % := new()
+        mpz__tdiv__r(gmpIn e, gmpIn a, gmpIn b);
+	return e
 	
-	(a:%) ^ (b:Z): %	== {
-		e:% := new();
-		____gmpz__pow__ui(rep e,rep a, b);
-		e;	
-	}
+    (quo)(a: %, b: %): % ==
+        e: % := new()
+        mpz__tdiv__q(gmpIn e, gmpIn a, gmpIn b);
+	return e
 
-	(a:%) rem (b:%): %		== {
-		e:% := new();
-		____gmpz__tdiv__r(rep e,rep a,rep b);
-		e;
-	}		
+    (^)(n: %, d: Z): % ==
+        e: % := new()
+        mpz__pow__ui(gmpIn e, gmpIn n, d pretend int);
+	return e
 
-	divide(a:%,b:%):(%,%)	== {
-		e:% := new();
-		d:% :=  new();
-		____gmpz__tdiv__qr(rep e,rep d,rep a,rep b);
-		(e,d);
-	}
+    machine(n: %): MachineInteger  == mpz__get__si(gmpIn n)
 
-	random():%		== {
-		import from Z, RandomNumberGenerator;
-		randomInteger()::%;
-	}
+    0: % == coerce 0
 
-	random(n:Z):% == {
-		import from RandomNumberGenerator;
-		assert(n > 0);
-		r:% := 0;
-		m := 8 * bytes$Z;
-		for i in 1..n repeat
-			r := add!(shift!(r, m), randomInteger()::%);
-		r;
-	}
+    1: % == coerce 1
 
-	shift!(a:%,b:Z):%	== {
-		zero? a or one? a => shift(a, b);
-		if b > 0 then ____gmpz__mul__2exp(rep a, rep a, b);
-			else ____gmpz__fdiv__q__2exp(rep a, rep a, -b); 
-		a;
-	}
+    coerce(n: MachineInteger): % ==
+       h: % := new()
+       mpz__set__si(gmpIn h, n)
+       return h
 
-	shift(a:%,b:Z):%	== {
-		c:% := new();
-		if b > 0 then ____gmpz__mul__2exp(rep c, rep a, b);
-			else ____gmpz__fdiv__q__2exp(rep c, rep a, -b); 
-		c;
-	}
+    -(a: %): % ==
+       zero? a => a
+       b: % := new()
+       mpz__sub(gmpIn b, gmpIn 0, gmpIn a)
+       return b
 
-	~(a:%): % 		== {
-		e:% := new();
-		____gmpz__com(rep e,rep a);
-		e;
-	}
+    gcd(a: %, b: %): % ==
+        e: % == new()
+	mpz__gcd(gmpIn e, gmpIn a, gmpIn b)
+	return e
 
-	coerce(a:AldorInteger):% == {
-		macro PZ == Record(z:Z);
-                import from Z, Boolean, PZ;
-		zero?(sgn := sign a) => 0;
-		if sgn < 0 then a := -a;
-                (s, r) := divide(length a, 8);
-                if ~zero? r then s := next s;
-		x:% := new();
-		____gmpz__set__si(rep x, 0);			-- x = 0
-		____gmpz__setbit(rep x, b := 8 * s);		-- x = 2^(8s)
-		ptr := plimbs x;
-		assert(~nil? ptr);
-		while s > 0 repeat {			-- must scan s bytes
-			n:Z := 0;
-			st:Z := 0;
-			for i in 1..wordsize while s > 0 repeat {
-				n := n \/ shift(machine(a) /\ 255, st);
-				st := st + 8;
-				s := prev s;
-				a := shift(a, -8);
-			}
-			(ptr pretend PZ).z := n;
-			ptr := (ptr::Z + wordsize)::PTR;
-		}
-		____gmpz__clrbit(rep x, b);
-		if sgn < 0 then ____gmpz__neg(rep x, rep x);
-		x;
-	}
+    lcm(a: %, b: %): % ==
+	ab := a * b;
+	c := gcd(a, b);
+	mpz__divexact(gmpIn ab, gmpIn ab, gmpIn c);
+	ab;
 
-        (p:BinaryWriter) << (x:%):BinaryWriter == {
-                import from GMPTools;
-		writelimbs!(p, sign x, nlimbs x, limbs x);
-        }
+    (\/)(a: %, b: %): % ==
+        e: % == new()
+	mpz__ior(gmpIn e, gmpIn a, gmpIn b)
+	return e
 
-	<< (p:BinaryReader):%	== {
-                import from GMPTools, Rec32, Rec64;
-		sgn:Z := << p;				-- read sign first
-		zero? sgn => 0;
-		(s, ptr) := readlimbs! p;		-- read size and limbs
-		assert(s >= 0);
-		x:% := new();
-		rec := rep x;
-		if b64? then {
-			(rec pretend Rec64).lmbs := ptr;
-			(rec pretend Rec64).szal := shift(s, 32) \/ s;
-		}
-		else {
-			(rec pretend Rec32).lmbs := ptr;
-			(rec pretend Rec32).al := s;
-			(rec pretend Rec32).sz := s;
-		}
-		if sgn < 0 then ____gmpz__neg(rep x, rep x);
-		x;
-	}
+    (/\)(a: %, b: %): % ==
+        e: % == new()
+	mpz__and(gmpIn e, gmpIn a, gmpIn b)
+	return e
 
-	coerce(x:%):AldorInteger == {
-                import from Z, Boolean;
-		zero?(sgn := sign x) => 0;
-                (s, r) := divide(length x, 8);
-                if ~zero? r then s := next s;
-		a:AldorInteger := 0;
-		st:Z := 0;
-		for n in limbs x repeat {
-			nn := n;
-			for m in 1..wordsize repeat {
-				a := a \/ shift((nn /\ 255)::AldorInteger, st);
-				nn := shift(nn, -8);
-				st := st + 8;
-			}
-		}
-		sgn < 0 => -a;
-		a;
-	}
+    (~)(n: %): % ==
+        e: % := new()
+	mpz__com(gmpIn e, gmpIn n)
+	return e
 
-	nthRoot(x:%, e:%):(Boolean,%)	== {
-		import from IntegerTypeTools %;
-		binaryNthRoot(x,e);
-	}
+    divide(p: %, q: %): (%, %)  ==
+	e:% := new()
+	d:% := new()
+	mpz__tdiv__qr(gmpIn e, gmpIn d, gmpIn p, gmpIn q)
+	(e,d);
 
-	(p:TextWriter) << (x:%):TextWriter == {
-		import from IntegerTypeTools %;
-                print(x, 10@%, p);
-	}
+    shift!(a:%,b:Z):%	==
+	zero? a or one? a => shift(a, b)
+	if b > 0 then mpz__mul__2exp(gmpIn a, gmpIn a, b)
+		else mpz__fdiv__q__2exp(gmpIn a, gmpIn a, -b);
+	a
 
-	<< (p:TextReader):% == {
-		import from IntegerTypeTools %;
-		scan p;
-	}
-				
-	(a:%) \/ (b:%):% == {
-		e:% := new();
-		____gmpz__ior(rep e,rep a,rep b);
-		e;
-	}
+    shift(a:%,b:Z):%	==
+	c:% := new()
+	if b > 0 then mpz__mul__2exp(gmpIn c, gmpIn a, b)
+		else mpz__fdiv__q__2exp(gmpIn c, gmpIn a, -b)
+	c
 
-	(a:%) /\ (b:%):% == {
-		e:% := new();
-		____gmpz__and(rep e,rep a,rep b);
-		e;
-	}
-}
+    sign(a:%):Z ==
+        r := mpz__cmp(gmpIn a, gmpIn 0)
+	return r pretend MachineInteger
+
+    nthRoot(x:%, e:%):(Boolean,%)	==
+	import from IntegerTypeTools %;
+	binaryNthRoot(x,e);
+
+    (p:TextWriter) << (x:%):TextWriter ==
+	import from IntegerTypeTools %;
+        print(x, 10@%, p);
+
+    << (p:TextReader):% ==
+	import from IntegerTypeTools %;
+	scan p;
+
+    random(): % ==
+        import from RandomNumberGenerator
+        return randomInteger()::%
+
+    random(n: MachineInteger): % ==
+	import from RandomNumberGenerator;
+	assert(n > 0);
+	r:% := 0;
+	m := 8 * bytes$Z;
+	for i in 1..n repeat
+		r := add!(shift!(r, m), randomInteger()::%);
+	return r;
+
+    local nlimbs(n: %): Z == mpz__size(gmpIn n) pretend Z
+
+    limbs(n: %): Generator Z == generate
+        sz: Z := nlimbs n
+	for i in 0..sz-1 repeat
+	    yield mpz__getlimbn(gmpIn n, i pretend int) pretend Z
+
+    -- these may work, but need testing
+    coerce(x:%): AldorInteger ==
+	zero?(sgn := sign x) => 0;
+        (s, r) := divide(length x, 8);
+        if ~zero? r then s := next s;
+	a:AldorInteger := 0;
+	st:Z := 0;
+	for n in limbs x repeat
+	    nn := n;
+	    for m in 1..wordsize repeat
+		a := a \/ shift((nn /\ 255)::AldorInteger, st);
+		nn := shift(nn, -8);
+		st := st + 8;
+	sgn < 0 => -a;
+	a;
+
+    coerce(a:AldorInteger):% ==
+        coerce1(n: AldorInteger): % ==
+	    zero? n => 0
+	    (q, r) := divide(n, 256)
+	    coerce1(q) * 256 + (machine(r)::%)
+	zero? a => 0
+	a < 0 => -coerce1(-a)
+	coerce1(a)
+
+#if 0
+	macro PZ == Record(z:Z);
+        import from Z, Boolean, PZ;
+	zero?(sgn := sign a) => 0;
+	if sgn < 0 then a := -a;
+        (s, r) := divide(length a, 8);
+        if ~zero? r then s := next s;
+	x: % := new();
+	mpz__set__si(gmpIn x, 0);			-- x = 0
+	mpz__setbit(gmpIn x, b := 8 * s);		-- x = 2^(8s)
+	ptr := plimbs x;
+	assert(~nil? ptr);
+	while s > 0 repeat 			-- must scan s bytes
+	    n:Z := 0;
+	    st:Z := 0;
+	    for i in 1..wordsize while s > 0 repeat
+	        n := n \/ shift(machine(a) /\ 255, st);
+		st := st + 8;
+		s := prev s;
+		a := shift(a, -8);
+	    (ptr pretend PZ).z := n;
+	    ptr := (ptr::Z + wordsize)::PTR;
+	mpz__clrbit(rep x, b);
+	if sgn < 0 then mpz__neg(rep x, rep x);
+	x;
+#endif
 
 #if ALDORTEST
 ---------------------- test sal_intgmp.as --------------------------
 #include "aldor"
 #include "aldortest"
+#pile
 
-macro Z == GMPInteger;
+import from Assert GMPInteger
+import from Assert String
+import from Assert Boolean
+import from GMPInteger
+Z ==> GMPInteger
 
-local fact():Boolean == {
-	import from Z;
-	n := random() mod 100;
-	m := 1;
-	for i in 2..n repeat m := times!(m, i);
-	m = factorial n;
-}
+local test():Boolean ==
+	assertEquals("12345", toString 12345)
+	true
 
-stderr << "Testing sal__intgmp..." << newline;
-aldorTest("fact", fact);
-stderr << newline;
+local testZero(): Boolean ==
+    assertEquals(0@Z, (-1) + 1@Z)
+    assertTrue(zero? 0)
+    true
+
+local testArith(): Boolean ==
+    import from MachineInteger
+    for i in 1..10@MachineInteger repeat
+        r0: Z := random(i)
+        r1: Z := random(i)
+	g := gcd(r0, r1)
+	assertEquals(0, r0 rem g)
+	assertEquals(0, r1 rem g)
+	assertEquals(0, r0-r0)
+	assertEquals(0, r1-r1)
+	assertEquals(2, (r0+r0) quo r0)
+	assertEquals(r1, (r0*r1) quo r0)
+    true
+
+local testBit(): Boolean ==
+    import from Fold Z, MachineInteger, Boolean
+    SZ: MachineInteger := 30
+    acc(n: Z, d: Z): Z == n * 2 + d
+    l: List Z := [random(1$MachineInteger) rem 2 for i in 1@MachineInteger..SZ]
+    n := (acc)/reverse l
+    for i in 0..SZ-1 repeat
+	assertTrue( (if bit?(n, i) then 1 else 0) = l.(i+1))
+    true
+
+stderr << "Testing sal__gmp2..." << newline
+aldorTest("test", test)
+aldorTest("testZero", testZero)
+aldorTest("testArith", testArith)
+aldorTest("testBit", testBit)
+stderr << newline
 #endif
-
