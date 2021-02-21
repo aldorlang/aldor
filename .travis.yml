@@ -4,9 +4,9 @@ dist: xenial
 
 jobs:
   include:
-    - os: osx
-      script: sh ./build-macos.sh
-      compiler: clang
+#    - os: osx
+#      script: sh ./build-macos.sh
+#      compiler: clang
 
     - os: linux
       script: dpkg-buildpackage -b -us -uc
