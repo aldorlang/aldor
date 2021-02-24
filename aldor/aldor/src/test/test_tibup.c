@@ -18,6 +18,7 @@ local void testTiTdnPretend();
 local void testTiTdnMultiToCrossEmbed();
 local void testTiBupApplyMixed();
 local void testTiBupApplyImplicit();
+local void testTiBupApplyErrorOnArg();
 
 /* XXX: from test_tinfer.c */
 void init(void);
@@ -35,6 +36,7 @@ tibupTest()
 	TEST(testTiTdnMultiToCrossEmbed);
 	TEST(testTiBupApplyMixed);
 	TEST(testTiBupApplyImplicit);
+	TEST(testTiBupApplyErrorOnArg);
 	fini();
 }
 
@@ -252,6 +254,41 @@ testTiBupApplyImplicit()
 
 	tiTopDown(stab, case1, tfNone());
 	testIntEqual("Unique", AB_State_HasUnique, abState(case1));
+
+	finiFile();
+}
+
+
+local void
+testTiBupApplyErrorOnArg()
+{
+	String Boolean_imp = "import from Boolean";
+	String E_def = "E: with == add";
+	String S_def = "S: with { apply: (%, E) -> () } == add { apply(f: %, e: E): () == never }";
+	String s_def = "s: S == never";
+	String e_def = "e: E == never";
+
+	StringList lines = listList(String)(5, Boolean_imp, E_def, S_def, s_def, e_def);
+	AbSynList absynList = listCons(AbSyn)(stdtypes(), abqParseLines(lines));
+	AbSyn absyn = abNewSequenceL(sposNone, absynList);
+
+	AbSyn case1 = abqParse("s x");
+	Stab stab;
+
+	initFile();
+	stab = stabFile();
+
+	abPutUse(absyn, AB_Use_NoValue);
+	scopeBind(stab, absyn);
+	typeInfer(stab, absyn);
+
+	tfsDebug = tipBupDebug = 1;
+	scopeBind(stab, case1);
+	tiBottomUp(stab, case1, tfUnknown);
+
+	testIntEqual("fn", 0, tpossCount(abTPoss(case1)));
+
+	testIntEqual("Unchanged", AB_State_HasPoss, abState(case1));
 
 	finiFile();
 }
