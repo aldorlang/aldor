@@ -10,8 +10,8 @@ AC_ARG_ENABLE([git-build-id],
               [AS_HELP_STRING([--enable-git-build-id],
                               [Force git sha1 hash as build id])],
               [case "${enableval}" in
-	          yes) gitid=true;;
-		  no) gitid=false;;
+	          yes) git_build_id=1;;
+		  no) git_build_id=0;;
 		  *) AC_MSG_ERROR([bad value ${enableval} for --enable-git-build-id]) ;;
 		  esac],
 	      [if test -f $srcdir/../.git/config ; then gitid=true; else gitid=false; fi]
