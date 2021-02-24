@@ -6,3 +6,4 @@ datarootdir     := @datarootdir@
 MKDIR_P         := @MKDIR_P@
 INSTALL         := @INSTALL@
 INSTALL_DATA    := @INSTALL_DATA@
+DOCS		:= @DOCS@

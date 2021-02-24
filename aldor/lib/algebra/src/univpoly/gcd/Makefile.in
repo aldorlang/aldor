@@ -15,7 +15,8 @@ abs_top_srcdir	:= @abs_top_srcdir@
 subdir		:= $(subst $(abs_top_builddir)/,,$(abs_builddir))
 
 # Build starts here
-library = sit_gcdint sit_gcdintg sit_heugcd sit_modgcd sit_modpgcd
+library = sit_gcdint sit_heugcd sit_modgcd sit_modpgcd
+@GMP_TRUE@library += sit_gcdintg
 
 java_blacklist = sit_gcdintg
 

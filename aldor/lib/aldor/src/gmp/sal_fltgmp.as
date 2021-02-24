@@ -192,7 +192,7 @@ call to {\tt realloc}.}
 
 		____gmpf__out__str: (Pointer,Z,Z,Rep) -> ();
 		____gmpf__inp__str:(Rep, Pointer,Z) -> ();
-	} from Foreign C;
+	} from Foreign C("gmp.h");
 	
 	import from Z,Rep;
 
@@ -278,7 +278,7 @@ call to {\tt realloc}.}
 		import from GMPInteger;
 		import {
 			____gmpz__set__f:(GMPInteger,Pointer) -> ();
-		} from Foreign C;
+		} from Foreign C("gmp.h");
 
 		e:% := new();
 		res: GMPInteger := new();
@@ -331,7 +331,7 @@ call to {\tt realloc}.}
 		import from Machine, DoubleFloat;
 		import {
 			____gmpf__get__d: Rep -> DFlo;
-		} from Foreign C;
+		} from Foreign C("gmp.h");
 		____gmpf__get__d(rep x)::DoubleFloat;
 	}
 

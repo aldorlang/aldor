@@ -1,0 +1,34 @@
+@SET_MAKE@
+
+default: pdf
+
+AM_DEFAULT_VERBOSITY = @AM_DEFAULT_VERBOSITY@
+
+abs_builddir    := @abs_builddir@
+top_builddir	:= @top_builddir@
+abs_top_builddir:= @abs_top_builddir@
+srcdir		:= @srcdir@
+top_srcdir	:= @top_srcdir@
+abs_top_srcdir	:= @abs_top_srcdir@
+subdir		:= $(subst $(abs_top_builddir)/,,$(abs_builddir))
+
+librarydocdir	:= $(top_builddir)/lib/$(libraryname)/doc
+
+top_builddir	:= @top_builddir@
+abs_top_builddir:= @abs_top_builddir@
+
+doc = algebra
+sources = \
+	algebra.tex alltypes.tex guide.tex intro.tex macros.tex	\
+	referAldor.tex refer.tex title.tex			\
+	aldoc.cls \
+	algbcat.fig algpolcat.fig \
+	ttyverb.sty
+
+figs  = algbcat.fig algpolcat.fig
+other = libaldor.tex
+
+libaldor.tex: $(srcdir)/alltypes.tex
+	ln -sf $(srcdir)/alltypes.tex libaldor.tex
+
+include $(abs_top_srcdir)/lib/builddoc.mk

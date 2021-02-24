@@ -1,10 +1,12 @@
 language: c
+os: linux
+dist: xenial
 
 jobs:
   include:
-    - os: macos
-      script: sh ./build-macos.sh
-      compiler: clang
+#    - os: osx
+#      script: sh ./build-macos.sh
+#      compiler: clang
 
     - os: linux
       script: dpkg-buildpackage -b -us -uc
@@ -13,7 +15,12 @@ jobs:
         - sudo apt-get install libgmp-dev
         - sudo apt-get install fakeroot
         - sudo apt-get install debhelper
-
+        - sudo apt-get install texlive-binaries
+        - sudo apt-get install texlive-latex-base
+        - sudo apt-get install fig2ps
+        - sudo apt-get install latex2html
+        - sudo apt-get install texlive-font-utils 
+        - sudo apt-get install texlive-fonts-extra
 #    - os: linux
 #      compiler: clang
 #      script: dpkg-buildpackage -b -us -uc

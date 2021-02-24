@@ -2,3 +2,4 @@
 /aldor.substvars
 /files
 /*.log
+.debhelper

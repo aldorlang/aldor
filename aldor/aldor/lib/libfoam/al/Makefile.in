@@ -20,6 +20,12 @@ internal = basictuple box stringtable dispatchvector dv dd domain	\
 	   aldordomainrep catdispatchvector catobj aldorcatrep ptrcache	\
 	   ptrcatobj pointerdomain lazyimport
 library = runtime
+
+# Disable all tests
+interp_test_blacklist = $(library)
+java_test_blacklist   = $(library)
+exec_test_blacklist   = $(library)
+
 @BUILD_JAVA_TRUE@javalibrary := $(library)
 
 libraryname	:= foam

@@ -179,7 +179,8 @@ That space grows when needed as elements are inserted in the table.}
 \alpage{bracket}
 \Usage{\name()\\ \name~n}
 \Signature{\altype{Generator} \altype{Cross}(K, V)}{\%}
-\Params{{\em g} & \% & a generator of key-value pairs\\}
+\Params{
+{\em g} & \% & a generator of key-value pairs\\
 }
 \Retval{Returns a new table containing the specified pairs}
 \alseealso{\alexp{[]}}

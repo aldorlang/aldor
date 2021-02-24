@@ -6,7 +6,7 @@ bin_SCRIPTS = aldor gdb-aldor
 #tool_SCRIPTS=doaldor doas doaxiomxl docc dog++ dolatex domkmk	\
 #	     dopdflatex doranlib buildarg
 
-noinst_PROGRAMS = zacc msgcat atinlay
+noinst_PROGRAMS = zacc msgcat atinlay extract aldoc2html
 
 msgcat_SOURCES = msgcat.c
 
@@ -19,6 +19,15 @@ zacc_SOURCES =		\
 	cenum.c
 
 atinlay_SOURCES = atinlay.c
+
+extract_SOURCES = \
+	extract.c \
+	flags.c
+
+aldoc2html_SOURCES = \
+	aldoc2html.c \
+	flags.c
+
 
 # Forces a dependency on the zaccgram.h header file
 zacc.o: zaccgram.c

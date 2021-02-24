@@ -1,1 +1,1 @@
-SUBDIRS = include src test
+SUBDIRS = include src test doc

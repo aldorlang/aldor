@@ -1200,7 +1200,7 @@ tibupApply(Stab stab, AbSyn absyn, TForm type)
 	/* If the op and the parts had meaning, then give an error. */
 	if (tpossCount(retTypes) == 0) {
 		Bool giveMsg = tpossCount(opTypes) > 0
-			|| tibup0ApplyGiveMessage(absyn, abApplyArgc(absyn), abApplyArgf);
+			&& tibup0ApplyGiveMessage(absyn, abApplyArgc(absyn), abApplyArgf);
 
 		if (giveMsg) {
 			abState(absyn) = AB_State_Error;
