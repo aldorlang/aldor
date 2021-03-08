@@ -162,6 +162,10 @@ abPutUse(AbSyn absyn, AbUse context)
 		abPutUse(absyn->abExport.what,        AB_Use_Declaration);
 		abPutUse(absyn->abExport.destination, AB_Use_Type);
 		break;
+	  case AB_ForeignExport:
+		abPutUse(absyn->abForeignExport.what, AB_Use_Declaration);
+		abPutUse(absyn->abForeignExport.dest, AB_Use_Type);
+		break;
 	  case AB_Extend:
 		abPutUse(absyn->abExtend.body, AB_Use_Declaration);
 		break;
