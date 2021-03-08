@@ -134,13 +134,13 @@ typedef unsigned long	UIInt;
  *   hence the "-2" in INT_MIN_IMMED.
  */
 #define INT_LG_IMMED	(bitsizeof(IInt)-2)
-#define INT_MIN_IMMED	( (IInt) ((((long) -1)<<INT_LG_IMMED)+1)) /*+1 => symmetric */
+#define INT_MIN_IMMED	((((IInt) 3) << INT_LG_IMMED) + 1)
 #define INT_MAX_IMMED	(- (long) INT_MIN_IMMED)
 #define INT_IS_IMMED(n)	(INT_MIN_IMMED<= (long)(n) && (long)(n)<= INT_MAX_IMMED)
 
 #define INT_LG_HALF	((bitsizeof(IInt)-2)/2)
-#define INT_MIN_HALF	( (IInt) ((((long) -1)<<INT_LG_HALF)+1))
-#define INT_MAX_HALF	(- (long) INT_MIN_HALF)
+#define INT_MAX_HALF	((((IInt) 1)<<(INT_LG_HALF)) -1)
+#define INT_MIN_HALF	(-INT_MAX_HALF)
 #define INT_IS_HALF(n)	(INT_MIN_HALF <= (long)(n) && (long)(n)<= INT_MAX_HALF)
 
 /*
