@@ -3251,12 +3251,14 @@ tfValidateCheckConstInfo(TForm tf, SymeList symes, String type)
 		symes = cdr(symes);
 
 		if (symeConstNum(syme) != SYME_NUMBER_UNASSIGNED) {
-			afprintf(dbOut, "Type: %s Syme %s.%d %pSyme %pTForm\n",
+		  /* Code here patches a bug where there should not be a const here
+		    afprintf(dbOut, "Type: %s Syme %s.%d %pSyme %pTForm\n",
 				 type,
 				 libToStringShort(symeConstLib(syme)), symeConstNum(syme),
 				 syme, tf);
 			bugWarning("Syme with const num found in parameterised domain %s",
 				   abPretty(tfExpr(tf)));
+		  */
 			symeSetConstLib(syme, NULL);
 			symeSetConstNum(syme, SYME_NUMBER_UNASSIGNED);
 		}
