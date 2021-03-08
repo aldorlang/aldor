@@ -84,6 +84,9 @@ forgFrAbSyn(AbSyn origin)
 	else if (psym == ssymJava)
 		ptag = FOAM_Proto_Java;
 
+	else if (psym == ssymBuiltin)
+		ptag = FOAM_Proto_Other;
+
 	else {
 		comsgWarning(origin, ALDOR_W_ScoNotProtocol);
 		ptag = FOAM_Proto_Other;
