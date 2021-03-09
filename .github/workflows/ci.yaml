@@ -3,7 +3,7 @@ name: Aldor CI
 on: [push, pull_request]
 
 jobs:
-  build:
+  build-linux:
     runs-on: ubuntu-20.04
 
     steps:
@@ -12,3 +12,9 @@ jobs:
       run: sudo apt-get install libgmp-dev debhelper fakeroot
     - name: build
       run: dpkg-buildpackage -b -us -uc
+
+  build-macos: 
+    runs-on: macos-10.15
+    steps:
+        sh ./build-macos.sh
+	
