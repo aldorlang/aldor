@@ -6,12 +6,12 @@ jobs:
   build:
     runs-on: ubuntu-20.04
 
-  steps:
-  - uses: actions/checkout@v2
-  - name: install dependencies
-    run:
-      - sudo apt-get install libgmp-dev
-      - sudo apt-get install debhelper
-      - sudo apt-get install fakeroot
-  - name: build
-    run: dpkg-buildpackage -b -us -uc
+    steps:
+    - uses: actions/checkout@v2
+    - name: install dependencies
+      run:
+        - sudo apt-get install libgmp-dev
+        - sudo apt-get install debhelper
+        - sudo apt-get install fakeroot
+    - name: build
+      run: dpkg-buildpackage -b -us -uc
