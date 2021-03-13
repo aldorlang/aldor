@@ -3,3 +3,6 @@
 /files
 /*.log
 .debhelper
+autoreconf.before
+autoreconf.after
+debhelper-build-stamp
