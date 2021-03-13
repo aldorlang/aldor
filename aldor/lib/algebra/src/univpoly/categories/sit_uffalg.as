@@ -9,7 +9,6 @@
 
 macro {
 	Z == Integer;
-	RR == (R pretend Ring);
 }
 
 #if ALDOC
