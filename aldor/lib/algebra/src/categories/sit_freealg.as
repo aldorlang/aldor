@@ -30,6 +30,6 @@ Its elements are assumed to have finite support.}
 
 define FreeAlgebra(R:Join(ArithmeticType, ExpressionType)):
 	Category == FreeRRing R with {
-	if R has Ring then Algebra(R pretend Ring);
+	if R has Ring then Algebra R
 }
 
