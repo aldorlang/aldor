@@ -14,10 +14,12 @@
 
 %:
 	dh $@				\
-	  --with autotools-dev		\
 	  --sourcedirectory=aldor	\
 	  --builddirectory=build	\
 	  --parallel
+
+override_dh_auto_configure:
+	dh_auto_configure -- --enable-silent-rules
 
 build: aldor/configure
 aldor/configure: aldor/autogen.sh
