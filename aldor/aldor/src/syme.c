@@ -386,9 +386,12 @@ Syme
 symeExtension(Syme syme)
 {
 	Syme ext = symeExtensionFirst(syme);
+	/*
+	 * Note: There may be an issue here, need to investigate
 	if (ext && ((Syme) symeExtensionFirst(ext)) != NULL) {
 		afprintf(dbOut, "More extensions for %pSyme\n", syme);
 	}
+	*/
 	return ext;
 }
 

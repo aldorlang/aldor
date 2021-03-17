@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.68])
-AC_INIT([aldor],[1.2],[aldor@xinutec.org])
+AC_INIT([aldor],[1.3],[aldor@xinutec.org])
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_SRCDIR([aldor/src/main.c])
 AC_CONFIG_AUX_DIR([amaux])

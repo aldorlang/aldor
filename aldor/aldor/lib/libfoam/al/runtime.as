@@ -165,11 +165,6 @@ export {
 		++ Adds more strings to the list of known exports
 	domainPrepare!:		Domain -> ();
 		++ initializes a domain.
-#if NEVER
-
-
-
-#endif
 } to Foreign(Builtin);
 
 domainMake(df: DomainFun AldorDomainRep): Domain == {

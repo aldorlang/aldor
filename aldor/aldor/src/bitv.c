@@ -186,7 +186,7 @@ bitvEqual(BitvClass class, Bitv a, Bitv b)
 	 * Test last word differently -- mask out extra bits so they
 	 * do not influence the equality test.
 	 */
-	mask = ~((~0L) << (class->nbits % BpW));
+	mask = ~((~0UL) << (class->nbits % BpW));
 	return (*a & mask) == (*b & mask);
 }
 
