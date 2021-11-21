@@ -6,18 +6,18 @@
  *
  ****************************************************************************/
 
+#include "abpretty.h"
 #include "axlobs.h"
+#include "comsg.h"
 #include "format.h"
+#include "lib.h"
+#include "sefo.h"
 #include "spesym.h"
 #include "stab.h"
 #include "store.h"
-#include "sefo.h"
-#include "lib.h"
-#include "tqual.h"
-#include "abpretty.h"
-#include "comsg.h"
 #include "strops.h"
 #include "symcoinfo.h"
+#include "tqual.h"
 
 Bool	tqDebug		= false;
 
