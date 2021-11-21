@@ -941,8 +941,10 @@ extern struct ab_info	abInfoTable[];
 			abIsTheId((op), ssymRecord)	||	\
 			abIsTheId((op), ssymRawRecord)		\
 		)
+enum abEqualValue { AbEqual_True, AbEqual_False, AbEqual_Struct };
+typedef Enum(abEqualValue) AbEqualValue;
 
-typedef Bool (*AbEqualFn)(void *, AbSyn, AbSyn);
+typedef AbEqualValue (*AbEqualFn)(void *, AbSyn, AbSyn);
 
 /*
  * :: General operations

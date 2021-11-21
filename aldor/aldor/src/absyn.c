@@ -713,11 +713,12 @@ abCompareModDeclares0(AbEqualFn eq, void *ctxt, AbSyn ab1, AbSyn ab2, Bool decls
 	ab1 = abEqualDeclMods(ab1, decls);
 	ab2 = abEqualDeclMods(ab2, decls);
 
+	AbEqualValue val = eq(ctxt, ab1, ab2);
+	if (val != AbEqual_Struct) {
+		return val == AbEqual_True ? true : false;
+	}
 	if (abTag(ab1) != abTag(ab2) || abArgc(ab1) != abArgc(ab2))
 		return false;
-
-	else if (abIsId(ab1))
-		return eq(ctxt, ab1, ab2);
 
 	else if (abIsLeaf(ab1))
 		return abEqual(ab1, ab2);
