@@ -861,9 +861,14 @@ tfSat1(SatMask mask, AbSyn Sab, TForm S, TForm T)
 	S = tfFollowOnly(S);
 	T = tfFollowOnly(T);
 
+	tfsSerialNo += 1;
+	serialThis   = tfsSerialNo;
+
 	/* If we can determine satisfaction w/o using tfFollow, do so. */
 	if (tfIsSubst(S)) {
+		tfsDEBUG(dbOut, "(%d - skip subst\n", serialThis);
 		result = tfSat(mask & ~TFS_Pending, tfSubstArg(S), T);
+		tfsDEBUG(dbOut, " %d - skip subst - %oBool)\n", serialThis, tfSatSucceed(result));
 		if (tfSatSucceed(result))
 			return result;
 	}
@@ -873,9 +878,7 @@ tfSat1(SatMask mask, AbSyn Sab, TForm S, TForm T)
 	if (tfSatAllow(mask, TFS_Sefo))
 		return tfSatResult(mask, TFS_Sefo);
 
-	tfsSerialNo += 1;
 	tfsDepthNo  += 1;
-	serialThis   = tfsSerialNo;
 
 	if (DEBUG(tfs)) {
 		fprintf(dbOut, "->Tfs: %*s%d= ", tfsDepthNo, "", serialThis);
