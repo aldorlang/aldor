@@ -195,6 +195,7 @@ static Bool initted = false;
 void
 init()
 {
+	osInit();
 	dbInit();
 
 	if (initted)
