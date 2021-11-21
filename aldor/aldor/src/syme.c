@@ -1288,6 +1288,7 @@ symeListCheckJoinSymes(Syme syme1, Syme syme2)
 Bool
 symeCheckCondition(Syme syme)
 {
+	static int count;
 	symeSetCondChecked(syme);
 	symeClrCheckCondIncomplete(syme);
 
@@ -1295,7 +1296,7 @@ symeCheckCondition(Syme syme)
 		Sefo	cond = car(symeCondition(syme));
 		Sefo	dom, cat;
 		int     result;
-
+		int serialThis = count++;
 		/* If the condition can be checked now, check it.
 		 * Otherwise just leave it alone and accept the syme.
 		 */
@@ -1304,9 +1305,9 @@ symeCheckCondition(Syme syme)
 
 		dom = cond->abHas.expr;
 		cat = cond->abHas.property;
-		symeHasDEBUG(dbOut, "(symeCheckCondition: %pSymeC...", syme);
+		symeHasDEBUG(dbOut, "(symeCheckCondition: %d %pSymeC...\n", serialThis, syme);
 		result = symeCheckHas(symeConditionContext(syme), dom, cat);
-		symeHasDEBUG(dbOut, " ... %d)\n", result);
+		symeHasDEBUG(dbOut, " ... %d %d)\n", result, serialThis);
 
 		if (result == 1) {
 			symeSetCheckCondIncomplete(syme);
