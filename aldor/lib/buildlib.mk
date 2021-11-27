@@ -209,9 +209,9 @@ all: $(libraryname).jar				\
 endif
 endif
 
-aldorinterptests := $(patsubst %,%.aldortest-exec-interp,$(filter-out $(interp_test_blacklist), library))
+aldorinterptests := $(patsubst %,%-aldortest-exec-interp,$(filter-out $(interp_test_blacklist), library))
 
-$(aldorinterptests): %.aldortest-exec-interp: Makefile
+$(aldorinterptests): %-aldortest-exec-interp: Makefile
 	$(AM_V_ALDORTEST) \
          (if ! grep -q '^#if ALDORTEST' $(srcdir)/$*.as; then exit 0; fi; \
 	 echo "  ALDORTEST $*.as"; \
@@ -226,7 +226,7 @@ $(aldorinterptests): %.aldortest-exec-interp: Makefile
 
 CHECK_TEST_STATUS = \
 	 status=$$?; \
-	 exstatus=$(filter $*, $(XFAIL) $(XFAIL_$(subst $*.aldortest-exec-,,$@))); \
+	 exstatus=$(filter $*, $(XFAIL) $(XFAIL_$(subst $*-aldortest-exec-,,$@))); \
 	 if ! [ "$$exstatus" = "" ] ; then \
 	     if [ $$status = 0 ] ; then echo XPASS: $*; exit 1; else echo XFAIL: $*; exit 0; fi;  \
 	 fi;\
@@ -255,7 +255,7 @@ $(aldortestexecs): %.aldortest.exe: Makefile %.as
 		      -Y$(foamlibdir) -l$(libraryname) $(exec_test_runtime) $(patsubst %,-l%,$(librarydeps))  \
 		        -Cargs="-Wconfig=$(aldorsrcdir)/aldor.conf -I$(aldorsrcdir) $(UNICLFLAGS)" \
 			-I$(top_srcdir)/lib/aldor/include -Y$(top_builddir)/lib/aldor/src \
-			-Y$(librarylibdir) -I$(libraryincdir) -fc -fx=$@ -DALDORTEST \
+			-Y$(librarylibdir) -I$(libraryincdir) -fc -fx=$@ -DALDORTEST  $($*_TESTAXLFLAGS) \
 			$*_test.as; fi)
 
 $(aldortest_run): %-aldortest-exec-exe: Makefile %.as %.aldortest.exe
@@ -266,10 +266,10 @@ $(aldortest_run): %-aldortest-exec-exe: Makefile %.as %.aldortest.exe
 
 ifneq ($(BUILD_JAVA),)
 ifneq ($(javalibrary),)
-aldortestjavas := $(patsubst %,%.aldortest-exec-java, \
+aldortestjavas := $(patsubst %,%-aldortest-exec-java, \
 			$(filter-out $(java_test_blacklist), $(_javalibrary)))
 
-$(aldortestjavas): %.aldortest-exec-java: Makefile %.as
+$(aldortestjavas): %-aldortest-exec-java: Makefile %.as
 	$(AM_V_ALDORTESTJ) \
         (if grep -q '^#if ALDORTEST' $(srcdir)/$*.as; then \
 	 echo "  ALDORTESTJ $*"; \
