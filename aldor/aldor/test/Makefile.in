@@ -199,7 +199,7 @@ $(patsubst %, %.exe, $(_xtests)): %.exe: %.o rtexns.o
 		      -Y$(foamdir)			\
 		      -Y$(foamlibdir)			\
 		      -Lfoamlib				\
-		      -Cargs="-Wconfig=$(aldorsrcdir)/aldor.conf -I$(aldorsrcdir) -Wv=2 $(UNICLFLAGS)" \
+		      -Cargs="-Wconfig=$(aldorsrcdir)/aldor.conf -I$(aldorsrcdir) $(UNICLFLAGS)" \
 		      -Fx=$@ out/ao/$*.ao rtexns.o
 
 #		      -Fmain=bobthebuilder.c		\
@@ -236,7 +236,6 @@ really-all: \
      $(patsubst %,out/java/aldorcode/%.class,$(_jruntests)) \
      $(patsubst %,%.o,$(_otests))  \
      $(patsubst %,%.exe,$(_xtests))
-
 
 .PHONY: all
 
