@@ -22,9 +22,11 @@ libsubdir	:= $(subst $(abs_libdir)/,,$(abs_builddir)/.)
 include $(top_builddir)/lib/config.mk
 include $(top_srcdir)/mk/step.mk
 
-$(call am_define_steps,\
-	ALDOR AO2C AO2FM AR DEP FOAMJ JAR JAVAC AS2TEX \
-	ALDORTEST ALDORTESTBLD ALDORTESTEXE ALDORTESTJ)
+STEPS := ALDOR AO2C AO2FM AR DEP FOAMJ JAR JAR JAVAC
+QUIET_STEPS := ALDORTEST ALDORTESTJ
+
+$(call am_define_steps, $(STEPS))
+$(call am_define_steps_quiet, $(QUIET_STEPS))
 
 # Check the makefile
 
