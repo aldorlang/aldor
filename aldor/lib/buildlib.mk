@@ -244,14 +244,15 @@ foamdir = $(abs_top_builddir)/aldor/lib/libfoam
 foamlibdir = $(abs_top_builddir)/aldor/lib/libfoamlib
 
 $(aldortestexecs): %.aldortest.exe: Makefile %.as
-	$(AM_V_ALDORTESTBLD) \
+	$(AM_V_ALDORTEST) \
          (if ! grep -q '^#if ALDORTEST' $(srcdir)/$*.as; then touch $@; chmod a+x $@; else \
-	   rm -f $@; \
-	   sed -n -e '/^#if ALDORTEST/,/^#endif/p' < $(srcdir)/$*.as > $*_test.as; \
-	   $(AM_DBG) $(aldorexedir)/aldor $(aldor_common_args) -Y$(aldorlibdir)/libfoam/al \
-		      -Ccc=$(aldortooldir)/unicl	\
-		      -Y$(foamdir) 		\
-		      -l$(libraryname) $(exec_test_runtime) $(patsubst %,-l%,$(librarydeps))  \
+	 rm -f $@; \
+	 echo "  ALDORTEST $*.as"; \
+	 sed -n -e '/^#if ALDORTEST/,/^#endif/p' < $(srcdir)/$*.as > $*_test.as; \
+	 $(AM_DBG) $(aldorexedir)/aldor $(aldor_common_args) -Y$(aldorlibdir)/libfoam/al \
+		        -Ccc=$(aldortooldir)/unicl	\
+		      -Y$(foamdir) -Y			\
+		      -Y$(foamlibdir) -l$(libraryname) $(exec_test_runtime) $(patsubst %,-l%,$(librarydeps))  \
 		        -Cargs="-Wconfig=$(aldorsrcdir)/aldor.conf -I$(aldorsrcdir) $(UNICLFLAGS)" \
 			-I$(top_srcdir)/lib/aldor/include -Y$(top_builddir)/lib/aldor/src \
 			-Y$(librarylibdir) -I$(libraryincdir) -fc -fx=$@ -DALDORTEST \
@@ -271,7 +272,7 @@ aldortestjavas := $(patsubst %,%.aldortest-exec-java, \
 $(aldortestjavas): %.aldortest-exec-java: Makefile %.as
 	$(AM_V_ALDORTESTJ) \
         (if grep -q '^#if ALDORTEST' $(srcdir)/$*.as; then \
-	 echo "   Running $*"; \
+	 echo "  ALDORTESTJ $*"; \
 	 sed -n -e '/^#if ALDORTEST/,/^#endif/p' < $(srcdir)/$*.as > $*_jtest.as; \
 	 $(AM_DBG) $(aldorexedir)/aldor $(aldor_common_args) -Y$(aldorlibdir)/libfoam/al \
 		-Y$(foamdir) -Y$(foamlibdir) -l$(libraryname) $(patsubst %,-l%,$(librarydeps)) \
