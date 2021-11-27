@@ -90,11 +90,9 @@ compCmd(int argc, char **argv)
 
 	/* Display the version string in all its glory */
 	if (cmdHasVerboseOption(argc, argv)) {
-		fprintf(osStdout, "%s version %d.%d.%d",
+		fprintf(osStdout, "%s version %s",
 			verName,
-			verMajorVersion,
-			verMinorVersion,
-			verMinorFreeze);
+			verVersionId);
 		if (*verPatchLevel)
 			fprintf(osStdout, "(%s)", verPatchLevel);
 		fprintf(osStdout, " for %s %s\n", CONFIG, DEBUG_CONFIG);
@@ -425,12 +423,10 @@ compGLoopInit(int argc, char **argv, FILE *fout, FileName *pfn,
 	/* Helpful start-up banner ... */
 	fprintf(osStdout,"%s\n",comsgString(ALDOR_M_GloopBanner));
 	if (comsgOkRelease()) {
-		fprintf(osStdout, "%s: %s(%s) version %d.%d.%d",
+		fprintf(osStdout, "%s: %s(%s) version %s",
 			"Release",
 			verName, "C", /* C-language version */
-			verMajorVersion,
-			verMinorVersion,
-			verMinorFreeze);
+			verVersionId);
 		if (*verPatchLevel)
 			fprintf(osStdout, "(%s)", verPatchLevel);
 		fprintf(osStdout, " for %s %s\n", CONFIG, DEBUG_CONFIG);

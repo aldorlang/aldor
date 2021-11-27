@@ -100,6 +100,7 @@ AC_CONFIG_FILES(
    aldor/subcmd/testaldor/Makefile
    aldor/src/Makefile
    aldor/src/opsys_port.h
+   aldor/src/version.c
    aldor/lib/Makefile
 
    aldor/lib/libfoamlib/Makefile
