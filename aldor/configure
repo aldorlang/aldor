@@ -13865,6 +13865,7 @@ then :
                   esac
 else $as_nop
   if test -f $srcdir/../.git/config ; then gitid=true; else gitid=false; fi
+              if test $gitid = true; then git_build_id=1; fi
 fi
 
 
