@@ -521,8 +521,6 @@ flogToSeq(FlowGraph flog, int * nLabels)
         newSeq  = flogToSeq0(flog, &lab);
         if (nLabels) *nLabels = lab + 1;
 
-	stoFree(flog);
-
         return newSeq;
 }
 
