@@ -111,7 +111,7 @@ $(addsuffix .fm,$(alldomains)): %.fm: %.ao
 
 $(if $(_withdocs),$(patsubst %,$(librarydocdir)/tex/gen/%.tex,$(docdomains)),): $(librarydocdir)/tex/gen/%.tex: %.as
 	$(AM_V_AS2TEX)			\
-	  mkdir -p $(librarydocdir)/tex/gen;	\
+	  $(MKDIR_P) $(librarydocdir)/tex/gen;	\
 	  $(unixtooldir)/extract -mALDOC -o $@ $(srcdir)/$*.as
 
 .PHONY: $(addsuffix .gloop, $(alldomains))
@@ -197,7 +197,7 @@ $(libraryname).jar: $(patsubst %,aldorcode/%.class, $(_javalibrary)) $(top_srcdi
 	$(AM_V_JAR) \
 	rm -f $@;	\
 	rm -rf jar;	\
-	mkdir jar;	\
+	$(MKDIR_P) jar;	\
 	jar cf $@ $(patsubst %,aldorcode/%*.class, $(_javalibrary));  \
 	for i in $(foreach i, $(SUBDIRS), $i/$(libraryname).jar); do \
 		(cd jar; jar xf ../$$i);				\
@@ -208,7 +208,7 @@ $(libraryname)-sources.jar: $(patsubst %,aldorcode/%.class, $(_javalibrary)) $(t
 	$(AM_V_SRCJAR) \
 	rm -f $@;	\
 	rm -rf sources-jar;	\
-	mkdir sources-jar;	\
+	$(MKDIR_P) sources-jar;	\
 	jar cf $@ $(patsubst %,aldorcode/%*.java, $(_javalibrary)); \
 	for i in $(foreach i, $(SUBDIRS), $i/$(libraryname)-sources.jar); do \
 		(cd jar; jar xf ../$$i);				\
