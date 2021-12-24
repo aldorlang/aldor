@@ -22,7 +22,7 @@ lib$(libraryname).al: $(foreach i,$(SUBDIRS),$i/_sublib_$(libraryname).al)
 $(libraryname).jar: $(foreach i, $(JAVA_SUBDIRS),$i/$(libraryname).jar)
 	$(AM_V_LIBJAR)		\
 	rm -rf jar;		\
-	mkdir jar;		\
+	$(MKDIR_P) jar;		\
 	for i in $(foreach j, $(JAVA_SUBDIRS),$j/$(libraryname).jar); \
 		do (cd jar; jar xf ../$$i); done;  		\
 	(cd jar; jar cf ../$@ .)
@@ -30,7 +30,7 @@ $(libraryname).jar: $(foreach i, $(JAVA_SUBDIRS),$i/$(libraryname).jar)
 $(libraryname)-sources.jar: $(foreach i, $(JAVA_SUBDIRS),$i/$(libraryname).jar)
 	$(AM_V_LIBSRCJAR)	\
 	rm -rf jar;		\
-	mkdir jar;		\
+	$(MKDIR_P) jar;		\
 	for i in $(foreach j, $(JAVA_SUBDIRS),$j/$(libraryname).jar); \
 		do (cd jar; jar xf ../$$i); done;  		\
 	(cd jar; jar cf ../$@ .)
