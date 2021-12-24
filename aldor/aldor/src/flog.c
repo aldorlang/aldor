@@ -926,7 +926,7 @@ bbPrint(FILE *fout, BBlock bb, Bool extended)
 		cc += fprintf(fout, " %d", bbEntry(bb,i)->label);
 
 	cc += fprintf(fout, "\n");
-	if (extended) cc += foamPrint(fout, bb->code);
+	if (extended) cc += afprintf(fout, "%pFoam\n", bb->code);
 	if (extended) cc += dflowPrintBlockInfo(fout, bb);
 
 	return cc;
