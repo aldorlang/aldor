@@ -1758,8 +1758,6 @@ foamToSExpr0(Foam foam)
 	Bool	isDecl;
 	long	li;
 
-	assert (foam);
-
 	if (!foam) 
 		return sxiFrString("Bad-Foam-0");
 	/*
