@@ -462,7 +462,7 @@ SExpressionReader: with
 	    else if tok.type = str then [sexpr tok.txt]
 	    else if tok.type = quote then readQuoted()
 	    else if tok.type = sym then
-	        [if cased then sexpr tok.txt else sexpr (-[upper x for x in tok.txt])]
+	        [if cased then sexpr(-tok.txt) else sexpr (-[upper x for x in tok.txt])]
 	    else if tok.type = escsym then
 	        [sexpr (-tok.txt)]
 	    else if tok.type = number then [sexpr integer literal tok.txt]
