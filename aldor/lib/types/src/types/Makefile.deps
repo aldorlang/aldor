@@ -1,0 +1,15 @@
+
+tp_annotated_deps :=
+tp_env_deps      := tp_typeterm tp_sx
+tp_expr_deps     := tp_listset tp_sx
+tp_infer_deps    := tp_annotated tp_counter tp_env tp_subst tp_tposs tp_typeterm tp_unify
+tp_listset_deps  := tp_sx
+tp_simple_deps   := tp_annotated tp_counter tp_env tp_subst tp_typeterm 
+tp_subst_deps    := tp_expr
+tp_sx_deps       :=
+tp_test_deps     := tp_annotated tp_subst tp_typeterm
+tp_tposs_deps    := tp_typeterm tp_subst tp_sx tp_unify
+tp_typeterm_deps := tp_subst
+tp_unify_deps    := tp_counter tp_subst tp_typeterm tp_subst
+
+library_deps :=
