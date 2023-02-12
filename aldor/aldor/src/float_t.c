@@ -333,7 +333,7 @@ testTruncate(void)
 
 
 	for (sign = 0; sign < 2; sign++)
-		for (i = 0; i < sizeof(fv)/sizeof(FiDFlo); i++) {
+		for (i = 0; i < sizeof(fv)/sizeof(FiSFlo); i++) {
 			FiDFlo df = (sign? -fv[i] : fv[i]);
 
 			stateOk = stateOk &&
