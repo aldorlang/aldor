@@ -46,7 +46,7 @@ foamsrcdir    = $(abs_top_srcdir)/aldor/lib/libfoam
 foamdir       = $(abs_top_builddir)/aldor/lib/libfoam
 
 aptests := exquo
-fmtests := rectest enumtest clos strtable1 simple apply nestcond silly cexp
+fmtests := rectest enumtest clos strtable1 simple apply nestcond silly cexp lself0 selfcond
 ctests  := rectest enumtest multinever maptuple
 otests  := enumtest
 xtests := enumtest jimport cross
@@ -76,6 +76,10 @@ JExportTest_classes := aldorcode.jexport
 JThrowTest_classes  := aldorcode.jthrow
 
 jimport_opt.ao: $(srcdir)/jimport.as
+
+out/ao/selfcond.ao: out/ao/lself0.ao
+
+selfcond_AXLFLAGS = -Y out/ao
 
 # opt1 fails because the optimise decides to inline the recursive call
 # (it shouldn't, but spotting the call is a bit tricky).
