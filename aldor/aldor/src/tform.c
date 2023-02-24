@@ -313,6 +313,8 @@ tfNewEmpty(TFormTag tag, Length argc)
 	tf->parent	= NULL;
 	tf->libNum	= TYPE_NUMBER_UNASSIGNED;
 
+	tf->tests = listNil(Sefo);
+
 	for (i = 0; i < argc; i += 1) tf->argv[i] = 0;
 
 	tfSetTForm(tf);
@@ -530,6 +532,29 @@ tfFrSelf(Stab stab, TForm tf)
 {
 	return tfFrSyme(stab, car(tfDefSelf(stab, tf)));
 }
+
+void tfTestPush(TForm tf, Sefo sf)
+{
+	tf->tests = listCons(Sefo)(sf, tf->tests);
+}
+
+void tfTestPop(TForm tf, Sefo sf)
+{
+	assert(car(tf->tests) == sf);
+	tf->tests = cdr(tf->tests);
+}
+
+Bool tfTestSeen(TForm tf, Sefo sf)
+{
+	SefoList ll = tf->tests;
+	for (; ll != listNil(Sefo); ll = cdr(ll)) {
+		if (sf == car(ll)) {
+			return true;
+		}
+	}
+	return false;
+}
+
 
 /*****************************************************************************
  *
