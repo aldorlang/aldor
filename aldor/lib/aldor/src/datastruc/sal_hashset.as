@@ -9,10 +9,10 @@ HashSet(T: HashType): BoundedFiniteDataStructureType T with {
 == add {
     Rep ==> HashTable(T, Boolean);
     import from Rep;
+    import from MachineInteger;
     default set: %;
     
     (a: %) = (b: %): Boolean == {
-        import from MachineInteger;
         import from BooleanFold;
         # a = #b and (_and)/(member?(elt, a) for elt in b)
     }
@@ -20,9 +20,9 @@ HashSet(T: HashType): BoundedFiniteDataStructureType T with {
     generator set: Generator T == {
         k for (k, v) in rep set;
     }
-    # set: MachineInteger == #(rep set);
+    # set: MachineInteger == numberOfEntries(rep set);
     free! set: () == free! rep set;
-    empty? set: Boolean == empty? set;
+    empty? set: Boolean == empty? rep set;
     empty(): % == per table();
     copy set: % == per copy rep set;
 
@@ -76,6 +76,8 @@ test(): () ==
     import from HashSet Integer
     e: HashSet Integer := [n for n in 1..1000]
     assertEquals(500*1001, (+, 0)/(x for x in e));
+    assertTrue(empty? empty())
+    assertFalse(empty? e)
     
 test();
 #endif
