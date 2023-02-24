@@ -37,13 +37,13 @@ AM_DBG := $(if $(filter 1,$(DBG)), gdb --args, $(DBG))
 AM_DBG_J := $(if $(filter 1,$(DBG_J)), gdb --args, $(DBG_J))
 AM_DBG_C := $(if $(filter 1,$(DBG_C)), gdb --args, $(DBG_C))
 
-aldorsrcdir = $(abs_top_srcdir)/aldor/src
-aldorexedir = $(abs_top_builddir)/aldor/src
-aldortooldir = $(abs_top_builddir)/aldor/subcmd/unitools
+aldorsrcdir   = $(abs_top_srcdir)/aldor/src
+aldorexedir   = $(abs_top_builddir)/aldor/src
+aldortooldir  = $(abs_top_builddir)/aldor/subcmd/unitools
 foamsrclibdir = $(abs_top_srcdir)/aldor/lib/libfoamlib
-foamlibdir = $(abs_top_builddir)/aldor/lib/libfoamlib
-foamsrcdir = $(abs_top_srcdir)/aldor/lib/libfoam
-foamdir = $(abs_top_builddir)/aldor/lib/libfoam
+foamlibdir    = $(abs_top_builddir)/aldor/lib/libfoamlib
+foamsrcdir    = $(abs_top_srcdir)/aldor/lib/libfoam
+foamdir       = $(abs_top_builddir)/aldor/lib/libfoam
 
 aptests := exquo
 fmtests := rectest enumtest clos strtable1 simple apply nestcond silly
