@@ -152,6 +152,8 @@ struct tform {
 
 	TfCond           conditions;     /* Conditional context */
 
+	SefoList tests;
+
 	AbSub			sigma;		/* Subst. for TF_Subst. */
 	FreeVar			fv;		/* Free vars for subst. */
 	Length			*rho;		/* Dep. multi. permutation. */
@@ -165,6 +167,10 @@ typedef Bool	(*TFormPredicate)	(TForm);
 
 #define		TYPE_NUMBER_UNASSIGNED	(0x7FFFFFFF)
 #define		TYPE_NUMBER_NEEDS_SEFO	(0x7FFFFFFE)
+
+void tfTestPush(TForm tf, Sefo sefo);
+void tfTestPop(TForm tf, Sefo);
+Bool tfTestSeen(TForm tf, Sefo);
 
 /******************************************************************************
  *

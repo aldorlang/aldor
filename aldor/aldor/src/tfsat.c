@@ -1814,9 +1814,15 @@ tfSatConditions(SatMask mask, SymeList mods, Syme s, Syme t)
 					return tfSatFalse(mask);
 			}
 			tfdom = abGetCategory(cond->abHas.expr);
+			if (tfTestSeen(tfdom, cond->abHas.property)) {
+				return tfSatFalse(mask);
+			}
+
 			cat   = cond->abHas.property;
 			tfcat = abTForm(cat) ? abTForm(cat) : tiTopFns()->tiGetTopLevelTForm(ablogTrue(), cat);
+			tfTestPush(tfdom, cond->abHas.property);
 			result = tfSat(mask, tfdom, tfcat);
+			tfTestPop(tfdom, cond->abHas.property);
 
 			if (tfSatSucceed(result))
 				continue;
