@@ -4,6 +4,6 @@ rt) 	;;
 hpux*) 	;;
 irix*)  ;;
 sun4os5*) ;;
-axposf*) 	ar tls $* > /dev/null ;;
+axposf*) 	${AR} tls $* > /dev/null ;;
 *) 	ranlib $*;;
 esac

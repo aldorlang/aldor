@@ -18,7 +18,7 @@ echo '== Compiling numeral*.as into numeral*.ao'
 $ALDOR -R $TMPDIR -Y $TMPDIR -F ao numeral*.as | grep -v "GC:"
 
 echo '== Building an archive containing numeral*.ao'
-ar cr $TMPDIR/lib/libnum.al $TMPDIR/numeral*.ao
+${AR} cr $TMPDIR/lib/libnum.al $TMPDIR/numeral*.ao
 rm -f $TMPDIR/numeral*.ao
 
 echo '== Creating a client for the archive'

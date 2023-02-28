@@ -44,7 +44,7 @@ Libraryname	:= Runtime
 
 all: libfoam.al
 libfoam.al: runtime.ao
-	$(AM_V_AR)ar cr $@ $<
+	$(AM_V_AR)${AR} cr $@ $<
 
 all:
 	@grep 'fiFileInitializer(' runtime.c | grep -v rtexns > runtime-gets.txt || true

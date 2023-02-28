@@ -12,8 +12,8 @@ fi
 
 echo "Dumping .ao files from $lib \n\tinto current directory."
 
-aos=`ar -t $lib`
-ar -x $lib
+aos=`${AR} -t $lib`
+${AR} -x $lib
 
 for i in $aos
 do
