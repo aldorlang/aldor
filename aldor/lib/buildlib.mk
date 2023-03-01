@@ -84,21 +84,21 @@ $(addsuffix .ao, $(alldomains)): %.ao: $(SUBLIB_DEPEND).al
 	$(AM_V_ALDOR)set -e;							\
 	rm -f $*.c $*.ao;							\
 	cp $(SUBLIB_DEPEND).al lib$(libraryname)_$*.al;				\
-	ar r lib$(libraryname)_$*.al $(addsuffix .ao, $(shell $(UNIQ) $*.dep));	\
+	${AR} r lib$(libraryname)_$*.al $(addsuffix .ao, $(shell $(UNIQ) $*.dep));	\
 	$(AM_DBG) $(aldorexedir)/aldor $(aldor_args);				\
 	rm lib$(libraryname)_$*.al
 
 $(SUBLIB_DEPEND).al: $(foreach l,$(library_deps),$(librarylibdir)/$l/$(SUBLIB).al) Makefile.deps
 	$(AM_V_AR)set -e;		\
-	ar cr $@;			\
+	${AR} cr $@;			\
 	for l in $(filter %.al,$+); do	\
 	   if [ ! -f $$l ]; then	\
 	      echo "missing $$l";	\
 	      exit 1;			\
 	   fi;				\
-	   ar x $$l;			\
-	   ar r $@ $$(ar t $$l);	\
-	   rm $$(ar t $$l);		\
+	   ${AR} x $$l;			\
+	   ${AR} r $@ $$(${AR} t $$l);	\
+	   rm $$(${AR} t $$l);		\
         done
 
 $(addsuffix .fm,$(alldomains)): %.fm: %.ao
@@ -117,7 +117,7 @@ $(addsuffix .gloop, $(alldomains)): %.gloop:
 	$(AM_V_ALDOR)set -e;							\
 	rm -f $*.c $*.ao;							\
 	cp $(SUBLIB_DEPEND).al lib$(libraryname)_$*.al;				\
-	ar r lib$(libraryname)_$*.al $(addsuffix .ao, $(shell $(UNIQ) $*.dep));	\
+	${AR} r lib$(libraryname)_$*.al $(addsuffix .ao, $(shell $(UNIQ) $*.dep));	\
 	$(AM_DBG) $(aldorexedir)/aldor -gloop 	\
 	  $(aldor_common_args) 			\
 	  -Y.					\
@@ -168,7 +168,7 @@ $(SUBLIB).al: $(addsuffix .ao,$(library))
 $(SUBLIB).al:
 	$(AM_V_AR)							\
 	rm -f $@;							\
-	ar cr $@ $(addsuffix .ao, $(shell $(UNIQ) $(@:.al=.dep)))
+	${AR} cr $@ $(addsuffix .ao, $(shell $(UNIQ) $(@:.al=.dep)))
 
 all: Makefile $(SUBLIB).al
 all: $(addsuffix .fm,$(library))

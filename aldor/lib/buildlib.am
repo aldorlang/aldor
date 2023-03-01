@@ -10,9 +10,9 @@ AM_CFLAGS = -I$(aldorsrcdir)
 lib$(libraryname).al: $(foreach i,$(SUBDIRS),$i/_sublib_$(libraryname).al)
 	$(AM_V_AR)		\
 	for l in $+; do		\
-	   ar x $$l;		\
-	   ar cr $@ $$(ar t $$l);\
-	   rm $$(ar t $$l);	\
+	   ${AR} x $$l;		\
+	   ${AR} cr $@ $$(${AR} t $$l);\
+	   rm $$(${AR} t $$l);	\
 	done
 
 $(libraryname).jar: $(foreach i, $(JAVA_SUBDIRS),$i/$(libraryname).jar)

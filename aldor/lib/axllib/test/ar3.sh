@@ -20,7 +20,7 @@ echo '== Compiling triv*.as into triv*.ao and triv*.o'
 $ALDOR -Mno-ALDOR_W_CantUseArchive $LM -l axllib -R $TMPDIR -F ao -F o triv*.as 2>&1 | grep -v "GC:" | grep -v "warning: conflicting types for built-in function"
 
 echo '== Building an archive containing triv*.ao'
-ar cr $TMPDIR/lib/libtriv.al $TMPDIR/triv*.ao
+${AR} cr $TMPDIR/lib/libtriv.al $TMPDIR/triv*.ao
 rm -f $TMPDIR/triv*.ao
 
 echo '== Building an archive containing triv*.o'
@@ -28,7 +28,7 @@ PL=`platform|tr "\r" " "`
 if [ "$PL" = "win32msvc - Win32 [+] " ]; then
 	lib /nologo /out:`cygpath -m $TMPDIR`/lib/libtriv.lib `cygpath -m $TMPDIR`/triv*.obj
 else
-	ar cr $TMPDIR/lib/libtriv.a $TMPDIR/triv*.o
+	${AR} cr $TMPDIR/lib/libtriv.a $TMPDIR/triv*.o
 	ranlib $TMPDIR/lib/libtriv.a
 fi
 

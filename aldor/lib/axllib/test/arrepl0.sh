@@ -14,12 +14,12 @@ LAXLREP=${LIB}/librepl.al
 
 LOBREP=${LIB}/librepl.a
 LOBREPLIB=${LIB}/librepl.lib
-ar rcv ${LOBREP} /dev/null
+${AR} rcv ${LOBREP} /dev/null
 
 # 'ar rcv' avoids the archive creation warning from ar.
-ar rcv ${LAXLREP} /dev/null 2>&1 | grep -v 'ar: writing'
+${AR} rcv ${LAXLREP} /dev/null 2>&1 | grep -v 'ar: writing'
 #if [ "$P" != "win" ]; then 
-#	ar rcv ${LOBREP} /dev/null 2>&1 | grep -v 'ar: writing'
+#	${AR} rcv ${LOBREP} /dev/null 2>&1 | grep -v 'ar: writing'
 #fi
 
 #

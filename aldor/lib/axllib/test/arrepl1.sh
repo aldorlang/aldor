@@ -14,8 +14,8 @@ LOBREP=${LIB}/librepl.a
 LOBREPLIB=${LIB}/librepl.lib
 
 # 'ar rcv' avoids the archive creation warning from ar.
-ar rcv ${LAXLREP} /dev/null 2>&1 | grep -v 'ar: writing'
-ar rcv ${LOBREP} /dev/null 2>&1 | grep -v 'ar: writing'
+${AR} rcv ${LAXLREP} /dev/null 2>&1 | grep -v 'ar: writing'
+${AR} rcv ${LOBREP} /dev/null 2>&1 | grep -v 'ar: writing'
 
 #
 # The perl -p -e 's/-R *[^ ]* //g' removes the use of a -R option with an 

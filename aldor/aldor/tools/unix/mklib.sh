@@ -17,13 +17,13 @@ then
 fi
 
 echo "Rebuilding $afile for $sys"
-for x in `ar t $alfile`;
+for x in `${AR} t $alfile`;
 do
 	echo $x
 	uniar x $alfile $x
 	aldor -Csys=$sys -csmax=0 -fo -O $x
 	ofile=`basename $x .ao`.o
 	if [ ! -f $ofile ] ; then echo "Compile failed. exiting." ; exit 1 ; fi
-	ar r $afile $ofile
+	${AR} r $afile $ofile
 	rm $x $ofile
 done

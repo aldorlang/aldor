@@ -26,7 +26,7 @@ check: $(addsuffix .test,$(tests))
 
 $(addsuffix .test,$(tests)): %.test: %.ao
 	cp $(SUBLIB_DEPEND).al lib$(libraryname)_$*.al;				\
-	ar r lib$(libraryname)_$*.al $(addsuffix .ao, $(shell $(UNIQ) $*.dep));	\
+	${AR} r lib$(libraryname)_$*.al $(addsuffix .ao, $(shell $(UNIQ) $*.dep));	\
 	$(DBG) $(aldorexedir)/aldor		\
 	  -Nfile=$(aldorsrcdir)/aldor.conf 	\
 	  -Y.					\
