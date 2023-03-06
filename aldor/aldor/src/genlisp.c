@@ -361,12 +361,8 @@ local SExpr
 gl0MakeUnitHeader(void)
 {
 	if (langOpt==GLLANG_COMMON)
-		return lisp3(GL_InPackage,
-			sxiFrString("FOAM-USER"),
-			gl0MakeKeyword("USE"),
-			lisp1(GL_Quote,
-				sxiList(2,sxiFrString("FOAM"),
-					sxiFrString("LISP")) ));
+		return lisp1(GL_InPackage,
+			sxiFrString("FOAM-USER"));
 	else
 		return lisp0(GL_UnitHead);
 }
