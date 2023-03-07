@@ -4,9 +4,9 @@
 ;;; Copyright (c) 1990-2007 Aldor Software Organization Ltd (Aldor.org).
 
 ;;
-;; Client files should begin with
-;;   (in-package "FOAM-USER" :use '("FOAM" "LISP"))
-;;
+;; Client files should contain
+;;   (in-package "FOAM-USER")
+;; And the FOAM-USER package should use this 'FOAM' package
 ;;
 ;; To Do:
 ;;    Test cases.
@@ -14,7 +14,7 @@
 ;;    Deftypes for each Foam type?
 ;;
 
-(in-package "FOAM" :use '("LISP"))
+(in-package "FOAM")
 
 (export '(
  compile-as-file cases
