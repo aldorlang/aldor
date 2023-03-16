@@ -32,6 +32,7 @@
 #include "optfoam.h"
 #include "parseby.h"
 #include "phase.h"
+#include "rdln.h"
 #include "scan.h"
 #include "scobind.h"
 #include "spesym.h"
@@ -370,9 +371,7 @@ compGLoopEval(FILE * fin, FILE * fout, EmitInfo finfo)
                         if (osFEof(fin))
                                 break;
 
-               comsgPromptPrint(fin, fout,
-                                fintHistory ? "%%%d := " : "%%%d >> ",
-                                intStepNo);
+               rdlnSetPrompt(fintHistory ? "%%%d := " : "%%%d >> ", intStepNo);
                osSetBreakHandler(compFintBreakHandler0);
                ab = compFileFront(finfo, stab, fin, &lineno);
                breakSetRoot(ab);
@@ -421,6 +420,7 @@ compGLoopInit(int argc, char **argv, FILE *fout, FileName *pfn,
 	compFileInit(*pfinfo);
 	comsgFini();
 	fintInit();
+	rdlnInit();
 
 	/* Helpful start-up banner ... */
 	fprintf(osStdout,"%s\n",comsgString(ALDOR_M_GloopBanner));
