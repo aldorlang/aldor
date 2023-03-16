@@ -4,7 +4,6 @@ prefix=@prefix@
 exec_prefix=@exec_prefix@
 libexecdir=@libexecdir@
 includedir=@includedir@
-datadir=@datadir@
 
 EXEEXT=@EXEEXT@
 
