@@ -1211,6 +1211,18 @@ comsgSetPromptSize(int size)
  * printf-style formatting.
  */
 void
+comsgPromptVPrint(FILE *fin, FILE *fout, String fmt, va_list argp)
+{
+	int promptSize;
+	if (!osIsInteractive(fin)) return;
+
+	promptSize = vfprintf(fout, fmt, argp);
+	comsgSetPromptSize(promptSize);
+
+	fflush(fout);
+}
+
+void
 comsgPromptPrint(FILE *fin, FILE *fout, String fmt, ...)
 {
 	int promptSize;
