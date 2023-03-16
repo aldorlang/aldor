@@ -150,6 +150,7 @@ extern int	osGetc		(FILE *);
 extern int	osPutc		(FILE *, int);
 extern int	osFPrintf	(FILE *, CString, ...) chk_fmt (2, 3);
 extern int	osFEof		(FILE *);
+extern void	osSetReadFns    (int (*)(FILE*), int (*)(FILE *));
 
 /*****************************************************************************
  *

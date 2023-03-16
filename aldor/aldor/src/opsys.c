@@ -659,6 +659,15 @@ IOMode osIoAubMode = "a+b";
  *
  ****************************************************************************/
 
+static int (*osAltGetc)(FILE *);
+static int (*osAltFEof)(FILE *);
+
+void osSetReadFns(int (*otherGetc)(FILE*), int (*otherFEof)(FILE *))
+{
+	osAltGetc = otherGetc;
+	osAltFEof = otherFEof;
+}
+
 #if (!defined(OS_Has_SpecialStreams))
 
 FILE *osStdout;
@@ -676,6 +685,9 @@ osSetStreams(FILE *sstdin, FILE *sstdout, FILE *sstderr)
 int  
 osGetc(FILE *f)
 {
+	if (osAltGetc != NULL && f == osStdin) {
+		return (*osAltGetc)(f);
+	}
 	return getc(f);
 }
 
@@ -700,6 +712,9 @@ osFPrintf(FILE *f, CString format, ...)
 int
 osFEof(FILE *f)
 {
+	if (osAltFEof != NULL && f == osStdin) {
+		return (*osAltFEof)(f);
+	}
 	return feof(f);
 }
 
