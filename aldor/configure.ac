@@ -13,8 +13,10 @@ AM_INIT_AUTOMAKE([foreign silent-rules parallel-tests color-tests subdir-objects
 AM_SILENT_RULES([yes])
 AM_MAINTAINER_MODE([enable])
 
+# Libraries
+
 # Checks for programs
-AC_PROG_LEX
+AC_PROG_LEX([yywrap])
 if test "x$LEX" = x:; then
    AC_MSG_ERROR([[lex/flex not found.
        	        Please install lex.]])
@@ -65,6 +67,10 @@ AC_ARG_ENABLE([documentation],
             [AS_HELP_STRING([--enable-documentation], [Generate documentation - requires latex])],
 	    [],
 	    [enable_documentation=no])
+
+AX_LIB_READLINE
+ALDOR_READLINE_OPTION
+ALDOR_READLINE_SELECT
 
 AC_SUBST([GC])
 AM_CONDITIONAL(HAVE_ALDOR_GC, test $GC = aldor)
