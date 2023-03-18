@@ -250,6 +250,7 @@ libphase_a_SOURCES =	\
 	opttools.c	\
 	parseby.c	\
 	phase.c		\
+	rdln.c		\
 	scan.c		\
 	scobind.c	\
 	syscmd.c	\
