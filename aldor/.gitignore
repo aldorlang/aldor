@@ -3,8 +3,8 @@
 /amaux
 /autom4te.cache
 /build
-/configure
 /config.status
+/config.log
 /install
 /libtool
 /.metadata
