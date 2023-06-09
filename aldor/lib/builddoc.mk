@@ -86,6 +86,9 @@ clean:
 	rm -rf html_work html
 	rm -f $(patsubst %.fig,%.eps,$(figs))
 
+distclean: clean
+	rm Makefile
+
 EMPTY_AUTOMAKE_TARGETS  = ps info html tags ctags
 EMPTY_AUTOMAKE_TARGETS += install-exec uninstall
 EMPTY_AUTOMAKE_TARGETS += install-dvi install-html install-info install-ps install-pdf
