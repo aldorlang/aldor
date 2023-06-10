@@ -5306,7 +5306,7 @@ fi
 
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking edit-gloop is selected.." >&5
 printf %s "checking edit-gloop is selected..... " >&6; };
-     if test -n "$ax_cv_lib_readline"; then
+     if test "$ax_cv_lib_readline" != "no" ; then
        if test "x$edit_gloop" = xyes || test "x$edit_gloop" = x ; then
            { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 printf "%s\n" "yes" >&6; }
@@ -5315,8 +5315,8 @@ printf "%s\n" "#define USE_GLOOP_SHELL 1" >>confdefs.h
 
 	   gloop_shell=yes;
        else
-           { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: available, but not selected" >&5
-printf "%s\n" "available, but not selected" >&6; }
+           { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: readline available, but not selected" >&5
+printf "%s\n" "readline available, but not selected" >&6; }
 	   gloop_shell=no;
        fi;
      else
