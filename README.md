@@ -5,9 +5,13 @@ Building the compiler
 ---------------------
 
 The directory `aldor` contains a build infrastructure based on the GNU build
-system: libtool, autoconf and automake. In order to use it, you will need
+system: libtool, autoconf and automake. In order to use it, you should have
 these tools, and run the command `./autogen.sh`. After that, you can set up
 the build with `./configure` and start it with `make`.
+
+Note that having the GNU build tools installed is optional.  Instead,
+you use the supplied `configure` script with
+`--disable-maintainer-mode`.
 
 The build system supports parallel builds with `make -jN` where N is the number
 of parallel tasks (generally: number of logical CPU cores + 2).
@@ -16,6 +20,11 @@ You can run `./configure --prefix=/install/path` to select the path you want to
 install aldor to (in this case `/install/path`, but you will likely want a
 different path).
 
+Compilation of the 'C' files in aldor will fail if a warning is
+generated.  If you want to the build to ignore warnings and simply
+continue, add `--disable-error-on-warning` as an argument to
+`./configure`.  It's likely that any new warning is harmless, and due
+to a change in C compiler.
 
 Reporting issues
 ----------------
