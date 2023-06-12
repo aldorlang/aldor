@@ -256,8 +256,7 @@ am__DIST_COMMON = $(srcdir)/Makefile.in \
 	$(top_srcdir)/lib/axldem/src/al/Makefile.in \
 	$(top_srcdir)/lib/axllib/src/al/Makefile.in AUTHORS \
 	amaux/compile amaux/config.guess amaux/config.sub \
-	amaux/depcomp amaux/install-sh amaux/ltmain.sh amaux/missing \
-	amaux/ylwrap
+	amaux/install-sh amaux/ltmain.sh amaux/missing amaux/ylwrap
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 distdir = $(PACKAGE)-$(VERSION)
 top_distdir = $(distdir)
