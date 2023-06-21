@@ -1,1 +1,1 @@
-library_deps := lang base arith datastruc util gmp
+library_deps := lang base arith datastruc util $(GMPDIR)

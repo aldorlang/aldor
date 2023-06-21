@@ -1,6 +1,3 @@
-/Makefile.in
-/aclocal.m4
-/amaux
 /autom4te.cache
 /build
 /config.status
@@ -11,6 +8,7 @@
 /workspace
 
 Makefile
+a.out
 
 .#*
 \#*

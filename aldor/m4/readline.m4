@@ -14,13 +14,13 @@ AC_DEFUN([ALDOR_READLINE_OPTION],
 	
 AC_DEFUN([ALDOR_READLINE_SELECT],
   [AC_MSG_CHECKING(edit-gloop is selected..);
-     if test -n "$ax_cv_lib_readline"; then
+     if test "$ax_cv_lib_readline" != "no" ; then
        if test "x$edit_gloop" = xyes || test "x$edit_gloop" = x ; then
            AC_MSG_RESULT([yes])
 	   AC_DEFINE(USE_GLOOP_SHELL, 1, [Use readline library in gloop])
 	   gloop_shell=yes;
        else
-           AC_MSG_RESULT([available, but not selected])
+           AC_MSG_RESULT([readline available, but not selected])
 	   gloop_shell=no;
        fi;
      else

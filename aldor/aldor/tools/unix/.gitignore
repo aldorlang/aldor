@@ -1,4 +1,3 @@
-/Makefile.in
 /aldor
 /atinlay
 /msgcat
@@ -7,3 +6,5 @@
 /zaccgram.h
 /zaccscan.c
 /gdb-aldor
+/aldoc2html
+/extract
