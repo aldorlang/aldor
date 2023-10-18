@@ -291,6 +291,7 @@ testsuite =			\
 	test/test_jcode.c	\
 	test/test_int.c		\
 	test/test_list.c	\
+	test/test_of_peep.c	\
 	test/test_ostream.c	\
 	test/test_printf.c	\
 	test/test_retyp.c	\

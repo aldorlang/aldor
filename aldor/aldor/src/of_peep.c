@@ -28,6 +28,7 @@ Bool	peepDebug	= false;
 
 local Foam peepExpr		(Foam, Bool *);
 local void peepAux		(Foam *);
+local Foam peepAElt		(Foam);
 local Foam peepBCall		(Foam);
 local Foam peepCast		(Foam);
 local Foam peepIf		(Foam);
@@ -123,6 +124,9 @@ peepExpr(Foam expr, Bool *changed)
 	case FOAM_CCall:
 		newExpr = peepCCall(expr);
 		break;
+	case FOAM_AElt:
+		newExpr = peepAElt(expr);
+		break;
 	case FOAM_EEnsure:
 		newExpr = peepEEnsure(expr);
 		break;
@@ -173,6 +177,22 @@ peepAux(Foam *arg)
 				  expr->foamBInt.BIntData == val)
 #define peepIsTheSFlo(val, expr) (peepHasTag(FOAM_SFlo, expr) && \
 				  expr->foamSFlo.SFloData == val)
+local Foam
+peepAElt(Foam foam)
+{
+	AInt baseType = foam->foamAElt.baseType;
+	Foam index = foam->foamAElt.index;
+	Foam expr = foam->foamAElt.expr;
+
+	if (peepHasTag(FOAM_SInt, index) && peepHasTag(FOAM_Arr, expr)) {
+		AInt idx = index->foamSInt.SIntData;
+		return foamNew(expr->foamArr.baseType, 1, expr->foamArr.eltv[index->foamSInt.SIntData]);
+	}
+
+	return foam;
+}
+
+
 local Foam
 peepBCall(Foam bcall)
 {
