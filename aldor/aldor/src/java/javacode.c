@@ -826,6 +826,8 @@ jcLiteralChar(String s)
 		t = strCopy("\\n");
 	else if (s[0] == '\t')
 		t = strCopy("\\t");
+	else if (s[0] == '\\')
+		t = strCopy("\\\\");
 	else if (s[0] == -1)
 		t = strCopy("\\1");
 	else

@@ -9,6 +9,7 @@
 #include "testlib.h"
 
 local void testTry();
+local void testStr();
 #define ID(name) jcId(strCopy(name))
 
 void
@@ -19,6 +20,7 @@ jcodeTest()
 	fmttsInit();
 	sxiInit();
 	TEST(testTry);
+	TEST(testStr);
 	dbFini();
 }
 
@@ -41,4 +43,11 @@ testTry()
 	afprintf(dbOut, "%s\n", txt);
 
 	testStringEqual("", "try {\n    r = obj.foo();\n}\ncatch (Exn e) {\n    return;\n}", txt);
+}
+
+void
+testStr()
+{
+	JavaCode c = jcLiteralChar("\\");
+	testStringEqual("eq", "\\\\", c->literal.txt);
 }
