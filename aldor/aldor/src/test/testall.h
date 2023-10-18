@@ -24,6 +24,7 @@ void jcodeTest(void);
 void jflowTest(void);
 void listTestSuite(void);
 void ostreamTest(void);
+void ofPeepTest(void);
 void printfTest(void);
 void retypeTest(void);
 void scobindTest(void);
