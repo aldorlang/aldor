@@ -78,7 +78,7 @@ public interface Word {
         }
 
         public static Word fromBool(boolean b) {
-            return new Bool(b);
+	    return b ? Bool.TRUE : Bool.FALSE;
         }
 
         public static Word fromChar(char c) {
