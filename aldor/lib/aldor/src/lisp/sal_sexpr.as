@@ -54,6 +54,7 @@ SExpression: Join(InputType, OutputType, PrimitiveType) with
     sexpr: String -> %
     sexpr: Cons -> %
     nil: %
+    list?: % -> Boolean
     cons?: % -> Boolean
     int?: % -> Boolean
     str?: % -> Boolean
@@ -91,6 +92,8 @@ SExpression: Join(InputType, OutputType, PrimitiveType) with
     sexpr(n: Integer): % == per [n]
     sexpr(str: String): % == per [str]
     sexpr(cons: Cons): % == per [cons]
+
+    list? sx: Boolean == nil? sx or cons? sx
 
     cons? sx: Boolean == not nil? sx and rep(sx) case CONS
     sym? sx: Boolean == not nil? sx and rep(sx) case SYM
