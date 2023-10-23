@@ -2157,10 +2157,12 @@ foamGDeclIsExportOf(AInt tag, Foam foam)
 #define FOAM_PUT_INT(format, buf, i) { \
 	switch (format) {				\
 	case 0:	 bufPutSInt(buf, i); break;		\
-	case 1:	 bufPutByte(buf, i); break;		\
+	case 1:	 FOAM_CHK_INT(i); bufPutByte(buf, i); break;	\
 	default: break; /* Included in tag. */		\
 	}						\
 }
+
+#define FOAM_CHK_INT(i) {if (i > MAX_BYTE) bug("oops - int too large");}
 
 #define FOAM_GET_INT(format, buf, i) {			\
 	switch (format) {				\
