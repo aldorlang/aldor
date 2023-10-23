@@ -49,13 +49,13 @@ aptests := exquo
 fmtests := rectest enumtest clos strtable1 simple apply nestcond silly cexp lself0 selfcond lself
 ctests  := rectest enumtest multinever maptuple
 otests  := enumtest
-xtests := enumtest jimport cross
+xtests := enumtest jimport cross seq small
 
 out/ao/lself.ao: out/ao/lself0.ao
 
 @BUILD_JAVA_TRUE@jtests := simple_j enumtest run_j halt
 @HAS_JUNIT_TRUE@junittests := JExportTest JThrowTest
-@BUILD_JAVA_TRUE@jruntests := jimport jimport_opt jimp0 jlist jexport jexport1 jexport2 envname jexn jthrow
+@BUILD_JAVA_TRUE@jruntests := small jimport jimport_opt jimp0 jlist jexport jexport1 jexport2 envname jexn jthrow
 
 x_extra := rtexns
 
