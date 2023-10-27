@@ -1219,6 +1219,7 @@ titdnLambda(Stab stab, AbSyn absyn, TForm type)
 
 	tuniReturnTForm = tfFullFrAbSyn(stab, ret);
 
+	titdn(stab, param, tfUnknown);
 	titdn(stab, body, tuniReturnTForm);
 
 	abtposs = abTPoss(absyn);
@@ -1368,10 +1369,11 @@ titdnExit(Stab stab, AbSyn absyn, TForm type)
 	AbSyn	test  = absyn->abExit.test;
 	AbSyn	value = absyn->abExit.value;
 	AbLogic	saveCond;
-
+	Bool    pushCond;
 	titdn(stab, test, tfUnknown);
 
-	if (!tuniTdnSelectObj) {
+	pushCond = !tuniTdnSelectObj && abIsSefo(test);
+	if (pushCond) {
 		/* See tibupExit for comments */
 		AbSyn nTest = abExpandDefs(stab, test);
 		ablogAndPush(&abCondKnown, &saveCond, nTest, true);
@@ -1379,7 +1381,7 @@ titdnExit(Stab stab, AbSyn absyn, TForm type)
 
 	titdn0FarValue(stab, absyn, type, value, &tuniExitTForm, &abExitsList);
 
-	if (!tuniTdnSelectObj)
+	if (pushCond)
 		ablogAndPop (&abCondKnown, &saveCond);
 	
 	return titdn0NoValue(stab, absyn, type, ALDOR_E_TinContextExit);
