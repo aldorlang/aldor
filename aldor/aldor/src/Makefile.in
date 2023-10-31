@@ -272,6 +272,7 @@ am__objects_1 = test/testall-test_abcheck.$(OBJEXT) \
 	test/testall-test_jcode.$(OBJEXT) \
 	test/testall-test_int.$(OBJEXT) \
 	test/testall-test_list.$(OBJEXT) \
+	test/testall-test_of_cprop.$(OBJEXT) \
 	test/testall-test_of_peep.$(OBJEXT) \
 	test/testall-test_ostream.$(OBJEXT) \
 	test/testall-test_printf.$(OBJEXT) \
@@ -436,6 +437,7 @@ am__depfiles_remade = ./$(DEPDIR)/abcheck.Po ./$(DEPDIR)/ablogic.Po \
 	test/$(DEPDIR)/testall-test_jcode.Po \
 	test/$(DEPDIR)/testall-test_jflow.Po \
 	test/$(DEPDIR)/testall-test_list.Po \
+	test/$(DEPDIR)/testall-test_of_cprop.Po \
 	test/$(DEPDIR)/testall-test_of_peep.Po \
 	test/$(DEPDIR)/testall-test_ostream.Po \
 	test/$(DEPDIR)/testall-test_printf.Po \
@@ -1131,6 +1133,7 @@ testsuite = \
 	test/test_jcode.c	\
 	test/test_int.c		\
 	test/test_list.c	\
+	test/test_of_cprop.c	\
 	test/test_of_peep.c	\
 	test/test_ostream.c	\
 	test/test_printf.c	\
@@ -1438,6 +1441,8 @@ test/testall-test_int.$(OBJEXT): test/$(am__dirstamp) \
 	test/$(DEPDIR)/$(am__dirstamp)
 test/testall-test_list.$(OBJEXT): test/$(am__dirstamp) \
 	test/$(DEPDIR)/$(am__dirstamp)
+test/testall-test_of_cprop.$(OBJEXT): test/$(am__dirstamp) \
+	test/$(DEPDIR)/$(am__dirstamp)
 test/testall-test_of_peep.$(OBJEXT): test/$(am__dirstamp) \
 	test/$(DEPDIR)/$(am__dirstamp)
 test/testall-test_ostream.$(OBJEXT): test/$(am__dirstamp) \
@@ -1704,6 +1709,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@test/$(DEPDIR)/testall-test_jcode.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@test/$(DEPDIR)/testall-test_jflow.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@test/$(DEPDIR)/testall-test_list.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@test/$(DEPDIR)/testall-test_of_cprop.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@test/$(DEPDIR)/testall-test_of_peep.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@test/$(DEPDIR)/testall-test_ostream.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@test/$(DEPDIR)/testall-test_printf.Po@am__quote@ # am--include-marker
@@ -2563,6 +2569,20 @@ test/testall-test_list.obj: test/test_list.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='test/test_list.c' object='test/testall-test_list.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testall_CFLAGS) $(CFLAGS) -c -o test/testall-test_list.obj `if test -f 'test/test_list.c'; then $(CYGPATH_W) 'test/test_list.c'; else $(CYGPATH_W) '$(srcdir)/test/test_list.c'; fi`
+
+test/testall-test_of_cprop.o: test/test_of_cprop.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testall_CFLAGS) $(CFLAGS) -MT test/testall-test_of_cprop.o -MD -MP -MF test/$(DEPDIR)/testall-test_of_cprop.Tpo -c -o test/testall-test_of_cprop.o `test -f 'test/test_of_cprop.c' || echo '$(srcdir)/'`test/test_of_cprop.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) test/$(DEPDIR)/testall-test_of_cprop.Tpo test/$(DEPDIR)/testall-test_of_cprop.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='test/test_of_cprop.c' object='test/testall-test_of_cprop.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testall_CFLAGS) $(CFLAGS) -c -o test/testall-test_of_cprop.o `test -f 'test/test_of_cprop.c' || echo '$(srcdir)/'`test/test_of_cprop.c
+
+test/testall-test_of_cprop.obj: test/test_of_cprop.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testall_CFLAGS) $(CFLAGS) -MT test/testall-test_of_cprop.obj -MD -MP -MF test/$(DEPDIR)/testall-test_of_cprop.Tpo -c -o test/testall-test_of_cprop.obj `if test -f 'test/test_of_cprop.c'; then $(CYGPATH_W) 'test/test_of_cprop.c'; else $(CYGPATH_W) '$(srcdir)/test/test_of_cprop.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) test/$(DEPDIR)/testall-test_of_cprop.Tpo test/$(DEPDIR)/testall-test_of_cprop.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='test/test_of_cprop.c' object='test/testall-test_of_cprop.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testall_CFLAGS) $(CFLAGS) -c -o test/testall-test_of_cprop.obj `if test -f 'test/test_of_cprop.c'; then $(CYGPATH_W) 'test/test_of_cprop.c'; else $(CYGPATH_W) '$(srcdir)/test/test_of_cprop.c'; fi`
 
 test/testall-test_of_peep.o: test/test_of_peep.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testall_CFLAGS) $(CFLAGS) -MT test/testall-test_of_peep.o -MD -MP -MF test/$(DEPDIR)/testall-test_of_peep.Tpo -c -o test/testall-test_of_peep.o `test -f 'test/test_of_peep.c' || echo '$(srcdir)/'`test/test_of_peep.c
@@ -3435,6 +3455,7 @@ distclean: distclean-am
 	-rm -f test/$(DEPDIR)/testall-test_jcode.Po
 	-rm -f test/$(DEPDIR)/testall-test_jflow.Po
 	-rm -f test/$(DEPDIR)/testall-test_list.Po
+	-rm -f test/$(DEPDIR)/testall-test_of_cprop.Po
 	-rm -f test/$(DEPDIR)/testall-test_of_peep.Po
 	-rm -f test/$(DEPDIR)/testall-test_ostream.Po
 	-rm -f test/$(DEPDIR)/testall-test_printf.Po
@@ -3715,6 +3736,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -f test/$(DEPDIR)/testall-test_jcode.Po
 	-rm -f test/$(DEPDIR)/testall-test_jflow.Po
 	-rm -f test/$(DEPDIR)/testall-test_list.Po
+	-rm -f test/$(DEPDIR)/testall-test_of_cprop.Po
 	-rm -f test/$(DEPDIR)/testall-test_of_peep.Po
 	-rm -f test/$(DEPDIR)/testall-test_ostream.Po
 	-rm -f test/$(DEPDIR)/testall-test_printf.Po
