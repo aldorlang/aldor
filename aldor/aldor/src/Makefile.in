@@ -115,7 +115,7 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 DIST_COMMON = $(srcdir)/Makefile.am $(include_HEADERS) \
 	$(am__DIST_COMMON)
 mkinstalldirs = $(install_sh) -d
-CONFIG_CLEAN_FILES = opsys_port.h
+CONFIG_CLEAN_FILES = opsys_port.h version.c
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(libexecdir)" \
 	"$(DESTDIR)$(dataincludedir)" "$(DESTDIR)$(datalibdir)" \
@@ -710,8 +710,8 @@ TEST_LOG_DRIVER = $(SHELL) $(top_srcdir)/amaux/test-driver
 TEST_LOG_COMPILE = $(TEST_LOG_COMPILER) $(AM_TEST_LOG_FLAGS) \
 	$(TEST_LOG_FLAGS)
 am__DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/opsys_port.h.in \
-	$(top_srcdir)/amaux/depcomp $(top_srcdir)/amaux/test-driver \
-	ChangeLog
+	$(srcdir)/version.c.in $(top_srcdir)/amaux/depcomp \
+	$(top_srcdir)/amaux/test-driver ChangeLog
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 AMTAR = @AMTAR@
@@ -1196,6 +1196,8 @@ $(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(am__aclocal_m4_deps):
 opsys_port.h: $(top_builddir)/config.status $(srcdir)/opsys_port.h.in
+	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
+version.c: $(top_builddir)/config.status $(srcdir)/version.c.in
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 install-binPROGRAMS: $(bin_PROGRAMS)
 	@$(NORMAL_INSTALL)
