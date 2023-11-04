@@ -3033,14 +3033,6 @@ $(patsubst %,prereq-%,$(SUBDIRS)): prereq-%:
 		(cd $$dir; $(MAKE) $(AM_MAKEFLAGS) all || exit 1); \
 	done
 
-$(libraryname)-sources.jar: $(foreach i, $(JAVA_SUBDIRS),$i/$(libraryname).jar)
-	$(AM_V_LIBSRCJAR)	\
-	rm -rf jar;		\
-	mkdir jar;		\
-	for i in $(foreach j, $(JAVA_SUBDIRS),$j/$(libraryname).jar); \
-		do (cd jar; jar xf ../$$i); done;  		\
-	(cd jar; jar cf ../$@ .)
-
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:
