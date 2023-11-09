@@ -17,7 +17,20 @@ SUP1(R: XGroup): SUPC R with
     (a: R) * (b: %): % == never
     (a: %) * (b: R): % == never
 
+
 local Test1: with
     bar: SUP1 % -> %
 == add
     bar(x: SUP1 %): % == never
+
+local Test3: XGroup with
+    bar: % -> %
+    baz: SUP1 % -> %
+== add
+    baz(x: SUP1 %): % == never
+    bar(x: %): % ==
+        x: SUP1 % := never
+	never
+
+    (a: %) * (b: %): % == never
+    1: % == never

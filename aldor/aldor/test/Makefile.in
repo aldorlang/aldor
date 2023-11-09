@@ -46,7 +46,7 @@ foamsrcdir    = $(abs_top_srcdir)/aldor/lib/libfoam
 foamdir       = $(abs_top_builddir)/aldor/lib/libfoam
 
 aptests := exquo
-fmtests := rectest enumtest clos strtable1 simple apply nestcond silly cexp lself0 selfcond lself
+fmtests := rectest enumtest clos strtable1 simple apply nestcond silly cexp lself0 selfcond lself catdef2
 ctests  := rectest enumtest multinever maptuple
 otests  := enumtest
 xtests := enumtest jimport cross seq small
