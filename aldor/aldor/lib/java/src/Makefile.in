@@ -36,7 +36,6 @@ $(sourcejarfile): $(buildfiles)
 	cd $(srcdir); jar cf $(abs_builddir)/$@ $(shell cd $(srcdir); find . -type f)
 
 all: $(jarfile) $(sourcejarfile)
-	echo $<
 
 # 
 # :: Automake requires this little lot
