@@ -1723,6 +1723,57 @@ tfSatExportsMissing(SatMask mask, SymeList mods, AbSyn Sab, SymeList S, SymeList
 	return missing;
 }
 
+typedef struct satModAbSyn {
+	SymeList mods;
+	AbSyn ab;
+} *SatModAbSyn;
+
+local SatModAbSyn
+satModAbSynNew(SymeList mods, AbSyn ab)
+{
+	SatModAbSyn satModAbSyn;
+
+	satModAbSyn = (SatModAbSyn) stoAlloc(OB_Other, sizeof(*satModAbSyn));
+	satModAbSyn->mods = mods;
+	satModAbSyn->ab = ab;
+	return satModAbSyn;
+}
+
+local void
+satModAbSynFree(SatModAbSyn satModAbSyn)
+{
+	stoFree(satModAbSyn);
+}
+
+local AbEqualValue
+tfSatAbCompareModAbSyn(void *ctxt, AbSyn ab1, AbSyn ab2)
+{
+	SatModAbSyn satModAbSyn = (SatModAbSyn) ctxt;
+	if (!abIsTheId(ab1, ssymSelf) && abIsTheId(ab2, ssymSelf)) {
+		return tfSatAbCompareModAbSyn(ctxt, ab2, ab1);
+	}
+	if (abTag(ab1) != AB_Id && abTag(ab2) == AB_Id) {
+		return tfSatAbCompareModAbSyn(ctxt, ab2, ab1);
+	}
+
+	if (abTag(ab1) != AB_Id) {
+		return AbEqual_Struct;
+	}
+	else if (abIsTheId(ab1, ssymSelf)) {
+		Bool eqAbSyn = abEqualModDeclares(satModAbSyn->ab, ab2);
+		if (eqAbSyn)
+			return AbEqual_True;
+		else {
+			Bool eq = sefoEqualMod(satModAbSyn->mods, ab1, ab2);
+			return eq ? AbEqual_True : AbEqual_False;
+		}
+	}
+	else {
+		Bool eq = sefoEqualMod(satModAbSyn->mods, ab1, ab2);
+		return eq ? AbEqual_True : AbEqual_False;
+	}
+}
+
 /*
  * Succeed if t can be found in S.
  */
@@ -1755,15 +1806,20 @@ tfSatExport(SatMask mask, SymeList mods, AbSyn Sab, SymeList S, Syme t, AbSub *l
 	}
 
 	tfsExportDEBUG(dbOut, "tfSatExport[%d]:: Start S: %pAbSyn\n", serialThis, Sab);
+	tfsExportDEBUG(dbOut, "tfSatExport[%d]:: Target %pSyme %pTForm\n", serialThis, t, symeType(t));
 
 	if (symeHasDefault(t) && !symeIsSelfSelf(t))
 		return tfSatTrue(mask);
 
 	/* First round.. try "normally" */
+	int iterCount = 0;
 	for (symes = S; !tfSatSucceed(result) && symes; symes = cdr(symes)) {
 		SatMask satConditions;
 		Syme	s = car(symes);
+		int     iterThis = iterCount++;
 
+		tfsExportDEBUG(dbOut, "tfSatExport[%d.%d]:: Test %pSyme %pTForm %pAbSynList\n",
+			       serialThis, iterThis, s, symeType(s), symeCondition(s));
 		if (!symeEqualModConditions(mods, s, t))
 			continue;
 		satConditions = tfSatConditions(mask, mods, s, t);
@@ -1791,16 +1847,16 @@ tfSatExport(SatMask mask, SymeList mods, AbSyn Sab, SymeList S, Syme t, AbSub *l
 	 * various local values for '%', and swapping them with the value used locally
 	 * should let us match 'Foo %' with 'Foo X'.
 	 */
-	sigma = tfSatExportLazySelfSubst(mods, Sab, lazySelfSubst);
 
 	tfsExportDEBUG(dbOut, "(tfSatExportExtra[%d]:: Incoming S: %pAbSyn %pTForm\n",
 		       serialThis, Sab, symeType(t));
 
-	substT = tfSubst(sigma, symeType(t));
+
+	SatModAbSyn satModAbSyn = satModAbSynNew(mods, Sab);
 	for (symes = S; !tfSatSucceed(result) && symes; symes = cdr(symes)) {
 		Syme	s = car(symes);
-		TForm   substS;
 		Bool    weakEq;
+
 		if (symeId(s) != symeId(t)) {
 			continue;
 		}
@@ -1808,8 +1864,9 @@ tfSatExport(SatMask mask, SymeList mods, AbSyn Sab, SymeList S, Syme t, AbSub *l
 		if (!abHasSymbol(tfExpr(symeType(s)), ssymSelf))
 			continue;
 
-		substS = tfSubst(sigma, symeType(s));
-		weakEq = abEqualModDeclares(tfExpr(substS), tfExpr(substT));
+		//substS = tfSubst(sigma, symeType(s));
+		//weakEq = abEqualModDeclares(tfExpr(substS), tfExpr(substT));
+		weakEq = abCompareModDeclares(tfSatAbCompareModAbSyn, satModAbSyn, tfExpr(symeType(s)), tfExpr(symeType(t)));
 
 		if (weakEq) {
 			if (symeCondition(s) != listNil(Sefo)) {
@@ -1819,9 +1876,8 @@ tfSatExport(SatMask mask, SymeList mods, AbSyn Sab, SymeList S, Syme t, AbSub *l
 				result = tfSatTrue(mask);
 			}
 		}
-		tfFree(substS);
 	}
-	tfFree(substT);
+	satModAbSynFree(satModAbSyn);
 
 	tfsExportDEBUG(dbOut, " tfSatExportExtra[%d]:: --> %d)\n",
 		       serialThis, tfSatSucceed(result));
@@ -2020,10 +2076,17 @@ tfSatParents(SatMask mask, SymeList mods, AbSyn Sab, SymeList S, SymeList T)
 		if (queue) {
 			Syme	oldSyme = car(queue);
 
-			tfsParentDEBUG(dbOut, " ->tfpSyme: %*s%d.%d= expanding: %pSyme %pTForm\n",
-				       tfsDepthNo, "", serialThis, iterThis, oldSyme, symeType(oldSyme));
+			tfsParentDEBUG(dbOut, " ->tfpSyme: %*s%d.%d= expanding: %pSyme %pTForm %pAbSynList\n",
+				       tfsDepthNo, "", serialThis, iterThis, oldSyme,
+				       symeType(oldSyme), symeCondition(oldSyme));
 
 			newS = tfGetCatParents(symeType(oldSyme), true);
+			/*
+			if (symeCondition(oldSyme) != listNil(Sefo)) {
+				newS = symeListAddCondition(newS, abNewOfList(AB_And, sposNone,
+									      (AbSynList) symeCondition(oldSyme)), true);
+			}
+			*/
 			queue = cdr(queue);
 
 			tfsParentDEBUG(dbOut, " ->tfpSyme: %*s%d.%d= into: %pSymeList\n",
