@@ -1715,7 +1715,7 @@ sefoIdEqual(void *ctxt, Sefo sefo1, Sefo sefo2)
 		sefoEqualDEBUG(dbOut, "(weak[%d]: %pAbSyn %pAbSyn\n",
 			       (int) serial, sefo1, sefo2);
 		if (symeIsSelf(abSyme(sefo1)) && symeIsSelf(abSyme(sefo2))) {
-			result = symeEqual0((SymeList) 0, abSyme(sefo1), abSyme(sefo2));
+			result = symeEqual0((SymeList) ctxt, abSyme(sefo1), abSyme(sefo2));
 		}
 		else {
 			result = abEqual(sefo1, sefo2);
