@@ -1069,7 +1069,7 @@ stabGetDomainExportMod(Stab astab, SymeList mods, Symbol sym, TForm tf)
 		exports = cdr(exports);
 		if (symeId(syme) != sym)
 			continue;
-		assert(symeIsExport(syme));
+		if (!symeIsExport(syme)) continue;
 		if (tfIsCategory(tf) && tfSatCat(symeType(syme)))
 			return syme;
 		if (tformEqualMod(mods, tf, symeType(syme)))
