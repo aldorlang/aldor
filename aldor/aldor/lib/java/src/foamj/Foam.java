@@ -362,13 +362,13 @@ public class Foam {
 
     public static float arrToSFlo(Object o) {
         char[] arr = (char[]) o;
-        return new Float(arrToString(arr));
+        return Float.parseFloat(arrToString(arr));
 
     }
 
     public static double arrToDFlo(Object o) {
         char[] arr = (char[]) o;
-        return new Double(arrToString(arr));
+        return Double.parseDouble(arrToString(arr));
     }
 
     public static int arrToSInt(Object o) {
