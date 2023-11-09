@@ -114,7 +114,7 @@ local Bool		symeOriginEqual0	(SymeList, Syme, Syme);
 
 local Bool		tformEqualCheckSymes	(TForm);
 local Sefo		sefoEqualMods		(Sefo);
-local Bool		sefoIdEqual		(void *, Sefo, Sefo);
+local AbEqualValue	sefoIdEqual		(void *, Sefo, Sefo);
 
 local void		sfvInitTable		(void);
 local void		sfvFiniTable		(void);
@@ -1694,7 +1694,7 @@ sefoEqual0(SymeList mods, Sefo sefo1, Sefo sefo2)
 	return result;
 }
 
-local Bool
+local AbEqualValue
 sefoIdEqual(void *ctxt, Sefo sefo1, Sefo sefo2)
 {
 	int serial;
@@ -1705,19 +1705,26 @@ sefoIdEqual(void *ctxt, Sefo sefo1, Sefo sefo2)
 	// that works via the parent exports.. Instead, compare ids
 	// only if they are lexical variables
 
-	sefoEqualDEBUG(dbOut, "(weak[%d]: %pAbSyn %pAbSyn\n",
-		       (int) serial, sefo1, sefo2);
-
-	if (symeIsSelf(abSyme(sefo1)) && symeIsSelf(abSyme(sefo2))) {
-		result = symeEqual0((SymeList) 0, abSyme(sefo1), abSyme(sefo2));
+	if (abTag(sefo1) != abTag(sefo2)) {
+		return AbEqual_Struct;
+	}
+	else if (abTag(sefo1) != AB_Id) {
+		return AbEqual_Struct;
 	}
 	else {
-		result = abEqual(sefo1, sefo2);
-	}
+		sefoEqualDEBUG(dbOut, "(weak[%d]: %pAbSyn %pAbSyn\n",
+			       (int) serial, sefo1, sefo2);
+		if (symeIsSelf(abSyme(sefo1)) && symeIsSelf(abSyme(sefo2))) {
+			result = symeEqual0((SymeList) 0, abSyme(sefo1), abSyme(sefo2));
+		}
+		else {
+			result = abEqual(sefo1, sefo2);
+		}
 
-	sefoEqualDEBUG(dbOut, " weak[%d]: %pAbSyn %pAbSyn --> %d\n",
-		       (int) serial, sefo1, sefo2, result);
-	return result;
+		sefoEqualDEBUG(dbOut, " weak[%d]: %pAbSyn %pAbSyn --> %d)\n",
+		       	       (int) serial, sefo1, sefo2, result);
+	}
+	return result ? AbEqual_True: AbEqual_False;
 }
 
 local Bool
