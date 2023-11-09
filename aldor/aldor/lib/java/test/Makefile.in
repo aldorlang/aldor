@@ -46,7 +46,6 @@ $(jarfile): $(buildfiles)
 	(cd $(outdir); jar cf $@ .)
 
 all:
-	echo $<
 
 #
 # :: Automake requires this little lot
