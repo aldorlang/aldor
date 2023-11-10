@@ -46,14 +46,17 @@ foamsrcdir    = $(abs_top_srcdir)/aldor/lib/libfoam
 foamdir       = $(abs_top_builddir)/aldor/lib/libfoam
 
 aptests := exquo
-fmtests := rectest enumtest clos strtable1 simple apply nestcond silly cexp lself0 selfcond
+fmtests := rectest enumtest clos strtable1 simple apply nestcond silly cexp lself0 selfcond lself lself2 catdef2
 ctests  := rectest enumtest multinever maptuple
 otests  := enumtest
-xtests := enumtest jimport cross
+xtests := enumtest jimport cross seq small
+
+out/ao/lself.ao: out/ao/lself0.ao
+out/ao/lself2.ao: out/ao/lself0.ao
 
 @BUILD_JAVA_TRUE@jtests := simple_j enumtest run_j halt
 @HAS_JUNIT_TRUE@junittests := JExportTest JThrowTest
-@BUILD_JAVA_TRUE@jruntests := jimport jimport_opt jimp0 jlist jexport jexport1 jexport2 envname jexn jthrow
+@BUILD_JAVA_TRUE@jruntests := small jimport jimport_opt jimp0 jlist jexport jexport1 jexport2 envname jexn jthrow
 
 x_extra := rtexns
 
@@ -66,6 +69,8 @@ jimport_opts := -Q3
 jthrow_opts := -Q3
 halt_opts := -Q3
 jlist_opts :=
+lself_opts = -Y out/ao
+lself2_opts = -Y out/ao -WD+tipAdd -WD+tfsExport -WD+tfs
 
 jexport_extjava := aldor.stuff.Foo aldor.stuff.Bar
 jthrow_extjava  := aldor.stuff.ExnThrow
@@ -175,11 +180,15 @@ define aldor_args
 	-Fao=out/ao/$*.ao $(srcdir)/$*.as
 endef
 
+.PHONY: all-ap
+all-ap: $(patsubst %, out/ao/%.ap, $(_aotests))
 $(patsubst %, out/ap/%.ap, $(_aotests)): out/ap/%.ap: %.as
 	$(AM_V_ALDOR_AP)		\
 	mkdir -p $$(dirname $@);	\
 	$(aldorexedir)/aldor $(nfile) -Fap=$@ $(srcdir)/$*.as
 
+.PHONY: all-ao
+all-ao: $(patsubst %, out/ao/%.ao, $(_aotests))
 $(patsubst %, out/ao/%.ao, $(_aotests)): $(aldorexedir)/aldor
 $(patsubst %, out/ao/%.ao, $(_aotests)): out/ao/%.ao: %.as
 	$(AM_V_ALDOR)			\
@@ -191,6 +200,8 @@ $(patsubst %, out/ao/%.cmd, $(_aotests)): out/ao/%.cmd: %.as
 	mkdir -p $$(dirname $@); \
 	echo run '$(aldor_args)' > $@
 
+.PHONY: all-exe
+all-exe: $(patsubst %, %.exe, $(_xtests))
 $(patsubst %, %.exe, $(_xtests)): %.exe: %.o rtexns.o
 	$(AM_V_ALDOR_EXE)				\
 	rm -f $@;					\
@@ -199,7 +210,7 @@ $(patsubst %, %.exe, $(_xtests)): %.exe: %.o rtexns.o
 		      -Y$(foamdir)			\
 		      -Y$(foamlibdir)			\
 		      -Lfoamlib				\
-		      -Cargs="-Wconfig=$(aldorsrcdir)/aldor.conf -I$(aldorsrcdir) -Wv=2 $(UNICLFLAGS)" \
+		      -Cargs="-Wconfig=$(aldorsrcdir)/aldor.conf -I$(aldorsrcdir) $(UNICLFLAGS)" \
 		      -Fx=$@ out/ao/$*.ao rtexns.o
 
 #		      -Fmain=bobthebuilder.c		\
@@ -237,7 +248,6 @@ really-all: \
      $(patsubst %,%.o,$(_otests))  \
      $(patsubst %,%.exe,$(_xtests))
 
-
 .PHONY: all
 
 # 
@@ -245,7 +255,7 @@ really-all: \
 #
 mostlyclean: 
 	rm -rf $(builddir)/out
-	rm -f $(patsubst %,%.o,$(otests))
+	rm -f $(patsubst %,%.o,$(_otests))
 
 clean: mostlyclean
 distclean: clean 

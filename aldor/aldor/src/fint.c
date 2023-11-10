@@ -1433,7 +1433,7 @@ readDef(FintUnit unit)
 			progInfoLabels(p) = (FiProgPos *) NULL;
 
 		fintGetByte(progInfoRetType(p));	/* return type */
-		fintGetInt(fmt, progInfoMValFmt(p));
+		fintGetSInt(progInfoMValFmt(p));
 
 		fintGetSInt(progInfoBMask(p));		/* bit mask */
 		fintGetSInt(n);				/* skip size */

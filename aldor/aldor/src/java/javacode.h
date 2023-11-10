@@ -58,9 +58,10 @@ extern JavaCode jcFalse();
 
 extern JavaCode jcGenericId(JavaCode root, JavaCodeList genArgs);
 
-extern JavaCode jcClass(int modifiers, String comment, 
-		     JavaCode id, JavaCode superclass,
-		     JavaCodeList implList, JavaCodeList body);
+extern JavaCode jcClass(int modifiers, String comment,
+			JavaCodeList annotations,
+			JavaCode id, JavaCode superclass,
+			JavaCodeList implList, JavaCodeList body);
 
 extern JavaCode jcMethod(int modifiers, String comment, 
 			 JavaCode retnType,
@@ -87,6 +88,7 @@ extern JavaCode jcInitialisation(int modifiers, JavaCode type,
 extern JavaCode jcFile(JavaCode pkg, JavaCode name, JavaCodeList imports, JavaCode body);
 extern JavaCodeList jcCollectImports(JavaCode code);
 extern JavaCode jcDocumented(String comment, JavaCode code);
+extern JavaCode jcAnnotation(JavaCode annotationClass, JavaCodeList arguments);
 extern JavaCode jcComment(String comment);
 extern JavaCode jcImportedId(String pkg, String name);
 extern JavaCode jcImportedStaticId(String pkg, String clss, String name);

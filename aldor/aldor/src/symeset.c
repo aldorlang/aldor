@@ -51,6 +51,14 @@ symeSetIsEmpty(SymeSet symeSet)
 	return listNil(Syme) == symeSet->symes;
 }
 
+SymeSet
+symeSetSingleton(Syme syme)
+{
+	SymeList sl = listSingleton(Syme)(syme);
+	SymeSet  ss = symeSetFrSymes(sl);
+	return ss;
+}
+
 Bool
 symeSetMember(SymeSet symeSet, Syme syme)
 {

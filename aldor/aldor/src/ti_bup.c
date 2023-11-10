@@ -5,28 +5,28 @@
  * Copyright (c) 1990-2007 Aldor Software Organization Ltd (Aldor.org).
  *
  ***************************************************************************/
-
+#include "ablogic.h"
+#include "abpretty.h"
+#include "absub.h"
+#include "comsg.h"
 #include "debug.h"
 #include "fluid.h"
 #include "format.h"
+#include "lib.h"
+#include "sefo.h"
 #include "spesym.h"
 #include "stab.h"
 #include "store.h"
+#include "strops.h"
+#include "tfsat.h"
+#include "table.h"
 #include "ti_bup.h"
 #include "ti_tdn.h"
-#include "tinfer.h"
 #include "terror.h"
-#include "util.h"
-#include "sefo.h"
-#include "lib.h"
+#include "tinfer.h"
 #include "tposs.h"
-#include "tfsat.h"
-#include "absub.h"
-#include "ablogic.h"
-#include "abpretty.h"
-#include "comsg.h"
-#include "strops.h"
-#include "table.h"
+#include "util.h"
+
 
 
 /*****************************************************************************

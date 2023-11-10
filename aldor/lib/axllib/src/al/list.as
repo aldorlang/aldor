@@ -104,9 +104,6 @@ List(S: Type): ListCategory S with == FakedConditionalOperations S add {
         macro Rep == P;
         macro R   == Record(first: S, rest: Rep);
 
-	--!! Remove when cascaded imports can be inferred in the correct order.
-	import from S, 'first', 'rest';
-
         -- This local domain gives an untagged union of
         -- Records and Nil.
         P: with {

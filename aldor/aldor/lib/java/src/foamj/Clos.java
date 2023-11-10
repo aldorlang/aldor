@@ -58,6 +58,10 @@ public class Clos extends AbstractValue implements Word, Value {
         return this;
     }
 
+    public Object toPtr() {
+	return this;
+    }
+
     @Override
     public Value toValue() {
         return this;

@@ -1,7 +1,7 @@
 SUBDIRS = lang base arith datastruc util $(GMPDIR) lisp test
 
 @BUILD_JAVA_TRUE@JAVA_SUBDIRS = $(filter-out gmp, $(SUBDIRS))
-@BUILD_JAVA_TRUE@JAVA_TARGET = aldor.jar
+@BUILD_JAVA_TRUE@JAVA_TARGET = aldor.jar aldor-sources.jar
 
 if GMP
 GMPDIR = gmp

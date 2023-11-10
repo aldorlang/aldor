@@ -8,6 +8,6 @@ public class FoamHelper {
     }
 
     static public <T extends FoamClass> T instanceForClass(Class<T> clss) {
-	return contextForThread.get().instanceForClass(clss);
+	    return contextForThread.get().instanceForClass(clss);
     }
 }

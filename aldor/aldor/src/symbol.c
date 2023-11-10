@@ -66,3 +66,15 @@ symMap(void (*symfun)(Symbol))
 	for (tblITER(it,symbolPool); tblMORE(it); tblSTEP(it))
 		symfun(tblELT(it));
 }
+
+Hash
+symHashFn(Symbol sym)
+{
+	return symHash(sym);
+}
+
+Bool
+symEqual(Symbol s1, Symbol s2)
+{
+	return s1 == s2;
+}

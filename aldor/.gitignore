@@ -7,8 +7,16 @@
 /.metadata
 /workspace
 
+/.idea
+*.iml
+/out
+
 Makefile
 a.out
+
+/.idea
+*.iml
+/out/
 
 .#*
 \#*

@@ -19,12 +19,17 @@ docdomains      := $(asdomains) $(documentation)
 
 libsubdir	:= $(subst $(abs_libdir)/,,$(abs_builddir)/.)
 
+space=$(subst @,,@ @)
+
 include $(top_builddir)/lib/config.mk
 include $(top_srcdir)/mk/step.mk
+include $(top_srcdir)/mk/topsort.mk
 
-$(call am_define_steps,\
-	ALDOR AO2C AO2FM AR DEP FOAMJ JAR JAVAC AS2TEX \
-	ALDORTEST ALDORTESTBLD ALDORTESTEXE ALDORTESTJ)
+STEPS := ALDOR AO2C AO2FM AR DEP FOAMJ JAR JAR JAVAC SRCJAR
+QUIET_STEPS := ALDORTEST ALDORTESTJ
+
+$(call am_define_steps, $(STEPS))
+$(call am_define_steps_quiet, $(QUIET_STEPS))
 
 # Check the makefile
 
@@ -109,7 +114,7 @@ $(addsuffix .fm,$(alldomains)): %.fm: %.ao
 
 $(if $(_withdocs),$(patsubst %,$(librarydocdir)/tex/gen/%.tex,$(docdomains)),): $(librarydocdir)/tex/gen/%.tex: %.as
 	$(AM_V_AS2TEX)			\
-	  mkdir -p $(librarydocdir)/tex/gen;	\
+	  $(MKDIR_P) $(librarydocdir)/tex/gen;	\
 	  $(unixtooldir)/extract -mALDOC -o $@ $(srcdir)/$*.as
 
 .PHONY: $(addsuffix .gloop, $(alldomains))
@@ -179,7 +184,7 @@ endif
 
 ifneq ($(BUILD_JAVA),)
 ifneq ($(javalibrary),)
-_javalibrary = $(filter-out $(java_blacklist), $(javalibrary))
+_javalibrary = $(call topsort_list, $(filter-out $(java_blacklist), $(javalibrary)))
 
 $(patsubst %,aldorcode/%.java, $(_javalibrary)): aldorcode/%.java: %.ao
 	$(AM_V_FOAMJ)$(AM_DBG)	\
@@ -195,21 +200,33 @@ $(libraryname).jar: $(patsubst %,aldorcode/%.class, $(_javalibrary)) $(top_srcdi
 	$(AM_V_JAR) \
 	rm -f $@;	\
 	rm -rf jar;	\
-	mkdir jar;	\
-	jar cf $@ $(patsubst %,aldorcode/%*.class, $(_javalibrary))
+	$(MKDIR_P) jar;	\
+	jar cf $@ $(patsubst %,aldorcode/%*.class, $(_javalibrary));  \
 	for i in $(foreach i, $(SUBDIRS), $i/$(libraryname).jar); do \
 		(cd jar; jar xf ../$$i);				\
 		jar uf ../$@ -C jar .; done;				\
 	rm -rf jar
 
-all: $(libraryname).jar				\
+$(libraryname)-sources.jar: $(patsubst %,aldorcode/%.class, $(_javalibrary)) $(top_srcdir)/lib/buildlib.mk
+	$(AM_V_SRCJAR) \
+	rm -f $@;	\
+	rm -rf sources-jar;	\
+	$(MKDIR_P) sources-jar;	\
+	jar cf $@ $(patsubst %,aldorcode/%*.java, $(_javalibrary)); \
+	for i in $(foreach i, $(SUBDIRS), $i/$(libraryname)-sources.jar); do \
+		(cd jar; jar xf ../$$i);				\
+		jar uf ../$@ -C sources-jar .; done;				\
+	rm -rf jar
+
+all: $(libraryname).jar	$(libraryname)-sources.jar \
 	$(patsubst %,aldorcode/%.class,$(_javalibrary))
+
 endif
 endif
 
-aldorinterptests := $(patsubst %,%.aldortest-exec-interp,$(filter-out $(interp_test_blacklist), library))
+aldorinterptests := $(patsubst %,%-aldortest-exec-interp,$(filter-out $(interp_test_blacklist), library))
 
-$(aldorinterptests): %.aldortest-exec-interp: Makefile
+$(aldorinterptests): %-aldortest-exec-interp: Makefile
 	$(AM_V_ALDORTEST) \
          (if ! grep -q '^#if ALDORTEST' $(srcdir)/$*.as; then exit 0; fi; \
 	 echo "  ALDORTEST $*.as"; \
@@ -224,7 +241,7 @@ $(aldorinterptests): %.aldortest-exec-interp: Makefile
 
 CHECK_TEST_STATUS = \
 	 status=$$?; \
-	 exstatus=$(filter $*, $(XFAIL) $(XFAIL_$(subst $*.aldortest-exec-,,$@))); \
+	 exstatus=$(filter $*, $(XFAIL) $(XFAIL_$(subst $*-aldortest-exec-,,$@))); \
 	 if ! [ "$$exstatus" = "" ] ; then \
 	     if [ $$status = 0 ] ; then echo XPASS: $*; exit 1; else echo XFAIL: $*; exit 0; fi;  \
 	 fi;\
@@ -242,17 +259,18 @@ foamdir = $(abs_top_builddir)/aldor/lib/libfoam
 foamlibdir = $(abs_top_builddir)/aldor/lib/libfoamlib
 
 $(aldortestexecs): %.aldortest.exe: Makefile %.as
-	$(AM_V_ALDORTESTBLD) \
+	$(AM_V_ALDORTEST) \
          (if ! grep -q '^#if ALDORTEST' $(srcdir)/$*.as; then touch $@; chmod a+x $@; else \
-	   rm -f $@; \
-	   sed -n -e '/^#if ALDORTEST/,/^#endif/p' < $(srcdir)/$*.as > $*_test.as; \
-	   $(AM_DBG) $(aldorexedir)/aldor $(aldor_common_args) -Y$(aldorlibdir)/libfoam/al \
-		      -Ccc=$(aldortooldir)/unicl	\
-		      -Y$(foamdir) 		\
-		      -l$(libraryname) $(exec_test_runtime) $(patsubst %,-l%,$(librarydeps))  \
+	 rm -f $@; \
+	 echo "  ALDORTEST $*.as"; \
+	 sed -n -e '/^#if ALDORTEST/,/^#endif/p' < $(srcdir)/$*.as > $*_test.as; \
+	 $(AM_DBG) $(aldorexedir)/aldor $(aldor_common_args) -Y$(aldorlibdir)/libfoam/al \
+		        -Ccc=$(aldortooldir)/unicl	\
+		      -Y$(foamdir) -Y			\
+		      -Y$(foamlibdir) -l$(libraryname) $(exec_test_runtime) $(patsubst %,-l%,$(librarydeps))  \
 		        -Cargs="-Wconfig=$(aldorsrcdir)/aldor.conf -I$(aldorsrcdir) $(UNICLFLAGS)" \
 			-I$(top_srcdir)/lib/aldor/include -Y$(top_builddir)/lib/aldor/src \
-			-Y$(librarylibdir) -I$(libraryincdir) -fc -fx=$@ -DALDORTEST \
+			-Y$(librarylibdir) -I$(libraryincdir) -fc -fx=$@ -DALDORTEST  $($*_TESTAXLFLAGS) \
 			$*_test.as; fi)
 
 $(aldortest_run): %-aldortest-exec-exe: Makefile %.as %.aldortest.exe
@@ -263,23 +281,23 @@ $(aldortest_run): %-aldortest-exec-exe: Makefile %.as %.aldortest.exe
 
 ifneq ($(BUILD_JAVA),)
 ifneq ($(javalibrary),)
-aldortestjavas := $(patsubst %,%.aldortest-exec-java, \
+aldortestjavas := $(patsubst %,%-aldortest-exec-java, \
 			$(filter-out $(java_test_blacklist), $(_javalibrary)))
-
-$(aldortestjavas): %.aldortest-exec-java: Makefile %.as
+libclasspath := $(subst $(space),:,$(foreach lib,$(librarydeps) $(libraryname),$(top_builddir)/lib/$(lib)/src/$(lib).jar))
+$(aldortestjavas): %-aldortest-exec-java: Makefile %.as
 	$(AM_V_ALDORTESTJ) \
         (if grep -q '^#if ALDORTEST' $(srcdir)/$*.as; then \
-	 echo "   Running $*"; \
+	 echo "  ALDORTESTJ $*"; \
 	 sed -n -e '/^#if ALDORTEST/,/^#endif/p' < $(srcdir)/$*.as > $*_jtest.as; \
 	 $(AM_DBG) $(aldorexedir)/aldor $(aldor_common_args) -Y$(aldorlibdir)/libfoam/al \
 		-Y$(foamdir) -Y$(foamlibdir) -l$(libraryname) $(patsubst %,-l%,$(librarydeps)) \
 		-I$(top_srcdir)/lib/aldor/include -Y$(top_builddir)/lib/aldor/src \
-		-Y$(librarylibdir) -I$(libraryincdir) -DALDORTEST $$(cat $*_jtest.as | grep ^aldoroptions: | sed -e 's/aldoroptions://') \
+	-Y$(librarylibdir) -I$(libraryincdir) -DALDORTEST $$(cat $*_jtest.as | grep ^aldoroptions: | sed -e 's/aldoroptions://') \
 		-Fjava -Ffm -Jmain \
 		$($*_test_AXLFLAGS) \
 		$*_jtest.as; \
 	 javac -g -cp $(aldorlibdir)/java/src/foamj.jar aldorcode/$*_jtest.java; \
-	 java -cp .:$(aldorlibdir)/java/src/foamj.jar:$(aldorlibdir)/libfoam/al/foam.jar:$(top_builddir)/lib/$(libraryname)/src/$(libraryname).jar:$(top_builddir)/lib/aldor/src/aldor.jar aldorcode.$*_jtest; \
+	 java -cp .:$(aldorlibdir)/java/src/foamj.jar:$(aldorlibdir)/libfoam/al/foam.jar:$(libclasspath) aldorcode.$*_jtest; \
 	 $(CHECK_TEST_STATUS) \
 	 fi;)
 

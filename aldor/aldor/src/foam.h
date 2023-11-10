@@ -1622,6 +1622,11 @@ extern Bool		 foamIsControlFlow	(Foam);
 typedef Bool (*FoamTestFn)(Foam f);
 extern Foam foamFindFirst(FoamTestFn testFn, Foam foam);
 
+typedef Bool (*FoamTestEnvFn)(Foam f, AInt env);
+extern Foam foamFindFirstEnv(FoamTestEnvFn testFn, Foam foam, AInt env);
+
+extern Foam foamFindFirstTag(FoamTag tag, Foam foam);
+
 Foam foamCastIfNeeded(FoamTag wanted, FoamTag actual, Foam foam);
 
 

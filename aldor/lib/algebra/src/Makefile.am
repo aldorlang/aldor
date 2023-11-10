@@ -35,7 +35,7 @@ SUBDIRS =			\
 	test
 
 @BUILD_JAVA_TRUE@JAVA_SUBDIRS = $(SUBDIRS)
-@BUILD_JAVA_TRUE@JAVA_TARGET = algebra.jar
+@BUILD_JAVA_TRUE@JAVA_TARGET = algebra.jar algebra-sources.jar
 
 lib_LIBRARIES = libalgebra.a
 

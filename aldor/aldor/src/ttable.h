@@ -1,6 +1,7 @@
 #ifndef _TTABLE_H_
 #define _TTABLE_H_
 #include "cport.h"
+#include "list.h"
 #include "ostream.h"
 #include "table.h"
 
@@ -13,6 +14,8 @@ typedef struct tsetIter { TableIterator iter; } *ANY_TSetIter;
 		Table table;			\
 	} *TSet(Type);				\
 	typedef ANY_TSetIter Type##TSetIter;	\
+	typedef Hash (*Type##TSetHashFn)(Type);  \
+	typedef Bool (*Type##TSetEqFn)(Type, Type); \
 	TSetOpsStruct(Type);			\
 	extern struct TSetOpsStructName(Type)	\
                  const *TSetOps(Type)		\
@@ -27,10 +30,12 @@ struct TSetOpsStructName(Type) const *TSetOps(Type) =		\
 #endif
 
 #define tsetCreate(Type) (TSetOps(Type)->Create)
+#define tsetCreateCustom(Type) (TSetOps(Type)->CreateCustom)
 #define tsetEmpty(Type) (TSetOps(Type)->Create)
 #define tsetFree(Type) (TSetOps(Type)->Free)
 #define tsetSize(Type) (TSetOps(Type)->Size)
 #define tsetAdd(Type) (TSetOps(Type)->Add)
+#define tsetAddAll(Type) (TSetOps(Type)->AddAll)
 #define tsetRemove(Type) (TSetOps(Type)->Remove)
 #define tsetMember(Type) (TSetOps(Type)->Member)
 #define tsetIsEmpty(Type) (TSetOps(Type)->IsEmpty)
@@ -46,9 +51,11 @@ struct TSetOpsStructName(Type) const *TSetOps(Type) =		\
 #define TSetOpsStruct(Type)				\
 struct TSetOpsStructName(Type) {			\
 	TSet(Type) (*Create) (void);			\
+	TSet(Type) (*CreateCustom) (Type##TSetHashFn, Type##TSetEqFn); \
 	void 	   (*Free)   (TSet(Type));		\
 	Length 	   (*Size)   (TSet(Type));		\
 	void 	   (*Add)    (TSet(Type), Type);	\
+	void 	   (*AddAll) (TSet(Type), List(Type));	\
 	void 	   (*Remove) (TSet(Type), Type);	\
 	Bool 	   (*Member) (TSet(Type), Type);	\
 	Bool 	   (*IsEmpty)(TSet(Type));		\

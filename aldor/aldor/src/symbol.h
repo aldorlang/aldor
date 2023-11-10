@@ -42,6 +42,8 @@ extern Symbol	symProbe		(String, int options);
 extern void	symClear		(void);
 extern int	symPrint		(FILE *, Symbol);
 extern void	symMap			(void (*symfun)(Symbol));
+extern Hash	symHashFn		(Symbol);
+extern Bool	symEqual		(Symbol, Symbol);
 
 DECLARE_TSET(Symbol);
 

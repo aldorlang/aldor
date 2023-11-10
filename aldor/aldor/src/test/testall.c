@@ -67,6 +67,8 @@ main(int argc, char *argv[])
 	if (testShouldRun("retype")) retypeTest();
 	if (testShouldRun("genfoam")) genfoamTestSuite();
 	if (testShouldRun("tposs")) tpossTest();
+	if (testShouldRun("of_peep")) ofPeepTest();
+	if (testShouldRun("of_cprop")) ofCPropTest();
 
 	testIntEqual("fluidlevel", 0, fluidLevel);
 

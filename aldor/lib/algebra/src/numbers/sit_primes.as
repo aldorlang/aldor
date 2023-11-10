@@ -16,8 +16,12 @@ macro Z	== MachineInteger;
 
 PrimesSmall: PrimeTable == add {
 	import from Z;
+	local smallPrimes: () -> Array Z;
+	local primitiveRoots: () -> Array Z;
+
 	-- the first 1000 odd primes
-	primes:Array Z == [_
+	primes:Array Z == smallPrimes();
+	smallPrimes(): Array Z == [_
 		3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59,_
 		61,67,71,73,79,83,89,97,101,103,107,109,113,127,131,137,139,_
 		149,151,157,163,167,173,179,181,191,193,197,199,211,223,227,_
@@ -101,7 +105,11 @@ PrimesSmall: PrimeTable == add {
 		7901,7907,7919,7927];
 
 	-- primitive roots for the above primes
-	roots:Array Z == [
+	roots: Array Z == primitiveRoots();
+	-- small primes of the form 2^n k + 1 for n = 1,2,...,
+	fourier:Array Z == [];
+
+	primitiveRoots(): Array Z == [
 		2,2,3,2,2,3,2,5,2,3,2,6,3,5,2,2,2,2,7,5,3,2,3,5,_
 		2,5,2,6,3,3,2,3,2,2,6,5,2,5,2,2,2,19,5,2,3,2,3,2,6,3,7,7,6,3,_
 		5,2,6,5,3,3,2,5,17,10,2,3,10,2,2,3,7,6,2,2,5,2,5,3,21,2,2,7,5,_
@@ -138,8 +146,6 @@ PrimesSmall: PrimeTable == add {
 		3,7,2,2,2,13,13,2,3,5,2,6,2,5,2,7,2,3,2,3,17,6,2,3,5,2,3,5,7,_
 		10,2,3,2,3,3,5,2,12,2,3,5,2,3,2,2,2,7,3];
 
-	-- small primes of the form 2^n k + 1 for n = 1,2,...,
-	fourier:Array Z == [];
 }
 
 Primes13: PrimeTable == add {

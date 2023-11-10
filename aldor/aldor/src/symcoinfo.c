@@ -20,3 +20,9 @@ symCoInfoNew(void)
 
 	return info;
 }
+
+SymCoInfoVal
+symCoInfo(Symbol sym)
+{
+	return (&( ((union symCoInfoU *) symInfo(sym)))->val);
+}

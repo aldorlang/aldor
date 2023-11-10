@@ -1758,8 +1758,6 @@ foamToSExpr0(Foam foam)
 	Bool	isDecl;
 	long	li;
 
-	assert (foam);
-
 	if (!foam) 
 		return sxiFrString("Bad-Foam-0");
 	/*
@@ -2157,10 +2155,12 @@ foamGDeclIsExportOf(AInt tag, Foam foam)
 #define FOAM_PUT_INT(format, buf, i) { \
 	switch (format) {				\
 	case 0:	 bufPutSInt(buf, i); break;		\
-	case 1:	 bufPutByte(buf, i); break;		\
+	case 1:	 FOAM_CHK_INT(i); bufPutByte(buf, i); break;	\
 	default: break; /* Included in tag. */		\
 	}						\
 }
+
+#define FOAM_CHK_INT(i) {if (i > MAX_BYTE) bug("oops - int too large");}
 
 #define FOAM_GET_INT(format, buf, i) {			\
 	switch (format) {				\
@@ -3525,9 +3525,37 @@ foamFindFirst(FoamTestFn testFn, Foam foam)
 {
 	if (testFn(foam))
 		return foam;
-	
-	foamIter(foam, arg, { 
+
+	foamIter(foam, arg, {
 			Foam f = foamFindFirst(testFn, *arg);
+			if (f != 0)
+				return f;
+		});
+	return 0;
+}
+
+Foam
+foamFindFirstEnv(FoamTestEnvFn testFn, Foam foam, AInt env)
+{
+	if (testFn(foam, env))
+		return foam;
+
+	foamIter(foam, arg, {
+			Foam f = foamFindFirstEnv(testFn, *arg, env);
+			if (f != 0)
+				return f;
+		});
+	return 0;
+}
+
+Foam
+foamFindFirstTag(FoamTag tag, Foam foam)
+{
+	if (foamTag(foam) == tag)
+		return foam;
+
+	foamIter(foam, arg, {
+			Foam f = foamFindFirstTag(tag, *arg);
 			if (f != 0)
 				return f;
 		});
@@ -3676,9 +3704,9 @@ struct foam_info foamInfoTable[] = {
  {FOAM_Seq,	    0,"Seq",          FOAM_NARY, "C*", 	0},
  {FOAM_Values,	    0,"Values",       FOAM_NARY, "C*", 	0},
 #ifdef NEW_FORMATS
- {FOAM_Prog,	    0,"Prog",         FOAM_NARY, "XFtiwwwwC*", 	0}
+ {FOAM_Prog,	    0,"Prog",         FOAM_NARY, "XFtwwwwwC*", 	0}
 #else
- {FOAM_Prog,	    0,"Prog",         FOAM_NARY, "XFtiwwwwC*", 	0}
+ {FOAM_Prog,	    0,"Prog",         FOAM_NARY, "XFtwwwwwC*", 	0}
 #endif
 };
 

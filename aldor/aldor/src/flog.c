@@ -521,8 +521,6 @@ flogToSeq(FlowGraph flog, int * nLabels)
         newSeq  = flogToSeq0(flog, &lab);
         if (nLabels) *nLabels = lab + 1;
 
-	stoFree(flog);
-
         return newSeq;
 }
 
@@ -926,7 +924,7 @@ bbPrint(FILE *fout, BBlock bb, Bool extended)
 		cc += fprintf(fout, " %d", bbEntry(bb,i)->label);
 
 	cc += fprintf(fout, "\n");
-	if (extended) cc += foamPrint(fout, bb->code);
+	if (extended) cc += afprintf(fout, "%pFoam\n", bb->code);
 	if (extended) cc += dflowPrintBlockInfo(fout, bb);
 
 	return cc;

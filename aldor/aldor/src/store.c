@@ -2026,8 +2026,23 @@ stoGcMark(void)
 	return n;
 }
 
+static int lvl;
+local int stoGcMarkRange1(Pointer *lo, Pointer *hi, int check);
 local int
 stoGcMarkRange(Pointer *lo, Pointer *hi, int check)
+{
+	lvl++;
+	if (DEBUG(sto) && lvl % 3000 == 0) {
+		printf("Deep stack %d\n", lvl);
+	}
+
+	int ret = stoGcMarkRange1(lo, hi, check);
+	lvl--;
+	return ret;
+}
+
+local int
+stoGcMarkRange1(Pointer *lo, Pointer *hi, int check)
 {
 	Pointer		p, *pp, *plo, *phi, *hi0;
 	static int	pgno, qmno;
@@ -2141,7 +2156,7 @@ PagesOkay: {}
 	stoWatchMarkFrom(lo);
 	stoWatchMarkTo  (hi);
 
-TailRecursion:
+ TailRecursion:
 	hi  = (Pointer *) ptrCanon(hi);
 	hi0 = (Pointer *) ptrOff(((char *) hi), 1 - sizeof(char *));
 

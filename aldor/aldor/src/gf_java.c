@@ -963,7 +963,7 @@ gfjExportDecoder(TForm tf)
 	// This will be <object>.rep()
 	String globName = gfjDeclMethodName(symeString(tfIdSyme(tf)),
 					    stabForeignExportLocation(gen0State->stab, tf),
-					    "rep");;
+					    "rep");
 
 	Foam ddecl = javaSigNew(foamNewDecl(FOAM_Word, strCopy(""), emptyFormatSlot),
 				foamNewDecl(FOAM_NOp, strCopy(""), emptyFormatSlot),

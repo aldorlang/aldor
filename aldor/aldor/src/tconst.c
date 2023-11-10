@@ -146,7 +146,7 @@ tcFree(TConst tc)
 		listPop(TConst, tc, tcList, tcEq);
 		assert(l0 - 1 == listLength(TConst)(tcList));
 	}
-
+	tcDEBUG(dbOut, "tcFree: %d %pTForm\n", tc->serial, tcOwner(tc));
 	tcCount -= 1;
 	stoFree((Pointer) tc);
 }
@@ -162,6 +162,7 @@ tcPush(TConst tc)
 			tcFree(tc);
 			return;
 		}
+	tcDEBUG(dbOut, "tcPush: %pTForm owns %pTConst\n", owner, tc);
 	listPush(TConst, tc, tfConsts(owner));
 }
 
@@ -237,6 +238,7 @@ tcNew(TConstTag tag, TForm owner, AbLogic known, AbSyn id, AbSyn ab0, Length arg
 		assert(owner != tc->owner);
 		tc->owner = owner;
 	}
+	tcDEBUG(dbOut, "tcNewSat: %pTForm owns %pTConst\n", tcOwner(tc), tc);
 	tcPush(tc);
 }
 
@@ -259,8 +261,11 @@ tcMove(TForm ntf, TForm otf)
 
 	tfFollow(ntf);
 
-	for (tcl = tfConsts(otf); tcl; tcl = cdr(tcl))
+	for (tcl = tfConsts(otf); tcl; tcl = cdr(tcl)) {
+		tcDEBUG(dbOut, "tcMove: Moving %d from %pTForm to %pTForm\n",
+			tcSerial(car(tcl)), otf, ntf);
 		tcOwner(car(tcl)) = ntf;
+	}
 
 	tfConsts(ntf) = listNConcat(TConst)(tfConsts(ntf), tfConsts(otf));
 	tfConsts(otf) = listNil(TConst);
@@ -308,7 +313,7 @@ tcCheck(TConst tc)
 	}
 
 	listPop(TConst, tc, tcStack, tcEq);
-
+	tcDEBUG(dbOut, "tcCheck: %pTForm %pTConst %oBool\n", tcOwner(tc), tc, result);
 	if (!result) {
 		if (DEBUG(tc)) {
 			tcPrint(dbOut, tc);

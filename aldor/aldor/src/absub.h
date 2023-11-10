@@ -57,6 +57,8 @@ struct abSub {
 
 extern AbSub		absNew			(Stab);
 extern AbSub		absFail			(void);
+extern int		absOStreamWrite		(OStream, AbSub);
+extern int		abbOStreamWrite		(OStream, AbBind);
 extern int		absPrint		(FILE *, AbSub);
 extern int		absPrintDb		(AbSub);
 extern AbSub		absRefer		(AbSub);

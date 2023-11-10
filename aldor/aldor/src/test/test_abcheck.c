@@ -1,10 +1,10 @@
-#include "axlobs.h"
-#include "abquick.h"
-#include "format.h"
-#include "testlib.h"
-#include "strops.h"
 #include "abcheck.h"
+#include "abquick.h"
+#include "axlobs.h"
 #include "comsg.h"
+#include "format.h"
+#include "strops.h"
+#include "testlib.h"
 
 local void testWithDeclarations(void);
 

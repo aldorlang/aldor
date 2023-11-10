@@ -29,6 +29,7 @@
 #include "comsg.h"
 #include "strops.h"
 #include "table.h"
+#include "ti_top.h"
 
 local Foam         gen0AddBody1           (AbSyn, Stab, AbSyn);
 local void         gen0AddImportedDomain  (TForm, Foam, AInt);
@@ -2150,6 +2151,7 @@ gen0RtSefoHash(Sefo sf, Sefo osf)
 	sf  = gen0EqualMods(sf);
 	osf = gen0EqualMods(osf);
 
+	tiTopFns()->tiSefo(stabFile(), sf);
 	tf = gen0AbType(sf);
 
 	if (tf && !tfSatDom(tf) && !tfSatCat(tf))

@@ -37,8 +37,7 @@ extern Bool		tfSatFailedBadArgType	 (SatMask);
 extern Bool		tfSatFailedDifferentArity(SatMask);
 
 extern Length		tfSatParN		(SatMask);
-extern Length		tfSatArgN		(AbSyn, Length, AbSynGetter,
-						 Length, TForm);
+extern Length		tfSatArgN		(AbSyn, Length, AbSynGetter, Length, TForm);
 
 extern AbEmbed		tfSatAbEmbed		(SatMask);
 extern AbEmbed		tfSatEmbedType		(TForm, TForm);

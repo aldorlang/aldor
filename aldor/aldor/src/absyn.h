@@ -941,6 +941,10 @@ extern struct ab_info	abInfoTable[];
 			abIsTheId((op), ssymRecord)	||	\
 			abIsTheId((op), ssymRawRecord)		\
 		)
+enum abEqualValue { AbEqual_True, AbEqual_False, AbEqual_Struct };
+typedef Enum(abEqualValue) AbEqualValue;
+
+typedef AbEqualValue (*AbEqualFn)(void *, AbSyn, AbSyn);
 
 /*
  * :: General operations
@@ -963,6 +967,7 @@ extern AbSyn	abMarkAsMacroExpanded	(AbSyn);
 extern Bool	abContains		(AbSyn, AbSyn);
 extern Bool	abEqual			(AbSyn, AbSyn);
 extern Bool	abEqualModDeclares	(AbSyn, AbSyn);
+extern Bool	abCompareModDeclares	(AbEqualFn, void *, AbSyn, AbSyn);
 extern Hash	abHash			(AbSyn);
 extern Hash	abHashSefo		(AbSyn);
 extern Hash	abHashList		(AbSynList);

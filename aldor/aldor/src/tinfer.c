@@ -6,32 +6,34 @@
  *
  ***************************************************************************/
 
+#include "ablogic.h"
+#include "abpretty.h"
+#include "comsg.h"
 #include "debug.h"
 #include "fluid.h"
 #include "format.h"
+#include "lib.h"
+
 #include "opsys.h"
+#include "sefo.h"
 #include "spesym.h"
 #include "stab.h"
 #include "store.h"
+#include "strops.h"
+#include "syme.h"
+#include "table.h"
+#include "tconst.h"
 #include "terror.h"
 #include "tfcond.h"
+#include "tfsat.h"
 #include "ti_bup.h"
 #include "ti_sef.h"
 #include "ti_tdn.h"
 #include "ti_top.h"
 #include "tinfer.h"
-#include "syme.h"
-#include "sefo.h"
-#include "lib.h"
-#include "tqual.h"
-#include "tconst.h"
 #include "tposs.h"
-#include "tfsat.h"
-#include "ablogic.h"
-#include "abpretty.h"
-#include "comsg.h"
-#include "strops.h"
-#include "table.h"
+#include "tqual.h"
+
 
 /*****************************************************************************
  *

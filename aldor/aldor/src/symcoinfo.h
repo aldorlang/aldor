@@ -7,22 +7,24 @@
 /*
  * Symbol information for fast S-Expression IO of compiler types.
  */
-union symCoInfoU {
-	struct {
-		union {
-			Pointer	generic;
-			AbSyn	macro;
-		}     phaseVal;		/* phase varying info */
+typedef struct {
+	union {
+		Pointer	generic;
+		AbSyn	macro;
+	}     phaseVal;		/* phase varying info */
+	AbSynTag abTagVal;
+	FoamTag foamTagVal;
+} symCoInfoV, *SymCoInfoVal;
 
-		AbSynTag abTagVal;
-		FoamTag foamTagVal;
-	} val;
-	MostAlignedType 	align;	/* Force alignment. */
+union symCoInfoU {
+	symCoInfoV	val;
+	MostAlignedType align;	/* Force alignment. */
 };
 
 extern  union symCoInfoU * symCoInfoNew  (void);
 
-#define symCoInfo(sym)     (&(((union symCoInfoU *) symInfo(sym))->val))
+extern SymCoInfoVal symCoInfo(Symbol sym);
+
 #define symCoInfoInit(sym) (symInfo(sym) = &(symCoInfoNew()->align))
 
 #endif

@@ -17,6 +17,9 @@ typedef Pointer (*PointerListEltFun)    (Pointer);
 typedef Bool    (*PointerListEltEqFun)  (Pointer, Pointer);
 typedef int     (*PointerListEltPrFun)  (FILE *, Pointer);
 typedef Bool	(*PointerListEltSatFun)	(Pointer);
+typedef Bool	(*PointerListPredicate)	(Pointer, void *);
+
+local Bool ptrlistMember(PointerList l, Pointer x, PointerListEltEqFun eq);
 
 local Bool
 ptrEqEqual(PointerListEltEqFun eq, Pointer a, Pointer b)
@@ -135,6 +138,34 @@ ptrlistFind(PointerList l, Pointer x, PointerListEltEqFun eq, int *pos)
 		}
 	*pos = -1;
 	return 0;
+}
+
+/* Return the first element matching the supplied predicate */
+local Pointer
+ptrlistMatch(PointerList l, void *p, PointerListPredicate pred, int *posn)
+{
+	int     i;
+	for (i = 0; l; l = l->rest, i++) {
+		if ((*pred)(l->first, p)) {
+			*posn = i;
+			return l->first;
+		}
+	}
+	return 0;
+}
+
+/* Returns the elements matching the supplied predicate */
+local PointerList
+ptrlistMatchAll(PointerList l, void *p, PointerListPredicate pred)
+{
+	PointerList res = listNil(Pointer);
+	int     i;
+	for (i = 0; l; l = l->rest, i++)
+		if ((*pred)(l->first, p)) {
+			res = listCons(Pointer)(l->first, res);
+		}
+
+	return listNReverse(Pointer)(res);
 }
 
 /*
@@ -453,6 +484,49 @@ ptrlistContainsAllq(PointerList l1, PointerList l2)
 }
 
 /*
+ * Return true if l1 contains any element in l2
+ */
+local Bool
+ptrlistContainsAnyq(PointerList l1, PointerList l2)
+{
+	while (l2 != listNil(Pointer)) {
+		if (ptrlistPosq(l1, car(l2)) != -1)
+			return true;
+		l2 = cdr(l2);
+	}
+	return false;
+}
+
+
+/*
+ * Return true if l1 contains every element in l2 (equal test)
+ */
+local Bool
+ptrlistContainsAll(PointerList l1, PointerList l2, Bool (*eq)(Pointer, Pointer))
+{
+	while (l2 != listNil(Pointer)) {
+		if (!ptrlistMember(l1, car(l2), eq))
+			return false;
+		l2 = cdr(l2);
+	}
+	return true;
+}
+
+/*
+ * Return true if l1 contains any element in l2 (equal test)
+ */
+local Bool
+ptrlistContainsAny(PointerList l1, PointerList l2, Bool (*eq)(Pointer, Pointer))
+{
+	while (l2 != listNil(Pointer)) {
+		if (ptrlistMember(l1, car(l2), eq))
+			return true;
+		l2 = cdr(l2);
+	}
+	return false;
+}
+
+/*
  * Return the position of e in l using `eq' as the equality test.
  * If e is not there, -1 is returned.   
  */
@@ -579,6 +653,8 @@ const struct ListOpsStructName(Pointer) ptrlistOps = {
 	ptrlistListNull,
 	ptrlistEqual,
 	ptrlistFind,
+	ptrlistMatch,
+	ptrlistMatchAll,
 	ptrlistFreeCons,                                
 	ptrlistFree,
 	ptrlistFreeTo,
@@ -605,6 +681,9 @@ const struct ListOpsStructName(Pointer) ptrlistOps = {
 	ptrlistMemq,
 	ptrlistMember,
 	ptrlistContainsAllq,
+	ptrlistContainsAnyq,
+	ptrlistContainsAll,
+	ptrlistContainsAny,
 	ptrlistPosq,
 	ptrlistPosition,                                
 	ptrlistNRemove,

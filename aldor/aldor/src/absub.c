@@ -120,6 +120,28 @@ absPrint(FILE *fout, AbSub sigma)
 }
 
 int
+absOStreamWrite(OStream os, AbSub sigma)
+{
+	int c = 0;
+	if (sigma == absFail()) {
+		return ostreamPrintf(os, "{ FAIL }");
+	}
+
+	c += ostreamPrintf(os, "{(%d) ", sigma->serialNo);
+	c += listFormat(AbBind)(os, "AbBind", sigma->l);
+	c += ostreamPrintf(os, "}");
+	return c;
+}
+
+int
+abbOStreamWrite(OStream os, AbBind bind)
+{
+	int c = 0;
+	c += ostreamPrintf(os, "%pSyme -> %pAbSyn", bind->key, bind->val);
+	return c;
+}
+
+int
 absPrintDb(AbSub sigma)
 {
 	int	rc = absPrint(dbOut, sigma);
@@ -208,11 +230,15 @@ absLookup(Syme syme, Sefo fail, AbSub sigma)
 {
 	AbBindList	l0;
 
-	for (l0 = sigma->l; l0; l0 = cdr(l0))
-		/** if (syme == car(l0)->key) **/ /** commented by C.O. for ALMA usage**/
-		    if (symeEqual(syme, car(l0)->key)) /** code introduced by C.O. for ALMA usage**/
+	for (l0 = sigma->l; l0; l0 = cdr(l0)) {
+		if (syme == car(l0)->key) {
 			return car(l0)->val;
-
+		}
+	}
+	for (l0 = sigma->l; l0; l0 = cdr(l0)) {
+		    if (symeEqual(syme, car(l0)->key))
+			return car(l0)->val;
+	}
 	return fail;
 }
 

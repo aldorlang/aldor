@@ -13,16 +13,16 @@
  */
 
 #include "axlobs.h"
+#include "ablogic.h"
 #include "debug.h"
 #include "format.h"
 #include "spesym.h"
 #include "store.h"
-#include "terror.h"
 #include "syme.h"
 #include "tconst.h"
-#include "tposs.h"
+#include "terror.h"
 #include "tfsat.h"
-#include "ablogic.h"
+#include "tposs.h"
 
 /*
  *   Each node is given a set of possible meanings.
@@ -88,14 +88,8 @@ tpossFrSymes(SymeList symes)
 	TPoss	tp = tpossEmpty();
 	for (; symes; symes = cdr(symes))
 	{
-/*
-		if (car(symes)->type != NULL)
-		{
-*/
-			tpossAdd1(tp, symeType(car(symes)));
-/*
-		}
-*/
+		Syme syme = car(symes);
+		tpossAdd1(tp, symeType(syme));
 	}
 	return tp;
 }
@@ -538,3 +532,8 @@ tpossIsHaving(TPoss tp, TFormPredicate pred)
 	return false;
 }
 
+TForm
+tpossELT_(TPossIterator *ip)
+{
+	return car(ip->possl);
+}
