@@ -808,7 +808,8 @@ gc0AddExtraModules()
 {
 	Foam decl;
 	CCode cco;
-	decl = foamNewGDecl(FOAM_Clos, "rtexns", 
+	decl = foamNewGDecl(FOAM_Clos, strCopy("rtexns"),
+			    FOAM_Nil,
 			    emptyFormatSlot, 
 			    FOAM_GDecl_Import,
 			    FOAM_Proto_Init);

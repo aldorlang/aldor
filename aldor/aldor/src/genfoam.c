@@ -394,11 +394,13 @@ generateFoam(Stab stab0, AbSyn absyn, String initName)
 	/* Declare the globals for the top-level prog. */
 
 	/* Once called, never again */
-        decl = foamNewGDecl(FOAM_Clos, strCopy(gen0ProgName), emptyFormatSlot,
+        decl = foamNewGDecl(FOAM_Clos, strCopy(gen0ProgName), FOAM_Nil,
+			    emptyFormatSlot,
 			    FOAM_GDecl_Export, FOAM_Proto_Init);
 	gloInitIdx = gen0AddGlobal(decl);
 
-        decl = foamNewGDecl(FOAM_Clos, strCopy("noOperation"), emptyFormatSlot,
+        decl = foamNewGDecl(FOAM_Clos, strCopy("noOperation"), FOAM_Nil,
+			    emptyFormatSlot,
 			    FOAM_GDecl_Import,FOAM_Proto_Foam);
 	gloNOpIdx = gen0AddGlobal(decl);
 
@@ -422,6 +424,7 @@ generateFoam(Stab stab0, AbSyn absyn, String initName)
 
 	if (!genIsRuntime()) {
 		decl = foamNewGDecl(FOAM_Clos, gen0InitialiserName("runtime"),
+				    FOAM_Nil,
 				    emptyFormatSlot,
 				    FOAM_GDecl_Import,
 				    FOAM_Proto_Init);
@@ -1011,10 +1014,10 @@ gen0ExportToBuiltin(AbSyn absyn)
 	
 	rtype = tfIsMap(tf) ? gen0Type(tfMapRet(tf), NULL) : FOAM_Nil;
 	decl = foamNewGDecl(gen0Type(tf, NULL), strCopy(symeString(syme)),
+			    rtype,
 			    emptyFormatSlot,
 			    FOAM_GDecl_Export,
 			    FOAM_Proto_Foam);
-	foamGDeclSetRType(decl, rtype);
 	
 	index = gen0AddGlobal(decl);
 	
@@ -1065,8 +1068,8 @@ gen0ExportToC(AbSyn absyn)
 
 	/*!! Assumes export to C is exporting a function! */
 	decl = foamNewGDecl(FOAM_Clos, strCopy(symeString(syme)),
-			    init, FOAM_GDecl_Export, FOAM_Proto_C);
-	foamGDeclSetRType(decl, rtype);
+			    rtype, init, FOAM_GDecl_Export,
+			    FOAM_Proto_C);
 
 	index = gen0AddGlobal(decl);
 	gen0BuiltinExports = listCons(AInt)(index, gen0BuiltinExports);
@@ -1108,9 +1111,9 @@ genForeignImport(AbSyn absyn)
 		return (Foam) NULL;
 
 	/* Global declaration */
-	decl = foamNewGDecl(FOAM_Word, strCopy(forg->file), emptyFormatSlot,
+	decl = foamNewGDecl(FOAM_Word, strCopy(forg->file),
+			    FOAM_Nil, emptyFormatSlot,
 			    FOAM_GDecl_Import, FOAM_Proto_Include);
-	foamGDeclSetRType(decl, FOAM_Nil);
 
 	gen0AddGlobal(decl);
 	return (Foam)NULL;
@@ -5704,7 +5707,7 @@ gen0VarsLex(Syme syme, Stab stab)
 
 	if (fintMode == FINT_LOOP &&
 	    gen0State->tag == GF_File && stabLevelNo(stab) == 1) {
-		decl = foamNewGDecl(type, name, fmtSlot,
+		decl = foamNewGDecl(type, name, FOAM_Nil, fmtSlot,
 				    FOAM_GDecl_Export, FOAM_Proto_Foam);
 		decl->foamDecl.id = gen0GlobalName(gen0FileName, syme);
 		isGlobal = true;
@@ -5819,7 +5822,7 @@ gen0VarsExport(Syme syme, Stab stab)
 		fmtSlot = gen0RecordFormatNumber(symeType(syme));
 
 	if (gen0State->tag == GF_File && stabLevelNo(stab) == 1) {
-		decl = foamNewGDecl(type, NULL, fmtSlot,
+		decl = foamNewGDecl(type, NULL, FOAM_Nil, fmtSlot,
 				    FOAM_GDecl_Export, FOAM_Proto_Foam);
 		decl->foamGDecl.id = gen0GlobalName(gen0FileName, syme);
 		index = gen0AddGlobal(decl);
@@ -5896,9 +5899,8 @@ gen0VarsForeign(Syme syme)
 	else
 		fmtSlot = emptyFormatSlot;
 
-	decl = foamNewGDecl(type, name, fmtSlot,
+	decl = foamNewGDecl(type, name, rtype, fmtSlot,
 			    FOAM_GDecl_Import, forg->protocol);
-	foamGDeclSetRType(decl, rtype);
 
 	index = gen0AddGlobal(decl);
 
@@ -7796,7 +7798,8 @@ gen0BuiltinImport(String fun, String lib)
 	for(i=0, l = gen0GlobalList; l; i++, l = cdr(l))
 		if (strEqual(fun, car(l)->foamGDecl.id))
 			return (AInt) (gen0NumGlobals - i - 1);
-	decl = foamNewGDecl(FOAM_Clos, strCopy(fun), emptyFormatSlot,
+	decl = foamNewGDecl(FOAM_Clos, strCopy(fun), FOAM_Nil,
+			    emptyFormatSlot,
 			    FOAM_GDecl_Import, FOAM_Proto_Foam);
 	assert(gen0GetRuntimeCallInfo(decl));
 	return (AInt) gen0AddGlobal(decl);

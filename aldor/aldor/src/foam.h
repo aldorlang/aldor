@@ -681,10 +681,9 @@ struct foamClos {
 	Foam                    prog;
 };
 
-#define foamNewGDecl(ty,id,f,pr,dir) foamNew(FOAM_GDecl,6,(AInt)(ty),id, \
-					     (AInt)FOAM_Nil,f, \
+#define foamNewGDecl(ty,id,rt,f,pr,dir) foamNew(FOAM_GDecl,6,(AInt)(ty),id, \
+					     rt,f, \
 					     (AInt)(pr),(AInt)(dir))
-#define foamGDeclSetRType(fm,ty)	((fm)->foamGDecl.rtype = (ty))
 extern Bool foamGDeclIsImport(Foam);
 extern Bool foamGDeclIsExport(Foam);
 extern Bool foamGDeclIsExportOf(AInt, Foam);

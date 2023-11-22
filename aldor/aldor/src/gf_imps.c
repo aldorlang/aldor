@@ -811,6 +811,7 @@ gen0StdLazyRef(FoamSig sig)
 	
 	decl = foamNewGDecl(FOAM_Clos, 
 			    gen0StdLazyName(sig->inArgs, sig->retType, sig->nRets),
+			    FOAM_Nil,
 			    emptyFormatSlot,
 			    FOAM_GDecl_Import, FOAM_Proto_Foam);
 	return foamNewGlo(gen0AddGlobal(decl));
@@ -887,6 +888,7 @@ gen0StdGetsCreate1(AIntList args, FoamTag retType, int nRets)
 	foam = foamNewClos(foamNewEnv(int0), foamCopy(sig->ref));
 	name = gen0StdLazyName(args, retType, nRets);
 	decl = foamNewGDecl(FOAM_Clos, name, emptyFormatSlot,
+			    FOAM_Nil,
 			    FOAM_GDecl_Export, FOAM_Proto_Foam);
 	idx = gen0AddGlobal(decl);
 	gen0AddStmt(foamNewSet(foamNewGlo(idx), foam), NULL);
@@ -1149,7 +1151,7 @@ gen0GVectIssueFn(String libName, AIntList globs)
 	/* Make a call to the initialiser */
 	decl = foamNewGDecl(FOAM_Clos, 
 			    gen0InitialiserName(libName),
-			    emptyFormatSlot,
+			    FOAM_Nil, emptyFormatSlot,
 			    FOAM_GDecl_Import, FOAM_Proto_Init);
 	ini = foamNewEmpty(FOAM_CCall, 2);
 	ini->foamCCall.type = FOAM_NOp;
@@ -1196,6 +1198,7 @@ gen0GlobalRef(Lib lib, Syme syme)
 	decl = foamNewGDecl(gen0Type(symeType(syme), NULL),
 			    gen0GlobalName(libGetFileId(lib),
 					   syme),
+			    FOAM_Nil,
 			    emptyFormatSlot,
 			    FOAM_GDecl_Import, FOAM_Proto_Foam);
 	globNo = gen0AddGlobal(decl);
