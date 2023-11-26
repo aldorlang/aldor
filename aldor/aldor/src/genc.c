@@ -6,6 +6,8 @@
  *
  ****************************************************************************/
 
+#include "bigint.h"
+#include "comsg.h"
 #include "compcfg.h"
 #include "debug.h"
 #include "fluid.h"
@@ -16,11 +18,8 @@
 #include "of_rrfmt.h"
 #include "optfoam.h"
 #include "store.h"
-#include "util.h"
 #include "syme.h"
-#include "comsg.h"
-#include "bigint.h"
-
+#include "util.h"
 
 /*
  * The following naming conventions are used in this file:
