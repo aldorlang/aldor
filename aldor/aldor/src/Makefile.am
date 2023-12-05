@@ -159,6 +159,7 @@ libstruct_a_SOURCES =	\
 	compcfg.c	\
 	comsg.c		\
 	comsgdb.c	\
+	csig.c		\
 	depdag.c	\
 	dflow.c		\
 	doc.c		\

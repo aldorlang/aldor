@@ -179,12 +179,12 @@ libstruct_a_LIBADD =
 am_libstruct_a_OBJECTS = ablogic.$(OBJEXT) abpretty.$(OBJEXT) \
 	absub.$(OBJEXT) absyn.$(OBJEXT) annabs.$(OBJEXT) \
 	archive.$(OBJEXT) axlobs.$(OBJEXT) compcfg.$(OBJEXT) \
-	comsg.$(OBJEXT) comsgdb.$(OBJEXT) depdag.$(OBJEXT) \
-	dflow.$(OBJEXT) doc.$(OBJEXT) fbox.$(OBJEXT) fint.$(OBJEXT) \
-	flog.$(OBJEXT) foam.$(OBJEXT) foamsig.$(OBJEXT) forg.$(OBJEXT) \
-	freevar.$(OBJEXT) formatters.$(OBJEXT) ftype.$(OBJEXT) \
-	gf_syme.$(OBJEXT) javasig.$(OBJEXT) lib.$(OBJEXT) \
-	loops.$(OBJEXT) output.$(OBJEXT) sefo.$(OBJEXT) \
+	comsg.$(OBJEXT) comsgdb.$(OBJEXT) csig.$(OBJEXT) \
+	depdag.$(OBJEXT) dflow.$(OBJEXT) doc.$(OBJEXT) fbox.$(OBJEXT) \
+	fint.$(OBJEXT) flog.$(OBJEXT) foam.$(OBJEXT) foamsig.$(OBJEXT) \
+	forg.$(OBJEXT) freevar.$(OBJEXT) formatters.$(OBJEXT) \
+	ftype.$(OBJEXT) gf_syme.$(OBJEXT) javasig.$(OBJEXT) \
+	lib.$(OBJEXT) loops.$(OBJEXT) output.$(OBJEXT) sefo.$(OBJEXT) \
 	simpl.$(OBJEXT) spesym.$(OBJEXT) srcline.$(OBJEXT) \
 	stab.$(OBJEXT) syme.$(OBJEXT) symeset.$(OBJEXT) \
 	symcoinfo.$(OBJEXT) tconst.$(OBJEXT) tfcond.$(OBJEXT) \
@@ -324,7 +324,7 @@ am__depfiles_remade = ./$(DEPDIR)/abcheck.Po ./$(DEPDIR)/ablogic.Po \
 	./$(DEPDIR)/ccomp.Po ./$(DEPDIR)/cfgfile.Po \
 	./$(DEPDIR)/compcfg.Po ./$(DEPDIR)/compopt.Po \
 	./$(DEPDIR)/comsg.Po ./$(DEPDIR)/comsgdb.Po \
-	./$(DEPDIR)/cport.Po ./$(DEPDIR)/debug.Po \
+	./$(DEPDIR)/cport.Po ./$(DEPDIR)/csig.Po ./$(DEPDIR)/debug.Po \
 	./$(DEPDIR)/depdag.Po ./$(DEPDIR)/dflow.Po ./$(DEPDIR)/dnf.Po \
 	./$(DEPDIR)/doc.Po ./$(DEPDIR)/dword.Po ./$(DEPDIR)/emit.Po \
 	./$(DEPDIR)/errorset.Po ./$(DEPDIR)/fbox.Po \
@@ -1008,6 +1008,7 @@ libstruct_a_SOURCES = \
 	compcfg.c	\
 	comsg.c		\
 	comsgdb.c	\
+	csig.c		\
 	depdag.c	\
 	dflow.c		\
 	doc.c		\
@@ -1521,6 +1522,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/comsg.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/comsgdb.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cport.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/csig.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/debug.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/depdag.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dflow.Po@am__quote@ # am--include-marker
@@ -3267,6 +3269,7 @@ distclean: distclean-am
 	-rm -f ./$(DEPDIR)/comsg.Po
 	-rm -f ./$(DEPDIR)/comsgdb.Po
 	-rm -f ./$(DEPDIR)/cport.Po
+	-rm -f ./$(DEPDIR)/csig.Po
 	-rm -f ./$(DEPDIR)/debug.Po
 	-rm -f ./$(DEPDIR)/depdag.Po
 	-rm -f ./$(DEPDIR)/dflow.Po
@@ -3548,6 +3551,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -f ./$(DEPDIR)/comsg.Po
 	-rm -f ./$(DEPDIR)/comsgdb.Po
 	-rm -f ./$(DEPDIR)/cport.Po
+	-rm -f ./$(DEPDIR)/csig.Po
 	-rm -f ./$(DEPDIR)/debug.Po
 	-rm -f ./$(DEPDIR)/depdag.Po
 	-rm -f ./$(DEPDIR)/dflow.Po
