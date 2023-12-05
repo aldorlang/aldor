@@ -1075,6 +1075,10 @@ foamAuditDecl(Foam decl)
 		if (fmt >= faNumFormats)
 			foamAuditBadDecl(decl);
 		break;
+	case FOAM_CObj:
+		if (fmt >= faNumFormats)
+			foamAuditBadDecl(decl);
+		break;
 	case FOAM_Rec:
 		/*
 		  TODO: Fix implicit exports so that they don't
@@ -3659,6 +3663,7 @@ struct foam_info foamInfoTable[] = {
  {FOAM_MFmt,	    0,"MFmt",         2,        "iC", 	0},
  {FOAM_RRFmt,	    0,"RRFmt",        1,        "C", 	0},
  {FOAM_JavaObj,	    0,"JavaObj",      0,        "", 	0},
+ {FOAM_CObj,	    0,"CObj",	      0,        "", 	0},
 
 /* ========> FFO_ORIGIN (start of multi-format instructions) <======== */
 
@@ -3749,6 +3754,7 @@ struct foamDDecl_info	foamDDeclInfoTable[] = {
  { FOAM_DDecl_Global, 		0, "Globals" },  
  { FOAM_DDecl_FortranSig,       0, "FortranSig" },
  { FOAM_DDecl_CSig,             0, "CSig" },
+ { FOAM_DDecl_CType,             0, "CType" },
  { FOAM_DDecl_JavaSig,          0, "JavaSig" },
  { FOAM_DDecl_JavaClass,        0, "JavaClass" },
 };

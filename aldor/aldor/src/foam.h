@@ -75,6 +75,7 @@ enum foamTag {
 			FOAM_MFmt,	 /* Indicate multiple values */
 			FOAM_RRFmt,	 /* Raw record (dynamic) format */
 	                FOAM_JavaObj,    /* Java things */
+	                FOAM_CObj,      /* C things */
 
 		FOAM_CONTROL_LIMIT,
 
@@ -467,6 +468,7 @@ enum foamDDeclTag {
 	FOAM_DDecl_Global,
 	FOAM_DDecl_FortranSig,
 	FOAM_DDecl_CSig,
+	FOAM_DDecl_CType,
 	FOAM_DDecl_JavaSig,
 	FOAM_DDecl_JavaClass,
    FOAM_DDECL_LIMIT
