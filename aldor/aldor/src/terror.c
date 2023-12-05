@@ -970,7 +970,6 @@ terrorCoerceTo(Buffer obuf, AbSyn ab, TForm type)
 {
  	String fmt;
 
-	assert(abState(ab->abCoerceTo.expr) == AB_State_HasPoss); 
 	fmt = comsgString(ALDOR_E_TinNoGoodOp);
 	bufPrintf(obuf, fmt, "coerce");
 
