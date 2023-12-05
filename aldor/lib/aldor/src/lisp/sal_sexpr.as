@@ -505,72 +505,72 @@ test(): () ==
     assertEquals(foo, retract sxMaybe)
 
     sxMaybe := readOne("23")
-    stdout << "SX: " << sxMaybe << newline
+    --stdout << "SX: " << sxMaybe << newline
     assertFalse failed? sxMaybe
     assertEquals(sexpr 23, retract sxMaybe)
 
     sxMaybe := readOne( "_"hello_"")
-    stdout << "SX: " << sxMaybe << newline
+    --stdout << "SX: " << sxMaybe << newline
     assertFalse failed? sxMaybe
     assertEquals(sexpr "hello", retract sxMaybe)
 
     sxMaybe := readOne("(foo)")
-    stdout << "SX: " << sxMaybe << newline
+    --stdout << "SX: " << sxMaybe << newline
     assertFalse failed? sxMaybe
     assertEquals(cons(foo, nil), retract sxMaybe)
 
     sxMaybe := readOne("(foo 2)")
-    stdout << "SX: " << sxMaybe << newline
+    --stdout << "SX: " << sxMaybe << newline
     assertFalse failed? sxMaybe
     assertEquals(cons(foo, cons(sexpr 2, nil)), retract sxMaybe)
 
     sxMaybe := readOne("(foo . 2)")
-    stdout << "SX: " << sxMaybe << newline
+    --stdout << "SX: " << sxMaybe << newline
     assertFalse failed? sxMaybe
     assertEquals(cons(foo, sexpr 2), retract sxMaybe)
 
     sxMaybe := readOne("|+->|")
-    stdout << "SX: " << sxMaybe << newline
+    --stdout << "SX: " << sxMaybe << newline
     assertFalse failed? sxMaybe
     assertEquals(sexpr (-"+->"), retract sxMaybe)
 
     sxMaybe := readOne("(foo () 2)")
-    stdout << "SX: " << sxMaybe << newline
+    --stdout << "SX: " << sxMaybe << newline
     assertFalse failed? sxMaybe
     assertEquals([sexpr(-"FOO"), [], sexpr 2], retract sxMaybe)
 
     sxMaybe := readOne("symbol?")
-    stdout << "SX: " << sxMaybe << newline
+    --stdout << "SX: " << sxMaybe << newline
     assertFalse failed? sxMaybe
     assertEquals(sexpr(-"SYMBOL?"), retract sxMaybe)
 
     sxMaybe := readOne("_"hello\_"_"")
-    stdout << "strsx: " << sxMaybe << newline
+    --stdout << "strsx: " << sxMaybe << newline
     assertFalse failed? sxMaybe
     assertEquals(sexpr("hello_""), retract sxMaybe)
 
     sxMaybe := readOne("_"\\_"")
-    stdout << "strsx: " << sxMaybe << newline
+    --stdout << "strsx: " << sxMaybe << newline
     assertFalse failed? sxMaybe
     assertEquals(sexpr("\"), retract sxMaybe)
 
     sxMaybe := readOne("|\||")
-    stdout << "strsx: " << sxMaybe << newline
+    --stdout << "strsx: " << sxMaybe << newline
     assertFalse failed? sxMaybe
     assertEquals(sexpr(-"|"), retract sxMaybe)
 
     sxMaybe := readOne("|__\|__|")
-    stdout << "strsx: " << sxMaybe << newline
+    --stdout << "strsx: " << sxMaybe << newline
     assertFalse failed? sxMaybe
     assertEquals(sexpr(-"__|__"), retract sxMaybe)
 
     sxMaybe := readOne("'x")
-    stdout << "strsx: " << sxMaybe << newline
+    --stdout << "strsx: " << sxMaybe << newline
     assertFalse failed? sxMaybe
     assertEquals([sexpr(-"QUOTE"), sexpr(-"X")], retract sxMaybe)
 
     sxMaybe := readOne("(((foo) . 1) ((|bar|) . 2))")
-    stdout << "strsx: " << sxMaybe << newline
+    --stdout << "strsx: " << sxMaybe << newline
     assertFalse failed? sxMaybe
     assertEquals([cons([sexpr(-"FOO")], sexpr 1), cons([sexpr(-"bar")], sexpr 2)], retract sxMaybe)
 
