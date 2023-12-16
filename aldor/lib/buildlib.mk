@@ -26,7 +26,7 @@ include $(top_srcdir)/mk/step.mk
 include $(top_srcdir)/mk/topsort.mk
 
 STEPS := ALDOR AO2C AO2FM AR DEP FOAMJ JAR JAR JAVAC SRCJAR
-QUIET_STEPS := ALDORTEST ALDORTESTJ
+QUIET_STEPS := ALDORTEST ALDORTESTJ ALDORTESTEXE
 
 $(call am_define_steps, $(STEPS))
 $(call am_define_steps_quiet, $(QUIET_STEPS))
