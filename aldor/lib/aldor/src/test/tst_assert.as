@@ -93,7 +93,6 @@ Assert(F: (X: Type) -> BoundedFiniteDataStructureType X, D: Type): with {
     export from Assert F D
 }
 == add {
-    import from Assert D, Assert F D, Assert MachineInteger, MachineInteger;
 
     assertSizeEquals(n: MachineInteger, a: F D): () == assertEquals(n, #a)$Assert(MachineInteger);
 
