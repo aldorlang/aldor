@@ -394,6 +394,7 @@ fpClearFormats(Foam ddecl)
 		} 
 		else if (decl->foamDecl.type != FOAM_Rec
 			 && decl->foamDecl.type != FOAM_JavaObj
+			 && decl->foamDecl.type != FOAM_CObj
 			 && decl->foamDecl.type != FOAM_Arr
 			 && decl->foamDecl.type != FOAM_TR
 			 && decl->foamDecl.type != FOAM_NOp)

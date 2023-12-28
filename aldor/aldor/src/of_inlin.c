@@ -2720,6 +2720,7 @@ inlUpdateDDecl(Foam ddecl)
 		decl = ddecl->foamDDecl.argv[i];
 		if (decl->foamDecl.type == FOAM_Rec
 		    || decl->foamDecl.type == FOAM_TR
+		    || decl->foamDecl.type == FOAM_CObj
 		    || decl->foamDecl.type == FOAM_JavaObj)
 			decl->foamDecl.format =
 				inlGetFormat(decl->foamDecl.format);
