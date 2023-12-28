@@ -13,8 +13,8 @@ librarydocdir	:= $(top_builddir)/lib/$(libraryname)/doc
 UNIQ		:= perl $(top_srcdir)/aldor/tools/unix/uniq
 
 asdomains	:= $(internal) $(library) $(tests)
-axdomains	:= $(axlibrary)
-alldomains	:= $(asdomains) $(axdomains)
+apdomains	:= $(aplibrary)
+alldomains	:= $(asdomains) $(apdomains)
 docdomains      := $(asdomains) $(documentation)
 
 libsubdir	:= $(subst $(abs_libdir)/,,$(abs_builddir)/.)
@@ -72,12 +72,12 @@ aldor_args = $(aldor_common_args)		\
 	-Fao=$*.ao				\
 	-Fabn=$*.abn				\
 	$(filter %$*.as,$^)			\
-	$(filter %$*.ax,$^)
+	$(filter %$*.ap,$^)
 
 $(addsuffix .dep,$(asdomains)): %.dep: %.as Makefile.in Makefile.deps
-$(addsuffix .dep,$(axdomains)): %.dep: %.ax Makefile.in Makefile.deps
+$(addsuffix .dep,$(apdomains)): %.dep: %.ap Makefile.in Makefile.deps
 $(addsuffix .ao, $(asdomains)): %.ao: %.as
-$(addsuffix .ao, $(axdomains)): %.ao: %.ax
+$(addsuffix .ao, $(apdomains)): %.ao: %.ap
 
 $(addsuffix .ao, $(alldomains)): %.ao: $(foreach x,$(librarydeps),$(top_builddir)/lib/$(x)/src/lib$(x).al)
 $(addsuffix .abn, $(alldomains)): %.abn: %.ao
