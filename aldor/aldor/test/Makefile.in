@@ -56,7 +56,7 @@ out/ao/lself2.ao: out/ao/lself0.ao
 
 @BUILD_JAVA_TRUE@jtests := simple_j enumtest run_j halt
 @HAS_JUNIT_TRUE@junittests := JExportTest JThrowTest
-@BUILD_JAVA_TRUE@jruntests := small jimport jimport_opt jimp0 jlist jexport jexport1 jexport2 envname jexn jthrow
+@BUILD_JAVA_TRUE@jruntests := small jimport jimport_opt jimp0 jimp1 jlist jexport jexport1 jexport2 envname jexn jthrow
 
 x_extra := rtexns
 
