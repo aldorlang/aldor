@@ -1,14 +1,21 @@
 # ..From autoconf
 @SET_MAKE@
 
+AM_DEFAULT_VERBOSITY = @AM_DEFAULT_VERBOSITY@
 VPATH = @srcdir@
 abs_top_builddir = @abs_top_builddir@
 srcdir = @srcdir@
+top_srcdir = @top_srcdir@
 top_builddir = @top_builddir@
 builddir = @builddir@
 abs_builddir = @abs_builddir@
 abs_top_srcdir = @abs_top_srcdir@
 subdir = aldor/lib/java/src
+
+include $(top_srcdir)/mk/step.mk
+$(call am_define_steps, JAVAC JAVAJAR JAVASRC)
+
+defaultTarget: all
 
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
@@ -23,16 +30,17 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 buildfiles := $(shell cd $(srcdir); find foamj -name \*.java)
 
 outdir := $(abs_builddir)/classes
-jarfile := $(abs_builddir)/foamj.jar
+jarfile := foamj.jar
 sourcejarfile := foamj-sources.jar
 
 # Build directly to a .jar file (easier than tracking .class files)
 $(jarfile): $(buildfiles)
-	mkdir -p $(outdir)
-	(cd $(srcdir); javac -g -d $(outdir) $(buildfiles))
-	(wd=$$(pwd); cd $(outdir); jar cf $@ .)
+	@mkdir -p $(outdir)
+	$(AM_V_JAVAC) (cd $(srcdir); javac -g -d $(outdir) $(buildfiles))
+	$(AM_V_JAVAJAR) (wd=$$(pwd); cd $(outdir); jar cf  $(abs_builddir)/$@ .)
 
 $(sourcejarfile): $(buildfiles)
+	$(AM_V_JAVASRC)		\
 	cd $(srcdir); jar cf $(abs_builddir)/$@ $(shell cd $(srcdir); find . -type f)
 
 all: $(jarfile) $(sourcejarfile)
