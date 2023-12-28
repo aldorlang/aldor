@@ -198,7 +198,7 @@ Matrix(R : Ring): MD  == MatrixDefinition where
 
    MatrixDefinition ==> add
 
-     Rep ==> Vector Vector R 
+     Rep == Vector Vector R
      import from Rep, Vector SingleInteger
      import from Vector R, R, SingleInteger
 
