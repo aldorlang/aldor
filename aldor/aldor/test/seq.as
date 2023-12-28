@@ -3,6 +3,7 @@
 
 zz: MachineInteger := 0
 foo(): () ==
+    free zz
     1 = 1 =>
         stdout << "Set zz" << zzz() << newline
         zz:= 1
