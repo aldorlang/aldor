@@ -8,12 +8,17 @@
 #include "algebrauid"
 
 extend GMPInteger: IntegerCategory == add {
-	import {
-		mpz__divexact: (%,%,%) -> ();
-		mpz__gcdext: (%,%,%,%,%) -> ();
-		mpz__tdiv__r: (%,%,%) -> ();
-		mpz__tdiv__qr: (%,%,%,%) -> ();
+       import { int: Type; mpz__srcptr: Type; mpz__ptr: Type; mpf__ptr: Type; Ptr: Type } from Foreign C("gmp.h");
+       import {
+		mpz__divexact: (mpz__ptr, mpz__srcptr,mpz__srcptr) -> ();
+		mpz__gcdext: (mpz__ptr,mpz__ptr,mpz__ptr,mpz__srcptr, mpz__srcptr) -> ();
+		mpz__tdiv__r: (mpz__ptr,mpz__srcptr, mpz__srcptr) -> ();
+		mpz__tdiv__qr: (mpz__ptr,mpz__ptr,mpz__srcptr,mpz__srcptr) -> ();
 	} from Foreign C("gmp.h");
+
+	local gmpIn(a: %): mpz__srcptr == a pretend mpz__srcptr;
+	local gmpIn(a: %): mpz__ptr == a pretend mpz__ptr;
+	local gmpOut(a: mpz__srcptr): % == a pretend %;
 
 #if GMP
 	-- Those 2 assume that Integer == GmpInteger
@@ -29,7 +34,7 @@ extend GMPInteger: IntegerCategory == add {
 	remainder!(a:%, b:%):% == { 
 		zero? a => 0;
 		one? a => { unit? b => 0; 1 }
-		mpz__tdiv__r(a, a, b);
+		mpz__tdiv__r(gmpIn a, gmpIn a, gmpIn b);
 		a;
 	}
 
@@ -42,22 +47,27 @@ extend GMPInteger: IntegerCategory == add {
 		}
 		if zero? q or one? q then q := new();
 		r:% := new();
-		mpz__tdiv__qr(q, r, a, b);
+		mpz__tdiv__qr(gmpIn q, gmpIn r, gmpIn a, gmpIn b);
 		(q, r);
 	}
 
 	quotient(x:%, y:%): % == {
 		one? y => x;
 		q:% := new();
-		mpz__divexact(q,x,y);
+		mpz__divexact(gmpIn q, gmpIn x, gmpIn y);
 		q;
+	}
+
+	local gcdext(a: %, b: %): (%, %) == {
+		g:% := new();
+		s:% := new();
+		mpz__gcdext(gmpIn g, gmpIn s,gmpIn(NULL), gmpIn a, gmpIn b);
+		(g, s)
 	}
 
 	extendedEuclidean(a:%, b:%): (%,%,%) == {
 		import from MachineInteger;
-		g:% := new();
-		s:% := new();
-		mpz__gcdext(g,s,NULL,a,b);
+		(g, s) := gcdext(a, b);
 		s := remainder!(s, b);
 		(g, s, quotient(g - a * s, b));
 	}
@@ -73,9 +83,7 @@ extend GMPInteger: IntegerCategory == add {
 			failed?(u := exactQuotient(c, b)) => failed;
 			[(0, retract u)];
 		}
-		g:% := new();
-		s:% := new();
-		mpz__gcdext(g,s,NULL,a,b);
+		(g, s) := gcdext(a, b);
 		failed?(u := exactQuotient(c, g)) => failed;
 		s := remainder!(times!(s, retract u), b);
 		[s, quotient(c - a * s, b)];
@@ -85,9 +93,7 @@ extend GMPInteger: IntegerCategory == add {
 		assert(~zero? m);
 		zero?(b := b rem m) => [0];
 		zero?(a := a rem m) => failed;
-		g:% := new();
-		c:% := new();
-		mpz__gcdext(g,c,NULL,a,m);
+		(g, c) := gcdext(a, m);
 		failed?(u := exactQuotient(b, g)) => u;
 		[remainder!(times!(c, retract u), m)];
 	}

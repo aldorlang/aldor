@@ -5,6 +5,8 @@
 -- Copyright (c) Helene Prieto 2000
 -- Copyright (c) INRIA 2000, Version 9-2-2000
 -- Logiciel Salli ©INRIA 2000, dans sa version du 9/2/2000
+--
+-- Updated: 2023 Peter Broadbery
 -------------------------------------------------------------------------------
 
 #include "aldor"
@@ -144,56 +146,70 @@ call to {\tt realloc}.}
 	macro Rec32 == Record(pr:Z, sz:Z, expo:Z, lmbs:Pointer);
 	macro Rec64 == Record(szpr:Z, expo:Z, lmbs:Pointer);
 
-	-- Cannot use the mpf_... names because they are macros in gmp.h
+        import { int: Type; mpf__srcptr: Type;  mpz__ptr: Type; mpf__ptr: Type; } from Foreign C;
+        import {  size__t: Type; mp__bitcnt__t: Type; Ptr: Type; LPtr: Type; int: Type } from Foreign C;
+        import {  mp__ext__t: Type } from Foreign C;
 	import {
-		____gmpf__init: Rep -> ();
-		____gmpf__clear:Rep -> ();
+		mpf__init: mpf__ptr -> ();
+		mpf__clear: mpf__ptr -> ();
 
-		____gmpf__set__default__prec: Z -> ();
-		____gmpf__get__default__prec: () -> Z;
-		____gmpf__set__prec: (Rep,Z) -> ();
-		____gmpf__get__prec: (Rep) -> Z;
-		____gmpf__set: (Rep, Rep) -> ();
-		____gmpf__set__ui: (Rep, Z) -> ();
-		____gmpf__set__si: (Rep, Z) -> ();
-		____gmpf__set__z: (Rep,GMPInteger) -> ();
-		____gmpf__set__d: (Rep,DoubleFloat) -> ();
-		____gmpf__set__str: (Rep, Pointer, Z) -> Z;
+		mpf__set__default__prec: mp__bitcnt__t -> ();
+		mpf__get__default__prec: () -> mp__bitcnt__t;
+		mpf__set__prec: (mpf__ptr,mp__bitcnt__t) -> ();
+		mpf__get__prec: mpf__srcptr -> mp__bitcnt__t;
+		mpf__set: (mpf__ptr, mpf__srcptr) -> ();
+		mpf__set__ui: (mpf__ptr, SInt$Machine) -> ();
+		mpf__set__si: (mpf__ptr, SInt$Machine) -> ();
+		mpf__set__z: (mpf__ptr, mpz__ptr) -> ();
+		mpf__set__d: (mpf__ptr, DFlo$Machine) -> ();
+		mpf__set__str: (mpf__ptr, Ptr, int) -> Z;
 
-		____gmpf__get__str: (Pointer, Pointer, Z, Z, Rep) -> Pointer;
+		mpf__get__str: (Ptr, LPtr, Z, Z, mpf__srcptr) -> Ptr;
 
-		____gmpf__add: (Rep,Rep,Rep) -> ();
-		____gmpf__add__ui: (Rep,Rep,Z) -> ();
-		____gmpf__sub: (Rep,Rep,Rep) -> ();
-		____gmpf__sub__ui: (Rep,Rep,Z) -> ();
-		____gmpf__mul: (Rep,Rep,Rep) -> ();
-		____gmpf__mul__ui: (Rep,Rep,Z) -> ();
+		mpf__add: (mpf__ptr,mpf__srcptr,mpf__srcptr) -> ();
+		mpf__add__ui: (mpf__ptr,mpf__srcptr,Z) -> ();
+		mpf__sub: (mpf__ptr,mpf__srcptr,mpf__srcptr) -> ();
+		mpf__sub__ui: (mpf__ptr,mpf__srcptr,Z) -> ();
+		mpf__mul: (mpf__ptr,mpf__srcptr,mpf__srcptr) -> ();
+		mpf__mul__ui: (mpf__ptr,mpf__srcptr,mpf__srcptr,Z) -> ();
 
-		____gmpf__div: (Rep,Rep,Rep) -> ();
-		____gmpf__ui__div: (Rep,Z,Rep) -> ();
-		____gmpf__div__ui: (Rep,Rep,Z) -> ();
+		mpf__div: (mpf__ptr,mpf__srcptr,mpf__srcptr) -> ();
+		mpf__ui__div: (mpf__ptr,Z,mpf__srcptr) -> ();
+		mpf__div__ui: (mpf__ptr,mpf__srcptr,Z) -> ();
 
-		____gmpf__sqrt: (Rep,Rep) -> ();
-		____gmpf__sqrt__ui: (Rep,Rep,Rep) -> ();
-		____gmpf__pow__ui: (Rep,Rep,Z) -> ();
-		____gmpf__neg: (Rep,Rep) -> ();
-		____gmpf__abs: (Rep,Rep) -> ();
-		____gmpf__mul__2exp: (Rep,Rep,Z) -> ();
-		____gmpf__div__2exp: (Rep,Rep,Z) -> ();
-		____gmpf__cmp: (Rep,Rep) -> Z;
-		____gmpf__cmp__ui: (Rep,Z) -> Z;
-		____gmpf__cmp__si: (Rep,Z) -> Z;
-		____gmpf__sgn: Rep -> Z;
+		mpf__sqrt: (mpf__ptr,mpf__srcptr) -> ();
+		mpf__sqrt__ui: (mpf__ptr,mpf__srcptr,Z) -> ();
+		mpf__pow__ui: (mpf__ptr,mpf__srcptr,Z) -> ();
+		mpf__neg: (mpf__ptr,mpf__srcptr) -> ();
+		mpf__abs: (mpf__ptr,mpf__srcptr) -> ();
+		mpf__mul__2exp: (mpf__ptr,mpf__srcptr,Z) -> ();
+		mpf__div__2exp: (mpf__ptr,mpf__srcptr,Z) -> ();
+		mpf__cmp: (mpf__ptr,mpf__ptr) -> Z;
+		mpf__cmp__ui: (mpf__srcptr,Z) -> Z;
+		mpf__cmp__si: (mpf__srcptr,Z) -> Z;
+		mpf__sgn: mpf__srcptr -> Z;
 
-		____gmpf__size: Rep -> Z;
-		____gmpf__sizeinbase: (Rep,Z) -> Z;
+		mpf__size: mpf__srcptr -> Z;
+		mpf__sizeinbase: (mpf__srcptr,Z) -> Z;
 
-		____gmpf__trunc: (Rep,Rep) -> ();
+		mpf__trunc: (mpf__ptr, mpf__srcptr) -> ();
+		mpz__set__f: (mpz__ptr, mpf__srcptr) -> ();
+		mpf__get__d: mpf__ptr -> (DFlo$Machine);
 
-		____gmpf__out__str: (Pointer,Z,Z,Rep) -> ();
-		____gmpf__inp__str:(Rep, Pointer,Z) -> ();
+		mpf__out__str: (Pointer,Z,Z,Rep) -> ();
+		mpf__inp__str:(Rep, Pointer,Z) -> ();
 	} from Foreign C("gmp.h");
 	
+        local gmpIn(a: GMPInteger): mpz__ptr == a pretend mpz__ptr;
+        local gmpIn(a: %): mpf__srcptr == rep(a) pretend mpf__srcptr;
+        local gmpIn(a: %): mpf__ptr == rep(a) pretend mpf__ptr;
+        local gmpOut(a: mpf__srcptr): % == per(a pretend Rep);
+
+        local gmpZIn(n: Z): mp__bitcnt__t == n pretend mp__bitcnt__t;
+        local gmpZIn(n: Z): int == n pretend int;
+        local gmpZOut(c: mp__bitcnt__t): Z == c pretend Z;
+        local gmpZOut(c: size__t): Z == c pretend Z;
+
 	import from Z,Rep;
 
 	local wordsize:Z        == bytes;
@@ -204,19 +220,20 @@ call to {\tt realloc}.}
 	local char0:Character	== { import from String; char "0"; }
 	local chare:Character	== { import from String; char "e"; }
 
-	local nlimbs(a:%):Z == ____gmpf__size(rep a);
+	local nlimbs(a:%):Z == mpf__size(gmpIn(a));
 
         new():%                         == {
 		n: Pointer := {
 			b64? => [0,0,nil]$Rec64 pretend Pointer;
 			[0,0,0,nil]$Rec32 pretend Pointer;
 		}
-                ____gmpf__init(n);
+                mpf__init(n pretend mpf__ptr);
 		per n;
 	}
 
-	-- HACK SINCE CANNOT USE ____gmpf__sgn BECAUSE IT IS A MACRO THAT TAKES
+	-- HACK SINCE CANNOT USE mpf__sgn BECAUSE IT IS A MACRO THAT TAKES
 	-- A POINTER AND CANNOT BE USED WITH AN FiWord
+
 	local hi32:Z == shift(4294967295, 32);  -- 32 1's and 32 0's
 
 	sign(a:%):Z == {
@@ -236,18 +253,18 @@ call to {\tt realloc}.}
 		(rep(a) pretend Rec32).expo;
 	}
 
-	free!(a:%): () == ____gmpf__clear(rep a);
+	free!(a:%): () == mpf__clear(gmpIn(a));
 
-	precision(a:%): Z == ____gmpf__get__prec(rep a);
+	precision(a:%): Z == gmpZOut mpf__get__prec(gmpIn(a));
 	setPrecision!(a:%,b:Z): % == {
-		____gmpf__set__prec(rep a,b);
+		mpf__set__prec(gmpIn(a), gmpZIn(b));
 		a;
 	}
 
-	defaultPrecision():Z == ____gmpf__get__default__prec();
+	defaultPrecision():Z == gmpZOut mpf__get__default__prec();
 	setDefaultPrecision(p:Z):Z == {
 		old := defaultPrecision();
-		____gmpf__set__default__prec(p);
+		mpf__set__default__prec(gmpZIn p);
 		old;
 	}
 
@@ -270,44 +287,41 @@ call to {\tt realloc}.}
 	float(a:Literal):%	== {
 		e:% := new();
 		import from String;
-		____gmpf__set__str(rep e, pointer(a pretend String), 10::Z);
+		mpf__set__str(gmpIn e, a pretend Ptr, gmpZIn(10::Z));
 		e;
 	}
 
-	truncate(a:%): AldorInteger	== {
+	truncate(a:%): AldorInteger == {
 		import from GMPInteger;
-		import {
-			____gmpz__set__f:(GMPInteger,Pointer) -> ();
-		} from Foreign C("gmp.h");
 
 		e:% := new();
 		res: GMPInteger := new();
-		____gmpf__trunc(rep e, rep a);
-		____gmpz__set__f(res,rep e);
+		mpf__trunc(gmpIn e, gmpIn a);
+		mpz__set__f(gmpIn res, gmpIn e);
 		res::AldorInteger;
 	}
 
 	fraction(a:%):% == {
 		e:% := new();
-		____gmpf__trunc(rep e, rep a);
+		mpf__trunc(gmpIn e, gmpIn a);
 		a-e;
 	}
 
 	copy(a:%): %		== {
 		e:% := new();
-		____gmpf__set(rep e,rep a);
+		mpf__set(gmpIn e, gmpIn a);
 		e;
 	}
 
 	coerce(a:Z):%		== {
 		e:% := new();
-		____gmpf__set__si(rep e, a);
+		mpf__set__si(gmpIn e, a::(SInt$Machine));
 		e;
 	}
 
 	coerce(a:GMPInteger):%	== {
 		e:% := new();
-		____gmpf__set__z(rep e, a);
+		mpf__set__z(gmpIn e, gmpIn a);
 		e;
 	}
 
@@ -323,114 +337,112 @@ call to {\tt realloc}.}
 
 	coerce(a:DoubleFloat):%		== {
 		e:% := new();
-		____gmpf__set__d(rep e, a);
+		mpf__set__d(gmpIn e, a::(DFlo$Machine));
 		e;
 	}
 
+
 	machine(x:%):DoubleFloat == {
 		import from Machine, DoubleFloat;
-		import {
-			____gmpf__get__d: Rep -> DFlo;
-		} from Foreign C("gmp.h");
-		____gmpf__get__d(rep x)::DoubleFloat;
+		mpf__get__d(gmpIn x)::DoubleFloat;
 	}
 
-	=(a:%,b:%): Boolean == ____gmpf__cmp(rep a,rep b) = 0;
-	~=(a:%,b:%): Boolean == ____gmpf__cmp(rep a,rep b) ~= 0;
+	=(a:%,b:%): Boolean == mpf__cmp(gmpIn a, gmpIn b) = 0;
+	~=(a:%,b:%): Boolean == mpf__cmp(gmpIn a, gmpIn b) ~= 0;
 
 	0: % 			    == {
 		h:% := new();
-		____gmpf__set__si(rep h,0);
+		mpf__set__si(gmpIn h, 0::(SInt$Machine));
 		h;
 	}
 
 	1: % 			    == {
 		g:% := new();
-		____gmpf__set__si(rep g,1);
+		mpf__set__si(gmpIn g,1::(SInt$Machine));
 		g;
 	}
 
 	(a:%) < (b:%):Boolean	== {
-		r:Z := ____gmpf__cmp(rep a,rep b);
+		r:Z := mpf__cmp(gmpIn a, gmpIn b);
 		r < 0;
 	}
 
 
 	(a:%) + (b:%):%		== {
 		e:% := new();
-		____gmpf__add(rep e,rep a,rep b);
+		mpf__add(gmpIn e, gmpIn a, gmpIn b);
 		e;
 	}
 
 
 	(a:%) * (b:%):%		== {
 		e:% := new();
-		____gmpf__mul(rep e,rep a,rep b);
+		mpf__mul(gmpIn e, gmpIn a, gmpIn b);
 		e;
 	}
 
 	(a:%) - (b:%):%		== {
 		e:% := new();
-		____gmpf__sub(rep e,rep a,rep b);
+		mpf__sub(gmpIn e, gmpIn a, gmpIn b);
 		e;
 	}
 
 	-(a:%):%		== {
 		b:% :=  new();
-		____gmpf__sub(rep b, rep 0, rep a);
+		mpf__sub(gmpIn b, gmpIn 0, gmpIn a);
 		b;
 	}
 
 	add!(a:%,b:%):%		== {
-		____gmpf__add(rep a,rep a,rep b);
+		mpf__add(gmpIn a, gmpIn a, gmpIn b);
 		a;
 	}
 
 	times!(a:%,b:%):%	== {
-		____gmpf__mul(rep a,rep a,rep b);
+		mpf__mul(gmpIn a, gmpIn a, gmpIn b);
 		a;
 	}
 
         next(a:%):%                             == {
 		e:%:=new();
-		____gmpf__add__ui(rep e, rep a, 1::Z);
+		mpf__add__ui(gmpIn e, gmpIn a, 1::Z);
 		e;
 	}
 
         prev(a:%):%                             == {
 		e:% := new();
-		____gmpf__sub__ui(rep e, rep a, 1::Z);
+		mpf__sub__ui(gmpIn e, gmpIn a, 1::Z);
 		e;
 	}
 
 	(a:%) > (b:%):Boolean	== ~(a<=b);
-	(a:%) <= (b:%):Boolean	== ____gmpf__cmp(rep a,rep b) <= 0;
-	(a:%) >= (b:%):Boolean	== ____gmpf__cmp(rep a,rep b) >= 0;
+	(a:%) <= (b:%):Boolean	== mpf__cmp(gmpIn a, gmpIn b) <= 0;
+	(a:%) >= (b:%):Boolean	== mpf__cmp(gmpIn a, gmpIn b) >= 0;
 
 
 	max(a:%,b:%):%		== {a < b => b; a};
 	min(a:%,b:%):%		== {a < b => a; b};
 	minus!(a:%):%		== -a;
 	minus!(a:%,b:%):%	== a-b;
-	zero?(a:%):Boolean	== ____gmpf__cmp(rep a, rep 0) = 0;
-	one?(a:%):Boolean	== ____gmpf__cmp(rep a, rep 1) = 0;
+	zero?(a:%):Boolean	== mpf__cmp(gmpIn a, gmpIn 0) = 0;
+	one?(a:%):Boolean	== mpf__cmp(gmpIn a, gmpIn 1) = 0;
 
 	abs(a:%):%		== { 
 		b:% :=  new();
-		____gmpf__abs(rep b,rep a);
+		mpf__abs(gmpIn b, gmpIn a);
 		b;	
 	}
 
 	
 	(a:%) ^ (b:Z): %	== {
 		e:% := new();
-		____gmpf__pow__ui(rep e,rep a, b);
+		mpf__pow__ui(gmpIn e, gmpIn a, b);
 		e;	
 	}
 
 	(a:%) / (b:%): %	== {
 		e:% := new();
-		____gmpf__div(rep e, rep a, rep b);
+		mpf__div(gmpIn e, gmpIn a, gmpIn b);
 		e;
 	}
 
@@ -439,7 +451,7 @@ call to {\tt realloc}.}
 		writelimbs!(p << exponent x, sign x, nlimbs x, limbs x);
         }
 
-	<< (p:BinaryReader):% == {
+        << (p:BinaryReader):% == {
 		import from GMPTools, Rec32, Rec64;
 		xpo:Z := << p;			-- read exponent first
 		sgn:Z := << p;			-- read sign
@@ -459,7 +471,7 @@ call to {\tt realloc}.}
 			(rec pretend Rec32).pr := s;
 			(rec pretend Rec32).sz := s;
 		}
-		if sgn < 0 then ____gmpf__neg(rep x, rep x);
+		if sgn < 0 then mpf__neg(gmpIn x, gmpIn x);
 		x;
 	}
 
@@ -467,8 +479,8 @@ call to {\tt realloc}.}
 		macro PZ == Record(z:Z);
 		import from Z, Character, String, Pointer;
 		pexp:PZ := [0];
-		ptr := ____gmpf__get__str(nil, pexp pretend Pointer,10,0,rep x);
-		s := string ptr;
+		ptr := mpf__get__str((nil$Pointer) pretend Ptr, pexp pretend LPtr, 10, 0, gmpIn x);
+		s := ptr pretend String;
 		n:Z := 0;
 		if s.0 = minus then {
 			p := p << minus;
@@ -479,6 +491,7 @@ call to {\tt realloc}.}
 		p << "e" << pexp.z;
 	}
 
+#if 0
 	local scanfloat(p:TextReader):List Character == {
 		import from Character, String;
 		local c:Character;
@@ -531,8 +544,38 @@ call to {\tt realloc}.}
 			i := next i;
 		}
 		e := new();
-		____gmpf__set__str(rep e, pointer s, 10);
+		mpf__set__str(rep e, pointer s, 10);
 		e;
 	}
-
+#endif
 }
+
+
+#if ALDORTEST
+---------------------- test sal_intgmp.as --------------------------
+#include "aldor"
+#include "aldortest"
+#pile
+
+import from Assert GMPFloat
+import from Assert Integer
+import from Assert String
+import from Assert Boolean
+import from GMPFloat
+import from Integer
+Z ==> GMPInteger
+
+local test():Boolean ==
+	assertEquals(12345, truncate 12345.0)
+	true
+
+test1(): Boolean ==
+    f: GMPFloat := 1.0
+    assertTrue(-f < f)
+    assertTrue(f < f+f)
+    true
+
+test()
+test1()
+
+#endif

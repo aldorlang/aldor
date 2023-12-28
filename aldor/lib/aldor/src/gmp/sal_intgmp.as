@@ -76,7 +76,7 @@ as parameters to explicit calls to {\tt mpz\_} functions.}
 
     export from IntegerSegment %;
 == add
-    import { int: Type; mpz__srcptr: Type; mpz__ptr: Type; mpf__ptr: Type; Ptr: Type } from Foreign C;
+    import { int: Type; mpz__srcptr: Type; mpz__ptr: Type; mpf__ptr: Type; Ptr: Type } from Foreign C("gmp.h")
     import
        mpz__add: (mpz__ptr, mpz__srcptr, mpz__srcptr) -> ()
        mpz__and: (mpz__ptr, mpz__srcptr, mpz__srcptr) -> ()
