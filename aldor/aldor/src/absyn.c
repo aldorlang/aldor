@@ -2027,8 +2027,10 @@ abDefineeIdOrElse(AbSyn ab, AbSyn failed)
 		case AB_Comma:
 			if (abArgc(ab) < 1)
 				return failed;
-			if (abArgc(ab) > 1)
+			if (abArgc(ab) > 1) {
+				afprintf(dbOut, "%pAbSyn\n", ab);
 				bugWarning("abDefineeId comma bug");
+			}
 			ab = abArgv(ab)[0];
 			break;
 		case AB_Id:
