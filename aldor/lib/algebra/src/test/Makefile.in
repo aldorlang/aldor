@@ -18,13 +18,18 @@ subdir		:= $(subst $(abs_top_builddir)/,,$(abs_builddir))
 library = alg_assert tst_test tst_ring
 tests = tst_random tst_complex tst_mint tst_int tst_fold tst_dup doc_poly doc_intpoly doc_series
 
+include $(abs_top_srcdir)/mk/step.mk
 include $(abs_top_srcdir)/lib/algebra/src/common.mk
+
+STEPS := ALDORINTERP
+$(call am_define_steps, $(STEPS))
 
 check: $(addsuffix .test,$(tests))
 
 .PHONY: $(addsuffix .test,$(tests))
 
 $(addsuffix .test,$(tests)): %.test: %.ao
+	$(AM_V_ALDORINTERP)			\
 	cp $(SUBLIB_DEPEND).al lib$(libraryname)_$*.al;				\
 	${AR} r lib$(libraryname)_$*.al $(addsuffix .ao, $(shell $(UNIQ) $*.dep));	\
 	$(DBG) $(aldorexedir)/aldor		\
