@@ -8,6 +8,7 @@
 #include "java/javacode.h"
 #include "ostream.h"
 #include "sefo.h"
+#include "susage.h"
 #include "strops.h"
 #include "syme.h"
 #include "symeset.h"
@@ -52,8 +53,10 @@ local int symbolFormatter(OStream stream, Pointer p);
 local int errorSetFormatter(OStream stream, Pointer p);
 local int javaCodeFormatter(OStream stream, Pointer p);
 
-
 local int boolFormatter(OStream ostream, int p);
+
+local int slotUsageFormatter(OStream ostream, Pointer p);
+local int slotUsageListFormatter(OStream ostream, Pointer p);
 
 void
 fmttsInit()
@@ -89,6 +92,9 @@ fmttsInit()
 
 	fmtRegister("String", stringFormatter);
 	fmtRegister("StringList", stringListFormatter);
+
+	fmtRegister("SlotUsage", slotUsageFormatter);
+	fmtRegister("SlotUsageList", slotUsageListFormatter);
 
 	fmtRegister("BInt", bintFormatter);
 	fmtRegister("Symbol", symbolFormatter);
@@ -362,4 +368,18 @@ boolFormatter(OStream ostream, int p)
 	else {
 		return ostreamPrintf(ostream, "%s", flg ? "true": "false");
 	}
+}
+
+local int
+slotUsageFormatter(OStream ostream, Pointer p)
+{
+	SlotUsage usage = (AInt) p;
+	return ostreamPrintf(ostream, "%d%s", suVal(usage), suIsUsed(usage) ? "R" : "");
+}
+
+local int
+slotUsageListFormatter(OStream ostream, Pointer p)
+{
+	SlotUsageList list = (SlotUsageList) p;
+	return listFormat(SlotUsage)(ostream, "SlotUsage", list);
 }
