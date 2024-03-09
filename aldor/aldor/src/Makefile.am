@@ -185,6 +185,7 @@ libstruct_a_SOURCES =	\
 	spesym.c	\
 	srcline.c	\
 	stab.c		\
+	susage.c	\
 	syme.c		\
 	symeset.c	\
 	symcoinfo.c	\
