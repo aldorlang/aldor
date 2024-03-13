@@ -2849,7 +2849,7 @@ gen0GetDomainDomain(TForm exporter)
 local void
 gen0SetInitUsage(Foam getter, AInt level)
 {
-        AIntList         lu;
+        SlotUsageList    lu;
         AIntList         ls;
 
         lu = gen0NthState(level)->formatUsage;
@@ -2858,7 +2858,7 @@ gen0SetInitUsage(Foam getter, AInt level)
 }
 
 void
-gen0SetUsage(Foam foam, AIntList lu, AIntList ls)
+gen0SetUsage(Foam foam, SlotUsageList lu, AIntList ls)
 {
         foamIter(foam, arg, gen0SetUsage(*arg, lu, ls));
         if (foamTag(foam) == FOAM_Lex) {
@@ -2872,7 +2872,7 @@ gen0SetUsage(Foam foam, AIntList lu, AIntList ls)
                 }
                 assert(ls != 0);
                 assert(lu != 0);
-                car(lu) = car(ls);
+                car(lu) = suFrFormat(car(ls));
         }
         else if (foamTag(foam) == FOAM_Env) {
                 AInt level = foam->foamEnv.level;
@@ -2883,7 +2883,7 @@ gen0SetUsage(Foam foam, AIntList lu, AIntList ls)
                 }
                 assert(lu != 0);
                 if (car(lu) == emptyFormatSlot)
-                        car(lu) = envUsedSlot;
+			car(lu) = suFrFormat(envUsedSlot);
         }
 }
 

@@ -12,6 +12,7 @@
 #include "axlobs.h"
 #include "foamsig.h"
 #include "of_util.h"
+#include "susage.h"
 
 extern Bool genfDebug, genfHashDebug, genfConstDebug;
 
@@ -80,7 +81,7 @@ typedef struct gfs {
 	VarPoolList	envLexPools;	/* stack of previous lexical envs */
 	FoamBox		params;		/* prog's parameters */
 	AIntList	formatStack;	/* nested prog lexical level stack */
-	AIntList	formatUsage;	/* stack of levels actually used */
+	SlotUsageList	formatUsage;	/* stack of levels actually used */
 	AIntList	fluidsUsed;	/* Fluids pushed in this scope */
 	Foam		program;	/* the foam for the prog */
 	int		yieldCount;	/* number of yields in prog */

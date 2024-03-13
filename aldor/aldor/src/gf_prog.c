@@ -16,6 +16,8 @@
 #include "fbox.h"
 #include "tform.h"
 
+Bool	genfEnvDebug	= false;
+
 /*****************************************************************************
  *
  * :: Local function declarations.
@@ -88,7 +90,8 @@ gen0ProgPushState(Stab stab, GenFoamTag tag)
 {
 	AInt		index = gen0FormatNum--;
 	GenFoamState	state = gen0NewState(stab, index, tag);
-	AIntList	fu, fs, ef;
+	SlotUsageList   fu;
+	AIntList	fs, ef;
 	Length		i, argc;
 
 	assert(state && state->parent);
@@ -98,7 +101,7 @@ gen0ProgPushState(Stab stab, GenFoamTag tag)
 
 	argc = listLength(AInt)(ef);
 	for (i = 0; i < argc - 1; i += 1)
-		fu = listCons(AInt)(emptyFormatSlot, fu);
+		fu = listCons(SlotUsage)(suFrFormat(emptyFormatSlot), fu);
 
 	if (ef) ef = listNReverse(AInt)(cdr(listReverse(AInt)(ef)));
 	fs = listNConcat(AInt)(ef, fs);
@@ -117,17 +120,22 @@ void
 gen0ProgPopState()
 {
 	GenFoamState	state = gen0State;
-	AIntList fu, ofu;
+	SlotUsageList fu, ofu;
 	int i;
 	gen0State = gen0State->parent;
 	
+	if (genfEnvDebug) {
+		afprintf(dbOut, "Pop state - pre formatUsage parent %pSlotUsageList\n", state->parent->formatUsage);
+		afprintf(dbOut, "Pop state - pre formatUsage current %pSlotUsageList\n", state->formatUsage);
+	}
+
 	ofu = state->parent->formatUsage;
 	fu  = cdr(state->formatUsage);
 	/* Copy usage information downwards */
 	for (i=0; i<state->parent->whereNest; i++)
 		fu = cdr(fu);
-	while (fu != listNil(AInt)) {
-		if (car(ofu) == emptyFormatSlot)
+	while (fu != listNil(SlotUsage)) {
+		if (suVal(car(ofu)) == emptyFormatSlot)
 			car(ofu) = car(fu);
 		ofu = cdr(ofu);
 		fu  = cdr(fu);
@@ -140,6 +148,10 @@ gen0ProgPopState()
 	listFree(TForm)(state->domImportList);
 	listFree(Foam)(state->domList);
 
+	if (genfEnvDebug) {
+		afprintf(dbOut, "Pop state - formatUsage %pAIntList\n", state->formatUsage);
+		afprintf(dbOut, "Pop state - formatUsage %pAIntList\n", state->parent->formatUsage);
+	}
 	stoFree(state);
 }
 
@@ -153,6 +165,9 @@ gen0ProgSaveState(ProgType pt)
 	GenFoamState	state = gen0State;
 	GenFoamState	saved = gen0NewState(NULL, emptyFormatSlot, GF_Saved);
 
+	if (genfEnvDebug) {
+		afprintf(dbOut, "Save state %pSlotUsageList\n", state->formatUsage);
+	}
 	gen0ProgTransferState(saved, state);
 
 	if (!gen0InDeep(state->progType))
@@ -178,14 +193,23 @@ void
 gen0ProgPushFormat(AInt index)
 {
 	GenFoamState	state = gen0State;
-	AIntList	fu, ef;
+	SlotUsageList   fu;
+	AIntList	ef;
 
 	fu = state->formatUsage;
 	ef = state->envFormatStack;
 
 	assert(fu);
-	if (ef && cdr(ef)) fu = listConcat(AInt)(ef, cdr(fu));
-	fu = listCons(AInt)(index, fu);
+	if (ef && cdr(ef)) {
+		//fu = listConcat(SlotUsage)((SlotUsageList) ef, cdr(fu));
+		fu = cdr(fu);
+		AIntList l2 = listReverse(AInt)(ef);
+		while (l2 != listNil(AInt)) {
+			fu = listCons(SlotUsage)(suFrFormat(car(l2)), fu);
+			l2 = listFreeCons(AInt)(l2);
+		}
+	}
+	fu = listCons(SlotUsage)(suFrFormat(index), fu);
 
 	state->formatUsage	= fu;
 	state->envFormatStack	= listNil(AInt);
@@ -205,6 +229,9 @@ gen0ProgRestoreState(GenFoamState saved)
 	if (!gen0InDeep(gen0State->progType))
 		state->base = NULL;
 
+	if (genfEnvDebug) {
+		afprintf(dbOut, "Restore state %pSlotUsageList\n", state->formatUsage);
+	}
 	stoFree(saved);
 }
 
@@ -254,7 +281,12 @@ Foam
 gen0ProgInitEmpty(String name, AbSyn absyn)
 {
 	Foam	foam, decl;
+	int 	idx;
 
+	if (genfEnvDebug) {
+		idx = gen0NumProgs;
+		afprintf(dbOut, "(Creating function %d\n", idx);
+	}
 #ifdef NEW_FORMATS
 	foam = foamNewProg(int0,int0,int0,int0,int0,emptyFormatSlot,NULL,NULL,NULL,NULL);
 #else
@@ -270,6 +302,11 @@ gen0ProgInitEmpty(String name, AbSyn absyn)
 	gen0ConstAdd(decl, foam);
 
 	if (absyn) foamPos(foam) = abPos(absyn);
+
+	if (genfEnvDebug) {
+		afprintf(dbOut, "..created function %d - %s)\n", idx, name);
+	}
+
 	return foam;
 }
 
@@ -299,6 +336,11 @@ gen0ProgFiniEmpty(Foam prog, AInt retType, AInt format)
 	prog->foamProg.fluids	= gen0IssueFluids();
 	prog->foamProg.levels	= gen0IssueLevels();
 	prog->foamProg.body	= gen0IssueStmts();
+
+	if (genfEnvDebug) {
+		afprintf(dbOut, "Fini - fmtStack: %pAIntList, usage: %pSlotUsageList)\n",
+			 gen0State->formatStack, gen0State->formatUsage);
+	}
 }
 
 Foam
@@ -307,9 +349,14 @@ gen0ProgClosEmpty(void)
 	GenFoamState	state = gen0State;
 	Foam		env;
 
+	if (genfEnvDebug && gen0State) {
+		afprintf(dbOut, "ClosEmpty - fmtStack: %pAIntList, usage: %pSlotUsageList\n",
+			 gen0State->formatStack, gen0State->formatUsage);
+	}
+
 	env = state ? foamCopy(car(state->envVarStack)) : foamNewEnv(int0);
-	if (state && car(state->formatUsage) == emptyFormatSlot)
-		car(state->formatUsage) = envUsedSlot;
+	if (state && suVal(car(state->formatUsage)) == emptyFormatSlot)
+		car(state->formatUsage) = suFrFormat(envUsedSlot);
 	return foamNewClos(env, foamNewConst(gen0NumProgs));
 }
 
@@ -342,10 +389,20 @@ gen0ProgAddFormat(AInt index, Foam format)
 {
 	AInt	nindex;
 
-	if (foamDDeclArgc(format) == 0)
+	if (genfEnvDebug) {
+		afprintf(dbOut, "ProgAddFormat format %d %pFoam\n", index, format);
+		afprintf(dbOut, "ProgAddFormat stack %pAIntList\n", gen0State->formatStack);
+		afprintf(dbOut, "ProgAddFormat usage %pSlotUsageList\n", gen0State->formatUsage);
+		afprintf(dbOut, "ProgAddFormat ddecl %pAInt Used %oBool\n", foamDDeclArgc(format), suIsUsed(car(gen0State->formatUsage)));
+	}
+
+	if (foamDDeclArgc(format) == 0 && !suIsUsed(car(gen0State->formatUsage))) {
 		nindex = emptyFormatSlot;
+	}
 	else {
-		if (gen0State->hasTemps) setcar(gen0State->formatUsage, index);
+		// Not sure why this is happening here; looks like it should be at a
+		// higher level
+		if (gen0State->hasTemps) setcar(gen0State->formatUsage, suFrFormat(index));
 		gen0FormatList = listCons(Foam)(format, gen0FormatList);
 		nindex = gen0RealFormatNum++;
 	}
@@ -569,13 +626,18 @@ gen0IssueFluids(void)
 local Foam
 gen0IssueLevels(void)
 {
-	AIntList	fu = gen0State->formatUsage;
-	Length		i, argc = listLength(AInt)(fu);
+	SlotUsageList	fu = gen0State->formatUsage;
+	Length		i, argc = listLength(SlotUsage)(fu);
 	Foam		levels;
 
 	levels = foamNewEmpty(FOAM_DEnv, argc);
 	for (i = 0; fu; i += 1, fu = cdr(fu))
-		levels->foamDEnv.argv[i] = car(fu);
+		levels->foamDEnv.argv[i] = suVal(car(fu));
 
+	if (genfEnvDebug) {
+		afprintf(dbOut, "Issue levels - stack %pAIntList\n", gen0State->formatStack);
+		afprintf(dbOut, "Issue levels - usage %pSlotUsageList\n", gen0State->formatUsage);
+		afprintf(dbOut, "Issue levels - %pFoam\n", levels);
+	}
 	return levels;
 }

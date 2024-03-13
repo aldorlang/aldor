@@ -208,7 +208,7 @@ local Foam	   gen0UnaryToRaw	  (Foam, AbSyn);
 local Foam	   gen0UnaryToTuple	  (Foam);
 local AInt 	   gen0CrossFormatNumber  (TForm tf);
 local AInt	   gen0TrailingFormatNumber(TForm tf);
-local AIntList	   gen0UnusedFormats	  (AIntList);
+local SlotUsageList gen0UnusedFormats	  (AIntList);
 local void	   gen0UseFormat	  (AInt level, int slot);
 local void	   gen0UseStateFormat	  (GenFoamState, AInt);
 local void	   gen0VarsList		  (Stab, SymeList);
@@ -1877,7 +1877,7 @@ gen0OCall(FoamTag type, Syme syme, Length argc, Foam **pargv)
 	foam->foamOCall.env = foamNewEnv(envLevel);
 
 	if (envLevel == 0) foamProgUnsetLeaf(gen0State->program);
-	if (listElt(AInt)(gen0State->formatUsage, envLevel) == emptyFormatSlot)
+	if (suVal(listElt(SlotUsage)(gen0State->formatUsage, envLevel)) == emptyFormatSlot)
 		gen0UseFormat(envLevel, envUsedSlot);
 
 	*pargv = foam->foamOCall.argv;
@@ -4605,6 +4605,8 @@ gen0ParamIndex(Syme param)
  * Generate Foam for the Syme of an identifier.
  */
 
+extern Bool	genfEnvDebug;
+
 Foam
 gen0ExtendSyme(Syme syme)
 {
@@ -4742,8 +4744,10 @@ gen0SymeGeneric(Syme syme)
 	}
 
 	level = gen0FoamLevel(symeDefLevelNo(syme));
-	genfDEBUG(dbOut, "std: Lev:%d\n", (int)level);
 	gen0UseStackedFormat(level);
+	if (genfEnvDebug) {
+		afprintf(dbOut, "std: %s Lev:%d %pAIntList %pSlotUsageList\n", symeString(syme), (int)level, gen0State->formatStack, gen0State->formatUsage);
+	}
 	return foamNewLex(level, gen0VarIndex(syme));
 }
 
@@ -5386,12 +5390,12 @@ gen0AbSynHasConstHash0(AbSyn ab)
 /*
  * Create an empty format usage stack of the same length as l.
  */
-local AIntList
+local SlotUsageList
 gen0UnusedFormats(AIntList l)
 {
-	AIntList r = listNil(AInt);
+	SlotUsageList r = listNil(SlotUsage);
 	for(; l != listNil(AInt); l = cdr(l))
-		r = listCons(AInt)(emptyFormatSlot, r);
+		r = listCons(SlotUsage)(suFrFormat(emptyFormatSlot), r);
 	return r;
 }
 
@@ -7064,7 +7068,7 @@ gen0NewState(Stab stab, int format, GenFoamTag tag)
 	s->envLexPools	 = listNil(VarPool);
 	s->params	 = fboxNew(foamNewEmptyDDecl(FOAM_DDecl_Param));
 	s->formatStack	 = listNil(AInt);
-	s->formatUsage	 = listNil(AInt);
+	s->formatUsage	 = listNil(SlotUsage);
 	s->fluidsUsed	 = listNil(AInt);
 	s->program	 = NULL;
 	s->yieldCount	 = 0;
@@ -7099,7 +7103,7 @@ gen0InitState(Stab stab, int index)
 {
 	GenFoamState	s = gen0NewState(stab, index, GF_File);
 
-	s->formatUsage = listCons(AInt)(emptyFormatSlot, listNil(AInt));
+	s->formatUsage = listCons(SlotUsage)(suFrFormat(emptyFormatSlot), listNil(SlotUsage));
 	s->formatStack = listCons(AInt)(index, listNil(AInt));
 
 	gen0State = s;
@@ -7259,8 +7263,8 @@ local void
 gen0UseStateFormat(GenFoamState s, AInt level)
 {
 	AIntList	ls = s->formatStack;
-	AIntList	lu = s->formatUsage;
-
+	SlotUsageList	lu = s->formatUsage;
+	Bool used;
 	while(level > 0) {
 		assert(ls != 0);
 		assert(lu != 0);
@@ -7270,7 +7274,9 @@ gen0UseStateFormat(GenFoamState s, AInt level)
 	}
 	assert(ls != 0);
 	assert(lu != 0);
-	car(lu) = car(ls);
+	used = suIsUsed(car(lu));
+	car(lu) = suFrFormat(car(ls));
+	car(lu) = suSetUse(car(lu));
 }
 
 void
@@ -7282,14 +7288,14 @@ gen0UseStackedFormat(AInt level)
 local void
 gen0UseFormat(AInt level, int slot)
 {
-	AIntList		l = gen0State->formatUsage;
+	SlotUsageList	l = gen0State->formatUsage;
 	while(level > 0) {
 		assert(l != 0);
 		l = cdr(l);
 		level -= 1;
 	}
 	assert(l != 0);
-	car(l) = slot;
+	car(l) = suFrFormat(slot);
 }
 
 local Syme
