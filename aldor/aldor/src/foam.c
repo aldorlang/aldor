@@ -1793,8 +1793,7 @@ foamToSExpr0(Foam foam)
 		fexLocc	  = foamDDeclArgc(foam->foamProg.locals);
 		if (fexFmtc != 0) {
 			fexLexv	  = foam->foamProg.levels->foamDEnv.argv;
-			fexLexc	  = foamDDeclArgc(fexFmtv[foam->foamProg.levels->
-						     foamDEnv.argv[0]]);
+			fexLexc	  = foamDEnvArgc(foam->foamProg.levels);
 		}
 		break;
 
@@ -1832,7 +1831,7 @@ foamToSExpr0(Foam foam)
 		j = foam->foamLex.index;
 		if (fexFmtc != 0 && i < fexLexc) {
 			i = fexLexv[i];
-			if (j < foamArgc(fexFmtv[i]))
+			if (j < foamDDeclArgc(fexFmtv[i]))
 			    idstr = fexFmtv[i]->foamDDecl.argv[j]->foamDecl.id;
 		}
 		break;
