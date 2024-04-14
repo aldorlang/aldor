@@ -222,7 +222,7 @@ typedef struct InlPriCallStruct *  InlPriCall;
  * To trace a particolar prog, used the debugger and set
  *	inlConstTrace = (num. prog).
  */
-int	inlConstTrace = -1; /* 19; */ /* 18;*/ /* -1; */
+int	inlConstTrace = -1;
 int	inlCallInfoSerial = -1;
 int	inlRejectInfo;
 
