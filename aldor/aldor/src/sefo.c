@@ -1789,6 +1789,8 @@ symeEqual0(SymeList mods, Syme syme1, Syme syme2)
 			tfFollow(tf2);
 
 			assert (tfIsGeneral(tf1) && tfIsGeneral(tf2));
+			sefoEqualDEBUG(dbOut, "  symeEqual[%d] - selfSelf case %pTForm %pTForm\n",
+				       (int) serial, tf1, tf2);
 			result = (sefoListEqual0(mods, symeCondition(syme1),
 						 symeCondition(syme2)) &&
 				  abCompareModDeclares(sefoIdEqual, mods, tfGetExpr(tf1), tfGetExpr(tf2)));
