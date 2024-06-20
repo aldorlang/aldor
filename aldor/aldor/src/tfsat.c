@@ -1655,7 +1655,8 @@ tfSatThdExports(SatMask mask, TForm S, TForm T)
 		assert(tfHasThdExports(S) && tfHasThdExports(T));
 
 		mods = listConcat(Syme)(tfGetThdSelf(S), tfGetThdSelf(T));
-		result = tfSatExports(mask, mods, tfGetThdExports(S),
+		result = tfSatExports(mask, mods,
+				      tfGetThdExports(S),
 				      tfGetThdExports(T));
 	}
 	else if (tfSatAllow(mask, TFS_Pending)) {
