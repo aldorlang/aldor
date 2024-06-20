@@ -48,13 +48,15 @@ foamdir       = $(abs_top_builddir)/aldor/lib/libfoam
 aptests := exquo
 fmtests := rectest enumtest clos strtable1 simple apply \
 	   nestcond silly cexp lself0 selfcond lself \
-	   lself2 catdef2
+	   lself2 catdef2 args1a args1 args2a args2
 ctests  := rectest enumtest multinever maptuple cimp1
 otests  := enumtest
 xtests := enumtest jimport cross seq small
 
 out/ao/lself.ao: out/ao/lself0.ao
 out/ao/lself2.ao: out/ao/lself0.ao
+out/ao/args1.ao: out/ao/args1a.ao
+out/ao/args2.ao: out/ao/args2a.ao
 
 @BUILD_JAVA_TRUE@jtests := simple_j enumtest run_j halt
 @HAS_JUNIT_TRUE@junittests := JExportTest JThrowTest
@@ -74,6 +76,8 @@ halt_opts := -Q3
 jlist_opts :=
 lself_opts = -Y out/ao
 lself2_opts = -Y out/ao
+args1_opts = -Y out/ao
+args2_opts = -Y out/ao
 
 jexport_extjava := aldor.stuff.Foo aldor.stuff.Bar
 jthrow_extjava  := aldor.stuff.ExnThrow
@@ -97,6 +101,8 @@ strtable1_AXLFLAGS=-Y$(foamdir)/al -I $(foamsrcdir)/al -lRuntimeLib=foam -Q9
 clos_AXLFLAGS := -Q2
 simple_AXLFLAGS=-O
 multinever_AXLFLAGS = -Q9
+args1_AXLFLAGS =
+args2_AXLFLAGS =
 
 _aptests := $(sort $(aptests))
 _ctests  := $(sort $(ctests)  $(otests))
