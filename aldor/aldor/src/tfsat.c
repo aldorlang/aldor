@@ -1851,7 +1851,6 @@ tfSatExport(SatMask mask, SymeList mods, AbSyn Sab, SymeList S, Syme t, AbSub *l
 	tfsExportDEBUG(dbOut, "(tfSatExportExtra[%d]:: Incoming S: %pAbSyn %pTForm\n",
 		       serialThis, Sab, symeType(t));
 
-
 	SatModAbSyn satModAbSyn = satModAbSynNew(mods, Sab);
 	for (symes = S; !tfSatSucceed(result) && symes; symes = cdr(symes)) {
 		Syme	s = car(symes);
