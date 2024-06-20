@@ -1750,6 +1750,7 @@ local AbEqualValue
 tfSatAbCompareModAbSyn(void *ctxt, AbSyn ab1, AbSyn ab2)
 {
 	SatModAbSyn satModAbSyn = (SatModAbSyn) ctxt;
+	// For ids, make sure % in ab1, if present at all
 	if (!abIsTheId(ab1, ssymSelf) && abIsTheId(ab2, ssymSelf)) {
 		return tfSatAbCompareModAbSyn(ctxt, ab2, ab1);
 	}
@@ -1765,6 +1766,10 @@ tfSatAbCompareModAbSyn(void *ctxt, AbSyn ab1, AbSyn ab2)
 		if (eqAbSyn)
 			return AbEqual_True;
 		else {
+			// NB: This is a bit too lax, but we can wait for a counterexample
+			if (abIsTheId(ab2, ssymSelf)) {
+				return AbEqual_True;
+			}
 			Bool eq = sefoEqualMod(satModAbSyn->mods, ab1, ab2);
 			return eq ? AbEqual_True : AbEqual_False;
 		}
