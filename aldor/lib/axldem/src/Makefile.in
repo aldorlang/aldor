@@ -959,6 +959,14 @@ $(libraryname)-sources.jar: $(foreach i, $(JAVA_SUBDIRS),$i/$(libraryname).jar)
 	(cd sources-jar; jar cf ../$@ .);				\
 	rm -rf sources-jar
 
+$(libraryname)-sources.jar: $(foreach i, $(JAVA_SUBDIRS),$i/$(libraryname).jar)
+	$(AM_V_LIBSRCJAR)	\
+	rm -rf jar;		\
+	mkdir jar;		\
+	for i in $(foreach j, $(JAVA_SUBDIRS),$j/$(libraryname).jar); \
+		do (cd jar; jar xf ../$$i); done;  		\
+	(cd jar; jar cf ../$@ .)
+
 $(patsubst %,prereq-%,$(SUBDIRS)): prereq-%:
 	$(AM_V_PREREQ)	\
 	for dir in $(call lst_prefix,$*,$(SUBDIRS)); do \
