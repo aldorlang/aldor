@@ -1786,7 +1786,6 @@ tfSatExport(SatMask mask, SymeList mods, AbSyn Sab, SymeList S, Syme t, AbSub *l
 	Bool tryHarder = true;
 	static int serialNo = 0;
 	int serialThis = serialNo++;
-	AbSub sigma;
 
 	/* Check for % explicitly
 	* More exactly, as long as Sab is %, find % from t; if it corresponds to Sab or mods,

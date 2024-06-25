@@ -70,7 +70,7 @@ jthrow_opts := -Q3
 halt_opts := -Q3
 jlist_opts :=
 lself_opts = -Y out/ao
-lself2_opts = -Y out/ao -WD+tipAdd -WD+tfsExport -WD+tfs
+lself2_opts = -Y out/ao
 
 jexport_extjava := aldor.stuff.Foo aldor.stuff.Bar
 jthrow_extjava  := aldor.stuff.ExnThrow
