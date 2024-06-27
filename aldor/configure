@@ -13807,7 +13807,7 @@ rm -f core conftest.err conftest.$ac_objext conftest.beam \
     conftest$ac_exeext conftest.$ac_ext
 CFLAGS=$safe_CFLAGS
 
-git_build_id=""
+gitid=false
 if test "$ld_has_build_id" = "";
 then
     { { printf "%s\n" "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
@@ -13825,19 +13825,20 @@ then :
                   esac
 else $as_nop
   if test -f $srcdir/../.git/config ; then gitid=true; else gitid=false; fi
-              if test $gitid = true; then git_build_id=1; fi
 fi
 
 
 # Git SHA1 hash as ld build-id.
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: gitid $gitid ld: $ld_has_build_id " >&5
+printf "%s\n" "$as_me: gitid $gitid ld: $ld_has_build_id " >&6;}
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking build id" >&5
 printf %s "checking build id... " >&6; }
-if test yes = "$ld_has_build_id" && test 1 = "$git_build_id"; then
+if test yes = "$ld_has_build_id" && test true = "$gitid"; then
    VCSVERSION=`cd $srcdir; git rev-parse HEAD`
    build_id="-Wl,--build-id=0x$VCSVERSION"
    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: git: $VCSVERSION ld: yes" >&5
 printf "%s\n" "git: $VCSVERSION ld: yes" >&6; }
-elif test 1 = "$git_build_id"; then
+elif test true = "$gitid"; then
    VCSVERSION=`cd $srcdir; git rev-parse HEAD`
    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: git: $VCSVERSION ld: no" >&5
 printf "%s\n" "git: $VCSVERSION ld: no" >&6; }
