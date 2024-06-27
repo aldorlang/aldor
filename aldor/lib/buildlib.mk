@@ -207,16 +207,16 @@ $(libraryname).jar: $(patsubst %,aldorcode/%.class, $(_javalibrary)) $(top_srcdi
 		jar uf ../$@ -C jar .; done;				\
 	rm -rf jar
 
-$(libraryname)-sources.jar: $(patsubst %,aldorcode/%.class, $(_javalibrary)) $(top_srcdir)/lib/buildlib.mk
+$(libraryname)-sources.jar: $(patsubst %,aldorcode/%.java, $(_javalibrary)) $(top_srcdir)/lib/buildlib.mk
 	$(AM_V_SRCJAR) \
 	rm -f $@;	\
 	rm -rf sources-jar;	\
 	$(MKDIR_P) sources-jar;	\
-	jar cf $@ $(patsubst %,aldorcode/%*.java, $(_javalibrary)); \
+	jar cf $@ $(patsubst %,aldorcode/%.java, $(_javalibrary)); \
 	for i in $(foreach i, $(SUBDIRS), $i/$(libraryname)-sources.jar); do \
-		(cd jar; jar xf ../$$i);				\
+		(cd sources-jar; jar xf ../$$i);				\
 		jar uf ../$@ -C sources-jar .; done;				\
-	rm -rf jar
+	rm -rf sources-jar
 
 all: $(libraryname)-sources.jar $(libraryname).jar
 

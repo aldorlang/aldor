@@ -36,7 +36,7 @@ $(libraryname)-sources.jar: $(foreach i, $(JAVA_SUBDIRS),$i/$(libraryname).jar)
 	$(AM_V_LIBSRCJAR)	\
 	rm -rf sources-jar;		\
 	$(MKDIR_P) sources-jar;		\
-	for i in $(foreach j, $(JAVA_SUBDIRS),$j/$(libraryname).jar);	\
+	for i in $(foreach j, $(JAVA_SUBDIRS),$j/$(libraryname)-sources.jar);	\
 		do (cd sources-jar; jar xf ../$$i); done;  		\
 	(cd sources-jar; jar cf ../$@ .);				\
 	rm -rf sources-jar
