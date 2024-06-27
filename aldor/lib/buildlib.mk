@@ -335,7 +335,7 @@ distclean: clean
 
 maintainer-clean: distclean
 
-install-data:
+install-data: $(local-install-targets)
 	$(MKDIR_P) $(DESTDIR)$(datarootdir)/aldor/lib/$(libraryname)/$(libsubdir)
 	for i in $(library); do \
 		if test -f $(abs_srcdir)/$$i.as; then \
