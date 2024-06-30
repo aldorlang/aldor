@@ -365,8 +365,16 @@ aldorexedir = $(top_builddir)/aldor/src
 AM_V_LIBJAR = $(am__v_LIBJAR_$(V))
 am__v_LIBJAR_ = $(am__v_LIBJAR_$(AM_DEFAULT_VERBOSITY))
 am__v_LIBJAR_0 = @echo "  LIBJAR   " $@;
+AM_V_LIBSRCJAR = $(am__v_LIBSRCJAR_$(V))
+am__v_LIBSRCJAR_ = $(am__v_LIBSRCJAR_$(AM_DEFAULT_VERBOSITY))
+am__v_LIBSRCJAR_0 = @echo "  LIBSRCJAR   " $@;
+AM_V_PREREQ = $(am__v_PREREQ_$(V))
+am__v_PREREQ_ = $(am__v_PREREQ_$(AM_DEFAULT_VERBOSITY))
+am__v_PREREQ_0 = @echo "  PREREQ   " $@;
 AM_CFLAGS = -I$(aldorsrcdir)
 CLEANFILES = lib$(libraryname).al
+eq = $(and $(findstring $1,$2),$(findstring $2,$1))
+lst_prefix = $(warning 1 $1 2 $2)$(if $(or $(if $2,,xx), $(call eq,$1,$(firstword $2))),,$(firstword $2) $(call lst_prefix,$1,$(wordlist 2,$(words $2),$2)))
 all: all-recursive
 
 .SUFFIXES:
@@ -719,10 +727,27 @@ lib$(libraryname).al: $(foreach i,$(SUBDIRS),$i/_sublib_$(libraryname).al)
 $(libraryname).jar: $(foreach i, $(JAVA_SUBDIRS),$i/$(libraryname).jar)
 	$(AM_V_LIBJAR)		\
 	rm -rf jar;		\
-	mkdir jar;		\
+	$(MKDIR_P) jar;		\
 	for i in $(foreach j, $(JAVA_SUBDIRS),$j/$(libraryname).jar); \
 		do (cd jar; jar xf ../$$i); done;  		\
-	(cd jar; jar cf ../$@ .)
+	(cd jar; jar cf ../$@ .);				\
+	rm -rf jar
+
+$(libraryname)-sources.jar: $(foreach i, $(JAVA_SUBDIRS),$i/$(libraryname).jar)
+	$(AM_V_LIBSRCJAR)	\
+	rm -rf sources-jar;		\
+	$(MKDIR_P) sources-jar;		\
+	for i in $(foreach j, $(JAVA_SUBDIRS),$j/$(libraryname)-sources.jar);	\
+		do (cd sources-jar; jar xf ../$$i); done;  		\
+	(cd sources-jar; jar cf ../$@ .);				\
+	rm -rf sources-jar
+
+$(patsubst %,prereq-%,$(SUBDIRS)): prereq-%:
+	$(AM_V_PREREQ)	\
+	for dir in $(call lst_prefix,$*,$(SUBDIRS)); do \
+		echo $$dir;\
+		(cd $$dir; $(MAKE) $(AM_MAKEFLAGS) all || exit 1); \
+	done
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

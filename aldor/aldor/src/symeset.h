@@ -1,8 +1,9 @@
 #ifndef _SYMESET_H_
 #define _SYMESET_H_
-#include "ttable.h"
+
 #include "symbol.h"
 #include "syme.h"
+#include "ttable.h"
 
 /* A SymeSet contains a collection of symes - we hold the names
  * separately as these can be used to determine quickly if a set does
@@ -14,6 +15,7 @@ typedef struct SymeSet {
 	SymeList symes;
 } *SymeSet;
 
+extern SymeSet 		symeSetSingleton(Syme     syme);
 extern SymeSet 		symeSetFrSymes	(SymeList symes);
 extern SymeSet 		symeSetEmpty	(void);
 extern void    		symeSetFree	(SymeSet symeSet);

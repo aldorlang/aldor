@@ -309,7 +309,7 @@ local void
 dvMarkType(Foam decl)
 {
 	int j;
-	if (decl->foamDecl.type == FOAM_JavaObj) {
+	if (decl->foamDecl.type == FOAM_JavaObj || decl->foamDecl.type == FOAM_CObj) {
 		dvMarkWholeFormat(decl->foamDecl.format);
 	}
 }
@@ -675,13 +675,20 @@ dvMarkWholeFormat(int format)
 	int	i;
 
 	ddecl = dvFormats[format];
-	/* FOAM_DDecl_CSig has no references to other formats (yet) */
-	if (ddecl->foamDDecl.usage == FOAM_DDecl_FortranSig) {
+
+	if (ddecl->foamDDecl.usage == FOAM_DDecl_CSig) {
+		for (i=0; i < foamDDeclArgc(ddecl); i++) {
+			dvMarkWholeFormat(ddecl->foamDDecl.argv[i]->foamDecl.format);
+		}
+	}
+
+	else if (ddecl->foamDDecl.usage == FOAM_DDecl_FortranSig) {
 		for (i=0; i < foamDDeclArgc(ddecl); i++) {
 			if (ddecl->foamDDecl.argv[i]->foamDecl.type == FOAM_Clos)
 				dvMarkWholeFormat(ddecl->foamDDecl.argv[i]->foamDecl.format);
 		}
-	} 
+	}
+
 	for(i=0; i<foamDDeclArgc(ddecl); i++)
 		dvMarkFormat(format, i, DV_Keep);
 }

@@ -394,11 +394,13 @@ generateFoam(Stab stab0, AbSyn absyn, String initName)
 	/* Declare the globals for the top-level prog. */
 
 	/* Once called, never again */
-        decl = foamNewGDecl(FOAM_Clos, strCopy(gen0ProgName), emptyFormatSlot,
+        decl = foamNewGDecl(FOAM_Clos, strCopy(gen0ProgName), FOAM_Nil,
+			    emptyFormatSlot,
 			    FOAM_GDecl_Export, FOAM_Proto_Init);
 	gloInitIdx = gen0AddGlobal(decl);
 
-        decl = foamNewGDecl(FOAM_Clos, strCopy("noOperation"), emptyFormatSlot,
+        decl = foamNewGDecl(FOAM_Clos, strCopy("noOperation"), FOAM_Nil,
+			    emptyFormatSlot,
 			    FOAM_GDecl_Import,FOAM_Proto_Foam);
 	gloNOpIdx = gen0AddGlobal(decl);
 
@@ -422,6 +424,7 @@ generateFoam(Stab stab0, AbSyn absyn, String initName)
 
 	if (!genIsRuntime()) {
 		decl = foamNewGDecl(FOAM_Clos, gen0InitialiserName("runtime"),
+				    FOAM_Nil,
 				    emptyFormatSlot,
 				    FOAM_GDecl_Import,
 				    FOAM_Proto_Init);
@@ -1011,10 +1014,10 @@ gen0ExportToBuiltin(AbSyn absyn)
 	
 	rtype = tfIsMap(tf) ? gen0Type(tfMapRet(tf), NULL) : FOAM_Nil;
 	decl = foamNewGDecl(gen0Type(tf, NULL), strCopy(symeString(syme)),
+			    rtype,
 			    emptyFormatSlot,
 			    FOAM_GDecl_Export,
 			    FOAM_Proto_Foam);
-	foamGDeclSetRType(decl, rtype);
 	
 	index = gen0AddGlobal(decl);
 	
@@ -1065,8 +1068,8 @@ gen0ExportToC(AbSyn absyn)
 
 	/*!! Assumes export to C is exporting a function! */
 	decl = foamNewGDecl(FOAM_Clos, strCopy(symeString(syme)),
-			    init, FOAM_GDecl_Export, FOAM_Proto_C);
-	foamGDeclSetRType(decl, rtype);
+			    rtype, init, FOAM_GDecl_Export,
+			    FOAM_Proto_C);
 
 	index = gen0AddGlobal(decl);
 	gen0BuiltinExports = listCons(AInt)(index, gen0BuiltinExports);
@@ -1108,9 +1111,9 @@ genForeignImport(AbSyn absyn)
 		return (Foam) NULL;
 
 	/* Global declaration */
-	decl = foamNewGDecl(FOAM_Word, strCopy(forg->file), emptyFormatSlot,
+	decl = foamNewGDecl(FOAM_Word, strCopy(forg->file),
+			    FOAM_Nil, emptyFormatSlot,
 			    FOAM_GDecl_Import, FOAM_Proto_Include);
-	foamGDeclSetRType(decl, FOAM_Nil);
 
 	gen0AddGlobal(decl);
 	return (Foam)NULL;
@@ -1454,6 +1457,9 @@ genImplicit(AbSyn absyn, AbSyn val, FoamTag type)
 	return gen0ApplyReturn(absyn, syme, gen0AbType(absyn), foam);
 }
 
+local FoamTag gen0CSigType(TForm tf, AInt *fmt);
+local FoamTag gen0CSigTypeTypedef(Syme syme, AInt *fmt);
+
 local Foam
 genApply(AbSyn absyn)
 {
@@ -1779,8 +1785,6 @@ gen0ApplySyme(FoamTag type, Syme syme, SImpl impl,
 		 listIsSingleton(gen0State->envFormatStack))
 		foam = gen0OCall(mtype, syme, argc, &args);
 	else
-		/* BDS -- syme->id->str gives the name of the function being 
-                          called. */
 		foam = gen0CCall(mtype, syme, argc, &args);
 
 	if (type != mtype)
@@ -1843,16 +1847,24 @@ local Foam
 gen0ApplyForeign(FoamTag type, Syme syme, Length argc, Foam **pargv)
 {
 	Foam	foam;
+	FoamTag objTag = type;
 
+	if (symeForeign(syme)->protocol == FOAM_Proto_C) {
+		AInt fmt;
+		objTag = gen0CSigType(tfMapRet(symeType(syme)), &fmt);
+	}
 	/* printf("BDS: Inside gen0ApplyForeign\n"); */
 
 	foam = foamNewEmpty(FOAM_PCall, TypeSlot + OpSlot + ProtoSlot + argc);
-	foam->foamPCall.type = type;
+	foam->foamPCall.type = objTag;
 	foam->foamPCall.op = gen0ForeignValue(syme);
 	foam->foamPCall.protocol = symeForeign(syme)->protocol;
 
 	*pargv = foam->foamPCall.argv;
 
+	if (objTag != type) {
+		foam = foamNewCast(type, foam);
+	}
 	return foam;
 }
 
@@ -1936,6 +1948,7 @@ gen0ApplyImplicitSyme(FoamTag type, Syme syme, Length argc,
 	}
 	/* Gross! */
 	tf = symeType(syme);
+	tfFollow(tf);
 	assert(tfIsAnyMap(tf));
 	
 	tfargc = tfMapArgc(tf);
@@ -3057,8 +3070,8 @@ gen0TrailingNew(Syme syme, TForm key, Length argc, AbSyn *argv, Foam *vals)
 
 	whole = gen0Temp0(FOAM_TR, format);
 	sz    = foamNewCast(FOAM_SInt, arg0);
-	hdr   = gen0CrossToMulti(arg1, tfMapArgN(tf, 1));
-	proto = gen0CrossToMulti(arg2, tfMapArgN(tf, 2));
+	hdr   = gen0CrossToMulti(arg1, tfDefineeMaybeType(tfMapArgN(tf, 1)));
+	proto = gen0CrossToMulti(arg2, tfDefineeMaybeType(tfMapArgN(tf, 2)));
 
 	/* Idea is to generate:
 	 * tr   := TRNew(fmt, sz)
@@ -3313,10 +3326,8 @@ gen0CSigFormatNumber(TForm tf)
 
 	/* Generate the format. */
 	retc = tfMapRetc(tf);
-	if (retc == 1) retc = 0; /* Only want retc for multi-valued imports */
-	ddecl = foamNewEmpty(FOAM_DDecl, 1 + argc + retc);
+	ddecl = foamNewEmpty(FOAM_DDecl, 1 + argc + 1 + retc);
 	ddecl->foamDDecl.usage = FOAM_DDecl_CSig;
-
 
 	/* Process the arguments */
 	for (i = 0; i < argc; i++) {
@@ -3328,28 +3339,57 @@ gen0CSigFormatNumber(TForm tf)
 		/* Skip any declaration */
 		if (tfIsDeclare(tfi)) tfi = tfDeclareType(tfi);
 
-
 		/* Get the foam type */
-		type = gen0Type(tfi, &fmt);
-
+		type = gen0CSigType(tfi, &fmt);
 
 		/* Create a suitable declaration */
-		(void)sprintf(buffer, "P%d", (int) i);
-		str = strCopy(buffer);
+		str = aStrPrintf("P%d", (int) i);
 		ddecl->foamDDecl.argv[i] = foamNewDecl(type, str, fmt);
 	}
 
 	/* Process any multiple return values */
+	ddecl->foamDDecl.argv[argc + 0] = foamNewDecl(FOAM_Nil, strCopy(""), emptyFormatSlot);
+
 	for (i = 0; i < retc; i++) {
+		TForm tfi = tfMapRetN(tf, i);
+		AInt fmt;
+		FoamTag type;
 		char *str;
-		FoamTag rtype = FOAM_Ptr; /* Always a pointer */
-		AInt fmt = emptyFormatSlot;
-		(void)sprintf(buffer, "R%d", (int) i);
-		str = strCopy(buffer);
-		ddecl->foamDDecl.argv[argc + i] = foamNewDecl(rtype, str, fmt);
+
+		if (tfIsDeclare(tfi)) tfi = tfDeclareType(tfi);
+
+		type = gen0CSigType(tfi, &fmt);
+		str = aStrPrintf("R%d", (int) i);
+		ddecl->foamDDecl.argv[argc + 1 + i] = foamNewDecl(type, str, fmt);
 	}
 
 	return gen0AddRealFormat(ddecl);
+}
+
+local FoamTag
+gen0CSigType(TForm tf, AInt *fmt)
+{
+	if (!tfIsId(tf)) {
+		return gen0Type(tf, fmt);
+	}
+	Syme syme = tfIdSyme(tf);
+	if (syme == NULL) {
+		return gen0Type(tf, fmt);
+	}
+	if (symeIsForeign(syme) &&
+	    symeForeign(syme)->protocol == FOAM_Proto_C) {
+		return gen0CSigTypeTypedef(syme, fmt);
+	}
+	return gen0Type(tf, fmt);
+}
+
+local FoamTag
+gen0CSigTypeTypedef(Syme syme, AInt *fmt)
+{
+	Foam decl = foamNewDecl(FOAM_CObj, strCopy(symeString(syme)), emptyFormatSlot);
+	AInt typeDDeclId = gen0AddRealFormat(foamNewDDecl(FOAM_DDecl_CType, decl, NULL));
+	*fmt = typeDDeclId;
+	return FOAM_CObj;
 }
 
 /*
@@ -3365,15 +3405,14 @@ gen0CPackedSigFormatNumber(TForm tf)
 {
 	Foam		ddecl;
 	Length		i, argc, retc;
-	char		buffer[120];
 
 	assert (tfIsPackedMap(tf));
 	argc = tfMapArgc(tf);
 
 	/* Generate the format. */
 	retc = tfMapRetc(tf);
-	if (retc == 1) retc = 0; /* Only want retc for multi-valued imports */
-	ddecl = foamNewEmpty(FOAM_DDecl, 1 + argc + retc);
+
+	ddecl = foamNewEmpty(FOAM_DDecl, 1 + argc + 1 + retc);
 	ddecl->foamDDecl.usage = FOAM_DDecl_CSig;
 
 
@@ -3395,19 +3434,18 @@ gen0CPackedSigFormatNumber(TForm tf)
 
 
 		/* Create a suitable declaration */
-		(void)sprintf(buffer, "P%d", (int) i);
-		str = strCopy(buffer);
+		str = aStrPrintf("P%d", (int) i);
 		ddecl->foamDDecl.argv[i] = foamNewDecl(type, str, fmt);
 	}
 
+	ddecl->foamDDecl.argv[argc + 0] = foamNewDecl(FOAM_Nil, strCopy(""), emptyFormatSlot);
 	/* Process any multiple return values */
 	for (i = 0; i < retc; i++) {
 		char *str;
 		FoamTag rtype = FOAM_Ptr; /* Always a pointer */
 		AInt fmt = emptyFormatSlot;
-		(void)sprintf(buffer, "R%d", (int) i);
-		str = strCopy(buffer);
-		ddecl->foamDDecl.argv[argc + i] = foamNewDecl(rtype, str, fmt);
+		str = aStrPrintf("R%d", (int) i);
+		ddecl->foamDDecl.argv[argc + 1 + i] = foamNewDecl(rtype, str, fmt);
 	}
 
 	return gen0AddRealFormat(ddecl);
@@ -5703,7 +5741,7 @@ gen0VarsLex(Syme syme, Stab stab)
 
 	if (fintMode == FINT_LOOP &&
 	    gen0State->tag == GF_File && stabLevelNo(stab) == 1) {
-		decl = foamNewGDecl(type, name, fmtSlot,
+		decl = foamNewGDecl(type, name, FOAM_Nil, fmtSlot,
 				    FOAM_GDecl_Export, FOAM_Proto_Foam);
 		decl->foamDecl.id = gen0GlobalName(gen0FileName, syme);
 		isGlobal = true;
@@ -5818,7 +5856,7 @@ gen0VarsExport(Syme syme, Stab stab)
 		fmtSlot = gen0RecordFormatNumber(symeType(syme));
 
 	if (gen0State->tag == GF_File && stabLevelNo(stab) == 1) {
-		decl = foamNewGDecl(type, NULL, fmtSlot,
+		decl = foamNewGDecl(type, NULL, FOAM_Nil, fmtSlot,
 				    FOAM_GDecl_Export, FOAM_Proto_Foam);
 		decl->foamGDecl.id = gen0GlobalName(gen0FileName, syme);
 		index = gen0AddGlobal(decl);
@@ -5895,9 +5933,8 @@ gen0VarsForeign(Syme syme)
 	else
 		fmtSlot = emptyFormatSlot;
 
-	decl = foamNewGDecl(type, name, fmtSlot,
+	decl = foamNewGDecl(type, name, rtype, fmtSlot,
 			    FOAM_GDecl_Import, forg->protocol);
-	foamGDeclSetRType(decl, rtype);
 
 	index = gen0AddGlobal(decl);
 
@@ -6291,7 +6328,8 @@ gen0ForIter(AbSyn absyn, FoamList *forl, FoamList *itl)
                 call = foamNewEmpty(FOAM_CCall, 2);
                 call->foamCCall.type = FOAM_Word;
                 call->foamCCall.op   = foamCopy(valueFun);
-                call = gen0CrossToMulti(foamNewCast(FOAM_Rec, call), tfGeneratorArg(gen0AbContextType(absyn)));
+                call = gen0CrossToMulti(foamNewCast(FOAM_Rec, call),
+					tfDefineeMaybeType(tfGeneratorArg(gen0AbContextType(absyn))));
                 gen0MultiAssign(FOAM_Set, absyn->abFor.lhs, call);
         }
         else {
@@ -7463,9 +7501,10 @@ gen0CrossToMulti(Foam val, TForm tf)
 {
 	Foam	values;
 	Foam	t; 
-	int	i, size = tfCrossArgc(tf);
+	int	i, size;
 	AInt    cfmt, ftype;
 
+	size = tfCrossArgc(tf);
 	ftype = gen0Type(tf, &cfmt);
 	cfmt  = gen0CrossFormatNumber(tf);
 	t   = gen0TempLocal0(FOAM_Rec, cfmt);
@@ -7793,7 +7832,8 @@ gen0BuiltinImport(String fun, String lib)
 	for(i=0, l = gen0GlobalList; l; i++, l = cdr(l))
 		if (strEqual(fun, car(l)->foamGDecl.id))
 			return (AInt) (gen0NumGlobals - i - 1);
-	decl = foamNewGDecl(FOAM_Clos, strCopy(fun), emptyFormatSlot,
+	decl = foamNewGDecl(FOAM_Clos, strCopy(fun), FOAM_Nil,
+			    emptyFormatSlot,
 			    FOAM_GDecl_Import, FOAM_Proto_Foam);
 	assert(gen0GetRuntimeCallInfo(decl));
 	return (AInt) gen0AddGlobal(decl);
@@ -8167,6 +8207,8 @@ gen0CompareFormats(Foam dd1, Foam dd2)
 		 * foreign Fortran interface.
 		 */
 		if (t1 == FOAM_Clos
+		    || usage == FOAM_DDecl_CSig
+		    || usage == FOAM_DDecl_CType
 		    || usage == FOAM_DDecl_JavaClass
 		    || usage == FOAM_DDecl_JavaSig)
 		{ /* Can't merge if different signatures ... */

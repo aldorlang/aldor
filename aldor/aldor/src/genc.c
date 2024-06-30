@@ -6,7 +6,10 @@
  *
  ****************************************************************************/
 
+#include "bigint.h"
+#include "comsg.h"
 #include "compcfg.h"
+#include "csig.h"
 #include "debug.h"
 #include "fluid.h"
 #include "fortran.h"
@@ -16,11 +19,8 @@
 #include "of_rrfmt.h"
 #include "optfoam.h"
 #include "store.h"
-#include "util.h"
 #include "syme.h"
-#include "comsg.h"
-#include "bigint.h"
-
+#include "util.h"
 
 /*
  * The following naming conventions are used in this file:
@@ -262,8 +262,11 @@ local	Bool	gc0NeedBothCasts(FoamTag, FoamTag);
 local   CCode	gc0TryCast	(FoamTag, Foam);
 local   CCode	gc0Cast		(FoamTag, Foam);
 local	CCode	gc0TypeId	(AInt, AInt);
+local   String  gc0CTypeId	(AInt fmt);
+
 local	CCode	gc0IdDecl	(Foam, FoamTag, Foam, int, int);
 local	CCode	gc0IdCDecl	(Foam, CCode);
+local	CCode	gc0IdCRetDecl	(Foam);
 local   void	gc0IdFortranDecl(Foam, CCode *, CCode *);
 local 	CCode	gc0GloIdDecl	(Foam, int);
 local	CCode 	gc0FluidSet	(Foam, Foam);
@@ -638,6 +641,7 @@ gc0ExternDecls(String name)
 		  case FOAM_DDecl_FortranSig:	/*FALLTHROUGH*/
 		  case FOAM_DDecl_CSig:		/*FALLTHROUGH*/
 		  case FOAM_DDecl_JavaClass:	/*FALLTHROUGH*/
+		  case FOAM_DDecl_CType:	/*FALLTHROUGH*/
 			break;
 		  default:
 			gc0LFmtDef(i);
@@ -655,6 +659,7 @@ gc0ExternDecls(String name)
 		  /* Some formats must not have a typedef */
 		  case FOAM_DDecl_FortranSig:	/*FALLTHROUGH*/
 		  case FOAM_DDecl_CSig:		/*FALLTHROUGH*/
+		  case FOAM_DDecl_CType:	/*FALLTHROUGH*/
 		  case FOAM_DDecl_JavaClass:	/*FALLTHROUGH*/
 		  case FOAM_DDecl_JavaSig:	/*FALLTHROUGH*/
 			break;
@@ -808,7 +813,8 @@ gc0AddExtraModules()
 {
 	Foam decl;
 	CCode cco;
-	decl = foamNewGDecl(FOAM_Clos, "rtexns", 
+	decl = foamNewGDecl(FOAM_Clos, strCopy("rtexns"),
+			    FOAM_Nil,
 			    emptyFormatSlot, 
 			    FOAM_GDecl_Import,
 			    FOAM_Proto_Init);
@@ -5434,6 +5440,8 @@ gc0FunOCall0(Foam foam, int returnKind)
 	return ccoFCall(gccProgId(foam->foamOCall.op), ccArgs);
 }
 
+local CCode gc0PCallCArgument(Foam op, int idx, Foam farg);
+
 local CCode
 gc0FunPCall0(Foam foam, int returnKind)
 {
@@ -5459,6 +5467,13 @@ gc0FunPCall0(Foam foam, int returnKind)
 		}
 		return ccPCall;
 	}
+	else if (foam->foamPCall.protocol == FOAM_Proto_C) {
+		for (i = 0; i < argc; i++) {
+			Foam farg = foam->foamPCall.argv[i];
+			gc0AddLine(code, gc0PCallCArgument(foam->foamPCall.op, i, farg));
+		}
+		code = listNReverse(CCode)(code);
+	}
 	else {
 		for (i = 0; i < argc; i++) {
 			Foam farg = foam->foamPCall.argv[i];
@@ -5469,6 +5484,31 @@ gc0FunPCall0(Foam foam, int returnKind)
 	ccArgs = gc0ListOf(CCO_Many, code);
 	listFree(CCode)(code);
 	return ccoFCall(gccPCallId(foam), ccArgs);
+}
+
+local CCode
+gc0PCallCArgument(Foam op, int idx, Foam farg)
+{
+	Foam gdecl = gcvGlo->foamDDecl.argv[op->foamGlo.index];
+	Foam sig, arg;
+	AInt argTypeIdx;
+
+	if (gdecl->foamGDecl.protocol != FOAM_Proto_C) {
+		return gccExpr(farg);
+	}
+	if (gdecl->foamGDecl.format == emptyFormatSlot) {
+		return gccExpr(farg);
+	}
+	sig = gcvFmt->foamDFmt.argv[gdecl->foamGDecl.format];
+	argTypeIdx = sig->foamDDecl.argv[idx]->foamDecl.format;
+	arg = gcvFmt->foamDFmt.argv[argTypeIdx];
+	if (arg->foamDDecl.usage == FOAM_DDecl_CType) {
+		String name = arg->foamDDecl.argv[0]->foamDecl.id;
+		return ccoCast(ccoIdOf(name), gccExpr(farg));
+	}
+	else {
+		return gccExpr(farg);
+	}
 }
 
 
@@ -5824,7 +5864,7 @@ gc0GloIdDecl(Foam decl, int idx)
 		ccType = gc0TypeId(t, fmt);
 	else if (imported && (p == FOAM_Proto_C)) {
 		ccName = gc0IdCDecl(decl, ccName);
-		ccType = gc0TypeId(decl->foamGDecl.rtype, emptyFormatSlot);
+		ccType = gc0IdCRetDecl(decl);
 	}
 	else {
 		/*
@@ -5878,13 +5918,28 @@ gc0GloIdDecl(Foam decl, int idx)
 
 
 local CCode
+gc0IdCRetDecl(Foam decl)
+{
+	AInt fmt    = decl->foamGDecl.format;
+	Foam fndecl = gcvFmt->foamDFmt.argv[fmt];
+	int  retc   = csigRetc(fndecl);
+
+	if (retc == 1) {
+		Foam ret = csigRetN(fndecl, 0);
+		return gc0TypeId(ret->foamDecl.type, ret->foamDecl.format);
+	}
+	else {
+		return ccoVoid();
+	}
+}
+
+local CCode
 gc0IdCDecl(Foam decl, CCode ccName)
 {
-	AInt	i, argc;
+	AInt	i, argc, nargs, nrets;
 	Foam	fndecl;
 	CCode	ccArgs;
 	AInt	fmt = decl->foamGDecl.format;
-
 
 	/* Ignore things with no format */
 	if (fmt == emptyFormatSlot) return ccoFCall(ccoCopy(ccName), int0);
@@ -5892,14 +5947,13 @@ gc0IdCDecl(Foam decl, CCode ccName)
 
 	/* Get the true declaration */
 	fndecl	= gcvFmt->foamDFmt.argv[fmt];
-	argc	= foamArgc(fndecl) - 1; /* skip CSig */
-	ccArgs	= ccoNewNode(CCO_Many, argc);
+	nargs = csigArgc(fndecl);
+	ccArgs	= ccoNewNode(CCO_Many, nargs);
 
-
-	/* Process each argument (includes arguments for return values) */
-	for (i = 0; i < argc; i++)
+	/* Process each argument */
+	for (i = 0; i < nargs; i++)
 	{
-		Foam	arg = fndecl->foamDDecl.argv[i];
+		Foam	arg = csigArgN(fndecl, i);
 		FoamTag type = arg->foamDecl.type;
 		AInt	fmt = arg->foamDecl.format;
 		String	str = arg->foamDecl.id;
@@ -6175,6 +6229,9 @@ gc0TypeId(AInt t, AInt fmt)
 	  case FOAM_Arb:
 		cc = ccoTypeIdOf(gcFiArb);
 		break;
+	  case FOAM_CObj:
+		cc = ccoTypedefId(gc0CTypeId(fmt));
+		break;
 	  case FOAM_JavaObj:
 		cc = ccoTypeIdOf(gcFiWord);
 		break;
@@ -6184,6 +6241,13 @@ gc0TypeId(AInt t, AInt fmt)
 	}
 	return cc;
 }
+
+local String
+gc0CTypeId(AInt fmt)
+{
+	return strPrintf("QQ-%d", fmt);
+}
+
 
 local CCode
 gc0SIntMod(Foam foam, CCodeTag ctag)

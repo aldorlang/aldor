@@ -76,7 +76,7 @@ as parameters to explicit calls to {\tt mpz\_} functions.}
 
     export from IntegerSegment %;
 == add
-    import { int: Type; mpz__srcptr: Type; mpz__ptr: Type } from Foreign C;
+    import { int: Type; mpz__srcptr: Type; mpz__ptr: Type; mpf__ptr: Type; Ptr: Type } from Foreign C("gmp.h")
     import
        mpz__add: (mpz__ptr, mpz__srcptr, mpz__srcptr) -> ()
        mpz__and: (mpz__ptr, mpz__srcptr, mpz__srcptr) -> ()
@@ -95,7 +95,7 @@ as parameters to explicit calls to {\tt mpz\_} functions.}
        mpz__pow__ui: (mpz__ptr, mpz__srcptr, int) -> ()
        mpz__scan1: (mpz__srcptr, Z) -> Z
        mpz__set__si: (mpz__ptr, MachineInteger) -> ()
-       mpz__set__str: (mpz__ptr, Pointer, int) -> ()
+       mpz__set__str: (mpz__ptr, Ptr, int) -> ()
        mpz__sign: mpz__ptr -> ()
        mpz__sizeinbase: (mpz__srcptr, int) -> int
        mpz__size: (mpz__ptr) -> int
@@ -146,7 +146,7 @@ as parameters to explicit calls to {\tt mpz\_} functions.}
 
     integer(l: Literal): % ==
         e: % := new()
-	mpz__set__str(gmpIn e, l pretend Pointer, (10@MachineInteger) pretend int)
+	mpz__set__str(gmpIn e, l pretend Ptr, (10@MachineInteger) pretend int)
 	return e
 	
     bit?(a: %, n: Z): Boolean  ==

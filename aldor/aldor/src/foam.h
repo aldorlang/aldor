@@ -75,6 +75,7 @@ enum foamTag {
 			FOAM_MFmt,	 /* Indicate multiple values */
 			FOAM_RRFmt,	 /* Raw record (dynamic) format */
 	                FOAM_JavaObj,    /* Java things */
+	                FOAM_CObj,      /* C things */
 
 		FOAM_CONTROL_LIMIT,
 
@@ -467,6 +468,7 @@ enum foamDDeclTag {
 	FOAM_DDecl_Global,
 	FOAM_DDecl_FortranSig,
 	FOAM_DDecl_CSig,
+	FOAM_DDecl_CType,
 	FOAM_DDecl_JavaSig,
 	FOAM_DDecl_JavaClass,
    FOAM_DDECL_LIMIT
@@ -681,10 +683,9 @@ struct foamClos {
 	Foam                    prog;
 };
 
-#define foamNewGDecl(ty,id,f,pr,dir) foamNew(FOAM_GDecl,6,(AInt)(ty),id, \
-					     (AInt)FOAM_Nil,f, \
+#define foamNewGDecl(ty,id,rt,f,pr,dir) foamNew(FOAM_GDecl,6,(AInt)(ty),id, \
+					     rt,f, \
 					     (AInt)(pr),(AInt)(dir))
-#define foamGDeclSetRType(fm,ty)	((fm)->foamGDecl.rtype = (ty))
 extern Bool foamGDeclIsImport(Foam);
 extern Bool foamGDeclIsExport(Foam);
 extern Bool foamGDeclIsExportOf(AInt, Foam);
@@ -1621,6 +1622,11 @@ extern Bool		 foamIsControlFlow	(Foam);
 
 typedef Bool (*FoamTestFn)(Foam f);
 extern Foam foamFindFirst(FoamTestFn testFn, Foam foam);
+
+typedef Bool (*FoamTestEnvFn)(Foam f, AInt env);
+extern Foam foamFindFirstEnv(FoamTestEnvFn testFn, Foam foam, AInt env);
+
+extern Foam foamFindFirstTag(FoamTag tag, Foam foam);
 
 Foam foamCastIfNeeded(FoamTag wanted, FoamTag actual, Foam foam);
 

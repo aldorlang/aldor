@@ -22,7 +22,9 @@ otherfiles := alg_leaf alg_op
 
 include $(abs_top_srcdir)/lib/algebra/src/common.mk
 
-install-data:
+local-install-targets=local-install-data
+
+local-install-data:
 	$(MKDIR_P) $(DESTDIR)$(datarootdir)/aldor/lib/$(libraryname)/$(libsubdir)
 	for i in $(otherfiles); do \
 		if test -f $(abs_srcdir)/$$i.as; then \

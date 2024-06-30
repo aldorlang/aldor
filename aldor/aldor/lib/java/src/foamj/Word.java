@@ -33,6 +33,7 @@ public interface Word {
 
     byte toByte();
 
+    Object toPtr();
 
     public class U {
         static public Object toArray(Word word) {
@@ -40,6 +41,13 @@ public interface Word {
                 return null;
             else
                 return word.toArray();
+        }
+
+        static public Object toPtr(Word word) {
+            if (word == null)
+                return null;
+            else
+                return word.toPtr();
         }
 
 	static public <T> T toJavaObj(Word word) {
@@ -70,7 +78,7 @@ public interface Word {
         }
 
         public static Word fromBool(boolean b) {
-            return new Bool(b);
+	    return b ? Bool.TRUE : Bool.FALSE;
         }
 
         public static Word fromChar(char c) {

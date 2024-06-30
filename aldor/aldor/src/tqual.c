@@ -6,18 +6,20 @@
  *
  ****************************************************************************/
 
+#include "abpretty.h"
 #include "axlobs.h"
+#include "comsg.h"
+#include "debug.h"
 #include "format.h"
+#include "lib.h"
+#include "sefo.h"
 #include "spesym.h"
 #include "stab.h"
 #include "store.h"
-#include "sefo.h"
-#include "lib.h"
-#include "tqual.h"
-#include "abpretty.h"
-#include "comsg.h"
 #include "strops.h"
 #include "symcoinfo.h"
+#include "tqual.h"
+
 
 Bool	tqDebug		= false;
 
@@ -138,6 +140,14 @@ tqFree(TQual tq)
 	if (tqIsQualified(tq))
 		tqFreeQual(tq);
 	stoFree(tq);
+}
+
+int
+tqPrintDb(TQual tq)
+{
+	int rc = tqPrint(dbOut, tq);
+	fnewline(dbOut);
+	return rc;
 }
 
 int

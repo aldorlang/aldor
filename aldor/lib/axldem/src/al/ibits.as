@@ -12,7 +12,7 @@ IndexedBits(mn:SI): Join(BasicType, Aggregate(Boolean), Logic) with {
 	string:Literal -> %;
 }
 == add {
-	Rep ==> Record(size: SI, nvalues:SI, values: BArr);
+	Rep == Record(size: SI, nvalues:SI, values: BArr);
 
 	import from Rep;
 	import from Machine;

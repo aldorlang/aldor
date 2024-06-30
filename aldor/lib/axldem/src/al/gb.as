@@ -126,7 +126,7 @@ sugarPol(Dpol: BasicType): BasicType with
    apply: (%, 'totdeg') -> NNI
    apply: (%, 'pol') -> Dpol
  == add
-   Rep ==> Record( totdeg: NonNegativeInteger, pol : Dpol)
+   Rep == Record( totdeg: NonNegativeInteger, pol : Dpol)
    import from Rep
    sample: % == nil$Pointer pretend %	--!!
    (p1:%) =  (p2:%):Boolean == rep(p1).pol = rep(p2).pol

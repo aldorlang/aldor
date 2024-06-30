@@ -17,7 +17,7 @@ subdir		:= $(subst $(abs_top_builddir)/,,$(abs_builddir))
 
 VPATH		:= $(VPATH):$(top_srcdir)/lib/axllib/src/al
 VPATH		:= $(VPATH):$(srcdir)/..
-VPATH		:= $(VPATH):$(srcdir)/../ax
+VPATH		:= $(VPATH):$(srcdir)/../ap
 
 # Build starts here
 library =	\
@@ -29,7 +29,7 @@ library =	\
 	stub	\
 	#
 
-axlibrary =		\
+aplibrary =		\
 	basecliq	\
 	aggcat	\
 	any	\

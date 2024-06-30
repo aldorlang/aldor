@@ -1,25 +1,29 @@
-
-#include "formatters.h"
+#include "absub.h"
 #include "axlobs.h"
-#include "syme.h"
-#include "symeset.h"
-#include "freevar.h"
 #include "bigint.h"
+#include "errorset.h"
+#include "format.h"
+#include "formatters.h"
+#include "freevar.h"
 #include "java/javacode.h"
 #include "ostream.h"
-#include "format.h"
 #include "sefo.h"
-#include "tposs.h"
 #include "strops.h"
-#include "errorset.h"
+#include "syme.h"
+#include "symeset.h"
 #include "tconst.h"
+#include "tfsat.h"
+#include "tposs.h"
 #include "ttable.h"
 
 local int tfFormatter(OStream stream, Pointer p);
+local int tfFormatterAlt(OStream stream, int lvl, Pointer p);
 local int tfListFormatter(OStream stream, Pointer p);
 
 local int tpossFormatter(OStream stream, Pointer p);
 local int fvFormatter(OStream stream, Pointer p);
+local int absFormatter(OStream stream, Pointer p);
+local int abbFormatter(OStream stream, Pointer p);
 
 local int tconstFormatter(OStream stream, Pointer p);
 
@@ -49,14 +53,21 @@ local int errorSetFormatter(OStream stream, Pointer p);
 local int javaCodeFormatter(OStream stream, Pointer p);
 
 
+local int boolFormatter(OStream ostream, int p);
+
 void
 fmttsInit()
 {
+	fmtRegisterI("Bool", boolFormatter);
+
 	fmtRegister("TForm", tfFormatter);
+	fmtRegisterAlt("TForm", tfFormatterAlt);
 	fmtRegister("TFormList", tfListFormatter);
 
 	fmtRegister("FreeVar", fvFormatter);
 	fmtRegister("TPoss", tpossFormatter);
+	fmtRegister("AbSub", absFormatter);
+	fmtRegister("AbBind", abbFormatter);
 
 	fmtRegister("TConst", tconstFormatter);
 
@@ -192,7 +203,17 @@ tfFormatter(OStream ostream, Pointer p)
 {
 	int c;
 
-	c = tformOStreamWrite(ostream, p);
+	c = tformOStreamWrite(ostream, false, p);
+
+	return c;
+}
+
+local int
+tfFormatterAlt(OStream ostream, int lvl, Pointer p)
+{
+	int c;
+
+	c = tformOStreamWrite(ostream, true, p);
 
 	return c;
 }
@@ -215,6 +236,29 @@ tpossFormatter(OStream ostream, Pointer p)
 	int c;
 
 	c = tpossOStreamWrite(ostream, tp);
+
+	return c;
+}
+
+local int
+absFormatter(OStream ostream, Pointer p)
+{
+	AbSub tp = (AbSub) p;
+	int c;
+
+	c = absOStreamWrite(ostream, tp);
+
+	return c;
+}
+
+
+local int
+abbFormatter(OStream ostream, Pointer p)
+{
+	AbBind tp = (AbBind) p;
+	int c;
+
+	c = abbOStreamWrite(ostream, tp);
 
 	return c;
 }
@@ -246,7 +290,7 @@ tconstFormatter(OStream ostream, Pointer p)
 	TConst tc = (TConst) p;
 	int i;
 
-	i = ostreamPrintf(ostream, "[TC: %pTForm %pTForm]", tc->argv[0], tc->argv[1]);
+	i = ostreamPrintf(ostream, "[TC: %d %pTForm %pTForm]", tc->serial, tc->argv[0], tc->argv[1]);
 
 	return i;
 }
@@ -305,4 +349,17 @@ stringListFormatter(OStream ostream, Pointer p)
 {
 	StringList list = (StringList) p;
 	return listFormat(String)(ostream, "String", list);
+}
+
+local int
+boolFormatter(OStream ostream, int p)
+{
+	Bool flg = p;
+
+	if (flg < 0 || flg > 1)	{
+		return ostreamPrintf(ostream, "Bool[%d]", flg);
+	}
+	else {
+		return ostreamPrintf(ostream, "%s", flg ? "true": "false");
+	}
 }

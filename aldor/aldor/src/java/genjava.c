@@ -314,7 +314,7 @@ genJavaUnit(Foam foam, String name)
 	body = listNConcat(JavaCode)(body, stubs);
 	
 	interfaces = listSingleton(JavaCode)(gj0Id(GJ_FoamClass));
-	clss = jcClass(JCO_MOD_Public, comment, 
+	clss = jcClass(JCO_MOD_Public, comment, listNil(JavaCode),
 		       jcId(gj0ClassName(foam, name)), NULL, interfaces, body);
 
 	imps = gj0CollectImports(clss);
@@ -490,6 +490,7 @@ gj0ExportClassCreate(JavaCode classId, AIntList ids)
 
 	clss = jcClass(JCO_MOD_Public|JCO_MOD_Final,
 		       strCopy(".. ++ docco goes here"),
+		       listNil(JavaCode),
 		       jcoCopy(className),
 		       gj0Id(GJ_AldorObject),
 		       listNil(JavaCode), body);
@@ -3802,7 +3803,37 @@ gj0CastObjToWord(JavaCode val, FoamTag type, AInt fmt)
 local JavaCode
 gj0CastObjToPtr(JavaCode val, FoamTag type, AInt fmt)
 {
-	return val;
+	switch (type) {
+		// self
+	case FOAM_Ptr:
+		return val;
+		// allocated once (I think)
+	case FOAM_Arr:
+	case FOAM_Rec:
+	case FOAM_JavaObj:
+	case FOAM_Clos:
+		return val;
+		// wrapped by runtime
+	case FOAM_Word:
+		return jcApplyMethod(jcMemRef(gj0Id(GJ_FoamWord),
+					      jcId(strCopy("U"))),
+				     jcId(strCopy("toPtr")),
+				     listSingleton(JavaCode)(val));
+		// throw an error
+	case FOAM_DFlo:
+	case FOAM_SFlo:
+	case FOAM_Byte:
+	case FOAM_Char:
+	case FOAM_SInt:
+	case FOAM_Bool:
+	case FOAM_HInt:
+	case FOAM_BInt:
+		return val;
+	case FOAM_Nil:
+		return val;
+	default:
+		return val;
+	}
 }
 
 /*

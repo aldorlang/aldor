@@ -6,21 +6,24 @@
 # dh-make output file, you may use that output file without restriction.
 # This special exception was added by Craig Small in version 0.37 of dh-make.
 
-# Uncomment this to turn on verbose mode.
-#export DH_VERBOSE=1
+# For a silent build.
+export DH_QUIET=1
 
 # FIXME: This breaks the Aldor B-tree based GC.
 #export DEB_BUILD_HARDENING=1
+
+OPTIONS_build=--enable-git-build-id=no
 
 %:
 	dh $@				\
 	  --sourcedirectory=aldor	\
 	  --builddirectory=build	\
-	  --parallel
+	  --parallel			\
+	  $(OPTIONS_$(@))
 
 override_dh_auto_configure:
 	dh_auto_configure -- --enable-silent-rules
 
 build: aldor/configure
-aldor/configure: aldor/autogen.sh
+aldor/configure: aldor/autogen.sh aldor/configure.ac
 	cd $(dir $@) && sh autogen.sh

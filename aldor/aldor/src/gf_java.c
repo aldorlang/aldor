@@ -142,7 +142,7 @@ gfjImportApplyInner(Syme syme, AInt fmtNum)
 
 	globName = gfjDeclMethodNameForType(exporter, symeJavaApplyName(syme));
 
-	gdecl = foamNewGDecl(FOAM_Clos, globName,
+	gdecl = foamNewGDecl(FOAM_Clos, globName, FOAM_Nil,
 			     gfjPCallDeclImport(innerTf, tfMapArgN(symeType(syme), 0)),
 			     FOAM_GDecl_Import, FOAM_Proto_JavaMethod);
 	gnum = gen0AddGlobal(gdecl);
@@ -200,7 +200,8 @@ gfjImportConstructor(Syme syme)
 
 	constNum = gen0NumProgs;
 	
-	gdecl = foamNewGDecl(FOAM_Clos, globName, gfjPCallDeclImport(symeType(syme), NULL),
+	gdecl = foamNewGDecl(FOAM_Clos, globName, FOAM_Nil,
+			     gfjPCallDeclImport(symeType(syme), NULL),
 			     FOAM_GDecl_Import, FOAM_Proto_JavaConstructor);
 	gnum = gen0AddGlobal(gdecl);
 
@@ -246,7 +247,9 @@ gfjImportStaticCall(Syme syme)
 	
 	constNum = gen0NumProgs;
 	
-	gdecl = foamNewGDecl(FOAM_Clos, globName, gfjPCallDeclImport(symeType(syme), NULL),
+	gdecl = foamNewGDecl(FOAM_Clos, globName,
+			     FOAM_Nil,
+			     gfjPCallDeclImport(symeType(syme), NULL),
 			     FOAM_GDecl_Import, FOAM_Proto_Java);
 	gnum = gen0AddGlobal(gdecl);
 
@@ -737,10 +740,8 @@ gfjExportToJavaSyme(TForm exporter, Syme syme, Foam clos)
 	String foamName = gfjDeclMethodName(symeString(tfIdSyme(exporter)), forg, methodName);
 
 	strFree(methodName);
-	decl = foamNewGDecl(FOAM_Clos, foamName,
+	decl = foamNewGDecl(FOAM_Clos, foamName, rtype,
 			    declFmt, FOAM_GDecl_Export, protocol);
-
-	foamGDeclSetRType(decl, rtype);
 
 	index = gen0AddGlobal(decl);
 	gen0BuiltinExports = listCons(AInt)(index, gen0BuiltinExports);
@@ -963,13 +964,13 @@ gfjExportDecoder(TForm tf)
 	// This will be <object>.rep()
 	String globName = gfjDeclMethodName(symeString(tfIdSyme(tf)),
 					    stabForeignExportLocation(gen0State->stab, tf),
-					    "rep");;
+					    "rep");
 
 	Foam ddecl = javaSigNew(foamNewDecl(FOAM_Word, strCopy(""), emptyFormatSlot),
 				foamNewDecl(FOAM_NOp, strCopy(""), emptyFormatSlot),
 				listSingleton(Foam)(gfjPCallDeclArg(tf)));
 	AInt sigIdx = gen0AddRealFormat(ddecl);
-	gdecl = foamNewGDecl(FOAM_Clos, globName, sigIdx,
+	gdecl = foamNewGDecl(FOAM_Clos, globName, FOAM_Nil, sigIdx,
 			     FOAM_GDecl_Import, FOAM_Proto_JavaMethod);
 
 	AInt idx = gen0AddGlobal(gdecl);
@@ -998,7 +999,7 @@ gfjExportEncoder(TForm tf)
 			   listSingleton(Foam)(foamNewDecl(FOAM_Word, strCopy(""), emptyFormatSlot)));
 	AInt sigIdx = gen0AddRealFormat(ddecl);
 
-	gdecl = foamNewGDecl(FOAM_Clos, globName, sigIdx,
+	gdecl = foamNewGDecl(FOAM_Clos, globName, FOAM_Nil, sigIdx,
 			     FOAM_GDecl_Import, FOAM_Proto_JavaMethod);
 
 	AInt idx = gen0AddGlobal(gdecl);

@@ -27,6 +27,10 @@ public class FoamJ {
             return this;
         }
 
+	public Object toPtr() {
+	    return arr;
+	}
+
         public String toString() {
             return "A" + arr.toString() + "]";
         }
@@ -60,6 +64,9 @@ public class FoamJ {
             return obj.toString();
         }
 
+	public Object toPtr() {
+	    return obj;
+	}
     }
 
     /**
@@ -194,7 +201,9 @@ public class FoamJ {
     }
 
     static public class Bool extends AbstractValue implements Value, Word {
-        private boolean value;
+	public final static Bool TRUE = new Bool(true);
+	public final static Bool FALSE = new Bool(false);
+        private final boolean value;
 
         public Bool(boolean b) {
             this.value = b;

@@ -10,7 +10,7 @@ OrderedDirectProduct(dim: SI, lessThan?: (Array S, Array S) -> Boolean):
 	OrderedDirectProductCat
 
 == add {
-	Rep ==> Array S;
+	Rep == Array S;
 	import from Rep;
 
 	map(f:S-> S, v: %):% == {

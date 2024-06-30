@@ -6,21 +6,23 @@
  *
  ****************************************************************************/
 
+#include "ablogic.h"
+#include "absub.h"
 #include "axlobs.h"
+#include "comsg.h"
 #include "debug.h"
 #include "format.h"
+#include "ostream.h"
+#include "sefo.h"
+#include "tconst.h"
+#include "tfsat.h"
+#include "tposs.h"
 #include "spesym.h"
 #include "stab.h"
+#include "store.h"
 #include "terror.h"
 #include "ti_top.h"
-#include "sefo.h"
-#include "lib.h"
-#include "tconst.h"
-#include "tposs.h"
-#include "tfsat.h"
-#include "absub.h"
-#include "ablogic.h"
-#include "comsg.h"
+#include "util.h"
 
 Bool	tfsDebug	= false;
 Bool	tfsMultiDebug	= false;
@@ -86,6 +88,36 @@ extern Stab		stabFindLevel		(Stab, Syme);
  */
 
 /*!! Remember to update tfSatAbEmbed when these change. */
+struct maskInfo {
+	String name;
+};
+struct maskInfo tfSatMaskInfo[] = {
+	{"Probe"},
+	{"Commit"},
+	{"Missing"},
+	{"Sigma"},
+	{"Info"},
+	{"Conditions"},
+	{"Pending"},
+	{"AnyToNone"},
+	{"Sefo"},
+	{"CrossToTuple"},
+	{"CrossToMulti"},
+	{"CrossToUnary"},
+	{"MultiToTuple"},
+	{"MultiToCross"},
+	{"MultiToUnary"},
+	{"UnaryToTuple"},
+	{"UnaryToCross"},
+	{"UnaryToMulti"},
+	{"Fail"},
+	{"ExportsMissing"},
+	{"EmbedFail"},
+	{"ArgMissing"},
+	{"BadArgType"},
+	{"DifferentArity"},
+	{NULL}
+};
 
 #define	TFS_Succeed		((SatMask) 0)
 
@@ -174,7 +206,7 @@ extern Stab		stabFindLevel		(Stab, Syme);
 #define			tfSatAllow(m,c)		((m) & (c))
 
 #define			tfSatResult(m,c)	(tfSatMode(m) | (c))
-#define			tfSatParNFail(m,n)	((m) | tfsParNBits(n))
+#define			tfSatParNFail(m, r, n)	(tfSatMode(m) | (r) | tfsParNBits(n))
 
 
 #define			tfSatTrue(m)		tfSatResult(m, TFS_Succeed)
@@ -212,7 +244,8 @@ local SatMask		tfSatCatExports		(SatMask, AbSyn Sab, TForm S, TForm T);
 local SatMask		tfSatThdExports		(SatMask, TForm S, TForm T);
 
 local SatMask		tfSatExports	(SatMask,SymeList,SymeList,SymeList);
-local SatMask		tfSatExport	(SatMask,SymeList,AbSyn Stf, SymeList S,Syme t);
+local SatMask		tfSatExport	(SatMask,SymeList,AbSyn Stf, SymeList S,Syme t, AbSub *lazy);
+local AbSub		tfSatExportLazySelfSubst(SymeList mods, Sefo Sab, AbSub *lazySelfSubst);
 local SatMask		tfSatParents	(SatMask,SymeList, AbSyn, SymeList,SymeList);
 
 local SatMask		tfSatConditions		(SatMask, SymeList, Syme, Syme);
@@ -223,9 +256,11 @@ local Sefo		tfSatCond		(TForm);
 local SefoList		tfSatConds		(void);
 
 local SymeList	tfSatExportsMissing	(SatMask,SymeList,AbSyn,SymeList,SymeList);
-local SymeList	tfSatParentsFilter	(SymeList, SymeList);
+local SymeList	tfSatParentsFilterTable	(SymeTSet, SymeList);
 
 local void	tfSatSetPendingFail	(TForm);
+
+local String    tfSatMaskToString(SatMask mask);
 
 /******************************************************************************
  *
@@ -623,8 +658,7 @@ tfSatAsMulti(SatMask mask, AbSub sigma, TForm S, TForm TScope,
 		abi  = tfAsMultiSelectArg(ab, argc, pi, argf, tfi, &def, &ai);
 
 		if (!abi) {
-			result = tfSatResult(mask, TFS_ArgMissing);
-			result = tfSatParNFail(result, pi);
+			result = tfSatParNFail(mask, TFS_ArgMissing, pi);
 			break;
 		}
 		if (!def) usedc += 1;
@@ -637,8 +671,7 @@ tfSatAsMulti(SatMask mask, AbSub sigma, TForm S, TForm TScope,
 		if (!def && !tfSatSigma(mask)) {
 			maski = tfSatArg(mask, abi, tfi);
 			if (!tfSatSucceed(maski)) {
-				result = tfSatResult(mask, TFS_BadArgType);
-				result = tfSatParNFail(result, pi);
+				result = tfSatParNFail(mask, TFS_BadArgType, pi);
 				break;
 			}
 			if (tfSatPending(maski))
@@ -678,8 +711,7 @@ tfSatAsMulti(SatMask mask, AbSub sigma, TForm S, TForm TScope,
 		/* Install the packed embedding on abi, if needed. */
 		if (tfSatCommit(mask) && packed)
 			if (!tiTopFns()->tiUnaryToRaw(absStab(sigma), abi, tfi)) {
-				result = tfSatResult(mask, TFS_BadArgType);
-				result = tfSatParNFail(result, pi);
+				result = tfSatParNFail(mask, TFS_BadArgType, pi);
 				break;
 			}
 		/*
@@ -700,8 +732,7 @@ tfSatAsMulti(SatMask mask, AbSub sigma, TForm S, TForm TScope,
 				sigma = absExtend(syme, abi, sigma);
 			}
 			else {
-				result = tfSatResult(mask, TFS_BadArgType);
-				result = tfSatParNFail(result, pi);
+				result = tfSatParNFail(mask, TFS_BadArgType, pi);
 				break;
 			}
 		}
@@ -723,8 +754,7 @@ tfSatAsMulti(SatMask mask, AbSub sigma, TForm S, TForm TScope,
 				sigma = absExtend(syme, abc, sigma);
 			}
 			else {
-				result = tfSatResult(mask, TFS_BadArgType);
-				result = tfSatParNFail(result, 1);
+				result = tfSatParNFail(mask, TFS_BadArgType, 1);
 			}
 		}
 	}
@@ -790,8 +820,10 @@ tfSatArgPoss(SatMask mask, AbSyn Sab, TForm T)
 			return result;
 	}
 
-	for (l = S->possl; l; l = cdr(l)) {
-		result = tfSat1(mask, Sab, car(l), T);
+	TPossIterator ip;
+	for (tpossITER(ip, S); tpossMORE(ip); tpossSTEP(ip)) {
+		TForm s = tpossELT(ip);
+		result = tfSat1(mask, Sab, s, T);
 		if (tfSatSucceed(result))
 			return result;
 	}
@@ -829,9 +861,14 @@ tfSat1(SatMask mask, AbSyn Sab, TForm S, TForm T)
 	S = tfFollowOnly(S);
 	T = tfFollowOnly(T);
 
+	tfsSerialNo += 1;
+	serialThis   = tfsSerialNo;
+
 	/* If we can determine satisfaction w/o using tfFollow, do so. */
 	if (tfIsSubst(S)) {
+		tfsDEBUG(dbOut, "(%d - skip subst\n", serialThis);
 		result = tfSat(mask & ~TFS_Pending, tfSubstArg(S), T);
+		tfsDEBUG(dbOut, " %d - skip subst - %oBool)\n", serialThis, tfSatSucceed(result));
 		if (tfSatSucceed(result))
 			return result;
 	}
@@ -841,9 +878,7 @@ tfSat1(SatMask mask, AbSyn Sab, TForm S, TForm T)
 	if (tfSatAllow(mask, TFS_Sefo))
 		return tfSatResult(mask, TFS_Sefo);
 
-	tfsSerialNo += 1;
 	tfsDepthNo  += 1;
-	serialThis   = tfsSerialNo;
 
 	if (DEBUG(tfs)) {
 		fprintf(dbOut, "->Tfs: %*s%d= ", tfsDepthNo, "", serialThis);
@@ -1033,6 +1068,8 @@ tfSat1(SatMask mask, AbSyn Sab, TForm S, TForm T)
 			serialThis, boolToString(tfSatSucceed(result)));
 		if (tfSatEmbed(result))
 			fprintf(dbOut, " (after embedding)");
+		if (tfSatPending(result))
+			afprintf(dbOut, " (pending) - %pTForm", tfSatGetPendingFail());
 		fnewline(dbOut);
 	}
 	tfsDepthNo -= 1;
@@ -1618,7 +1655,8 @@ tfSatThdExports(SatMask mask, TForm S, TForm T)
 		assert(tfHasThdExports(S) && tfHasThdExports(T));
 
 		mods = listConcat(Syme)(tfGetThdSelf(S), tfGetThdSelf(T));
-		result = tfSatExports(mask, mods, tfGetThdExports(S),
+		result = tfSatExports(mask, mods,
+				      tfGetThdExports(S),
 				      tfGetThdExports(T));
 	}
 	else if (tfSatAllow(mask, TFS_Pending)) {
@@ -1653,6 +1691,7 @@ local SymeList
 tfSatExportsMissing(SatMask mask, SymeList mods, AbSyn Sab, SymeList S, SymeList T)
 {
 	SymeList	symes, missing;
+	AbSub		lazySelfSubst;
 
 	if (DEBUG(tfsExport)) {
 		fprintf(dbOut, "(->tfSatExportMissing: %*s= source list: ",
@@ -1662,14 +1701,14 @@ tfSatExportsMissing(SatMask mask, SymeList mods, AbSyn Sab, SymeList S, SymeList
 	}
 
 	missing	= listNil(Syme);
-
+	lazySelfSubst = NULL;
 	for (symes = T; symes; symes = cdr(symes)) {
 		Syme	syme = car(symes);
 
-		tfsExportDEBUG(dbOut, "->tfSatExportMissing: %*s= looking for: %pSyme\n",
-			       tfsDepthNo, "", syme);
+		tfsExportDEBUG(dbOut, "->tfSatExportMissing: %*s= looking for: %pSyme %pTForm\n",
+			       tfsDepthNo, "", syme, symeType(syme));
 
-		if (tfSatSucceed(tfSatExport(mask, mods, Sab, S, syme)))
+		if (tfSatSucceed(tfSatExport(mask, mods, Sab, S, syme, &lazySelfSubst)))
 			continue;
 
 		missing = listCons(Syme)(syme, missing);
@@ -1685,11 +1724,67 @@ tfSatExportsMissing(SatMask mask, SymeList mods, AbSyn Sab, SymeList S, SymeList
 	return missing;
 }
 
+typedef struct satModAbSyn {
+	SymeList mods;
+	AbSyn ab;
+} *SatModAbSyn;
+
+local SatModAbSyn
+satModAbSynNew(SymeList mods, AbSyn ab)
+{
+	SatModAbSyn satModAbSyn;
+
+	satModAbSyn = (SatModAbSyn) stoAlloc(OB_Other, sizeof(*satModAbSyn));
+	satModAbSyn->mods = mods;
+	satModAbSyn->ab = ab;
+	return satModAbSyn;
+}
+
+local void
+satModAbSynFree(SatModAbSyn satModAbSyn)
+{
+	stoFree(satModAbSyn);
+}
+
+local AbEqualValue
+tfSatAbCompareModAbSyn(void *ctxt, AbSyn ab1, AbSyn ab2)
+{
+	SatModAbSyn satModAbSyn = (SatModAbSyn) ctxt;
+	// For ids, make sure % in ab1, if present at all
+	if (!abIsTheId(ab1, ssymSelf) && abIsTheId(ab2, ssymSelf)) {
+		return tfSatAbCompareModAbSyn(ctxt, ab2, ab1);
+	}
+	if (abTag(ab1) != AB_Id && abTag(ab2) == AB_Id) {
+		return tfSatAbCompareModAbSyn(ctxt, ab2, ab1);
+	}
+
+	if (abTag(ab1) != AB_Id) {
+		return AbEqual_Struct;
+	}
+	else if (abIsTheId(ab1, ssymSelf)) {
+		Bool eqAbSyn = abEqualModDeclares(satModAbSyn->ab, ab2);
+		if (eqAbSyn)
+			return AbEqual_True;
+		else {
+			// NB: This is a bit too lax, but we can wait for a counterexample
+			if (abIsTheId(ab2, ssymSelf)) {
+				return AbEqual_True;
+			}
+			Bool eq = sefoEqualMod(satModAbSyn->mods, ab1, ab2);
+			return eq ? AbEqual_True : AbEqual_False;
+		}
+	}
+	else {
+		Bool eq = sefoEqualMod(satModAbSyn->mods, ab1, ab2);
+		return eq ? AbEqual_True : AbEqual_False;
+	}
+}
+
 /*
  * Succeed if t can be found in S.
  */
 local SatMask
-tfSatExport(SatMask mask, SymeList mods, AbSyn Sab, SymeList S, Syme t)
+tfSatExport(SatMask mask, SymeList mods, AbSyn Sab, SymeList S, Syme t, AbSub *lazySelfSubst)
 {
 	SatMask		result = tfSatFalse(mask);
 	TForm           substT;
@@ -1697,7 +1792,6 @@ tfSatExport(SatMask mask, SymeList mods, AbSyn Sab, SymeList S, Syme t)
 	Bool tryHarder = true;
 	static int serialNo = 0;
 	int serialThis = serialNo++;
-	AbSub sigma;
 
 	/* Check for % explicitly
 	* More exactly, as long as Sab is %, find % from t; if it corresponds to Sab or mods,
@@ -1717,15 +1811,20 @@ tfSatExport(SatMask mask, SymeList mods, AbSyn Sab, SymeList S, Syme t)
 	}
 
 	tfsExportDEBUG(dbOut, "tfSatExport[%d]:: Start S: %pAbSyn\n", serialThis, Sab);
+	tfsExportDEBUG(dbOut, "tfSatExport[%d]:: Target %pSyme %pTForm\n", serialThis, t, symeType(t));
 
 	if (symeHasDefault(t) && !symeIsSelfSelf(t))
 		return tfSatTrue(mask);
 
 	/* First round.. try "normally" */
+	int iterCount = 0;
 	for (symes = S; !tfSatSucceed(result) && symes; symes = cdr(symes)) {
 		SatMask satConditions;
 		Syme	s = car(symes);
+		int     iterThis = iterCount++;
 
+		tfsExportDEBUG(dbOut, "tfSatExport[%d.%d]:: Test %pSyme %pTForm %pAbSynList\n",
+			       serialThis, iterThis, s, symeType(s), symeCondition(s));
 		if (!symeEqualModConditions(mods, s, t))
 			continue;
 		satConditions = tfSatConditions(mask, mods, s, t);
@@ -1753,32 +1852,54 @@ tfSatExport(SatMask mask, SymeList mods, AbSyn Sab, SymeList S, Syme t)
 	 * various local values for '%', and swapping them with the value used locally
 	 * should let us match 'Foo %' with 'Foo X'.
 	 */
-	sigma = absFrSymes(stabFile(), mods, Sab);
-	tfsExportDEBUG(dbOut, "tfSatExport[%d]:: Incoming S: %pAbSyn\n", serialThis, Sab);
 
-	substT = tfSubst(sigma, symeType(t));
+	tfsExportDEBUG(dbOut, "(tfSatExportExtra[%d]:: Incoming S: %pAbSyn %pTForm\n",
+		       serialThis, Sab, symeType(t));
+
+	SatModAbSyn satModAbSyn = satModAbSynNew(mods, Sab);
 	for (symes = S; !tfSatSucceed(result) && symes; symes = cdr(symes)) {
 		Syme	s = car(symes);
-		TForm   substS;
 		Bool    weakEq;
+
 		if (symeId(s) != symeId(t)) {
 			continue;
 		}
 
-		substS = tfSubst(sigma, symeType(s));
-		weakEq = abEqualModDeclares(tfExpr(substS), tfExpr(substT));
-		tfsExportDEBUG(dbOut, "tfsatExport[%d]::CompareTF: [%pTForm], [%pTForm] = %d\n",
-			       serialThis, substS, substT, weakEq);
+		if (!abHasSymbol(tfExpr(symeType(s)), ssymSelf))
+			continue;
+
+		//substS = tfSubst(sigma, symeType(s));
+		//weakEq = abEqualModDeclares(tfExpr(substS), tfExpr(substT));
+		weakEq = abCompareModDeclares(tfSatAbCompareModAbSyn, satModAbSyn, tfExpr(symeType(s)), tfExpr(symeType(t)));
 
 		if (weakEq) {
-			result = tfSatTrue(mask);
+			if (symeCondition(s) != listNil(Sefo)) {
+				result = tfSatConditions(mask, mods, s, t);
+			}
+			else {
+				result = tfSatTrue(mask);
+			}
 		}
-		tfFree(substS);
 	}
-	tfFree(substT);
+	satModAbSynFree(satModAbSyn);
+
+	tfsExportDEBUG(dbOut, " tfSatExportExtra[%d]:: --> %d)\n",
+		       serialThis, tfSatSucceed(result));
 
 	return result;
 }
+
+AbSub
+tfSatExportLazySelfSubst(SymeList mods, Sefo Sab, AbSub *lazySelfSubst)
+{
+	AbSub sigma = *lazySelfSubst;
+	if (sigma == NULL) {
+		sigma = absFrSymes(stabFile(), mods, Sab);
+		*lazySelfSubst = sigma;
+	}
+	return sigma;;
+}
+
 
 extern TForm		tiGetTForm		(Stab, AbSyn);
 
@@ -1790,6 +1911,8 @@ tfSatConditions(SatMask mask, SymeList mods, Syme s, Syme t)
 	SefoList	Sconds = symeCondition(s);
 	SefoList	Tconds = symeCondition(t);
 	SatMask		result = tfSatTrue(mask);
+	static int count = 0;
+	int serial = count++;
 
 	for (; Sconds; Sconds = cdr(Sconds)) {
 		Sefo	cond = car(Sconds);
@@ -1806,24 +1929,34 @@ tfSatConditions(SatMask mask, SymeList mods, Syme s, Syme t)
 		 */
 		if (abTag(cond) ==  AB_Has) {
 			TForm tfdom, tfcat;
-			AbSyn cat;
+			AbSyn dom, cat;
+
 			if (abIsTheId(cond->abHas.expr, ssymSelf)) {
 				if (tfSatSucceed(tfSatConditionOnSelf(mask, mods, s, cond->abHas.property)))
 					continue;
 				else
 					return tfSatFalse(mask);
 			}
-			tfdom = abGetCategory(cond->abHas.expr);
+			tfsExportDEBUG(dbOut, "(%d Check condition %pSyme %pTForm %pAbSyn\n", serial, s, symeType(s), cond);
+			dom   = cond->abHas.expr;
+			tfdom = abGetCategory(dom);
 			if (tfTestSeen(tfdom, cond->abHas.property)) {
 				return tfSatFalse(mask);
 			}
-
+			if (tfSatUseConditions(mask) && abCondKnown != NULL) {
+				TForm tfdomNew = ablogImpliedType(abCondKnown, dom, tfdom);
+				if (tfdomNew != NULL) {
+					tfsExportDEBUG(dbOut, "Domain switch: %pTForm --> %pTForm\n", tfdom, tfdomNew);
+					tfdom = tfdomNew;
+				}
+			}
 			cat   = cond->abHas.property;
 			tfcat = abTForm(cat) ? abTForm(cat) : tiTopFns()->tiGetTopLevelTForm(ablogTrue(), cat);
 			tfTestPush(tfdom, cond->abHas.property);
-			result = tfSat(mask, tfdom, tfcat);
+			result = tfSat1(mask, dom, tfdom, tfcat);
 			tfTestPop(tfdom, cond->abHas.property);
 
+			tfsExportDEBUG(dbOut, " %d Check condition %pSyme %oBool)\n", serial, s, tfSatSucceed(result));
 			if (tfSatSucceed(result))
 				continue;
 			else if (tfSatPending(result)) {
@@ -1839,12 +1972,10 @@ tfSatConditions(SatMask mask, SymeList mods, Syme s, Syme t)
 SatMask
 tfSatConditionOnSelf(SatMask mask, SymeList mods, Syme s, Sefo property)
 {
-	/* This looks for "if % has X then X"..
-	 * Ideally, should look for "if % has T then X" and see if T => X */
-	if (sefoEqualMod(mods, tfExpr(symeType(s)), property)) {
-		return tfSatTrue(mask);
-	}
-	return tfSatFalse(mask);
+	tfsExportDEBUG(dbOut, "tfsExport: Check self condition %pSyme %pTForm %pAbSyn\n", s, symeType(s), property);
+	// Might as well say true as this is an export list.. need to retain
+	// in case it becomes true on import
+	return tfSatTrue(mask);
 }
 
 
@@ -1921,65 +2052,109 @@ tfSatParents(SatMask mask, SymeList mods, AbSyn Sab, SymeList S, SymeList T)
 {
 	SymeList	newS = S, oldS = listNil(Syme);
 	SymeList	queue = listNil(Syme);
+	SymeTSet        oldTbl = tsetCreateCustom(Syme)(symeHashFn, symeEqual);
+	int		serialThis;
+	int		iterThis;
+
+	tfsSerialNo += 1;
+	serialThis = tfsSerialNo;
 
 	/* Collect all of the missing exports. */
 	mask |= TFS_Missing;
 
-	tfsParentDEBUG(dbOut, "(->tfpSyme: %*s= source list: %pSymeList\n",
-		       tfsDepthNo, "", S);
+	tfsParentDEBUG(dbOut, "(->tfpSyme: %*s%d = source list: %pSymeList\n",
+		       tfsDepthNo, "", serialThis, S);
 
 	while (newS || queue) {
-		T = tfSatExportsMissing(mask, mods, Sab, newS, T);
+		iterThis++;
+		SymeList currentS = newS;
+		T = tfSatExportsMissing(mask, mods, Sab, currentS, T);
 		if (T == listNil(Syme)) {
-		  tfsParentDEBUG(dbOut, " ->tfpSyme: %*s= No parents)\n", tfsDepthNo, "");
+			tfsParentDEBUG(dbOut, " ->tfpSyme: %*s%d = No parents)\n", tfsDepthNo, "", serialThis);
 			return tfSatTrue(mask);
 		}
-		newS = tfSatParentsFilter(oldS, newS);
-		oldS = listNConcat(Syme)(oldS, newS);
+		newS = tfSatParentsFilterTable(oldTbl, currentS);
 		queue = listNConcat(Syme)(queue, listCopy(Syme)(newS));
+		tsetAddAll(Syme)(oldTbl, newS);
 
 		if (queue) {
 			Syme	oldSyme = car(queue);
-			int	serialThis;
 
-			tfsSerialNo += 1;
-			serialThis = tfsSerialNo;
-
-			tfsParentDEBUG(dbOut, " ->tfpSyme: %*s%d= expanding: %pSyme\n",
-						tfsDepthNo, "", serialThis, oldSyme);
+			tfsParentDEBUG(dbOut, " ->tfpSyme: %*s%d.%d= expanding: %pSyme %pTForm %pAbSynList\n",
+				       tfsDepthNo, "", serialThis, iterThis, oldSyme,
+				       symeType(oldSyme), symeCondition(oldSyme));
 
 			newS = tfGetCatParents(symeType(oldSyme), true);
+			/*
+			if (symeCondition(oldSyme) != listNil(Sefo)) {
+				newS = symeListAddCondition(newS, abNewOfList(AB_And, sposNone,
+									      (AbSynList) symeCondition(oldSyme)), true);
+			}
+			*/
 			queue = cdr(queue);
 
-			tfsParentDEBUG(dbOut, " ->tfpSyme: %*s%d= into: %pSymeList\n",
-						tfsDepthNo, "", serialThis, newS);
+			tfsParentDEBUG(dbOut, " ->tfpSyme: %*s%d.%d= into: %pSymeList\n",
+				       tfsDepthNo, "", serialThis, iterThis, newS);
 		}
 		else
 			newS = listNil(Syme);
 	}
-	tfsParentDEBUG(dbOut, " ->tfpSyme: %*s= Left: %pSymeList)\n",
-				tfsDepthNo, "", T);
+	tfsParentDEBUG(dbOut, " ->tfpSyme: %*s%d= Left: %pSymeList)\n",
+		       tfsDepthNo, "", serialThis, T);
 	if (T == listNil(Syme))
 		return tfSatTrue(mask);
+	tsetFree(Syme)(oldTbl);
+	while (T && tfsParentDebug) {
+		tfsParentDEBUG(dbOut, "%d Missing %pAbSyn %pSyme: %pTForm %pAbSynList\n", serialThis, Sab, car(T),
+			       symeType(car(T)),
+			       symeCondition(car(T)));
+		T = cdr(T);
+	}
 
 	return tfSatResult(mask, TFS_ExportsMissing);
 }
 
 local SymeList
-tfSatParentsFilter(SymeList osymes, SymeList nsymes)
+tfSatParentsFilterTable(SymeTSet tbl, SymeList nsymes)
 {
-	SymeList	symes, rsymes = listNil(Syme);
-
+	SymeList symes, rsymes = listNil(Syme);
 	/* Collect symes for %% which have not been seen before. */
 	for (symes = nsymes; symes; symes = cdr(symes))
 		if (symeIsSelfSelf(car(symes)) &&
-		    !symeListMember(car(symes), osymes, symeEqual))
+		    !tsetMember(Syme)(tbl, car(symes)))
 			rsymes = listCons(Syme)(car(symes), rsymes);
 
 	listFree(Syme)(nsymes);
 	return listNReverse(Syme)(rsymes);
+
 }
 
+
+
+local String
+tfSatMaskToString(SatMask mask)
+{
+	String sep="";
+	if (mask == TFS_Succeed) {
+		return "Success";
+	}
+	else {
+		Buffer b = bufNew();
+		OStream os = ostreamNewFrBuffer(b);
+		int i = 0;
+
+		while (tfSatMaskInfo[i].name != 0) {
+			if (mask & (1<<i)) {
+				ostreamWrite(os, sep, -1);
+				ostreamWrite(os, tfSatMaskInfo[i].name, -1);
+				sep = "|";
+			}
+			i++;
+		}
+		ostreamFree(os);
+		return bufLiberate(b);
+	}
+}
 
 /******************************************************************************
  *

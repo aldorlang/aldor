@@ -11,7 +11,7 @@ Term(S: Ring, Expon: AbelianMonoid): BasicType with {
 	apply: (%, 'expon') -> Expon;
 }
 == add {
-	Rep ==> Record(expon:Expon, coef:S);
+	Rep == Record(expon:Expon, coef:S);
 	import from Rep;
 	sample: % == nil$Pointer pretend %;
 	apply(f:%, tag:'coef'):S == rep(f).coef;

@@ -704,10 +704,52 @@ abEqualModDeclares0(AbSyn ab1, AbSyn ab2, Bool decls)
 	}
 }
 
+local Bool
+abCompareModDeclares0(AbEqualFn eq, void *ctxt, AbSyn ab1, AbSyn ab2, Bool decls)
+{
+	if (ab1 == ab2)
+		return true;
+
+	ab1 = abEqualDeclMods(ab1, decls);
+	ab2 = abEqualDeclMods(ab2, decls);
+
+	AbEqualValue val = eq(ctxt, ab1, ab2);
+	if (val != AbEqual_Struct) {
+		return val == AbEqual_True ? true : false;
+	}
+	if (abTag(ab1) != abTag(ab2) || abArgc(ab1) != abArgc(ab2))
+		return false;
+
+	else if (abIsLeaf(ab1))
+		return abEqual(ab1, ab2);
+
+	else if (abHasTag(ab1, AB_Define))
+		return abCompareModDeclares0(eq, ctxt, ab1->abDefine.lhs,
+					     ab2->abDefine.lhs, decls) &&
+			abCompareModDeclares0(eq, ctxt, ab1->abDefine.rhs,
+					      ab2->abDefine.rhs, false);
+
+	else {
+		Length	i;
+		decls &= abHasTag(ab1, AB_Comma) || abIsAnyMap(ab1);
+		for (i = 0; i < abArgc(ab1); i += 1)
+			if (!abCompareModDeclares0(eq, ctxt, abArgv(ab1)[i],
+						   abArgv(ab2)[i], decls))
+				return false;
+		return true;
+	}
+}
+
 Bool
 abEqualModDeclares(AbSyn ab1, AbSyn ab2)
 {
 	return abEqualModDeclares0(ab1, ab2, true);
+}
+
+Bool
+abCompareModDeclares(AbEqualFn eq, void *ctxt, AbSyn ab1, AbSyn ab2)
+{
+	return abCompareModDeclares0(eq, ctxt, ab1, ab2, true);
 }
 
 /*
@@ -1985,8 +2027,10 @@ abDefineeIdOrElse(AbSyn ab, AbSyn failed)
 		case AB_Comma:
 			if (abArgc(ab) < 1)
 				return failed;
-			if (abArgc(ab) > 1)
+			if (abArgc(ab) > 1) {
+				afprintf(dbOut, "%pAbSyn\n", ab);
 				bugWarning("abDefineeId comma bug");
+			}
 			ab = abArgv(ab)[0];
 			break;
 		case AB_Id:

@@ -3,10 +3,12 @@
 #include "ttable.h"
 
 local PointerTSet ptrTSetCreate	(void);
+local PointerTSet ptrTSetCreateCustom(TblHashFun, TblEqFun);
 local PointerTSet ptrTSetEmpty	(void);
 local void 	  ptrTSetFree	(PointerTSet);
 local Length 	  ptrTSetSize	(PointerTSet);
 local void 	  ptrTSetAdd	(PointerTSet, Pointer);
+local void 	  ptrTSetAddAll	(PointerTSet, PointerList);
 local void 	  ptrTSetRemove	(PointerTSet, Pointer);
 local Bool 	  ptrTSetMember	(PointerTSet, Pointer);
 local Bool 	  ptrTSetIsEmpty(PointerTSet);
@@ -22,9 +24,11 @@ CREATE_TSET(Pointer);
 
 const struct TSetOpsStructName(Pointer) ptrTSetOps = {
 	ptrTSetCreate,
+	ptrTSetCreateCustom,
 	ptrTSetFree,
 	ptrTSetSize,
 	ptrTSetAdd,
+	ptrTSetAddAll,
 	ptrTSetRemove,
 	ptrTSetMember,
 	ptrTSetIsEmpty,
@@ -41,6 +45,14 @@ ptrTSetCreate()
 {
 	PointerTSet tset = (PointerTSet) stoAlloc(OB_Other, sizeof(*tset));
 	tset->table = tblNew(ptrHashFn, ptrEqualFn);
+	return tset;
+}
+
+local PointerTSet
+ptrTSetCreateCustom(TblHashFun hashfn, TblEqFun eqfn)
+{
+	PointerTSet tset = (PointerTSet) stoAlloc(OB_Other, sizeof(*tset));
+	tset->table = tblNew(hashfn, eqfn);
 	return tset;
 }
 
@@ -83,6 +95,15 @@ ptrTSetAdd(PointerTSet tset, Pointer ptr)
 {
 	assert(ptr != NULL);
 	tblSetElt(tset->table, ptr, ptr);
+}
+
+local void
+ptrTSetAddAll(PointerTSet tset, PointerList ptrlist)
+{
+	while (ptrlist != listNil(Pointer)) {
+		tblSetElt(tset->table, car(ptrlist), car(ptrlist));
+		ptrlist = cdr(ptrlist);
+	}
 }
 
 local void

@@ -3,7 +3,7 @@
 macro SI == SingleInteger;
 
 SmallPrimeField(p:SI): FiniteField == add {
-	Rep ==> SI;
+	Rep == SI;
 	import from Rep;
 	0:% == per 0;
 	1:% == per 1;
@@ -48,7 +48,7 @@ SmallPrimeField(p:SI): FiniteField == add {
 }
 
 Zmod2: FiniteField == add {
-	Rep ==> Boolean;
+	Rep == Boolean;
 	import from Rep;
 	import from SI;
 	0:% == per false;

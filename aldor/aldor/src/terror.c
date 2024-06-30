@@ -6,25 +6,25 @@
  *
  ***************************************************************************/
 
+#include "ablogic.h"
+#include "abpretty.h"
+#include "absub.h"
+#include "comsg.h"
 #include "debug.h"
 #include "format.h"
+#include "freevar.h"
+#include "lib.h"
+#include "sefo.h"
 #include "spesym.h"
 #include "stab.h"
 #include "store.h"
-#include "terror.h"
-#include "util.h"
-#include "sefo.h"
-#include "lib.h"
-#include "tconst.h"
-#include "tposs.h"
-#include "tfsat.h"
-#include "freevar.h"
-#include "absub.h"
-#include "ablogic.h"
-#include "abpretty.h"
-#include "comsg.h"
 #include "strops.h"
 #include "table.h"
+#include "tconst.h"
+#include "tfsat.h"
+#include "terror.h"
+#include "tposs.h"
+#include "util.h"
 
 extern void		tiBottomUp		(Stab, AbSyn, TForm);
 extern void		tiTopDown		(Stab, AbSyn, TForm);
@@ -67,7 +67,7 @@ typedef struct trejectInfo * TRejectInfo;
 local TReject		trAlloc			(Syme, TForm);
 local void		trFree			(TReject);
 
-local void		trInfoFrSymes		(TRejectInfo, SymeList);
+local void		trInfoFrStab		(TRejectInfo, Stab, AbLogic, Symbol);
 local void		trInfoFrTPoss		(TRejectInfo, TPoss);
 local void		trInfoFrTUnique		(TRejectInfo, TForm);
 
@@ -102,13 +102,15 @@ trFree(TReject tr)
 }
 
 local void
-trInfoFrSymes(TRejectInfo trInfo, SymeList symes)
+trInfoFrStab(TRejectInfo trInfo, Stab stab, AbLogic cond, Symbol sym)
 {
+	SymeList	symes;
 	TReject *	trArr;
-	Length		nsymes = listLength(Syme)(symes);
+	Length		nsymes;
 	Length 		i = 0;
 
-
+	symes = stabGetMeanings(stab, cond, sym);
+	nsymes = listLength(Syme)(symes);
 	trArr =  (TReject *) stoAlloc((unsigned) OB_Other,
 				      sizeof(TReject) * nsymes);
 
@@ -968,7 +970,6 @@ terrorCoerceTo(Buffer obuf, AbSyn ab, TForm type)
 {
  	String fmt;
 
-	assert(abState(ab->abCoerceTo.expr) == AB_State_HasPoss); 
 	fmt = comsgString(ALDOR_E_TinNoGoodOp);
 	bufPrintf(obuf, fmt, "coerce");
 
@@ -1193,7 +1194,7 @@ terrorImplicitSetBang(Stab stab, AbSyn ab, Length argc, AbSynGetter argf,
  * Here we assume this. 
  * !!! FIXME (ablogFalse)
  */
-	trInfoFrSymes(&trInfoStruct, stabGetMeanings(stab, ablogFalse(), ssymSetBang));
+	trInfoFrStab(&trInfoStruct, stab, ablogFalse(), ssymSetBang);
 
 	fillTRejectInfo(&trInfoStruct, type, ab, stab, argc, argf);
 	sortSetBangTRejectInfo(&trInfoStruct);
@@ -1736,8 +1737,8 @@ noMeaningsForOperator(Buffer obuf, TForm type, AbSyn ab, AbSyn op, Stab stab,
 	}
 
 	if (abTag(op) == AB_Id)
-		trInfoFrSymes(&trInfoStruct,	    /* vvv FIXME */
-			      stabGetMeanings(stab, ablogFalse(), op->abId.sym));
+		trInfoFrStab(&trInfoStruct,	    /* vvv FIXME */
+			     stab, ablogFalse(), op->abId.sym);
 	else if (abState(op) == AB_State_HasPoss ||
 		 abState(op) == AB_State_Error)
 		trInfoFrTPoss(&trInfoStruct, abGoodTPoss(op));

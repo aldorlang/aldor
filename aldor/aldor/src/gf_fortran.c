@@ -1447,9 +1447,8 @@ gen0ExportToFortran(AbSyn absyn)
 	fmtslot = gen0FortranSigExportNumber(tf);
 	str     = strCopy(symeString(syme));
 	wrapper = gen0FortranExportFn(tf, rtype, gen0Syme(syme), str, absyn);
-	decl    = foamNewGDecl(FOAM_Clos, str, fmtslot,
+	decl    = foamNewGDecl(FOAM_Clos, str, rtype, fmtslot,
 			    FOAM_GDecl_Export, FOAM_Proto_Fortran);
-	foamGDeclSetRType(decl, rtype);
         index   = gen0AddGlobal(decl);
 	glo     = foamNewGlo(index);
 	gen0AddStmt(foamNewSet(glo, wrapper), absyn);

@@ -17,6 +17,7 @@
 #include "cconfig.h"
 
 typedef char			*Ptr;
+typedef long			*LPtr;
 
 typedef Ptr			FiNil;
 typedef unsigned long int	FiWord;

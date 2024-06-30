@@ -115,7 +115,7 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 DIST_COMMON = $(srcdir)/Makefile.am $(include_HEADERS) \
 	$(am__DIST_COMMON)
 mkinstalldirs = $(install_sh) -d
-CONFIG_CLEAN_FILES = opsys_port.h
+CONFIG_CLEAN_FILES = opsys_port.h version.c
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(libexecdir)" \
 	"$(DESTDIR)$(dataincludedir)" "$(DESTDIR)$(datalibdir)" \
@@ -179,12 +179,12 @@ libstruct_a_LIBADD =
 am_libstruct_a_OBJECTS = ablogic.$(OBJEXT) abpretty.$(OBJEXT) \
 	absub.$(OBJEXT) absyn.$(OBJEXT) annabs.$(OBJEXT) \
 	archive.$(OBJEXT) axlobs.$(OBJEXT) compcfg.$(OBJEXT) \
-	comsg.$(OBJEXT) comsgdb.$(OBJEXT) depdag.$(OBJEXT) \
-	dflow.$(OBJEXT) doc.$(OBJEXT) fbox.$(OBJEXT) fint.$(OBJEXT) \
-	flog.$(OBJEXT) foam.$(OBJEXT) foamsig.$(OBJEXT) forg.$(OBJEXT) \
-	freevar.$(OBJEXT) formatters.$(OBJEXT) ftype.$(OBJEXT) \
-	gf_syme.$(OBJEXT) javasig.$(OBJEXT) lib.$(OBJEXT) \
-	loops.$(OBJEXT) output.$(OBJEXT) sefo.$(OBJEXT) \
+	comsg.$(OBJEXT) comsgdb.$(OBJEXT) csig.$(OBJEXT) \
+	depdag.$(OBJEXT) dflow.$(OBJEXT) doc.$(OBJEXT) fbox.$(OBJEXT) \
+	fint.$(OBJEXT) flog.$(OBJEXT) foam.$(OBJEXT) foamsig.$(OBJEXT) \
+	forg.$(OBJEXT) freevar.$(OBJEXT) formatters.$(OBJEXT) \
+	ftype.$(OBJEXT) gf_syme.$(OBJEXT) javasig.$(OBJEXT) \
+	lib.$(OBJEXT) loops.$(OBJEXT) output.$(OBJEXT) sefo.$(OBJEXT) \
 	simpl.$(OBJEXT) spesym.$(OBJEXT) srcline.$(OBJEXT) \
 	stab.$(OBJEXT) syme.$(OBJEXT) symeset.$(OBJEXT) \
 	symcoinfo.$(OBJEXT) tconst.$(OBJEXT) tfcond.$(OBJEXT) \
@@ -272,6 +272,8 @@ am__objects_1 = test/testall-test_abcheck.$(OBJEXT) \
 	test/testall-test_jcode.$(OBJEXT) \
 	test/testall-test_int.$(OBJEXT) \
 	test/testall-test_list.$(OBJEXT) \
+	test/testall-test_of_cprop.$(OBJEXT) \
+	test/testall-test_of_peep.$(OBJEXT) \
 	test/testall-test_ostream.$(OBJEXT) \
 	test/testall-test_printf.$(OBJEXT) \
 	test/testall-test_retyp.$(OBJEXT) \
@@ -322,7 +324,7 @@ am__depfiles_remade = ./$(DEPDIR)/abcheck.Po ./$(DEPDIR)/ablogic.Po \
 	./$(DEPDIR)/ccomp.Po ./$(DEPDIR)/cfgfile.Po \
 	./$(DEPDIR)/compcfg.Po ./$(DEPDIR)/compopt.Po \
 	./$(DEPDIR)/comsg.Po ./$(DEPDIR)/comsgdb.Po \
-	./$(DEPDIR)/cport.Po ./$(DEPDIR)/debug.Po \
+	./$(DEPDIR)/cport.Po ./$(DEPDIR)/csig.Po ./$(DEPDIR)/debug.Po \
 	./$(DEPDIR)/depdag.Po ./$(DEPDIR)/dflow.Po ./$(DEPDIR)/dnf.Po \
 	./$(DEPDIR)/doc.Po ./$(DEPDIR)/dword.Po ./$(DEPDIR)/emit.Po \
 	./$(DEPDIR)/errorset.Po ./$(DEPDIR)/fbox.Po \
@@ -435,6 +437,8 @@ am__depfiles_remade = ./$(DEPDIR)/abcheck.Po ./$(DEPDIR)/ablogic.Po \
 	test/$(DEPDIR)/testall-test_jcode.Po \
 	test/$(DEPDIR)/testall-test_jflow.Po \
 	test/$(DEPDIR)/testall-test_list.Po \
+	test/$(DEPDIR)/testall-test_of_cprop.Po \
+	test/$(DEPDIR)/testall-test_of_peep.Po \
 	test/$(DEPDIR)/testall-test_ostream.Po \
 	test/$(DEPDIR)/testall-test_printf.Po \
 	test/$(DEPDIR)/testall-test_retyp.Po \
@@ -710,8 +714,8 @@ TEST_LOG_DRIVER = $(SHELL) $(top_srcdir)/amaux/test-driver
 TEST_LOG_COMPILE = $(TEST_LOG_COMPILER) $(AM_TEST_LOG_FLAGS) \
 	$(TEST_LOG_FLAGS)
 am__DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/opsys_port.h.in \
-	$(top_srcdir)/amaux/depcomp $(top_srcdir)/amaux/test-driver \
-	ChangeLog
+	$(srcdir)/version.c.in $(top_srcdir)/amaux/depcomp \
+	$(top_srcdir)/amaux/test-driver ChangeLog
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 AMTAR = @AMTAR@
@@ -1004,6 +1008,7 @@ libstruct_a_SOURCES = \
 	compcfg.c	\
 	comsg.c		\
 	comsgdb.c	\
+	csig.c		\
 	depdag.c	\
 	dflow.c		\
 	doc.c		\
@@ -1129,6 +1134,8 @@ testsuite = \
 	test/test_jcode.c	\
 	test/test_int.c		\
 	test/test_list.c	\
+	test/test_of_cprop.c	\
+	test/test_of_peep.c	\
 	test/test_ostream.c	\
 	test/test_printf.c	\
 	test/test_retyp.c	\
@@ -1196,6 +1203,8 @@ $(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(am__aclocal_m4_deps):
 opsys_port.h: $(top_builddir)/config.status $(srcdir)/opsys_port.h.in
+	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
+version.c: $(top_builddir)/config.status $(srcdir)/version.c.in
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 install-binPROGRAMS: $(bin_PROGRAMS)
 	@$(NORMAL_INSTALL)
@@ -1433,6 +1442,10 @@ test/testall-test_int.$(OBJEXT): test/$(am__dirstamp) \
 	test/$(DEPDIR)/$(am__dirstamp)
 test/testall-test_list.$(OBJEXT): test/$(am__dirstamp) \
 	test/$(DEPDIR)/$(am__dirstamp)
+test/testall-test_of_cprop.$(OBJEXT): test/$(am__dirstamp) \
+	test/$(DEPDIR)/$(am__dirstamp)
+test/testall-test_of_peep.$(OBJEXT): test/$(am__dirstamp) \
+	test/$(DEPDIR)/$(am__dirstamp)
 test/testall-test_ostream.$(OBJEXT): test/$(am__dirstamp) \
 	test/$(DEPDIR)/$(am__dirstamp)
 test/testall-test_printf.$(OBJEXT): test/$(am__dirstamp) \
@@ -1509,6 +1522,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/comsg.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/comsgdb.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cport.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/csig.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/debug.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/depdag.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dflow.Po@am__quote@ # am--include-marker
@@ -1697,6 +1711,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@test/$(DEPDIR)/testall-test_jcode.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@test/$(DEPDIR)/testall-test_jflow.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@test/$(DEPDIR)/testall-test_list.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@test/$(DEPDIR)/testall-test_of_cprop.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@test/$(DEPDIR)/testall-test_of_peep.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@test/$(DEPDIR)/testall-test_ostream.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@test/$(DEPDIR)/testall-test_printf.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@test/$(DEPDIR)/testall-test_retyp.Po@am__quote@ # am--include-marker
@@ -2556,6 +2572,34 @@ test/testall-test_list.obj: test/test_list.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testall_CFLAGS) $(CFLAGS) -c -o test/testall-test_list.obj `if test -f 'test/test_list.c'; then $(CYGPATH_W) 'test/test_list.c'; else $(CYGPATH_W) '$(srcdir)/test/test_list.c'; fi`
 
+test/testall-test_of_cprop.o: test/test_of_cprop.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testall_CFLAGS) $(CFLAGS) -MT test/testall-test_of_cprop.o -MD -MP -MF test/$(DEPDIR)/testall-test_of_cprop.Tpo -c -o test/testall-test_of_cprop.o `test -f 'test/test_of_cprop.c' || echo '$(srcdir)/'`test/test_of_cprop.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) test/$(DEPDIR)/testall-test_of_cprop.Tpo test/$(DEPDIR)/testall-test_of_cprop.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='test/test_of_cprop.c' object='test/testall-test_of_cprop.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testall_CFLAGS) $(CFLAGS) -c -o test/testall-test_of_cprop.o `test -f 'test/test_of_cprop.c' || echo '$(srcdir)/'`test/test_of_cprop.c
+
+test/testall-test_of_cprop.obj: test/test_of_cprop.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testall_CFLAGS) $(CFLAGS) -MT test/testall-test_of_cprop.obj -MD -MP -MF test/$(DEPDIR)/testall-test_of_cprop.Tpo -c -o test/testall-test_of_cprop.obj `if test -f 'test/test_of_cprop.c'; then $(CYGPATH_W) 'test/test_of_cprop.c'; else $(CYGPATH_W) '$(srcdir)/test/test_of_cprop.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) test/$(DEPDIR)/testall-test_of_cprop.Tpo test/$(DEPDIR)/testall-test_of_cprop.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='test/test_of_cprop.c' object='test/testall-test_of_cprop.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testall_CFLAGS) $(CFLAGS) -c -o test/testall-test_of_cprop.obj `if test -f 'test/test_of_cprop.c'; then $(CYGPATH_W) 'test/test_of_cprop.c'; else $(CYGPATH_W) '$(srcdir)/test/test_of_cprop.c'; fi`
+
+test/testall-test_of_peep.o: test/test_of_peep.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testall_CFLAGS) $(CFLAGS) -MT test/testall-test_of_peep.o -MD -MP -MF test/$(DEPDIR)/testall-test_of_peep.Tpo -c -o test/testall-test_of_peep.o `test -f 'test/test_of_peep.c' || echo '$(srcdir)/'`test/test_of_peep.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) test/$(DEPDIR)/testall-test_of_peep.Tpo test/$(DEPDIR)/testall-test_of_peep.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='test/test_of_peep.c' object='test/testall-test_of_peep.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testall_CFLAGS) $(CFLAGS) -c -o test/testall-test_of_peep.o `test -f 'test/test_of_peep.c' || echo '$(srcdir)/'`test/test_of_peep.c
+
+test/testall-test_of_peep.obj: test/test_of_peep.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testall_CFLAGS) $(CFLAGS) -MT test/testall-test_of_peep.obj -MD -MP -MF test/$(DEPDIR)/testall-test_of_peep.Tpo -c -o test/testall-test_of_peep.obj `if test -f 'test/test_of_peep.c'; then $(CYGPATH_W) 'test/test_of_peep.c'; else $(CYGPATH_W) '$(srcdir)/test/test_of_peep.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) test/$(DEPDIR)/testall-test_of_peep.Tpo test/$(DEPDIR)/testall-test_of_peep.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='test/test_of_peep.c' object='test/testall-test_of_peep.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testall_CFLAGS) $(CFLAGS) -c -o test/testall-test_of_peep.obj `if test -f 'test/test_of_peep.c'; then $(CYGPATH_W) 'test/test_of_peep.c'; else $(CYGPATH_W) '$(srcdir)/test/test_of_peep.c'; fi`
+
 test/testall-test_ostream.o: test/test_ostream.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testall_CFLAGS) $(CFLAGS) -MT test/testall-test_ostream.o -MD -MP -MF test/$(DEPDIR)/testall-test_ostream.Tpo -c -o test/testall-test_ostream.o `test -f 'test/test_ostream.c' || echo '$(srcdir)/'`test/test_ostream.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) test/$(DEPDIR)/testall-test_ostream.Tpo test/$(DEPDIR)/testall-test_ostream.Po
@@ -3225,6 +3269,7 @@ distclean: distclean-am
 	-rm -f ./$(DEPDIR)/comsg.Po
 	-rm -f ./$(DEPDIR)/comsgdb.Po
 	-rm -f ./$(DEPDIR)/cport.Po
+	-rm -f ./$(DEPDIR)/csig.Po
 	-rm -f ./$(DEPDIR)/debug.Po
 	-rm -f ./$(DEPDIR)/depdag.Po
 	-rm -f ./$(DEPDIR)/dflow.Po
@@ -3413,6 +3458,8 @@ distclean: distclean-am
 	-rm -f test/$(DEPDIR)/testall-test_jcode.Po
 	-rm -f test/$(DEPDIR)/testall-test_jflow.Po
 	-rm -f test/$(DEPDIR)/testall-test_list.Po
+	-rm -f test/$(DEPDIR)/testall-test_of_cprop.Po
+	-rm -f test/$(DEPDIR)/testall-test_of_peep.Po
 	-rm -f test/$(DEPDIR)/testall-test_ostream.Po
 	-rm -f test/$(DEPDIR)/testall-test_printf.Po
 	-rm -f test/$(DEPDIR)/testall-test_retyp.Po
@@ -3504,6 +3551,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -f ./$(DEPDIR)/comsg.Po
 	-rm -f ./$(DEPDIR)/comsgdb.Po
 	-rm -f ./$(DEPDIR)/cport.Po
+	-rm -f ./$(DEPDIR)/csig.Po
 	-rm -f ./$(DEPDIR)/debug.Po
 	-rm -f ./$(DEPDIR)/depdag.Po
 	-rm -f ./$(DEPDIR)/dflow.Po
@@ -3692,6 +3740,8 @@ maintainer-clean: maintainer-clean-am
 	-rm -f test/$(DEPDIR)/testall-test_jcode.Po
 	-rm -f test/$(DEPDIR)/testall-test_jflow.Po
 	-rm -f test/$(DEPDIR)/testall-test_list.Po
+	-rm -f test/$(DEPDIR)/testall-test_of_cprop.Po
+	-rm -f test/$(DEPDIR)/testall-test_of_peep.Po
 	-rm -f test/$(DEPDIR)/testall-test_ostream.Po
 	-rm -f test/$(DEPDIR)/testall-test_printf.Po
 	-rm -f test/$(DEPDIR)/testall-test_retyp.Po
