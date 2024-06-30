@@ -17,7 +17,6 @@ AC_ARG_ENABLE([git-build-id],
               [if test -f $srcdir/../.git/config ; then gitid=true; else gitid=false; fi])
 
 # Git SHA1 hash as ld build-id.
-AC_MSG_NOTICE([gitid $gitid ld: $ld_has_build_id ])
 AC_MSG_CHECKING([build id])
 if test yes = "$ld_has_build_id" && test true = "$gitid"; then
    VCSVERSION=`cd $srcdir; git rev-parse HEAD`
