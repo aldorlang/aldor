@@ -254,8 +254,27 @@ $(addsuffix -junittest,$(_junittests)): %-junittest: out/java/%.class
 
 check-java: $(patsubst %,%-javatest,$(_jruntests)) $(patsubst %,%-junittest,$(_junittests))
 
-.PHONY: check-java
+define all_template
+nall-$(1): $(patsubst %, out/ao/%.ao, $(filter $(1), $(_aotests)))
+all-$(1): $(patsubst %, out/fm/%.fm, $(filter $(1), $(_fmtests)))
+all-$(1): $(patsubst %, out/c/%.c, $(filter $(1), $(_ctests)))
+all-$(1): $(patsubst %, out/java/aldorcode/%.java, $(filter $(1), $(_jtests)))
+endef
 
+define clean_template
+.PHONY: clean-$(1)
+clean-$(1):
+	$(AM_V_CLEANONE); \
+	for ii in $(patsubst %, out/ao/%.ao, $(filter $(1), $(_aotests))) 	\
+		  $(patsubst %, out/ao/%.ao, $(filter $(1), $(_aotests)))	\
+		  $(patsubst %, out/fm/%.fm, $(filter $(1), $(_fmtests)))	\
+		  $(patsubst %, out/c/%.c, $(filter $(1), $(_ctests)))		\
+		  $(patsubst %, out/java/aldorcode/%.java, $(filter $(1), $(_jtests))); do \
+		rm -f $$$$ii; \
+	done
+endef
+
+.PHONY: check-java
 check: check-java
 
 really-all: \
