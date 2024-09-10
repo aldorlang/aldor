@@ -90,6 +90,7 @@ extern JavaCodeList jcCollectImports(JavaCode code);
 extern JavaCode jcDocumented(String comment, JavaCode code);
 extern JavaCode jcAnnotation(JavaCode annotationClass, JavaCodeList arguments);
 extern JavaCode jcComment(String comment);
+extern JavaCode jcCommented(String comment, JavaCode code);
 extern JavaCode jcImportedId(String pkg, String name);
 extern JavaCode jcImportedStaticId(String pkg, String clss, String name);
 extern JavaCode jcLiteralString(String s);
