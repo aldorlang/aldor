@@ -17,6 +17,7 @@ void fnameTest(void);
 void foamTest(void);
 void forgTest(void);
 void formatTest(void);
+void fptrTest(void);
 void genfoamTestSuite(void);
 void intTestSuite(void);
 void javaTestSuite(void);

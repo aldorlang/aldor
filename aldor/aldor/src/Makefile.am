@@ -171,6 +171,7 @@ libstruct_a_SOURCES =	\
 	foam.c		\
 	foamsig.c	\
 	forg.c		\
+	fptr.c		\
 	freevar.c	\
 	formatters.c	\
 	ftype.c		\
@@ -287,6 +288,7 @@ testsuite =			\
 	test/test_fname.c 	\
 	test/test_foam.c 	\
 	test/test_forg.c	\
+	test/test_fptr.c	\
 	test/test_format.c	\
 	test/test_genfoam.c	\
 	test/test_jflow.c	\

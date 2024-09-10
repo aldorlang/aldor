@@ -46,6 +46,7 @@ main(int argc, char *argv[])
 	if (testShouldRun("foam")) foamTest();
 	if (testShouldRun("forg")) forgTest();
 	if (testShouldRun("format")) formatTest();
+	if (testShouldRun("fptr")) fptrTest();
 	if (testShouldRun("flog")) flogTest();
 	if (testShouldRun("java")) javaTestSuite();
 	if (testShouldRun("jflow")) jflowTest();
