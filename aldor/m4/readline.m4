@@ -9,7 +9,7 @@ AC_DEFUN([ALDOR_READLINE_OPTION],
 	   no) edit_gloop=no;;
 	   *) AC_MSG_ERROR([bad value ${enableval} for --enable-edit-gloop])
 	   esac],
-     [AC_MSG_NOTICE([no gloop edit option supplied (delete me later)])
+     [AC_MSG_NOTICE([no gloop edit option supplied])
       ])])
 	
 AC_DEFUN([ALDOR_READLINE_SELECT],
