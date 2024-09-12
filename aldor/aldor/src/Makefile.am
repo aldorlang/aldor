@@ -165,6 +165,7 @@ libstruct_a_SOURCES =	\
 	dflow.c		\
 	doc.c		\
 	fbox.c		\
+	fex.c		\
 	fint.c		\
 	flog.c		\
 	foam.c		\

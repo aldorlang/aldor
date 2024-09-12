@@ -10,6 +10,7 @@
 #define _FOAM_H_
 
 #include "axlobs.h"
+#include "fex.h"
 
 /*****************************************************************************
  *
@@ -1337,6 +1338,9 @@ extern struct foamBVal_info  foamBValInfoTable[];
 extern struct foamProto_info foamProtoInfoTable[];
 extern struct foamDDecl_info foamDDeclInfoTable[];
 
+#define FOAM_NARY	(-1)	/* Identifies tags with N-ary data argument. */
+
+
 #define foamInfo(tag)       (foamInfoTable    [(int)(tag)-(int)FOAM_START])
 #define foamBValInfo(tag)   (foamBValInfoTable[(int)(tag)-(int)FOAM_BVAL_START])
 #define foamProtoInfo(tag)  (foamProtoInfoTable[(int)(tag)-(int)FOAM_PROTO_START])
@@ -1495,6 +1499,7 @@ Statement( {								\
 
 
 extern void		 foamInit       (void);
+extern void		 foamEnsureInit (void);
 
 extern Foam              foamNewEmpty   (FoamTag t, Length argc);
 extern Foam              foamNew        (FoamTag t, Length argc, ...);
@@ -1532,15 +1537,6 @@ extern void		 foamDumpToFile	(Foam, String);
 /*
  * Conversion and basic I/O.
  */
-extern int               foamWrSExpr    (FILE *, Foam, ULong sxioMode);
-extern Foam              foamRdSExpr    (FILE *, FileName *, int *lno);
-
-extern SExpr             foamToSExpr    (Foam);
-extern Foam              foamFrSExpr    (SExpr);
-
-extern String		 foamToString   (Foam);
-extern Foam              foamFrString   (String);
-
 extern int		 foamToBuffer   (Buffer, Foam);
 extern Foam		 foamFrBuffer   (Buffer);
 extern Bool              foamVerifyBuffer(Buffer, Foam);
