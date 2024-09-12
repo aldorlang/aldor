@@ -1,9 +1,10 @@
-#include "fex.h"
-#include "sexpr.h"
 #include "comsg.h"
 #include "debug.h"
-#include "util.h"
+#include "fex.h"
+#include "sexpr.h"
 #include "symcoinfo.h"
+#include "syme.h"
+#include "util.h"
 
 /*****************************************************************************
  *
@@ -43,6 +44,10 @@ foamRdSExpr(FILE *file, FileName *pfn, int *plno)
  *
  ****************************************************************************/
 
+local SExpr fexSymeAnnotation(Foam foam);
+#define fexSymbol(id)		sxiFrSymbol(symIntern(id))
+
+
 static	Foam	*fexFmtv;	/* DDecls for formats  */
 static	Length	fexFmtc;
 static	Foam	*fexGlov;	/* Decls for globals   */
@@ -55,8 +60,7 @@ static	Foam	*fexLocv;	/* Decls for locals    */
 static	Length	fexLocc;
 static	AInt	*fexLexv;	/* Format numbers in DEnv */
 static	Length	fexLexc;
-
-#define fexSymbol(id)		sxiFrSymbol(symIntern(id))
+static  FoamSxFlags fexSxFlags;
 
 /* Define StripHash to remove the hash code from the end of global names. */
 #undef	StripHash
@@ -289,6 +293,10 @@ foamToSExpr0(Foam foam)
 	if (idstr) sx = sxCons(sxiFrSymbol(symIntern(idstr)), sx);
 #endif
 
+	if ((fexSxFlags & FOAMSX_Syme) && foamSyme(foam) != NULL) {
+		SExpr note = fexSymeAnnotation(foam);
+		sx = sxCons(note, sx);
+	}
 	sx = sxNReverse(sx);
 	sx = sxiRepos(foamPos(foam), sx);
 
@@ -301,6 +309,31 @@ foamToSExpr(Foam foam)
 	foamEnsureInit();
 	fexFmtc = fexGloc = fexConstc = fexParc = fexLocc = fexLexc = 0;
 	return foamToSExpr0(foam);
+}
+
+SExpr
+foamToSExprExtra(Foam foam, FoamSxFlags flags)
+{
+	SExpr sx;
+
+	foamEnsureInit();
+	fexFmtc = fexGloc = fexConstc = fexParc = fexLocc = fexLexc = 0;
+	fexSxFlags = flags;
+
+	sx = foamToSExpr0(foam);
+	fexSxFlags = 0;
+	return sx;
+}
+
+local SExpr
+fexSymeAnnotation(Foam foam)
+{
+	Syme syme = foamSyme(foam);
+	String type;
+
+	type = aStrPrintf("%pTForm", symeType(syme));
+
+	return sxiList(2, sxiFrSymbol(symeId(syme)), sxiFrString(type));
 }
 
 #define croak(sx, msg)	comsgFatal(abNewNothing(sxiPos(sx)), msg)

@@ -69,6 +69,9 @@ local int foamListFormatter(OStream ostream, Pointer p);
 local int foamFormatter(OStream ostream, Pointer p);
 local int foamSigFormatter(OStream ostream, Pointer p);
 
+local int foamTypeFormatter(OStream ostream, Pointer p);
+local int foamFormatterExt(OStream ostream, Pointer p, FoamSxFlags flags);
+
 /*
  * Note: This implementation shares the foamTagVal field of symCoInfo so foam
  * instructions, builtins and protocols must not have overlapping names.
@@ -120,6 +123,7 @@ foamInit(void)
 	fmtRegister("Foam", foamFormatter);
 	fmtRegister("FoamList", foamListFormatter);
 	fmtRegister("FoamSig", foamSigFormatter);
+	fmtRegister("FoamTypes", foamTypeFormatter);
 
 	foamIsInit = true;
 }
@@ -127,10 +131,22 @@ foamInit(void)
 local int
 foamFormatter(OStream ostream, Pointer p)
 {
+	return foamFormatterExt(ostream, p, FOAMSX_None);
+}
+
+local int
+foamTypeFormatter(OStream ostream, Pointer p)
+{
+	return foamFormatterExt(ostream, p, FOAMSX_Syme);
+}
+
+local int
+foamFormatterExt(OStream ostream, Pointer p, FoamSxFlags flags)
+{
 	Foam foam = (Foam) p;
 	int c;
 
-	SExpr sx = foamToSExpr(foam);
+	SExpr sx = foamToSExprExtra(foam, flags);
 	Buffer b = bufNew();
 	sxiToBufferFormatted(b, sx, SXRW_MixedCase);
 	c = ostreamWrite(ostream, bufLiberate(b), -1);
