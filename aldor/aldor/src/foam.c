@@ -257,6 +257,12 @@ foamNewSeq(Foam arg0, ...)
 	return foamNewOfList(FOAM_Seq, l);
 }
 
+Foam
+foamNewSeqOfList(FoamList ll)
+{
+	return foamNewOfList(FOAM_Seq, ll);
+}
+
 
 
 Foam

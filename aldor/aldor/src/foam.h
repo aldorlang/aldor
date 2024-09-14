@@ -993,6 +993,7 @@ struct foamIf {
 };
 
 extern Foam foamNewSeq(Foam arg0, ...);
+extern Foam foamNewSeqOfList(FoamList list);
 
 struct foamSeq {
 	struct foamHdr          hdr;
