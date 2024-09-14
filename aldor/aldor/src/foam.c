@@ -386,6 +386,22 @@ foamNewDDeclOfList(AInt usage, FoamList foamList)
 	return foam;
 }
 
+Foam
+foamNewSelectRange(Foam op, AInt lo, AInt count)
+{
+	Foam foam;
+	AInt idx;
+
+	foam = foamNewEmpty(FOAM_Select, 1 + count);
+	foam->foamSelect.op = op;
+
+	for (idx = 0; idx < count; idx++) {
+		foam->foamSelect.argv[idx] = lo + idx;
+	}
+
+	return foam;
+}
+
 
 Foam
 foamNewEmpty(FoamTag tag, Length argc)
