@@ -387,6 +387,20 @@ foamNewDDeclOfList(AInt usage, FoamList foamList)
 }
 
 Foam
+foamNewDFmt(Foam arg0, ...)
+{
+	FoamList foamList;
+	va_list argp;
+
+	va_start(argp, arg0);
+	foamList = listListv(Foam)(argp);
+	va_end(argp);
+	foamList = listCons(Foam)(arg0, foamList);
+
+	return foamNewOfList(FOAM_DFmt, foamList);
+}
+
+Foam
 foamNewSelectRange(Foam op, AInt lo, AInt count)
 {
 	Foam foam;

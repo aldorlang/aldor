@@ -741,6 +741,7 @@ struct foamDEnv {
 
 #define foamDEnvArgc(foam) foamArgc(foam)
 
+extern Foam foamNewDFmt(Foam arg0, ...);
 struct foamDFmt {
 	struct foamHdr          hdr;
 	Foam                    argv[NARY];
