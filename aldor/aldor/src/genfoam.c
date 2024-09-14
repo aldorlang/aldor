@@ -68,6 +68,7 @@ Bool	genfHashDebug	= false;
 
 extern Bool genfExportDebug;	/* (from gf_add.c) */
 #define genfExportDEBUG		DEBUG_IF(genfExport)	afprintf
+#define genfEnvDEBUG		DEBUG_IF(genfEnv)	afprintf
 
 CREATE_LIST (DomainCache);
 CREATE_LIST (VarPool);
@@ -4723,8 +4724,8 @@ gen0SymeGeneric(Syme syme)
 		return foamNew(kind, 1, (AInt) gen0VarIndex(syme));
 	}
 
-	if (DEBUG(genf)) {
-		fprintf(dbOut, "GenSyme: %s \t\tstablev: %lu stabLamLev:%lu symeDefLev: %lu symeDefLamLev: %lu ",
+	if (DEBUG(genfEnv)) {
+		fprintf(dbOut, "GenSyme: %-8s stablev: %lu stabLamLev:%lu symeDefLev: %lu symeDefLamLev: %lu ",
 			symeString(syme),
 			!gen0State->stab ? 0 : stabLevelNo(gen0State->stab), 
 			!gen0State->stab ? 0 : stabLambdaLevelNo(gen0State->stab), 
@@ -4738,15 +4739,15 @@ gen0SymeGeneric(Syme syme)
 		level = stabLambdaLevelNo(gen0State->stab) -
 			symeDefLambdaLevelNo(syme);
 		if (gen0IsInnerVar(syme, level)) {
-			genfDEBUG(dbOut, "Inner\n");
+			genfEnvDEBUG(dbOut, "Inner\n");
 			return gen0InnerSyme(syme, level);
 		}
 	}
 
 	level = gen0FoamLevel(symeDefLevelNo(syme));
 	gen0UseStackedFormat(level);
-	if (genfEnvDebug) {
-		afprintf(dbOut, "std: %s Lev:%d %pAIntList %pSlotUsageList\n", symeString(syme), (int)level, gen0State->formatStack, gen0State->formatUsage);
+	if (DEBUG(genfEnv)) {
+		afprintf(dbOut, "sym: %s Lev:%d %pAIntList %pSlotUsageList\n", symeString(syme), (int)level, gen0State->formatStack, gen0State->formatUsage);
 	}
 	return foamNewLex(level, gen0VarIndex(syme));
 }
