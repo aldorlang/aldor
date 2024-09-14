@@ -35,6 +35,7 @@
 #include "foamsig.h"
 #include "format.h"
 #include "int.h"
+#include "intset.h"
 #include "javasig.h"
 #include "opsys.h"
 #include "sexpr.h"
@@ -43,7 +44,6 @@
 #include "symcoinfo.h"
 #include "util.h"
 #include "xfloat.h"
-#include "intset.h"
 
 /* Used for foam sharing audit */
 #define FOAM_MARKED	0x01
