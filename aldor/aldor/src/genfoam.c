@@ -146,7 +146,7 @@ local Symbol	   gen0ExportingTo	  (AbSyn absyn);
 local void	   gen0ExportToBuiltin	  (AbSyn fun);
 local void	   gen0ExportToC	  (AbSyn fun);
 local Foam	   gen0Extend		  (AbSyn);
-local void	   gen0FindDefs		  (AbSyn, AbSyn, Stab, Bool, Bool );
+local void	   gen0FindDefsAll	  (AbSyn, Stab);
 local int	   gen0FoamLevel	  (AInt level);
 local FoamTag	   gen0FoamType		  (Foam foam);
 local void	   gen0ForIter		  (AbSyn, FoamList *, FoamList *);
@@ -388,7 +388,7 @@ generateFoam(Stab stab0, AbSyn absyn, String initName)
 
 
 	/* Walk absyn for open callable funcs and lexically deep references. */
-	gen0FindDefs(absyn, NULL, stab0, false, true);
+	gen0FindDefsAll(absyn, stab0);
 
 	/* Declare the globals for the top-level prog. */
 
@@ -6376,11 +6376,26 @@ gen0ForIter(AbSyn absyn, FoamList *forl, FoamList *itl)
 /* 
  * !!should replace lhs with exporter
  */
-local void gen0FindDefsSyme(Stab stab, Syme syme, Bool inHighLev);
-local void gen0FindDefsDefine(AbSyn absyn, Stab stab, Bool inHighLev, Bool topLev);
+typedef AInt GFindDefMask;
+
+#define GFindDef_None 0
+
+#define GFindDef_HighLevel (1 << 0)
+#define gfdSetHighLevel(mask) ( (mask) | GFindDef_HighLevel)
+#define gfdHighLevel(mask) ( (mask) & GFindDef_HighLevel)
+
+local void gen0FindDefs(AbSyn, AbSyn, Stab, GFindDefMask);
+local void gen0FindDefsSyme(Stab stab, Syme syme, GFindDefMask mask);
+local void gen0FindDefsDefine(AbSyn absyn, Stab stab, GFindDefMask mask);
 
 local void
-gen0FindDefs(AbSyn absyn, AbSyn lhs, Stab stab, Bool inHighLev, Bool topLev)
+gen0FindDefsAll(AbSyn absyn, Stab stab0)
+{
+	gen0FindDefs(absyn, NULL, stab0, GFindDef_None);
+}
+
+local void
+gen0FindDefs(AbSyn absyn, AbSyn lhs, Stab stab, GFindDefMask mask)
 {
 	Length		i, argc = abArgc(absyn);
 
@@ -6391,50 +6406,49 @@ gen0FindDefs(AbSyn absyn, AbSyn lhs, Stab stab, Bool inHighLev, Bool topLev)
 
 		stab = abStab(absyn);
 
-		gen0FindDefs(lhs, NULL, stab, inHighLev, false);
-		gen0FindDefs(rhs, NULL, stab, inHighLev, true);
+		gen0FindDefs(lhs, NULL, stab, mask);
+		gen0FindDefs(rhs, NULL, stab, mask);
 		break;
 	}
 	case AB_Define: {
-		gen0FindDefsDefine(absyn, stab, inHighLev, topLev);
+		gen0FindDefsDefine(absyn, stab, mask);
 		break;
 	}
 	case AB_RestrictTo: {
 		AbSyn	expr = absyn->abRestrictTo.expr;
 		AbSyn	type = absyn->abRestrictTo.type;
 
-		gen0FindDefs(expr, NULL, stab, inHighLev, topLev);
+		gen0FindDefs(expr, NULL, stab, mask);
 		if (abHasTag(expr, AB_Add) && tfIsCategory(gen0AbType(type)))
-			gen0FindDefs(type, NULL, stab, true, topLev);
+			gen0FindDefs(type, NULL, stab, gfdSetHighLevel(mask));
 		break;
 	}
 	case AB_Generate: {
 		AbSyn	count = absyn->abGenerate.count;
 		AbSyn	body  = absyn->abGenerate.body;
-
-		gen0FindDefs(count, NULL, stab, true, false);
-		gen0FindDefs(body,  NULL, stab, true, false);
+		gen0FindDefs(count, NULL, stab, gfdSetHighLevel(mask));
+		gen0FindDefs(body,  NULL, stab, gfdSetHighLevel(mask));
 		break;
 	}
 	case AB_Reference: {
 		AbSyn	body  = absyn->abReference.body;
 
 		/* Mark our parameter as being used deeply */
-		gen0FindDefs(body,  NULL, stab, true, false);
+		gen0FindDefs(body,  NULL, stab, gfdSetHighLevel(mask));
 		break;
 	}
 	case AB_Collect: {
 		AbSyn	*argv = absyn->abCollect.iterv;
 		AbSyn	body  = absyn->abCollect.body;
-
-		for (i = 0; i < argc - 1; i += 1)
-			gen0FindDefs(argv[i], NULL, stab, true, false);
-		gen0FindDefs(body, NULL, stab, true, false);
+		for (i = 0; i < argc - 1; i += 1) {
+			gen0FindDefs(argv[i], NULL, stab, gfdSetHighLevel(mask));
+		}
+		gen0FindDefs(body, NULL, stab, gfdSetHighLevel(mask));
 		break;
 	}
 	case AB_Id: {
 		Syme	syme = abSyme(absyn);
-		gen0FindDefsSyme(stab, syme, inHighLev);
+		gen0FindDefsSyme(stab, syme, mask);
 		break;
 	}
 	case AB_Where: {
@@ -6443,16 +6457,16 @@ gen0FindDefs(AbSyn absyn, AbSyn lhs, Stab stab, Bool inHighLev, Bool topLev)
 
 		stab = abStab(absyn);
 
-                gen0FindDefs(ctxt, NULL, abStab(absyn), inHighLev, false);
-                gen0FindDefs(expr, NULL, abStab(absyn), inHighLev, false);
+                gen0FindDefs(ctxt, NULL, abStab(absyn), mask);
+                gen0FindDefs(expr, NULL, abStab(absyn), mask);
 		break;
 	}
 	case AB_With: {
 		AbSyn	lhs = absyn->abWith.base;
 		AbSyn	rhs = absyn->abWith.within;
 
-		gen0FindDefs(lhs, NULL, stab, inHighLev, false);
-		gen0FindDefs(rhs, NULL, stab, inHighLev, false);
+		gen0FindDefs(lhs, NULL, stab, mask);
+		gen0FindDefs(rhs, NULL, stab, mask);
 		break;
 	}
 	case AB_Lambda:
@@ -6486,7 +6500,7 @@ gen0FindDefs(AbSyn absyn, AbSyn lhs, Stab stab, Bool inHighLev, Bool topLev)
 		gen0FwdProgNum -= 1;
 
 		if (markParams) gen0MarkParamsDeep(stab,absyn->abLambda.param);
-		gen0FindDefs(fbody, NULL, abStab(absyn), inHighLev, false);
+		gen0FindDefs(fbody, NULL, abStab(absyn), mask);
 
 		break;
 	}
@@ -6503,7 +6517,7 @@ gen0FindDefs(AbSyn absyn, AbSyn lhs, Stab stab, Bool inHighLev, Bool topLev)
 		if (abStab(absyn))
 			stab = abStab(absyn);
 
-		if (impl) gen0FindDefs(impl, NULL, stab, inHighLev, topLev);
+		if (impl) gen0FindDefs(impl, NULL, stab, mask);
 
 		
 		for (i = 0; i < argc; i += 1)
@@ -6529,7 +6543,7 @@ gen0FindDefs(AbSyn absyn, AbSyn lhs, Stab stab, Bool inHighLev, Bool topLev)
 				isDeep = i && isForeign && isFunArg;
 			}
 
-			gen0FindDefs(argv[i], NULL, stab, isDeep || inHighLev, false);
+			gen0FindDefs(argv[i], NULL, stab, isDeep ? gfdSetHighLevel(mask) : mask);
 		}
 		break;
 	}
@@ -6539,10 +6553,10 @@ gen0FindDefs(AbSyn absyn, AbSyn lhs, Stab stab, Bool inHighLev, Bool topLev)
 		AbSyn	except = absyn->abTry.except;
 		AbSyn	always = absyn->abTry.always;
 
-		gen0FindDefs(id,     lhs, stab, inHighLev, false);
-		gen0FindDefs(expr,   lhs, stab, true, false);
-		gen0FindDefs(except, lhs, stab, inHighLev, false);
-		gen0FindDefs(always, lhs, stab, inHighLev, false);
+		gen0FindDefs(id,     lhs, stab, mask);
+		gen0FindDefs(expr,   lhs, stab, gfdSetHighLevel(mask));
+		gen0FindDefs(except, lhs, stab, mask);
+		gen0FindDefs(always, lhs, stab, mask);
 		break;
 	}
   	case AB_Export: {
@@ -6551,33 +6565,33 @@ gen0FindDefs(AbSyn absyn, AbSyn lhs, Stab stab, Bool inHighLev, Bool topLev)
 		AbSyn	dest = absyn->abExport.destination;
 
 		if (abTag(dest) == AB_Apply) 
-			gen0FindDefs(what, lhs, stab, true, false);
+			gen0FindDefs(what, lhs, stab, gfdSetHighLevel(mask));
 		else 
-			gen0FindDefs(what, lhs, stab, inHighLev, false);
-		gen0FindDefs(dest, lhs, stab, inHighLev, false);
-		gen0FindDefs(from, lhs, stab, inHighLev, false);
+			gen0FindDefs(what, lhs, stab, mask);
+		gen0FindDefs(dest, lhs, stab, mask);
+		gen0FindDefs(from, lhs, stab, mask);
 		break;
 	}
 	case AB_Label: {
 		AbSyn	expr = absyn->abLabel.expr;
-		gen0FindDefs(expr, lhs, stab, inHighLev, topLev);
+		gen0FindDefs(expr, lhs, stab, mask);
 		break;
 	}
 	default:
 		if (abImplicitSyme(absyn) != NULL) {
-			gen0FindDefs(abImplicit(absyn), NULL, stab, inHighLev, false);
+			gen0FindDefs(abImplicit(absyn), NULL, stab, mask);
 
 		}
 		if (!abIsLeaf(absyn))
 			for (i = 0; i < argc; i += 1)
 				gen0FindDefs(abArgv(absyn)[i], NULL,
-					     stab, inHighLev, false);
+					     stab, mask);
 		break;
 	}
 }
 
 local void
-gen0FindDefsDefine(AbSyn absyn, Stab stab, Bool inHighLev, Bool topLev)
+gen0FindDefsDefine(AbSyn absyn, Stab stab, GFindDefMask mask)
 {
 	AbSyn	*argv;
 	AbSyn	lhs;
@@ -6599,7 +6613,7 @@ gen0FindDefsDefine(AbSyn absyn, Stab stab, Bool inHighLev, Bool topLev)
 		argc = 1;
 		id = abDefineeId(lhs);
 	}
-	gen0FindDefs(rhs, id, stab, inHighLev, false);
+	gen0FindDefs(rhs, id, stab, mask);
 
 	for (i = 0; i < argc; i++) {
 		AbSyn   lhs = argv[i];
@@ -6614,27 +6628,49 @@ gen0FindDefsDefine(AbSyn absyn, Stab stab, Bool inHighLev, Bool topLev)
 		if (abTag(type) == AB_With &&
 		    (abIsNotNothing(type->abWith.base) ||
 		     gen0HasDefaults(type)))
-			gen0FindDefs(type, NULL, stab, true, false);
+			gen0FindDefs(type, NULL, stab, gfdSetHighLevel(mask));
 		else if (tfIsCategoryType(gen0AbType(type)))
-			gen0FindDefs(type, NULL, stab, true, false);
+			gen0FindDefs(type, NULL, stab, gfdSetHighLevel(mask));
 		else
-			gen0FindDefs(type, NULL, stab, inHighLev, topLev);
+			gen0FindDefs(type, NULL, stab, mask);
 	}
 }
 
 local void
-gen0FindDefsSyme(Stab stab, Syme syme, Bool inHighLev)
+gen0FindDefsSyme(Stab stab, Syme syme, GFindDefMask mask)
 {
+	Stab tstab;
+	Buffer buf;
+	String suffix = "";
+
 	if (!syme) return;
+
+	if (genfEnvDebug) {
+		buf = bufNew();
+		bufPrintf(buf, "%s [%d]", symeString(syme), symeDefLambdaLevelNo(syme));
+		tstab = stab;
+		while (tstab && stabHasMeaning(tstab, syme)) {
+			bufPrintf(buf, " .. (%d, %d, %d, %s)", stabSerialNo(tstab), stabLevelNo(tstab), stabLambdaLevelNo(tstab),
+				  "Normal" /*car(tstab)->isGenerator ? "Gen" : "Normal"*/);
+			tstab = cdr(tstab);
+		}
+	}
 	if (!symeUsed(syme)) {
 		stabUseMeaning(stab, syme);
 		symeSetUsed(syme);
+		suffix = ".. local";
 	}
-	if (inHighLev ||
+
+	if (gfdHighLevel(mask) ||
 	    stabLambdaLevelNo(stab) != symeDefLambdaLevelNo(syme)) {
 		stabUseMeaning(stab, syme);
 		symeSetUsed(syme);
 		symeSetUsedDeeply(syme);
+		suffix = ".. deep";
+	}
+
+	if (genfEnvDebug) {
+		afprintf(dbOut, "FindDefsSyme: %s %s\n", bufLiberate(buf), suffix);
 	}
 }
 
