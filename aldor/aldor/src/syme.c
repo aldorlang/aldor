@@ -1789,7 +1789,8 @@ symeListSubListById(SymeList symes, Symbol sym)
 }
 
 
-void gen0SetFoamKind(Syme syme, FoamTag kind)
+void
+gen0SetFoamKind(Syme syme, FoamTag kind)
 {
 	symeSetFoamKind(syme, kind);
 }
