@@ -6,24 +6,25 @@
  *
  *****************************************************************************/
 
+#include "abpretty.h"
 #include "abuse.h"
+#include "comsg.h"
 #include "debug.h"
+#include "doc.h"
 #include "fint.h"
 #include "format.h"
+#include "lib.h"
 #include "spesym.h"
 #include "stab.h"
 #include "store.h"
-#include "tfcond.h"
-#include "util.h"
-#include "lib.h"
-#include "tqual.h"
-#include "tposs.h"
-#include "abpretty.h"
-#include "doc.h"
-#include "comsg.h"
 #include "strops.h"
-#include "table.h"
 #include "symcoinfo.h"
+#include "table.h"
+#include "tfcond.h"
+#include "tposs.h"
+#include "tqual.h"
+#include "util.h"
+
 
 Bool	scoDebug	= false;
 Bool	scoStabDebug	= false;
