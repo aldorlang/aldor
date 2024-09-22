@@ -42,8 +42,8 @@ flogPrint(FILE *fout, FlowGraph flog, Bool extended)
 	BBlock	bb;
 
 	/* Gather info to help reader. */
-	flogFixEntries(flog);
-	flogFixLabels(flog);
+	//flogFixEntries(flog);
+	//flogFixLabels(flog);
 
 	cc += fprintf(fout, "Flow Graph  (upto %d nodes)  entry = %d\n",
 			flogBlockC(flog), flog->block0->label);
