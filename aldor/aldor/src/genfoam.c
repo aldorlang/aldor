@@ -1450,7 +1450,12 @@ genImplicit(AbSyn absyn, AbSyn val, FoamTag type)
 	Syme	syme = abImplicitSyme(absyn);
 	AbSyn  *argv = NULL;
 	Foam 	foam;      
-	if (!syme) return genFoamVal(val);
+	if (!syme) {
+		foam = genFoamVal(val);
+		if (gen0Type(gen0AbContextType(val), NULL) != type)
+			foam = foamNewCast(type, foam);
+		return foam;
+	}
 
 	argv = gen0MakeImplicitArgs(1, val, abThisArgf);
 	foam = gen0ApplyImplicitSyme(type, syme, 1, argv, NULL);
