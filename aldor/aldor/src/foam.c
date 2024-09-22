@@ -3212,7 +3212,7 @@ foamExprTypeCB(Foam expr, AInt *extra, FoamExprTypeCallback callback, void *arg)
 
 		return type;
 
-	case FOAM_Const: 
+	  case FOAM_Const:
 		decl = callback(arg, expr);
 		return decl->foamDecl.type;
 
