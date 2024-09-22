@@ -2,6 +2,7 @@
 #include "axlobs.h"
 #include "bigint.h"
 #include "errorset.h"
+#include "flog.h"
 #include "format.h"
 #include "formatters.h"
 #include "freevar.h"
@@ -16,6 +17,7 @@
 #include "tfsat.h"
 #include "tposs.h"
 #include "ttable.h"
+#include "usedef.h"
 
 local int tfFormatter(OStream stream, Pointer p);
 local int tfFormatterAlt(OStream stream, int lvl, Pointer p);
@@ -58,6 +60,9 @@ local int boolFormatter(OStream ostream, int p);
 local int slotUsageFormatter(OStream ostream, Pointer p);
 local int slotUsageListFormatter(OStream ostream, Pointer p);
 
+local int udInfoFormatter(OStream ostream, Pointer p);
+local int udInfoListFormatter(OStream ostream, Pointer p);
+
 void
 fmttsInit()
 {
@@ -95,6 +100,9 @@ fmttsInit()
 
 	fmtRegister("SlotUsage", slotUsageFormatter);
 	fmtRegister("SlotUsageList", slotUsageListFormatter);
+
+	fmtRegister("UdInfo", udInfoFormatter);
+	fmtRegister("UdInfoList", udInfoListFormatter);
 
 	fmtRegister("BInt", bintFormatter);
 	fmtRegister("Symbol", symbolFormatter);
@@ -382,4 +390,18 @@ slotUsageListFormatter(OStream ostream, Pointer p)
 {
 	SlotUsageList list = (SlotUsageList) p;
 	return listFormat(SlotUsage)(ostream, "SlotUsage", list);
+}
+
+local int
+udInfoFormatter(OStream ostream, Pointer p)
+{
+	UdInfo udInfo = (UdInfo) p;
+	return ostreamPrintf(ostream, "(UD %d %pFoam)", udInfo->block->label, udInfo->foam);
+}
+
+local int
+udInfoListFormatter(OStream ostream, Pointer p)
+{
+	UdInfoList list = (UdInfoList) p;
+	return listFormat(UdInfo)(ostream, "UdInfo", list);
 }
