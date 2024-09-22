@@ -193,6 +193,7 @@ local	CCode	gccMFmt		(Foam); /* Generate multi-value call */
 local	CCode	gccReturnValues	(Foam); /* Return multiple values */
 local	CCode	gccValues	(Foam); /* Generate multiple values */
 local	CCode	gccIf		(Foam); /* Generate an if statement */
+local	CCode	gccEnv		(Foam); /* Generate an Env reference */
 local	CCode	gccSelect	(Foam); /* Generate a switch statement */
 local	CCode	gccBInt		(Foam); /* Generate a big integer */
 local	CCode	gccPushEnv	(Foam); /* Push environment onto the stack */
@@ -4405,23 +4406,8 @@ gccId(Foam foam)
 		  break;
 		}
 	  case FOAM_Env:
-		{
-		int level = foam->foamEnv.level;
-
-		if (gcvIsLeaf && level == 0 && 
-		    (gcvLFmtStk->foamDEnv.argv[level] == emptyFormatSlot
-		     || gcvLFmtStk->foamDEnv.argv[level] == envUsedSlot))
-			cc = gcFiEnvPush(ccoIntOf(int0),
-					 gc0VarId("e", level+1));
-		else
-			cc = gc0VarId("e", level);
-		/* !! Because sometimes usage info is lost */
-		if (gc0EmptyEnv(gcvLFmtStk->foamDEnv.argv[level]) && level!=0) {
-			gcvLFmtStk = foamCopy(gcvLFmtStk);
-			gcvLFmtStk->foamDEnv.argv[level] = envUsedSlot;
-		}
-		break;
-	      }
+		  cc = gccEnv(foam);
+		  break;
 	  default:
 		cc = gccExpr(foam);
 		break;
@@ -4429,6 +4415,29 @@ gccId(Foam foam)
 	return cc;
 }
 
+local CCode
+gccEnv(Foam foam)
+{
+	CCode cc;
+	int level = foam->foamEnv.level;
+
+	if (gcvIsLeaf && level == 0 &&
+	    (gcvLFmtStk->foamDEnv.argv[level] == emptyFormatSlot
+	     || gcvLFmtStk->foamDEnv.argv[level] == envUsedSlot)) {
+		bugWarning("Odd env usage..");
+		cc = gcFiEnvPush(ccoIntOf(int0),
+				 gc0VarId("e", level+1));
+	}
+	else
+		cc = gc0VarId("e", level);
+	/* !! Because sometimes usage info is lost */
+	if (gc0EmptyEnv(gcvLFmtStk->foamDEnv.argv[level]) && level!=0) {
+		bugWarning("Lost usage info..");
+		gcvLFmtStk = foamCopy(gcvLFmtStk);
+		gcvLFmtStk->foamDEnv.argv[level] = envUsedSlot;
+	}
+	return cc;
+}
 
 /* Given a constant, it returns the name of the corresponding function.
  * In example, for constant 2 it returns CF2_....
