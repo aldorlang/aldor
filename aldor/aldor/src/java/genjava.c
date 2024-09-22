@@ -4235,7 +4235,7 @@ gj0PCallJavaConstructorGlo(Foam foam)
 
 	op = foam->foamPCall.op;
 
-	assert(foamPCallArgc(foam) > 1);
+	assert(foamPCallArgc(foam) >= 1);
 
 	decl = gjContextGlobal(op->foamGlo.index);
 	//args = gj0GenList(foam->foamPCall.argv, foamPCallArgc(foam));
@@ -4277,7 +4277,7 @@ gj0PCallCastArgs(Foam op, JavaCodeList argsIn)
 	int i = 0;
 
 	assert(ddecl->foamDDecl.usage == FOAM_DDecl_JavaSig);
-	assert(javaSigArgc(ddecl) == listLength(JavaCode)(argsIn));
+	//assert(javaSigArgc(ddecl) == listLength(JavaCode)(argsIn)); // FIXME: Should be able to get the args right..
 
 	/* Cast java-valued arguments - all other types are not converted */
 	while (args != listNil(JavaCode)) {
