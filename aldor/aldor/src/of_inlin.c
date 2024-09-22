@@ -3272,7 +3272,7 @@ inlTransformExpr(Foam expr, Foam *paramArgv, Foam *localArgv)
 		break;
 	  case FOAM_Select: {
 		int	i;
-		for(i=0; i< foamArgc(nexpr) - 1 /* for op */; i++)
+		for(i=0; i< foamSelectArgc(nexpr); i++)
 			nexpr->foamSelect.argv[i] += inlProg->numLabels;
 		break; }
 	  case FOAM_Goto:
