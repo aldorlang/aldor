@@ -134,7 +134,6 @@ local AInt	   gen0BuiltinImport	  (String, String);
 local Foam	   gen0BuiltinExporter	  (Foam, Syme);
 local Foam	   gen0CCall		  (FoamTag, Syme, Length, Foam **);
 local Bool	   gen0CompareFormats	  (Foam, Foam);
-local void	   gen0ComputeSideEffects (Foam prog);
 local Foam	   gen0CrossToMulti	  (Foam, TForm);
 local Foam	   gen0CrossToUnary	  (Foam, TForm);
 local Foam	   gen0CrossToTuple	  (Foam, TForm);
@@ -7420,7 +7419,7 @@ genGlobalInfo(Foam glo, String *pname, String *porig, int *phash)
 
 
 /* Try to compute the side effect bit correctly . */
-local void
+void
 gen0ComputeSideEffects(Foam prog)
 {
 	/*!! Needs beefing up */

@@ -268,4 +268,6 @@ extern void 		gen0SetDDeclUsage	(AInt, FoamDDeclTag);
 
 extern int		gen0RootEnv		(void);
 
+extern void gen0ComputeSideEffects(Foam prog);
+
 #endif /* !_GF_UTIL_H_ */
