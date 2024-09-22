@@ -7,14 +7,15 @@
  ****************************************************************************/
  
 #include "debug.h"
+#include "fbox.h"
+#include "flog.h"
 #include "of_util.h"
 #include "phase.h"
 #include "store.h"
-#include "util.h"
-#include "syme.h"
 #include "strops.h"
-#include "fbox.h"
- 
+#include "syme.h"
+#include "util.h"
+
 /*****************************************************************************
  *
  * :: Temporary variable pools
@@ -410,6 +411,7 @@ fpClearFormats(Foam ddecl)
 
 local int	utilStatementsCount	(Foam foam);
 local void	utilSequencesExpand	(Foam foam, Foam ** p);
+local void	utilMakeFlatBB		(BBlock bb);
 
 /* During the inlining some (Seq ..) stmts are inserted into the code.
  * For convenience, we want that a Prog contains exactly a unique Seq as
@@ -438,6 +440,37 @@ utilMakeFlatSeq(Foam foam)
 	utilSequencesExpand(foam, &stmtPtr);
 
 	return newSeq;
+}
+
+void
+utilMakeFlatFlog(FlowGraph flog)
+{
+	flogIter(flog, bb, {
+			utilMakeFlatBB(bb);
+			});
+
+}
+
+local void
+utilMakeFlatBB(BBlock bb)
+{
+	int 	numStmts = utilStatementsCount(bb->code);
+	Foam    foam = bb->code;
+	Foam 	newSeq;
+	Foam *  stmtPtr;
+
+	assert(foamTag(foam) == FOAM_Seq);
+
+	/* No sequences inside ? */
+	if (numStmts == foamArgc(foam)) return;
+
+	newSeq = foamNewEmpty(FOAM_Seq, numStmts);
+
+	stmtPtr = newSeq->foamSeq.argv;
+
+	utilSequencesExpand(foam, &stmtPtr);
+
+	bb->code = newSeq;
 }
 
 local int
