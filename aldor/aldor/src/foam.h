@@ -1596,6 +1596,7 @@ extern Foam foamNeutralValue(FoamTag foam);
 
 #define foamSelectArgc(foam)    (foamArgc(foam) - 1)
 extern Foam foamNewSelectRange(Foam expr, AInt lo, AInt hi);
+extern Foam foamNewSelect(Foam expr, AInt nBranches);
 
 extern Bool foamProgHasMultiAssign(Foam prog);
 extern Bool foamIsMultiAssign(Foam prog);

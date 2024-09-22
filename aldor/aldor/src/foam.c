@@ -407,6 +407,14 @@ foamNewDFmt(Foam arg0, ...)
 }
 
 Foam
+foamNewSelect(Foam op, AInt nBranches)
+{
+	Foam foam = foamNewEmpty(FOAM_Select, 1 + nBranches);
+	foam->foamSelect.op = op;
+	return foam;
+}
+
+Foam
 foamNewSelectRange(Foam op, AInt lo, AInt count)
 {
 	Foam foam;
