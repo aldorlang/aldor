@@ -366,15 +366,12 @@ flog0Clip1Block(Foam seq, Length *pix0)
 		case FOAM_Select:
 			ftag = foamTag(argv[ixL]);
 			break;
-#define FlogHalt	1
-#if FlogHalt
 		case FOAM_BCall:
 			if (foamIsBCallOf(argv[ixL], FOAM_BVal_Halt)) {
 				ftag = FOAM_Throw;
 			} else
 				ixL++;
 			break;
-#endif
 		default:
 			ixL++;
 			break;
@@ -397,14 +394,13 @@ flog0Clip1Block(Foam seq, Length *pix0)
 	if (extra != 0)
 		subseq->foamSeq.argv[n] = extra;
 	*pix0 = ixL + 1;
-#if FlogHalt
+
 	if (ftag==FOAM_Throw) 
 		while (*pix0 < argc 
 		       && foamTag(argv[*pix0]) != FOAM_Label) {
 			/*foamFree(argv[*pix0]);*/
 			(*pix0)++;
 		}
-#endif	
 	return subseq;
 }
  
@@ -462,9 +458,7 @@ flog0KindExitCount(BBlock bb)
 	case FOAM_Select:	return foamArgc(bbLastStat(bb)) - 1;
 	case FOAM_Goto:		return 1;
 	case FOAM_Return:	return 0;
-#if FlogHalt
 	case FOAM_Throw:	return 0;
-#endif
 	default:		bugBadCase(bb->kind); return 0;
 	}
 }
@@ -907,9 +901,7 @@ bbPrint(FILE *fout, BBlock bb, Bool extended)
 	case FOAM_Select:  s = "Select"; break;
 	case FOAM_Return:  s = "Return"; break;
 	case FOAM_Goto:    s = "Goto  "; break;
-#if FlogHalt
 	case FOAM_Throw:   s = "Exit  "; break;
-#endif
 	default:           s = "??????"; break;
 	}
 
