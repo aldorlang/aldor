@@ -1057,6 +1057,8 @@ foamAuditExpr(Foam foam)
 		    faDEnv[foam->foamLex.level] >= faNumFormats ||
 		    foam->foamLex.index >= faNumLexes(foam->foamLex.level))
 			foamAuditBadRef(foam);
+		if (foam->foamLex.level < 0)
+			foamAuditBadRef(foam);
 		break;
 	  case FOAM_Const:
 		if (foam->foamConst.index >= faNumConsts)
@@ -1075,7 +1077,13 @@ foamAuditExpr(Foam foam)
 		    foam->foamEElt.lex >=
 		    foamArgc(faFormatsv[foam->foamEElt.env]))
 			foamAuditBadRef(foam);
+		if (foam->foamEElt.level < 0)
+			foamAuditBadRef(foam);
 		break;
+	  case FOAM_Env:
+		  if (foam->foamEnv.level < 0)
+			  foamAuditBadRef(foam);
+		  break;
 	  case FOAM_RElt:
 		if (foam->foamRElt.format >= faNumFormats)
 			foamAuditBadRef(foam);
@@ -1152,6 +1160,8 @@ foamAuditDecl(Foam decl)
 			foamAuditBadDecl(decl);
 		*/
 		break;
+	case FOAM_Env:
+		// There's an argument for tracking types of env properly
 	default:
 		if (fmt != emptyFormatSlot && fmt != 0)
 			foamAuditBadDecl(decl);
