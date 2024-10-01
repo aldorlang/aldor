@@ -43,6 +43,13 @@ strLength(CString s)
 	return strlen(s);
 }
 
+Bool
+strIsEmpty(CString s)
+{
+	return s[0] == '\0';
+}
+
+
 Length
 strUntabLength(CString s, Length tabstop)
 {

@@ -23,6 +23,7 @@ extern String           strOfChars      (char *);
 #define                 strChars(s)     (s)
 
 extern Length           strLength       (CString);
+extern Bool             strIsEmpty      (CString);
 extern Length		strUntabLength	(CString, Length tabstop);
 	
 extern String           strCopy         (CString);

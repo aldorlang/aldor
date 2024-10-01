@@ -32,6 +32,7 @@ void retypeTest(void);
 void scobindTest(void);
 void srcposTest(void);
 void stabTest(void);
+void stropsTestSuite(void);
 void symeTest(void);
 void symeSetTestSuite(void);
 void tformTest(void);

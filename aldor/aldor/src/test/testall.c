@@ -36,6 +36,7 @@ main(int argc, char *argv[])
 	if (testShouldRun("ostream")) ostreamTest();
 	if (testShouldRun("float")) floatTestSuite();
 	if (testShouldRun("int")) intTestSuite();
+	if (testShouldRun("strops")) stropsTestSuite();
 	if (testShouldRun("bigint")) bintTestSuite();
 	if (testShouldRun("errorset")) errorSetTestSuite();
 	if (testShouldRun("bitv")) bitvTestSuite();

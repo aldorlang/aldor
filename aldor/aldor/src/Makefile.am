@@ -305,6 +305,7 @@ testsuite =			\
 	test/test_scobind.c	\
 	test/test_srcpos.c	\
 	test/test_stab.c	\
+	test/test_strops.c	\
 	test/test_syme.c	\
 	test/test_symeset.c	\
 	test/test_tform.c	\
