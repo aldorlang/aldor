@@ -374,6 +374,13 @@ foamNewDDecl(AInt usage, ...)
 	return foamNewDDeclOfList(usage, foamList);
 }
 
+Foam foamNewDDeclEmpty(AInt n, AInt usage)
+{
+	Foam foam = foamNewEmpty(FOAM_DDecl, 1 + n);
+	foam->foamDDecl.usage = usage;
+	return foam;
+}
+
 Foam
 foamNewDDeclOfList(AInt usage, FoamList foamList)
 {
@@ -381,7 +388,7 @@ foamNewDDeclOfList(AInt usage, FoamList foamList)
 	int i;
 	assert(foamDDeclSlotc == 1); /* Will blow up if a field is added */
 
-	foam = foamNew(FOAM_DDecl, foamDDeclSlotc + listLength(Foam)(foamList));
+	foam = foamNewEmpty(FOAM_DDecl, foamDDeclSlotc + listLength(Foam)(foamList));
 	foam->foamDDecl.usage = usage;
 	i=0;
 	while (foamList != listNil(Foam)) {

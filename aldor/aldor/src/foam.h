@@ -714,6 +714,7 @@ struct foamDecl {
 };
 
 #define foamNewEmptyDDecl(u) foamNew(FOAM_DDecl, 1, (AInt) u)
+extern Foam foamNewDDeclEmpty(AInt n, AInt usage);
 extern Foam foamNewDDecl(AInt usage, ...);
 extern Foam foamNewDDeclOfList(AInt usage, FoamList args);
 
