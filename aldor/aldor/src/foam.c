@@ -848,6 +848,13 @@ foamProgHasMultiAssign(Foam prog)
 	return false;
 }
 
+AInt
+foamProgFormatForLevel(Foam prog, AInt level)
+{
+	return prog->foamProg.levels->foamDEnv.argv[level];
+}
+
+
 Bool
 foamIsMultiAssign(Foam foam)
 {

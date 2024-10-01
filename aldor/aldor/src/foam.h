@@ -1602,6 +1602,7 @@ extern Foam foamNewSelectRange(Foam expr, AInt lo, AInt hi);
 extern Foam foamNewSelect(Foam expr, AInt nBranches);
 
 extern Bool foamProgHasMultiAssign(Foam prog);
+extern AInt foamProgFormatForLevel(Foam prog, AInt lexLevel);
 extern Bool foamIsMultiAssign(Foam prog);
 
 extern Bool foamDeclEqual(Foam, Foam);
