@@ -414,6 +414,17 @@ foamNewDFmt(Foam arg0, ...)
 }
 
 Foam
+foamNewDEnvUnused(AInt len)
+{
+	Foam foam = foamNewEmpty(FOAM_DEnv, len);
+	for (AInt i=0; i<len; i++) {
+		foam->foamDEnv.argv[i] = emptyFormatSlot;
+	}
+	return foam;
+}
+
+
+Foam
 foamNewSelect(Foam op, AInt nBranches)
 {
 	Foam foam = foamNewEmpty(FOAM_Select, 1 + nBranches);

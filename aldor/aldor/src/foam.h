@@ -734,6 +734,7 @@ struct foamDFluid {
 };
 
 #define foamNewEmptyDEnv() foamNew(FOAM_DEnv, 0)
+extern Foam foamNewDEnvUnused(AInt len);
 
 struct foamDEnv {
 	struct foamHdr          hdr;
