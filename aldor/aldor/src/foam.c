@@ -1114,6 +1114,8 @@ foamAuditExpr(Foam foam)
 	  case FOAM_Env:
 		  if (foam->foamEnv.level < 0)
 			  foamAuditBadRef(foam);
+		  if (foam->foamEnv.level >= faNumLevels)
+			  foamAuditBadRef(foam);
 		  break;
 	  case FOAM_RElt:
 		if (foam->foamRElt.format >= faNumFormats)
