@@ -33,8 +33,10 @@
 #include "strops.h"
 
 Bool	optfDebug = false;
+Bool	optfShowDebug = false;
 
 #define optfDEBUG	DEBUG_IF(optf)	afprintf
+#define optfShowDEBUG	DEBUG_IF(optfShow) afprintf
 
 static int optInline;
 static int optInlineAll;
@@ -259,7 +261,9 @@ optimizeFoam(Foam foam)
 	Bool	newConsts = false;
 	int	i, iters;
 	if (DEBUG(optf)){optPrintOpts(dbOut);}
-
+	if (DEBUG(optfShow)) {
+		afprintf(dbOut, "optfoam - in:\n%pFoam\n", foam);
+	}
 	optOptimizationsInit();
 
 	if (optDeadVar)   {
@@ -428,6 +432,10 @@ optimizeFoam(Foam foam)
 	/*flattenUnit(foam);*/
 
 	optfDEBUG(dbOut, "Optimizations finished.\n");
+
+	if (DEBUG(optfShow)) {
+		afprintf(dbOut, "optfoam - out:\n%pFoam\n", foam);
+	}
 
 	foamAuditAll(foam, 0xffff);
 
