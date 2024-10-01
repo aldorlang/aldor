@@ -1146,6 +1146,7 @@ struct foamMFmt {
 };
 
 #define foamNewEmptyValues()    foamNew(FOAM_Values, 0)
+extern Foam foamNewValuesOfList(FoamList vals);
 struct foamValues {
 	struct foamHdr		hdr;
 	Foam			argv[NARY];

@@ -448,6 +448,12 @@ foamNewSelectRange(Foam op, AInt lo, AInt count)
 	return foam;
 }
 
+Foam
+foamNewValuesOfList(FoamList lst)
+{
+	return foamNewOfList(FOAM_Values, lst);
+}
+
 
 Foam
 foamNewEmpty(FoamTag tag, Length argc)
