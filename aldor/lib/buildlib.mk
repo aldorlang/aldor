@@ -218,7 +218,8 @@ $(libraryname)-sources.jar: $(patsubst %,aldorcode/%.java, $(_javalibrary)) $(to
 		jar uf ../$@ -C sources-jar .; done;				\
 	rm -rf sources-jar
 
-all: $(libraryname)-sources.jar $(libraryname).jar
+all: $(libraryname)-sources.jar $(libraryname).jar \
+	$(patsubst %,aldorcode/%.class,$(_javalibrary))
 
 endif
 endif
