@@ -1014,9 +1014,10 @@ scobindLambda(AbSyn absyn)
 		if (abTForm(ret) == NULL)
 			abSetTForm(ret, scobindTfSyntaxFrAbSyn(scoStab, ret));
 	}
+#if RTYPE
 	else
                 comsgError(absyn, ALDOR_E_ChkMissingRetType);
-
+#endif
 	scoIsInAdd = false;
 	scobindValue(absyn->abLambda.body);
 	scoIsInAdd = save;
