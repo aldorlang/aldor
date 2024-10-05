@@ -2,7 +2,6 @@
 #include "foam.h"
 #include "int.h"
 #include "sexpr.h"
-#include "syme.h"
 #include "testlib.h"
 #include "util.h"
 
