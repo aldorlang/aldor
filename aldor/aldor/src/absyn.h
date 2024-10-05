@@ -151,10 +151,12 @@ typedef Enum(abSynTag)	AbSynTag;
 # define abNewFluid(p,b)	abNew(AB_Fluid,		p,1, b)
 # define abNewFix(p,b)		abNew(AB_Fix,		p,1, b)
 # define abNewFor(p,v,i,c)	abNew(AB_For,		p,3, v,i,c)
+# define abNewXFor(p,v,i,c)	abNewMod(AB_For,        p,1, 3,v,i,c)
 # define abNewForeignImport(p,w,o) abNew(AB_ForeignImport,p,2, w,o)
 # define abNewForeignExport(p,w,o) abNew(AB_ForeignExport,p,2, w,o)
 # define abNewFree(p,b)		abNew(AB_Free,		p,1, b)
 # define abNewGenerate(p,n,e)	abNew(AB_Generate,	p,2, n,e)
+# define abNewXGenerate(p,n,e)	abNewMod(AB_Generate,	p,1,2, n,e)
 # define abNewGoto(p,l)		abNew(AB_Goto,		p,1, l)
 # define abNewHas(p,a,b)	abNew(AB_Has,		p,2, a,b)
 # define abNewHide(p,e)		abNew(AB_Hide,		p,1, e)
@@ -236,6 +238,17 @@ enum ab_use {
 typedef Enum(ab_use)	AbUse;
 
 /*
+ * AbFlags
+ */
+enum ab_flag {
+	AB_Flag_OldIter = 0,
+	AB_Flag_NewIter = 1
+};
+typedef Enum(ab_flag) AbFlag;
+
+#define abFlag_IsNewIter(ab) (abFlags(ab) == AB_Flag_NewIter)
+
+/*
  * AbState
  */
 
@@ -305,6 +318,7 @@ struct abHdr {
 	BPack(AbSynTag)		tag;
 	BPack(AbUse)		use;
 	BPack(AbState)		state;
+	BPack(AbFlag)		flags;
 
 	Length			argc;
 	SrcPosStack		pos;
@@ -864,6 +878,7 @@ extern struct ab_info	abInfoTable[];
 
 # define abUse(a)	  ((a)->abHdr.use)
 # define abState(a)	  ((a)->abHdr.state)
+# define abFlags(a)	  ((a)->abHdr.flags)
 # define abArgc(a)	  ((a)->abHdr.argc)
 # define abArgv(a)	  ((a)->abGen.data.argv)
 # define abLeafSym(a)	  ((a)->abGen.data.sym)
@@ -954,6 +969,7 @@ extern void	abFree			(AbSyn);
 extern void	abFreeNode		(AbSyn);
 
 extern AbSyn	abNew			(AbSynTag t, SrcPos, Length argc, ...);
+extern AbSyn	abNewMod		(AbSynTag t, SrcPos, UByte, Length argc, ...);
 extern AbSyn	abNewOfList		(AbSynTag t, SrcPos, AbSynList);
 extern AbSyn	abNewOfOpAndList	(AbSynTag t, SrcPos,AbSyn op,AbSynList);
 extern AbSyn	abNewOfToken		(AbSynTag t, Token);
