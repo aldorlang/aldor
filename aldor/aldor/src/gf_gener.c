@@ -352,32 +352,6 @@ gen0GenerValueFun(FoamTag retType, TForm tf)
 	return clos;
 }
 
-local Foam 
-gen0BuildFunFromFoam(String name, FoamTag retType, Foam body)
-{
-	GenFoamState	saved;
-	Foam		foam, clos;
-
-	clos = foamNewClos(foamNewEnv(-1), foamNewConst(gen0NumProgs));
-	foam = gen0ProgInitEmpty(name, NULL);
-
-	saved = gen0ProgSaveState(PT_Gener);
-
-	gen0AddStmt(foamNewReturn(body), NULL);
-
-	gen0UseStackedFormat(int0);
-	gen0ProgPushFormat(emptyFormatSlot);
-	gen0ProgPushFormat(emptyFormatSlot);
-	gen0ProgFiniEmpty(foam, retType, int0);
-
-	gen0AddLexLevels(foam, 2);
-
-        foamOptInfo(foam) = inlInfoNew(NULL, foam, NULL, false);
-
-	gen0ProgRestoreState(saved);
-	return clos;
-}
-
 /******************************************************************************
  *
  * :: Lifting free generators, and computing bounds
