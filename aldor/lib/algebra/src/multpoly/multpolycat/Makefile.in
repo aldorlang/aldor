@@ -16,6 +16,6 @@ subdir		:= $(subst $(abs_top_builddir)/,,$(abs_builddir))
 
 # Build starts here
 library = alg_defgcd alg_poltype alg_stdfrng sm_famr0 sm_polring0 sm_polring sm_rmpcat0 
-XFAIL_java = alg_defgcd
+#XFAIL_java = alg_defgcd
 
 include $(abs_top_srcdir)/lib/algebra/src/common.mk
