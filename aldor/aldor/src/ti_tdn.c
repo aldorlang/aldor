@@ -1420,18 +1420,23 @@ titdnGenerate(Stab stab, AbSyn absyn, TForm type)
 	AbSyn		body = absyn->abGenerate.body;
 	AbSyn		count = absyn->abGenerate.count;
 	Bool		result;
+	TfGenType	tfGenType;
 
 	tuniReturnTForm	= tfNone();
 	tuniYieldTForm	= tfNone();
 	tuniExitTForm	= tfNone();
 	abYieldsList = listNil(AbSyn);
 
-	if (tfIsGenerator(type))
-		tuniYieldTForm = tfGeneratorArg(type);
+	tfGenType = abFlag_IsNewIter(absyn) ? TFG_XGenerator : TFG_Generator;
+
+	if (tfIsAnyGenerator(type))
+		tuniYieldTForm = tfAnyGeneratorArg(type);
 	else
 		tuniYieldTForm = tfUnknown;
 
-	titdn(stab, count, tfUnknown);
+	if (abTag(count) != KW_From) {
+		titdn(stab, count, tfUnknown);
+	}
 	titdn(stab, body,  tfNone());
 
 	if (abState(absyn) == AB_State_Error) {
@@ -1471,7 +1476,7 @@ titdnGenerate(Stab stab, AbSyn absyn, TForm type)
 	result = (abState(absyn) != AB_State_Error) ? true : false;
 
 	/* Only allowed to set abTUnique if returning true */
-	if (result) abTUnique(absyn) = tfGenerator(tuniYieldTForm);
+	if (result) abTUnique(absyn) = tfAnyGenerator(tfGenType, tuniYieldTForm);
 
 	listFree(AbSyn)(abYieldsList);
 	Return(result);
@@ -1685,8 +1690,8 @@ titdnCollect(Stab stab, AbSyn absyn, TForm type)
 	for (i = 0; i < iterc; i++)
 		titdn(stab, iterv[i], tfUnknown);
 
-	if (tfIsGenerator(type))
-		rtype = tfGeneratorArg(type);
+	if (tfIsAnyGenerator(type))
+		rtype = tfAnyGeneratorArg(type);
 	else
 		rtype = tfUnknown;
 
@@ -1803,8 +1808,11 @@ titdnFor(Stab stab, AbSyn absyn, TForm type)
 	AbSyn	lhs   = absyn->abFor.lhs;
 	AbSyn	test  = absyn->abFor.test;
 	TForm	twhole;
-
-	if (tfIsUnknown(type) && tpossIsUnique(abTPoss(lhs)))
+	Bool unique;
+	unique = tfIsUnknown(type) && tpossIsUnique(abTPoss(lhs));
+	if (unique && abFlag_IsNewIter(absyn))
+		twhole = tfXGenerator(tpossUnique(abTPoss(lhs)));
+	else if (unique)
 		twhole = tfGenerator(tpossUnique(abTPoss(lhs)));
 	else
 		twhole = type;
@@ -1815,10 +1823,17 @@ titdnFor(Stab stab, AbSyn absyn, TForm type)
 	 * that we have to use cdr(stab) whenever we tinfer
 	 * absyn->abFor.whole or via abForIterArgf().
 	 */
-	titdn0ApplySymIfNeeded(cdr(stab), absyn, twhole,
-			ssymTheGenerator, 1, abForIterArgf,
-			NULL, tfIsGeneratorFn);
 
+	if (!abFlag_IsNewIter(absyn)) {
+		titdn0ApplySymIfNeeded(cdr(stab), absyn, twhole,
+				       ssymTheGenerator, 1, abForIterArgf,
+				       NULL, tfIsGeneratorFn);
+	}
+	else if (abFlag_IsNewIter(absyn)) {
+		titdn0ApplySymIfNeeded(cdr(stab), absyn, twhole,
+				       ssymTheXGenerator, 1, abForIterArgf,
+				       NULL, tfIsXGeneratorFn);
+	}
 
 	/*
 	 * The for-variable and test lie within the scope

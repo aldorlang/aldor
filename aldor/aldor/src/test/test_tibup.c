@@ -19,6 +19,7 @@ local void testTiTdnMultiToCrossEmbed();
 local void testTiBupApplyMixed();
 local void testTiBupApplyImplicit();
 local void testTiBupApplyErrorOnArg();
+local void testTiBupGenCross();
 
 void
 tibupTest()
@@ -31,6 +32,7 @@ tibupTest()
 	TEST(testTiBupApplyMixed);
 	TEST(testTiBupApplyImplicit);
 	TEST(testTiBupApplyErrorOnArg);
+	TEST(testTiBupGenCross);
 	fini();
 }
 
@@ -341,6 +343,35 @@ testTiTdnMultiToCrossEmbed()
 	aprintf("Type of g: %pTForm\n", abTUnique(fncall->abApply.op));
 	aprintf("Type of f(): %pTForm\n", abTUnique(fncall->abApply.argv[0]));
 	aprintf("Embed of f(): %d\n", abEmbedApply(fncall->abApply.argv[0]));
+
+	finiFile();
+}
+
+
+local void
+testTiBupGenCross()
+{
+	AbSyn absyn = stdtypes();
+
+	initFile();
+	Stab stab = stabFile();
+	abPutUse(absyn, AB_Use_NoValue);
+	scopeBind(stab, absyn);
+	typeInfer(stab, absyn);
+
+	AbSyn test1 = abqParse("generate yield ()");
+	tiBottomUp(stab, test1, tfUnknown);
+
+	testIntEqual("G0", 1, tpossCount(abTPoss(test1)));
+	testTrue("G1", tfIsGenerator(tpossUnique(abTPoss(test1))));
+	testTrue("G2", tfIsAnyGenerator(tpossUnique(abTPoss(test1))));
+
+	AbSyn test2 = abqParse("xgenerate yield ()");
+	tiBottomUp(stab, test2, tfUnknown);
+
+	testIntEqual("XG0", 1, tpossCount(abTPoss(test2)));
+	testTrue("XG1", tfIsXGenerator(tpossUnique(abTPoss(test2))));
+	testTrue("XG2", tfIsAnyGenerator(tpossUnique(abTPoss(test2))));
 
 	finiFile();
 }

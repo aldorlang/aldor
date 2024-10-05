@@ -734,6 +734,7 @@ tfp0OpSyme(Stab stab, Syme syme, Symbol sym, Length argc)
 	    (argc == 2 && sym == ssymPackedArrow)	||
 	    (argc == 1 && sym == ssymTuple)		||
 	    (argc == 1 && sym == ssymGenerator)		||
+	    (argc == 1 && sym == ssymXGenerator)	||
 	    (argc == 1 && sym == ssymReference)		||
 	    (argc == 1 && sym == ssymRaw)		||
 
@@ -774,6 +775,7 @@ tfp0OpTForm(Symbol sym, Length argc)
 	else if (sym == ssymPackedArrow)	tag = TF_PackedMap;
 	else if (sym == ssymTuple)		tag = TF_Tuple;
 	else if (sym == ssymGenerator)		tag = TF_Generator;
+	else if (sym == ssymXGenerator)		tag = TF_XGenerator;
 	else if (sym == ssymReference)		tag = TF_Reference;
 	else if (sym == ssymRaw)		tag = TF_Raw;
 
@@ -1743,6 +1745,10 @@ tfToAbSyn0(TForm tf, Bool pretty)
 		ab = abNewWith(sposNone, abbase, abwith);
 		break;
 	}
+	case TF_XGenerator:
+		ab = abNewApply1(sposNone, abNewId(sposNone, ssymXGenerator),
+				 tfDisownExpr(tfGeneratorArg(tf), pretty));
+		break;
 	case TF_Except:
 		ab = abNewExcept(sposNone, 
 				 tfDisownExpr(tfExceptType(tf), pretty),
@@ -7068,6 +7074,13 @@ tfIsGeneratorFn(TForm tf)
 	return tfIsGenerator(tf);
 }
 
+Bool
+tfIsXGeneratorFn(TForm tf)
+{
+	tf = tfFollowSubst(tf);
+	return tfIsXGenerator(tf);
+}
+
 /*
  * tfReference
  */
@@ -7926,12 +7939,30 @@ tfIsGeneratorOpType(TForm tf)
 		tfIsGenerator(tfMapRet(tf));
 }
 
+Bool
+tfIsXGeneratorOpType(TForm tf)
+{
+	tfFollow(tf);
+	return tfIsAnyMap(tf) &&
+		tfIsXGenerator(tfMapRet(tf));
+}
+
 TForm
 tfGeneratorOpTypeArg(TForm tf)
 {
 	tfFollow(tf);
 	if (!tfIsGeneratorOpType(tf))
 		bug("tfGeneratorOpTypeArg:  !tfIsGeneratorOpType(tf)");
+
+	return tfMapArg(tf);
+}
+
+TForm
+tfXGeneratorOpTypeArg(TForm tf)
+{
+	tfFollow(tf);
+	if (!tfIsXGeneratorOpType(tf))
+		bug("tfXGeneratorOpTypeArg:  !tfIsXGeneratorOpType(tf)");
 
 	return tfMapArg(tf);
 }
@@ -7945,6 +7976,67 @@ tfGeneratorOpTypeRet(TForm tf)
 
 	return tfGeneratorArg(tfMapRet(tf));
 }
+
+TForm
+tfXGeneratorOpTypeRet(TForm tf)
+{
+	tfFollow(tf);
+	if (!tfIsXGeneratorOpType(tf))
+		bug("tfXGeneratorOpTypeRet:  !tfIsXGeneratorOpType(tf)");
+
+	return tfXGeneratorArg(tfMapRet(tf));
+}
+
+TForm
+tfXGenerator(TForm arg)
+{
+	TForm	tf = tfNewNode(TF_XGenerator, 1, arg);
+	tfSetMeaningArgs(tf);
+	return tf;
+}
+
+TForm
+tfAnyGenerator(TfGenType type, TForm tf)
+{
+	switch (type) {
+	case TFG_Generator:
+		return tfGenerator(tf);
+	case TFG_XGenerator:
+		return tfXGenerator(tf);
+	default:
+		assert(false);
+	}
+	return NULL;
+}
+
+Bool
+tfIsAnyGenerator(TForm tf)
+{
+	return tfIsGenerator(tf)
+		|| tfIsXGenerator(tf);
+}
+
+TfGenType
+tfAnyGeneratorType(TForm tf)
+{
+	assert(tfIsAnyGenerator(tf));
+	return tfIsGenerator(tf) ? TFG_Generator : TFG_XGenerator;
+}
+
+TForm
+tfAnyGeneratorArg(TForm tf)
+{
+	if (tfIsGenerator(tf))
+		return tfGeneratorArg(tf);
+	else if (tfIsXGenerator(tf))
+		return tfXGeneratorArg(tf);
+	else
+		bug("tfIsGeneratorArg: Not reached");
+}
+
+/*
+  Usage
+ */
 
 Bool
 abUseIsDContext(AbSyn ab)
@@ -8397,6 +8489,7 @@ struct tform_info tformInfoTable[] = {
 	{TF_Enumerate,	"Enumeration",  "Enumeration",  0, 1},
 	{TF_Forward,	"Forward",      "Forward",      0, 1},
 	{TF_Generator,	"Generator",    "Generator",    0, 1},
+	{TF_XGenerator,	"XGenerator",   "XGenerator",    0, 1},
 	{TF_If,		"If",           "If",           0, 3},
 	{TF_Instance,	"Instance",     "Instance",     0, 2},
 	{TF_Join,	"Join",         "Join",         0, TF_NARY},

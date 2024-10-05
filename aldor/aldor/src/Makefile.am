@@ -310,6 +310,7 @@ testsuite =			\
 	test/test_symeset.c	\
 	test/test_tform.c	\
 	test/test_tibup.c	\
+	test/test_tisef.c	\
 	test/test_tfsat.c	\
 	test/test_tinfer.c	\
 	test/test_tposs.c	\

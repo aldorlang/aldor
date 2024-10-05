@@ -38,6 +38,7 @@ void symeSetTestSuite(void);
 void tformTest(void);
 void tfsatTest(void);
 void tibupTest(void);
+void tisefTest(void);
 void tinferTest(void);
 void tpossTest(void);
 void tsetTestSuite(void);

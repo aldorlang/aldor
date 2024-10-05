@@ -521,6 +521,22 @@ tpossGeneratorArg(TPoss tpit)
 	return tparg;
 }
 
+TPoss
+tpossAnyGeneratorArg(TPoss tpit)
+{
+	TPoss		tparg;
+	TPossIterator	it;
+
+	tparg = tpossEmpty();
+	for (tpossITER(it,tpit); tpossMORE(it); tpossSTEP(it)) {
+		TForm	t = tpossELT(it);
+		tfFollow(t);
+		if (tfIsAnyGenerator(t))
+			tparg = tpossAdd1(tparg, tfAnyGeneratorArg(t));
+	}
+	return tparg;
+}
+
 Bool
 tpossIsHaving(TPoss tp, TFormPredicate pred)
 {
