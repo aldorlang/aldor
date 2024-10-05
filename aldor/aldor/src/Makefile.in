@@ -188,11 +188,11 @@ am_libstruct_a_OBJECTS = ablogic.$(OBJEXT) abpretty.$(OBJEXT) \
 	gf_syme.$(OBJEXT) javasig.$(OBJEXT) lib.$(OBJEXT) \
 	loops.$(OBJEXT) output.$(OBJEXT) sefo.$(OBJEXT) \
 	simpl.$(OBJEXT) spesym.$(OBJEXT) srcline.$(OBJEXT) \
-	stab.$(OBJEXT) syme.$(OBJEXT) symeset.$(OBJEXT) \
-	symcoinfo.$(OBJEXT) tconst.$(OBJEXT) tfcond.$(OBJEXT) \
-	tform.$(OBJEXT) tfsat.$(OBJEXT) ti_top.$(OBJEXT) \
-	token.$(OBJEXT) tposs.$(OBJEXT) tqual.$(OBJEXT) \
-	version.$(OBJEXT)
+	stab.$(OBJEXT) susage.$(OBJEXT) syme.$(OBJEXT) \
+	symeset.$(OBJEXT) symcoinfo.$(OBJEXT) tconst.$(OBJEXT) \
+	tfcond.$(OBJEXT) tform.$(OBJEXT) tfsat.$(OBJEXT) \
+	ti_top.$(OBJEXT) token.$(OBJEXT) tposs.$(OBJEXT) \
+	tqual.$(OBJEXT) version.$(OBJEXT)
 libstruct_a_OBJECTS = $(am_libstruct_a_OBJECTS)
 libtest_a_AR = $(AR) $(ARFLAGS)
 libtest_a_LIBADD =
@@ -283,6 +283,7 @@ am__objects_1 = test/testall-test_abcheck.$(OBJEXT) \
 	test/testall-test_scobind.$(OBJEXT) \
 	test/testall-test_srcpos.$(OBJEXT) \
 	test/testall-test_stab.$(OBJEXT) \
+	test/testall-test_strops.$(OBJEXT) \
 	test/testall-test_syme.$(OBJEXT) \
 	test/testall-test_symeset.$(OBJEXT) \
 	test/testall-test_tform.$(OBJEXT) \
@@ -398,20 +399,20 @@ am__depfiles_remade = ./$(DEPDIR)/abcheck.Po ./$(DEPDIR)/ablogic.Po \
 	./$(DEPDIR)/srcline.Po ./$(DEPDIR)/srcpos.Po \
 	./$(DEPDIR)/stab.Po ./$(DEPDIR)/stdc.Po ./$(DEPDIR)/store.Po \
 	./$(DEPDIR)/strops.Po ./$(DEPDIR)/structtest.Po \
-	./$(DEPDIR)/symbol.Po ./$(DEPDIR)/symcoinfo.Po \
-	./$(DEPDIR)/syme.Po ./$(DEPDIR)/symeset.Po \
-	./$(DEPDIR)/syscmd.Po ./$(DEPDIR)/table.Po \
-	./$(DEPDIR)/tconst.Po ./$(DEPDIR)/termtype.Po \
-	./$(DEPDIR)/terror.Po ./$(DEPDIR)/test.Po \
-	./$(DEPDIR)/testall-axlcomp.Po ./$(DEPDIR)/testall-cmdline.Po \
-	./$(DEPDIR)/textansi.Po ./$(DEPDIR)/textcolour.Po \
-	./$(DEPDIR)/texthp.Po ./$(DEPDIR)/tfcond.Po \
-	./$(DEPDIR)/tform.Po ./$(DEPDIR)/tfsat.Po \
-	./$(DEPDIR)/ti_bup.Po ./$(DEPDIR)/ti_decl.Po \
-	./$(DEPDIR)/ti_sef.Po ./$(DEPDIR)/ti_tdn.Po \
-	./$(DEPDIR)/ti_top.Po ./$(DEPDIR)/timer.Po \
-	./$(DEPDIR)/tinfer.Po ./$(DEPDIR)/token.Po \
-	./$(DEPDIR)/tposs.Po ./$(DEPDIR)/tqual.Po \
+	./$(DEPDIR)/susage.Po ./$(DEPDIR)/symbol.Po \
+	./$(DEPDIR)/symcoinfo.Po ./$(DEPDIR)/syme.Po \
+	./$(DEPDIR)/symeset.Po ./$(DEPDIR)/syscmd.Po \
+	./$(DEPDIR)/table.Po ./$(DEPDIR)/tconst.Po \
+	./$(DEPDIR)/termtype.Po ./$(DEPDIR)/terror.Po \
+	./$(DEPDIR)/test.Po ./$(DEPDIR)/testall-axlcomp.Po \
+	./$(DEPDIR)/testall-cmdline.Po ./$(DEPDIR)/textansi.Po \
+	./$(DEPDIR)/textcolour.Po ./$(DEPDIR)/texthp.Po \
+	./$(DEPDIR)/tfcond.Po ./$(DEPDIR)/tform.Po \
+	./$(DEPDIR)/tfsat.Po ./$(DEPDIR)/ti_bup.Po \
+	./$(DEPDIR)/ti_decl.Po ./$(DEPDIR)/ti_sef.Po \
+	./$(DEPDIR)/ti_tdn.Po ./$(DEPDIR)/ti_top.Po \
+	./$(DEPDIR)/timer.Po ./$(DEPDIR)/tinfer.Po \
+	./$(DEPDIR)/token.Po ./$(DEPDIR)/tposs.Po ./$(DEPDIR)/tqual.Po \
 	./$(DEPDIR)/ttable.Po ./$(DEPDIR)/usedef.Po \
 	./$(DEPDIR)/util.Po ./$(DEPDIR)/version.Po \
 	./$(DEPDIR)/xfloat.Po java/$(DEPDIR)/genjava.Po \
@@ -450,6 +451,7 @@ am__depfiles_remade = ./$(DEPDIR)/abcheck.Po ./$(DEPDIR)/ablogic.Po \
 	test/$(DEPDIR)/testall-test_scobind.Po \
 	test/$(DEPDIR)/testall-test_srcpos.Po \
 	test/$(DEPDIR)/testall-test_stab.Po \
+	test/$(DEPDIR)/testall-test_strops.Po \
 	test/$(DEPDIR)/testall-test_syme.Po \
 	test/$(DEPDIR)/testall-test_symeset.Po \
 	test/$(DEPDIR)/testall-test_tform.Po \
@@ -1042,6 +1044,7 @@ libstruct_a_SOURCES = \
 	spesym.c	\
 	srcline.c	\
 	stab.c		\
+	susage.c	\
 	syme.c		\
 	symeset.c	\
 	symcoinfo.c	\
@@ -1154,6 +1157,7 @@ testsuite = \
 	test/test_scobind.c	\
 	test/test_srcpos.c	\
 	test/test_stab.c	\
+	test/test_strops.c	\
 	test/test_syme.c	\
 	test/test_symeset.c	\
 	test/test_tform.c	\
@@ -1472,6 +1476,8 @@ test/testall-test_srcpos.$(OBJEXT): test/$(am__dirstamp) \
 	test/$(DEPDIR)/$(am__dirstamp)
 test/testall-test_stab.$(OBJEXT): test/$(am__dirstamp) \
 	test/$(DEPDIR)/$(am__dirstamp)
+test/testall-test_strops.$(OBJEXT): test/$(am__dirstamp) \
+	test/$(DEPDIR)/$(am__dirstamp)
 test/testall-test_syme.$(OBJEXT): test/$(am__dirstamp) \
 	test/$(DEPDIR)/$(am__dirstamp)
 test/testall-test_symeset.$(OBJEXT): test/$(am__dirstamp) \
@@ -1666,6 +1672,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/store.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/strops.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/structtest.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/susage.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/symbol.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/symcoinfo.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/syme.Po@am__quote@ # am--include-marker
@@ -1737,6 +1744,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@test/$(DEPDIR)/testall-test_scobind.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@test/$(DEPDIR)/testall-test_srcpos.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@test/$(DEPDIR)/testall-test_stab.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@test/$(DEPDIR)/testall-test_strops.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@test/$(DEPDIR)/testall-test_syme.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@test/$(DEPDIR)/testall-test_symeset.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@test/$(DEPDIR)/testall-test_tform.Po@am__quote@ # am--include-marker
@@ -2716,6 +2724,20 @@ test/testall-test_stab.obj: test/test_stab.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testall_CFLAGS) $(CFLAGS) -c -o test/testall-test_stab.obj `if test -f 'test/test_stab.c'; then $(CYGPATH_W) 'test/test_stab.c'; else $(CYGPATH_W) '$(srcdir)/test/test_stab.c'; fi`
 
+test/testall-test_strops.o: test/test_strops.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testall_CFLAGS) $(CFLAGS) -MT test/testall-test_strops.o -MD -MP -MF test/$(DEPDIR)/testall-test_strops.Tpo -c -o test/testall-test_strops.o `test -f 'test/test_strops.c' || echo '$(srcdir)/'`test/test_strops.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) test/$(DEPDIR)/testall-test_strops.Tpo test/$(DEPDIR)/testall-test_strops.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='test/test_strops.c' object='test/testall-test_strops.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testall_CFLAGS) $(CFLAGS) -c -o test/testall-test_strops.o `test -f 'test/test_strops.c' || echo '$(srcdir)/'`test/test_strops.c
+
+test/testall-test_strops.obj: test/test_strops.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testall_CFLAGS) $(CFLAGS) -MT test/testall-test_strops.obj -MD -MP -MF test/$(DEPDIR)/testall-test_strops.Tpo -c -o test/testall-test_strops.obj `if test -f 'test/test_strops.c'; then $(CYGPATH_W) 'test/test_strops.c'; else $(CYGPATH_W) '$(srcdir)/test/test_strops.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) test/$(DEPDIR)/testall-test_strops.Tpo test/$(DEPDIR)/testall-test_strops.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='test/test_strops.c' object='test/testall-test_strops.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testall_CFLAGS) $(CFLAGS) -c -o test/testall-test_strops.obj `if test -f 'test/test_strops.c'; then $(CYGPATH_W) 'test/test_strops.c'; else $(CYGPATH_W) '$(srcdir)/test/test_strops.c'; fi`
+
 test/testall-test_syme.o: test/test_syme.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testall_CFLAGS) $(CFLAGS) -MT test/testall-test_syme.o -MD -MP -MF test/$(DEPDIR)/testall-test_syme.Tpo -c -o test/testall-test_syme.o `test -f 'test/test_syme.c' || echo '$(srcdir)/'`test/test_syme.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) test/$(DEPDIR)/testall-test_syme.Tpo test/$(DEPDIR)/testall-test_syme.Po
@@ -3431,6 +3453,7 @@ distclean: distclean-am
 	-rm -f ./$(DEPDIR)/store.Po
 	-rm -f ./$(DEPDIR)/strops.Po
 	-rm -f ./$(DEPDIR)/structtest.Po
+	-rm -f ./$(DEPDIR)/susage.Po
 	-rm -f ./$(DEPDIR)/symbol.Po
 	-rm -f ./$(DEPDIR)/symcoinfo.Po
 	-rm -f ./$(DEPDIR)/syme.Po
@@ -3502,6 +3525,7 @@ distclean: distclean-am
 	-rm -f test/$(DEPDIR)/testall-test_scobind.Po
 	-rm -f test/$(DEPDIR)/testall-test_srcpos.Po
 	-rm -f test/$(DEPDIR)/testall-test_stab.Po
+	-rm -f test/$(DEPDIR)/testall-test_strops.Po
 	-rm -f test/$(DEPDIR)/testall-test_syme.Po
 	-rm -f test/$(DEPDIR)/testall-test_symeset.Po
 	-rm -f test/$(DEPDIR)/testall-test_tform.Po
@@ -3717,6 +3741,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -f ./$(DEPDIR)/store.Po
 	-rm -f ./$(DEPDIR)/strops.Po
 	-rm -f ./$(DEPDIR)/structtest.Po
+	-rm -f ./$(DEPDIR)/susage.Po
 	-rm -f ./$(DEPDIR)/symbol.Po
 	-rm -f ./$(DEPDIR)/symcoinfo.Po
 	-rm -f ./$(DEPDIR)/syme.Po
@@ -3788,6 +3813,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -f test/$(DEPDIR)/testall-test_scobind.Po
 	-rm -f test/$(DEPDIR)/testall-test_srcpos.Po
 	-rm -f test/$(DEPDIR)/testall-test_stab.Po
+	-rm -f test/$(DEPDIR)/testall-test_strops.Po
 	-rm -f test/$(DEPDIR)/testall-test_syme.Po
 	-rm -f test/$(DEPDIR)/testall-test_symeset.Po
 	-rm -f test/$(DEPDIR)/testall-test_tform.Po
