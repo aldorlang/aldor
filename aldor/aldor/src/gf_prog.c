@@ -641,3 +641,65 @@ gen0IssueLevels(void)
 	}
 	return levels;
 }
+
+/*
+ * :: Utilities
+ */
+
+Foam
+gen0BuildFunFromFoam(String name, FoamTag retType, Foam body)
+{
+	return gen0BuildFunFromFoam0(name, retType, int0, body);
+}
+
+Foam
+gen0BuildFunFromFoam0(String name, FoamTag retType, AInt retFmt, Foam body)
+{
+	GenFoamState	saved;
+	Foam		foam, clos;
+
+	clos = foamNewClos(foamNewEnv(-1), foamNewConst(gen0NumProgs));
+	foam = gen0ProgInitEmpty(name, NULL);
+
+	saved = gen0ProgSaveState(PT_Gener);
+
+	gen0AddStmt(foamNewReturn(body), NULL);
+
+	gen0UseStackedFormat(int0);
+	gen0ProgPushFormat(emptyFormatSlot);
+	gen0ProgPushFormat(emptyFormatSlot);
+	gen0ProgFiniEmpty(foam, retType, retFmt);
+
+	gen0AddLexLevels(foam, 2);
+
+        foamOptInfo(foam) = inlInfoNew(NULL, foam, NULL, false);
+
+	gen0ProgRestoreState(saved);
+	return clos;
+}
+
+Foam
+gen0BuildFunFromFoam1(String name, FoamTag retType, AInt retFmt, Foam body)
+{
+	GenFoamState	saved;
+	Foam		foam, clos;
+
+	clos = foamNewClos(foamNewEnv(0), foamNewConst(gen0NumProgs));
+	foam = gen0ProgInitEmpty(name, NULL);
+
+	saved = gen0ProgSaveState(PT_Gener);
+
+	gen0AddStmt(foamNewReturn(body), NULL);
+
+	gen0UseStackedFormat(int0);
+	gen0ProgPushFormat(emptyFormatSlot);
+	gen0ProgPushFormat(emptyFormatSlot);
+	gen0ProgFiniEmpty(foam, retType, retFmt);
+
+	gen0AddLexLevels(foam, 1);
+
+        foamOptInfo(foam) = inlInfoNew(NULL, foam, NULL, false);
+
+	gen0ProgRestoreState(saved);
+	return clos;
+}

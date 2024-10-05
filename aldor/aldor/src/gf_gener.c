@@ -32,7 +32,6 @@ local Foam	   gen0GenerBoundFun  	   (AbSyn, GenBoundCalc);
 local Foam	   gen0MakeGenerVars	   (TForm);
 local Foam	   gen0GetGenerVar	   (Foam env, int id);
 
-local Foam 	   gen0BuildFunFromFoam    (String, FoamTag, Foam);
 #ifdef GenerBetterGuesses
 local GenBoundCalc gen0MakeBoundInit(AbSyn);
 local Foam 	   gen0ComputeBoundFunction(GenBoundCalc);

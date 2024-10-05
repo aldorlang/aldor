@@ -55,4 +55,8 @@ extern AInt		gen0AddLexNth		(Foam, AInt, AInt);
 
 extern void 		gen0ConstAdd		(Foam, Foam);
 
+extern Foam		gen0BuildFunFromFoam    (String, FoamTag, Foam);
+extern Foam		gen0BuildFunFromFoam0   (String, FoamTag, AInt, Foam);
+extern Foam		gen0BuildFunFromFoam1	(String, FoamTag, AInt, Foam);
+
 #endif /* !_GF_PROG_H_ */
