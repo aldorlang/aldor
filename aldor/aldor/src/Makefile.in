@@ -183,15 +183,16 @@ am_libstruct_a_OBJECTS = ablogic.$(OBJEXT) abpretty.$(OBJEXT) \
 	comsg.$(OBJEXT) comsgdb.$(OBJEXT) csig.$(OBJEXT) \
 	depdag.$(OBJEXT) dflow.$(OBJEXT) doc.$(OBJEXT) fbox.$(OBJEXT) \
 	fex.$(OBJEXT) fint.$(OBJEXT) flog.$(OBJEXT) foam.$(OBJEXT) \
-	foamsig.$(OBJEXT) forg.$(OBJEXT) freevar.$(OBJEXT) \
-	formatters.$(OBJEXT) ftype.$(OBJEXT) gf_syme.$(OBJEXT) \
-	javasig.$(OBJEXT) lib.$(OBJEXT) loops.$(OBJEXT) \
-	output.$(OBJEXT) sefo.$(OBJEXT) simpl.$(OBJEXT) \
-	spesym.$(OBJEXT) srcline.$(OBJEXT) stab.$(OBJEXT) \
-	syme.$(OBJEXT) symeset.$(OBJEXT) symcoinfo.$(OBJEXT) \
-	tconst.$(OBJEXT) tfcond.$(OBJEXT) tform.$(OBJEXT) \
-	tfsat.$(OBJEXT) ti_top.$(OBJEXT) token.$(OBJEXT) \
-	tposs.$(OBJEXT) tqual.$(OBJEXT) version.$(OBJEXT)
+	foamsig.$(OBJEXT) forg.$(OBJEXT) fptr.$(OBJEXT) \
+	freevar.$(OBJEXT) formatters.$(OBJEXT) ftype.$(OBJEXT) \
+	gf_syme.$(OBJEXT) javasig.$(OBJEXT) lib.$(OBJEXT) \
+	loops.$(OBJEXT) output.$(OBJEXT) sefo.$(OBJEXT) \
+	simpl.$(OBJEXT) spesym.$(OBJEXT) srcline.$(OBJEXT) \
+	stab.$(OBJEXT) syme.$(OBJEXT) symeset.$(OBJEXT) \
+	symcoinfo.$(OBJEXT) tconst.$(OBJEXT) tfcond.$(OBJEXT) \
+	tform.$(OBJEXT) tfsat.$(OBJEXT) ti_top.$(OBJEXT) \
+	token.$(OBJEXT) tposs.$(OBJEXT) tqual.$(OBJEXT) \
+	version.$(OBJEXT)
 libstruct_a_OBJECTS = $(am_libstruct_a_OBJECTS)
 libtest_a_AR = $(AR) $(ARFLAGS)
 libtest_a_LIBADD =
@@ -266,6 +267,7 @@ am__objects_1 = test/testall-test_abcheck.$(OBJEXT) \
 	test/testall-test_fname.$(OBJEXT) \
 	test/testall-test_foam.$(OBJEXT) \
 	test/testall-test_forg.$(OBJEXT) \
+	test/testall-test_fptr.$(OBJEXT) \
 	test/testall-test_format.$(OBJEXT) \
 	test/testall-test_genfoam.$(OBJEXT) \
 	test/testall-test_jflow.$(OBJEXT) \
@@ -338,8 +340,8 @@ am__depfiles_remade = ./$(DEPDIR)/abcheck.Po ./$(DEPDIR)/ablogic.Po \
 	./$(DEPDIR)/foamopt.Po ./$(DEPDIR)/foamsig.Po \
 	./$(DEPDIR)/forg.Po ./$(DEPDIR)/format.Po \
 	./$(DEPDIR)/formatters.Po ./$(DEPDIR)/fortran.Po \
-	./$(DEPDIR)/freevar.Po ./$(DEPDIR)/ftype.Po \
-	./$(DEPDIR)/genc.Po ./$(DEPDIR)/gencpp.Po \
+	./$(DEPDIR)/fptr.Po ./$(DEPDIR)/freevar.Po \
+	./$(DEPDIR)/ftype.Po ./$(DEPDIR)/genc.Po ./$(DEPDIR)/gencpp.Po \
 	./$(DEPDIR)/genfoam.Po ./$(DEPDIR)/genlisp.Po \
 	./$(DEPDIR)/gentest.Po ./$(DEPDIR)/gf_add.Po \
 	./$(DEPDIR)/gf_excpt.Po ./$(DEPDIR)/gf_fortran.Po \
@@ -433,6 +435,7 @@ am__depfiles_remade = ./$(DEPDIR)/abcheck.Po ./$(DEPDIR)/ablogic.Po \
 	test/$(DEPDIR)/testall-test_foam.Po \
 	test/$(DEPDIR)/testall-test_forg.Po \
 	test/$(DEPDIR)/testall-test_format.Po \
+	test/$(DEPDIR)/testall-test_fptr.Po \
 	test/$(DEPDIR)/testall-test_genfoam.Po \
 	test/$(DEPDIR)/testall-test_int.Po \
 	test/$(DEPDIR)/testall-test_java.Po \
@@ -1025,6 +1028,7 @@ libstruct_a_SOURCES = \
 	foam.c		\
 	foamsig.c	\
 	forg.c		\
+	fptr.c		\
 	freevar.c	\
 	formatters.c	\
 	ftype.c		\
@@ -1134,6 +1138,7 @@ testsuite = \
 	test/test_fname.c 	\
 	test/test_foam.c 	\
 	test/test_forg.c	\
+	test/test_fptr.c	\
 	test/test_format.c	\
 	test/test_genfoam.c	\
 	test/test_jflow.c	\
@@ -1435,6 +1440,8 @@ test/testall-test_foam.$(OBJEXT): test/$(am__dirstamp) \
 	test/$(DEPDIR)/$(am__dirstamp)
 test/testall-test_forg.$(OBJEXT): test/$(am__dirstamp) \
 	test/$(DEPDIR)/$(am__dirstamp)
+test/testall-test_fptr.$(OBJEXT): test/$(am__dirstamp) \
+	test/$(DEPDIR)/$(am__dirstamp)
 test/testall-test_format.$(OBJEXT): test/$(am__dirstamp) \
 	test/$(DEPDIR)/$(am__dirstamp)
 test/testall-test_genfoam.$(OBJEXT): test/$(am__dirstamp) \
@@ -1558,6 +1565,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/format.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/formatters.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fortran.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fptr.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/freevar.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ftype.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/genc.Po@am__quote@ # am--include-marker
@@ -1714,6 +1722,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@test/$(DEPDIR)/testall-test_foam.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@test/$(DEPDIR)/testall-test_forg.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@test/$(DEPDIR)/testall-test_format.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@test/$(DEPDIR)/testall-test_fptr.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@test/$(DEPDIR)/testall-test_genfoam.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@test/$(DEPDIR)/testall-test_int.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@test/$(DEPDIR)/testall-test_java.Po@am__quote@ # am--include-marker
@@ -2482,6 +2491,20 @@ test/testall-test_forg.obj: test/test_forg.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='test/test_forg.c' object='test/testall-test_forg.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testall_CFLAGS) $(CFLAGS) -c -o test/testall-test_forg.obj `if test -f 'test/test_forg.c'; then $(CYGPATH_W) 'test/test_forg.c'; else $(CYGPATH_W) '$(srcdir)/test/test_forg.c'; fi`
+
+test/testall-test_fptr.o: test/test_fptr.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testall_CFLAGS) $(CFLAGS) -MT test/testall-test_fptr.o -MD -MP -MF test/$(DEPDIR)/testall-test_fptr.Tpo -c -o test/testall-test_fptr.o `test -f 'test/test_fptr.c' || echo '$(srcdir)/'`test/test_fptr.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) test/$(DEPDIR)/testall-test_fptr.Tpo test/$(DEPDIR)/testall-test_fptr.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='test/test_fptr.c' object='test/testall-test_fptr.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testall_CFLAGS) $(CFLAGS) -c -o test/testall-test_fptr.o `test -f 'test/test_fptr.c' || echo '$(srcdir)/'`test/test_fptr.c
+
+test/testall-test_fptr.obj: test/test_fptr.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testall_CFLAGS) $(CFLAGS) -MT test/testall-test_fptr.obj -MD -MP -MF test/$(DEPDIR)/testall-test_fptr.Tpo -c -o test/testall-test_fptr.obj `if test -f 'test/test_fptr.c'; then $(CYGPATH_W) 'test/test_fptr.c'; else $(CYGPATH_W) '$(srcdir)/test/test_fptr.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) test/$(DEPDIR)/testall-test_fptr.Tpo test/$(DEPDIR)/testall-test_fptr.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='test/test_fptr.c' object='test/testall-test_fptr.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testall_CFLAGS) $(CFLAGS) -c -o test/testall-test_fptr.obj `if test -f 'test/test_fptr.c'; then $(CYGPATH_W) 'test/test_fptr.c'; else $(CYGPATH_W) '$(srcdir)/test/test_fptr.c'; fi`
 
 test/testall-test_format.o: test/test_format.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testall_CFLAGS) $(CFLAGS) -MT test/testall-test_format.o -MD -MP -MF test/$(DEPDIR)/testall-test_format.Tpo -c -o test/testall-test_format.o `test -f 'test/test_format.c' || echo '$(srcdir)/'`test/test_format.c
@@ -3307,6 +3330,7 @@ distclean: distclean-am
 	-rm -f ./$(DEPDIR)/format.Po
 	-rm -f ./$(DEPDIR)/formatters.Po
 	-rm -f ./$(DEPDIR)/fortran.Po
+	-rm -f ./$(DEPDIR)/fptr.Po
 	-rm -f ./$(DEPDIR)/freevar.Po
 	-rm -f ./$(DEPDIR)/ftype.Po
 	-rm -f ./$(DEPDIR)/genc.Po
@@ -3463,6 +3487,7 @@ distclean: distclean-am
 	-rm -f test/$(DEPDIR)/testall-test_foam.Po
 	-rm -f test/$(DEPDIR)/testall-test_forg.Po
 	-rm -f test/$(DEPDIR)/testall-test_format.Po
+	-rm -f test/$(DEPDIR)/testall-test_fptr.Po
 	-rm -f test/$(DEPDIR)/testall-test_genfoam.Po
 	-rm -f test/$(DEPDIR)/testall-test_int.Po
 	-rm -f test/$(DEPDIR)/testall-test_java.Po
@@ -3591,6 +3616,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -f ./$(DEPDIR)/format.Po
 	-rm -f ./$(DEPDIR)/formatters.Po
 	-rm -f ./$(DEPDIR)/fortran.Po
+	-rm -f ./$(DEPDIR)/fptr.Po
 	-rm -f ./$(DEPDIR)/freevar.Po
 	-rm -f ./$(DEPDIR)/ftype.Po
 	-rm -f ./$(DEPDIR)/genc.Po
@@ -3747,6 +3773,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -f test/$(DEPDIR)/testall-test_foam.Po
 	-rm -f test/$(DEPDIR)/testall-test_forg.Po
 	-rm -f test/$(DEPDIR)/testall-test_format.Po
+	-rm -f test/$(DEPDIR)/testall-test_fptr.Po
 	-rm -f test/$(DEPDIR)/testall-test_genfoam.Po
 	-rm -f test/$(DEPDIR)/testall-test_int.Po
 	-rm -f test/$(DEPDIR)/testall-test_java.Po
