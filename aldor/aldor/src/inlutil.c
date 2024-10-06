@@ -432,9 +432,11 @@ inuAnalyseProg(Foam foam, int constNum)
 
 	assert(foamTag(foam) == FOAM_Prog);
 
+#if 0
+	// This can't work
 	if (foamArgc(foam->foamProg.body) == 1)
 		foamProgSetHasSingleStmt(foam);
-
+#endif
 	inuProgInit(foam);
 
 	/* -- perform dflow analysis on prog */

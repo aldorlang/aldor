@@ -161,6 +161,7 @@ flogFrProg(Foam foam, FlogType mask)
         assert(foamTag(foam->foamProg.body) == FOAM_Seq);
 
 	flog = flogFrSeq0(foam->foamProg.body, mask, foam->foamProg.nLabels);
+	foam->foamProg.body = NULL;
 
         flog->prog   = foam;
 

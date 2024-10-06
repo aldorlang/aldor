@@ -1764,6 +1764,9 @@ inlInlineSymeCall(Foam call, Foam *argv, Foam env, Syme syme, Bool valueMode)
 	if (symeIsLocalConst(syme) && foamOptInfo(code) &&
 	    foamOptInfo(code)->inlState != INL_Inlined)
 		Return(call);
+	if (code->foamProg.body == NULL) {
+		Return(call);
+	}
 
 	assert(!foamProgIsGetter(code));
 	assert(!inlIsEvil(code));
@@ -2575,6 +2578,7 @@ inlGetLocalConstInfo(int n)
 	/* don't return the code if we are in the middle of inlining it. */
 	assert(foamTag(prog) == FOAM_Prog);
 	if (info && info->inlState == INL_BeingInlined) return NULL;
+
 	prog = inlProgram(prog, n);
 
 	prog = inlGetProgInfoFrProg(prog);
@@ -2611,7 +2615,8 @@ inlGetLocalConst(AInt n)
 	/* don't return the code if we are in the middle of inlining it. */
 	if (info->inlState != INL_Inlined)
 		return NULL;
-
+	if (prog->foamProg.body == NULL)
+		return NULL;
 	return inlSetInlinee(NULL, prog);
 }
 
@@ -2917,17 +2922,41 @@ inlIsUnderLimit(AInt base, AInt value, int limit)
 }
 
 /* $$ Think the possibility of using a new bit: DontInlineMe, that can be
- * generally used by #pragma DONT_INLINE
+ * generally used by #pragma DONT_INLINE.
+ * Yeah, but we'd lose the fun naming convention.
  */
+local Bool inlIsEvilFlog(FlowGraph g);
+local Bool inlIsEvilSeq(Foam foam);
+
 Bool
 inlIsEvil(Foam foam)
 {
-	Foam body;
+	if (foam->foamProg.body == NULL) {
+		return inlIsEvilFlog(foamOptInfo(foam)->flog);
+	}
+	else {
+		return inlIsEvilSeq(foam->foamProg.body);
+	}
+}
+
+local Bool
+inlIsEvilFlog(FlowGraph flog)
+{
+	flogIter(flog, bb, {
+			if (inlIsEvilSeq(bb->code))
+				return true;
+	});
+	return false;
+}
+
+local Bool
+inlIsEvilSeq(Foam foam)
+{
 	int i, idx;
 
-	body = foam->foamProg.body;
-	for (i=0; i<foamArgc(body); i++) {
-		Foam stmt = body->foamSeq.argv[i];
+	assert(foamTag(foam) == FOAM_Seq);
+	for (i=0; i<foamArgc(foam); i++) {
+		Foam stmt = foam->foamSeq.argv[i];
 		if (foamTag(stmt) == FOAM_Return)
 			stmt = stmt->foamReturn.value;
 		if (foamTag(stmt) == FOAM_Glo) {
