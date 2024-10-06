@@ -183,6 +183,7 @@ local void	udCreateUDLists		(FlowGraph);
 local Foam	udFindUses		(Foam, Bitv, BBlock, Bool);
 
 local UdInfo	udInfoNew		(Foam, BBlock);
+local Foam      udLastStmt;
 
 static int	udFlogCutOff =  200; /* Max no of dataflow iterations */
 
@@ -556,6 +557,9 @@ udSetReachingList(Foam foam, FoamList defs, Bitv dfin, BBlock block)
 	});
 
 	/* Attach the udList to the used var */
+	if (DEBUG(udDf)) {
+		afprintf(dbOut, "Setting reaching list %pFoam, %pUseDefList\n", foam, udList);
+	}
 
 	udReachingDefs(foam) = udList;
 }
@@ -586,6 +590,10 @@ udSetReachingDef(Foam foam, FoamList defs, Bitv dfin, Bool refContext)
 		}
 	});
 
+	if (DEBUG(udDf)) {
+		afprintf(dbOut, "In %pFoam\n..Setting reaching def %pFoam, %pFoam\n", udLastStmt, foam, uniqueDef);
+	}
+
 	udReachingDefs(foam) = (UdInfoList) uniqueDef;
 
 	/* Last condition ensure that (Set (Loc 0) (SInt 1)) is not
@@ -603,7 +611,6 @@ local void
 udCreateUDLists(FlowGraph flog)
 {
 	flogIter(flog, bb, {
-
 		bb->code = udFindUses(bb->code, dfFwdIn(bb), bb, false);
 	});
 }
@@ -612,7 +619,7 @@ local Foam
 udFindUses(Foam foam, Bitv dfin, BBlock block, Bool refContext)
 {
 	Foam newFoam = foam;
-
+	Bool track = false;
 	switch (foamTag(foam)) {
 	case FOAM_Loc:
 	case FOAM_Par:
@@ -680,15 +687,18 @@ udFindUses(Foam foam, Bitv dfin, BBlock block, Bool refContext)
 
 		return foam;
 	}
-
+	case FOAM_Seq:
+		track = true;
+		break;
 	default:
 		break;
 	}
 
 	foamIter(foam, arg, {
-		*arg = udFindUses(*arg, dfin, block, refContext);
-	});
-
+			if (track) udLastStmt = *arg;
+			*arg = udFindUses(*arg, dfin, block, refContext);
+			if (track) udLastStmt = NULL;
+		});
 	return newFoam;
 }
 

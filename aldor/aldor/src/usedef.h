@@ -10,7 +10,7 @@
 #define _USEDEF_H_
 
 #include "axlobs.h"
-
+// FIXME: Be honest about optInfo types
 # define	udReachingDefs(foam)	((foam)->foamGen.hdr.info.defList)
 # define	udInfoDef(udinfo)	((udinfo)->foam)
 # define	udInfoBlock(udinfo)	((udinfo)->block)
