@@ -624,14 +624,26 @@ inlDDef(Foam defs)
 /*
  * Inline a foam program.
  */
+local Foam inlProgram1(Foam prog, int n);
+
 local Foam
 inlProgram(Foam prog, int n)
+{
+	Foam newProg;
+	inlProgDEBUG(stdout, "(Program %d %d\n", n, foamOptInfo(prog) == NULL ? -1 : foamOptInfo(prog)->inlState);
+	newProg = inlProgram1(prog, n);
+	inlProgDEBUG(stdout, " Program %d:\n%pFoam\n", n, newProg);
+	inlProgDEBUG(stdout, " Program %d)\n", n);
+	return newProg;
+}
+
+local Foam
+inlProgram1(Foam prog, int n)
 {
 	Scope("inlProgram");
 	OptInfo		fluid(inlProg);
 	int		count, maxCount = 30;
 
-	inlProgDEBUG(stdout, "(Program %d\n", n);
 
 	assert(foamTag(prog) == FOAM_Prog);
 
@@ -705,8 +717,6 @@ inlProgram(Foam prog, int n)
 	(void)foamPrintDb(prog);
 	(void)fprintf(dbOut, "***************************************\n\n");
 #endif
-	inlProgDEBUG(stdout, " Program %d:\n%pFoam\n)\n", n, prog);
-
 	Return(prog);
 }
 
