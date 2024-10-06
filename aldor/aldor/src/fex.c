@@ -121,20 +121,12 @@ foamToSExpr0(Foam foam)
 		fexFmtc	  = foamArgc(foam->foamUnit.formats);
 		fexGlov	  = foamUnitGlobals(foam)->foamDDecl.argv;
 		fexGloc	  = foamDDeclArgc(foamUnitGlobals(foam));
-#ifdef NEW_FORMATS
-		faParamsv  = foamUnitParams(foam)->foamDDecl.argv;
-#endif
 		fexConstv = foamUnitConstants(foam)->foamDDecl.argv;
 		fexConstc = foamDDeclArgc(foamUnitConstants(foam));
 		break;
 	case FOAM_Prog:
-#ifdef NEW_FORMATS
-		fexParv	  = (faParamsv[foam->foamProg.params-1])->foamDDecl.argv;
-		fexParc	  = foamDDeclArgc(faParamsv[foam->foamProg.params-1]);
-#else
 		fexParv	  = foam->foamProg.params->foamDDecl.argv;
 		fexParc	  = foamDDeclArgc(foam->foamProg.params);
-#endif
 		fexLocv	  = foam->foamProg.locals->foamDDecl.argv;
 		fexLocc	  = foamDDeclArgc(foam->foamProg.locals);
 		if (fexFmtc != 0) {
@@ -143,11 +135,6 @@ foamToSExpr0(Foam foam)
 		}
 		break;
 
-#ifdef NEW_FORMATS
-	case FOAM_DDecl:
-		if (foam->foamDDecl.usage == paramsSlot)
-			return sxNil;
-#endif
 	case FOAM_Par:
 		j = foam->foamPar.index;
 		if (j < fexParc)
@@ -229,15 +216,6 @@ foamToSExpr0(Foam foam)
 				li = (long) foamArgv(foam)[si].data;
 			}
 			sxi = sxiFrInteger(li);
-#ifdef NEW_FORMATS
-			if (DEBUG(phase)) {
-				if (foamTag(foam) == FOAM_Prog
-				    && si > 4) {
-					assert(li < fexFmtc);
-					sxi = foamToSExpr0(fexFmtv[li]);
-				}
-			}
-#endif
 			break;
 		case 't': {
 			AInt tag = foamArgv(foam)[si].data;

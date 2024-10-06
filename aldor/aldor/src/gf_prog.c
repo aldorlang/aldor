@@ -26,11 +26,7 @@ Bool	genfEnvDebug	= false;
 local void	gen0ProgTransferState(GenFoamState, GenFoamState);
 
 local Foam		gen0IssueStmts		(void);
-#ifdef NEW_FORMATS
-local AInt		gen0IssueParams		(void);
-#else
 local Foam		gen0IssueParams		(void);
-#endif
 local Foam		gen0IssueLocals		(void);
 local Foam		gen0IssueFluids		(void);
 local Foam		gen0IssueLevels		(void);
@@ -287,11 +283,7 @@ gen0ProgInitEmpty(String name, AbSyn absyn)
 		idx = gen0NumProgs;
 		afprintf(dbOut, "(Creating function %d\n", idx);
 	}
-#ifdef NEW_FORMATS
-	foam = foamNewProg(int0,int0,int0,int0,int0,emptyFormatSlot,NULL,NULL,NULL,NULL);
-#else
 	foam = foamNewProg(int0,int0,int0,int0,int0,NULL,NULL,NULL,NULL,NULL);
-#endif
 
 #ifdef MODS
 	name = gen0InitialiserName(name);
@@ -595,21 +587,11 @@ gen0IssueStmts(void)
 	return seq;
 }
 
-#ifdef NEW_FORMATS
-local AInt
-gen0IssueParams(void)
-{
-	gen0ParamsList = listCons(Foam)(fboxMake(gen0State->params),
-					gen0ParamsList);
-	return gen0NumParams++;
-}
-#else
 local Foam
 gen0IssueParams(void)
 {
 	return fboxMake(gen0State->params);
 }
-#endif
 
 local Foam
 gen0IssueLocals(void)

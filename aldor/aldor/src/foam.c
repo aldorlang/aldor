@@ -268,7 +268,7 @@ foamNewSeqOfList(FoamList ll)
 Foam
 foamNewProgEmpty()
 {
-	return foamNewProg(int0,int0,int0,int0,int0,emptyFormatSlot,NULL,NULL,NULL,NULL);
+	return foamNewProg(int0,int0,int0,int0,int0,NULL,NULL,NULL,NULL,NULL);
 }
 
 Foam
@@ -939,9 +939,6 @@ Foam	faProg;
 Foam	faFormats;
 Foam *	faFormatsv;
 Foam *	faGlobalsv;
-#ifdef NEW_FORMATS
-Foam *	faParamsv;
-#endif
 Foam *	faFluidsv;
 int	faNumFormats;
 int	faNumConsts;
@@ -1043,9 +1040,6 @@ foamAudit0(Foam foam)
 	faFormatsv   = foamUnitFormats(foam)->foamDFmt.argv;
 	faGlobalsv   = foamUnitGlobals(foam)->foamDDecl.argv;
 	faFluidsv    = foamUnitGlobals(foam)->foamDDecl.argv;
-#ifdef NEW_FORMATS
-	faParamsv     = foamUnitParams(foam)->foamDDecl.argv;
-#endif
 	faNumFormats = foamArgc(foamUnitFormats(foam));
 	faNumConsts  = foamDDeclArgc(foamUnitConstants(foam));
 	faNumGlobals = foamDDeclArgc(foamUnitGlobals(foam));
@@ -1075,12 +1069,7 @@ foamAuditExpr(Foam foam)
 		faDEnv	    = foam->foamProg.levels->foamDEnv.argv;
 		faNumLevels = foamArgc(foam->foamProg.levels);
 		faNumLocals = foamDDeclArgc(foam->foamProg.locals);
-#ifdef NEW_FORMATS
-		faNumParams = foamDDeclArgc(faParamsv[foam->foamProg.params-1]);
-		assert(foam->foamProg.params < foamDDeclArgc(foamUnitParams(faUnit)));
-#else
 		faNumParams = foamDDeclArgc(foam->foamProg.params);
-#endif
 		break;
 	  case FOAM_Def:
 		if (foamTag(foam->foamDef.lhs) == FOAM_Const)
@@ -1756,9 +1745,6 @@ foamSymeList(Foam foam)
 		assert(foamTag(fmtv[i]) == FOAM_DDecl);
 		declv = fmtv[i]->foamDDecl.argv;
 		declc = foamDDeclArgc(fmtv[i]);
-#ifdef NEW_FORMATS
-		if (declc > 0 && foamTag(declv[0]) == FOAM_DDecl) break;
-#endif
 		for (j = 0; j < declc; j += 1) {
 			decl = declv[j];
 			assert(foamIsDecl(decl));
@@ -3424,11 +3410,7 @@ struct foam_info foamInfoTable[] = {
  {FOAM_OCall,	    0,"OCall",        FOAM_NARY, "tCCC*", 	0},
  {FOAM_Seq,	    0,"Seq",          FOAM_NARY, "C*", 	0},
  {FOAM_Values,	    0,"Values",       FOAM_NARY, "C*", 	0},
-#ifdef NEW_FORMATS
  {FOAM_Prog,	    0,"Prog",         FOAM_NARY, "XFtwwwwwC*", 	0}
-#else
- {FOAM_Prog,	    0,"Prog",         FOAM_NARY, "XFtwwwwwC*", 	0}
-#endif
 };
 
 /*****************************************************************************

@@ -130,10 +130,6 @@ typedef struct {
 } CpInfo;
 
 static CpInfo	cpInfo;
-#ifdef NEW_FORMATS
-static Foam	cpUnit;
-#endif
-
 static Bool   	cpFirstTime;
 
 /* maybe a bitmap ? */
@@ -187,9 +183,6 @@ cpropUnit(Foam foam, Bool isFirst)
 
 	cpFirstTime = isFirst;
 
-#ifdef NEW_FORMATS
-	cpUnit = foam;
-#endif
 	defs = foam->foamUnit.defs;
 
 	for (i = 0; i < foamArgc(defs); i++) {
@@ -886,11 +879,7 @@ local void
 cpProgInit(Foam prog)
 {
 	int	nLoc = foamDDeclArgc(prog->foamProg.locals);
-#ifdef NEW_FORMATS
-	int	nPar = foamDDeclArgc(foamUnitParams(cpUnit)->foamDDecl.argv[flog->prog->foamProg.params-1]);
-#else
 	int	nPar = foamDDeclArgc(prog->foamProg.params);
-#endif
 	int 	i;
 
 	assert(foamTag(prog) == FOAM_Prog);

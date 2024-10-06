@@ -642,15 +642,9 @@ struct foamRRec {
 	Foam			values; /* FOAM_Values holding raw values */
 };
 
-#ifdef NEW_FORMATS
-#define foamNewProg(x,m,t,f,ib,p,l,fl,le,b) \
-	foamNew(FOAM_Prog, 13, (AInt)(x),(AInt)(m),(AInt)(t),(AInt)(f),\
-		(AInt)(ib), (AInt)0, (AInt)0, (AInt)0, (AInt)(p), l, fl, le, b)
-#else
 #define foamNewProg(x,m,t,f,ib,p,l,fl,le,b) \
 	foamNew(FOAM_Prog, 13, (AInt)(x),(AInt)(m),(AInt)(t),(AInt)(f),\
 		(AInt)(ib), (AInt)0, (AInt)0, (AInt)0 , p, l, fl, le, b)
-#endif
 
 extern Foam foamNewProgEmpty(void);
 
@@ -665,12 +659,7 @@ struct foamProg {
 	AInt			size;
 	AInt			time;	    /* estimated exec. time	  */
 	AInt			auxInfo;
-
-#ifdef NEW_FORMATS
-	AInt                    params;
-#else
 	Foam                    params;
-#endif
 	Foam                    locals;
 	Foam                    fluids; 
 	Foam                    levels;
@@ -1465,16 +1454,9 @@ extern struct foamDDecl_info foamDDeclInfoTable[];
 #define constsSlot  	1
 #define lexesSlot   	2
 #define fluidsSlot   	3
-#ifdef NEW_FORMATS
-#define paramsSlot	4
-#define emptyFormatSlot 5
-#define envUsedSlot 	0
-#define FOAM_FORMAT_START 6
-#else
 #define emptyFormatSlot 4
 #define envUsedSlot 	0
 #define FOAM_FORMAT_START 5
-#endif
 
 #define	foamUnitFormats(foam)	((foam)->foamUnit.formats)
 #define foamUnitGlobals(foam)	\
@@ -1485,10 +1467,6 @@ extern struct foamDDecl_info foamDDeclInfoTable[];
  	(foamArgv((foam)->foamUnit.formats)[lexesSlot].code)
 #define foamUnitFluids(foam)	\
  	(foamArgv((foam)->foamUnit.formats)[fluidsSlot].code)
-#ifdef NEW_FORMATS
-#define foamUnitParams(foam)	\
- 	(foamArgv((foam)->foamUnit.formats)[paramsSlot].code)
-#endif
 
 /* map a function over a foam tree */
 #define foamIter(foam, arg, argumentAction)				\

@@ -156,9 +156,6 @@ typedef struct {
 } UdProgInfo;
 
 static UdProgInfo	udProgInfo;
-#ifdef NEW_FORMATS
-static Foam	udUnit;
-#endif
 
 CREATE_LIST(UdInfo);
 
@@ -204,16 +201,8 @@ useDefChainsFrFoamProg(Foam foam)
 
 	assert(foamTag(foam) == FOAM_Prog);
 
-#ifdef NEW_FORMATS
-	udUnit = foam;
-#endif
-
 	if (foamArgc(foam->foamProg.locals) + 
-#ifdef NEW_FORMATS
-	    foamArgc(foamUnitParams(udUnit)->foamDDecl.argv[prog->foamProg.params]) == 0)
-#else
 	    foamArgc(foam->foamProg.params) == 0)
-#endif
 		return;
 
 	flog = flogFrProg(foam, FLOG_UniqueExit);
@@ -330,11 +319,7 @@ udVarDefsVectBuild(FlowGraph flog)
 	Foam	stmt, lhs;
 	int	i, nDefs;
 	int	nLocs = foamDDeclArgc(flog->prog->foamProg.locals);
-#ifdef NEW_FORMATS
-	int	nPars = foamArgc(foamUnitParams(udUnit)->foamDDecl.argv[flog->prog->foamProg.params-1]);
-#else
 	int	nPars = foamDDeclArgc(flog->prog->foamProg.params);
-#endif
 
 	udProgInfo.nPars = nPars;
 	udProgInfo.nLocs = nLocs;

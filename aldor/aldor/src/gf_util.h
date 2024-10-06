@@ -177,18 +177,12 @@ extern GenFoamState	gen0State;
 
 extern FoamList		gen0GlobalList,
 			gen0FormatList,
-#ifdef NEW_FORMATS
-			gen0ParamsList,
-#endif
 			gen0DeclList,
 			gen0ProgList;
 
 extern int		gen0NumGlobals,
 			gen0RealFormatNum,
 			gen0FormatNum,
-#ifdef NEW_FORMATS
-			gen0NumParams,
-#endif
 			gen0NumProgs,
 			gen0FwdProgNum,
 			gen0GenerFormat,

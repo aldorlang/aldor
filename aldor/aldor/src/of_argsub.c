@@ -253,14 +253,8 @@ agsProgram(Foam prog, Length n)
 	agsProg->lexv = (AInt *)NULL;
 	agsProg->locc = foamDDeclArgc(prog->foamProg.locals);
 	agsProg->locv = prog->foamProg.locals->foamDDecl.argv;
-#ifdef NEW_FORMATS
-	agsProg->parc = foamDDeclArgc(faParamsv[prog->foamProg.params-1]);
-	agsProg->parv = (faParamsv[prog->foamProg.params-1])->foamDDecl.argv;
-#else
 	agsProg->parc = foamDDeclArgc(prog->foamProg.params);
 	agsProg->parv = prog->foamProg.params->foamDDecl.argv;
-#endif
-
 
 	/* Lexicals only exist if we have formats */
 	if (agsUnit->fmtc)
@@ -745,32 +739,10 @@ agsSubsProg(Foam foam, Foam *sigma, Length argc, String name)
 
 
 	/* Pull out the list of function parameters */
-#ifdef NEW_FORMATS
-	parc = foamDDeclArgc(faParamsv[foam->foamProg.params-1]);
-	parv = (faParamsv[foam->foamProg.params-1])->foamDDecl.argv;
-#else
 	parc = foamDDeclArgc(foam->foamProg.params);
 	parv = foam->foamProg.params->foamDDecl.argv;
-#endif
-
 
 	/* Create a new prog */
-#ifdef NEW_FORMATS
-	prog = foamNewProg
-		(
-			/* Leading fields accessed anonymously */
-			foam->foamGen.argv[0].data,	/* endOffset */
-			foam->foamGen.argv[1].data,	/* nLabels */
-			foam->foamGen.argv[2].data,	/* retType */
-			foam->foamGen.argv[3].data,	/* format */
-			foam->foamGen.argv[4].data,	/* infoBits */
-			emptyFormatSlot,		/* (AInt)params */
-			foamCopy(foam->foamProg.locals),
-			foamCopy(foam->foamProg.fluids),
-			foamCopy(foam->foamProg.levels),
-			NULL				/* body */
-		);
-#else
 	prog = foamNewProg
 		(
 			/* Leading fields accessed anonymously */
@@ -785,8 +757,6 @@ agsSubsProg(Foam foam, Foam *sigma, Length argc, String name)
 			foamCopy(foam->foamProg.levels),
 			NULL				/* body */
 		);
-#endif
-
 
 	/* Create a declaration for this prog */
 	decl = foamNewDecl(FOAM_Prog, strCopy(name), emptyFormatSlot);

@@ -84,10 +84,6 @@ static Table 	kpUseTbl;
 static Bitv  	kpLive;
 static Bitv  	kpOut;
 
-#ifdef NEW_FORMATS
-static Foam *faParamsv;
-#endif
-
 /****************************************************************************
  *
  * Local declarations
@@ -147,10 +143,6 @@ killPointers(Foam unit)
 
 	conc = foamDDeclArgc(foamUnitConstants(unit));
 	conv = foamUnitConstants(unit)->foamDDecl.argv;
-
-#ifdef NEW_FORMATS
-	faParamsv = foamUnitParams(unit)->foamDDecl.argv;
-#endif
 
 	ddef = unit->foamUnit.defs;
 	for (i = 0; i<foamArgc(ddef); i++) {
@@ -618,13 +610,8 @@ kpPreprocessProg(Foam prog)
 	locc = foamDDeclArgc(prog->foamProg.locals);
 	locv = prog->foamProg.locals->foamDDecl.argv;
 
-#ifdef NEW_FORMATS
-	parc = foamDDeclArgc(faParamsv[prog->foamProg.params-1]);
-	parv = (faParamsv[prog->foamProg.params-1])->foamDDecl.argv;
-#else
 	parc = foamDDeclArgc(prog->foamProg.params);
 	parv = prog->foamProg.params->foamDDecl.argv;
-#endif
 
 	/* Prepare the way of the addition of new locals */
 	/* !!! Will use fbox when we figure out what it does */

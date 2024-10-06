@@ -937,11 +937,7 @@ gl0Prog(Foam lhs, Foam prog)
 
 	assert(foamTag(prog) == FOAM_Prog);
 
-#ifdef NEW_FORMATS
-	params  = glvDFmt->foamDFmt.argv[prog->foamProg.params];
-#else
 	params  = prog->foamProg.params;
-#endif
 	locals  = prog->foamProg.locals;
 	body    = prog->foamProg.body;
 
@@ -1235,11 +1231,7 @@ gl0ProgType(Foam lhs, Foam rhs)
 	int i;
 
 	name    = gl0IdName(lhs);
-#ifdef NEW_FORMATS
-	params  = glvDFmt->foamDFmt.argv[rhs->foamProg.params];
-#else
 	params  = rhs->foamProg.params;
-#endif
 	argv    = params->foamDDecl.argv;
 	argTypes = sxNil;
 

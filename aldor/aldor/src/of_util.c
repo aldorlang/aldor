@@ -162,13 +162,8 @@ fpPatchProg(Foam prog)
 	}
 
         fpLocals = prog->foamProg.locals->foamDDecl.argv;
-#ifdef NEW_FORMATS
-	fpParams = fpFormats[paramsSlot]->foamDDecl.argv[prog->foamProg.params-1]->foamDDecl.argv;
-        fpClearFormats(fpFormats[paramsSlot]->foamDDecl.argv[prog->foamProg.params-1]);
-#else
         fpParams = prog->foamProg.params->foamDDecl.argv;
         fpClearFormats(prog->foamProg.params);
-#endif
         fpClearFormats(prog->foamProg.locals);
  
         fpPatchExpr(prog->foamProg.body, false);
@@ -385,9 +380,6 @@ fpClearFormats(Foam ddecl)
 
 	for (i = 0; i < foamDDeclArgc(ddecl); i += 1) {
 		Foam	decl = ddecl->foamDDecl.argv[i];
-#ifdef NEW_FORMATS
-		if (foamTag(decl) == FOAM_DDecl) break;
-#endif
 		if (foamTag(decl) == FOAM_GDecl) {
 			if (decl->foamGDecl.protocol == FOAM_Proto_Foam &&
 			    decl->foamGDecl.type != FOAM_Rec)

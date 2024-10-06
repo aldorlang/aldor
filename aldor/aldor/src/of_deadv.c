@@ -342,10 +342,6 @@ dvMarkProgUsage(int idx, Foam prog)
 	/* Mark the whole return format if a prog return multiple values */
 	if (prog->foamProg.retType == FOAM_NOp && prog->foamProg.format!=0)
 		dvMarkWholeFormat(prog->foamProg.format);
-#ifdef NEW_FORMATS
-	dvMarkWholeFormat(paramsSlot);
-#endif
-
 	/* Walk the program's body. */
 	dvMarkExprUsage(prog->foamProg.body);
 

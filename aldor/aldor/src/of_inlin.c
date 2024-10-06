@@ -1869,11 +1869,7 @@ inlInlineBody(Foam code, Foam call, Foam *argv, Foam env,
 	assert(foamArgc(code->foamProg.fluids) == 0);
 
 	/* Initialize the paramter replacement vector. */
-#ifdef NEW_FORMATS
-	paramArgc  = foamDDeclArgc(foamUnitParams(inlUnit->unit)->foamDDecl.argv[code->foamProg.params-1]);
-#else
 	paramArgc  = foamDDeclArgc(code->foamProg.params);
-#endif
 	paramCount = (int *) stoAlloc(OB_Other, paramArgc * sizeof(int));
 	paramArgv  = (Foam *) stoAlloc(OB_Other, paramArgc * sizeof(Foam));
 	for(i=0; i<paramArgc; i++) paramCount[i] = 0;
@@ -2675,11 +2671,7 @@ inlUpdateConstProg(Foam prog)
 	inlUpdateConstBody(prog->foamProg.body);
 	foamOptInfo(prog) = optInfoNew0(NULL, prog, NULL, false, true);
 
-#ifdef NEW_FORMATS
-	inlUpdateDDecl(inlInlineeDecl(paramsSlot, prog->foamProg.params-1));
-#else
 	inlUpdateDDecl(prog->foamProg.params);
-#endif
 	inlUpdateDDecl(prog->foamProg.locals);
 
 	for(i=0; i< foamArgc(prog->foamProg.levels); i++)

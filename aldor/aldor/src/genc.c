@@ -104,9 +104,6 @@ static Foam	gcvGlo;			/* Unit globals */
 static Foam	gcvConst;		/* Unit constants */
 static Foam	gcvFluids;		/* Unit Fluids */
 static Foam	gcvFmt;			/* Unit formats */
-#ifdef NEW_FORMATS
-static Foam	gcvParams;		/* Unit parameters */
-#endif
 static Foam	gcvPar;			/* Prog parameters */
 static Foam	gcvLoc;			/* Prog locals */
 static Foam	gcvLocFluids;		/* Prog fluids */
@@ -554,9 +551,6 @@ gccUnit(Foam foam, String name)
 	gcvFluids  = foamUnitFluids(foam);
 	gcvFmt	  = foam->foamUnit.formats;
 	gcvLexStk = listCons(Foam)(foamUnitLexicals(foam), listNil(Foam));
-#ifdef NEW_FORMATS
-	gcvParams = foamUnitParams(foam);
-#endif
 
 	gc0InitSpecialChars();
 	gcvDefs = foam->foamUnit.defs;
@@ -1320,22 +1314,10 @@ gc0ConstDecl(int idx)
 
 	ccName = gc0MultVarId("C", idx, str);
 	ccProgName = gc0MultVarId("CF", idx, str);
-#ifdef NEW_FORMATS
-		
-	ccProto = ccoFCall(ccProgName, gc0Param(val,
-						gcvParams->foamDDecl.argv[val->foamProg.params-1]));
-		
-	gc0AddLine(gc0DeclStmts, ccoDecl(ccClass, ccName));
-	gc0AddLine(ccoDecl(ccoType(ccClass, 
-				   gc0TypeId(val->foamProg.retType,
-					     val->foamProg.format)), ccoProto));
-
-#else
 	ccProto = ccoFCall(ccProgName, gc0Param(val,
 						val->foamProg.params));
 	gc0AddLine(gc0DeclStmts, ccoDecl(ccType, ccName));
 	gc0AddLine(gc0DeclStmts, ccoDecl(ccoType(ccClass, gc0TypeId(val->foamProg.retType, val->foamProg.format)), ccProto));
-#endif
 }
 
 local void
@@ -1457,11 +1439,7 @@ gc0ExportCDef(String name, Foam gdecl, int nglo, int nprog)
 	CCodeList fnbody = listNil(CCode);
 	Foam	cprog  = foamArgv(gcvDefs)[nprog].code;
 	Foam	ccdecl  = cprog->foamDef.rhs;
-#ifdef NEW_FORMATS
-	Foam	params = gcvParams->foamDDecl.argv[ccdecl->foamProg.params-1];
-#else
 	Foam	params = ccdecl->foamProg.params;
-#endif
 	FoamTag *argTypes;
 
 	int	i, ix, nparams, nargs;
@@ -2347,11 +2325,7 @@ gc0Prog(Foam ref, Foam foam)
 	progFmt	 = foamProgIndex(foam);
 	type	 = foam->foamProg.retType;
 	format	 = foam->foamProg.format;
-#ifdef NEW_FORMATS
-	params	 = gcvParams->foamDDecl.argv[foam->foamProg.params-1];
-#else
 	params	 = foam->foamProg.params;
-#endif
 	locals	 = foam->foamProg.locals;
 	lexicals = foamArgv(gcvFmt)[progFmt].code;
 	fluids	 = foam->foamProg.fluids;

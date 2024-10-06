@@ -265,12 +265,7 @@ static int	numLexicals;
 
 
 String	 gen0FileName;
-#ifdef NEW_FORMATS
-FoamList gen0GlobalList, gen0FluidList, gen0FormatList, gen0ParamsList;
-int	 gen0NumParams;
-#else
 FoamList gen0GlobalList, gen0FluidList, gen0FormatList;
-#endif
 FoamList gen0DeclList, gen0ProgList;
 AIntList gen0ConstList;
 AIntList gen0RealConstList;
@@ -367,13 +362,8 @@ generateFoam(Stab stab0, AbSyn absyn, String initName)
 {
 	Scope("generateFoam");
 
-#ifdef NEW_FORMATS
-	Foam		foam, clos, constants, def, params,
-			globals, lexicals, formats, defs, decl, fluids;
-#else
 	Foam		foam, clos, constants, def,
 			globals, lexicals, formats, defs, decl, fluids;
-#endif
 	int		index, gloNOpIdx, gloRuntimeIdx;
 	AbLogic		fluid(gfCondKnown); /* COND-DEF */
 
@@ -477,10 +467,6 @@ generateFoam(Stab stab0, AbSyn absyn, String initName)
 	gen0MakeBuiltinExports();
 	defs	    = gen0RenewDefs(gen0ProgList, gen0NumProgs);
 
-#ifdef NEW_FORMATS
-	gen0ParamsList	= listNReverse(Foam)(gen0ParamsList);
-	params = foamNewOfList(FOAM_DDecl, gen0ParamsList);
-#endif
 	/* Fixup defns of globals... */
 
 	gen0GlobalList	= listNReverse(Foam)(gen0GlobalList);
@@ -552,10 +538,6 @@ gen0GenFoamInit()
 	gen0FluidList		= listNil(Foam);
 	gen0ConstList		= listNil(AInt);
 	gen0RealConstList	= listNil(AInt);
-#ifdef NEW_FORMATS
-	gen0ParamsList		= listNil(Foam);
-	gen0NumParams		= 0;
-#endif
 	gen0NumGlobals		= 0;
 	gen0FwdProgNum		= SYME_NUMBER_UNASSIGNED - 1;
 	gen0NumProgs		= 0;
@@ -584,9 +566,6 @@ gen0GenFoamFini()
 	listFree(Foam)(gen0FormatList);
 	listFree(Foam)(gen0ProgList);
 	listFree(Foam)(gen0DeclList);
-#ifdef NEW_FORMATS
-	listFree(Foam)(gen0ParamsList);
-#endif
 	listFree(Foam)(gen0GlobalList);
 	listFree(Foam)(gen0FluidList);
 	listFree(AInt)(gen0ConstList);
