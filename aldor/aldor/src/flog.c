@@ -581,10 +581,10 @@ flogCountLabelsInFoamList(FoamList stats)
 local FoamList
 flogConsStats(FlowGraph flog, BBlock bb, FoamList stats)
 {
-        int             i, fc;
-        Foam            *fv, stat;
-        BBlock      dd;
- 
+        int    i, fc;
+        Foam  *fv, stat;
+        BBlock dd;
+
         if (bb->mark) return stats;
         bb->mark = true;
 
