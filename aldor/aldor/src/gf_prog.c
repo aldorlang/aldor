@@ -292,7 +292,6 @@ gen0ProgInitEmpty(String name, AbSyn absyn)
 #endif
 	decl = foamNewDecl(FOAM_Prog, name, emptyFormatSlot);
 	gen0ConstAdd(decl, foam);
-
 	if (absyn) foamPos(foam) = abPos(absyn);
 
 	if (genfEnvDebug) {
@@ -351,6 +350,30 @@ gen0ProgClosEmpty(void)
 		car(state->formatUsage) = suFrFormat(envUsedSlot);
 	return foamNewClos(env, foamNewConst(gen0NumProgs));
 }
+
+Foam
+gen0ProgEnv0(void)
+{
+	GenFoamState	state = gen0State;
+	Foam		env;
+
+	if (genfEnvDebug && gen0State) {
+		afprintf(dbOut, "EnvEmpty - fmtStack: %pAIntList, usage: %pAIntList\n",
+			 gen0State->formatStack, gen0State->formatUsage);
+	}
+
+	env = state ? foamCopy(car(state->envVarStack)) : foamNewEnv(int0);
+
+	if (state) {
+		car(state->formatUsage) = suSetUse(car(state->formatUsage));
+		if (genfEnvDebug) {
+			afprintf(dbOut, "EnvEmpty - usage: %pSlotUsageList\n",
+				 gen0State->formatUsage);
+		}
+	}
+	return env;
+}
+
 
 /*
  * Generate decls for variables needed by the prog.
