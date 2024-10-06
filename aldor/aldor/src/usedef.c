@@ -193,8 +193,8 @@ static int	udFlogCutOff =  200; /* Max no of dataflow iterations */
  *
  ****************************************************************************/
 
-#if 0  /* MUST BE COMPLETED */
-Bool
+#if 0
+void
 useDefChainsFrFoamProg(Foam foam)
 {
 	FlowGraph 	flog;
@@ -217,13 +217,10 @@ useDefChainsFrFoamProg(Foam foam)
 
 	flog = flogFrProg(foam, FLOG_UniqueExit);
 
-	useDefChainsFrFlog(flog);
+	useDefChainsFrFlog(flog, UD_OUTPUT_SinglePointer);
 		
-	return flogToProg(flog);
-
+	flogToProg(flog);
 }
-
-#endif 
 
 void
 usedefChainsFreeFrProg(Foam foam)
@@ -235,6 +232,7 @@ usedefChainsFreeFrProg(Foam foam)
 
 	udDestroyUses(foam);
 }
+#endif
 
 /* Compute, for each use of local/parameter, the set of definitions reaching
  * it. This information is associated to the use, using the 

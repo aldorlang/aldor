@@ -39,8 +39,10 @@ typedef enum {
  *
  ****************************************************************************/
 
+#if 0
+extern void     useDefChainsFrFoamProg  (Foam);
 extern void	usedefChainsFreeFrProg	(Foam);
-
+#endif
 extern Bool    	usedefChainsFrFlog	(FlowGraph, UdOutputKind);
 extern void	usedefChainsFreeFrFlog	(FlowGraph);
 extern void	udSetFlogCutOff		(int);
