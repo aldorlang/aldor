@@ -2689,7 +2689,7 @@ foamGetProgHdrFrBuffer(Buffer buf, int pos)
 		prog->foamProg.params = NULL;
 		prog->foamProg.fluids = NULL;
 		prog->foamProg.levels = NULL;
-		prog->foamProg.body = NULL;
+		prog->foamProg.body   = NULL;
 	}
 
 	return prog;
@@ -3470,7 +3470,7 @@ struct foamDDecl_info	foamDDeclInfoTable[] = {
  { FOAM_DDecl_Global, 		0, "Globals" },  
  { FOAM_DDecl_FortranSig,       0, "FortranSig" },
  { FOAM_DDecl_CSig,             0, "CSig" },
- { FOAM_DDecl_CType,             0, "CType" },
+ { FOAM_DDecl_CType,            0, "CType" },
  { FOAM_DDecl_JavaSig,          0, "JavaSig" },
  { FOAM_DDecl_JavaClass,        0, "JavaClass" },
 };
