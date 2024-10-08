@@ -414,8 +414,9 @@ where $s = \sum_{n \ge 0} a_n x^n$.}
 		zero? a => {
 			(p:RX):Generator R +-> coefficients p;
 		 }
-		(p:RX):Generator R +-> generate {
+		(p0:RX):Generator R +-> generate {
 			import from Boolean, I, Z;
+			p := p0;
 			assert(~zero? p);
 			for i in 0..machine degree p repeat {
 				(p, c) := Horner(p, a);

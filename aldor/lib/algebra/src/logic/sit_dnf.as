@@ -53,8 +53,9 @@ State(T: OutputType): with {
 
     init(initlst: List List T): % == per [iterator l for l in initlst];
 
-    generator(iter: %): Generator List T == generate {
+    generator(iter0: %): Generator List T == generate {
         import from Partial %;
+        iter := iter0;
         done := false;
         while not done repeat {
             (nextIter, nextElt) := next iter;
@@ -269,7 +270,7 @@ allExpressions(depth: Integer, nAtoms: Integer): HashSet LogicExpression ==
                 insert!(hs, _or(e1, e2))
         hs
 
---test();
+test();
 
 foo(): () ==
     import from Integer;

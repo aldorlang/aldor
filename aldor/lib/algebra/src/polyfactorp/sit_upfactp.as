@@ -410,8 +410,9 @@ factors of $p$.}
 	}
 
 	-- for squarefree polynomials only!
-	local rootsSqfr(a:P):Generator RR == generate {
+	local rootsSqfr(a0:P):Generator RR == generate {
 		import from Boolean, Z, F, RR;
+		a := a0;
 		assert(one? gcd(a, differentiate a));
 		if ~one?(lc := leadingCoefficient a) then a := inv(lc) * a;
 		for rt in rootsSqfrMonic a repeat yield integralRoot(rt, 1);

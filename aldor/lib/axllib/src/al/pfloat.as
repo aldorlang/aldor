@@ -292,7 +292,8 @@ PFloat(bits: I): FloatingPointNumberSystem with {
 	(a: %) >> (b: %): B == 
 		zero? b or exponent rep a - exponent rep b > bits;
 	
-	step(n: SingleInteger)(a: %, b: %): Generator % == generate {
+	step(n: SingleInteger)(a0: %, b: %): Generator % == generate {
+	        a := a0;
 		del := (b - a)/normalize coerce(n - 1);
 		for i in 1..n repeat {
 			yield a;

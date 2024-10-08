@@ -237,18 +237,20 @@ List(S: Type): ListCategory S with == FakedConditionalOperations S add {
         test(l: %): Boolean == not empty? l;
 
         generator(l: %): Generator S == generate {
-                while l repeat {
-                        yield first l;
-                        l := rest l;
+	        ll := l;
+                while ll repeat {
+                        yield first ll;
+                        ll := rest ll;
                 }
         }
 
 	tails(l: %): Generator % == generate {
+	        ll := l;
 		while l repeat {
 			-- Save the tail first to allow clients to update it.
-			tl := rest l;
-			yield l;
-			l := tl;
+			tl := rest ll;
+			yield ll;
+			ll := tl;
 		}
 	}
 

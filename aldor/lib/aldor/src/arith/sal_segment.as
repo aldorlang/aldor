@@ -140,8 +140,9 @@ the range of s. The result of high(s) is undefined if s is an open segment.}
 	}
 
 	-- BUG 1182: DOES NOT INLINE WELL IF BROKEN INTO SUBFUNCTIONS
-	generator(s:%):Generator Z == generate {
+	generator(s0:%):Generator Z == generate {
 		import from Z;
+		s: % := s0;
 		op? := open? s;
 		a := low s;
 		one?(c := step s) => {
@@ -155,7 +156,7 @@ the range of s. The result of high(s) is undefined if s is an open segment.}
 		while a <= b repeat { yield a; a := a + c; }
 	}
 
-	-- prints as ..[from, to, step, open?]
+        -- prints as ..[from, to, step, open?]
 	(p:TextWriter) << (s:%):TextWriter == {
 		import from Z, Boolean, Character;
 		p << dot << dot << leftBracket << low s << comma << high s _

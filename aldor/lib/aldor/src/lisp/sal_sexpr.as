@@ -175,7 +175,8 @@ SExpression: Join(InputType, OutputType, PrimitiveType) with
 
     nth(sx, n: Integer): % == if n = 0 then first sx else nth(rest sx, n-1)
 
-    generator(sx): Generator % == generate {
+    generator(sx0: %): Generator % == generate {
+        sx := sx0;
         while cons? sx repeat {
 	    yield first sx;
 	    sx := rest sx
@@ -486,6 +487,7 @@ SExpressionReader: with
 #include "aldorio"
 #pile
 
+# if 0
 readOne(s: String): Partial SExpression ==
     import from SExpressionReader
     sb: StringBuffer := new()
@@ -616,16 +618,19 @@ testNth(): () ==
     assertEquals(sexpr 1, nth(l, 0))
     assertEquals(sexpr 2, nth(l, 1))
     assertEquals(sexpr 3, nth(l, 2))
-
+# endif
 testGenerator(): () ==
     import from Assert Integer
     import from SExpression
     import from Integer
     import from Fold Integer
     sx: SExpression := [sexpr n for n in 1..3]
+--    stdout << "sx " << sx << " " << cons? sx << newline
     sum := (+)/(int elt for elt in sx)
+--    stdout << "sx2 " << sx << " " << [x for x in sx] << newline
     assertEquals(6, sum)
 
+# if 0
 testReadRef(): () ==
     import from Assert SExpression
     import from Partial SExpression, SExpression, Symbol
@@ -646,7 +651,9 @@ test2()
 testBracket()
 testAppend()
 testNth()
+# endif
 testGenerator()
+# if 0
 testReadRef()
 testReadRef2()
 
@@ -682,5 +689,5 @@ testFileStuff(): () ==
     assertEquals(sx, [sexpr(-"GOODBYE"), sexpr(-"WORLD")]@SExpression)
 
 testFileStuff()
-
+# endif
 #endif

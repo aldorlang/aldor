@@ -210,7 +210,8 @@ SparseMultivariatePolynomial(_
       --% exported functions as FreeAlgebra(R)        %--
       ---------------------------------------------------
 
-       nonZeroCoefficients(p:%): Generator(R)  == generate {
+       nonZeroCoefficients(p0:%): Generator(R)  == generate {
+	    p := p0;
             local toSee : List(%) := [p];
             local ip: %;
             local u: U;
@@ -234,8 +235,9 @@ SparseMultivariatePolynomial(_
                 }
             }
       }
-      support(p:%): Generator(Cross(R,%)) == generate {
+      support(p0:%): Generator(Cross(R,%)) == generate {
                -- import from Character, String, TextWriter;
+	       p := p0;
                zero? p => yield (0,1);
                while not ground? p repeat {
                   ip: % := ini(p);
@@ -252,7 +254,8 @@ SparseMultivariatePolynomial(_
                }
                not zero? p => yield (base(p),1);
       }
-      variableProduct(p: %): Generator(Cross(V, NNI)) == generate {
+      variableProduct(p0: %): Generator(Cross(V, NNI)) == generate {
+              p := p0;
               assert(not ground? p);
               while (not ground? p) repeat {
                  v := var(p);

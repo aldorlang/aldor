@@ -109,7 +109,8 @@ Lst( S: with (=:(S,S)->Boolean; <<: (TextWriter, S) -> TextWriter) ): with
 
 	test(l: %): Boolean == not empty? l
 
-	generator(l: %): Generator S == generate
+	generator(l0: %): Generator S == generate
+	        l := l0
 		while l repeat
 			yield first l
 			l := rest l

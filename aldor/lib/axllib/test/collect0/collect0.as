@@ -16,16 +16,18 @@ sum(it: Generator SI): SI ==
 foo(a:SI, b:SI): SI ==
   import from String
 
-  c  := a
-  it := generate while c <= b repeat (yield c*c; c := c+1)
+  c0  := a
+  it := generate
+      c := c0
+      while c <= b repeat (yield c*c; c := c+1)
   for i in it repeat print<<i<<" "
   print<<newline
 
   s := sum generator(1..10)
   print<<s<<newline
 
-  c := a
-  s := sum(generate while c<=b repeat (yield c*c*c; c := c+1))
+  c0 := a
+  s := sum(generate(c := c0; while c<=b repeat (yield c*c*c; c := c+1)))
   print<<s<<newline
 
   s := sum(i*i*i for i:SI in 1..10)

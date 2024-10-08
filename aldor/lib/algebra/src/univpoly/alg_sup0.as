@@ -79,8 +79,9 @@ SparseUnivariatePolynomial0(R:Join(ArithmeticType, ExpressionType),
 		reverse! cl;
 	}
 
-	local gen(l:List Term):Generator Cross(R, Z) == generate {
+	local gen(l0:List Term):Generator Cross(R, Z) == generate {
 		import from Boolean;
+		l := l0;
 		while ~empty? l repeat {
 			t := first l;
 			l := rest l;

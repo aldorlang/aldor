@@ -29,8 +29,9 @@ MyList(X: BasicType): FiniteAggregate X with {
 
 	cons(z:X , x: %): % == per([z, [rep x]]);
 	make(z: X): 	  % == per([z, [noValue]]);
-	generator(x: %): Generator X == {
+	generator(x0: %): Generator X == {
 		generate {
+		        x := x0;
 			while not last? x repeat {
 				yield first x;
 				x := rest x;

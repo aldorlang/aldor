@@ -106,8 +106,9 @@ BivariateUtilitiesTestPackage2(u__s: Symbol, v__s: Symbol, _
 		}
 		f__V;
 	}
-	examples(n: Z, maxdeg__U: Z == 10, maxdeg__V: Z == 10, maxCoeff: Z == 2147483647, sparsity: DF  == 0.01): Generator Cross(V,V) == generate  {
-		assert(n > 0);
+	examples(n0: Z, maxdeg__U: Z == 10, maxdeg__V: Z == 10, maxCoeff: Z == 2147483647, sparsity: DF  == 0.01): Generator Cross(V,V) == generate  {
+		assert(n0 > 0);
+		n := n0;
 		if n <= 5 then {
 			yield example1();
 			if n > 1 then yield example2();
