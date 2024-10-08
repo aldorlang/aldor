@@ -24,6 +24,9 @@ Bool	flogDebug	= false;
 local void  flogFreeFoamNode	(Foam);
 local void  flogFreeFoam	(Foam);
 
+local AInt  bbIfLastLabel	(BBlock bb);
+local void  bbIfSetLastLabel	(BBlock bb, AInt label);
+
 /****************************************************************************
  *
  * :: Basic FlowGraph operations
@@ -427,7 +430,7 @@ flog0MakeExitEdges(FlowGraph flog)
 		switch (bb->kind) {
 		case FOAM_If:
 			flog0Make1ExitEdge(flog, bb, bb->iextra);
-			flog0Make1ExitEdge(flog, bb, flast->foamIf.label);
+			flog0Make1ExitEdge(flog, bb, bbIfLastLabel(bb));
 			break;
 		case FOAM_Select:
 			for (j = 0; j < foamArgc(flast)-1; j++)
@@ -731,7 +734,7 @@ flogFixLabels(FlowGraph flog)
 		
 		switch (bb->kind) {
 		case FOAM_If:
-			flast->foamIf.label = bbExit(bb, 1)->label;
+			bbIfSetLastLabel(bb, bbExit(bb, 1)->label);
 			break;
 		case FOAM_Select:
 			for (j = 0; j < foamArgc(flast)-1; j++)
@@ -740,7 +743,11 @@ flogFixLabels(FlowGraph flog)
 		case FOAM_Goto:
 			flast->foamGoto.label = bbExit(bb, int0)->label;
 			break;
+		case FOAM_Return:
+		case FOAM_Throw:
+			break;
 		default:
+			bug("Unknown bb type %d", bb->kind);
 			break;
 		}
 	}
@@ -1257,6 +1264,42 @@ bbufSetBlockFn(BlockBuf bf, BlockLabel lab, BBlock bb)
 	assert(bb->label < bf->pos);
 	bf->argv[bb->label] = bb;
 	return bb;
+}
+
+local AInt
+bbIfLastLabel(BBlock bb)
+{
+	Foam bbLast = bbLastStat(bb);
+	assert(bb->kind == FOAM_If);
+	switch (foamTag(bbLast)) {
+	case FOAM_If:
+		return bbLast->foamIf.label;
+	default:
+		bug("bad case in bbIfLastLabel");
+	}
+}
+
+local void
+bbIfSetLastLabel(BBlock bb, AInt label)
+{
+	Foam bbLast = bbLastStat(bb);
+	assert(bb->kind == FOAM_If);
+	switch (foamTag(bbLast)) {
+	case FOAM_If:
+		bbLast->foamIf.label = label;
+		break;
+	default:
+		bug("bad case in bbIfSetLastLabel");
+	}
+}
+
+Bool
+bbIsIfStmt(BBlock bb)
+{
+	if (bb->kind != FOAM_If) {
+		return false;
+	}
+	return foamTag(bbLastStat(bb)) == FOAM_If;
 }
 
 /****************************************************************************

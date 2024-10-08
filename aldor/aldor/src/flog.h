@@ -202,6 +202,8 @@ extern void	  bbSpecializeExit      (BBlock, int exitno);
 extern BBlock 	  bbNConcat		(BBlock, BBlock);
 extern BBlockList bbGetEntries		(BBlock);
 extern BBlock     bbCopy                (BBlock);
+extern Bool       bbIsIfStmt            (BBlock);
+
 			/*
 			 * bbNConcat modifies/frees its args.
 			 */
