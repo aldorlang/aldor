@@ -4,6 +4,9 @@
 @WITH_ALDOR_INTERP_TESTS_TRUE@INTERP_TESTS=1
 @WITH_ALDOR_INTERP_TESTS_FALSE@INTERP_TESTS=
 
+
+GENERATOR_COROUTINES=@GENERATOR_COROUTINES@
+
 prefix          := @prefix@
 datarootdir     := @datarootdir@
 MKDIR_P         := @MKDIR_P@
