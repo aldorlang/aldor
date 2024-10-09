@@ -220,6 +220,7 @@ libphase_a_SOURCES =	\
 	genfoam.c	\
 	genlisp.c	\
 	java/genjava.c	\
+	genstyle.c	\
 	gf_add.c	\
 	gf_excpt.c	\
 	gf_fortran.c	\
