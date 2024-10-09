@@ -663,7 +663,6 @@ inlProgram(Foam prog, int n)
 		inlProg->locals		= vpNew(fboxNew(prog->foamProg.locals));
 		inlProg->numLabels	= prog->foamProg.nLabels;
 		inlProg->denv		= prog->foamProg.levels;
-		inlProg->seqBody	= 0;
 		inlProg->changed	= false;
 
 		inlProg->seq = prog->foamProg.body;
