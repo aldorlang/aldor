@@ -3319,7 +3319,9 @@ stoAlloc(unsigned code, ULong nbytes)
 #ifdef USE_MEMORY_CLIMATE
 	code = getMemoryClimate();
 #endif
-
+	if (nbytes > 100*1024*1024) {
+		bug("stoAlloc: Too large");
+	}
 	if (nbytes==0) return NULL; /* TTT */
 	if (nbytes <= FixedSizeMax)
 	{
