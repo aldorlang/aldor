@@ -414,6 +414,20 @@ foamNewDFmt(Foam arg0, ...)
 }
 
 Foam
+foamNewDDef(Foam arg0, ...)
+{
+	FoamList foamList;
+	va_list argp;
+
+	va_start(argp, arg0);
+	foamList = listListv(Foam)(argp);
+	va_end(argp);
+	foamList = listCons(Foam)(arg0, foamList);
+
+	return foamNewOfList(FOAM_DDef, foamList);
+}
+
+Foam
 foamNewDEnvUnused(AInt len)
 {
 	Foam foam = foamNewEmpty(FOAM_DEnv, len);
@@ -454,6 +468,19 @@ foamNewValuesOfList(FoamList lst)
 	return foamNewOfList(FOAM_Values, lst);
 }
 
+Foam
+foamNewValues(Foam arg0, ...)
+{
+	FoamList foamList;
+	va_list argp;
+
+	va_start(argp, arg0);
+	foamList = listListv(Foam)(argp);
+	va_end(argp);
+	foamList = listCons(Foam)(arg0, foamList);
+
+	return foamNewOfList(FOAM_Values, foamList);
+}
 
 Foam
 foamNewEmpty(FoamTag tag, Length argc)
