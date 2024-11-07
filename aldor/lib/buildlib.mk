@@ -188,7 +188,7 @@ _javalibrary = $(call topsort_list, $(filter-out $(java_blacklist), $(javalibrar
 
 $(patsubst %,aldorcode/%.java, $(_javalibrary)): aldorcode/%.java: %.ao
 	$(AM_V_FOAMJ)$(AM_DBG)	\
-	$(aldorexedir)/aldor $(aldor_common_args) -Fjava $*.ao
+	$(aldorexedir)/aldor $(aldor_common_args) $($*_jopts) -Fjava $*.ao
 
 $(patsubst %,aldorcode/%.class, $(_javalibrary)): aldorcode/%.class: $(libraryname).classlib
 # FIXME: -g here is ropey
@@ -220,6 +220,9 @@ $(libraryname)-sources.jar: $(patsubst %,aldorcode/%.java, $(_javalibrary)) $(to
 
 all: $(libraryname)-sources.jar $(libraryname).jar \
 	$(patsubst %,aldorcode/%.class,$(_javalibrary))
+
+.PHONY: $(patsubst %, java-%, $(_javalibrary))
+$(patsubst %, java-%, $(_javalibrary)): java-%: aldorcode/%.class
 
 endif
 endif
