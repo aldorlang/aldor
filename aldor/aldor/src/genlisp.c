@@ -7,9 +7,9 @@
  ****************************************************************************/
 
 #include "gf_util.h"
-#include "util.h"
-#include "strops.h"
 #include "sexpr.h"
+#include "strops.h"
+#include "util.h"
 
 /*
  * The following naming conventions are used in this file:
