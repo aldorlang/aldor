@@ -98,6 +98,7 @@ libtest_a_SOURCES =	\
 # Foam stuff does not belong!
 libgen_a_SOURCES =	\
 	aldorlib.c	\
+	axlgen.c	\
 	bigint.c	\
 	bitv.c		\
 	btree.c		\
