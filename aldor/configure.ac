@@ -69,6 +69,7 @@ AC_ARG_ENABLE([documentation],
 	    [enable_documentation=no])
 
 AX_LIB_READLINE
+ALDOR_LIB_COMPILE
 ALDOR_READLINE_OPTION
 ALDOR_READLINE_SELECT
 

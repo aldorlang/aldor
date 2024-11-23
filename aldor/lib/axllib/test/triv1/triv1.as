@@ -16,7 +16,7 @@ export
 
 import
 	puts:     	(String) -> ()
-from Foreign C "<stdlib.h>"
+from Foreign C "<stdio.h>"
 
 string (s: Literal): String          == s pretend String
 

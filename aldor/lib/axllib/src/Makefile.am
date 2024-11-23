@@ -58,4 +58,4 @@ datalib_DATA = libaxllib.al
 libraryname = axllib
 include ../../buildlib.am
 
-AM_CFLAGS += -ffloat-store
+AM_CFLAGS += -ffloat-store $(LIB_CC_FLAGS)

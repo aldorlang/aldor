@@ -709,6 +709,7 @@ HAVE_BOEHM_GC_TRUE
 HAVE_ALDOR_GC_FALSE
 HAVE_ALDOR_GC_TRUE
 GC
+LIB_CC_FLAGS
 BUILD_JAVA_FALSE
 BUILD_JAVA_TRUE
 JAVAC
@@ -5290,6 +5291,23 @@ fi
 
     fi
   fi
+
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking Options for build library .." >&5
+printf %s "checking Options for build library ..... " >&6; }
+	 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking $CC supports -Wno-int-conversion" >&5
+printf %s "checking $CC supports -Wno-int-conversion... " >&6; }; echo "int main() { return 1; }" > conftest-Wno-int-conversion.c;
+ res=no
+ if $CC -Werror -Wno-int-conversion -c conftest-Wno-int-conversion.c > /dev/null 2>&1; then cfg_no_int_conversion="-Wno-int-conversion"; res=yes; fi;
+ { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $res" >&5
+printf "%s\n" "$res" >&6; }
+	 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking $CC supports -Wno-incompatible-pointer-types" >&5
+printf %s "checking $CC supports -Wno-incompatible-pointer-types... " >&6; }; echo "int main() { return 1; }" > conftest-Wno-incompatible-pointer-types.c;
+ res=no
+ if $CC -Werror -Wno-incompatible-pointer-types -c conftest-Wno-incompatible-pointer-types.c > /dev/null 2>&1; then cfg_no_incompatible_pointer_types="-Wno-incompatible-pointer-types"; res=yes; fi;
+ { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $res" >&5
+printf "%s\n" "$res" >&6; }
+	 LIB_CC_FLAGS="${cfg_no_int_conversion} ${cfg_no_incompatible_pointer_types}"
+
 
 # Check whether --enable-edit-gloop was given.
 if test ${enable_edit_gloop+y}
@@ -13438,7 +13456,9 @@ CC=$lt_save_CC
 
 
 # Enable extra warnings and -Werror if supported.
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking $CC supports -Wno-error=shift-negative-value" >&5
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking Strict options for C compiler" >&5
+printf %s "checking Strict options for C compiler... " >&6; }
+   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking $CC supports -Wno-error=shift-negative-value" >&5
 printf %s "checking $CC supports -Wno-error=shift-negative-value... " >&6; }; echo "int main() { return -1 << 1; }" > conftest-Wno-error=shift-negative-value.c;
  res=no
  if $CC -Werror -Wno-error=shift-negative-value -c conftest-Wno-error=shift-negative-value.c > /dev/null 2>&1; then cfg_no_shift_negative_value="-Wno-error=shift-negative-value"; res=yes; fi;
@@ -13450,8 +13470,6 @@ printf %s "checking $CC supports -Wno-sign-compare... " >&6; }; echo "" > confte
  if $CC -Werror -Wno-sign-compare -c conftest-Wno-sign-compare.c > /dev/null 2>&1; then cfg_no_sign_compare="-Wno-sign-compare"; res=yes; fi;
  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $res" >&5
 printf "%s\n" "$res" >&6; }
-   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking Strict options for C compiler" >&5
-printf %s "checking Strict options for C compiler... " >&6; }
 
    cfgSTRICTCFLAGS="-pedantic -std=c99 -Wall -Wextra -Werror -Wno-empty-body -Wno-enum-compare \
                     -Wno-missing-field-initializers -Wno-unused -Wno-unused-parameter \
@@ -13829,8 +13847,6 @@ fi
 
 
 # Git SHA1 hash as ld build-id.
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: gitid $gitid ld: $ld_has_build_id " >&5
-printf "%s\n" "$as_me: gitid $gitid ld: $ld_has_build_id " >&6;}
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking build id" >&5
 printf %s "checking build id... " >&6; }
 if test yes = "$ld_has_build_id" && test true = "$gitid"; then
