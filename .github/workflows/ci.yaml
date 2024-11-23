@@ -13,7 +13,7 @@ jobs:
       run: sudo apt-get install libgmp-dev debhelper fakeroot gcc-14
     - name: build
       run: dpkg-buildpackage -b -us -uc
-    -name: build-gcc-14
+    - name: build-gcc-14
       env:
           CC: gcc-14
       run: dpkg-buildpackage -b -us -uc
