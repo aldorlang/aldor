@@ -296,6 +296,7 @@ LIBOBJS = @LIBOBJS@
 LIBS = @LIBS@
 LIBTOOL = @LIBTOOL@
 LIBTOOL_DEPS = @LIBTOOL_DEPS@
+LIB_CC_FLAGS = @LIB_CC_FLAGS@
 LIPO = @LIPO@
 LN_S = @LN_S@
 LTLIBOBJS = @LTLIBOBJS@
@@ -398,7 +399,7 @@ other_files = al/libfoamlib.al
 aldorsrcdir = $(abs_top_srcdir)/aldor/src
 libfoamlib_a_SOURCES = $(libfoamlib_ALDOR)
 #CFLAGS=-Wno-error
-AM_CFLAGS = -I$(aldorsrcdir)
+AM_CFLAGS = -I$(aldorsrcdir) $(LIB_CC_FLAGS)
 noinst_LIBRARIES = libfoamlib.a
 all: all-recursive
 

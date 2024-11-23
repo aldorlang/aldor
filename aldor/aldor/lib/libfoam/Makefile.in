@@ -330,6 +330,7 @@ LIBOBJS = @LIBOBJS@
 LIBS = @LIBS@
 LIBTOOL = @LIBTOOL@
 LIBTOOL_DEPS = @LIBTOOL_DEPS@
+LIB_CC_FLAGS = @LIB_CC_FLAGS@
 LIPO = @LIPO@
 LN_S = @LN_S@
 LTLIBOBJS = @LTLIBOBJS@
@@ -442,7 +443,7 @@ runtime_CSOURCES = \
 	util.c		\
 	xfloat.c
 
-AM_CFLAGS = -I$(aldorsrcdir) -I ../../src -DFOAM_RTS
+AM_CFLAGS = -I$(aldorsrcdir) -I ../../src -DFOAM_RTS $(LIB_CC_FLAGS)
 
 #############################################################################
 # :: Built-in bigint
