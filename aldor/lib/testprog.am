@@ -27,6 +27,8 @@ ALDORFLAGS	:=				\
 	-Waudit -Wcheck				\
 	$(ALFLAGS)
 
+AM_CFLAGS = $(LIB_CC_FLAGS)
+
 # Aldor silent-rules
 AM_V_ALDOR = $(am__v_ALDOR_$(V))
 am__v_ALDOR_ = $(am__v_ALDOR_$(AM_DEFAULT_VERBOSITY))

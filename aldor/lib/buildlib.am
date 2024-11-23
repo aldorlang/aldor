@@ -13,7 +13,7 @@ AM_V_PREREQ = $(am__v_PREREQ_$(V))
 am__v_PREREQ_ = $(am__v_PREREQ_$(AM_DEFAULT_VERBOSITY))
 am__v_PREREQ_0 = @echo "  PREREQ   " $@;
 
-AM_CFLAGS = -I$(aldorsrcdir)
+AM_CFLAGS = -I$(aldorsrcdir) $(LIB_CC_FLAGS)
 
 lib$(libraryname).al: $(foreach i,$(SUBDIRS),$i/_sublib_$(libraryname).al)
 	$(AM_V_AR)		\

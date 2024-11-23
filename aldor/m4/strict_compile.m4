@@ -7,10 +7,9 @@ AC_DEFUN([ALDOR_CC_OPTION],
  AC_MSG_RESULT($res)])
 
 AC_DEFUN([ALDOR_STRICT_COMPILE],
-
-  [ALDOR_CC_OPTION(-Wno-error=shift-negative-value,cfg_no_shift_negative_value,int main() { return -1 << 1; })
-   ALDOR_CC_OPTION(-Wno-sign-compare,cfg_no_sign_compare)
-   AC_MSG_CHECKING(Strict options for C compiler)
+  [AC_MSG_CHECKING(Strict options for C compiler)
+   ALDOR_CC_OPTION(-Wno-error=shift-negative-value,cfg_no_shift_negative_value,int main() { return -1 << 1; })
+   ALDOR_CC_OPTION(-Wno-sign-compare, cfg_no_sign_compare)
 
    cfgSTRICTCFLAGS="-pedantic -std=c99 -Wall -Wextra -Werror -Wno-empty-body -Wno-enum-compare \
                     -Wno-missing-field-initializers -Wno-unused -Wno-unused-parameter \
@@ -29,3 +28,11 @@ AC_DEFUN([ALDOR_STRICT_COMPILE],
              cfgSTRICTCFLAGS="";;
     esac
    AC_MSG_RESULT(${CC})])
+
+AC_DEFUN([ALDOR_LIB_COMPILE],
+	[AC_MSG_CHECKING([Options for build library ..])
+	 ALDOR_CC_OPTION(-Wno-int-conversion,cfg_no_int_conversion, int main() { return 1; })
+	 ALDOR_CC_OPTION(-Wno-incompatible-pointer-types,cfg_no_incompatible_pointer_types, int main() { return 1; })
+	 LIB_CC_FLAGS="${cfg_no_int_conversion} ${cfg_no_incompatible_pointer_types}"
+	 AC_SUBST(LIB_CC_FLAGS)
+	 ])

@@ -24,7 +24,7 @@ runtime_CSOURCES =			\
 	util.c		\
 	xfloat.c
 
-AM_CFLAGS = -I$(aldorsrcdir) -I ../../src -DFOAM_RTS
+AM_CFLAGS = -I$(aldorsrcdir) -I ../../src -DFOAM_RTS $(LIB_CC_FLAGS)
 
 lib_LIBRARIES =
 

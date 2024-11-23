@@ -12,7 +12,7 @@ aldorsrcdir = $(abs_top_srcdir)/aldor/src
 
 libfoamlib_a_SOURCES=$(libfoamlib_ALDOR)
 #CFLAGS=-Wno-error
-AM_CFLAGS=-I$(aldorsrcdir)
+AM_CFLAGS=-I$(aldorsrcdir) $(LIB_CC_FLAGS)
 
 noinst_LIBRARIES=libfoamlib.a
 
