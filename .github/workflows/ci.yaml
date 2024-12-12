@@ -14,6 +14,20 @@ jobs:
     - name: build
       run: dpkg-buildpackage -b -us -uc
 
+    - name: Create artifact archives
+      run: |
+        cd debian && rm -rf aldor/DEBIAN && tar zcf aldor-linux-x86_64-${{ github.sha }}.tar.gz aldor/
+        mv aldor-linux-x86_64-${{ github.sha }}.tar.gz ../
+        mv ../../aldor_1.3.0+20190802_amd64.deb ../
+
+    - name: Upload Linux binaries
+      uses: actions/upload-artifact@v4
+      with:
+        name: aldor-linux-x86_64-binary
+        path: |
+          aldor-linux-x86_64-${{ github.sha }}.tar.gz
+          aldor_1.3.0+20190802_amd64.deb
+
 #  build-macos:
 #    runs-on: macos-10.15
 
