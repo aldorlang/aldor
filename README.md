@@ -1,4 +1,4 @@
-[![Aldor CI](https://github.com/gvanuxem/aldor/actions/workflows/ci.yaml/badge.svg)](https://github.com/gvanuxem/aldor/actions/workflows/ci.yaml)
+[![Aldor CI](https://github.com/aldorlang/aldor/actions/workflows/ci.yaml/badge.svg)](https://github.com/aldorlang/aldor/actions/workflows/ci.yaml)
 
 The Aldor Programming Language
 ==============================
