@@ -6119,7 +6119,7 @@ gc0Cast(FoamTag toType, Foam foam)
 
 	cc = gccExpr(foam);
 
-	if (toType == FOAM_Rec) toType = FOAM_Word;
+	if (toType == FOAM_Rec) toType = FOAM_Ptr;
 
 	if (fromType != FOAM_DFlo && toType == FOAM_DFlo) {
 		if (fromType != FOAM_Word) 
@@ -6191,7 +6191,7 @@ gc0TypeId(AInt t, AInt fmt)
 		break;
 	  case FOAM_Rec:
 		if (fmt == emptyFormatSlot)
-			cc = ccoTypeIdOf(gcFiWord);
+			cc = ccoTypeIdOf(gcFiPtr);
 		else
 			cc = ccoTypedefId(gc0VarId(gcFmtType, fmt));
 		break;
@@ -6446,7 +6446,7 @@ gc0Decl(Foam decl, CCode name)
 		 */
 		/*assert(fmt && fmt != emptyFormatSlot);*/
 		if (!fmt || fmt == emptyFormatSlot) {
-			ccType = gc0TypeId(FOAM_Word, emptyFormatSlot);
+			ccType = gc0TypeId(FOAM_Ptr, emptyFormatSlot);
 			ccDecl = ccoDecl(ccType, name);
 		}
 		else {
