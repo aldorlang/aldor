@@ -48,9 +48,10 @@ foamdir       = $(abs_top_builddir)/aldor/lib/libfoam
 aptests := exquo
 fmtests := rectest enumtest clos strtable1 simple apply \
 	   nestcond silly cexp lself0 selfcond lself \
-	   lself2 catdef2 args1a args1 args2a args2
+	   lself2 catdef2 args1a args1 args2a args2 \
+	   rec2
 ctests  := rectest enumtest multinever maptuple cimp1
-otests  := enumtest
+otests  := enumtest rec2
 xtests := enumtest jimport cross seq small
 
 out/ao/lself.ao: out/ao/lself0.ao
