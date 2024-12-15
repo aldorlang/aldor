@@ -1783,7 +1783,7 @@ gen0ApplySyme(FoamTag type, Syme syme, SImpl impl,
 	}
 	else if (gen0IsOpenCallable(syme, impl) &&
 		 listIsSingleton(gen0State->envFormatStack))
-		foam = gen0OCall(mtype, syme, argc, &args);
+		foam = gen0OCall(type, syme, argc, &args);
 	else
 		foam = gen0CCall(mtype, syme, argc, &args);
 
