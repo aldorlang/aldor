@@ -38,9 +38,6 @@
  */
 #define AXL_EDIT_1_1_12p6_07 1	/* tibupComma more cautious creating defs */
 
-#define AXL_EDIT_1_1_12p6_04 1	/* inlining limit now user-defined */
-
-
 /************************************************************************
  * Dead edits: DON'T use unless you have a really good reason ...
  ************************************************************************/

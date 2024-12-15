@@ -509,19 +509,11 @@ extern int optInlineRoof;
 		 */
 		priCall = (InlPriCall) priqExtractMin(inlProg->priq, &priority);
 
-#if AXL_EDIT_1_1_12p6_04
 		if (priority > 0
 		    && (inlProg->size > optInlineRoof ||
 			flogBlockC(inlProg->flog) > InlFlogCutOff)
 		    && !genIsRuntime() && !optIsMaxLevel())
 			break;
-#else
-		if (priority > 0
-		    && (inlProg->size > InlProgCutOff ||
-			flogBlockC(inlProg->flog) > InlFlogCutOff)
-		    && !genIsRuntime() && !optIsMaxLevel())
-			break;
-#endif
 
 		if (priority > 0 &&
 		    inlSizeLimit != -1) {
