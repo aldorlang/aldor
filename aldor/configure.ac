@@ -30,6 +30,10 @@ if test x"$YACC" = "xyacc"; then
        fi
 fi
 
+# Check for sbcl - other lisps ought to work but for testing just one will do.
+
+AC_CHECK_PROG([SBCL_EXISTS], [sbcl], [yes], [no])
+
 GC=aldor
 # Check for GMP
 AC_CHECK_HEADER([gmp.h],
@@ -67,6 +71,21 @@ AC_ARG_ENABLE([documentation],
             [AS_HELP_STRING([--enable-documentation], [Generate documentation - requires latex])],
 	    [],
 	    [enable_documentation=no])
+
+AC_ARG_ENABLE([lisp-tests],
+	    [AS_HELP_STRING([--enable-lisp-tests], [Include Lisp (SBCL only) integration tests])],
+	    [BUILD_LISP=yes],
+	    [BUILD_LISP=no])
+AC_SUBST([BUILD_LISP])
+
+AC_MSG_NOTICE([SBCL $SBCL_EXISTS])
+if test x"$BUILD_LISP" = xyes -a ! x"$SBCL_EXISTS" = xyes; then
+    AC_MSG_ERROR([Lisp enabled, but sbcl not available $SBCL_EXISTS $BUILD_LISP])
+elif test x"$BUILD_LISP" = xyes; then
+    AC_MSG_NOTICE([Lisp tests enabled])
+else
+    AC_MSG_NOTICE([Lisp tests disabled])
+fi
 
 AX_LIB_READLINE
 ALDOR_STRICT_COMPILE
