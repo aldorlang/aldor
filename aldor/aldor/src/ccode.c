@@ -347,7 +347,7 @@ ccoPr(CCode cco)
 		{
 	         	if (wrote_fputc == 0)
 			{
-	                	cc += ccoPutsFileOnly("extern int fputc(); /* Signature patched in ccode.c:ccoPr */");
+				cc += ccoPutsFileOnly("extern int fputc(FiWord, FiWord); /* Signature patched in ccode.c:ccoPr [1]*/");
 				wrote_fputc = 1;
 			}
 		}
@@ -355,13 +355,13 @@ ccoPr(CCode cco)
 		{
 	         	if (wrote_fputc == 0)
 			{
-	                	cc += ccoPutsFileOnly("extern int fputc(FiWord P0, FiWord P1); /* Signature patched in ccode.c:ccoPr */");
+				cc += ccoPutsFileOnly("extern int fputc(FiWord P0, FiWord P1); /* Signature patched in ccode.c:ccoPr [2] */");
 				wrote_fputc = 1;
 			}
 		}
                 else if (strcmp(BufferOutput,"extern FiWord fputs();") == 0)
                 {
-                        cc += ccoPutsFileOnly("extern int fputs(); /* Signature patched in ccode.c:ccoPr */");
+                        cc += ccoPutsFileOnly("extern int fputs(FiWord, FiWord); /* Signature patched in ccode.c:ccoPr [3]*/");
                 }
 		else
 		{
