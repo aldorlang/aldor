@@ -343,23 +343,6 @@ ccoPr(CCode cco)
 
                 /* dump the buffered output and stop the buffering */
 
-#if 0
-		cc += ccoPutsFileOnly("\n#if 0\n");
-		cc += ccoPutsFileOnly(BufferOutput);
-		cc += ccoPutsFileOnly("\n#endif\n");
-#endif
-#if 0
-		if (strcmp(BufferOutput,"extern FiWord fputc();\n") == 0)
-		{
-	         	if (wrote_fputc == 0)
-			{
-			       cc += ccoPutsFileOnly("extern int fputc(); /* Signature patched in ccode.c:ccoPr */ \n");
-				wrote_fputc = 1;
-			}
-		}
-		else 
-#endif
-		
 		if (strcmp(BufferOutput,"extern FiWord fputc();") == 0)
 		{
 	         	if (wrote_fputc == 0)
