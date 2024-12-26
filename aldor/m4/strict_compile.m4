@@ -32,7 +32,8 @@ AC_DEFUN([ALDOR_STRICT_COMPILE],
 AC_DEFUN([ALDOR_LIB_COMPILE],
 	[AC_MSG_CHECKING([Options for build library ..])
 	 ALDOR_CC_OPTION(-Wno-int-conversion,cfg_no_int_conversion, int main() { return 1; })
+	 ALDOR_CC_OPTION(-Wno-builtin-declaration-mismatch,cfg_no_builtin_mismatch, int main() { return 1; })
 	 ALDOR_CC_OPTION(-Wno-incompatible-pointer-types,cfg_no_incompatible_pointer_types, int main() { return 1; })
-	 LIB_CC_FLAGS="${cfg_no_int_conversion} ${cfg_no_incompatible_pointer_types}"
+	 LIB_CC_FLAGS="${cfg_no_builtin_mismatch} ${cfg_no_incompatible_pointer_types}"
 	 AC_SUBST(LIB_CC_FLAGS)
 	 ])

@@ -7,6 +7,11 @@
 --> testgen l
 --> testrun -l axllib
 
+Machine: with
+    Ptr: Type
+== add
+    Ptr: Type == add
+
 export
 	Type:	      	Type
 	Tuple:		Type -> Type
@@ -15,9 +20,9 @@ export
 	String:		Type
 
 import
-	puts:     	(String) -> ()
+	puts:     	(Ptr$Machine) -> ()
 from Foreign C "<stdio.h>"
 
-string (s: Literal): String          == s pretend String
-
-puts "42 Skidoo"
+string (l: Literal): String          == l pretend String
+ptr(s: String): Ptr$Machine == s pretend Ptr$Machine
+puts(ptr("42 Skidoo"))
