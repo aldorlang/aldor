@@ -5300,13 +5300,19 @@ printf %s "checking $CC supports -Wno-int-conversion... " >&6; }; echo "int main
  if $CC -Werror -Wno-int-conversion -c conftest-Wno-int-conversion.c > /dev/null 2>&1; then cfg_no_int_conversion="-Wno-int-conversion"; res=yes; fi;
  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $res" >&5
 printf "%s\n" "$res" >&6; }
+	 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking $CC supports -Wno-builtin-declaration-mismatch" >&5
+printf %s "checking $CC supports -Wno-builtin-declaration-mismatch... " >&6; }; echo "int main() { return 1; }" > conftest-Wno-builtin-declaration-mismatch.c;
+ res=no
+ if $CC -Werror -Wno-builtin-declaration-mismatch -c conftest-Wno-builtin-declaration-mismatch.c > /dev/null 2>&1; then cfg_no_builtin_mismatch="-Wno-builtin-declaration-mismatch"; res=yes; fi;
+ { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $res" >&5
+printf "%s\n" "$res" >&6; }
 	 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking $CC supports -Wno-incompatible-pointer-types" >&5
 printf %s "checking $CC supports -Wno-incompatible-pointer-types... " >&6; }; echo "int main() { return 1; }" > conftest-Wno-incompatible-pointer-types.c;
  res=no
  if $CC -Werror -Wno-incompatible-pointer-types -c conftest-Wno-incompatible-pointer-types.c > /dev/null 2>&1; then cfg_no_incompatible_pointer_types="-Wno-incompatible-pointer-types"; res=yes; fi;
  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $res" >&5
 printf "%s\n" "$res" >&6; }
-	 LIB_CC_FLAGS="${cfg_no_int_conversion} ${cfg_no_incompatible_pointer_types}"
+	 LIB_CC_FLAGS="${cfg_no_builtin_mismatch} ${cfg_no_incompatible_pointer_types}"
 
 
 # Check whether --enable-edit-gloop was given.
