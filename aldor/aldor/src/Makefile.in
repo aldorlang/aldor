@@ -1162,7 +1162,7 @@ testall_SOURCES = \
 
 testall_LDADD = libphase.a libstruct.a libgen.a libport.a -lm
 testall_LDFLAGS = 
-testall_CFLAGS = -save-temps $(STRICTCFLAGS)
+testall_CFLAGS = $(STRICTCFLAGS)
 tmpdir = $(abs_top_builddir)/build/tmp
 toolexedir = $(abs_top_builddir)/aldor/tools/unix
 

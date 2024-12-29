@@ -391,6 +391,7 @@ top_srcdir = @top_srcdir@
 
 # Install aldor wrapper script.
 bin_SCRIPTS = aldor gdb-aldor
+AM_CFLAGS = $(STRICTCFLAGS) -Wno-implicit-function-declaration
 msgcat_SOURCES = msgcat.c
 
 # zacc: Parser generator with parameterized rules. Preprocessor
