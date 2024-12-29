@@ -307,7 +307,9 @@ scanMsg(infile)
 			case 'b':  c = '\b'; break;
 			case 'r':  c = '\r'; break;
 			case 'f':  c = '\f'; break;
-			case EOF:  scanError("End of file in escape sequence.");
+			case EOF:
+				scanError("End of file in escape sequence.");
+				break;
 			default:   if (c != quoteChar && c != '\\')
 					scanError("Bad escape sequence.");
 				   break;
