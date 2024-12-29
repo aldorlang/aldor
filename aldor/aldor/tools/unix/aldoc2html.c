@@ -237,7 +237,7 @@ static int doinput(char *name, FILE *fpout, int verbose, int exmacro)
 
 static int doexpand0(FILE *fpout, char *s, int verbose, int exmacro)
 {
-	char name[MAXLINE], name2[MAXLINE];
+	char name[MAXLINE-50], name2[MAXLINE-50];
 	/*FILE *fpin = NULL;*//*unused*/
 	int i, err = 0, shortthis;
 	if (macrocheck(s, INPUT, NINPUT)) {	/* \input something */
@@ -260,8 +260,8 @@ static int doexpand0(FILE *fpout, char *s, int verbose, int exmacro)
 				getarg(name, &(s[NASPAGE]));
 				killLastChar(name, '}');
 				strcpy(macroname, name);
-				sprintf(macrosig, "\\nsignature{%s}",name);
-				sprintf(macroconst, "\\alsignature{%s}",name);
+				sprintf(macrosig, "\\nsignature{%s}", name);
+				sprintf(macroconst, "\\alsignature{%s}", name);
 				if (verbose)
 					fprintf(stderr,"\\name --> %s\n", name);
 				fprintf(fpout, "\\alhtmltarget{%s}{%s}\n",
@@ -291,8 +291,8 @@ static int doexpand0(FILE *fpout, char *s, int verbose, int exmacro)
 				killLastChar(name2, '}');
 				strcpy(macrothis, name2);
 				if (!shortthis) strcpy(macroshortthis, name2);
-				sprintf(macroasexp, "\\alfunc{%s}", name2);
-				sprintf(macroastarget,
+				snprintf(macroasexp, MAXLINE, "\\alfunc{%s}", name2);
+				snprintf(macroastarget, MAXLINE,
 						"\\alhtmltarget{%s}", name2);
 				if (verbose) {
 					fprintf(stderr, "\\shortthis --> %s\n",
