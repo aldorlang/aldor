@@ -1,4 +1,6 @@
 
+AM_CFLAGS=$(STRICTCFLAGS)
+
 noinst_PROGRAMS     = testaldor
 
 testaldor_sources = testaldor.c tx_opsys.c 
