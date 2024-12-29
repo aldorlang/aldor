@@ -2054,7 +2054,7 @@ tfSatParents(SatMask mask, SymeList mods, AbSyn Sab, SymeList S, SymeList T)
 	SymeList	queue = listNil(Syme);
 	SymeTSet        oldTbl = tsetCreateCustom(Syme)(symeHashFn, symeEqual);
 	int		serialThis;
-	int		iterThis;
+	int		iterThis = 0;
 
 	tfsSerialNo += 1;
 	serialThis = tfsSerialNo;
