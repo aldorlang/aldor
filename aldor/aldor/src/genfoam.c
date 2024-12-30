@@ -1849,10 +1849,6 @@ gen0ApplyForeign(FoamTag type, Syme syme, Length argc, Foam **pargv)
 	Foam	foam;
 	FoamTag objTag = type;
 
-	if (symeForeign(syme)->protocol == FOAM_Proto_C) {
-		AInt fmt;
-		objTag = gen0CSigType(tfMapRet(symeType(syme)), &fmt);
-	}
 	/* printf("BDS: Inside gen0ApplyForeign\n"); */
 
 	foam = foamNewEmpty(FOAM_PCall, TypeSlot + OpSlot + ProtoSlot + argc);
@@ -1862,9 +1858,6 @@ gen0ApplyForeign(FoamTag type, Syme syme, Length argc, Foam **pargv)
 
 	*pargv = foam->foamPCall.argv;
 
-	if (objTag != type) {
-		foam = foamNewCast(type, foam);
-	}
 	return foam;
 }
 
@@ -3439,15 +3432,25 @@ gen0CPackedSigFormatNumber(TForm tf)
 	}
 
 	ddecl->foamDDecl.argv[argc + 0] = foamNewDecl(FOAM_Nil, strCopy(""), emptyFormatSlot);
-	/* Process any multiple return values */
-	for (i = 0; i < retc; i++) {
-		char *str;
-		FoamTag rtype = FOAM_Ptr; /* Always a pointer */
-		AInt fmt = emptyFormatSlot;
-		str = aStrPrintf("R%d", (int) i);
-		ddecl->foamDDecl.argv[argc + 1 + i] = foamNewDecl(rtype, str, fmt);
-	}
+	if (retc == 1) {
+		TForm tfr;
+		FoamTag type;
+		AInt fmt;
 
+		tfr = tfRawType(tfMapRet(tf));
+		type = gen0Type(tfr, &fmt);
+		ddecl->foamDDecl.argv[argc+1] = foamNewDecl(type, strCopy(""), fmt);
+	}
+	/* Process any multiple return values */
+	else {
+		for (i = 0; i < retc; i++) {
+			char *str;
+			FoamTag rtype = FOAM_Ptr; /* Always a pointer */
+			AInt fmt = emptyFormatSlot;
+			str = aStrPrintf("R%d", (int) i);
+			ddecl->foamDDecl.argv[argc + 1 + i] = foamNewDecl(rtype, str, fmt);
+		}
+	}
 	return gen0AddRealFormat(ddecl);
 }
 

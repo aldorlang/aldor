@@ -3,7 +3,8 @@ AC_DEFUN([ALDOR_SBRK_OPTION],
 [AC_MSG_CHECKING(Determining source for sbrk)
 cat > conftest_sbrk.c << EOF
 #include <unistd.h>
-int main() { sbrk(3); }
+int main(int argc, char **argv);
+int main(int argc, char **argv) { sbrk(3); }
 EOF
 case ${host_os} in
   darwin*) sbrk_opt=_SBRK_NOT_NEEDED;;

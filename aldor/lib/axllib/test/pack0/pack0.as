@@ -33,7 +33,8 @@ main () : () == {
 	import from DF;
 	inline from DF;
 
-	print << dbltimes(2.1, 3.2) << newline;
+	dbltimes(2.0, 4.0) = 8.0 => return;
+	never
 }
 
 main();

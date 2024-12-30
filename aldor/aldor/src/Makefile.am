@@ -318,7 +318,7 @@ testall_SOURCES =	\
 	axlcomp.c
 testall_LDADD = libphase.a libstruct.a libgen.a libport.a -lm
 testall_LDFLAGS = 
-testall_CFLAGS = -save-temps $(STRICTCFLAGS)
+testall_CFLAGS = $(STRICTCFLAGS)
 
 CFLAGS=-O0 -g
 

@@ -5292,6 +5292,54 @@ fi
     fi
   fi
 
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking Strict options for C compiler" >&5
+printf %s "checking Strict options for C compiler... " >&6; }
+   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking $CC supports -Wno-error=shift-negative-value" >&5
+printf %s "checking $CC supports -Wno-error=shift-negative-value... " >&6; }; echo "int main() { return -1 << 1; }" > conftest-Wno-error=shift-negative-value.c;
+ res=no
+ if $CC -Werror -Wno-error=shift-negative-value -c conftest-Wno-error=shift-negative-value.c > /dev/null 2>&1; then cfg_no_shift_negative_value="-Wno-error=shift-negative-value"; res=yes; fi;
+ { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $res" >&5
+printf "%s\n" "$res" >&6; }
+   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking $CC supports -Wno-sign-compare" >&5
+printf %s "checking $CC supports -Wno-sign-compare... " >&6; }; echo "" > conftest-Wno-sign-compare.c;
+ res=no
+ if $CC -Werror -Wno-sign-compare -c conftest-Wno-sign-compare.c > /dev/null 2>&1; then cfg_no_sign_compare="-Wno-sign-compare"; res=yes; fi;
+ { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $res" >&5
+printf "%s\n" "$res" >&6; }
+   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking $CC supports -Wno-deprecated-non-prototype" >&5
+printf %s "checking $CC supports -Wno-deprecated-non-prototype... " >&6; }; echo "" > conftest-Wno-deprecated-non-prototype.c;
+ res=no
+ if $CC -Werror -Wno-deprecated-non-prototype -c conftest-Wno-deprecated-non-prototype.c > /dev/null 2>&1; then cfg_no_deprecated_non_prototype="-Wno-deprecated-non-prototype"; res=yes; fi;
+ { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $res" >&5
+printf "%s\n" "$res" >&6; }
+   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking $CC supports -Wno-strict-prototypes" >&5
+printf %s "checking $CC supports -Wno-strict-prototypes... " >&6; }; echo "" > conftest-Wno-strict-prototypes.c;
+ res=no
+ if $CC -Werror -Wno-strict-prototypes -c conftest-Wno-strict-prototypes.c > /dev/null 2>&1; then cfg_no_strict_prototypes="-Wno-strict-prototypes"; res=yes; fi;
+ { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $res" >&5
+printf "%s\n" "$res" >&6; }
+
+   cfgSTRICTCFLAGS="-pedantic -std=c99 -Wall -Wextra -Werror -Wno-empty-body -Wno-enum-compare \
+                    -Wno-missing-field-initializers -Wno-unused -Wno-unused-parameter \
+		    -Wno-error=format -Wno-error=type-limits -Wno-error=strict-aliasing \
+		    $cfg_no_sign_compare $cfg_no_shift_negative_value"
+   case "${CC}" in
+       gcc*)
+             cfgSTRICTCFLAGS="${cfgSTRICTCFLAGS} -Wno-error=clobbered"
+	     ;;
+       clang*)
+             cfgSTRICTCFLAGS="${cfgSTRICTCFLAGS} -fcolor-diagnostics -Wno-error=enum-conversion \
+				-Wno-error=tautological-compare -Wno-parentheses-equality \
+				$cfg_no_deprecated_non_prototype \
+				$cfg_no_strict_prototypes"
+	     ;;
+       *)
+             { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: Unknown C compiler ${CC}" >&5
+printf "%s\n" "$as_me: WARNING: Unknown C compiler ${CC}" >&2;}
+             cfgSTRICTCFLAGS="";;
+    esac
+   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: ${CC}" >&5
+printf "%s\n" "${CC}" >&6; }
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking Options for build library .." >&5
 printf %s "checking Options for build library ..... " >&6; }
 	 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking $CC supports -Wno-int-conversion" >&5
@@ -5300,13 +5348,20 @@ printf %s "checking $CC supports -Wno-int-conversion... " >&6; }; echo "int main
  if $CC -Werror -Wno-int-conversion -c conftest-Wno-int-conversion.c > /dev/null 2>&1; then cfg_no_int_conversion="-Wno-int-conversion"; res=yes; fi;
  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $res" >&5
 printf "%s\n" "$res" >&6; }
+	 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking $CC supports -Wno-builtin-declaration-mismatch" >&5
+printf %s "checking $CC supports -Wno-builtin-declaration-mismatch... " >&6; }; echo "int main() { return 1; }" > conftest-Wno-builtin-declaration-mismatch.c;
+ res=no
+ if $CC -Werror -Wno-builtin-declaration-mismatch -c conftest-Wno-builtin-declaration-mismatch.c > /dev/null 2>&1; then cfg_no_builtin_mismatch="-Wno-builtin-declaration-mismatch"; res=yes; fi;
+ { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $res" >&5
+printf "%s\n" "$res" >&6; }
 	 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking $CC supports -Wno-incompatible-pointer-types" >&5
 printf %s "checking $CC supports -Wno-incompatible-pointer-types... " >&6; }; echo "int main() { return 1; }" > conftest-Wno-incompatible-pointer-types.c;
  res=no
  if $CC -Werror -Wno-incompatible-pointer-types -c conftest-Wno-incompatible-pointer-types.c > /dev/null 2>&1; then cfg_no_incompatible_pointer_types="-Wno-incompatible-pointer-types"; res=yes; fi;
  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $res" >&5
 printf "%s\n" "$res" >&6; }
-	 LIB_CC_FLAGS="${cfg_no_int_conversion} ${cfg_no_incompatible_pointer_types}"
+	 LIB_CC_FLAGS="${cfg_no_builtin_mismatch} ${cfg_no_incompatible_pointer_types} ${cfg_no_deprecated_non_prototype}"
+
 
 
 # Check whether --enable-edit-gloop was given.
@@ -13456,45 +13511,12 @@ CC=$lt_save_CC
 
 
 # Enable extra warnings and -Werror if supported.
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking Strict options for C compiler" >&5
-printf %s "checking Strict options for C compiler... " >&6; }
-   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking $CC supports -Wno-error=shift-negative-value" >&5
-printf %s "checking $CC supports -Wno-error=shift-negative-value... " >&6; }; echo "int main() { return -1 << 1; }" > conftest-Wno-error=shift-negative-value.c;
- res=no
- if $CC -Werror -Wno-error=shift-negative-value -c conftest-Wno-error=shift-negative-value.c > /dev/null 2>&1; then cfg_no_shift_negative_value="-Wno-error=shift-negative-value"; res=yes; fi;
- { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $res" >&5
-printf "%s\n" "$res" >&6; }
-   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking $CC supports -Wno-sign-compare" >&5
-printf %s "checking $CC supports -Wno-sign-compare... " >&6; }; echo "" > conftest-Wno-sign-compare.c;
- res=no
- if $CC -Werror -Wno-sign-compare -c conftest-Wno-sign-compare.c > /dev/null 2>&1; then cfg_no_sign_compare="-Wno-sign-compare"; res=yes; fi;
- { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $res" >&5
-printf "%s\n" "$res" >&6; }
-
-   cfgSTRICTCFLAGS="-pedantic -std=c99 -Wall -Wextra -Werror -Wno-empty-body -Wno-enum-compare \
-                    -Wno-missing-field-initializers -Wno-unused -Wno-unused-parameter \
-		    -Wno-error=format -Wno-error=type-limits -Wno-error=strict-aliasing \
-		    $cfg_no_sign_compare $cfg_no_shift_negative_value"
-   case "${CC}" in
-       gcc*)
-             cfgSTRICTCFLAGS="${cfgSTRICTCFLAGS} -Wno-error=clobbered"
-	     ;;
-       clang*)
-             cfgSTRICTCFLAGS="${cfgSTRICTCFLAGS} -fcolor-diagnostics -Wno-error=enum-conversion \
-				-Wno-error=tautological-compare -Wno-parentheses-equality"
-	     ;;
-       *)
-             { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: Unknown C compiler ${CC}" >&5
-printf "%s\n" "$as_me: WARNING: Unknown C compiler ${CC}" >&2;}
-             cfgSTRICTCFLAGS="";;
-    esac
-   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: ${CC}" >&5
-printf "%s\n" "${CC}" >&6; }
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking Determining source for sbrk" >&5
 printf %s "checking Determining source for sbrk... " >&6; }
 cat > conftest_sbrk.c << EOF
 #include <unistd.h>
-int main() { sbrk(3); }
+int main(int argc, char **argv);
+int main(int argc, char **argv) { sbrk(3); }
 EOF
 case ${host_os} in
   darwin*) sbrk_opt=_SBRK_NOT_NEEDED;;

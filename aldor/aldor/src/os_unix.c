@@ -234,7 +234,9 @@ osDate(void)
 #if defined(OS_UNIX)
 #define OS_Has_PutEnv
 
-extern int	putenv(/* String */);
+/*
+ * Expect that putenv comes from include of stdlib.h
+ */
 
 int
 osPutEnv(String eqn)

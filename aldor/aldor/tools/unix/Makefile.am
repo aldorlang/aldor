@@ -1,6 +1,7 @@
 # Install aldor wrapper script.
 bin_SCRIPTS = aldor gdb-aldor
 
+AM_CFLAGS=$(STRICTCFLAGS) -Wno-implicit-function-declaration
 
 #tooldir= $(abs_top_builddir)/build/tools
 #tool_SCRIPTS=doaldor doas doaxiomxl docc dog++ dolatex domkmk	\

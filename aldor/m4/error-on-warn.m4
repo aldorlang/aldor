@@ -1,6 +1,5 @@
 
 AC_DEFUN([ALDOR_ERROR_ON_WARN],
-ALDOR_STRICT_COMPILE
 ALDOR_SBRK_OPTION
 
 [AC_MSG_CHECKING(what extra warning flags to pass to the C compiler)

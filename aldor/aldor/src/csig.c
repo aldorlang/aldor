@@ -14,6 +14,7 @@ csigNew(FoamList args, FoamList rets)
 	ddecl = foamNewDDecl(FOAM_DDecl, 1 + argc + 1 + retc);
 	ddecl->foamDDecl.usage = FOAM_DDecl_CSig;
 
+	i = 0;
 	listIter(Foam, argDecl, args, {
 		ddecl->foamDDecl.argv[i++] = argDecl;
 		});

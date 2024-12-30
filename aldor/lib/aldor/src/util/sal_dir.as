@@ -1,6 +1,7 @@
 #include "aldor"
 #pile
 
+BPtr ==> Ptr$Machine
 
 Directory: with
     open: String -> %
@@ -9,20 +10,20 @@ Directory: with
     readName: % -> Partial String
     listDirectory: String -> List FileName
 == add
-    Rep == Pointer
+    Rep ==> BPtr
     import
-        readdir: Pointer -> Pointer
-	opendir: String -> Pointer
-	closedir: Pointer -> MachineInteger
+        readdir: BPtr -> BPtr
+	opendir: BPtr -> BPtr
+	closedir: BPtr -> MachineInteger
     from Foreign C "<dirent.h>"
     import
-        direntName: Pointer -> Pointer
+        direntName: BPtr -> BPtr
     from Foreign C "aldorlib.h"
 
-    open(p: String): % == per opendir(p)
+    open(p: String): % == per opendir(p pretend BPtr)
     read(dir: %): Partial Pointer ==
         import from Pointer
-        ptr := readdir(rep dir)
+        ptr := readdir(rep dir) pretend Pointer
 	nil? ptr => failed
 	[ptr]
 
@@ -30,9 +31,9 @@ Directory: with
         import from Partial Pointer, String
         ent := read dir
 	failed? ent => failed
-        [copy(direntName(retract ent) pretend String)]
+        [copy(direntName( (retract ent) pretend BPtr) pretend String)]
 
-    close(dir: %): () == closedir(dir pretend Pointer)
+    close(dir: %): () == closedir(dir pretend BPtr)
 
     listDirectory(path: String): List FileName ==
         import from Partial String, FileName
