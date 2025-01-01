@@ -201,7 +201,7 @@ jflowFlipNegates(FlowGraph flog)
 
 
 		/* Only want to process if statements */
-		if ((bb->kind) != FOAM_If) continue;
+		if (!bbIsIfStmt(bb)) continue;
 
 
 		/* Extract the controlling statement */
