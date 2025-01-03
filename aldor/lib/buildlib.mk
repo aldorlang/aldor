@@ -227,7 +227,11 @@ $(patsubst %, java-%, $(_javalibrary)): java-%: aldorcode/%.class
 endif
 endif
 
+ifneq ($(WITH_INTERP_TESTS),)
 aldorinterptests := $(patsubst %,%-aldortest-exec-interp,$(filter-out $(interp_test_blacklist), library))
+else
+aldorinterptests :=
+endif
 
 $(aldorinterptests): %-aldortest-exec-interp: Makefile
 	$(AM_V_ALDORTEST) \

@@ -512,6 +512,14 @@ XFAIL_TESTS =	\
 RESOLVED = \
 	bug814
 
+if ! WITH_ALDOR_INTERP_TESTS
+XFAIL_TESTS += \
+	bug1099/bug1099	\
+	t1099/t1099	\
+	genops/genops	\
+	#
+endif
+
 include ../../testprog.am
 
 pack0_pack0_SOURCES += pack0/packfns.c
