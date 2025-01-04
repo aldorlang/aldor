@@ -110,16 +110,15 @@ args1_AXLFLAGS =
 args2_AXLFLAGS =
 
 _aptests := $(sort $(aptests))
-_ctests  := $(sort $(ctests)  $(otests))
-
-_jruntests  := $(if $(BUILD_JAVA),$(sort $(jruntests)),)
+_jruntests  := $(if $(BUILD_JAVA), $(sort $(jruntests)),)
 _junittests := $(if $(BUILD_JAVA), $(sort $(junittests)),)
 _jtests     := $(if $(BUILD_JAVA), $(sort $(jtests) $(_jruntests)),)
-_xtests  := $(sort $(xtests))
-_fmtests := $(sort $(fmtests) $(_jtests) $(_ctests))
-_otests  := $(sort $(otests) $(x_extra) $(_xtests))
-_ctests  := $(sort $(ctests)  $(_otests))
-_aotests := $(sort $(_fmtests) $(_ctests) $(_xtests))
+_xtests     := $(sort $(xtests))
+_otests     := $(sort $(otests) $(_xtests))
+_ctests     := $(sort $(ctests) $(_otests))
+_fmtests    := $(sort $(fmtests) $(_jtests) $(_ctests))
+_aotests    := $(sort $(_fmtests) $(_ctests) $(_xtests))
+_alltests   := $(sort $(_aptests) $(_fmtests) $(_ctests) $(_otests) $(_xtests) $(_jtests))
 
 nfile := -Nfile=$(aldorsrcdir)/aldor.conf
 
