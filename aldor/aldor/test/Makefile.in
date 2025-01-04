@@ -55,14 +55,14 @@ ctests  := rectest enumtest multinever maptuple cimp1
 otests  := enumtest rec2
 xtests := enumtest jimport cross seq small
 
+jtests := simple_j enumtest run_j halt
+junittests := JExportTest JThrowTest
+jruntests := small jimport jimport_opt jimp0 jimp1 jlist jexport jexport1 jexport2 envname jexn jthrow
+
 out/ao/lself.ao: out/ao/lself0.ao
 out/ao/lself2.ao: out/ao/lself0.ao
 out/ao/args1.ao: out/ao/args1a.ao
 out/ao/args2.ao: out/ao/args2a.ao
-
-@BUILD_JAVA_TRUE@jtests := simple_j enumtest run_j halt
-@HAS_JUNIT_TRUE@junittests := JExportTest JThrowTest
-@BUILD_JAVA_TRUE@jruntests := small jimport jimport_opt jimp0 jimp1 jlist jexport jexport1 jexport2 envname jexn jthrow
 
 x_extra := rtexns
 
@@ -109,9 +109,9 @@ args2_AXLFLAGS =
 _aptests := $(sort $(aptests))
 _ctests  := $(sort $(ctests)  $(otests))
 
-_jruntests := $(sort $(jruntests))
-_junittests := $(sort $(junittests))
-_jtests  := $(sort $(jtests) $(_jruntests))
+_jruntests  := $(if $(BUILD_JAVA),$(sort $(jruntests)),)
+_junittests := $(if $(BUILD_JAVA), $(sort $(junittests)),)
+_jtests     := $(if $(BUILD_JAVA), $(sort $(jtests) $(_jruntests)),)
 _xtests  := $(sort $(xtests))
 _fmtests := $(sort $(fmtests) $(_jtests) $(_ctests))
 _otests  := $(sort $(otests) $(x_extra) $(_xtests))
