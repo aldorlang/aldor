@@ -300,13 +300,15 @@ check-makefile:
 #
 # :: Automake requires this little lot
 #
-mostlyclean: 
+mostlyclean:
 	rm -rf $(builddir)/out
-	rm -f $(patsubst %,%.o,$(_otests))
-
+	rm -f $(patsubst %,%.o,$(utils) $(_otests))
+	rm -f $(patsubst %,%.exe,$(_xtests))
 clean: mostlyclean
-distclean: clean 
+
+distclean: clean
 	rm Makefile
+
 maintainer-clean: distclean
 
 
