@@ -4,5 +4,5 @@ AC_DEFUN([ALDOR_JAVA_TESTS],
 		  [HAS_JUNIT=yes], [HAS_JUNIT=no])
 AC_SUBST([JUNIT_JAR])
 AC_SUBST([HAS_JUNIT])
-AM_CONDITIONAL(HAS_JUNIT, test $BUILD_JAVA = true -a $HAS_JUNIT != no)
+AM_CONDITIONAL(HAS_JUNIT, test "x$enable_java" = xyes -a x"$HAS_JUNIT" != xno)
 ])

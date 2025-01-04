@@ -51,14 +51,14 @@ AC_CHECK_PROGS([JAVAC], [javac], [no])
 AC_ARG_ENABLE([java],
               [AS_HELP_STRING([--disable-java],
                               [Do not build Aldor Java libraries])],
-              [BUILD_JAVA=false],
-              [BUILD_JAVA=true])
+              [],
+              [enable_java=yes])
+AM_CONDITIONAL(BUILD_JAVA,test "x$JAVAC" != "xno" -a "x$enable_java" = xyes)
 
 AC_ARG_WITH([java-junit],
              [AS_HELP_STRING([--with-java-junit], [specify location of junit jar file])],
 	     [JUNIT_JAR=$withval], [JUNIT_JAR=/usr/share/java/junit4.jar])
 
-AM_CONDITIONAL(BUILD_JAVA, test $JAVAC != no -a $BUILD_JAVA = true)
 
 AC_ARG_WITH([boehm-gc],
             [AS_HELP_STRING([--with-boehm-gc],
@@ -78,6 +78,7 @@ AC_ARG_ENABLE([lisp-tests],
 	    [BUILD_LISP=no])
 AC_SUBST([BUILD_LISP])
 
+AC_MSG_NOTICE([JAVA $BUILD_JAVA unit tests: $JUNIT_JAR])
 AC_MSG_NOTICE([SBCL $SBCL_EXISTS])
 if test x"$BUILD_LISP" = xyes -a ! x"$SBCL_EXISTS" = xyes; then
     AC_MSG_ERROR([Lisp enabled, but sbcl not available $SBCL_EXISTS $BUILD_LISP])
