@@ -170,7 +170,7 @@ $(patsubst %, %.o, $(_otests)): %.o: out/ao/%.ao
 	$(AM_V_ALDOR_OBJ)		\
 	mkdir -p $$(dirname $@);	\
 	$(AM_DBG) $(aldorexedir)/aldor $(nfile) 	\
-			      -Ccc=$(aldortooldir)/unicl	\
+			      -Ccc=$(aldortooldir)/unicl \
 			      -Cargs="-Wconfig=$(aldorsrcdir)/aldor.conf $(UNICLFLAGS) -I$(aldorsrcdir)" \
 			      -Fo=$(builddir)/$@ $<
 
