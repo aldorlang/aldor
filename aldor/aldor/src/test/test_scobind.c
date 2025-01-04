@@ -13,12 +13,6 @@ local void testScobindCondition(void);
 local void testScobindConditionMulti(void);
 local void testScobindExtends(void);
 
-/* XXX: from test_tinfer.c */
-void init(void);
-void fini(void);
-void initFile(void);
-void finiFile(void);
-
 void
 scobindTest(void)
 {

@@ -17,12 +17,6 @@ local void testStabIsChild();
 
 local void testTFormCascadedImport();
 
-/* XXX: from test_tinfer.c */
-void init(void);
-void fini(void);
-void initFile();
-void finiFile();
-
 void stabTest()
 {
 	init();

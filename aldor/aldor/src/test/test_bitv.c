@@ -8,10 +8,6 @@ local void testBitvToInt();
 local void testBitvCount();
 local void testBInt();
 
-/* XXX: from test_tinfer.c */
-void init(void);
-void fini(void);
-
 void
 bitvTestSuite()
 {

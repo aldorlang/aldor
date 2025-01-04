@@ -16,12 +16,6 @@
 local void testSymeSExpr();
 local void testSymeAddCondition();
 
-/* XXX: from test_tinfer.c */
-void init(void);
-void fini(void);
-void initFile(void);
-void finiFile(void);
-
 void
 symeTest()
 {

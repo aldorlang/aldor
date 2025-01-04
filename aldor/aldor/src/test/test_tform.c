@@ -19,12 +19,6 @@ local void testDependentExport(void);
 local void testEnum();
 local void testMachineInt();
 
-/* XXX: from test_tinfer.c */
-void init(void);
-void fini(void);
-void initFile(void);
-void finiFile(void);
-
 void
 tformTest(void)
 {

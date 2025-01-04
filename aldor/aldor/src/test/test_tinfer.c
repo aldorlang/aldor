@@ -20,12 +20,6 @@
 #include "comsg.h"
 #include "sexpr.h"
 
-/* XXX: from test_tinfer.c */
-void init(void);
-void fini(void);
-void initFile(void);
-void finiFile(void);
-
 void testSelfTInfer();
 void testSimpleTInfer();
 void testConditionalTInfer();
@@ -39,14 +33,6 @@ void testTinferMutualReference();
 void testTinferValueConditional();
 void testTinferValueConditionalAliased();
 void testTinferImport();
-
-AbSyn stdtypes();
-
-void init(void);
-void fini(void);
-
-void initFile();
-void finiFile();
 
 void tinferTest()
 {

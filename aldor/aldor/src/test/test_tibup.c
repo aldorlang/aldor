@@ -20,12 +20,6 @@ local void testTiBupApplyMixed();
 local void testTiBupApplyImplicit();
 local void testTiBupApplyErrorOnArg();
 
-/* XXX: from test_tinfer.c */
-void init(void);
-void fini(void);
-void initFile(void);
-void finiFile(void);
-
 void
 tibupTest()
 {
