@@ -16,6 +16,7 @@ subdir = aldor/test
 JUNIT_JAR = @JUNIT_JAR@
 
 include $(top_srcdir)/mk/step.mk
+include $(top_builddir)/lib/config.mk
 
 $(call am_define_steps,\
     ALDOR ALDOR_AP ALDOR_CMD ALDOR_EXE ALDOR_FM ALDOR_GENC \
