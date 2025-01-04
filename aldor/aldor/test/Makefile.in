@@ -142,14 +142,14 @@ javaopts=-cp $(abs_top_builddir)/aldor/lib/java/src/foamj.jar
 define java_import_dependency_template
 out/java/aldorcode/$1.class: $(patsubst %,out/java/%.java,$(subst .,/,$($(1)_srcjava)))
 $(1)_srcjava:
-	echo $(1) $($(1)_srcjava) $(patsubst %,out/java/%.java,$(subst .,/,$($(1)_srcjava)))
+	echo $(1) $($(1)-srcjava) $(patsubst %,out/java/%.java,$(subst .,/,$($(1)_srcjava)))
 endef
 
 define junit_class_dependency_template
-out/java/aldorcode/$1.class: $(patsubst %,out/java/aldorcode/%.java,$(subst .,/,$($(1)_classes)))
+out/java/$1.class: $(patsubst %,out/java/%.class,$(subst .,/,$($(1)_classes)))
 endef
 
-$(foreach jtest,$(_jtests), $(eval $(call java_import_dependency_template,$(jtest))))
+$(foreach jtest,$(utils) $(_jtests), $(eval $(call java_import_dependency_template,$(jtest))))
 $(foreach junit,$(_junittests), $(eval $(call junit_class_dependency_template,$(junit))))
 
 allsrcjava := $(foreach jtest,$(_jtests),$(patsubst %,out/java/%.java,$(subst .,/,$($(jtest)_srcjava))))
