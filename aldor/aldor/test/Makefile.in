@@ -37,6 +37,7 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 AM_DBG := $(if $(filter 1,$(DBG)), gdb --args, $(DBG))
 AM_DBG_J := $(if $(filter 1,$(DBG_J)), gdb --args, $(DBG_J))
 AM_DBG_C := $(if $(filter 1,$(DBG_C)), gdb --args, $(DBG_C))
+AM_DBG_FM := $(if $(filter 1,$(DBG_FM)), gdb --args, $(DBG_FM))
 
 aldorsrcdir   = $(abs_top_srcdir)/aldor/src
 aldorexedir   = $(abs_top_builddir)/aldor/src
