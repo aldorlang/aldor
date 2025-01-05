@@ -5447,8 +5447,8 @@ then :
 	   *) as_fn_error $? "bad value ${enableval} for --enable-edit-gloop" "$LINENO" 5
 	   esac
 else $as_nop
-  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: no gloop edit option supplied (delete me later)" >&5
-printf "%s\n" "$as_me: no gloop edit option supplied (delete me later)" >&6;}
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: no gloop edit option supplied" >&5
+printf "%s\n" "$as_me: no gloop edit option supplied" >&6;}
 
 fi
 
