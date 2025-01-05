@@ -131,8 +131,9 @@ Dnf: BooleanAlgebra with {
 
     normalForm(inexpr: LogicExpression): % == {
         e := removeNegations(inexpr);
-        e := distribution(e);
-        dnf := dnfFromNormalForm e;
+        de := distribution(e);
+        dnf := dnfFromNormalForm de;
+	--stdout << "Normal form " << inexpr << " ---> neg " << e << " --> de " << de << " --> dnf " << dnf << newline;
         dnf
     }
 
@@ -246,30 +247,27 @@ test(): () ==
     dnf := normalForm l;
     stdout << l << " --> " << dnf << newline;
 
+    l := _and(expression atom 1, _and(expression atom 2, _or(expression atom 1, expression atom 2)))
+    dnf := normalForm l
+    stdout << l << " --> " << dnf << newline
 
-
-
-allExpressions(depth: Integer, nAtoms: Integer): HashSet LogicExpression == {
-    import from List SortedSet LogicExpression;
-    import from List LogicExpression;
-    import from LogicExpression;
-    import from IndexedAtom;
+allExpressions(depth: Integer, nAtoms: Integer): HashSet LogicExpression ==
+    import from List SortedSet LogicExpression
+    import from List LogicExpression
+    import from LogicExpression
+    import from IndexedAtom
     if depth = 0 then [expression atom n for n in 1..nAtoms]
-    else {
-        exprs: HashSet LogicExpression := allExpressions(depth - 1, nAtoms);
+    else
+        exprs: HashSet LogicExpression := allExpressions(depth - 1, nAtoms)
         for e in exprs repeat
-            stdout << e << newline;
-        hs := copy exprs;
-        for e in exprs | not not? e repeat insert!(hs, _not e);
-        for e1 in exprs repeat {
-            for e2 in exprs repeat {
-                insert!(hs, _and(e1, e2));
-                insert!(hs, _or(e1, e2));
-            }
-        }
+            stdout << e << newline
+        hs := copy exprs
+        for e in exprs | not not? e repeat insert!(hs, _not e)
+        for e1 in exprs repeat
+            for e2 in exprs repeat
+                insert!(hs, _and(e1, e2))
+                insert!(hs, _or(e1, e2))
         hs
-    }
-}
 
 --test();
 
