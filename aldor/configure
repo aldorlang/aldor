@@ -676,6 +676,8 @@ HAS_JUNIT_FALSE
 HAS_JUNIT_TRUE
 HAS_JUNIT
 JUNIT_JAR
+WITH_ALDOR_INTERP_TESTS_FALSE
+WITH_ALDOR_INTERP_TESTS_TRUE
 STRICTCFLAGS
 SBRK_OPT
 LIBTOOL_DEPS
@@ -834,6 +836,7 @@ with_java_junit
 with_boehm_gc
 enable_documentation
 enable_lisp_tests
+enable_interpreter_tests
 enable_edit_gloop
 enable_shared
 enable_static
@@ -1497,6 +1500,8 @@ Optional Features:
   --disable-java          Do not build Aldor Java libraries
   --enable-documentation  Generate documentation - requires latex
   --enable-lisp-tests     Include Lisp (SBCL only) integration tests
+  --disable-interpreter-tests
+                          Disable all tests via foam interpreter
   --enable-edit-gloop     Allow editing in -gloop repl
   --enable-shared[=PKGS]  build shared libraries [default=yes]
   --enable-static[=PKGS]  build static libraries [default=yes]
@@ -5439,6 +5444,23 @@ printf "%s\n" "$res" >&6; }
 	 LIB_CC_FLAGS="${cfg_no_builtin_mismatch} ${cfg_no_incompatible_pointer_types} ${cfg_no_deprecated_non_prototype}"
 
 
+
+disable_interp_tests=no
+# Check whether --enable-interpreter-tests was given.
+if test ${enable_interpreter_tests+y}
+then :
+  enableval=$enable_interpreter_tests; run_interp=yes;
+      case "${enableval}" in
+      	   yes) run_interp=yes;;
+	   no) run_interp=no;;
+	   *) as_fn_error $? "bad value ${enableval} for --run-interp-tests" "$LINENO" 5
+	   esac; set +x
+else $as_nop
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: no interpreter test option supplied" >&5
+printf "%s\n" "$as_me: no interpreter test option supplied" >&6;}
+     run_interp=yes
+
+fi
 
 # Check whether --enable-edit-gloop was given.
 if test ${enable_edit_gloop+y}
@@ -13656,6 +13678,19 @@ fi
 printf "%s\n" "$aldor_error_on_warning - ${STRICTCFLAGS}" >&6; }
 
 
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking run interpreter tests.." >&5
+printf %s "checking run interpreter tests..... " >&6; };
+  if test x"$run_interp" = xyes -a x"$disable_interp_tests" = xno; then run_tests=yes; else run_tests=no; fi;
+   if test x"$run_tests" = xyes; then
+  WITH_ALDOR_INTERP_TESTS_TRUE=
+  WITH_ALDOR_INTERP_TESTS_FALSE='#'
+else
+  WITH_ALDOR_INTERP_TESTS_TRUE='#'
+  WITH_ALDOR_INTERP_TESTS_FALSE=
+fi
+
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result:  Running interpreter tests: $run_tests .. disabled by other rules: $disable_interp_tests " >&5
+printf "%s\n" " Running interpreter tests: $run_tests .. disabled by other rules: $disable_interp_tests " >&6; }
 as_ac_File=`printf "%s\n" "ac_cv_file_$JUNIT_JAR" | $as_tr_sh`
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for $JUNIT_JAR" >&5
 printf %s "checking for $JUNIT_JAR... " >&6; }
@@ -14168,6 +14203,10 @@ Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${HAVE_BOEHM_GC_TRUE}" && test -z "${HAVE_BOEHM_GC_FALSE}"; then
   as_fn_error $? "conditional \"HAVE_BOEHM_GC\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${WITH_ALDOR_INTERP_TESTS_TRUE}" && test -z "${WITH_ALDOR_INTERP_TESTS_FALSE}"; then
+  as_fn_error $? "conditional \"WITH_ALDOR_INTERP_TESTS\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${HAS_JUNIT_TRUE}" && test -z "${HAS_JUNIT_FALSE}"; then
