@@ -1908,7 +1908,6 @@ tibupReference(Stab stab, AbSyn absyn, TForm type)
 	/* Check the body */
 	tibupRefArg(stab, body, tfUnknown);
 
-
 	/* Get the type of the Ref argument */
 	if (tfIsReference(type))
 		inner = tfReferenceArg(type);
