@@ -46,6 +46,7 @@ foamlibdir    = $(abs_top_builddir)/aldor/lib/libfoamlib
 foamsrcdir    = $(abs_top_srcdir)/aldor/lib/libfoam
 foamdir       = $(abs_top_builddir)/aldor/lib/libfoam
 
+utils := tassert rtexns
 aptests := exquo
 fmtests := rectest enumtest clos strtable1 simple apply \
 	   nestcond silly cexp lself0 selfcond lself \
@@ -120,22 +121,28 @@ _aotests := $(sort $(_fmtests) $(_ctests) $(_xtests))
 
 nfile := -Nfile=$(aldorsrcdir)/aldor.conf
 
-$(patsubst %, out/fm/%.fm, $(_fmtests)): out/fm/%.fm: out/ao/%.ao
+.PHONY: all-fm
+all-fm: $(patsubst %, out/fm/%.fm, $(utils) $(_fmtests))
+$(patsubst %, out/fm/%.fm, $(utils) $(_fmtests)): out/fm/%.fm: out/ao/%.ao
 	$(AM_V_ALDOR_FM)		\
 	mkdir -p $$(dirname $@);	\
-	$(aldorexedir)/aldor $(nfile) -Ffm=$(builddir)/$@ $<
+	$(AM_DBG_FM) $(aldorexedir)/aldor $(nfile) -Ffm=$(builddir)/$@ $<
 
-$(patsubst %, out/c/%.c, $(_ctests)): out/c/%.c: out/ao/%.ao
+$(patsubst %, out/c/%.c, $(utils) $(_ctests)): out/c/%.c: out/ao/%.ao
 	$(AM_V_ALDOR_GENC)		\
 	mkdir -p $$(dirname $@);	\
 	$(AM_DBG_C) $(aldorexedir)/aldor $(nfile) -Fc=$(builddir)/$@ $<
 
-$(patsubst %, out/java/aldorcode/%.java, $(_jtests)): out/java/aldorcode/%.java: out/fm/%.fm
+$(patsubst %, out/java/aldorcode/%.java, $(utils) $(_jtests)): out/java/aldorcode/%.java: out/fm/%.fm
 	$(AM_V_ALDOR_JAVA)		\
 	mkdir -p $$(dirname $@);	\
-	$(AM_DBG_J) $(aldorexedir)/aldor $(nfile) \
+	$(AM_DBG_J) $(aldorexedir)/aldor \
+                -Wcheck $(nfile) 	 \
 		$(if $(filter $(_jruntests), $*), -Jmain,) \
 		-Fjava=$(builddir)/out/java/$*.java $<
+
+$(patsubst %, %-javatest, $(_jtests)): out/java/aldorcode/tassert.class
+$(patsubst %, out/ao/%.ao, $(_aotests)): out/ao/tassert.ao
 
 javaopts=-cp $(abs_top_builddir)/aldor/lib/java/src/foamj.jar
 
@@ -158,16 +165,16 @@ $(allsrcjava): out/java/%.java: $(srcdir)/%.java
 	$(AM_V_JAVA_CP) \
 	(mkdir -p $(dir $@); cp $(srcdir)/$*.java $@)
 
-$(patsubst %, out/java/aldorcode/%.class, $(_jtests)): out/java/aldorcode/%.class: out/java/aldorcode/%.java
+$(patsubst %, out/java/aldorcode/%.class, $(utils) $(_jtests)): out/java/aldorcode/%.class: out/java/aldorcode/%.java
 	$(AM_V_JAVAC) \
-	(cd $(builddir)/out/java;  \
+	(mkdir -p $$(dirname $@); cd $(builddir)/out/java;  \
 	 javac $(javaopts) aldorcode/$*.java \
 			   $(addsuffix .java,$(subst .,/,$($*_extjava) $($*_srcjava))) \
 	)
 
 # Create .o files locally as unicl creates files in the
 # current directory...
-$(patsubst %, %.o, $(_otests)): %.o: out/ao/%.ao
+$(patsubst %, %.o, $(utils) $(_otests)): %.o: out/ao/%.ao
 	$(AM_V_ALDOR_OBJ)		\
 	mkdir -p $$(dirname $@);	\
 	$(AM_DBG) $(aldorexedir)/aldor $(nfile) 	\
@@ -185,6 +192,7 @@ define aldor_args
 	$(nfile) 		\
 	-Wcheck			\
 	-Y$(foamlibdir)/al	\
+	-Y out/ao		\
 	-I$(foamsrclibdir)/al	\
 	-lAxlLib=foamlib 		\
 	$(AXLFLAGS) $($*_AXLFLAGS)	\
@@ -200,8 +208,8 @@ $(patsubst %, out/ap/%.ap, $(_aotests)): out/ap/%.ap: %.as
 
 .PHONY: all-ao
 all-ao: $(patsubst %, out/ao/%.ao, $(_aotests))
-$(patsubst %, out/ao/%.ao, $(_aotests)): $(aldorexedir)/aldor
-$(patsubst %, out/ao/%.ao, $(_aotests)): out/ao/%.ao: %.as
+$(patsubst %, out/ao/%.ao, $(utils) $(_aotests)): $(aldorexedir)/aldor
+$(patsubst %, out/ao/%.ao, $(utils) $(_aotests)): out/ao/%.ao: %.as
 	$(AM_V_ALDOR)			\
 	mkdir -p $$(dirname $@);	\
 	$(AM_DBG) $(aldorexedir)/aldor $($*_opts) $(aldor_args)
@@ -213,7 +221,7 @@ $(patsubst %, out/ao/%.cmd, $(_aotests)): out/ao/%.cmd: %.as
 
 .PHONY: all-exe
 all-exe: $(patsubst %, %.exe, $(_xtests))
-$(patsubst %, %.exe, $(_xtests)): %.exe: %.o rtexns.o
+$(patsubst %, %.exe, $(_xtests)): %.exe: %.o rtexns.o tassert.o
 	$(AM_V_ALDOR_EXE)				\
 	rm -f $@;					\
 	$(AM_DBG) $(aldorexedir)/aldor $(nfile) 	\
@@ -222,7 +230,7 @@ $(patsubst %, %.exe, $(_xtests)): %.exe: %.o rtexns.o
 		      -Y$(foamlibdir)			\
 		      -Lfoamlib				\
 		      -Cargs="-Wconfig=$(aldorsrcdir)/aldor.conf -I$(aldorsrcdir) $(UNICLFLAGS)" \
-		      -Fx=$@ out/ao/$*.ao rtexns.o
+		      -Fx=$@ out/ao/$*.ao rtexns.o tassert.o
 
 #		      -Fmain=bobthebuilder.c		\
 
@@ -232,6 +240,7 @@ $(patsubst %, %-javatest,$(_jruntests)): %-javatest: out/java/aldorcode/%.class
 
 $(patsubst %,out/java/%.class,$(_junittests)):  out/java/%.class: %.java
 	(cd $(builddir)/out/java; \
+         mkdir -p $$(dirname $@); \
          javac -d . -cp $(classpath)/../src/foamj.jar:$(JUNIT_JAR):. \
 		$(abs_srcdir)/$*.java)
 
