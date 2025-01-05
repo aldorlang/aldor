@@ -130,21 +130,22 @@ am__v_AR_1 =
 libgen_a_AR = $(AR) $(ARFLAGS)
 libgen_a_LIBADD =
 am__dirstamp = $(am__leading_dot)dirstamp
-am_libgen_a_OBJECTS = aldorlib.$(OBJEXT) bigint.$(OBJEXT) \
-	bitv.$(OBJEXT) btree.$(OBJEXT) buffer.$(OBJEXT) \
-	ccode.$(OBJEXT) cfgfile.$(OBJEXT) compopt.$(OBJEXT) \
-	debug.$(OBJEXT) dnf.$(OBJEXT) dword.$(OBJEXT) \
-	errorset.$(OBJEXT) file.$(OBJEXT) fluid.$(OBJEXT) \
-	fname.$(OBJEXT) foam_c.$(OBJEXT) foam_cfp.$(OBJEXT) \
-	foam_i.$(OBJEXT) foamopt.$(OBJEXT) format.$(OBJEXT) \
-	int.$(OBJEXT) intset.$(OBJEXT) java/javacode.$(OBJEXT) \
-	java/javaobj.$(OBJEXT) list.$(OBJEXT) memclim.$(OBJEXT) \
-	msg.$(OBJEXT) ostream.$(OBJEXT) path.$(OBJEXT) priq.$(OBJEXT) \
-	sexpr.$(OBJEXT) srcpos.$(OBJEXT) store.$(OBJEXT) \
-	strops.$(OBJEXT) symbol.$(OBJEXT) table.$(OBJEXT) \
-	ttable.$(OBJEXT) termtype.$(OBJEXT) test.$(OBJEXT) \
-	textansi.$(OBJEXT) textcolour.$(OBJEXT) texthp.$(OBJEXT) \
-	timer.$(OBJEXT) util.$(OBJEXT) xfloat.$(OBJEXT)
+am_libgen_a_OBJECTS = aldorlib.$(OBJEXT) axlgen.$(OBJEXT) \
+	bigint.$(OBJEXT) bitv.$(OBJEXT) btree.$(OBJEXT) \
+	buffer.$(OBJEXT) ccode.$(OBJEXT) cfgfile.$(OBJEXT) \
+	compopt.$(OBJEXT) debug.$(OBJEXT) dnf.$(OBJEXT) \
+	dword.$(OBJEXT) errorset.$(OBJEXT) file.$(OBJEXT) \
+	fluid.$(OBJEXT) fname.$(OBJEXT) foam_c.$(OBJEXT) \
+	foam_cfp.$(OBJEXT) foam_i.$(OBJEXT) foamopt.$(OBJEXT) \
+	format.$(OBJEXT) int.$(OBJEXT) intset.$(OBJEXT) \
+	java/javacode.$(OBJEXT) java/javaobj.$(OBJEXT) list.$(OBJEXT) \
+	memclim.$(OBJEXT) msg.$(OBJEXT) ostream.$(OBJEXT) \
+	path.$(OBJEXT) priq.$(OBJEXT) sexpr.$(OBJEXT) srcpos.$(OBJEXT) \
+	store.$(OBJEXT) strops.$(OBJEXT) symbol.$(OBJEXT) \
+	table.$(OBJEXT) ttable.$(OBJEXT) termtype.$(OBJEXT) \
+	test.$(OBJEXT) textansi.$(OBJEXT) textcolour.$(OBJEXT) \
+	texthp.$(OBJEXT) timer.$(OBJEXT) util.$(OBJEXT) \
+	xfloat.$(OBJEXT)
 libgen_a_OBJECTS = $(am_libgen_a_OBJECTS)
 libphase_a_AR = $(AR) $(ARFLAGS)
 libphase_a_LIBADD =
@@ -318,15 +319,16 @@ am__depfiles_remade = ./$(DEPDIR)/abcheck.Po ./$(DEPDIR)/ablogic.Po \
 	./$(DEPDIR)/aldor-main.Po ./$(DEPDIR)/aldorlib.Po \
 	./$(DEPDIR)/aldortest-test.Po ./$(DEPDIR)/annabs.Po \
 	./$(DEPDIR)/archive.Po ./$(DEPDIR)/axl_y.Po \
-	./$(DEPDIR)/axlobs.Po ./$(DEPDIR)/bigint.Po \
-	./$(DEPDIR)/bitv.Po ./$(DEPDIR)/bloop.Po ./$(DEPDIR)/btree.Po \
-	./$(DEPDIR)/buffer.Po ./$(DEPDIR)/ccode.Po \
-	./$(DEPDIR)/ccomp.Po ./$(DEPDIR)/cfgfile.Po \
-	./$(DEPDIR)/compcfg.Po ./$(DEPDIR)/compopt.Po \
-	./$(DEPDIR)/comsg.Po ./$(DEPDIR)/comsgdb.Po \
-	./$(DEPDIR)/cport.Po ./$(DEPDIR)/csig.Po ./$(DEPDIR)/debug.Po \
-	./$(DEPDIR)/depdag.Po ./$(DEPDIR)/dflow.Po ./$(DEPDIR)/dnf.Po \
-	./$(DEPDIR)/doc.Po ./$(DEPDIR)/dword.Po ./$(DEPDIR)/emit.Po \
+	./$(DEPDIR)/axlgen.Po ./$(DEPDIR)/axlobs.Po \
+	./$(DEPDIR)/bigint.Po ./$(DEPDIR)/bitv.Po ./$(DEPDIR)/bloop.Po \
+	./$(DEPDIR)/btree.Po ./$(DEPDIR)/buffer.Po \
+	./$(DEPDIR)/ccode.Po ./$(DEPDIR)/ccomp.Po \
+	./$(DEPDIR)/cfgfile.Po ./$(DEPDIR)/compcfg.Po \
+	./$(DEPDIR)/compopt.Po ./$(DEPDIR)/comsg.Po \
+	./$(DEPDIR)/comsgdb.Po ./$(DEPDIR)/cport.Po \
+	./$(DEPDIR)/csig.Po ./$(DEPDIR)/debug.Po ./$(DEPDIR)/depdag.Po \
+	./$(DEPDIR)/dflow.Po ./$(DEPDIR)/dnf.Po ./$(DEPDIR)/doc.Po \
+	./$(DEPDIR)/dword.Po ./$(DEPDIR)/emit.Po \
 	./$(DEPDIR)/errorset.Po ./$(DEPDIR)/fbox.Po \
 	./$(DEPDIR)/file.Po ./$(DEPDIR)/fint.Po \
 	./$(DEPDIR)/fintphase.Po ./$(DEPDIR)/flatten.Po \
@@ -951,6 +953,7 @@ libtest_a_SOURCES = \
 # Foam stuff does not belong!
 libgen_a_SOURCES = \
 	aldorlib.c	\
+	axlgen.c	\
 	bigint.c	\
 	bitv.c		\
 	btree.c		\
@@ -1511,6 +1514,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/annabs.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/archive.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/axl_y.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/axlgen.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/axlobs.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bigint.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bitv.Po@am__quote@ # am--include-marker
@@ -3258,6 +3262,7 @@ distclean: distclean-am
 	-rm -f ./$(DEPDIR)/annabs.Po
 	-rm -f ./$(DEPDIR)/archive.Po
 	-rm -f ./$(DEPDIR)/axl_y.Po
+	-rm -f ./$(DEPDIR)/axlgen.Po
 	-rm -f ./$(DEPDIR)/axlobs.Po
 	-rm -f ./$(DEPDIR)/bigint.Po
 	-rm -f ./$(DEPDIR)/bitv.Po
@@ -3540,6 +3545,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -f ./$(DEPDIR)/annabs.Po
 	-rm -f ./$(DEPDIR)/archive.Po
 	-rm -f ./$(DEPDIR)/axl_y.Po
+	-rm -f ./$(DEPDIR)/axlgen.Po
 	-rm -f ./$(DEPDIR)/axlobs.Po
 	-rm -f ./$(DEPDIR)/bigint.Po
 	-rm -f ./$(DEPDIR)/bitv.Po
