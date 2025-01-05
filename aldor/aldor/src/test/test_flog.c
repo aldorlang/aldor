@@ -2,7 +2,7 @@
 #include "cmdline.h"
 #include "flog.h"
 #include "foam.h"
-#include "of_inlin.h"
+#include "optinfo.h"
 #include "testlib.h"
 #include "syme.h"
 #include "strops.h"
@@ -36,7 +36,7 @@ local void testBBCopy()
 	prog->foamProg.fluids = foamNewEmptyDDecl(int0);
 	prog->foamProg.nLabels = 2;
 	prog->foamProg.levels = foamNewEmptyDEnv();
-	foamOptInfo(prog) = inlInfoNew(NULL, prog, NULL, false);
+	foamOptInfo(prog) = optInfoNew(NULL, prog, NULL, false);
 
 	flog = flogFrProg(prog, FLOG_MultipleExits);
 

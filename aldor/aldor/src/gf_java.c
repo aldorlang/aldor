@@ -6,7 +6,7 @@
 #include "gf_java.h"
 #include "gf_syme.h"
 #include "javasig.h"
-#include "of_inlin.h"
+#include "optinfo.h"
 #include "table.h"
 #include "tinfer.h"
 #include "tform.h"
@@ -115,7 +115,7 @@ gfjImportApply(Syme syme)
 				       NULL));
 
 	gen0ProgFiniEmpty(prog, FOAM_Word, emptyFormatSlot);
-        foamOptInfo(prog) = inlInfoNew(NULL, prog, NULL, false);
+        foamOptInfo(prog) = optInfoNew(NULL, prog, NULL, false);
 	gen0ProgRestoreState(saved);
 	genSetConstNum(syme, -1, constNum, true);
 	return foamNewClos(foamNewEnv(int0), foamNewConst(constNum));
@@ -178,7 +178,7 @@ gfjImportApplyInner(Syme syme, AInt fmtNum)
 	gen0ProgPushFormat(emptyFormatSlot);
 
 	gen0ProgFiniEmpty(prog, retType, emptyFormatSlot);
-        foamOptInfo(prog) = inlInfoNew(NULL, prog, NULL, false);
+        foamOptInfo(prog) = optInfoNew(NULL, prog, NULL, false);
 
 	gen0ProgRestoreState(saved);
 	return constnum;
@@ -220,7 +220,7 @@ gfjImportConstructor(Syme syme)
 	gen0AddStmt(foamNewReturn(foamNewCast(FOAM_Word, pcall)), NULL);
 
 	gen0ProgFiniEmpty(prog, FOAM_Word, emptyFormatSlot);
-        foamOptInfo(prog) = inlInfoNew(NULL, prog, NULL, false);
+        foamOptInfo(prog) = optInfoNew(NULL, prog, NULL, false);
 	gen0ProgRestoreState(saved);
 
 	genSetConstNum(syme, -1, constNum, true);
@@ -267,7 +267,7 @@ gfjImportStaticCall(Syme syme)
 	gen0AddStmt(foamNewReturn(foamNewCast(FOAM_Word, pcall)), NULL);
 
 	gen0ProgFiniEmpty(prog, FOAM_Word, emptyFormatSlot);
-        foamOptInfo(prog) = inlInfoNew(NULL, prog, NULL, false);
+        foamOptInfo(prog) = optInfoNew(NULL, prog, NULL, false);
 	gen0ProgRestoreState(saved);
 
 	genSetConstNum(syme, -1, constNum, true);
@@ -896,7 +896,7 @@ gfjExportToJavaFn(ForeignOrigin forg, String clssName, TForm this, Syme syme)
 	gen0ProgFiniEmpty(prog, type, fmt);
 	gen0AddLexLevels(prog, 1);
 
-        foamOptInfo(prog) = inlInfoNew(NULL, prog, NULL, false);
+        foamOptInfo(prog) = optInfoNew(NULL, prog, NULL, false);
 	gen0ProgRestoreState(saved);
 
 	return clos;

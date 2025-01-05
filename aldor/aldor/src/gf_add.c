@@ -16,7 +16,7 @@
 #include "gf_rtime.h"
 #include "gf_seq.h"
 #include "of_util.h"
-#include "of_inlin.h"
+#include "optinfo.h"
 #include "spesym.h"
 #include "stab.h"
 #include "store.h"
@@ -221,7 +221,7 @@ gen0AddBody0(AbSyn ab, Stab stab, AbSyn defaultsAb)
 	gen0ProgAddStateFormat(index);
 	gen0ProgFiniEmpty(foam, FOAM_Clos, int0);
 
-        foamOptInfo(foam) = inlInfoNew(gen0State->stab, foam, NULL, false);
+        foamOptInfo(foam) = optInfoNew(gen0State->stab, foam, NULL, false);
         foamProgSetGetter(foam);
 
 	gen0ProgPopState();
@@ -285,7 +285,7 @@ gen0AddBody1(AbSyn ab, Stab stab, AbSyn defaultsAb)
 	gen0ProgAddStateFormat(index);
 	gen0ProgFiniEmpty(foam, FOAM_Word, int0);
 
-        foamOptInfo(foam) = inlInfoNew(gen0State->stab, foam, NULL, false);
+        foamOptInfo(foam) = optInfoNew(gen0State->stab, foam, NULL, false);
         foamProgSetGetter(foam);
 
 	gen0ProgPopState();
@@ -389,7 +389,7 @@ gen0MakeDefaultPackage(AbSyn base, Stab stab, Bool inCatForm, Syme syme)
 	gen0ProgAddStateFormat(index);
 	gen0ProgFiniEmpty(foam, FOAM_NOp, int0);
 
-	foamOptInfo(foam) = inlInfoNew(gen0State->stab, foam, syme, false);
+	foamOptInfo(foam) = optInfoNew(gen0State->stab, foam, syme, false);
         foamProgSetGetter(foam);
 	if (foam->foamProg.levels->foamDEnv.argv[0] != emptyFormatSlot)
 		foamProgUnsetLeaf(foam);
@@ -432,7 +432,7 @@ gen0MakeDefaultHash()
 		gen0ProgPushFormat(emptyFormatSlot);
 		gen0ProgFiniEmpty(foam, FOAM_SInt, int0);
 		gen0AddLexLevels(foam, 1);
-		foamOptInfo(foam) = inlInfoNew(NULL, foam, NULL, false);
+		foamOptInfo(foam) = optInfoNew(NULL, foam, NULL, false);
 		
 		gen0ProgRestoreState(saved);
 		gen0State->tag = oldTag;
@@ -3158,7 +3158,7 @@ gen0BuildExporterNameFn(AbSyn exporter)
 
 	gen0AddLexLevels(foam, 1);
 
-        foamOptInfo(foam) = inlInfoNew(NULL, foam, NULL, false);
+        foamOptInfo(foam) = optInfoNew(NULL, foam, NULL, false);
 
 	gen0ProgRestoreState(saved);
 

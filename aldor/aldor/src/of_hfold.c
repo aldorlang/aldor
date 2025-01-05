@@ -19,8 +19,9 @@
 #include "gf_rtime.h"
 #include "lib.h"
 #include "of_hfold.h"
-#include "of_inlin.h"
 #include "of_util.h"
+#include "of_inlin.h"
+#include "optinfo.h"
 #include "stab.h"
 #include "strops.h"
 

@@ -11,13 +11,14 @@
  * domain exports. At the moment we only deal with array operations.
  */
 
-#include "gf_implicit.h"
-#include "util.h"
-#include "syme.h"
-#include "lib.h"
 #include "comsg.h"
+#include "gf_implicit.h"
+#include "lib.h"
+#include "optinfo.h"
 #include "strops.h"
 #include "symbol.h"
+#include "syme.h"
+#include "util.h"
 
 extern Bool	genfoamDebug;
 extern Bool	genfoamHashDebug;
@@ -270,7 +271,7 @@ gen1ImplicitExport(Syme syme, FoamTag repTag)
 
 	/* Optimisation bits */
 	/* foam->foamProg.infoBits = IB_INLINEME; */
-	foamOptInfo(foam) = inlInfoNew(NULL, foam, NULL, false);
+	foamOptInfo(foam) = optInfoNew(NULL, foam, NULL, false);
 
 
 #if 0

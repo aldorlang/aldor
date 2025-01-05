@@ -38,6 +38,7 @@
 #include "of_deada.h"
 #include "of_util.h"
 #include "optfoam.h"
+#include "optinfo.h"
 #include "opttools.h"
 #include "store.h"
 #include "table.h"

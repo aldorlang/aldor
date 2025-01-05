@@ -42,36 +42,7 @@ typedef struct varPool {
 	AIntList	vars[FOAM_LIMIT];
 } *VarPool;
 
-struct optInfo {
-	InlineState	inlState;
-	DeadVarState	dvState; 
-	Stab		stab;
-	Syme		syme;
-	int		constNum;
-	Bool		isGener;     	/* Is generator? */
-	Foam		prog;
-	Foam		seq;
-	FoamList	seqBody;
-	VarPool		locals;
-	int		numLabels;
-	int		newLabel;
-	Foam		denv;
-	Bool		changed;
-	DvUsage		localUsage;
 
-	FlowGraph	flog;
-	PriQ		priq;		/* Priority queue for this prog	*/
-	Bool		converged;	/* Usedef info available	*/
-	UShort		numRefs;	/* how many progs call this     */
-	unsigned	originalSize;	/* size before inlining 	*/
-	unsigned	size;		/* size during inlining		*/
-
-	UShort		optMask;	/* Pending optimizations  */
-
-};
-
-
-# define optInfoRefs(opt)	(opt)->numRefs
 
 
 /* Functions for temporary variable pools. */

@@ -42,9 +42,9 @@
 #include "gf_rtime.h"
 #include "gf_syme.h"
 #include "gf_util.h"
-#include "of_inlin.h"
 #include "of_util.h"
 #include "optfoam.h"
+#include "optinfo.h"
 #include "opttools.h"
 #include "scobind.h"
 #include "sefo.h"
@@ -464,7 +464,7 @@ generateFoam(Stab stab0, AbSyn absyn, String initName)
 	gen0IssueDCache();
 	gen0ProgFiniEmpty(foam, FOAM_NOp, int0);
 
-	foamOptInfo(foam) = inlInfoNew(NULL, foam, NULL, false);
+	foamOptInfo(foam) = optInfoNew(NULL, foam, NULL, false);
 
 	/* construct the unit */
 	constants   = gen0RenewConstants(gen0DeclList, gen0NumProgs);
@@ -4418,7 +4418,7 @@ gen0MakeExtendLambda(Syme syme, TForm tf)
 	gen0IssueDCache();
 	gen0ProgFiniEmpty(foam, retType, int0);
 
-        foamOptInfo(foam) = inlInfoNew(gen0State->stab, foam, NULL, false);
+        foamOptInfo(foam) = optInfoNew(gen0State->stab, foam, NULL, false);
         foamProgSetGetter(foam);
 
 	gen0ProgPopState();
@@ -4470,7 +4470,7 @@ gen0MakeExtendBase(Syme syme)
 	gen0IssueDCache();
 	gen0ProgFiniEmpty(foam, FOAM_Clos, int0);
 
-        foamOptInfo(foam) = inlInfoNew(gen0State->stab, foam, NULL, false);
+        foamOptInfo(foam) = optInfoNew(gen0State->stab, foam, NULL, false);
         foamProgSetGetter(foam);
 
 	gen0ProgPopState();
@@ -5242,7 +5242,7 @@ gen0Lambda(AbSyn absyn, Syme syme, AbSyn defaults)
 	gen0ProgFiniEmpty(foam, retType, retfmt);
 
 	/* foam->foamProg.infoBits = IB_SIDE | IB_LEAF; */
-	foamOptInfo(foam) = inlInfoNew(gen0State->stab, foam,
+	foamOptInfo(foam) = optInfoNew(gen0State->stab, foam,
 				       syme, false);
 	if (foam->foamProg.levels->foamDEnv.argv[0] != emptyFormatSlot)
 		foamProgUnsetLeaf(foam);
@@ -8034,7 +8034,7 @@ gen0BuiltinExporter(Foam glo, Syme syme)
 	gen0AddLexLevels(foam, 1);
 	foam->foamProg.format = retFmt;
 	foam->foamProg.levels = foamNew(FOAM_DEnv, 1, int0);
-	foamOptInfo(foam) = inlInfoNew(NULL, foam, NULL, false);
+	foamOptInfo(foam) = optInfoNew(NULL, foam, NULL, false);
 	gen0ProgRestoreState(saved);
 
 	return clos;
@@ -8136,7 +8136,7 @@ gen0ForeignWrapFn(Syme syme)
 
 	gen0ProgRestoreState(saved);
 	foam->foamProg.format = retFmt;
-	foamOptInfo(foam) = inlInfoNew(NULL, foam, NULL, false);
+	foamOptInfo(foam) = optInfoNew(NULL, foam, NULL, false);
 
 	symeSetClosure(syme, clos);
 	Return(foamCopy(clos));

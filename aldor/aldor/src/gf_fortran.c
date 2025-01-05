@@ -31,9 +31,9 @@
 #include "gf_reference.h"
 #include "gf_rtime.h"
 #include "gf_util.h"
-#include "of_inlin.h"
 #include "of_util.h"
 #include "optfoam.h"
+#include "optinfo.h"
 #include "opttools.h"
 #include "scobind.h"
 #include "simpl.h"
@@ -1710,7 +1710,7 @@ gen0FortranExportFn(TForm tf, FoamTag rtype, Foam op, String name, AbSyn absyn)
 
 	/* Optimisation bits */
 	/* foam->foamProg.infoBits = IB_INLINEME; */
-	foamOptInfo(foam) = inlInfoNew(NULL, foam, NULL, false);
+	foamOptInfo(foam) = optInfoNew(NULL, foam, NULL, false);
 	foam->foamProg.format = retfmt;
 
 

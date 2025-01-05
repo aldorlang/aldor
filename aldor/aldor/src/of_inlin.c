@@ -109,6 +109,7 @@
 #include "of_inlin.h"
 #include "of_util.h"
 #include "optfoam.h"
+#include "optinfo.h"
 #include "opttools.h"
 #include "stab.h"
 #include "store.h"
@@ -357,8 +358,6 @@ local Foam	inlGetLocalFoam		(Syme);
 local Foam	inlGetExternalFoam	(Syme);
 local InlProgInfo	inlGetProgInfoFrSyme	(Syme);
 local InlProgInfo	inlGetExternalProgHdr	(Syme);
-
-local OptInfo	inlInfoNew0		(Stab, Foam, Syme, Bool, Bool);
 
 /*
  * Foam Inlinability
@@ -2674,7 +2673,7 @@ inlUpdateConstProg(Foam prog)
 	assert(foamTag(prog) == FOAM_Prog);
 	levels = prog->foamProg.levels->foamDEnv.argv;
 	inlUpdateConstBody(prog->foamProg.body);
-	foamOptInfo(prog) = inlInfoNew0(NULL, prog, NULL, false, true);
+	foamOptInfo(prog) = optInfoNew0(NULL, prog, NULL, false, true);
 
 #ifdef NEW_FORMATS
 	inlUpdateDDecl(inlInlineeDecl(paramsSlot, prog->foamProg.params-1));
@@ -3653,47 +3652,6 @@ inlGetTypeFrDecl(Foam decl, FoamTag *ptype, int *pformat)
 		*pformat = inlGetFormat(format);
 	else
 		*pformat = format;
-}
-
-/*
- * Create a new OptInfo structure.
- */
-local OptInfo
-inlInfoNew0(Stab stab, Foam prog, Syme lhs, Bool isGener, Bool external)
-{
-	OptInfo		new;
-
-	new = (OptInfo) stoAlloc(OB_Other, sizeof(struct optInfo));
-
-	new->inlState	 = (external ? INL_Inlined : INL_NotInlined);
-	new->stab	 = stab;
-	new->syme	 = lhs;
-	new->prog	 = prog;
-	new->seq	 = prog->foamProg.body;
-	new->locals	 = vpNew(fboxNew(prog->foamProg.locals));
-	new->numLabels	 = prog->foamProg.nLabels;
-	new->denv	 = prog->foamProg.levels;
-	new->seqBody	 = 0;
-
-	new->localUsage	 = 0;
-	new->constNum	 = -1;
-	new->isGener	 = isGener;
-
-	new->flog	 = 0;
-	new->priq	 = 0;
-	new->converged   = false;
-	new->numRefs	 = 0;
-	new->originalSize = 0;
-	new->size	  = 0;
-	new->optMask	  = 0xffff;
-
-	return new;
-}
-
-OptInfo
-inlInfoNew(Stab stab, Foam prog, Syme lhs, Bool isGener)
-{
-	return inlInfoNew0(stab, prog, lhs, isGener, false);
 }
 
 

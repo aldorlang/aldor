@@ -32,6 +32,7 @@
 #include "gf_rtime.h"
 #include "of_util.h"
 #include "optfoam.h"
+#include "optinfo.h"
 #include "store.h"
 #include "fint.h"
 #include "syme.h"

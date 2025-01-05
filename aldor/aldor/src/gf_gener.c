@@ -13,6 +13,7 @@
 #include "gf_gener.h"
 #include "of_inlin.h"
 #include "of_util.h"
+#include "optinfo.h"
 #include "store.h"
 #include "tform.h"
 #include "comsg.h"
@@ -147,7 +148,7 @@ gen0GenerBodyFun(AbSyn iter, TForm tf)
 	gen0AddLexLevels(foam, 1);
 
         foam->foamProg.infoBits = IB_SIDE | IB_INLINEME;
-        foamOptInfo(foam) = inlInfoNew(NULL, foam, NULL, false);
+        foamOptInfo(foam) = optInfoNew(NULL, foam, NULL, false);
 
 	if (gen0GenInfo) stoFree(gen0GenInfo);
 
@@ -211,7 +212,7 @@ gen0GenerStepFun(AbSyn body, TForm tf)
         gen0AddLexLevels(foam, 2);
 
         foam->foamProg.infoBits = IB_SIDE | IB_INLINEME;
-        foamOptInfo(foam) = inlInfoNew(gen0State->stab, foam, NULL, true);
+        foamOptInfo(foam) = optInfoNew(gen0State->stab, foam, NULL, true);
 
 	gen0ProgRestoreState(saved);
         return clos;
@@ -314,7 +315,7 @@ gen0GenerBoundFun(AbSyn bound, GenBoundCalc calc)
 
 		gen0AddLexLevels(foam, 2);
 
-	        foamOptInfo(foam) = inlInfoNew(NULL, foam, NULL, false);
+	        foamOptInfo(foam) = optInfoNew(NULL, foam, NULL, false);
 
 		foam->foamProg.infoBits |= IB_INLINEME;
 
@@ -346,7 +347,7 @@ gen0GenerValueFun(FoamTag retType, TForm tf)
 
 	gen0AddLexLevels(foam, 2);
 
-	foamOptInfo(foam) = inlInfoNew(NULL, foam, NULL, false);
+	foamOptInfo(foam) = optInfoNew(NULL, foam, NULL, false);
 
 	gen0ProgRestoreState(saved);
 	return clos;
@@ -467,7 +468,7 @@ gen0ComputeBoundFunction(GenBoundCalc calc)
 	gen0AddStmt(foamNewLabel(retLabel), NULL);
 	gen0AddStmt(foamNewReturn(foamCopy(ret)), NULL);
 
-	foamOptInfo(foam) = inlInfoNew(NULL, foam, NULL, true);
+	foamOptInfo(foam) = optInfoNew(NULL, foam, NULL, true);
 
 	foam->foamProg.infoBits = IB_SIDE | IB_INLINEME;
 

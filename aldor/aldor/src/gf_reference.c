@@ -11,8 +11,8 @@
 #include "gf_prog.h"
 #include "gf_rtime.h"
 #include "gf_reference.h"
-#include "of_inlin.h"
 #include "of_util.h"
+#include "optinfo.h"
 #include "tinfer.h"
 #include "abuse.h"
 #include "syme.h"
@@ -102,7 +102,7 @@ genReferenceFrFoam(Foam rid, TForm tf, AbSyn ab)
 
 	/* Optimisation bits */
 	foam->foamProg.infoBits = IB_SIDE | IB_INLINEME;
-	foamOptInfo(foam) = inlInfoNew(NULL, foam, NULL, false);
+	foamOptInfo(foam) = optInfoNew(NULL, foam, NULL, false);
 
 
 	/* Restore the saved state before returning. */
@@ -146,7 +146,7 @@ gen0RefGetter(Foam rid, AbSyn id, TForm tf)
 
 	/* Optimisation bits */
 	foam->foamProg.infoBits = IB_INLINEME;
-	foamOptInfo(foam) = inlInfoNew(NULL, foam, NULL, false);
+	foamOptInfo(foam) = optInfoNew(NULL, foam, NULL, false);
 
 
 	/* Restore the saved state before returning. */
@@ -202,7 +202,7 @@ gen0RefSetter(Foam rid, AbSyn id, TForm tf)
 
 	/* Optimisation bits */
 	foam->foamProg.infoBits = IB_SIDE | IB_INLINEME;
-	foamOptInfo(foam) = inlInfoNew(NULL, foam, NULL, false);
+	foamOptInfo(foam) = optInfoNew(NULL, foam, NULL, false);
 
 
 	/* Restore the saved state before returning. */

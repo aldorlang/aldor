@@ -9,7 +9,7 @@
 #include "debug.h"
 #include "gf_prog.h"
 #include "gf_util.h"
-#include "of_inlin.h"
+#include "optinfo.h"
 #include "store.h"
 #include "syme.h"
 #include "strops.h"
@@ -75,7 +75,7 @@ gen0BuildFunction(ProgType pt, String name, AbSyn expr)
 
 	gen0AddLexLevels(foam, 1);
 
-        foamOptInfo(foam) = inlInfoNew(NULL, foam, NULL, false);
+        foamOptInfo(foam) = optInfoNew(NULL, foam, NULL, false);
 
 	gen0ProgRestoreState(saved);
 	return clos;
@@ -672,7 +672,7 @@ gen0BuildFunFromFoam0(String name, FoamTag retType, AInt retFmt, Foam body)
 
 	gen0AddLexLevels(foam, 2);
 
-        foamOptInfo(foam) = inlInfoNew(NULL, foam, NULL, false);
+        foamOptInfo(foam) = optInfoNew(NULL, foam, NULL, false);
 
 	gen0ProgRestoreState(saved);
 	return clos;
@@ -698,7 +698,7 @@ gen0BuildFunFromFoam1(String name, FoamTag retType, AInt retFmt, Foam body)
 
 	gen0AddLexLevels(foam, 1);
 
-        foamOptInfo(foam) = inlInfoNew(NULL, foam, NULL, false);
+        foamOptInfo(foam) = optInfoNew(NULL, foam, NULL, false);
 
 	gen0ProgRestoreState(saved);
 	return clos;

@@ -9,7 +9,7 @@
 #include "gf_prog.h"
 #include "gf_rtime.h"
 #include "gf_util.h"
-#include "of_inlin.h"
+#include "optinfo.h"
 #include "store.h"
 #include "strops.h"
 /* ToDo:
@@ -696,7 +696,7 @@ gen0CacheClos(AbSyn ab, int nargs, Foam fnClos)
 	gen0ProgAddStateFormat(index);
 	gen0ProgFiniEmpty(foam, retType, int0);
 
-        foamOptInfo(foam) = inlInfoNew(NULL, foam, NULL, false);
+        foamOptInfo(foam) = optInfoNew(NULL, foam, NULL, false);
 
 	gen0ProgPopState();
 	stoFree(paramv);

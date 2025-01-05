@@ -12,6 +12,7 @@
 #include "optfoam.h"
 #include "of_cfold.h"
 #include "of_util.h"
+#include "optinfo.h"
 #include "store.h"
 #include "syme.h"
 #include "bigint.h"

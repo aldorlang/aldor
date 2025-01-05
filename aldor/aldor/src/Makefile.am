@@ -179,6 +179,7 @@ libstruct_a_SOURCES =	\
 	javasig.c	\
 	lib.c		\
 	loops.c		\
+	optinfo.c	\
 	output.c	\
 	sefo.c		\
 	simpl.c		\
