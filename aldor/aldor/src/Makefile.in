@@ -182,16 +182,16 @@ am_libstruct_a_OBJECTS = ablogic.$(OBJEXT) abpretty.$(OBJEXT) \
 	archive.$(OBJEXT) axlobs.$(OBJEXT) compcfg.$(OBJEXT) \
 	comsg.$(OBJEXT) comsgdb.$(OBJEXT) csig.$(OBJEXT) \
 	depdag.$(OBJEXT) dflow.$(OBJEXT) doc.$(OBJEXT) fbox.$(OBJEXT) \
-	fint.$(OBJEXT) flog.$(OBJEXT) foam.$(OBJEXT) foamsig.$(OBJEXT) \
-	forg.$(OBJEXT) freevar.$(OBJEXT) formatters.$(OBJEXT) \
-	ftype.$(OBJEXT) gf_syme.$(OBJEXT) javasig.$(OBJEXT) \
-	lib.$(OBJEXT) loops.$(OBJEXT) output.$(OBJEXT) sefo.$(OBJEXT) \
-	simpl.$(OBJEXT) spesym.$(OBJEXT) srcline.$(OBJEXT) \
-	stab.$(OBJEXT) syme.$(OBJEXT) symeset.$(OBJEXT) \
-	symcoinfo.$(OBJEXT) tconst.$(OBJEXT) tfcond.$(OBJEXT) \
-	tform.$(OBJEXT) tfsat.$(OBJEXT) ti_top.$(OBJEXT) \
-	token.$(OBJEXT) tposs.$(OBJEXT) tqual.$(OBJEXT) \
-	version.$(OBJEXT)
+	fex.$(OBJEXT) fint.$(OBJEXT) flog.$(OBJEXT) foam.$(OBJEXT) \
+	foamsig.$(OBJEXT) forg.$(OBJEXT) freevar.$(OBJEXT) \
+	formatters.$(OBJEXT) ftype.$(OBJEXT) gf_syme.$(OBJEXT) \
+	javasig.$(OBJEXT) lib.$(OBJEXT) loops.$(OBJEXT) \
+	output.$(OBJEXT) sefo.$(OBJEXT) simpl.$(OBJEXT) \
+	spesym.$(OBJEXT) srcline.$(OBJEXT) stab.$(OBJEXT) \
+	syme.$(OBJEXT) symeset.$(OBJEXT) symcoinfo.$(OBJEXT) \
+	tconst.$(OBJEXT) tfcond.$(OBJEXT) tform.$(OBJEXT) \
+	tfsat.$(OBJEXT) ti_top.$(OBJEXT) token.$(OBJEXT) \
+	tposs.$(OBJEXT) tqual.$(OBJEXT) version.$(OBJEXT)
 libstruct_a_OBJECTS = $(am_libstruct_a_OBJECTS)
 libtest_a_AR = $(AR) $(ARFLAGS)
 libtest_a_LIBADD =
@@ -329,7 +329,7 @@ am__depfiles_remade = ./$(DEPDIR)/abcheck.Po ./$(DEPDIR)/ablogic.Po \
 	./$(DEPDIR)/csig.Po ./$(DEPDIR)/debug.Po ./$(DEPDIR)/depdag.Po \
 	./$(DEPDIR)/dflow.Po ./$(DEPDIR)/dnf.Po ./$(DEPDIR)/doc.Po \
 	./$(DEPDIR)/dword.Po ./$(DEPDIR)/emit.Po \
-	./$(DEPDIR)/errorset.Po ./$(DEPDIR)/fbox.Po \
+	./$(DEPDIR)/errorset.Po ./$(DEPDIR)/fbox.Po ./$(DEPDIR)/fex.Po \
 	./$(DEPDIR)/file.Po ./$(DEPDIR)/fint.Po \
 	./$(DEPDIR)/fintphase.Po ./$(DEPDIR)/flatten.Po \
 	./$(DEPDIR)/flog.Po ./$(DEPDIR)/fluid.Po ./$(DEPDIR)/fname.Po \
@@ -1019,6 +1019,7 @@ libstruct_a_SOURCES = \
 	dflow.c		\
 	doc.c		\
 	fbox.c		\
+	fex.c		\
 	fint.c		\
 	flog.c		\
 	foam.c		\
@@ -1539,6 +1540,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/emit.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/errorset.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fbox.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fex.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/file.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fint.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fintphase.Po@am__quote@ # am--include-marker
@@ -3287,6 +3289,7 @@ distclean: distclean-am
 	-rm -f ./$(DEPDIR)/emit.Po
 	-rm -f ./$(DEPDIR)/errorset.Po
 	-rm -f ./$(DEPDIR)/fbox.Po
+	-rm -f ./$(DEPDIR)/fex.Po
 	-rm -f ./$(DEPDIR)/file.Po
 	-rm -f ./$(DEPDIR)/fint.Po
 	-rm -f ./$(DEPDIR)/fintphase.Po
@@ -3570,6 +3573,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -f ./$(DEPDIR)/emit.Po
 	-rm -f ./$(DEPDIR)/errorset.Po
 	-rm -f ./$(DEPDIR)/fbox.Po
+	-rm -f ./$(DEPDIR)/fex.Po
 	-rm -f ./$(DEPDIR)/file.Po
 	-rm -f ./$(DEPDIR)/fint.Po
 	-rm -f ./$(DEPDIR)/fintphase.Po
