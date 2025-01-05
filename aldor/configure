@@ -710,6 +710,7 @@ HAVE_ALDOR_GC_FALSE
 HAVE_ALDOR_GC_TRUE
 GC
 LIB_CC_FLAGS
+BUILD_LISP
 BUILD_JAVA_FALSE
 BUILD_JAVA_TRUE
 JAVAC
@@ -717,6 +718,7 @@ BUILD_LIBS_FALSE
 BUILD_LIBS_TRUE
 GMP_FALSE
 GMP_TRUE
+SBCL_EXISTS
 YACC_EXISTS
 YFLAGS
 YACC
@@ -831,6 +833,7 @@ enable_java
 with_java_junit
 with_boehm_gc
 enable_documentation
+enable_lisp_tests
 enable_edit_gloop
 enable_shared
 enable_static
@@ -1493,6 +1496,7 @@ Optional Features:
   --disable-libraries     Do not build Aldor libraries
   --disable-java          Do not build Aldor Java libraries
   --enable-documentation  Generate documentation - requires latex
+  --enable-lisp-tests     Include Lisp (SBCL only) integration tests
   --enable-edit-gloop     Allow editing in -gloop repl
   --enable-shared[=PKGS]  build shared libraries [default=yes]
   --enable-static[=PKGS]  build static libraries [default=yes]
@@ -4993,6 +4997,52 @@ fi
        fi
 fi
 
+# Check for sbcl - other lisps ought to work but for testing just one will do.
+
+# Extract the first word of "sbcl", so it can be a program name with args.
+set dummy sbcl; ac_word=$2
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+printf %s "checking for $ac_word... " >&6; }
+if test ${ac_cv_prog_SBCL_EXISTS+y}
+then :
+  printf %s "(cached) " >&6
+else $as_nop
+  if test -n "$SBCL_EXISTS"; then
+  ac_cv_prog_SBCL_EXISTS="$SBCL_EXISTS" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  case $as_dir in #(((
+    '') as_dir=./ ;;
+    */) ;;
+    *) as_dir=$as_dir/ ;;
+  esac
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir$ac_word$ac_exec_ext"; then
+    ac_cv_prog_SBCL_EXISTS="yes"
+    printf "%s\n" "$as_me:${as_lineno-$LINENO}: found $as_dir$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+  test -z "$ac_cv_prog_SBCL_EXISTS" && ac_cv_prog_SBCL_EXISTS="no"
+fi
+fi
+SBCL_EXISTS=$ac_cv_prog_SBCL_EXISTS
+if test -n "$SBCL_EXISTS"; then
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $SBCL_EXISTS" >&5
+printf "%s\n" "$SBCL_EXISTS" >&6; }
+else
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
+printf "%s\n" "no" >&6; }
+fi
+
+
+
 GC=aldor
 # Check for GMP
 ac_header= ac_cache=
@@ -5122,9 +5172,17 @@ test -n "$JAVAC" || JAVAC="no"
 # Check whether --enable-java was given.
 if test ${enable_java+y}
 then :
-  enableval=$enable_java; BUILD_JAVA=false
+  enableval=$enable_java;
 else $as_nop
-  BUILD_JAVA=true
+  enable_java=yes
+fi
+
+ if test "x$JAVAC" != "xno" -a "x$enable_java" = xyes; then
+  BUILD_JAVA_TRUE=
+  BUILD_JAVA_FALSE='#'
+else
+  BUILD_JAVA_TRUE='#'
+  BUILD_JAVA_FALSE=
 fi
 
 
@@ -5137,14 +5195,6 @@ else $as_nop
   JUNIT_JAR=/usr/share/java/junit4.jar
 fi
 
-
- if test $JAVAC != no -a $BUILD_JAVA = true; then
-  BUILD_JAVA_TRUE=
-  BUILD_JAVA_FALSE='#'
-else
-  BUILD_JAVA_TRUE='#'
-  BUILD_JAVA_FALSE=
-fi
 
 
 
@@ -5165,6 +5215,30 @@ else $as_nop
   enable_documentation=no
 fi
 
+
+# Check whether --enable-lisp-tests was given.
+if test ${enable_lisp_tests+y}
+then :
+  enableval=$enable_lisp_tests; BUILD_LISP=yes
+else $as_nop
+  BUILD_LISP=no
+fi
+
+
+
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: JAVA $BUILD_JAVA unit tests: $JUNIT_JAR" >&5
+printf "%s\n" "$as_me: JAVA $BUILD_JAVA unit tests: $JUNIT_JAR" >&6;}
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: SBCL $SBCL_EXISTS" >&5
+printf "%s\n" "$as_me: SBCL $SBCL_EXISTS" >&6;}
+if test x"$BUILD_LISP" = xyes -a ! x"$SBCL_EXISTS" = xyes; then
+    as_fn_error $? "Lisp enabled, but sbcl not available $SBCL_EXISTS $BUILD_LISP" "$LINENO" 5
+elif test x"$BUILD_LISP" = xyes; then
+    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: Lisp tests enabled" >&5
+printf "%s\n" "$as_me: Lisp tests enabled" >&6;}
+else
+    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: Lisp tests disabled" >&5
+printf "%s\n" "$as_me: Lisp tests disabled" >&6;}
+fi
 
 
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for a readline compatible library" >&5
@@ -13607,7 +13681,7 @@ fi
 
 
 
- if test $BUILD_JAVA = true -a $HAS_JUNIT != no; then
+ if test "x$enable_java" = xyes -a x"$HAS_JUNIT" != xno; then
   HAS_JUNIT_TRUE=
   HAS_JUNIT_FALSE='#'
 else
