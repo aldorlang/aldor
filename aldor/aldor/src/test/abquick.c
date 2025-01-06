@@ -154,6 +154,7 @@ stdtypes()
 	String Tuple_txt = "Tuple(T: Type): with == add";
 	String Cross_txt = "Cross(T: Tuple Type): with == add";
 	String Generator_txt = "Generator(T: Type): with == add";
+	String XGenerator_txt = "XGenerator(T: Type): with == add";
 	String Map_txt = "(->)(A: Tuple Type, R: Tuple Type): with == add";
 	String Boolean_txt = "Boolean: with == add";
 	String Join_txt = "Join(T: Tuple Category): Category == with";
@@ -161,9 +162,9 @@ stdtypes()
 	String Union_txt = "Union(T: Tuple Type): with == add";
 	String Enumeration_txt = "Enumeration(T: Tuple Type): with == add";
 
-	StringList lines = listList(String)(11, Type_txt, Category_txt, Cross_txt,
+	StringList lines = listList(String)(12, Type_txt, Category_txt, Cross_txt,
 					    Tuple_txt, Map_txt, Boolean_txt, Join_txt,
-					    Generator_txt, Record_txt, Union_txt,
+					    Generator_txt, XGenerator_txt, Record_txt, Union_txt,
 					    Enumeration_txt);
 	AbSynList code = abqParseLines(lines);
 	AbSyn absyn = abNewSequenceL(sposNone, code);
