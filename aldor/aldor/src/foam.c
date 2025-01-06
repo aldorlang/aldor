@@ -896,6 +896,24 @@ foamDeclEqual(Foam decl1, Foam decl2)
 		&& decl1->foamDecl.format == decl2->foamDecl.format;
 }
 
+Bool
+foamUnitHasCoroutine(Foam foam)
+{
+	int i;
+	for (i=0; i<foamArgc(foam->foamUnit.defs); i++) {
+		Foam def = foam->foamUnit.defs->foamDDef.argv[i];
+		Foam prog;
+		if (foamTag(def->foamDef.rhs) != FOAM_Prog) {
+			continue;
+		}
+		prog = def->foamDef.rhs;
+		if (foamProgIsCoroutine(prog)) {
+			return true;
+		}
+	}
+	return false;
+}
+
 /** Return the next statement in seq which is reachable */
 int
 foamSeqNextReachable(Foam seq, int index)
@@ -2842,6 +2860,8 @@ foamExprTypeCB(Foam expr, AInt *extra, FoamExprTypeCallback callback, void *arg)
 	  case FOAM_Arb:
 	  case FOAM_Ptr:
 	  case FOAM_Clos:
+	  case FOAM_Gener:
+	  case FOAM_GenIter:
 	  case FOAM_BInt:
 	  case FOAM_Env:
 	  case FOAM_RRec:
@@ -2933,6 +2953,9 @@ foamExprTypeCB(Foam expr, AInt *extra, FoamExprTypeCallback callback, void *arg)
 		return FOAM_TR;
 
 	  case FOAM_RRElt:
+		return FOAM_Word;
+
+	  case FOAM_GenerValue:
 		return FOAM_Word;
 
 	  case FOAM_Lex: {
@@ -3195,6 +3218,8 @@ foamHasSideEffect(Foam foam)
 		return false;
 	  case FOAM_EEnsure:
 		return true;
+	  case FOAM_Yield:
+		return true;
 	  default:
 		break;
 	}
@@ -3220,6 +3245,7 @@ foamIsControlFlow(Foam foam)
 	  case FOAM_Throw:
 	  case FOAM_Catch:
 	  case FOAM_Seq:
+	  case FOAM_GenerStep:
 		return true;
 	  default:
 		return false;
@@ -3366,6 +3392,11 @@ struct foam_info foamInfoTable[] = {
  {FOAM_RRFmt,	    0,"RRFmt",        1,        "C", 	0},
  {FOAM_JavaObj,	    0,"JavaObj",      0,        "", 	0},
  {FOAM_CObj,	    0,"CObj",	      0,        "", 	0},
+ {FOAM_Gener,       0,"Gener",	      3,        "iCC",  0},
+ {FOAM_Yield,       0,"Yield",	      1,        "C", 	0},
+ {FOAM_GenIter,     0,"GenIter",      1,        "C", 	0},
+ {FOAM_GenerValue,  0,"GenerValue",   1,        "C", 	0},
+ {FOAM_GenerStep,   0,"GenerStep",    2,        "LC", 	0},
 
 /* ========> FFO_ORIGIN (start of multi-format instructions) <======== */
 
