@@ -3994,7 +3994,6 @@ inlPrintRejectCause(String call)
 void
 inlPrintUninlinedCalls(InlPriCall pric, PriQKey pri)
 {
-	InlPriCall 	priCall;
 	PriQKey	       	priority;
 
 	if (pric == NULL) return;
@@ -4007,11 +4006,15 @@ inlPrintUninlinedCalls(InlPriCall pric, PriQKey pri)
 
 	inlPrintPriq();
 	while (priqCount(inlProg->priq)) {
-		priCall =(InlPriCall) priqExtractMin(inlProg->priq, &priority);
+		InlPriCall priCall = (InlPriCall) priqExtractMin(inlProg->priq, &priority);
 
 		foamPrintDb(priCall->call);
 		fprintf(dbOut, "(priority = %f, size = %d)\n",
 			priority, (int)priCall->size);
+		if (foamTag(priCall->call) == FOAM_CCall && foamSyme(priCall->call->foamCCall.op) != NULL) {
+			Syme syme = foamSyme(priCall->call->foamCCall.op);
+			afprintf(dbOut, "(syme.. %s %pTForm)\n", symeString(syme), symeType(syme));
+		}
 	}
 
 	fprintf(dbOut, "limit end)\n");
