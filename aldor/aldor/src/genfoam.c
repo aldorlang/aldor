@@ -1194,14 +1194,8 @@ genMulti(AbSyn absyn)
 			TForm tfi = abTUnique(abArgv(absyn)[i]);
 			val = genFoamVal(abArgv(absyn)[i]);
 			type = gen0Type(tfi, &fmt);
-#ifdef MultiUseLocals
-			/*!! We would rather generate locals here, but
-			 *!! gen0TempLocal isn't working as expected. */
+			/* NB: Poss issue here (fix: var = gen0TempLex0(type, fmt);) */
 			var = gen0TempLocal0(type, fmt);
-#else
-			var = gen0TempLex0(type, fmt);
-#endif
-
 			values->foamValues.argv[i] = var;
 			gen0AddStmt(foamNewSet(foamCopy(var), val), NULL);   
 		}
