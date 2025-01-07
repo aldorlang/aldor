@@ -13,6 +13,8 @@ AM_INIT_AUTOMAKE([foreign silent-rules parallel-tests color-tests subdir-objects
 AM_SILENT_RULES([yes])
 AM_MAINTAINER_MODE([enable])
 
+# Extra target for more extensive tests and checks for release quality
+AM_EXTRA_RECURSIVE_TARGETS([releasecheck])
 # Libraries
 
 # Checks for programs

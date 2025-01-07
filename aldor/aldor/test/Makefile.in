@@ -297,6 +297,14 @@ really-all: \
 check-makefile:
 	set -e; for i in $(_alltests); do make clean && make all-$$i; done
 
+# Check all files are in git
+all-check-source: $(patsubst %,check-source-%, $(utils) $(_aotests))
+$(patsubst %,check-source-%, $(utils) $(_aotests)): check-source-%:
+	@(cd $(srcdir); git ls-files --error-unmatch $*.as)
+
+
+releasecheck: all-check-source check-makefile
+
 #
 # :: Automake requires this little lot
 #

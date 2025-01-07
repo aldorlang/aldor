@@ -363,6 +363,7 @@ EMPTY_AUTOMAKE_TARGETS += install-exec uninstall
 EMPTY_AUTOMAKE_TARGETS += install-dvi install-html install-info install-ps install-pdf
 EMPTY_AUTOMAKE_TARGETS += installdirs
 EMPTY_AUTOMAKE_TARGETS += check installcheck
+EMPTY_AUTOMAKE_TARGETS += releasecheck
 
 .PHONY: $(EMPTY_AUTOMAKE_TARGETS)
 $(EMPTY_AUTOMAKE_TARGETS):
