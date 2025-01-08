@@ -62,6 +62,7 @@ typedef enum {
 	PT_Std,
 	PT_DeepStart,
 	PT_Gener = PT_DeepStart,
+	PT_Coroutine,
 	PT_ExFn
 } ProgType;
 
@@ -201,6 +202,7 @@ extern AIntList		gen0LazyConstDefnList;
 extern AIntList		gen0BuiltinExports;
 
 extern TForm		gen0AbType		(AbSyn ab);
+extern TForm		gen0AbContextType	(AbSyn ab);
 extern Foam	   	genImplicit		(AbSyn, AbSyn, FoamTag);
 extern void		gen0AddConst		(AInt, AInt);
 extern void		gen0AddFormat		(AInt, AInt);

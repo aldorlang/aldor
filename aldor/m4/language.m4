@@ -20,7 +20,6 @@ AC_DEFUN([ALDOR_GENERATOR_SELECT],
    if test x"$generator" = xcoroutine; then
        AC_MSG_RESULT([coroutines])
        AC_DEFINE(GENERATOR_COROUTINES, 1, [Use coroutines as implementation for generators])
-       disable_interp_tests=yes
    else
        AC_DEFINE(GENERATOR_COROUTINES, 0, [Use functions as implementation for generators])
        AC_MSG_RESULT([functions])

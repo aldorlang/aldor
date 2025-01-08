@@ -51,6 +51,7 @@ typedef struct _FiProg {
 	FiFun	fcall;
 	FiWord	progInfo;
 	FiWord	data;
+	FiSInt  envSz;
 } *FiProg;
 
 typedef struct _FiEnv {
@@ -88,6 +89,20 @@ typedef struct _FiList {
 	struct _FiList	*next;
 } FiList;
 
+typedef struct _FiGener {
+	FiEnv env;
+	FiSInt stateSize;
+	FiProg prog;
+} *FiGener;
+
+typedef struct _FiGenIter {
+	FiEnv env;
+	FiEnv env0;
+	FiProg prog;
+	FiSInt step;
+	FiPtr  state;
+	FiWord value;
+} *FiGenIter;
 
 enum fiDbgTag
 {
@@ -155,6 +170,15 @@ extern void	fiEnvEnsureFun		(FiEnv);
 extern FiClos	fiClosMakeFun		(FiEnv, FiProg);
 
 #define fiProgHashCode(prog)	((prog)->data)
+
+extern FiGener fiGenerNew(FiEnv env, FiSInt sz, FiProg prog);
+extern FiGenIter fiGenStartIter(FiGener g);
+
+extern void fiGenerStep(FiGenIter g);
+
+#define fiGenerStepIndex(gi) ((gi)->step)
+#define fiGenerValue(gi) ((gi)->value)
+
 
 /*****************************************************************************
  *
@@ -390,6 +414,7 @@ extern FiWord	fiPlatformRTE	(void);
 extern FiWord	fiPlatformOS	(void);
 
 extern FiWord	fiHalt		(FiSInt);	/* Does not return. */
+extern FiWord	fiHaltMsg	(FiSInt, FiSInt);/* Does not return. */
 
 extern void	fiSetDebugVar	(FiWord);
 extern FiWord	fiGetDebugVar	(void);

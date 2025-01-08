@@ -6,6 +6,7 @@
  *
  ****************************************************************************/
 
+#include "gencr.h"
 #include "gf_util.h"
 #include "sexpr.h"
 #include "strops.h"
@@ -39,6 +40,7 @@ static Foam      glvDLoc;                        /* Unit/Prog locals */
 static Foam	 glvLexFormats;			 /* Prog lex format stack */
 static Foam	 glvProg;			 /* Prog being translated */
 static int	 glvIsLeaf;			 /* Prog is a leaf proc */
+static int	 glvIsCoroutine;		 /* Prog is a coroutine */
 static int	 glvHasGoto;			 /* true iff prog has goto */
 static int	 glvLabelNum;			 /* temp label number */
 static SExpr	 glvFunName;			 /* name of function */
@@ -77,6 +79,12 @@ local  SExpr	 gl0SetForm             (SExpr, SExpr);
 local  SExpr     gliId                  (Foam);
 local  SExpr     gliIf                  (Foam);
 
+local SExpr	 gliGener		(Foam);
+local SExpr	 gliGenIter		(Foam);
+local SExpr	 gliGenIter		(Foam);
+local SExpr	 gliGenerStep		(Foam);
+local SExpr	 gliGenerValue		(Foam);
+
 local  SExpr	 gl0MakeUnitHeader	(void);
 local  SExpr	 gl0MakeUnitIface	(Foam, Foam);
 local  SExpr     gl0ExprOf              (SExpr, int, Foam);
@@ -90,6 +98,7 @@ local  SExpr	 gl0DeclareVar		(Foam, int);
 local  SExpr	 gl0ProgType		(Foam, Foam);
 local  SExpr     gl0typeName		(String);
 local  SExpr     gl0IdName		(Foam);
+local  SExpr     gl0IdCRProgName	(Foam);
 local  SExpr     gl0IdPlainName		(Foam);
 local  SExpr     gl0Id                  (FoamTag t, int, String);
 local  SExpr	 gl0OpenCall		(Foam);
@@ -160,6 +169,7 @@ local  void	 gl0UseEnv		(Foam);
 /*
  * other foam support
  */
+#define GL_e0		lispId("e0")
 #define GL_e1		lispId("e1")
 #define GL_EnvLevel     lispId("EnvLevel")
 #define GL_EnvNext      lispId("EnvNext")
@@ -171,10 +181,16 @@ local  void	 gl0UseEnv		(Foam);
 #define GL_SetRElt      lispId("SetRElt")
 #define GL_SetEElt	lispId("SetEElt")
 
+#define GL_Gener	lispId("Gener")
+#define GL_GenIter	lispId("GenIter")
+#define GL_GenerValue	lispId("GenerValue")
+#define GL_GenerStep	lispId("GenerStep")
+
 #define GL_FileExports   lispId("FILE-EXPORTS")
 #define GL_FileImports   lispId("FILE-IMPORTS")
 #define GL_IgnoreVar    lispId("IGNORE-VAR")
 #define GL_DefProg	lispId("DEFPROG")
+#define GL_DefCoroutine lispId("DEFCOROUTINE")
 #define GL_Seq		lispId("TAGBODY")
 #define GL_DefSpecials   lispId("DEFSPECIALS")
 #define GL_DeclareType  lispId("DECLARE-TYPE")
@@ -280,6 +296,10 @@ gliUnit(Foam foam)
 	int	i;
 
 	assert(foamTag(foam) == FOAM_Unit);
+
+	if (foamUnitHasCoroutine(foam)) {
+		foam = gcrRewriteUnit(foam);
+	}
 
 	glvDGlo      = foamUnitGlobals(foam);
 	glvDConst    = foamUnitConstants(foam);
@@ -538,6 +558,18 @@ gliExpr(Foam foam)
 	  case FOAM_EEnsure:
 		sx = lisp1(GL_FoamEEnsure, gliExpr(foam->foamEEnsure.env));
 		break;
+	  case FOAM_Gener:
+		  sx = gliGener(foam);
+		  break;
+	  case FOAM_GenIter:
+		  sx = gliGenIter(foam);
+		  break;
+	  case FOAM_GenerValue:
+		  sx = gliGenerValue(foam);
+		  break;
+	  case FOAM_GenerStep:
+		  sx = gliGenerStep(foam);
+		  break;
 	  default:
 		printf("unhandled foamTag = %s\n",
 		       foamInfo(foamTag(foam)).str);
@@ -644,6 +676,18 @@ gl0IdName(Foam foam)
 }
 
 local SExpr
+gl0IdCRProgName(Foam foam)
+{
+	Foam    decl = gl0GetDecl(foam);
+	int     ix   = foam->foamConst.index;
+	SExpr   val;
+
+	val =  gl0Id(FOAM_Const, ix, strPrintf("CR-Prog-%s-%s", glvFileName,
+					       decl->foamDecl.id));
+	return val;
+}
+
+local SExpr
 gl0IdInfo(Foam decl, int ix)
 {
 	String name, exporter;
@@ -681,7 +725,6 @@ gliConst(Foam foam)
 	val =  gl0Id(FOAM_Const, ix, strPrintf("%s-%s", glvFileName,
 						 decl->foamDecl.id));
 	return val;		
-
 }
 
 local SExpr
@@ -933,14 +976,15 @@ local SExpr
 gl0Prog(Foam lhs, Foam prog)
 {
 	Foam            params, locals, body;
-	SExpr           sx, name = gl0IdName(lhs), ei, hdr;
+	SExpr           sx, ei, hdr;
+	Bool		isCoroutine;
 
 	assert(foamTag(prog) == FOAM_Prog);
 
 	params  = prog->foamProg.params;
 	locals  = prog->foamProg.locals;
 	body    = prog->foamProg.body;
-
+	isCoroutine  = foamProgIsCoroutine(prog);
 	glvLabelNum  = 0;
 	glvHasGoto   = 0;
 	glvDPar      = params;
@@ -949,7 +993,9 @@ gl0Prog(Foam lhs, Foam prog)
 	glvIsLeaf    = foamProgIsLeaf(prog);
 	glvLexFormats= prog->foamProg.levels;
 	glvActualLexFormats = gl0InitFormats(glvLexFormats);
-	glvFunName   = name;
+	glvFunName   = isCoroutine ? gl0IdCRProgName(lhs): gl0IdName(lhs);
+
+	glvIsCoroutine = isCoroutine;
 
 	sx = gliExpr(body);
 	ei = gl0EnvInit(prog);
@@ -958,13 +1004,24 @@ gl0Prog(Foam lhs, Foam prog)
 		sx = gl0FlattenProgn(sx);
 	}
 
-	hdr= sxCons(GL_DefProg, 
-		    sxCons(gl0ProgType(lhs,prog),
-		           lisp0(gl0MakeLocals(locals,ei))));
-		   
+	if (glvIsCoroutine) {
+		SExpr mkenv = glvActualLexFormats->foamDEnv.argv[0] == emptyFormatSlot
+			? GL_Nil
+			: gl0MakeEnv(gl0Env(1), gl0MakeLevel(glvActualLexFormats->foamDEnv.argv[0]));
+		hdr = lisp4(GL_DefCoroutine,
+			    gl0IdName(lhs),
+			    gl0ProgType(lhs, prog),
+			    sxiList(2, gl0Env(1), mkenv),
+			    gl0MakeLocals(locals, ei));
+	}
+	else {
+		hdr = sxCons(GL_DefProg,
+			     sxCons(gl0ProgType(lhs,prog),
+				    lisp0(gl0MakeLocals(locals,ei))));
+	}
 	if (sxCar(sx) == GL_Progn) sx = sxCdr(sx);
 	else sx = lisp0(sx);
-	
+
 	glvLexFormats = 0;
 	foamFree(glvActualLexFormats);
 	glvActualLexFormats = NULL;
@@ -994,8 +1051,11 @@ gl0EnvInit(Foam prog)
 	int 	index = foamProgIndex(prog);
 
 	int 	i, level, maxLevel = -1;
-	
-	if (!foamProgIsLeaf(prog)) {
+
+	if (foamProgIsCoroutine(prog) && !foamProgIsLeaf(prog)) {
+		sx = sxCons(lisp2(GL_Setq, gl0Level(int0), gl0EnvLevel(0)), sx);
+	}
+	else if (!foamProgIsLeaf(prog)) {
 		sx = sxCons(lisp2(GL_Setq, gl0Level(int0),
 				  gl0MakeLevel(index)), sx);
 		sx = sxCons(lisp2(GL_Setq, gl0Env(int0),
@@ -1218,7 +1278,7 @@ gl0DeclareVar(Foam lhs, int type)
 local SExpr
 gl0DeclareDefun(Foam lhs, Foam rhs)
 {
-	return sxCons(GL_DeclareFunction,gl0ProgType(lhs,rhs));
+	return sxCons(GL_DeclareFunction, gl0ProgType(lhs,rhs));
 }
 
 
@@ -1230,7 +1290,7 @@ gl0ProgType(Foam lhs, Foam rhs)
 	AInt type;
 	int i;
 
-	name    = gl0IdName(lhs);
+	name    = glvIsCoroutine ? gl0IdCRProgName(lhs) : gl0IdName(lhs);
 	params  = rhs->foamProg.params;
 	argv    = params->foamDDecl.argv;
 	argTypes = sxNil;
@@ -1242,6 +1302,10 @@ gl0ProgType(Foam lhs, Foam rhs)
 				  argTypes);
 
 	argTypes = sxCons(lisp1( GL_e1, GL_Env), argTypes);
+	if (foamProgIsCoroutine(rhs)) {
+		argTypes = sxCons(lisp1( GL_e0, GL_Env), argTypes);
+	}
+
 	argTypes = sxNReverse(argTypes);
 
 	/* Return type */
@@ -1309,7 +1373,7 @@ gl0MakeDDecl(int formatIndex)
 {
 	Foam 	decl, format = glvDFmt->foamDFmt.argv[formatIndex];
 	int 	i;
-	SExpr	def, field, name, type;
+	SExpr	def, field, type;
 	String	typeId;
 
 	assert(foamTag(format) == FOAM_DDecl);
@@ -1328,7 +1392,7 @@ gl0MakeDDecl(int formatIndex)
 		def = sxCons(lisp1(field, type), def);
 	}
 
-	name = gl0StructName(formatIndex);
+	SExpr name = gl0StructName(formatIndex);
 	return sxCons(GL_DDecl, sxCons(name, def));
 }
 
@@ -1346,6 +1410,14 @@ gl0StructName(int i)
 {
 	String 	buf;
 	buf = strPrintf("Struct-%s-%d", glvFileName, i);
+	return lispId(buf);
+}
+
+local SExpr
+gl0EnvStructName(int i)
+{
+	String 	buf;
+	buf = strPrintf("EnvStruct-%s-%d", glvFileName, i);
 	return lispId(buf);
 }
 
@@ -1515,6 +1587,43 @@ gliRElt(Foam foam)
 		     sxiFrInteger(ix),
 		     gliExpr(foam->foamRElt.expr));
 }
+
+local SExpr
+gliGener(Foam foam)
+{
+	return lisp3(GL_Gener,
+		     gliExpr(foam->foamGener.env),
+		     gl0StructName(foam->foamGener.fmt),
+		     gliExpr(foam->foamGener.prog));
+}
+
+local SExpr
+gliGenIter(Foam foam)
+{
+	// TODO: Multi-argument
+	return lisp1(GL_GenIter, gliExpr(foam->foamGenIter.gener));
+}
+
+local SExpr
+gliGenerValue(Foam foam)
+{
+	return lisp1(GL_GenerValue, gliExpr(foam->foamGenerValue.gener));
+}
+
+local SExpr
+gliGenerStep(Foam foam)
+{
+	glvHasGoto = 1;
+	return lisp2(GL_GenerStep,
+		     gliExpr(foam->foamGenerStep.gener),
+		     lisp1(GL_Go, lispId(strPrintf("Lab%d", foam->foamGenerStep.label))));
+}
+
+/********************************************
+ *
+ * :: Utils
+ *
+ */
 
 local String
 gl0ExtractFileName()

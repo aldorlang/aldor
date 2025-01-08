@@ -27,6 +27,7 @@ void listTestSuite(void);
 void ostreamTest(void);
 void ofPeepTest(void);
 void ofCPropTest(void);
+void ofCrinTest(void);
 void printfTest(void);
 void retypeTest(void);
 void scobindTest(void);

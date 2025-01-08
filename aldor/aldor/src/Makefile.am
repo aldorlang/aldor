@@ -36,7 +36,8 @@ javagen_SOURCES =	\
 	java/javaobj.c	\
 	java/main.c	\
 	axlcomp.c	\
-	cmdline.c
+	cmdline.c	\
+	yldlocs.c
 
 javagen_LDADD = libphase.a libstruct.a libgen.a libport.a -lm
 javagen_LDFLAGS =
@@ -216,6 +217,7 @@ libphase_a_SOURCES =	\
 	flatten.c	\
 	fortran.c	\
 	genc.c		\
+	gencr.c		\
 	gencpp.c	\
 	genfoam.c	\
 	genlisp.c	\
@@ -233,7 +235,9 @@ libphase_a_SOURCES =	\
 	gf_rtime.c	\
 	gf_seq.c	\
 	gf_xgener.c	\
+	gf_cgener.c	\
 	include.c	\
+	inlstate.c	\
 	inlutil.c	\
 	linear.c	\
 	macex.c		\
@@ -241,6 +245,7 @@ libphase_a_SOURCES =	\
 	of_cfold.c	\
 	of_comex.c	\
 	of_cprop.c	\
+	of_crinlin.c	\
 	of_deada.c	\
 	of_deadv.c	\
 	of_emerg.c	\
@@ -268,7 +273,8 @@ libphase_a_SOURCES =	\
 	ti_sef.c	\
 	ti_tdn.c	\
 	tinfer.c	\
-	usedef.c
+	usedef.c	\
+	yldlocs.c
 
 #libphase_a_LIBADD = libstruct.a libgen.a libport.a
 
@@ -294,6 +300,7 @@ testsuite =			\
 	test/test_forg.c	\
 	test/test_fptr.c	\
 	test/test_format.c	\
+	test/test_gencr.c	\
 	test/test_genfoam.c	\
 	test/test_jflow.c	\
 	test/test_java.c	\
@@ -301,6 +308,7 @@ testsuite =			\
 	test/test_int.c		\
 	test/test_list.c	\
 	test/test_of_cprop.c	\
+	test/test_of_crinlin.c	\
 	test/test_of_peep.c	\
 	test/test_ostream.c	\
 	test/test_printf.c	\

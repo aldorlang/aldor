@@ -49,30 +49,65 @@ foamdir       = $(abs_top_builddir)/aldor/lib/libfoam
 
 utils := tassert rtexns
 aptests := exquo
-fmtests := rectest enumtest clos strtable1 simple apply \
-	   nestcond silly cexp lself0 selfcond lself \
-	   lself2 catdef2 args1a args1 args2a args2 \
-	   rec2
-ctests  := rectest enumtest multinever maptuple cimp1
-otests  := enumtest rec2
-xtests := enumtest jimport cross seq small
 
-jtests := simple_j enumtest run_j halt
+fmtests := x rectest enumtest clos strtable1 simple apply \
+           nestcond silly cexp lself0 selfcond lself \
+	   lself2 catdef2 args1a args1 args2a args2 \
+	   strtable1 rec2 lit gener0 gener_fns gtools xarr \
+	   xdom gencross_empty
+ctests  := rectest enumtest multinever maptuple cimp1 \
+           gener0 xit xits xiter lit xarr
+otests  := enumtest rec2
+xtests := enumtest jimport cross seq small lit xit xits xiter generlist xmap xfold
+
+jtests := simple_j enumtest run_j halt gener0 xit xiter
 junittests := JExportTest JThrowTest
-jruntests := small jimport jimport_opt jimp0 jimp1 jlist jexport jexport1 jexport2 envname jexn jthrow
+jruntests := small jimport jimport_opt jimp0 jimp1 jlist jexport jexport1 jexport2 \
+	     envname jexn jthrow xiter xit genlist0a genlist1a gencross0 gencross1 \
+	     xgenerpkg0 xgenerpkg1 xmap where1 xdom gdom xfold gencross_empty
 
 out/ao/lself.ao: out/ao/lself0.ao
 out/ao/lself2.ao: out/ao/lself0.ao
+
 out/ao/args1.ao: out/ao/args1a.ao
 out/ao/args2.ao: out/ao/args2a.ao
 
-x_extra := rtexns
+out/ao/xlist.ao: out/ao/x.ao
+out/ao/gener.ao: out/ao/x.ao
+out/ao/gener0.ao: out/ao/x.ao
+out/ao/generlist.ao: out/ao/x.ao
+out/ao/generlist1.ao: out/ao/x.ao
+out/ao/gener_fns.ao: out/ao/x.ao
+out/ao/gencross0.ao: out/ao/x.ao
+out/ao/gencross1.ao: out/ao/x.ao
+out/ao/gencross1a.ao: out/ao/x.ao
+out/ao/gtools.ao: out/ao/x.ao
+out/ao/xit.ao: out/ao/x.ao
+out/ao/xits.ao: out/ao/x.ao
+out/ao/xmap.ao: out/ao/x.ao
+out/ao/xdom.ao: out/ao/x.ao
+out/ao/xfold.ao: out/ao/x.ao
+out/ao/xgenerpkg0.ao: out/ao/x.ao
+out/ao/xgenerpkg1.ao: out/ao/x.ao
+out/ao/selfcond.ao: out/ao/lself0.ao
 
+out/ao/generlist1.ao: generlist.as
+out/ao/genlist1a.ao: genlist0a.as
+
+out/ao/xgenerpkg0.ao: xgenerpkg.as
+out/ao/xgenerpkg1.ao: xgenerpkg.as
+
+c_AXLFLAGS=-Q3
 cimp1_AXLFLAGS=-Q3
 simple_j_AXLFLAGS=-Q2
 jimport_opt_AXLFLAGS=-Q9 -Qinline-all
+xarr_opts = -Q9 -Qinline-all
+xfold_opts = -Q3
 
-badtests := opt1 jcatch fcall
+#badtests := opt1 jcatch fcall
+badtests := jcatch fcall
+
+#xarr_opts += -WD+crin -WD+optf -WD+inlProg -WD+inlCallInfo
 
 jimport_opts := -Q3
 jthrow_opts := -Q3
@@ -84,6 +119,19 @@ lself2_opts = -Y out/ao
 args1_opts = -Y out/ao
 args2_opts = -Y out/ao
 
+gx_opts += -Q3
+gener1a_opts += -Q3
+xm1_opts += -Q3
+xn1_opts += -Q3
+xit_opts += -Q3
+xits_opts += -Q3
+xiter_opts += -Q3
+xgenerpkg_opts += -Q3
+xmap_opts += -Q8
+xdom_opts += -Q3
+gdom_opts += -Q3
+lit_opts += -Q3
+
 jexport_extjava := aldor.stuff.Foo aldor.stuff.Bar
 jthrow_extjava  := aldor.stuff.ExnThrow
 envname_extjava := aldor.stuff.Env
@@ -93,10 +141,6 @@ JExportTest_classes := aldorcode.jexport
 JThrowTest_classes  := aldorcode.jthrow
 
 jimport_opt.ao: $(srcdir)/jimport.as
-
-out/ao/selfcond.ao: out/ao/lself0.ao
-
-selfcond_AXLFLAGS = -Y out/ao
 
 # opt1 fails because the optimise decides to inline the recursive call
 # (it shouldn't, but spotting the call is a bit tricky).
@@ -124,6 +168,7 @@ nfile := -Nfile=$(aldorsrcdir)/aldor.conf
 
 .PHONY: all-fm
 all-fm: $(patsubst %, out/fm/%.fm, $(utils) $(_fmtests))
+
 $(patsubst %, out/fm/%.fm, $(utils) $(_fmtests)): out/fm/%.fm: out/ao/%.ao
 	$(AM_V_ALDOR_FM)		\
 	mkdir -p $$(dirname $@);	\
@@ -239,9 +284,9 @@ classpath=$(abs_top_builddir)/aldor/lib/java/src/foamj.jar:$(abs_top_builddir)/a
 $(patsubst %, %-javatest,$(_jruntests)): %-javatest: out/java/aldorcode/%.class
 	$(AM_V_ALDOR_JAVATEST) java -cp out/java:$(classpath) aldorcode.$*
 
-$(patsubst %,out/java/%.class,$(_junittests)):  out/java/%.class: %.java
-	(cd $(builddir)/out/java; \
-         mkdir -p $$(dirname $@); \
+$(patsubst %,out/java/%.class,$(_junittests)): out/java/%.class: %.java
+	(mkdir -p $$(dirname $@); \
+	 cd $(builddir)/out/java; \
          javac -d . -cp $(classpath)/../src/foamj.jar:$(JUNIT_JAR):. \
 		$(abs_srcdir)/$*.java)
 

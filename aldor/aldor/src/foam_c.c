@@ -72,6 +72,8 @@ char *x[] = {"-", NULL};
 char **mainArgv = x;
 FiWord mainArgc = 1;
 
+FiWord haltMessage;
+
 /*****************************************************************************
  *
  * :: Storage management
@@ -1698,6 +1700,12 @@ fiWordToSFlo(FiWord i)
  *
  *****************************************************************************/
 
+void
+fiSetHaltMessage(FiWord msg)
+{
+	haltMessage = msg;
+}
+
 FiWord
 fiHalt(FiSInt i)
 {
@@ -1721,9 +1729,11 @@ fiHalt(FiSInt i)
 	case 106:
 		fiRaiseException((FiWord)"(Aldor error) Write to invalid pointer (read-only?).");
 		exit((int)i);
-	default:
-		fiRaiseException((FiWord)"(Aldor error) Halt");
+	default: {
+		FiWord msg = (FiWord) "(Aldor error) Halt";
+		fiRaiseException(msg);
 		exit((int)i);
+	}
 	case -1:
 		break;	/* To quiet compilers which think "exit" returns. */
 	}
@@ -2349,6 +2359,56 @@ fiImportGlobalFun(String name, Ptr * p)
 }
 
 void	(* fiFileInitializer)(char *) = (void (*)(char *)) NULL;
+
+
+/*****************************************************************************
+ *
+ * :: Generator operations
+ *
+ *****************************************************************************/
+
+FiGener
+fiGenerNew(FiEnv env, FiSInt sz, FiProg prog)
+{
+	FiGener g = (FiGener) stoAlloc(OB_Other, sizeof(*g));
+	g->env = env;
+	g->stateSize = sz;
+	g->prog = prog;
+	return g;
+}
+
+FiGenIter
+fiGenStartIter(FiGener g)
+{
+	FiGenIter iter = (FiGenIter) stoAlloc(OB_Other, sizeof(*iter));
+	iter->env = g->env;
+	iter->prog = g->prog;
+	iter->step = -1;
+	iter->state = (FiPtr) stoAlloc(OB_Other, g->stateSize);
+	if (iter->prog->envSz != 0) {
+		FiPtr l0 = (FiPtr) fi0Alloc(iter->prog->envSz, CENSUS_EnvLevel);
+		iter->env0 = fiEnvPush(l0, iter->env);
+	}
+	else {
+		iter->env0 = NULL;
+	}
+	return iter;
+}
+
+void
+fiGenerStep(FiGenIter gi)
+{
+	FiSInt  newStep;
+	FiWord ret;
+	if (gi->env0 != NULL) {
+		(gi->prog->fun)(gi->env, gi->env0, gi->step, gi->state, &newStep, &ret);
+	}
+	else {
+		(gi->prog->fun)(gi->env, gi->step, gi->state, &newStep, &ret);
+	}
+	gi->step  = newStep;
+	gi->value = ret;
+}
 
 
 /*****************************************************************************

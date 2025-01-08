@@ -20,7 +20,7 @@
  compile-as-file cases
 
  |Clos| |Char| |Bool| |Byte| |HInt| |SInt| |BInt| |SFlo| |DFlo| |Ptr| 
- |Word| |Arb| |Env| |Level| |Arr| |Record|
+ |Word| |Arb| |Env| |Level| |Arr| |Record| |Gener| |GenIter|
 
  |ClosInit| |CharInit| |BoolInit| |ByteInit| |HIntInit| |SIntInit| 
  |BIntInit| |SFloInit| |DFloInit| |PtrInit| |WordInit| |ArbInit| |EnvInit|
@@ -89,8 +89,10 @@
  |SetLex| |SetRElt| |SetAElt| |SetEElt|
  |FoamFree|
 
+ |GenerStep| |GenerValue|
+
  declare-prog declare-type
- defprog ignore-var block-return
+ defprog defcoroutine ignore-var block-return
  defspecials file-exports file-imports
  typed-let foamfn |FoamProg| |alloc-prog-info|
 
@@ -114,7 +116,7 @@
  |fiSetDebugVar| |fiGetDebugVar| |fiSetDebugger| |fiGetDebugger|
  ;; Blatent hacks..
  |G-stdoutVar| |G-stdinVar| |G-stderrVar|
- |fiStrHash|
+ |fiStrHash| |SIntHashCombine|
 
  axiomxl-file-init-name
  axiomxl-global-name
@@ -122,12 +124,14 @@
 
 
 ;; type defs for Foam types
-(deftype |Char| () 'string-char)
+(deftype |Char| () 'character)
 (deftype |Clos| () 'list)
 (deftype |Bool| () '(member t nil))
 (deftype |Byte| () 'unsigned-byte)
 (deftype |HInt| () '(integer #.(- (expt 2 15)) #.(1- (expt 2 15))))
-(deftype |SInt| () 'fixnum)
+(deftype |SInt| () '(integer #.(- (expt 2 31)) #.(1- (expt 2 31))))
+(deftype |Gener| () 'vector)
+(deftype |GenIter| () 'simple-vector)
 
 #+:AKCL
 (deftype |BInt| () t)
@@ -139,7 +143,7 @@
 #+:AKCL
 (deftype |DFlo| () t)
 #-:AKCL
-(deftype |DFlo| () 'long-float)
+(deftype |DFlo| () t)
 
 (deftype |Level| () t) ;; structure??
 
@@ -168,6 +172,8 @@
 (defconstant |ArbInit|  (the |Arb|  nil))
 (defconstant |EnvInit|  (the |Env|  nil))
 (defconstant |LevelInit|  (the |Level|  nil))
+(defconstant |GenerInit|  (the |Gener|  (vector 0)))
+(defconstant |GenIterInit|  (the |GenIter| (vector 0)))
 
 ;; Bool values are assumed to be either 'T or NIL.
 ;; Thus non-nil values are canonically represented.
@@ -281,8 +287,8 @@
 
 (defmacro |SInt0|         () 0)
 (defmacro |SInt1|         () 1)
-(defmacro |SIntMin|       () `(the |SInt| most-negative-fixnum))
-(defmacro |SIntMax|       () `(the |SInt| most-positive-fixnum))
+(defmacro |SIntMin|       () `(the |SInt| #.(- (expt 2 31))))
+(defmacro |SIntMax|       () `(the |SInt| #.(1- (expt 2 31))))
 (defmacro |SIntIsZero|   (x) `(zerop (the |SInt| ,x)))
 (defmacro |SIntIsNeg|    (x) `(minusp (the |SInt| ,x)))
 (defmacro |SIntIsPos|    (x) `(plusp (the |SInt| ,x)))
@@ -471,7 +477,7 @@
 (defmacro |FoamEnvEnsure| (e) 
   `(if (|EnvInfo| ,e) (|CCall| (|EnvInfo| ,e)) nil))
 
-(defconstant null-char-string (string (code-char 0)))
+(defparameter null-char-string (string (code-char 0)))
 (defmacro |MakeLit| (s) `(concatenate 'string ,s null-char-string))
 
 ;; functions are represented by symbols, with the symbol-value being some
@@ -481,7 +487,7 @@
 (defmacro |FunProg| (x) x)
 
 (defstruct FoamProgInfoStruct
-  (funcall nil :type function)
+  (funcall #'(lambda () (error "FoamProgInfoStruct: funcall not assigned")) :type function)
   (hashval 0   :type |SInt|))
 
 (defun |ProgHashCode| (x)
@@ -507,6 +513,10 @@
 
 ;; Accessors and constructors
 (defmacro |DDecl| (name &rest args)
+  (setf (get name 'struct-args) args)
+  `(defstruct ,name ,@(insert-types args)))
+
+(defmacro |EnvDDecl| (name &rest args)
   (setf (get name 'struct-args) args)
   `(defstruct ,name ,@(insert-types args)))
 
@@ -546,23 +556,24 @@
   `(setf (aref ,name ,index) ,val))
 
 (defmacro |MakeLevel| (builder struct)
-  (if (get struct 'struct-args)
-      `(,builder)
-    'nil))
+  (let ((args (get struct 'struct-args)))
+    (if (get struct 'struct-args)
+	`(make-array ,(length args))
+	'nil)))
 
 
 (defmacro |EElt| (accessor n var)
-  `(,accessor ,var))
+  `(svref ,var ,n))
 
 (defmacro |SetEElt| (accessor n var val)
-  `(setf (,accessor ,var) ,val))
+  `(setf (svref ,var ,n) ,val))
 
 (defmacro |Lex| (accessor n var)
-  `(,accessor ,var))
+  `(svref ,var ,n))
 
 (defmacro |SetLex| (accessor n var val)
   `(progn ;; (print ',accessor)
-	  (setf (,accessor ,var) ,val)))
+	  (setf (svref ,var ,n) ,val)))
 
 ;; Atomic arguments for fun don't need a let to hold the fun.
 ;; CCall's with arguments need a let to hold the prog and the env.
@@ -584,10 +595,75 @@
 
 (defmacro |FoamFree| (o) '())
 
-;; macros for defining things
+;; Generators.
+;; A coroutine is (list cr-impl env0-constructor)
+;; A generator (Gener) is (vector record-descriptor env-descriptor env1 cr-impl)
+;; An iterator is (vector lastresult step state env1 env0 cr-impl)
+;; A record-descriptor is a lambda returning a new state record
+;; An env-descriptor is a lambda returning a new env0, or null
+(defmacro |Gener| (e1 rec id)
+  `(let ((rl (lambda () (|RNew| ,rec)))
+	 (cr ,id))
+      (vector rl
+	      (cadr cr)
+	      ,e1
+	      (car cr))))
 
+(defmacro |GenIter| (g &rest args)
+  `(let ((gg ,g))
+     (vector () 0
+	     (funcall (svref gg 0))
+	     (svref gg 2)
+	     (funcall (svref gg 1) (svref gg 2))
+	     (svref gg 3)
+	     ,args)))
+
+(defmacro |GenerStep| (it out)
+  `(let ((r (|GenerDoStep| ,it)))
+     (when r ,out)))
+
+(defun |GenerDoStep| (it)
+  (multiple-value-bind (newstep newresult)
+      (funcall (|GenIterGenerProg| it) (|GenIterStep| it) (|GenIterState| it)
+	       (|GenIterEnv1| it) (|GenIterEnv0| it))
+    (|GenIterSetResult| it newstep newresult)
+    (= newstep -1)))
+
+(defmacro |GenerValue| (g)
+  `(|GenIterValue| ,g))
+
+(defun |GenIterValue| (it)
+  (svref it 0))
+
+(defun |GenIterStep| (it)
+  (svref it 1))
+
+(defun |GenIterState| (it)
+  (svref it 2))
+
+(defun |GenIterEnv1| (it)
+  (svref it 3))
+
+(defun |GenIterEnv0| (it)
+  (svref it 4))
+
+(defun |GenIterGenerProg| (it)
+  (svref it 5))
+
+(defun |GenIterSetResult| (it newstep newresult)
+  (setf (svref it 0) newresult)
+  (setf (svref it 1) newstep))
+
+;; macros for defining things
+;; Example:
+;; (declare-prog
+;;  (|C25-csspecies-generBaseFn| |Clos| |Clos| |Clos| |Clos|)
+;;  ((|e1| |Env|)))
 (defmacro declare-prog (name-result params)
-  `(proclaim '(function ,(car name-result) ,params ,@(cdr name-result))))
+  `(proclaim '(ftype (function
+                      ,(mapcar #'cadr params)
+                      (values ,@(cdr name-result)))
+                     ,(car name-result))))
 
 (defmacro declare-type (name type)
   `(proclaim '(type ,name ,type)))
@@ -596,6 +672,13 @@
   `(progn (defun ,(caar type) ,(mapcar #'car (cadr type))
 	    (typed-let ,temps ,@body))
 	  (alloc-prog-info #',(caar type) (make-FoamProgInfoStruct))))
+
+(defmacro defcoroutine (cr-name type env temps &rest body)
+  `(progn (defun ,(caar type) ,(mapcar #'car (cadr type))
+	    (typed-let ,temps ,@body))
+	  (alloc-prog-info #',(caar type) (make-FoamProgInfoStruct))
+	  (defconstant ,cr-name
+	    (list #',(caar type) (lambda (,(car env)) ,(cadr env))))))
 
 (defmacro defspecials (&rest lst)
   `(proclaim '(special ,@lst)))
@@ -671,6 +754,8 @@
    ((eq x '|Arb|) '|ArbInit|)
    ((eq x '|Env|) '|EnvInit|)
    ((eq x '|Level|) '|LevelInit|)
+   ((eq x '|Gener|) '|GenerInit|)
+   ((eq x '|GenIter|) '|GenIterInit|)
    ((eq x '|Nil|) nil)
    (t nil)))
 
@@ -693,11 +778,10 @@
 		 (return i))))
   (length s))
 
-(defun |formatSInt| (n) (format nil "~D" n))
-(defun |formatBInt| (n) (format nil "~D" n))
-(defun |formatSFloat| (x) (format nil "~G" x))
-(defun |formatDFloat| (x) (format nil "~G" x))
-
+(defun |formatSInt| (n) (format nil "~D~D" n |CharCode0|))
+(defun |formatBInt| (n) (format nil "~D~D" n |CharCode0|))
+(defun |formatSFloat| (x) (format nil "~G~D" x |CharCode0|))
+(defun |formatDFloat| (x) (format nil "~G~D" x |CharCode0|))
 
 ;; Printing functions
 (defun |printNewLine| (cs) (terpri cs))
@@ -805,7 +889,7 @@
 (defmacro |atan2| (a b) `(atan ,a ,b))
 
 (defun |Halt| (n) 
-  (error (cond ((= n 101) "System Error: Unfortunate use of dependant type")
+  (error (cond ((= n 101) "System Error: Unfortunate use of dependent type")
 	       ((= n 102) "User error: Reached a 'never'")
 	       ((= n 103) "User error: Bad union branch")
 	       ((= n 104) "User error: Assertion failed")
@@ -823,8 +907,7 @@
 (setq |G-stdinVar| t)
 (setq |G-stderrVar| t)
 
-;; !! Not portable !!
-(defun foam::|fiStrHash| (x) (boot::|hashString| (subseq x 0 (- (length x) 1))))
+(defun foam::|fiStrHash| (x) (sxhash x))
 
 ;; These three functions check that two cons's contain identical entries.
 ;; We use EQL to test numbers and EQ everywhere else.  If the structure 
@@ -846,4 +929,15 @@
        ( (or (atom u) (atom v)) nil)
        ( (|politicallySound| (car u) (car v)) (|magicEq1| (cdr u) (cdr v)))
        nil ))
+
+(defconstant |hashZ1| 1100661313)
+(defconstant |hashZ2| 1433925857)
+(defconstant |hashZZ| 4903203917250634599)
+
+(defun |SIntHashCombine| (hash1 hash2)
+  (let ((h1 (logand hash1 (- (ash 1 32) 1)))
+	(h2 (logand hash2 (- (ash 1 32) 1))))
+    (logand (ash (* (+ (* h1 |hashZ1|) (* h2 |hashZ2|)) |hashZZ|)
+		 -32)
+	    1073741823)))
 

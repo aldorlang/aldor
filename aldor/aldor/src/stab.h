@@ -66,6 +66,7 @@ struct stabLevel {
 	BPack(Bool)	isLocked;		/* Can modify level?	*/
 	BPack(Bool)	isChecked;		/* All tforms checked?	*/
 	BPack(Bool)	isSubstable;		/* Any substable symes? */
+	BPack(Bool)	isGenerator;		/* Is this a generator  */
 	UShort		intStepNo;		/* interactive step     */
 	Table		tbl;			/* Symbol->StabEntry tbl*/
 	StabList	children;		/* child symbol tables	*/
@@ -141,6 +142,9 @@ extern UShort		stabMaxDefnNum		(void);
 #define			STAB_LEVEL_LARGE	(1<<1)
 #define			STAB_LEVEL_LOOP		(1<<2)
 #define			STAB_LEVEL_WHERE	(1<<3)
+#define			STAB_LEVEL_XGENERATE	(1<<4)
+//#define			STAB_LEVEL_COLLECT	(1<<4)
+#define			STAB_LEVEL_COLLECT	(1<<5)
 
 extern Stab		stabPushLevel		(Stab, SrcPos, ULong);
 extern Stab		stabPopLevel		(Stab);

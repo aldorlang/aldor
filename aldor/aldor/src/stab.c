@@ -63,7 +63,7 @@ CREATE_LIST(TFormUses);
 
 typedef			TFormUses(*UpdateTfuFun)(TFormUses);
 
-local StabLevel		stabNewLevel		(int, int, SrcPos, Bool);
+local StabLevel		stabNewLevel		(int, int, SrcPos, Bool, Bool);
 local StabEntry		stabGetEntry		(Stab, Symbol, Bool);
 local int		stabPrEntry		(FILE *, TblKey);
 
@@ -176,7 +176,7 @@ stabInitFile(void)
 Stab
 stabNewGlobal(void)
 {
-	StabLevel slev = stabNewLevel(int0, int0, sposNone, false); /* small */
+	StabLevel slev = stabNewLevel(int0, int0, sposNone, false, false); /* small */
 
 	Stab stab = listCons(StabLevel) (slev, listNil(StabLevel));
 	stabClrSubstable(stab);
@@ -187,7 +187,7 @@ stabNewGlobal(void)
 Stab
 stabNewFile(Stab globalStab)
 {
-	StabLevel slev = stabNewLevel(1, 1, sposNone, true); /* large level */
+	StabLevel slev = stabNewLevel(1, 1, sposNone, true, false); /* large level */
 
 	Stab fileStab = listCons(StabLevel) (slev, globalStab);
 	assert(listLength(StabLevel)(globalStab) == 1);
@@ -531,7 +531,7 @@ stabEntryCacheTypes(StabEntry stent, Length i)
  ****************************************************************************/
 
 local StabLevel
-stabNewLevel(int levno, int lamno, SrcPos spos, Bool isLargeLevel)
+stabNewLevel(int levno, int lamno, SrcPos spos, Bool isLargeLevel, Bool isGenerator)
 {
 	StabLevel	slev;
 
@@ -544,6 +544,7 @@ stabNewLevel(int levno, int lamno, SrcPos spos, Bool isLargeLevel)
 	slev->isLocked		= false;
 	slev->isChecked		= false;
 	slev->isSubstable	= true;
+	slev->isGenerator	= isGenerator;
 	slev->intStepNo		= intStepNo;
 	slev->tbl		= tblNew((TblHashFun) 0, (TblEqFun) 0);
 	slev->children		= listNil(Stab);
@@ -580,17 +581,20 @@ stabPushLevel(Stab stab, SrcPos spos, ULong flags)
 	Stab	  oldStab = stab;
 	int	  levno, lamno;
 
-	Bool	  isLargeLevel	= (flags & STAB_LEVEL_LARGE)  ? 1 : 0;
-	Bool	  isLoopLevel	= (flags & STAB_LEVEL_LOOP)   ? 1 : 0;
-	Bool	  isWhereLevel	= (flags & STAB_LEVEL_WHERE)  ? 1 : 0;
-	Bool	  isProgLevel	= !isLoopLevel && !isWhereLevel;
+	Bool	  isLargeLevel	= (flags & STAB_LEVEL_LARGE)    ? 1 : 0;
+	Bool	  isLoopLevel	= (flags & STAB_LEVEL_LOOP)     ? 1 : 0;
+	Bool	  isCollectLevel= (flags & STAB_LEVEL_COLLECT)  ? 1 : 0;
+	Bool	  isWhereLevel	= (flags & STAB_LEVEL_WHERE)    ? 1 : 0;
+	Bool	  isGenLevel	= (flags & STAB_LEVEL_XGENERATE) ? 1 : 0;
+	Bool      isLoopLike    = isLoopLevel || isCollectLevel;
+	Bool	  isProgLevel	= !isLoopLike && !isWhereLevel;
 
 	assert(stab != 0);
 
-	levno = car(stab)->lexicalLevel + (isLoopLevel ? 0 : 1);
+	levno = car(stab)->lexicalLevel + (isLoopLike ? 0 : 1);
 	lamno = car(stab)->lambdaLevel	+ (isProgLevel ? 1 : 0);
 
-	slev  = stabNewLevel(levno, lamno, spos, isLargeLevel);
+	slev  = stabNewLevel(levno, lamno, spos, isLargeLevel, isGenLevel);
 	stab  = listCons(StabLevel) (slev, stab);
 	car(oldStab)->children =
 		listCons(Stab) (stab, car(oldStab)->children);

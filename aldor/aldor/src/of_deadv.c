@@ -379,13 +379,18 @@ dvMarkExprUsage(Foam expr)
 		dvLocals[expr->foamLoc.index].used = DV_Used;
 		break;
 	  case FOAM_Return: {
-		Foam	env, clos = expr->foamReturn.value;
+		Foam	env = NULL;
+		Foam    clos = expr->foamReturn.value;
 		int	format;
 		if (foamTag(clos) == FOAM_Clos) {
 			env = clos->foamClos.env;
+		}
+		if (foamTag(clos) == FOAM_Gener) {
+			env = clos->foamGener.env;
+		}
+		if (env != NULL) {
 			if (foamTag(env) == FOAM_Env) {
-				format = dvDEnv->foamDEnv.
-					argv[env->foamEnv.level];
+				format = dvDEnv->foamDEnv.argv[env->foamEnv.level];
 				dvMarkDefinedValues(format);
 			}
 		}
@@ -404,6 +409,14 @@ dvMarkExprUsage(Foam expr)
 		dvMarkFormat(format, expr->foamLex.index, DV_Used);
 		dvKillEnsures[dvThisConst] = false;
 		break;
+	  }
+	  case FOAM_Gener: {
+		  Foam env = expr->foamGener.env;
+		  if (foamTag(env) == FOAM_Env) {
+			  int format = dvDEnv->foamDEnv.argv[env->foamEnv.level];
+			  dvMarkDefinedValues(format);
+		  }
+		  break;
 	  }
 	  case FOAM_EElt:
 		dvMarkEEltFormat(expr);

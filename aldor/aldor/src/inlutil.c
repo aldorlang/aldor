@@ -605,6 +605,7 @@ inuProgSizeComputeWithConsts(Foam foam, Foam prog, int constNum)
 	switch(foamTag(foam)) {
 
 	case FOAM_OCall: 
+		prog->foamProg.size++;
 		foamProgUnsetHasNoOCalls(prog);
 		break;
 
@@ -624,16 +625,19 @@ inuProgSizeComputeWithConsts(Foam foam, Foam prog, int constNum)
 		prog->foamProg.size += newProg->foamProg.size;
 		foamProgSetHasConsts(prog);
 
+		prog->foamProg.size++;
 		break;
 	}
-		
+	case FOAM_SInt:
+	case FOAM_BInt:
+	case FOAM_Par:
+	case FOAM_BCall:
+	case FOAM_Cast:
+		break;
 	default:
+		prog->foamProg.size++;
 		break;
 	}
-
-	prog->foamProg.size++;
-
-	
 
 }
 

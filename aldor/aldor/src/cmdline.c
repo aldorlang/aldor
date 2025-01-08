@@ -1019,11 +1019,13 @@ extern Bool
 	abnDefineDebug, abnWhereDebug, abnWithMergeDebug, abnormDebug,
 	absDebug, arDebug,
 	cfoldDebug, condApplyDebug, cpDebug, cpDfDebug,
+	crinDebug,
         cseDebug, cseDfDebug, cseDfiDebug, daDebug,
         dnfDebug, dvDebug, emergeDebug, fileDebug,
         fintDebug, fintLinkDebug, fintStoDebug,
 	flogDebug, foamConstDebug, foamDebug, foamSposDebug, 
 	fortranTypesDebug, fvDebug,
+	gcrDebug, gcrFmtDebug,
 	genfImplicitDebug,
 	genfDebug, genfHashDebug, genfExportDebug,
 	genfEnvDebug,
@@ -1057,7 +1059,7 @@ extern Bool
 	tipFarDebug, tipIdDebug,
 	tipLitDebug, tipEmbedDebug, tipSefDebug, tipTdnDebug, 
 	titfDebug, titfOneDebug, titfStabDebug,
-	udDfDebug, udDfiDebug;
+        udDfDebug, udDfiDebug, ylDebug;
  
 struct dbVarInfo {
 	Bool	*pvar;
@@ -1078,6 +1080,7 @@ struct dbVarInfo dbVarInfo[] = {
 	{ & condApplyDebug,	"condApply" },
  	{ & cpDebug,		"cp" },
  	{ & cpDfDebug,		"cpDf" },
+	{ & crinDebug,		"crin" },
  	{ & cseDebug,		"cse" },
  	{ & cseDfDebug,		"cseDf" },
  	{ & cseDfiDebug,	"cseDfi" },
@@ -1095,6 +1098,8 @@ struct dbVarInfo dbVarInfo[] = {
 	{ & foamSposDebug,	"foamSpos" },
 	{ & fortranTypesDebug,	"fortranTypes" },
 	{ & fvDebug,		"fv" },
+	{ & gcrDebug,		"gcr" },
+	{ & gcrFmtDebug,	"gcrFmt" },
 	{ & genfEnvDebug,	"genfEnv" },
 	{ & genfExportDebug,	"genfExport" },
 	{ & genfImplicitDebug,	"genfImplicit" },
@@ -1188,6 +1193,7 @@ struct dbVarInfo dbVarInfo[] = {
 	{ & titfStabDebug,	"titfStab" },
 	{ & udDfDebug,		"udDf" },
 	{ & udDfiDebug,		"udDfi" },
+	{ & ylDebug,		"yl" },
 	{ 0,			0}
 };
  

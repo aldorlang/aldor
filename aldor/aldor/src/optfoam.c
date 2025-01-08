@@ -17,6 +17,7 @@
 #include "of_cfold.h"
 #include "of_comex.h"
 #include "of_cprop.h"
+#include "of_crinlin.h"
 #include "of_deada.h"
 #include "of_deadv.h"
 #include "of_emerg.h"
@@ -57,6 +58,7 @@ static int optJumpFlow;
 static int optCast;
 static int optCC;
 static int optArgSub;
+static int optArgCrinlin;
 static int optCcFnonstd;
 static int optIgnoreAsserts;
 static int optKillPointers;
@@ -128,6 +130,7 @@ struct optControl	optControl[] = {
 /* The next three are experimental or future-work */
 {"killp",  	OPT_FLAG,  &optKillPointers,  { 0,  0,    0,    0,    0}},
 {"argsub",  	OPT_FLAG,  &optArgSub,        { 0,  0,    0,    0,    0}},
+{"crinlin",  	OPT_FLAG,  &optArgCrinlin,    { 0,  0,    1,    1,    1}},
 { 0 }
 };
 
@@ -276,6 +279,12 @@ optimizeFoam(Foam foam)
 		inlineUnit(foam, optInlineAll, optInlineLimit, true);
 		if (DEBUG(phase)){stoAudit();}
 	}
+	if (optInline) 	  {
+		optfDEBUG(dbOut, "Starting coroutine inline...\n");
+		crinUnit(foam);
+		inlineUnit(foam, optInlineAll, optInlineLimit, true);
+		if (DEBUG(phase)){stoAudit();}
+	}
 	/* Maybe we ought to cprop before cfold? */
 	if (optConstFold || optFloatFold) {
 		optfDEBUG(dbOut, "Starting cfold...\n");
@@ -287,6 +296,11 @@ optimizeFoam(Foam foam)
 		/* If const folding made new constants, inline them. */
 		inlineUnit(foam, optInlineAll, optInlineLimit, false);
 		newConsts = cfoldUnit(foam, optConstFold, optFloatFold);
+		if (DEBUG(phase)){stoAudit();}
+	}
+	if (newConsts && optInline) {
+		optfDEBUG(dbOut, "Starting coroutine inline...\n");
+		crinUnit(foam);
 		if (DEBUG(phase)){stoAudit();}
 	}
 	if (optHashFold) {

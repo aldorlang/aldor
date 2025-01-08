@@ -57,7 +57,8 @@ typedef struct fmt	* Fmt;
 typedef struct fintUnit * FintUnit;
 
 struct progInfo {
-	FintUnit	unit;			/* unit in which is contained*/
+	int		progType;		/* 0 => normal, 1 => coroutine */
+	FintUnit	unit;			/* unit in which is contained */
 	String		name;			/* name of the const that defines prog */
 	FiProgPos	fiProgPos;		/* pos. of Seq command */
 	int		size;			/* size */
@@ -84,7 +85,7 @@ typedef union  dataObj  * DataObj;
 typedef struct mFmt	* MFmt;
 typedef struct shDataObj* ShDataObj;
 
-union  dataObj {
+union dataObj {
 	FiNil		_fiNil; /*  (fiNil already defined!) */
 	FiWord		fiWord;
 	FiArb		fiArb;
@@ -104,6 +105,8 @@ union  dataObj {
 	FiSFlo		fiSFlo;
 	FiDFlo		fiDFlo;
 	FiProg		fiProg;
+	FiGener		fiGener;
+	FiGenIter	fiGenIter;
 	/* -------- for internal use: -------------- */
 	FiFluid		fiFluid;
 	DataObj		ptr;
@@ -319,9 +322,11 @@ typedef struct fintUnit	fintUnit;
      case FOAM_Rec:  (ref)->fiRec  = (expr).fiRec;  break;   \
      case FOAM_Arr:  (ref)->fiArr  = (expr).fiArr;  break;   \
      case FOAM_TR:   (ref)->fiTR   = (expr).fiTR;  break;   \
-     case FOAM_Prog: (ref)->fiProgPos=(expr).fiProgPos; break;\
-     case FOAM_Clos: (ref)->fiClos = (expr).fiClos; break;\
-     case FOAM_Env: (ref)->fiEnv = (expr).fiEnv; break;\
+     case FOAM_Prog:    (ref)->fiProgPos=(expr).fiProgPos; break;\
+     case FOAM_Clos:    (ref)->fiClos = (expr).fiClos; break;\
+     case FOAM_Gener:   (ref)->fiGener = (expr).fiGener; break;\
+     case FOAM_GenIter: (ref)->fiGenIter = (expr).fiGenIter; break;\
+     case FOAM_Env:     (ref)->fiEnv = (expr).fiEnv; break;\
      case FOAM_NOp: fintSetMFmt((ref), &(expr)); break; \
      case FOAM_Nil:  (ref)->_fiNil = (expr)._fiNil; break;\
      case FOAM_BInt:  (ref)->fiBInt = (Ptr) (bintCopy((BInt) (expr).fiBInt)); break;\
@@ -390,6 +395,8 @@ typedef struct fintUnit	fintUnit;
 	 case FOAM_Env: (x) = sizeof(FiEnv); break; \
 	 case FOAM_Prog: (x) = sizeof(FiProg); break; \
 	 case FOAM_Clos: (x) = sizeof(FiClos); break; \
+	 case FOAM_Gener: (x) = sizeof(FiGener); break; \
+	 case FOAM_GenIter: (x) = sizeof(FiGenIter); break; \
 	 case FOAM_Ptr: (x) = sizeof(FiPtr); break; \
 	 case FOAM_Word: (x) = sizeof(FiWord); break; \
 	 case FOAM_Arb: (x) = sizeof(FiArb); break; \
@@ -478,7 +485,7 @@ typedef struct fintUnit	fintUnit;
  * the previous stack.
  *************************************************************************/
 
-# define	PAR_OFFSET		9
+# define	PAR_OFFSET		10
 /* stack[bp + PAR_OFFSET] is the first parameter */
 
 
@@ -495,14 +502,15 @@ typedef struct fintUnit	fintUnit;
 # define	stackFrameProg(b)	((b)[6].progInfo)
 # define	stackFrameUnit(b)	((b)[7].unit)
 # define	stackFrameFluids(b)	((b)[8].ptr)
+# define	stackFrameCurrIter(b)	((b)[9].fiGenIter)
 
 # define	stackAlloc(ptr0,num)	{ \
-	 if (sp + num >= stack + STACK_SIZE -10)  stackChain(num); \
+	 if (sp + num >= stack + STACK_SIZE - 11)  stackChain(num); \
 	 (ptr0) = sp; sp += (num); \
          }
 
 # define	stackFrameAlloc(nParam)	{ \
-	 if (sp + PAR_OFFSET + nParam >= stack + STACK_SIZE -10)  stackChain(nParam+PAR_OFFSET); \
+	 if (sp + PAR_OFFSET + nParam >= stack + STACK_SIZE - 11)  stackChain(nParam+PAR_OFFSET); \
 	 sp->ptr = bp; \
 	 bp = sp; \
 	 sp += 2; \
@@ -513,6 +521,7 @@ typedef struct fintUnit	fintUnit;
 	 (sp++)->progInfo = prog; \
 	 (sp++)->fiUnit = unit; \
 	 (sp++)->ptr = fluidValues; \
+	 (sp++)->fiGenIter = currGenIter; \
          sp += nParam + 1; }
 
 # define	stackFrameFree()	{ \
@@ -524,6 +533,7 @@ typedef struct fintUnit	fintUnit;
 	  prog = bp[6].progInfo; \
 	  unit = bp[7].fiUnit; \
           fluidValues = bp[8].ptr; \
+          currGenIter = bp[9].fiGenIter; \
 	  tape = fintUnitTape(unit); \
           if (bp < stack || bp >= stack + STACK_SIZE) { sp = stack[1].ptr; stack = stack[0].ptr; }\
 	  else sp = bp; \
@@ -547,6 +557,12 @@ typedef struct fintUnit	fintUnit;
            (cl) = (FiClos) fintAlloc(struct _FiClos,1); \
            (cl)->prog = (FiProg) (pr).fiProgPos;  \
            (cl)->env =  (en).fiEnv;}
+
+# define	fintGenerMake(gg,en,pr, ssz)   {	 \
+           (gg) = (FiGener) fintAlloc(struct _FiGener,1); \
+           (gg)->prog = (FiProg) (pr).fiProgPos;  \
+	   (gg)->stateSize = ssz;		  \
+           (gg)->env =  (en).fiEnv;}
 
 /*
  * This value is the number of stack frames printed before executing an
@@ -827,6 +843,7 @@ local DataObj	sp;		/* First free cell on the top of the stack. */
 local DataObj	bp;		/* Bottom of the current frame; refers to a
 				 * dataObj containing the old bp.
 				 */
+local FiGenIter currGenIter;    /* Current coroutine */
 local DataObj	locValues;	/* local values in the current stack frame */
 local DataObj	fluidValues;	/* fluid values in the current stack frame */
 local FiEnv	lexEnv;		/* current lexical environment */
@@ -1051,6 +1068,11 @@ local dataType	fintDoCallN	(DataObj clos, DataObj, int, DataObj *);
       void      fintCheckCallStack(void);
 local void *	fintSaveState(void);
 local void	fintRestoreState(void *);
+
+local Bool	fintGenerStep(FiGenIter);
+local DataObj   fintGenerLocsAlloc(int sz);
+local void      fintGenerLocsFree(DataObj);
+
 /**************************************************************************
  * :: fintInit()
  * :: fintFini()
@@ -1589,7 +1611,7 @@ fintStmt(DataObj retDataObj)
 		myType = fintEval(retDataObj);
 		fintDEBUG(dbOut, "returning from %s in %s\n",
 			  prog->name, prog->unit->name);
-		return myType;   /* Unique exit for a stmt sequence */
+		return myType;   /* Unique exit for a stmt sequence (also: see yield) */
 
 	case FOAM_Seq:   /* Ignore... */
 		fintGetInt(fmt,argc);
@@ -1638,6 +1660,26 @@ fintStmt(DataObj retDataObj)
 		bug("unwind returned");
 		break;
 	}
+	case FOAM_GenerStep: {
+		union dataObj loc;
+		Bool done;
+		fintGetInt(labelFmt, n);
+		fintTypedEval(&loc, FOAM_GenIter);
+		done = fintGenerStep(loc.fiGenIter);
+		if (done) {
+			ip = labels[n];
+		}
+		break;
+	}
+	case FOAM_Yield: {
+		FiGenIter iter = currGenIter;
+		fintTypedEval(&expr, FOAM_Word);
+		fiGenerStepIndex(iter) = ip;
+		fiGenerValue(iter) = expr.fiWord;
+		return FOAM_Word;
+	}
+	case FOAM_GenerValue:
+	case FOAM_GenIter:
 	case FOAM_CCall:
 	case FOAM_BCall:
 	case FOAM_OCall:
@@ -3642,10 +3684,7 @@ fintEval_(DataObj retDataObj)
 
 		if (DEBUG(fint)) {
 			int k;
-			if (tag == FOAM_CCall)
-				(void)fprintf(dbOut, "((CCall ");
-			else
-				(void)fprintf(dbOut, "((OCall ");
+			fprintf(dbOut, "((%s ", foamInfo(tag).str);
 			(void)fprintf(dbOut, "to %s in %s with par: ",
 				      prog0->name,
 				      prog0->unit->name);
@@ -3907,6 +3946,39 @@ fintEval_(DataObj retDataObj)
 		fintClosMake(retDataObj->fiClos, env, prog0);
 
 		myType = FOAM_Clos;
+		return myType;
+	}
+	case FOAM_Gener: {
+		union dataObj		env;
+		union dataObj		prog0;
+		FiGener gener;
+		int n;
+		fintGetInt(fmt, n);
+		fintTypedEval(&env, FOAM_Env);
+		fintTypedEval(&prog0, FOAM_Prog);
+
+		fintGenerMake(retDataObj->fiGener, env, prog0, 0);
+
+		myType = FOAM_Gener;
+		return myType;
+	}
+	case FOAM_GenIter: {
+		FiGenIter gi;
+		fintTypedEval(&expr, FOAM_Gener);
+		gi = (FiGenIter) stoAlloc(OB_Other, sizeof(*retDataObj->fiGenIter));
+		gi->env = expr.fiGener->env;
+		gi->prog = expr.fiGener->prog;
+		gi->step = -1;
+		gi->state = NULL;
+		retDataObj->fiGenIter = gi;
+		myType = FOAM_GenIter;
+		return myType;
+	}
+	case FOAM_GenerValue: {
+		union dataObj dgi;
+		fintTypedEval(&dgi, FOAM_GenIter);
+		retDataObj->fiWord = fiGenerValue(dgi.fiGenIter);
+		myType = FOAM_Word;
 		return myType;
 	}
 	case FOAM_Const:
@@ -5425,6 +5497,73 @@ fintDoCallN(DataObj clos, DataObj retDataObj, int argc, DataObj *argv)
 
 }
 
+local Bool
+fintGenerStep(FiGenIter iter)
+{
+	DataObj  oldStack;
+	FiEnv    env;
+	DataObj	 sp0;
+	union dataObj retVal;
+	UByte	      denv;
+
+	stackAlloc(sp0, 0 + PAR_OFFSET);
+	oldStack = stack;
+
+	stackFrameAlloc(0);
+	stackFrameIp(bp) = ip;
+	prog = (ProgInfo) iter->prog;
+	unit = prog->unit;
+	tape = fintUnitTape(unit);
+	labels = progInfoLabels(prog);
+	ip     = progInfoSeq(prog);
+	env    = iter->env;
+
+	if (iter->step == -1) {
+		denv = progInfoDEnv(prog)[0];
+
+		if (fintUnitLexsCount(unit, denv)) {
+			DataObj newLev0;
+			newLev0 = fintAlloc(union dataObj,
+					 fintUnitLexsCount(unit, denv));
+			iter->env0 = fiEnvPush(newLev0, iter->env);
+		}
+		else
+			iter->env0 = NULL;
+	}
+
+	if (iter->step == -1) {
+		iter->state = (progInfoLocsCount(prog) ? (FiPtr) fintGenerLocsAlloc(progInfoLocsCount(prog)) : NULL);
+	}
+	if (iter->step != -1) {
+		ip = iter->step;
+	}
+
+	iter->step = 0;
+	locValues = (DataObj) iter->state;
+	lev0 = iter->env0 == NULL ? NULL : (DataObj) iter->env0->level;
+	fintEnvPush(lexEnv, lev0, env);
+	currGenIter = iter;
+	fintStmt(&retVal);
+
+	stackFrameFree();
+	if (iter->step == 0) {
+		fintGenerLocsFree((DataObj) iter->state);
+	}
+
+	return iter->step == 0; // (true indicates completed)
+}
+
+DataObj
+fintGenerLocsAlloc(int sz)
+{
+	return (DataObj) stoAlloc(OB_Other, sizeof(union dataObj) * sz);
+}
+
+void
+fintGenerLocsFree(DataObj obj)
+{
+	stoFree(obj);
+}
 /*****************************************************************************
  *
  * :: Storage management
@@ -6419,7 +6558,7 @@ typedef struct {
 	DataObj	lev0;		/* lexEnv->level, used to speed up lex(0,n) */
 	ProgInfo	prog;		/* progInfo for the current program */
 	FiProgPos	* labels;
-
+	FiGenIter currIter;
 	int	labelFmt;
 	FintUnit unit;
 } fintState;

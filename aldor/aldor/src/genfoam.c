@@ -32,9 +32,11 @@
 #include "fortran.h"
 #include "genfoam.h"
 #include "gf_add.h"
+#include "gf_cgener.h"
 #include "gf_excpt.h"
 #include "gf_fortran.h"
 #include "gf_gener.h"
+#include "genstyle.h"
 #include "gf_imps.h"
 #include "gf_java.h"
 #include "gf_prog.h"
@@ -42,7 +44,6 @@
 #include "gf_rtime.h"
 #include "gf_syme.h"
 #include "gf_util.h"
-#include "gf_xgener.h"
 #include "of_util.h"
 #include "optfoam.h"
 #include "optinfo.h"
@@ -152,7 +153,7 @@ local void	   gen0FindDefsAll	  (AbSyn, Stab);
 local int	   gen0FoamLevel	  (AInt level);
 local FoamTag	   gen0FoamType		  (Foam foam);
 local void	   gen0ForIter		  (AbSyn, FoamList *, FoamList *);
-local void	   gen0XForIter		  (AbSyn, FoamList *, FoamList *);
+local void	   gen0CForIter		  (AbSyn, FoamList *, FoamList *);
 local void	   gen0FreeTemp		  (Foam);
 local void	   gen0GenFoamInit	  (void);
 local void	   gen0GenFoamFini	  (void);
@@ -302,7 +303,7 @@ GenFoamState		gen0State;
 static AbSyn            gen0FortranFnResult = NULL;
 static FoamList         gen0FortranActualArgTmps = listNil(Foam); 
 
-static Bool gen0GenType;
+static GenType gen0GenType;
 
 /* Flags for options */
 Bool 			gen0InAxiomAx	   = false;
@@ -5141,7 +5142,6 @@ gen0Lambda(AbSyn absyn, Syme syme, AbSyn defaults)
 		val = gen0Lambda(fbody, (Syme)NULL, defaults);
 		assert(foamTag(val) != FOAM_Nil);
 	}
-
 	else if (abTag(fbody) == AB_Add) {
 		if (genIsRuntime() && syme) {
 			gen0Vars(abStab(fbody));
@@ -5378,6 +5378,7 @@ gen0UnusedFormats(AIntList l)
 /*
  * Return the Foam type given a type form.
  */
+local FoamTag gen0TypeGenerator(GenType genType);
 
 FoamTag
 gen0Type(TForm tf, AInt *pfmt)
@@ -5404,7 +5405,8 @@ gen0Type(TForm tf, AInt *pfmt)
 
 		if	(tfIsWith(tf))		tag = FOAM_Word;
 		else if (tfIsAnyMap(tf))	tag = FOAM_Clos;
-		else if (tfIsGenerator(tf))	tag = FOAM_Clos;
+		else if (tfIsGenerator(tf))	tag = gen0TypeGenerator(gfGenTypeDefault());
+		else if (tfIsXGenerator(tf))	tag = gen0TypeGenerator(gfGenTypeAlt());
 		else if (tfIsMulti(tf))		tag = FOAM_NOp;
 		else if (tfIsRecord(tf)) {
 			tag = FOAM_Rec;
@@ -5471,6 +5473,21 @@ gen0Type(TForm tf, AInt *pfmt)
 
 	return tag;
 }
+
+local FoamTag
+gen0TypeGenerator(GenType genType)
+{
+	switch (genType) {
+	case GENTYPE_Function:
+		return FOAM_Clos;
+	case GENTYPE_Coroutine:
+		return FOAM_Word;
+	default:
+		bug("Not reached");
+		return  FOAM_NOp;
+	}
+}
+
 
 local Symbol
 gen0MachineType(TForm tf)
@@ -6240,13 +6257,15 @@ genGenerate(AbSyn absyn)
 {
 	Scope("Generate");
 	Foam foam;
-	Bool fluid(gen0GenType);
-	gen0GenType = abFlag_IsNewIter(absyn);
+	GenType fluid(gen0GenType);
+	gen0GenType = gfGenTypeGenerator(absyn);
 
-	if (gen0GenType)
-		foam = gen0XGenerate(absyn);
-	else
+	if (gen0GenType == GENTYPE_Coroutine)
+		foam = gen0CGenerate(absyn);
+	else if (gen0GenType == GENTYPE_Function)
 		foam = gen0Generate(absyn);
+	else
+		bug("Unknown generator type");
 
 	Return(foam);
 }
@@ -6256,7 +6275,7 @@ genYield(AbSyn absyn)
 {
 	Foam foam;
 	if (gen0GenType)
-		foam = gen0XYield(absyn);
+		foam = gen0CYield(absyn);
 	else
 		foam = gen0Yield(absyn);
 
@@ -6279,10 +6298,12 @@ gen0Iter(AbSyn absyn, FoamList *forl, FoamList *itl)
 		*itl = listCons(Foam)(test, gen0State->lines);
 		break;
 	case AB_For:
-		if (abFlag_IsNewIter(absyn))
-			gen0XForIter(absyn, forl, itl);
-		else
+		if (gfGenTypeFor(absyn) == GENTYPE_Coroutine)
+			gen0CForIter(absyn, forl, itl);
+		else if (gfGenTypeFor(absyn) == GENTYPE_Function)
 			gen0ForIter(absyn, forl, itl);
+		else
+			bug("Unknown generator");
 		*itl = gen0State->lines;
 		break;
 	default:
@@ -6368,9 +6389,50 @@ gen0ForIter(AbSyn absyn, FoamList *forl, FoamList *itl)
 }
 
 extern void
-gen0XForIter(AbSyn absyn, FoamList *forl, FoamList *itl)
+gen0CForIter(AbSyn absyn, FoamList *forl, FoamList *itl)
 {
-	bug("xgen not implemented");
+	Foam gen;
+	Foam  hasNext, next, whole;
+	FoamTag type;
+	AbSyn id;
+
+	hasNext = gen0Temp(FOAM_Bool);
+	next = gen0Temp(FOAM_Word);
+	whole = gen0Temp(FOAM_GenIter);
+
+	gen0State->lines = *forl;
+	gen = foamNewCast(FOAM_Gener, genImplicit(absyn, absyn->abFor.whole, FOAM_Word));
+	gen0AddStmt(foamNewSet(foamCopy(whole), foamNewGenIter(gen)), NULL);
+	*forl = gen0State->lines;
+	gen0State->lines = *itl;
+
+	/* Finished? */
+	gen0AddStmt(foamNewGenerStep(gen0BreakLabel, foamCopy(whole)), absyn);
+
+        if (abTag(absyn->abFor.lhs) == AB_Comma) {
+		Foam val = foamNewGenerValue(foamCopy(whole));
+                Foam mval = gen0CrossToMulti(val,
+					     tfDefineeMaybeType(tfXGeneratorArg(gen0AbContextType(absyn))));
+                gen0MultiAssign(FOAM_Set, absyn->abFor.lhs, mval);
+        }
+	else {
+		gen0AddStmt(foamNewSet(foamCopy(next), foamNewGenerValue(foamCopy(whole))), NULL);
+		id = abDefineeId(absyn);
+		type = gen0Type(gen0AbContextType(id), NULL);
+		if (type != FOAM_Word)
+			next = foamNewCast(type, foamCopy(next));
+		gen0AddStmt(foamNewSet(genFoamVal(id), foamCopy(next)), absyn);
+        }
+        if (!abIsNothing(absyn->abFor.test)) {
+		int  l1     = gen0State->labelNo++;
+		Foam test   = genFoamBit(absyn->abFor.test);
+		gen0AddStmt(foamNewIf(test, l1), absyn);
+		gen0AddStmt(foamNewGoto(gen0IterateLabel), absyn);
+		gen0AddStmt(foamNewLabel(l1), absyn);
+	}
+	foamFree(whole);
+	foamFree(hasNext);
+	foamFree(next);
 }
 
 
@@ -6394,8 +6456,13 @@ typedef AInt GFindDefMask;
 #define GFindDef_None 0
 
 #define GFindDef_HighLevel (1 << 0)
+#define GFindDef_Generator (1 << 1)
+
 #define gfdSetHighLevel(mask) ( (mask) | GFindDef_HighLevel)
+#define gfdSetGenerator(mask) ( (mask) | GFindDef_Generator)
+
 #define gfdHighLevel(mask) ( (mask) & GFindDef_HighLevel)
+#define gfdGenerator(mask) ( (mask) & GFindDef_Generator)
 
 local void gen0FindDefs(AbSyn, AbSyn, Stab, GFindDefMask);
 local void gen0FindDefsSyme(Stab stab, Syme syme, GFindDefMask mask);
@@ -6921,6 +6988,8 @@ gen0NewLex(int idx, int offset)
 /*
  * Generate a generator for a collect form.
  * E for a in b...  ==> generate for a in b... repeat yield E
+ *
+ * (GCompose La.if T(a) then One(Ea) else [])
  */
 local Foam
 genCollect(AbSyn absyn)
@@ -6936,7 +7005,13 @@ genCollect(AbSyn absyn)
 	for(i=1; i< abArgc(absyn); i++)
 		abArgv(repeat)[i] = abArgv(absyn)[i];
 
-	iter   = abNewGenerate(abPos(absyn), abNewNothing(sposNone), repeat);
+	if (tfIsXGenerator(abTUnique(absyn))) {
+		iter = abNewXGenerate(abPos(absyn), abNewNothing(sposNone), repeat);
+	}
+	else {
+		iter = abNewGenerate(abPos(absyn), abNewNothing(sposNone), repeat);
+	}
+	abSetStab(iter, abStab(absyn));
 
 	abTUnique(body)	  = tfExit;
 	abTUnique(repeat) = tfNone();

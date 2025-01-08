@@ -26,6 +26,8 @@
 #include "util.h"
 
 
+#include "genstyle.h"
+
 Bool	scoDebug	= false;
 Bool	scoStabDebug	= false;
 Bool	scoFluidDebug	= false;
@@ -304,6 +306,7 @@ local void		scobindForeignId	(AbSyn, AbSyn, ForeignOrigin);
 local void		scobindParamDefine	(AbSyn, AbSyn);
 local void		scobindParamDeclare	(AbSyn, AbSyn);
 local void		scobindParamId		(AbSyn, AbSyn, AbSyn);
+local Bool              scoIsNewCollect		(AbSyn ab);
 
 local TForm scobindTfSyntaxFrAbSyn(Stab stab, AbSyn ab);
 
@@ -338,7 +341,9 @@ local void		scobindLOFDeclInfo	(AbSyn, IdInfo, DeclInfo,
 #define			scobindWithFlags	STAB_LEVEL_LARGE
 #define			scobindWhereFlags	STAB_LEVEL_WHERE
 #define			scobindRepeatFlags	STAB_LEVEL_LOOP
-#define			scobindCollectFlags	STAB_LEVEL_LOOP
+#define			scobindCollectFlags	STAB_LEVEL_COLLECT
+#define			scobindGenerateFlags	STAB_LEVEL_LOOP
+#define			scobindXGenerateFlags	STAB_LEVEL_XGENERATE
 
 /*
  * scobindIf (and conditions)
@@ -450,6 +455,8 @@ local void	  scobindCollect	      (AbSyn);
 local void	  scobindHas		      (AbSyn);
 local void	  scobindId		      (AbSyn, IdContext);
 local void	  scobindLabel		      (AbSyn);
+local void	  scobindGenerate	      (AbSyn);
+local void	  scobindXGenerate	      (AbSyn);
 local void	  scobindLambda		      (AbSyn);
 local void	  scobindRepeat		      (AbSyn);
 local void	  scobindWhere		      (AbSyn);
@@ -603,6 +610,8 @@ scobindSave()
 local void
 scobindValue(AbSyn absyn)
 {
+	Bool isCoroutine;
+
 	switch (abTag(absyn)) {
 	case AB_Nothing:
 		break;
@@ -640,7 +649,22 @@ scobindValue(AbSyn absyn)
 		break;
 
 	case AB_Collect:
-		scobindLevel(absyn, scobindCollect, scobindCollectFlags);
+		if (gfGenTypeDefault() == GENTYPE_Coroutine || scoIsNewCollect(absyn)) {
+			scobindLevel(absyn, scobindCollect, scobindXGenerateFlags);
+		}
+		else {
+			scobindLevel(absyn, scobindCollect, scobindCollectFlags);
+		}
+		break;
+
+	case AB_Generate:
+		isCoroutine = gfGenTypeGenerator(absyn) == GENTYPE_Coroutine;
+		if (isCoroutine) {
+			scobindLevel(absyn, scobindXGenerate, scobindXGenerateFlags);
+		}
+		else {
+			scobindLevel(absyn, scobindGenerate, scobindGenerateFlags);
+		}
 		break;
 
 	case AB_Fix:
@@ -862,8 +886,9 @@ scobindLevel(AbSyn absyn, ScoBindFun fun, ULong flags)
 	scoStab = abStab(absyn);
 	
 	if (DEBUG(sco)) {
-		fprintf(dbOut, "%s Scope Begin (# %lu)",
-			abInfo(abTag(absyn)).str, car(scoStab)->serialNo);
+		fprintf(dbOut, "%s Scope Begin (# %lu) (lambda: %ld lex: %ld)",
+			abInfo(abTag(absyn)).str, car(scoStab)->serialNo,
+			car(scoStab)->lambdaLevel, car(scoStab)->lexicalLevel);
 		findent += 2;
 		fnewline(dbOut);
 	}
@@ -1034,6 +1059,25 @@ scobindCollect(AbSyn absyn)
 	scobindValue(absyn->abCollect.body);
 	stabUnlockLevel(scoStab);
 }
+
+local void
+scobindGenerate(AbSyn absyn)
+{
+	stabLockLevel(scoStab);
+	scobindValue(absyn->abGenerate.count);
+	scobindValue(absyn->abGenerate.body);
+	stabUnlockLevel(scoStab);
+}
+
+local void
+scobindXGenerate(AbSyn absyn)
+{
+	stabLockLevel(scoStab);
+	scobindValue(absyn->abGenerate.count);
+	stabUnlockLevel(scoStab);
+	scobindValue(absyn->abGenerate.body);
+}
+
 
 local void
 scobindRepeat(AbSyn absyn)
@@ -3136,6 +3180,40 @@ defposFree(DefnPos pos)
 {
 	listFree(AInt)(pos);
 }
+
+/******************************************************************************
+ *
+ * :: scobindCollect
+ *
+ *****************************************************************************/
+
+local Bool scoCollectIsNewIter(AbSyn ab);
+
+local Bool
+scoIsNewCollect(AbSyn absyn)
+{
+	AbSyn	*iterv	  = absyn->abCollect.iterv;
+	Length	i, iterc  = abCollectIterc(absyn);
+	int newIters = 0;
+
+	for (i=0; i<iterc; i++) {
+		if (scoCollectIsNewIter(iterv[i])) {
+			newIters++;
+		}
+	}
+
+	return iterc > 0 && newIters == iterc;
+}
+
+local Bool
+scoCollectIsNewIter(AbSyn absyn)
+{
+	if (abTag(absyn) == AB_For && abFlag_IsNewIter(absyn)) {
+		return true;
+	}
+	return false;
+}
+
 
 /******************************************************************************
  *

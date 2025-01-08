@@ -2968,6 +2968,7 @@ inlIsEvilSeq(Foam foam)
 	return false;
 }
 
+
 /*
  * See if Syme is declared inlinable.
  */
@@ -3307,6 +3308,9 @@ inlTransformExpr(Foam expr, Foam *paramArgv, Foam *localArgv)
 		break; }
 	  case FOAM_Goto:
 		nexpr->foamGoto.label += inlProg->numLabels;
+		break;
+	  case FOAM_GenerStep:
+		nexpr->foamGenerStep.label += inlProg->numLabels;
 		break;
 	  case FOAM_EElt:
 		inlComputeEEltSyme(expr);
