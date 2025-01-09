@@ -186,13 +186,13 @@ am_libstruct_a_OBJECTS = ablogic.$(OBJEXT) abpretty.$(OBJEXT) \
 	foamsig.$(OBJEXT) forg.$(OBJEXT) fptr.$(OBJEXT) \
 	freevar.$(OBJEXT) formatters.$(OBJEXT) ftype.$(OBJEXT) \
 	gf_syme.$(OBJEXT) javasig.$(OBJEXT) lib.$(OBJEXT) \
-	loops.$(OBJEXT) output.$(OBJEXT) sefo.$(OBJEXT) \
-	simpl.$(OBJEXT) spesym.$(OBJEXT) srcline.$(OBJEXT) \
-	stab.$(OBJEXT) susage.$(OBJEXT) syme.$(OBJEXT) \
-	symeset.$(OBJEXT) symcoinfo.$(OBJEXT) tconst.$(OBJEXT) \
-	tfcond.$(OBJEXT) tform.$(OBJEXT) tfsat.$(OBJEXT) \
-	ti_top.$(OBJEXT) token.$(OBJEXT) tposs.$(OBJEXT) \
-	tqual.$(OBJEXT) version.$(OBJEXT)
+	loops.$(OBJEXT) optinfo.$(OBJEXT) output.$(OBJEXT) \
+	sefo.$(OBJEXT) simpl.$(OBJEXT) spesym.$(OBJEXT) \
+	srcline.$(OBJEXT) stab.$(OBJEXT) susage.$(OBJEXT) \
+	syme.$(OBJEXT) symeset.$(OBJEXT) symcoinfo.$(OBJEXT) \
+	tconst.$(OBJEXT) tfcond.$(OBJEXT) tform.$(OBJEXT) \
+	tfsat.$(OBJEXT) ti_top.$(OBJEXT) token.$(OBJEXT) \
+	tposs.$(OBJEXT) tqual.$(OBJEXT) version.$(OBJEXT)
 libstruct_a_OBJECTS = $(am_libstruct_a_OBJECTS)
 libtest_a_AR = $(AR) $(ARFLAGS)
 libtest_a_LIBADD =
@@ -389,30 +389,31 @@ am__depfiles_remade = ./$(DEPDIR)/abcheck.Po ./$(DEPDIR)/ablogic.Po \
 	./$(DEPDIR)/of_loops.Po ./$(DEPDIR)/of_peep.Po \
 	./$(DEPDIR)/of_retyp2.Po ./$(DEPDIR)/of_rrfmt.Po \
 	./$(DEPDIR)/of_util.Po ./$(DEPDIR)/opsys.Po \
-	./$(DEPDIR)/optfoam.Po ./$(DEPDIR)/opttools.Po \
-	./$(DEPDIR)/ostream.Po ./$(DEPDIR)/output.Po \
-	./$(DEPDIR)/parseby.Po ./$(DEPDIR)/path.Po \
-	./$(DEPDIR)/phase.Po ./$(DEPDIR)/priq.Po ./$(DEPDIR)/rdln.Po \
-	./$(DEPDIR)/scan.Po ./$(DEPDIR)/scobind.Po ./$(DEPDIR)/sefo.Po \
-	./$(DEPDIR)/sexpr.Po ./$(DEPDIR)/showexp-showexports.Po \
-	./$(DEPDIR)/simpl.Po ./$(DEPDIR)/spesym.Po \
-	./$(DEPDIR)/srcline.Po ./$(DEPDIR)/srcpos.Po \
-	./$(DEPDIR)/stab.Po ./$(DEPDIR)/stdc.Po ./$(DEPDIR)/store.Po \
-	./$(DEPDIR)/strops.Po ./$(DEPDIR)/structtest.Po \
-	./$(DEPDIR)/susage.Po ./$(DEPDIR)/symbol.Po \
-	./$(DEPDIR)/symcoinfo.Po ./$(DEPDIR)/syme.Po \
-	./$(DEPDIR)/symeset.Po ./$(DEPDIR)/syscmd.Po \
-	./$(DEPDIR)/table.Po ./$(DEPDIR)/tconst.Po \
-	./$(DEPDIR)/termtype.Po ./$(DEPDIR)/terror.Po \
-	./$(DEPDIR)/test.Po ./$(DEPDIR)/testall-axlcomp.Po \
-	./$(DEPDIR)/testall-cmdline.Po ./$(DEPDIR)/textansi.Po \
-	./$(DEPDIR)/textcolour.Po ./$(DEPDIR)/texthp.Po \
-	./$(DEPDIR)/tfcond.Po ./$(DEPDIR)/tform.Po \
-	./$(DEPDIR)/tfsat.Po ./$(DEPDIR)/ti_bup.Po \
-	./$(DEPDIR)/ti_decl.Po ./$(DEPDIR)/ti_sef.Po \
-	./$(DEPDIR)/ti_tdn.Po ./$(DEPDIR)/ti_top.Po \
-	./$(DEPDIR)/timer.Po ./$(DEPDIR)/tinfer.Po \
-	./$(DEPDIR)/token.Po ./$(DEPDIR)/tposs.Po ./$(DEPDIR)/tqual.Po \
+	./$(DEPDIR)/optfoam.Po ./$(DEPDIR)/optinfo.Po \
+	./$(DEPDIR)/opttools.Po ./$(DEPDIR)/ostream.Po \
+	./$(DEPDIR)/output.Po ./$(DEPDIR)/parseby.Po \
+	./$(DEPDIR)/path.Po ./$(DEPDIR)/phase.Po ./$(DEPDIR)/priq.Po \
+	./$(DEPDIR)/rdln.Po ./$(DEPDIR)/scan.Po ./$(DEPDIR)/scobind.Po \
+	./$(DEPDIR)/sefo.Po ./$(DEPDIR)/sexpr.Po \
+	./$(DEPDIR)/showexp-showexports.Po ./$(DEPDIR)/simpl.Po \
+	./$(DEPDIR)/spesym.Po ./$(DEPDIR)/srcline.Po \
+	./$(DEPDIR)/srcpos.Po ./$(DEPDIR)/stab.Po ./$(DEPDIR)/stdc.Po \
+	./$(DEPDIR)/store.Po ./$(DEPDIR)/strops.Po \
+	./$(DEPDIR)/structtest.Po ./$(DEPDIR)/susage.Po \
+	./$(DEPDIR)/symbol.Po ./$(DEPDIR)/symcoinfo.Po \
+	./$(DEPDIR)/syme.Po ./$(DEPDIR)/symeset.Po \
+	./$(DEPDIR)/syscmd.Po ./$(DEPDIR)/table.Po \
+	./$(DEPDIR)/tconst.Po ./$(DEPDIR)/termtype.Po \
+	./$(DEPDIR)/terror.Po ./$(DEPDIR)/test.Po \
+	./$(DEPDIR)/testall-axlcomp.Po ./$(DEPDIR)/testall-cmdline.Po \
+	./$(DEPDIR)/textansi.Po ./$(DEPDIR)/textcolour.Po \
+	./$(DEPDIR)/texthp.Po ./$(DEPDIR)/tfcond.Po \
+	./$(DEPDIR)/tform.Po ./$(DEPDIR)/tfsat.Po \
+	./$(DEPDIR)/ti_bup.Po ./$(DEPDIR)/ti_decl.Po \
+	./$(DEPDIR)/ti_sef.Po ./$(DEPDIR)/ti_tdn.Po \
+	./$(DEPDIR)/ti_top.Po ./$(DEPDIR)/timer.Po \
+	./$(DEPDIR)/tinfer.Po ./$(DEPDIR)/token.Po \
+	./$(DEPDIR)/tposs.Po ./$(DEPDIR)/tqual.Po \
 	./$(DEPDIR)/ttable.Po ./$(DEPDIR)/usedef.Po \
 	./$(DEPDIR)/util.Po ./$(DEPDIR)/version.Po \
 	./$(DEPDIR)/xfloat.Po java/$(DEPDIR)/genjava.Po \
@@ -1038,6 +1039,7 @@ libstruct_a_SOURCES = \
 	javasig.c	\
 	lib.c		\
 	loops.c		\
+	optinfo.c	\
 	output.c	\
 	sefo.c		\
 	simpl.c		\
@@ -1650,6 +1652,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/of_util.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/opsys.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/optfoam.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/optinfo.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/opttools.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ostream.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/output.Po@am__quote@ # am--include-marker
@@ -3431,6 +3434,7 @@ distclean: distclean-am
 	-rm -f ./$(DEPDIR)/of_util.Po
 	-rm -f ./$(DEPDIR)/opsys.Po
 	-rm -f ./$(DEPDIR)/optfoam.Po
+	-rm -f ./$(DEPDIR)/optinfo.Po
 	-rm -f ./$(DEPDIR)/opttools.Po
 	-rm -f ./$(DEPDIR)/ostream.Po
 	-rm -f ./$(DEPDIR)/output.Po
@@ -3719,6 +3723,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -f ./$(DEPDIR)/of_util.Po
 	-rm -f ./$(DEPDIR)/opsys.Po
 	-rm -f ./$(DEPDIR)/optfoam.Po
+	-rm -f ./$(DEPDIR)/optinfo.Po
 	-rm -f ./$(DEPDIR)/opttools.Po
 	-rm -f ./$(DEPDIR)/ostream.Po
 	-rm -f ./$(DEPDIR)/output.Po
