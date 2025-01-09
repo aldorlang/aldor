@@ -39,8 +39,7 @@ local Foam 	   gen0ComputeBoundFunction(GenBoundCalc);
 local void	   gen0ComputeGeners(void);
 #endif
 
-static Foam gen0RetFormatDDeclValue;
-static Foam 		gen0GenVars;
+static Foam 	    gen0GenVars;
 static GenerGenInfo gen0GenInfo;
 
 #define 	gen0RetFormatSize 4
@@ -69,7 +68,7 @@ static AInt	gen0RetFormatFmts[]  = { emptyFormatSlot, emptyFormatSlot,
  */
 
 Foam
-genYield(AbSyn absyn)
+gen0Yield(AbSyn absyn)
 {
         /* set the place variable */
         gen0AddStmt(foamNewSet(yieldPlaceVar,
@@ -89,7 +88,7 @@ genYield(AbSyn absyn)
  */
 
 Foam
-genGenerate(AbSyn iter)
+gen0Generate(AbSyn iter)
 {
         foamProgUnsetLeaf(gen0State->program);
         return gen0GenerBodyFun(iter, tfGeneratorArg(gen0AbType(iter)));
@@ -274,12 +273,6 @@ gen0MakeGenerRetFormat()
 					       gen0RetFormatTypes, gen0RetFormatFmts);
 	gen0SetDDeclUsage(gen0GenerRetFormat, FOAM_DDecl_Multi);
 	return gen0GenerRetFormat;
-}
-
-Foam 
-gen0RetFormatDDecl()
-{
-	return gen0RetFormatDDeclValue;
 }
 
 local Foam

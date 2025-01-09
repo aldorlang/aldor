@@ -42,6 +42,7 @@
 #include "gf_rtime.h"
 #include "gf_syme.h"
 #include "gf_util.h"
+#include "gf_xgener.h"
 #include "of_util.h"
 #include "optfoam.h"
 #include "optinfo.h"
@@ -151,6 +152,7 @@ local void	   gen0FindDefsAll	  (AbSyn, Stab);
 local int	   gen0FoamLevel	  (AInt level);
 local FoamTag	   gen0FoamType		  (Foam foam);
 local void	   gen0ForIter		  (AbSyn, FoamList *, FoamList *);
+local void	   gen0XForIter		  (AbSyn, FoamList *, FoamList *);
 local void	   gen0FreeTemp		  (Foam);
 local void	   gen0GenFoamInit	  (void);
 local void	   gen0GenFoamFini	  (void);
@@ -255,7 +257,8 @@ local AInt	   gen0FortranSigFormatNumber   (TForm, Bool);
 local String       gen0TypeString               (Sefo);
 local FoamTag 	   gen0TfMapType(Syme syme, TForm mapTf, FoamTag argFoamTag, AInt *newFmt);
 
-
+local Foam genGenerate(AbSyn absyn);
+local Foam genYield(AbSyn absyn);
 /*
  * The following are used store information for flattening programs.
  */
@@ -299,6 +302,7 @@ GenFoamState		gen0State;
 static AbSyn            gen0FortranFnResult = NULL;
 static FoamList         gen0FortranActualArgTmps = listNil(Foam); 
 
+static Bool gen0GenType;
 
 /* Flags for options */
 Bool 			gen0InAxiomAx	   = false;
@@ -6237,6 +6241,33 @@ genRepeat(AbSyn absyn)
 	Return(NULL);
 }
 
+local Foam
+genGenerate(AbSyn absyn)
+{
+	Scope("Generate");
+	Foam foam;
+	Bool fluid(gen0GenType);
+	gen0GenType = abFlag_IsNewIter(absyn);
+
+	if (gen0GenType)
+		foam = gen0XGenerate(absyn);
+	else
+		foam = gen0Generate(absyn);
+
+	Return(foam);
+}
+
+local Foam
+genYield(AbSyn absyn)
+{
+	Foam foam;
+	if (gen0GenType)
+		foam = gen0XYield(absyn);
+	else
+		foam = gen0Yield(absyn);
+
+	return foam;
+}
 /*
  * Generate an exit test and for-loop initialization for a single iterator.
  */
@@ -6254,7 +6285,10 @@ gen0Iter(AbSyn absyn, FoamList *forl, FoamList *itl)
 		*itl = listCons(Foam)(test, gen0State->lines);
 		break;
 	case AB_For:
-		gen0ForIter(absyn, forl, itl);
+		if (abFlag_IsNewIter(absyn))
+			gen0XForIter(absyn, forl, itl);
+		else
+			gen0ForIter(absyn, forl, itl);
 		*itl = gen0State->lines;
 		break;
 	default:
@@ -6338,6 +6372,13 @@ gen0ForIter(AbSyn absyn, FoamList *forl, FoamList *itl)
 
 	return;
 }
+
+extern void
+gen0XForIter(AbSyn absyn, FoamList *forl, FoamList *itl)
+{
+	bug("xgen not implemented");
+}
+
 
 /*****************************************************************************
  *
