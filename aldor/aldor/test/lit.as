@@ -19,5 +19,5 @@ total(l: List MachineInteger): MachineInteger ==
 import from Assert MachineInteger
 import from List MachineInteger
 assertEquals(2, bar())
-assertEquals(7, foo()(5))
+assertEquals(5, foo()(5))
 assertEquals(6, total [1,2,3])

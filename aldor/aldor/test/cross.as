@@ -1,4 +1,5 @@
 #include "foamlib"
+#include "assertlib"
 #pile
 
 Foo: with
@@ -16,11 +17,13 @@ Foo: with
 
     bar(c: Rep): String ==
         (a, b) := c
-	a
+	b
+
+import from Assert String
 
 test(): () ==
     import from Foo, String
-    print << foo(new("xx")) << newline
-    print << bar(new "xx") << newline
+    assertEquals("xx", foo new "xx")
+    assertEquals("xx", bar new "xx")
 
 test()
