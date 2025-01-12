@@ -119,10 +119,10 @@ am__objects_1 = al/array.$(OBJEXT) al/basic.$(OBJEXT) \
 	al/bool.$(OBJEXT) al/character.$(OBJEXT) al/file.$(OBJEXT) \
 	al/fname.$(OBJEXT) al/foamcat.$(OBJEXT) al/format.$(OBJEXT) \
 	al/gener.$(OBJEXT) al/lang.$(OBJEXT) al/langx.$(OBJEXT) \
-	al/list.$(OBJEXT) al/machine.$(OBJEXT) al/opsys.$(OBJEXT) \
-	al/oslow.$(OBJEXT) al/parray.$(OBJEXT) al/partial.$(OBJEXT) \
-	al/pointer.$(OBJEXT) al/segment.$(OBJEXT) al/sfloat.$(OBJEXT) \
-	al/sinteger.$(OBJEXT) al/string.$(OBJEXT) \
+	al/list.$(OBJEXT) al/lv.$(OBJEXT) al/machine.$(OBJEXT) \
+	al/opsys.$(OBJEXT) al/oslow.$(OBJEXT) al/parray.$(OBJEXT) \
+	al/partial.$(OBJEXT) al/pointer.$(OBJEXT) al/segment.$(OBJEXT) \
+	al/sfloat.$(OBJEXT) al/sinteger.$(OBJEXT) al/string.$(OBJEXT) \
 	al/textwrit.$(OBJEXT) al/tuple.$(OBJEXT)
 am_libfoamlib_a_OBJECTS = $(am__objects_1)
 libfoamlib_a_OBJECTS = $(am_libfoamlib_a_OBJECTS)
@@ -146,7 +146,7 @@ am__depfiles_remade = al/$(DEPDIR)/array.Po al/$(DEPDIR)/basic.Po \
 	al/$(DEPDIR)/file.Po al/$(DEPDIR)/fname.Po \
 	al/$(DEPDIR)/foamcat.Po al/$(DEPDIR)/format.Po \
 	al/$(DEPDIR)/gener.Po al/$(DEPDIR)/lang.Po \
-	al/$(DEPDIR)/langx.Po al/$(DEPDIR)/list.Po \
+	al/$(DEPDIR)/langx.Po al/$(DEPDIR)/list.Po al/$(DEPDIR)/lv.Po \
 	al/$(DEPDIR)/machine.Po al/$(DEPDIR)/opsys.Po \
 	al/$(DEPDIR)/oslow.Po al/$(DEPDIR)/parray.Po \
 	al/$(DEPDIR)/partial.Po al/$(DEPDIR)/pointer.Po \
@@ -394,7 +394,7 @@ top_srcdir = @top_srcdir@
 SUBDIRS = al
 libfoamlib_ALDOR = al/array.c al/basic.c al/bool.c al/character.c		\
 	         al/file.c al/fname.c al/foamcat.c al/format.c		\
-	         al/gener.c al/lang.c al/langx.c al/list.c		\
+	         al/gener.c al/lang.c al/langx.c al/list.c al/lv.c	\
 	         al/machine.c al/opsys.c al/oslow.c al/parray.c		\
 	         al/partial.c al/pointer.c al/segment.c al/sfloat.c	\
 	         al/sinteger.c al/string.c al/textwrit.c al/tuple.c
@@ -460,6 +460,7 @@ al/gener.$(OBJEXT): al/$(am__dirstamp) al/$(DEPDIR)/$(am__dirstamp)
 al/lang.$(OBJEXT): al/$(am__dirstamp) al/$(DEPDIR)/$(am__dirstamp)
 al/langx.$(OBJEXT): al/$(am__dirstamp) al/$(DEPDIR)/$(am__dirstamp)
 al/list.$(OBJEXT): al/$(am__dirstamp) al/$(DEPDIR)/$(am__dirstamp)
+al/lv.$(OBJEXT): al/$(am__dirstamp) al/$(DEPDIR)/$(am__dirstamp)
 al/machine.$(OBJEXT): al/$(am__dirstamp) al/$(DEPDIR)/$(am__dirstamp)
 al/opsys.$(OBJEXT): al/$(am__dirstamp) al/$(DEPDIR)/$(am__dirstamp)
 al/oslow.$(OBJEXT): al/$(am__dirstamp) al/$(DEPDIR)/$(am__dirstamp)
@@ -497,6 +498,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@al/$(DEPDIR)/lang.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@al/$(DEPDIR)/langx.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@al/$(DEPDIR)/list.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@al/$(DEPDIR)/lv.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@al/$(DEPDIR)/machine.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@al/$(DEPDIR)/opsys.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@al/$(DEPDIR)/oslow.Po@am__quote@ # am--include-marker
@@ -758,6 +760,7 @@ distclean: distclean-recursive
 	-rm -f al/$(DEPDIR)/lang.Po
 	-rm -f al/$(DEPDIR)/langx.Po
 	-rm -f al/$(DEPDIR)/list.Po
+	-rm -f al/$(DEPDIR)/lv.Po
 	-rm -f al/$(DEPDIR)/machine.Po
 	-rm -f al/$(DEPDIR)/opsys.Po
 	-rm -f al/$(DEPDIR)/oslow.Po
@@ -827,6 +830,7 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f al/$(DEPDIR)/lang.Po
 	-rm -f al/$(DEPDIR)/langx.Po
 	-rm -f al/$(DEPDIR)/list.Po
+	-rm -f al/$(DEPDIR)/lv.Po
 	-rm -f al/$(DEPDIR)/machine.Po
 	-rm -f al/$(DEPDIR)/opsys.Po
 	-rm -f al/$(DEPDIR)/oslow.Po
