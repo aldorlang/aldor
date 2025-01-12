@@ -54,17 +54,17 @@ fmtests := x rectest enumtest clos strtable1 simple apply \
            nestcond silly cexp lself0 selfcond lself \
 	   lself2 catdef2 args1a args1 args2a args2 \
 	   strtable1 rec2 lit gener0 gener_fns gtools xarr \
-	   xdom gencross_empty
+	   xdom
 ctests  := rectest enumtest multinever maptuple cimp1 \
            gener0 xit xits xiter lit xarr
 otests  := enumtest rec2
-xtests := enumtest jimport cross seq small lit xit xits xiter generlist xmap xfold
+xtests := enumtest jimport cross seq small lit xit xits xiter generlist xmap xfold genrec
 
 jtests := simple_j enumtest run_j halt gener0 xit xiter
 junittests := JExportTest JThrowTest
 jruntests := small jimport jimport_opt jimp0 jimp1 jlist jexport jexport1 jexport2 \
 	     envname jexn jthrow xiter xit genlist0a genlist1a gencross0 gencross1 \
-	     xgenerpkg0 xgenerpkg1 xmap where1 xdom gdom xfold gencross_empty
+	     xgenerpkg0 xgenerpkg1 xmap where1 xdom gdom xfold gencross_empty genrec
 
 out/ao/lself.ao: out/ao/lself0.ao
 out/ao/lself2.ao: out/ao/lself0.ao
@@ -82,6 +82,7 @@ out/ao/gencross0.ao: out/ao/x.ao
 out/ao/gencross1.ao: out/ao/x.ao
 out/ao/gencross1a.ao: out/ao/x.ao
 out/ao/gtools.ao: out/ao/x.ao
+out/ao/genrec.ao: out/ao/x.ao
 out/ao/xit.ao: out/ao/x.ao
 out/ao/xits.ao: out/ao/x.ao
 out/ao/xmap.ao: out/ao/x.ao
