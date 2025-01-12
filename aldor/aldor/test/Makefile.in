@@ -180,6 +180,9 @@ $(patsubst %, out/c/%.c, $(utils) $(_ctests)): out/c/%.c: out/ao/%.ao
 	mkdir -p $$(dirname $@);	\
 	$(AM_DBG_C) $(aldorexedir)/aldor $(nfile) -Fc=$(builddir)/$@ $<
 
+.PHONY: all-c
+all-c: $(patsubst %,out/c/%.c,$(_ctests))
+
 $(patsubst %, out/java/aldorcode/%.java, $(utils) $(_jtests)): out/java/aldorcode/%.java: out/fm/%.fm
 	$(AM_V_ALDOR_JAVA)		\
 	mkdir -p $$(dirname $@);	\
@@ -303,19 +306,23 @@ check-java: $(patsubst %,%-javatest,$(_jruntests)) $(patsubst %,%-junittest,$(_j
 $(addsuffix -xtest,$(_xtests)): %-xtest: %.exe
 	$(AM_V_ALDOR_EXE) ./$*.exe
 
-check-xest: $(patsubst %,%-xtest,$(_xtests))
+.PHONY: check-xtest
+check-xtest: $(patsubst %,%-xtest,$(_xtests))
+check: check-xtest
 
 define all_template
 all-$(1): $(patsubst %, out/ao/%.ao, $(filter $(1), $(_aotests)))
 all-$(1): $(patsubst %, out/fm/%.fm, $(filter $(1), $(_fmtests)))
-all-$(1): $(patsubst %, out/c/%.c, $(filter $(1), $(_ctests)))
+all-$(1): $(patsubst %, out/c/%.c,   $(filter $(1), $(_ctests)))
 all-$(1): $(patsubst %, out/java/aldorcode/%.java, $(filter $(1), $(_jtests)))
+.PHONY: all-$(1)
 endef
 
 define check_template
 check-$(1): $(patsubst %, %-javatest,  $(filter $(1), $(_jruntests)))
 check-$(1): $(patsubst %, %-junittest, $(filter $(1), $(_junittests)))
 check-$(1): $(patsubst %, %-xtest,     $(filter $(1), $(_xtests)))
+.PHONY: check-$(1)
 endef
 
 define clean_template
@@ -332,7 +339,7 @@ clean-$(1):
 .PHONY: clean-$(1)
 endef
 
-$(foreach test, $(_alltests), $(eval $(call all_template,  $(test))))
+$(foreach test, $(_alltests), $(eval $(call all_template,$(test))))
 $(foreach test, $(_alltests), $(eval $(call check_template,$(test))))
 $(foreach test, $(_alltests), $(eval $(call clean_template,$(test))))
 
