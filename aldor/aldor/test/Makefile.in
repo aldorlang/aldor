@@ -156,7 +156,7 @@ args2_AXLFLAGS =
 
 _aptests := $(sort $(aptests))
 _jruntests  := $(if $(BUILD_JAVA), $(sort $(jruntests)),)
-_junittests := $(if $(BUILD_JAVA), $(sort $(junittests)),)
+_junittests := $(if $(HAS_JUNIT), $(sort $(junittests)),)
 _jtests     := $(if $(BUILD_JAVA), $(sort $(jtests) $(_jruntests)),)
 _xtests     := $(sort $(xtests))
 _otests     := $(sort $(otests) $(_xtests))
