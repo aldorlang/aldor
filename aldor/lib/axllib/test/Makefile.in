@@ -99,11 +99,11 @@ XFAIL_TESTS = bug892/bug892$(EXEEXT) bug911/bug911$(EXEEXT) \
 	default8/default8$(EXEEXT) depend1/depend1$(EXEEXT) \
 	funlist1/funlist1$(EXEEXT) object1/object1$(EXEEXT) \
 	pack1/pack1 pack2/pack2 $(am__EXEEXT_1)
-@WITH_ALDOR_INTERP_TESTS_FALSE@am__append_1 = \
-@WITH_ALDOR_INTERP_TESTS_FALSE@	bug1099/bug1099	\
-@WITH_ALDOR_INTERP_TESTS_FALSE@	t1099/t1099	\
-@WITH_ALDOR_INTERP_TESTS_FALSE@	genops/genops	\
-@WITH_ALDOR_INTERP_TESTS_FALSE@	#
+@MK_GENERATOR_COROUTINES_TRUE@am__append_1 = \
+@MK_GENERATOR_COROUTINES_TRUE@	bug1099/bug1099	\
+@MK_GENERATOR_COROUTINES_TRUE@	t1099/t1099	\
+@MK_GENERATOR_COROUTINES_TRUE@	genops/genops	\
+@MK_GENERATOR_COROUTINES_TRUE@	#
 
 check_PROGRAMS = 1test/1test$(EXEEXT) abcheck3/abcheck3$(EXEEXT) \
 	array0/array0$(EXEEXT) array1/array1$(EXEEXT) \
@@ -332,11 +332,12 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/ax_lib_readline.m4 \
 	$(top_srcdir)/m4/documentation-tests.m4 \
 	$(top_srcdir)/m4/error-on-warn.m4 $(top_srcdir)/m4/git.m4 \
 	$(top_srcdir)/m4/interp-tests.m4 \
-	$(top_srcdir)/m4/java-tests.m4 $(top_srcdir)/m4/libtool.m4 \
-	$(top_srcdir)/m4/ltoptions.m4 $(top_srcdir)/m4/ltsugar.m4 \
-	$(top_srcdir)/m4/ltversion.m4 $(top_srcdir)/m4/lt~obsolete.m4 \
-	$(top_srcdir)/m4/readline.m4 $(top_srcdir)/m4/sbrk.m4 \
-	$(top_srcdir)/m4/strict_compile.m4 $(top_srcdir)/configure.ac
+	$(top_srcdir)/m4/java-tests.m4 $(top_srcdir)/m4/language.m4 \
+	$(top_srcdir)/m4/libtool.m4 $(top_srcdir)/m4/ltoptions.m4 \
+	$(top_srcdir)/m4/ltsugar.m4 $(top_srcdir)/m4/ltversion.m4 \
+	$(top_srcdir)/m4/lt~obsolete.m4 $(top_srcdir)/m4/readline.m4 \
+	$(top_srcdir)/m4/sbrk.m4 $(top_srcdir)/m4/strict_compile.m4 \
+	$(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 DIST_COMMON = $(srcdir)/Makefile.am $(am__DIST_COMMON)
@@ -5144,10 +5145,9 @@ am__set_TESTS_bases = \
 AM_TESTSUITE_SUMMARY_HEADER = ' for $(PACKAGE_STRING)'
 RECHECK_LOGS = $(TEST_LOGS)
 AM_RECURSIVE_TARGETS = check recheck
-@WITH_ALDOR_INTERP_TESTS_FALSE@am__EXEEXT_1 =  \
-@WITH_ALDOR_INTERP_TESTS_FALSE@	bug1099/bug1099$(EXEEXT) \
-@WITH_ALDOR_INTERP_TESTS_FALSE@	t1099/t1099$(EXEEXT) \
-@WITH_ALDOR_INTERP_TESTS_FALSE@	genops/genops$(EXEEXT)
+@MK_GENERATOR_COROUTINES_TRUE@am__EXEEXT_1 = bug1099/bug1099$(EXEEXT) \
+@MK_GENERATOR_COROUTINES_TRUE@	t1099/t1099$(EXEEXT) \
+@MK_GENERATOR_COROUTINES_TRUE@	genops/genops$(EXEEXT)
 TEST_SUITE_LOG = test-suite.log
 TEST_EXTENSIONS = @EXEEXT@ .test
 LOG_DRIVER = $(SHELL) $(top_srcdir)/amaux/test-driver
@@ -5204,8 +5204,8 @@ FGREP = @FGREP@
 FIG2EPS = @FIG2EPS@
 FILECMD = @FILECMD@
 GC = @GC@
+GENERATOR_COROUTINES = @GENERATOR_COROUTINES@
 GREP = @GREP@
-HAS_JUNIT = @HAS_JUNIT@
 HAVE_ALDOR_GC = @HAVE_ALDOR_GC@
 HAVE_BOEHM_GC = @HAVE_BOEHM_GC@
 INSTALL = @INSTALL@

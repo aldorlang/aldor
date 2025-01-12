@@ -672,10 +672,9 @@ FIG2EPS
 MAKEINDEX
 PDFLATEX
 LATEX
+JUNIT_JAR
 HAS_JUNIT_FALSE
 HAS_JUNIT_TRUE
-HAS_JUNIT
-JUNIT_JAR
 WITH_ALDOR_INTERP_TESTS_FALSE
 WITH_ALDOR_INTERP_TESTS_TRUE
 STRICTCFLAGS
@@ -704,6 +703,7 @@ EGREP
 GREP
 SED
 LIBTOOL
+GENERATOR_COROUTINES
 HAVE_BOEHM_GC
 HAVE_ALDOR_GC
 HAVE_BOEHM_GC_FALSE
@@ -711,6 +711,8 @@ HAVE_BOEHM_GC_TRUE
 HAVE_ALDOR_GC_FALSE
 HAVE_ALDOR_GC_TRUE
 GC
+MK_GENERATOR_COROUTINES_FALSE
+MK_GENERATOR_COROUTINES_TRUE
 LIB_CC_FLAGS
 BUILD_LISP
 BUILD_JAVA_FALSE
@@ -838,6 +840,7 @@ enable_documentation
 enable_lisp_tests
 enable_interpreter_tests
 enable_edit_gloop
+with_generators
 enable_shared
 enable_static
 with_pic
@@ -1517,6 +1520,8 @@ Optional Packages:
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
   --with-java-junit       specify location of junit jar file
   --with-boehm-gc         Use Boehm Garbage Collector instead of built-in
+  --with-generators       generator implementation (values: function,
+                          coroutine)
   --with-pic[=PKGS]       try to use only PIC/non-PIC objects [default=use
                           both]
   --with-aix-soname=aix|svr4|both
@@ -5504,6 +5509,46 @@ printf "%s\n" "not available" >&6; }
 	  fi;
      fi
 
+# Check whether --with-generators was given.
+if test ${with_generators+y}
+then :
+  withval=$with_generators; case "${withval}" in
+		    function) generator=function;;
+		    coroutine) generator=coroutine;;
+		    *) as_fn_error $? "bad value for 'enable-generator': ${withval}" "$LINENO" 5
+		    esac
+		{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: generators: $generator" >&5
+printf "%s\n" "$as_me: generators: $generator" >&6;}
+else $as_nop
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: no generator option provided" >&5
+printf "%s\n" "$as_me: no generator option provided" >&6;}
+
+fi
+
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking generator implementation.." >&5
+printf %s "checking generator implementation..... " >&6; };
+    if test x"$generator" = xcoroutine; then
+  MK_GENERATOR_COROUTINES_TRUE=
+  MK_GENERATOR_COROUTINES_FALSE='#'
+else
+  MK_GENERATOR_COROUTINES_TRUE='#'
+  MK_GENERATOR_COROUTINES_FALSE=
+fi
+
+   if test x"$generator" = xcoroutine; then
+       { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: coroutines" >&5
+printf "%s\n" "coroutines" >&6; }
+
+printf "%s\n" "#define GENERATOR_COROUTINES 1" >>confdefs.h
+
+   else
+
+printf "%s\n" "#define GENERATOR_COROUTINES 0" >>confdefs.h
+
+       { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: functions" >&5
+printf "%s\n" "functions" >&6; }
+   fi
+
 
  if test $GC = aldor; then
   HAVE_ALDOR_GC_TRUE=
@@ -5520,6 +5565,7 @@ else
   HAVE_BOEHM_GC_TRUE='#'
   HAVE_BOEHM_GC_FALSE=
 fi
+
 
 
 
@@ -13711,20 +13757,19 @@ eval ac_res=\$$as_ac_File
 printf "%s\n" "$ac_res" >&6; }
 if eval test \"x\$"$as_ac_File"\" = x"yes"
 then :
-  HAS_JUNIT=yes
+  HAS_JUNIT_JAR=yes
 else $as_nop
-  HAS_JUNIT=no
+  HAS_JUNIT_JAR=no
 fi
 
-
-
- if test "x$enable_java" = xyes -a x"$HAS_JUNIT" != xno; then
+  if test "x$enable_java" = xyes -a x"$HAS_JUNIT_JAR" != xno; then
   HAS_JUNIT_TRUE=
   HAS_JUNIT_FALSE='#'
 else
   HAS_JUNIT_TRUE='#'
   HAS_JUNIT_FALSE=
 fi
+
 
 
 # Extract the first word of "latex", so it can be a program name with args.
@@ -14195,6 +14240,10 @@ Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${BUILD_JAVA_TRUE}" && test -z "${BUILD_JAVA_FALSE}"; then
   as_fn_error $? "conditional \"BUILD_JAVA\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${MK_GENERATOR_COROUTINES_TRUE}" && test -z "${MK_GENERATOR_COROUTINES_FALSE}"; then
+  as_fn_error $? "conditional \"MK_GENERATOR_COROUTINES\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${HAVE_ALDOR_GC_TRUE}" && test -z "${HAVE_ALDOR_GC_FALSE}"; then
