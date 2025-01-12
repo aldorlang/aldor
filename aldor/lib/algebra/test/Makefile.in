@@ -301,6 +301,7 @@ am__can_run_installinfo = \
     n|no|NO) false;; \
     *) (install-info --version) >/dev/null 2>&1;; \
   esac
+am__extra_recursive_targets = releasecheck-recursive
 am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) $(LISP)
 # Read a list of newline-separated strings from the standard input,
 # and print each of them once, without duplicates.  Input order is
@@ -1051,6 +1052,7 @@ clean-libtool:
 	-rm -rf opteqbug/.libs opteqbug/_libs
 	-rm -rf primetest/.libs primetest/_libs
 	-rm -rf tstSprsUniPol/.libs tstSprsUniPol/_libs
+releasecheck-local: 
 
 ID: $(am__tagged_files)
 	$(am__define_uniq_tagged_files); mkid -fID $$unique
@@ -1557,6 +1559,10 @@ ps: ps-am
 
 ps-am:
 
+releasecheck: releasecheck-am
+
+releasecheck-am: releasecheck-local
+
 uninstall-am:
 
 .MAKE: check-am install-am install-strip
@@ -1573,7 +1579,8 @@ uninstall-am:
 	installcheck installcheck-am installdirs maintainer-clean \
 	maintainer-clean-generic mostlyclean mostlyclean-compile \
 	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
-	recheck tags tags-am uninstall uninstall-am
+	recheck releasecheck-am releasecheck-local tags tags-am \
+	uninstall uninstall-am
 
 .PRECIOUS: Makefile
 

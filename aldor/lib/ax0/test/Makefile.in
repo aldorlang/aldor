@@ -123,6 +123,7 @@ am__can_run_installinfo = \
     n|no|NO) false;; \
     *) (install-info --version) >/dev/null 2>&1;; \
   esac
+am__extra_recursive_targets = releasecheck-recursive
 am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) $(LISP)
 am__tty_colors_dummy = \
   mgn= red= grn= lgn= blu= brg= std=; \
@@ -570,6 +571,7 @@ mostlyclean-libtool:
 
 clean-libtool:
 	-rm -rf .libs _libs
+releasecheck-local: 
 tags TAGS:
 
 ctags CTAGS:
@@ -869,6 +871,10 @@ ps: ps-am
 
 ps-am:
 
+releasecheck: releasecheck-am
+
+releasecheck-am: releasecheck-local
+
 uninstall-am:
 
 .MAKE: check-am install-am install-strip
@@ -883,8 +889,9 @@ uninstall-am:
 	install-ps install-ps-am install-strip installcheck \
 	installcheck-am installdirs maintainer-clean \
 	maintainer-clean-generic mostlyclean mostlyclean-generic \
-	mostlyclean-libtool pdf pdf-am ps ps-am recheck tags-am \
-	uninstall uninstall-am
+	mostlyclean-libtool pdf pdf-am ps ps-am recheck \
+	releasecheck-am releasecheck-local tags-am uninstall \
+	uninstall-am
 
 .PRECIOUS: Makefile
 

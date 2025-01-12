@@ -288,6 +288,7 @@ am__objects_1 = test/testall-test_abcheck.$(OBJEXT) \
 	test/testall-test_symeset.$(OBJEXT) \
 	test/testall-test_tform.$(OBJEXT) \
 	test/testall-test_tibup.$(OBJEXT) \
+	test/testall-test_tisef.$(OBJEXT) \
 	test/testall-test_tfsat.$(OBJEXT) \
 	test/testall-test_tinfer.$(OBJEXT) \
 	test/testall-test_tposs.$(OBJEXT) \
@@ -459,6 +460,7 @@ am__depfiles_remade = ./$(DEPDIR)/abcheck.Po ./$(DEPDIR)/ablogic.Po \
 	test/$(DEPDIR)/testall-test_tfsat.Po \
 	test/$(DEPDIR)/testall-test_tibup.Po \
 	test/$(DEPDIR)/testall-test_tinfer.Po \
+	test/$(DEPDIR)/testall-test_tisef.Po \
 	test/$(DEPDIR)/testall-test_tposs.Po \
 	test/$(DEPDIR)/testall-test_tset.Po \
 	test/$(DEPDIR)/testall-testall.Po \
@@ -526,6 +528,7 @@ am__uninstall_files_from_dir = { \
   }
 DATA = $(datainclude_DATA) $(datalib_DATA)
 HEADERS = $(include_HEADERS)
+am__extra_recursive_targets = releasecheck-recursive
 am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) $(LISP)
 # Read a list of newline-separated strings from the standard input,
 # and print each of them once, without duplicates.  Input order is
@@ -1164,6 +1167,7 @@ testsuite = \
 	test/test_symeset.c	\
 	test/test_tform.c	\
 	test/test_tibup.c	\
+	test/test_tisef.c	\
 	test/test_tfsat.c	\
 	test/test_tinfer.c	\
 	test/test_tposs.c	\
@@ -1488,6 +1492,8 @@ test/testall-test_tform.$(OBJEXT): test/$(am__dirstamp) \
 	test/$(DEPDIR)/$(am__dirstamp)
 test/testall-test_tibup.$(OBJEXT): test/$(am__dirstamp) \
 	test/$(DEPDIR)/$(am__dirstamp)
+test/testall-test_tisef.$(OBJEXT): test/$(am__dirstamp) \
+	test/$(DEPDIR)/$(am__dirstamp)
 test/testall-test_tfsat.$(OBJEXT): test/$(am__dirstamp) \
 	test/$(DEPDIR)/$(am__dirstamp)
 test/testall-test_tinfer.$(OBJEXT): test/$(am__dirstamp) \
@@ -1754,6 +1760,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@test/$(DEPDIR)/testall-test_tfsat.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@test/$(DEPDIR)/testall-test_tibup.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@test/$(DEPDIR)/testall-test_tinfer.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@test/$(DEPDIR)/testall-test_tisef.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@test/$(DEPDIR)/testall-test_tposs.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@test/$(DEPDIR)/testall-test_tset.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@test/$(DEPDIR)/testall-testall.Po@am__quote@ # am--include-marker
@@ -2797,6 +2804,20 @@ test/testall-test_tibup.obj: test/test_tibup.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testall_CFLAGS) $(CFLAGS) -c -o test/testall-test_tibup.obj `if test -f 'test/test_tibup.c'; then $(CYGPATH_W) 'test/test_tibup.c'; else $(CYGPATH_W) '$(srcdir)/test/test_tibup.c'; fi`
 
+test/testall-test_tisef.o: test/test_tisef.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testall_CFLAGS) $(CFLAGS) -MT test/testall-test_tisef.o -MD -MP -MF test/$(DEPDIR)/testall-test_tisef.Tpo -c -o test/testall-test_tisef.o `test -f 'test/test_tisef.c' || echo '$(srcdir)/'`test/test_tisef.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) test/$(DEPDIR)/testall-test_tisef.Tpo test/$(DEPDIR)/testall-test_tisef.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='test/test_tisef.c' object='test/testall-test_tisef.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testall_CFLAGS) $(CFLAGS) -c -o test/testall-test_tisef.o `test -f 'test/test_tisef.c' || echo '$(srcdir)/'`test/test_tisef.c
+
+test/testall-test_tisef.obj: test/test_tisef.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testall_CFLAGS) $(CFLAGS) -MT test/testall-test_tisef.obj -MD -MP -MF test/$(DEPDIR)/testall-test_tisef.Tpo -c -o test/testall-test_tisef.obj `if test -f 'test/test_tisef.c'; then $(CYGPATH_W) 'test/test_tisef.c'; else $(CYGPATH_W) '$(srcdir)/test/test_tisef.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) test/$(DEPDIR)/testall-test_tisef.Tpo test/$(DEPDIR)/testall-test_tisef.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='test/test_tisef.c' object='test/testall-test_tisef.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testall_CFLAGS) $(CFLAGS) -c -o test/testall-test_tisef.obj `if test -f 'test/test_tisef.c'; then $(CYGPATH_W) 'test/test_tisef.c'; else $(CYGPATH_W) '$(srcdir)/test/test_tisef.c'; fi`
+
 test/testall-test_tfsat.o: test/test_tfsat.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testall_CFLAGS) $(CFLAGS) -MT test/testall-test_tfsat.o -MD -MP -MF test/$(DEPDIR)/testall-test_tfsat.Tpo -c -o test/testall-test_tfsat.o `test -f 'test/test_tfsat.c' || echo '$(srcdir)/'`test/test_tfsat.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) test/$(DEPDIR)/testall-test_tfsat.Tpo test/$(DEPDIR)/testall-test_tfsat.Po
@@ -2991,6 +3012,7 @@ uninstall-includeHEADERS:
 	@list='$(include_HEADERS)'; test -n "$(includedir)" || list=; \
 	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
 	dir='$(DESTDIR)$(includedir)'; $(am__uninstall_files_from_dir)
+releasecheck-local: 
 
 ID: $(am__tagged_files)
 	$(am__define_uniq_tagged_files); mkid -fID $$unique
@@ -3536,6 +3558,7 @@ distclean: distclean-am
 	-rm -f test/$(DEPDIR)/testall-test_tfsat.Po
 	-rm -f test/$(DEPDIR)/testall-test_tibup.Po
 	-rm -f test/$(DEPDIR)/testall-test_tinfer.Po
+	-rm -f test/$(DEPDIR)/testall-test_tisef.Po
 	-rm -f test/$(DEPDIR)/testall-test_tposs.Po
 	-rm -f test/$(DEPDIR)/testall-test_tset.Po
 	-rm -f test/$(DEPDIR)/testall-testall.Po
@@ -3825,6 +3848,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -f test/$(DEPDIR)/testall-test_tfsat.Po
 	-rm -f test/$(DEPDIR)/testall-test_tibup.Po
 	-rm -f test/$(DEPDIR)/testall-test_tinfer.Po
+	-rm -f test/$(DEPDIR)/testall-test_tisef.Po
 	-rm -f test/$(DEPDIR)/testall-test_tposs.Po
 	-rm -f test/$(DEPDIR)/testall-test_tset.Po
 	-rm -f test/$(DEPDIR)/testall-testall.Po
@@ -3844,6 +3868,10 @@ pdf-am:
 ps: ps-am
 
 ps-am:
+
+releasecheck: releasecheck-am
+
+releasecheck-am: releasecheck-local
 
 uninstall-am: uninstall-binPROGRAMS uninstall-dataincludeDATA \
 	uninstall-datalibDATA uninstall-includeHEADERS \
@@ -3868,10 +3896,10 @@ uninstall-am: uninstall-binPROGRAMS uninstall-dataincludeDATA \
 	installcheck-am installdirs maintainer-clean \
 	maintainer-clean-generic mostlyclean mostlyclean-compile \
 	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
-	recheck tags tags-am uninstall uninstall-am \
-	uninstall-binPROGRAMS uninstall-dataincludeDATA \
-	uninstall-datalibDATA uninstall-includeHEADERS \
-	uninstall-libexecPROGRAMS
+	recheck releasecheck-am releasecheck-local tags tags-am \
+	uninstall uninstall-am uninstall-binPROGRAMS \
+	uninstall-dataincludeDATA uninstall-datalibDATA \
+	uninstall-includeHEADERS uninstall-libexecPROGRAMS
 
 .PRECIOUS: Makefile
 
