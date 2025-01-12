@@ -3883,13 +3883,6 @@ genAssign(AbSyn absyn)
 	rhsFoam = genFoamVal(rhs);
 
 
-	/* This will go once we have the embed tags right */
-#if 0
-	if (abTContext(rhs) == AB_Embed_Fail) {
-		embed = tfSatEmbedType(abTUnique(rhs), abTUnique(lhs));
-		rhsFoam = gen0Embed(rhsFoam, rhs, gen0AbType(rhs), embed);
-	}
-#endif
 	if (abTag(lhs) == AB_Declare)
 		lhs = lhs->abDeclare.id;
 	if (abTag(lhs) == AB_Comma)
