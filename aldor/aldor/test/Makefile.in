@@ -254,11 +254,22 @@ $(addsuffix -junittest,$(_junittests)): %-junittest: out/java/%.class
 
 check-java: $(patsubst %,%-javatest,$(_jruntests)) $(patsubst %,%-junittest,$(_junittests))
 
+$(addsuffix -xtest,$(_xtests)): %-xtest: %.exe
+	$(AM_V_ALDOR_EXE) ./$*.exe
+
+check-xest: $(patsubst %,%-xtest,$(_xtests))
+
 define all_template
 all-$(1): $(patsubst %, out/ao/%.ao, $(filter $(1), $(_aotests)))
 all-$(1): $(patsubst %, out/fm/%.fm, $(filter $(1), $(_fmtests)))
 all-$(1): $(patsubst %, out/c/%.c, $(filter $(1), $(_ctests)))
 all-$(1): $(patsubst %, out/java/aldorcode/%.java, $(filter $(1), $(_jtests)))
+endef
+
+define check_template
+check-$(1): $(patsubst %, %-javatest,  $(filter $(1), $(_jruntests)))
+check-$(1): $(patsubst %, %-junittest, $(filter $(1), $(_junittests)))
+check-$(1): $(patsubst %, %-xtest,     $(filter $(1), $(_xtests)))
 endef
 
 define clean_template
@@ -267,14 +278,16 @@ clean-$(1):
 	for ii in $(patsubst %, out/ao/%.ao, $(filter $(1), $(_aotests))) 	\
 		  $(patsubst %, out/ao/%.ao, $(filter $(1), $(_aotests)))	\
 		  $(patsubst %, out/fm/%.fm, $(filter $(1), $(_fmtests)))	\
-		  $(patsubst %, out/c/%.c, $(filter $(1), $(_ctests)))		\
+		  $(patsubst %, out/c/%.c,   $(filter $(1), $(_ctests)))	\
+		  $(patsubst %, %.exe,       $(filter $(1), $(_xtests)))	\
 		  $(patsubst %, out/java/aldorcode/%.java, $(filter $(1), $(_jtests))); do \
 		rm -f $$$$ii; \
 	done
 .PHONY: clean-$(1)
 endef
 
-$(foreach test, $(_alltests), $(eval $(call all_template,$(test))))
+$(foreach test, $(_alltests), $(eval $(call all_template,  $(test))))
+$(foreach test, $(_alltests), $(eval $(call check_template,$(test))))
 $(foreach test, $(_alltests), $(eval $(call clean_template,$(test))))
 
 .PHONY: check-java
