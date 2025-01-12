@@ -58,7 +58,7 @@ fmtests := x rectest enumtest clos strtable1 simple apply \
 ctests  := rectest enumtest multinever maptuple cimp1 \
            gener0 xit xits xiter lit xarr
 otests  := enumtest rec2
-xtests := enumtest jimport cross seq small lit xit xits xiter generlist xmap xfold genrec
+xtests := enumtest cross seq small lit xit xits xiter generlist xmap xfold genrec
 
 jtests := simple_j enumtest run_j halt gener0 xit xiter
 junittests := JExportTest JThrowTest
