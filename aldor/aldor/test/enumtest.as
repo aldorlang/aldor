@@ -1,4 +1,5 @@
 #include "foamlib"
+#include "assertlib"
 
 X ==> 'GOOD,BAD,UGLY';	
 
@@ -12,4 +13,8 @@ bar(): X == BAD;
 
 bad?(x: X): Boolean == (x = BAD);
 
-print << "hello" << newline
+import from GeneralAssert, X;
+assertTrue(bad? BAD);
+assertFalse(bad? GOOD);
+
+

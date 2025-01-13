@@ -7,14 +7,15 @@
  ****************************************************************************/
  
 #include "debug.h"
+#include "fbox.h"
+#include "flog.h"
 #include "of_util.h"
 #include "phase.h"
 #include "store.h"
-#include "util.h"
-#include "syme.h"
 #include "strops.h"
-#include "fbox.h"
- 
+#include "syme.h"
+#include "util.h"
+
 /*****************************************************************************
  *
  * :: Temporary variable pools
@@ -161,13 +162,8 @@ fpPatchProg(Foam prog)
 	}
 
         fpLocals = prog->foamProg.locals->foamDDecl.argv;
-#ifdef NEW_FORMATS
-	fpParams = fpFormats[paramsSlot]->foamDDecl.argv[prog->foamProg.params-1]->foamDDecl.argv;
-        fpClearFormats(fpFormats[paramsSlot]->foamDDecl.argv[prog->foamProg.params-1]);
-#else
         fpParams = prog->foamProg.params->foamDDecl.argv;
         fpClearFormats(prog->foamProg.params);
-#endif
         fpClearFormats(prog->foamProg.locals);
  
         fpPatchExpr(prog->foamProg.body, false);
@@ -384,9 +380,6 @@ fpClearFormats(Foam ddecl)
 
 	for (i = 0; i < foamDDeclArgc(ddecl); i += 1) {
 		Foam	decl = ddecl->foamDDecl.argv[i];
-#ifdef NEW_FORMATS
-		if (foamTag(decl) == FOAM_DDecl) break;
-#endif
 		if (foamTag(decl) == FOAM_GDecl) {
 			if (decl->foamGDecl.protocol == FOAM_Proto_Foam &&
 			    decl->foamGDecl.type != FOAM_Rec)
@@ -410,6 +403,7 @@ fpClearFormats(Foam ddecl)
 
 local int	utilStatementsCount	(Foam foam);
 local void	utilSequencesExpand	(Foam foam, Foam ** p);
+local void	utilMakeFlatBB		(BBlock bb);
 
 /* During the inlining some (Seq ..) stmts are inserted into the code.
  * For convenience, we want that a Prog contains exactly a unique Seq as
@@ -438,6 +432,37 @@ utilMakeFlatSeq(Foam foam)
 	utilSequencesExpand(foam, &stmtPtr);
 
 	return newSeq;
+}
+
+void
+utilMakeFlatFlog(FlowGraph flog)
+{
+	flogIter(flog, bb, {
+			utilMakeFlatBB(bb);
+			});
+
+}
+
+local void
+utilMakeFlatBB(BBlock bb)
+{
+	int 	numStmts = utilStatementsCount(bb->code);
+	Foam    foam = bb->code;
+	Foam 	newSeq;
+	Foam *  stmtPtr;
+
+	assert(foamTag(foam) == FOAM_Seq);
+
+	/* No sequences inside ? */
+	if (numStmts == foamArgc(foam)) return;
+
+	newSeq = foamNewEmpty(FOAM_Seq, numStmts);
+
+	stmtPtr = newSeq->foamSeq.argv;
+
+	utilSequencesExpand(foam, &stmtPtr);
+
+	bb->code = newSeq;
 }
 
 local int

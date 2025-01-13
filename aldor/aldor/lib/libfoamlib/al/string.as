@@ -66,6 +66,8 @@ extend String: BasicType with {
         leftTrim: (%, Character) -> %;
                 ++ `leftTrim(s,c)' removes leading  occurrences
 		++ of `c' from `s'.
+
+        +: (%, %) -> %;
 }
 == add {
 	import from Machine;
@@ -135,6 +137,9 @@ extend String: BasicType with {
 		for i in seg while i <= len repeat s.i := c;
 		s
 	}
+
+        (+)(a: %, b: %): % == concat(a, b);
+
 	concat(t: Tuple %): % == {
                 n : SingleInteger := 0;
                 for i in 1..length t repeat n := n + #element(t, i);

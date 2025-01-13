@@ -130,6 +130,7 @@
 #include "of_rrfmt.h"
 #include "of_util.h"
 #include "optfoam.h"
+#include "optinfo.h"
 #include "store.h"
 #include "util.h"
 #include "fbox.h"

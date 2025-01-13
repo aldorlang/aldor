@@ -10,7 +10,7 @@
 #define _USEDEF_H_
 
 #include "axlobs.h"
-
+// FIXME: Be honest about optInfo types
 # define	udReachingDefs(foam)	((foam)->foamGen.hdr.info.defList)
 # define	udInfoDef(udinfo)	((udinfo)->foam)
 # define	udInfoBlock(udinfo)	((udinfo)->block)
@@ -39,8 +39,10 @@ typedef enum {
  *
  ****************************************************************************/
 
+#if 0
+extern void     useDefChainsFrFoamProg  (Foam);
 extern void	usedefChainsFreeFrProg	(Foam);
-
+#endif
 extern Bool    	usedefChainsFrFlog	(FlowGraph, UdOutputKind);
 extern void	usedefChainsFreeFrFlog	(FlowGraph);
 extern void	udSetFlogCutOff		(int);

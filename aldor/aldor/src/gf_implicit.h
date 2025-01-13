@@ -19,7 +19,6 @@
 #include "gf_imps.h"
 #include "gf_rtime.h"
 #include "opttools.h"
-#include "of_inlin.h"
 #include "of_util.h"
 #include "optfoam.h"
 #include "simpl.h"

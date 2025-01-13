@@ -1001,7 +1001,8 @@ Float: FloatingPointNumberSystem with {
 	    p << convert(x)@String;
 
 
-	step(n: SingleInteger)(a: %, b: %): Generator % == generate {
+	step(n: SingleInteger)(a0: %, b: %): Generator % == generate {
+	        a := a0;
 		del := (b - a)/makeFloat(n - 1);
 		for i in 1..n repeat {
 			yield a;

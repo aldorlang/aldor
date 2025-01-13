@@ -12,8 +12,8 @@
 #include "axlobs.h"
 
 
-extern Foam      genGenerate            (AbSyn);
-extern Foam      genYield            	(AbSyn);
+extern Foam      gen0Generate           (AbSyn);
+extern Foam      gen0Yield            	(AbSyn);
 extern Foam	 gen0RetFormatDDecl	(void);
 extern AInt	 gen0MakeGenerRetFormat (void);
 extern Foam	 gen0GenLiftedGener	(AbSyn, AbSyn);

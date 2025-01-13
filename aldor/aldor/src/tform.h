@@ -47,6 +47,7 @@ enum tformTag {
 	TF_Enumerate,
 	TF_Forward,
 	TF_Generator,
+	TF_XGenerator,
 	TF_If,
 	TF_Instance,
 	TF_Join,
@@ -719,10 +720,29 @@ extern TForm		tfThirdFrTForm		(TForm);
 /*
  * tfGenerator		Type of a generator object.
  */
+
 extern TForm		tfGenerator		(TForm);
 #define			tfIsGenerator(tf)	(tfTag(tf) == TF_Generator)
 extern Bool		tfIsGeneratorFn		(TForm);
 #define			tfGeneratorArg(tf)	tfFollowArg(tf, 0)
+
+/*
+ * tfXGenerator		Type of a generator object.
+ */
+extern TForm		tfXGenerator		(TForm);
+#define			tfIsXGenerator(tf)	(tfTag(tf) == TF_XGenerator)
+extern Bool		tfIsXGeneratorFn	(TForm);
+#define			tfXGeneratorArg(tf)	tfFollowArg(tf, 0)
+
+/*
+ * TfAnyGenerator	We have two generator types. */
+
+typedef enum { TFG_Generator, TFG_XGenerator } TfGenType;
+
+extern Bool		tfIsAnyGenerator	(TForm);
+extern TForm		tfAnyGenerator		(TfGenType, TForm);
+extern TForm		tfAnyGeneratorArg	(TForm);
+extern TfGenType	tfAnyGeneratorType		(TForm);
 
 /*
  * tfSubst		Type which has a pending substitution.

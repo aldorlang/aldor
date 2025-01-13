@@ -223,6 +223,8 @@ Flow(XX)
 	{ $$ = abNewReference(TPOS($1),$2); }
 | KW_Generate GenBound Binding(XX)
 	{ $$ = abNewGenerate(TPOS($1),$2,$3); }
+| KW_XGenerate GenBound Binding(XX)
+	{ $$ = abNewXGenerate(TPOS($1),$2,$3); }
 | KW_Assert Binding(XX)
 	{ $$ = abNewAssert(TPOS($1),TEST($2)); }
 | KW_Iterate opt(Name)
@@ -292,6 +294,8 @@ Iterators1<ablist>
 Iterator
 : KW_For ForLhs KW_In Infixed opt(SuchthatPart)
 	{ $$ = abNewFor(TPOS($1),$2,$4,$5); }
+| KW_XFor ForLhs KW_In Infixed opt(SuchthatPart)
+	{ $$ = abNewXFor(TPOS($1),$2,$4,$5); }
 | KW_While Infixed
 	{ $$ = abNewWhile(TPOS($1),TEST($2)); }
 ;

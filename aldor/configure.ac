@@ -13,6 +13,8 @@ AM_INIT_AUTOMAKE([foreign silent-rules parallel-tests color-tests subdir-objects
 AM_SILENT_RULES([yes])
 AM_MAINTAINER_MODE([enable])
 
+# Extra target for more extensive tests and checks for release quality
+AM_EXTRA_RECURSIVE_TARGETS([releasecheck])
 # Libraries
 
 # Checks for programs
@@ -29,6 +31,10 @@ if test x"$YACC" = "xyacc"; then
        	      Please install bison.]])
        fi
 fi
+
+# Check for sbcl - other lisps ought to work but for testing just one will do.
+
+AC_CHECK_PROG([SBCL_EXISTS], [sbcl], [yes], [no])
 
 GC=aldor
 # Check for GMP
@@ -47,14 +53,14 @@ AC_CHECK_PROGS([JAVAC], [javac], [no])
 AC_ARG_ENABLE([java],
               [AS_HELP_STRING([--disable-java],
                               [Do not build Aldor Java libraries])],
-              [BUILD_JAVA=false],
-              [BUILD_JAVA=true])
+              [],
+              [enable_java=yes])
+AM_CONDITIONAL(BUILD_JAVA,test "x$JAVAC" != "xno" -a "x$enable_java" = xyes)
 
 AC_ARG_WITH([java-junit],
              [AS_HELP_STRING([--with-java-junit], [specify location of junit jar file])],
 	     [JUNIT_JAR=$withval], [JUNIT_JAR=/usr/share/java/junit4.jar])
 
-AM_CONDITIONAL(BUILD_JAVA, test $JAVAC != no -a $BUILD_JAVA = true)
 
 AC_ARG_WITH([boehm-gc],
             [AS_HELP_STRING([--with-boehm-gc],
@@ -68,18 +74,39 @@ AC_ARG_ENABLE([documentation],
 	    [],
 	    [enable_documentation=no])
 
+AC_ARG_ENABLE([lisp-tests],
+	    [AS_HELP_STRING([--enable-lisp-tests], [Include Lisp (SBCL only) integration tests])],
+	    [BUILD_LISP=yes],
+	    [BUILD_LISP=no])
+AC_SUBST([BUILD_LISP])
+
+AC_MSG_NOTICE([JAVA $BUILD_JAVA unit tests: $JUNIT_JAR])
+AC_MSG_NOTICE([SBCL $SBCL_EXISTS])
+if test x"$BUILD_LISP" = xyes -a ! x"$SBCL_EXISTS" = xyes; then
+    AC_MSG_ERROR([Lisp enabled, but sbcl not available $SBCL_EXISTS $BUILD_LISP])
+elif test x"$BUILD_LISP" = xyes; then
+    AC_MSG_NOTICE([Lisp tests enabled])
+else
+    AC_MSG_NOTICE([Lisp tests disabled])
+fi
+
 AX_LIB_READLINE
 ALDOR_STRICT_COMPILE
 ALDOR_LIB_COMPILE
 
+ALDOR_INTERP_TESTS_INIT
+ALDOR_INTERP_TESTS_OPTION
 ALDOR_READLINE_OPTION
 ALDOR_READLINE_SELECT
+ALDOR_GENERATOR_OPTION
+ALDOR_GENERATOR_SELECT
 
 AC_SUBST([GC])
 AM_CONDITIONAL(HAVE_ALDOR_GC, test $GC = aldor)
 AM_CONDITIONAL(HAVE_BOEHM_GC, test $GC = boehm)
 AC_SUBST([HAVE_ALDOR_GC])
 AC_SUBST([HAVE_BOEHM_GC])
+AC_SUBST([GENERATOR_COROUTINES])
 
 # Checks for libraries.
 LT_INIT
@@ -88,6 +115,7 @@ AC_SUBST([LIBTOOL_DEPS])
 # Enable extra warnings and -Werror if supported.
 ALDOR_ERROR_ON_WARN
 
+ALDOR_INTERP_TESTS
 ALDOR_JAVA_TESTS
 ALDOR_DOCUMENTATION_TESTS
 

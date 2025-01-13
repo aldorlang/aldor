@@ -1871,8 +1871,8 @@ int sxiWrite(FILE *outf, SExpr s, ULong iomode)
 	cc += sxiWrite0(outf, s);
 	cc += fprintf(outf, "\n");
 
-	Return(cc)
-;}
+	Return(cc);
+}
 
 int sxiWrite0(FILE *outf, SExpr s)
 {

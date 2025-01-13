@@ -60,7 +60,8 @@ extern Symbol	ssymBoolean,
 		ssymTuple,
 		ssymType,
 		ssymUnion,
-		ssymVariable;
+		ssymVariable,
+		ssymXGenerator;
 
 /*
  * Symbols for operation names we care about.
@@ -91,7 +92,9 @@ extern Symbol	ssymArrow,
 		ssymTheString,
 		ssymTheTest,
 		ssymTheTrailingArray,
-		ssymTheUnion;
+		ssymTheUnion,
+		ssymTheXGenerator;
+
 
 
 /*

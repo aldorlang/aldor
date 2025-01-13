@@ -73,11 +73,14 @@ Segment(S: Steppable): BasicType with {
 		a := low (s::%);
 		repeat (yield a; a := a + 1);
 	}
+
 	generator(s: CSeg): Generator S == generate { -- to size s of {
 		a := low (s::%);
 		b := high(s::%);
 		while a <= b repeat (yield a; a := a + 1);
 	}
+
+#if 0
 	generator(s: %): Generator S == generate { -- to size s of {
 		a := low  s;
 		b := high s;
@@ -85,6 +88,19 @@ Segment(S: Steppable): BasicType with {
 		open? s =>		repeat (yield a; a := a + d);
 		d >= 0	=> while a <= b repeat (yield a; a := a + d);
 		d <  0	=> while a >= b repeat (yield a; a := a + d);
+	}
+#endif
+
+	generator(s: %): Generator S == generate { -- to size s of {
+		a := low  s;
+		b := high s;
+		d := step s;
+		ubd := open? s;
+		up := d >= 0;
+		while ubd or (up and a <= b) or (not up and a >= b) repeat {
+			yield a;
+			a := a + d;
+		}
 	}
 
 	(a: %) = (b: %): Boolean == {

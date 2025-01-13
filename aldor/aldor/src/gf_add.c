@@ -16,7 +16,7 @@
 #include "gf_rtime.h"
 #include "gf_seq.h"
 #include "of_util.h"
-#include "of_inlin.h"
+#include "optinfo.h"
 #include "spesym.h"
 #include "stab.h"
 #include "store.h"
@@ -221,7 +221,7 @@ gen0AddBody0(AbSyn ab, Stab stab, AbSyn defaultsAb)
 	gen0ProgAddStateFormat(index);
 	gen0ProgFiniEmpty(foam, FOAM_Clos, int0);
 
-        foamOptInfo(foam) = inlInfoNew(gen0State->stab, foam, NULL, false);
+        foamOptInfo(foam) = optInfoNew(gen0State->stab, foam, NULL, false);
         foamProgSetGetter(foam);
 
 	gen0ProgPopState();
@@ -285,7 +285,7 @@ gen0AddBody1(AbSyn ab, Stab stab, AbSyn defaultsAb)
 	gen0ProgAddStateFormat(index);
 	gen0ProgFiniEmpty(foam, FOAM_Word, int0);
 
-        foamOptInfo(foam) = inlInfoNew(gen0State->stab, foam, NULL, false);
+        foamOptInfo(foam) = optInfoNew(gen0State->stab, foam, NULL, false);
         foamProgSetGetter(foam);
 
 	gen0ProgPopState();
@@ -389,7 +389,7 @@ gen0MakeDefaultPackage(AbSyn base, Stab stab, Bool inCatForm, Syme syme)
 	gen0ProgAddStateFormat(index);
 	gen0ProgFiniEmpty(foam, FOAM_NOp, int0);
 
-	foamOptInfo(foam) = inlInfoNew(gen0State->stab, foam, syme, false);
+	foamOptInfo(foam) = optInfoNew(gen0State->stab, foam, syme, false);
         foamProgSetGetter(foam);
 	if (foam->foamProg.levels->foamDEnv.argv[0] != emptyFormatSlot)
 		foamProgUnsetLeaf(foam);
@@ -432,7 +432,7 @@ gen0MakeDefaultHash()
 		gen0ProgPushFormat(emptyFormatSlot);
 		gen0ProgFiniEmpty(foam, FOAM_SInt, int0);
 		gen0AddLexLevels(foam, 1);
-		foamOptInfo(foam) = inlInfoNew(NULL, foam, NULL, false);
+		foamOptInfo(foam) = optInfoNew(NULL, foam, NULL, false);
 		
 		gen0ProgRestoreState(saved);
 		gen0State->tag = oldTag;
@@ -2849,7 +2849,7 @@ gen0GetDomainDomain(TForm exporter)
 local void
 gen0SetInitUsage(Foam getter, AInt level)
 {
-        AIntList         lu;
+        SlotUsageList    lu;
         AIntList         ls;
 
         lu = gen0NthState(level)->formatUsage;
@@ -2858,7 +2858,7 @@ gen0SetInitUsage(Foam getter, AInt level)
 }
 
 void
-gen0SetUsage(Foam foam, AIntList lu, AIntList ls)
+gen0SetUsage(Foam foam, SlotUsageList lu, AIntList ls)
 {
         foamIter(foam, arg, gen0SetUsage(*arg, lu, ls));
         if (foamTag(foam) == FOAM_Lex) {
@@ -2872,7 +2872,7 @@ gen0SetUsage(Foam foam, AIntList lu, AIntList ls)
                 }
                 assert(ls != 0);
                 assert(lu != 0);
-                car(lu) = car(ls);
+                car(lu) = suFrFormat(car(ls));
         }
         else if (foamTag(foam) == FOAM_Env) {
                 AInt level = foam->foamEnv.level;
@@ -2883,7 +2883,7 @@ gen0SetUsage(Foam foam, AIntList lu, AIntList ls)
                 }
                 assert(lu != 0);
                 if (car(lu) == emptyFormatSlot)
-                        car(lu) = envUsedSlot;
+			car(lu) = suFrFormat(envUsedSlot);
         }
 }
 
@@ -3158,7 +3158,7 @@ gen0BuildExporterNameFn(AbSyn exporter)
 
 	gen0AddLexLevels(foam, 1);
 
-        foamOptInfo(foam) = inlInfoNew(NULL, foam, NULL, false);
+        foamOptInfo(foam) = optInfoNew(NULL, foam, NULL, false);
 
 	gen0ProgRestoreState(saved);
 

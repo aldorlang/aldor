@@ -49,5 +49,6 @@ typedef union  ccode *             CCode;
 
 /* Lists of general library types. */
 DECLARE_LIST(FileName);
+DECLARE_LIST(AInt);
 
 #endif /* !_AXLGEN_H_ */

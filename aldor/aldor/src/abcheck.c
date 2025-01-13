@@ -761,9 +761,10 @@ abCheckLambda(AbSyn absyn)
 	SymbolList	parameters = listNil(Symbol);
 	Length		i;
 
+#if RTYPE
 	if (!rtype)
 		comsgError(absyn, ALDOR_E_ChkMissingRetType);
-
+#endif
 	abCheckParam(param);
 
 	for (i = 0; i < abArgc(param); i += 1) {

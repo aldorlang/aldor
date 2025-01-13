@@ -94,11 +94,13 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/ax_lib_readline.m4 \
 	$(top_srcdir)/m4/build_id.m4 \
 	$(top_srcdir)/m4/documentation-tests.m4 \
 	$(top_srcdir)/m4/error-on-warn.m4 $(top_srcdir)/m4/git.m4 \
-	$(top_srcdir)/m4/java-tests.m4 $(top_srcdir)/m4/libtool.m4 \
-	$(top_srcdir)/m4/ltoptions.m4 $(top_srcdir)/m4/ltsugar.m4 \
-	$(top_srcdir)/m4/ltversion.m4 $(top_srcdir)/m4/lt~obsolete.m4 \
-	$(top_srcdir)/m4/readline.m4 $(top_srcdir)/m4/sbrk.m4 \
-	$(top_srcdir)/m4/strict_compile.m4 $(top_srcdir)/configure.ac
+	$(top_srcdir)/m4/interp-tests.m4 \
+	$(top_srcdir)/m4/java-tests.m4 $(top_srcdir)/m4/language.m4 \
+	$(top_srcdir)/m4/libtool.m4 $(top_srcdir)/m4/ltoptions.m4 \
+	$(top_srcdir)/m4/ltsugar.m4 $(top_srcdir)/m4/ltversion.m4 \
+	$(top_srcdir)/m4/lt~obsolete.m4 $(top_srcdir)/m4/readline.m4 \
+	$(top_srcdir)/m4/sbrk.m4 $(top_srcdir)/m4/strict_compile.m4 \
+	$(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 DIST_COMMON = $(srcdir)/Makefile.am $(am__DIST_COMMON)
@@ -153,6 +155,7 @@ am__uninstall_files_from_dir = { \
   }
 am__installdirs = "$(DESTDIR)$(dataincludedir)"
 DATA = $(datainclude_DATA)
+am__extra_recursive_targets = releasecheck-recursive
 am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) $(LISP)
 am__DIST_COMMON = $(srcdir)/Makefile.in
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -164,6 +167,7 @@ AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
+BUILD_LISP = @BUILD_LISP@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
@@ -187,8 +191,8 @@ FGREP = @FGREP@
 FIG2EPS = @FIG2EPS@
 FILECMD = @FILECMD@
 GC = @GC@
+GENERATOR_COROUTINES = @GENERATOR_COROUTINES@
 GREP = @GREP@
-HAS_JUNIT = @HAS_JUNIT@
 HAVE_ALDOR_GC = @HAVE_ALDOR_GC@
 HAVE_BOEHM_GC = @HAVE_BOEHM_GC@
 INSTALL = @INSTALL@
@@ -234,6 +238,7 @@ PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 PDFLATEX = @PDFLATEX@
 RANLIB = @RANLIB@
+SBCL_EXISTS = @SBCL_EXISTS@
 SBRK_OPT = @SBRK_OPT@
 SED = @SED@
 SET_MAKE = @SET_MAKE@
@@ -360,6 +365,7 @@ uninstall-dataincludeDATA:
 	@list='$(datainclude_DATA)'; test -n "$(dataincludedir)" || list=; \
 	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
 	dir='$(DESTDIR)$(dataincludedir)'; $(am__uninstall_files_from_dir)
+releasecheck-local: 
 tags TAGS:
 
 ctags CTAGS:
@@ -500,6 +506,10 @@ ps: ps-am
 
 ps-am:
 
+releasecheck: releasecheck-am
+
+releasecheck-am: releasecheck-local
+
 uninstall-am: uninstall-dataincludeDATA
 
 .MAKE: install-am install-strip
@@ -514,8 +524,9 @@ uninstall-am: uninstall-dataincludeDATA
 	install-pdf-am install-ps install-ps-am install-strip \
 	installcheck installcheck-am installdirs maintainer-clean \
 	maintainer-clean-generic mostlyclean mostlyclean-generic \
-	mostlyclean-libtool pdf pdf-am ps ps-am tags-am uninstall \
-	uninstall-am uninstall-dataincludeDATA
+	mostlyclean-libtool pdf pdf-am ps ps-am releasecheck-am \
+	releasecheck-local tags-am uninstall uninstall-am \
+	uninstall-dataincludeDATA
 
 .PRECIOUS: Makefile
 

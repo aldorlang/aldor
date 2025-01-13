@@ -9,7 +9,7 @@ void testBuffer(void);
 void testBuffer2(void);
 void testNull(void);
 
-void 
+void
 ostreamTest()
 {
 	TEST(testBuffer);
@@ -17,7 +17,7 @@ ostreamTest()
 	TEST(testNull);
 }
 
-void 
+void
 testBuffer()
 {
 	int i;
@@ -39,7 +39,7 @@ testBuffer()
 	}
 }
 
-void 
+void
 testBuffer2()
 {
 	StringList l = listList(String)(3, "", "hello", "a");
@@ -56,7 +56,7 @@ testBuffer2()
 	}
 }
 
-void 
+void
 testNull()
 {
 	int i;

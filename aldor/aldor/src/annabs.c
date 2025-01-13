@@ -24,8 +24,6 @@
  ****************************************************************************/
 static Bool abcElideInnerExpressions;
 
-SExpr abToAnnotatedSExpr(AbSyn whole);
-
 typedef struct _AbAnnotationBucket {
 	Table indexForSefo;
 	Table sxForIndex;

@@ -83,7 +83,8 @@ SingleFloat: Join(
 		w;
 	}
 
-	step(n:SingleInteger)(a:%, b:%): Generator % == generate {
+	step(n:SingleInteger)(aa:%, b:%): Generator % == generate {
+	        a := aa;
 		del := (b - a)/(n - 1)::%;
 		for i in 1..n repeat {
 			yield a;

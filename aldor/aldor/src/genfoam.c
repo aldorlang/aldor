@@ -32,9 +32,11 @@
 #include "fortran.h"
 #include "genfoam.h"
 #include "gf_add.h"
+#include "gf_cgener.h"
 #include "gf_excpt.h"
 #include "gf_fortran.h"
 #include "gf_gener.h"
+#include "genstyle.h"
 #include "gf_imps.h"
 #include "gf_java.h"
 #include "gf_prog.h"
@@ -42,9 +44,9 @@
 #include "gf_rtime.h"
 #include "gf_syme.h"
 #include "gf_util.h"
-#include "of_inlin.h"
 #include "of_util.h"
 #include "optfoam.h"
+#include "optinfo.h"
 #include "opttools.h"
 #include "scobind.h"
 #include "sefo.h"
@@ -68,6 +70,7 @@ Bool	genfHashDebug	= false;
 
 extern Bool genfExportDebug;	/* (from gf_add.c) */
 #define genfExportDEBUG		DEBUG_IF(genfExport)	afprintf
+#define genfEnvDEBUG		DEBUG_IF(genfEnv)	afprintf
 
 CREATE_LIST (DomainCache);
 CREATE_LIST (VarPool);
@@ -134,7 +137,6 @@ local AInt	   gen0BuiltinImport	  (String, String);
 local Foam	   gen0BuiltinExporter	  (Foam, Syme);
 local Foam	   gen0CCall		  (FoamTag, Syme, Length, Foam **);
 local Bool	   gen0CompareFormats	  (Foam, Foam);
-local void	   gen0ComputeSideEffects (Foam prog);
 local Foam	   gen0CrossToMulti	  (Foam, TForm);
 local Foam	   gen0CrossToUnary	  (Foam, TForm);
 local Foam	   gen0CrossToTuple	  (Foam, TForm);
@@ -147,10 +149,11 @@ local Symbol	   gen0ExportingTo	  (AbSyn absyn);
 local void	   gen0ExportToBuiltin	  (AbSyn fun);
 local void	   gen0ExportToC	  (AbSyn fun);
 local Foam	   gen0Extend		  (AbSyn);
-local void	   gen0FindDefs		  (AbSyn, AbSyn, Stab, Bool, Bool );
+local void	   gen0FindDefsAll	  (AbSyn, Stab);
 local int	   gen0FoamLevel	  (AInt level);
 local FoamTag	   gen0FoamType		  (Foam foam);
 local void	   gen0ForIter		  (AbSyn, FoamList *, FoamList *);
+local void	   gen0CForIter		  (AbSyn, FoamList *, FoamList *);
 local void	   gen0FreeTemp		  (Foam);
 local void	   gen0GenFoamInit	  (void);
 local void	   gen0GenFoamFini	  (void);
@@ -209,7 +212,7 @@ local Foam	   gen0UnaryToRaw	  (Foam, AbSyn);
 local Foam	   gen0UnaryToTuple	  (Foam);
 local AInt 	   gen0CrossFormatNumber  (TForm tf);
 local AInt	   gen0TrailingFormatNumber(TForm tf);
-local AIntList	   gen0UnusedFormats	  (AIntList);
+local SlotUsageList gen0UnusedFormats	  (AIntList);
 local void	   gen0UseFormat	  (AInt level, int slot);
 local void	   gen0UseStateFormat	  (GenFoamState, AInt);
 local void	   gen0VarsList		  (Stab, SymeList);
@@ -255,7 +258,8 @@ local AInt	   gen0FortranSigFormatNumber   (TForm, Bool);
 local String       gen0TypeString               (Sefo);
 local FoamTag 	   gen0TfMapType(Syme syme, TForm mapTf, FoamTag argFoamTag, AInt *newFmt);
 
-
+local Foam genGenerate(AbSyn absyn);
+local Foam genYield(AbSyn absyn);
 /*
  * The following are used store information for flattening programs.
  */
@@ -265,12 +269,7 @@ static int	numLexicals;
 
 
 String	 gen0FileName;
-#ifdef NEW_FORMATS
-FoamList gen0GlobalList, gen0FluidList, gen0FormatList, gen0ParamsList;
-int	 gen0NumParams;
-#else
 FoamList gen0GlobalList, gen0FluidList, gen0FormatList;
-#endif
 FoamList gen0DeclList, gen0ProgList;
 AIntList gen0ConstList;
 AIntList gen0RealConstList;
@@ -304,6 +303,7 @@ GenFoamState		gen0State;
 static AbSyn            gen0FortranFnResult = NULL;
 static FoamList         gen0FortranActualArgTmps = listNil(Foam); 
 
+static GenType gen0GenType;
 
 /* Flags for options */
 Bool 			gen0InAxiomAx	   = false;
@@ -367,13 +367,8 @@ generateFoam(Stab stab0, AbSyn absyn, String initName)
 {
 	Scope("generateFoam");
 
-#ifdef NEW_FORMATS
-	Foam		foam, clos, constants, def, params,
-			globals, lexicals, formats, defs, decl, fluids;
-#else
 	Foam		foam, clos, constants, def,
 			globals, lexicals, formats, defs, decl, fluids;
-#endif
 	int		index, gloNOpIdx, gloRuntimeIdx;
 	AbLogic		fluid(gfCondKnown); /* COND-DEF */
 
@@ -389,7 +384,7 @@ generateFoam(Stab stab0, AbSyn absyn, String initName)
 
 
 	/* Walk absyn for open callable funcs and lexically deep references. */
-	gen0FindDefs(absyn, NULL, stab0, false, true);
+	gen0FindDefsAll(absyn, stab0);
 
 	/* Declare the globals for the top-level prog. */
 
@@ -464,7 +459,7 @@ generateFoam(Stab stab0, AbSyn absyn, String initName)
 	gen0IssueDCache();
 	gen0ProgFiniEmpty(foam, FOAM_NOp, int0);
 
-	foamOptInfo(foam) = inlInfoNew(NULL, foam, NULL, false);
+	foamOptInfo(foam) = optInfoNew(NULL, foam, NULL, false);
 
 	/* construct the unit */
 	constants   = gen0RenewConstants(gen0DeclList, gen0NumProgs);
@@ -477,10 +472,6 @@ generateFoam(Stab stab0, AbSyn absyn, String initName)
 	gen0MakeBuiltinExports();
 	defs	    = gen0RenewDefs(gen0ProgList, gen0NumProgs);
 
-#ifdef NEW_FORMATS
-	gen0ParamsList	= listNReverse(Foam)(gen0ParamsList);
-	params = foamNewOfList(FOAM_DDecl, gen0ParamsList);
-#endif
 	/* Fixup defns of globals... */
 
 	gen0GlobalList	= listNReverse(Foam)(gen0GlobalList);
@@ -552,10 +543,6 @@ gen0GenFoamInit()
 	gen0FluidList		= listNil(Foam);
 	gen0ConstList		= listNil(AInt);
 	gen0RealConstList	= listNil(AInt);
-#ifdef NEW_FORMATS
-	gen0ParamsList		= listNil(Foam);
-	gen0NumParams		= 0;
-#endif
 	gen0NumGlobals		= 0;
 	gen0FwdProgNum		= SYME_NUMBER_UNASSIGNED - 1;
 	gen0NumProgs		= 0;
@@ -584,9 +571,6 @@ gen0GenFoamFini()
 	listFree(Foam)(gen0FormatList);
 	listFree(Foam)(gen0ProgList);
 	listFree(Foam)(gen0DeclList);
-#ifdef NEW_FORMATS
-	listFree(Foam)(gen0ParamsList);
-#endif
 	listFree(Foam)(gen0GlobalList);
 	listFree(Foam)(gen0FluidList);
 	listFree(AInt)(gen0ConstList);
@@ -1211,14 +1195,8 @@ genMulti(AbSyn absyn)
 			TForm tfi = abTUnique(abArgv(absyn)[i]);
 			val = genFoamVal(abArgv(absyn)[i]);
 			type = gen0Type(tfi, &fmt);
-#ifdef MultiUseLocals
-			/*!! We would rather generate locals here, but
-			 *!! gen0TempLocal isn't working as expected. */
+			/* NB: Poss issue here (fix: var = gen0TempLex0(type, fmt);) */
 			var = gen0TempLocal0(type, fmt);
-#else
-			var = gen0TempLex0(type, fmt);
-#endif
-
 			values->foamValues.argv[i] = var;
 			gen0AddStmt(foamNewSet(foamCopy(var), val), NULL);   
 		}
@@ -1450,7 +1428,12 @@ genImplicit(AbSyn absyn, AbSyn val, FoamTag type)
 	Syme	syme = abImplicitSyme(absyn);
 	AbSyn  *argv = NULL;
 	Foam 	foam;      
-	if (!syme) return genFoamVal(val);
+	if (!syme) {
+		foam = genFoamVal(val);
+		if (gen0Type(gen0AbContextType(val), NULL) != type)
+			foam = foamNewCast(type, foam);
+		return foam;
+	}
 
 	argv = gen0MakeImplicitArgs(1, val, abThisArgf);
 	foam = gen0ApplyImplicitSyme(type, syme, 1, argv, NULL);
@@ -1878,7 +1861,7 @@ gen0OCall(FoamTag type, Syme syme, Length argc, Foam **pargv)
 	foam->foamOCall.env = foamNewEnv(envLevel);
 
 	if (envLevel == 0) foamProgUnsetLeaf(gen0State->program);
-	if (listElt(AInt)(gen0State->formatUsage, envLevel) == emptyFormatSlot)
+	if (suVal(listElt(SlotUsage)(gen0State->formatUsage, envLevel)) == emptyFormatSlot)
 		gen0UseFormat(envLevel, envUsedSlot);
 
 	*pargv = foam->foamOCall.argv;
@@ -3899,13 +3882,6 @@ genAssign(AbSyn absyn)
 	rhsFoam = genFoamVal(rhs);
 
 
-	/* This will go once we have the embed tags right */
-#if 0
-	if (abTContext(rhs) == AB_Embed_Fail) {
-		embed = tfSatEmbedType(abTUnique(rhs), abTUnique(lhs));
-		rhsFoam = gen0Embed(rhsFoam, rhs, gen0AbType(rhs), embed);
-	}
-#endif
 	if (abTag(lhs) == AB_Declare)
 		lhs = lhs->abDeclare.id;
 	if (abTag(lhs) == AB_Comma)
@@ -4413,7 +4389,7 @@ gen0MakeExtendLambda(Syme syme, TForm tf)
 	gen0IssueDCache();
 	gen0ProgFiniEmpty(foam, retType, int0);
 
-        foamOptInfo(foam) = inlInfoNew(gen0State->stab, foam, NULL, false);
+        foamOptInfo(foam) = optInfoNew(gen0State->stab, foam, NULL, false);
         foamProgSetGetter(foam);
 
 	gen0ProgPopState();
@@ -4465,7 +4441,7 @@ gen0MakeExtendBase(Syme syme)
 	gen0IssueDCache();
 	gen0ProgFiniEmpty(foam, FOAM_Clos, int0);
 
-        foamOptInfo(foam) = inlInfoNew(gen0State->stab, foam, NULL, false);
+        foamOptInfo(foam) = optInfoNew(gen0State->stab, foam, NULL, false);
         foamProgSetGetter(foam);
 
 	gen0ProgPopState();
@@ -4606,6 +4582,8 @@ gen0ParamIndex(Syme param)
  * Generate Foam for the Syme of an identifier.
  */
 
+extern Bool	genfEnvDebug;
+
 Foam
 gen0ExtendSyme(Syme syme)
 {
@@ -4722,8 +4700,8 @@ gen0SymeGeneric(Syme syme)
 		return foamNew(kind, 1, (AInt) gen0VarIndex(syme));
 	}
 
-	if (DEBUG(genf)) {
-		fprintf(dbOut, "GenSyme: %s \t\tstablev: %lu stabLamLev:%lu symeDefLev: %lu symeDefLamLev: %lu ",
+	if (DEBUG(genfEnv)) {
+		fprintf(dbOut, "GenSyme: %-8s stablev: %lu stabLamLev:%lu symeDefLev: %lu symeDefLamLev: %lu ",
 			symeString(syme),
 			!gen0State->stab ? 0 : stabLevelNo(gen0State->stab), 
 			!gen0State->stab ? 0 : stabLambdaLevelNo(gen0State->stab), 
@@ -4737,14 +4715,16 @@ gen0SymeGeneric(Syme syme)
 		level = stabLambdaLevelNo(gen0State->stab) -
 			symeDefLambdaLevelNo(syme);
 		if (gen0IsInnerVar(syme, level)) {
-			genfDEBUG(dbOut, "Inner\n");
+			genfEnvDEBUG(dbOut, "Inner\n");
 			return gen0InnerSyme(syme, level);
 		}
 	}
 
 	level = gen0FoamLevel(symeDefLevelNo(syme));
-	genfDEBUG(dbOut, "std: Lev:%d\n", (int)level);
 	gen0UseStackedFormat(level);
+	if (DEBUG(genfEnv)) {
+		afprintf(dbOut, "sym: %s Lev:%d %pAIntList %pSlotUsageList\n", symeString(syme), (int)level, gen0State->formatStack, gen0State->formatUsage);
+	}
 	return foamNewLex(level, gen0VarIndex(syme));
 }
 
@@ -5162,7 +5142,6 @@ gen0Lambda(AbSyn absyn, Syme syme, AbSyn defaults)
 		val = gen0Lambda(fbody, (Syme)NULL, defaults);
 		assert(foamTag(val) != FOAM_Nil);
 	}
-
 	else if (abTag(fbody) == AB_Add) {
 		if (genIsRuntime() && syme) {
 			gen0Vars(abStab(fbody));
@@ -5233,7 +5212,7 @@ gen0Lambda(AbSyn absyn, Syme syme, AbSyn defaults)
 	gen0ProgFiniEmpty(foam, retType, retfmt);
 
 	/* foam->foamProg.infoBits = IB_SIDE | IB_LEAF; */
-	foamOptInfo(foam) = inlInfoNew(gen0State->stab, foam,
+	foamOptInfo(foam) = optInfoNew(gen0State->stab, foam,
 				       syme, false);
 	if (foam->foamProg.levels->foamDEnv.argv[0] != emptyFormatSlot)
 		foamProgUnsetLeaf(foam);
@@ -5387,18 +5366,19 @@ gen0AbSynHasConstHash0(AbSyn ab)
 /*
  * Create an empty format usage stack of the same length as l.
  */
-local AIntList
+local SlotUsageList
 gen0UnusedFormats(AIntList l)
 {
-	AIntList r = listNil(AInt);
+	SlotUsageList r = listNil(SlotUsage);
 	for(; l != listNil(AInt); l = cdr(l))
-		r = listCons(AInt)(emptyFormatSlot, r);
+		r = listCons(SlotUsage)(suFrFormat(emptyFormatSlot), r);
 	return r;
 }
 
 /*
  * Return the Foam type given a type form.
  */
+local FoamTag gen0TypeGenerator(GenType genType);
 
 FoamTag
 gen0Type(TForm tf, AInt *pfmt)
@@ -5425,7 +5405,8 @@ gen0Type(TForm tf, AInt *pfmt)
 
 		if	(tfIsWith(tf))		tag = FOAM_Word;
 		else if (tfIsAnyMap(tf))	tag = FOAM_Clos;
-		else if (tfIsGenerator(tf))	tag = FOAM_Clos;
+		else if (tfIsGenerator(tf))	tag = gen0TypeGenerator(gfGenTypeDefault());
+		else if (tfIsXGenerator(tf))	tag = gen0TypeGenerator(gfGenTypeAlt());
 		else if (tfIsMulti(tf))		tag = FOAM_NOp;
 		else if (tfIsRecord(tf)) {
 			tag = FOAM_Rec;
@@ -5492,6 +5473,21 @@ gen0Type(TForm tf, AInt *pfmt)
 
 	return tag;
 }
+
+local FoamTag
+gen0TypeGenerator(GenType genType)
+{
+	switch (genType) {
+	case GENTYPE_Function:
+		return FOAM_Clos;
+	case GENTYPE_Coroutine:
+		return FOAM_Word;
+	default:
+		bug("Not reached");
+		return  FOAM_NOp;
+	}
+}
+
 
 local Symbol
 gen0MachineType(TForm tf)
@@ -6256,6 +6252,35 @@ genRepeat(AbSyn absyn)
 	Return(NULL);
 }
 
+local Foam
+genGenerate(AbSyn absyn)
+{
+	Scope("Generate");
+	Foam foam;
+	GenType fluid(gen0GenType);
+	gen0GenType = gfGenTypeGenerator(absyn);
+
+	if (gen0GenType == GENTYPE_Coroutine)
+		foam = gen0CGenerate(absyn);
+	else if (gen0GenType == GENTYPE_Function)
+		foam = gen0Generate(absyn);
+	else
+		bug("Unknown generator type");
+
+	Return(foam);
+}
+
+local Foam
+genYield(AbSyn absyn)
+{
+	Foam foam;
+	if (gen0GenType)
+		foam = gen0CYield(absyn);
+	else
+		foam = gen0Yield(absyn);
+
+	return foam;
+}
 /*
  * Generate an exit test and for-loop initialization for a single iterator.
  */
@@ -6273,7 +6298,12 @@ gen0Iter(AbSyn absyn, FoamList *forl, FoamList *itl)
 		*itl = listCons(Foam)(test, gen0State->lines);
 		break;
 	case AB_For:
-		gen0ForIter(absyn, forl, itl);
+		if (gfGenTypeFor(absyn) == GENTYPE_Coroutine)
+			gen0CForIter(absyn, forl, itl);
+		else if (gfGenTypeFor(absyn) == GENTYPE_Function)
+			gen0ForIter(absyn, forl, itl);
+		else
+			bug("Unknown generator");
 		*itl = gen0State->lines;
 		break;
 	default:
@@ -6358,6 +6388,54 @@ gen0ForIter(AbSyn absyn, FoamList *forl, FoamList *itl)
 	return;
 }
 
+extern void
+gen0CForIter(AbSyn absyn, FoamList *forl, FoamList *itl)
+{
+	Foam gen;
+	Foam  hasNext, next, whole;
+	FoamTag type;
+	AbSyn id;
+
+	hasNext = gen0Temp(FOAM_Bool);
+	next = gen0Temp(FOAM_Word);
+	whole = gen0Temp(FOAM_GenIter);
+
+	gen0State->lines = *forl;
+	gen = foamNewCast(FOAM_Gener, genImplicit(absyn, absyn->abFor.whole, FOAM_Word));
+	gen0AddStmt(foamNewSet(foamCopy(whole), foamNewGenIter(gen)), NULL);
+	*forl = gen0State->lines;
+	gen0State->lines = *itl;
+
+	/* Finished? */
+	gen0AddStmt(foamNewGenerStep(gen0BreakLabel, foamCopy(whole)), absyn);
+
+        if (abTag(absyn->abFor.lhs) == AB_Comma) {
+		Foam val = foamNewGenerValue(foamCopy(whole));
+                Foam mval = gen0CrossToMulti(val,
+					     tfDefineeMaybeType(tfXGeneratorArg(gen0AbContextType(absyn))));
+                gen0MultiAssign(FOAM_Set, absyn->abFor.lhs, mval);
+        }
+	else {
+		gen0AddStmt(foamNewSet(foamCopy(next), foamNewGenerValue(foamCopy(whole))), NULL);
+		id = abDefineeId(absyn);
+		type = gen0Type(gen0AbContextType(id), NULL);
+		if (type != FOAM_Word)
+			next = foamNewCast(type, foamCopy(next));
+		gen0AddStmt(foamNewSet(genFoamVal(id), foamCopy(next)), absyn);
+        }
+        if (!abIsNothing(absyn->abFor.test)) {
+		int  l1     = gen0State->labelNo++;
+		Foam test   = genFoamBit(absyn->abFor.test);
+		gen0AddStmt(foamNewIf(test, l1), absyn);
+		gen0AddStmt(foamNewGoto(gen0IterateLabel), absyn);
+		gen0AddStmt(foamNewLabel(l1), absyn);
+	}
+	foamFree(whole);
+	foamFree(hasNext);
+	foamFree(next);
+}
+
+
 /*****************************************************************************
  *
  * :: gen0FindDefs
@@ -6373,11 +6451,31 @@ gen0ForIter(AbSyn absyn, FoamList *forl, FoamList *itl)
 /* 
  * !!should replace lhs with exporter
  */
-local void gen0FindDefsSyme(Stab stab, Syme syme, Bool inHighLev);
-local void gen0FindDefsDefine(AbSyn absyn, Stab stab, Bool inHighLev, Bool topLev);
+typedef AInt GFindDefMask;
+
+#define GFindDef_None 0
+
+#define GFindDef_HighLevel (1 << 0)
+#define GFindDef_Generator (1 << 1)
+
+#define gfdSetHighLevel(mask) ( (mask) | GFindDef_HighLevel)
+#define gfdSetGenerator(mask) ( (mask) | GFindDef_Generator)
+
+#define gfdHighLevel(mask) ( (mask) & GFindDef_HighLevel)
+#define gfdGenerator(mask) ( (mask) & GFindDef_Generator)
+
+local void gen0FindDefs(AbSyn, AbSyn, Stab, GFindDefMask);
+local void gen0FindDefsSyme(Stab stab, Syme syme, GFindDefMask mask);
+local void gen0FindDefsDefine(AbSyn absyn, Stab stab, GFindDefMask mask);
 
 local void
-gen0FindDefs(AbSyn absyn, AbSyn lhs, Stab stab, Bool inHighLev, Bool topLev)
+gen0FindDefsAll(AbSyn absyn, Stab stab0)
+{
+	gen0FindDefs(absyn, NULL, stab0, GFindDef_None);
+}
+
+local void
+gen0FindDefs(AbSyn absyn, AbSyn lhs, Stab stab, GFindDefMask mask)
 {
 	Length		i, argc = abArgc(absyn);
 
@@ -6388,50 +6486,49 @@ gen0FindDefs(AbSyn absyn, AbSyn lhs, Stab stab, Bool inHighLev, Bool topLev)
 
 		stab = abStab(absyn);
 
-		gen0FindDefs(lhs, NULL, stab, inHighLev, false);
-		gen0FindDefs(rhs, NULL, stab, inHighLev, true);
+		gen0FindDefs(lhs, NULL, stab, mask);
+		gen0FindDefs(rhs, NULL, stab, mask);
 		break;
 	}
 	case AB_Define: {
-		gen0FindDefsDefine(absyn, stab, inHighLev, topLev);
+		gen0FindDefsDefine(absyn, stab, mask);
 		break;
 	}
 	case AB_RestrictTo: {
 		AbSyn	expr = absyn->abRestrictTo.expr;
 		AbSyn	type = absyn->abRestrictTo.type;
 
-		gen0FindDefs(expr, NULL, stab, inHighLev, topLev);
+		gen0FindDefs(expr, NULL, stab, mask);
 		if (abHasTag(expr, AB_Add) && tfIsCategory(gen0AbType(type)))
-			gen0FindDefs(type, NULL, stab, true, topLev);
+			gen0FindDefs(type, NULL, stab, gfdSetHighLevel(mask));
 		break;
 	}
 	case AB_Generate: {
 		AbSyn	count = absyn->abGenerate.count;
 		AbSyn	body  = absyn->abGenerate.body;
-
-		gen0FindDefs(count, NULL, stab, true, false);
-		gen0FindDefs(body,  NULL, stab, true, false);
+		gen0FindDefs(count, NULL, stab, gfdSetHighLevel(mask));
+		gen0FindDefs(body,  NULL, stab, gfdSetHighLevel(mask));
 		break;
 	}
 	case AB_Reference: {
 		AbSyn	body  = absyn->abReference.body;
 
 		/* Mark our parameter as being used deeply */
-		gen0FindDefs(body,  NULL, stab, true, false);
+		gen0FindDefs(body,  NULL, stab, gfdSetHighLevel(mask));
 		break;
 	}
 	case AB_Collect: {
 		AbSyn	*argv = absyn->abCollect.iterv;
 		AbSyn	body  = absyn->abCollect.body;
-
-		for (i = 0; i < argc - 1; i += 1)
-			gen0FindDefs(argv[i], NULL, stab, true, false);
-		gen0FindDefs(body, NULL, stab, true, false);
+		for (i = 0; i < argc - 1; i += 1) {
+			gen0FindDefs(argv[i], NULL, stab, gfdSetHighLevel(mask));
+		}
+		gen0FindDefs(body, NULL, stab, gfdSetHighLevel(mask));
 		break;
 	}
 	case AB_Id: {
 		Syme	syme = abSyme(absyn);
-		gen0FindDefsSyme(stab, syme, inHighLev);
+		gen0FindDefsSyme(stab, syme, mask);
 		break;
 	}
 	case AB_Where: {
@@ -6440,16 +6537,16 @@ gen0FindDefs(AbSyn absyn, AbSyn lhs, Stab stab, Bool inHighLev, Bool topLev)
 
 		stab = abStab(absyn);
 
-                gen0FindDefs(ctxt, NULL, abStab(absyn), inHighLev, false);
-                gen0FindDefs(expr, NULL, abStab(absyn), inHighLev, false);
+                gen0FindDefs(ctxt, NULL, abStab(absyn), mask);
+                gen0FindDefs(expr, NULL, abStab(absyn), mask);
 		break;
 	}
 	case AB_With: {
 		AbSyn	lhs = absyn->abWith.base;
 		AbSyn	rhs = absyn->abWith.within;
 
-		gen0FindDefs(lhs, NULL, stab, inHighLev, false);
-		gen0FindDefs(rhs, NULL, stab, inHighLev, false);
+		gen0FindDefs(lhs, NULL, stab, mask);
+		gen0FindDefs(rhs, NULL, stab, mask);
 		break;
 	}
 	case AB_Lambda:
@@ -6483,7 +6580,7 @@ gen0FindDefs(AbSyn absyn, AbSyn lhs, Stab stab, Bool inHighLev, Bool topLev)
 		gen0FwdProgNum -= 1;
 
 		if (markParams) gen0MarkParamsDeep(stab,absyn->abLambda.param);
-		gen0FindDefs(fbody, NULL, abStab(absyn), inHighLev, false);
+		gen0FindDefs(fbody, NULL, abStab(absyn), mask);
 
 		break;
 	}
@@ -6500,7 +6597,7 @@ gen0FindDefs(AbSyn absyn, AbSyn lhs, Stab stab, Bool inHighLev, Bool topLev)
 		if (abStab(absyn))
 			stab = abStab(absyn);
 
-		if (impl) gen0FindDefs(impl, NULL, stab, inHighLev, topLev);
+		if (impl) gen0FindDefs(impl, NULL, stab, mask);
 
 		
 		for (i = 0; i < argc; i += 1)
@@ -6526,7 +6623,7 @@ gen0FindDefs(AbSyn absyn, AbSyn lhs, Stab stab, Bool inHighLev, Bool topLev)
 				isDeep = i && isForeign && isFunArg;
 			}
 
-			gen0FindDefs(argv[i], NULL, stab, isDeep || inHighLev, false);
+			gen0FindDefs(argv[i], NULL, stab, isDeep ? gfdSetHighLevel(mask) : mask);
 		}
 		break;
 	}
@@ -6536,10 +6633,10 @@ gen0FindDefs(AbSyn absyn, AbSyn lhs, Stab stab, Bool inHighLev, Bool topLev)
 		AbSyn	except = absyn->abTry.except;
 		AbSyn	always = absyn->abTry.always;
 
-		gen0FindDefs(id,     lhs, stab, inHighLev, false);
-		gen0FindDefs(expr,   lhs, stab, true, false);
-		gen0FindDefs(except, lhs, stab, inHighLev, false);
-		gen0FindDefs(always, lhs, stab, inHighLev, false);
+		gen0FindDefs(id,     lhs, stab, mask);
+		gen0FindDefs(expr,   lhs, stab, gfdSetHighLevel(mask));
+		gen0FindDefs(except, lhs, stab, mask);
+		gen0FindDefs(always, lhs, stab, mask);
 		break;
 	}
   	case AB_Export: {
@@ -6548,33 +6645,33 @@ gen0FindDefs(AbSyn absyn, AbSyn lhs, Stab stab, Bool inHighLev, Bool topLev)
 		AbSyn	dest = absyn->abExport.destination;
 
 		if (abTag(dest) == AB_Apply) 
-			gen0FindDefs(what, lhs, stab, true, false);
+			gen0FindDefs(what, lhs, stab, gfdSetHighLevel(mask));
 		else 
-			gen0FindDefs(what, lhs, stab, inHighLev, false);
-		gen0FindDefs(dest, lhs, stab, inHighLev, false);
-		gen0FindDefs(from, lhs, stab, inHighLev, false);
+			gen0FindDefs(what, lhs, stab, mask);
+		gen0FindDefs(dest, lhs, stab, mask);
+		gen0FindDefs(from, lhs, stab, mask);
 		break;
 	}
 	case AB_Label: {
 		AbSyn	expr = absyn->abLabel.expr;
-		gen0FindDefs(expr, lhs, stab, inHighLev, topLev);
+		gen0FindDefs(expr, lhs, stab, mask);
 		break;
 	}
 	default:
 		if (abImplicitSyme(absyn) != NULL) {
-			gen0FindDefs(abImplicit(absyn), NULL, stab, inHighLev, false);
+			gen0FindDefs(abImplicit(absyn), NULL, stab, mask);
 
 		}
 		if (!abIsLeaf(absyn))
 			for (i = 0; i < argc; i += 1)
 				gen0FindDefs(abArgv(absyn)[i], NULL,
-					     stab, inHighLev, false);
+					     stab, mask);
 		break;
 	}
 }
 
 local void
-gen0FindDefsDefine(AbSyn absyn, Stab stab, Bool inHighLev, Bool topLev)
+gen0FindDefsDefine(AbSyn absyn, Stab stab, GFindDefMask mask)
 {
 	AbSyn	*argv;
 	AbSyn	lhs;
@@ -6596,7 +6693,7 @@ gen0FindDefsDefine(AbSyn absyn, Stab stab, Bool inHighLev, Bool topLev)
 		argc = 1;
 		id = abDefineeId(lhs);
 	}
-	gen0FindDefs(rhs, id, stab, inHighLev, false);
+	gen0FindDefs(rhs, id, stab, mask);
 
 	for (i = 0; i < argc; i++) {
 		AbSyn   lhs = argv[i];
@@ -6611,27 +6708,49 @@ gen0FindDefsDefine(AbSyn absyn, Stab stab, Bool inHighLev, Bool topLev)
 		if (abTag(type) == AB_With &&
 		    (abIsNotNothing(type->abWith.base) ||
 		     gen0HasDefaults(type)))
-			gen0FindDefs(type, NULL, stab, true, false);
+			gen0FindDefs(type, NULL, stab, gfdSetHighLevel(mask));
 		else if (tfIsCategoryType(gen0AbType(type)))
-			gen0FindDefs(type, NULL, stab, true, false);
+			gen0FindDefs(type, NULL, stab, gfdSetHighLevel(mask));
 		else
-			gen0FindDefs(type, NULL, stab, inHighLev, topLev);
+			gen0FindDefs(type, NULL, stab, mask);
 	}
 }
 
 local void
-gen0FindDefsSyme(Stab stab, Syme syme, Bool inHighLev)
+gen0FindDefsSyme(Stab stab, Syme syme, GFindDefMask mask)
 {
+	Stab tstab;
+	Buffer buf;
+	String suffix = "";
+
 	if (!syme) return;
+
+	if (genfEnvDebug) {
+		buf = bufNew();
+		bufPrintf(buf, "%s [%d]", symeString(syme), symeDefLambdaLevelNo(syme));
+		tstab = stab;
+		while (tstab && stabHasMeaning(tstab, syme)) {
+			bufPrintf(buf, " .. (%d, %d, %d, %s)", stabSerialNo(tstab), stabLevelNo(tstab), stabLambdaLevelNo(tstab),
+				  "Normal" /*car(tstab)->isGenerator ? "Gen" : "Normal"*/);
+			tstab = cdr(tstab);
+		}
+	}
 	if (!symeUsed(syme)) {
 		stabUseMeaning(stab, syme);
 		symeSetUsed(syme);
+		suffix = ".. local";
 	}
-	if (inHighLev ||
+
+	if (gfdHighLevel(mask) ||
 	    stabLambdaLevelNo(stab) != symeDefLambdaLevelNo(syme)) {
 		stabUseMeaning(stab, syme);
 		symeSetUsed(syme);
 		symeSetUsedDeeply(syme);
+		suffix = ".. deep";
+	}
+
+	if (genfEnvDebug) {
+		afprintf(dbOut, "FindDefsSyme: %s %s\n", bufLiberate(buf), suffix);
 	}
 }
 
@@ -6869,6 +6988,8 @@ gen0NewLex(int idx, int offset)
 /*
  * Generate a generator for a collect form.
  * E for a in b...  ==> generate for a in b... repeat yield E
+ *
+ * (GCompose La.if T(a) then One(Ea) else [])
  */
 local Foam
 genCollect(AbSyn absyn)
@@ -6884,7 +7005,13 @@ genCollect(AbSyn absyn)
 	for(i=1; i< abArgc(absyn); i++)
 		abArgv(repeat)[i] = abArgv(absyn)[i];
 
-	iter   = abNewGenerate(abPos(absyn), abNewNothing(sposNone), repeat);
+	if (tfIsXGenerator(abTUnique(absyn))) {
+		iter = abNewXGenerate(abPos(absyn), abNewNothing(sposNone), repeat);
+	}
+	else {
+		iter = abNewGenerate(abPos(absyn), abNewNothing(sposNone), repeat);
+	}
+	abSetStab(iter, abStab(absyn));
 
 	abTUnique(body)	  = tfExit;
 	abTUnique(repeat) = tfNone();
@@ -7065,7 +7192,7 @@ gen0NewState(Stab stab, int format, GenFoamTag tag)
 	s->envLexPools	 = listNil(VarPool);
 	s->params	 = fboxNew(foamNewEmptyDDecl(FOAM_DDecl_Param));
 	s->formatStack	 = listNil(AInt);
-	s->formatUsage	 = listNil(AInt);
+	s->formatUsage	 = listNil(SlotUsage);
 	s->fluidsUsed	 = listNil(AInt);
 	s->program	 = NULL;
 	s->yieldCount	 = 0;
@@ -7100,7 +7227,7 @@ gen0InitState(Stab stab, int index)
 {
 	GenFoamState	s = gen0NewState(stab, index, GF_File);
 
-	s->formatUsage = listCons(AInt)(emptyFormatSlot, listNil(AInt));
+	s->formatUsage = listCons(SlotUsage)(suFrFormat(emptyFormatSlot), listNil(SlotUsage));
 	s->formatStack = listCons(AInt)(index, listNil(AInt));
 
 	gen0State = s;
@@ -7260,8 +7387,8 @@ local void
 gen0UseStateFormat(GenFoamState s, AInt level)
 {
 	AIntList	ls = s->formatStack;
-	AIntList	lu = s->formatUsage;
-
+	SlotUsageList	lu = s->formatUsage;
+	Bool used;
 	while(level > 0) {
 		assert(ls != 0);
 		assert(lu != 0);
@@ -7271,7 +7398,9 @@ gen0UseStateFormat(GenFoamState s, AInt level)
 	}
 	assert(ls != 0);
 	assert(lu != 0);
-	car(lu) = car(ls);
+	used = suIsUsed(car(lu));
+	car(lu) = suFrFormat(car(ls));
+	car(lu) = suSetUse(car(lu));
 }
 
 void
@@ -7283,14 +7412,14 @@ gen0UseStackedFormat(AInt level)
 local void
 gen0UseFormat(AInt level, int slot)
 {
-	AIntList		l = gen0State->formatUsage;
+	SlotUsageList	l = gen0State->formatUsage;
 	while(level > 0) {
 		assert(l != 0);
 		l = cdr(l);
 		level -= 1;
 	}
 	assert(l != 0);
-	car(l) = slot;
+	car(l) = suFrFormat(slot);
 }
 
 local Syme
@@ -7420,7 +7549,7 @@ genGlobalInfo(Foam glo, String *pname, String *porig, int *phash)
 
 
 /* Try to compute the side effect bit correctly . */
-local void
+void
 gen0ComputeSideEffects(Foam prog)
 {
 	/*!! Needs beefing up */
@@ -7987,7 +8116,7 @@ gen0BuiltinExporter(Foam glo, Syme syme)
 	gen0AddLexLevels(foam, 1);
 	foam->foamProg.format = retFmt;
 	foam->foamProg.levels = foamNew(FOAM_DEnv, 1, int0);
-	foamOptInfo(foam) = inlInfoNew(NULL, foam, NULL, false);
+	foamOptInfo(foam) = optInfoNew(NULL, foam, NULL, false);
 	gen0ProgRestoreState(saved);
 
 	return clos;
@@ -8089,7 +8218,7 @@ gen0ForeignWrapFn(Syme syme)
 
 	gen0ProgRestoreState(saved);
 	foam->foamProg.format = retFmt;
-	foamOptInfo(foam) = inlInfoNew(NULL, foam, NULL, false);
+	foamOptInfo(foam) = optInfoNew(NULL, foam, NULL, false);
 
 	symeSetClosure(syme, clos);
 	Return(foamCopy(clos));

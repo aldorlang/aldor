@@ -2,21 +2,23 @@
 #include "cmdline.h"
 #include "flog.h"
 #include "foam.h"
-#include "of_inlin.h"
 #include "of_peep.h"
 #include "optfoam.h"
+#include "optinfo.h"
 #include "strops.h"
 #include "syme.h"
 #include "testlib.h"
 
 local void testAElt();
 
-void ofPeepTest()
+void
+ofPeepTest()
 {
 	TEST(testAElt);
 }
 
-void testAElt()
+void
+testAElt()
 {
 	Foam expr, body, prog, locals;
 
@@ -34,9 +36,10 @@ void testAElt()
 	prog->foamProg.fluids = foamNewEmptyDDecl(int0);
 	prog->foamProg.nLabels = 2;
 	prog->foamProg.levels = foamNewEmptyDEnv();
-	foamOptInfo(prog) = inlInfoNew(NULL, prog, NULL, false);
+	foamOptInfo(prog) = optInfoNew(NULL, prog, NULL, false);
 	
 	peepProg(prog, false);
 
-	testTrue("eq", foamEqual(foamNewDef(foamNewLoc(int0), foamNewChar(46)), prog->foamProg.body->foamSeq.argv[0]));
+	testTrue("eq", foamEqual(foamNewDef(foamNewLoc(int0), foamNewChar(46)),
+				 prog->foamProg.body->foamSeq.argv[0]));
 }

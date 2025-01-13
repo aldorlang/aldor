@@ -13,6 +13,7 @@
 #include "gf_gener.h"
 #include "of_inlin.h"
 #include "of_util.h"
+#include "optinfo.h"
 #include "store.h"
 #include "tform.h"
 #include "comsg.h"
@@ -32,15 +33,13 @@ local Foam	   gen0GenerBoundFun  	   (AbSyn, GenBoundCalc);
 local Foam	   gen0MakeGenerVars	   (TForm);
 local Foam	   gen0GetGenerVar	   (Foam env, int id);
 
-local Foam 	   gen0BuildFunFromFoam    (String, FoamTag, Foam);
 #ifdef GenerBetterGuesses
 local GenBoundCalc gen0MakeBoundInit(AbSyn);
 local Foam 	   gen0ComputeBoundFunction(GenBoundCalc);
 local void	   gen0ComputeGeners(void);
 #endif
 
-static Foam gen0RetFormatDDeclValue;
-static Foam 		gen0GenVars;
+static Foam 	    gen0GenVars;
 static GenerGenInfo gen0GenInfo;
 
 #define 	gen0RetFormatSize 4
@@ -69,7 +68,7 @@ static AInt	gen0RetFormatFmts[]  = { emptyFormatSlot, emptyFormatSlot,
  */
 
 Foam
-genYield(AbSyn absyn)
+gen0Yield(AbSyn absyn)
 {
         /* set the place variable */
         gen0AddStmt(foamNewSet(yieldPlaceVar,
@@ -89,7 +88,7 @@ genYield(AbSyn absyn)
  */
 
 Foam
-genGenerate(AbSyn iter)
+gen0Generate(AbSyn iter)
 {
         foamProgUnsetLeaf(gen0State->program);
         return gen0GenerBodyFun(iter, tfGeneratorArg(gen0AbType(iter)));
@@ -148,7 +147,7 @@ gen0GenerBodyFun(AbSyn iter, TForm tf)
 	gen0AddLexLevels(foam, 1);
 
         foam->foamProg.infoBits = IB_SIDE | IB_INLINEME;
-        foamOptInfo(foam) = inlInfoNew(NULL, foam, NULL, false);
+        foamOptInfo(foam) = optInfoNew(NULL, foam, NULL, false);
 
 	if (gen0GenInfo) stoFree(gen0GenInfo);
 
@@ -212,7 +211,7 @@ gen0GenerStepFun(AbSyn body, TForm tf)
         gen0AddLexLevels(foam, 2);
 
         foam->foamProg.infoBits = IB_SIDE | IB_INLINEME;
-        foamOptInfo(foam) = inlInfoNew(gen0State->stab, foam, NULL, true);
+        foamOptInfo(foam) = optInfoNew(gen0State->stab, foam, NULL, true);
 
 	gen0ProgRestoreState(saved);
         return clos;
@@ -276,12 +275,6 @@ gen0MakeGenerRetFormat()
 	return gen0GenerRetFormat;
 }
 
-Foam 
-gen0RetFormatDDecl()
-{
-	return gen0RetFormatDDeclValue;
-}
-
 local Foam
 gen0GenerDoneFun()
 {
@@ -315,7 +308,7 @@ gen0GenerBoundFun(AbSyn bound, GenBoundCalc calc)
 
 		gen0AddLexLevels(foam, 2);
 
-	        foamOptInfo(foam) = inlInfoNew(NULL, foam, NULL, false);
+	        foamOptInfo(foam) = optInfoNew(NULL, foam, NULL, false);
 
 		foam->foamProg.infoBits |= IB_INLINEME;
 
@@ -347,33 +340,7 @@ gen0GenerValueFun(FoamTag retType, TForm tf)
 
 	gen0AddLexLevels(foam, 2);
 
-	foamOptInfo(foam) = inlInfoNew(NULL, foam, NULL, false);
-
-	gen0ProgRestoreState(saved);
-	return clos;
-}
-
-local Foam 
-gen0BuildFunFromFoam(String name, FoamTag retType, Foam body)
-{
-	GenFoamState	saved;
-	Foam		foam, clos;
-
-	clos = foamNewClos(foamNewEnv(-1), foamNewConst(gen0NumProgs));
-	foam = gen0ProgInitEmpty(name, NULL);
-
-	saved = gen0ProgSaveState(PT_Gener);
-
-	gen0AddStmt(foamNewReturn(body), NULL);
-
-	gen0UseStackedFormat(int0);
-	gen0ProgPushFormat(emptyFormatSlot);
-	gen0ProgPushFormat(emptyFormatSlot);
-	gen0ProgFiniEmpty(foam, retType, int0);
-
-	gen0AddLexLevels(foam, 2);
-
-        foamOptInfo(foam) = inlInfoNew(NULL, foam, NULL, false);
+	foamOptInfo(foam) = optInfoNew(NULL, foam, NULL, false);
 
 	gen0ProgRestoreState(saved);
 	return clos;
@@ -494,7 +461,7 @@ gen0ComputeBoundFunction(GenBoundCalc calc)
 	gen0AddStmt(foamNewLabel(retLabel), NULL);
 	gen0AddStmt(foamNewReturn(foamCopy(ret)), NULL);
 
-	foamOptInfo(foam) = inlInfoNew(NULL, foam, NULL, true);
+	foamOptInfo(foam) = optInfoNew(NULL, foam, NULL, true);
 
 	foam->foamProg.infoBits = IB_SIDE | IB_INLINEME;
 

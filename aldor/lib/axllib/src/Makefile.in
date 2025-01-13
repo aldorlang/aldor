@@ -95,11 +95,13 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/ax_lib_readline.m4 \
 	$(top_srcdir)/m4/build_id.m4 \
 	$(top_srcdir)/m4/documentation-tests.m4 \
 	$(top_srcdir)/m4/error-on-warn.m4 $(top_srcdir)/m4/git.m4 \
-	$(top_srcdir)/m4/java-tests.m4 $(top_srcdir)/m4/libtool.m4 \
-	$(top_srcdir)/m4/ltoptions.m4 $(top_srcdir)/m4/ltsugar.m4 \
-	$(top_srcdir)/m4/ltversion.m4 $(top_srcdir)/m4/lt~obsolete.m4 \
-	$(top_srcdir)/m4/readline.m4 $(top_srcdir)/m4/sbrk.m4 \
-	$(top_srcdir)/m4/strict_compile.m4 $(top_srcdir)/configure.ac
+	$(top_srcdir)/m4/interp-tests.m4 \
+	$(top_srcdir)/m4/java-tests.m4 $(top_srcdir)/m4/language.m4 \
+	$(top_srcdir)/m4/libtool.m4 $(top_srcdir)/m4/ltoptions.m4 \
+	$(top_srcdir)/m4/ltsugar.m4 $(top_srcdir)/m4/ltversion.m4 \
+	$(top_srcdir)/m4/lt~obsolete.m4 $(top_srcdir)/m4/readline.m4 \
+	$(top_srcdir)/m4/sbrk.m4 $(top_srcdir)/m4/strict_compile.m4 \
+	$(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 DIST_COMMON = $(srcdir)/Makefile.am $(am__DIST_COMMON)
@@ -246,6 +248,7 @@ am__recursive_targets = \
   $(am__extra_recursive_targets)
 AM_RECURSIVE_TARGETS = $(am__recursive_targets:-recursive=) TAGS CTAGS \
 	distdir distdir-am
+am__extra_recursive_targets = releasecheck-recursive
 am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) $(LISP)
 # Read a list of newline-separated strings from the standard input,
 # and print each of them once, without duplicates.  Input order is
@@ -300,6 +303,7 @@ AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
+BUILD_LISP = @BUILD_LISP@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
@@ -323,8 +327,8 @@ FGREP = @FGREP@
 FIG2EPS = @FIG2EPS@
 FILECMD = @FILECMD@
 GC = @GC@
+GENERATOR_COROUTINES = @GENERATOR_COROUTINES@
 GREP = @GREP@
-HAS_JUNIT = @HAS_JUNIT@
 HAVE_ALDOR_GC = @HAVE_ALDOR_GC@
 HAVE_BOEHM_GC = @HAVE_BOEHM_GC@
 INSTALL = @INSTALL@
@@ -370,6 +374,7 @@ PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 PDFLATEX = @PDFLATEX@
 RANLIB = @RANLIB@
+SBCL_EXISTS = @SBCL_EXISTS@
 SBRK_OPT = @SBRK_OPT@
 SED = @SED@
 SET_MAKE = @SET_MAKE@
@@ -773,6 +778,7 @@ $(am__recursive_targets):
 	if test "$$dot_seen" = "no"; then \
 	  $(MAKE) $(AM_MAKEFLAGS) "$$target-am" || exit 1; \
 	fi; test -z "$$fail"
+releasecheck-local: 
 
 ID: $(am__tagged_files)
 	$(am__define_uniq_tagged_files); mkid -fID $$unique
@@ -1094,6 +1100,10 @@ ps: ps-recursive
 
 ps-am:
 
+releasecheck: releasecheck-recursive
+
+releasecheck-am: releasecheck-local
+
 uninstall-am: uninstall-datalibDATA uninstall-libLIBRARIES
 
 .MAKE: $(am__recursive_targets) install-am install-strip
@@ -1111,8 +1121,9 @@ uninstall-am: uninstall-datalibDATA uninstall-libLIBRARIES
 	install-strip installcheck installcheck-am installdirs \
 	installdirs-am maintainer-clean maintainer-clean-generic \
 	mostlyclean mostlyclean-compile mostlyclean-generic \
-	mostlyclean-libtool pdf pdf-am ps ps-am tags tags-am uninstall \
-	uninstall-am uninstall-datalibDATA uninstall-libLIBRARIES
+	mostlyclean-libtool pdf pdf-am ps ps-am releasecheck-am \
+	releasecheck-local tags tags-am uninstall uninstall-am \
+	uninstall-datalibDATA uninstall-libLIBRARIES
 
 .PRECIOUS: Makefile
 

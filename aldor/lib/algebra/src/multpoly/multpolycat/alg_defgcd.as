@@ -143,6 +143,7 @@ P:PolynomialRing(R,V), v1:V, v2:V): B == {
     import from R,V,P,String,Symbol;
     p1: P := v1 :: P;
     p2: P := v2 :: P;
+    r0:R:=random(); -- It looks like this is hitting a bug. <-- Workaround
     r1:R:=random();
     r2:R:=random();
     r3:R:=random();
@@ -153,6 +154,16 @@ P:PolynomialRing(R,V), v1:V, v2:V): B == {
     r8:R:=random();
     r9:R:=random();    
     r10:R:=random();
+    stdout << "Number r1 " << r1 << newline;
+    stdout << "Number r2 " << r2 << newline;
+    stdout << "Number r3 " << r3 << newline;
+    stdout << "Number r4 " << r4 << newline;
+    stdout << "Number r5 " << r5 << newline;
+    stdout << "Number r6 " << r6 << newline;
+    stdout << "Number r7 " << r7 << newline;
+    stdout << "Number r8 " << r8 << newline;
+    stdout << "Number r9 " << r9 << newline;
+    stdout << "Number r10 " << r10 << newline;
     if R has FractionFieldCategory(Integer) then {
         import from Q ;
         bound:Integer:=5;

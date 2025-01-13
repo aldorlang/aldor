@@ -14,6 +14,7 @@
 #include "msg.h"
 #include "lib.h"
 #include "errorset.h"
+#include "syme0.h"
 
 /******************************************************************************
  *
@@ -219,9 +220,6 @@ struct syme {
 	Syme			full;		/* Syme for other fields */
 	AInt *			fieldv;		/* Field values */
 };
-
-# define SYME_NUMBER_UNASSIGNED (0x7FFF)
-# define SYME_DEPTH_UNUSED	(0x7FFF)
 
 /******************************************************************************
  *

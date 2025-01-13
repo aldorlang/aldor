@@ -156,9 +156,6 @@ typedef struct {
 } UdProgInfo;
 
 static UdProgInfo	udProgInfo;
-#ifdef NEW_FORMATS
-static Foam	udUnit;
-#endif
 
 CREATE_LIST(UdInfo);
 
@@ -183,6 +180,7 @@ local void	udCreateUDLists		(FlowGraph);
 local Foam	udFindUses		(Foam, Bitv, BBlock, Bool);
 
 local UdInfo	udInfoNew		(Foam, BBlock);
+local Foam      udLastStmt;
 
 static int	udFlogCutOff =  200; /* Max no of dataflow iterations */
 
@@ -193,8 +191,8 @@ static int	udFlogCutOff =  200; /* Max no of dataflow iterations */
  *
  ****************************************************************************/
 
-#if 0  /* MUST BE COMPLETED */
-Bool
+#if 0
+void
 useDefChainsFrFoamProg(Foam foam)
 {
 	FlowGraph 	flog;
@@ -203,27 +201,16 @@ useDefChainsFrFoamProg(Foam foam)
 
 	assert(foamTag(foam) == FOAM_Prog);
 
-#ifdef NEW_FORMATS
-	udUnit = foam;
-#endif
-
 	if (foamArgc(foam->foamProg.locals) + 
-#ifdef NEW_FORMATS
-	    foamArgc(foamUnitParams(udUnit)->foamDDecl.argv[prog->foamProg.params]) == 0)
-#else
 	    foamArgc(foam->foamProg.params) == 0)
-#endif
 		return;
 
 	flog = flogFrProg(foam, FLOG_UniqueExit);
 
-	useDefChainsFrFlog(flog);
+	useDefChainsFrFlog(flog, UD_OUTPUT_SinglePointer);
 		
-	return flogToProg(flog);
-
+	flogToProg(flog);
 }
-
-#endif 
 
 void
 usedefChainsFreeFrProg(Foam foam)
@@ -235,6 +222,7 @@ usedefChainsFreeFrProg(Foam foam)
 
 	udDestroyUses(foam);
 }
+#endif
 
 /* Compute, for each use of local/parameter, the set of definitions reaching
  * it. This information is associated to the use, using the 
@@ -331,11 +319,7 @@ udVarDefsVectBuild(FlowGraph flog)
 	Foam	stmt, lhs;
 	int	i, nDefs;
 	int	nLocs = foamDDeclArgc(flog->prog->foamProg.locals);
-#ifdef NEW_FORMATS
-	int	nPars = foamArgc(foamUnitParams(udUnit)->foamDDecl.argv[flog->prog->foamProg.params-1]);
-#else
 	int	nPars = foamDDeclArgc(flog->prog->foamProg.params);
-#endif
 
 	udProgInfo.nPars = nPars;
 	udProgInfo.nLocs = nLocs;
@@ -558,6 +542,9 @@ udSetReachingList(Foam foam, FoamList defs, Bitv dfin, BBlock block)
 	});
 
 	/* Attach the udList to the used var */
+	if (DEBUG(udDf)) {
+		afprintf(dbOut, "Setting reaching list %pFoam, %pUseDefList\n", foam, udList);
+	}
 
 	udReachingDefs(foam) = udList;
 }
@@ -588,6 +575,10 @@ udSetReachingDef(Foam foam, FoamList defs, Bitv dfin, Bool refContext)
 		}
 	});
 
+	if (DEBUG(udDf)) {
+		afprintf(dbOut, "In %pFoam\n..Setting reaching def %pFoam, %pFoam\n", udLastStmt, foam, uniqueDef);
+	}
+
 	udReachingDefs(foam) = (UdInfoList) uniqueDef;
 
 	/* Last condition ensure that (Set (Loc 0) (SInt 1)) is not
@@ -605,7 +596,6 @@ local void
 udCreateUDLists(FlowGraph flog)
 {
 	flogIter(flog, bb, {
-
 		bb->code = udFindUses(bb->code, dfFwdIn(bb), bb, false);
 	});
 }
@@ -614,7 +604,7 @@ local Foam
 udFindUses(Foam foam, Bitv dfin, BBlock block, Bool refContext)
 {
 	Foam newFoam = foam;
-
+	Bool track = false;
 	switch (foamTag(foam)) {
 	case FOAM_Loc:
 	case FOAM_Par:
@@ -682,15 +672,18 @@ udFindUses(Foam foam, Bitv dfin, BBlock block, Bool refContext)
 
 		return foam;
 	}
-
+	case FOAM_Seq:
+		track = true;
+		break;
 	default:
 		break;
 	}
 
 	foamIter(foam, arg, {
-		*arg = udFindUses(*arg, dfin, block, refContext);
-	});
-
+			if (track) udLastStmt = *arg;
+			*arg = udFindUses(*arg, dfin, block, refContext);
+			if (track) udLastStmt = NULL;
+		});
 	return newFoam;
 }
 

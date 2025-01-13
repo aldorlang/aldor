@@ -109,6 +109,7 @@
 #include "of_inlin.h"
 #include "of_util.h"
 #include "optfoam.h"
+#include "optinfo.h"
 #include "opttools.h"
 #include "stab.h"
 #include "store.h"
@@ -222,7 +223,7 @@ typedef struct InlPriCallStruct *  InlPriCall;
  * To trace a particolar prog, used the debugger and set
  *	inlConstTrace = (num. prog).
  */
-int	inlConstTrace = -1; /* 19; */ /* 18;*/ /* -1; */
+int	inlConstTrace = -1;
 int	inlCallInfoSerial = -1;
 int	inlRejectInfo;
 
@@ -357,8 +358,6 @@ local Foam	inlGetLocalFoam		(Syme);
 local Foam	inlGetExternalFoam	(Syme);
 local InlProgInfo	inlGetProgInfoFrSyme	(Syme);
 local InlProgInfo	inlGetExternalProgHdr	(Syme);
-
-local OptInfo	inlInfoNew0		(Stab, Foam, Syme, Bool, Bool);
 
 /*
  * Foam Inlinability
@@ -509,19 +508,11 @@ extern int optInlineRoof;
 		 */
 		priCall = (InlPriCall) priqExtractMin(inlProg->priq, &priority);
 
-#if AXL_EDIT_1_1_12p6_04
 		if (priority > 0
 		    && (inlProg->size > optInlineRoof ||
 			flogBlockC(inlProg->flog) > InlFlogCutOff)
 		    && !genIsRuntime() && !optIsMaxLevel())
 			break;
-#else
-		if (priority > 0
-		    && (inlProg->size > InlProgCutOff ||
-			flogBlockC(inlProg->flog) > InlFlogCutOff)
-		    && !genIsRuntime() && !optIsMaxLevel())
-			break;
-#endif
 
 		if (priority > 0 &&
 		    inlSizeLimit != -1) {
@@ -633,14 +624,26 @@ inlDDef(Foam defs)
 /*
  * Inline a foam program.
  */
+local Foam inlProgram1(Foam prog, int n);
+
 local Foam
 inlProgram(Foam prog, int n)
+{
+	Foam newProg;
+	inlProgDEBUG(stdout, "(Program %d %d\n", n, foamOptInfo(prog) == NULL ? -1 : foamOptInfo(prog)->inlState);
+	newProg = inlProgram1(prog, n);
+	inlProgDEBUG(stdout, " Program %d:\n%pFoam\n", n, newProg);
+	inlProgDEBUG(stdout, " Program %d)\n", n);
+	return newProg;
+}
+
+local Foam
+inlProgram1(Foam prog, int n)
 {
 	Scope("inlProgram");
 	OptInfo		fluid(inlProg);
 	int		count, maxCount = 30;
 
-	inlProgDEBUG(stdout, "(Program %d\n", n);
 
 	assert(foamTag(prog) == FOAM_Prog);
 
@@ -671,7 +674,6 @@ inlProgram(Foam prog, int n)
 		inlProg->locals		= vpNew(fboxNew(prog->foamProg.locals));
 		inlProg->numLabels	= prog->foamProg.nLabels;
 		inlProg->denv		= prog->foamProg.levels;
-		inlProg->seqBody	= 0;
 		inlProg->changed	= false;
 
 		inlProg->seq = prog->foamProg.body;
@@ -715,8 +717,6 @@ inlProgram(Foam prog, int n)
 	(void)foamPrintDb(prog);
 	(void)fprintf(dbOut, "***************************************\n\n");
 #endif
-	inlProgDEBUG(stdout, " Program %d:\n%pFoam\n)\n", n, prog);
-
 	Return(prog);
 }
 
@@ -1764,6 +1764,9 @@ inlInlineSymeCall(Foam call, Foam *argv, Foam env, Syme syme, Bool valueMode)
 	if (symeIsLocalConst(syme) && foamOptInfo(code) &&
 	    foamOptInfo(code)->inlState != INL_Inlined)
 		Return(call);
+	if (code->foamProg.body == NULL) {
+		Return(call);
+	}
 
 	assert(!foamProgIsGetter(code));
 	assert(!inlIsEvil(code));
@@ -1879,11 +1882,7 @@ inlInlineBody(Foam code, Foam call, Foam *argv, Foam env,
 	assert(foamArgc(code->foamProg.fluids) == 0);
 
 	/* Initialize the paramter replacement vector. */
-#ifdef NEW_FORMATS
-	paramArgc  = foamDDeclArgc(foamUnitParams(inlUnit->unit)->foamDDecl.argv[code->foamProg.params-1]);
-#else
 	paramArgc  = foamDDeclArgc(code->foamProg.params);
-#endif
 	paramCount = (int *) stoAlloc(OB_Other, paramArgc * sizeof(int));
 	paramArgv  = (Foam *) stoAlloc(OB_Other, paramArgc * sizeof(Foam));
 	for(i=0; i<paramArgc; i++) paramCount[i] = 0;
@@ -2579,6 +2578,7 @@ inlGetLocalConstInfo(int n)
 	/* don't return the code if we are in the middle of inlining it. */
 	assert(foamTag(prog) == FOAM_Prog);
 	if (info && info->inlState == INL_BeingInlined) return NULL;
+
 	prog = inlProgram(prog, n);
 
 	prog = inlGetProgInfoFrProg(prog);
@@ -2615,7 +2615,8 @@ inlGetLocalConst(AInt n)
 	/* don't return the code if we are in the middle of inlining it. */
 	if (info->inlState != INL_Inlined)
 		return NULL;
-
+	if (prog->foamProg.body == NULL)
+		return NULL;
 	return inlSetInlinee(NULL, prog);
 }
 
@@ -2683,13 +2684,9 @@ inlUpdateConstProg(Foam prog)
 	assert(foamTag(prog) == FOAM_Prog);
 	levels = prog->foamProg.levels->foamDEnv.argv;
 	inlUpdateConstBody(prog->foamProg.body);
-	foamOptInfo(prog) = inlInfoNew0(NULL, prog, NULL, false, true);
+	foamOptInfo(prog) = optInfoNew0(NULL, prog, NULL, false, true);
 
-#ifdef NEW_FORMATS
-	inlUpdateDDecl(inlInlineeDecl(paramsSlot, prog->foamProg.params-1));
-#else
 	inlUpdateDDecl(prog->foamProg.params);
-#endif
 	inlUpdateDDecl(prog->foamProg.locals);
 
 	for(i=0; i< foamArgc(prog->foamProg.levels); i++)
@@ -2925,17 +2922,41 @@ inlIsUnderLimit(AInt base, AInt value, int limit)
 }
 
 /* $$ Think the possibility of using a new bit: DontInlineMe, that can be
- * generally used by #pragma DONT_INLINE
+ * generally used by #pragma DONT_INLINE.
+ * Yeah, but we'd lose the fun naming convention.
  */
+local Bool inlIsEvilFlog(FlowGraph g);
+local Bool inlIsEvilSeq(Foam foam);
+
 Bool
 inlIsEvil(Foam foam)
 {
-	Foam body;
+	if (foam->foamProg.body == NULL) {
+		return inlIsEvilFlog(foamOptInfo(foam)->flog);
+	}
+	else {
+		return inlIsEvilSeq(foam->foamProg.body);
+	}
+}
+
+local Bool
+inlIsEvilFlog(FlowGraph flog)
+{
+	flogIter(flog, bb, {
+			if (inlIsEvilSeq(bb->code))
+				return true;
+	});
+	return false;
+}
+
+local Bool
+inlIsEvilSeq(Foam foam)
+{
 	int i, idx;
 
-	body = foam->foamProg.body;
-	for (i=0; i<foamArgc(body); i++) {
-		Foam stmt = body->foamSeq.argv[i];
+	assert(foamTag(foam) == FOAM_Seq);
+	for (i=0; i<foamArgc(foam); i++) {
+		Foam stmt = foam->foamSeq.argv[i];
 		if (foamTag(stmt) == FOAM_Return)
 			stmt = stmt->foamReturn.value;
 		if (foamTag(stmt) == FOAM_Glo) {
@@ -2946,6 +2967,7 @@ inlIsEvil(Foam foam)
 	}
 	return false;
 }
+
 
 /*
  * See if Syme is declared inlinable.
@@ -3281,11 +3303,14 @@ inlTransformExpr(Foam expr, Foam *paramArgv, Foam *localArgv)
 		break;
 	  case FOAM_Select: {
 		int	i;
-		for(i=0; i< foamArgc(nexpr) - 1 /* for op */; i++)
+		for(i=0; i< foamSelectArgc(nexpr); i++)
 			nexpr->foamSelect.argv[i] += inlProg->numLabels;
 		break; }
 	  case FOAM_Goto:
 		nexpr->foamGoto.label += inlProg->numLabels;
+		break;
+	  case FOAM_GenerStep:
+		nexpr->foamGenerStep.label += inlProg->numLabels;
 		break;
 	  case FOAM_EElt:
 		inlComputeEEltSyme(expr);
@@ -3664,47 +3689,6 @@ inlGetTypeFrDecl(Foam decl, FoamTag *ptype, int *pformat)
 		*pformat = format;
 }
 
-/*
- * Create a new OptInfo structure.
- */
-local OptInfo
-inlInfoNew0(Stab stab, Foam prog, Syme lhs, Bool isGener, Bool external)
-{
-	OptInfo		new;
-
-	new = (OptInfo) stoAlloc(OB_Other, sizeof(struct optInfo));
-
-	new->inlState	 = (external ? INL_Inlined : INL_NotInlined);
-	new->stab	 = stab;
-	new->syme	 = lhs;
-	new->prog	 = prog;
-	new->seq	 = prog->foamProg.body;
-	new->locals	 = vpNew(fboxNew(prog->foamProg.locals));
-	new->numLabels	 = prog->foamProg.nLabels;
-	new->denv	 = prog->foamProg.levels;
-	new->seqBody	 = 0;
-
-	new->localUsage	 = 0;
-	new->constNum	 = -1;
-	new->isGener	 = isGener;
-
-	new->flog	 = 0;
-	new->priq	 = 0;
-	new->converged   = false;
-	new->numRefs	 = 0;
-	new->originalSize = 0;
-	new->size	  = 0;
-	new->optMask	  = 0xffff;
-
-	return new;
-}
-
-OptInfo
-inlInfoNew(Stab stab, Foam prog, Syme lhs, Bool isGener)
-{
-	return inlInfoNew0(stab, prog, lhs, isGener, false);
-}
-
 
 /*
  * return the Foam type of an arbitrary Foam expression.
@@ -4014,7 +3998,6 @@ inlPrintRejectCause(String call)
 void
 inlPrintUninlinedCalls(InlPriCall pric, PriQKey pri)
 {
-	InlPriCall 	priCall;
 	PriQKey	       	priority;
 
 	if (pric == NULL) return;
@@ -4027,11 +4010,15 @@ inlPrintUninlinedCalls(InlPriCall pric, PriQKey pri)
 
 	inlPrintPriq();
 	while (priqCount(inlProg->priq)) {
-		priCall =(InlPriCall) priqExtractMin(inlProg->priq, &priority);
+		InlPriCall priCall = (InlPriCall) priqExtractMin(inlProg->priq, &priority);
 
 		foamPrintDb(priCall->call);
 		fprintf(dbOut, "(priority = %f, size = %d)\n",
 			priority, (int)priCall->size);
+		if (foamTag(priCall->call) == FOAM_CCall && foamSyme(priCall->call->foamCCall.op) != NULL) {
+			Syme syme = foamSyme(priCall->call->foamCCall.op);
+			afprintf(dbOut, "(syme.. %s %pTForm)\n", symeString(syme), symeType(syme));
+		}
 	}
 
 	fprintf(dbOut, "limit end)\n");

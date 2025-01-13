@@ -254,14 +254,16 @@ List(S: Type): ListCategory S with == FakedConditionalOperations S add {
 
         test(l: %): Boolean == not empty? l;
 
-        generator(l: %): Generator S == generate {
+        generator(l0: %): Generator S == generate {
+	        l := l0;
                 while l repeat {
                         yield first l;
                         l := rest l;
                 }
         }
 
-	tails(l: %): Generator % == generate {
+	tails(l0: %): Generator % == generate {
+	        l := l0;
 		while l repeat {
 			-- Save the tail first to allow clients to update it.
 			tl := rest l;

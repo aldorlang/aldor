@@ -740,6 +740,7 @@ tisefReturn(Stab stab, Sefo sefo)
 local void
 tisefGenerate(Stab stab, Sefo sefo)
 {
+	TfGenType tfGenType;
 	Scope("tisefGenerate");
 
 	TForm	fluid(tuniReturnTForm);
@@ -751,7 +752,9 @@ tisefGenerate(Stab stab, Sefo sefo)
 	tuniExitTForm	= tfNone();
 
 	tisef0Generic(stab, sefo);
-	abTUnique(sefo) = tfGenerator(tuniYieldTForm);
+	tfGenType = abFlag_IsNewIter(sefo) ? TFG_XGenerator : TFG_Generator;
+
+	abTUnique(sefo) = tfAnyGenerator(tfGenType, tuniYieldTForm);
 
 	ReturnNothing;
 }
@@ -1013,7 +1016,7 @@ local void
 tisefFor(Stab stab, Sefo sefo)
 {
 	tisef0Generic(stab, sefo);
-	tisef0ApplySymIfNeeded(stab,sefo,1,abForIterArgf,NULL,tfIsGeneratorFn);
+	tisef0ApplySymIfNeeded(stab,sefo,1,abForIterArgf,NULL,tfIsAnyGenerator);
 }
 
 /****************************************************************************

@@ -32,6 +32,7 @@
 #include "debug.h"
 #include "flog.h"
 #include "of_rrfmt.h"
+#include "optinfo.h"
 #include "util.h"
 #include "syme.h"
 #include "strops.h"

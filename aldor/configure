@@ -672,10 +672,11 @@ FIG2EPS
 MAKEINDEX
 PDFLATEX
 LATEX
+JUNIT_JAR
 HAS_JUNIT_FALSE
 HAS_JUNIT_TRUE
-HAS_JUNIT
-JUNIT_JAR
+WITH_ALDOR_INTERP_TESTS_FALSE
+WITH_ALDOR_INTERP_TESTS_TRUE
 STRICTCFLAGS
 SBRK_OPT
 LIBTOOL_DEPS
@@ -702,6 +703,7 @@ EGREP
 GREP
 SED
 LIBTOOL
+GENERATOR_COROUTINES
 HAVE_BOEHM_GC
 HAVE_ALDOR_GC
 HAVE_BOEHM_GC_FALSE
@@ -709,7 +711,10 @@ HAVE_BOEHM_GC_TRUE
 HAVE_ALDOR_GC_FALSE
 HAVE_ALDOR_GC_TRUE
 GC
+MK_GENERATOR_COROUTINES_FALSE
+MK_GENERATOR_COROUTINES_TRUE
 LIB_CC_FLAGS
+BUILD_LISP
 BUILD_JAVA_FALSE
 BUILD_JAVA_TRUE
 JAVAC
@@ -717,6 +722,7 @@ BUILD_LIBS_FALSE
 BUILD_LIBS_TRUE
 GMP_FALSE
 GMP_TRUE
+SBCL_EXISTS
 YACC_EXISTS
 YFLAGS
 YACC
@@ -831,7 +837,10 @@ enable_java
 with_java_junit
 with_boehm_gc
 enable_documentation
+enable_lisp_tests
+enable_interpreter_tests
 enable_edit_gloop
+with_generators
 enable_shared
 enable_static
 with_pic
@@ -1493,6 +1502,9 @@ Optional Features:
   --disable-libraries     Do not build Aldor libraries
   --disable-java          Do not build Aldor Java libraries
   --enable-documentation  Generate documentation - requires latex
+  --enable-lisp-tests     Include Lisp (SBCL only) integration tests
+  --disable-interpreter-tests
+                          Disable all tests via foam interpreter
   --enable-edit-gloop     Allow editing in -gloop repl
   --enable-shared[=PKGS]  build shared libraries [default=yes]
   --enable-static[=PKGS]  build static libraries [default=yes]
@@ -1508,6 +1520,8 @@ Optional Packages:
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
   --with-java-junit       specify location of junit jar file
   --with-boehm-gc         Use Boehm Garbage Collector instead of built-in
+  --with-generators       generator implementation (values: function,
+                          coroutine)
   --with-pic[=PKGS]       try to use only PIC/non-PIC objects [default=use
                           both]
   --with-aix-soname=aix|svr4|both
@@ -3337,6 +3351,8 @@ fi
 
 
 
+# Extra target for more extensive tests and checks for release quality
+
 # Libraries
 
 # Checks for programs
@@ -4993,6 +5009,52 @@ fi
        fi
 fi
 
+# Check for sbcl - other lisps ought to work but for testing just one will do.
+
+# Extract the first word of "sbcl", so it can be a program name with args.
+set dummy sbcl; ac_word=$2
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+printf %s "checking for $ac_word... " >&6; }
+if test ${ac_cv_prog_SBCL_EXISTS+y}
+then :
+  printf %s "(cached) " >&6
+else $as_nop
+  if test -n "$SBCL_EXISTS"; then
+  ac_cv_prog_SBCL_EXISTS="$SBCL_EXISTS" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  case $as_dir in #(((
+    '') as_dir=./ ;;
+    */) ;;
+    *) as_dir=$as_dir/ ;;
+  esac
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir$ac_word$ac_exec_ext"; then
+    ac_cv_prog_SBCL_EXISTS="yes"
+    printf "%s\n" "$as_me:${as_lineno-$LINENO}: found $as_dir$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+  test -z "$ac_cv_prog_SBCL_EXISTS" && ac_cv_prog_SBCL_EXISTS="no"
+fi
+fi
+SBCL_EXISTS=$ac_cv_prog_SBCL_EXISTS
+if test -n "$SBCL_EXISTS"; then
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $SBCL_EXISTS" >&5
+printf "%s\n" "$SBCL_EXISTS" >&6; }
+else
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
+printf "%s\n" "no" >&6; }
+fi
+
+
+
 GC=aldor
 # Check for GMP
 ac_header= ac_cache=
@@ -5122,9 +5184,17 @@ test -n "$JAVAC" || JAVAC="no"
 # Check whether --enable-java was given.
 if test ${enable_java+y}
 then :
-  enableval=$enable_java; BUILD_JAVA=false
+  enableval=$enable_java;
 else $as_nop
-  BUILD_JAVA=true
+  enable_java=yes
+fi
+
+ if test "x$JAVAC" != "xno" -a "x$enable_java" = xyes; then
+  BUILD_JAVA_TRUE=
+  BUILD_JAVA_FALSE='#'
+else
+  BUILD_JAVA_TRUE='#'
+  BUILD_JAVA_FALSE=
 fi
 
 
@@ -5137,14 +5207,6 @@ else $as_nop
   JUNIT_JAR=/usr/share/java/junit4.jar
 fi
 
-
- if test $JAVAC != no -a $BUILD_JAVA = true; then
-  BUILD_JAVA_TRUE=
-  BUILD_JAVA_FALSE='#'
-else
-  BUILD_JAVA_TRUE='#'
-  BUILD_JAVA_FALSE=
-fi
 
 
 
@@ -5165,6 +5227,30 @@ else $as_nop
   enable_documentation=no
 fi
 
+
+# Check whether --enable-lisp-tests was given.
+if test ${enable_lisp_tests+y}
+then :
+  enableval=$enable_lisp_tests; BUILD_LISP=yes
+else $as_nop
+  BUILD_LISP=no
+fi
+
+
+
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: JAVA $BUILD_JAVA unit tests: $JUNIT_JAR" >&5
+printf "%s\n" "$as_me: JAVA $BUILD_JAVA unit tests: $JUNIT_JAR" >&6;}
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: SBCL $SBCL_EXISTS" >&5
+printf "%s\n" "$as_me: SBCL $SBCL_EXISTS" >&6;}
+if test x"$BUILD_LISP" = xyes -a ! x"$SBCL_EXISTS" = xyes; then
+    as_fn_error $? "Lisp enabled, but sbcl not available $SBCL_EXISTS $BUILD_LISP" "$LINENO" 5
+elif test x"$BUILD_LISP" = xyes; then
+    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: Lisp tests enabled" >&5
+printf "%s\n" "$as_me: Lisp tests enabled" >&6;}
+else
+    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: Lisp tests disabled" >&5
+printf "%s\n" "$as_me: Lisp tests disabled" >&6;}
+fi
 
 
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for a readline compatible library" >&5
@@ -5364,6 +5450,23 @@ printf "%s\n" "$res" >&6; }
 
 
 
+disable_interp_tests=no
+# Check whether --enable-interpreter-tests was given.
+if test ${enable_interpreter_tests+y}
+then :
+  enableval=$enable_interpreter_tests; run_interp=yes;
+      case "${enableval}" in
+      	   yes) run_interp=yes;;
+	   no) run_interp=no;;
+	   *) as_fn_error $? "bad value ${enableval} for --run-interp-tests" "$LINENO" 5
+	   esac; set +x
+else $as_nop
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: no interpreter test option supplied" >&5
+printf "%s\n" "$as_me: no interpreter test option supplied" >&6;}
+     run_interp=yes
+
+fi
+
 # Check whether --enable-edit-gloop was given.
 if test ${enable_edit_gloop+y}
 then :
@@ -5373,8 +5476,8 @@ then :
 	   *) as_fn_error $? "bad value ${enableval} for --enable-edit-gloop" "$LINENO" 5
 	   esac
 else $as_nop
-  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: no gloop edit option supplied (delete me later)" >&5
-printf "%s\n" "$as_me: no gloop edit option supplied (delete me later)" >&6;}
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: no gloop edit option supplied" >&5
+printf "%s\n" "$as_me: no gloop edit option supplied" >&6;}
 
 fi
 
@@ -5406,6 +5509,46 @@ printf "%s\n" "not available" >&6; }
 	  fi;
      fi
 
+# Check whether --with-generators was given.
+if test ${with_generators+y}
+then :
+  withval=$with_generators; case "${withval}" in
+		    function) generator=function;;
+		    coroutine) generator=coroutine;;
+		    *) as_fn_error $? "bad value for 'enable-generator': ${withval}" "$LINENO" 5
+		    esac
+		{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: generators: $generator" >&5
+printf "%s\n" "$as_me: generators: $generator" >&6;}
+else $as_nop
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: no generator option provided" >&5
+printf "%s\n" "$as_me: no generator option provided" >&6;}
+
+fi
+
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking generator implementation.." >&5
+printf %s "checking generator implementation..... " >&6; };
+    if test x"$generator" = xcoroutine; then
+  MK_GENERATOR_COROUTINES_TRUE=
+  MK_GENERATOR_COROUTINES_FALSE='#'
+else
+  MK_GENERATOR_COROUTINES_TRUE='#'
+  MK_GENERATOR_COROUTINES_FALSE=
+fi
+
+   if test x"$generator" = xcoroutine; then
+       { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: coroutines" >&5
+printf "%s\n" "coroutines" >&6; }
+
+printf "%s\n" "#define GENERATOR_COROUTINES 1" >>confdefs.h
+
+   else
+
+printf "%s\n" "#define GENERATOR_COROUTINES 0" >>confdefs.h
+
+       { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: functions" >&5
+printf "%s\n" "functions" >&6; }
+   fi
+
 
  if test $GC = aldor; then
   HAVE_ALDOR_GC_TRUE=
@@ -5422,6 +5565,7 @@ else
   HAVE_BOEHM_GC_TRUE='#'
   HAVE_BOEHM_GC_FALSE=
 fi
+
 
 
 
@@ -13580,6 +13724,19 @@ fi
 printf "%s\n" "$aldor_error_on_warning - ${STRICTCFLAGS}" >&6; }
 
 
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking run interpreter tests.." >&5
+printf %s "checking run interpreter tests..... " >&6; };
+  if test x"$run_interp" = xyes -a x"$disable_interp_tests" = xno; then run_tests=yes; else run_tests=no; fi;
+   if test x"$run_tests" = xyes; then
+  WITH_ALDOR_INTERP_TESTS_TRUE=
+  WITH_ALDOR_INTERP_TESTS_FALSE='#'
+else
+  WITH_ALDOR_INTERP_TESTS_TRUE='#'
+  WITH_ALDOR_INTERP_TESTS_FALSE=
+fi
+
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result:  Running interpreter tests: $run_tests .. disabled by other rules: $disable_interp_tests " >&5
+printf "%s\n" " Running interpreter tests: $run_tests .. disabled by other rules: $disable_interp_tests " >&6; }
 as_ac_File=`printf "%s\n" "ac_cv_file_$JUNIT_JAR" | $as_tr_sh`
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for $JUNIT_JAR" >&5
 printf %s "checking for $JUNIT_JAR... " >&6; }
@@ -13600,20 +13757,19 @@ eval ac_res=\$$as_ac_File
 printf "%s\n" "$ac_res" >&6; }
 if eval test \"x\$"$as_ac_File"\" = x"yes"
 then :
-  HAS_JUNIT=yes
+  HAS_JUNIT_JAR=yes
 else $as_nop
-  HAS_JUNIT=no
+  HAS_JUNIT_JAR=no
 fi
 
-
-
- if test $BUILD_JAVA = true -a $HAS_JUNIT != no; then
+  if test "x$enable_java" = xyes -a x"$HAS_JUNIT_JAR" != xno; then
   HAS_JUNIT_TRUE=
   HAS_JUNIT_FALSE='#'
 else
   HAS_JUNIT_TRUE='#'
   HAS_JUNIT_FALSE=
 fi
+
 
 
 # Extract the first word of "latex", so it can be a program name with args.
@@ -13865,6 +14021,7 @@ then :
                   esac
 else $as_nop
   if test -f $srcdir/../.git/config ; then gitid=true; else gitid=false; fi
+              if test $gitid = true; then git_build_id=1; fi
 fi
 
 
@@ -14085,12 +14242,20 @@ if test -z "${BUILD_JAVA_TRUE}" && test -z "${BUILD_JAVA_FALSE}"; then
   as_fn_error $? "conditional \"BUILD_JAVA\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
+if test -z "${MK_GENERATOR_COROUTINES_TRUE}" && test -z "${MK_GENERATOR_COROUTINES_FALSE}"; then
+  as_fn_error $? "conditional \"MK_GENERATOR_COROUTINES\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
 if test -z "${HAVE_ALDOR_GC_TRUE}" && test -z "${HAVE_ALDOR_GC_FALSE}"; then
   as_fn_error $? "conditional \"HAVE_ALDOR_GC\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${HAVE_BOEHM_GC_TRUE}" && test -z "${HAVE_BOEHM_GC_FALSE}"; then
   as_fn_error $? "conditional \"HAVE_BOEHM_GC\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${WITH_ALDOR_INTERP_TESTS_TRUE}" && test -z "${WITH_ALDOR_INTERP_TESTS_FALSE}"; then
+  as_fn_error $? "conditional \"WITH_ALDOR_INTERP_TESTS\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${HAS_JUNIT_TRUE}" && test -z "${HAS_JUNIT_FALSE}"; then

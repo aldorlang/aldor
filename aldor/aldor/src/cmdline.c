@@ -1019,13 +1019,16 @@ extern Bool
 	abnDefineDebug, abnWhereDebug, abnWithMergeDebug, abnormDebug,
 	absDebug, arDebug,
 	cfoldDebug, condApplyDebug, cpDebug, cpDfDebug,
+	crinDebug,
         cseDebug, cseDfDebug, cseDfiDebug, daDebug,
         dnfDebug, dvDebug, emergeDebug, fileDebug,
         fintDebug, fintLinkDebug, fintStoDebug,
 	flogDebug, foamConstDebug, foamDebug, foamSposDebug, 
 	fortranTypesDebug, fvDebug,
+	gcrDebug, gcrFmtDebug,
 	genfImplicitDebug,
 	genfDebug, genfHashDebug, genfExportDebug,
+	genfEnvDebug,
 	gfaddDebug,
 	implDebug, inlCallDebug,
 	inlCallInfoDebug, inlExportDebug, inlExprDebug, inlExtendDebug,
@@ -1035,7 +1038,7 @@ extern Bool
 	libConstDebug, libDebug, libLazyDebug, libRepDebug, libVerboseDebug,
 	linDebug,
 	macDebug, oeDebug,
-	optfDebug, peepDebug,
+	optfDebug, optfShowDebug, peepDebug,
 	retDebug, rrfmtDebug,
 	scoDebug, scoFluidDebug, scoStabDebug, scoUndoDebug,
 	sefoCloseDebug, sefoEqualDebug, sefoFreeDebug,
@@ -1056,7 +1059,7 @@ extern Bool
 	tipFarDebug, tipIdDebug,
 	tipLitDebug, tipEmbedDebug, tipSefDebug, tipTdnDebug, 
 	titfDebug, titfOneDebug, titfStabDebug,
-	udDfDebug, udDfiDebug;
+        udDfDebug, udDfiDebug, ylDebug;
  
 struct dbVarInfo {
 	Bool	*pvar;
@@ -1077,6 +1080,7 @@ struct dbVarInfo dbVarInfo[] = {
 	{ & condApplyDebug,	"condApply" },
  	{ & cpDebug,		"cp" },
  	{ & cpDfDebug,		"cpDf" },
+	{ & crinDebug,		"crin" },
  	{ & cseDebug,		"cse" },
  	{ & cseDfDebug,		"cseDf" },
  	{ & cseDfiDebug,	"cseDfi" },
@@ -1094,6 +1098,9 @@ struct dbVarInfo dbVarInfo[] = {
 	{ & foamSposDebug,	"foamSpos" },
 	{ & fortranTypesDebug,	"fortranTypes" },
 	{ & fvDebug,		"fv" },
+	{ & gcrDebug,		"gcr" },
+	{ & gcrFmtDebug,	"gcrFmt" },
+	{ & genfEnvDebug,	"genfEnv" },
 	{ & genfExportDebug,	"genfExport" },
 	{ & genfImplicitDebug,	"genfImplicit" },
 	{ & genfDebug,		"genf"},
@@ -1124,6 +1131,7 @@ struct dbVarInfo dbVarInfo[] = {
 	{ & macDebug,           "macex" },
 	{ & oeDebug,          "oe" },
 	{ & optfDebug,          "optf" },
+	{ & optfShowDebug,      "optfShow" },
 	{ & peepDebug,          "peep" },
 	{ & retDebug,		"ret" },
 	{ & rrfmtDebug,		"rrfmt" },
@@ -1185,6 +1193,7 @@ struct dbVarInfo dbVarInfo[] = {
 	{ & titfStabDebug,	"titfStab" },
 	{ & udDfDebug,		"udDf" },
 	{ & udDfiDebug,		"udDfi" },
+	{ & ylDebug,		"yl" },
 	{ 0,			0}
 };
  

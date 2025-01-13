@@ -101,40 +101,19 @@ define ListCategory(S: Type): Category
 
 List(S: Type): ListCategory S with == FakedConditionalOperations S add {
 
-        macro Rep == P;
-        macro R   == Record(first: S, rest: Rep);
-
-	--!! Remove when cascaded imports can be inferred in the correct order.
-	import from S, 'first', 'rest';
-
-        -- This local domain gives an untagged union of
-        -- Records and Nil.
-        P: with {
-                nil?:    % -> Boolean;
-                nilptr:  %;
-                recptr:  R -> %;
-                value:   % -> R;
-        } == add {
-                macro  Rep == Pointer;
-                import from Rep;
-                nil? (p: %): Boolean == nil? rep p;
-                nilptr: %        == per (nil()$Pointer);
-                recptr(r: R): %  == r pretend %;
-                value(p: %): R   == p pretend R;
-        }
-
-        import from R;
+	Rep == Record(first: S, rest: %);
+	import from Pointer;
+	import from Rep;
 
         default n: SingleInteger;
 
-        -- non-empty % as a Record
-        rec(x: %): R == value rep x;
+        rec(x: %): Rep == rep x;
 
-        empty?(l: %): Boolean  == nil? rep l;
+        empty?(l: %): Boolean  == nil?(l pretend Pointer);
         #(l: %): SingleInteger == { n:=0; for i in l repeat n:=n+1; n }
-        nil(): %     == per nilptr;
+        nil(): %     == (nil()$Pointer) pretend %;
         empty():%  == nil();
-        cons(a: S, l: %): % == per recptr [a, rep l];
+        cons(a: S, l: %): % == per [a, l];
 
 	sample: %  == nil(); --!! Should get from Aggregate(S)
 
@@ -150,7 +129,7 @@ List(S: Type): ListCategory S with == FakedConditionalOperations S add {
 	}
         rest(l: %): % == {
 		empty? l => l;
-		per rec(l).rest;
+		rec(l).rest;
 	}
         setFirst!(l: %, a: S): S == {
 		empty? l => error "Cannot set `first' of emtpy list.";
@@ -158,7 +137,7 @@ List(S: Type): ListCategory S with == FakedConditionalOperations S add {
 	}
         setRest! (l: %, t: %): % == {
 		empty? l => error "Cannot set `rest' of emtpy list.";
-		per (rec(l).rest := rep t)
+		(rec(l).rest := t)
 	}
 	apply(l: %, x: 'first'): S == first l;
 	apply(l: %, x: 'rest' ): % == rest l;
@@ -176,15 +155,15 @@ List(S: Type): ListCategory S with == FakedConditionalOperations S add {
 
         last (l: %): S == first tail l;
 
-        copy(l: %): % == [x for x in l];
+        copy(l: %): % == [generator l];
 
         reverse(l: %): % ==  {
-                revl := nil();
+                revl: % := nil();
                 for e in l repeat revl := cons(e, revl);
                 revl;
         }
         reverse!(l: %): % == {
-                r := nil();
+                r: % := nil();
                 while l repeat {
 			-- (l.rest, r, l) := (r, l, l.rest);
                         t := l.rest;
@@ -258,37 +237,40 @@ List(S: Type): ListCategory S with == FakedConditionalOperations S add {
         test(l: %): Boolean == not empty? l;
 
         generator(l: %): Generator S == generate {
-                while l repeat {
-                        yield first l;
-                        l := rest l;
+	        ll := l;
+                while ll repeat {
+                        yield first ll;
+                        ll := rest ll;
                 }
         }
 
 	tails(l: %): Generator % == generate {
+	        ll := l;
 		while l repeat {
 			-- Save the tail first to allow clients to update it.
-			tl := rest l;
-			yield l;
-			l := tl;
+			tl := rest ll;
+			yield ll;
+			ll := tl;
 		}
 	}
 
         [t: Tuple S]: % == {
-                l := nil();
-                for i in length t..1 by -1 repeat
-                        l := cons(element(t, i), l);
+                l: % := nil();
+		len := length t;
+                for i in 0..(len-1) repeat
+                        l := cons(element(t, len-i), l);
                 l;
         }
 
         [g: Generator S]: % == {
-                h := l := nil();
+                head: % := last: % := nil();
                 for a in g repeat {
-                        t := l;
-                        l := cons(a, nil());
-                        empty? t => h := l;
-                        t.rest := l;
+                        temp := last;
+                        last := cons(a, nil());
+                        empty? temp => head := last;
+                        temp.rest := last;
                 }
-                h;
+                head;
         }
 
 	disposeHead!(l: %): % == { t := rest l; dispose! rec l; t }

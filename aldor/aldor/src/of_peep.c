@@ -12,6 +12,7 @@
 #include "of_peep.h"
 #include "of_util.h"
 #include "optfoam.h"
+#include "optinfo.h"
 #include "opttools.h"
 #include "util.h"
 #include "sexpr.h"

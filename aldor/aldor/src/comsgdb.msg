@@ -303,6 +303,7 @@ ALDOR_W_GenCatFunNotConst		"Function returns a category that might not be consta
 
 ALDOR_W_GenBadDefCycle		"Illegal recursive definition: %s"
 ALDOR_W_GenBadDefOrder		"Implementation restriction: the value of `%s' depends on the value of %s. Perhaps you ought to define `%s' later?"
+ALDOR_F_XGenNotImplemented	"New generators not supported (yet)"
 
 ALDOR_M_FintBreakHandler    "Execution terminated: use #quit if you want to quit."
 ALDOR_M_FintBreakHandler0   "Use '#quit' to quit Aldor."

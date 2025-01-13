@@ -139,23 +139,20 @@ the range of s. The result of high(s) is undefined if s is an open segment.}
 			and high s = high t and step s = step t;
 	}
 
-	-- BUG 1182: DOES NOT INLINE WELL IF BROKEN INTO SUBFUNCTIONS
-	generator(s:%):Generator Z == generate {
+	generator(s: %): Generator Z == generate {
 		import from Z;
-		op? := open? s;
-		a := low s;
-		one?(c := step s) => {
-			op? => repeat { yield a; a := next a }
-			b := high s;
-			while a <= b repeat { yield a; a := next a }
-		}
-		op? => repeat { yield a; a := a + c; }
+		a := low  s;
 		b := high s;
-		c < 0 => while b <= a repeat { yield a; a := a + c }
-		while a <= b repeat { yield a; a := a + c; }
+		d := step s;
+		ubd := open? s;
+		up := d >= 0;
+		while ubd or (up and a <= b) or (not up and a >= b) repeat {
+			yield a;
+			a := a + d;
+		}
 	}
 
-	-- prints as ..[from, to, step, open?]
+        -- prints as ..[from, to, step, open?]
 	(p:TextWriter) << (s:%):TextWriter == {
 		import from Z, Boolean, Character;
 		p << dot << dot << leftBracket << low s << comma << high s _
@@ -209,3 +206,32 @@ the range of s. The result of high(s) is undefined if s is an open segment.}
 		per [op?, lo, hi, st];
 	}
 }
+
+#if ALDORTEST
+
+#include "aldor"
+#include "aldortest"
+
+import from IntegerSegment MachineInteger;
+import from Assert MachineInteger;
+import from MachineInteger;
+
+sum(s: IntegerSegment MachineInteger): MachineInteger == {
+    acc: MachineInteger := 0;
+    for i in s repeat acc := acc + i;
+    acc
+}
+
+upTo(n: MachineInteger, s: IntegerSegment MachineInteger): MachineInteger == {
+    acc: MachineInteger := 0;
+    for x in s for i in 1..n repeat acc := acc + x;
+    acc
+}
+
+
+assertEquals(10, sum(1..4));
+assertEquals(10, sum(4..1 by -1));
+
+assertEquals(15, upTo(5, 1..));
+assertEquals(-15, upTo(5, -1.. by -1));
+#endif

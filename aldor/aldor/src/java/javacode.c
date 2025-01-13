@@ -678,6 +678,12 @@ jcDocumented(String comment, JavaCode code)
 }
 
 JavaCode
+jcCommented(String comment, JavaCode code)
+{
+	return jcSpaceSeqV(2, jcComment(comment), code);
+}
+
+JavaCode
 jcComment(String comment)
 {
 	JavaCode jc = jcoNewLiteral(jc0ClassObj(JCO_CLSS_Comment), comment);
@@ -946,25 +952,26 @@ jcReturnVoid()
 
 
 JavaCode
-jcNull(String name)
+jcNull()
 {
-	return jcKeyword(symIntern("null"));
+	return jcKeyword(symInternConst("null"));
 }
+
 JavaCode
 jcTrue(String name)
 {
-	return jcKeyword(symIntern("true"));
+	return jcKeyword(symInternConst("true"));
 }
 JavaCode
 jcFalse(String name)
 {
-	return jcKeyword(symIntern("false"));
+	return jcKeyword(symInternConst("false"));
 }
 
 JavaCode
 jcThis(String name)
 {
-	return jcKeyword(symIntern("this"));
+	return jcKeyword(symInternConst("this"));
 }
 
 local SExpr

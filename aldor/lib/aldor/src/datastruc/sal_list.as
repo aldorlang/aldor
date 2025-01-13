@@ -129,8 +129,9 @@ List(T:Type): ListType T == add {
 		r.elt := x;
 	}
 
-	generator(l:%):Generator T == generate {
+	generator(l0:%):Generator T == generate {
 		import from Boolean;
+		l := l0;
 		while ~empty? l repeat {
 			yield first l;
 			l := rest l;

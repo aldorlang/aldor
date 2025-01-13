@@ -38,6 +38,7 @@
 #include "debug.h"
 #include "store.h"
 #include "util.h"
+#include "list.h"
 
 #define 	BpW	bitsizeof(BitvWord)
 
@@ -350,4 +351,16 @@ bitvToInt(BitvClass class, Bitv bitv)
 			result = result | (1<<i);
 	}
 	return result;
+}
+
+AIntList
+bitvToAIntList(BitvClass class, Bitv bitv)
+{
+	AIntList res = listNil(AInt);
+	for (int i=0; i<bitvClassSize(class); i++) {
+		if (bitvTest(class, bitv, i)) {
+			res = listCons(AInt)(i, res);
+		}
+	}
+	return listNReverse(AInt)(res);
 }

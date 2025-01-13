@@ -83,6 +83,7 @@ extern Bool	tpossHasNonMapType	(TPoss);
 
 
 extern TPoss	tpossGeneratorArg	(TPoss tp);
+extern TPoss	tpossAnyGeneratorArg	(TPoss tp);
 		/*
 		 * Return the type possibilities X such that tp is Generator(X).
 		 */

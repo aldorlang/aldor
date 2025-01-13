@@ -16,7 +16,7 @@
 #include "gf_prog.h"
 #include "gf_rtime.h"
 #include "gf_util.h"
-#include "of_inlin.h"
+#include "optinfo.h"
 #include "store.h"
 #include "sefo.h"
 #include "lib.h"
@@ -632,7 +632,7 @@ gen0BuildLazyFun0(FoamSig fun)
 	gen0ProgFiniEmpty(foam, FOAM_Clos, int0);
 
 	gen0ProgRestoreState(saved);
-	foamOptInfo(foam) = inlInfoNew(NULL, foam, NULL, false);
+	foamOptInfo(foam) = optInfoNew(NULL, foam, NULL, false);
 	foamProgSetGetter(foam);
 	return clos;
 }
@@ -716,7 +716,7 @@ gen0BuildLazyFun1(FoamSig sig)
 	gen0ProgPushFormat(emptyFormatSlot);
 	gen0ProgFiniEmpty(foam, retType, retFmt);
 	foam->foamProg.format = retFmt;
-	foamOptInfo(foam) = inlInfoNew(NULL, foam, NULL, false);
+	foamOptInfo(foam) = optInfoNew(NULL, foam, NULL, false);
 	gen0ProgRestoreState(saved);
 	return clos;
 }
@@ -766,7 +766,7 @@ gen0BuildLazyFun2()
 	gen0ProgFiniEmpty(foam, FOAM_NOp, int0);
 	foam->foamProg.format = 0;
 	gen0ProgRestoreState(saved);
-	foamOptInfo(foam) = inlInfoNew(NULL, foam, NULL, false);
+	foamOptInfo(foam) = optInfoNew(NULL, foam, NULL, false);
 	foamProgSetGetter(foam);
 	
 	gen0LazyFun2Const = clos;
@@ -1177,7 +1177,7 @@ gen0GVectIssueFn(String libName, AIntList globs)
 
 	gen0ProgPushFormat(emptyFormatSlot);
 	gen0ProgFiniEmpty(foam, FOAM_Word, int0);
-	foamOptInfo(foam) = inlInfoNew(NULL, foam, NULL, false);
+	foamOptInfo(foam) = optInfoNew(NULL, foam, NULL, false);
 	gen0ProgRestoreState(saved);
 
 	foamFree(flag);

@@ -438,6 +438,8 @@ struct tok_info tokInfoTable[] = {
         {KW_Where,      0,"where",       0, 0,  0,  0,  1,  1,  1,  0,   0, 0},
         {KW_While,      0,"while",       0, 0,  0,  0,  0,  1,  1,  0,   0, 0},
         {KW_With,       0,"with",        0, 0,  0,  0,  0,  1,  1,  0,   0, 0},
+        {KW_XFor,       0,"xfor",        0, 0,  0,  0,  0,  1,  1,  0,   0, 0},
+	{KW_XGenerate,  0,"xgenerate",   0, 0,  0,  0,  0,  1,  1,  0,   0, 0},
         {KW_Yield,      0,"yield",       0, 0,  0,  0,  0,  1,  1,  0,   0, 0},
 
         {KW_Quote,      0,"'",           0, 0,  0,  0,  0,  0,  1,  0,   0, 0},

@@ -2,7 +2,6 @@
 #include "foam.h"
 #include "int.h"
 #include "sexpr.h"
-#include "syme.h"
 #include "testlib.h"
 #include "util.h"
 
@@ -14,6 +13,7 @@ local void testHash();
 local void testSIntReduce();
 local void testFoamBuffer();
 local void testIter();
+local void testHasCoroutine();
 
 void
 foamTest()
@@ -28,6 +28,7 @@ foamTest()
 	TEST(testSIntReduce);
 	TEST(testFoamBuffer);
 	TEST(testIter);
+	TEST(testHasCoroutine);
 }
 
 local void
@@ -268,4 +269,27 @@ tFoamToBuffer(Foam foam)
 	foamToBuffer(buf, foam);
 
 	return buf;
+}
+
+/***********************
+ *
+ *
+ *
+ **********************/
+
+local void
+testHasCoroutine()
+{
+	Foam foam, prog;
+
+	foam = foamNewUnit(foamNew(FOAM_DFmt, 0), foamNew(FOAM_DDef, 0));
+	testFalse("empty", foamUnitHasCoroutine(foam));
+	foamFree(foam);
+
+	prog = foamNewProgEmpty();
+	foamProgSetCoroutine(prog);
+	foam = foamNewUnit(foamNew(FOAM_DFmt, 0),
+			   foamNew(FOAM_DDef, 1, foamNewDef(foamNewConst(int0), prog)));
+	testTrue("empty", foamUnitHasCoroutine(foam));
+	foamFree(foam);
 }

@@ -31,6 +31,7 @@
  *     Select: exits = [0 case, 1 case, ..., exitc-1 case]
  *     Goto:   exits = [destination]
  *     Return: exits = [ ]
+ *     GenerStep: exits = [value case, done case ]
  *
  * While foam is in flow graph form, the foam labels can be out date.
  * This includes the maxLabel of the prog and the destination labels of the
@@ -202,6 +203,8 @@ extern void	  bbSpecializeExit      (BBlock, int exitno);
 extern BBlock 	  bbNConcat		(BBlock, BBlock);
 extern BBlockList bbGetEntries		(BBlock);
 extern BBlock     bbCopy                (BBlock);
+extern Bool       bbIsIfStmt            (BBlock);
+
 			/*
 			 * bbNConcat modifies/frees its args.
 			 */

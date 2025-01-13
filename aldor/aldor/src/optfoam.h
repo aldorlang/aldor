@@ -10,7 +10,7 @@
 #define _OPTFOAM_H_
 
 #include "axlobs.h"
-
+#include "optinfo.h"
 
 extern void	optInit		        (void);
 extern void	optSetInit	        (void);

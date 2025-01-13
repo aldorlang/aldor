@@ -10,6 +10,8 @@
 #define _FOAM_H_
 
 #include "axlobs.h"
+#include "fex.h"
+#include "syme0.h"
 
 /*****************************************************************************
  *
@@ -76,7 +78,11 @@ enum foamTag {
 			FOAM_RRFmt,	 /* Raw record (dynamic) format */
 	                FOAM_JavaObj,    /* Java things */
 	                FOAM_CObj,      /* C things */
-
+			FOAM_Gener,
+			FOAM_Yield,
+			FOAM_GenIter,
+			FOAM_GenerValue,
+			FOAM_GenerStep,
 		FOAM_CONTROL_LIMIT,
 
 /* ===========> FFO_ORIGIN (start of multi-format instructions) <=========== */
@@ -141,7 +147,6 @@ enum foamTag {
 };
 
 typedef Enum(foamTag)    	FoamTag;
-
 
 enum foamBValTag {
 	FOAM_BVAL_START,
@@ -515,6 +520,7 @@ struct foamHdr {
 		Symbol		sym;	 /* ... to be used in genc */
 		Bool		lazy;    /* EInfo used inside lazy getter */
  		int		defNo;   /* Used by of_copyp.c (see file) */
+		int		yldNo;   /* Used by gen{c, java, lisp, ..} for yields */
  		UdInfoList	defList; /* Reaching definitions (of_copyp.c)*/
 		ExpInfo		expInfo; /* for common subexpr elimination */
                 InvInfo         invInfo; /* for loop optimization */
@@ -640,15 +646,9 @@ struct foamRRec {
 	Foam			values; /* FOAM_Values holding raw values */
 };
 
-#ifdef NEW_FORMATS
-#define foamNewProg(x,m,t,f,ib,p,l,fl,le,b) \
-	foamNew(FOAM_Prog, 13, (AInt)(x),(AInt)(m),(AInt)(t),(AInt)(f),\
-		(AInt)(ib), (AInt)0, (AInt)0, (AInt)0, (AInt)(p), l, fl, le, b)
-#else
-#define foamNewProg(x,m,t,f,ib,p,l,fl,le,b) \
-	foamNew(FOAM_Prog, 13, (AInt)(x),(AInt)(m),(AInt)(t),(AInt)(f),\
+#define foamNewProg(x,m,t,f,ib,p,l,fl,le,b)				\
+	foamNew(FOAM_Prog, 13, (AInt)(x),(AInt)(m),(AInt)(t),(AInt)(f), \
 		(AInt)(ib), (AInt)0, (AInt)0, (AInt)0 , p, l, fl, le, b)
-#endif
 
 extern Foam foamNewProgEmpty(void);
 
@@ -663,12 +663,7 @@ struct foamProg {
 	AInt			size;
 	AInt			time;	    /* estimated exec. time	  */
 	AInt			auxInfo;
-
-#ifdef NEW_FORMATS
-	AInt                    params;
-#else
 	Foam                    params;
-#endif
 	Foam                    locals;
 	Foam                    fluids; 
 	Foam                    levels;
@@ -681,6 +676,23 @@ struct foamClos {
 	struct foamHdr          hdr;
 	Foam                    env;
 	Foam                    prog;
+};
+
+#define foamNewGener(fmt, env, prog)   foamNew(FOAM_Gener,3, fmt, env, prog)
+
+struct foamGener {
+	struct foamHdr          hdr;
+	AInt                    fmt;
+	Foam                    env;
+	Foam                    prog;
+};
+
+#define foamNewGenIter(g)   foamNew(FOAM_GenIter, 1, g)
+
+struct foamGenIter {
+	struct foamHdr          hdr;
+	Foam                    gener;
+	Foam                    argv[NARY];
 };
 
 #define foamNewGDecl(ty,id,rt,f,pr,dir) foamNew(FOAM_GDecl,6,(AInt)(ty),id, \
@@ -712,6 +724,7 @@ struct foamDecl {
 };
 
 #define foamNewEmptyDDecl(u) foamNew(FOAM_DDecl, 1, (AInt) u)
+extern Foam foamNewDDeclEmpty(AInt n, AInt usage);
 extern Foam foamNewDDecl(AInt usage, ...);
 extern Foam foamNewDDeclOfList(AInt usage, FoamList args);
 
@@ -731,6 +744,7 @@ struct foamDFluid {
 };
 
 #define foamNewEmptyDEnv() foamNew(FOAM_DEnv, 0)
+extern Foam foamNewDEnvUnused(AInt len);
 
 struct foamDEnv {
 	struct foamHdr          hdr;
@@ -739,6 +753,7 @@ struct foamDEnv {
 
 #define foamDEnvArgc(foam) foamArgc(foam)
 
+extern Foam foamNewDFmt(Foam arg0, ...);
 struct foamDFmt {
 	struct foamHdr          hdr;
 	Foam                    argv[NARY];
@@ -753,6 +768,7 @@ struct foamDef {
 	Foam                    rhs;
 };
 
+extern Foam foamNewDDef(Foam arg0, ...);
 struct foamDDef {
 	struct foamHdr          hdr;
 	Foam                    argv[NARY];
@@ -990,6 +1006,7 @@ struct foamIf {
 };
 
 extern Foam foamNewSeq(Foam arg0, ...);
+extern Foam foamNewSeqOfList(FoamList list);
 
 struct foamSeq {
 	struct foamHdr          hdr;
@@ -1140,6 +1157,8 @@ struct foamMFmt {
 };
 
 #define foamNewEmptyValues()    foamNew(FOAM_Values, 0)
+extern Foam foamNewValues      (Foam arg0, ...);
+extern Foam foamNewValuesOfList(FoamList vals);
 struct foamValues {
 	struct foamHdr		hdr;
 	Foam			argv[NARY];
@@ -1194,6 +1213,28 @@ struct foamProtect {
 struct foamReturn {
 	struct foamHdr          hdr;
 	Foam                    value;
+};
+
+#define foamNewYield(v)      foamNew(FOAM_Yield, 1, v)
+
+struct foamYield {
+	struct foamHdr          hdr;
+	Foam                    value;
+};
+
+#define foamNewGenerValue(v)      foamNew(FOAM_GenerValue, 1, v)
+
+struct foamGenerValue {
+	struct foamHdr          hdr;
+	Foam                    gener;
+};
+
+#define foamNewGenerStep(label, gener)      foamNew(FOAM_GenerStep, 2, label, gener)
+
+struct foamGenerStep {
+	struct foamHdr          hdr;
+	AInt                    label;
+	Foam                    gener;
 };
 
 
@@ -1283,6 +1324,11 @@ union foam {
 	struct foamCatch	foamCatch;
 	struct foamProtect	foamProtect;
 	struct foamReturn       foamReturn;
+	struct foamGener        foamGener;
+	struct foamGenIter      foamGenIter;
+	struct foamYield        foamYield;
+	struct foamGenerValue   foamGenerValue;
+	struct foamGenerStep    foamGenerStep;
 };
 
 
@@ -1337,6 +1383,9 @@ extern struct foamBVal_info  foamBValInfoTable[];
 extern struct foamProto_info foamProtoInfoTable[];
 extern struct foamDDecl_info foamDDeclInfoTable[];
 
+#define FOAM_NARY	(-1)	/* Identifies tags with N-ary data argument. */
+
+
 #define foamInfo(tag)       (foamInfoTable    [(int)(tag)-(int)FOAM_START])
 #define foamBValInfo(tag)   (foamBValInfoTable[(int)(tag)-(int)FOAM_BVAL_START])
 #define foamProtoInfo(tag)  (foamProtoInfoTable[(int)(tag)-(int)FOAM_PROTO_START])
@@ -1358,6 +1407,7 @@ extern struct foamDDecl_info foamDDeclInfoTable[];
 #define foamBValIdTag(sym)  ((FoamBValTag)  symCoInfo(sym)->foamTagVal)
 #define foamProtoIdTag(sym) ((FoamProtoTag) symCoInfo(sym)->foamTagVal)
 
+/* TODO: Rename me! */
 #define foamProgIndex(foam) \
  	((foam)->foamProg.levels->foamDEnv.argv[0])
 
@@ -1393,14 +1443,15 @@ extern struct foamDDecl_info foamDDeclInfoTable[];
 #define IB_INLINEME	(1 << 4)	/* prog should be inlined */
 #define IB_USESFLUIDS   (1 << 5)	/* Prog uses fluid variables */
 #define IB_FORCER	(1 << 6)	/* Prog is a forcer for consts */
+#define IB_COROUTINE	(1 << 7)	/* Prog is a coroutine */
 
-#define IB_INLINEINFO	 (1 << 7)	/* Remaining info bits availables? */
-#define IB_DONTINLINEME	 (1 << 8)	/* prog should never be inlined  */
-#define IB_HASCONSTS	 (1 << 9)	/* prog contains some (Const ..) */
-#define IB_NOOCALLS	 (1 << 10)	/* prog contains no OCalls	 */
-#define IB_SINGLESTMT	 (1 << 11)	/* prog has a single statement	 */
-#define IB_CALLEDONCE	 (1 << 12)	/* prog is called once.		 */
-#define IB_NOENVUSE	 (1 << 13)	/* Prog does not refer to its environment */
+#define IB_INLINEINFO	 (1 << 8)	/* Remaining info bits availables? */
+#define IB_DONTINLINEME	 (1 << 9)	/* prog should never be inlined  */
+#define IB_HASCONSTS	 (1 << 10)	/* prog contains some (Const ..) */
+#define IB_NOOCALLS	 (1 << 11)	/* prog contains no OCalls	 */
+#define IB_SINGLESTMT	 (1 << 12)	/* prog has a single statement	 */
+#define IB_CALLEDONCE	 (1 << 13)	/* prog is called once.		 */
+#define IB_NOENVUSE	 (1 << 14)	/* Prog does not refer to its environsment */
 
 /* Foam prog information bits */
 #define foamProgIsSidingEffect(x) ((x)->foamProg.infoBits & IB_SIDE)
@@ -1410,6 +1461,7 @@ extern struct foamDDecl_info foamDDeclInfoTable[];
 #define foamProgInlineMe(x)       ((x)->foamProg.infoBits & IB_INLINEME)
 #define foamProgUsesFluids(x)     ((x)->foamProg.infoBits & IB_USESFLUIDS)
 #define foamProgIsForcer(x)       ((x)->foamProg.infoBits & IB_FORCER)
+#define foamProgIsCoroutine(x)       ((x)->foamProg.infoBits & IB_COROUTINE)
 
 #define foamProgHasInlineInfo(x) ((x)->foamProg.infoBits & IB_INLINEINFO)
 #define foamProgDontInlineMe(x)  ((x)->foamProg.infoBits & IB_DONTINLINEME)
@@ -1419,7 +1471,6 @@ extern struct foamDDecl_info foamDDeclInfoTable[];
 #define foamProgIsCalledOnce(x)  ((x)->foamProg.infoBits & IB_CALLEDONCE)
 #define foamProgHasNoEnvUse(x)   ((x)->foamProg.infoBits & IB_NOENVUSE)
 
-
 #define foamProgSetHasInlineInfo(x)  ((x)->foamProg.infoBits |= IB_INLINEINFO)
 #define foamProgSetLeaf(x)           ((x)->foamProg.infoBits |= IB_LEAF)
 #define foamProgSetGenerator(x)      ((x)->foamProg.infoBits |= IB_GENERATOR)
@@ -1428,6 +1479,7 @@ extern struct foamDDecl_info foamDDeclInfoTable[];
 #define foamProgSetSide(x)     	     ((x)->foamProg.infoBits |= IB_SIDE)
 #define foamProgSetUsesFluid(x)      ((x)->foamProg.infoBits |= IB_USESFLUIDS)
 #define foamProgSetForcer(x) 	     ((x)->foamProg.infoBits |= IB_FORCER)
+#define foamProgSetCoroutine(x)      ((x)->foamProg.infoBits |= IB_COROUTINE)
 
 #define foamProgSetDontInlineMe(x)   ((x)->foamProg.infoBits |= IB_DONTINLINEME)
 #define foamProgSetHasConsts(x)      ((x)->foamProg.infoBits |= IB_HASCONSTS)
@@ -1444,6 +1496,7 @@ extern struct foamDDecl_info foamDDeclInfoTable[];
 #define foamProgUnsetHasSingleStmt(x) ((x)->foamProg.infoBits &= ~IB_SINGLESTMT)
 #define foamProgUnsetIsCalledOnce(x)  ((x)->foamProg.infoBits &= ~IB_CALLEDONCE)
 #define foamProgUnsetNoEnvUse(x)      ((x)->foamProg.infoBits &= ~IB_NOENVUSE)
+#define foamProgUnsetCoroutine(x)     ((x)->foamProg.infoBits &= ~IB_COROUTINE)
 
 #define foamArgc(foam)         ((foam)->hdr.argc)
 #define foamArgv(foam)         ((foam)->foamGen.argv)
@@ -1453,16 +1506,9 @@ extern struct foamDDecl_info foamDDeclInfoTable[];
 #define constsSlot  	1
 #define lexesSlot   	2
 #define fluidsSlot   	3
-#ifdef NEW_FORMATS
-#define paramsSlot	4
-#define emptyFormatSlot 5
-#define envUsedSlot 	0
-#define FOAM_FORMAT_START 6
-#else
 #define emptyFormatSlot 4
 #define envUsedSlot 	0
 #define FOAM_FORMAT_START 5
-#endif
 
 #define	foamUnitFormats(foam)	((foam)->foamUnit.formats)
 #define foamUnitGlobals(foam)	\
@@ -1473,10 +1519,6 @@ extern struct foamDDecl_info foamDDeclInfoTable[];
  	(foamArgv((foam)->foamUnit.formats)[lexesSlot].code)
 #define foamUnitFluids(foam)	\
  	(foamArgv((foam)->foamUnit.formats)[fluidsSlot].code)
-#ifdef NEW_FORMATS
-#define foamUnitParams(foam)	\
- 	(foamArgv((foam)->foamUnit.formats)[paramsSlot].code)
-#endif
 
 /* map a function over a foam tree */
 #define foamIter(foam, arg, argumentAction)				\
@@ -1495,6 +1537,7 @@ Statement( {								\
 
 
 extern void		 foamInit       (void);
+extern void		 foamEnsureInit (void);
 
 extern Foam              foamNewEmpty   (FoamTag t, Length argc);
 extern Foam              foamNew        (FoamTag t, Length argc, ...);
@@ -1532,14 +1575,6 @@ extern void		 foamDumpToFile	(Foam, String);
 /*
  * Conversion and basic I/O.
  */
-extern int               foamWrSExpr    (FILE *, Foam, ULong sxioMode);
-extern Foam              foamRdSExpr    (FILE *, FileName *, int *lno);
-
-extern SExpr             foamToSExpr    (Foam);
-extern Foam              foamFrSExpr    (SExpr);
-
-extern String		 foamToString   (Foam);
-extern Foam              foamFrString   (String);
 
 extern int		 foamToBuffer   (Buffer, Foam);
 extern Foam		 foamFrBuffer   (Buffer);
@@ -1596,13 +1631,18 @@ extern Foam foamNeutralValue(FoamTag foam);
 				    [1+ foamTRDDeclIDeclN(ddecl) + (n)])
 
 #define foamSelectArgc(foam)    (foamArgc(foam) - 1)
+extern Foam foamNewSelectRange(Foam expr, AInt lo, AInt hi);
+extern Foam foamNewSelect(Foam expr, AInt nBranches);
 
 extern Bool foamProgHasMultiAssign(Foam prog);
+extern AInt foamProgFormatForLevel(Foam prog, AInt lexLevel);
 extern Bool foamIsMultiAssign(Foam prog);
 
 extern Bool foamDeclEqual(Foam, Foam);
 
 extern int foamSeqNextReachable(Foam seq, int index);
+
+extern Bool foamUnitHasCoroutine(Foam unit);
 
 /*
  * This macro can be used to strip multiple casts from an expression. Be

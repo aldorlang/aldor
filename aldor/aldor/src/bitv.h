@@ -71,4 +71,7 @@ extern void	bitvMinus	(BitvClass, Bitv r, Bitv a, Bitv b);
 extern	int	bitvUnique1IndexInRange(BitvClass, Bitv, int org, int lim);
 extern  Bitv    bitvFromInt(BitvClass, int);
 extern  int     bitvToInt(BitvClass, Bitv);
+
+extern AIntList bitvToAIntList(BitvClass clss, Bitv);
+
 #endif /* !_BITV_H_ */

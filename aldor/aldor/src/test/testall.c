@@ -36,6 +36,7 @@ main(int argc, char *argv[])
 	if (testShouldRun("ostream")) ostreamTest();
 	if (testShouldRun("float")) floatTestSuite();
 	if (testShouldRun("int")) intTestSuite();
+	if (testShouldRun("strops")) stropsTestSuite();
 	if (testShouldRun("bigint")) bintTestSuite();
 	if (testShouldRun("errorset")) errorSetTestSuite();
 	if (testShouldRun("bitv")) bitvTestSuite();
@@ -46,6 +47,7 @@ main(int argc, char *argv[])
 	if (testShouldRun("foam")) foamTest();
 	if (testShouldRun("forg")) forgTest();
 	if (testShouldRun("format")) formatTest();
+	if (testShouldRun("fptr")) fptrTest();
 	if (testShouldRun("flog")) flogTest();
 	if (testShouldRun("java")) javaTestSuite();
 	if (testShouldRun("jflow")) jflowTest();
@@ -62,6 +64,7 @@ main(int argc, char *argv[])
 	if (testShouldRun("syme")) symeTest();
 	if (testShouldRun("symeset")) symeSetTestSuite();
 	if (testShouldRun("tibup")) tibupTest();
+	if (testShouldRun("tisef")) tisefTest();
 	if (testShouldRun("tfsat")) tfsatTest();
 	if (testShouldRun("annabs")) annotateAbSynTest();
 	if (testShouldRun("retype")) retypeTest();
@@ -69,6 +72,7 @@ main(int argc, char *argv[])
 	if (testShouldRun("tposs")) tpossTest();
 	if (testShouldRun("of_peep")) ofPeepTest();
 	if (testShouldRun("of_cprop")) ofCPropTest();
+	if (testShouldRun("of_crin")) ofCrinTest();
 
 	testIntEqual("fluidlevel", 0, fluidLevel);
 

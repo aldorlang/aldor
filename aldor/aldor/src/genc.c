@@ -14,6 +14,7 @@
 #include "fluid.h"
 #include "fortran.h"
 #include "genc.h"
+#include "gencr.h"
 #include "gf_util.h"
 #include "of_killp.h"
 #include "of_rrfmt.h"
@@ -104,9 +105,6 @@ static Foam	gcvGlo;			/* Unit globals */
 static Foam	gcvConst;		/* Unit constants */
 static Foam	gcvFluids;		/* Unit Fluids */
 static Foam	gcvFmt;			/* Unit formats */
-#ifdef NEW_FORMATS
-static Foam	gcvParams;		/* Unit parameters */
-#endif
 static Foam	gcvPar;			/* Prog parameters */
 static Foam	gcvLoc;			/* Prog locals */
 static Foam	gcvLocFluids;		/* Prog fluids */
@@ -115,6 +113,7 @@ static Foam	gcvLFmtStk;		/* Prog lexical format stack */
 static Foam	gcvDefs;		/* Unit definitions */
 static FoamList gcvLexStk = 0;		/* Unit/Prog lexicals stack */
 static Bool	gcvIsLeaf;		/* True iff prog is a leaf proc */
+static Bool	gcvIsCoroutine;		/* True iff prog is a coroutine */
 static int	gcvIdChars[CHAR_MAX];	/* Array of special print chars */
 static int	gcvIdCharc[CHAR_MAX];	/* Array of special print lengths */
 static int	gcvNLocs  = 0;		/* Number of locals */
@@ -174,6 +173,7 @@ local	CCode	gccId		(Foam); /* Create an identifier */
 local 	CCode 	gccProgId	(Foam); /* (see func. definition) */
 local	CCode	gccGetVar	(Foam); /* Return a C variable */
 local	CCode	gccEnvParam	(void); /* Declare an environment parameter */ 
+local	CCode	gccEnv0Param	(void); /* Declare an environment parameter (for coroutines) */
 local	CCode	gccUnhandled	(Foam); /* No implementation for this foam */
 local	CCode	gccArr		(Foam); /* Return an array */ 
 local	CCode	gccArrNew	(Foam); /* Create a new array */ 
@@ -193,6 +193,10 @@ local	CCode	gccMFmt		(Foam); /* Generate multi-value call */
 local	CCode	gccReturnValues	(Foam); /* Return multiple values */
 local	CCode	gccValues	(Foam); /* Generate multiple values */
 local	CCode	gccIf		(Foam); /* Generate an if statement */
+local	CCode	gccGenIter	(Foam); /* Generate a new iterator */
+local	CCode	gccGenerStep	(Foam); /* Generate a step */
+local	CCode	gccGenerValue	(Foam); /* Generate a value from an iterator */
+local	CCode	gccEnv		(Foam); /* Generate an Env reference */
 local	CCode	gccSelect	(Foam); /* Generate a switch statement */
 local	CCode	gccBInt		(Foam); /* Generate a big integer */
 local	CCode	gccPushEnv	(Foam); /* Push environment onto the stack */
@@ -232,10 +236,11 @@ local	CCode	gc0SetValues	(Foam, Foam);
 local   CCode   gc0FortranSet   (Foam, Foam, FoamTag, FoamTag);
 local	CCode	gc0SetCatch	(Foam, Foam);
 local	CCode	gc0Prog		(Foam, Foam);
-local	CCode	gc0Compound	(Foam, Foam, Foam, int, int);
+local	CCode	gc0Compound	(Foam, Foam, Foam, int, int, int);
 local	CCode	gc0Compress	(CCode);
 local	CCode	gc0Param	(Foam, Foam);
 local	CCode	gc0LocRef	(Foam, int);
+local   Foam    gc0KillPointers (Foam foam);
 
 local	CCode	gc0ExportCDef	(String, Foam, int, int);
 local	CCode	gc0ExportToFortran(String, Foam, Foam, FtnFunParam, int);
@@ -280,7 +285,7 @@ local	CCode	gc0VarId	(String, int);
 
 local	CCode	gc0RRFmt	(CCode, Foam);
 
-local	CCodeList gc0Levels	(int, int, int, int);
+local	CCodeList gc0Levels	(int, int, int, int, int);
 local	CCode	gc0LexRef	(int, int);
 local	CCode	gc0EnvNext	(int, int);
 local	CCode	gc0EnvMake	(int);
@@ -385,6 +390,8 @@ local	Foam		gc0AddExplicitReturn(Foam);
 #define gcFiDFlo  "FiDFlo"
 #define gcFiEnv   "FiEnv"
 #define gcFiClos  "FiClos"
+#define gcFiGener "FiGener"
+#define gcFiGenIter "FiGenIter"
 #define gcFiComplexSF "FiComplexSF"
 #define gcFiComplexDF "FiComplexDF"
 #define gcFiFluid "FiFluid"
@@ -449,12 +456,14 @@ local	Foam		gc0AddExplicitReturn(Foam);
 		   ((p) != FOAM_Return) && \
 		   ((p) != FOAM_Seq) && \
 		   ((p) != FOAM_If) && \
+		   ((p) != FOAM_GenerStep) && \
 		   ((p) != FOAM_Label) && \
 		   ((p) != FOAM_Goto) && \
 		   ((p) != FOAM_NOp))
 
 /*
  * These macros should be moved to other files, e.g. foam.h and ccode.h
+ * TODO: ^^^^^
  */
 
 #define gc0EmptyEnv(x) ((x == emptyFormatSlot) || \
@@ -545,6 +554,9 @@ gccUnit(Foam foam, String name)
 {
 	CCodeList	ccode;
 
+	if (foamUnitHasCoroutine(foam)) {
+		foam = gcrRewriteUnit(foam);
+	}
 	assert(foamTag(foam) == FOAM_Unit);
 
 	gcvLvl	  = 0;
@@ -553,9 +565,6 @@ gccUnit(Foam foam, String name)
 	gcvFluids  = foamUnitFluids(foam);
 	gcvFmt	  = foam->foamUnit.formats;
 	gcvLexStk = listCons(Foam)(foamUnitLexicals(foam), listNil(Foam));
-#ifdef NEW_FORMATS
-	gcvParams = foamUnitParams(foam);
-#endif
 
 	gc0InitSpecialChars();
 	gcvDefs = foam->foamUnit.defs;
@@ -1319,22 +1328,10 @@ gc0ConstDecl(int idx)
 
 	ccName = gc0MultVarId("C", idx, str);
 	ccProgName = gc0MultVarId("CF", idx, str);
-#ifdef NEW_FORMATS
-		
-	ccProto = ccoFCall(ccProgName, gc0Param(val,
-						gcvParams->foamDDecl.argv[val->foamProg.params-1]));
-		
-	gc0AddLine(gc0DeclStmts, ccoDecl(ccClass, ccName));
-	gc0AddLine(ccoDecl(ccoType(ccClass, 
-				   gc0TypeId(val->foamProg.retType,
-					     val->foamProg.format)), ccoProto));
-
-#else
 	ccProto = ccoFCall(ccProgName, gc0Param(val,
 						val->foamProg.params));
 	gc0AddLine(gc0DeclStmts, ccoDecl(ccType, ccName));
 	gc0AddLine(gc0DeclStmts, ccoDecl(ccoType(ccClass, gc0TypeId(val->foamProg.retType, val->foamProg.format)), ccProto));
-#endif
 }
 
 local void
@@ -1456,11 +1453,7 @@ gc0ExportCDef(String name, Foam gdecl, int nglo, int nprog)
 	CCodeList fnbody = listNil(CCode);
 	Foam	cprog  = foamArgv(gcvDefs)[nprog].code;
 	Foam	ccdecl  = cprog->foamDef.rhs;
-#ifdef NEW_FORMATS
-	Foam	params = gcvParams->foamDDecl.argv[ccdecl->foamProg.params-1];
-#else
 	Foam	params = ccdecl->foamProg.params;
-#endif
 	FoamTag *argTypes;
 
 	int	i, ix, nparams, nargs;
@@ -2334,23 +2327,12 @@ gc0Prog(Foam ref, Foam foam)
 	assert(foamTag(foam) == FOAM_Prog);
 
 	/* We have to leave the pointer crushing until now */
-	if (optIsKillPointersWanted())
-	{
-		foam = foamCopy(foam);
-		killProgPointers(foam);
-		if (DEBUG(phase)) {
-			stoAudit();
-		}
-	}
+	foam = gc0KillPointers(foam);
 
 	progFmt	 = foamProgIndex(foam);
 	type	 = foam->foamProg.retType;
 	format	 = foam->foamProg.format;
-#ifdef NEW_FORMATS
-	params	 = gcvParams->foamDDecl.argv[foam->foamProg.params-1];
-#else
 	params	 = foam->foamProg.params;
-#endif
 	locals	 = foam->foamProg.locals;
 	lexicals = foamArgv(gcvFmt)[progFmt].code;
 	fluids	 = foam->foamProg.fluids;
@@ -2373,17 +2355,31 @@ gc0Prog(Foam ref, Foam foam)
 	}
 	ccParams  = gc0Param(foam, params);
 	gcvIsLeaf = foamProgIsLeaf(foam);
+	gcvIsCoroutine = foamProgIsCoroutine(foam);
 
 	ccBody = gc0ProgBody(ref, foam);
 
 	listFreeCons(Foam)(gcvLexStk);
 
 	ccLeft = gc0MultVarId("tmp", ref->foamConst.index, decl->foamDecl.id);
-	ccRight = ccoInit(ccoMany4(ccoCast(ccoIdOf("FiFun"),
+	if (!gcvIsLeaf && gcvIsCoroutine) {
+		AInt fmtEnv0 = foam->foamProg.levels->foamDEnv.argv[0];
+		ccRight = ccoInit(ccoMany5(ccoCast(ccoIdOf("FiFun"),
+						   gccProgId(ref)),
+					   ccoIntOf(int0),
+					   ccoIntOf(int0),
+					   ccoIntOf(int0),
+					   ccoSizeof(ccoType(ccoStructRef(gc0VarId(gcFmtName, fmtEnv0)), NULL))
+					  ));
+	}
+	else {
+		ccRight = ccoInit(ccoMany5(ccoCast(ccoIdOf("FiFun"),
 						gccProgId(ref)),
-					ccoIntOf(int0),
-					ccoIntOf(int0),
-					ccoIntOf(int0)));
+					   ccoIntOf(int0),
+					   ccoIntOf(int0),
+					   ccoIntOf(int0),
+					   ccoIntOf(int0)));
+	}
 
 	gc0AddLine(codeProg, ccoDecl(ccoType(ccoStatic(),
 					     ccoStructRef(ccoIdOf("_FiProg"))),
@@ -2398,6 +2394,22 @@ gc0Prog(Foam ref, Foam foam)
 			gc0ListOf(CCO_Many, codeProg));
 	Return(retval);
 }
+
+local Foam
+gc0KillPointers(Foam foam)
+{
+	if (!optIsKillPointersWanted())	{
+		return foam;
+	}
+
+	foam = foamCopy(foam);
+	killProgPointers(foam);
+	if (DEBUG(phase)) {
+		stoAudit();
+	}
+	return foam;
+}
+
 
 local CCode
 gc0ProgBody(Foam ref, Foam prog)
@@ -2418,7 +2430,7 @@ gc0ProgBodyC(Foam ref, Foam foam)
 	AInt progFmt = foamProgIndex(foam);
 
 	CCode ccBody  = ccoCompound(gc0Compound(locals, body, ref, progFmt,
-					       gcvIsLeaf));
+						gcvIsLeaf, gcvIsCoroutine));
 	return ccBody;
 }
 
@@ -2467,6 +2479,7 @@ gc0FoamIsJavaPCall(Foam foam)
 		|| foam->foamPCall.protocol == FOAM_Proto_JavaMethod;
 }
 
+
 /*****************************************************************************
  * 
  * :: Create the C program parameters list for the Foam program 'foam',
@@ -2481,11 +2494,18 @@ gc0Param(Foam foam, Foam params)
 	CCode		ccParams, ccName, ccDecl, ccSpec;
 	int		i;
 	Foam		decl;
+	Bool 		isCoroutine, isLeaf;
 
 	assert(foamTag(params) == FOAM_DDecl);
 	assert(foamTag(foam) == FOAM_Prog);
+	isCoroutine = foamProgIsCoroutine(foam);
+	isLeaf = foamProgIsLeaf(foam);
 
 	gc0AddLine(code, gccEnvParam());
+	if (isCoroutine && !isLeaf) {
+		gc0AddLine(code, gccEnv0Param());
+	}
+
 	for (i = 0; i < foamDDeclArgc(params); i++) {
 		int	fmt, typ;
 		decl   = params->foamDDecl.argv[i];
@@ -2536,6 +2556,13 @@ gccEnvParam()
 			gc0TypeId(FOAM_Env, int0), ccoIdOf("e1"));
 }
 
+local CCode
+gccEnv0Param()
+{
+	return ccoParam(ccoIdOf("e0"),
+			gc0TypeId(FOAM_Env, int0), ccoIdOf("e0"));
+}
+
 /*****************************************************************************
  * 
  * :: Return the number of multiple-return values defined in the body of the
@@ -2577,7 +2604,7 @@ gc0NumVals(Foam body)
  ****************************************************************************/
 
 local CCode
-gc0Compound(Foam locals, Foam body, Foam ref, int fmt, int leaf)
+gc0Compound(Foam locals, Foam body, Foam ref, int fmt, int leaf, int isCoroutine)
 {
 	CCodeList	code = listNil(CCode);
 	CCodeList	cmpd = listNil(CCode);
@@ -2623,7 +2650,7 @@ gc0Compound(Foam locals, Foam body, Foam ref, int fmt, int leaf)
 		}
 		gc0AddLine(code, gc0PushFluid());
 	}
-	ccLevels = gc0Levels(numLexs, maxLevel, leaf, fmt);
+	ccLevels = gc0Levels(numLexs, maxLevel, leaf, isCoroutine, fmt);
 	tmp = ccLevels;
 	while (tmp) {
 		gc0AddLine(code, car(tmp));
@@ -2831,6 +2858,9 @@ gccCmd(Foam foam)
 	  case FOAM_Goto:
 		cc = ccoGoto(gc0VarId("L", foam->foamGoto.label));
 		break;
+	  case FOAM_GenerStep:
+		  cc = gccGenerStep(foam);
+		  break;
 	  case FOAM_If:
 		cc = gccIf(foam);
 		break;
@@ -2859,6 +2889,9 @@ gccCmd(Foam foam)
 	  case FOAM_Seq:
 		cc = gccSeq(foam);
 		break;
+	  case FOAM_Yield:
+		  bug("FOAM_Yield: should not be here");
+		  break;
 	  case FOAM_NOp:
 		cc = ccoStat(ccoIdOf(";"));
 		break;
@@ -2982,6 +3015,7 @@ gccReturnValues(Foam foam)
 	}
 	return ccoNewNode(CCO_Return, int0);
 }
+
 
 /*****************************************************************************
  * 
@@ -4146,6 +4180,57 @@ gccClos(Foam foam)
 							gccExpr(prog)));
 }
 
+
+/*****************************************************************************
+ *
+ * :: Generators
+ *
+ ****************************************************************************/
+
+local CCode
+gccGener(Foam foam)
+{
+	Foam env, prog, init;
+	CCode stmt;
+	AInt fmt;
+	env = foam->foamGener.env;
+	prog = foam->foamGener.prog;
+	fmt = foam->foamGener.fmt;
+
+	return ccoFCall(ccoIdOf("fiGenerNew"),
+			ccoMany3(gccVal(env),
+				 ccoSizeof(ccoType(ccoStructRef(gc0VarId(gcFmtName, fmt)), NULL)),
+				 gccVal(prog)));
+}
+
+
+local CCode
+gccGenerValue(Foam foam)
+{
+	return ccoFCall(ccoIdOf("fiGenerValue"), gccExpr(foam->foamGenerValue.gener));
+}
+
+
+local CCode
+gccGenerStep(Foam foam)
+{
+	CCode stmt, branch;
+	// FIXME: Double evaluation of generator..
+	stmt = ccoStat(ccoFCall(ccoIdOf("fiGenerStep"), gccExpr(foam->foamGenerStep.gener)));
+	branch = ccoIf(ccoEQ(ccoFCall(ccoIdOf("fiGenerStepIndex"),
+				      gccExpr(foam->foamGenerStep.gener)),
+			     ccoIntOf(-1L)),
+		       ccoGoto(gc0VarId("L", foam->foamGenerStep.label)), NULL);
+
+	return ccoMany2(stmt, branch);
+}
+
+local CCode
+gccGenIter(Foam foam)
+{
+	return ccoFCall(ccoIdOf("fiGenStartIter"), gccExpr(foam->foamGenIter.gener));
+}
+
 /*****************************************************************************
  * 
  * :: Return the C code for the Foam reference, 'foam'.
@@ -4207,6 +4292,15 @@ gccRef(Foam foam)
           case FOAM_Catch:
 		cc = gccId(foam->foamCatch.ref);
 		break;
+	  case FOAM_GenerValue:
+		  cc = gccGenerValue(foam);
+		  break;
+	  case FOAM_GenIter:
+		  cc = gccGenIter(foam);
+		  break;
+	  case FOAM_Gener:
+		  cc = gccGener(foam);
+		  break;
 	  default:
 		bugBadCase(foamTag(foam));
 		NotReached(return 0);
@@ -4405,23 +4499,8 @@ gccId(Foam foam)
 		  break;
 		}
 	  case FOAM_Env:
-		{
-		int level = foam->foamEnv.level;
-
-		if (gcvIsLeaf && level == 0 && 
-		    (gcvLFmtStk->foamDEnv.argv[level] == emptyFormatSlot
-		     || gcvLFmtStk->foamDEnv.argv[level] == envUsedSlot))
-			cc = gcFiEnvPush(ccoIntOf(int0),
-					 gc0VarId("e", level+1));
-		else
-			cc = gc0VarId("e", level);
-		/* !! Because sometimes usage info is lost */
-		if (gc0EmptyEnv(gcvLFmtStk->foamDEnv.argv[level]) && level!=0) {
-			gcvLFmtStk = foamCopy(gcvLFmtStk);
-			gcvLFmtStk->foamDEnv.argv[level] = envUsedSlot;
-		}
-		break;
-	      }
+		  cc = gccEnv(foam);
+		  break;
 	  default:
 		cc = gccExpr(foam);
 		break;
@@ -4429,6 +4508,29 @@ gccId(Foam foam)
 	return cc;
 }
 
+local CCode
+gccEnv(Foam foam)
+{
+	CCode cc;
+	int level = foam->foamEnv.level;
+
+	if (gcvIsLeaf && level == 0 &&
+	    (gcvLFmtStk->foamDEnv.argv[level] == emptyFormatSlot
+	     || gcvLFmtStk->foamDEnv.argv[level] == envUsedSlot)) {
+		bugWarning("Odd env usage..");
+		cc = gcFiEnvPush(ccoIntOf(int0),
+				 gc0VarId("e", level+1));
+	}
+	else
+		cc = gc0VarId("e", level);
+	/* !! Because sometimes usage info is lost */
+	if (gc0EmptyEnv(gcvLFmtStk->foamDEnv.argv[level]) && level!=0) {
+		bugWarning("Lost usage info..");
+		gcvLFmtStk = foamCopy(gcvLFmtStk);
+		gcvLFmtStk->foamDEnv.argv[level] = envUsedSlot;
+	}
+	return cc;
+}
 
 /* Given a constant, it returns the name of the corresponding function.
  * In example, for constant 2 it returns CF2_....
@@ -4570,35 +4672,48 @@ gccUnhandled(Foam foam)
  ****************************************************************************/
 
 local CCodeList
-gc0Levels(int nLexs, int maxLev, int isLeaf, int fmt)
+gc0Levels(int nLexs, int maxLev, int isLeaf, int isCoroutine, int fmt)
 {
 	CCodeList	code = listNil(CCode);
 	int		i, level;
 
+	// Declarations
 	for (i = 0; i < nLexs; i++) {
 		level = gcvLFmtStk->foamDEnv.argv[i];
 		if (!gc0EmptyEnv(level) && level != envUsedSlot)
 			if (foamArgc(gcvFmt->foamDFmt.argv[level]) > 0)
 				gc0AddLine(code, gc0LexRef(level, i));
-		if (!gc0EmptyEnv(level) && i != 1)
+		if (!gc0EmptyEnv(level) && i > 1)
 			gc0AddLine(code, gc0EnvRef(i));
+		if (i == 0 && !gc0EmptyEnv(level) && !isCoroutine)
+			gc0AddLine(code, gc0EnvRef(i));
+
 		if (gc0EmptyEnv(level) && i > 1 && i <= maxLev)
 			gc0AddLine(code, gc0EnvRef(i));
 	}
-	if (!isLeaf) {
+
+	if (!isLeaf && !isCoroutine) {
+		// Declare env0
 		if (gc0EmptyEnv(fmt))
 			gc0AddLine(code, gc0EnvRef(int0));
+	}
+
+	// Definitions
+	if (!isLeaf && !isCoroutine) {
 		if (!gc0EmptyEnv(fmt) && fmt != envUsedSlot)
 			if (foamArgc(foamArgv(gcvFmt)[fmt].code) > 0)
-				gc0AddLine(code, gc0EnvMake(fmt));
-		gc0AddLine(code, gc0EnvPush(fmt));
+				gc0AddLine(code, gc0EnvMake(fmt)); // l0 = alloc(lvl)
+		gc0AddLine(code, gc0EnvPush(fmt)); 		   // e0 = push(l0, e1)
+	}
+	if (!isLeaf && isCoroutine) {
+		gc0AddLine(code, gc0EnvLevel(0, gcvLFmtStk->foamDEnv.argv[0])); // l0 = car(e0)
 	}
 	for (i = 1; i <= maxLev; i++) {
 		level = gcvLFmtStk->foamDEnv.argv[i];
 		if (i != 1)
-			gc0AddLine(code, gc0EnvNext(i, i-1));
+			gc0AddLine(code, gc0EnvNext(i, i-1)); // eN = cdr(eN-1)
 		if (!gc0EmptyEnv(level) && level != envUsedSlot)
-			gc0AddLine(code, gc0EnvLevel(i, level));
+			gc0AddLine(code, gc0EnvLevel(i, level)); // lN = car(eN)
 	}
 	code = listNReverse(CCode)(code);
 	return code;
@@ -6234,6 +6349,12 @@ gc0TypeId(AInt t, AInt fmt)
 		break;
 	  case FOAM_JavaObj:
 		cc = ccoTypeIdOf(gcFiWord);
+		break;
+	  case FOAM_GenIter:
+		cc = ccoTypeIdOf(gcFiGenIter);
+		break;
+	  case FOAM_Gener:
+		cc = ccoTypeIdOf(gcFiGener);
 		break;
 	  default:
 		bugBadCase(t);

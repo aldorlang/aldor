@@ -17,6 +17,7 @@
 #include "of_cfold.h"
 #include "of_comex.h"
 #include "of_cprop.h"
+#include "of_crinlin.h"
 #include "of_deada.h"
 #include "of_deadv.h"
 #include "of_emerg.h"
@@ -33,8 +34,10 @@
 #include "strops.h"
 
 Bool	optfDebug = false;
+Bool	optfShowDebug = false;
 
 #define optfDEBUG	DEBUG_IF(optf)	afprintf
+#define optfShowDEBUG	DEBUG_IF(optfShow) afprintf
 
 static int optInline;
 static int optInlineAll;
@@ -55,6 +58,7 @@ static int optJumpFlow;
 static int optCast;
 static int optCC;
 static int optArgSub;
+static int optArgCrinlin;
 static int optCcFnonstd;
 static int optIgnoreAsserts;
 static int optKillPointers;
@@ -126,6 +130,7 @@ struct optControl	optControl[] = {
 /* The next three are experimental or future-work */
 {"killp",  	OPT_FLAG,  &optKillPointers,  { 0,  0,    0,    0,    0}},
 {"argsub",  	OPT_FLAG,  &optArgSub,        { 0,  0,    0,    0,    0}},
+{"crinlin",  	OPT_FLAG,  &optArgCrinlin,    { 0,  0,    1,    1,    1}},
 { 0 }
 };
 
@@ -259,7 +264,9 @@ optimizeFoam(Foam foam)
 	Bool	newConsts = false;
 	int	i, iters;
 	if (DEBUG(optf)){optPrintOpts(dbOut);}
-
+	if (DEBUG(optfShow)) {
+		afprintf(dbOut, "optfoam - in:\n%pFoam\n", foam);
+	}
 	optOptimizationsInit();
 
 	if (optDeadVar)   {
@@ -269,6 +276,12 @@ optimizeFoam(Foam foam)
 	}
 	if (optInline) 	  {
 		optfDEBUG(dbOut, "Starting inline...\n");
+		inlineUnit(foam, optInlineAll, optInlineLimit, true);
+		if (DEBUG(phase)){stoAudit();}
+	}
+	if (optInline) 	  {
+		optfDEBUG(dbOut, "Starting coroutine inline...\n");
+		crinUnit(foam);
 		inlineUnit(foam, optInlineAll, optInlineLimit, true);
 		if (DEBUG(phase)){stoAudit();}
 	}
@@ -283,6 +296,11 @@ optimizeFoam(Foam foam)
 		/* If const folding made new constants, inline them. */
 		inlineUnit(foam, optInlineAll, optInlineLimit, false);
 		newConsts = cfoldUnit(foam, optConstFold, optFloatFold);
+		if (DEBUG(phase)){stoAudit();}
+	}
+	if (newConsts && optInline) {
+		optfDEBUG(dbOut, "Starting coroutine inline...\n");
+		crinUnit(foam);
 		if (DEBUG(phase)){stoAudit();}
 	}
 	if (optHashFold) {
@@ -428,6 +446,10 @@ optimizeFoam(Foam foam)
 	/*flattenUnit(foam);*/
 
 	optfDEBUG(dbOut, "Optimizations finished.\n");
+
+	if (DEBUG(optfShow)) {
+		afprintf(dbOut, "optfoam - out:\n%pFoam\n", foam);
+	}
 
 	foamAuditAll(foam, 0xffff);
 

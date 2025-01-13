@@ -24,6 +24,9 @@ Bool	flogDebug	= false;
 local void  flogFreeFoamNode	(Foam);
 local void  flogFreeFoam	(Foam);
 
+local AInt  bbIfLastLabel	(BBlock bb);
+local void  bbIfSetLastLabel	(BBlock bb, AInt label);
+
 /****************************************************************************
  *
  * :: Basic FlowGraph operations
@@ -42,8 +45,8 @@ flogPrint(FILE *fout, FlowGraph flog, Bool extended)
 	BBlock	bb;
 
 	/* Gather info to help reader. */
-	flogFixEntries(flog);
-	flogFixLabels(flog);
+	//flogFixEntries(flog);
+	//flogFixLabels(flog);
 
 	cc += fprintf(fout, "Flow Graph  (upto %d nodes)  entry = %d\n",
 			flogBlockC(flog), flog->block0->label);
@@ -158,6 +161,7 @@ flogFrProg(Foam foam, FlogType mask)
         assert(foamTag(foam->foamProg.body) == FOAM_Seq);
 
 	flog = flogFrSeq0(foam->foamProg.body, mask, foam->foamProg.nLabels);
+	foam->foamProg.body = NULL;
 
         flog->prog   = foam;
 
@@ -265,6 +269,7 @@ flog0EstimateNBB(Foam seq, int nLabels)
 	assert(foamTag(seq) == FOAM_Seq);
 
 	return foamCountSubtreesOfKind(seq, FOAM_If)
+	     + foamCountSubtreesOfKind(seq, FOAM_GenerStep)
 	     + foamCountSubtreesOfKind(seq, FOAM_Return)
 	     + nLabels + 1;
 }
@@ -360,21 +365,22 @@ flog0Clip1Block(Foam seq, Length *pix0)
 			foamPos(extra) = foamPos(argv[ixL]);
 			ixL--;
 			break;
+		case FOAM_GenerStep:
+			if (argv[ixL]->foamGenerStep.label != -1)
+				ftag = FOAM_If;
+			break;
 		case FOAM_Goto:
 		case FOAM_Return:
 		case FOAM_If:
 		case FOAM_Select:
 			ftag = foamTag(argv[ixL]);
 			break;
-#define FlogHalt	1
-#if FlogHalt
 		case FOAM_BCall:
 			if (foamIsBCallOf(argv[ixL], FOAM_BVal_Halt)) {
 				ftag = FOAM_Throw;
 			} else
 				ixL++;
 			break;
-#endif
 		default:
 			ixL++;
 			break;
@@ -397,14 +403,13 @@ flog0Clip1Block(Foam seq, Length *pix0)
 	if (extra != 0)
 		subseq->foamSeq.argv[n] = extra;
 	*pix0 = ixL + 1;
-#if FlogHalt
+
 	if (ftag==FOAM_Throw) 
 		while (*pix0 < argc 
 		       && foamTag(argv[*pix0]) != FOAM_Label) {
 			/*foamFree(argv[*pix0]);*/
 			(*pix0)++;
 		}
-#endif	
 	return subseq;
 }
  
@@ -431,7 +436,7 @@ flog0MakeExitEdges(FlowGraph flog)
 		switch (bb->kind) {
 		case FOAM_If:
 			flog0Make1ExitEdge(flog, bb, bb->iextra);
-			flog0Make1ExitEdge(flog, bb, flast->foamIf.label);
+			flog0Make1ExitEdge(flog, bb, bbIfLastLabel(bb));
 			break;
 		case FOAM_Select:
 			for (j = 0; j < foamArgc(flast)-1; j++)
@@ -459,12 +464,11 @@ flog0KindExitCount(BBlock bb)
 {
 	switch (bb->kind) {
 	case FOAM_If:		return 2;
+	case FOAM_GenerStep:	return 2;
 	case FOAM_Select:	return foamArgc(bbLastStat(bb)) - 1;
 	case FOAM_Goto:		return 1;
 	case FOAM_Return:	return 0;
-#if FlogHalt
 	case FOAM_Throw:	return 0;
-#endif
 	default:		bugBadCase(bb->kind); return 0;
 	}
 }
@@ -587,10 +591,10 @@ flogCountLabelsInFoamList(FoamList stats)
 local FoamList
 flogConsStats(FlowGraph flog, BBlock bb, FoamList stats)
 {
-        int             i, fc;
-        Foam            *fv, stat;
-        BBlock      dd;
- 
+        int    i, fc;
+        Foam  *fv, stat;
+        BBlock dd;
+
         if (bb->mark) return stats;
         bb->mark = true;
 
@@ -637,7 +641,6 @@ flogConsStats(FlowGraph flog, BBlock bb, FoamList stats)
 			stats = flogConsStats(flog, dd, stats);
 		}
 	}
- 
         return stats;
 }
 
@@ -737,7 +740,7 @@ flogFixLabels(FlowGraph flog)
 		
 		switch (bb->kind) {
 		case FOAM_If:
-			flast->foamIf.label = bbExit(bb, 1)->label;
+			bbIfSetLastLabel(bb, bbExit(bb, 1)->label);
 			break;
 		case FOAM_Select:
 			for (j = 0; j < foamArgc(flast)-1; j++)
@@ -746,7 +749,14 @@ flogFixLabels(FlowGraph flog)
 		case FOAM_Goto:
 			flast->foamGoto.label = bbExit(bb, int0)->label;
 			break;
+		case FOAM_GenerStep:
+			flast->foamGenerStep.label = bbExit(bb, int0)->label;
+			break;
+		case FOAM_Return:
+		case FOAM_Throw:
+			break;
 		default:
+			bug("Unknown bb type %d", bb->kind);
 			break;
 		}
 	}
@@ -869,6 +879,8 @@ bbNew(Foam foam, BlockLabel in)
 	tag =  foamTag(bbLastStat(bb));
 	if (tag == FOAM_BCall)
 		tag = FOAM_Throw;
+	if (tag == FOAM_GenerStep)
+		tag = FOAM_If;
 	bb->kind    = tag;
 	bb->mark    = false;
 	bb->label   = in;
@@ -903,14 +915,13 @@ bbPrint(FILE *fout, BBlock bb, Bool extended)
 	String	s;
 
 	switch (bb->kind) {
-	case FOAM_If:      s = "If    "; break;
-	case FOAM_Select:  s = "Select"; break;
-	case FOAM_Return:  s = "Return"; break;
-	case FOAM_Goto:    s = "Goto  "; break;
-#if FlogHalt
-	case FOAM_Throw:   s = "Exit  "; break;
-#endif
-	default:           s = "??????"; break;
+	case FOAM_If:       s = "If    "; break;
+	case FOAM_Select:   s = "Select"; break;
+	case FOAM_Return:   s = "Return"; break;
+	case FOAM_Goto:     s = "Goto  "; break;
+	case FOAM_Throw:    s = "Exit  "; break;
+	case FOAM_GenerStep:s = "GenerStep  "; break;
+	default:            s = "??????"; break;
 	}
 
 	cc += fprintf(fout, "Block %d: %s", bb->label, s);
@@ -1265,6 +1276,47 @@ bbufSetBlockFn(BlockBuf bf, BlockLabel lab, BBlock bb)
 	assert(bb->label < bf->pos);
 	bf->argv[bb->label] = bb;
 	return bb;
+}
+
+local AInt
+bbIfLastLabel(BBlock bb)
+{
+	Foam bbLast = bbLastStat(bb);
+	assert(bb->kind == FOAM_If);
+	switch (foamTag(bbLast)) {
+	case FOAM_If:
+		return bbLast->foamIf.label;
+	case FOAM_GenerStep:
+		return bbLast->foamGenerStep.label;
+	default:
+		bug("bad case in bbIfLastLabel");
+	}
+}
+
+local void
+bbIfSetLastLabel(BBlock bb, AInt label)
+{
+	Foam bbLast = bbLastStat(bb);
+	assert(bb->kind == FOAM_If);
+	switch (foamTag(bbLast)) {
+	case FOAM_If:
+		bbLast->foamIf.label = label;
+		break;
+	case FOAM_GenerStep:
+		bbLast->foamGenerStep.label = label;
+		break;
+	default:
+		bug("bad case in bbIfSetLastLabel");
+	}
+}
+
+Bool
+bbIsIfStmt(BBlock bb)
+{
+	if (bb->kind != FOAM_If) {
+		return false;
+	}
+	return foamTag(bbLastStat(bb)) == FOAM_If;
 }
 
 /****************************************************************************

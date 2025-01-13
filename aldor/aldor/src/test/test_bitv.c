@@ -1,16 +1,14 @@
 #include "axlobs.h"
+#include "bigint.h"
 #include "bitv.h"
 #include "foam.h"
+#include "int.h"
 #include "testlib.h"
-#include "bigint.h"
 
 local void testBitvToInt();
 local void testBitvCount();
+local void testBitvToAIntList();
 local void testBInt();
-
-/* XXX: from test_tinfer.c */
-void init(void);
-void fini(void);
 
 void
 bitvTestSuite()
@@ -18,6 +16,7 @@ bitvTestSuite()
 	init();
 	TEST(testBitvToInt);
 	TEST(testBitvCount);
+	TEST(testBitvToAIntList);
 	TEST(testBInt);
 	fini();
 }
@@ -67,6 +66,21 @@ testBitvCount()
 	for (i=0; i<10; i++) {
 		testIntEqual("C", i, bitvCountTo(clss, bitv, i));
 	}
+	bitvClassDestroy(clss);
+}
+
+local void
+testBitvToAIntList()
+{
+	BitvClass clss = bitvClassCreate(10);
+	Bitv bitv = bitvNew(clss);
+	bitvClearAll(clss, bitv);
+
+	testTrue("", listEqual(AInt)(listNil(AInt), bitvToAIntList(clss, bitv), aintEqual));
+	bitvSet(clss, bitv, 5);
+	bitvSet(clss, bitv, 8);
+	testTrue("", listEqual(AInt)(listList(AInt)(2, 5, 8), bitvToAIntList(clss, bitv), aintEqual));
+
 	bitvClassDestroy(clss);
 }
 

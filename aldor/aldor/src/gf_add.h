@@ -10,6 +10,7 @@
 #define _GF_ADD_H_
 
 #include "axlobs.h"
+#include "susage.h"
 
 extern Foam	genAdd			(AbSyn);
 extern Foam	genWith			(AbSyn);
@@ -22,7 +23,7 @@ extern Foam	gen0GetDomain		(TForm, int);
 extern Bool	gen0IsSpecialType	(AbSyn);
 extern Foam	gen0ApplySpecialType	(AbSyn);
 extern void  	gen0TypeAddExportSlot	(Syme);
-extern void	gen0SetUsage		(Foam, AIntList, AIntList);
+extern void	gen0SetUsage		(Foam, SlotUsageList, AIntList);
 extern void 	gen0SymeSetInit		(Syme, Foam);
 extern Foam	gen0SymeInit		(Syme);
 extern void	gen0SymeSetCond		(Syme, Foam);

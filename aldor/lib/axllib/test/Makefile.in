@@ -98,7 +98,13 @@ XFAIL_TESTS = bug892/bug892$(EXEEXT) bug911/bug911$(EXEEXT) \
 	bug1290/bug1290$(EXEEXT) depend8/depend8$(EXEEXT) \
 	default8/default8$(EXEEXT) depend1/depend1$(EXEEXT) \
 	funlist1/funlist1$(EXEEXT) object1/object1$(EXEEXT) \
-	pack1/pack1 pack2/pack2
+	pack1/pack1 pack2/pack2 $(am__EXEEXT_1)
+@MK_GENERATOR_COROUTINES_TRUE@am__append_1 = \
+@MK_GENERATOR_COROUTINES_TRUE@	bug1099/bug1099	\
+@MK_GENERATOR_COROUTINES_TRUE@	t1099/t1099	\
+@MK_GENERATOR_COROUTINES_TRUE@	genops/genops	\
+@MK_GENERATOR_COROUTINES_TRUE@	#
+
 check_PROGRAMS = 1test/1test$(EXEEXT) abcheck3/abcheck3$(EXEEXT) \
 	array0/array0$(EXEEXT) array1/array1$(EXEEXT) \
 	arrepl1a/arrepl1a$(EXEEXT) arrepla/arrepla$(EXEEXT) \
@@ -325,11 +331,13 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/ax_lib_readline.m4 \
 	$(top_srcdir)/m4/build_id.m4 \
 	$(top_srcdir)/m4/documentation-tests.m4 \
 	$(top_srcdir)/m4/error-on-warn.m4 $(top_srcdir)/m4/git.m4 \
-	$(top_srcdir)/m4/java-tests.m4 $(top_srcdir)/m4/libtool.m4 \
-	$(top_srcdir)/m4/ltoptions.m4 $(top_srcdir)/m4/ltsugar.m4 \
-	$(top_srcdir)/m4/ltversion.m4 $(top_srcdir)/m4/lt~obsolete.m4 \
-	$(top_srcdir)/m4/readline.m4 $(top_srcdir)/m4/sbrk.m4 \
-	$(top_srcdir)/m4/strict_compile.m4 $(top_srcdir)/configure.ac
+	$(top_srcdir)/m4/interp-tests.m4 \
+	$(top_srcdir)/m4/java-tests.m4 $(top_srcdir)/m4/language.m4 \
+	$(top_srcdir)/m4/libtool.m4 $(top_srcdir)/m4/ltoptions.m4 \
+	$(top_srcdir)/m4/ltsugar.m4 $(top_srcdir)/m4/ltversion.m4 \
+	$(top_srcdir)/m4/lt~obsolete.m4 $(top_srcdir)/m4/readline.m4 \
+	$(top_srcdir)/m4/sbrk.m4 $(top_srcdir)/m4/strict_compile.m4 \
+	$(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 DIST_COMMON = $(srcdir)/Makefile.am $(am__DIST_COMMON)
@@ -4934,6 +4942,7 @@ am__can_run_installinfo = \
     n|no|NO) false;; \
     *) (install-info --version) >/dev/null 2>&1;; \
   esac
+am__extra_recursive_targets = releasecheck-recursive
 am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) $(LISP)
 # Read a list of newline-separated strings from the standard input,
 # and print each of them once, without duplicates.  Input order is
@@ -5136,6 +5145,9 @@ am__set_TESTS_bases = \
 AM_TESTSUITE_SUMMARY_HEADER = ' for $(PACKAGE_STRING)'
 RECHECK_LOGS = $(TEST_LOGS)
 AM_RECURSIVE_TARGETS = check recheck
+@MK_GENERATOR_COROUTINES_TRUE@am__EXEEXT_1 = bug1099/bug1099$(EXEEXT) \
+@MK_GENERATOR_COROUTINES_TRUE@	t1099/t1099$(EXEEXT) \
+@MK_GENERATOR_COROUTINES_TRUE@	genops/genops$(EXEEXT)
 TEST_SUITE_LOG = test-suite.log
 TEST_EXTENSIONS = @EXEEXT@ .test
 LOG_DRIVER = $(SHELL) $(top_srcdir)/amaux/test-driver
@@ -5168,6 +5180,7 @@ AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
+BUILD_LISP = @BUILD_LISP@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
@@ -5191,8 +5204,8 @@ FGREP = @FGREP@
 FIG2EPS = @FIG2EPS@
 FILECMD = @FILECMD@
 GC = @GC@
+GENERATOR_COROUTINES = @GENERATOR_COROUTINES@
 GREP = @GREP@
-HAS_JUNIT = @HAS_JUNIT@
 HAVE_ALDOR_GC = @HAVE_ALDOR_GC@
 HAVE_BOEHM_GC = @HAVE_BOEHM_GC@
 INSTALL = @INSTALL@
@@ -5238,6 +5251,7 @@ PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 PDFLATEX = @PDFLATEX@
 RANLIB = @RANLIB@
+SBCL_EXISTS = @SBCL_EXISTS@
 SBRK_OPT = @SBRK_OPT@
 SED = @SED@
 SET_MAKE = @SET_MAKE@
@@ -15351,6 +15365,7 @@ clean-libtool:
 	-rm -rf where0/.libs where0/_libs
 	-rm -rf where1/.libs where1/_libs
 	-rm -rf where3/.libs where3/_libs
+releasecheck-local: 
 
 ID: $(am__tagged_files)
 	$(am__define_uniq_tagged_files); mkid -fID $$unique
@@ -21772,6 +21787,10 @@ ps: ps-am
 
 ps-am:
 
+releasecheck: releasecheck-am
+
+releasecheck-am: releasecheck-local
+
 uninstall-am:
 
 .MAKE: check-am install-am install-strip
@@ -21788,7 +21807,8 @@ uninstall-am:
 	installcheck installcheck-am installdirs maintainer-clean \
 	maintainer-clean-generic mostlyclean mostlyclean-compile \
 	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
-	recheck tags tags-am uninstall uninstall-am
+	recheck releasecheck-am releasecheck-local tags tags-am \
+	uninstall uninstall-am
 
 .PRECIOUS: Makefile
 

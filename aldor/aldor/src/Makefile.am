@@ -36,7 +36,8 @@ javagen_SOURCES =	\
 	java/javaobj.c	\
 	java/main.c	\
 	axlcomp.c	\
-	cmdline.c
+	cmdline.c	\
+	yldlocs.c
 
 javagen_LDADD = libphase.a libstruct.a libgen.a libport.a -lm
 javagen_LDFLAGS =
@@ -98,6 +99,7 @@ libtest_a_SOURCES =	\
 # Foam stuff does not belong!
 libgen_a_SOURCES =	\
 	aldorlib.c	\
+	axlgen.c	\
 	bigint.c	\
 	bitv.c		\
 	btree.c		\
@@ -164,11 +166,13 @@ libstruct_a_SOURCES =	\
 	dflow.c		\
 	doc.c		\
 	fbox.c		\
+	fex.c		\
 	fint.c		\
 	flog.c		\
 	foam.c		\
 	foamsig.c	\
 	forg.c		\
+	fptr.c		\
 	freevar.c	\
 	formatters.c	\
 	ftype.c		\
@@ -176,12 +180,14 @@ libstruct_a_SOURCES =	\
 	javasig.c	\
 	lib.c		\
 	loops.c		\
+	optinfo.c	\
 	output.c	\
 	sefo.c		\
 	simpl.c		\
 	spesym.c	\
 	srcline.c	\
 	stab.c		\
+	susage.c	\
 	syme.c		\
 	symeset.c	\
 	symcoinfo.c	\
@@ -211,10 +217,12 @@ libphase_a_SOURCES =	\
 	flatten.c	\
 	fortran.c	\
 	genc.c		\
+	gencr.c		\
 	gencpp.c	\
 	genfoam.c	\
 	genlisp.c	\
 	java/genjava.c	\
+	genstyle.c	\
 	gf_add.c	\
 	gf_excpt.c	\
 	gf_fortran.c	\
@@ -226,7 +234,10 @@ libphase_a_SOURCES =	\
 	gf_reference.c	\
 	gf_rtime.c	\
 	gf_seq.c	\
+	gf_xgener.c	\
+	gf_cgener.c	\
 	include.c	\
+	inlstate.c	\
 	inlutil.c	\
 	linear.c	\
 	macex.c		\
@@ -234,6 +245,7 @@ libphase_a_SOURCES =	\
 	of_cfold.c	\
 	of_comex.c	\
 	of_cprop.c	\
+	of_crinlin.c	\
 	of_deada.c	\
 	of_deadv.c	\
 	of_emerg.c	\
@@ -261,7 +273,8 @@ libphase_a_SOURCES =	\
 	ti_sef.c	\
 	ti_tdn.c	\
 	tinfer.c	\
-	usedef.c
+	usedef.c	\
+	yldlocs.c
 
 #libphase_a_LIBADD = libstruct.a libgen.a libport.a
 
@@ -285,7 +298,9 @@ testsuite =			\
 	test/test_fname.c 	\
 	test/test_foam.c 	\
 	test/test_forg.c	\
+	test/test_fptr.c	\
 	test/test_format.c	\
+	test/test_gencr.c	\
 	test/test_genfoam.c	\
 	test/test_jflow.c	\
 	test/test_java.c	\
@@ -293,6 +308,7 @@ testsuite =			\
 	test/test_int.c		\
 	test/test_list.c	\
 	test/test_of_cprop.c	\
+	test/test_of_crinlin.c	\
 	test/test_of_peep.c	\
 	test/test_ostream.c	\
 	test/test_printf.c	\
@@ -300,10 +316,12 @@ testsuite =			\
 	test/test_scobind.c	\
 	test/test_srcpos.c	\
 	test/test_stab.c	\
+	test/test_strops.c	\
 	test/test_syme.c	\
 	test/test_symeset.c	\
 	test/test_tform.c	\
 	test/test_tibup.c	\
+	test/test_tisef.c	\
 	test/test_tfsat.c	\
 	test/test_tinfer.c	\
 	test/test_tposs.c	\

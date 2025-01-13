@@ -104,18 +104,37 @@ abNewEmpty(AbSynTag abtag, Length argc)
 	return ab;
 }
 
+local AbSyn vabNew(AbSynTag abtag, SrcPos pos, UByte flags, Length argc, va_list argp);
+
+AbSyn
+abNewMod(AbSynTag abtag, SrcPos pos, UByte mod, Length argc, ...)
+{
+	va_list argp;
+	va_start(argp, argc);
+	AbSyn ab = vabNew(abtag, pos, mod, argc, argp);
+	va_end(argp);
+	return ab;
+}
+
 AbSyn
 abNew(AbSynTag abtag, SrcPos pos, Length argc, ...)
 {
+	va_list argp;
+	va_start(argp, argc);
+	AbSyn ab = vabNew(abtag, pos, 0, argc, argp);
+	va_end(argp);
+	return ab;
+}
+
+local AbSyn
+vabNew(AbSynTag abtag, SrcPos pos, UByte flags, Length argc, va_list argp)
+{
 	AbSyn	ab;
 	Length	i;
-	va_list argp;
 
 	ab = abNewEmpty(abtag, argc);
-
+	ab->abHdr.flags = flags;
 	abSetPos(ab, pos);
-
-	va_start(argp, argc);
 
 	if (abIsSymTag(abtag))
 		abLeafSym(ab) = va_arg(argp, Symbol);
@@ -128,8 +147,6 @@ abNew(AbSynTag abtag, SrcPos pos, Length argc, ...)
 			abArgv(ab)[i] = va_arg(argp, AbSyn);
 		if (argc > 0) abSetEnd(ab, abEnd(abArgv(ab)[argc-1]));
 	}
-
-	va_end(argp);
 
 	return ab;
 }

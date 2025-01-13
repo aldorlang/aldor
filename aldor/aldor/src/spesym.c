@@ -54,7 +54,8 @@ Symbol	ssymBoolean,
 	ssymTuple,
 	ssymType,
 	ssymUnion,
-	ssymVariable;
+	ssymVariable,
+	ssymXGenerator;
 
 /*
  * Symbols for operation names we care about.
@@ -84,7 +85,8 @@ Symbol	ssymArrow,
 	ssymTheString,
 	ssymTheTest,
 	ssymTheTrailingArray,
-	ssymTheUnion;
+	ssymTheUnion,
+	ssymTheXGenerator;
 
 /*
  * Symbols naming function interfaces.
@@ -195,6 +197,7 @@ ssymInit(void)
 	ssymType          = symIntern("Type");
 	ssymUnion         = symIntern("Union");
 	ssymVariable      = symIntern("?");
+	ssymXGenerator    = symIntern("XGenerator");
 
 	/*
 	 * Symbols for operation names we care about.

@@ -1,8 +1,8 @@
 #include "axlobs.h"
 #include "cmdline.h"
 #include "foam.h"
-#include "of_inlin.h"
 #include "of_jflow.h"
+#include "optinfo.h"
 #include "testlib.h"
 #include "syme.h"
 #include "strops.h"
@@ -114,7 +114,7 @@ fmTestProgFrCode(Foam locals, Foam body)
 	prog->foamProg.fluids = foamNewEmptyDDecl(int0);
 	prog->foamProg.nLabels = nLabels;
 	prog->foamProg.levels = foamNewEmptyDEnv();
-	foamOptInfo(prog) = inlInfoNew(NULL, prog, NULL, false);
+	foamOptInfo(prog) = optInfoNew(NULL, prog, NULL, false);
 
 	return prog;
 }

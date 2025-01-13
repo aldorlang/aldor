@@ -84,6 +84,7 @@ local void	emMarkDef		(Foam def);
 local void	emMarkParents		(Foam);
 local void	emMarkCallArgs		(Length argc, Foam *argv);
 local void	emMarkClos		(Foam clos);
+local void	emMarkGener		(Foam gener);
 local void	emMarkAElt		(Foam aelt);
 local void	emMarkRElt		(Foam aelt);
 local void	emMarkRRElt		(Foam aelt);
@@ -105,6 +106,7 @@ local Foam	emMergeLex		(Foam lex);
 local Foam	emMergeEEnv		(Foam eenv);
 local Foam	emMergeFree		(Foam foam);
 local Foam	emMergeReturn		(Foam expr);
+local Foam	emMergeYield		(Foam expr);
 local Foam	emMergeAElt		(Foam aelt);
 local EmUsage	emUsageAliasing 	(Foam loc);
 local EmUsage	emUsage 		(Foam foam);
@@ -346,6 +348,12 @@ emMarkUsage(Foam expr)
 	case FOAM_Clos:
 		emMarkClos(expr);
 		return;
+	case FOAM_Gener:
+		emMarkGener(expr);
+		return;
+	case FOAM_Yield:
+		emMarkLocal(expr->foamYield.value);
+		return;
 	case FOAM_Return:
 		/*!! need to write a copy on returner! */
 		emMarkLocal(expr->foamReturn.value);
@@ -574,6 +582,14 @@ local void
 emMarkClos(Foam clos)
 {
 	Foam	env = clos->foamClos.env;
+
+	emMarkLocal(env);
+}
+
+local void
+emMarkGener(Foam gener)
+{
+	Foam	env = gener->foamGener.env;
 
 	emMarkLocal(env);
 }
@@ -879,6 +895,9 @@ emMergeExpr(Foam expr)
 	case FOAM_Return:
 		nexpr = emMergeReturn(expr);
 		break;
+	case FOAM_Yield:
+		nexpr = emMergeYield(expr);
+		break;
 	case FOAM_AElt:
 		nexpr = emMergeAElt(expr);
 		break;
@@ -1143,6 +1162,35 @@ emMergeReturn(Foam ret)
 	format = emUsageAliasing(expr)->format;
 	size   = foamDDeclArgc(emFormats[format]);
 	newFoam	   = foamNewEmpty(FOAM_Rec, size+1);
+	newFoam->foamRec.format = format;
+	for(i=0; i<size; i++)
+		newFoam->foamRec.eltv[i+1] =
+			foamCopy(emUsageAliasing(expr)->remap[i]);
+	emChanged = true;
+
+	return newFoam;
+}
+
+/*
+ * create a new record object for yield
+ */
+local Foam
+emMergeYield(Foam yld)
+{
+	int	size, format, i;
+	Foam	newFoam, expr;
+
+	foamDereferenceCast(yld);
+
+	expr = yld->foamYield.value;
+	if (foamTag(expr) != FOAM_Loc) return yld;
+
+	if (!emOldLocal(expr)) return yld;
+	if (emUsageAliasing(expr)->used != EM_NonEscapingEnv) return yld;
+
+	format = emUsageAliasing(expr)->format;
+	size   = foamDDeclArgc(emFormats[format]);
+	newFoam = foamNewEmpty(FOAM_Rec, size+1);
 	newFoam->foamRec.format = format;
 	for(i=0; i<size; i++)
 		newFoam->foamRec.eltv[i+1] =

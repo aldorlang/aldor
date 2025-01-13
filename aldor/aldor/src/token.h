@@ -90,6 +90,8 @@ enum tokenTag {
 	KW_Where,
 	KW_While,
 	KW_With,
+	KW_XFor,
+	KW_XGenerate,
 	KW_Yield,
 
     KW_ALPHA_LIMIT,

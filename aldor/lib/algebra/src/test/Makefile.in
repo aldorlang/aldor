@@ -16,7 +16,9 @@ subdir		:= $(subst $(abs_top_builddir)/,,$(abs_builddir))
 
 # Build starts here
 library = alg_assert tst_test tst_ring
+ifeq ($(INTERP_TESTS), 1)
 tests = tst_random tst_complex tst_mint tst_int tst_fold tst_dup doc_poly doc_intpoly doc_series
+endif
 
 include $(abs_top_srcdir)/mk/step.mk
 include $(abs_top_srcdir)/lib/algebra/src/common.mk

@@ -16,10 +16,11 @@ subdir = aldor/test
 JUNIT_JAR = @JUNIT_JAR@
 
 include $(top_srcdir)/mk/step.mk
+include $(top_builddir)/lib/config.mk
 
 $(call am_define_steps,\
     ALDOR ALDOR_AP ALDOR_CMD ALDOR_EXE ALDOR_FM ALDOR_GENC \
-    ALDOR_JAVATEST ALDOR_OBJ JAVAC ALDOR_JAVA JAVA_CP JUNIT)
+    ALDOR_JAVATEST ALDOR_OBJ JAVAC ALDOR_JAVA JAVA_CP JUNIT CLEANONE)
 
 all: really-all
 
@@ -36,6 +37,7 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 AM_DBG := $(if $(filter 1,$(DBG)), gdb --args, $(DBG))
 AM_DBG_J := $(if $(filter 1,$(DBG_J)), gdb --args, $(DBG_J))
 AM_DBG_C := $(if $(filter 1,$(DBG_C)), gdb --args, $(DBG_C))
+AM_DBG_FM := $(if $(filter 1,$(DBG_FM)), gdb --args, $(DBG_FM))
 
 aldorsrcdir   = $(abs_top_srcdir)/aldor/src
 aldorexedir   = $(abs_top_builddir)/aldor/src
@@ -45,40 +47,91 @@ foamlibdir    = $(abs_top_builddir)/aldor/lib/libfoamlib
 foamsrcdir    = $(abs_top_srcdir)/aldor/lib/libfoam
 foamdir       = $(abs_top_builddir)/aldor/lib/libfoam
 
+utils := tassert rtexns
 aptests := exquo
-fmtests := rectest enumtest clos strtable1 simple apply \
-	   nestcond silly cexp lself0 selfcond lself \
+
+fmtests := x rectest enumtest clos strtable1 simple apply \
+           nestcond silly cexp lself0 selfcond lself \
 	   lself2 catdef2 args1a args1 args2a args2 \
-	   rec2
-ctests  := rectest enumtest multinever maptuple cimp1
+	   strtable1 rec2 lit gener0 gener_fns gtools xarr \
+	   xdom
+ctests  := rectest enumtest multinever maptuple cimp1 \
+           gener0 xit xits xiter lit xarr
 otests  := enumtest rec2
-xtests := enumtest jimport cross seq small
+xtests := enumtest cross seq small lit xit xits xiter generlist xmap xfold genrec
+
+jtests := simple_j enumtest run_j halt gener0 xit xiter
+junittests := JExportTest JThrowTest
+jruntests := small jimport jimport_opt jimp0 jimp1 jlist jexport jexport1 jexport2 \
+	     envname jexn jthrow xiter xit genlist0a genlist1a gencross0 gencross1 \
+	     xgenerpkg0 xgenerpkg1 xmap where1 xdom gdom xfold gencross_empty genrec
 
 out/ao/lself.ao: out/ao/lself0.ao
 out/ao/lself2.ao: out/ao/lself0.ao
+
 out/ao/args1.ao: out/ao/args1a.ao
 out/ao/args2.ao: out/ao/args2a.ao
 
-@BUILD_JAVA_TRUE@jtests := simple_j enumtest run_j halt
-@HAS_JUNIT_TRUE@junittests := JExportTest JThrowTest
-@BUILD_JAVA_TRUE@jruntests := small jimport jimport_opt jimp0 jimp1 jlist jexport jexport1 jexport2 envname jexn jthrow
+out/ao/xlist.ao: out/ao/x.ao
+out/ao/gener.ao: out/ao/x.ao
+out/ao/gener0.ao: out/ao/x.ao
+out/ao/generlist.ao: out/ao/x.ao
+out/ao/generlist1.ao: out/ao/x.ao
+out/ao/gener_fns.ao: out/ao/x.ao
+out/ao/gencross0.ao: out/ao/x.ao
+out/ao/gencross1.ao: out/ao/x.ao
+out/ao/gencross1a.ao: out/ao/x.ao
+out/ao/gtools.ao: out/ao/x.ao
+out/ao/genrec.ao: out/ao/x.ao
+out/ao/xit.ao: out/ao/x.ao
+out/ao/xits.ao: out/ao/x.ao
+out/ao/xmap.ao: out/ao/x.ao
+out/ao/xdom.ao: out/ao/x.ao
+out/ao/xfold.ao: out/ao/x.ao
+out/ao/xgenerpkg0.ao: out/ao/x.ao
+out/ao/xgenerpkg1.ao: out/ao/x.ao
+out/ao/selfcond.ao: out/ao/lself0.ao
 
-x_extra := rtexns
+out/ao/generlist1.ao: generlist.as
+out/ao/genlist1a.ao: genlist0a.as
 
+out/ao/xgenerpkg0.ao: xgenerpkg.as
+out/ao/xgenerpkg1.ao: xgenerpkg.as
+
+c_AXLFLAGS=-Q3
 cimp1_AXLFLAGS=-Q3
 simple_j_AXLFLAGS=-Q2
 jimport_opt_AXLFLAGS=-Q9 -Qinline-all
+xarr_opts = -Q9 -Qinline-all
+xfold_opts = -Q3
 
-badtests := opt1 jcatch fcall
+#badtests := opt1 jcatch fcall
+badtests := jcatch fcall
+
+#xarr_opts += -WD+crin -WD+optf -WD+inlProg -WD+inlCallInfo
 
 jimport_opts := -Q3
 jthrow_opts := -Q3
 halt_opts := -Q3
 jlist_opts :=
+
 lself_opts = -Y out/ao
 lself2_opts = -Y out/ao
 args1_opts = -Y out/ao
 args2_opts = -Y out/ao
+
+gx_opts += -Q3
+gener1a_opts += -Q3
+xm1_opts += -Q3
+xn1_opts += -Q3
+xit_opts += -Q3
+xits_opts += -Q3
+xiter_opts += -Q3
+xgenerpkg_opts += -Q3
+xmap_opts += -Q8
+xdom_opts += -Q3
+gdom_opts += -Q3
+lit_opts += -Q3
 
 jexport_extjava := aldor.stuff.Foo aldor.stuff.Bar
 jthrow_extjava  := aldor.stuff.ExnThrow
@@ -89,10 +142,6 @@ JExportTest_classes := aldorcode.jexport
 JThrowTest_classes  := aldorcode.jthrow
 
 jimport_opt.ao: $(srcdir)/jimport.as
-
-out/ao/selfcond.ao: out/ao/lself0.ao
-
-selfcond_AXLFLAGS = -Y out/ao
 
 # opt1 fails because the optimise decides to inline the recursive call
 # (it shouldn't, but spotting the call is a bit tricky).
@@ -106,49 +155,58 @@ args1_AXLFLAGS =
 args2_AXLFLAGS =
 
 _aptests := $(sort $(aptests))
-_ctests  := $(sort $(ctests)  $(otests))
-
-_jruntests := $(sort $(jruntests))
-_junittests := $(sort $(junittests))
-_jtests  := $(sort $(jtests) $(_jruntests))
-_xtests  := $(sort $(xtests))
-_fmtests := $(sort $(fmtests) $(_jtests) $(_ctests))
-_otests  := $(sort $(otests) $(x_extra) $(_xtests))
-_ctests  := $(sort $(ctests)  $(_otests))
-_aotests := $(sort $(_fmtests) $(_ctests) $(_xtests))
+_jruntests  := $(if $(BUILD_JAVA), $(sort $(jruntests)),)
+_junittests := $(if $(HAS_JUNIT), $(sort $(junittests)),)
+_jtests     := $(if $(BUILD_JAVA), $(sort $(jtests) $(_jruntests)),)
+_xtests     := $(sort $(xtests))
+_otests     := $(sort $(otests) $(_xtests))
+_ctests     := $(sort $(ctests) $(_otests))
+_fmtests    := $(sort $(fmtests) $(_jtests) $(_ctests))
+_aotests    := $(sort $(_fmtests) $(_ctests) $(_xtests))
+_alltests   := $(sort $(_aptests) $(_fmtests) $(_ctests) $(_otests) $(_xtests) $(_jtests))
 
 nfile := -Nfile=$(aldorsrcdir)/aldor.conf
 
-$(patsubst %, out/fm/%.fm, $(_fmtests)): out/fm/%.fm: out/ao/%.ao
+.PHONY: all-fm
+all-fm: $(patsubst %, out/fm/%.fm, $(utils) $(_fmtests))
+
+$(patsubst %, out/fm/%.fm, $(utils) $(_fmtests)): out/fm/%.fm: out/ao/%.ao
 	$(AM_V_ALDOR_FM)		\
 	mkdir -p $$(dirname $@);	\
-	$(aldorexedir)/aldor $(nfile) -Ffm=$(builddir)/$@ $<
+	$(AM_DBG_FM) $(aldorexedir)/aldor $(nfile) -Ffm=$(builddir)/$@ $<
 
-$(patsubst %, out/c/%.c, $(_ctests)): out/c/%.c: out/ao/%.ao
+$(patsubst %, out/c/%.c, $(utils) $(_ctests)): out/c/%.c: out/ao/%.ao
 	$(AM_V_ALDOR_GENC)		\
 	mkdir -p $$(dirname $@);	\
 	$(AM_DBG_C) $(aldorexedir)/aldor $(nfile) -Fc=$(builddir)/$@ $<
 
-$(patsubst %, out/java/aldorcode/%.java, $(_jtests)): out/java/aldorcode/%.java: out/fm/%.fm
+.PHONY: all-c
+all-c: $(patsubst %,out/c/%.c,$(_ctests))
+
+$(patsubst %, out/java/aldorcode/%.java, $(utils) $(_jtests)): out/java/aldorcode/%.java: out/fm/%.fm
 	$(AM_V_ALDOR_JAVA)		\
 	mkdir -p $$(dirname $@);	\
-	$(AM_DBG_J) $(aldorexedir)/aldor $(nfile) \
+	$(AM_DBG_J) $(aldorexedir)/aldor \
+                -Wcheck $(nfile) 	 \
 		$(if $(filter $(_jruntests), $*), -Jmain,) \
 		-Fjava=$(builddir)/out/java/$*.java $<
+
+$(patsubst %, %-javatest, $(_jtests)): out/java/aldorcode/tassert.class
+$(patsubst %, out/ao/%.ao, $(_aotests)): out/ao/tassert.ao
 
 javaopts=-cp $(abs_top_builddir)/aldor/lib/java/src/foamj.jar
 
 define java_import_dependency_template
 out/java/aldorcode/$1.class: $(patsubst %,out/java/%.java,$(subst .,/,$($(1)_srcjava)))
 $(1)_srcjava:
-	echo $(1) $($(1)_srcjava) $(patsubst %,out/java/%.java,$(subst .,/,$($(1)_srcjava)))
+	echo $(1) $($(1)-srcjava) $(patsubst %,out/java/%.java,$(subst .,/,$($(1)_srcjava)))
 endef
 
 define junit_class_dependency_template
-out/java/aldorcode/$1.class: $(patsubst %,out/java/aldorcode/%.java,$(subst .,/,$($(1)_classes)))
+out/java/$1.class: $(patsubst %,out/java/%.class,$(subst .,/,$($(1)_classes)))
 endef
 
-$(foreach jtest,$(_jtests), $(eval $(call java_import_dependency_template,$(jtest))))
+$(foreach jtest,$(utils) $(_jtests), $(eval $(call java_import_dependency_template,$(jtest))))
 $(foreach junit,$(_junittests), $(eval $(call junit_class_dependency_template,$(junit))))
 
 allsrcjava := $(foreach jtest,$(_jtests),$(patsubst %,out/java/%.java,$(subst .,/,$($(jtest)_srcjava))))
@@ -157,20 +215,20 @@ $(allsrcjava): out/java/%.java: $(srcdir)/%.java
 	$(AM_V_JAVA_CP) \
 	(mkdir -p $(dir $@); cp $(srcdir)/$*.java $@)
 
-$(patsubst %, out/java/aldorcode/%.class, $(_jtests)): out/java/aldorcode/%.class: out/java/aldorcode/%.java
+$(patsubst %, out/java/aldorcode/%.class, $(utils) $(_jtests)): out/java/aldorcode/%.class: out/java/aldorcode/%.java
 	$(AM_V_JAVAC) \
-	(cd $(builddir)/out/java;  \
+	(mkdir -p $$(dirname $@); cd $(builddir)/out/java;  \
 	 javac $(javaopts) aldorcode/$*.java \
 			   $(addsuffix .java,$(subst .,/,$($*_extjava) $($*_srcjava))) \
 	)
 
 # Create .o files locally as unicl creates files in the
 # current directory...
-$(patsubst %, %.o, $(_otests)): %.o: out/ao/%.ao
+$(patsubst %, %.o, $(utils) $(_otests)): %.o: out/ao/%.ao
 	$(AM_V_ALDOR_OBJ)		\
 	mkdir -p $$(dirname $@);	\
 	$(AM_DBG) $(aldorexedir)/aldor $(nfile) 	\
-			      -Ccc=$(aldortooldir)/unicl	\
+			      -Ccc=$(aldortooldir)/unicl \
 			      -Cargs="-Wconfig=$(aldorsrcdir)/aldor.conf $(UNICLFLAGS) -I$(aldorsrcdir)" \
 			      -Fo=$(builddir)/$@ $<
 
@@ -184,6 +242,7 @@ define aldor_args
 	$(nfile) 		\
 	-Wcheck			\
 	-Y$(foamlibdir)/al	\
+	-Y out/ao		\
 	-I$(foamsrclibdir)/al	\
 	-lAxlLib=foamlib 		\
 	$(AXLFLAGS) $($*_AXLFLAGS)	\
@@ -199,8 +258,8 @@ $(patsubst %, out/ap/%.ap, $(_aotests)): out/ap/%.ap: %.as
 
 .PHONY: all-ao
 all-ao: $(patsubst %, out/ao/%.ao, $(_aotests))
-$(patsubst %, out/ao/%.ao, $(_aotests)): $(aldorexedir)/aldor
-$(patsubst %, out/ao/%.ao, $(_aotests)): out/ao/%.ao: %.as
+$(patsubst %, out/ao/%.ao, $(utils) $(_aotests)): $(aldorexedir)/aldor
+$(patsubst %, out/ao/%.ao, $(utils) $(_aotests)): out/ao/%.ao: %.as
 	$(AM_V_ALDOR)			\
 	mkdir -p $$(dirname $@);	\
 	$(AM_DBG) $(aldorexedir)/aldor $($*_opts) $(aldor_args)
@@ -212,7 +271,7 @@ $(patsubst %, out/ao/%.cmd, $(_aotests)): out/ao/%.cmd: %.as
 
 .PHONY: all-exe
 all-exe: $(patsubst %, %.exe, $(_xtests))
-$(patsubst %, %.exe, $(_xtests)): %.exe: %.o rtexns.o
+$(patsubst %, %.exe, $(_xtests)): %.exe: %.o rtexns.o tassert.o
 	$(AM_V_ALDOR_EXE)				\
 	rm -f $@;					\
 	$(AM_DBG) $(aldorexedir)/aldor $(nfile) 	\
@@ -221,7 +280,7 @@ $(patsubst %, %.exe, $(_xtests)): %.exe: %.o rtexns.o
 		      -Y$(foamlibdir)			\
 		      -Lfoamlib				\
 		      -Cargs="-Wconfig=$(aldorsrcdir)/aldor.conf -I$(aldorsrcdir) $(UNICLFLAGS)" \
-		      -Fx=$@ out/ao/$*.ao rtexns.o
+		      -Fx=$@ out/ao/$*.ao rtexns.o tassert.o
 
 #		      -Fmain=bobthebuilder.c		\
 
@@ -229,8 +288,9 @@ classpath=$(abs_top_builddir)/aldor/lib/java/src/foamj.jar:$(abs_top_builddir)/a
 $(patsubst %, %-javatest,$(_jruntests)): %-javatest: out/java/aldorcode/%.class
 	$(AM_V_ALDOR_JAVATEST) java -cp out/java:$(classpath) aldorcode.$*
 
-$(patsubst %,out/java/%.class,$(_junittests)):  out/java/%.class: %.java
-	(cd $(builddir)/out/java; \
+$(patsubst %,out/java/%.class,$(_junittests)): out/java/%.class: %.java
+	(mkdir -p $$(dirname $@); \
+	 cd $(builddir)/out/java; \
          javac -d . -cp $(classpath)/../src/foamj.jar:$(JUNIT_JAR):. \
 		$(abs_srcdir)/$*.java)
 
@@ -243,8 +303,47 @@ $(addsuffix -junittest,$(_junittests)): %-junittest: out/java/%.class
 
 check-java: $(patsubst %,%-javatest,$(_jruntests)) $(patsubst %,%-junittest,$(_junittests))
 
-.PHONY: check-java
+$(addsuffix -xtest,$(_xtests)): %-xtest: %.exe
+	$(AM_V_ALDOR_EXE) ./$*.exe
 
+.PHONY: check-xtest
+check-xtest: $(patsubst %,%-xtest,$(_xtests))
+check: check-xtest
+
+define all_template
+all-$(1): $(patsubst %, out/ao/%.ao, $(filter $(1), $(_aotests)))
+all-$(1): $(patsubst %, out/fm/%.fm, $(filter $(1), $(_fmtests)))
+all-$(1): $(patsubst %, out/c/%.c,   $(filter $(1), $(_ctests)))
+all-$(1): $(patsubst %, out/java/aldorcode/%.java, $(filter $(1), $(_jtests)))
+.PHONY: all-$(1)
+endef
+
+define check_template
+check-$(1): $(patsubst %, %-javatest,  $(filter $(1), $(_jruntests)))
+check-$(1): $(patsubst %, %-junittest, $(filter $(1), $(_junittests)))
+check-$(1): $(patsubst %, %-xtest,     $(filter $(1), $(_xtests)))
+.PHONY: check-$(1)
+endef
+
+define clean_template
+clean-$(1):
+	$(call AM_P_CLEANONE, $(1)) \
+	for ii in $(patsubst %, out/ao/%.ao, $(filter $(1), $(_aotests))) 	\
+		  $(patsubst %, out/ao/%.ao, $(filter $(1), $(_aotests)))	\
+		  $(patsubst %, out/fm/%.fm, $(filter $(1), $(_fmtests)))	\
+		  $(patsubst %, out/c/%.c,   $(filter $(1), $(_ctests)))	\
+		  $(patsubst %, %.exe,       $(filter $(1), $(_xtests)))	\
+		  $(patsubst %, out/java/aldorcode/%.java, $(filter $(1), $(_jtests))); do \
+		rm -f $$$$ii; \
+	done
+.PHONY: clean-$(1)
+endef
+
+$(foreach test, $(_alltests), $(eval $(call all_template,$(test))))
+$(foreach test, $(_alltests), $(eval $(call check_template,$(test))))
+$(foreach test, $(_alltests), $(eval $(call clean_template,$(test))))
+
+.PHONY: check-java
 check: check-java
 
 really-all: \
@@ -260,16 +359,30 @@ really-all: \
 
 .PHONY: all
 
-# 
+# Check each target is buildable standalone
+check-makefile:
+	set -e; for i in $(_alltests); do make clean && make all-$$i; done
+
+# Check all files are in git
+all-check-source: $(patsubst %,check-source-%, $(utils) $(_aotests))
+$(patsubst %,check-source-%, $(utils) $(_aotests)): check-source-%:
+	@(cd $(srcdir); git ls-files --error-unmatch $*.as)
+
+
+releasecheck: all-check-source check-makefile
+
+#
 # :: Automake requires this little lot
 #
-mostlyclean: 
+mostlyclean:
 	rm -rf $(builddir)/out
-	rm -f $(patsubst %,%.o,$(_otests))
-
+	rm -f $(patsubst %,%.o,$(utils) $(_otests))
+	rm -f $(patsubst %,%.exe,$(_xtests))
 clean: mostlyclean
-distclean: clean 
+
+distclean: clean
 	rm Makefile
+
 maintainer-clean: distclean
 
 

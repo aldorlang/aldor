@@ -209,11 +209,12 @@ RecursiveMultivariatePolynomial0(_
       --% exported functions as FreeAlgebra(R)        %--
       ---------------------------------------------------
 
-       nonZeroCoefficients(p:%): Generator(R)  == generate {
-            local toSee : List(%) := [p];
+       nonZeroCoefficients(p0:%): Generator(R)  == generate {
+            local toSee : List(%) := [p0];
             local ip: %;
             local u: U;
             local v: V;
+	    p := p0;
             while not empty? toSee repeat {
                 p := first toSee;
                 toSee := rest toSee;
@@ -233,9 +234,10 @@ RecursiveMultivariatePolynomial0(_
                 }
             }
       }
-      support(p:%): Generator(Cross(R,%)) == generate {
+      support(p0:%): Generator(Cross(R,%)) == generate {
                -- import from Character, String, TextWriter;
-               zero? p => yield (0,1);
+               zero? p0 => yield (0,1);
+	       p := p0;
                while not ground? p repeat {
                   ip: % := ini(p);
                   mp: % := rank(p);
@@ -251,8 +253,9 @@ RecursiveMultivariatePolynomial0(_
                }
                not zero? p => yield (base(p),1);
       }
-      variableProduct(p: %): Generator(Cross(V, NNI)) == generate {
-              assert(not ground? p);
+      variableProduct(p0: %): Generator(Cross(V, NNI)) == generate {
+              assert(not ground? p0);
+	      p := p0;
               while (not ground? p) repeat {
                  v := var(p);
                  up := univariatePretend(p);

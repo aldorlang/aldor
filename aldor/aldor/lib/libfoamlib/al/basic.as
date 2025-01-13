@@ -176,8 +176,8 @@ Pointer: with == add;
 error(s: String): Exit == {
 	import {
 		stdoutFile:	() -> Pointer;
-		fputc:          (SingleInteger, Pointer) -> SingleInteger;
-		fputs:		(String, Pointer) -> SingleInteger;
+		fputc:     (SingleInteger, Pointer) -> SingleInteger;
+		fputs:     (String, Pointer) -> SingleInteger;
 	
 	} from Foreign;
 

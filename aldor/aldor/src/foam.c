@@ -35,6 +35,7 @@
 #include "foamsig.h"
 #include "format.h"
 #include "int.h"
+#include "intset.h"
 #include "javasig.h"
 #include "opsys.h"
 #include "sexpr.h"
@@ -43,9 +44,6 @@
 #include "symcoinfo.h"
 #include "util.h"
 #include "xfloat.h"
-#include "intset.h"
-
-#define FOAM_NARY	(-1)	/* Identifies tags with N-ary data argument. */
 
 /* Used for foam sharing audit */
 #define FOAM_MARKED	0x01
@@ -67,14 +65,24 @@ Bool	foamSposDebug	= false;
 
 SrcPos		foamDefaultPosition;
 static Bool	foamIsInit = false;
-
 local int foamListFormatter(OStream ostream, Pointer p);
 local int foamFormatter(OStream ostream, Pointer p);
 local int foamSigFormatter(OStream ostream, Pointer p);
+
+local int foamTypeFormatter(OStream ostream, Pointer p);
+local int foamFormatterExt(OStream ostream, Pointer p, FoamSxFlags flags);
+
 /*
  * Note: This implementation shares the foamTagVal field of symCoInfo so foam
  * instructions, builtins and protocols must not have overlapping names.
  */
+void
+foamEnsureInit(void)
+{
+	if (!foamIsInit)
+		foamInit();
+}
+
 void
 foamInit(void)
 {
@@ -115,6 +123,7 @@ foamInit(void)
 	fmtRegister("Foam", foamFormatter);
 	fmtRegister("FoamList", foamListFormatter);
 	fmtRegister("FoamSig", foamSigFormatter);
+	fmtRegister("FoamTypes", foamTypeFormatter);
 
 	foamIsInit = true;
 }
@@ -122,10 +131,22 @@ foamInit(void)
 local int
 foamFormatter(OStream ostream, Pointer p)
 {
+	return foamFormatterExt(ostream, p, FOAMSX_None);
+}
+
+local int
+foamTypeFormatter(OStream ostream, Pointer p)
+{
+	return foamFormatterExt(ostream, p, FOAMSX_Syme);
+}
+
+local int
+foamFormatterExt(OStream ostream, Pointer p, FoamSxFlags flags)
+{
 	Foam foam = (Foam) p;
 	int c;
 
-	SExpr sx = foamToSExpr(foam);
+	SExpr sx = foamToSExprExtra(foam, flags);
 	Buffer b = bufNew();
 	sxiToBufferFormatted(b, sx, SXRW_MixedCase);
 	c = ostreamWrite(ostream, bufLiberate(b), -1);
@@ -236,12 +257,18 @@ foamNewSeq(Foam arg0, ...)
 	return foamNewOfList(FOAM_Seq, l);
 }
 
+Foam
+foamNewSeqOfList(FoamList ll)
+{
+	return foamNewOfList(FOAM_Seq, ll);
+}
+
 
 
 Foam
 foamNewProgEmpty()
 {
-	return foamNewProg(int0,int0,int0,int0,int0,emptyFormatSlot,NULL,NULL,NULL,NULL);
+	return foamNewProg(int0,int0,int0,int0,int0,NULL,NULL,NULL,NULL,NULL);
 }
 
 Foam
@@ -347,6 +374,13 @@ foamNewDDecl(AInt usage, ...)
 	return foamNewDDeclOfList(usage, foamList);
 }
 
+Foam foamNewDDeclEmpty(AInt n, AInt usage)
+{
+	Foam foam = foamNewEmpty(FOAM_DDecl, 1 + n);
+	foam->foamDDecl.usage = usage;
+	return foam;
+}
+
 Foam
 foamNewDDeclOfList(AInt usage, FoamList foamList)
 {
@@ -354,7 +388,7 @@ foamNewDDeclOfList(AInt usage, FoamList foamList)
 	int i;
 	assert(foamDDeclSlotc == 1); /* Will blow up if a field is added */
 
-	foam = foamNew(FOAM_DDecl, foamDDeclSlotc + listLength(Foam)(foamList));
+	foam = foamNewEmpty(FOAM_DDecl, foamDDeclSlotc + listLength(Foam)(foamList));
 	foam->foamDDecl.usage = usage;
 	i=0;
 	while (foamList != listNil(Foam)) {
@@ -365,6 +399,88 @@ foamNewDDeclOfList(AInt usage, FoamList foamList)
 	return foam;
 }
 
+Foam
+foamNewDFmt(Foam arg0, ...)
+{
+	FoamList foamList;
+	va_list argp;
+
+	va_start(argp, arg0);
+	foamList = listListv(Foam)(argp);
+	va_end(argp);
+	foamList = listCons(Foam)(arg0, foamList);
+
+	return foamNewOfList(FOAM_DFmt, foamList);
+}
+
+Foam
+foamNewDDef(Foam arg0, ...)
+{
+	FoamList foamList;
+	va_list argp;
+
+	va_start(argp, arg0);
+	foamList = listListv(Foam)(argp);
+	va_end(argp);
+	foamList = listCons(Foam)(arg0, foamList);
+
+	return foamNewOfList(FOAM_DDef, foamList);
+}
+
+Foam
+foamNewDEnvUnused(AInt len)
+{
+	Foam foam = foamNewEmpty(FOAM_DEnv, len);
+	for (AInt i=0; i<len; i++) {
+		foam->foamDEnv.argv[i] = emptyFormatSlot;
+	}
+	return foam;
+}
+
+
+Foam
+foamNewSelect(Foam op, AInt nBranches)
+{
+	Foam foam = foamNewEmpty(FOAM_Select, 1 + nBranches);
+	foam->foamSelect.op = op;
+	return foam;
+}
+
+Foam
+foamNewSelectRange(Foam op, AInt lo, AInt count)
+{
+	Foam foam;
+	AInt idx;
+
+	foam = foamNewEmpty(FOAM_Select, 1 + count);
+	foam->foamSelect.op = op;
+
+	for (idx = 0; idx < count; idx++) {
+		foam->foamSelect.argv[idx] = lo + idx;
+	}
+
+	return foam;
+}
+
+Foam
+foamNewValuesOfList(FoamList lst)
+{
+	return foamNewOfList(FOAM_Values, lst);
+}
+
+Foam
+foamNewValues(Foam arg0, ...)
+{
+	FoamList foamList;
+	va_list argp;
+
+	va_start(argp, arg0);
+	foamList = listListv(Foam)(argp);
+	va_end(argp);
+	foamList = listCons(Foam)(arg0, foamList);
+
+	return foamNewOfList(FOAM_Values, foamList);
+}
 
 Foam
 foamNewEmpty(FoamTag tag, Length argc)
@@ -759,6 +875,13 @@ foamProgHasMultiAssign(Foam prog)
 	return false;
 }
 
+AInt
+foamProgFormatForLevel(Foam prog, AInt level)
+{
+	return prog->foamProg.levels->foamDEnv.argv[level];
+}
+
+
 Bool
 foamIsMultiAssign(Foam foam)
 {
@@ -771,6 +894,24 @@ foamDeclEqual(Foam decl1, Foam decl2)
 {
 	return decl1->foamDecl.type == decl2->foamDecl.type
 		&& decl1->foamDecl.format == decl2->foamDecl.format;
+}
+
+Bool
+foamUnitHasCoroutine(Foam foam)
+{
+	int i;
+	for (i=0; i<foamArgc(foam->foamUnit.defs); i++) {
+		Foam def = foam->foamUnit.defs->foamDDef.argv[i];
+		Foam prog;
+		if (foamTag(def->foamDef.rhs) != FOAM_Prog) {
+			continue;
+		}
+		prog = def->foamDef.rhs;
+		if (foamProgIsCoroutine(prog)) {
+			return true;
+		}
+	}
+	return false;
 }
 
 /** Return the next statement in seq which is reachable */
@@ -816,9 +957,6 @@ Foam	faProg;
 Foam	faFormats;
 Foam *	faFormatsv;
 Foam *	faGlobalsv;
-#ifdef NEW_FORMATS
-Foam *	faParamsv;
-#endif
 Foam *	faFluidsv;
 int	faNumFormats;
 int	faNumConsts;
@@ -920,9 +1058,6 @@ foamAudit0(Foam foam)
 	faFormatsv   = foamUnitFormats(foam)->foamDFmt.argv;
 	faGlobalsv   = foamUnitGlobals(foam)->foamDDecl.argv;
 	faFluidsv    = foamUnitGlobals(foam)->foamDDecl.argv;
-#ifdef NEW_FORMATS
-	faParamsv     = foamUnitParams(foam)->foamDDecl.argv;
-#endif
 	faNumFormats = foamArgc(foamUnitFormats(foam));
 	faNumConsts  = foamDDeclArgc(foamUnitConstants(foam));
 	faNumGlobals = foamDDeclArgc(foamUnitGlobals(foam));
@@ -952,12 +1087,7 @@ foamAuditExpr(Foam foam)
 		faDEnv	    = foam->foamProg.levels->foamDEnv.argv;
 		faNumLevels = foamArgc(foam->foamProg.levels);
 		faNumLocals = foamDDeclArgc(foam->foamProg.locals);
-#ifdef NEW_FORMATS
-		faNumParams = foamDDeclArgc(faParamsv[foam->foamProg.params-1]);
-		assert(foam->foamProg.params < foamDDeclArgc(foamUnitParams(faUnit)));
-#else
 		faNumParams = foamDDeclArgc(foam->foamProg.params);
-#endif
 		break;
 	  case FOAM_Def:
 		if (foamTag(foam->foamDef.lhs) == FOAM_Const)
@@ -992,6 +1122,8 @@ foamAuditExpr(Foam foam)
 		    faDEnv[foam->foamLex.level] >= faNumFormats ||
 		    foam->foamLex.index >= faNumLexes(foam->foamLex.level))
 			foamAuditBadRef(foam);
+		if (foam->foamLex.level < 0)
+			foamAuditBadRef(foam);
 		break;
 	  case FOAM_Const:
 		if (foam->foamConst.index >= faNumConsts)
@@ -1010,7 +1142,15 @@ foamAuditExpr(Foam foam)
 		    foam->foamEElt.lex >=
 		    foamArgc(faFormatsv[foam->foamEElt.env]))
 			foamAuditBadRef(foam);
+		if (foam->foamEElt.level < 0)
+			foamAuditBadRef(foam);
 		break;
+	  case FOAM_Env:
+		  if (foam->foamEnv.level < 0)
+			  foamAuditBadRef(foam);
+		  if (foam->foamEnv.level >= faNumLevels)
+			  foamAuditBadRef(foam);
+		  break;
 	  case FOAM_RElt:
 		if (foam->foamRElt.format >= faNumFormats)
 			foamAuditBadRef(foam);
@@ -1087,6 +1227,8 @@ foamAuditDecl(Foam decl)
 			foamAuditBadDecl(decl);
 		*/
 		break;
+	case FOAM_Env:
+		// There's an argument for tracking types of env properly
 	default:
 		if (fmt != emptyFormatSlot && fmt != 0)
 			foamAuditBadDecl(decl);
@@ -1621,9 +1763,6 @@ foamSymeList(Foam foam)
 		assert(foamTag(fmtv[i]) == FOAM_DDecl);
 		declv = fmtv[i]->foamDDecl.argv;
 		declc = foamDDeclArgc(fmtv[i]);
-#ifdef NEW_FORMATS
-		if (declc > 0 && foamTag(declv[0]) == FOAM_DDecl) break;
-#endif
 		for (j = 0; j < declc; j += 1) {
 			decl = declv[j];
 			assert(foamIsDecl(decl));
@@ -1661,425 +1800,6 @@ foamCountSubtreesOfKind(Foam foam, FoamTag kind)
 		if (foamTag(foam->foamSeq.argv[i]) == kind) count++;
 
 	return count;
-}
-
-/*****************************************************************************
- *
- * :: Foam SExpr I/O
- *
- ****************************************************************************/
-
-int
-foamWrSExpr(FILE *file, Foam foam, ULong sxioMode)
-{
-	SExpr	sx;
-	int	cc;
-
-	sx = foamToSExpr(foam);
-	cc = sxiWrite(file, sx, SXRW_MixedCase | sxioMode);
-	sxiFree(sx);
-
-	return cc;
-}
-
-Foam
-foamRdSExpr(FILE *file, FileName *pfn, int *plno)
-{
-	SExpr	sx;
-	Foam	foam;
-
-	sx   = sxiRead(file, pfn, plno, sxNil, SXRW_MixedCase | SXRW_SrcPos);
-	foam = foamFrSExpr(sx);
-	sxiFree(sx);
-
-	return foam;
-}
-
-/*****************************************************************************
- *
- * :: Foam-SExpr conversion
- *
- ****************************************************************************/
-
-static	Foam	*fexFmtv;	/* DDecls for formats  */
-static	Length	fexFmtc;
-static	Foam	*fexGlov;	/* Decls for globals   */
-static	Length	fexGloc;
-static	Foam	*fexConstv;	/* Decls for constants */
-static	Length	fexConstc;
-static	Foam	*fexParv;	/* Decls for params    */
-static	Length	fexParc;
-static	Foam	*fexLocv;	/* Decls for locals    */
-static	Length	fexLocc;
-static	AInt	*fexLexv;	/* Format numbers in DEnv */
-static	Length	fexLexc;
-
-#define fexSymbol(id)		sxiFrSymbol(symIntern(id))
-
-/* Define StripHash to remove the hash code from the end of global names. */
-#undef	StripHash
-
-/* Define StripName to remove the file name from the front of global names. */
-#undef	StripName
-
-/* Define StripIndex to remove the loc/lex/glo index when we have an idstr. */
-#undef	StripIndex
-
-#ifdef StripHash
-String
-foamStripHash(String str)
-{
-	int	i, j = 0;
-	for (i = strLength(str) - 1; i > 0; i -= 1) {
-		if (str[i] == '_')
-			break;
-		if (!isdigit(str[i]))
-			return str;
-	}
-	if (i <= 0 || i == strLength(str) - 1)
-		return str;
-
-#ifdef StripName
-	for (j = 0; j < i; j += 1)
-		if (str[j] == '_') break;
-
-	if (j == 0 || j == i)
-		return str;
-#endif
-
-	return strnCopy(str + j, i - j);
-}
-#endif
-
-local SExpr
-foamToSExpr0(Foam foam)
-{
-	int	si, fi;
-	String	argf, idstr;
-	SExpr	sx, sxi;
-	int	i, j;
-
-	Bool	isDecl;
-	long	li;
-
-	if (!foam) 
-		return sxiFrString("Bad-Foam-0");
-	/*
-	 * Code for determining identifers.
-	 */
-	idstr = 0;
-
-	switch (foamTag(foam)) {
-	case FOAM_Unit:
-		fexFmtv	  = foam->foamUnit.formats->foamDFmt.argv;
-		fexFmtc	  = foamArgc(foam->foamUnit.formats);
-		fexGlov	  = foamUnitGlobals(foam)->foamDDecl.argv;
-		fexGloc	  = foamDDeclArgc(foamUnitGlobals(foam));
-#ifdef NEW_FORMATS
-		faParamsv  = foamUnitParams(foam)->foamDDecl.argv;
-#endif
-		fexConstv = foamUnitConstants(foam)->foamDDecl.argv;
-		fexConstc = foamDDeclArgc(foamUnitConstants(foam));
-		break;
-	case FOAM_Prog:
-#ifdef NEW_FORMATS
-		fexParv	  = (faParamsv[foam->foamProg.params-1])->foamDDecl.argv;
-		fexParc	  = foamDDeclArgc(faParamsv[foam->foamProg.params-1]);
-#else
-		fexParv	  = foam->foamProg.params->foamDDecl.argv;
-		fexParc	  = foamDDeclArgc(foam->foamProg.params);
-#endif
-		fexLocv	  = foam->foamProg.locals->foamDDecl.argv;
-		fexLocc	  = foamDDeclArgc(foam->foamProg.locals);
-		if (fexFmtc != 0) {
-			fexLexv	  = foam->foamProg.levels->foamDEnv.argv;
-			fexLexc	  = foamDDeclArgc(fexFmtv[foam->foamProg.levels->
-						     foamDEnv.argv[0]]);
-		}
-		break;
-
-#ifdef NEW_FORMATS
-	case FOAM_DDecl:
-		if (foam->foamDDecl.usage == paramsSlot)
-			return sxNil;
-#endif
-	case FOAM_Par:
-		j = foam->foamPar.index;
-		if (j < fexParc)
-			idstr = fexParv[j]->foamDecl.id;
-		break;
-	case FOAM_Loc:
-		j = foam->foamLoc.index;
-		if (j < fexLocc)
-			idstr = fexLocv[j]->foamDecl.id;
-		break;
-	case FOAM_Glo:
-		j = foam->foamGlo.index;
-		if (j < fexGloc)
-			idstr = fexGlov[j]->foamGDecl.id;
-#ifdef StripHash
-		if (idstr)
-			idstr = foamStripHash(idstr);
-#endif
-		break;
-	case FOAM_Const:
-		j = foam->foamConst.index;
-		if (j < fexConstc)
-			idstr = fexConstv[j]->foamDecl.id;
-		break;
-	case FOAM_Lex:
-		i = foam->foamLex.level;
-		j = foam->foamLex.index;
-		if (fexFmtc != 0 && i < fexLexc) {
-			i = fexLexv[i];
-			if (j < foamArgc(fexFmtv[i]))
-			    idstr = fexFmtv[i]->foamDDecl.argv[j]->foamDecl.id;
-		}
-		break;
-
-	case FOAM_EElt:
-		i = foam->foamEElt.env;
-		j = foam->foamEElt.lex;
-		if (fexFmtc != 0)
-			idstr = fexFmtv[i]->foamDDecl.argv[j]->foamDecl.id;
-		break;
-
-	default:
-		break;
-	}
-	if (idstr && !*idstr) idstr = 0;
-
-	/*
-	 * Cons the subexpressions into a list.
-	 */
-	sx    = sxNil;
-#if 0 /* This breaks the format of FOAM sexprs. */
-	if (DEBUG(foamSpos)) {
-		if (foamPos(foam) != sposNone)
-			sx = sxCons(sxiFrInteger(sposLine(foamPos(foam))), sx);
-	}
-#endif
-	argf  = foamInfo(foamTag(foam)).argf;
-	sx    = sxCons(foamSExpr(foamTag(foam)), sx);
-
-	isDecl = foamTag(foam) == FOAM_Decl || foamTag(foam) == FOAM_GDecl;
-
-	for (si = fi = 0; si < foamArgc(foam); si++, fi++) {
-		if (argf[fi] == '*') fi--;
-
-		switch (argf[fi]) {
-		case 'X':
-		case 'F':
-		case 'L':
-		case 'b':
-		case 'h':
-		case 'w':
-		case 'i':
-			if (isDecl && argf[fi] == 'w') {
-				li = -1;
-			} else {
-				li = (long) foamArgv(foam)[si].data;
-			}
-			if (DEBUG(phase)) {
-				li = (long) foamArgv(foam)[si].data;
-			}
-			sxi = sxiFrInteger(li);
-#ifdef NEW_FORMATS
-			if (DEBUG(phase)) {
-				if (foamTag(foam) == FOAM_Prog
-				    && si > 4) {
-					assert(li < fexFmtc);
-					sxi = foamToSExpr0(fexFmtv[li]);
-				}
-			}
-#endif
-			break;
-		case 't': {
-			AInt tag = foamArgv(foam)[si].data;
-			if (tag < FOAM_LIMIT)
-				sxi = foamSExpr(foamArgv(foam)[si].data);
-			else
-				sxi = sxiFrInteger(tag);
-			break;
-		}
-		case 'o':
-			sxi = foamBValSExpr(foamArgv(foam)[si].data);
-			break;
-		case 'p':
-			sxi = foamProtoSExpr(foamArgv(foam)[si].data);
-			break;
-		case 'D':
-			sxi = foamDDeclSExpr(foamArgv(foam)[si].data);
-			break;
-		case 's':
-#ifdef StripHash
-			if (foamTag(foam) == FOAM_Decl) {
-				String	str = foamArgv(foam)[si].str;
-				str = foamStripHash(str);
-				sxi = sxiFrString(str);
-			}
-			else
-#endif
-			sxi = sxiFrString(foamArgv(foam)[si].str);
-			break;
-		case 'f':
-			sxi = sxiFrSFloat(foamToSFlo(foam));
-			si = foamArgc(foam);
-			break;
-		case 'd':
-			sxi = sxiFrDFloat(foamToDFlo(foam));
-			si = foamArgc(foam);
-			break;
-		case 'n':
-			sxi = sxiFrBigInteger(foamArgv(foam)[si].bint);
-			break;
-		case 'C':
-			sxi = foamToSExpr0(foamArgv(foam)[si].code);
-			break;
-		default:
-			bugBadCase(argf[fi]);
-			NotReached(sxi = 0);
-		}
-		sx = sxCons(sxi, sx);
-	}
-#ifdef StripIndex
-	if (idstr) sx = sxCons(sxiFrSymbol(symIntern(idstr)), sxCdr(sx));
-#else
-	if (idstr) sx = sxCons(sxiFrSymbol(symIntern(idstr)), sx);
-#endif
-
-	sx = sxNReverse(sx);
-	sx = sxiRepos(foamPos(foam), sx);
-
-	return sx;
-}
-
-SExpr
-foamToSExpr(Foam foam)
-{
-	if (!foamIsInit) foamInit();
-	fexFmtc = fexGloc = fexConstc = fexParc = fexLocc = fexLexc = 0;
-	return foamToSExpr0(foam);
-}
-
-#define croak(sx, msg)	comsgFatal(abNewNothing(sxiPos(sx)), msg)
-
-Foam
-foamFrSExpr(SExpr sx)
-{
-	Foam	foam;
-	Symbol	op, sym;
-	SExpr	sxi;
-	String	argf;
-	int	fi, si, tag, argc;
-
-	if (!foamIsInit) foamInit();
-
-	
-	if (!sxiConsP(sx))  croak(sx, ALDOR_F_LoadNotList);
-	if (!sxiSymbolP(sxi = sxCar(sx))) croak(sxi, ALDOR_F_LoadNotSymbol);
-
-	op   = sxiToSymbol(sxi);
-	if (!symCoInfo(op) || (FoamBValTag)symCoInfo(op)->foamTagVal == FOAM_BVAL_LIMIT)
-		croak(sxi, ALDOR_F_LoadNotFoam);
-
-	tag  = symCoInfo(op)->foamTagVal;
-	argf = foamInfo(tag).argf;
-	argc = foamInfo(tag).argc;
-	if (argc == FOAM_NARY) argc = sxiLength(sx) - 1; /* -1 For tag */
-
-	if (tag == FOAM_DFlo)
-		foam   = foamNewDFlo(0.0);
-	else
-		foam   = foamNewEmpty(tag, argc);
-
-	for (fi = si = 0, sx=sxCdr(sx); si < argc; fi++, si++, sx=sxCdr(sx)) {
-		if (argf[fi] == '*') fi--;
-
-		if (!sxiConsP(sx)) croak(sx, ALDOR_F_LoadNotList);
-
-		sxi = sxCar(sx);
-
-		switch (argf[fi]) {
-		case 'X':
-		case 'F':
-		case 'L':
-		case 'b':
-		case 'h':
-		case 'w':
-		case 'i':
-			if (!sxiIntegerP(sxi)) croak(sxi, ALDOR_F_LoadNotInteger);
-			foamArgv(foam)[si].data = sxiToInteger(sxi);
-			break;
-		case 't':
-		case 'o':
-		case 'p':
-		case 'D':
-			if (!sxiSymbolP(sxi)) croak(sxi, ALDOR_F_LoadNotSymbol);
-			sym = sxiToSymbol(sxi);
-
-			if (!symCoInfo(sym) || (int)symCoInfo(sym)->foamTagVal == -1)
-				croak(sxi, ALDOR_F_LoadNotFoam);
-			foamArgv(foam)[si].data = symCoInfo(sym)->foamTagVal;
-			break;
-		case 's':
-			if (!sxiStringP(sxi)) croak(sxi, ALDOR_F_LoadNotString);
-			foamArgv(foam)[si].str = sxiToString(sxi);
-			break;
-		case 'f':
-			if (!sxiSFloatP(sxi)) croak(sxi, ALDOR_F_LoadNotFloat);
-			foamToSFlo(foam) = sxiToSFloat(sxi);
-			break;
-		case 'd':
-			if (!sxiDFloatP(sxi)) croak(sxi, ALDOR_F_LoadNotFloat);
-			foamToDFlo(foam) = sxiToDFloat(sxi);
-			break;
-		case 'n':
-			if (!sxiIntegerP(sxi)) croak(sxi, ALDOR_F_LoadNotInteger);
-			foamArgv(foam)[si].bint = sxiToBigInteger(sxi);
-			break;
-		case 'C':
-			if (!sxiConsP(sxi))  croak(sxi, ALDOR_F_LoadNotList);
-			foamArgv(foam)[si].code = foamFrSExpr(sxi);
-			break;
-		default:
-			bugBadCase(argf[fi]);
-		}
-	}
-	foamPos(foam) = sxiPos(sx);
-	return foam;
-}
-
-/*****************************************************************************
- *
- * :: Foam-String conversion
- *
- ****************************************************************************/
-
-String
-foamToString(Foam foam)
-{
-	String	s;
-	Buffer	buf;
-
-	buf = bufNew();
-	foamToBuffer(buf, foam);
-	s = bufLiberate(buf);
-
-	return s;
-}
-
-Foam
-foamFrString(String s)
-{
-	Foam	foam;
-	Buffer	buf;
-
-	buf = bufCapture(s, stoSize(s));
-	foam = foamFrBuffer(buf);
-	bufLiberate(buf);
-
-	return foam;
 }
 
 /*****************************************************************************
@@ -2973,7 +2693,7 @@ foamGetProgHdrFrBuffer(Buffer buf, int pos)
 		prog->foamProg.params = NULL;
 		prog->foamProg.fluids = NULL;
 		prog->foamProg.levels = NULL;
-		prog->foamProg.body = NULL;
+		prog->foamProg.body   = NULL;
 	}
 
 	return prog;
@@ -3140,6 +2860,8 @@ foamExprTypeCB(Foam expr, AInt *extra, FoamExprTypeCallback callback, void *arg)
 	  case FOAM_Arb:
 	  case FOAM_Ptr:
 	  case FOAM_Clos:
+	  case FOAM_Gener:
+	  case FOAM_GenIter:
 	  case FOAM_BInt:
 	  case FOAM_Env:
 	  case FOAM_RRec:
@@ -3212,7 +2934,7 @@ foamExprTypeCB(Foam expr, AInt *extra, FoamExprTypeCallback callback, void *arg)
 
 		return type;
 
-	case FOAM_Const: 
+	  case FOAM_Const:
 		decl = callback(arg, expr);
 		return decl->foamDecl.type;
 
@@ -3231,6 +2953,9 @@ foamExprTypeCB(Foam expr, AInt *extra, FoamExprTypeCallback callback, void *arg)
 		return FOAM_TR;
 
 	  case FOAM_RRElt:
+		return FOAM_Word;
+
+	  case FOAM_GenerValue:
 		return FOAM_Word;
 
 	  case FOAM_Lex: {
@@ -3493,6 +3218,8 @@ foamHasSideEffect(Foam foam)
 		return false;
 	  case FOAM_EEnsure:
 		return true;
+	  case FOAM_Yield:
+		return true;
 	  default:
 		break;
 	}
@@ -3518,6 +3245,7 @@ foamIsControlFlow(Foam foam)
 	  case FOAM_Throw:
 	  case FOAM_Catch:
 	  case FOAM_Seq:
+	  case FOAM_GenerStep:
 		return true;
 	  default:
 		return false;
@@ -3664,6 +3392,11 @@ struct foam_info foamInfoTable[] = {
  {FOAM_RRFmt,	    0,"RRFmt",        1,        "C", 	0},
  {FOAM_JavaObj,	    0,"JavaObj",      0,        "", 	0},
  {FOAM_CObj,	    0,"CObj",	      0,        "", 	0},
+ {FOAM_Gener,       0,"Gener",	      3,        "iCC",  0},
+ {FOAM_Yield,       0,"Yield",	      1,        "C", 	0},
+ {FOAM_GenIter,     0,"GenIter",      1,        "C", 	0},
+ {FOAM_GenerValue,  0,"GenerValue",   1,        "C", 	0},
+ {FOAM_GenerStep,   0,"GenerStep",    2,        "LC", 	0},
 
 /* ========> FFO_ORIGIN (start of multi-format instructions) <======== */
 
@@ -3708,11 +3441,7 @@ struct foam_info foamInfoTable[] = {
  {FOAM_OCall,	    0,"OCall",        FOAM_NARY, "tCCC*", 	0},
  {FOAM_Seq,	    0,"Seq",          FOAM_NARY, "C*", 	0},
  {FOAM_Values,	    0,"Values",       FOAM_NARY, "C*", 	0},
-#ifdef NEW_FORMATS
  {FOAM_Prog,	    0,"Prog",         FOAM_NARY, "XFtwwwwwC*", 	0}
-#else
- {FOAM_Prog,	    0,"Prog",         FOAM_NARY, "XFtwwwwwC*", 	0}
-#endif
 };
 
 /*****************************************************************************
@@ -3754,7 +3483,7 @@ struct foamDDecl_info	foamDDeclInfoTable[] = {
  { FOAM_DDecl_Global, 		0, "Globals" },  
  { FOAM_DDecl_FortranSig,       0, "FortranSig" },
  { FOAM_DDecl_CSig,             0, "CSig" },
- { FOAM_DDecl_CType,             0, "CType" },
+ { FOAM_DDecl_CType,            0, "CType" },
  { FOAM_DDecl_JavaSig,          0, "JavaSig" },
  { FOAM_DDecl_JavaClass,        0, "JavaClass" },
 };

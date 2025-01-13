@@ -12,6 +12,7 @@
 #include "axlobs.h"
 #include "foamsig.h"
 #include "of_util.h"
+#include "susage.h"
 
 extern Bool genfDebug, genfHashDebug, genfConstDebug;
 
@@ -61,6 +62,7 @@ typedef enum {
 	PT_Std,
 	PT_DeepStart,
 	PT_Gener = PT_DeepStart,
+	PT_Coroutine,
 	PT_ExFn
 } ProgType;
 
@@ -80,7 +82,7 @@ typedef struct gfs {
 	VarPoolList	envLexPools;	/* stack of previous lexical envs */
 	FoamBox		params;		/* prog's parameters */
 	AIntList	formatStack;	/* nested prog lexical level stack */
-	AIntList	formatUsage;	/* stack of levels actually used */
+	SlotUsageList	formatUsage;	/* stack of levels actually used */
 	AIntList	fluidsUsed;	/* Fluids pushed in this scope */
 	Foam		program;	/* the foam for the prog */
 	int		yieldCount;	/* number of yields in prog */
@@ -176,18 +178,12 @@ extern GenFoamState	gen0State;
 
 extern FoamList		gen0GlobalList,
 			gen0FormatList,
-#ifdef NEW_FORMATS
-			gen0ParamsList,
-#endif
 			gen0DeclList,
 			gen0ProgList;
 
 extern int		gen0NumGlobals,
 			gen0RealFormatNum,
 			gen0FormatNum,
-#ifdef NEW_FORMATS
-			gen0NumParams,
-#endif
 			gen0NumProgs,
 			gen0FwdProgNum,
 			gen0GenerFormat,
@@ -206,6 +202,7 @@ extern AIntList		gen0LazyConstDefnList;
 extern AIntList		gen0BuiltinExports;
 
 extern TForm		gen0AbType		(AbSyn ab);
+extern TForm		gen0AbContextType	(AbSyn ab);
 extern Foam	   	genImplicit		(AbSyn, AbSyn, FoamTag);
 extern void		gen0AddConst		(AInt, AInt);
 extern void		gen0AddFormat		(AInt, AInt);
@@ -267,5 +264,7 @@ extern AInt 		gen0StdDeclFormat	(Length, String *, FoamTag *, AInt *);
 extern void 		gen0SetDDeclUsage	(AInt, FoamDDeclTag);
 
 extern int		gen0RootEnv		(void);
+
+extern void gen0ComputeSideEffects(Foam prog);
 
 #endif /* !_GF_UTIL_H_ */

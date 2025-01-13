@@ -1814,6 +1814,7 @@ tibupGenerate(Stab stab, AbSyn absyn, TForm type)
 	TPoss	fluid(tuniYieldTPoss);
 	TPoss	fluid(tuniExitTPoss);
 	TForm   fluid(tuniYieldType);
+	TfGenType tfGenType;
 
 	tuniReturnTPoss = tuniInappropriateTPoss;
 	tuniYieldTPoss	= tuniInappropriateTPoss;
@@ -1821,10 +1822,17 @@ tibupGenerate(Stab stab, AbSyn absyn, TForm type)
 
 	tuniYieldTPoss	= tuniUnknownTPoss;
 
-	if (tfIsGenerator(type)) 
+	tfGenType = abFlag_IsNewIter(absyn) ? TFG_XGenerator : TFG_Generator;
+
+	if (tfIsGenerator(type)) {
 		inner = tfGeneratorArg(type);
-	else 
+	}
+	else if (tfIsXGenerator(type)) {
+		inner = tfXGeneratorArg(type);
+	}
+	else {
 		inner = tfUnknown;
+	}
 
 	tuniYieldType = inner;
 
@@ -1844,15 +1852,21 @@ tibupGenerate(Stab stab, AbSyn absyn, TForm type)
 		t = tpossELT(tit);
 		if (tfSatisfies(t, inner)) {
 			if (tfIsMulti(t)) t = tfCrossFrMulti(t);
-			tpossIt = tpossAdd1(tpossIt, tfGenerator(t));
+			tpossIt = tpossAdd1(tpossIt, tfAnyGenerator(tfGenType, t));
 		}
 	}
 
-	if (!tfIsUnknown(type) && !tfIsGenerator(type)) {
+	if (!tfIsUnknown(type) && !tfIsAnyGenerator(type)) {
 		tpossFree(tpossIt);
 		abState(absyn) = AB_State_Error;
 		abTPoss(absyn) = tpossEmpty();
-	} else if (tpossCount(tpossIt) == 0 &&
+	}
+	else if (!tfIsUnknown(type) && tfAnyGeneratorType(type) != tfGenType) {
+		tpossFree(tpossIt);
+		abState(absyn) = AB_State_Error;
+		abTPoss(absyn) = tpossEmpty();
+	}
+	else if (tpossCount(tpossIt) == 0 &&
 		   tpossCount(tuniYieldTPoss) != 0) {
 		tpossFree(tpossIt);
 		abState(absyn) = AB_State_Error;
@@ -1862,7 +1876,7 @@ tibupGenerate(Stab stab, AbSyn absyn, TForm type)
 		     tpossSTEP(tit)) {
 			t = tpossELT(tit);
 			if (tfIsMulti(t)) t = tfCrossFrMulti(t);
-			tpossIt = tpossAdd1(tpossIt, tfGenerator(t));
+			tpossIt = tpossAdd1(tpossIt, tfAnyGenerator(tfGenType, t));
 		}
 		abTPoss(absyn) = tpossIt;
 		tpossFree(tuniYieldTPoss);
@@ -1907,7 +1921,6 @@ tibupReference(Stab stab, AbSyn absyn, TForm type)
 
 	/* Check the body */
 	tibupRefArg(stab, body, tfUnknown);
-
 
 	/* Get the type of the Ref argument */
 	if (tfIsReference(type))
@@ -2426,6 +2439,8 @@ tibupTest(Stab stab, AbSyn absyn, TForm type)
  *
  ***************************************************************************/
 
+local TForm tibup0CollectGenerator(int iterType, TForm type);
+
 local void
 tibupCollect(Stab stab, AbSyn absyn, TForm type)
 {
@@ -2440,6 +2455,7 @@ tibupCollect(Stab stab, AbSyn absyn, TForm type)
 	TPoss	fluid(tuniYieldTPoss);
 	TPoss	fluid(tuniExitTPoss);
 	Bool	fluid(tloopBreakCount);
+	int     iterType;
 
 	tuniReturnTPoss = tuniInappropriateTPoss;
 	tuniYieldTPoss	= tuniInappropriateTPoss;
@@ -2448,6 +2464,11 @@ tibupCollect(Stab stab, AbSyn absyn, TForm type)
 
 	for (i = 0; i < iterc; i++)
 		tibup(stab, iterv[i], tfUnknown);
+
+	iterType = 0;
+	for (i = 0; i < iterc; i++) {
+		iterType |= 1 << (abFlag_IsNewIter(iterv[i]) ? 1 : 0);
+	}
 
 	tibup(stab, body, tfUnknown);
 
@@ -2460,7 +2481,7 @@ tibupCollect(Stab stab, AbSyn absyn, TForm type)
 		SatMask result;
 		tfFollow(t);
 		if (tfIsMulti(t)) t = tfCrossFrMulti(t);
-		retType = tfGenerator(t);
+		retType = tibup0CollectGenerator(iterType, t);
 		result = tfSat(tfSatBupMask(), retType, type);
 		if (tfSatSucceed(result)) {
 			cposs = tpossAdd1(cposs, retType);
@@ -2470,6 +2491,21 @@ tibupCollect(Stab stab, AbSyn absyn, TForm type)
 
 	ReturnNothing;
 }
+
+local TForm
+tibup0CollectGenerator(int iterType, TForm type)
+{
+	switch (iterType) {
+	case 0:
+	case 1:
+		return tfGenerator(type);
+	case 2:
+		return tfXGenerator(type);
+	default:
+		bug("odd iterator");
+	}
+}
+
 
 /****************************************************************************
  *
@@ -2589,8 +2625,17 @@ tibupFor(Stab stab, AbSyn absyn, TForm type)
 	 */
 	stab = cdr(stab);
 	tibup(stab, whole, tfUnknown);
-	tibup0ApplySymIfNeeded(stab, absyn, tfUnknown, ssymTheGenerator,
-			       1, abForIterArgf, NULL, tfIsGeneratorFn);
+	if (!abFlag_IsNewIter(absyn)) {
+		tibup0ApplySymIfNeeded(stab, absyn, tfUnknown, ssymTheGenerator,
+				       1, abForIterArgf, NULL, tfIsGeneratorFn);
+	}
+	else if (abFlag_IsNewIter(absyn)) {
+		tibup0ApplySymIfNeeded(stab, absyn, tfUnknown, ssymTheXGenerator,
+				       1, abForIterArgf, NULL, tfIsXGeneratorFn);
+	}
+	else {
+		bug("unknown iteration");
+	}
 	stab = ostab;
 
 
@@ -2598,7 +2643,7 @@ tibupFor(Stab stab, AbSyn absyn, TForm type)
 	 * The for-variable and test lie within the scope
 	 * of the repeat clause.
 	 */
-	tparg = tpossGeneratorArg(abGoodTPoss(absyn));
+	tparg = tpossAnyGeneratorArg(abGoodTPoss(absyn));
 	tibup0InferLhs(stab, absyn, lhs, test, tparg); /* !! test */
 	tibup(stab, lhs,  tfUnknown);
 
@@ -2631,7 +2676,10 @@ tibupFor(Stab stab, AbSyn absyn, TForm type)
 	if (tpossIsUnique(tp) && !tpossIsUnique(abTPoss(absyn))) {
 		TForm tf = tpossUnique(tp);
 		tpossFree(abTPoss(absyn));
-		abTPoss(absyn) = tpossSingleton(tfGenerator(tf));
+		if (abFlag_IsNewIter(absyn))
+			abTPoss(absyn) = tpossSingleton(tfXGenerator(tf));
+		else
+			abTPoss(absyn) = tpossSingleton(tfGenerator(tf));
 	}
 
 	/* Avoid two error messages */

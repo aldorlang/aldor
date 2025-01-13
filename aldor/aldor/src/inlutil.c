@@ -9,8 +9,8 @@
 #include "flog.h"
 #include "inlutil.h"
 #include "opttools.h"
-#include "of_inlin.h"
 #include "of_util.h"
+#include "optinfo.h"
 #include "loops.h"
 #include "optfoam.h"
 #include "strops.h"
@@ -432,9 +432,11 @@ inuAnalyseProg(Foam foam, int constNum)
 
 	assert(foamTag(foam) == FOAM_Prog);
 
+#if 0
+	// This can't work
 	if (foamArgc(foam->foamProg.body) == 1)
 		foamProgSetHasSingleStmt(foam);
-
+#endif
 	inuProgInit(foam);
 
 	/* -- perform dflow analysis on prog */
@@ -603,6 +605,7 @@ inuProgSizeComputeWithConsts(Foam foam, Foam prog, int constNum)
 	switch(foamTag(foam)) {
 
 	case FOAM_OCall: 
+		prog->foamProg.size++;
 		foamProgUnsetHasNoOCalls(prog);
 		break;
 
@@ -622,16 +625,19 @@ inuProgSizeComputeWithConsts(Foam foam, Foam prog, int constNum)
 		prog->foamProg.size += newProg->foamProg.size;
 		foamProgSetHasConsts(prog);
 
+		prog->foamProg.size++;
 		break;
 	}
-		
+	case FOAM_SInt:
+	case FOAM_BInt:
+	case FOAM_Par:
+	case FOAM_BCall:
+	case FOAM_Cast:
+		break;
 	default:
+		prog->foamProg.size++;
 		break;
 	}
-
-	prog->foamProg.size++;
-
-	
 
 }
 

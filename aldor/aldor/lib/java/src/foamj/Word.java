@@ -105,6 +105,10 @@ public interface Word {
             return r;
         }
 
+        public static Word fromGener(Gener r) {
+            return r;
+        }
+
         public static Word fromValue(Value v) {
             if (v == null) return null;
             else return v.asWord();
