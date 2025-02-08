@@ -27,6 +27,7 @@ java_test_blacklist   = $(library)
 exec_test_blacklist   = $(library)
 
 @BUILD_JAVA_TRUE@javalibrary := $(library)
+@BUILD_LISP_TRUE@lisplibrary := $(library)
 
 libraryname	:= foam
 

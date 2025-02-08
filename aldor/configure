@@ -714,6 +714,8 @@ GC
 MK_GENERATOR_COROUTINES_FALSE
 MK_GENERATOR_COROUTINES_TRUE
 LIB_CC_FLAGS
+BUILD_LISP_FALSE
+BUILD_LISP_TRUE
 BUILD_LISP
 BUILD_JAVA_FALSE
 BUILD_JAVA_TRUE
@@ -5236,6 +5238,14 @@ else $as_nop
   BUILD_LISP=no
 fi
 
+
+ if test x$(BUILD_LISP) = x; then
+  BUILD_LISP_TRUE=
+  BUILD_LISP_FALSE='#'
+else
+  BUILD_LISP_TRUE='#'
+  BUILD_LISP_FALSE=
+fi
 
 
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: JAVA $BUILD_JAVA unit tests: $JUNIT_JAR" >&5
@@ -14240,6 +14250,10 @@ Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${BUILD_JAVA_TRUE}" && test -z "${BUILD_JAVA_FALSE}"; then
   as_fn_error $? "conditional \"BUILD_JAVA\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${BUILD_LISP_TRUE}" && test -z "${BUILD_LISP_FALSE}"; then
+  as_fn_error $? "conditional \"BUILD_LISP\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${MK_GENERATOR_COROUTINES_TRUE}" && test -z "${MK_GENERATOR_COROUTINES_FALSE}"; then
