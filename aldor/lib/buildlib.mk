@@ -25,7 +25,7 @@ include $(top_builddir)/lib/config.mk
 include $(top_srcdir)/mk/step.mk
 include $(top_srcdir)/mk/topsort.mk
 
-STEPS := ALDOR AO2C AO2FM AR DEP FOAMJ JAR JAR JAVAC SRCJAR
+STEPS := ALDOR AO2C AO2FM AR DEP FOAMJ JAR JAR JAVAC SRCJAR LISP
 QUIET_STEPS := ALDORTEST ALDORTESTJ ALDORTESTEXE
 
 $(call am_define_steps, $(STEPS))
@@ -180,6 +180,16 @@ all: $(addsuffix .fm,$(library))
 all: $(if $(_withdocs),$(patsubst %,$(librarydocdir)/tex/gen/%.tex,$(docdomains)),)
 ifeq ($(bytecode_only),)
 all: $(addsuffix .c,$(library))
+endif
+
+ifneq ($(BUILD_LISP),)
+.PHONY: all-lsp
+all-lsp: $(patsubst %,%.lsp,$(lisplibrary))
+$(patsubst %,%.lsp,$(lisplibrary)): %.lsp: %.ao
+	$(AM_V_LISP) \
+	$(aldorexedir)/aldor $(aldor_common_args) $($*_lopts) -Flsp $*.ao
+
+all: all-lsp
 endif
 
 ifneq ($(BUILD_JAVA),)

@@ -44,6 +44,7 @@ library =		\
 	tuple
 
 @BUILD_JAVA_TRUE@javalibrary := $(library)
+@BUILD_JAVA_TRUE@lisplibrary := $(library)
 
 libraryname	:= foamlib
 
