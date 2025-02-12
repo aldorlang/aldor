@@ -23,6 +23,7 @@ extern SymeList tfSetSymesFn(TForm, SymeList);
  *
  *****************************************************************************/
 
+// Note that the order is fixed - gen0RtArgHash and fricas need to agree
 enum tformTag {
     TF_START,
     TF_SYM_START = TF_START,
@@ -47,7 +48,6 @@ enum tformTag {
 	TF_Enumerate,
 	TF_Forward,
 	TF_Generator,
-	TF_XGenerator,
 	TF_If,
 	TF_Instance,
 	TF_Join,
@@ -68,6 +68,7 @@ enum tformTag {
 	TF_Variable,
 	TF_With,
         TF_Except,
+	TF_XGenerator,
     TF_NODE_LIMIT,
     TF_LIMIT = TF_NODE_LIMIT
 };
