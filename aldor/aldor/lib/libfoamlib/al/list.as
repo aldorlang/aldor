@@ -246,7 +246,7 @@ List(S: Type): ListCategory S with == FakedConditionalOperations S add {
 
 	tails(l: %): Generator % == generate {
 	        ll := l;
-		while l repeat {
+		while ll repeat {
 			-- Save the tail first to allow clients to update it.
 			tl := rest ll;
 			yield ll;
