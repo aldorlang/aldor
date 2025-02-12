@@ -58,14 +58,16 @@ fmtests := x rectest enumtest clos strtable1 simple apply \
 ctests  := rectest enumtest multinever maptuple cimp1 \
            gener0 xit xits xiter lit xarr
 otests  := enumtest rec2
-xtests := enumtest cross seq small lit xit xits xiter generlist xmap xfold genrec
+xtests := enumtest cross seq small lit xit xits xiter generlist xmap xfold genrec \
+		testlist
 
 jtests := simple_j enumtest run_j halt gener0 xit xiter
 junittests := JExportTest JThrowTest
 jruntests := small jimport jimport_opt jimp0 jimp1 jlist jexport jexport1 jexport2 \
 	     envname jexn jthrow xiter xit genlist0a genlist1a gencross0 gencross1 \
-	     xgenerpkg0 xgenerpkg1 xmap where1 xdom gdom xfold gencross_empty genrec
-lsptests  := enumtest gener0 genlist0a
+	     xgenerpkg0 xgenerpkg1 xmap where1 xdom gdom xfold gencross_empty genrec \
+	     testlist
+lsptests  := enumtest gener0 genlist0a testlist
 
 out/ao/lself.ao: out/ao/lself0.ao
 out/ao/lself2.ao: out/ao/lself0.ao
@@ -105,6 +107,7 @@ simple_j_AXLFLAGS=-Q2
 jimport_opt_AXLFLAGS=-Q9 -Qinline-all
 xarr_opts = -Q9 -Qinline-all
 xfold_opts = -Q3
+testlist_opts = -Q3
 
 #badtests := opt1 jcatch fcall
 badtests := jcatch fcall
