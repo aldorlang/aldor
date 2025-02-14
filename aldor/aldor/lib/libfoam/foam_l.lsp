@@ -20,7 +20,7 @@
  compile-as-file cases
 
  |Clos| |Char| |Bool| |Byte| |HInt| |SInt| |BInt| |SFlo| |DFlo| |Ptr| 
- |Word| |Arb| |Env| |Level| |Arr| |Record| |Gener| |GenIter|
+ |Word| |Arb| |Env| |Level| |Arr| |Record| |Gener| |Nil| |GenIter|
 
  |ClosInit| |CharInit| |BoolInit| |ByteInit| |HIntInit| |SIntInit| 
  |BIntInit| |SFloInit| |DFloInit| |PtrInit| |WordInit| |ArbInit| |EnvInit|
@@ -676,9 +676,10 @@
 (defmacro defcoroutine (cr-name type env temps &rest body)
   `(progn (defun ,(caar type) ,(mapcar #'car (cadr type))
 	    (typed-let ,temps ,@body))
-	  (alloc-prog-info #',(caar type) (make-FoamProgInfoStruct))
-	  (defconstant ,cr-name
-	    (list #',(caar type) (lambda (,(car env)) ,(cadr env))))))
+	  (let ((the-cr #',(caar type)))
+	    (alloc-prog-info the-cr (make-FoamProgInfoStruct))
+	    (defconstant ,cr-name
+	      (list the-cr (lambda (,(car env)) ,(cadr env))))))
 
 (defmacro defspecials (&rest lst)
   `(proclaim '(special ,@lst)))

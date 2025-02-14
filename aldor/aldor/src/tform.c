@@ -8489,7 +8489,6 @@ struct tform_info tformInfoTable[] = {
 	{TF_Enumerate,	"Enumeration",  "Enumeration",  0, 1},
 	{TF_Forward,	"Forward",      "Forward",      0, 1},
 	{TF_Generator,	"Generator",    "Generator",    0, 1},
-	{TF_XGenerator,	"XGenerator",   "XGenerator",    0, 1},
 	{TF_If,		"If",           "If",           0, 3},
 	{TF_Instance,	"Instance",     "Instance",     0, 2},
 	{TF_Join,	"Join",         "Join",         0, TF_NARY},
@@ -8510,6 +8509,7 @@ struct tform_info tformInfoTable[] = {
 	{TF_Variable,	"Variable",     "Variable",     0, 1},
 	{TF_With,	"With",         "With",         0, 2},
 	{TF_Except,	"Except",       "Except",       0, 2},
+	{TF_XGenerator,	"XGenerator",   "XGenerator",   0, 1},
 
 	{TF_LIMIT,	"LIMIT",        "LIMIT",        0, 0}
 };

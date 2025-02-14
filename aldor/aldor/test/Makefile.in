@@ -58,13 +58,16 @@ fmtests := x rectest enumtest clos strtable1 simple apply \
 ctests  := rectest enumtest multinever maptuple cimp1 \
            gener0 xit xits xiter lit xarr
 otests  := enumtest rec2
-xtests := enumtest cross seq small lit xit xits xiter generlist xmap xfold genrec
+xtests := enumtest cross seq small lit xit xits xiter generlist xmap xfold genrec \
+		testlist
 
 jtests := simple_j enumtest run_j halt gener0 xit xiter
 junittests := JExportTest JThrowTest
 jruntests := small jimport jimport_opt jimp0 jimp1 jlist jexport jexport1 jexport2 \
 	     envname jexn jthrow xiter xit genlist0a genlist1a gencross0 gencross1 \
-	     xgenerpkg0 xgenerpkg1 xmap where1 xdom gdom xfold gencross_empty genrec
+	     xgenerpkg0 xgenerpkg1 xmap where1 xdom gdom xfold gencross_empty genrec \
+	     testlist
+lsptests  := enumtest gener0 genlist0a testlist
 
 out/ao/lself.ao: out/ao/lself0.ao
 out/ao/lself2.ao: out/ao/lself0.ao
@@ -104,6 +107,7 @@ simple_j_AXLFLAGS=-Q2
 jimport_opt_AXLFLAGS=-Q9 -Qinline-all
 xarr_opts = -Q9 -Qinline-all
 xfold_opts = -Q3
+testlist_opts = -Q3
 
 #badtests := opt1 jcatch fcall
 badtests := jcatch fcall
@@ -158,12 +162,14 @@ _aptests := $(sort $(aptests))
 _jruntests  := $(if $(BUILD_JAVA), $(sort $(jruntests)),)
 _junittests := $(if $(HAS_JUNIT), $(sort $(junittests)),)
 _jtests     := $(if $(BUILD_JAVA), $(sort $(jtests) $(_jruntests)),)
+_lsptests   := $(if $(BUILD_LISP), $(sort $(lsptests)))
 _xtests     := $(sort $(xtests))
 _otests     := $(sort $(otests) $(_xtests))
 _ctests     := $(sort $(ctests) $(_otests))
 _fmtests    := $(sort $(fmtests) $(_jtests) $(_ctests))
 _aotests    := $(sort $(_fmtests) $(_ctests) $(_xtests))
 _alltests   := $(sort $(_aptests) $(_fmtests) $(_ctests) $(_otests) $(_xtests) $(_jtests))
+$(warning tests $(lsptests) .. $(_lsptests))
 
 nfile := -Nfile=$(aldorsrcdir)/aldor.conf
 
@@ -175,13 +181,24 @@ $(patsubst %, out/fm/%.fm, $(utils) $(_fmtests)): out/fm/%.fm: out/ao/%.ao
 	mkdir -p $$(dirname $@);	\
 	$(AM_DBG_FM) $(aldorexedir)/aldor $(nfile) -Ffm=$(builddir)/$@ $<
 
+.PHONY: all-lsp
+all-lsp: $(patsubst %, out/lsp/%.lsp, $(utils) $(_lsptests))
+
+$(patsubst %, out/lsp/%.lsp, $(utils) $(_fmtests)): out/lsp/%.lsp: out/ao/%.ao
+	$(AM_V_ALDOR_LSP)		\
+	mkdir -p $$(dirname $@);	\
+	$(AM_DBG_FM) $(aldorexedir)/aldor $(nfile) -Flsp=$(builddir)/$@ $<
+
+.PHONY: all-c
+all-c: $(patsubst %,out/c/%.c,$(_ctests))
+
 $(patsubst %, out/c/%.c, $(utils) $(_ctests)): out/c/%.c: out/ao/%.ao
 	$(AM_V_ALDOR_GENC)		\
 	mkdir -p $$(dirname $@);	\
 	$(AM_DBG_C) $(aldorexedir)/aldor $(nfile) -Fc=$(builddir)/$@ $<
 
-.PHONY: all-c
-all-c: $(patsubst %,out/c/%.c,$(_ctests))
+.PHONY: all-java
+all-java: $(patsubst %,out/java/aldorcode/%.java,$(_jtests))
 
 $(patsubst %, out/java/aldorcode/%.java, $(utils) $(_jtests)): out/java/aldorcode/%.java: out/fm/%.fm
 	$(AM_V_ALDOR_JAVA)		\
@@ -302,6 +319,35 @@ $(addsuffix -junittest,$(_junittests)): %-junittest: out/java/%.class
 	         org.junit.runner.JUnitCore $*
 
 check-java: $(patsubst %,%-javatest,$(_jruntests)) $(patsubst %,%-junittest,$(_junittests))
+
+$(patsubst %,out/lsp/%_in.lsp, $(_lsptests)): out/lsp/%_in.lsp: Makefile
+	mkdir -p out/lsp;				\
+	(echo '(load "$(srcdir)/prelude.lsp")';		\
+	 echo '(load "$(foamsrcdir)/foam_l.lsp")';	\
+	 echo '(load "$(foamdir)/al/runtime.lsp")';	\
+	 echo '(load "$(foamlibdir)/al/array.lsp")';	\
+	 echo '(load "$(foamlibdir)/al/sinteger.lsp")';	\
+	 echo '(load "$(foamlibdir)/al/list.lsp")';	\
+	 echo '(load "$(foamlibdir)/al/lang.lsp")';	\
+	 echo '(load "$(foamlibdir)/al/character.lsp")';	\
+	 echo '(load "$(foamlibdir)/al/textwrit.lsp")';	\
+	 echo '(load "$(foamlibdir)/al/basic.lsp")';	\
+	 echo '(load "$(foamlibdir)/al/bool.lsp")';	\
+	 echo '(load "$(foamlibdir)/al/string.lsp")';	\
+	 echo '(load "$(foamlibdir)/al/foamcat.lsp")';	\
+	 echo '(load "$(foamlibdir)/al/opsys.lsp")';	\
+	 echo '(load "$(foamlibdir)/al/segment.lsp")';	\
+	 echo '(load "$(foamlibdir)/al/machine.lsp")';	\
+	 echo '(load "out/lsp/tassert.lsp")';		\
+	 echo '(load "out/lsp/$*.lsp")';		\
+	 echo '(in-package :FOAM-USER)';		\
+	 echo '(|CCall| |G-$*|)') > $@
+
+.PHONY: all-lsp-tests
+all-lsp-tests: $(patsubst %, %-lsptest, $(_lsptests))
+$(addsuffix -lsptest, $(_lsptests)): %-lsptest: $(srcdir)/prelude.lsp out/lsp/%.lsp out/lsp/%_in.lsp out/lsp/tassert.lsp
+	cat out/lsp/$*_in.lsp
+	sbcl --non-interactive --load out/lsp/$*_in.lsp
 
 $(addsuffix -xtest,$(_xtests)): %-xtest: %.exe
 	$(AM_V_ALDOR_EXE) ./$*.exe

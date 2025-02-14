@@ -18,3 +18,4 @@ assertTrue(bad? BAD);
 assertFalse(bad? GOOD);
 
 
+
