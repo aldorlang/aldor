@@ -53,8 +53,8 @@ aldor_common_args :=				\
 AM_DBG := $(if $(filter 1,$(DBG)), gdb --args, $(DBG))
 $(addsuffix .c, $(library)): %.c: %.ao %.dep
 	$(AM_V_AO2C)				\
-	$(AM_DBG) $(aldorexedir)/aldor			\
-	  $(aldor_common_args)			\
+	$(AM_DBG) $(aldorexedir)/aldor		\
+	  $(aldor_common_args)	$($*_AXLFLAGS)	\
 	  -Fc=$(builddir)/$@			\
 	  $<	
 
