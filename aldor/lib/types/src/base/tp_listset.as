@@ -17,6 +17,7 @@ ListSet(T: PrimitiveType): PrimitiveType with
     union: (%, %) -> %
     empty: () -> %
     empty?: % -> Boolean
+    unique: % -> T
     #: % -> MachineInteger
 == List T add
     Rep == List T
@@ -29,6 +30,10 @@ ListSet(T: PrimitiveType): PrimitiveType with
     member?(t: T, s: %): Boolean == _or/(elt = t for elt in rep s)
     remove(s: %, t: T): % == per [ x for x in s | x ~= t]
 
+    unique(s: %): T ==
+        empty? s or not empty? rest rep s => error "not unique"
+	first rep s
+	
     empty?(s: %): Boolean == empty? rep s
 
     (a: %) + (b: %): % == per append!(copy rep a, [elt for elt in b | not member?(elt, a)])

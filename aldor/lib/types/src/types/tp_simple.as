@@ -60,7 +60,7 @@ Operators: with
     import from MachineInteger
     import from List Expression
 
-    unifyCounter: CallCounter := counter("unify", false) 
+    unifyCounter: CallCounter := counter("unify", false)
     unify(tf1: TypeTerm, tf2: TypeTerm): UnificationResult ==
         count := open(unifyCounter)
         writer(count) << "(Unify " << count << ": " << tf1 << " <--> " << tf2 << newline

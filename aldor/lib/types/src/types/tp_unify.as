@@ -11,6 +11,7 @@ UnificationResult: SExpressionOutputType with
     result: (Substitution, ListSet Symbol) -> %
     failed: () -> %
     failed?: % -> Boolean
+    unified?: % -> Boolean
 
     validate: % -> List String
 == add
@@ -29,7 +30,8 @@ UnificationResult: SExpressionOutputType with
 
     failed(): % == theFailed;
     failed?(r: %): Boolean == rep(r).failed
-
+    unified?(r: %): Boolean == not failed? r
+    
     emptyResult(): % == per [false, empty(), [], []]
     sigma(r: %): Substitution == rep(r).subst
     fv(r: %): ListSet Symbol == rep(r).fv
@@ -156,7 +158,8 @@ UnificationTools: with
             maybeOther: Partial Expression := lookup(sigma final, var)
             if failed? maybeOther then
                 sig0: Substitution := sigma(var, expr)
-                final := result(addSubst(sigma( (var1, sig0 expr1) for (var1, expr1) in sigma final), var, expr), fv final - [var])
+                final := result(addSubst(sigma( (var1, sig0 expr1) for (var1, expr1) in sigma final), var, expr),
+		                fv final - [var])
             else
                 -- replace final with substituted and add (var, expr) as a new substitution
                 other := retract maybeOther

@@ -18,22 +18,7 @@ subdir		:= $(subst $(abs_top_builddir)/,,$(abs_builddir))
 # Build starts here..
 
 library=\
-	tp_counter	\
-	tp_env		\
-	tp_infer2	\
-	tp_ptt		\
-	tp_sat		\
-	tp_scopes	\
-	tp_state	\
-	tp_test		\
-	tp_tposs	\
-	tp_tposs2	\
-	tp_typeterm	\
-	tp_unify2	\
-	tp_testcases
-#	tp_simple	
-
-@BUILD_JAVA_TRUE@javalibrary := $(library)
+	tp_hm \
 
 include $(abs_top_srcdir)/lib/types/src/common.mk
 

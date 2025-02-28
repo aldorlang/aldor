@@ -2,10 +2,15 @@
 #include "aldorio"
 #pile
 
-TPoss: Join(PrimitiveType, SExpressionOutputType) with
+TPossOld: Join(PrimitiveType, SExpressionOutputType) with
+    empty?: % -> Boolean
+    unique?: % -> Boolean
+    unique: % -> TypeTerm
     empty: () -> %
     addOne: (%, TypeTerm, ParamSet) -> %
-    find: (%, TypeTerm) -> Partial ParamSet
+    findFirst: (%, TypeTerm) -> Partial ParamSet
+    findFirst: (%, TypeTerm, (TypeTerm, TypeTerm) -> SatResult) -> Partial ParamSet
+    find: (%, TypeTerm, (TypeTerm, TypeTerm) -> SatResult) -> %
     bracket: Generator TypeTerm -> %
     bracket: Tuple TypeTerm -> %
     bracket: Generator Cross(TypeTerm, ParamSet) -> %
@@ -14,22 +19,29 @@ TPoss: Join(PrimitiveType, SExpressionOutputType) with
 
     #: % -> MachineInteger
 
-    -- temp
-    satisfies?: (TypeTerm, TypeTerm) -> Boolean
 == add
     TPossItem == Record(ptt: TypeTerm, psub: ParamSet)
     Rep == List TPossItem
     import from Rep, TPossItem
     import from List Substitution
     import from Partial Rep
-    import from UnificationTools
+    import from UnificationTools2
+    import from TypeSatisfier
+    import from SatResult
     import from Substitution
     import from MachineInteger
     import from BooleanFold
     import from Expression
     import from ParamSet
+    import from Unifier
     
     empty(): % == per []
+    empty?(tp: %): Boolean == empty? rep tp
+    unique?(tp: %): Boolean == not empty? tp and empty? rest rep tp
+
+    unique(tp: %): TypeTerm ==
+        not unique? tp => error "not unique"
+        (first rep tp).ptt
 
     bracket(g: Generator TypeTerm): % ==
         elt(tt: TypeTerm): TPossItem ==
@@ -76,24 +88,27 @@ TPoss: Join(PrimitiveType, SExpressionOutputType) with
        not failed? merged => per retract merged
        per cons([tt, tts], rep tp)
 	
-    satisfies?(s: TypeTerm, t: TypeTerm): Boolean ==
-	constant? t => s = t
-	ur := unify(constant expr s, t)
-	not failed? ur
-
     local satisfies?(ps: TPossItem, pt: TPossItem): Boolean ==
-        if empty? ps.psub and empty? pt.psub then satisfies?(ps.ptt, pt.ptt) else false
+        if empty? ps.psub and empty? pt.psub then test satisfies?(ps.ptt, pt.ptt) else false
 
     local mergeDefs(l1: ParamSet, l2: ParamSet): ParamSet ==
         empty? l1 => l2
     	empty? l2 => l1
 	never
 
-    find(tp: %, tt: TypeTerm): Partial ParamSet ==
+    findFirst(tp: %, tt: TypeTerm): Partial ParamSet ==
+        local sat(a: TypeTerm, b: TypeTerm): SatResult == satisfies?(a, b)
+        findFirst(tp, tt, sat)
+
+    findFirst(tp: %, tt: TypeTerm, sat?: (TypeTerm, TypeTerm) -> SatResult): Partial ParamSet ==
         empty? rep tp => failed
 	candidate := first rep tp
-	satisfies?(tt, candidate.ptt) => [candidate.psub]
-	find(per rest rep tp, tt)
+	sat?(candidate.ptt, tt) => [candidate.psub]
+	findFirst(per rest rep tp, tt, sat?)
+
+    find(tp: %, tt: TypeTerm, sat?: (TypeTerm, TypeTerm) -> SatResult): % ==
+        l0: List Cross(TypeTerm, ParamSet, SatResult) := [(tt1, ps1, sat?(tt1, tt)) for (tt1, ps1) in tp]
+	return [ ((left unifier sr) tt1, (left unifier sr) ps1) for (tt1, ps1, sr) in l0 | sr]
 
     sexpression(tp: %): SExpression ==
         import from Symbol
@@ -103,44 +118,44 @@ TPoss: Join(PrimitiveType, SExpressionOutputType) with
 TestTPoss: with
     testTPoss: () -> ()
 == add
-    import from TypeTerm
-    import from Substitution
-    import from List Substitution
+    import from Assert MachineInteger
     import from Assert TypeTerm
-    import from Partial ParamSet
-    import from TPoss
     import from Expression
+    import from List Substitution
+    import from MachineInteger
     import from ParamSet
+    import from Partial ParamSet
+    import from TPossOld
+    import from Substitution
+    import from TypeTerm
     
     testTPoss(): () ==
         testBasics()
-	testSat()
 	testQuantifiers()
 
     local testBasics(): () ==
-        tp: TPoss := empty()
+        tp: TPossOld := empty()
 	tp := addOne(tp, fromString "int", empty())
-	assertFalse(failed? find(tp, fromString "int"))
-	assertTrue(failed? find(tp, fromString "wibble"))
-
-    local testSat(): () ==
-        tt1: TypeTerm := fromString "int"
-	tt2: TypeTerm := fromString "(forall (x) x)"
-	assertTrue(satisfies?(tt1, tt2))
-	assertFalse(satisfies?(tt2, tt1))
-	tt1 := fromString "(forall (x) (apply plus x one))"
-	tt2 := fromString "(forall (a b) (apply plus a b))"
-	assertTrue(satisfies?(tt1, tt2))
-	assertFalse(satisfies?(tt2, tt1))
+	assertFalse(failed? findFirst(tp, fromString "int"))
+	assertTrue(failed? findFirst(tp, fromString "wibble"))
 
     local testQuantifiers(): () ==
 	tp := addOne(empty(), fromString "(forall (x) x)", empty())
-	assertFalse(failed? find(tp, fromString "int"))
+	assertFalse(failed? findFirst(tp, fromString "int"))
+	assertEquals(1, #tp)
 
 	tp := addOne(empty(), fromString "int", empty())
 	tp := addOne(tp, fromString "(forall (x) x)", empty())
+	assertEquals(1, #tp)
 	stdout << "poss " << tp << newline
-	assertFalse(failed? find(tp, fromString "(forall (k) k)"))
+	assertFalse(failed? findFirst(tp, fromString "(forall (k) k)"))
+	stdout << "int + Vx.x --> " << tp << newline
+	
+	stdout << "Vx.x + int " << newline
+	tp := addOne(empty(), fromString "(forall (x) x)", empty())
+	tp := addOne(tp, fromString "int", empty())
+	assertEquals(1, #tp)
+	stdout << "Vx.x + int --> " << tp << newline
 	
 #if ALDORTEST
 #include "types"

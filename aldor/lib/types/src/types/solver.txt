@@ -1,0 +1,94 @@
+
+
+Program:
+
+f(x) == x = 0 ? 1 : x * f(x-1)
+k(x) == list(x, x+1, x-1)
+
+reverse(l) = reverse1(l, [])
+reverse1(l,r) == empty? l ? r : reverse1(rest l, cons(first l, r))
+
+constraint:
+f: T1
+x: T2
+f(x): T3
+x: T4
+0: T5
+=: T6
+1: T7
+
+x*f(x-1): t99
+*: t98
+
+t98 has form (a1, a2) -> a3
+
+as network
+- equality
+- subtype
+- select
+
+Operations:
+- building..
+
+absyn(ab, t) -> node
+introduce(t) -> node
+
+hasTypes(t, list(node))
+fcall(t, argTypes, rettype)
+eq(t1, t2)
+
+wildcard: () -> a
+subtype: (t1, t2) -> link
+
+
+InferGraph: with
+    absyn!: (%, AbSyn, Node)
+    fnCall: (%, args, ret)
+    ifStmt: (%, t1, t2, t3)
+
+
+fn call:
+- argument selection
+- tuples
+- dependencies
+
+--------
+
+f: Vx.List(x)
+f(x)
+
+Graph:
+
+f: T1
+x: T2
+
+f Satisfies Vx.map(comma(x), comma(list x))
+
+f' --> T1 -> map(comma(T3), comma(list T3))
+x' --> T2
+
+Fn call.. 
+f(x) --> T4
+
+f: (a, a) -> list a
+f: (a, b) -> cross(a, b)
+
+f(1, "aa")
+
+f: T1
+1: T2
+"aa": T3
+f(1, "aa"): T4
+
+from scope,
+T1 = either(Va.(a, a) -> list a, Vab.(a, b) -> cross(a, b)
+
+T1 --> oneOf([(T5, T5) -> T6], [(T7,T8) -> T9])
+T6 --> list T5
+T9 --> cross(T7, T9)
+
+By fncall:
+T2 --> oneOf(T5, T7)
+T3 --> oneOf(T5, T8)
+
+fncall(T1, 

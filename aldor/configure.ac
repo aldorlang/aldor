@@ -227,5 +227,13 @@ AC_CONFIG_FILES(
    lib/ax0/src/Makefile
    lib/ax0/src/al/Makefile
    lib/ax0/test/Makefile
+
+   dnl Type library
+   lib/types/Makefile
+   lib/types/include/Makefile
+   lib/types/src/Makefile
+   lib/types/src/base/Makefile
+   lib/types/src/types/Makefile
+   lib/types/src/hm/Makefile
 )
 AC_OUTPUT

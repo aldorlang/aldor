@@ -1,4 +1,4 @@
-SUBDIRS=types
+SUBDIRS=base types hm
 
 @BUILD_JAVA_TRUE@JAVA_SUBDIRS = $(SUBDIRS)
 @BUILD_JAVA_TRUE@JAVA_TARGET = types.jar types-sources.jar
@@ -6,18 +6,20 @@ SUBDIRS=types
 lib_LIBRARIES = libtypes.a
 
 libtypes_a_SOURCES = \
-	types/tp_annotated.c	\
+	base/tp_annotated.c	\
+	base/tp_expr.c		\
+	base/tp_listset.c	\
+	base/tp_sx.c		\
 	types/tp_counter.c	\
 	types/tp_env.c		\
-	types/tp_expr.c		\
-	types/tp_infer.c	\
-	types/tp_listset.c	\
+	types/tp_infer2.c	\
+	types/tp_scopes.c	\
 	types/tp_subst.c	\
-	types/tp_sx.c		\
 	types/tp_test.c		\
 	types/tp_tposs.c	\
 	types/tp_typeterm.c	\
-	types/tp_unify.c
+	types/tp_unify2.c	\
+	hm/tp_hm.as
 
 datalibdir = $(datadir)/lib
 datalib_DATA = libtypes.al $(JAVA_TARGET)

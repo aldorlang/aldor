@@ -6,6 +6,7 @@ CallCount: OutputType with
     new: CallCounter -> %
     <<: (TextWriter, %) -> TextWriter
     writer: % -> TextWriter
+    lineWriter: % -> TextWriter
     close: % -> ()
 == add
     Rep == Record(n: MachineInteger, d: MachineInteger, cc: CallCounter)
@@ -13,17 +14,20 @@ CallCount: OutputType with
 
     new(cc: CallCounter): % == per [count(cc), depth(cc), cc]
     close(c: %): () == close(rep(c).cc)
-    (o: TextWriter) << (c: %): TextWriter == o << rep(c).d << "," << rep(c).n
+    (o: TextWriter) << (c: %): TextWriter == o << rep(c).n << "," << rep(c).d
 
-    writer(c: %): TextWriter == writer rep(c).cc
+    writer(c: %):     TextWriter == writer rep(c).cc
+    lineWriter(c: %): TextWriter == writer(c) << name(rep(c).cc) << ": " << c << " "
 
 CallCounter: with
     counter: String -> %
     counter: (String, Boolean) -> %
     open: % -> CallCount
+    name: % -> String
     depth: % -> MachineInteger
     count: % -> MachineInteger
     close: % -> ()
+    current: % -> CallCount
 
     writer: % -> TextWriter
 
@@ -37,6 +41,9 @@ CallCounter: with
 
     depth(cc: %): MachineInteger == rep(cc).d
     count(cc: %): MachineInteger == rep(cc).c
+    name(cc: %): String == rep(cc).name
+
+    current(cc: %): CallCount == new(cc)$CallCount
 
     open(cc: %): CallCount ==
         count := new(cc)$CallCount

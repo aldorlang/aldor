@@ -6,10 +6,10 @@ Env: with
     empty: () -> %
     meanings: (%, Symbol) -> List TypeTerm
     put!: (%, Symbol, TypeTerm) -> ()
-    putParam!: (%, Symbol, Symbol) -> ()
+    putParamType!: (%, Symbol, Symbol) -> ()
     push: % -> %
     param?: (%, Symbol) -> Boolean
-    ptype: (%, Symbol) -> Symbol
+    paramType: (%, Symbol) -> Symbol
 == add
     Tbl == HashTable(Symbol, List TypeTerm)
     PTbl == HashTable(Symbol, Symbol)
@@ -33,7 +33,7 @@ Env: with
     put!(e: %, sym: Symbol, t: TypeTerm): () ==
         (first rep(e)).tbl.sym := cons(t, (first rep(e)).tbl.sym)
 
-    putParam!(e: %, sym: Symbol, tsym: Symbol): () ==
+    putParamType!(e: %, sym: Symbol, tsym: Symbol): () ==
         first(rep(e)).params.sym := tsym
 
     push(e: %): % == per cons(emptyLevel(), rep e)
@@ -41,4 +41,4 @@ Env: with
     param?(e: %, sym: Symbol): Boolean ==
         not failed? find(sym, first(rep(e)).params)
 
-    ptype(e: %, sym: Symbol): Symbol == first(rep(e)).params.sym
+    paramType(e: %, sym: Symbol): Symbol == first(rep(e)).params.sym

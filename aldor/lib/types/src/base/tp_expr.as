@@ -2,21 +2,21 @@
 #include "aldorio"
 #pile
 
+-- FIXME: Alphabet!
 Expression: SExpressionType with
     PrimitiveType
     term?: % -> Boolean
     term: % -> Symbol
     expr: Symbol -> %
 
-    apply?: % -> Boolean
-    
     terms: % -> ListSet Symbol
 
+    apply: (%, List %) -> %
+    apply?: % -> Boolean -- FIXME..
     application?: % -> Boolean
     applicationOp: % -> %
     applicationArgs: % -> List %
-    apply: (%, List %) -> %
-
+    
     comma?: % -> Boolean
     comma: List % -> %
     commaParts: % -> List %
@@ -27,7 +27,7 @@ Expression: SExpressionType with
     declareVar: % -> Symbol
     declareType: % -> %
     declare: (Symbol, %) -> %
-    
+
     if?: % -> Boolean
     _if: (%, %, %) -> %
     ifTest: % -> %
@@ -44,9 +44,18 @@ Expression: SExpressionType with
     paramExpr: % -> Expression
     param: (Symbol, %) -> %
 
-    --psetParamExpr: (%, Symbol) -> Partial %
-    --psetSymbols: % -> List Cross(Symbol, %)
-    --psetExpr: % -> Partial %
+    def?: % -> Boolean
+    defLhs: % -> %
+    defRhs: % -> %
+    def: (%, %) -> %
+
+    let?: % -> Boolean
+    _let: (List %, %) -> %
+    letDefs: % -> List Expression
+    letBody: % -> Expression
+
+    unknown: () -> %
+    unknown?: % -> Boolean
 
     parts: % -> List %
     contains?: (%, Symbol) -> Boolean
@@ -54,15 +63,21 @@ Expression: SExpressionType with
     equalMod: ((Symbol, Symbol) -> Boolean, %, %) -> Boolean
 
     search: (%, %) -> Partial %
+    all: (%, %) -> List %
 == add
     App == Record(op: %, args: List %)
     Comma == List %
     Lambda == Record(vars: List %, body: %)
     If == Record(test: %, ifPart: %, elsePart: %)
     Declare == Record(var: Symbol, type: %)
-    Param  == Record(sym: Symbol, rhs: %) -- maybe could be define
-    Rep == Union(term: Symbol, app: App, comma: Comma, lambda: Lambda, _if: If, declare: Declare, param: Param)
-    import from Rep, App, Symbol, Param
+    Param  == Record(sym: Symbol, rhs: %)
+    Def == Record(lhs: %, rhs: %)
+    Let  == Record(defs: List %, body: %)
+    Unk  == Cross()
+    Rep == Union(term: Symbol, app: App, comma: Comma, lambda: Lambda, _if: If, declare: Declare, pp: Param, _let: Let, def: Def, u: Unk)
+
+    import from Rep, App, Symbol, Param, Def
+    import from Fold2 List %
     import from List %
     import from BooleanFold
     import from MachineInteger
@@ -85,7 +100,7 @@ Expression: SExpressionType with
     emptyComma?(e: %): Boolean == comma? e and empty? commaParts e
 
     lambda?(e: %): Boolean == rep(e) case lambda
-    lambda(l: List %, body: %): % == per [[l, body]]
+    lambda(l: List %, body: %): % == per [lambda==[l, body]]
     lambdaBody(e: %): % == rep(e).lambda.body
     lambdaVars(e: %): List % == rep(e).lambda.vars
 
@@ -100,10 +115,23 @@ Expression: SExpressionType with
     declareType(e: %): % == rep(e).declare.type
     declare(v: Symbol, e: %): % == per [declare==[v, e]]
 
-    param?(e: %): Boolean == rep(e) case param
-    paramVar(e: %): Symbol == rep(e).param.sym
-    paramExpr(e: %): Expression == rep(e).param.rhs
-    param(v: Symbol, e: %): % == per [param==[v, e]]
+    param?(e: %): Boolean == rep(e) case pp
+    paramVar(e: %): Symbol == rep(e).pp.sym
+    paramExpr(e: %): Expression == rep(e).pp.rhs
+    param(v: Symbol, e: %): % == per [pp==[v, e]]
+
+    def?(e: %): Boolean == rep(e) case def
+    defLhs(e: %): % == rep(e).def.lhs
+    defRhs(e: %): % == rep(e).def.rhs
+    def(lhs: %, rhs: %): % == per [def==[lhs, rhs]]
+
+    let?(e: %): Boolean == rep(e) case _let
+    _let(defs: List %, body: %): % == per [_let == [defs, body]]
+    letDefs(e: %): List % == rep(e)._let.defs
+    letBody(e: %): % == rep(e)._let.body
+
+    unknown(): % == per[u==()]
+    unknown?(e: %): Boolean == rep(e) case u
     
     parts(e: %): List % ==
         term? e => []
@@ -113,6 +141,7 @@ Expression: SExpressionType with
 	if? e => [ifTest e, ifPart e, ifElsePart e]
 	declare? e => [declareType e]
 	param? e => [paramExpr e]
+	let? e => cons(letBody e, letDefs e)
         error "Missing case in parts"
 	
     (expr1: %) = (expr2: %): Boolean ==
@@ -120,8 +149,9 @@ Expression: SExpressionType with
             term? expr2 and term expr1 = term expr2
         application? expr1 => application? expr2 and parts expr1 = parts expr2
         comma? expr1 => comma? expr2 and parts expr1 = parts expr2
-        if? expr1 => if? expr2 and parts expr1 = parts expr2
 	declare? expr1 => declare? expr2 and declareVar expr1 = declareVar expr2 and parts expr1 = parts expr2
+        if? expr1 => if? expr2 and parts expr1 = parts expr2
+	let? expr1 => let? expr2 and parts expr1 = parts expr2
 	param? expr1 => param? expr2 and paramVar expr1 = paramVar expr2 and parts expr1 = parts expr2
         error "Missing case in equal"
 
@@ -132,7 +162,9 @@ Expression: SExpressionType with
         comma? expr1 => comma? expr2 and _and/(equalMod(symEq, p1, p2) for p1 in parts expr1 for p2 in parts expr2)
         if? expr1 => if? expr2 and _and/(equalMod(symEq, p1, p2) for p1 in parts expr1 for p2 in parts expr2)
 	declare? expr1 => declare? expr2 and equalMod(symEq, declareType(expr1), declareType(expr2))
+        let? expr1 => let? expr2 and _and/(equalMod(symEq, p1, p2) for p1 in parts expr1 for p2 in parts expr2)
 	param? expr1 => param? expr2 and paramVar expr1 = paramVar expr2 and equalMod(symEq, paramExpr(expr1), paramExpr(expr2))
+	unknown? expr1 => unknown? expr2
         error "Missing case in equalMod"
 
     contains?(e: %, v: Symbol): Boolean ==
@@ -154,14 +186,21 @@ Expression: SExpressionType with
 	   if not failed? maybe then return maybe
 	failed
 
+    all(e: %, tgt: %): List % ==
+        e = tgt => [e]
+	(append!,[])/(all(p, tgt) for p in parts e)
+
     sexpression(e: %): SExpression ==
+        import from MachineInteger
         term? e => sexpr term e
 	apply? e => cons(sexpr(-"apply"), cons(sexpression applicationOp e, [sexpression arg for arg in applicationArgs e]))
 	comma? e => cons(sexpr(-"comma"), [sexpression p for p in commaParts e])
 	lambda? e => [sexpr(-"lambda"), [sexpression v for v in lambdaVars e], sexpression lambdaBody(e)]
 	if? e => [sexpr(-"if"), sexpression ifTest e, sexpression ifPart e, sexpression ifElsePart e]
 	declare? e => [sexpr(-":"), sexpr declareVar e, sexpression declareType e]
+	let? e => [sexpr(-"let"), [sexpression v for v in letDefs e], sexpression letBody e]
 	param? e => [sexpr(-"param"), sexpr paramVar e, sexpression paramExpr e]
+	unknown? e => sexpr(-"*unknown*")
 	stdout << "unexpected"
 	never
 
@@ -177,6 +216,9 @@ Expression: SExpressionType with
 	s0 = -"lambda" =>
 	    sx := rest sx
 	    lambda([parseSExpression sxi for sxi in first sx], parseSExpression first rest sx)
+	s0 = -"let" =>
+	    sx := rest sx
+	    _let([parseSExpression sxi for sxi in first sx], parseSExpression first rest sx)
 	s0 = -"if" =>
 	    sx := rest sx
 	    testPart := parseSExpression first sx
