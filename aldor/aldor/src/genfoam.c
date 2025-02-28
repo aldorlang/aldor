@@ -4140,7 +4140,7 @@ gen0Define(AbSyn absyn)
 		   	 * mis-inherited.
 			 */
 			assert(gen0State->tag == GF_Default ||
-		       	gen0State->tag == GF_DefaultCat);
+			       gen0State->tag == GF_DefaultCat);
 			lhsFoam = gen0SymeInit(syme);
 		
 			if (!lhsFoam) {
