@@ -188,7 +188,6 @@ testTfSatRec()
 	rtf = symeType(r);
 	s = uniqueMeaning(stab, "s");
 	stf = symeType(s);
-	aprintf("R: %pTForm S: %pTForm\n", rtf, stf);
 
 	testTrue("def eq", tfSatisfies(rtf, stf));
 
