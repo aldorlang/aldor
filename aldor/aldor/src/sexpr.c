@@ -1836,6 +1836,7 @@ int sxiWrite(FILE *outf, SExpr s, ULong iomode)
 	int cc = 0;
 	int fluid(sxiIoMixedCase), fluid(sxiIoKeepSrcPos);
 	int fluid(sxiIoOutPackages);
+	int fluid(sxiWrMaxText);
 
 	if (iomode & SXRW_MixedCase)
 		sxiIoMixedCase = 1;
@@ -1847,6 +1848,8 @@ int sxiWrite(FILE *outf, SExpr s, ULong iomode)
 		sxiIoKeepSrcPos = 0;
 	if (iomode & SXRW_Packages)
 		sxiIoOutPackages = 1;
+	if (iomode & SXRW_NoBreaks)
+		sxiWrMaxText = 1<<30;
 
 	sxiWrLead = 0;
 	sxiShareVStart();
@@ -3055,6 +3058,15 @@ sxiFormat(SExpr sx)
 	bufAdd1(buf, '\0');
 	return bufLiberate(buf);
 }
+String
+sxiFormatWide(SExpr sx)
+{
+
+	Buffer buf = bufNew();
+	sxiToBufferFormatted(buf, sx, SXRW_MixedCase | SXRW_NoBreaks);
+	bufAdd1(buf, '\0');
+	return bufLiberate(buf);
+}
 
 void 
 sxiToBufferFormatted(Buffer buf, SExpr s, ULong iomode)
@@ -3062,6 +3074,7 @@ sxiToBufferFormatted(Buffer buf, SExpr s, ULong iomode)
 	Scope("sxiToBufferFormatted");
 	int fluid(sxiIoMixedCase), fluid(sxiIoKeepSrcPos);
 	int fluid(sxiIoOutPackages);
+	int fluid(sxiWrMaxText);
 
 	if (iomode & SXRW_MixedCase)
 		sxiIoMixedCase = 1;
@@ -3073,6 +3086,8 @@ sxiToBufferFormatted(Buffer buf, SExpr s, ULong iomode)
 		sxiIoKeepSrcPos = 0;
 	if (iomode & SXRW_Packages)
 		sxiIoOutPackages = 1;
+	if (iomode & SXRW_NoBreaks)
+		sxiWrMaxText = 1<<30;
 
 	sxiToBuffer(buf, s);
 
