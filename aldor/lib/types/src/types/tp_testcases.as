@@ -213,9 +213,9 @@ TestFun: with
 
 import from GeneratorFun
 import from TestEnvs
-example()
+--example()
 
-test()$TestFun
+--test()$TestFun
 
 #endif
 

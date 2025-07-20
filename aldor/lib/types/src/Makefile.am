@@ -1,4 +1,4 @@
-SUBDIRS=base types hm
+SUBDIRS=base types xsubsts
 
 @BUILD_JAVA_TRUE@JAVA_SUBDIRS = $(SUBDIRS)
 @BUILD_JAVA_TRUE@JAVA_TARGET = types.jar types-sources.jar
@@ -19,7 +19,8 @@ libtypes_a_SOURCES = \
 	types/tp_tposs.c	\
 	types/tp_typeterm.c	\
 	types/tp_unify2.c	\
-	hm/tp_hm.as
+	hm/tp_hm.as		\
+	xsubsts/tp_xsubst.c
 
 datalibdir = $(datadir)/lib
 datalib_DATA = libtypes.al $(JAVA_TARGET)

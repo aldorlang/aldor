@@ -47,14 +47,15 @@ Substitution: SExpressionType with
     sigma(sym: Symbol, e: Expression): % == validate(per [ (sym, e)@Subst])
     sigma(pairs: Tuple Subst): % == per [pairs]
 
-    generator(sigma: %): Generator Cross(Symbol, Expression) ==
+    generator(sigma: %): Generator Cross(Symbol, Expression) == (a,b) for (a, b) in rep sigma
+#if 0    
         ll: List Subst := rep sigma
 	len := #ll
 	generate while not empty? ll repeat
 	    (a, b) := first ll
 	    ll := rest ll
 	    yield (a, b)
-	    
+#endif	    
     sigma(g: Generator Subst): % == validate(per [g])
 
     empty?(sigma: %):  Boolean == empty? rep sigma

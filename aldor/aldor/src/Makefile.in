@@ -197,7 +197,9 @@ am_libstruct_a_OBJECTS = ablogic.$(OBJEXT) abpretty.$(OBJEXT) \
 	syme.$(OBJEXT) symeset.$(OBJEXT) symcoinfo.$(OBJEXT) \
 	tconst.$(OBJEXT) tfcond.$(OBJEXT) tform.$(OBJEXT) \
 	tfsat.$(OBJEXT) ti_top.$(OBJEXT) token.$(OBJEXT) \
-	tposs.$(OBJEXT) tqual.$(OBJEXT) version.$(OBJEXT)
+	tposs.$(OBJEXT) tqual.$(OBJEXT) unify.$(OBJEXT) \
+	utform.$(OBJEXT) utype.$(OBJEXT) utyperes.$(OBJEXT) \
+	uvar.$(OBJEXT) version.$(OBJEXT) wildimp.$(OBJEXT)
 libstruct_a_OBJECTS = $(am_libstruct_a_OBJECTS)
 libtest_a_AR = $(AR) $(ARFLAGS)
 libtest_a_LIBADD =
@@ -425,8 +427,11 @@ am__depfiles_remade = ./$(DEPDIR)/abcheck.Po ./$(DEPDIR)/ablogic.Po \
 	./$(DEPDIR)/ti_tdn.Po ./$(DEPDIR)/ti_top.Po \
 	./$(DEPDIR)/timer.Po ./$(DEPDIR)/tinfer.Po \
 	./$(DEPDIR)/token.Po ./$(DEPDIR)/tposs.Po ./$(DEPDIR)/tqual.Po \
-	./$(DEPDIR)/ttable.Po ./$(DEPDIR)/usedef.Po \
-	./$(DEPDIR)/util.Po ./$(DEPDIR)/version.Po \
+	./$(DEPDIR)/ttable.Po ./$(DEPDIR)/unify.Po \
+	./$(DEPDIR)/usedef.Po ./$(DEPDIR)/utform.Po \
+	./$(DEPDIR)/util.Po ./$(DEPDIR)/utype.Po \
+	./$(DEPDIR)/utyperes.Po ./$(DEPDIR)/uvar.Po \
+	./$(DEPDIR)/version.Po ./$(DEPDIR)/wildimp.Po \
 	./$(DEPDIR)/xfloat.Po ./$(DEPDIR)/yldlocs.Po \
 	java/$(DEPDIR)/genjava.Po java/$(DEPDIR)/javacode.Po \
 	java/$(DEPDIR)/javagen-genjava.Po \
@@ -1075,7 +1080,14 @@ libstruct_a_SOURCES = \
 	token.c		\
 	tposs.c		\
 	tqual.c		\
-	version.c
+	unify.c		\
+	utform.c	\
+	utype.c		\
+	utyperes.c	\
+	uvar.c		\
+	version.c	\
+	wildimp.c
+
 
 #libstruct_a_LIBADD = libgen.a libport.a
 structtest_SOURCES = structtest.c
@@ -1745,9 +1757,15 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tposs.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tqual.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ttable.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unify.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/usedef.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/utform.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/util.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/utype.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/utyperes.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/uvar.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/version.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/wildimp.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xfloat.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/yldlocs.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@java/$(DEPDIR)/genjava.Po@am__quote@ # am--include-marker
@@ -3595,9 +3613,15 @@ distclean: distclean-am
 	-rm -f ./$(DEPDIR)/tposs.Po
 	-rm -f ./$(DEPDIR)/tqual.Po
 	-rm -f ./$(DEPDIR)/ttable.Po
+	-rm -f ./$(DEPDIR)/unify.Po
 	-rm -f ./$(DEPDIR)/usedef.Po
+	-rm -f ./$(DEPDIR)/utform.Po
 	-rm -f ./$(DEPDIR)/util.Po
+	-rm -f ./$(DEPDIR)/utype.Po
+	-rm -f ./$(DEPDIR)/utyperes.Po
+	-rm -f ./$(DEPDIR)/uvar.Po
 	-rm -f ./$(DEPDIR)/version.Po
+	-rm -f ./$(DEPDIR)/wildimp.Po
 	-rm -f ./$(DEPDIR)/xfloat.Po
 	-rm -f ./$(DEPDIR)/yldlocs.Po
 	-rm -f java/$(DEPDIR)/genjava.Po
@@ -3895,9 +3919,15 @@ maintainer-clean: maintainer-clean-am
 	-rm -f ./$(DEPDIR)/tposs.Po
 	-rm -f ./$(DEPDIR)/tqual.Po
 	-rm -f ./$(DEPDIR)/ttable.Po
+	-rm -f ./$(DEPDIR)/unify.Po
 	-rm -f ./$(DEPDIR)/usedef.Po
+	-rm -f ./$(DEPDIR)/utform.Po
 	-rm -f ./$(DEPDIR)/util.Po
+	-rm -f ./$(DEPDIR)/utype.Po
+	-rm -f ./$(DEPDIR)/utyperes.Po
+	-rm -f ./$(DEPDIR)/uvar.Po
 	-rm -f ./$(DEPDIR)/version.Po
+	-rm -f ./$(DEPDIR)/wildimp.Po
 	-rm -f ./$(DEPDIR)/xfloat.Po
 	-rm -f ./$(DEPDIR)/yldlocs.Po
 	-rm -f java/$(DEPDIR)/genjava.Po

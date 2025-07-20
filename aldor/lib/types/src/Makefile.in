@@ -91,12 +91,15 @@ build_triplet = @build@
 host_triplet = @host@
 subdir = lib/types/src
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/m4/build_id.m4 \
+am__aclocal_m4_deps = $(top_srcdir)/m4/ax_lib_readline.m4 \
+	$(top_srcdir)/m4/build_id.m4 \
 	$(top_srcdir)/m4/documentation-tests.m4 \
 	$(top_srcdir)/m4/error-on-warn.m4 $(top_srcdir)/m4/git.m4 \
-	$(top_srcdir)/m4/java-tests.m4 $(top_srcdir)/m4/libtool.m4 \
-	$(top_srcdir)/m4/ltoptions.m4 $(top_srcdir)/m4/ltsugar.m4 \
-	$(top_srcdir)/m4/ltversion.m4 $(top_srcdir)/m4/lt~obsolete.m4 \
+	$(top_srcdir)/m4/interp-tests.m4 \
+	$(top_srcdir)/m4/java-tests.m4 $(top_srcdir)/m4/language.m4 \
+	$(top_srcdir)/m4/libtool.m4 $(top_srcdir)/m4/ltoptions.m4 \
+	$(top_srcdir)/m4/ltsugar.m4 $(top_srcdir)/m4/ltversion.m4 \
+	$(top_srcdir)/m4/lt~obsolete.m4 $(top_srcdir)/m4/readline.m4 \
 	$(top_srcdir)/m4/sbrk.m4 $(top_srcdir)/m4/strict_compile.m4 \
 	$(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
@@ -148,7 +151,8 @@ am_libtypes_a_OBJECTS = base/tp_annotated.$(OBJEXT) \
 	types/tp_env.$(OBJEXT) types/tp_infer2.$(OBJEXT) \
 	types/tp_scopes.$(OBJEXT) types/tp_subst.$(OBJEXT) \
 	types/tp_test.$(OBJEXT) types/tp_tposs.$(OBJEXT) \
-	types/tp_typeterm.$(OBJEXT) types/tp_unify2.$(OBJEXT)
+	types/tp_typeterm.$(OBJEXT) types/tp_unify2.$(OBJEXT) \
+	xsubsts/tp_xsubst.$(OBJEXT)
 libtypes_a_OBJECTS = $(am_libtypes_a_OBJECTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
@@ -171,7 +175,8 @@ am__depfiles_remade = base/$(DEPDIR)/tp_annotated.Po \
 	types/$(DEPDIR)/tp_env.Po types/$(DEPDIR)/tp_infer2.Po \
 	types/$(DEPDIR)/tp_scopes.Po types/$(DEPDIR)/tp_subst.Po \
 	types/$(DEPDIR)/tp_test.Po types/$(DEPDIR)/tp_tposs.Po \
-	types/$(DEPDIR)/tp_typeterm.Po types/$(DEPDIR)/tp_unify2.Po
+	types/$(DEPDIR)/tp_typeterm.Po types/$(DEPDIR)/tp_unify2.Po \
+	xsubsts/$(DEPDIR)/tp_xsubst.Po
 am__mv = mv -f
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
@@ -219,6 +224,7 @@ am__recursive_targets = \
   $(am__extra_recursive_targets)
 AM_RECURSIVE_TARGETS = $(am__recursive_targets:-recursive=) TAGS CTAGS \
 	distdir distdir-am
+am__extra_recursive_targets = releasecheck-recursive
 am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) $(LISP)
 # Read a list of newline-separated strings from the standard input,
 # and print each of them once, without duplicates.  Input order is
@@ -273,6 +279,7 @@ AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
+BUILD_LISP = @BUILD_LISP@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
@@ -294,9 +301,10 @@ ETAGS = @ETAGS@
 EXEEXT = @EXEEXT@
 FGREP = @FGREP@
 FIG2EPS = @FIG2EPS@
+FILECMD = @FILECMD@
 GC = @GC@
+GENERATOR_COROUTINES = @GENERATOR_COROUTINES@
 GREP = @GREP@
-HAS_JUNIT = @HAS_JUNIT@
 HAVE_ALDOR_GC = @HAVE_ALDOR_GC@
 HAVE_BOEHM_GC = @HAVE_BOEHM_GC@
 INSTALL = @INSTALL@
@@ -316,6 +324,7 @@ LIBOBJS = @LIBOBJS@
 LIBS = @LIBS@
 LIBTOOL = @LIBTOOL@
 LIBTOOL_DEPS = @LIBTOOL_DEPS@
+LIB_CC_FLAGS = @LIB_CC_FLAGS@
 LIPO = @LIPO@
 LN_S = @LN_S@
 LTLIBOBJS = @LTLIBOBJS@
@@ -341,6 +350,7 @@ PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 PDFLATEX = @PDFLATEX@
 RANLIB = @RANLIB@
+SBCL_EXISTS = @SBCL_EXISTS@
 SBRK_OPT = @SBRK_OPT@
 SED = @SED@
 SET_MAKE = @SET_MAKE@
@@ -406,7 +416,7 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-SUBDIRS = base types hm
+SUBDIRS = base types xsubsts
 @BUILD_JAVA_TRUE@JAVA_SUBDIRS = $(SUBDIRS)
 @BUILD_JAVA_TRUE@JAVA_TARGET = types.jar types-sources.jar
 lib_LIBRARIES = libtypes.a
@@ -424,7 +434,8 @@ libtypes_a_SOURCES = \
 	types/tp_tposs.c	\
 	types/tp_typeterm.c	\
 	types/tp_unify2.c	\
-	hm/tp_hm.as
+	hm/tp_hm.as		\
+	xsubsts/tp_xsubst.c
 
 datalibdir = $(datadir)/lib
 datalib_DATA = libtypes.al $(JAVA_TARGET)
@@ -440,7 +451,7 @@ am__v_LIBSRCJAR_0 = @echo "  LIBSRCJAR   " $@;
 AM_V_PREREQ = $(am__v_PREREQ_$(V))
 am__v_PREREQ_ = $(am__v_PREREQ_$(AM_DEFAULT_VERBOSITY))
 am__v_PREREQ_0 = @echo "  PREREQ   " $@;
-AM_CFLAGS = -I$(aldorsrcdir)
+AM_CFLAGS = -I$(aldorsrcdir) $(LIB_CC_FLAGS)
 CLEANFILES = lib$(libraryname).al
 eq = $(and $(findstring $1,$2),$(findstring $2,$1))
 lst_prefix = $(warning 1 $1 2 $2)$(if $(or $(if $2,,xx), $(call eq,$1,$(firstword $2))),,$(firstword $2) $(call lst_prefix,$1,$(wordlist 2,$(words $2),$2)))
@@ -547,6 +558,14 @@ types/tp_typeterm.$(OBJEXT): types/$(am__dirstamp) \
 	types/$(DEPDIR)/$(am__dirstamp)
 types/tp_unify2.$(OBJEXT): types/$(am__dirstamp) \
 	types/$(DEPDIR)/$(am__dirstamp)
+xsubsts/$(am__dirstamp):
+	@$(MKDIR_P) xsubsts
+	@: > xsubsts/$(am__dirstamp)
+xsubsts/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) xsubsts/$(DEPDIR)
+	@: > xsubsts/$(DEPDIR)/$(am__dirstamp)
+xsubsts/tp_xsubst.$(OBJEXT): xsubsts/$(am__dirstamp) \
+	xsubsts/$(DEPDIR)/$(am__dirstamp)
 
 libtypes.a: $(libtypes_a_OBJECTS) $(libtypes_a_DEPENDENCIES) $(EXTRA_libtypes_a_DEPENDENCIES) 
 	$(AM_V_at)-rm -f libtypes.a
@@ -557,6 +576,7 @@ mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
 	-rm -f base/*.$(OBJEXT)
 	-rm -f types/*.$(OBJEXT)
+	-rm -f xsubsts/*.$(OBJEXT)
 
 distclean-compile:
 	-rm -f *.tab.c
@@ -574,6 +594,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@types/$(DEPDIR)/tp_tposs.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@types/$(DEPDIR)/tp_typeterm.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@types/$(DEPDIR)/tp_unify2.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@xsubsts/$(DEPDIR)/tp_xsubst.Po@am__quote@ # am--include-marker
 
 $(am__depfiles_remade):
 	@$(MKDIR_P) $(@D)
@@ -665,6 +686,7 @@ $(am__recursive_targets):
 	if test "$$dot_seen" = "no"; then \
 	  $(MAKE) $(AM_MAKEFLAGS) "$$target-am" || exit 1; \
 	fi; test -z "$$fail"
+releasecheck-local: 
 
 ID: $(am__tagged_files)
 	$(am__define_uniq_tagged_files); mkid -fID $$unique
@@ -827,6 +849,8 @@ distclean-generic:
 	-rm -f base/$(am__dirstamp)
 	-rm -f types/$(DEPDIR)/$(am__dirstamp)
 	-rm -f types/$(am__dirstamp)
+	-rm -f xsubsts/$(DEPDIR)/$(am__dirstamp)
+	-rm -f xsubsts/$(am__dirstamp)
 
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
@@ -850,6 +874,7 @@ distclean: distclean-recursive
 	-rm -f types/$(DEPDIR)/tp_tposs.Po
 	-rm -f types/$(DEPDIR)/tp_typeterm.Po
 	-rm -f types/$(DEPDIR)/tp_unify2.Po
+	-rm -f xsubsts/$(DEPDIR)/tp_xsubst.Po
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -908,6 +933,7 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f types/$(DEPDIR)/tp_tposs.Po
 	-rm -f types/$(DEPDIR)/tp_typeterm.Po
 	-rm -f types/$(DEPDIR)/tp_unify2.Po
+	-rm -f xsubsts/$(DEPDIR)/tp_xsubst.Po
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
@@ -923,6 +949,10 @@ pdf-am:
 ps: ps-recursive
 
 ps-am:
+
+releasecheck: releasecheck-recursive
+
+releasecheck-am: releasecheck-local
 
 uninstall-am: uninstall-datalibDATA uninstall-libLIBRARIES
 
@@ -941,8 +971,9 @@ uninstall-am: uninstall-datalibDATA uninstall-libLIBRARIES
 	install-strip installcheck installcheck-am installdirs \
 	installdirs-am maintainer-clean maintainer-clean-generic \
 	mostlyclean mostlyclean-compile mostlyclean-generic \
-	mostlyclean-libtool pdf pdf-am ps ps-am tags tags-am uninstall \
-	uninstall-am uninstall-datalibDATA uninstall-libLIBRARIES
+	mostlyclean-libtool pdf pdf-am ps ps-am releasecheck-am \
+	releasecheck-local tags tags-am uninstall uninstall-am \
+	uninstall-datalibDATA uninstall-libLIBRARIES
 
 .PRECIOUS: Makefile
 
@@ -950,9 +981,9 @@ uninstall-am: uninstall-datalibDATA uninstall-libLIBRARIES
 lib$(libraryname).al: $(foreach i,$(SUBDIRS),$i/_sublib_$(libraryname).al)
 	$(AM_V_AR)		\
 	for l in $+; do		\
-	   ar x $$l;		\
-	   ar cr $@ $$(ar t $$l);\
-	   rm $$(ar t $$l);	\
+	   ${AR} x $$l;		\
+	   ${AR} cr $@ $$(${AR} t $$l);\
+	   rm $$(${AR} t $$l);	\
 	done
 
 $(libraryname).jar: $(foreach i, $(JAVA_SUBDIRS),$i/$(libraryname).jar)
@@ -968,7 +999,7 @@ $(libraryname)-sources.jar: $(foreach i, $(JAVA_SUBDIRS),$i/$(libraryname).jar)
 	$(AM_V_LIBSRCJAR)	\
 	rm -rf sources-jar;		\
 	$(MKDIR_P) sources-jar;		\
-	for i in $(foreach j, $(JAVA_SUBDIRS),$j/$(libraryname).jar);	\
+	for i in $(foreach j, $(JAVA_SUBDIRS),$j/$(libraryname)-sources.jar);	\
 		do (cd sources-jar; jar xf ../$$i); done;  		\
 	(cd sources-jar; jar cf ../$@ .);				\
 	rm -rf sources-jar

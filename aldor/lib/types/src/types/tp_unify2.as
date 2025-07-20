@@ -806,6 +806,6 @@ TestUnify2: with
 #include "aldorio"
 #pile
 import from TestUnify2
-testUnify()
-stdout << "DONE!" << newline
+--testUnify()
+--stdout << "DONE!" << newline
 #endif

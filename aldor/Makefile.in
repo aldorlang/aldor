@@ -147,7 +147,9 @@ CONFIG_CLEAN_FILES = aldor/lib/libfoamlib/al/Makefile \
 	lib/algebra/src/multpoly/multpolypkg/Makefile \
 	lib/algebra/src/multpoly/multpolytest/Makefile \
 	lib/algebra/src/test/Makefile lib/axllib/src/al/Makefile \
-	lib/axldem/src/al/Makefile lib/ax0/src/al/Makefile
+	lib/axldem/src/al/Makefile lib/ax0/src/al/Makefile \
+	lib/types/src/base/Makefile lib/types/src/types/Makefile \
+	lib/types/src/hm/Makefile lib/types/src/xsubsts/Makefile
 CONFIG_CLEAN_VPATH_FILES =
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
@@ -257,7 +259,11 @@ am__DIST_COMMON = $(srcdir)/Makefile.in \
 	$(top_srcdir)/lib/algebra/src/util/Makefile.in \
 	$(top_srcdir)/lib/ax0/src/al/Makefile.in \
 	$(top_srcdir)/lib/axldem/src/al/Makefile.in \
-	$(top_srcdir)/lib/axllib/src/al/Makefile.in AUTHORS \
+	$(top_srcdir)/lib/axllib/src/al/Makefile.in \
+	$(top_srcdir)/lib/types/src/base/Makefile.in \
+	$(top_srcdir)/lib/types/src/hm/Makefile.in \
+	$(top_srcdir)/lib/types/src/types/Makefile.in \
+	$(top_srcdir)/lib/types/src/xsubsts/Makefile.in AUTHORS \
 	amaux/compile amaux/config.guess amaux/config.sub \
 	amaux/depcomp amaux/install-sh amaux/ltmain.sh amaux/missing \
 	amaux/ylwrap
@@ -589,6 +595,14 @@ lib/axllib/src/al/Makefile: $(top_builddir)/config.status $(top_srcdir)/lib/axll
 lib/axldem/src/al/Makefile: $(top_builddir)/config.status $(top_srcdir)/lib/axldem/src/al/Makefile.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 lib/ax0/src/al/Makefile: $(top_builddir)/config.status $(top_srcdir)/lib/ax0/src/al/Makefile.in
+	cd $(top_builddir) && $(SHELL) ./config.status $@
+lib/types/src/base/Makefile: $(top_builddir)/config.status $(top_srcdir)/lib/types/src/base/Makefile.in
+	cd $(top_builddir) && $(SHELL) ./config.status $@
+lib/types/src/types/Makefile: $(top_builddir)/config.status $(top_srcdir)/lib/types/src/types/Makefile.in
+	cd $(top_builddir) && $(SHELL) ./config.status $@
+lib/types/src/hm/Makefile: $(top_builddir)/config.status $(top_srcdir)/lib/types/src/hm/Makefile.in
+	cd $(top_builddir) && $(SHELL) ./config.status $@
+lib/types/src/xsubsts/Makefile: $(top_builddir)/config.status $(top_srcdir)/lib/types/src/xsubsts/Makefile.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 
 mostlyclean-libtool:

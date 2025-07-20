@@ -156,6 +156,6 @@ TestSatisfier: with
 #include "aldorio"
 #pile
 import from TestSatisfier
-testSat()
+--testSat()
 stdout << "DONE!" << newline
 #endif

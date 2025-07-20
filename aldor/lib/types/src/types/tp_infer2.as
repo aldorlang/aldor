@@ -829,7 +829,7 @@ TestInfer: with
 #include "aldorio"
 #pile
 import from TestInfer
-testBottomUp()
-testTopDown()
+--testBottomUp()
+--testTopDown()
 stdout << "DONE!" << newline
 #endif

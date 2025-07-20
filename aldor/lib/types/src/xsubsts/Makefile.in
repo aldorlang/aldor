@@ -18,12 +18,14 @@ subdir		:= $(subst $(abs_top_builddir)/,,$(abs_builddir))
 # Build starts here..
 
 library=\
-	tp_annotated \
-	tp_expr \
-	tp_listset \
-	tp_subst   \
-	tp_sx	\
-	tp_wrap
+	tp_xenv \
+	tp_fvset \
+	tp_xinfer \
+	tp_xposs \
+	tp_xsat  \
+	tp_xscopes \
+	tp_xstate \
+	tp_xsubst \
+	tp_xtypes
 
 include $(abs_top_srcdir)/lib/types/src/common.mk
-

@@ -7,6 +7,7 @@ Expression: SExpressionType with
     PrimitiveType
     term?: % -> Boolean
     term: % -> Symbol
+    termProperties: % -> Wrapped Symbol
     expr: Symbol -> %
 
     terms: % -> ListSet Symbol
@@ -16,6 +17,8 @@ Expression: SExpressionType with
     application?: % -> Boolean
     applicationOp: % -> %
     applicationArgs: % -> List %
+    applicationArgC: % -> MachineInteger
+    applicationArgN: (%, MachineInteger) -> %
     
     comma?: % -> Boolean
     comma: List % -> %
@@ -64,6 +67,8 @@ Expression: SExpressionType with
 
     search: (%, %) -> Partial %
     all: (%, %) -> List %
+
+    mapTerms: (% -> %) -> % -> %
 == add
     App == Record(op: %, args: List %)
     Comma == List %
@@ -74,7 +79,7 @@ Expression: SExpressionType with
     Def == Record(lhs: %, rhs: %)
     Let  == Record(defs: List %, body: %)
     Unk  == Cross()
-    Rep == Union(term: Symbol, app: App, comma: Comma, lambda: Lambda, _if: If, declare: Declare, pp: Param, _let: Let, def: Def, u: Unk)
+    Rep == Union(term: Wrapped Symbol, app: App, comma: Comma, lambda: Lambda, _if: If, declare: Declare, pp: Param, _let: Let, def: Def, u: Unk)
 
     import from Rep, App, Symbol, Param, Def
     import from Fold2 List %
@@ -83,12 +88,15 @@ Expression: SExpressionType with
     import from MachineInteger
     
     term?(e: %): Boolean == rep e case term
-    term(e: %): Symbol == rep(e).term
-    expr(s: Symbol): % == per [s]
+    term(e: %): Symbol == value rep(e).term
+    termProperties(e: %): Wrapped Symbol == rep(e).term
+    expr(s: Symbol): % == per [term==wrap s]
 
     application?(e: %): Boolean == rep(e) case app
     applicationOp(e: %): % == rep(e).app.op
     applicationArgs(e: %): List % == rep(e).app.args
+    applicationArgC(e: %): MachineInteger == # rep(e).app.args
+    applicationArgN(e: %, n: MachineInteger): % == rep(e).app.args.n
 
     apply?(e: %): Boolean == rep(e) case app
     apply(op: %, args: List %): % == per [[op, args]]
@@ -156,6 +164,7 @@ Expression: SExpressionType with
         error "Missing case in equal"
 
     equalMod(symEq: (Symbol, Symbol) -> Boolean, expr1: %, expr2: %): Boolean ==
+        stdout << "eq " << expr1 << " " << expr2 << newline
         term? expr1 =>
             term? expr2 and symEq(term expr1, term expr2)
         application? expr1 => application? expr2 and _and/(equalMod(symEq, p1, p2) for p1 in parts expr1 for p2 in parts expr2)
@@ -186,6 +195,29 @@ Expression: SExpressionType with
 	   if not failed? maybe then return maybe
 	failed
 
+    -- this needs a nice visitor interface...
+    mapTerms(f: % -> %): % -> % ==
+        op(e: %): % ==
+	    term? e => f e
+	    apply? e =>
+	        apply(op applicationOp e, [op arg for arg in applicationArgs e])
+	    comma? e =>
+	        comma [op part for part in commaParts e]
+	    lambda? e =>
+	        lambda(lambdaVars e, op lambdaBody e)
+	    if? e =>
+	        _if(op ifTest e, op ifPart e, op ifElsePart e)
+	    declare? e =>
+	        declare(declareVar e, op declareType e)
+	    param? e =>
+	        param(paramVar e, op paramExpr e)
+	    def? e =>
+	        def(defLhs e, op defRhs e)
+	    let? e =>
+	        _let([op v for v in letDefs e], op letBody e)
+	    unknown? e => e
+	    never
+	op
     all(e: %, tgt: %): List % ==
         e = tgt => [e]
 	(append!,[])/(all(p, tgt) for p in parts e)

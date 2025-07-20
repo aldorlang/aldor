@@ -235,5 +235,6 @@ AC_CONFIG_FILES(
    lib/types/src/base/Makefile
    lib/types/src/types/Makefile
    lib/types/src/hm/Makefile
+   lib/types/src/xsubsts/Makefile
 )
 AC_OUTPUT
