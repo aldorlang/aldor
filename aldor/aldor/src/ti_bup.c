@@ -1093,7 +1093,6 @@ tibupComma(Stab stab, AbSyn absyn, TForm type)
 			}
 			tfFollow(tfi);
 
-#if AXL_EDIT_1_1_12p6_07
 			if (tfIsDeclare(tfi))
 				syme = tfDeclareSyme(tfi);
 
@@ -1114,20 +1113,6 @@ tibupComma(Stab stab, AbSyn absyn, TForm type)
 				}
 				ntp = tpossDefine(syme, tp, abi);
 			}
-#else
-			if (tfIsDeclare(tfi)) {
-				Syme syme = tfDeclareSyme(tfi);
-
-				if (!stabHasMeaning(stab, syme)) {
-					if (!istab) {
-						istab = stabPushLevel(stab, abPos(absyn),(ULong) 0);
-						sigma = absNew(tfStab(type));
-					}
-					syme = stabDefParam(istab, symeId(syme), tformSubst(sigma, tfi));
-				}
-				ntp = tpossDefine(syme, tp, abi);
-			}
-#endif
 		}
 
 		if (ntp) abResetTPoss(abi, ntp);

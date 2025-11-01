@@ -28,15 +28,6 @@
 /* ============================ Aldor Edits ============================ */
 /* ===================================================================== */
 
-/*
- * These next three (probably just edit 6) break AXIOM 2.3. Unfortunately
- * without them we get a huge drop in performance (especially for arrays).
- * 
- * Note also that edit 6 breaks libalgebra when it and libaldor are built
- * using -Q5 optimisation for release (Unhandled Merge). This problem was
- * fixed by edit 1.0.-1(11).
- */
-#define AXL_EDIT_1_1_12p6_07 1	/* tibupComma more cautious creating defs */
 
 /************************************************************************
  * Dead edits: DON'T use unless you have a really good reason ...
