@@ -209,7 +209,7 @@ titdn(Stab stab, AbSyn absyn, TForm type)
 	/* MUST use tpossRefer() or abReferTPoss() */
 	abtposs	 = tpossRefer(abTPoss(absyn));
 
-	if (tpossCount(abtposs) == 0) {
+	if (tpossIsEmpty(abtposs)) {
 		titdnError(stab, absyn, type);
 		return false;
 	}
@@ -217,12 +217,12 @@ titdn(Stab stab, AbSyn absyn, TForm type)
 	stype = tfFollowSubst(type);
 
 	if (tfIsUnknown(stype) || tfIsNone(stype)) {
-		if (tpossCount(abtposs) > 1) {
+		if (!tpossIsUnique(abtposs)) {
 			terrorNotUniqueType(ALDOR_E_TinExprMeans,
 					    absyn,type,abtposs);
 			return false;
 		}
-		if (tpossCount(abtposs) == 1)
+		if (tpossIsUnique(abtposs))
 			type = tpossUnique(abtposs);
 	}
 
@@ -325,7 +325,7 @@ titdn0ApplySymIfNeeded(Stab stab, AbSyn absyn, TForm type, Symbol fsym,
 	part = argf(absyn, int0);
 	tp   = abReferTPoss(part);
 
-	if (tpossIsHaving(tp, pred) || tpossCount(tp) == 0)
+	if (tpossIsHaving(tp, pred) || tpossIsEmpty(tp))
 		titdn(stab, part, type);
 	else
 		return titdn0ApplySym(stab, absyn, type, fsym, argc, argf,

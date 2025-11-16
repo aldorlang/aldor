@@ -289,7 +289,7 @@ tibup0GiveMsg(AbSyn absyn)
 
 	/* Does this node have a possible set of types? */
 	result = abState(absyn) == AB_State_HasPoss &&
-		tpossCount(abTPoss(absyn)) == 0;
+		tpossIsEmpty(abTPoss(absyn));
 
 
 	/* If there are possible types then return now. */
@@ -311,7 +311,7 @@ tibup0GiveMsg(AbSyn absyn)
 			AbSyn	argi = abArgv(absyn)[i];
 			switch (abState(argi)) {
 			case AB_State_HasPoss:
-				result = tpossCount(abTPoss(argi)) > 0;
+				result = !tpossIsEmpty(abTPoss(argi));
 				break;
 			case AB_State_Error:
 				result = false;
@@ -554,7 +554,7 @@ tibup0ApplySymIfNeeded(Stab stab, AbSyn absyn, TForm type, Symbol fsym,
 	tibup(stab, part, tfUnknown);
 	tp   = abReferTPoss(part);
 
-	if (tpossCount(tp) == 0)
+	if (tpossIsEmpty(tp))
 		abTPoss(absyn) = tpossRefer(tp);
 
 	else if (tpossIsHaving(tp, pred)) {
@@ -663,8 +663,8 @@ tibup0ApplyFType(Stab stab, AbSyn absyn, TForm type,
 	tibup0ApplyFilter(stab, absyn, type, opTypes, op, argc, argf, &nopTypes, &retTypes);
 
 	/* If the op and the parts had meaning, then give an error. */
-	if (tpossCount(nopTypes) == 0) {
-		Bool giveMsg = tpossCount(opTypes) > 0
+	if (tpossIsEmpty(nopTypes)) {
+		Bool giveMsg = !tpossIsEmpty(opTypes)
 			|| tibup0ApplyGiveMessage(absyn, argc, argf);
 
 		if (giveMsg) {
@@ -672,7 +672,7 @@ tibup0ApplyFType(Stab stab, AbSyn absyn, TForm type,
 			abState(op) = AB_State_Error;
 		}
 		else {
-			if (tpossCount( opTypes ) == 0)
+			if (tpossIsEmpty(opTypes))
 				abState(absyn) = AB_State_Error;
 
 			abResetTPoss(op, nopTypes);
@@ -695,7 +695,7 @@ tibup0ApplyGiveMessage(AbSyn absyn, Length argc, AbSynGetter argf)
 		AbSyn	argi = argf(absyn, i);
 		if (abState(argi) == AB_State_Error ||
 		    (abState(argi) == AB_State_HasPoss &&
-		     tpossCount(abTPoss(argi)) == 0))
+		     tpossIsEmpty(abTPoss(argi))))
 			giveMsg = false;
 	}
 
@@ -772,7 +772,7 @@ tibup0FarValue(Stab stab, AbSyn absyn, TForm type,
 			}
 			*pFarTPoss = tpossRefer(tp1);
 		}
-		else if (tpossCount(tp1) != 0) {
+		else if (!tpossIsEmpty(tp1)) {
 			if (DEBUG(tipFar)) {
 				fprintf(dbOut, " with ");
 				tpossPrint(dbOut, *pFarTPoss);
@@ -866,9 +866,9 @@ tibupId(Stab stab, AbSyn absyn, TForm type)
 	 * information from.
 	 */
 
-	if (tpossCount(tp) == 1 && tfIsUnknown(tpossUnique(tp)))
+	if (tpossIsUnique(tp) && tfIsUnknown(tpossUnique(tp)))
 		tp = tpossEmpty();
-	if (tpossCount(tp) == 0)
+	if (tpossIsEmpty(tp))
 		tibup0IdComplain(absyn);
 
 	abTPoss(absyn) = tp;
@@ -983,7 +983,7 @@ tibup0Literal(Symbol sym, Stab stab, AbSyn absyn, TForm type)
 
 		abTPoss(absyn) = litTypes;
 
-		if (tpossCount(litTypes) == 0)
+		if (tpossIsEmpty(litTypes))
 			abState(absyn) = AB_State_Error;
 	}
 }
@@ -1170,7 +1170,7 @@ tibupApply(Stab stab, AbSyn absyn, TForm type)
 		tibup0ApplyFilter(stab, absyn, type, abTPoss(imp),
 				  imp, abArgc(absyn), abArgf, &impOpTypes, &impRetTypes);
 
-		if (tpossCount(impOpTypes) > 0) {
+		if (!tpossIsEmpty(impOpTypes)) {
 			TPoss tmp2 = retTypes;
 			retTypes = tpossUnion(retTypes, impRetTypes);
 			tpossFree(tmp2);
@@ -1183,8 +1183,8 @@ tibupApply(Stab stab, AbSyn absyn, TForm type)
 	}
 
 	/* If the op and the parts had meaning, then give an error. */
-	if (tpossCount(retTypes) == 0) {
-		Bool giveMsg = tpossCount(opTypes) > 0
+	if (tpossIsEmpty(retTypes)) {
+		Bool giveMsg = !tpossIsEmpty(opTypes)
 			&& tibup0ApplyGiveMessage(absyn, abApplyArgc(absyn), abApplyArgf);
 
 		if (giveMsg) {
@@ -1192,7 +1192,7 @@ tibupApply(Stab stab, AbSyn absyn, TForm type)
 			abState(op) = AB_State_Error;
 		}
 		else {
-			if (tpossCount( opTypes ) == 0)
+			if (tpossIsEmpty(opTypes))
 				abState(absyn) = AB_State_Error;
 
 			if (!imp)
@@ -1291,7 +1291,7 @@ tibupDefine(Stab stab, AbSyn absyn, TForm type)
 
 
 		/* Check that we have at least one type for RHS */
-		if (!tpossCount(tprhs))
+		if (tpossIsEmpty(tprhs))
 			abState(absyn) = AB_State_Error;
 	}
 
@@ -1451,7 +1451,7 @@ tibupAssign(Stab stab, AbSyn absyn, TForm type)
 		tibup0ApplySym(stab, absyn, type,
 			       ssymSetBang, abArgc(lhs) + 1, abSetArgf, lhs);
 		if (abState(absyn) != AB_State_HasUnique &&
-		    tpossCount(abGoodTPoss(absyn))== 0)  {
+		    tpossIsEmpty(abGoodTPoss(absyn)))  {
  			abState(lhs) = AB_State_HasPoss;
  			abTPoss(lhs) = tpossEmpty();
 		}
@@ -1504,7 +1504,7 @@ tibupAssign(Stab stab, AbSyn absyn, TForm type)
 	tplhs = abReferTPoss(lhs);
 	abTPoss(absyn) = tpossFilterSatisfiers(rhs, tplhs);
 
-	if (tpossCount(tprhs) > 0 && tpossCount(abTPoss(absyn)) != 1)
+	if (!tpossIsEmpty(tprhs) && !tpossIsUnique(abTPoss(absyn)))
 		abState(absyn) = AB_State_Error;
 
 	tpossFree(tplhs);
@@ -1718,7 +1718,7 @@ tibupSequence0(Stab stab, AbSyn absyn, TForm type)
 		 * the caller must deal with checking that the
 		 * set of possible types is sensible.
 		 */
-		if (tpossCount(tp) == 0 && tfIsUnknown(type)) {
+		if (tpossIsEmpty(tp) && tfIsUnknown(type)) {
 			abState(absyn) = AB_State_Error;
 			abTPoss(absyn) = tpossEmpty();
 			tpossFree(tp);
@@ -1851,8 +1851,8 @@ tibupGenerate(Stab stab, AbSyn absyn, TForm type)
 		abState(absyn) = AB_State_Error;
 		abTPoss(absyn) = tpossEmpty();
 	}
-	else if (tpossCount(tpossIt) == 0 &&
-		   tpossCount(tuniYieldTPoss) != 0) {
+	else if (tpossIsEmpty(tpossIt) &&
+		   !tpossIsEmpty(tuniYieldTPoss)) {
 		tpossFree(tpossIt);
 		abState(absyn) = AB_State_Error;
 		tpossIt = tpossEmpty();
@@ -1945,12 +1945,12 @@ tibupReference(Stab stab, AbSyn absyn, TForm type)
 		abState(absyn) = AB_State_Error;
 		abTPoss(absyn) = tpossEmpty();
 	}
-	else if ((tpossCount(tpRef) == 0) && (tpossCount(tp) == 0))
+	else if ((tpossIsEmpty(tpRef)) && (tpossIsEmpty(tp)))
 	{
 		abState(absyn) = AB_State_Error;
 		abTPoss(absyn) = tpRef;
 	}
-	else if ((tpossCount(tpRef) == 0) && (tpossCount(tp) != 0))
+	else if ((tpossIsEmpty(tpRef)) && (!tpossIsEmpty(tp)))
 	{
 		/*
 		 * There were some possible types for the expression that
@@ -2132,8 +2132,8 @@ tibup0RefImps(Stab stab, AbSyn absyn, TForm type)
 	 * noptypes - these are the types of specific apply operators
 	 */
 	/* If the op and the parts had no meaning, then give an error. */
-	if (tpossCount(nopTypes) == 0) {
-		Bool giveMsg = tpossCount(opTypes) > 0
+	if (tpossIsEmpty(nopTypes)) {
+		Bool giveMsg = !tpossIsEmpty(opTypes)
 			|| tibup0ApplyGiveMessage(absyn, abArgc(absyn), abApplyArgf);
 
 		if (giveMsg) {
@@ -2141,7 +2141,7 @@ tibup0RefImps(Stab stab, AbSyn absyn, TForm type)
 			abState(op) = AB_State_Error;
 		}
 		else {
-			if (tpossCount( opTypes ) == 0)
+			if (tpossIsEmpty(opTypes))
 				abState(absyn) = AB_State_Error;
 
 			abResetTPoss(op, nopTypes);
@@ -2650,7 +2650,7 @@ tibupFor(Stab stab, AbSyn absyn, TForm type)
 	abResetTPoss(lhs, tp);
 	tpossFree(tplhs);
 
-	if (tpossCount(tparg) > 0 && tpossCount(tp) != 1)
+	if (!tpossIsEmpty(tparg) && !tpossIsUnique(tp))
 		abState(absyn) = AB_State_Error;
 
 	if (abState(absyn) == AB_State_Error) {
@@ -2809,7 +2809,7 @@ tibupQualify(Stab stab, AbSyn absyn, TForm type)
 			tposs = tpossAdd1(tposs, symeType(syme));
 	}
 	abTPoss(absyn) = tposs;
-	if (tpossCount(tposs) != 0) {
+	if (!tpossIsEmpty(tposs)) {
 		abState(what) = AB_State_HasPoss;
 		abTPoss(what) = tpossRefer(tposs);
 	}

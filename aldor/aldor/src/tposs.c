@@ -319,6 +319,14 @@ tpossPrintDb(TPoss tp)
 }
 
 Bool
+tpossIsEmpty(TPoss tp)
+{
+	if (tp)
+		return tp->possc == 0;
+	else
+		return true;
+}
+Bool
 tpossIsUnique(TPoss tp)
 {
 	if (tp)

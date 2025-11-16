@@ -685,7 +685,7 @@ stabGetEntry(Stab stab0, Symbol id, Bool recurse)
 			findent -= 3;
 		}
 
-		if (tp && tpossCount(tp)) {
+		if (tp && !tpossIsEmpty(tp)) {
 			TPossIterator	tit;
 
 			findent += 2;
