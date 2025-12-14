@@ -26,6 +26,7 @@ extern SatMask		tfSatTdnMask		(void);
 extern SatMask		tfSatTdnInfoMask	(void);
 extern SatMask		tfSatSefMask		(void);
 extern SatMask		tfSatTErrorMask		(void);
+extern String		tfSatMaskToString	(SatMask);
 
 extern Bool		tfSatSucceed		(SatMask);
 extern Bool		tfSatPending		(SatMask);

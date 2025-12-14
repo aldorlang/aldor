@@ -275,8 +275,6 @@ local SymeList	tfSatParentsFilterTable	(SymeTSet, SymeList);
 
 local void	tfSatSetPendingFail	(TForm);
 
-local String    tfSatMaskToString(SatMask mask);
-
 /******************************************************************************
  *
  * :: Type form satisfaction bit mask accessors.
@@ -2150,9 +2148,7 @@ tfSatParentsFilterTable(SymeTSet tbl, SymeList nsymes)
 
 }
 
-
-
-local String
+String
 tfSatMaskToString(SatMask mask)
 {
 	String sep="";
