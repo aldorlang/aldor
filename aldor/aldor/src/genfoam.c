@@ -6402,7 +6402,7 @@ gen0CForIter(AbSyn absyn, FoamList *forl, FoamList *itl)
 
 	gen0State->lines = *forl;
 	gen = foamNewCast(FOAM_Gener, genImplicit(absyn, absyn->abFor.whole, FOAM_Word));
-	gen0AddStmt(foamNewSet(foamCopy(whole), foamNewGenIter(gen)), NULL);
+	gen0AddStmt(foamNewSet(foamCopy(whole), foamNewGenIter(gen, 0)), NULL);
 	*forl = gen0State->lines;
 	gen0State->lines = *itl;
 

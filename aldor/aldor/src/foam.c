@@ -437,6 +437,20 @@ foamNewDEnvUnused(AInt len)
 	return foam;
 }
 
+Foam
+foamNewGenIter(Foam g, Length n, ...)
+{
+	Foam genIter;
+	va_list argp;
+
+	genIter = foamNewGenIterEmpty(g, n);
+	va_start(argp, n);
+	for (int i=0; i<n; i++) {
+		genIter->foamGenIter.argv[i] = (Foam) va_arg(argp, Foam);
+	}
+	va_end(argp);
+	return genIter;
+}
 
 Foam
 foamNewSelect(Foam op, AInt nBranches)

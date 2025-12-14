@@ -48,7 +48,7 @@ testCrinInlineOne()
 	prog->foamProg.fluids = foamNew(FOAM_DFluid, 0);
 	prog->foamProg.body = // foamFrString(callerText)
 		foamNewSeq(foamNewSet(foamNewLoc(1),
-				      foamNewGenIter(foamNewGener(0, foamNewEnv(0), foamNewConst(1)))),
+				      foamNewGenIter(foamNewGener(0, foamNewEnv(0), foamNewConst(1)), 0)),
 			   foamNewLabel(0),
 			   foamNewGenerStep(1, foamNewLoc(1)),
 			   foamNewCCall(FOAM_NOp, foamNewPar(0), foamNewGenerValue(foamNewLoc(1)), NULL),
