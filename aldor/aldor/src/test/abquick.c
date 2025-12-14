@@ -181,7 +181,6 @@ stdscope(Stab stab)
 	AbSyn absyn = abNewSequenceL(sposNone, listCons(AbSyn)(stdtypes(),
 							       abqParseLines(lines)));
 	abPutUse(absyn, AB_Use_NoValue);
-	abPrintDb(absyn);
 	scopeBind(stab, absyn);
 	typeInfer(stab, absyn);
 
@@ -194,7 +193,7 @@ tfqTypeForm(Stab stab, String str)
 {
 	AbSyn absyn = abqParse(str);
 	abPutUse(absyn, AB_Use_NoValue);
-	abPrintDb(absyn);
+
 	scopeBind(stab, absyn);
 	typeInfer(stab, absyn);
 
