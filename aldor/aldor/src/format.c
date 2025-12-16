@@ -22,6 +22,7 @@
  */
 int findent = 0;
 local int    fmtPPrint(Format format, int width, char *fmt, OStream stream, Pointer ptr);
+local int    fmtLIPrint(Format format, int width, char *fmt, OStream stream, long n);
 local int    fmtIPrint(Format format, int width, char *fmt, OStream stream, int n);
 
 int
@@ -292,6 +293,10 @@ ostreamVPrintf(OStream ostream, const char *fmt, va_list argp)
 				sprintf(arg_buf, f, va_arg(argp, int));
 				cc += ostreamWrite(ostream, arg_buf, -1);
 			}
+			else if (format->isLong) {
+				cc += fmtLIPrint(format, fb.width, fb.fmt, ostream, va_arg(argp, long));
+				fmt += strlen(format->name);
+			}
 			else {
 				cc += fmtIPrint(format, fb.width, fb.fmt, ostream, va_arg(argp, int));
 				fmt += strlen(format->name);
@@ -369,7 +374,9 @@ fmtRegisterFull(const char *name, PFormatFn fn, Bool nullOk)
 	format->name = strCopy(name);
 	format->pfn = fn;
 	format->ifn = NULL;
+	format->lifn = NULL;
 	format->nullOk = nullOk;
+	format->isLong = 0;
 	format->apfn = NULL;
 	format->aifn = NULL;
 	fmtRegisteredFormats = listCons(Format)(format, fmtRegisteredFormats);
@@ -381,7 +388,23 @@ void fmtRegisterI(const char *name, IFormatFn ifn)
 	assert(name[0] != '\0');
 	format->name = strCopy(name);
 	format->ifn = ifn;
+	format->lifn = NULL;
 	format->nullOk = false;
+	format->isLong = false;
+	format->apfn = NULL;
+	format->aifn = NULL;
+	fmtRegisteredFormats = listCons(Format)(format, fmtRegisteredFormats);
+}
+
+void fmtRegisterLI(const char *name, LIFormatFn lifn)
+{
+	Format format = (Format) stoAlloc(OB_Other, sizeof(*format));
+	assert(name[0] != '\0');
+	format->name = strCopy(name);
+	format->ifn = NULL;
+	format->lifn = lifn;
+	format->nullOk = false;
+	format->isLong = true;
 	format->apfn = NULL;
 	format->aifn = NULL;
 	fmtRegisteredFormats = listCons(Format)(format, fmtRegisteredFormats);
@@ -448,4 +471,11 @@ fmtIPrint(Format format, int width, char *fmt, OStream stream, int n)
 {
 	assert(format != NULL);
 	return format->ifn(stream, n);
+}
+
+static int
+fmtLIPrint(Format format, int width, char *fmt, OStream stream, long n)
+{
+	assert(format != NULL);
+	return format->lifn(stream, n);
 }
