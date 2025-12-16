@@ -232,6 +232,7 @@ libphase_a_SOURCES =	\
 	genstyle.c	\
 	gf_add.c	\
 	gf_excpt.c	\
+	gf_embed.c	\
 	gf_fortran.c	\
 	gf_gener.c	\
 	gf_implicit.c	\

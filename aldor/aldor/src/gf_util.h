@@ -256,14 +256,20 @@ extern Bool 		gen0IsCatInner		(void);
 
 extern Foam	        gen0CharArray	  	(String);
 
+extern AInt 	   	gen0CrossFormatNumber  (TForm tf);
 extern AInt		gen0RecordFormatNumber	(TForm);
 extern AInt		gen0MultiFormatNumber	(TForm);
+extern AInt		gen0TrailingFormatNumber	(TForm);
 extern AInt		gen0MFmtNumberForSig	(int, FoamTag*);
 extern AInt	   	gen0MakeTupleFormat  	(void);
 extern AInt 		gen0StdDeclFormat	(Length, String *, FoamTag *, AInt *);
 extern void 		gen0SetDDeclUsage	(AInt, FoamDDeclTag);
 
 extern int		gen0RootEnv		(void);
+extern Foam		gen0ApplySyme	  	(FoamTag, Syme, SImpl, Length, Foam **);
+extern void		gen0SetTemp		(Foam, Foam);
+extern Foam		gen0FoamCast		(Foam, AbSyn, FoamTag);
+extern FoamTag	   	gen0FoamType		(Foam);
 
 extern void gen0ComputeSideEffects(Foam prog);
 
