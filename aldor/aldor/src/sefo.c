@@ -2573,7 +2573,10 @@ sefoFreeVars0(TForm *pa, TForm parent, Sefo sefo)
 		Syme	syme = abSyme(sefo);
 
 		/*!! assert(syme); */
-		if (!syme) return;
+		if (!syme) {
+			afprintf(dbOut, " sefoFree[%d]: No Syme\n", (int) serial);
+			return;
+		}
 
 		if (symeIsSubstable(syme))
 			sfvAddSyme(syme);
