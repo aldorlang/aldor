@@ -7,6 +7,7 @@
  ****************************************************************************/
 
 #include "axlobs.h"
+#include "buffer.h"
 #include "debug.h"
 #include "format.h"
 #include "opsys.h"
@@ -26,6 +27,7 @@ Bool	abDebug		= false;
 local int       abFormatter     (OStream stream, Pointer p);
 local int       abFormatterList (OStream ostream, Pointer p);
 local int       abTagFormatter  (OStream ostream, int p);
+local int       abEmbedFormatter (OStream ostream, long p);
 local void	abPosNodeSpan0	(AbSyn X, AbSyn *pA, AbSyn *pB);
 local SrcPos	abLeafEnd	(AbSyn ab);
 
@@ -75,6 +77,7 @@ abInit(void)
 	fmtRegister("Sefo", abFormatter);
 	fmtRegister("SefoList", abFormatterList);
 	fmtRegisterI("AbTag", abTagFormatter);
+	fmtRegisterLI("AbEmbed", abEmbedFormatter);
 }
 
 AbSyn
@@ -2119,6 +2122,41 @@ abDumpPosition(AbSyn ab)
 	}
 }
 
+/*****************************************************************************
+ *
+ * :: Embed Info
+ *
+ ****************************************************************************/
+struct abEmbedInfo {
+	char *name;
+	AbEmbed val;
+};
+
+local struct abEmbedInfo abEmbedInfoVals[] = {
+	{"Identity",		AB_Embed_Identity},
+	{"CrossToTuple",	AB_Embed_CrossToTuple},
+	{"CrossToMulti",	AB_Embed_CrossToMulti},
+	{"CrossToUnary",	AB_Embed_CrossToUnary},
+	{"MultiToTuple",	AB_Embed_MultiToTuple},
+	{"MultiToCross",	AB_Embed_MultiToCross},
+	{"MultiToUnary",	AB_Embed_MultiToUnary},
+	{"UnaryToTuple",	AB_Embed_UnaryToTuple},
+	{"UnaryToCross",	AB_Embed_UnaryToCross},
+	{"UnaryToMulti",	AB_Embed_UnaryToMulti},
+	{"UnaryToRaw",		AB_Embed_UnaryToRaw},
+	{"RawToUnary",		AB_Embed_RawToUnary},
+	{"ApplyMultiToTuple",	AB_Embed_ApplyMultiToTuple},
+	{"ApplyMultiToCross",	AB_Embed_ApplyMultiToCross},
+	{ NULL, -1}
+};
+
+
+/*****************************************************************************
+ *
+ * :: Formatting
+ *
+ ****************************************************************************/
+
 local int
 abFormatter(OStream ostream, Pointer p)
 {
@@ -2131,4 +2169,35 @@ abFormatterList(OStream ostream, Pointer p)
 {
 	AbSynList list = (AbSynList) p;
 	return listFormat(AbSyn)(ostream, "AbSyn", list);
+}
+
+local int
+abEmbedFormatter(OStream ostream, long e)
+{
+	AbEmbed embed = (AbEmbed) e;
+	int n = 0;
+	char *sep = "";
+
+	if (e == 0) {
+		n += ostreamWrite(ostream, "Fail", strlen("Identity"));
+	}
+	for (int i=0; i < AB_Embed_BitCount; i++) {
+		if (embed & abEmbedInfoVals[i].val) {
+			String name = abEmbedInfoVals[i].name;
+			n += ostreamWrite(ostream, sep, strlen(sep));
+			n += ostreamWrite(ostream, name, strlen(name));
+			sep = "|";
+		}
+	}
+	return n;
+}
+
+String
+abEmbedToString(AbEmbed embed)
+{
+	Buffer buf = bufNew();
+	OStream ostream = ostreamNewFrBuffer(buf);
+	abEmbedFormatter(ostream, embed);
+	ostreamFree(ostream);
+	return bufLiberate(buf);
 }

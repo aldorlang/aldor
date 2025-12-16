@@ -289,8 +289,12 @@ typedef	ULong		AbEmbed;
 #define			AB_Embed_ApplyMask		\
 	(AB_Embed_ApplyMultiToTuple | AB_Embed_ApplyMultiToCross)
 
+#define AB_Embed_BitCount 14
+
 #define		abEmbedArg(ab)		(abTContext(ab) & AB_Embed_ArgMask)
 #define		abEmbedApply(ab)	(abTContext(ab) & AB_Embed_ApplyMask)
+
+String abEmbedToString(AbEmbed embed);
 
 /*
  * AbSeman
