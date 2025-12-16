@@ -1173,7 +1173,6 @@ tibupApply(Stab stab, AbSyn absyn, TForm type)
 		if (!tpossIsEmpty(impOpTypes)) {
 			TPoss tmp2 = retTypes;
 			retTypes = tpossUnion(retTypes, impRetTypes);
-			tpossFree(tmp2);
 		}
 		else {
 			abFree(imp);
