@@ -14,6 +14,7 @@ ofCrinTest()
 	crinDebug = 1;
 	init();
 	TEST(testCrinInlineOne);
+	fini();
 }
 
 void
