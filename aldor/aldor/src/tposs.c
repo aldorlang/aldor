@@ -220,6 +220,16 @@ tpossAdd1UTForm(TPoss tp, UTForm t)
 	return tp;
 }
 
+Bool
+tpossHasIntersection(TPoss tp1, TPoss tp2)
+{
+	TPoss tp = tpossIntersect(tp1, tp2);
+	Bool flg = tpossCount(tp) == 0;
+	tpossFree(tp);
+	return flg;
+}
+
+
 TPoss
 tpossRefer(TPoss tp)
 {

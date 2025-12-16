@@ -115,6 +115,7 @@ extern Bool	tpossHasUTForm(TPoss, UTForm);
 		 * Does the TP contain (implicitly) the supplied type?
 		 * NB: May give false negatives.
 		 */
+extern Bool	tpossHasIntersection(TPoss tp1, TPoss tp2);
 
 /*
  * Abstract iteration over type possibility sets:
