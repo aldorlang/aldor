@@ -1714,25 +1714,6 @@ gen0RtTypeHash(TForm tf, TForm otf)
 	return hash;
 }
 
-local Bool
-tfMapArgIsTuple(TForm tf)
-{
-	if (tfMapArgc(tf) != 1)
-		return false;
-	if (abTUnique(tfExpr(tfMapArg(tf))) == NULL)
-		return false;
-	return tfIsTypeTuple(abTUnique(tfExpr(tfMapArg(tf))));
-}
-
-local Bool
-tfMapRetIsTuple(TForm tf)
-{
-	if (tfMapRetc(tf) != 1)
-		return false;
-	if (abTUnique(tfExpr(tfMapRet(tf))) == NULL)
-		return false;
-	return tfIsTypeTuple(abTUnique(tfExpr(tfMapRet(tf))));
-}
 
 local Foam
 gen0RtTypeHashMap(TForm tf, TForm otf)

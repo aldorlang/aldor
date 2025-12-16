@@ -8291,6 +8291,33 @@ tfIsWildcardImport(TForm tf)
 	return false;
 }
 
+
+/******************************************************************************
+ *
+ * :: Utilities
+ *
+ *****************************************************************************/
+
+Bool
+tfMapArgIsTuple(TForm tf)
+{
+	if (tfMapArgc(tf) != 1)
+		return false;
+	if (abGetCategory(tfExpr(tfMapArg(tf))) == NULL)
+		return false;
+	return tfIsTypeTuple(abGetCategory(tfExpr(tfMapArg(tf))));
+}
+
+Bool
+tfMapRetIsTuple(TForm tf)
+{
+	if (tfMapRetc(tf) != 1)
+		return false;
+	if (abGetCategory(tfExpr(tfMapRet(tf))) == NULL)
+		return false;
+	return tfIsTypeTuple(abGetCategory(tfExpr(tfMapRet(tf))));
+}
+
 /******************************************************************************
  *
  * :: Java

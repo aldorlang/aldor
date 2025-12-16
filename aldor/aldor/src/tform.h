@@ -600,6 +600,8 @@ extern Length		tfMapRetc		(TForm);
 extern TForm		tfMapRetN		(TForm, Length);
 extern TForm		tfMapMultiRetN		(TForm, Length, Length);
 extern AbEmbed		tfMapMultiRetEmbed	(TForm, Length);
+extern Bool		tfMapRetIsTuple		(TForm tf);
+extern Bool		tfMapArgIsTuple		(TForm tf);
 
 /*
  * tfCross		Type of cross products.	 Possibly heterogeneous.
