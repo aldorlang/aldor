@@ -396,6 +396,26 @@ abContains(AbSyn ab, AbSyn target)
 	}
 }
 
+AbSyn
+abFindNode(AbSyn ab, AbSynTag tag)
+{
+	if (abTag(ab) == tag)
+		return ab;
+	if (abIsLeaf(ab)) {
+		return NULL;
+	}
+	else {
+		for (int i=0; i<abArgc(ab); i++) {
+			AbSyn next = abFindNode(abArgv(ab)[i], tag);
+			if (next != NULL) {
+				return next;
+			}
+		}
+		return NULL;
+	}
+}
+
+
 /*
  * To find a node in a given tree:  path = abPathToNode(r,n, eql, &len, 0);
  * If the equality tester "eql" is 0, then "==" is used.

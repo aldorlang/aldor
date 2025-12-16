@@ -1045,6 +1045,10 @@ extern void	abPosSpan		(AbSyn, SrcPos *pmin, SrcPos *pmax);
  *:: Tree searching
  */
 
+extern AbSyn	abFindNode		(AbSyn ab, AbSynTag tag);
+		/*
+		 * Return node with tag 'tag' - depth first
+		 */
 extern Bool	abHasSymbol		(AbSyn, Symbol);
 		/*
 		 * Return true iff the tree has an abId with the given symbol.
