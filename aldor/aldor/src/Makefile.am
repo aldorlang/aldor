@@ -242,6 +242,7 @@ libphase_a_SOURCES =	\
 	gf_reference.c	\
 	gf_rtime.c	\
 	gf_seq.c	\
+	gf_special.c	\
 	gf_xgener.c	\
 	gf_cgener.c	\
 	include.c	\

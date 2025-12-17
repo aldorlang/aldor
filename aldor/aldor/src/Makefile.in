@@ -161,20 +161,20 @@ am_libphase_a_OBJECTS = abcheck.$(OBJEXT) abnorm.$(OBJEXT) \
 	gf_fortran.$(OBJEXT) gf_gener.$(OBJEXT) gf_implicit.$(OBJEXT) \
 	gf_imps.$(OBJEXT) gf_java.$(OBJEXT) gf_prog.$(OBJEXT) \
 	gf_reference.$(OBJEXT) gf_rtime.$(OBJEXT) gf_seq.$(OBJEXT) \
-	gf_xgener.$(OBJEXT) gf_cgener.$(OBJEXT) include.$(OBJEXT) \
-	inlstate.$(OBJEXT) inlutil.$(OBJEXT) linear.$(OBJEXT) \
-	macex.$(OBJEXT) of_argsub.$(OBJEXT) of_cfold.$(OBJEXT) \
-	of_comex.$(OBJEXT) of_cprop.$(OBJEXT) of_crinlin.$(OBJEXT) \
-	of_deada.$(OBJEXT) of_deadv.$(OBJEXT) of_emerg.$(OBJEXT) \
-	of_env.$(OBJEXT) of_hfold.$(OBJEXT) of_inlin.$(OBJEXT) \
-	of_jflow.$(OBJEXT) of_killp.$(OBJEXT) of_loops.$(OBJEXT) \
-	of_peep.$(OBJEXT) of_retyp2.$(OBJEXT) of_rrfmt.$(OBJEXT) \
-	of_util.$(OBJEXT) optfoam.$(OBJEXT) opttools.$(OBJEXT) \
-	parseby.$(OBJEXT) phase.$(OBJEXT) rdln.$(OBJEXT) \
-	scan.$(OBJEXT) scobind.$(OBJEXT) syscmd.$(OBJEXT) \
-	terror.$(OBJEXT) ti_bup.$(OBJEXT) ti_decl.$(OBJEXT) \
-	ti_sef.$(OBJEXT) ti_tdn.$(OBJEXT) tinfer.$(OBJEXT) \
-	usedef.$(OBJEXT) yldlocs.$(OBJEXT)
+	gf_special.$(OBJEXT) gf_xgener.$(OBJEXT) gf_cgener.$(OBJEXT) \
+	include.$(OBJEXT) inlstate.$(OBJEXT) inlutil.$(OBJEXT) \
+	linear.$(OBJEXT) macex.$(OBJEXT) of_argsub.$(OBJEXT) \
+	of_cfold.$(OBJEXT) of_comex.$(OBJEXT) of_cprop.$(OBJEXT) \
+	of_crinlin.$(OBJEXT) of_deada.$(OBJEXT) of_deadv.$(OBJEXT) \
+	of_emerg.$(OBJEXT) of_env.$(OBJEXT) of_hfold.$(OBJEXT) \
+	of_inlin.$(OBJEXT) of_jflow.$(OBJEXT) of_killp.$(OBJEXT) \
+	of_loops.$(OBJEXT) of_peep.$(OBJEXT) of_retyp2.$(OBJEXT) \
+	of_rrfmt.$(OBJEXT) of_util.$(OBJEXT) optfoam.$(OBJEXT) \
+	opttools.$(OBJEXT) parseby.$(OBJEXT) phase.$(OBJEXT) \
+	rdln.$(OBJEXT) scan.$(OBJEXT) scobind.$(OBJEXT) \
+	syscmd.$(OBJEXT) terror.$(OBJEXT) ti_bup.$(OBJEXT) \
+	ti_decl.$(OBJEXT) ti_sef.$(OBJEXT) ti_tdn.$(OBJEXT) \
+	tinfer.$(OBJEXT) usedef.$(OBJEXT) yldlocs.$(OBJEXT)
 libphase_a_OBJECTS = $(am_libphase_a_OBJECTS)
 libport_a_AR = $(AR) $(ARFLAGS)
 libport_a_LIBADD =
@@ -362,13 +362,13 @@ am__depfiles_remade = ./$(DEPDIR)/abcheck.Po ./$(DEPDIR)/ablogic.Po \
 	./$(DEPDIR)/gf_imps.Po ./$(DEPDIR)/gf_java.Po \
 	./$(DEPDIR)/gf_prog.Po ./$(DEPDIR)/gf_reference.Po \
 	./$(DEPDIR)/gf_rtime.Po ./$(DEPDIR)/gf_seq.Po \
-	./$(DEPDIR)/gf_syme.Po ./$(DEPDIR)/gf_xgener.Po \
-	./$(DEPDIR)/include.Po ./$(DEPDIR)/inlstate.Po \
-	./$(DEPDIR)/inlutil.Po ./$(DEPDIR)/int.Po \
-	./$(DEPDIR)/intset.Po ./$(DEPDIR)/javagen-axlcomp.Po \
-	./$(DEPDIR)/javagen-cmdline.Po ./$(DEPDIR)/javagen-yldlocs.Po \
-	./$(DEPDIR)/javasig.Po ./$(DEPDIR)/lib.Po \
-	./$(DEPDIR)/libtest_a-bigint_t.Po \
+	./$(DEPDIR)/gf_special.Po ./$(DEPDIR)/gf_syme.Po \
+	./$(DEPDIR)/gf_xgener.Po ./$(DEPDIR)/include.Po \
+	./$(DEPDIR)/inlstate.Po ./$(DEPDIR)/inlutil.Po \
+	./$(DEPDIR)/int.Po ./$(DEPDIR)/intset.Po \
+	./$(DEPDIR)/javagen-axlcomp.Po ./$(DEPDIR)/javagen-cmdline.Po \
+	./$(DEPDIR)/javagen-yldlocs.Po ./$(DEPDIR)/javasig.Po \
+	./$(DEPDIR)/lib.Po ./$(DEPDIR)/libtest_a-bigint_t.Po \
 	./$(DEPDIR)/libtest_a-bitv_t.Po \
 	./$(DEPDIR)/libtest_a-btree_t.Po \
 	./$(DEPDIR)/libtest_a-buffer_t.Po \
@@ -1124,6 +1124,7 @@ libphase_a_SOURCES = \
 	gf_reference.c	\
 	gf_rtime.c	\
 	gf_seq.c	\
+	gf_special.c	\
 	gf_xgener.c	\
 	gf_cgener.c	\
 	include.c	\
@@ -1643,6 +1644,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gf_reference.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gf_rtime.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gf_seq.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gf_special.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gf_syme.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gf_xgener.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/include.Po@am__quote@ # am--include-marker
@@ -3500,6 +3502,7 @@ distclean: distclean-am
 	-rm -f ./$(DEPDIR)/gf_reference.Po
 	-rm -f ./$(DEPDIR)/gf_rtime.Po
 	-rm -f ./$(DEPDIR)/gf_seq.Po
+	-rm -f ./$(DEPDIR)/gf_special.Po
 	-rm -f ./$(DEPDIR)/gf_syme.Po
 	-rm -f ./$(DEPDIR)/gf_xgener.Po
 	-rm -f ./$(DEPDIR)/include.Po
@@ -3807,6 +3810,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -f ./$(DEPDIR)/gf_reference.Po
 	-rm -f ./$(DEPDIR)/gf_rtime.Po
 	-rm -f ./$(DEPDIR)/gf_seq.Po
+	-rm -f ./$(DEPDIR)/gf_special.Po
 	-rm -f ./$(DEPDIR)/gf_syme.Po
 	-rm -f ./$(DEPDIR)/gf_xgener.Po
 	-rm -f ./$(DEPDIR)/include.Po

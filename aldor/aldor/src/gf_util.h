@@ -270,6 +270,9 @@ extern Foam		gen0ApplySyme	  	(FoamTag, Syme, SImpl, Length, Foam **);
 extern void		gen0SetTemp		(Foam, Foam);
 extern Foam		gen0FoamCast		(Foam, AbSyn, FoamTag);
 extern FoamTag	   	gen0FoamType		(Foam);
+extern Foam		gen0SetValue		(Foam, AbSyn);
+
+extern Foam		gen0CCallFrFoam		(FoamTag type, Foam op, Length argc, Foam **pargv);
 
 extern void gen0ComputeSideEffects(Foam prog);
 
