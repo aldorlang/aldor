@@ -327,8 +327,15 @@ tconstFormatter(OStream ostream, Pointer p)
 {
 	TConst tc = (TConst) p;
 	int i;
-
-	i = ostreamPrintf(ostream, "[TC: %d %pTForm %pTForm]", tc->serial, tc->argv[0], tc->argv[1]);
+	int parent = tc->parent == NULL ? -1 : tc->parent->serial;
+	if (tc->owner == NULL) {
+		i = ostreamPrintf(ostream, "[TC: %d owner: -- p: %d:: %pTForm satisfies %pTForm]",
+				  tc->serial, parent, tc->argv[0], tc->argv[1]);
+	}
+	else {
+		i = ostreamPrintf(ostream, "[TC: %d owner: %p p: %d:: %pTForm satisfies %pTForm]",
+				  tc->serial, tc->owner, parent, tc->argv[0], tc->argv[1]);
+	}
 
 	return i;
 }
