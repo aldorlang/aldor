@@ -1715,6 +1715,23 @@ abTagFormatter(OStream ostream, int p)
 	}
 }
 
+struct ab_use_info abUseInfoTable[] = {
+	{AB_Use_Declaration, "Declaration"},
+	{AB_Use_Type, "Type"},
+	{AB_Use_Label, "Label"},
+	{AB_Use_Assign, "Assign"},
+	{AB_Use_Define, "Define"},
+	{AB_Use_Value, "Value"},
+	{AB_Use_RetValue, "RetValue"},
+	{AB_Use_NoValue, "NoValue"},
+	{AB_Use_Iterator, "Iterator"},
+	{AB_Use_Default, "Default"},
+	{AB_Use_Except,	 "Except"},
+	{AB_Use_Elided,	 "Elided"},
+	{AB_Use_PatLocation, "PatLocation"},
+	{AB_Use_Pattern,     "Pattern"},
+	{AB_Use_LIMIT,     "LIMIT"},
+};
 
 /*
  * Equality preserving functions for abTransferSemantics.

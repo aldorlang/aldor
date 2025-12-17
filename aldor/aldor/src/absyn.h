@@ -861,6 +861,23 @@ extern struct ab_info	abInfoTable[];
 
 /******************************************************************************
  *
+ * :: Table of information for use values
+ *
+ *****************************************************************************/
+
+struct ab_use_info {
+	AbUse use;
+	String str;
+};
+
+extern struct ab_use_info	abUseInfoTable[];
+
+#define abUseInfo(tag)	((tag) >= AB_Use_LIMIT ? abUseInfoTable[AB_Use_LIMIT] : abUseInfoTable[(tag)])
+
+extern Bool abUseIsPattern(AbUse use);
+
+/******************************************************************************
+ *
  * :: Operations on nodes
  *
  *****************************************************************************/
