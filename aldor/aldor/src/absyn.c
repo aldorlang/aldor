@@ -1728,8 +1728,6 @@ struct ab_use_info abUseInfoTable[] = {
 	{AB_Use_Default, "Default"},
 	{AB_Use_Except,	 "Except"},
 	{AB_Use_Elided,	 "Elided"},
-	{AB_Use_PatLocation, "PatLocation"},
-	{AB_Use_Pattern,     "Pattern"},
 	{AB_Use_LIMIT,     "LIMIT"},
 };
 
