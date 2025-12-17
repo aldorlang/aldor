@@ -59,6 +59,7 @@ local int errorSetFormatter(OStream stream, Pointer p);
 local int javaCodeFormatter(OStream stream, Pointer p);
 
 local int boolFormatter(OStream ostream, int p);
+local int abUseFormatter(OStream ostream, int p);
 
 local int slotUsageFormatter(OStream ostream, Pointer p);
 local int slotUsageListFormatter(OStream ostream, Pointer p);
@@ -78,6 +79,7 @@ void
 fmttsInit()
 {
 	fmtRegisterI("Bool", boolFormatter);
+	fmtRegisterI("AbUseTag", abUseFormatter);
 
 	fmtRegister("TForm", tfFormatter);
 	fmtRegisterAlt("TForm", tfFormatterAlt);
@@ -385,6 +387,12 @@ stringListFormatter(OStream ostream, Pointer p)
 {
 	StringList list = (StringList) p;
 	return listFormat(String)(ostream, "String", list);
+}
+
+local int
+abUseFormatter(OStream ostream, int p)
+{
+	return ostreamPrintf(ostream, "%s", abUseInfo(p).str);
 }
 
 local int
