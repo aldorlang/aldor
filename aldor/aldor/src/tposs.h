@@ -94,6 +94,19 @@ extern TPoss	tpossAnyGeneratorArg	(TPoss tp);
 		 * Return the type possibilities X such that tp is Generator(X).
 		 */
 
+extern TPoss	tpossPattern(TPoss tp);
+		/*
+		 * Return the type possibilities Pattern(X) for X in tp
+		 */
+extern TPoss	tpossPatternArg(TPoss tp);
+		/*
+		 * Return the type possibilities X where Pattern(X) is in tp
+		 */
+extern TPoss	tpossPatternCase(TPoss tp);
+		/*
+		 * Return the type (X, Pattern X) -> Bool
+		 */
+
 extern Bool	tpossIsHaving		(TPoss tp, TFormPredicate pred);
 		/*
 		 * Is there any type form in tp which satisfies the predicate?

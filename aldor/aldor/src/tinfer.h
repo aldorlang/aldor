@@ -105,6 +105,7 @@ extern Bool	tipFarDebug;
 extern Bool	tipIdDebug;
 extern Bool	tipLitDebug;
 extern Bool	tipEmbedDebug;
+extern Bool	tipPatternDebug;
 
 #define tipAddDEBUG		DEBUG_IF(tipAdd)     afprintf
 #define tipApplyDEBUG		DEBUG_IF(tipApply)   afprintf
@@ -115,5 +116,6 @@ extern Bool	tipEmbedDebug;
 #define tipIdDEBUG		DEBUG_IF(tipId)      afprintf
 #define tipLitDEBUG		DEBUG_IF(tipLit)     afprintf
 #define tipEmbedDEBUG		DEBUG_IF(tipEmbed)   afprintf
+#define tipPatternDEBUG		DEBUG_IF(tipPattern) afprintf
 
 #endif /* !_TINFER_H_ */

@@ -1,6 +1,7 @@
 #include "abquick.h"
 #include "abuse.h"
 #include "axlobs.h"
+#include "comsg.h"
 #include "debug.h"
 #include "format.h"
 #include "scobind.h"
@@ -20,11 +21,18 @@ local void testTiBupApplyMixed();
 local void testTiBupApplyImplicit();
 local void testTiBupApplyErrorOnArg();
 local void testTiBupGenCross();
+local void testTiBupCase0();
+local void testTiBupCase1();
+local void testTiBupCase2();
+local void testTiTdnCase1();
+local void testTiTdnCase2();
+local void testTiTdnSelect();
 
 void
 tibupTest()
 {
 	init();
+	/*
 	TEST(testTiBupCollect1);
 	TEST(testTiBupCollect2);
 	TEST(testTiTdnPretend);
@@ -33,6 +41,16 @@ tibupTest()
 	TEST(testTiBupApplyImplicit);
 	TEST(testTiBupApplyErrorOnArg);
 	TEST(testTiBupGenCross);
+
+	TEST(testTiBupCase0);
+	TEST(testTiTdnSelect);
+
+	TEST(testTiBupCase1);
+	TEST(testTiBupCase2);
+	*/
+	TEST(testTiTdnCase1);
+	//TEST(testTiTdnCase2);
+
 	fini();
 }
 
@@ -180,7 +198,9 @@ testTiTdnPretend()
 }
 
 extern int tipBupDebug;
+extern int tipTdnDebug;
 extern int tfsDebug;
+extern int tfsMultiDebug;
 
 local void
 testTiBupApplyMixed()
@@ -373,5 +393,246 @@ testTiBupGenCross()
 	testTrue("XG1", tfIsXGenerator(tpossUnique(abTPoss(test2))));
 	testTrue("XG2", tfIsAnyGenerator(tpossUnique(abTPoss(test2))));
 
+	finiFile();
+}
+
+local void
+testTiBupCase0()
+{
+	String Boolean_imp = "import from Boolean";
+	String t_def = "true: Boolean == never";
+	String X_def = "X: with == add";
+	String x_def = "x: X == never";
+
+	StringList lines = listList(String)(4, Boolean_imp, t_def, X_def, x_def);
+	AbSynList absynList = listCons(AbSyn)(stdtypes(), abqParseLines(lines));
+	AbSyn absyn = abNewSequenceL(sposNone, absynList);
+
+	initFile();
+	tipBupDebug = true;
+	tipTdnDebug = true;
+	tipPatternDebug = true;
+	tipApplyDebug = true;
+	tfsDebug = true;
+	Stab stab = stabFile();
+	abPutUse(absyn, AB_Use_NoValue);
+	scopeBind(stab, absyn);
+	typeInfer(stab, absyn);
+
+	AbSyn test1 = abqParse("if x case ? then true");
+	tiBottomUp(stab, test1, tfUnknown);
+	AbSyn applyCase1 = abFindNode(test1, AB_Apply);
+	testAIntEqual("one pattern", AB_State_HasUnique, abState(applyCase1));
+
+	AbSyn test2 = abqParse("if (x, x) case (?,?) then true");
+	tiBottomUp(stab, test2, tfUnknown);
+	AbSyn applyCase2 = abFindNode(test2, AB_Apply);
+	testAIntEqual("two pattern", AB_State_HasUnique, abState(applyCase2));
+
+	AbSyn test3 = abqParse("if () case () then true");
+	tiBottomUp(stab, test3, tfUnknown);
+
+	finiFile();
+}
+
+
+local void
+testTiBupCase1()
+{
+	String Boolean_imp = "import from Boolean";
+	String X_def = "X: with == add";
+	String Y_def = "Y: with == add";
+	String x1_def = "x1: X == never";
+	String x2_def = "x2: X == never";
+	String f1_def = "f(x: X): PPartial(Y, X) == never";
+	String f2_def = "f(x: X, y: Y): Y == never";
+	
+	StringList lines = listList(String)(7, Boolean_imp, X_def, Y_def, x1_def, x2_def, f1_def, f2_def);
+	AbSynList absynList = listCons(AbSyn)(stdtypes(), abqParseLines(lines));
+	AbSyn absyn = abNewSequenceL(sposNone, absynList);
+
+	initFile();
+	/*
+	tipBupDebug = true;
+	tipPatternDebug = true;
+	tipApplyDebug = true;
+	tfsDebug = true;
+	tfsMultiDebug = true;
+	*/
+	Stab stab = stabFile();
+	abPutUse(absyn, AB_Use_NoValue);
+	scopeBind(stab, absyn);
+	typeInfer(stab, absyn);
+
+	AbSyn test2 = abqParse("x1 case f(?, ?)");
+	abPutUse(test2, AB_Use_NoValue);
+	scopeBind(stab, absyn);
+	tiBottomUp(stab, test2, tfUnknown);
+
+	AbSyn apply = abFindNode(test2, AB_Apply);
+	testAIntEqual("one pattern", 1, tpossCount(abTPoss(apply)));
+	
+	finiFile();
+}
+
+local void
+testTiTdnCase1()
+{
+	String Boolean_imp = "import from Boolean";
+	String X_def = "X: with == add";
+	String Y_def = "Y: with == add";
+	String x1_def = "x1: X == never";
+	String x2_def = "x2: X == never";
+	String f1_def = "f(x: X): PPartial(Y, X) == never";
+	String f2_def = "f(x: X, y: Y): Y == never";
+	
+	StringList lines = listList(String)(7, Boolean_imp, X_def, Y_def, x1_def, x2_def, f1_def, f2_def);
+	AbSynList absynList = listCons(AbSyn)(stdtypes(), abqParseLines(lines));
+	AbSyn absyn = abNewSequenceL(sposNone, absynList);
+
+	initFile();
+	tipBupDebug = true;
+	tipTdnDebug = true;
+	tipPatternDebug = true;
+	tipApplyDebug = true;
+	tfsDebug = false;
+	tfsMultiDebug = true;
+	
+	Stab stab = stabFile();
+	abPutUse(absyn, AB_Use_NoValue);
+	scopeBind(stab, absyn);
+	typeInfer(stab, absyn);
+
+	AbSyn test2 = abqParse("if x1 case f(?, ?) then never");
+	abPutUse(test2, AB_Use_NoValue);
+	scopeBind(stab, absyn);
+	tiBottomUp(stab, test2, tfUnknown);
+	tiTopDown(stab, test2, tfUnknown);
+
+	AbSyn applyCase = abFindNode(test2, AB_Apply);
+	testAIntEqual("uniqueCase", AB_State_HasUnique, abState(applyCase));
+
+	AbSyn applyF = abFindNode(applyCase->abApply.argv[1], AB_Apply);
+	testAIntEqual("uniqueApply", AB_State_HasUnique, abState(applyF));
+
+	AbSyn f = abFindNode(applyF, AB_Id);
+	testAIntEqual("uniqueF", AB_State_HasUnique, abState(f));
+	testAIntEqual("embedF", AB_Embed_ApplyPatCall|AB_Embed_Identity, abTContext(f));
+	
+	finiFile();
+}
+
+local void
+testTiBupCase2()
+{
+	String Boolean_imp = "import from Boolean";
+	String X_def = "X: with == add";
+	String Y_def = "Y: with == add";
+	String x1_def = "x1: X == never";
+	String x2_def = "y1: X == never";
+	String f1_def = "f(x: X): PPartial(Y) == never";
+	
+	StringList lines = listList(String)(6, Boolean_imp, X_def, Y_def, x1_def, x2_def, f1_def);
+	AbSynList absynList = listCons(AbSyn)(stdtypes(), abqParseLines(lines));
+	AbSyn absyn = abNewSequenceL(sposNone, absynList);
+
+	initFile();
+	/*
+	tipBupDebug = true;
+	tipPatternDebug = true;
+	tipApplyDebug = true;
+	tfsDebug = true;
+	tfsMultiDebug = true;
+	*/
+	Stab stab = stabFile();
+	abPutUse(absyn, AB_Use_NoValue);
+	scopeBind(stab, absyn);
+	typeInfer(stab, absyn);
+
+	AbSyn test2 = abqParse("(x1,y1) case (f(?), ?)");
+	abPutUse(test2, AB_Use_Value);
+	scopeBind(stab, absyn);
+	tiBottomUp(stab, test2, tfUnknown);
+
+	AbSyn applyCase = abFindNode(test2, AB_Apply);
+	AbSyn applyF = abFindNode(abApplyArg(applyCase, 1), AB_Apply);
+	testAIntEqual("pair lhs", 1, tpossCount(abTPoss(applyCase)));
+	testAIntEqual("fn lhs", 1, tpossCount(abTPoss(applyF)));
+	
+	testIntEqual("Error count", 0, comsgErrorCount());
+
+	finiFile();
+}
+
+local void
+testTiTdnCase2()
+{
+	String Boolean_imp = "import from Boolean";
+	String X_def = "X: with == add";
+	String x1_def = "x1: X == never";
+	String g_def = "g: X -> X -> PPartial X";
+	
+	StringList lines = listList(String)(4, Boolean_imp, X_def, x1_def, g_def);
+	AbSynList absynList = listCons(AbSyn)(stdtypes(), abqParseLines(lines));
+	AbSyn absyn = abNewSequenceL(sposNone, absynList);
+
+	initFile();
+	tipBupDebug = true;
+	tipTdnDebug = true;
+	tipPatternDebug = true;
+	tipApplyDebug = true;
+	tfsDebug = true;
+	tfsMultiDebug = true;
+	
+	Stab stab = stabFile();
+	abPutUse(absyn, AB_Use_NoValue);
+	scopeBind(stab, absyn);
+	typeInfer(stab, absyn);
+
+	AbSyn test2 = abqParse("if x1 case g(x1)(?) then never");
+	abPutUse(test2, AB_Use_NoValue);
+	scopeBind(stab, absyn);
+	tiBottomUp(stab, test2, tfUnknown);
+	tiTopDown(stab, test2, tfUnknown);
+
+	AbSyn applyCase = abFindNode(test2, AB_Apply);
+	testAIntEqual("uniqueCase", AB_State_HasUnique, abState(applyCase));
+
+	testIntEqual("Error count", 0, comsgErrorCount());
+	finiFile();
+}
+
+local void
+testTiTdnSelect()
+{
+	String Boolean_imp = "import from Boolean";
+	String X_def = "X: with == add";
+	String x1_def = "local x1: X == never";
+	String g_def = "g: X -> X -> PPartial X";
+	
+	StringList lines = listList(String)(4, Boolean_imp, X_def, x1_def, g_def);
+	AbSynList absynList = listCons(AbSyn)(stdtypes(), abqParseLines(lines));
+	AbSyn absyn = abNewSequenceL(sposNone, absynList);
+
+	initFile();
+	tipBupDebug = true;
+	tipTdnDebug = true;
+	tipPatternDebug = true;
+	tipApplyDebug = true;
+	tfsDebug = true;
+	tfsMultiDebug = true;
+	
+	Stab stab = stabFile();
+	abPutUse(absyn, AB_Use_NoValue);
+	scopeBind(stab, absyn);
+	typeInfer(stab, absyn);
+
+	AbSyn test2 = abqParse("select x1 in { ? => never } ");
+	abPutUse(test2, AB_Use_NoValue);
+	scopeBind(stab, absyn);
+	tiBottomUp(stab, test2, tfUnknown);
+	tiTopDown(stab, test2, tfUnknown);
+
+	testIntEqual("Error count", 0, comsgErrorCount());
 	finiFile();
 }

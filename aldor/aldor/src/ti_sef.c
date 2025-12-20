@@ -673,7 +673,7 @@ tisefLambda(Stab stab, Sefo sefo)
 	tfret = tiGetTForm(stab, sefo->abLambda.rtype);
 
 	if (tfarg && tfret)
-		abTUnique(sefo) = tfAnyMap(tfarg, tfret, pack);
+		abTUnique(sefo) = tfAnyMap(tfarg, tfret, pack ? AB_MAP_Packed : AB_MAP_Generic);
 	else
 		abTUnique(sefo) = tfUnknown;
 

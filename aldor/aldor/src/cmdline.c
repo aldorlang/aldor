@@ -1028,7 +1028,7 @@ extern Bool
 	gcrDebug, gcrFmtDebug,
 	genfImplicitDebug,
 	genfDebug, genfHashDebug, genfExportDebug,
-	genfEnvDebug,
+	genfEnvDebug, genfMatchDebug,
 	gfaddDebug,
 	implDebug, inlCallDebug,
 	inlCallInfoDebug, inlExportDebug, inlExprDebug, inlExtendDebug,
@@ -1057,7 +1057,7 @@ extern Bool
 	tipDeclDebug,
 	tipDeclareDebug, tipDefineDebug, tipExtendDebug,
 	tipFarDebug, tipIdDebug,
-	tipLitDebug, tipEmbedDebug, tipSefDebug, tipTdnDebug, 
+	tipLitDebug, tipEmbedDebug, tipSefDebug, tipTdnDebug,
 	titfDebug, titfOneDebug, titfStabDebug,
         udDfDebug, udDfiDebug, ylDebug, utypeDebug;
  
@@ -1105,6 +1105,7 @@ struct dbVarInfo dbVarInfo[] = {
 	{ & genfImplicitDebug,	"genfImplicit" },
 	{ & genfDebug,		"genf"},
 	{ & genfHashDebug,	"genfHash"},
+	{ & genfMatchDebug,	"genfMatch"},
 	{ & gfaddDebug,		"gfadd"},
 	{ & implDebug,		"impl" },
 	{ & inlCallDebug,	"inlCall" },

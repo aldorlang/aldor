@@ -136,7 +136,9 @@ ALDOR_E_ChkMissingRetType "Function return type must be specified."
 ALDOR_D_ChkUseFromHint    "  Maybe you want to use `import from ...'."
 ALDOR_E_ChkSelectSeq	"`select <E> in' must be followed by a sequence."
 ALDOR_E_ChkSelectExits    "Unexpected `=>' in select"
-ALDOR_E_ChkMustExportJavaToPackage "Java exports must specify a package";
+ALDOR_E_ChkMustExportJavaToPackage "Java exports must specify a package"
+ALDOR_E_BlankOutsidePattern "Wildcard outside a pattern context."
+ALDOR_E_BadPatternContent "Unguarded identifier in pattern"
 
 ALDOR_W_FunnyJuxta        "Suspicious juxtaposition.  Check for missing `;'.\n\
 Check indentation if you are using `#pile'."

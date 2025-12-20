@@ -22,12 +22,11 @@
 #include "table.h"
 #include "ti_bup.h"
 #include "ti_tdn.h"
+#include "ti_util.h"
 #include "terror.h"
 #include "tinfer.h"
 #include "tposs.h"
 #include "util.h"
-
-
 
 /*****************************************************************************
  *
@@ -37,6 +36,7 @@
 
 Bool	tipBupDebug	= false;
 #define tipBupDEBUG	DEBUG_IF(tipBup)	afprintf
+#define tipApplyDEBUG	DEBUG_IF(tipApply)	afprintf
 
 /*****************************************************************************
  *
@@ -93,6 +93,7 @@ local void	tibup0ApplyFType(Stab, AbSyn, TForm, AbSyn,
 				 Length, AbSynGetter);
 local void	tibup0ApplyJoin (Stab, AbSyn, TForm, AbSyn,
 				 Length, AbSynGetter);
+local TPoss	tibup0ApplyPatternCase(AbSyn lhs, AbSyn rhs);
 
 local void	tibupSequence0  (Stab, AbSyn, TForm);
 
@@ -168,6 +169,7 @@ local void	tibupWith	(Stab, AbSyn, TForm);
 local void	tibupYield	(Stab, AbSyn, TForm);
 
 local void tibup0RefImps(Stab, AbSyn, TForm);
+local void tibup0ResetTPoss(AbSyn ab, TPoss poss);
 
 /*****************************************************************************
  *
@@ -187,7 +189,7 @@ tiBottomUp(Stab stab, AbSyn absyn, TForm type)
 	Bool	   fluid(tloopBreakCount);
 	SymbolList fluid(terrorIdComplaints);
 	AbLogic    fluid(abCondKnown);
-
+	
 	tuniYieldTPoss	   = tuniInappropriateTPoss;
 	tuniYieldType	   = tfUnknown;
 	tuniReturnTPoss	   = tuniInappropriateTPoss;
@@ -662,6 +664,21 @@ tibup0ApplyFType(Stab stab, AbSyn absyn, TForm type,
 
 	tibup0ApplyFilter(stab, absyn, type, opTypes, op, argc, argf, &nopTypes, &retTypes);
 
+	if (abIsTheId(op, ssymTheCase) && argc == 2) {
+		TPoss cposs = tibup0ApplyPatternCase((*argf)(absyn, 0), (*argf)(absyn, 1));
+		if (DEBUG(tipApply)) {
+			afprintf(dbOut, "Case.. %pTPoss\n", cposs);
+		}
+
+		if (tpossCount(cposs) != 0) {
+			retTypes = tpossAdd1(retTypes, tfBoolean);
+			nopTypes = tpossUnion(nopTypes, tpossPatternCase(cposs));
+		}
+		if (DEBUG(tipApply)) {
+			afprintf(dbOut, "Case.. %pTPoss\n", nopTypes);
+		}
+	}
+
 	/* If the op and the parts had meaning, then give an error. */
 	if (tpossIsEmpty(nopTypes)) {
 		Bool giveMsg = !tpossIsEmpty(opTypes)
@@ -702,9 +719,32 @@ tibup0ApplyGiveMessage(AbSyn absyn, Length argc, AbSynGetter argf)
 	return giveMsg;
 }
 
+enum mapType { MAP_Mapping, MAP_Pattern };
+typedef Enum(mapType) MapType;
+
+local void tibup0ApplyFilterAll(Stab stab, AbSyn absyn, TForm type, TPoss opTypes,
+				AbSyn op, Length argc, AbSynGetter argf,
+				TPoss *pnopTypes, TPoss *pretTypes, MapType mapType);
+
 local void
 tibup0ApplyFilter(Stab stab, AbSyn absyn, TForm type, TPoss opTypes,
-		  AbSyn op, Length argc, AbSynGetter argf, TPoss *pnopTypes, TPoss *pretTypes)
+		  AbSyn op, Length argc, AbSynGetter argf,
+		  TPoss *pnopTypes, TPoss *pretTypes)
+{
+	if (abUse(absyn) == AB_Use_Pattern || abUse(absyn) == AB_Use_PatLocation) {
+		tibup0ApplyFilterAll(stab, absyn, type, opTypes,
+					 op, argc, argf, pnopTypes, pretTypes, MAP_Pattern);
+	}
+	else {
+		tibup0ApplyFilterAll(stab, absyn, type, opTypes,
+				     op, argc, argf, pnopTypes, pretTypes, MAP_Mapping);
+	}
+}
+
+local void
+tibup0ApplyFilterAll(Stab stab, AbSyn absyn, TForm type, TPoss opTypes,
+		     AbSyn op, Length argc, AbSynGetter argf,
+		     TPoss *pnopTypes, TPoss *pretTypes, MapType mapType)
 {
 	SatMask		mask = tfSatBupMask(), result;
 	TPossIterator	it;
@@ -717,8 +757,9 @@ tibup0ApplyFilter(Stab stab, AbSyn absyn, TForm type, TPoss opTypes,
 		AbSub	sigma;
 
 		opType = tfDefineeType(opType);
-		if (!tfIsAnyMap(opType)) continue;
 
+		if (mapType == MAP_Mapping && !tfIsFunctionMap(opType)) continue;
+		if (!tfIsAnyMap(opType)) continue;
 		retType = tfMapRet(opType);
 		sigma	= absNew(stab);
 
@@ -726,6 +767,9 @@ tibup0ApplyFilter(Stab stab, AbSyn absyn, TForm type, TPoss opTypes,
 
 		if (tfSatSucceed(result)) {
 			retType = tformSubst(sigma, retType);
+			if (tfIsPatMatch(opType)) {
+				retType = tfPattern(retType);
+			}
 			result = tfSat(mask, retType, type);
 			if (tfSatSucceed(result)) {
 				nopTypes = tpossAdd1(nopTypes, opType);
@@ -735,8 +779,46 @@ tibup0ApplyFilter(Stab stab, AbSyn absyn, TForm type, TPoss opTypes,
 
 		absFreeDeeply(sigma);
 	}
+	/* Filter opTypes where we're looking for patterns. */
+	if (mapType == MAP_Pattern) {
+		for (tpossITER(it, opTypes); tpossMORE(it); tpossSTEP(it)) {
+			TForm	opType = tpossELT(it), retType, popType;
+			AbSub	sigma;
+			
+			opType = tfDefineeType(opType);
+
+			if (!tfIsPPartialMap(opType)) {
+				continue;
+			}
+			popType = tfsEmbedResult(opType, AB_Embed_ApplyPatCall);
+			retType = tfMapRet(popType);
+			sigma	= absNew(stab);
+			
+			result = tfSatMapArgs(mask, sigma, popType, absyn, argc, argf);
+			
+			if (tfSatSucceed(result)) {
+				retType = tformSubst(sigma, retType);
+				retType = tfPattern(retType);
+
+				result = tfSat(mask, retType, type);
+				if (tfSatSucceed(result)) {
+					nopTypes = tpossAdd1(nopTypes, opType);
+					retTypes = tpossAdd1(retTypes, retType);
+				}
+			}
+		
+			absFreeDeeply(sigma);
+		}
+	}
 	*pnopTypes = nopTypes;
 	*pretTypes = retTypes;
+}
+
+local void
+tibup0ApplyFilterPattern(Stab stab, AbSyn absyn, TForm type, TPoss opTypes,
+			 AbSyn op, Length argc, AbSynGetter argf,
+			 TPoss *pnopTypes, TPoss *pretTypes)
+{
 }
 
 /****************************************************************************
@@ -824,6 +906,7 @@ tibup0NoValue(Stab stab, AbSyn absyn, TForm type, Msg msg)
  ***************************************************************************/
 
 local void		tibup0IdComplain	(AbSyn);
+local Bool		tibup0IdSkipComplaint	(AbSyn);
 
 local void
 tibupId(Stab stab, AbSyn absyn, TForm type)
@@ -868,11 +951,21 @@ tibupId(Stab stab, AbSyn absyn, TForm type)
 
 	if (tpossIsUnique(tp) && tfIsUnknown(tpossUnique(tp)))
 		tp = tpossEmpty();
-	if (tpossIsEmpty(tp))
+
+	if (tpossIsEmpty(tp) && !tibup0IdSkipComplaint(absyn))
 		tibup0IdComplain(absyn);
 
 	abTPoss(absyn) = tp;
 }
+
+local Bool
+tibup0IdSkipComplaint(AbSyn absyn)
+{
+	/* 'Case' is a bit weird at the moment.. We'll work around it. */
+	return abIdSym(absyn) == ssymTheCase;
+}
+
+
 
 local void
 tibup0IdComplain(AbSyn absyn)
@@ -1131,9 +1224,21 @@ tibupComma(Stab stab, AbSyn absyn, TForm type)
  * :: Apply:   f(a, b, ...)
  *
  ***************************************************************************/
+local void tibupApplyFunction(Stab stab, AbSyn absyn, TForm type);
+local void tibupApplyPattern(Stab stab, AbSyn absyn);
 
 local void
 tibupApply(Stab stab, AbSyn absyn, TForm type)
+{
+
+	AbSyn op = abApplyOp(absyn);
+
+	// Case maybe..
+	tibupApplyFunction(stab, absyn, type);
+}
+
+local void
+tibupApplyFunction(Stab stab, AbSyn absyn, TForm type)
 {
 	AbSyn op = abApplyOp(absyn);
 	AbSyn imp = NULL;
@@ -1142,6 +1247,8 @@ tibupApply(Stab stab, AbSyn absyn, TForm type)
 	TPoss retTypes;
 	TPoss impOpTypes;
 	TPoss impRetTypes;
+	TPossIterator it;
+	Bool  isPattern;
 	int i;
 
 	tibup(stab, abApplyOp(absyn), tfUnknown);
@@ -1158,8 +1265,27 @@ tibupApply(Stab stab, AbSyn absyn, TForm type)
 	for (i = 0; i < abApplyArgc(absyn); i += 1)
 		tibup(stab, abApplyArg(absyn, i), tfUnknown);
 
+	if (DEBUG(tipApply)) {
+		afprintf(dbOut, "Apply %oAbUseTag %d %pAbSyn\n", abUse(absyn), tpossCount(opTypes), absyn);
+	}
+	
 	tibup0ApplyFilter(stab, absyn, type, opTypes,
 			  op, abApplyArgc(absyn), abApplyArgf, &nopTypes, &retTypes);
+	
+	if (abIsTheId(op, ssymTheCase) && abApplyArgc(absyn) == 2) {
+		TPoss cposs = tibup0ApplyPatternCase(absyn->abApply.argv[0], absyn->abApply.argv[1]);
+		if (DEBUG(tipApply)) {
+			afprintf(dbOut, "Case.. %pTPoss\n", cposs);
+		}
+
+		if (tpossCount(cposs) != 0) {
+			retTypes = tpossAdd1(retTypes, tfBoolean);
+			nopTypes = tpossUnion(nopTypes, tpossPatternCase(cposs));
+		}
+		if (DEBUG(tipApply)) {
+			afprintf(dbOut, "Case.. %pTPoss\n", nopTypes);
+		}
+	}
 
 	if (tpossHasNonMapType(opTypes)) {
 		imp = abNewId(abPos(absyn), ssymApply);
@@ -1202,14 +1328,68 @@ tibupApply(Stab stab, AbSyn absyn, TForm type)
 	}
 	else {
 		if (!imp)
-			abResetTPoss(op, nopTypes);
+			tibup0ResetTPoss(op, nopTypes);
 		if (imp)
-			abResetTPoss(imp, impOpTypes);
+			tibup0ResetTPoss(imp, impOpTypes);
 	}
 
 	abResetTPoss(absyn, retTypes);
 	tpossFree(opTypes);
 }
+
+local void
+tibup0ResetTPoss(AbSyn ab, TPoss poss)
+{
+	abResetTPoss(ab, poss);
+	if (abState(ab) == AB_State_Error && tpossCount(poss) > 0) {
+		abState(ab) = AB_State_HasPoss;
+	}
+}
+
+
+local TPoss
+tibup0ApplyPatternCase(AbSyn lhs, AbSyn rhs)
+{
+	static int count = 0;
+	int instance = count++;
+	TPoss ret = tpossEmpty();
+	TPoss lhsPoss = abTPoss(lhs);
+	TPoss rhsPoss = abTPoss(rhs);
+	TPossIterator it, lit;
+
+	if (DEBUG(tipPattern)) {
+		afprintf(dbOut, "bupPatternCase: %d lhs %pAbSyn %pTPoss\n", instance, lhs, lhsPoss);
+		afprintf(dbOut, "bupPatternCase: %d rhs %pAbSyn %pTPoss\n", instance, rhs, rhsPoss);
+	}
+	// Quick exit for general patterns 'x case ?'
+	for (tpossITER(it, rhsPoss); tpossMORE(it); tpossSTEP(it)) {
+		TForm rtf = tpossELT(it);
+		if (tfIsPatternExit(rtf)) {
+			if (DEBUG(tipPattern)) {
+				afprintf(dbOut, "(bupPattern: %d %pAbSyn found exit)\n", instance, rhs);
+			}
+			return lhsPoss;
+		}
+	}
+	
+	for (tpossITER(it, rhsPoss); tpossMORE(it); tpossSTEP(it)) {
+		TForm rtf = tpossELT(it);
+		
+		for (tpossITER(lit, lhsPoss); tpossMORE(lit); tpossSTEP(lit)) {
+			TForm ltf = tpossELT(lit);
+			
+			if (DEBUG(tipPattern)) {
+				afprintf(dbOut, "(bupPattern: %d satCase %pTForm %pTForm --> %oBool)\n",
+					 instance, ltf, rtf, tfSatCase(ltf, rtf));
+			}
+			if (tfSatCase(ltf, rtf)) {
+				tpossAdd1(ret, ltf);
+			}
+		}
+	}
+	return ret;
+}
+
 
 /****************************************************************************
  *
@@ -1232,6 +1412,15 @@ tpossFilterSatisfiers(AbSyn absyn, TPoss T)
 }
 
 local void
+tibupDefinePattern(AbSyn absyn) {
+	AbSyn rhs = absyn->abDefine.rhs;
+
+	if (abUse(rhs) == AB_Use_Pattern) {
+		abUse(absyn) = AB_Use_Pattern;
+	}
+}
+
+local void
 tibupDefine(Stab stab, AbSyn absyn, TForm type)
 {
 	AbSyn	lhs = absyn->abDefine.lhs;
@@ -1239,10 +1428,10 @@ tibupDefine(Stab stab, AbSyn absyn, TForm type)
 	Bool	key = abTag(lhs) != AB_Declare && abUse(absyn) == AB_Use_Value;
 
 	tiTfPushDefinee(lhs);
-
 	if (key) {
 		/* !! We don't check the type of keyword arguments. */
 		tibup(stab, rhs, type);
+		tibupDefinePattern(absyn);
 		abState(lhs) = AB_State_HasPoss;
 		abTPoss(lhs) = abReferTPoss(rhs);
 	}
@@ -1250,6 +1439,7 @@ tibupDefine(Stab stab, AbSyn absyn, TForm type)
 		tibup(stab, lhs, type);
 		type = abTForm(lhs->abDeclare.type);
 		tibup(stab, rhs, type);
+		tibupDefinePattern(absyn);
 	}
 	else {
 		TPoss	tprhs, tpnew;
@@ -1649,7 +1839,7 @@ tibupLambda(Stab stab, AbSyn absyn, TForm type)
 	tibup(stab, body,  tf);
 
 	/* There can be only one type for this lambda ... */
-	tf = tfAnyMap(tfFullFrAbSyn(stab, param), tf, pack);
+	tf = tfAnyMap(tfFullFrAbSyn(stab, param), tf, pack ? AB_MAP_Packed : AB_MAP_Generic);
 	abTPoss(absyn) = tpossSingleton(tf);
 
 	listFree(Symbol)(terrorIdComplaints);
@@ -2970,7 +3160,8 @@ tibupAssert(Stab stab, AbSyn absyn, TForm type)
 local void
 tibupBlank(Stab stab, AbSyn absyn, TForm type)
 {
-	tibup0Generic(stab, absyn, type);
+	// Not ideal, a 'Vx, Pattern(x)' type would be nice
+	abTPoss(absyn) = tpossSingleton(tfPattern(tfExit));
 }
 
 /***************************************************************************

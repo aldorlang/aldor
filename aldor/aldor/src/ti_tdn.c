@@ -445,13 +445,27 @@ titdn0ApplyFType(Stab stab, AbSyn absyn, TForm type, AbSyn op,
 
 	if (!result) return false;
 
-	titdn(stab, op, opType);
+	if (abIsTheId(op, ssymTheCase)
+	    && argc == 2
+	    && tfIsPatternCaseArg(tfMapArgN(opType, 1))) {
+		// Leave as is.  Ideally we would have a 'case' builtin on Pattern
+		abAddTContext(absyn, AB_Embed_ApplyCase);
+		// "Magic" operator from (X, X) -> Bool that matches on the way
+		abTUnique(absyn->abApply.op) = opType; 
+		abAddTContext(absyn, AB_Embed_ApplyCase);
+		
+		mask = tfSatTdnMask();
+		result = tfSatMap(mask, stab, opType, type, absyn, abApplyArgc(absyn), abApplyArgf);
+	}
+	else {
+		titdn(stab, op, opType);
+		parmc = tfMapHasDefaults(opType) ? tfMapArgc(opType) : argc;
+		AbEmbed embed = tfMapMultiArgEmbed(opType, parmc);
+		abAddTContext(op, embed);
 
-	parmc = tfMapHasDefaults(opType) ? tfMapArgc(opType) : argc;
-	abAddTContext(op, tfMapMultiArgEmbed(opType, parmc));
-
-	mask = tfSatTdnMask();
-	result = tfSatMap(mask, stab, opType, type, absyn, argc, argf);
+		mask = tfSatTdnMask();
+		result = tfSatMap(mask, stab, opType, type, absyn, argc, argf);
+	}
 
 	/* We return false rarely (eg titdn0FarValue failure). */
 	return tfSatSucceed(result);
@@ -636,8 +650,12 @@ titdnId(Stab stab, AbSyn absyn, TForm type)
 	/* Give this leaf some meaning */
 	stabSetSyme(stab, absyn, syme, abCondKnown);
 	abTUnique(absyn) = symeType(syme);
-
-
+	/*
+	AbEmbed embed = tfSatEmbedType(symeType(syme), type);
+	if (embed != AB_Embed_Identity) {
+		abSetTContext(absyn, embed);
+	}
+	*/
 	/* We return success even if an error was raised */
 	return true;
 }
@@ -830,6 +848,39 @@ titdnComma(Stab stab, AbSyn absyn, TForm type)
  *
  ***************************************************************************/
 
+// TODO: Move this function..
+local Bool
+titdnApplyCase(Stab stab, AbSyn absyn, TForm type)
+{
+	TPoss lposs, rposs;
+	TPossIterator it;
+	AbSyn lhs = absyn->abApply.argv[0];
+	AbSyn rhs = absyn->abApply.argv[1];
+	TForm ctype;
+
+	if (!tfSatReturn(tfBoolean, type)) {
+		return false;
+	}
+	
+	TPoss itsc = tpossIntersect(abTPoss(lhs), tpossPatternArg(abTPoss(rhs)));
+
+	if (DEBUG(tipPattern)) {
+		afprintf(dbOut, "tdnPattern: Itsc: %pTPoss\n", itsc);
+	}
+	
+	if (!tpossIsUnique(itsc)) {
+		return false;
+	}
+
+	titdn(stab, absyn->abApply.argv[0], tpossUnique(itsc));
+	titdn(stab, absyn->abApply.argv[1], tfPattern(tpossUnique(itsc)));
+
+	abTUnique(absyn) = tfBoolean;
+	abAddTContext(absyn, AB_Embed_ApplyCase);
+	abTUnique(absyn->abApply.op) = tfUnknown; // "Magic" operator from (X, X) -> Bool that matches on the way
+	return true;
+}
+
 local Bool
 titdnApply(Stab stab, AbSyn absyn, TForm type)
 {
@@ -841,8 +892,11 @@ titdnApply(Stab stab, AbSyn absyn, TForm type)
 	Length nopc, popc, parmc;
 	TForm  nopt, popt, opType;
 	Bool   result;
-	if (abState(op) == AB_State_Error)
-		return false;
+	Bool   isPPartial = false;
+	
+	if (abUseIsPattern(abUse(absyn))) {
+		mask = tfSatWithPatContext(mask);
+	}
 
 	nopc = 0;			/* Number of non-pending matches */
 	popc = 0;			/* Number of all possible matches */
@@ -864,11 +918,27 @@ titdnApply(Stab stab, AbSyn absyn, TForm type)
 		TForm	opType = tpossELT(it);
 		SatMask	result;
 
+		if (DEBUG(tipApply)) {
+			afprintf(dbOut, "--> tdnApply %pTForm\n", opType);
+		}
+		
 		opType = tfDefineeType(opType);
 		if (!tfIsAnyMap(opType))
 			continue;
 
+		if (tfIsPatMatch(opType) && !abUseIsPat(absyn)) {
+			continue;
+		}
+
+		if (tfIsFunctionMap(opType) && abUse(absyn) == AB_Use_Pattern) {
+			continue;
+		}
+		
 		result = tfSatMap(mask, stab, opType, type, absyn, abApplyArgc(absyn), abApplyArgf);
+		if (DEBUG(tipApply)) {
+			afprintf(dbOut, "--> tdnApply - SatMap %s\n", tfSatMaskToString(result));
+		}
+		
 		if (tfSatSucceed(result)) {
 			if (!tfSatPending(result)) {
 				nopc += 1;
@@ -877,6 +947,31 @@ titdnApply(Stab stab, AbSyn absyn, TForm type)
 			}
 			popc += 1;
 			popt = opType;
+		}
+	}
+	if (abUseIsPat(absyn)) {
+		for (tpossITER(it, opTypes); tpossMORE(it); tpossSTEP(it)) {
+			TForm	opType = tpossELT(it);
+			SatMask	result;
+			if (!tfIsPPartialMap(opType)) {
+				continue;
+			}
+			TForm patType = tfsEmbedResult(opType, AB_Embed_ApplyPatCall);
+			result = tfSatMap(mask, stab, patType, type, absyn, abApplyArgc(absyn), abApplyArgf);
+			if (DEBUG(tipApply)) {
+				afprintf(dbOut, "--> tdnApply - SatMap %s\n", tfSatMaskToString(result));
+			}
+			
+			if (tfSatSucceed(result)) {
+				if (!tfSatPending(result)) {
+					nopc += 1;
+					nopt = patType;
+					nopTypes = tpossAdd1(nopTypes, patType);
+				}
+				popc += 1;
+				popt = patType;
+				isPPartial = true;
+			}
 		}
 	}
 	/* And now the implicit part */
@@ -925,12 +1020,37 @@ titdnApply(Stab stab, AbSyn absyn, TForm type)
 		result = false;
 	}
 
+	if (result && isPPartial) {
+		abAddTContext(op, AB_Embed_ApplyPatCall);
+	}
+	
 	tpossFree(opTypes);
 	tpossFree(nopTypes);
 
 	if (!result) return false;
 
-	if (isImplicit) {
+	/*
+	if (abIsApplyOf(absyn, ssymTheCase)
+	    && abApplyArgc(absyn) == 2) {
+		afprintf(dbOut, "TF OP: %pTForm\n", opType);
+		afprintf(dbOut, "TF arg1: %oBool %pTForm\n",
+			 tfIsPattern(tfMapArgN(opType, 1)),
+			 tfMapArgN(opType, 1));
+	}
+	*/
+	if (abIsApplyOf(absyn, ssymTheCase)
+	    && abApplyArgc(absyn) == 2
+	    && tfIsPatternCaseArg(tfMapArgN(opType, 1))) {
+		// Leave as is.  Ideally we would have a 'case' builtin on Pattern
+		abTUnique(absyn) = tfBoolean;
+		abAddTContext(absyn, AB_Embed_ApplyCase);
+		// "Magic" operator from (X, X) -> Bool that matches on the way
+		abTUnique(absyn->abApply.op) = opType; 
+
+		mask = tfSatTdnMask();
+		result = tfSatMap(mask, stab, opType, type, absyn, abApplyArgc(absyn), abApplyArgf);
+	}
+	else if (isImplicit) {
 		AbSyn imp = abImplicit(absyn);
 		int parmc;
 		titdn(stab, imp, opType);
@@ -2124,7 +2244,7 @@ titdnCoerceTo(Stab stab, AbSyn absyn, TForm type)
 				    absyn, type, abTPoss(absyn));
 		return false;
 	}
-	titdn0ApplySym(stab, absyn, tf, ssymCoerce, 1, abArgf, NULL);
+ 	titdn0ApplySym(stab, absyn, tf, ssymCoerce, 1, abArgf, NULL);
 	abTUnique(absyn) = tf;
 	return true;
 }
@@ -2305,7 +2425,8 @@ titdnAssert(Stab stab, AbSyn absyn, TForm type)
 local Bool
 titdnBlank(Stab stab, AbSyn absyn, TForm type)
 {
-	return titdn0Generic(stab, absyn, type);
+	abTUnique(absyn) = type;
+	return true;
 }
 
 /***************************************************************************
@@ -2609,7 +2730,7 @@ titdnReference(Stab stab, AbSyn absyn, TForm type)
  ***************************************************************************/
 
 local Bool
-titdnSelect(Stab stab, AbSyn absyn, TForm type)
+                                                                              titdnSelect(Stab stab, AbSyn absyn, TForm type)
 {
 	Scope("titdnSelect");
 	TForm		fluid(tuniExitTForm);

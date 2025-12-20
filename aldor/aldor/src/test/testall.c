@@ -58,6 +58,7 @@ main(int argc, char *argv[])
 	if (testShouldRun("absyn")) absynTest();
 	if (testShouldRun("abnorm")) abnormTest();
 	if (testShouldRun("abcheck")) abcheckTest();
+	if (testShouldRun("abuse")) abuseTest();
 	if (testShouldRun("ablog")) ablogTest();
 	if (testShouldRun("tform")) tformTest();
 	if (testShouldRun("scobind")) scobindTest();

@@ -243,6 +243,15 @@ gen0SpecialOp(FoamTag type, Syme syme, Length argc, AbSyn *argv, Foam *vals)
 		else if (tfIsTrailingArray(key))
 			foam = gen0TrailingDispose(syme, key, argc, argv, vals);
 	}
+	/* PPartials. */
+	else if (sym == ssymTheSuccess) {
+		TForm	key = gen0SpecialRetType(syme);
+		foam = gen0PPartialSuccess(syme, key, argc, argv, vals);
+	}
+	else if (sym == ssymTheFailed) {
+		TForm	key = gen0SpecialRetType(syme);
+		foam = gen0PPartialFailed(syme, key, argc, argv, vals);
+	}
 
 	if (foam == NULL)
 		foam = gen0SpecialUnhandled(syme);
@@ -278,9 +287,9 @@ gen0SpecialKeyType(TForm tf)
 	Length		i, argc;
 
 	tfFollow(tf);
-	if (tfIsRecord(tf) || tfIsRawRecord(tf) || tfIsUnion(tf) ||
-	    tfIsEnum(tf) || tfIsTrailingArray(tf) 
-	    //|| tfIsPPartial(tf)
+	if (tfIsRecord(tf) || tfIsRawRecord(tf) || tfIsUnion(tf)
+	    || tfIsEnum(tf) || tfIsTrailingArray(tf)
+	    || tfIsPPartial(tf)
 	    )
 		return tf;
 
@@ -1209,3 +1218,94 @@ gen0TrailingSet(Syme syme, TForm key, Length argc, AbSyn *argv, Foam *vals)
  *
  ****************************************************************************/
 
+
+local Foam
+gen0PPartialSuccess(Syme syme, TForm key, Length argc, AbSyn *argv, Foam *vals)
+{
+	AInt	format = gen0PPartialFormatNumber(key);
+	AInt	index;
+	Foam	whole = gen0Temp0(FOAM_Rec, format);
+
+	gen0AddStmt(gen0RNew(whole, format), NULL);
+	for (index = 0; index < argc; index += 1) {
+		TForm tf = tfRecordArgN(key, index);
+		Foam value = genFoamArg(argv, vals, index);
+		FoamTag type = gen0Type(tf, NULL);
+		if (type != FOAM_Word)
+			value = foamNewCast(type, value);
+		gen0AddStmt(gen0RSet(whole, format, index, value), NULL);
+	}
+
+	return foamCopy(whole);
+}
+
+local Foam
+gen0PPartialFailed(Syme syme, TForm key, Length argc, AbSyn *argv, Foam *vals)
+{
+	return foamNewCast(FOAM_Word, foamNew(FOAM_BCall, 1, FOAM_BVal_PtrNil));
+}
+
+
+/*****************************************************************************
+ *
+ * :: Special matchers
+ *
+ ****************************************************************************/
+
+local void gfm0MatchUnion(Syme syme, TForm key, AbSyn ab, Foam in);
+local void gfm0MatchRecord(TForm key, AbSyn ab, Foam in);
+local void gfm0MatchRawRecord(TForm key, AbSyn ab, Foam in);
+
+void
+gfm0SpecialMatch(Syme syme, AbSyn ab, Foam in)
+{
+	Symbol sym = symeId(syme);
+
+	if (sym == ssymBracket) {
+		TForm	key = gen0SpecialRetType(syme);
+		if (tfIsRecord(key))
+			gfm0MatchRecord(key, ab, in);
+		else if (tfIsRawRecord(key))
+			gfm0MatchRawRecord(key, ab, in);
+		else if (tfIsUnion(key))
+			gfm0MatchUnion(syme, key, ab, in);
+	}
+	else {
+		bug("not implemented");
+	}
+}
+
+local void
+gfm0MatchUnion(Syme syme, TForm key, AbSyn ab, Foam in)
+{
+	AInt format = gen0MakeUnionFormat();
+	TForm tf0   = tfMapMultiArgN(symeType(syme), 2, int0);
+	AInt index  = gen0UnionIndex(key, tf0);
+	Foam foam   = foamNewEmpty(FOAM_BCall, 3);
+
+	foam->foamBCall.op = FOAM_BVal_SIntEQ;
+	foam->foamBCall.argv[0] = foamNewRElt(format,
+					      foamNewCast(FOAM_Rec, in), (AInt) 0);
+	foam->foamBCall.argv[1] = foamNewSInt(index);
+	gen0AddStmt(foamNewIf(foamNotThis(foam), gfm0MatchExitLabel()), ab);
+
+	gfm0MatchExpr(ab->abApply.argv[0], foamNewRElt(format, foamNewCast(FOAM_Rec, in), 1));
+}
+
+local void
+gfm0MatchRecord(TForm key, AbSyn ab, Foam lhs)
+{
+	bug("not implemented");
+}
+
+local void
+gfm0MatchRawRecord(TForm key, AbSyn ab, Foam lhs)
+{
+	bug("not implemented");
+}
+
+local void
+gfm0MatchTrailingArray(TForm key, AbSyn ab, Foam lhs)
+{
+	bug("not implemented");
+}

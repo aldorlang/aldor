@@ -238,6 +238,7 @@ libphase_a_SOURCES =	\
 	gf_implicit.c	\
 	gf_imps.c	\
 	gf_java.c	\
+	gf_match.c	\
 	gf_prog.c	\
 	gf_reference.c	\
 	gf_rtime.c	\
@@ -281,6 +282,7 @@ libphase_a_SOURCES =	\
 	ti_decl.c	\
 	ti_sef.c	\
 	ti_tdn.c	\
+	ti_util.c	\
 	tinfer.c	\
 	usedef.c	\
 	yldlocs.c
@@ -297,6 +299,7 @@ testsuite =			\
 	test/test_ablogic.c 	\
 	test/test_abnorm.c	\
 	test/test_absyn.c 	\
+	test/test_abuse.c 	\
 	test/test_annabs.c 	\
 	test/test_archive.c	\
 	test/test_bigint.c 	\

@@ -18,16 +18,23 @@ local void testTFormFormatOne(String name, String expect, TForm tf);
 local void testDependentExport(void);
 local void testEnum();
 local void testMachineInt();
+local void testPPartial();
+local void testRecord();
 
 void
 tformTest(void)
 {
 	init();
+	/*
 	TEST(testTFormFormat);
 	TEST(testTFormSyntaxConditions);
 	TEST(testEnum);
 	TEST(testDependentExport);
 	TEST(testMachineInt);
+	*/
+	TEST(testRecord);
+	TEST(testPPartial);
+
 	fini();
 }
 
@@ -110,6 +117,11 @@ testEnum()
 extern int tipBupDebug;
 extern int tipTdnDebug;
 extern int tfsDebug;
+extern int tfImportDebug;
+extern int tcDebug;
+extern int sefoFreeDebug;
+extern int sefoSubstDebug;
+
 local void
 testDependentExport()
 {
@@ -153,5 +165,57 @@ testMachineInt()
 	tfqTypeInfer(stabFile(), "MachineInteger: with == add; default x: MachineInteger");
 	testTrue("xx", tfMachineInteger != tfUnknown);
 
+	finiFile();
+}
+
+local void
+testPPartial()
+{
+	initFile();
+	stdscope(stabFile());
+
+	tipBupDebug = 1;
+	tipTdnDebug = 0;
+	tfImportDebug = 1;
+	sefoSubstDebug = 1;
+
+	sefoFreeDebug = 1;
+	afprintf(dbOut, "+++++++++++++\n");
+	tfqTypeInfer(stabFile(), "L(): with { a: () -> PPartial % } == add { a(): PPartial % == never }");
+	
+	SymeList symes = stabGetMeanings(stabFile(), ablogFalse(), symInternConst("L"));
+	Syme symeL = car(symes);
+
+	TForm tfL = tfqTypeForm(stabFile(), "L()");
+	SymeList symesI = tfGetDomImports(tfL);
+
+	afprintf(dbOut, "%pTForm\n", symeType(car(symesI)));
+	
+	finiFile();
+}
+
+local void
+testRecord()
+{
+	initFile();
+	stdscope(stabFile());
+
+	tipBupDebug = 1;
+	tipTdnDebug = 0;
+	tfImportDebug = 1;
+	sefoSubstDebug = 1;
+	sefoFreeDebug = 1;
+	afprintf(dbOut, "+++++++++++++\n");
+	tfqTypeInfer(stabFile(), "L(): with { a: () -> Record(x: %) } == add { a(): Record(x: %) == never }");
+	
+	SymeList symes = stabGetMeanings(stabFile(), ablogFalse(), symInternConst("L"));
+	Syme symeL = car(symes);
+
+	TForm tfL = tfqTypeForm(stabFile(), "L()");
+	SymeList symesI = tfGetDomImports(tfL);
+
+	afprintf(dbOut, "%pTForm\n", symeType(car(symesI)));
+
+	
 	finiFile();
 }

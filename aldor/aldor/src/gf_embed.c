@@ -39,6 +39,10 @@ gen0Embed(Foam val, AbSyn ab, TForm tf, AbEmbed embed)
 		return gen0UnaryToRaw(val, ab);
 	case AB_Embed_RawToUnary:
 		return gen0RawToUnary(val, ab);
+	case AB_Embed_ApplyCase:
+		return val;
+	case AB_Embed_ApplyPatCall:
+		return val;
 	default:
 		bugBadCase(embed);
 		NotReached(return val);

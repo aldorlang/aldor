@@ -1164,6 +1164,22 @@ abNewApplyDeclaredArg(AbSyn app)
       return a;
 }
 
+AbMapType
+abMapType(AbSyn ab)
+{
+	if (abIsGenericMap(ab)) {
+		return AB_MAP_Generic;
+	}
+	if (abIsPackedMap(ab)) {
+		return AB_MAP_Packed;
+	}
+	if (abIsPatMatch(ab)) {
+		return AB_MAP_PatMatch;
+	}
+	bug("not reached");
+}
+
+
 /*
  * Allocate a new comma for copied arguments of an application.
  */
@@ -1728,8 +1744,18 @@ struct ab_use_info abUseInfoTable[] = {
 	{AB_Use_Default, "Default"},
 	{AB_Use_Except,	 "Except"},
 	{AB_Use_Elided,	 "Elided"},
+	{AB_Use_PatLocation, "PatLocation"},
+	{AB_Use_Pattern,     "Pattern"},
 	{AB_Use_LIMIT,     "LIMIT"},
 };
+
+Bool
+abUseIsPattern(AbUse use)
+{
+	return use == AB_Use_Pattern || use == AB_Use_PatLocation;
+}
+
+
 
 /*
  * Equality preserving functions for abTransferSemantics.
@@ -2182,6 +2208,8 @@ local struct abEmbedInfo abEmbedInfoVals[] = {
 	{"RawToUnary",		AB_Embed_RawToUnary},
 	{"ApplyMultiToTuple",	AB_Embed_ApplyMultiToTuple},
 	{"ApplyMultiToCross",	AB_Embed_ApplyMultiToCross},
+	{"ApplyCase",		AB_Embed_ApplyCase},
+	{"ApplyPatCall",    	AB_Embed_ApplyPatCall},
 	{ NULL, -1}
 };
 

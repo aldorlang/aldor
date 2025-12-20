@@ -79,9 +79,11 @@ extern Stab		stabFindLevel		(Stab, Syme);
  *	TFS_MultiToUnary		(S) -> S
  *	TFS_UnaryToTuple		S -> Tuple(S)
  *	TFS_UnaryToCross		S -> Cross(S)
+ *	TFS_PPartialToPat		[S -> PPartial T] -> PatMatch(T, S)
 
  *	TFS_Unify			ForAll(x, S) -> S'
  *      TFS_Any                         S -> ForAll(x, x)
+ *      TFS_AnyToPattern                S -> Pattern(S)
  *
  *	(error return modes)
  *	TFS_Fail
@@ -115,6 +117,7 @@ struct maskInfo tfSatMaskInfo[] = {
 	{"UnaryToTuple"},
 	{"UnaryToCross"},
 	{"UnaryToMulti"},
+	{"AnyToPattern"},
 	{"Unify"},
 	{"AnyEmbed"},
 
@@ -151,19 +154,20 @@ struct maskInfo tfSatMaskInfo[] = {
 #define	TFS_UnaryToTuple	(((SatMask) 1) << 15)
 #define	TFS_UnaryToCross	(((SatMask) 1) << 16)
 #define	TFS_UnaryToMulti	(((SatMask) 1) << 17)
+#define TFS_AnyToPattern	(((SatMask) 1) << 18)
+#define TFS_PPartialToPat	(((SatMask) 1) << 19)
+#define	TFS_Unify		(((SatMask) 1) << 20)
+#define	TFS_AnyEmbed		(((SatMask) 1) << 21)
 
-#define	TFS_Unify		(((SatMask) 1) << 18)
-#define	TFS_AnyEmbed		(((SatMask) 1) << 19)
+#define	TFS_Fail		(((SatMask) 1) << 22)
+#define	TFS_ExportsMissing	(((SatMask) 1) << 23)
+#define	TFS_EmbedFail		(((SatMask) 1) << 24)
+#define	TFS_ArgMissing		(((SatMask) 1) << 25)
+#define	TFS_BadArgType		(((SatMask) 1) << 26)
+#define	TFS_DifferentArity	(((SatMask) 1) << 27)
+#define	TFS_UnifyFail		(((SatMask) 1) << 28)
 
-#define	TFS_Fail		(((SatMask) 1) << 20)
-#define	TFS_ExportsMissing	(((SatMask) 1) << 21)
-#define	TFS_EmbedFail		(((SatMask) 1) << 22)
-#define	TFS_ArgMissing		(((SatMask) 1) << 23)
-#define	TFS_BadArgType		(((SatMask) 1) << 24)
-#define	TFS_DifferentArity	(((SatMask) 1) << 25)
-#define	TFS_UnifyFail		(((SatMask) 1) << 26)
-
-#define	TFS_BitsWidth		27
+#define	TFS_BitsWidth		29
 #define	TFS_BitsMask		((((SatMask) 1) << TFS_BitsWidth) - 1)
 
 #define	TFS_ModeMask		(\
@@ -219,6 +223,7 @@ struct maskInfo tfSatMaskInfo[] = {
 #define			tfSatAnyArg(m)		((m) & TFS_Any)
 
 #define			tfSatAllow(m,c)		((m) & (c))
+#define			tfSatWithout(m,c)	((m) & ~(c))
 
 #define			tfSatResult(m,c)	(tfSatMode(m) | (c))
 #define			tfSatParNFail(m, r, n)	(tfSatMode(m) | (r) | tfsParNBits(n))
@@ -341,6 +346,13 @@ tfSatFailedExportsMissing(SatMask mask)
 	return mask & TFS_ExportsMissing;
 }
 
+SatMask
+tfSatWithPatContext(SatMask mask)
+{
+	return mask | TFS_AnyToPattern;
+}
+
+
 Bool
 tfSatFailedEmbedFail(SatMask mask)
 {
@@ -431,6 +443,10 @@ tfSatEmbedType(TForm tf1, TForm tf2)
 		else if (t2 == TF_Multiple)	return AB_Embed_Identity;
 		else				return AB_Embed_MultiToUnary;
 	}
+	else if (t1 == TF_Map) {
+		if (t2 == TF_PatMatch)		return AB_Embed_ApplyPatCall;
+		else				return AB_Embed_Identity;
+	}
 	else {
 		if	(t2 == TF_Tuple)	return AB_Embed_UnaryToTuple;
 		else if (t2 == TF_Cross)	return AB_Embed_UnaryToCross;
@@ -452,6 +468,17 @@ tfsEmbedResult(TForm tf, AbEmbed embed)
 		tf = tfDefinedVal(tf);
 	}
 
+	if (embed & AB_Embed_ApplyPatCall) {
+		return tfPatMatch(tfPPartialAsMapArg(tfMapRet(tf)), tfMapArg(tf));
+	}
+
+	/* See comment in tiTfTopDown 
+	if ((embed & AB_Embed_Identity) && embed != AB_Embed_Identity) {
+		afprintf(dbOut, "Embed %oAbEmbed %pTForm\n", embed, tf);
+		bug("odd embed");
+	}
+	*/
+	
 	if (embed & AB_Embed_Identity || embed == 0)
 		return tf;
 
@@ -496,6 +523,10 @@ tfsEmbedResult(TForm tf, AbEmbed embed)
 	}
 	if (embed & AB_Embed_UnaryToMulti) {
 		return tfMulti(1, tf);
+	}
+
+	if (embed & AB_Embed_ApplyPatCall) {
+		return tfPatMatch(tfPPartialAsMapArg(tfMapRet(tf)), tfMapArg(tf));
 	}
 
 	return tf;
@@ -595,6 +626,37 @@ tfSatSubList(AbSyn ab)
 
 /******************************************************************************
  *
+ * :: tfSatCase
+ * (maybe not needed)
+ *****************************************************************************/
+
+Bool
+tfSatCase(TForm S, TForm T)
+{
+	if (tfIsMulti(T)) {
+		Bool ok = true;
+		Length argc = tfAsMultiArgc(S);
+		if (argc != tfMultiArgc(T)) {
+			return false;
+		}
+		
+		for (int i=0; i<tfArgc(T) && ok; i++) {
+			ok = tfSatisfies(tfPattern(tfAsMultiArgN(S, argc, i)), tfMultiArgN(T, i));
+		}
+		return ok;
+	}
+	else if (!tfIsPattern(T)) {
+		return false;
+	}
+	else if (tfIsExit(tfPatternArg(T))) {
+		return true;
+	}
+	return tfSatisfies(tfPattern(S), T);
+}
+
+
+/******************************************************************************
+ *
  * :: tfSatMap
  *
  *****************************************************************************/
@@ -615,10 +677,14 @@ tfSatMap(SatMask mask, Stab stab, TForm S, TForm T,
 	result = tfSatMapArgs(mask, sigma, S, ab, argc, argf);
 	if (tfSatSucceed(result)) {
 		Sret = tformSubst(sigma, Sret);
+		if (tfIsPatMatch(S)) {
+			Sret = tfPattern(Sret);
+		}
 		result = tfSatEmbed(result) | tfSat1(mask, ab, Sret, T);
 
-		if (tfSatSucceed(result) && tfSatCommit(mask))
+		if (tfSatSucceed(result) && tfSatCommit(mask)) {
 			abTUnique(ab) = Sret;
+		}
 	}
 
 	absFreeDeeply(sigma);
@@ -630,6 +696,12 @@ SatMask
 tfSatMapArgs(SatMask mask, AbSub sigma, TForm S,
 	     AbSyn ab, Length argc, AbSynGetter argf)
 {
+	assert(tfIsAnyMap(S));
+	/*
+	if (tfIsPPartialMap(S) && tfSatEmbedPartialToPat(mask)) {
+		
+	}
+	*/
 	return tfSatAsMulti(mask, sigma, tfMapArg(S), S, ab, argc, argf);
 }
 
@@ -641,7 +713,12 @@ tfSatAsMulti(SatMask mask, AbSub sigma, TForm S, TForm TScope,
 	Length		i, parmc, usedc;
 	int		serialThis;
 	Bool		packed = tfIsPackedMap(TScope);
+	Bool 		pattern = tfIsPatMatch(TScope);
 	AbSyn		abc = NULL;
+
+	if (DEBUG(tfsMulti)) {
+		afprintf(dbOut, "SatAsMulti: S: %pTForm Scope: %pTForm\n", S, TScope);
+	}
 
 	if (tfAsMultiEmbed(S, argc) == AB_Embed_Fail)
 		return tfSatResult(mask, TFS_EmbedFail);
@@ -685,7 +762,9 @@ tfSatAsMulti(SatMask mask, AbSub sigma, TForm S, TForm TScope,
 		syme = tfDefineeSyme(tfi);
 		tfi  = tfDefineeType(tfi);
 		tfi  = tformSubst(sigma, tfi);
-
+		if (pattern) {
+			tfi = tfPattern(tfi);
+		}
 		/* Check to see if abi satisfies tfi. */
 		if (!def && !tfSatSigma(mask)) {
 			maski = tfSatArg(mask, abi, tfi);
@@ -955,6 +1034,21 @@ tfSat1(SatMask mask, AbSyn Sab, TForm S, TForm T)
 	else if (tfIsRaw(T))
 		result = tfSat(mask, S, tfRawType(tfRawArg(T)));
 
+	/*
+	 * tfPattern
+	 */
+	else if (tfIsPattern(T)) {
+		if (tfIsPatternExit(T)) {
+			result = tfSatTrue(mask);
+		}
+		else if (tfIsPattern(S)) {
+			result = tfSat(mask, tfPatternArg(S), tfPatternArg(T));
+		}
+		else if (tfSatAllow(mask, TFS_AnyToPattern)) {
+			result = tfSat(tfSatWithout(mask, TFS_AnyToPattern), S, tfPatternArg(T));
+			result = tfSatResult(result, TFS_AnyToPattern);
+		}
+	}
 	/*
 	 * tfExcept
 	 */
@@ -1297,8 +1391,34 @@ tfSatEach(SatMask mask, TForm S, TForm T)
 	return result;
 }
 
+local SatMask tfSatMap1(SatMask mask, TForm S, TForm T);
+
 local SatMask
 tfSatMap0(SatMask mask, TForm S, TForm T)
+{
+	assert(tfIsAnyMap(T));
+
+	if (!tfIsAnyMap(S)) {
+		return tfSatFalse(mask);
+	}
+	if (tfIsPatMatch(S) && tfIsPatMatch(T)) {
+		return tfSatMap1(mask, S, T);
+	}
+	else if (tfIsFunctionMap(S) && tfIsFunctionMap(T)) {
+		return tfSatMap1(mask, S, T);
+	}
+	else if (tfSatAllow(mask, TFS_AnyToPattern)
+		 && tfIsPPartialMap(S)) {
+		TForm patS = tfsEmbedResult(S, AB_Embed_ApplyPatCall);
+		SatMask r = tfSatMap1(mask, patS, T);
+		tfsDEBUG(dbOut, "SatPPartial %oBool - %oSatMask %pTForm %pTForm\n", tfSatSucceed(r), r, patS, T);
+		return tfSatSucceed(r) ? tfSatResult(mask, TFS_PPartialToPat) : tfSatFalse(mask);
+	}
+	return tfSatFalse(mask);
+}
+
+local SatMask
+tfSatMap1(SatMask mask, TForm S, TForm T)
 {
 	SatMask		result = tfSatFalse(mask);
 	SatMask		mask0 = tfSatInner(mask);
@@ -1389,7 +1509,7 @@ tfSatTuple(SatMask mask, TForm S, TForm T)
 	else if (!tfSatEmbed(mask))
 		/* result = tfSatFalse(mask) */;
 
-	else if (tfIsCross(S)) {
+	else if (tfIsCross(tfDefineeTypeSubst(S))) {
 		/* Embed Cross(A, ..., A) in Tuple(A). */
 		if (tfSatAllow(mask, TFS_CrossToTuple) &&
 		    tfSatSucceed(tfSatEvery(mask, S, Targ)))

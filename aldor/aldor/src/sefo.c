@@ -1899,7 +1899,7 @@ tformEqual0(SymeList mods, TForm tf1, TForm tf2)
 		result = sefoEqual0(mods, tfGetExpr(tf1), tfGetExpr(tf2));
 
 	else if (tfIsRecord(tf1) || tfIsRawRecord(tf1) ||
-		 tfIsUnion(tf1) || tfIsEnum(tf1)) {
+		 tfIsUnion(tf1) || tfIsEnum(tf1) || tfIsPPartial(tf1)) {
 		Length	i;
 		for (i = 0; result && i < tfArgc(tf1); i += 1) {
 			Symbol	sym1 = tfCompoundId(tf1, i);

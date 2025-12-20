@@ -15,6 +15,9 @@ local void testTfSatEmbed();
 local void testTfSatEmbedExcept();
 local void testTfSatRec();
 local void testTfSatEnum();
+local void testTfSatExitPattern();
+local void testTfSatEmbedPattern();
+
 extern int tfsDebug;
 
 void
@@ -25,6 +28,8 @@ tfsatTest()
 	TEST(testTfSatEmbedExcept);
 	TEST(testTfSatRec);
 	TEST(testTfSatEnum);
+	TEST(testTfSatExitPattern);
+	TEST(testTfSatEmbedPattern);
 	fini();
 }
 
@@ -53,7 +58,7 @@ testTfSatEmbed()
 	stab = stabFile();
 
 	abPutUse(absyn, AB_Use_NoValue);
-	abPrintDb(absyn);
+
 	scopeBind(stab, absyn);
 	typeInfer(stab, absyn);
 
@@ -114,7 +119,7 @@ testTfSatEmbedExcept()
 	stab = stabFile();
 
 	abPutUse(absyn, AB_Use_NoValue);
-	abPrintDb(absyn);
+
 	scopeBind(stab, absyn);
 	typeInfer(stab, absyn);
 
@@ -215,5 +220,60 @@ testTfSatEnum()
 	tf2 = tfqTypeForm(stabFile(), "'y'");
 
 	testFalse("enum0", tfSatisfies(tf1, tf2));
+	finiFile();
+}
+
+local void
+testTfSatExitPattern()
+{
+	String T_def = "T: with == add";
+	StringList lines;
+	AbSynList code;
+	AbSyn absyn;
+	TForm tf1, tf2;
+	Stab stab;
+	initFile();
+	stdscope(stabFile());
+
+	lines = listList(String)(1, T_def);
+
+	code = listCons(AbSyn)(stdtypes(), abqParseLines(lines));
+	absyn = abNewSequenceL(sposNone, code);
+	stab = stabFile();
+
+	tf1 = tfExit;
+	tf2 = tfPattern(tfqTypeForm(stab, "Integer"));
+
+	testTrue("exitPattern", tfSatisfies(tf1, tf2));
+	
+	finiFile();
+}
+
+local void
+testTfSatEmbedPattern()
+{
+	String T_def = "T: with == add";
+	StringList lines;
+	AbSynList code;
+	AbSyn absyn;
+	TForm tf1, tf2;
+	Stab stab;
+	SatMask satMask;
+
+	initFile();
+	stdscope(stabFile());
+	tfsDebug = 1;
+	
+	lines = listList(String)(1, T_def);
+
+	code = listCons(AbSyn)(stdtypes(), abqParseLines(lines));
+	absyn = abNewSequenceL(sposNone, code);
+	stab = stabFile();
+
+	tf1 = tfqTypeForm(stab, "Integer");
+	tf2 = tfPattern(tfqTypeForm(stab, "Integer"));
+	satMask = tfSat(tfSatWithPatContext(tfSatBupMask()), tf1, tf2);
+	testTrue("embedPattern", tfSatSucceed(satMask));
+	
 	finiFile();
 }

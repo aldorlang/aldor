@@ -55,6 +55,9 @@ enum tformTag {
 	TF_Meet,
 	TF_Multiple,
 	TF_PackedMap,
+	TF_PatMatch,
+	TF_Pattern,
+	TF_PPartial,
 	TF_Raw,
 	TF_RawRecord,
 	TF_Record,
@@ -459,6 +462,8 @@ extern TForm		tfUnknown;
 #define			tfIsUnknownMap(tf)	\
 	(tfIsAnyMap(tf) && tfIsUnknown(tfMapRet(tf)))
 
+#define tfIs(tag, _tf)  tfIs_(__FILE__, __LINE__, tag, _tf)
+extern TForm tfIs_(char *file, int line, TFormTag tag, TForm tf);
 /*
  * tfExit		Type of an expression which does not return.
  */
@@ -574,10 +579,14 @@ extern TForm		tfAssign		(TForm, AbSyn);
 /*
  * tfMap		Type of an expression which is a function.
  */
-extern TForm		tfAnyMap		(TForm, TForm, Bool);
+extern TForm		tfAnyMap		(TForm, TForm, AbMapType);
+extern AbMapType        tfAbMapType		(TForm);
 #define			tfIsAnyMap(tf)		\
-	(tfIsMap(tf) || tfIsPackedMap(tf))
+	(tfIsMap(tf) || tfIsPackedMap(tf) || tfIsPatMatch(tf))
 
+#define			tfIsFunctionMap(tf)		\
+	(tfIsMap(tf) || tfIsPackedMap(tf))
+  
 extern TForm		tfPackedMap		(TForm arg, TForm ret);
 #define			tfIsPackedMap(tf)	(tfTag(tf) == TF_PackedMap)
 
@@ -736,6 +745,34 @@ extern TForm		tfXGenerator		(TForm);
 #define			tfIsXGenerator(tf)	(tfTag(tf) == TF_XGenerator)
 extern Bool		tfIsXGeneratorFn	(TForm);
 #define			tfXGeneratorArg(tf)	tfFollowArg(tf, 0)
+
+/*
+ * tfPatMatch		Type of a Pattern Matcher object
+ */
+extern TForm		tfPatMatch		(TForm, TForm);
+#define			tfIsPatMatch(tf)	(tfTag(tf) == TF_PatMatch)
+#define			tfPatMatchWhole(tf)	tfFollowArg(tfIs(TF_PatMatch, tf), 0)
+#define			tfPatMatchParts(tf)	tfFollowArg(tf, 1)
+
+/*
+ * tfPattern		Type of Pattern - we work carry the pattern-ness of a result in the type
+ */
+extern TForm		tfPattern		(TForm);
+extern Bool		tfIsPatternExit		(TForm);
+extern Bool		tfIsPatternCaseArg	(TForm);
+extern TForm		tfPatternCase		(TForm);
+#define			tfIsPattern(tf)		(tfTag(tf) == TF_Pattern)
+#define			tfPatternArg(tf)	tfFollowArg(tfIs(TF_Pattern, tf), 0)
+
+/*
+ * tfPPartial		Type of a Pattern Match result
+ */
+extern TForm		tfPPartial		(TForm);
+extern TForm		tfPPartialAsMapArg	(TForm);
+extern Bool		tfIsPPartialMap		(TForm);
+#define			tfIsPPartial(tf)	(tfTag(tf) == TF_PPartial)
+#define			tfPPartialArgN(tf, i)	tfFollowArg(tfIs(TF_PPartial, tf), i)
+#define			tfPPartialArgc(tf)	tfArgc(tfIs(TF_PPartial, tf))
 
 /*
  * TfAnyGenerator	We have two generator types. */
@@ -947,6 +984,8 @@ extern Bool		tfCatHasImplicit(TForm);
 extern Syme		tfImplicitExport(Stab, SymeList, Syme);
 
 extern Bool		tfIsWildcardImport(TForm tf);
+
+
 /*****************************************************************************
  *
  * :: Java Stuff

@@ -1525,6 +1525,7 @@ scobindApplyNeedsSelf(AbSyn ab)
 	sym = abIsId(op) ? abIdSym(op) : NULL;
 
 	return	sym == ssymJoin			||
+		sym == ssymPPartial		||
 		sym == ssymRawRecord		||
 		sym == ssymRecord		||
 		sym == ssymUnion		||

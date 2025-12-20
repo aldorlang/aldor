@@ -269,12 +269,11 @@ tpossFree(TPoss tp)
 	if (tp == NULL)
 		return;
 	if (--tp->refc > 0) return;
-if (!debugflag)
-{
-	listFree(UTForm)(tp->possl);
-	stoFree((Pointer) tp);
-}
-debugflag = 0;
+	if (!debugflag) {
+		listFree(UTForm)(tp->possl);
+		stoFree((Pointer) tp);
+	}
+	debugflag = 0;
 }
 
 int
@@ -696,6 +695,50 @@ tpossIsHaving(TPoss tp, TFormPredicate pred)
 		if (pred(tpossELT(tit))) return true;
 
 	return false;
+}
+
+TPoss
+tpossPattern(TPoss tp)
+{
+	TPoss tpNew;
+	TPossIterator tit;
+	
+	tpNew = tpossEmpty();
+	for (tpossITER(tit, tp); tpossMORE(tit); tpossSTEP(tit)) {
+		tpossCons(tpNew, utformNewConstant(tfPattern(tpossELT(tit))));
+	}
+	return tpNew;
+}
+
+TPoss
+tpossPatternArg(TPoss tpit)
+{
+	TPoss		tparg;
+	TPossIterator	it;
+
+	tparg = tpossEmpty();
+	for (tpossITER(it,tpit); tpossMORE(it); tpossSTEP(it)) {
+		TForm	t = tpossELT(it);
+		tfFollow(t);
+		if (tfIsPattern(t))
+			tparg = tpossAdd1(tparg, tfPatternArg(t));
+	}
+	return tparg;
+}
+
+TPoss
+tpossPatternCase(TPoss tpit)
+{
+	TPoss		tparg;
+	TPossIterator	it;
+
+	tparg = tpossEmpty();
+	for (tpossITER(it,tpit); tpossMORE(it); tpossSTEP(it)) {
+		TForm	t = tpossELT(it);
+		tfFollow(t);
+		tparg = tpossAdd1(tparg, tfPatternCase(t));
+	}
+	return tparg;
 }
 
 TForm

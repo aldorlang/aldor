@@ -232,6 +232,8 @@ enum ab_use {
 	AB_Use_Default,		/* Default variable declaration. */
 	AB_Use_Except,		/* Value in "except" RHS */
 	AB_Use_Elided,		/* Used where real syntax was dropped. */
+	AB_Use_PatLocation,	/* Expression may form part of a pattern. */
+	AB_Use_Pattern,		/* Expression forms part of a pattern. */
 	AB_Use_LIMIT
 };
 
@@ -284,6 +286,9 @@ typedef	ULong		AbEmbed;
 #define			AB_Embed_RawToUnary		(((AbEmbed) 1) << 11)
 #define			AB_Embed_ApplyMultiToTuple	(((AbEmbed) 1) << 12)
 #define			AB_Embed_ApplyMultiToCross	(((AbEmbed) 1) << 13)
+
+#define			AB_Embed_ApplyCase		(((AbEmbed) 1) << 14)
+#define			AB_Embed_ApplyPatCall		(((AbEmbed) 1) << 15)
 
 #define			AB_Embed_ArgMask		(~AB_Embed_ApplyMask)
 #define			AB_Embed_ApplyMask		\
@@ -898,6 +903,7 @@ extern Bool abUseIsPattern(AbUse use);
 # define abSetPos(a,p)	  ((a)->abHdr.pos=spstackSetFirst ((a)->abHdr.pos,(p)))
 
 # define abUse(a)	  ((a)->abHdr.use)
+# define abUseIsPat(a)    (abUse(a) == AB_Use_PatLocation || abUse(a) == AB_Use_Pattern)
 # define abState(a)	  ((a)->abHdr.state)
 # define abFlags(a)	  ((a)->abHdr.flags)
 # define abArgc(a)	  ((a)->abHdr.argc)
@@ -917,6 +923,9 @@ extern Bool abUseIsPattern(AbUse use);
 # define abDefineIdx(a)	  ((a)->abHdr.seman ? (a)->abHdr.seman->defnIdx  : -1)
 # define abSymeImpl(a)	  ((a)->abHdr.seman ? (a)->abHdr.seman->impl	 : 0)
 # define abSelf(a)	  ((a)->abHdr.seman ? (a)->abHdr.seman->self	 : 0)
+
+# define abCommaArgc(ab)  (abArgc(ab))
+# define abCommaArg(ab, i) ((ab)->abComma.argv[(i)])
 
 # define abRepeatIterc(a) (abArgc(a)-1) /* -1 for body */
 # define abCollectIterc(a)(abArgc(a)-1) /* -1 for body */
@@ -953,11 +962,22 @@ extern Bool abUseIsPattern(AbUse use);
 #define			abIsJoin(a)		abIsApplyOf(a, ssymJoin)
 
 #define			abIsAnyMap(a)		\
-	(abIsGenericMap(a) || abIsPackedMap(a))
+	(abIsGenericMap(a) || abIsPackedMap(a) || abIsPatMatch(a))
 #define			abIsGenericMap(a)	\
 	(abIsApplyOf(a, ssymArrow) && abApplyArgc(a) == 2)
 #define			abIsPackedMap(a)	\
 	(abIsApplyOf(a, ssymPackedArrow) && abApplyArgc(a) == 2)
+#define			abIsPatMatch(a)	\
+	(abIsApplyOf(a, ssymPatMatch) && abApplyArgc(a) == 2)
+
+enum abMapType {
+	AB_MAP_Generic,
+	AB_MAP_Packed,
+	AB_MAP_PatMatch,
+};
+typedef Enum(abMapType) AbMapType;
+
+extern AbMapType abMapType	(AbSyn ab);
 
 #define			abMapArg(a)		abApplyArg(a, 0)
 #define			abMapRet(a)		abApplyArg(a, 1)

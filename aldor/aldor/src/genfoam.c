@@ -40,9 +40,11 @@
 #include "genstyle.h"
 #include "gf_imps.h"
 #include "gf_java.h"
+#include "gf_match.h"
 #include "gf_prog.h"
 #include "gf_reference.h"
 #include "gf_rtime.h"
+#include "gf_special.h"
 #include "gf_syme.h"
 #include "gf_special.h"
 #include "gf_util.h"
@@ -209,7 +211,6 @@ local Foam	   gen0ForeignValue	  (Syme);
 local Foam	   gen0ForeignWrapValue	  (Syme);
 local Foam	   gen0ForeignWrapFn	  (Syme);
 local void	   gen0FreeFortranActualArgTmps(void);
-local Foam	   genFoamArg		  (AbSyn *, Foam *, int);
 local void	   gen0GetGlobalDefs	  (void);
 local SymeList     gen0GetExporterSymes   (Stab, Sefo, SymeList);
 local SymeList	   gen0GetBoundSymes	  (Stab);	
@@ -1447,7 +1448,12 @@ genApply(AbSyn absyn)
 
 	if (gen0IsSpecialType(absyn))
 		return gen0ApplySpecialType(absyn);
-		
+
+	if (abTContext(absyn) & AB_Embed_ApplyCase) {
+		Foam lhs = genFoamVal(absyn->abApply.argv[0]);
+		return gfmCaseMatch(absyn->abApply.argv[1], lhs);
+	}
+	
 	if (abImplicitSyme(absyn)) {
 		Syme	syme = abImplicitSyme(absyn);
 		Length	argc = abApplyArgc(absyn) + 1;
@@ -1998,6 +2004,33 @@ gen0MultiFormatNumber(TForm tf)
 }
 
 /*
+ * Return the format number of a given partial type.
+ */
+AInt
+gen0PPartialFormatNumber(TForm tf)
+{
+	Foam		ddecl;
+	Length		i, argc;
+	AInt		fmt0 = emptyFormatSlot;
+
+	assert (tfIsPPartial(tf));
+	argc = tfPPartialArgc(tf);
+
+	/* Generate the format. */
+	ddecl = foamNewEmpty(FOAM_DDecl, argc + 1);
+	ddecl->foamDDecl.usage = FOAM_DDecl_Record;
+	for (i = 0; i < argc; i += 1) {
+		TForm	tfi = tfPPartialArgN(tf, i);
+		String	s = "";
+		FoamTag tag = gen0Type(tfi, &fmt0);
+		ddecl->foamDDecl.argv[i] =
+			foamNewDecl(tag, strCopy(s), fmt0);
+	}
+
+	return gen0AddRealFormat(ddecl);
+}
+
+/*
  * Return the format number of a non-void catch block.
  */
 AInt
@@ -2515,7 +2548,6 @@ gen0FortranMFmtNumber(TFormList returntypes)
 }
 #endif
 
-/* s/b extern */
 AInt
 gen0CrossFormatNumber(TForm tf)
 {
@@ -3729,7 +3761,7 @@ gen0SelectCase(AbSyn test, AbSyn id)
 
 	assert(abTag(test) == AB_Test);
 	app  = abNewApply2(sposNone, abImplicit(test), id, test->abTest.cond);
-	
+	abSetTContext(app, abTContext(test));
 	foam =  genFoamVal(app);
 
 	return foam;
@@ -6383,8 +6415,6 @@ gen0IsMultiEvaluable(Foam foam)
 		return gen0IsMultiEvaluable(foam->foamCast.expr);
 	return foamIsRef(foam) || foamTag(foam) < FOAM_DATA_LIMIT;
 }
-
-
 
 FoamTag
 gen0FoamType(Foam foam)

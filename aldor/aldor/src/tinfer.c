@@ -51,6 +51,7 @@ Bool	tipIdDebug		= false;
 Bool	tipLitDebug		= false;
 Bool	tipEmbedDebug		= false;
 Bool	tipExtendDebug		= false;
+Bool	tipPatternDebug		= false;
 
 Bool	titfDebug		= false;
 Bool	titfOneDebug		= false;
@@ -691,6 +692,10 @@ tiGetMeaning(Stab stab, AbSyn absyn, TForm type)
 	Syme		nsyme, psyme, syme;
 	SymeList	symes, nsymes, sl;
 
+	if (abUse(absyn) == AB_Use_Pattern || abUse(absyn) == AB_Use_PatLocation) {
+		mask = tfSatWithPatContext(mask);
+	}
+	
 	symes = stabGetMeanings(stab, abCondKnown, abIdSym(absyn));
 	nsymes = listNil(Syme);		/* Possible (non-pending) meanings */
 	nsymec = 0;			/* Number of non-pending matches */
@@ -1957,6 +1962,9 @@ tiTfAudit1(Stab stab, TForm tf)
 }
 
 /* Perform top-down analysis to generate semantics for each AbSyn. */
+/* TypeTuple as a default is a compromise.. When we look at the context
+ * we may have to switch from that to 'Type'
+ */
 local void
 tiTfTopDown1(Stab stab, TForm tf)
 {

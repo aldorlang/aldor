@@ -26,7 +26,9 @@ extern SatMask		tfSatTdnMask		(void);
 extern SatMask		tfSatTdnInfoMask	(void);
 extern SatMask		tfSatSefMask		(void);
 extern SatMask		tfSatTErrorMask		(void);
+extern SatMask		tfSatWithPatContext	(SatMask);
 extern String		tfSatMaskToString	(SatMask);
+
 
 extern Bool		tfSatSucceed		(SatMask);
 extern Bool		tfSatPending		(SatMask);
@@ -93,6 +95,8 @@ extern Bool		tfSatCat	(TForm S);
  * Symbols whose type is S represent Types.
  */
 extern Bool		tfSatType	(TForm S);
+
+extern Bool		tfSatCase	(TForm S, TForm T);
 
 /******************************************************************************
  *
