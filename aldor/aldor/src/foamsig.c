@@ -88,7 +88,7 @@ Hash
 foamSigHash(FoamSig s1)
 {
 	AIntList ltmp;
-	Hash h = s1->retType;;
+	Hash h = s1->retType;
 	ltmp = s1->inArgs;
 	while (ltmp) {
 		h = hashCombinePair(h, car(ltmp));
