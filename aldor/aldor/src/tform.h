@@ -765,6 +765,14 @@ extern TForm		tfPatternCase		(TForm);
 #define			tfPatternArg(tf)	tfFollowArg(tfIs(TF_Pattern, tf), 0)
 
 /*
+ * tfVar		Substitutable
+ */
+
+extern TForm		tfVarNew(void);
+extern TForm		tfVarNewFrId(AInt);
+extern AInt		tfVarId(TForm);
+
+/*
  * tfPPartial		Type of a Pattern Match result
  */
 extern TForm		tfPPartial		(TForm);

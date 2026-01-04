@@ -1891,6 +1891,7 @@ struct symeInfo symeInfo[] = {
 	{SYME_Trigger, "SYME_Trigger", 	"trigger",	    ALDOR_S_Syme_Trigger},
 	{SYME_Temp,    "SYME_Temp", 	"temp",	            ALDOR_S_Syme_Temp},
 	{SYME_Has,     "SYME_Has", 	"has",	            ALDOR_S_Syme_Temp},
+	{SYME_Var,     "SYME_Var", 	"var",	            ALDOR_S_Syme_Var},
 };
 
 /******************************************************************************
