@@ -1,11 +1,11 @@
-# ..From autoconf
 @SET_MAKE@
+AM_DEFAULT_VERBOSITY = @AM_DEFAULT_VERBOSITY@
 VPATH = @srcdir@
 
-# For AM_V_*
-AM_DEFAULT_VERBOSITY = @AM_DEFAULT_VERBOSITY@
-
 builddir	:= @builddir@
+testdir		:= @top_builddir@/aldor/test
+top_builddir	:= @top_builddir@
+
 abs_builddir	:= @abs_builddir@
 top_builddir	:= @top_builddir@
 abs_top_builddir:= @abs_top_builddir@
@@ -13,26 +13,21 @@ srcdir		:= @srcdir@
 abs_srcdir	:= @abs_srcdir@
 top_srcdir	:= @top_srcdir@
 abs_top_srcdir	:= @abs_top_srcdir@
+abs_libdir	:= $(abs_builddir)
 subdir		:= $(subst $(abs_top_builddir)/,,$(abs_builddir))
+top_srcdir	:= @top_srcdir@
 
-# Build starts here..
+utils := tassert rtexns
+aptests := 
 
-library=\
-	tp_counter	\
-	tp_env		\
-	tp_infer2	\
-	tp_ptt		\
-	tp_sat		\
-	tp_scopes	\
-	tp_state	\
-	tp_tposs	\
-	tp_tposs2	\
-	tp_typeterm	\
-	tp_unify2	\
-	tp_testcases
-#	tp_simple	
+fmtests := 
+ctests  :=
+otests  :=
+xtests := 
 
-@BUILD_JAVA_TRUE@javalibrary := $(library)
+jtests := 
+junittests := 
+jruntests := 
+lsptests  := 
 
-include $(abs_top_srcdir)/lib/types/src/common.mk
-
+include $(top_srcdir)/aldor/test/test-common.mk

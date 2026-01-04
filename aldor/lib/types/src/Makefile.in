@@ -149,8 +149,7 @@ am_libtypes_a_OBJECTS = base/tp_annotated.$(OBJEXT) \
 	base/tp_expr.$(OBJEXT) base/tp_listset.$(OBJEXT) \
 	base/tp_sx.$(OBJEXT) types/tp_counter.$(OBJEXT) \
 	types/tp_env.$(OBJEXT) types/tp_infer2.$(OBJEXT) \
-	types/tp_scopes.$(OBJEXT) types/tp_subst.$(OBJEXT) \
-	types/tp_test.$(OBJEXT) types/tp_tposs.$(OBJEXT) \
+	types/tp_scopes.$(OBJEXT) types/tp_tposs.$(OBJEXT) \
 	types/tp_typeterm.$(OBJEXT) types/tp_unify2.$(OBJEXT) \
 	xsubsts/tp_xsubst.$(OBJEXT)
 libtypes_a_OBJECTS = $(am_libtypes_a_OBJECTS)
@@ -173,8 +172,7 @@ am__depfiles_remade = base/$(DEPDIR)/tp_annotated.Po \
 	base/$(DEPDIR)/tp_expr.Po base/$(DEPDIR)/tp_listset.Po \
 	base/$(DEPDIR)/tp_sx.Po types/$(DEPDIR)/tp_counter.Po \
 	types/$(DEPDIR)/tp_env.Po types/$(DEPDIR)/tp_infer2.Po \
-	types/$(DEPDIR)/tp_scopes.Po types/$(DEPDIR)/tp_subst.Po \
-	types/$(DEPDIR)/tp_test.Po types/$(DEPDIR)/tp_tposs.Po \
+	types/$(DEPDIR)/tp_scopes.Po types/$(DEPDIR)/tp_tposs.Po \
 	types/$(DEPDIR)/tp_typeterm.Po types/$(DEPDIR)/tp_unify2.Po \
 	xsubsts/$(DEPDIR)/tp_xsubst.Po
 am__mv = mv -f
@@ -429,8 +427,6 @@ libtypes_a_SOURCES = \
 	types/tp_env.c		\
 	types/tp_infer2.c	\
 	types/tp_scopes.c	\
-	types/tp_subst.c	\
-	types/tp_test.c		\
 	types/tp_tposs.c	\
 	types/tp_typeterm.c	\
 	types/tp_unify2.c	\
@@ -548,10 +544,6 @@ types/tp_infer2.$(OBJEXT): types/$(am__dirstamp) \
 	types/$(DEPDIR)/$(am__dirstamp)
 types/tp_scopes.$(OBJEXT): types/$(am__dirstamp) \
 	types/$(DEPDIR)/$(am__dirstamp)
-types/tp_subst.$(OBJEXT): types/$(am__dirstamp) \
-	types/$(DEPDIR)/$(am__dirstamp)
-types/tp_test.$(OBJEXT): types/$(am__dirstamp) \
-	types/$(DEPDIR)/$(am__dirstamp)
 types/tp_tposs.$(OBJEXT): types/$(am__dirstamp) \
 	types/$(DEPDIR)/$(am__dirstamp)
 types/tp_typeterm.$(OBJEXT): types/$(am__dirstamp) \
@@ -589,8 +581,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@types/$(DEPDIR)/tp_env.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@types/$(DEPDIR)/tp_infer2.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@types/$(DEPDIR)/tp_scopes.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@types/$(DEPDIR)/tp_subst.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@types/$(DEPDIR)/tp_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@types/$(DEPDIR)/tp_tposs.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@types/$(DEPDIR)/tp_typeterm.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@types/$(DEPDIR)/tp_unify2.Po@am__quote@ # am--include-marker
@@ -869,8 +859,6 @@ distclean: distclean-recursive
 	-rm -f types/$(DEPDIR)/tp_env.Po
 	-rm -f types/$(DEPDIR)/tp_infer2.Po
 	-rm -f types/$(DEPDIR)/tp_scopes.Po
-	-rm -f types/$(DEPDIR)/tp_subst.Po
-	-rm -f types/$(DEPDIR)/tp_test.Po
 	-rm -f types/$(DEPDIR)/tp_tposs.Po
 	-rm -f types/$(DEPDIR)/tp_typeterm.Po
 	-rm -f types/$(DEPDIR)/tp_unify2.Po
@@ -928,8 +916,6 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f types/$(DEPDIR)/tp_env.Po
 	-rm -f types/$(DEPDIR)/tp_infer2.Po
 	-rm -f types/$(DEPDIR)/tp_scopes.Po
-	-rm -f types/$(DEPDIR)/tp_subst.Po
-	-rm -f types/$(DEPDIR)/tp_test.Po
 	-rm -f types/$(DEPDIR)/tp_tposs.Po
 	-rm -f types/$(DEPDIR)/tp_typeterm.Po
 	-rm -f types/$(DEPDIR)/tp_unify2.Po

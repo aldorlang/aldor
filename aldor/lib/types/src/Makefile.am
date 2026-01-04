@@ -14,8 +14,6 @@ libtypes_a_SOURCES = \
 	types/tp_env.c		\
 	types/tp_infer2.c	\
 	types/tp_scopes.c	\
-	types/tp_subst.c	\
-	types/tp_test.c		\
 	types/tp_tposs.c	\
 	types/tp_typeterm.c	\
 	types/tp_unify2.c	\
