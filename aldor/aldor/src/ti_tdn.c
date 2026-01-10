@@ -19,6 +19,7 @@
 #include "store.h"
 #include "stab.h"
 #include "terror.h"
+#include "tfcontext.h"
 #include "tfsat.h"
 #include "ti_tdn.h"
 #include "tinfer.h"
@@ -69,96 +70,96 @@ AbSynList abYieldsList = 0;
  *
  ****************************************************************************/
 
-local Bool	titdn0Generic	(Stab, AbSyn, TForm);
-local Bool	titdn0FarValue	(Stab, AbSyn, TForm, AbSyn,TForm *,
+local Bool	titdn0Generic	(Stab, AbSyn, TFContext);
+local Bool	titdn0FarValue	(Stab, AbSyn, TFContext, AbSyn,TForm *,
 				 AbSynList *);
-local Bool	titdn0NoValue	(Stab, AbSyn, TForm, Msg);
+local Bool	titdn0NoValue	(Stab, AbSyn, TFContext, Msg);
 
 local Bool	titdn0ApplySymIfNeeded
-				(Stab, AbSyn, TForm, Symbol,
+				(Stab, AbSyn, TFContext, Symbol,
 				 Length, AbSynGetter, AbSyn, TFormPredicate);
-local Bool	titdn0ApplySym	(Stab, AbSyn, TForm, Symbol,
+local Bool	titdn0ApplySym	(Stab, AbSyn, TFContext, Symbol,
 				 Length, AbSynGetter, AbSyn);
-local Bool	titdn0ApplyFType(Stab, AbSyn, TForm, AbSyn,
+local Bool	titdn0ApplyFType(Stab, AbSyn, TFContext, AbSyn,
 				 Length, AbSynGetter);
-local Bool	titdn0ApplyJoin (Stab, AbSyn, TForm, AbSyn,
+local Bool	titdn0ApplyJoin (Stab, AbSyn, TFContext, AbSyn,
 				 Length, AbSynGetter);
 
 local Bool	titdn0PLambdaArgs	(Stab, AbSyn);
 local Bool	titdn0PLambdaRets	(Stab, AbSynList);
 
-local Bool	titdnId		(Stab, AbSyn, TForm);
+local Bool	titdnId		(Stab, AbSyn, TFContext);
 local Bool	titdn0IdCondition(AbSyn, Syme);
-local Bool	titdnIdSy	(Stab, AbSyn, TForm);
-local Bool	titdnBlank	(Stab, AbSyn, TForm);
-local Bool	titdnLitInteger (Stab, AbSyn, TForm);
-local Bool	titdnLitFloat	(Stab, AbSyn, TForm);
-local Bool	titdnLitString	(Stab, AbSyn, TForm);
-local Bool	titdnAdd	(Stab, AbSyn, TForm);
-local Bool	titdnAnd	(Stab, AbSyn, TForm);
-local Bool	titdnApply	(Stab, AbSyn, TForm);
-local Bool	titdnAssert	(Stab, AbSyn, TForm);
-local Bool	titdnAssign	(Stab, AbSyn, TForm);
-local Bool	titdnBreak	(Stab, AbSyn, TForm);
-local Bool	titdnBuiltin	(Stab, AbSyn, TForm);
-local Bool	titdnCoerceTo	(Stab, AbSyn, TForm);
-local Bool	titdnCollect	(Stab, AbSyn, TForm);
-local Bool	titdnComma	(Stab, AbSyn, TForm);
-local Bool	titdnDeclare	(Stab, AbSyn, TForm);
-local Bool	titdnDefault	(Stab, AbSyn, TForm);
-local Bool	titdnDefine	(Stab, AbSyn, TForm);
-local Bool	titdnDelay	(Stab, AbSyn, TForm);
-local Bool	titdnDo		(Stab, AbSyn, TForm);
-local Bool	titdnExcept	(Stab, AbSyn, TForm);
-local Bool	titdnRaise	(Stab, AbSyn, TForm);
-local Bool	titdnExit	(Stab, AbSyn, TForm);
-local Bool	titdnExport	(Stab, AbSyn, TForm);
-local Bool	titdnExtend	(Stab, AbSyn, TForm);
-local Bool	titdnFix	(Stab, AbSyn, TForm);
-local Bool	titdnFluid	(Stab, AbSyn, TForm);
-local Bool	titdnFor	(Stab, AbSyn, TForm);
-local Bool	titdnForeignImport(Stab, AbSyn, TForm);
-local Bool	titdnForeignExport(Stab, AbSyn, TForm);
-local Bool	titdnFree	(Stab, AbSyn, TForm);
-local Bool	titdnGenerate	(Stab, AbSyn, TForm);
-local Bool	titdnGoto	(Stab, AbSyn, TForm);
-local Bool	titdnHas	(Stab, AbSyn, TForm);
-local Bool	titdnHide	(Stab, AbSyn, TForm);
-local Bool	titdnIf		(Stab, AbSyn, TForm);
-local Bool	titdnImport	(Stab, AbSyn, TForm);
-local Bool	titdnInline	(Stab, AbSyn, TForm);
-local Bool	titdnIterate	(Stab, AbSyn, TForm);
-local Bool	titdnLabel	(Stab, AbSyn, TForm);
-local Bool	titdnLambda	(Stab, AbSyn, TForm);
-local Bool	titdnLet	(Stab, AbSyn, TForm);
-local Bool	titdnLocal	(Stab, AbSyn, TForm);
-local Bool	titdnMacro	(Stab, AbSyn, TForm);
-local Bool	titdnMLambda    (Stab, AbSyn, TForm);
-local Bool	titdnNever	(Stab, AbSyn, TForm);
-local Bool	titdnNot	(Stab, AbSyn, TForm);
-local Bool	titdnNothing	(Stab, AbSyn, TForm);
-local Bool	titdnOr		(Stab, AbSyn, TForm);
-local Bool	titdnPretendTo	(Stab, AbSyn, TForm);
-local Bool	titdnQualify	(Stab, AbSyn, TForm);
-local Bool	titdnQuote	(Stab, AbSyn, TForm);
-local Bool	titdnReference	(Stab, AbSyn, TForm);
-local Bool	titdnRepeat	(Stab, AbSyn, TForm);
-local Bool	titdnRestrictTo (Stab, AbSyn, TForm);
-local Bool	titdnReturn	(Stab, AbSyn, TForm);
-local Bool	titdnSelect	(Stab, AbSyn, TForm);
-local Bool	titdnSequence	(Stab, AbSyn, TForm);
-local Bool	titdnSelect	(Stab, AbSyn, TForm);
-local Bool	titdnTest	(Stab, AbSyn, TForm);
-local Bool	titdnTry	(Stab, AbSyn, TForm);
-local Bool	titdnWhere	(Stab, AbSyn, TForm);
-local Bool	titdnWhile	(Stab, AbSyn, TForm);
-local Bool	titdnWith	(Stab, AbSyn, TForm);
-local Bool	titdnYield	(Stab, AbSyn, TForm);
+local Bool	titdnIdSy	(Stab, AbSyn, TFContext);
+local Bool	titdnBlank	(Stab, AbSyn, TFContext);
+local Bool	titdnLitInteger (Stab, AbSyn, TFContext);
+local Bool	titdnLitFloat	(Stab, AbSyn, TFContext);
+local Bool	titdnLitString	(Stab, AbSyn, TFContext);
+local Bool	titdnAdd	(Stab, AbSyn, TFContext);
+local Bool	titdnAnd	(Stab, AbSyn, TFContext);
+local Bool	titdnApply	(Stab, AbSyn, TFContext);
+local Bool	titdnAssert	(Stab, AbSyn, TFContext);
+local Bool	titdnAssign	(Stab, AbSyn, TFContext);
+local Bool	titdnBreak	(Stab, AbSyn, TFContext);
+local Bool	titdnBuiltin	(Stab, AbSyn, TFContext);
+local Bool	titdnCoerceTo	(Stab, AbSyn, TFContext);
+local Bool	titdnCollect	(Stab, AbSyn, TFContext);
+local Bool	titdnComma	(Stab, AbSyn, TFContext);
+local Bool	titdnDeclare	(Stab, AbSyn, TFContext);
+local Bool	titdnDefault	(Stab, AbSyn, TFContext);
+local Bool	titdnDefine	(Stab, AbSyn, TFContext);
+local Bool	titdnDelay	(Stab, AbSyn, TFContext);
+local Bool	titdnDo		(Stab, AbSyn, TFContext);
+local Bool	titdnExcept	(Stab, AbSyn, TFContext);
+local Bool	titdnRaise	(Stab, AbSyn, TFContext);
+local Bool	titdnExit	(Stab, AbSyn, TFContext);
+local Bool	titdnExport	(Stab, AbSyn, TFContext);
+local Bool	titdnExtend	(Stab, AbSyn, TFContext);
+local Bool	titdnFix	(Stab, AbSyn, TFContext);
+local Bool	titdnFluid	(Stab, AbSyn, TFContext);
+local Bool	titdnFor	(Stab, AbSyn, TFContext);
+local Bool	titdnForeignImport(Stab, AbSyn, TFContext);
+local Bool	titdnForeignExport(Stab, AbSyn, TFContext);
+local Bool	titdnFree	(Stab, AbSyn, TFContext);
+local Bool	titdnGenerate	(Stab, AbSyn, TFContext);
+local Bool	titdnGoto	(Stab, AbSyn, TFContext);
+local Bool	titdnHas	(Stab, AbSyn, TFContext);
+local Bool	titdnHide	(Stab, AbSyn, TFContext);
+local Bool	titdnIf		(Stab, AbSyn, TFContext);
+local Bool	titdnImport	(Stab, AbSyn, TFContext);
+local Bool	titdnInline	(Stab, AbSyn, TFContext);
+local Bool	titdnIterate	(Stab, AbSyn, TFContext);
+local Bool	titdnLabel	(Stab, AbSyn, TFContext);
+local Bool	titdnLambda	(Stab, AbSyn, TFContext);
+local Bool	titdnLet	(Stab, AbSyn, TFContext);
+local Bool	titdnLocal	(Stab, AbSyn, TFContext);
+local Bool	titdnMacro	(Stab, AbSyn, TFContext);
+local Bool	titdnMLambda    (Stab, AbSyn, TFContext);
+local Bool	titdnNever	(Stab, AbSyn, TFContext);
+local Bool	titdnNot	(Stab, AbSyn, TFContext);
+local Bool	titdnNothing	(Stab, AbSyn, TFContext);
+local Bool	titdnOr		(Stab, AbSyn, TFContext);
+local Bool	titdnPretendTo	(Stab, AbSyn, TFContext);
+local Bool	titdnQualify	(Stab, AbSyn, TFContext);
+local Bool	titdnQuote	(Stab, AbSyn, TFContext);
+local Bool	titdnReference	(Stab, AbSyn, TFContext);
+local Bool	titdnRepeat	(Stab, AbSyn, TFContext);
+local Bool	titdnRestrictTo (Stab, AbSyn, TFContext);
+local Bool	titdnReturn	(Stab, AbSyn, TFContext);
+local Bool	titdnSelect	(Stab, AbSyn, TFContext);
+local Bool	titdnSequence	(Stab, AbSyn, TFContext);
+local Bool	titdnSelect	(Stab, AbSyn, TFContext);
+local Bool	titdnTest	(Stab, AbSyn, TFContext);
+local Bool	titdnTry	(Stab, AbSyn, TFContext);
+local Bool	titdnWhere	(Stab, AbSyn, TFContext);
+local Bool	titdnWhile	(Stab, AbSyn, TFContext);
+local Bool	titdnWith	(Stab, AbSyn, TFContext);
+local Bool	titdnYield	(Stab, AbSyn, TFContext);
 
-local void 	titdnError(Stab stab, AbSyn absyn, TForm type);
-local void 	titdn0Error(Stab stab, AbSyn absyn, TForm type);
+local void 	titdnError(Stab stab, AbSyn absyn, TFContext type);
+local void 	titdn0Error(Stab stab, AbSyn absyn, TFContext type);
 
-local Bool	titdnSequence0	(Stab, AbSyn, TForm);
+local Bool	titdnSequence0	(Stab, AbSyn, TFContext);
 
 /*****************************************************************************
  *
@@ -181,7 +182,7 @@ tiTopDown(Stab stab, AbSyn absyn, TForm type)
 	tuniExitTForm	= tfNone();
 	abCondKnown     = abCondKnown ? ablogCopy(abCondKnown) : ablogTrue();
 
-	titdn(stab, absyn, type);
+	titdn(stab, absyn, ctxtEmpty(type));
 
 	ablogFree(abCondKnown);
 
@@ -189,19 +190,22 @@ tiTopDown(Stab stab, AbSyn absyn, TForm type)
 }
 
 Bool
-titdn(Stab stab, AbSyn absyn, TForm type)
+titdn(Stab stab, AbSyn absyn, TFContext tfc)
 {
 	TPoss		abtposs;
 	static int	serialNo = 0, depthNo = 0;
 	int		serialThis;
 	Bool		s = false;
 	TForm		stype;
+	TForm 		type;
 
+	type = ctxtTForm(tfc);
+	
 	if (abState(absyn) == AB_State_HasUnique)
 		return true;
 
 	if (abState(absyn) == AB_State_Error) {
-		titdnError(stab, absyn, type);
+		titdnError(stab, absyn, tfc);
 		return false;
 	}
 
@@ -210,7 +214,7 @@ titdn(Stab stab, AbSyn absyn, TForm type)
 	abtposs	 = tpossRefer(abTPoss(absyn));
 
 	if (tpossIsEmpty(abtposs)) {
-		titdnError(stab, absyn, type);
+		titdnError(stab, absyn, tfc);
 		return false;
 	}
 
@@ -223,7 +227,7 @@ titdn(Stab stab, AbSyn absyn, TForm type)
 			return false;
 		}
 		if (tpossIsUnique(abtposs))
-			type = tpossUnique(abtposs);
+			tfc = ctxtCopy(tfc, tpossUnique(abtposs));
 	}
 
 	if (!abIsLeaf(absyn) && abStab(absyn))
@@ -240,7 +244,7 @@ titdn(Stab stab, AbSyn absyn, TForm type)
 		fnewline(dbOut);
 	}
 
-	AB_SWITCH(absyn, s = titdn, (stab, absyn, type));
+	AB_SWITCH(absyn, s = titdn, (stab, absyn, tfc));
 
 	if (s) {
 		/* The callee should have set abTUnique(absyn). */
@@ -281,14 +285,15 @@ titdn(Stab stab, AbSyn absyn, TForm type)
  ***************************************************************************/
 
 local Bool
-titdn0Generic(Stab stab, AbSyn absyn, TForm type)
+titdn0Generic(Stab stab, AbSyn absyn, TFContext tfc)
 {
-	Length	i;
+	Length i;
+
 	if (!abIsLeaf(absyn))
 		for (i = 0; i < abArgc(absyn); i += 1)
-			titdn(stab, abArgv(absyn)[i], tfUnknown);
-	tfFollow(type);
-	abTUnique(absyn) = type;
+			titdn(stab, abArgv(absyn)[i], ctxtCopy(tfc, tfUnknown));
+
+	abTUnique(absyn) = tfFollowFn(ctxtTForm(tfc));
 	return true;
 }
 
@@ -313,7 +318,7 @@ titdn0Generic(Stab stab, AbSyn absyn, TForm type)
  */
 
 local Bool
-titdn0ApplySymIfNeeded(Stab stab, AbSyn absyn, TForm type, Symbol fsym,
+titdn0ApplySymIfNeeded(Stab stab, AbSyn absyn, TFContext tfc, Symbol fsym,
 		Length argc, AbSynGetter argf,
 		AbSyn implicitPart, TFormPredicate pred)
 {
@@ -326,9 +331,9 @@ titdn0ApplySymIfNeeded(Stab stab, AbSyn absyn, TForm type, Symbol fsym,
 	tp   = abReferTPoss(part);
 
 	if (tpossIsHaving(tp, pred) || tpossIsEmpty(tp))
-		titdn(stab, part, type);
+		titdn(stab, part, tfc);
 	else
-		return titdn0ApplySym(stab, absyn, type, fsym, argc, argf,
+		return titdn0ApplySym(stab, absyn, tfc, fsym, argc, argf,
 				      implicitPart);
 
 	tpossFree(tp);
@@ -336,7 +341,7 @@ titdn0ApplySymIfNeeded(Stab stab, AbSyn absyn, TForm type, Symbol fsym,
 }
 
 local Bool
-titdn0ApplySym(Stab stab, AbSyn absyn, TForm type,
+titdn0ApplySym(Stab stab, AbSyn absyn, TFContext tfc,
 	       Symbol fsym, Length argc, AbSynGetter argf,
 	       AbSyn  implicitPart)
 {
@@ -348,18 +353,18 @@ titdn0ApplySym(Stab stab, AbSyn absyn, TForm type,
 	implicitOp = abImplicit(implicitPart);
 	assert(implicitOp);
 
-	return titdn0ApplyFType(stab, absyn, type, implicitOp, argc, argf);
+	return titdn0ApplyFType(stab, absyn, tfc, implicitOp, argc, argf);
 }
 
 local Bool
-titdn0ApplyJoin(Stab stab, AbSyn absyn, TForm type,
+titdn0ApplyJoin(Stab stab, AbSyn absyn, TFContext tfc,
 		 AbSyn op, Length argc, AbSynGetter argf)
 {
 	TPoss	abtposs = abTPoss(absyn);
 	TForm	opType, retType;
 
 	opType = tpossUnique(abTPoss(op));
-	titdn(stab, op, opType);
+	titdn(stab, op, ctxtCopy(tfc, opType));
 	assert(abState(op) == AB_State_HasUnique);
 	abAddTContext(op, tfMapMultiArgEmbed(opType, argc));
 
@@ -367,7 +372,7 @@ titdn0ApplyJoin(Stab stab, AbSyn absyn, TForm type,
 		return false;
 
 	retType = tpossUnique(abtposs);
-	if (!tfSatValues(retType, type))
+	if (!tfSatValues(retType, ctxtTForm(tfc)))
 		return false;
 
 	abTUnique(absyn) = retType;
@@ -380,7 +385,7 @@ titdn0ApplyJoin(Stab stab, AbSyn absyn, TForm type,
  */
 
 local Bool
-titdn0ApplyFType(Stab stab, AbSyn absyn, TForm type, AbSyn op,
+titdn0ApplyFType(Stab stab, AbSyn absyn, TFContext tfc, AbSyn op,
 		 Length argc, AbSynGetter argf)
 {
 	SatMask		mask = tfSatBupMask();
@@ -393,7 +398,7 @@ titdn0ApplyFType(Stab stab, AbSyn absyn, TForm type, AbSyn op,
 	opTypes = abTPoss(op);
 	if (abIsTheId(op, ssymJoin) && tpossIsUnique(opTypes) &&
 	    tfSatisfies(tfMapRet(tpossUnique(opTypes)), tfCategory))
-		return titdn0ApplyJoin(stab, absyn, type, op, argc, argf);
+		return titdn0ApplyJoin(stab, absyn, tfc, op, argc, argf);
 
 	opTypes  = abReferTPoss(op);	/* Original list of possible types */
 	nopTypes = tpossEmpty();	/* Possible (non-pending) types */
@@ -411,7 +416,7 @@ titdn0ApplyFType(Stab stab, AbSyn absyn, TForm type, AbSyn op,
 		opType = tfDefineeType(opType);
 		assert(tfIsAnyMap(opType));
 
-		result = tfSatMap(mask, stab, opType, type, absyn, argc, argf);
+		result = tfSatMap(mask, stab, opType, ctxtTForm(tfc), absyn, argc, argf);
 		if (tfSatSucceed(result)) {
 			if (!tfSatPending(result)) {
 				nopc += 1;
@@ -436,7 +441,7 @@ titdn0ApplyFType(Stab stab, AbSyn absyn, TForm type, AbSyn op,
 		result = false;
 	}
 	else {
-   		terrorApplyFType(absyn, type, nopTypes, op, stab, argc, argf);
+   		terrorApplyFType(absyn, ctxtTForm(tfc), nopTypes, op, stab, argc, argf);
 		result = false;
 	}
 
@@ -455,16 +460,16 @@ titdn0ApplyFType(Stab stab, AbSyn absyn, TForm type, AbSyn op,
 		abAddTContext(absyn, AB_Embed_ApplyCase);
 		
 		mask = tfSatTdnMask();
-		result = tfSatMap(mask, stab, opType, type, absyn, abApplyArgc(absyn), abApplyArgf);
+		result = tfSatMap(mask, stab, opType, ctxtTForm(tfc), absyn, abApplyArgc(absyn), abApplyArgf);
 	}
 	else {
-		titdn(stab, op, opType);
+		titdn(stab, op, ctxtCopy(tfc, opType));
 		parmc = tfMapHasDefaults(opType) ? tfMapArgc(opType) : argc;
 		AbEmbed embed = tfMapMultiArgEmbed(opType, parmc);
 		abAddTContext(op, embed);
 
 		mask = tfSatTdnMask();
-		result = tfSatMap(mask, stab, opType, type, absyn, argc, argf);
+		result = tfSatMap(mask, stab, opType, ctxtTForm(tfc), absyn, argc, argf);
 	}
 
 	/* We return false rarely (eg titdn0FarValue failure). */
@@ -478,7 +483,7 @@ titdn0ApplyFType(Stab stab, AbSyn absyn, TForm type, AbSyn op,
  ***************************************************************************/
 
 local Bool
-titdn0FarValue(Stab stab,AbSyn absyn,TForm type,AbSyn farValue,TForm *pFarType,
+titdn0FarValue(Stab stab, AbSyn absyn, TFContext tfc, AbSyn farValue, TForm *pFarType,
 	       AbSynList *pFarAbSynList)
 {
 	AbEmbed embed;
@@ -487,7 +492,7 @@ titdn0FarValue(Stab stab,AbSyn absyn,TForm type,AbSyn farValue,TForm *pFarType,
 		tfPrint(dbOut, *pFarType);
 		fnewline(dbOut);
 	}
-	titdn(stab, farValue, *pFarType);
+	titdn(stab, farValue, ctxtCopy(tfc, *pFarType));
 
 	if (abState(farValue) != AB_State_HasUnique)
 	  	return false;
@@ -540,7 +545,7 @@ titdn0FarValue(Stab stab,AbSyn absyn,TForm type,AbSyn farValue,TForm *pFarType,
  * specified error message is generated.
  */
 local Bool
-titdn0NoValue(Stab stab, AbSyn absyn, TForm type, Msg msg)
+titdn0NoValue(Stab stab, AbSyn absyn, TFContext tfc, Msg msg)
 {
 	/*
 	 * If the context requires a value of type () then
@@ -550,7 +555,7 @@ titdn0NoValue(Stab stab, AbSyn absyn, TForm type, Msg msg)
 	 * this is useless because () satisfies any tuple
 	 * type (it represents the empty tuple).
 	 */
-	if (tfIsEmptyMulti(type))
+	if (tfIsEmptyMulti(ctxtTForm(tfc)))
 	{
 		/* Phew! The types match */
 		abTUnique(absyn) = tfNone();
@@ -572,7 +577,7 @@ titdn0NoValue(Stab stab, AbSyn absyn, TForm type, Msg msg)
  ***************************************************************************/
 
 local Bool
-titdnId(Stab stab, AbSyn absyn, TForm type)
+titdnId(Stab stab, AbSyn absyn, TFContext tfc)
 {
 	Syme	syme = abSyme(absyn);
 
@@ -590,7 +595,7 @@ titdnId(Stab stab, AbSyn absyn, TForm type)
 			syme = symeNewLexVar(absyn->abId.sym, tf, car(stab));
 		}
 		else
-			syme = tiGetMeaning(stab, absyn, type);
+			syme = tiGetMeaning(stab, absyn, ctxtTForm(tfc));
 
 
 		/*
@@ -703,28 +708,28 @@ titdn0IdCondition(AbSyn id, Syme syme)
  * !! This stuff could be made to go through ti...0Apply.
  ***************************************************************************/
 
-local Bool	titdn0Literal (Symbol, Stab, AbSyn, TForm);
+local Bool	titdn0Literal (Symbol, Stab, AbSyn, TFContext);
 
 /*
  * Top down entry points.
  */
 
 local Bool
-titdnLitInteger(Stab stab, AbSyn absyn, TForm tform)
+titdnLitInteger(Stab stab, AbSyn absyn, TFContext tfc)
 {
-	return titdn0Literal(ssymTheInteger, stab, absyn, tform);
+	return titdn0Literal(ssymTheInteger, stab, absyn, tfc);
 }
 
 local Bool
-titdnLitFloat(Stab stab, AbSyn absyn, TForm tform)
+titdnLitFloat(Stab stab, AbSyn absyn, TFContext tfc)
 {
-	return titdn0Literal(ssymTheFloat, stab, absyn, tform);
+	return titdn0Literal(ssymTheFloat, stab, absyn, tfc);
 }
 
 local Bool
-titdnLitString(Stab stab, AbSyn absyn, TForm tform)
+titdnLitString(Stab stab, AbSyn absyn, TFContext tfc)
 {
-	return titdn0Literal(ssymTheString, stab, absyn, tform);
+	return titdn0Literal(ssymTheString, stab, absyn, tfc);
 }
 
 /*
@@ -732,7 +737,7 @@ titdnLitString(Stab stab, AbSyn absyn, TForm tform)
  */
 
 local Bool
-titdn0Literal(Symbol sym, Stab stab, AbSyn absyn, TForm type)
+titdn0Literal(Symbol sym, Stab stab, AbSyn absyn, TFContext tfc)
 {
 	SatMask		mask = tfSatBupMask(), result;
 	Syme		syme = abSyme(absyn);
@@ -754,7 +759,7 @@ titdn0Literal(Symbol sym, Stab stab, AbSyn absyn, TForm type)
 			tfFollow(tf);
 			if (!tfIsLitOpType(tf)) continue;
 
-			result = tfSat(mask, tfMapRet(tf), type);
+			result = tfSat(mask, tfMapRet(tf), ctxtTForm(tfc));
 			if (tfSatPending(result) && cdr(ml0)) {
 				terrorApplyNotAnalyzed(absyn, absyn, tf);
 				return false;
@@ -777,14 +782,14 @@ titdn0Literal(Symbol sym, Stab stab, AbSyn absyn, TForm type)
 			if (n) okSymes = listCons(Syme)(syme, okSymes);
 			terrorNotUniqueMeaning(ALDOR_E_TinNMeanings,
 					       absyn, okSymes, ml0,
-					       abLeafStr(absyn), type);
+					       abLeafStr(absyn), ctxtTForm(tfc));
 			listFree(Syme)(okSymes);
 			return false;
 		}
 	}
 
 	mask = tfSatTdnMask();
-	tfSat(mask, retType, type);
+	tfSat(mask, retType, ctxtTForm(tfc));
 
 	abTUnique(absyn) = retType;
 	stabSetSyme(stab, absyn, syme, abCondKnown);
@@ -799,7 +804,7 @@ titdn0Literal(Symbol sym, Stab stab, AbSyn absyn, TForm type)
  ***************************************************************************/
 
 local Bool
-titdnComma(Stab stab, AbSyn absyn, TForm type)
+titdnComma(Stab stab, AbSyn absyn, TFContext tfc)
 {
 	AbSyn		*argv	= abArgv(absyn);
 	Length		i, argc	= abArgc(absyn);
@@ -812,29 +817,29 @@ titdnComma(Stab stab, AbSyn absyn, TForm type)
 	if (abUse(absyn) == AB_Use_Declaration ||
 	    abUse(absyn) == AB_Use_Default) {
 		for (i = 0; i < argc; i++)
-			titdn(stab, argv[i], tfUnknown);
-		rtype = type;
+			titdn(stab, argv[i], ctxtCopy(tfc, tfUnknown));
+		rtype = ctxtTForm(tfc);
 	}
 	else {
 		for (tpossITER(it,tp); tpossMORE(it); tpossSTEP(it)) {
 			TForm	tt = tpossELT(it);
-			if (tfSatReturn(tt, type)) {
+			if (tfSatReturn(tt, ctxtTForm(tfc))) {
 				n++;
 				rtype = tt;
 			}
 		}
 		if (n != 1) {
 			/* Note we haven't done titdn on descendents. */
-			terrorNotUniqueType(ALDOR_E_TinExprMeans, absyn, type, tp);
+			terrorNotUniqueType(ALDOR_E_TinExprMeans, absyn, ctxtTForm(tfc), tp);
 			return false;
 		}
 		for (i = 0; i < argc; i++) {
 			TForm	rti = tfMultiArgN(rtype,i);
-			if (tfIsTypeTuple(type)) rti = tfType;
-			titdn(stab, argv[i], rti);
+			if (tfIsTypeTuple(ctxtTForm(tfc))) rti = tfType;
+			titdn(stab, argv[i], ctxtCopy(tfc, rti));
 		}
-		embed = tfSatEmbedType(rtype, type);
-		if (!tfIsNone(type) && embed != AB_Embed_Identity)
+		embed = tfSatEmbedType(rtype, ctxtTForm(tfc));
+		if (!tfIsNone(ctxtTForm(tfc)) && embed != AB_Embed_Identity)
 			abAddTContext(absyn, embed);
 	}
 
@@ -850,7 +855,7 @@ titdnComma(Stab stab, AbSyn absyn, TForm type)
 
 // TODO: Move this function..
 local Bool
-titdnApplyCase(Stab stab, AbSyn absyn, TForm type)
+titdnApplyCase(Stab stab, AbSyn absyn, TFContext tfc)
 {
 	TPoss lposs, rposs;
 	TPossIterator it;
@@ -858,7 +863,7 @@ titdnApplyCase(Stab stab, AbSyn absyn, TForm type)
 	AbSyn rhs = absyn->abApply.argv[1];
 	TForm ctype;
 
-	if (!tfSatReturn(tfBoolean, type)) {
+	if (!tfSatReturn(tfBoolean, ctxtTForm(tfc))) {
 		return false;
 	}
 	
@@ -872,8 +877,8 @@ titdnApplyCase(Stab stab, AbSyn absyn, TForm type)
 		return false;
 	}
 
-	titdn(stab, absyn->abApply.argv[0], tpossUnique(itsc));
-	titdn(stab, absyn->abApply.argv[1], tfPattern(tpossUnique(itsc)));
+	titdn(stab, absyn->abApply.argv[0], ctxtCopy(tfc, tpossUnique(itsc)));
+	titdn(stab, absyn->abApply.argv[1], ctxtCopy(tfc, tfPattern(tpossUnique(itsc))));
 
 	abTUnique(absyn) = tfBoolean;
 	abAddTContext(absyn, AB_Embed_ApplyCase);
@@ -882,7 +887,7 @@ titdnApplyCase(Stab stab, AbSyn absyn, TForm type)
 }
 
 local Bool
-titdnApply(Stab stab, AbSyn absyn, TForm type)
+titdnApply(Stab stab, AbSyn absyn, TFContext tfc)
 {
 	SatMask	mask = tfSatBupMask();
 	AbSyn op = abApplyOp(absyn);
@@ -908,7 +913,7 @@ titdnApply(Stab stab, AbSyn absyn, TForm type)
 	nopTypes = tpossEmpty();
 	if (abIsTheId(op, ssymJoin) && tpossIsUnique(opTypes) &&
 	    tfSatisfies(tfMapRet(tpossUnique(opTypes)), tfCategory))
-		return titdn0ApplyJoin(stab, absyn, type, op, abArgc(absyn), abApplyArgf);
+		return titdn0ApplyJoin(stab, absyn, tfc, op, abArgc(absyn), abApplyArgf);
 
 	/* At this point, the mapping is either in the implicit part,
 	 * or in the operator position.  Let's look at the operator
@@ -934,7 +939,7 @@ titdnApply(Stab stab, AbSyn absyn, TForm type)
 			continue;
 		}
 		
-		result = tfSatMap(mask, stab, opType, type, absyn, abApplyArgc(absyn), abApplyArgf);
+		result = tfSatMap(mask, stab, opType, ctxtTForm(tfc), absyn, abApplyArgc(absyn), abApplyArgf);
 		if (DEBUG(tipApply)) {
 			afprintf(dbOut, "--> tdnApply - SatMap %s\n", tfSatMaskToString(result));
 		}
@@ -957,7 +962,7 @@ titdnApply(Stab stab, AbSyn absyn, TForm type)
 				continue;
 			}
 			TForm patType = tfsEmbedResult(opType, AB_Embed_ApplyPatCall);
-			result = tfSatMap(mask, stab, patType, type, absyn, abApplyArgc(absyn), abApplyArgf);
+			result = tfSatMap(mask, stab, patType, ctxtTForm(tfc), absyn, abApplyArgc(absyn), abApplyArgf);
 			if (DEBUG(tipApply)) {
 				afprintf(dbOut, "--> tdnApply - SatMap %s\n", tfSatMaskToString(result));
 			}
@@ -986,7 +991,7 @@ titdnApply(Stab stab, AbSyn absyn, TForm type)
 			opType = tfDefineeType(opType);
 			assert(tfIsAnyMap(opType));
 
-			result = tfSatMap(mask, stab, opType, type, absyn, abArgc(absyn), abArgf);
+			result = tfSatMap(mask, stab, opType, ctxtTForm(tfc), absyn, abArgc(absyn), abArgf);
 			if (tfSatSucceed(result)) {
 				if (!tfSatPending(result)) {
 					nopc += 1;
@@ -1016,7 +1021,7 @@ titdnApply(Stab stab, AbSyn absyn, TForm type)
 	}
 	else {
 		/* Anything else - error */
-		terrorApplyFType(absyn, type, nopTypes, op, stab, abApplyArgc(absyn), abApplyArgf);
+		terrorApplyFType(absyn, ctxtTForm(tfc), nopTypes, op, stab, abApplyArgc(absyn), abApplyArgf);
 		result = false;
 	}
 
@@ -1048,30 +1053,30 @@ titdnApply(Stab stab, AbSyn absyn, TForm type)
 		abTUnique(absyn->abApply.op) = opType; 
 
 		mask = tfSatTdnMask();
-		result = tfSatMap(mask, stab, opType, type, absyn, abApplyArgc(absyn), abApplyArgf);
+		result = tfSatMap(mask, stab, opType, ctxtTForm(tfc), absyn, abApplyArgc(absyn), abApplyArgf);
 	}
 	else if (isImplicit) {
 		AbSyn imp = abImplicit(absyn);
 		int parmc;
-		titdn(stab, imp, opType);
+		titdn(stab, imp, ctxtCopy(tfc, opType));
 
 		parmc = tfMapHasDefaults(opType) ? tfMapArgc(opType) : abArgc(absyn);
 		abAddTContext(imp, tfMapMultiArgEmbed(opType, parmc));
 
 		mask = tfSatTdnMask();
-		result = tfSatMap(mask, stab, opType, type, absyn, abArgc(absyn), abArgf);
+		result = tfSatMap(mask, stab, opType, ctxtTForm(tfc), absyn, abArgc(absyn), abArgf);
 	}
 	else {
 		int parmc;
 		abFree(abImplicit(absyn));
 		abSetImplicit(absyn, NULL);
-		titdn(stab, op, opType);
+		titdn(stab, op, ctxtCopy(tfc, opType));
 
 		parmc = tfMapHasDefaults(opType) ? tfMapArgc(opType) : abApplyArgc(absyn);
 		abAddTContext(op, tfMapMultiArgEmbed(opType, parmc));
 
 		mask = tfSatTdnMask();
-		result = tfSatMap(mask, stab, opType, type, absyn, abApplyArgc(absyn), abApplyArgf);
+		result = tfSatMap(mask, stab, opType, ctxtTForm(tfc), absyn, abApplyArgc(absyn), abApplyArgf);
 	}
 	/* We return false rarely (eg titdn0FarValue failure). */
 	return tfSatSucceed(result);
@@ -1086,16 +1091,16 @@ titdnApply(Stab stab, AbSyn absyn, TForm type)
  ***************************************************************************/
 
 local Bool
-titdnDefine(Stab stab, AbSyn absyn, TForm type)
+titdnDefine(Stab stab, AbSyn absyn, TFContext tfc)
 {
 	AbSyn		lhs = absyn->abDefine.lhs;
 	AbSyn		rhs = absyn->abDefine.rhs;
 	TForm		rtype, ltype, idtype;
 	TPoss		idtposs;
 
-	if (tfIsNone(type)) type = tfUnknown;
+	if (tfIsNone(ctxtTForm(tfc))) tfc = ctxtCopy(tfc, tfUnknown);
 
-	idtype = tiDefineFilter(absyn, type);
+	idtype = tiDefineFilter(absyn, ctxtTForm(tfc));
 	idtposs = tiDefineTPoss(absyn);
 
 	rtype = tpossSelectSatisfier(idtposs, idtype);
@@ -1123,14 +1128,14 @@ titdnDefine(Stab stab, AbSyn absyn, TForm type)
 		fnewline(dbOut);
 	}
 
-	titdn(stab, lhs, ltype);
-	titdn(stab, rhs, rtype);
+	titdn(stab, lhs, ctxtCopy(tfc, ltype));
+	titdn(stab, rhs, ctxtCopy(tfc, rtype));
 
 	if (abTag(lhs) == AB_Declare) {
-		rtype = tpossSelectSatisfier(abTPoss(absyn), type);
+		rtype = tpossSelectSatisfier(abTPoss(absyn), ctxtTForm(tfc));
 		if (!rtype) {
 			terrorNotUniqueType(ALDOR_E_TinDefnMeans, absyn,
-					    type, abTPoss(absyn));
+					    ctxtTForm(tfc), abTPoss(absyn));
 			return false;
 		}
 	}
@@ -1157,7 +1162,7 @@ titdnDefine(Stab stab, AbSyn absyn, TForm type)
 /*!! To do: (v.i,v.j) := (v.j, v.i)	 */
 
 local Bool
-titdnAssign(Stab stab, AbSyn absyn, TForm type)
+titdnAssign(Stab stab, AbSyn absyn, TFContext tfc)
 {
 	AbSyn		rhs = absyn->abAssign.rhs;
 	AbSyn		lhs = absyn->abAssign.lhs;
@@ -1165,19 +1170,19 @@ titdnAssign(Stab stab, AbSyn absyn, TForm type)
 	TForm		rtype;
 	AbEmbed 	embed;
 
-	if (tfIsNone(type)) type = tfUnknown;
-	rtype = tpossSelectSatisfier(abtposs, type);
+	if (tfIsNone(ctxtTForm(tfc))) tfc = ctxtCopy(tfc, tfUnknown);
+	rtype = tpossSelectSatisfier(abtposs, ctxtTForm(tfc));
 	if (!rtype) {
-		terrorNotUniqueType(ALDOR_E_TinAssMeans, absyn, type, abtposs);
+		terrorNotUniqueType(ALDOR_E_TinAssMeans, absyn, ctxtTForm(tfc), abtposs);
 		return false;
 	}
 
 	if (abTag(lhs) == AB_Apply)
-		return titdn0ApplySym(stab, absyn, rtype, ssymSetBang,
+		return titdn0ApplySym(stab, absyn, ctxtCopy(tfc, rtype), ssymSetBang,
 				      abArgc(lhs) + 1, abSetArgf, lhs);
 
-	titdn(stab, rhs, rtype);
-	titdn(stab, lhs, rtype);
+	titdn(stab, rhs, ctxtCopy(tfc, rtype));
+	titdn(stab, lhs, ctxtCopy(tfc, rtype));
 	abTUnique(absyn) = rtype;
 	
 	embed = tfSatEmbedType(abTUnique(rhs), rtype);
@@ -1202,7 +1207,7 @@ titdnAssign(Stab stab, AbSyn absyn, TForm type)
  ***************************************************************************/
 
 local Bool
-titdnDeclare(Stab stab, AbSyn absyn, TForm type)
+titdnDeclare(Stab stab, AbSyn absyn, TFContext tfc)
 {
 	AbSyn id     = absyn->abDeclare.id;
 	AbSyn idtype = absyn->abDeclare.type;
@@ -1221,7 +1226,7 @@ titdnDeclare(Stab stab, AbSyn absyn, TForm type)
 	}
 
 	if (abUse(absyn) == AB_Use_Define || abUse(absyn) == AB_Use_Assign)
-		tf = (tfIsUnknown(type) ? tiGetTForm(stab, idtype) : type);
+		tf = (tfIsUnknown(ctxtTForm(tfc)) ? tiGetTForm(stab, idtype) : ctxtTForm(tfc));
 	else
 		tf = tiGetTForm(stab, idtype);
 
@@ -1229,17 +1234,17 @@ titdnDeclare(Stab stab, AbSyn absyn, TForm type)
 	if (abUse(absyn) != AB_Use_Assign) stabUseMeaningShadow(id);
 
  	syme = abSyme(id);
-	if (syme && tfIsMulti(type)) {
+	if (syme && tfIsMulti(ctxtTForm(tfc))) {
 		comsgError(absyn, ALDOR_E_TinBadDeclare);
 		return false;
 	}
 
-	titdn(stab, id, tf);
+	titdn(stab, id, ctxtCopy(tfc, tf));
 	stabUseMeaningUnshadow();
 
 	/* idtype has been handled already. */
 
-	rtype = tpossSelectSatisfier(abTPoss(absyn), type);
+	rtype = tpossSelectSatisfier(abTPoss(absyn), ctxtTForm(tfc));
 	if (!rtype) rtype = tfUnknown;
 	abTUnique(absyn) = rtype;
 
@@ -1260,11 +1265,11 @@ titdnDeclare(Stab stab, AbSyn absyn, TForm type)
  ***************************************************************************/
 
 local Bool
-titdnLabel(Stab stab, AbSyn absyn, TForm type)
+titdnLabel(Stab stab, AbSyn absyn, TFContext tfc)
 {
 	AbSyn	expr = absyn->abLabel.expr;
 
-	if (titdn(stab, expr, type))
+	if (titdn(stab, expr, tfc))
 		abTUnique(absyn) = abTUnique(expr);
 	else
 		abTUnique(absyn) = tfUnknown;
@@ -1279,7 +1284,7 @@ titdnLabel(Stab stab, AbSyn absyn, TForm type)
  ***************************************************************************/
 
 local Bool
-titdnGoto(Stab stab, AbSyn absyn, TForm type)
+titdnGoto(Stab stab, AbSyn absyn, TFContext tfc)
 {
 	AbSyn label = absyn->abGoto.label;
 
@@ -1317,7 +1322,7 @@ titdnGoto(Stab stab, AbSyn absyn, TForm type)
  ***************************************************************************/
 
 local Bool
-titdnLambda(Stab stab, AbSyn absyn, TForm type)
+titdnLambda(Stab stab, AbSyn absyn, TFContext tfc)
 {
 	Scope("titdnLambda");
 	AbSyn	param = absyn->abLambda.param;
@@ -1339,17 +1344,17 @@ titdnLambda(Stab stab, AbSyn absyn, TForm type)
 
 	tuniReturnTForm = tfFullFrAbSyn(stab, ret);
 
-	titdn(stab, param, tfUnknown);
-	titdn(stab, body, tuniReturnTForm);
+	titdn(stab, param, ctxtCopy(tfc, tfUnknown));
+	titdn(stab, body, ctxtCopy(tfc, tuniReturnTForm));
 
 	abtposs = abTPoss(absyn);
-	if (tiCheckLambdaType(type) || !tfIsAnyMap(type))
-		rtype = tpossSelectSatisfier(abtposs, type);
+	if (tiCheckLambdaType(ctxtTForm(tfc)) || !tfIsAnyMap(ctxtTForm(tfc)))
+		rtype = tpossSelectSatisfier(abtposs, ctxtTForm(tfc));
 	else
-		rtype = type;
+		rtype = ctxtTForm(tfc);
 
 	if (!rtype) {
-		terrorNotUniqueType(ALDOR_E_TinExprMeans, absyn, type, abtposs);
+		terrorNotUniqueType(ALDOR_E_TinExprMeans, absyn, ctxtTForm(tfc), abtposs);
 		result = false;
 	}
 
@@ -1425,7 +1430,7 @@ titdn0PLambdaRets(Stab stab, AbSynList vals)
  ***************************************************************************/
 
 local Bool
-titdnSequence(Stab stab, AbSyn absyn, TForm type)
+titdnSequence(Stab stab, AbSyn absyn, TFContext tfc)
 {
 	Scope("titdnSequence");
 	TForm		fluid(tuniExitTForm);
@@ -1433,17 +1438,17 @@ titdnSequence(Stab stab, AbSyn absyn, TForm type)
 	AbSyn		fluid(tuniTdnSelectObj);
 	Bool		result;
 
-	tuniExitTForm    = type;
+	tuniExitTForm    = ctxtTForm(tfc);
 	abExitsList      = listNil(AbSyn);
 	tuniTdnSelectObj = NULL;
 
-	result = titdnSequence0(stab, absyn, type);
+	result = titdnSequence0(stab, absyn, tfc);
 
 	Return(result);
 }
 
 local Bool
-titdnSequence0(Stab stab, AbSyn absyn, TForm type)
+titdnSequence0(Stab stab, AbSyn absyn, TFContext tfc)
 {
 	int		i, n = abArgc(absyn);
 	Bool		result;
@@ -1452,19 +1457,19 @@ titdnSequence0(Stab stab, AbSyn absyn, TForm type)
 		abState(absyn) = AB_State_HasPoss;
 
 	if (n == 0)
-		result = titdn0NoValue(stab, absyn, type, ALDOR_E_TinContextSeq);
+		result = titdn0NoValue(stab, absyn, tfc, ALDOR_E_TinContextSeq);
 	else
 	{
 		TForm none = tfNone();
 
 		for (i = 0; i < n-1; i++)
-			titdn(stab, abArgv(absyn)[i], none);
+			titdn(stab, abArgv(absyn)[i], ctxtCopy(tfc, none));
 
-		titdn0FarValue(stab,absyn, type, abArgv(absyn)[n-1],
+		titdn0FarValue(stab,absyn, tfc, abArgv(absyn)[n-1],
 			       &tuniExitTForm, &abExitsList);
 
 		if (abState(absyn) == AB_State_Error) {
-			terror(stab, absyn, type);
+			terror(stab, absyn, ctxtTForm(tfc));
 			result = false;
 		}
 		else {
@@ -1484,13 +1489,13 @@ titdnSequence0(Stab stab, AbSyn absyn, TForm type)
  ***************************************************************************/
 
 local Bool
-titdnExit(Stab stab, AbSyn absyn, TForm type)
+titdnExit(Stab stab, AbSyn absyn, TFContext tfc)
 {
 	AbSyn	test  = absyn->abExit.test;
 	AbSyn	value = absyn->abExit.value;
 	AbLogic	saveCond;
 	Bool    pushCond;
-	titdn(stab, test, tfUnknown);
+	titdn(stab, test, ctxtCopy(tfc, tfUnknown));
 
 	pushCond = !tuniTdnSelectObj && abIsSefo(test);
 	if (pushCond) {
@@ -1499,12 +1504,12 @@ titdnExit(Stab stab, AbSyn absyn, TForm type)
 		ablogAndPush(&abCondKnown, &saveCond, nTest, true);
 	}
 
-	titdn0FarValue(stab, absyn, type, value, &tuniExitTForm, &abExitsList);
+	titdn0FarValue(stab, absyn, tfc, value, &tuniExitTForm, &abExitsList);
 
 	if (pushCond)
 		ablogAndPop (&abCondKnown, &saveCond);
 	
-	return titdn0NoValue(stab, absyn, type, ALDOR_E_TinContextExit);
+	return titdn0NoValue(stab, absyn, tfc, ALDOR_E_TinContextExit);
 }
 
 /***************************************************************************
@@ -1514,9 +1519,9 @@ titdnExit(Stab stab, AbSyn absyn, TForm type)
  ***************************************************************************/
 
 local Bool
-titdnReturn(Stab stab, AbSyn absyn, TForm type)
+titdnReturn(Stab stab, AbSyn absyn, TFContext tfc)
 {
-	titdn0FarValue(stab,absyn,type,absyn->abReturn.value,
+	titdn0FarValue(stab, absyn, tfc, absyn->abReturn.value,
 		       &tuniReturnTForm, &abReturnsList);
 	abTUnique(absyn) = tfExit;
 	return true;
@@ -1529,7 +1534,7 @@ titdnReturn(Stab stab, AbSyn absyn, TForm type)
  ***************************************************************************/
 
 local Bool
-titdnGenerate(Stab stab, AbSyn absyn, TForm type)
+titdnGenerate(Stab stab, AbSyn absyn, TFContext tfc)
 {
 	Scope("titdnGenerate");
 
@@ -1549,15 +1554,15 @@ titdnGenerate(Stab stab, AbSyn absyn, TForm type)
 
 	tfGenType = abFlag_IsNewIter(absyn) ? TFG_XGenerator : TFG_Generator;
 
-	if (tfIsAnyGenerator(type))
-		tuniYieldTForm = tfAnyGeneratorArg(type);
+	if (tfIsAnyGenerator(ctxtTForm(tfc)))
+		tuniYieldTForm = tfAnyGeneratorArg(ctxtTForm(tfc));
 	else
 		tuniYieldTForm = tfUnknown;
 
 	if (abTag(count) != KW_From) {
-		titdn(stab, count, tfUnknown);
+		titdn(stab, count, ctxtCopy(tfc, tfUnknown));
 	}
-	titdn(stab, body,  tfNone());
+	titdn(stab, body,  ctxtCopy(tfc, tfNone()));
 
 	if (abState(absyn) == AB_State_Error) {
 		/*
@@ -1589,7 +1594,7 @@ titdnGenerate(Stab stab, AbSyn absyn, TForm type)
 		 * inferred type does not satisfy the context type.
 		 * Hopefully terror() will report the problem for us.
 		 */
-		terror(stab, body, type);
+		terror(stab, body, ctxtTForm(tfc));
 	}
 
 	/* Were we successful? */
@@ -1609,9 +1614,9 @@ titdnGenerate(Stab stab, AbSyn absyn, TForm type)
  ***************************************************************************/
 
 local Bool
-titdnYield(Stab stab, AbSyn absyn, TForm type)
+titdnYield(Stab stab, AbSyn absyn, TFContext tfc)
 {
-	titdn0FarValue(stab, absyn, type, 
+	titdn0FarValue(stab, absyn, tfc, 
                        absyn->abYield.value,
 		       &tuniYieldTForm, 
                        &abYieldsList);
@@ -1626,16 +1631,16 @@ titdnYield(Stab stab, AbSyn absyn, TForm type)
  ***************************************************************************/
 
 local Bool
-titdnAdd(Stab stab, AbSyn absyn, TForm type)
+titdnAdd(Stab stab, AbSyn absyn, TFContext tfc)
 {
 	AbSyn		base	= absyn->abAdd.base;
 	AbSyn		capsule = absyn->abAdd.capsule;
 
-	titdn(stab, base,    tfUnknown);	/* !! cd push Type */
-	titdn(stab, capsule, tfUnknown);
+	titdn(stab, base,    ctxtCopy(tfc, tfUnknown));
+	titdn(stab, capsule, ctxtCopy(tfc, tfUnknown));
 
 	/* !! Should infer type of body. */
-	abTUnique(absyn) = type;
+	abTUnique(absyn) = ctxtTForm(tfc);
 	return true;
 }
 
@@ -1646,12 +1651,12 @@ titdnAdd(Stab stab, AbSyn absyn, TForm type)
  ***************************************************************************/
 
 local Bool
-titdnWith(Stab stab, AbSyn absyn, TForm type)
+titdnWith(Stab stab, AbSyn absyn, TFContext tfc)
 {
 	TPoss	abtposs = abTPoss(absyn);
 	TForm	rtype;
 
-	rtype = tpossSelectSatisfier(abtposs, type);
+	rtype = tpossSelectSatisfier(abtposs, ctxtTForm(tfc));
 	if (!rtype) return false;
 
 	abTUnique(absyn) = rtype;
@@ -1665,16 +1670,17 @@ titdnWith(Stab stab, AbSyn absyn, TForm type)
  ***************************************************************************/
 
 local Bool
-titdnWhere(Stab stab, AbSyn absyn, TForm type)
+titdnWhere(Stab stab, AbSyn absyn, TFContext tfc)
 {
 	TPoss   abtposs = abTPoss(absyn);
 	AbSyn	context = absyn->abWhere.context;
 	AbSyn	expr	= absyn->abWhere.expr;
+	TForm   type;
 
-	titdn(stab, context, tfNone());
-	titdn(stab, expr,    type);
+	titdn(stab, context, ctxtCopy(tfc, tfNone()));
+	titdn(stab, expr,    tfc);
 	
-	type = tpossSelectSatisfier(abtposs, type);
+	type = tpossSelectSatisfier(abtposs, ctxtTForm(tfc));
 	if (!type) return false;
 
 	abTUnique(absyn) = type;
@@ -1688,7 +1694,7 @@ titdnWhere(Stab stab, AbSyn absyn, TForm type)
  ***************************************************************************/
 
 local Bool
-titdnIf(Stab stab, AbSyn absyn, TForm type)
+titdnIf(Stab stab, AbSyn absyn, TFContext tfc)
 {
 	AbSyn	test	= absyn->abIf.test;
 	AbSyn	thenAlt = absyn->abIf.thenAlt;
@@ -1697,10 +1703,10 @@ titdnIf(Stab stab, AbSyn absyn, TForm type)
 	AbLogic	saveCond;
 
 	TPoss	abtposs = abTPoss(absyn);
-	abtposs = tpossSatisfiesType(abtposs, type); 
+	abtposs = tpossSatisfiesType(abtposs, ctxtTForm(tfc));
 
 	if (tpossCount(abtposs) > 1) {
-		terrorNotUniqueType(ALDOR_E_TinIfMeans, absyn, type, abtposs);
+		terrorNotUniqueType(ALDOR_E_TinIfMeans, absyn, ctxtTForm(tfc), abtposs);
 		return false;
 	}
 
@@ -1713,26 +1719,26 @@ titdnIf(Stab stab, AbSyn absyn, TForm type)
 
 
 	/* This ought to do nothing since we tinfered test during tibup */
-	titdn(stab, test, tfBoolean);
+	titdn(stab, test, ctxtCopy(tfc, tfBoolean));
 
 
-	if (tfIsCategoryContext(type, absyn))
-		type = tpossUnique(abtposs);
+	if (tfIsCategoryContext(ctxtTForm(tfc), absyn))
+		tfc = ctxtCopy(tfc, tpossUnique(abtposs));
 	else	/* Normalise the test for other contexts */
 		nTest = abExpandDefs(stab, test);
 
 	if (abIsSefo(nTest)) {
 		ablogAndPush(&abCondKnown, &saveCond, nTest, true); /* test, true); */
-		titdn(stab, thenAlt, type);
+		titdn(stab, thenAlt, tfc);
 		ablogAndPop (&abCondKnown, &saveCond);
 
 		ablogAndPush(&abCondKnown, &saveCond, nTest, false); /* test, false); */
-		titdn(stab, elseAlt, type);
+		titdn(stab, elseAlt, tfc);
 		ablogAndPop (&abCondKnown, &saveCond);
 	}
 	else {
-		titdn(stab, thenAlt, type);
-		titdn(stab, elseAlt, type);
+		titdn(stab, thenAlt, tfc);
+		titdn(stab, elseAlt, tfc);
 	}
 
 	/*
@@ -1740,7 +1746,7 @@ titdnIf(Stab stab, AbSyn absyn, TForm type)
 	 * will end up performing embeddings on ourself in addition to
 	 * the same embeddings that we performed on the branches.
 	 */
-	abTUnique(absyn) = type;
+	abTUnique(absyn) = ctxtTForm(tfc);
 	return true;
 }
 
@@ -1760,7 +1766,7 @@ titdnSelectArgf(AbSyn ab, Length i)
 }
 
 local Bool
-titdnTest(Stab stab, AbSyn absyn, TForm type)
+titdnTest(Stab stab, AbSyn absyn, TFContext tfc)
 {
 	/*
 	 * An unfixed compiler bug means that parts of Salli programs
@@ -1771,12 +1777,12 @@ titdnTest(Stab stab, AbSyn absyn, TForm type)
 
 	if (tuniTdnSelectObj != NULL) {
 		titdn0ApplySym(stab, absyn, 
-			       tfBoolean,
+			       ctxtCopy(tfc, tfBoolean),
 			       ssymTheCase, 2,
 			       titdnSelectArgf, NULL);
 	}
 	else {
-		titdn0ApplySymIfNeeded(stab, absyn, tfBoolean, 
+		titdn0ApplySymIfNeeded(stab, absyn, ctxtCopy(tfc, tfBoolean), 
 				       ssymTheTest, 1, abArgf, NULL,
 				       tfIsBooleanFn);
 	}
@@ -1791,13 +1797,14 @@ titdnTest(Stab stab, AbSyn absyn, TForm type)
  ***************************************************************************/
 
 local Bool
-titdnCollect(Stab stab, AbSyn absyn, TForm type)
+titdnCollect(Stab stab, AbSyn absyn, TFContext tfc)
 {
 	Scope("titdnCollect");
 	AbSyn	body	  = absyn->abCollect.body;
 	AbSyn	*iterv	  = absyn->abCollect.iterv;
 	Length	i, iterc  = abCollectIterc(absyn);
-	TForm	rtype;
+	TForm	type, rtype;
+
 
 	TForm	fluid(tuniReturnTForm);
 	TForm	fluid(tuniYieldTForm);
@@ -1808,15 +1815,16 @@ titdnCollect(Stab stab, AbSyn absyn, TForm type)
 	tuniExitTForm	= tfNone();
 
 	for (i = 0; i < iterc; i++)
-		titdn(stab, iterv[i], tfUnknown);
+		titdn(stab, iterv[i], ctxtCopy(tfc, tfUnknown));
 
+	type = ctxtTForm(tfc);
 	if (tfIsAnyGenerator(type))
 		rtype = tfAnyGeneratorArg(type);
 	else
 		rtype = tfUnknown;
 
-	titdn(stab, body, rtype);
-	abTUnique(absyn) = type;
+	titdn(stab, body, ctxtCopy(tfc, rtype));
+	abTUnique(absyn) = ctxtTForm(tfc);
 
 	{
 		AbEmbed	embed = tfSatEmbedType(abTUnique(body), rtype);
@@ -1834,7 +1842,7 @@ titdnCollect(Stab stab, AbSyn absyn, TForm type)
  ***************************************************************************/
 
 local Bool
-titdnRepeat(Stab stab, AbSyn absyn, TForm type)
+titdnRepeat(Stab stab, AbSyn absyn, TFContext tfc)
 {
 	AbSyn	body	  = absyn->abRepeat.body;
 	AbSyn	*iterv	  = absyn->abRepeat.iterv;
@@ -1842,16 +1850,14 @@ titdnRepeat(Stab stab, AbSyn absyn, TForm type)
 	Bool	result;
 
 	for (i = 0; i < iterc; i++)
-		titdn(stab, iterv[i], tfUnknown);
+		titdn(stab, iterv[i], ctxtCopy(tfc, tfUnknown));
 
-	titdn(stab, body, tfNone());
-	if (tfIsNone(tpossUnique(abTPoss(absyn))))
-	{
-		result = titdn0NoValue(stab,absyn,type,ALDOR_E_TinContextRepeat);
+	titdn(stab, body, ctxtCopy(tfc, tfNone()));
+	if (tfIsNone(tpossUnique(abTPoss(absyn)))) {
+		result = titdn0NoValue(stab,absyn,tfc,ALDOR_E_TinContextRepeat);
 	}
-	else
-	{
-		abTUnique(absyn) = type;
+	else {
+		abTUnique(absyn) = ctxtTForm(tfc);
 		result = true;
 	}
 
@@ -1865,7 +1871,7 @@ titdnRepeat(Stab stab, AbSyn absyn, TForm type)
  ***************************************************************************/
 
 local Bool
-titdnNever(Stab stab, AbSyn absyn, TForm type)
+titdnNever(Stab stab, AbSyn absyn, TFContext tfc)
 {
 	abTUnique(absyn) = tfExit;
 	return true;
@@ -1878,7 +1884,7 @@ titdnNever(Stab stab, AbSyn absyn, TForm type)
  ***************************************************************************/
 
 local Bool
-titdnIterate(Stab stab, AbSyn absyn, TForm type)
+titdnIterate(Stab stab, AbSyn absyn, TFContext tfc)
 {
 	abTUnique(absyn) = tfExit;
 	return true;
@@ -1891,7 +1897,7 @@ titdnIterate(Stab stab, AbSyn absyn, TForm type)
  ***************************************************************************/
 
 local Bool
-titdnBreak(Stab stab, AbSyn absyn, TForm type)
+titdnBreak(Stab stab, AbSyn absyn, TFContext tfc)
 {
 	abTUnique(absyn) = tfExit;
 	return true;
@@ -1904,7 +1910,7 @@ titdnBreak(Stab stab, AbSyn absyn, TForm type)
  ***************************************************************************/
 
 local Bool
-titdnWhile(Stab stab, AbSyn absyn, TForm type)
+titdnWhile(Stab stab, AbSyn absyn, TFContext tfc)
 {
 	/*
 	 * An unfixed compiler bug means that parts of Salli programs
@@ -1913,7 +1919,7 @@ titdnWhile(Stab stab, AbSyn absyn, TForm type)
 	 */
 	assert(tfBoolean != tfUnknown);
 
-	return titdn0Generic(stab, absyn, tfBoolean);
+	return titdn0Generic(stab, absyn, ctxtCopy(tfc, tfBoolean));
 }
 
 /***************************************************************************
@@ -1923,19 +1929,20 @@ titdnWhile(Stab stab, AbSyn absyn, TForm type)
  ***************************************************************************/
 
 local Bool
-titdnFor(Stab stab, AbSyn absyn, TForm type)
+titdnFor(Stab stab, AbSyn absyn, TFContext tfc)
 {
 	AbSyn	lhs   = absyn->abFor.lhs;
 	AbSyn	test  = absyn->abFor.test;
 	TForm	twhole;
 	Bool unique;
-	unique = tfIsUnknown(type) && tpossIsUnique(abTPoss(lhs));
+
+	unique = tfIsUnknown(ctxtTForm(tfc)) && tpossIsUnique(abTPoss(lhs));
 	if (unique && abFlag_IsNewIter(absyn))
 		twhole = tfXGenerator(tpossUnique(abTPoss(lhs)));
 	else if (unique)
 		twhole = tfGenerator(tpossUnique(abTPoss(lhs)));
 	else
-		twhole = type;
+		twhole = ctxtTForm(tfc);
 
 	/*
 	 * Subtle note: the generator in a for-iterator lies
@@ -1945,12 +1952,12 @@ titdnFor(Stab stab, AbSyn absyn, TForm type)
 	 */
 
 	if (!abFlag_IsNewIter(absyn)) {
-		titdn0ApplySymIfNeeded(cdr(stab), absyn, twhole,
+		titdn0ApplySymIfNeeded(cdr(stab), absyn, ctxtCopy(tfc, twhole),
 				       ssymTheGenerator, 1, abForIterArgf,
 				       NULL, tfIsGeneratorFn);
 	}
 	else if (abFlag_IsNewIter(absyn)) {
-		titdn0ApplySymIfNeeded(cdr(stab), absyn, twhole,
+		titdn0ApplySymIfNeeded(cdr(stab), absyn, ctxtCopy(tfc, twhole),
 				       ssymTheXGenerator, 1, abForIterArgf,
 				       NULL, tfIsXGeneratorFn);
 	}
@@ -1959,8 +1966,8 @@ titdnFor(Stab stab, AbSyn absyn, TForm type)
 	 * The for-variable and test lie within the scope
 	 * of the repeat clause.
 	 */
-	titdn(stab, lhs,  tfUnknown);
-	titdn(stab, test, tfUnknown);
+	titdn(stab, lhs,  ctxtCopy(tfc, tfUnknown));
+	titdn(stab, test, ctxtCopy(tfc, tfUnknown));
         
 	abTUnique(absyn) = twhole;
 	return true;
@@ -1976,11 +1983,11 @@ local Bool titdnForeignJava(Stab stab, AbSyn absyn);
 local Bool titdnForeignJavaDeclare(Stab stab, AbSyn decl);
 
 local Bool
-titdnForeignImport(Stab stab, AbSyn absyn, TForm type)
+titdnForeignImport(Stab stab, AbSyn absyn, TFContext tfc)
 {
 	ForeignOrigin forg = forgFrAbSyn(absyn->abForeignImport.origin);
 	Bool ok;
-	titdn(stab, absyn->abForeignImport.what, tfUnknown);
+	titdn(stab, absyn->abForeignImport.what, ctxtCopy(tfc, tfUnknown));
 
 	switch (forg->protocol) {
 	case FOAM_Proto_Java:
@@ -1994,7 +2001,7 @@ titdnForeignImport(Stab stab, AbSyn absyn, TForm type)
 		return false;
 	}
 
-	abTUnique(absyn) = type;
+	abTUnique(absyn) = ctxtTForm(tfc);
 	return true;
 }
 
@@ -2076,17 +2083,17 @@ titdnForeignJavaDeclare(Stab stab, AbSyn decl)
  ***************************************************************************/
 
 local Bool
-titdnForeignExport(Stab stab, AbSyn absyn, TForm type)
+titdnForeignExport(Stab stab, AbSyn absyn, TFContext tfc)
 {
 	AbSyn	what	= absyn->abForeignExport.what;
 	AbSyn	dest	= absyn->abForeignExport.dest;
 	ForeignOrigin forg = forgFrAbSyn(dest->abApply.argv[0]);
 
-	Bool success = titdn(stab, absyn->abForeignExport.what, tfUnknown);
+	Bool success = titdn(stab, absyn->abForeignExport.what, ctxtCopy(tfc, tfUnknown));
 	if (success && forg->protocol == FOAM_Proto_Java) {
 		stabAddForeignExport(stab, tiGetTForm(stab, what), forg);
 	}
-	abTUnique(absyn) = type;
+	abTUnique(absyn) = ctxtTForm(tfc);
 	return true;
 }
 
@@ -2098,11 +2105,11 @@ titdnForeignExport(Stab stab, AbSyn absyn, TForm type)
 
 
 local Bool
-titdnImport(Stab stab, AbSyn absyn, TForm type)
+titdnImport(Stab stab, AbSyn absyn, TFContext tfc)
 {
-	if (!tfSatReturn(tfNone(), type)) {
+	if (!tfSatReturn(tfNone(), ctxtTForm(tfc))) {
 		terrorNotUniqueType(ALDOR_E_TinExprMeans,
-				    absyn, type, abTPoss(absyn));
+				    absyn, ctxtTForm(tfc), abTPoss(absyn));
 		return false;
 	}
 	abTUnique(absyn) = tfNone();
@@ -2116,14 +2123,14 @@ titdnImport(Stab stab, AbSyn absyn, TForm type)
  ***************************************************************************/
 
 local Bool
-titdnInline(Stab stab, AbSyn absyn, TForm type)
+titdnInline(Stab stab, AbSyn absyn, TFContext tfc)
 {
-	if (!tfSatReturn(tfNone(), type)) {
+	if (!tfSatReturn(tfNone(), ctxtTForm(tfc))) {
 		terrorNotUniqueType(ALDOR_E_TinExprMeans,
-				    absyn, type, abTPoss(absyn));
+				    absyn, ctxtTForm(tfc), abTPoss(absyn));
 		return false;
 	}
-	abTUnique(absyn) = type;
+	abTUnique(absyn) = tfNone();
 	return true;
 }
 
@@ -2136,7 +2143,7 @@ titdnInline(Stab stab, AbSyn absyn, TForm type)
  ***************************************************************************/
 
 local Bool
-titdnQualify(Stab stab, AbSyn absyn, TForm type)
+titdnQualify(Stab stab, AbSyn absyn, TFContext tfc)
 {
 	AbSyn		origin = absyn->abQualify.origin;
 	AbSyn		what   = absyn->abQualify.what;
@@ -2190,7 +2197,7 @@ titdnQualify(Stab stab, AbSyn absyn, TForm type)
 		syme = car(symes);
 
 		if (symeId(syme) == sym 
-		    && tfSatReturn(symeType(syme), type)) {
+		    && tfSatReturn(symeType(syme), ctxtTForm(tfc))) {
 			osyme = symeListHasExtendee(okSymes, syme);
 			if (osyme) {
 				symeSetExtension(osyme, syme);
@@ -2207,7 +2214,7 @@ titdnQualify(Stab stab, AbSyn absyn, TForm type)
 
 	if (okSymes == NULL || cdr(okSymes) != NULL) {
 		terrorNotUniqueMeaning(ALDOR_E_TinNMeanings, absyn, okSymes,
-				       allSymes, symString(sym), type);
+				       allSymes, symString(sym), ctxtTForm(tfc));
 		listFree(Syme)(okSymes);
 		listFree(Syme)(fsymes);
 		return false;
@@ -2235,16 +2242,16 @@ titdnQualify(Stab stab, AbSyn absyn, TForm type)
  ***************************************************************************/
 
 local Bool
-titdnCoerceTo(Stab stab, AbSyn absyn, TForm type)
+titdnCoerceTo(Stab stab, AbSyn absyn, TFContext tfc)
 {
 	TForm	tf = tiGetTForm(stab, absyn->abCoerceTo.type);
 
-	if (!tfSatReturn(tf, type)) {
+	if (!tfSatReturn(tf, ctxtTForm(tfc))) {
 		terrorNotUniqueType(ALDOR_E_TinExprMeans,
-				    absyn, type, abTPoss(absyn));
+				    absyn, ctxtTForm(tfc), abTPoss(absyn));
 		return false;
 	}
- 	titdn0ApplySym(stab, absyn, tf, ssymCoerce, 1, abArgf, NULL);
+ 	titdn0ApplySym(stab, absyn, ctxtCopy(tfc, tf), ssymCoerce, 1, abArgf, NULL);
 	abTUnique(absyn) = tf;
 	return true;
 }
@@ -2257,16 +2264,16 @@ titdnCoerceTo(Stab stab, AbSyn absyn, TForm type)
 
 
 local Bool
-titdnRestrictTo(Stab stab, AbSyn absyn, TForm type)
+titdnRestrictTo(Stab stab, AbSyn absyn, TFContext tfc)
 {
 	TForm tf = tiGetTForm(stab, absyn->abRestrictTo.type);
 
-	if (!tfSatReturn(tf, type)) {
+	if (!tfSatReturn(tf, ctxtTForm(tfc))) {
 		terrorNotUniqueType(ALDOR_E_TinExprMeans,
-			            absyn, type, abTPoss(absyn));
+			            absyn, ctxtTForm(tfc), abTPoss(absyn));
 		return false;
 	}
-	titdn(stab, absyn->abRestrictTo.expr, tf);
+	titdn(stab, absyn->abRestrictTo.expr, ctxtCopy(tfc, tf));
 	abTUnique(absyn) = tf;
 	return true;
 }
@@ -2279,18 +2286,18 @@ titdnRestrictTo(Stab stab, AbSyn absyn, TForm type)
  ***************************************************************************/
 
 local Bool
-titdnPretendTo(Stab stab, AbSyn absyn, TForm type)
+titdnPretendTo(Stab stab, AbSyn absyn, TFContext tfc)
 {
 	TForm tf = tiGetTForm(stab, absyn->abPretendTo.type);
 
-	if (!tfSatReturn(tf, type)) {
+	if (!tfSatReturn(tf, ctxtTForm(tfc))) {
 		terrorNotUniqueType(ALDOR_E_TinExprMeans,
-				    absyn, type, abTPoss(absyn));
+				    absyn, ctxtTForm(tfc), abTPoss(absyn));
 		return false;
 	}
-	titdn(stab, absyn->abPretendTo.expr, tfUnknown);
-	if (!tfIsMulti(type) && tfIsMulti(abTUnique(absyn->abPretendTo.expr))) {
-	  abSetTContext(absyn->abPretendTo.expr, AB_Embed_MultiToCross);
+	titdn(stab, absyn->abPretendTo.expr, ctxtCopy(tfc, tfUnknown));
+	if (!tfIsMulti(ctxtTForm(tfc)) && tfIsMulti(abTUnique(absyn->abPretendTo.expr))) {
+		abSetTContext(absyn->abPretendTo.expr, AB_Embed_MultiToCross);
 	}
 
 	abTUnique(absyn) = tf;
@@ -2304,7 +2311,7 @@ titdnPretendTo(Stab stab, AbSyn absyn, TForm type)
  ***************************************************************************/
 
 local Bool
-titdnNot(Stab stab, AbSyn absyn, TForm type)
+titdnNot(Stab stab, AbSyn absyn, TFContext tfc)
 {
 	/*
 	 * An unfixed compiler bug means that parts of Salli programs
@@ -2313,12 +2320,12 @@ titdnNot(Stab stab, AbSyn absyn, TForm type)
 	 */
 	assert(tfBoolean != tfUnknown);
 
-	if (!tfSatReturn(tfBoolean, type)) {
+	if (!tfSatReturn(tfBoolean, ctxtTForm(tfc))) {
 		terrorNotUniqueType(ALDOR_E_TinExprMeans,
-				    absyn, type, abTPoss(absyn));
+				    absyn, ctxtTForm(tfc), abTPoss(absyn));
 		return false;
 	}
-	titdn(stab, absyn->abNot.expr, tfBoolean);
+	titdn(stab, absyn->abNot.expr, ctxtCopy(tfc, tfBoolean));
 	abTUnique(absyn) = tfBoolean;
 	return true;
 }
@@ -2330,7 +2337,7 @@ titdnNot(Stab stab, AbSyn absyn, TForm type)
  ***************************************************************************/
 
 local Bool
-titdnAnd(Stab stab, AbSyn absyn, TForm type)
+titdnAnd(Stab stab, AbSyn absyn, TFContext tfc)
 {
 	int	i;
 	int	argc = abArgc(absyn);
@@ -2343,14 +2350,14 @@ titdnAnd(Stab stab, AbSyn absyn, TForm type)
 	 */
 	assert(tfBoolean != tfUnknown);
 
-	if (!tfSatReturn(tfBoolean, type)) {
+	if (!tfSatReturn(tfBoolean, ctxtTForm(tfc))) {
 		terrorNotUniqueType(ALDOR_E_TinExprMeans,
-				    absyn, type, abTPoss(absyn));
+				    absyn, ctxtTForm(tfc), abTPoss(absyn));
 		return false;
 	}
 
 	for (i = 0; i < argc; i++) {
-		titdn(stab, abArgv(absyn)[i], tfBoolean);
+		titdn(stab, abArgv(absyn)[i], ctxtCopy(tfc, tfBoolean));
 		ablogAndPush(&abCondKnown, &saveCond[i], abArgv(absyn)[i], true);
 	}
 	for (i = 0; i < argc; i++) {
@@ -2369,7 +2376,7 @@ titdnAnd(Stab stab, AbSyn absyn, TForm type)
 
 
 local Bool
-titdnOr(Stab stab, AbSyn absyn, TForm type)
+titdnOr(Stab stab, AbSyn absyn, TFContext tfc)
 {
 	int	i;
 
@@ -2380,13 +2387,13 @@ titdnOr(Stab stab, AbSyn absyn, TForm type)
 	 */
 	assert(tfBoolean != tfUnknown);
 
-	if (!tfSatReturn(tfBoolean, type)) {
+	if (!tfSatReturn(tfBoolean, ctxtTForm(tfc))) {
 		terrorNotUniqueType(ALDOR_E_TinExprMeans,
-				    absyn, type, abTPoss(absyn));
+				    absyn, ctxtTForm(tfc), abTPoss(absyn));
 		return false;
 	}
 	for (i = 0; i < abArgc(absyn); i++)
-		titdn(stab, abArgv(absyn)[i], tfBoolean);
+		titdn(stab, abArgv(absyn)[i], ctxtCopy(tfc, tfBoolean));
 	abTUnique(absyn) = tfBoolean;
 	return true;
 }
@@ -2398,12 +2405,12 @@ titdnOr(Stab stab, AbSyn absyn, TForm type)
  ***************************************************************************/
 
 local Bool
-titdnAssert(Stab stab, AbSyn absyn, TForm type)
+titdnAssert(Stab stab, AbSyn absyn, TFContext tfc)
 {
 	Bool ok;
 
 	/* Ensure that the context requires no value */
-	ok = titdn0NoValue(stab, absyn, type, ALDOR_E_TinContextAssert);
+	ok = titdn0NoValue(stab, absyn, tfc, ALDOR_E_TinContextAssert);
 
 	/*
 	 * An unfixed compiler bug means that parts of Salli programs
@@ -2412,7 +2419,7 @@ titdnAssert(Stab stab, AbSyn absyn, TForm type)
 	 */
 	assert(!ok || (tfBoolean != tfUnknown));
 
-	if (ok) titdn(stab, absyn->abAssert.test, tfBoolean);
+	if (ok) titdn(stab, absyn->abAssert.test, ctxtCopy(tfc, tfBoolean));
 	return ok;
 }
 
@@ -2423,9 +2430,9 @@ titdnAssert(Stab stab, AbSyn absyn, TForm type)
  ***************************************************************************/
 
 local Bool
-titdnBlank(Stab stab, AbSyn absyn, TForm type)
+titdnBlank(Stab stab, AbSyn absyn, TFContext tfc)
 {
-	abTUnique(absyn) = type;
+	abTUnique(absyn) = ctxtTForm(tfc);
 	return true;
 }
 
@@ -2436,9 +2443,9 @@ titdnBlank(Stab stab, AbSyn absyn, TForm type)
  ***************************************************************************/
 
 local Bool
-titdnBuiltin(Stab stab, AbSyn absyn, TForm type)
+titdnBuiltin(Stab stab, AbSyn absyn, TFContext tfc)
 {
-	return titdn0Generic(stab, absyn, type);
+	return titdn0Generic(stab, absyn, tfc);
 }
 
 /***************************************************************************
@@ -2448,12 +2455,12 @@ titdnBuiltin(Stab stab, AbSyn absyn, TForm type)
  ***************************************************************************/
 
 local Bool
-titdnDefault(Stab stab, AbSyn absyn, TForm type)
+titdnDefault(Stab stab, AbSyn absyn, TFContext tfc)
 {
 	TPoss	abtposs = abTPoss(absyn);
 	TForm	rtype;
 
-	rtype = tpossSelectSatisfier(abtposs, type);
+	rtype = tpossSelectSatisfier(abtposs, ctxtTForm(tfc));
 	if (!rtype) return false;
 
 	abTUnique(absyn) = rtype;
@@ -2467,9 +2474,9 @@ titdnDefault(Stab stab, AbSyn absyn, TForm type)
  ***************************************************************************/
 
 local Bool
-titdnDelay(Stab stab, AbSyn absyn, TForm type)
+titdnDelay(Stab stab, AbSyn absyn, TFContext tfc)
 {
-	return titdn0Generic(stab, absyn, type);
+	return titdn0Generic(stab, absyn, tfc);
 }
 
 /***************************************************************************
@@ -2479,13 +2486,13 @@ titdnDelay(Stab stab, AbSyn absyn, TForm type)
  ***************************************************************************/
 
 local Bool
-titdnDo(Stab stab, AbSyn absyn, TForm type)
+titdnDo(Stab stab, AbSyn absyn, TFContext tfc)
 {
 	Bool ok;
 
 	/* Ensure that the context requires no value */
-	ok = titdn0NoValue(stab, absyn, type, ALDOR_E_TinContextDo);
-	return titdn0Generic(stab, absyn, tfNone());
+	ok = titdn0NoValue(stab, absyn, tfc, ALDOR_E_TinContextDo);
+	return titdn0Generic(stab, absyn, ctxtCopy(tfc, tfNone()));
 }
 
 /***************************************************************************
@@ -2495,13 +2502,13 @@ titdnDo(Stab stab, AbSyn absyn, TForm type)
  ***************************************************************************/
 
 local Bool
-titdnExcept(Stab stab, AbSyn absyn, TForm type)
+titdnExcept(Stab stab, AbSyn absyn, TFContext tfc)
 {
-	titdn(stab, absyn->abExcept.except, tfTuple(tfCategory));
-	if (!titdn(stab, absyn->abExcept.type, type))
+	titdn(stab, absyn->abExcept.except, ctxtCopy(tfc, tfTuple(tfCategory)));
+	if (!titdn(stab, absyn->abExcept.type, tfc))
 		return false;
 	if (abState(absyn->abExcept.type) != AB_State_HasUnique)
-	  return false;
+		return false;
 	abTUnique(absyn) = abTUnique(absyn->abExcept.type);
 	return true;
 }
@@ -2513,18 +2520,18 @@ titdnExcept(Stab stab, AbSyn absyn, TForm type)
  ***************************************************************************/
 
 local Bool
-titdnRaise(Stab stab, AbSyn absyn, TForm type)
+titdnRaise(Stab stab, AbSyn absyn, TFContext tfc)
 {
 	TForm tf;
 	Sefo sef;
-	titdn(stab, absyn->abRaise.expr, tfDomain);
+	titdn(stab, absyn->abRaise.expr, ctxtCopy(tfc, tfDomain));
 	tf = tiGetTForm(stab, absyn->abRaise.expr);
 	sef = tfGetExpr(tf);
 	assert(sef);
 	tf = tfExcept(tfExit, abGetCategory(sef));
-	if (!tfSatReturn(tf, type)) {
+	if (!tfSatReturn(tf, ctxtTForm(tfc))) {
 		/* !!This is the _wrong_ routine to call */
-		terrorNotUniqueType(ALDOR_E_TinExprMeans, absyn, type, 
+		terrorNotUniqueType(ALDOR_E_TinExprMeans, absyn, ctxtTForm(tfc), 
 				    tpossSingleton(tf));
 		return false;
 	}
@@ -2539,7 +2546,7 @@ titdnRaise(Stab stab, AbSyn absyn, TForm type)
  ***************************************************************************/
 
 local Bool
-titdnExport(Stab stab, AbSyn absyn, TForm type)
+titdnExport(Stab stab, AbSyn absyn, TFContext tfc)
 {
 	abTUnique(absyn) = tfNone();
 	return true;
@@ -2552,9 +2559,9 @@ titdnExport(Stab stab, AbSyn absyn, TForm type)
  ***************************************************************************/
 
 local Bool
-titdnExtend(Stab stab, AbSyn absyn, TForm type)
+titdnExtend(Stab stab, AbSyn absyn, TFContext tfc)
 {
-	return titdn0Generic(stab, absyn, type);
+	return titdn0Generic(stab, absyn, tfc);
 }
 
 /***************************************************************************
@@ -2564,9 +2571,9 @@ titdnExtend(Stab stab, AbSyn absyn, TForm type)
  ***************************************************************************/
 
 local Bool
-titdnFix(Stab stab, AbSyn absyn, TForm type)
+titdnFix(Stab stab, AbSyn absyn, TFContext tfc)
 {
-	return titdn0Generic(stab, absyn, type);
+	return titdn0Generic(stab, absyn, tfc);
 }
 
 /***************************************************************************
@@ -2576,9 +2583,9 @@ titdnFix(Stab stab, AbSyn absyn, TForm type)
  ***************************************************************************/
 
 local Bool
-titdnFluid(Stab stab, AbSyn absyn, TForm type)
+titdnFluid(Stab stab, AbSyn absyn, TFContext tfc)
 {
-	return titdn0Generic(stab, absyn, type);
+	return titdn0Generic(stab, absyn, tfc);
 }
 
 /***************************************************************************
@@ -2588,9 +2595,9 @@ titdnFluid(Stab stab, AbSyn absyn, TForm type)
  ***************************************************************************/
 
 local Bool
-titdnFree(Stab stab, AbSyn absyn, TForm type)
+titdnFree(Stab stab, AbSyn absyn, TFContext tfc)
 {
-	return titdn0Generic(stab, absyn, type);
+	return titdn0Generic(stab, absyn, tfc);
 }
 
 /***************************************************************************
@@ -2600,9 +2607,9 @@ titdnFree(Stab stab, AbSyn absyn, TForm type)
  ***************************************************************************/
 
 local Bool
-titdnHas(Stab stab, AbSyn absyn, TForm type)
+titdnHas(Stab stab, AbSyn absyn, TFContext tfc)
 {
-	return titdn0Generic(stab, absyn, type);
+	return titdn0Generic(stab, absyn, tfc);
 }
 
 /***************************************************************************
@@ -2612,9 +2619,9 @@ titdnHas(Stab stab, AbSyn absyn, TForm type)
  ***************************************************************************/
 
 local Bool
-titdnHide(Stab stab, AbSyn absyn, TForm type)
+titdnHide(Stab stab, AbSyn absyn, TFContext tfc)
 {
-	return titdn0Generic(stab, absyn, type);
+	return titdn0Generic(stab, absyn, tfc);
 }
 
 /***************************************************************************
@@ -2624,9 +2631,9 @@ titdnHide(Stab stab, AbSyn absyn, TForm type)
  ***************************************************************************/
 
 local Bool
-titdnIdSy(Stab stab, AbSyn absyn, TForm type)
+titdnIdSy(Stab stab, AbSyn absyn, TFContext tfc)
 {
-	return titdn0Generic(stab, absyn, type);
+	return titdn0Generic(stab, absyn, tfc);
 }
 
 /***************************************************************************
@@ -2636,9 +2643,9 @@ titdnIdSy(Stab stab, AbSyn absyn, TForm type)
  ***************************************************************************/
 
 local Bool
-titdnLocal(Stab stab, AbSyn absyn, TForm type)
+titdnLocal(Stab stab, AbSyn absyn, TFContext tfc)
 {
-	return titdn0Generic(stab, absyn, type);
+	return titdn0Generic(stab, absyn, tfc);
 }
 
 /***************************************************************************
@@ -2648,9 +2655,9 @@ titdnLocal(Stab stab, AbSyn absyn, TForm type)
  ***************************************************************************/
 
 local Bool
-titdnMacro(Stab stab, AbSyn absyn, TForm type)
+titdnMacro(Stab stab, AbSyn absyn, TFContext tfc)
 {
-	return titdn0Generic(stab, absyn, type);
+	return titdn0Generic(stab, absyn, tfc);
 }
 
 /***************************************************************************
@@ -2660,9 +2667,9 @@ titdnMacro(Stab stab, AbSyn absyn, TForm type)
  ***************************************************************************/
 
 local Bool
-titdnMLambda(Stab stab, AbSyn absyn, TForm type)
+titdnMLambda(Stab stab, AbSyn absyn, TFContext tfc)
 {
-	return titdn0Generic(stab, absyn, type);
+	return titdn0Generic(stab, absyn, tfc);
 }
 
 /***************************************************************************
@@ -2672,7 +2679,7 @@ titdnMLambda(Stab stab, AbSyn absyn, TForm type)
  ***************************************************************************/
 
 local Bool
-titdnNothing(Stab stab, AbSyn absyn, TForm type)
+titdnNothing(Stab stab, AbSyn absyn, TFContext tfc)
 {
 	abTUnique(absyn) = tfNone();
 	return true;
@@ -2685,9 +2692,9 @@ titdnNothing(Stab stab, AbSyn absyn, TForm type)
  ***************************************************************************/
 
 local Bool
-titdnQuote(Stab stab, AbSyn absyn, TForm type)
+titdnQuote(Stab stab, AbSyn absyn, TFContext tfc)
 {
-	return titdn0Generic(stab, absyn, type);
+	return titdn0Generic(stab, absyn, tfc);
 }
 
 /***************************************************************************
@@ -2697,21 +2704,21 @@ titdnQuote(Stab stab, AbSyn absyn, TForm type)
  ***************************************************************************/
 
 local Bool
-titdnReference(Stab stab, AbSyn absyn, TForm type)
+titdnReference(Stab stab, AbSyn absyn, TFContext tfc)
 {
 	AbSyn	body = absyn -> abReference.body;
 	TForm	inner;
 
 
 	/* What is the argument to the reference? */
-	if (tfIsReference(type))
-		inner = tfReferenceArg(type);
+	if (tfIsReference(ctxtTForm(tfc)))
+		inner = tfReferenceArg(ctxtTForm(tfc));
 	else
 		inner = tfUnknown;
 
 
 	/* Continue type inference to the leaves */
-	titdn(stab, body, tfUnknown);
+	titdn(stab, body, ctxtCopy(tfc, tfUnknown));
 
 
 	/* Return now if an error has occurred */
@@ -2730,7 +2737,7 @@ titdnReference(Stab stab, AbSyn absyn, TForm type)
  ***************************************************************************/
 
 local Bool
-                                                                              titdnSelect(Stab stab, AbSyn absyn, TForm type)
+titdnSelect(Stab stab, AbSyn absyn, TFContext tfc)
 {
 	Scope("titdnSelect");
 	TForm		fluid(tuniExitTForm);
@@ -2739,15 +2746,15 @@ local Bool
 	AbSyn		seq;
 	Bool		result;
 
-	tuniExitTForm    = type;
+	tuniExitTForm    = ctxtTForm(tfc);
 	abExitsList      = listNil(AbSyn);
 	tuniTdnSelectObj = absyn->abSelect.testPart;
 	
-	titdn(stab, absyn->abSelect.testPart, tfUnknown);
+	titdn(stab, absyn->abSelect.testPart, ctxtCopy(tfc, tfUnknown));
 
 	seq = absyn->abSelect.alternatives;
 	
-	result = titdnSequence0(stab, absyn->abSelect.alternatives, type);
+	result = titdnSequence0(stab, absyn->abSelect.alternatives, tfc);
 
 	if (result) 
 		abTUnique(absyn) = abTUnique(absyn->abSelect.alternatives);
@@ -2761,16 +2768,16 @@ local Bool
  ***************************************************************************/
 
 local Bool
-titdnTry(Stab stab, AbSyn absyn, TForm type)
+titdnTry(Stab stab, AbSyn absyn, TFContext tfc)
 {
 	AInt	i, argc;
 	TForm	inner;
 	AbEmbed	embed;
 	AbSyn	expr, seq, nuttin, *argv;
-
+	TForm   type = ctxtTForm(tfc);
 	extern void tibup(Stab, AbSyn, TForm);
 
-
+	
 	/* Try-blocks with no value are tricky */
 	if (tfIsNone(type)) {
 		/* (void)fprintf(dbOut, "*** Ick: empty multi.\n"); */
@@ -2822,11 +2829,11 @@ titdnTry(Stab stab, AbSyn absyn, TForm type)
 
 
 	/* Finish the type inference on this node */
-	titdn(stab, absyn->abTry.id, tfUnknown);
-	titdn(stab, absyn->abTry.expr, tfIgnoreExceptions(type));
-	titdn(stab, absyn->abTry.always, tfNone());
+	titdn(stab, absyn->abTry.id, ctxtCopy(tfc, tfUnknown));
+	titdn(stab, absyn->abTry.expr, ctxtCopy(tfc, tfIgnoreExceptions(type)));
+	titdn(stab, absyn->abTry.always, ctxtCopy(tfc, tfNone()));
 	if (!abIsNothing(absyn->abTry.except))
-		titdn(stab, absyn->abTry.except, type);
+		titdn(stab, absyn->abTry.except, ctxtCopy(tfc, type));
 
 
 	/* Embed multi-valued try-blocks in a Cross */
@@ -2851,9 +2858,9 @@ titdnTry(Stab stab, AbSyn absyn, TForm type)
  ***************************************************************************/
 
 local Bool
-titdnLet(Stab stab, AbSyn absyn, TForm type)
+titdnLet(Stab stab, AbSyn absyn, TFContext tfc)
 {
-	return titdn0Generic(stab, absyn, type);
+	return titdn0Generic(stab, absyn, tfc);
 }
 
 
@@ -2864,25 +2871,25 @@ titdnLet(Stab stab, AbSyn absyn, TForm type)
  * Note: every error find in bup process should be handled here.
  **************************************************************************/
 
-local void	titdn0ErrorSequence(Stab stab, AbSyn ab, TForm type);
+local void	titdn0ErrorSequence(Stab stab, AbSyn ab, TFContext tfc);
 
 /* Call titdnError on each subtree using .type. as constraint type */
 local void
-titdn0Error(Stab stab, AbSyn absyn, TForm type)
+titdn0Error(Stab stab, AbSyn absyn, TFContext tfc)
 {
 	int	i;
 	int argc = abArgc(absyn);
 
 	for (i = 0; i < argc; i++) {
 		AbSyn	argi = abArgv(absyn)[i];
-		titdnError(stab, argi, type);
+		titdnError(stab, argi, tfc);
 	}
 }
 
 local void
-titdnError(Stab stab, AbSyn absyn, TForm type)
+titdnError(Stab stab, AbSyn absyn, TFContext tfc)
 {
-	tfFollow(type);
+	tfc = ctxtCopy(tfc, tfFollowFn(ctxtTForm(tfc)));
 
 	if (!abIsLeaf(absyn) && abStab(absyn))
 		stab = abStab(absyn);
@@ -2892,13 +2899,13 @@ titdnError(Stab stab, AbSyn absyn, TForm type)
 		Bool	result = false;
 
 		if (abTag(absyn) == AB_Sequence)
-			result = titdnSequence(stab, absyn, type);
+			result = titdnSequence(stab, absyn, tfc);
 		else if (abIsAnyLambda(absyn))
-			result = titdnLambda(stab, absyn, type);
+			result = titdnLambda(stab, absyn, tfc);
 		else if (abTag(absyn) == AB_Generate)
-			result = titdnGenerate(stab, absyn, type);
+			result = titdnGenerate(stab, absyn, tfc);
 		else
-			exit = !terror(stab, absyn, type);
+			exit = !terror(stab, absyn, ctxtTForm(tfc));
 
 		/*assert(!result);*/
 		if (result) abState(absyn) = AB_State_HasUnique;
@@ -2913,55 +2920,55 @@ titdnError(Stab stab, AbSyn absyn, TForm type)
 		case AB_Declare:
 			{
 			TForm tf = abTForm(absyn->abDeclare.type);
-			titdnError(stab, absyn->abDeclare.id, tf);
+			titdnError(stab, absyn->abDeclare.id, ctxtCopy(tfc, tf));
 		}
 			break;
 		case AB_Lambda:
 		case AB_PLambda: {
 			TForm	tf    = tiGetTForm(stab,absyn->abLambda.rtype);
-			titdnError(stab, absyn->abLambda.param, tfUnknown);
-			titdnError(stab, absyn->abLambda.body,  tf);
+			titdnError(stab, absyn->abLambda.param, ctxtCopy(tfc, tfUnknown));
+			titdnError(stab, absyn->abLambda.body,  ctxtCopy(tfc, tf));
 		}
 			break;
 		case AB_With:
-			titdnError(stab,absyn->abWith.base, tfCategory);
-			titdnError(stab,absyn->abWith.within, tfUnknown);
+			titdnError(stab,absyn->abWith.base, ctxtCopy(tfc, tfCategory));
+			titdnError(stab,absyn->abWith.within, ctxtCopy(tfc, tfUnknown));
 			break;
 		case AB_Where:
-			titdnError(stab,absyn->abWhere.context, tfUnknown);
-			titdnError(stab,absyn->abWhere.expr, type);
+			titdnError(stab,absyn->abWhere.context, ctxtCopy(tfc, tfUnknown));
+			titdnError(stab,absyn->abWhere.expr, tfc);
 			break;
 		case AB_If:
 			assert(tfBoolean != tfUnknown);
-			titdnError(stab, absyn->abIf.test,     tfBoolean);
-			titdnError(stab, absyn->abIf.thenAlt,  type);
-			titdnError(stab, absyn->abIf.elseAlt, type);
+			titdnError(stab, absyn->abIf.test,     ctxtCopy(tfc, tfBoolean));
+			titdnError(stab, absyn->abIf.thenAlt,  tfc);
+			titdnError(stab, absyn->abIf.elseAlt,  tfc);
 			break;
 		case AB_RestrictTo: {
 			TForm tf = tiGetTForm(stab, absyn->abRestrictTo.type);
-			titdnError(stab, absyn->abRestrictTo.expr, tf);
+			titdnError(stab, absyn->abRestrictTo.expr, ctxtCopy(tfc, tf));
 		}
 			break;
 		case AB_For:
-			titdnError(stab, absyn->abFor.whole, tfUnknown);
+			titdnError(stab, absyn->abFor.whole, ctxtCopy(tfc, tfUnknown));
 			assert(tfBoolean != tfUnknown);
-			titdnError(stab, absyn->abFor.test, tfBoolean);
-			titdnError(stab, absyn->abFor.lhs, tfUnknown);
+			titdnError(stab, absyn->abFor.test, ctxtCopy(tfc, tfBoolean));
+			titdnError(stab, absyn->abFor.lhs, ctxtCopy(tfc, tfUnknown));
 			break;
 		case AB_ForeignImport:
-			titdnError(stab, absyn->abForeignImport.what, tfUnknown);
+			titdnError(stab, absyn->abForeignImport.what, ctxtCopy(tfc, tfUnknown));
 			break;
 		case AB_ForeignExport:
-			titdnError(stab, absyn->abForeignExport.what, tfUnknown);
+			titdnError(stab, absyn->abForeignExport.what, ctxtCopy(tfc, tfUnknown));
 			break;
 		case AB_Import:
-			titdnError(stab, absyn->abImport.what, tfUnknown);
+			titdnError(stab, absyn->abImport.what, ctxtCopy(tfc, tfUnknown));
 			break;
 		case AB_Inline:
-			titdnError(stab, absyn->abInline.what, tfUnknown);
+			titdnError(stab, absyn->abInline.what, ctxtCopy(tfc, tfUnknown));
 			break;
 		case AB_Sequence:
-			titdn0ErrorSequence(stab, absyn, type);
+			titdn0ErrorSequence(stab, absyn, tfc);
 			break;
 		case AB_PretendTo:
 		case AB_Do:
@@ -2972,7 +2979,7 @@ titdnError(Stab stab, AbSyn absyn, TForm type)
 		case AB_Exit:
 		case AB_Comma:
 		case AB_Apply:
-			titdn0Error(stab, absyn, tfUnknown);
+			titdn0Error(stab, absyn, ctxtCopy(tfc, tfUnknown));
 			break;
 		case AB_Not:
 		case AB_And:
@@ -2980,10 +2987,10 @@ titdnError(Stab stab, AbSyn absyn, TForm type)
 		case AB_Has:
 		case AB_While:
 			assert(tfBoolean != tfUnknown);
-			titdn0Error(stab, absyn, tfBoolean);
+			titdn0Error(stab, absyn, ctxtCopy(tfc, tfBoolean));
 			break;
 		default:
-			titdn0Error(stab, absyn, type);
+			titdn0Error(stab, absyn, tfc);
 			break;
 		}
 	}
@@ -2995,7 +3002,7 @@ titdnError(Stab stab, AbSyn absyn, TForm type)
  * generate and return (probably)
  */
 local void
-titdn0ErrorSequence(Stab stab, AbSyn absyn, TForm type)
+titdn0ErrorSequence(Stab stab, AbSyn absyn, TFContext tfc)
 {
 	TForm  none = tfNone();
 	int	i;
@@ -3006,7 +3013,7 @@ titdn0ErrorSequence(Stab stab, AbSyn absyn, TForm type)
 
 	for (i = 0; i < argc-1; i++) {
 		AbSyn	argi = absyn->abSequence.argv[i];
-		titdnError(stab, argi, none);
+		titdnError(stab, argi, ctxtCopy(tfc, none));
 	}
-	titdnError(stab, absyn->abSequence.argv[i], type);
+	titdnError(stab, absyn->abSequence.argv[i], tfc);
 }

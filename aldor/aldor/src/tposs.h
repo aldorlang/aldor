@@ -11,9 +11,10 @@
 
 #include "axlobs.h"
 #include "tform.h"
+#include "tfcontext.h"
 
 struct tposs {
-	UTFormList	possl;
+	UTFContextList	possl;
 	int		possc;
 	int		refc;
 };
@@ -29,6 +30,7 @@ extern TPoss	tpossMulti		(Length, Pointer, TPossGetter);
 extern TPoss	tpossAdd1		(TPoss, TForm);
 extern TPoss	tpossFrTheList		(TFormList);
 extern TPoss    tpossFrTheUTFormList	(UTFormList);
+extern TPoss	tpossFrTheUTFContextList(UTFContextList);
 extern TPoss	tpossAdd1UTForm		(TPoss, UTForm);
 
 extern UTForm   tpossUniqueUTForm	(TPoss);
@@ -140,16 +142,18 @@ extern Bool	tpossHasIntersection(TPoss tp1, TPoss tp2);
  * }
  */
 typedef struct {
-	UTFormList	possl;
+	UTFContextList	possl;
 } TPossIterator;
 
-extern TForm  tpossELT_(TPossIterator *ip);
-extern UTForm tpossUELT_(TPossIterator *ip);
+extern UTFContext tpossTFCtxt_(TPossIterator *ip);
+extern TForm	 tpossELT_(TPossIterator *ip);
+extern UTForm 	 tpossUELT_(TPossIterator *ip);
 
 #define tpossITER(ip,p)	((ip).possl = (p ? (p)->possl : NULL))
 #define tpossMORE(ip)   ((ip).possl)
 #define tpossSTEP(ip)	((ip).possl = cdr((ip).possl))
 #define tpossELT(ip)    tpossELT_(&ip)
 #define tpossUELT(ip)	tpossUELT_(&ip)
+#define tpossTFCtxt(ip)	tpossTFCtxt_(&ip)
 
 #endif /* !_TPOSS_H_ */

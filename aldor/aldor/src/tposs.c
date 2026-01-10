@@ -26,6 +26,7 @@
 #include "tposs.h"
 #include "unify.h"
 #include "utform.h"
+#include "util.h"
 #include "utyperes.h"
 
 /*
@@ -41,6 +42,9 @@
  *   write the code so that this idea could be used.	-- SMW
  */
 
+local UTFContext tpossJoin(USatMask, UTForm, UTForm);
+
+
 local TPoss
 tpossAlloc(void)
 {
@@ -53,7 +57,7 @@ TPoss
 tpossEmpty(void)
 {
 	TPoss tp  = tpossAlloc();
-	tp->possl = listNil(UTForm);
+	tp->possl = listNil(UTFContext);
 	tp->possc = 0;
 	tp->refc  = 1;
 	return tp;
@@ -64,7 +68,7 @@ tpossCons(TPoss tp, UTForm t)
 {
 	assert(tp);
 	t = utformFollowOnly(t);
-	tp->possl = listCons(UTForm)(t, tp->possl);
+	tp->possl = listCons(UTFContext)(uctxtEmpty(t), tp->possl);
 	tp->possc += 1;
 }
 
@@ -74,12 +78,12 @@ tpossFrTheList(TFormList l)
 	TPoss tp  = tpossAlloc();
 	tp->possc = listLength(TForm)(l);
 	tp->refc  = 1;
-	tp->possl = listNil(UTForm);
+	tp->possl = listNil(UTFContext);
 	while (l != listNil(TForm)) {
-		tp->possl = listCons(UTForm)(utformNewConstant(car(l)), tp->possl);
+		tp->possl = listCons(UTFContext)(uctxtEmpty(utformNewConstant(car(l))), tp->possl);
 		l = cdr(l);
 	}
-	listNReverse(UTForm)(tp->possl);
+	listNReverse(UTFContext)(tp->possl);
 	return tp;
 }
 
@@ -87,9 +91,23 @@ TPoss
 tpossFrTheUTFormList(UTFormList l)
 {
 	TPoss tp  = tpossAlloc();
-	tp->possl = l;
 	tp->possc = listLength(UTForm)(l);
 	tp->refc  = 1;
+	while (l != listNil(UTForm)) {
+		tp->possl = listCons(UTFContext)(uctxtEmpty(car(l)), tp->possl);
+		l = cdr(l);
+	}
+	listNReverse(UTFContext)(tp->possl);
+	return tp;
+}
+
+TPoss
+tpossFrTheUTFContextList(UTFContextList l)
+{
+	TPoss tp  = tpossAlloc();
+	tp->possc = listLength(UTFContext)(l);
+	tp->refc  = 1;
+	tp->possl = l;
 	return tp;
 }
 
@@ -187,7 +205,7 @@ tpossAdd1(TPoss tp, TForm t)
 Bool
 tpossHasUTForm(TPoss tp, UTForm t)
 {
-        UTFormList l;
+        UTFContextList l;
         UTForm s;
 
         if (tp == NULL)
@@ -197,8 +215,8 @@ tpossHasUTForm(TPoss tp, UTForm t)
         }
 
         l = tp->possl;
-        while (l != listNil(UTForm)) {
-                s = car(l);
+        while (l != listNil(UTFContext)) {
+                s = uctxtUTForm(car(l));
                 l = cdr(l);
                 // tpossHas({Int}, Vs.S) --> false (actually, replace Int with Vs.S)
                 // tpossHas({Vs.S}, Int) --> true
@@ -247,7 +265,7 @@ tpossCopy(TPoss tp)
 	       	return NULL;
 
 	np = tpossAlloc();
-	np->possl = listCopy(UTForm)(tp->possl);
+	np->possl = listCopy(UTFContext)(tp->possl);
 	np->possc = tp->possc;
 	np->refc  = 1;
 	return np;
@@ -270,7 +288,7 @@ tpossFree(TPoss tp)
 		return;
 	if (--tp->refc > 0) return;
 	if (!debugflag) {
-		listFree(UTForm)(tp->possl);
+		listFree(UTFContext)(tp->possl);
 		stoFree((Pointer) tp);
 	}
 	debugflag = 0;
@@ -292,7 +310,7 @@ tpossPrint(FILE *fout, TPoss tp)
 		case tuniErrorTPossVal:
 			return fprintf(fout, "(error)");
 		default:
-			return listPrint(UTForm)(fout, tp->possl, utfPrint);
+			return afprintf(fout, "%pUTFContextList", tp->possl);
 	}
 	return 0;
 }
@@ -313,7 +331,7 @@ tpossOStreamWrite(OStream ostream, TPoss tp)
 		case tuniErrorTPossVal:
 			return ostreamPrintf(ostream, "(error)");
 		default:
-			return ostreamPrintf(ostream, "[TP: %d %pUTFormList]", tp->possc, tp->possl);
+			return ostreamPrintf(ostream, "[TP: %d %pUTFContextList]", tp->possc, tp->possl);
 	}
 	return 0;
 }
@@ -371,36 +389,42 @@ tpossIntersect(TPoss tp1, TPoss tp2)
 TPoss
 tpossIntersect(TPoss S, TPoss T)
 {
-	UTFormList LS, LT, l = 0;
-
+	UTFContextList LS, LT, l = 0;
+	UTForm carLS, carLT;
+	
 	if (S == NULL || T == NULL)
 		return NULL;
-
+	
 	/* If T is free of duplicates, then the result will also be. */
 	for (LT = T->possl; LT; LT = cdr(LT)) {
-		car(LT) = utformFollowOnly(car(LT));
+		car(LT) = uctxtFollowOnly(car(LT));
+		carLT = uctxtUTForm(car(LT));
 		for (LS = S->possl; LS; LS = cdr(LS)) {
-			car(LS) = utformFollowOnly(car(LS));
-			if (utfSatisfies(car(LS), car(LT))) {
-				l = listCons(UTForm)(car(LT), l);
+			car(LS) = uctxtFollowOnly(car(LS));
+			carLS = uctxtUTForm(car(LS));
+			if (utfSatisfies(carLS, carLT)) {
+				l = listCons(UTFContext)(car(LT), l);
 				break;
 			}
-			if (utfSatisfies(car(LT), car(LS))) {
-				if (!listMember(UTForm)(l, car(LS), utformEqual))
-					l = listCons(UTForm)(car(LS), l);
+			if (utfSatisfies(carLT, carLS)) {
+				if (!listMember(UTFContext)(l, car(LS), uctxtEqual))
+					l = listCons(UTFContext)(car(LS), l);
 			}
+			// We need to preserve context
+			assert(uctxtIsEmpty(car(LS)));
+			assert(uctxtIsEmpty(car(LT)));
 		}
 	}
 
-	l = listNReverse(UTForm)(l);
-	return tpossFrTheUTFormList(l);
+	l = listNReverse(UTFContext)(l);
+	return tpossFrTheUTFContextList(l);
 }
 
 TPoss
 tpossUnion(TPoss tp1, TPoss tp2)
 {
-	UTFormList l1;
-	UTFormList l;
+	UTFContextList l1;
+	UTFContextList l;
 
 	if (tp1 == NULL)
 		return tp2;
@@ -408,48 +432,48 @@ tpossUnion(TPoss tp1, TPoss tp2)
 		return tp1;
 
 	l1 = tp1->possl;
-	l = listReverse(UTForm)(tp2->possl);	/* Reversed copy */
+	l = listReverse(UTFContext)(tp2->possl);	/* Reversed copy */
 
 	for (; l1; l1 = cdr(l1)) {
-		car(l1) = utformFollowOnly(car(l1));
+		car(l1) = uctxtFollowOnly(car(l1));
 		/* const or fail here could be: if only one utf, then keep both
 		 * otherwise utfEquality */
-		if (!tpossHasUTForm(tp2, car(l1)))
-			l = listCons(UTForm)(car(l1), l);
+		if (!tpossHasUTForm(tp2, uctxtUTForm(car(l1))))
+			l = listCons(UTFContext)(car(l1), l);
 	}
 
-	l = listNReverse(UTForm)(l);
-	return tpossFrTheUTFormList(l);
+	l = listNReverse(UTFContext)(l);
+	return tpossFrTheUTFContextList(l);
 }
 
 TForm
 tpossUnique(TPoss tp)
 {
-	car(tp->possl) = utformFollowOnly(car(tp->possl));
-	return utformConstOrFail(car(tp->possl));
+	car(tp->possl) = uctxtFollowOnly(car(tp->possl));
+	return utformConstOrFail(uctxtUTForm(car(tp->possl)));
 }
 
 UTForm
 tpossUniqueUTForm(TPoss tp)
 {
-	car(tp->possl) = utformFollowOnly(car(tp->possl));
-	return car(tp->possl);
+	car(tp->possl) = uctxtFollowOnly(car(tp->possl));
+	return uctxtUTForm(car(tp->possl));
 }
 
 Bool
 tpossHas(TPoss tp, TForm t)
 {
-	UTFormList l;
+	UTFContextList l;
 	Bool needsConstT = false;
 	UTForm utfT = NULL;
 
 	if (tp == NULL)
 		return false;
 	l = tp->possl;
-	while (l != listNil(UTForm)) {
-		if (utfIsConstant(car(l)) && t == utformConstOrFail(car(l)))
+	while (l != listNil(UTFContext)) {
+		if (uctxtUTFIsConstant(car(l)) && t == uctxtUTFConstOrFail(car(l)))
 			return true;
-		else if (!utfIsConstant(car(l))) {
+		else if (!uctxtUTFIsConstant(car(l))) {
 			needsConstT = true;
 		}
 		l = cdr(l);
@@ -458,13 +482,16 @@ tpossHas(TPoss tp, TForm t)
 		utfT = utformNewConstant(t);
 	}
 	l = tp->possl;
-	while (l != listNil(UTForm)) {
-		if (utfIsConstant(car(l)) && tfEqual(t, utformConstOrFail(car(l))))
+	while (l != listNil(UTFContext)) {
+		if (uctxtUTFIsConstant(car(l)) && tfEqual(t, uctxtUTFConstOrFail(car(l))))
 			return true;
-		else if (!utfIsConstant(car(l))) {
+		else if (!uctxtUTFIsConstant(car(l))) {
+			bug("unification not implemented");
+			/*
 			if (utformCanUnify(utfT, car(l))) {
 				return true;
 			}
+			*/
 		}
 		l = cdr(l);
 	}
@@ -506,7 +533,7 @@ tpossIsPending(TPoss tp, TForm t)
 Bool
 tpossHasSatisfier(TPoss tp, TForm t)
 {
-	UTFormList l;
+	UTFContextList l;
 
 	if (tp == NULL)
 		return false;
@@ -515,7 +542,7 @@ tpossHasSatisfier(TPoss tp, TForm t)
 		return true;
 
 	for (l = tp->possl; l; l = cdr(l))
-		if (tfSatValues(utformConstOrFail(car(l)), t))
+		if (tfSatValues(uctxtUTFConstOrFail(car(l)), t))
 			return true;
 
 	return false;
@@ -524,7 +551,7 @@ tpossHasSatisfier(TPoss tp, TForm t)
 TForm
 tpossSelectSatisfier(TPoss tp, TForm t)
 {
-	UTFormList l;
+	UTFContextList l;
 	TForm	  r = 0;
 
 	if (tp == NULL)
@@ -532,51 +559,52 @@ tpossSelectSatisfier(TPoss tp, TForm t)
 
 	for (l = tp->possl; l; l = cdr(l)) {
 /*		car(l) = tfFollowOnly(car(l));	    */
-		if (tfSatValues(utformConstOrFail(car(l)), t)) {
+		if (tfSatValues(uctxtUTFConstOrFail(car(l)), t)) {
 			if (r) return 0;
-			r = utformConstOrFail(car(l));
+			r = uctxtUTFConstOrFail(car(l));
 		}
 	}
 	return r;
 }
 
-local UTForm
+local UTFContext
 tpossJoin(USatMask mask, UTForm S, UTForm T)
 {
        S = utypeResultApplyTForm(mask->result, S);
        T = utypeResultApplyTForm(mask->result, T);
-	return tfIsThird(utformConstOrFail(S)) ? S : T;
+       return uctxtEmpty(tfIsThird(utformConstOrFail(S)) ? S : T);
 }
 
 TPoss
 tpossSatisfies(TPoss S, TPoss T)
 {
-	UTFormList LS, LT, l = 0;
+	UTFContextList LS, LT, l = 0;
 
 	if (S == NULL || T == NULL) 
 		return NULL;
 
 	/* If T is free of duplicates, then the result will also be. */
 	for (LT = T->possl; LT; LT = cdr(LT)) {
-		car(LT) = utformFollowOnly(car(LT));
+		car(LT) = uctxtFollowOnly(car(LT));
 		for (LS = S->possl; LS; LS = cdr(LS)) {
-			UTForm	stf = car(LS);
-			UTForm  ttf = car(LT);
+			UTForm	stf = uctxtUTForm(car(LS));
+			UTForm  ttf = uctxtUTForm(car(LT));
+
 			USatMask result = utfSat(tfSatBupMask(), stf, ttf);
 			if (utfSatSucceed(result)) {
-				l = listCons(UTForm)(tpossJoin(result, stf, ttf), l);
+				l = listCons(UTFContext)(tpossJoin(result, stf, ttf), l);
 			}
 		}
 	}
 
-	l = listNReverse(UTForm)(l);
-	return tpossFrTheUTFormList(l);
+	l = listNReverse(UTFContext)(l);
+	return tpossFrTheUTFContextList(l);
 }
 
 TPoss
 tpossSatisfiesType(TPoss S, TForm T)
 {
-	UTFormList LS, l = 0;
+	UTFContextList LS, l = listNil(UTFContext);
 	UTForm uT;
 
 	if (S == NULL)
@@ -589,11 +617,11 @@ tpossSatisfiesType(TPoss S, TForm T)
 
 	uT = utformNewConstant(T);
 	for (LS = S->possl; LS; LS = cdr(LS))
-		if (utfSatisfies(car(LS), uT))
-			l = listCons(UTForm)(car(LS), l);
+		if (utfSatisfies(uctxtUTForm(car(LS)), uT))
+			l = listCons(UTFContext)(car(LS), l);
 
-	l = listNReverse(UTForm)(l);
-	return tpossFrTheUTFormList(l);
+	l = listNReverse(UTFContext)(l);
+	return tpossFrTheUTFContextList(l);
 }
 
 Bool
@@ -744,11 +772,11 @@ tpossPatternCase(TPoss tpit)
 TForm
 tpossELT_(TPossIterator *ip)
 {
-	return utformConstOrFail(car(ip->possl));
+	return utformConstOrFail(uctxtUTForm(car(ip->possl)));
 }
 
 UTForm
 tpossUELT_(TPossIterator *ip)
 {
-	return car(ip->possl);
+	return uctxtUTForm(car(ip->possl));
 }
