@@ -407,7 +407,7 @@ TForm
 tpossSelectSatisfier(TPoss tp, TForm t)
 {
 	TFormList l;
-	TForm	  r = 0;
+	TForm	  r = NULL;
 
 	if (tp == NULL)
 		return 0;
