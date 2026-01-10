@@ -431,7 +431,7 @@ tpossJoin(TForm S, TForm T)
 TPoss
 tpossSatisfies(TPoss S, TPoss T)
 {
-	TFormList LS, LT, l = 0;
+	TFormList LS, LT, l = listNil(TForm);
 
 	if (S == NULL || T == NULL) 
 		return NULL;
