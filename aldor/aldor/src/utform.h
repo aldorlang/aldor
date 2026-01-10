@@ -1,5 +1,6 @@
 #ifndef UTFORM_H
 #define UTFORM_H
+#include "axlobs.h"
 
 struct utform {
 	TForm tf;
@@ -72,6 +73,7 @@ SefoList utformCondition(UTForm utf);
 Bool utfIsUnknown(UTForm S);
 Bool utfIsConstant(UTForm S);
 Bool utfIsAny(UTForm S);
+Bool utfIsNone(UTForm S);
 
 Bool utfHasVar(UTForm utf, Syme syme);
 

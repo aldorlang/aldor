@@ -165,6 +165,12 @@ utfIsAny(UTForm utf)
 	return listMemq(Syme)(utformVars(utf), syme);
 }
 
+Bool
+utfIsNone(UTForm utf)
+{
+	return tfIsNone(utf->tf);
+}
+
 UTForm
 utfDefineeType(UTForm utf)
 {
