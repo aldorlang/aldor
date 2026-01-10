@@ -196,11 +196,12 @@ am_libstruct_a_OBJECTS = ablogic.$(OBJEXT) abpretty.$(OBJEXT) \
 	sefo.$(OBJEXT) simpl.$(OBJEXT) spesym.$(OBJEXT) \
 	srcline.$(OBJEXT) stab.$(OBJEXT) susage.$(OBJEXT) \
 	syme.$(OBJEXT) symeset.$(OBJEXT) symcoinfo.$(OBJEXT) \
-	tconst.$(OBJEXT) tfcond.$(OBJEXT) tform.$(OBJEXT) \
-	tfsat.$(OBJEXT) ti_top.$(OBJEXT) token.$(OBJEXT) \
-	tposs.$(OBJEXT) tqual.$(OBJEXT) unify.$(OBJEXT) \
-	utform.$(OBJEXT) utype.$(OBJEXT) utyperes.$(OBJEXT) \
-	uvar.$(OBJEXT) version.$(OBJEXT) wildimp.$(OBJEXT)
+	tfcond.$(OBJEXT) tconst.$(OBJEXT) tfcontext.$(OBJEXT) \
+	tform.$(OBJEXT) tfsat.$(OBJEXT) ti_top.$(OBJEXT) \
+	token.$(OBJEXT) tposs.$(OBJEXT) tqual.$(OBJEXT) \
+	unify.$(OBJEXT) utform.$(OBJEXT) utype.$(OBJEXT) \
+	utyperes.$(OBJEXT) uvar.$(OBJEXT) version.$(OBJEXT) \
+	wildimp.$(OBJEXT)
 libstruct_a_OBJECTS = $(am_libstruct_a_OBJECTS)
 libtest_a_AR = $(AR) $(ARFLAGS)
 libtest_a_LIBADD =
@@ -425,13 +426,13 @@ am__depfiles_remade = ./$(DEPDIR)/abcheck.Po ./$(DEPDIR)/ablogic.Po \
 	./$(DEPDIR)/test.Po ./$(DEPDIR)/testall-axlcomp.Po \
 	./$(DEPDIR)/testall-cmdline.Po ./$(DEPDIR)/textansi.Po \
 	./$(DEPDIR)/textcolour.Po ./$(DEPDIR)/texthp.Po \
-	./$(DEPDIR)/tfcond.Po ./$(DEPDIR)/tform.Po \
-	./$(DEPDIR)/tfsat.Po ./$(DEPDIR)/ti_bup.Po \
-	./$(DEPDIR)/ti_decl.Po ./$(DEPDIR)/ti_sef.Po \
-	./$(DEPDIR)/ti_tdn.Po ./$(DEPDIR)/ti_top.Po \
-	./$(DEPDIR)/ti_util.Po ./$(DEPDIR)/timer.Po \
-	./$(DEPDIR)/tinfer.Po ./$(DEPDIR)/token.Po \
-	./$(DEPDIR)/tposs.Po ./$(DEPDIR)/tqual.Po \
+	./$(DEPDIR)/tfcond.Po ./$(DEPDIR)/tfcontext.Po \
+	./$(DEPDIR)/tform.Po ./$(DEPDIR)/tfsat.Po \
+	./$(DEPDIR)/ti_bup.Po ./$(DEPDIR)/ti_decl.Po \
+	./$(DEPDIR)/ti_sef.Po ./$(DEPDIR)/ti_tdn.Po \
+	./$(DEPDIR)/ti_top.Po ./$(DEPDIR)/ti_util.Po \
+	./$(DEPDIR)/timer.Po ./$(DEPDIR)/tinfer.Po \
+	./$(DEPDIR)/token.Po ./$(DEPDIR)/tposs.Po ./$(DEPDIR)/tqual.Po \
 	./$(DEPDIR)/ttable.Po ./$(DEPDIR)/unify.Po \
 	./$(DEPDIR)/usedef.Po ./$(DEPDIR)/utform.Po \
 	./$(DEPDIR)/util.Po ./$(DEPDIR)/utype.Po \
@@ -1078,8 +1079,9 @@ libstruct_a_SOURCES = \
 	syme.c		\
 	symeset.c	\
 	symcoinfo.c	\
-	tconst.c	\
 	tfcond.c	\
+	tconst.c	\
+	tfcontext.c	\
 	tform.c		\
 	tfsat.c		\
 	ti_top.c	\
@@ -1760,6 +1762,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/textcolour.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/texthp.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tfcond.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tfcontext.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tform.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tfsat.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ti_bup.Po@am__quote@ # am--include-marker
@@ -3635,6 +3638,7 @@ distclean: distclean-am
 	-rm -f ./$(DEPDIR)/textcolour.Po
 	-rm -f ./$(DEPDIR)/texthp.Po
 	-rm -f ./$(DEPDIR)/tfcond.Po
+	-rm -f ./$(DEPDIR)/tfcontext.Po
 	-rm -f ./$(DEPDIR)/tform.Po
 	-rm -f ./$(DEPDIR)/tfsat.Po
 	-rm -f ./$(DEPDIR)/ti_bup.Po
@@ -3946,6 +3950,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -f ./$(DEPDIR)/textcolour.Po
 	-rm -f ./$(DEPDIR)/texthp.Po
 	-rm -f ./$(DEPDIR)/tfcond.Po
+	-rm -f ./$(DEPDIR)/tfcontext.Po
 	-rm -f ./$(DEPDIR)/tform.Po
 	-rm -f ./$(DEPDIR)/tfsat.Po
 	-rm -f ./$(DEPDIR)/ti_bup.Po

@@ -191,8 +191,9 @@ libstruct_a_SOURCES =	\
 	syme.c		\
 	symeset.c	\
 	symcoinfo.c	\
-	tconst.c	\
 	tfcond.c	\
+	tconst.c	\
+	tfcontext.c	\
 	tform.c		\
 	tfsat.c		\
 	ti_top.c	\
