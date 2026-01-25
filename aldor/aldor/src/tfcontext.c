@@ -62,6 +62,12 @@ uctxtAlloc(UTForm utf, InferEnv inf)
 }
 
 UTFContext
+uctxtNew(InferEnv env, UTForm utf)
+{
+	return uctxtAlloc(utf, env);
+}
+
+UTFContext
 uctxtEmpty(UTForm utf)
 {
 	return uctxtAlloc(utf, NULL);

@@ -20,6 +20,7 @@
 #include "strops.h"
 #include "tfsat.h"
 #include "table.h"
+#include "tfknown.h"
 #include "ti_bup.h"
 #include "ti_tdn.h"
 #include "ti_util.h"

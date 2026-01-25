@@ -63,6 +63,11 @@ abPutUseInner(AbSyn absyn, AbUse context)
 	  case AB_LitFloat:
 	  case AB_LitString:
 		break;
+	  case AB_Blank:
+		if (context == AB_Use_Type) {
+		        abUse(absyn) = context;
+		}
+		break;
 	  case AB_Apply:
 		con1 =  abIsApplyOf(absyn, ssymJoin) || abIsAnyMap(absyn)
 			? AB_Use_Type
@@ -262,7 +267,7 @@ abPutPatternUse(AbSyn ab, Bool isPattern)
 		return false;
 	}
 	case AB_Exit: {
-		Bool flg = abPutPatternUse(ab->abExit.test, isPattern);
+		abPutPatternUse(ab->abExit.test, isPattern);
 		abPutPatternUse(ab->abExit.value, false);
 		return false;
 	}
@@ -294,6 +299,8 @@ abPutPatternUse(AbSyn ab, Bool isPattern)
 		break;
 	}
 	case AB_Blank: {
+		if (abUse(ab) == AB_Use_Type)
+			return true;
 		if (!isPattern) {
 			comsgError(ab, ALDOR_E_BlankOutsidePattern);
 			return false;
@@ -304,7 +311,7 @@ abPutPatternUse(AbSyn ab, Bool isPattern)
 	}
 	case AB_Comma: {
 		for (int i=0; i<abCommaArgc(ab); i++) {
-		  abPutPatternUse(abCommaArg(ab, i), isPattern);
+			abPutPatternUse(abCommaArg(ab, i), isPattern);
 		}
 		return isPattern; //??
 	}

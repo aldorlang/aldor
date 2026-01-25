@@ -116,6 +116,15 @@ enum abSynTag {
 
 typedef Enum(abSynTag)	AbSynTag;
 
+/*
+ * AbFlags
+ */
+enum ab_flag {
+	AB_Flag_OldIter = 0,
+	AB_Flag_NewIter = 1,
+	AB_Flag_Unknown = 2
+};
+typedef Enum(ab_flag) AbFlag;
 
 /******************************************************************************
  *
@@ -132,6 +141,7 @@ typedef Enum(abSynTag)	AbSynTag;
 # define abNewAssert(p,e)	abNew(AB_Assert,	p,1, e)
 # define abNewAssign(p,l,r)	abNew(AB_Assign,	p,2, l,r)
 # define abNewBlank(p,s)	abNew(AB_Blank,		p,1, s)
+# define abNewUnknown(p,s)	abNewMod(AB_Blank,	p,AB_Flag_Unknown,1, s)
 # define abNewBreak(p,l)	abNew(AB_Break,		p,1, l)
 # define abNewBuiltin(p,b)	abNew(AB_Builtin,	p,1, b)
 # define abNewCoerceTo(p,a,t)	abNew(AB_CoerceTo,	p,2, a,t)
@@ -151,12 +161,12 @@ typedef Enum(abSynTag)	AbSynTag;
 # define abNewFluid(p,b)	abNew(AB_Fluid,		p,1, b)
 # define abNewFix(p,b)		abNew(AB_Fix,		p,1, b)
 # define abNewFor(p,v,i,c)	abNew(AB_For,		p,3, v,i,c)
-# define abNewXFor(p,v,i,c)	abNewMod(AB_For,        p,1, 3,v,i,c)
+# define abNewXFor(p,v,i,c)	abNewMod(AB_For,        p,AB_Flag_NewIter, 3,v,i,c)
 # define abNewForeignImport(p,w,o) abNew(AB_ForeignImport,p,2, w,o)
 # define abNewForeignExport(p,w,o) abNew(AB_ForeignExport,p,2, w,o)
 # define abNewFree(p,b)		abNew(AB_Free,		p,1, b)
 # define abNewGenerate(p,n,e)	abNew(AB_Generate,	p,2, n,e)
-# define abNewXGenerate(p,n,e)	abNewMod(AB_Generate,	p,1,2, n,e)
+# define abNewXGenerate(p,n,e)	abNewMod(AB_Generate,	p,AB_Flag_NewIter,2, n,e)
 # define abNewGoto(p,l)		abNew(AB_Goto,		p,1, l)
 # define abNewHas(p,a,b)	abNew(AB_Has,		p,2, a,b)
 # define abNewHide(p,e)		abNew(AB_Hide,		p,1, e)
@@ -239,16 +249,8 @@ enum ab_use {
 
 typedef Enum(ab_use)	AbUse;
 
-/*
- * AbFlags
- */
-enum ab_flag {
-	AB_Flag_OldIter = 0,
-	AB_Flag_NewIter = 1
-};
-typedef Enum(ab_flag) AbFlag;
-
 #define abFlag_IsNewIter(ab) (abFlags(ab) == AB_Flag_NewIter)
+#define abFlag_IsUnknown(ab) (abFlags(ab) == AB_Flag_Unknown)
 
 /*
  * AbState
@@ -933,7 +935,7 @@ extern Bool abUseIsPattern(AbUse use);
 
 # define abCopyPos(a)	  abNewNothing(abPos(a))
 
-#define			abIsUnknown(a)		abHasTag(a, AB_Blank)
+extern Bool abIsUnknown(AbSyn);
 
 #define			abIsNothing(a)		abHasTag(a, AB_Nothing)
 #define			abIsNotNothing(a)	!abIsNothing(a)

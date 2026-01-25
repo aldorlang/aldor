@@ -74,6 +74,9 @@ main(int argc, char *argv[])
 	if (testShouldRun("of_peep")) ofPeepTest();
 	if (testShouldRun("of_cprop")) ofCPropTest();
 	if (testShouldRun("of_crin")) ofCrinTest();
+	if (testShouldRun("ufind")) ufindTest();
+	if (testShouldRun("blank")) blankTest();
+	if (testShouldRun("infenv")) infEnvTest();
 
 	testIntEqual("fluidlevel", 0, fluidLevel);
 

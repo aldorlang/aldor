@@ -23,16 +23,19 @@
 #include "strops.h"
 #include "table.h"
 #include "tfsat.h"
+#include "tfknown.h"
 #include "tposs.h"
 #include "tqual.h"
 
 Bool	stabDebug	= false;
 Bool	stabImportDebug	= false;
 Bool	stabConstDebug	= false;
+Bool	stabVarDebug	= false;
 
 #define stabDEBUG	DEBUG_IF(stab)		afprintf
 #define stabImportDEBUG	DEBUG_IF(stabImport)	afprintf
 #define stabConstDEBUG	DEBUG_IF(stabConst)	afprintf
+#define stabVarDEBUG	DEBUG_IF(stabVar)	afprintf
 
 /****************************************************************************
  *
@@ -564,7 +567,7 @@ stabNewLevel(int levno, int lamno, SrcPos spos, Bool isLargeLevel, Bool isGenera
 	slev->boundSymes	= listNil(Syme);
 	slev->extendSymes	= listNil(Syme);
 	slev->exportedTypes     = NULL;
-
+	slev->varCount		= 0;
 	return slev;
 }
 
@@ -1410,6 +1413,21 @@ stabDefBuiltin(Stab stab, Symbol id, TForm tform, FoamBValTag builtin)
 
 	return stabAddMeaning(stab, syme);
 }
+
+TForm
+stabRegisterVar(Stab stab, AbSyn ab)
+{
+	assert(stab != NULL);
+
+	if (stabLevelIsLocked(stab)) {
+		return stabRegisterVar(stab, ab);
+	}
+	AInt id    = car(stab)->varCount++;
+	AInt varId = car(stab)->serialNo * 1000 + id;
+	stabVarDEBUG(dbOut, "Registered var %d for %pAbSyn\n", varId, ab);
+	return tfVarFrId(varId);
+}
+
 
 /******************************************************************************
  *

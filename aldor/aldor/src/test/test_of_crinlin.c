@@ -87,5 +87,5 @@ testCrinInlineOne()
 				    foamNewDef(foamNewConst(1), coroutine)));
 	crinUnit(unit);
 
-	foamPrintDb(unit);
+	//foamPrintDb(unit);
 }

@@ -21,6 +21,7 @@
 #include "stab.h"
 #include "store.h"
 #include "terror.h"
+#include "tfknown.h"
 #include "ti_top.h"
 #include "util.h"
 #include "unify.h"
@@ -2603,6 +2604,7 @@ utfSatMapArgsList(SatMask mask, AbSub sigma, UTForm S,
 
 local Bool
 utfSatMapCommit(SatMask mask, UTForm TScope, Stab absStabSigma, UTForm tfi, AbSyn abi);
+
 USatMask
 utfSatAsMulti(SatMask mask, AbSub sigma, UTForm S, UTForm TScope,
 	      AbSyn ab, Length argc, AbSynGetter argf)

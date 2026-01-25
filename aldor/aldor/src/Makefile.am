@@ -177,6 +177,7 @@ libstruct_a_SOURCES =	\
 	formatters.c	\
 	ftype.c		\
 	gf_syme.c	\
+	infenv.c	\
 	javasig.c	\
 	lib.c		\
 	loops.c		\
@@ -196,10 +197,12 @@ libstruct_a_SOURCES =	\
 	tfcontext.c	\
 	tform.c		\
 	tfsat.c		\
+	tfknown.c	\
 	ti_top.c	\
 	token.c		\
 	tposs.c		\
 	tqual.c		\
+	ufind.c		\
 	unify.c		\
 	utform.c	\
 	utype.c		\
@@ -305,6 +308,7 @@ testsuite =			\
 	test/test_archive.c	\
 	test/test_bigint.c 	\
 	test/test_bitv.c 	\
+	test/test_blank.c 	\
 	test/test_errorset.c	\
 	test/test_float.c	\
 	test/test_flog.c	\
@@ -338,7 +342,8 @@ testsuite =			\
 	test/test_tfsat.c	\
 	test/test_tinfer.c	\
 	test/test_tposs.c	\
-	test/test_tset.c
+	test/test_tset.c	\
+	test/test_ufind.c
 
 testall_SOURCES =	\
 	$(testsuite)	\

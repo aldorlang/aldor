@@ -75,6 +75,9 @@ local int utypeResultFormatter(OStream stream, Pointer p);
 
 local int utfSatMaskListFormatter(OStream ostream, Pointer p);
 
+local int utfContextFormatter(OStream ostream, Pointer p);
+local int utfContextListFormatter(OStream ostream, Pointer p);
+
 void
 fmttsInit()
 {
@@ -133,6 +136,9 @@ fmttsInit()
 
 	fmtRegister("USatMask", utfSatMaskFormatter);
 	fmtRegister("USatMaskList", utfSatMaskListFormatter);
+
+	fmtRegister("UTFContext", utfContextFormatter);
+	fmtRegister("UTFContextList", utfContextListFormatter);
 }
 
 
@@ -482,4 +488,18 @@ utfSatMaskListFormatter(OStream ostream, Pointer p)
 {
 	USatMaskList list = (USatMaskList) p;
 	return listFormat(USatMask)(ostream, "USatMask", list);
+}
+
+local int
+utfContextFormatter(OStream ostream, Pointer p)
+{
+	UTFContext utfc = (UTFContext) p;
+
+	return utformFormatter(ostream, (Pointer) uctxtUTForm(utfc));
+}
+
+local int
+utfContextListFormatter(OStream ostream, Pointer p)
+{
+	return listFormat(USatMask)(ostream, "UTFContext", p);
 }

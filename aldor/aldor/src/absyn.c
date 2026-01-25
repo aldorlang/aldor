@@ -93,6 +93,7 @@ abNewEmpty(AbSynTag abtag, Length argc)
 
 	ab->abGen.hdr.tag	= abtag;
 	ab->abGen.hdr.argc	= argc;
+	ab->abGen.hdr.flags	= 0;
 
 	ab->abGen.hdr.pos	= spstackEmpty;
 	ab->abGen.hdr.state	= AB_State_AbSyn;
@@ -322,6 +323,7 @@ abCopy(AbSyn ab)
 			abArgv(abnew)[i] = abCopy(abArgv(ab)[i]);
 
 	abnew->abHdr.pos = spstackCopy(ab->abHdr.pos);
+	abFlags(abnew) = abFlags(ab);
 
 	if (abHasTag(ab, AB_Id) && abComment(ab))
 		abSetComment(abnew, docCopy(abComment(ab)));
@@ -1349,6 +1351,15 @@ abPosSpan(AbSyn ab, SrcPos *pmin, SrcPos *pmax)
 
 	if (pmin) *pmin = abPos(A);
 	if (pmax) *pmax = abEnd(B);
+}
+
+Bool
+abIsUnknown(AbSyn ab)
+{
+	if (!abHasTag(ab, AB_Blank))
+		return false;
+
+	return abFlag_IsUnknown(ab);
 }
 
 /******************************************************************************

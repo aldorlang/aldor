@@ -21,6 +21,7 @@
 #include "terror.h"
 #include "tfcontext.h"
 #include "tfsat.h"
+#include "tfknown.h"
 #include "ti_tdn.h"
 #include "tinfer.h"
 #include "tposs.h"

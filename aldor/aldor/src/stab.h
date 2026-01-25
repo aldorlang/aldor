@@ -83,6 +83,7 @@ struct stabLevel {
 	SymeList	boundSymes;		/* List of bound symes       */
 	SymeList	extendSymes;		/* List of extend symes      */
 	Table           exportedTypes;          /* types exported to foreign */
+	AInt            varCount;
 };
 
 /******************************************************************************
@@ -194,6 +195,9 @@ extern void		stabSetSyme		(Stab, AbSyn, Syme, AbLogic);
 
 extern Bool		stabIsUndeclaredId	(Stab, Symbol);
 extern void		stabDeclareId		(Stab, Symbol, TForm);
+
+extern TForm		stabRegisterVar		(Stab, AbSyn);
+
 
 extern Bool             stabIsChild             (Stab parent, Stab child);
 

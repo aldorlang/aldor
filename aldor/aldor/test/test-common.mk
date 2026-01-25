@@ -280,6 +280,8 @@ really-all: \
 
 .PHONY: all
 
+check: all
+
 # Check each target is buildable standalone
 check-makefile:
 	set -e; for i in $(_alltests); do make clean && make all-$$i; done

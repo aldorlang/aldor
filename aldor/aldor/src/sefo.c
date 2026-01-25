@@ -1665,7 +1665,9 @@ sefoEqual0(SymeList mods, Sefo sefo1, Sefo sefo2)
 
 	else if (abIsId(sefo1))
 		result = symeEqual0(mods, abSyme(sefo1), abSyme(sefo2));
-
+	else if (abTag(sefo1) == AB_Blank) {
+		result = tformEqual(abTForm(sefo1), abTForm(sefo2));
+	}
 	else if (abIsLeaf(sefo1))
 		result = abEqual(sefo1, sefo2) &&
 			 symeEqual0(mods, abSyme(sefo1), abSyme(sefo2));
@@ -1897,7 +1899,8 @@ tformEqual0(SymeList mods, TForm tf1, TForm tf2)
 
 	else if (tfTag(tf1) == TF_General)
 		result = sefoEqual0(mods, tfGetExpr(tf1), tfGetExpr(tf2));
-
+	else if (tfTag(tf1) == TF_Variable)
+		result = tfVarId(tf1) == tfVarId(tf2);
 	else if (tfIsRecord(tf1) || tfIsRawRecord(tf1) ||
 		 tfIsUnion(tf1) || tfIsEnum(tf1) || tfIsPPartial(tf1)) {
 		Length	i;

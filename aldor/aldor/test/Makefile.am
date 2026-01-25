@@ -1,6 +1,6 @@
 SUBDIRS =	\
-	core	\
-	rtypes
+	rtypes  \
+	core
 
 
 config.mk: $(srcdir)/test-config.mk.in

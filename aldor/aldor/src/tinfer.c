@@ -25,6 +25,7 @@
 #include "tconst.h"
 #include "terror.h"
 #include "tfcond.h"
+#include "tfknown.h"
 #include "tfsat.h"
 #include "ti_bup.h"
 #include "ti_sef.h"

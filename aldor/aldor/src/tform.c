@@ -322,6 +322,7 @@ tfNewEmpty(TFormTag tag, Length argc)
 	tf->conditions = NULL;;
 
 	tf->sigma	= NULL;
+	tf->varId	= 0;
 	tf->fv		= NULL;
 	tf->rho		= NULL;
 
@@ -427,7 +428,7 @@ tfInit(void)
 
 	if (isInit) return;
 
-	abUnknown = abNewBlank(sposNone, symIntern("?"));
+	abUnknown = abNewUnknown(sposNone, symIntern("?"));
 
 	tfUnknown	= tfNewSymbol(TF_Unknown);
 	tfExit		= tfNewSymbol(TF_Exit);
@@ -590,7 +591,6 @@ local TForm	tfp0General	(Stab, AbSyn);
 local TForm	tfp0Float	(Stab, AbSyn);
 
 local TForm	tfpNothing	(Stab, AbSyn);
-local TForm	tfpBlank	(Stab, AbSyn);
 local TForm	tfpId		(Stab, AbSyn);
 local TForm	tfpDeclare	(Stab, AbSyn);
 local TForm	tfpDefine	(Stab, AbSyn);
@@ -599,6 +599,7 @@ local TForm	tfpComma	(Stab, AbSyn);
 local TForm	tfpAdd		(Stab, AbSyn);
 local TForm	tfpWith		(Stab, AbSyn);
 local TForm	tfpIf		(Stab, AbSyn);
+local TForm	tfpBlank	(Stab, AbSyn);
 local TForm	tfpExcept	(Stab, AbSyn);
 local TForm	tfpApply	(Stab, AbSyn);
 
@@ -917,11 +918,12 @@ tfpBlank(Stab stab, AbSyn ab)
 {
 	TForm	tf;
 
-#ifdef UseTypeVariables
-	tf = tfNewNode(TF_Variable, 1, tfUnknown);
-#else
-	tf = tfUnknown;
-#endif
+	if (abIsUnknown(ab)) {
+		tf = tfUnknown;
+	}
+	else {
+		tf = stabRegisterVar(stab, ab);
+	}
 
 	return tf;
 }
@@ -1361,13 +1363,14 @@ tfmNothing(Stab stab, AbSyn ab, TForm tf)
 local TForm
 tfmBlank(Stab stab, AbSyn ab, TForm tf)
 {
-#ifdef UseTypeVariables
-	assert(tfIsVariable(tf));
-#else
-	assert(tfIsUnknown(tf));
-#endif
+	AInt id;
 
-	return tfm0General(stab, ab, tf);
+	if (abIsUnknown(ab)) {
+		return tfm0General(stab, ab, tf);
+	}
+	else {
+		return tfm0General(stab, ab, tf);
+	}
 }
 
 local TForm
@@ -7238,6 +7241,39 @@ tfIsReferenceFn(TForm tf)
 {
 	tf = tfFollowSubst(tf);
 	return tfIsReference(tf);
+}
+
+
+/*
+ * tfVariable
+ */
+
+TForm
+tfVar()
+{
+	TForm	tf = tfNewNode(TF_Variable, 0);
+	tf->varId = tfVarCounter;
+	tfVarCounter++;
+	return tf;
+}
+
+/*
+ * tfVariable
+ */
+
+TForm
+tfVarFrId(AInt id)
+{
+	TForm	tf = tfNewNode(TF_Variable, 0);
+	tf->varId = id;
+	return tf;
+}
+
+AInt
+tfVarId(TForm tf)
+{
+	assert(tfTag(tf) == TF_Variable);
+	return tf->varId;
 }
 
 

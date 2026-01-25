@@ -1050,7 +1050,7 @@ extern Bool
 	tcDebug,
 	tfDebug, tfCascadeDebug, tfCatDebug, tfCrossDebug,
 	tfExprDebug, tfFloatDebug, tfHasDebug, tfHashDebug,
-	tfImportDebug, tfMapDebug,
+	tfImportDebug, tfKnownDebug, tfMapDebug,
 	tfMultiDebug, tfParentDebug, tfWithDebug,
 	tfsDebug, tfsExportDebug, tfsMultiDebug, tfsParentDebug,
 	tipAddDebug, tipApplyDebug, tipAssignDebug, tipBupDebug,

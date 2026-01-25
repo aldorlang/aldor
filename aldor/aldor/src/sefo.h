@@ -13,6 +13,7 @@
 #include "syme.h"
 
 #define			abIsSefo(ab)	(abState(ab) == AB_State_HasUnique)
+#define			abIsVar(ab)	(abTForm(ab) && tfIsVar(abTForm(ab)))
 
 /*
  * sstPrint

@@ -15,6 +15,7 @@
 #include "tconst.h"
 #include "tfsat.h"
 #include "tform.h"
+#include "tfknown.h"
 #include "ablogic.h"
 
 Bool	tcDebug		= false;

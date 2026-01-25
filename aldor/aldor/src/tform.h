@@ -160,6 +160,8 @@ struct tform {
 	SefoList tests;
 
 	AbSub			sigma;		/* Subst. for TF_Subst. */
+	AInt			varId;          /* Serial id for TF_Variable */
+
 	FreeVar			fv;		/* Free vars for subst. */
 	Length			*rho;		/* Dep. multi. permutation. */
 
@@ -765,14 +767,6 @@ extern TForm		tfPatternCase		(TForm);
 #define			tfPatternArg(tf)	tfFollowArg(tfIs(TF_Pattern, tf), 0)
 
 /*
- * tfVar		Substitutable
- */
-
-extern TForm		tfVarNew(void);
-extern TForm		tfVarNewFrId(AInt);
-extern AInt		tfVarId(TForm);
-
-/*
  * tfPPartial		Type of a Pattern Match result
  */
 extern TForm		tfPPartial		(TForm);
@@ -782,8 +776,18 @@ extern Bool		tfIsPPartialMap		(TForm);
 #define			tfPPartialArgN(tf, i)	tfFollowArg(tfIs(TF_PPartial, tf), i)
 #define			tfPPartialArgc(tf)	tfArgc(tfIs(TF_PPartial, tf))
 
+
 /*
- * TfAnyGenerator	We have two generator types. */
+ * tfVar		Substitutable
+ */
+
+extern TForm		tfVarNew	(void);
+extern TForm		tfVarFrId	(AInt);
+extern AInt		tfVarId		(TForm);
+#define			tfIsVar(tf)	(tfTag(tf) == TF_Variable)
+/*
+ * TfAnyGenerator	We have two generator types.
+ */
 
 typedef enum { TFG_Generator, TFG_XGenerator } TfGenType;
 

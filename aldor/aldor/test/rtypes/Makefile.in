@@ -20,7 +20,7 @@ top_srcdir	:= @top_srcdir@
 utils := tassert rtexns
 aptests := 
 
-fmtests := 
+fmtests := rtype_blank
 ctests  :=
 otests  :=
 xtests := 
@@ -29,5 +29,7 @@ jtests :=
 junittests := 
 jruntests := 
 lsptests  := 
+
+rtype_blank_opts := -WD+tipBup
 
 include $(top_srcdir)/aldor/test/test-common.mk

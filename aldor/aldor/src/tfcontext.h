@@ -24,6 +24,7 @@ extern TFContext ctxtFollowOnly(TFContext);
 #define ctxtInfEnv(tfc) ((tfc)->infEnv)
 
 extern UTFContext uctxtEmpty(UTForm);
+extern UTFContext uctxtNew(InferEnv, UTForm);
 extern UTFContext uctxtCopy(UTFContext, UTForm);
 extern UTFContext uctxtFollowOnly(UTFContext);
 extern Bool       uctxtEqual(UTFContext, UTFContext);

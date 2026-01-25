@@ -11,6 +11,7 @@ void archiveTestSuite(void);
 void bigintTestSuite(void);
 void bintTestSuite(void);
 void bitvTestSuite(void);
+void blankTest(void);
 void errorSetTestSuite(void);
 void floatTestSuite(void);
 void flogTest(void);
@@ -20,6 +21,7 @@ void forgTest(void);
 void formatTest(void);
 void fptrTest(void);
 void genfoamTestSuite(void);
+void infEnvTest(void);
 void intTestSuite(void);
 void javaTestSuite(void);
 void jcodeTest(void);
@@ -44,5 +46,6 @@ void tisefTest(void);
 void tinferTest(void);
 void tpossTest(void);
 void tsetTestSuite(void);
+void ufindTest(void);
 
 #endif

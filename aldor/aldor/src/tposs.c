@@ -17,6 +17,7 @@
 #include "ablogic.h"
 #include "debug.h"
 #include "format.h"
+#include "infenv.h"
 #include "spesym.h"
 #include "store.h"
 #include "syme.h"
@@ -387,7 +388,7 @@ tpossIntersect(TPoss tp1, TPoss tp2)
 
 
 TPoss
-tpossIntersect(TPoss S, TPoss T)
+tpossIntersect_Orig(TPoss S, TPoss T)
 {
 	UTFContextList LS, LT, l = 0;
 	UTForm carLS, carLT;
@@ -413,6 +414,40 @@ tpossIntersect(TPoss S, TPoss T)
 			// We need to preserve context
 			assert(uctxtIsEmpty(car(LS)));
 			assert(uctxtIsEmpty(car(LT)));
+		}
+	}
+
+	l = listNReverse(UTFContext)(l);
+	return tpossFrTheUTFContextList(l);
+}
+
+TPoss
+tpossIntersect(TPoss S, TPoss T)
+{
+	UTFContextList LS, LT, l = 0;
+	UTForm carLS, carLT;
+	
+	if (S == NULL || T == NULL)
+		return NULL;
+	
+	/* If T is free of duplicates, then the result will also be. */
+	for (LT = T->possl; LT; LT = cdr(LT)) {
+		car(LT) = uctxtFollowOnly(car(LT));
+		carLT = uctxtUTForm(car(LT));
+		for (LS = S->possl; LS; LS = cdr(LS)) {
+			InferEnv newEnv = infEnvMerge(uctxtInfEnv(car(LT)), uctxtInfEnv(car(LS)));
+			if (infEnvIsFailed(newEnv))
+				continue;
+			car(LS) = uctxtFollowOnly(car(LS));
+			carLS = uctxtUTForm(car(LS));
+			if (infEnvSatisfies(newEnv, utformConstOrFail(carLS), utformConstOrFail(carLT))) {
+				l = listCons(UTFContext)(uctxtNew(newEnv, carLT), l);
+				break;
+			}
+			if (infEnvSatisfies(newEnv, utformConstOrFail(carLT), utformConstOrFail(carLS))) {
+				if (!listMember(UTFContext)(l, car(LS), uctxtEqual))
+					l = listCons(UTFContext)(uctxtNew(newEnv, carLS), l);
+			}
 		}
 	}
 

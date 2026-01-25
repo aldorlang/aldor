@@ -20,7 +20,6 @@ struct abLogic {
 	double	fake;
 };
 
-extern AbLogic	abCondKnown;	  /* Conditions with known value (tinfer) */
 extern AbLogic	gfCondKnown;	  /* Ditto (genfoam) */
 
 extern void	ablogInit	  (void);
@@ -48,9 +47,6 @@ extern Bool	ablogImplies	  (AbLogic, AbLogic);
 extern Bool	ablogIsListImplied(AbLogic, SefoList);
 extern Bool	ablogIsListKnown  (SefoList sefolist);
  
-extern void	ablogAndPush	  (AbLogic* glo,AbLogic* save,Sefo,Bool sense);
-extern void	ablogAndPop	  (AbLogic* glo,AbLogic* save);
-
 extern TForm    ablogImpliedType  (AbLogic known, AbSyn sefo, TForm tf);
 
 extern int	bputAblog         (Buffer, AbLogic);

@@ -29,6 +29,7 @@
 #include "comsg.h"
 #include "strops.h"
 #include "table.h"
+#include "tfknown.h"
 #include "ti_top.h"
 
 local Foam         gen0AddBody1           (AbSyn, Stab, AbSyn);
