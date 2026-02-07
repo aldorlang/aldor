@@ -84,6 +84,7 @@ extern Table    tblCopy         (Table);
 extern Table	tblRemoveIf	(Table, TblFreeEltFun, TblTestEltFun);
 extern Table    tblNMap         (TblMapEltFun, Table);
 extern Length   tblSize         (Table);
+extern Bool	tblIsEmpty      (Table);
 extern TblElt   tblElt          (Table, TblKey, TblElt dflt);
 extern TblElt   tblSetElt       (Table, TblKey, TblElt);
 extern Table    tblDrop         (Table, TblKey);
