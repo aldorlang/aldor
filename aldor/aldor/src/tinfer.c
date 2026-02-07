@@ -693,6 +693,7 @@ tiGetMeaning(Stab stab, AbSyn absyn, TForm type)
 	Syme		nsyme, psyme, syme;
 	SymeList	symes, nsymes, sl;
 
+	// FIXME: This should be an embedding..
 	if (abUse(absyn) == AB_Use_Pattern || abUse(absyn) == AB_Use_PatLocation) {
 		mask = tfSatWithPatContext(mask);
 	}
