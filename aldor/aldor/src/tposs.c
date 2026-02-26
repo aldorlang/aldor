@@ -109,6 +109,24 @@ tpossDeclare(Syme syme, TPoss tp)
 	return ntp;
 }
 
+TPoss
+tpossFilterEmpty(TPoss tposs)
+{
+	TPoss tprhs = tpossEmpty();
+	TPossIterator tit;
+
+	for (tpossITER(tit, tposs); tpossMORE(tit); tpossSTEP(tit)) {
+		/* Get the next type possibility */
+		TForm t = tpossELT(tit);
+
+		/* Is it an empty multi? */
+		if (tfIsMulti(t) && !tfArgc(t)) continue;
+		/* No - add it to the set of possible types */
+		tprhs = tpossAdd1(tprhs, t);
+	}
+	return tprhs;
+}
+
 /*
  * tpossMulti(n,v,f) takes the n TPoss sets  f(v,0)...f(v,n-1) and forms
  *   their cross product.
