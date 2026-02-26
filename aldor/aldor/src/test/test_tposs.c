@@ -5,12 +5,14 @@
 #include "tform.h"
 
 local void testMapType();
+local void testFilterEmpty();
 
 void
 tpossTest()
 {
 	init();
 	TEST(testMapType);
+	TEST(testFilterEmpty);
 	fini();
 }
 
@@ -32,3 +34,20 @@ testMapType()
 
 }
 
+local void
+testFilterEmpty()
+{
+	TPoss tp = tpossEmpty();
+	TPoss tpr;
+
+	tpr = tpossFilterEmpty(tp);
+	testIntEqual("", 0, tpossCount(tpr));
+
+	tpossAdd1(tp, tfMulti(0));
+	tpr = tpossFilterEmpty(tp);
+	testIntEqual("", 0, tpossCount(tpr));
+
+	tpossAdd1(tp, tfMulti(1, tfMap(tfNone(), tfNone())));
+	tpr = tpossFilterEmpty(tp);
+	testIntEqual("", 1, tpossCount(tpr));
+}

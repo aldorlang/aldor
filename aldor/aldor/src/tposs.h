@@ -93,6 +93,8 @@ extern Bool	tpossIsHaving		(TPoss tp, TFormPredicate pred);
 		 * Is there any type form in tp which satisfies the predicate?
 		 */
 
+extern TPoss	tpossFilterEmpty	(TPoss tposs);
+
 /*
  * Abstract iteration over type possibility sets:
  *
