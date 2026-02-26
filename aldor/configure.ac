@@ -18,7 +18,7 @@ AM_EXTRA_RECURSIVE_TARGETS([releasecheck])
 # Libraries
 
 # Checks for programs
-AC_PROG_LEX([yywrap])
+AC_PROG_LEX([noyywrap])
 if test "x$LEX" = x:; then
    AC_MSG_ERROR([[lex/flex not found.
        	        Please install lex.]])

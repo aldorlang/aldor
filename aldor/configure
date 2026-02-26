@@ -1717,6 +1717,39 @@ fi
 
 } # ac_fn_c_try_link
 
+# ac_fn_c_check_header_compile LINENO HEADER VAR INCLUDES
+# -------------------------------------------------------
+# Tests whether HEADER exists and can be compiled using the include files in
+# INCLUDES, setting the cache variable VAR accordingly.
+ac_fn_c_check_header_compile ()
+{
+  as_lineno=${as_lineno-"$1"} as_lineno_stack=as_lineno_stack=$as_lineno_stack
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for $2" >&5
+printf %s "checking for $2... " >&6; }
+if eval test \${$3+y}
+then :
+  printf %s "(cached) " >&6
+else $as_nop
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+$4
+#include <$2>
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"
+then :
+  eval "$3=yes"
+else $as_nop
+  eval "$3=no"
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam conftest.$ac_ext
+fi
+eval ac_res=\$$3
+	       { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_res" >&5
+printf "%s\n" "$ac_res" >&6; }
+  eval $as_lineno_stack; ${as_lineno_stack:+:} unset as_lineno
+
+} # ac_fn_c_check_header_compile
+
 # ac_fn_c_check_func LINENO FUNC VAR
 # ----------------------------------
 # Tests whether FUNC exists, setting the cache variable VAR accordingly
@@ -1778,39 +1811,6 @@ printf "%s\n" "$ac_res" >&6; }
   eval $as_lineno_stack; ${as_lineno_stack:+:} unset as_lineno
 
 } # ac_fn_c_check_func
-
-# ac_fn_c_check_header_compile LINENO HEADER VAR INCLUDES
-# -------------------------------------------------------
-# Tests whether HEADER exists and can be compiled using the include files in
-# INCLUDES, setting the cache variable VAR accordingly.
-ac_fn_c_check_header_compile ()
-{
-  as_lineno=${as_lineno-"$1"} as_lineno_stack=as_lineno_stack=$as_lineno_stack
-  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for $2" >&5
-printf %s "checking for $2... " >&6; }
-if eval test \${$3+y}
-then :
-  printf %s "(cached) " >&6
-else $as_nop
-  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-$4
-#include <$2>
-_ACEOF
-if ac_fn_c_try_compile "$LINENO"
-then :
-  eval "$3=yes"
-else $as_nop
-  eval "$3=no"
-fi
-rm -f core conftest.err conftest.$ac_objext conftest.beam conftest.$ac_ext
-fi
-eval ac_res=\$$3
-	       { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_res" >&5
-printf "%s\n" "$ac_res" >&6; }
-  eval $as_lineno_stack; ${as_lineno_stack:+:} unset as_lineno
-
-} # ac_fn_c_check_header_compile
 ac_configure_args_raw=
 for ac_arg
 do
@@ -4784,90 +4784,7 @@ then :
 else $as_nop
   LEXLIB=$ac_cv_lib_lex
 fi
-  ac_save_LIBS="$LIBS"
-      if test -n "$LEXLIB"
-then :
-  LIBS="$LEXLIB"
-        ac_fn_c_check_func "$LINENO" "yywrap" "ac_cv_func_yywrap"
-if test "x$ac_cv_func_yywrap" = xyes
-then :
-  :
-else $as_nop
-  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: $LEXLIB does not contain yywrap; giving up on $LEX" >&5
-printf "%s\n" "$as_me: WARNING: $LEXLIB does not contain yywrap; giving up on $LEX" >&2;}
-          LEX=: LEXLIB=
-fi
 
-
-else $as_nop
-  LIBS=
-        { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for library containing yywrap" >&5
-printf %s "checking for library containing yywrap... " >&6; }
-if test ${ac_cv_search_yywrap+y}
-then :
-  printf %s "(cached) " >&6
-else $as_nop
-  ac_func_search_save_LIBS=$LIBS
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-char yywrap ();
-int
-main (void)
-{
-return yywrap ();
-  ;
-  return 0;
-}
-_ACEOF
-for ac_lib in '' fl l
-do
-  if test -z "$ac_lib"; then
-    ac_res="none required"
-  else
-    ac_res=-l$ac_lib
-    LIBS="-l$ac_lib  $ac_func_search_save_LIBS"
-  fi
-  if ac_fn_c_try_link "$LINENO"
-then :
-  ac_cv_search_yywrap=$ac_res
-fi
-rm -f core conftest.err conftest.$ac_objext conftest.beam \
-    conftest$ac_exeext
-  if test ${ac_cv_search_yywrap+y}
-then :
-  break
-fi
-done
-if test ${ac_cv_search_yywrap+y}
-then :
-
-else $as_nop
-  ac_cv_search_yywrap=no
-fi
-rm conftest.$ac_ext
-LIBS=$ac_func_search_save_LIBS
-fi
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_search_yywrap" >&5
-printf "%s\n" "$ac_cv_search_yywrap" >&6; }
-ac_res=$ac_cv_search_yywrap
-if test "$ac_res" != no
-then :
-  test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
-  LEXLIB="$LIBS"
-fi
-
-        if test x"$ac_cv_search_yywrap" = xno
-then :
-  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: yywrap not found; giving up on $LEX" >&5
-printf "%s\n" "$as_me: WARNING: yywrap not found; giving up on $LEX" >&2;}
-          LEX=: LEXLIB=
-fi
-fi
-      LIBS="$ac_save_LIBS"
 fi
 
 
