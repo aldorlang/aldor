@@ -14,11 +14,13 @@ jobs:
 
     - name: Capture version
       run: |
-         MAIL=build-agent@aldorlang.example.com
-         version=$(grep AC_INIT ./aldor/configure.ac | awk -F, '{print $2}' | tr -d '[]')
-         dch --newversion "${version}+$(date +%Y%M%d)" 'Build'
+         EMAIL=build-agent@aldorlang.example.com
+         cfg_version=$(grep AC_INIT ./aldor/configure.ac | awk -F, '{print $2}' | tr -d '[]')
+         version="${cfg_version}+$(date +%Y%m%d)"
+         dch --newversion $version 'Build'
          dch -r Relase
          echo "pkg_version=${version}" >> "$GITHUB_ENV"
+         echo "Building version ${version}"
 
     - name: build
       run: dpkg-buildpackage -b -us -uc
@@ -29,13 +31,13 @@ jobs:
         mv aldor-linux-x86_64-${{ github.sha }}.tar.gz ../
         mv ../../aldor_${pkg_version}_amd64.deb ../
 
-# - name: Upload Linux binaries
-#      uses: actions/upload-artifact@v4
-#      with:
-#        name: aldor-linux-x86_64-binary
-#        path: |
-#          aldor-linux-x86_64-${{ github.sha }}.tar.gz
-#          aldor_${pkg_version}_amd64.deb
+    - name: Upload Linux binaries
+      uses: actions/upload-artifact@v4
+      with:
+        name: aldor-linux-x86_64-binary
+        path: |
+            aldor-linux-x86_64-${{ github.sha }}.tar.gz
+            aldor_${pkg_version}_amd64.deb
 
   build-linux-latest:
     runs-on: ubuntu-latest
