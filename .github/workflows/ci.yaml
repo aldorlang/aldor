@@ -2,10 +2,6 @@ name: Aldor CI
 
 on: [push, pull_request]
 
-# build-linux builds, and takes the version from the configure.ac file
-# - I don't want to worry about maintaining debian/changelog as part of the release workflow
-#   It will be updated for significant/interesting things
-
 jobs:
   build-linux:
     runs-on: ubuntu-22.04
@@ -20,9 +16,9 @@ jobs:
       run: |
          MAIL=build-agent@aldorlang.example.com
          version=$(grep AC_INIT ./aldor/configure.ac | awk -F, '{print $2}' | tr -d '[]')
-	 dch --newversion "${version}+$(date +%Y%M%d)" 'Build'
-	 dch -r Relase
-	 echo "pkg_version=${version}" >> "$GITHUB_ENV"
+         dch --newversion "${version}+$(date +%Y%M%d)" 'Build'
+         dch -r Relase
+         echo "pkg_version=${version}" >> "$GITHUB_ENV"
 
     - name: build
       run: dpkg-buildpackage -b -us -uc
