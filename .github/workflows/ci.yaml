@@ -14,7 +14,7 @@ jobs:
 
     - name: Capture version
       run: |
-         EMAIL=build-agent@aldorlang.example.com
+         export EMAIL=build-agent@aldorlang.example.com
          cfg_version=$(grep AC_INIT ./aldor/configure.ac | awk -F, '{print $2}' | tr -d '[]')
          version="${cfg_version}+$(date +%Y%m%d)"
          dch --newversion $version 'Build'
