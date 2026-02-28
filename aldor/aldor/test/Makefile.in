@@ -169,7 +169,6 @@ _ctests     := $(sort $(ctests) $(_otests))
 _fmtests    := $(sort $(fmtests) $(_jtests) $(_ctests))
 _aotests    := $(sort $(_fmtests) $(_ctests) $(_xtests))
 _alltests   := $(sort $(_aptests) $(_fmtests) $(_ctests) $(_otests) $(_xtests) $(_jtests))
-$(warning tests $(lsptests) .. $(_lsptests))
 
 nfile := -Nfile=$(aldorsrcdir)/aldor.conf
 
