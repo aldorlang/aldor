@@ -1698,6 +1698,24 @@ tfuPrint(FILE *fout, TFormUses tfu)
 	return cc;
 }
 
+int
+tfuOStreamPrint(OStream ostream, TFormUses tfu)
+{
+	int cc = 0;
+	if (!tfu)
+		return ostreamPrintf(ostream, "(tfu: NULL)");
+
+	cc += ostreamPrintf(ostream, "(TFU[%d] %s%s%s%s: %pTForm)",
+		      tfu->serialNo,
+		      tfu->isImported 		? "[imported]" : "",
+		      tfu->isExplicitImport 	? "[explicit]" : "",
+		      tfu->isParamImport 	? "[param]" : "",
+		      tfu->isCategoryImport 	? "[cat]" : "",
+		      tfu->tf);
+
+	return cc;
+}
+
 /******************************************************************************
  *
  * :: Imports
