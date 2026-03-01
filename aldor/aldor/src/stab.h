@@ -29,6 +29,7 @@ struct tformUses {
 	BPack(Bool)	isParamImport;
 	BPack(Bool)	isCategoryImport;
 	BPack(Bool)	isCatConditionImport;
+	ULong		serialNo;
 	TForm		tf;
 	TQual		exports;
 	TQual		imports;

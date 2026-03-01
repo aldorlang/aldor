@@ -1878,6 +1878,7 @@ stabIsForeignExport(Stab stab, TForm tf)
  *
  ****************************************************************************/
 
+static Length tfuCounter = 0;
 /*
  * General scheme is this: TFormUses holds TForms and their usage
  * information.	 If a TForm is "registered" via stabDefTForm but not
@@ -1961,6 +1962,7 @@ tfuNew(TForm tf)
 	tu->isCategoryImport	= false;
 	tu->isCatConditionImport= false;
 	tu->isParamImport	= false;
+	tu->serialNo		= tfuCounter++;
 	tu->tf			= tf;
 	tu->exports		= NULL;
 	tu->imports		= NULL;
