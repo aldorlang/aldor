@@ -1636,7 +1636,7 @@ tfuPrint(FILE *fout, TFormUses tfu)
 {
 	int	cc = 0;
 	
-	cc += tfPrint(fout, tfu->tf);
+	cc += afprintf(fout, "%ld - %pTForm", tfu->serialNo, tfu->tf);
 	findent += 2;
 	cc += fnewline(fout);
 	
