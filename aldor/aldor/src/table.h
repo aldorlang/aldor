@@ -71,6 +71,7 @@ typedef struct {
  *    for (tblITER(it,t); tblMORE(it); tblSTEP(it)) {
  *        k = tblKEY(it);
  *        e = tblELT(it);
+ *        e = tblBUCKET(tbl, it);
  *        ...
  *        tblSETKEY(it, k);     -- Possible but unusual. k must hash the same.
  *        tblSETELT(it, e);
@@ -95,10 +96,12 @@ extern int      tblColumnPrint  (FILE *, Table, TblPrKeyFun, TblPrEltFun);
 #define tblSTEP(it)     ((((it).link=(it).link->next))==0 ? _tblSTEP(&(it)) : 1)
 #define tblKEY(it)      ((it).link->key)
 #define tblELT(it)      ((it).link->elt)
+#define tblBUCKET(t, it)  _tblBUCKET(t, &it)
 #define tblSETKEY(it,k) ((it).link->key = (k))
 #define tblSETELT(it,e) ((it).link->elt = (e))
 
 extern int      _tblITER        (TableIterator *, Table);
 extern int      _tblSTEP        (TableIterator *);
+extern int      _tblBUCKET      (Table, TableIterator *);
 
 #endif
