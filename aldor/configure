@@ -5156,7 +5156,7 @@ else $as_nop
 fi
 
 
- if test x$(BUILD_LISP) = x; then
+ if test x$BUILD_LISP = xyes; then
   BUILD_LISP_TRUE=
   BUILD_LISP_FALSE='#'
 else
