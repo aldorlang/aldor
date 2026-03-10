@@ -711,6 +711,10 @@ HAVE_BOEHM_GC_TRUE
 HAVE_ALDOR_GC_FALSE
 HAVE_ALDOR_GC_TRUE
 GC
+CI_CHECK_FALSE
+CI_CHECK_TRUE
+YQ
+YC
 MK_GENERATOR_COROUTINES_FALSE
 MK_GENERATOR_COROUTINES_TRUE
 LIB_CC_FLAGS
@@ -864,6 +868,7 @@ LIBS
 CPPFLAGS
 YACC
 YFLAGS
+YC
 LT_SYS_LIBRARY_PATH'
 
 
@@ -1547,6 +1552,7 @@ Some influential environment variables:
   YFLAGS      The list of arguments that will be passed by default to $YACC.
               This script will default YFLAGS to the empty string to avoid a
               default value of `-d' given by some make applications.
+  YC          Yaml/json conversion tool
   LT_SYS_LIBRARY_PATH
               User-defined run-time library search path.
 
@@ -5442,7 +5448,7 @@ then :
   withval=$with_generators; case "${withval}" in
 		    function) generator=function;;
 		    coroutine) generator=coroutine;;
-		    *) as_fn_error $? "bad value for 'enable-generator': ${withval}" "$LINENO" 5
+		    *) as_fn_error $? "bad value for 'enable-generator': ${withval} (valid values: function, coroutine)" "$LINENO" 5
 		    esac
 		{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: generators: $generator" >&5
 printf "%s\n" "$as_me: generators: $generator" >&6;}
@@ -5475,6 +5481,63 @@ printf "%s\n" "#define GENERATOR_COROUTINES 0" >>confdefs.h
        { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: functions" >&5
 printf "%s\n" "functions" >&6; }
    fi
+
+
+  # Extract the first word of "yq", so it can be a program name with args.
+set dummy yq; ac_word=$2
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+printf %s "checking for $ac_word... " >&6; }
+if test ${ac_cv_prog_YQ+y}
+then :
+  printf %s "(cached) " >&6
+else $as_nop
+  if test -n "$YQ"; then
+  ac_cv_prog_YQ="$YQ" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  case $as_dir in #(((
+    '') as_dir=./ ;;
+    */) ;;
+    *) as_dir=$as_dir/ ;;
+  esac
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir$ac_word$ac_exec_ext"; then
+    ac_cv_prog_YQ="yq"
+    printf "%s\n" "$as_me:${as_lineno-$LINENO}: found $as_dir$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+fi
+fi
+YQ=$ac_cv_prog_YQ
+if test -n "$YQ"; then
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $YQ" >&5
+printf "%s\n" "$YQ" >&6; }
+else
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
+printf "%s\n" "no" >&6; }
+fi
+
+
+  if test -z "$YQ"; then ci_check=no; else ci_check=yes; fi;
+  if test "$ci_check" = yes; then
+    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: Will check git workflow files using yq" >&5
+printf "%s\n" "$as_me: Will check git workflow files using yq" >&6;}
+  fi
+   if test "$ci_check" = yes; then
+  CI_CHECK_TRUE=
+  CI_CHECK_FALSE='#'
+else
+  CI_CHECK_TRUE='#'
+  CI_CHECK_FALSE=
+fi
+
 
 
  if test $GC = aldor; then
@@ -14175,6 +14238,10 @@ Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${MK_GENERATOR_COROUTINES_TRUE}" && test -z "${MK_GENERATOR_COROUTINES_FALSE}"; then
   as_fn_error $? "conditional \"MK_GENERATOR_COROUTINES\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${CI_CHECK_TRUE}" && test -z "${CI_CHECK_FALSE}"; then
+  as_fn_error $? "conditional \"CI_CHECK\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${HAVE_ALDOR_GC_TRUE}" && test -z "${HAVE_ALDOR_GC_FALSE}"; then

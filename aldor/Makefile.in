@@ -91,7 +91,7 @@ host_triplet = @host@
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ax_lib_readline.m4 \
-	$(top_srcdir)/m4/build_id.m4 \
+	$(top_srcdir)/m4/build_id.m4 $(top_srcdir)/m4/ci.m4 \
 	$(top_srcdir)/m4/documentation-tests.m4 \
 	$(top_srcdir)/m4/error-on-warn.m4 $(top_srcdir)/m4/git.m4 \
 	$(top_srcdir)/m4/interp-tests.m4 \
@@ -398,7 +398,9 @@ VCSVERSION = @VCSVERSION@
 VERSION = @VERSION@
 YACC = @YACC@
 YACC_EXISTS = @YACC_EXISTS@
+YC = @YC@
 YFLAGS = @YFLAGS@
+YQ = @YQ@
 abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
 abs_top_builddir = @abs_top_builddir@
@@ -1040,6 +1042,15 @@ uninstall-am:
 
 .PRECIOUS: Makefile
 
+
+@CI_CHECK_TRUE@all: ci-check
+@CI_CHECK_TRUE@ci-check:
+@CI_CHECK_TRUE@	@set -e; \
+@CI_CHECK_TRUE@	for file in $$(find $(top_srcdir)/../.github/workflows -name \*.yaml); \
+@CI_CHECK_TRUE@	do \
+@CI_CHECK_TRUE@	  echo Checking $$file; \
+@CI_CHECK_TRUE@	  $(YQ) $$file > /dev/null; \
+@CI_CHECK_TRUE@	done
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
