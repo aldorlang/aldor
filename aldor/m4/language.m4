@@ -8,7 +8,7 @@ AC_DEFUN([ALDOR_GENERATOR_OPTION],
 		[case "${withval}" in
 		    function) generator=function;;
 		    coroutine) generator=coroutine;;
-		    *) AC_MSG_ERROR([bad value for 'enable-generator': ${withval}])
+		    *) AC_MSG_ERROR([bad value for 'enable-generator': ${withval} (valid values: function, coroutine)])
 		    esac]
 		[AC_MSG_NOTICE([generators: $generator])],
 		[AC_MSG_NOTICE([no generator option provided])]
