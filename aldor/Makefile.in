@@ -91,7 +91,7 @@ host_triplet = @host@
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ax_lib_readline.m4 \
-	$(top_srcdir)/m4/build_id.m4 \
+	$(top_srcdir)/m4/build_id.m4 $(top_srcdir)/m4/ci.m4 \
 	$(top_srcdir)/m4/documentation-tests.m4 \
 	$(top_srcdir)/m4/error-on-warn.m4 $(top_srcdir)/m4/git.m4 \
 	$(top_srcdir)/m4/interp-tests.m4 \
@@ -398,7 +398,9 @@ VCSVERSION = @VCSVERSION@
 VERSION = @VERSION@
 YACC = @YACC@
 YACC_EXISTS = @YACC_EXISTS@
+YC = @YC@
 YFLAGS = @YFLAGS@
+YQ = @YQ@
 abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
 abs_top_builddir = @abs_top_builddir@
@@ -945,6 +947,7 @@ distclean-generic:
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
+@CI_CHECK_FALSE@releasecheck-local:
 clean: clean-recursive
 
 clean-am: clean-generic clean-libtool mostlyclean-am
@@ -1040,6 +1043,9 @@ uninstall-am:
 
 .PRECIOUS: Makefile
 
+
+@CI_CHECK_TRUE@releasecheck-local:
+@CI_CHECK_TRUE@	$(YQ) $(top_srcdir)/../.github/workflows/ci.yaml > /dev/null
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
