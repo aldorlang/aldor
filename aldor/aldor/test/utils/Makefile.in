@@ -1,0 +1,5 @@
+
+# Not a lot to do here
+all:
+
+#tassert.ao: $(srcdir)/tassert.as

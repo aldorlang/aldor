@@ -1,0 +1,11 @@
+
+#AM_DEFAULT_VERBOSITY = @AM_DEFAULT_VERBOSITY@
+
+#VPATH = @srcdir@
+#abs_top_builddir = @abs_top_builddir@
+abs_testsrcdir = @abs_srcdir@
+#top_builddir = @top_builddir@
+#builddir = @builddir@
+#top_srcdir = @top_srcdir@
+#abs_top_srcdir = @abs_top_srcdir@
+JUNIT_JAR = @JUNIT_JAR@

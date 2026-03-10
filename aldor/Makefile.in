@@ -110,7 +110,8 @@ am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
 mkinstalldirs = $(install_sh) -d
 CONFIG_CLEAN_FILES = aldor/lib/libfoamlib/al/Makefile \
 	aldor/lib/libfoam/al/Makefile aldor/lib/java/src/Makefile \
-	aldor/lib/java/test/Makefile aldor/test/Makefile \
+	aldor/lib/java/test/Makefile aldor/test/core/Makefile \
+	aldor/test/java/Makefile aldor/test/utils/Makefile \
 	lib/aldor/doc/tex/Makefile lib/aldor/src/lang/Makefile \
 	lib/aldor/src/base/Makefile lib/aldor/src/arith/Makefile \
 	lib/aldor/src/datastruc/Makefile lib/aldor/src/lisp/Makefile \
@@ -208,7 +209,9 @@ am__DIST_COMMON = $(srcdir)/Makefile.in \
 	$(top_srcdir)/aldor/lib/java/test/Makefile.in \
 	$(top_srcdir)/aldor/lib/libfoam/al/Makefile.in \
 	$(top_srcdir)/aldor/lib/libfoamlib/al/Makefile.in \
-	$(top_srcdir)/aldor/test/Makefile.in \
+	$(top_srcdir)/aldor/test/core/Makefile.in \
+	$(top_srcdir)/aldor/test/java/Makefile.in \
+	$(top_srcdir)/aldor/test/utils/Makefile.in \
 	$(top_srcdir)/amaux/compile $(top_srcdir)/amaux/config.guess \
 	$(top_srcdir)/amaux/config.sub $(top_srcdir)/amaux/install-sh \
 	$(top_srcdir)/amaux/ltmain.sh $(top_srcdir)/amaux/missing \
@@ -496,7 +499,11 @@ aldor/lib/java/src/Makefile: $(top_builddir)/config.status $(top_srcdir)/aldor/l
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 aldor/lib/java/test/Makefile: $(top_builddir)/config.status $(top_srcdir)/aldor/lib/java/test/Makefile.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
-aldor/test/Makefile: $(top_builddir)/config.status $(top_srcdir)/aldor/test/Makefile.in
+aldor/test/core/Makefile: $(top_builddir)/config.status $(top_srcdir)/aldor/test/core/Makefile.in
+	cd $(top_builddir) && $(SHELL) ./config.status $@
+aldor/test/java/Makefile: $(top_builddir)/config.status $(top_srcdir)/aldor/test/java/Makefile.in
+	cd $(top_builddir) && $(SHELL) ./config.status $@
+aldor/test/utils/Makefile: $(top_builddir)/config.status $(top_srcdir)/aldor/test/utils/Makefile.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 lib/aldor/doc/tex/Makefile: $(top_builddir)/config.status $(top_srcdir)/lib/aldor/doc/tex/Makefile.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@

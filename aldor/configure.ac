@@ -143,6 +143,10 @@ AC_CONFIG_FILES(
    aldor/lib/java/src/Makefile
    aldor/lib/java/test/Makefile
    aldor/test/Makefile
+   aldor/test/test-config.mk
+   aldor/test/core/Makefile
+   aldor/test/java/Makefile
+   aldor/test/utils/Makefile
    aldor/tools/Makefile
    aldor/tools/unix/Makefile
    aldor/tools/unix/aldor
