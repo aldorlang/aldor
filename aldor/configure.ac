@@ -18,7 +18,7 @@ AM_EXTRA_RECURSIVE_TARGETS([releasecheck])
 # Libraries
 
 # Checks for programs
-AC_PROG_LEX([yywrap])
+AC_PROG_LEX([noyywrap])
 if test "x$LEX" = x:; then
    AC_MSG_ERROR([[lex/flex not found.
        	        Please install lex.]])
@@ -79,7 +79,7 @@ AC_ARG_ENABLE([lisp-tests],
 	    [BUILD_LISP=yes],
 	    [BUILD_LISP=no])
 AC_SUBST([BUILD_LISP])
-AM_CONDITIONAL([BUILD_LISP], test x$(BUILD_LISP) = x)
+AM_CONDITIONAL([BUILD_LISP], test x$BUILD_LISP = xyes)
 
 AC_MSG_NOTICE([JAVA $BUILD_JAVA unit tests: $JUNIT_JAR])
 AC_MSG_NOTICE([SBCL $SBCL_EXISTS])
@@ -143,6 +143,10 @@ AC_CONFIG_FILES(
    aldor/lib/java/src/Makefile
    aldor/lib/java/test/Makefile
    aldor/test/Makefile
+   aldor/test/test-config.mk
+   aldor/test/core/Makefile
+   aldor/test/java/Makefile
+   aldor/test/utils/Makefile
    aldor/tools/Makefile
    aldor/tools/unix/Makefile
    aldor/tools/unix/aldor

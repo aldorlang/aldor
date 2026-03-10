@@ -9,6 +9,7 @@
 #include "java/javacode.h"
 #include "ostream.h"
 #include "sefo.h"
+#include "stab.h"
 #include "susage.h"
 #include "strops.h"
 #include "syme.h"
@@ -22,6 +23,7 @@
 local int tfFormatter(OStream stream, Pointer p);
 local int tfFormatterAlt(OStream stream, int lvl, Pointer p);
 local int tfListFormatter(OStream stream, Pointer p);
+local int tfuFormatter(OStream stream, Pointer p);
 
 local int tpossFormatter(OStream stream, Pointer p);
 local int fvFormatter(OStream stream, Pointer p);
@@ -71,6 +73,7 @@ fmttsInit()
 	fmtRegister("TForm", tfFormatter);
 	fmtRegisterAlt("TForm", tfFormatterAlt);
 	fmtRegister("TFormList", tfListFormatter);
+	fmtRegister("TFormUses", tfuFormatter);
 
 	fmtRegister("FreeVar", fvFormatter);
 	fmtRegister("TPoss", tpossFormatter);
@@ -322,6 +325,14 @@ tfListFormatter(OStream ostream, Pointer p)
 	TFormList list = (TFormList) p;
 	return listFormat(TForm)(ostream, "TForm", list);
 }
+
+local int
+tfuFormatter(OStream ostream, Pointer p)
+{
+	TFormUses tfu = (TFormUses) p;
+	return tfuOStreamPrint(ostream, tfu);
+}
+
 
 local int
 symeListFormatter(OStream ostream, Pointer p)

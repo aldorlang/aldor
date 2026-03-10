@@ -8,6 +8,7 @@
 
 # For a silent build.
 export DH_QUIET=1
+export DEB_BUILD_MAINT_OPTIONS=optimize=-lto
 
 # FIXME: This breaks the Aldor B-tree based GC.
 #export DEB_BUILD_HARDENING=1

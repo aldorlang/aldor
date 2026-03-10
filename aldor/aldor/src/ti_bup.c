@@ -1269,31 +1269,12 @@ tibupDefine(Stab stab, AbSyn absyn, TForm type)
 	}
 	else {
 		TPoss	tprhs, tpnew;
-		TForm	t;
-		TPossIterator	tit;
-
 
 		/* Compute possible types for the RHS */
 		tibup(stab, rhs, type);
 		tpnew = abReferTPoss(rhs);
 
-
-		/* Filter out void types */
-		tprhs = tpossEmpty();
-		for (tpossITER(tit,tpnew); tpossMORE(tit); tpossSTEP(tit))
-		{
-			/* Get the next type possibility */
-			t = tpossELT(tit);
-
-
-			/* Is it an empty multi? */
-			if (tfIsMulti(t) && !tfArgc(t)) continue;
-
-
-			/* No - add it to the set of possible types */
-			tprhs = tpossAdd1(tprhs, t);
-		}
-
+		tprhs = tpossFilterEmpty(tpnew);
 
 		/* Update the tposs for the RHS */
 		/* abTPoss(rhs) = tpossRefer(tprhs); */

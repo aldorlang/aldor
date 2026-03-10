@@ -29,6 +29,7 @@ struct tformUses {
 	BPack(Bool)	isParamImport;
 	BPack(Bool)	isCategoryImport;
 	BPack(Bool)	isCatConditionImport;
+	ULong		serialNo;
 	TForm		tf;
 	TQual		exports;
 	TQual		imports;
@@ -201,6 +202,7 @@ extern int		stabPrint		(FILE *, Stab);
 extern int		stabPrintTo		(FILE *, Stab, int minlev);
 extern int		tfuPrint		(FILE *, TFormUses);
 extern int		tfulPrint		(FILE *, TFormUsesList);
+extern int		tfuOStreamPrint		(OStream, TFormUses);
 
 extern SymeList		stabGetExportedSymes	(Stab);
 extern TQualList	stabImportFrom		(Stab, TQual);

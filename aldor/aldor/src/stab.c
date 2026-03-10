@@ -1636,7 +1636,7 @@ tfuPrint(FILE *fout, TFormUses tfu)
 {
 	int	cc = 0;
 	
-	cc += tfPrint(fout, tfu->tf);
+	cc += afprintf(fout, "%ld - %pTForm", tfu->serialNo, tfu->tf);
 	findent += 2;
 	cc += fnewline(fout);
 	
@@ -1695,6 +1695,24 @@ tfuPrint(FILE *fout, TFormUses tfu)
 	findent -= 2;
 	cc += fnewline(fout);
 	
+	return cc;
+}
+
+int
+tfuOStreamPrint(OStream ostream, TFormUses tfu)
+{
+	int cc = 0;
+	if (!tfu)
+		return ostreamPrintf(ostream, "(tfu: NULL)");
+
+	cc += ostreamPrintf(ostream, "(TFU[%d] %s%s%s%s: %pTForm)",
+		      tfu->serialNo,
+		      tfu->isImported 		? "[imported]" : "",
+		      tfu->isExplicitImport 	? "[explicit]" : "",
+		      tfu->isParamImport 	? "[param]" : "",
+		      tfu->isCategoryImport 	? "[cat]" : "",
+		      tfu->tf);
+
 	return cc;
 }
 
@@ -1878,6 +1896,7 @@ stabIsForeignExport(Stab stab, TForm tf)
  *
  ****************************************************************************/
 
+static Length tfuCounter = 0;
 /*
  * General scheme is this: TFormUses holds TForms and their usage
  * information.	 If a TForm is "registered" via stabDefTForm but not
@@ -1961,6 +1980,7 @@ tfuNew(TForm tf)
 	tu->isCategoryImport	= false;
 	tu->isCatConditionImport= false;
 	tu->isParamImport	= false;
+	tu->serialNo		= tfuCounter++;
 	tu->tf			= tf;
 	tu->exports		= NULL;
 	tu->imports		= NULL;

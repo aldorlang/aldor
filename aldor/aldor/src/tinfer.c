@@ -128,14 +128,17 @@ local Bool		tiTfDefaultSyntaxDefine	(Stab, TForm);
 
 extern void		tiTfPrint		(FILE *, Stab, String,
 						 TFormUsesList);
-extern void		tiTfEnter		(FILE *, String,
+extern void		tiTfEnter		(int *, FILE *, String,
 						 TFormUses, TForm);
-extern void		tiTfExit		(FILE *, String,
+extern void		tiTfExit		(int, FILE *, String,
 						 TFormUses, TForm);
+
+extern void		tiTfSkip		(int, FILE *, String);
 
 #define tiTfPrintDb(v)	if (DEBUG(v)) tiTfPrint
 #define tiTfEnterDb(v)	if (DEBUG(v)) tiTfEnter
 #define tiTfExitDb(v)	if (DEBUG(v)) tiTfExit
+#define tiTfSkipDb(v)	if (DEBUG(v)) tiTfSkip
 
 /* typeInferTForms phases. */
 
@@ -929,9 +932,14 @@ typeInferTForms(Stab stab)
 	depthNo  += 1;
 	serialThis = serialNo;
 	if (serialMax == 0) serialMax = stabMaxSerialNo();
-	tiTfPrintDb(titf)(dbOut, stab, ">>typeInferTForms:", tful0);
-	titfStabDEBUG(dbOut, "->Titf: %*s%ld/%ld\n", (int)depthNo, "",
-		      serialThis, serialMax);
+	if (DEBUG(titf)) {
+		afprintf(dbOut, ">>typeInferTForms: Stab: %d, Sz: %d\n", car(stab)->serialNo, listLength(TFormUses)(tful0));
+		listIter(TFormUses, tfu, tful0, {
+				afprintf(dbOut, "%pTFormUses\n", tfu);
+			});
+	}
+
+	titfStabDEBUG(dbOut, "->(enter)Titf: %*s%ld/%ld\n", (int)depthNo, "", serialThis, serialMax);
 
 	for (tful = tful0; tful; tful = tful1) {
 		DefaultState	wasDoingDefaults = tiTfDoingDefault;
@@ -960,7 +968,7 @@ typeInferTForms(Stab stab)
 		tiTfDoingDefault = wasDoingDefaults;
 	}
 
-	titfStabDEBUG(dbOut, "<-Titf: %*s%ld/%ld\n", (int)depthNo, "",
+	titfStabDEBUG(dbOut, "<-(exit)Titf: %*s%ld/%ld\n", (int)depthNo, "",
 		      serialThis, serialMax);
 	tiTfPrintDb(titf)(dbOut, stab, "<<typeInferTForms:", tful0);
 	depthNo -=1;
@@ -1058,12 +1066,17 @@ tiTfSort(Stab stab, TFormUsesList tful0)
 local void
 tiTfOne(Stab stab, TFormUses tfu, TForm tf)
 {
-	tiTfEnterDb(titf)(dbOut, "tiTfOne", tfu, tf);
+	int serial;
+
+	tiTfEnterDb(titf)(&serial, dbOut, "tiTfOne", tfu, tf);
 
 	/* tfu == NULL just means that typeInferTForm doesn't have a tfu. */
 
 	if (tiTfSyntax1(stab, tfu, tf, listNil(AbSyn))) {
-		if (tfu == NULL) return;
+		if (tfu == NULL) {
+			tiTfSkipDb(titf)(serial, dbOut, "tiTfOne");
+			return;
+		}
 	}
 
 	if (tfIsSyntax(tf) || tfIsPending(tf) || tfu == NULL) {
@@ -1080,7 +1093,7 @@ tiTfOne(Stab stab, TFormUses tfu, TForm tf)
 		tiTfCascades1(stab, tfu);
 	}
 
-	tiTfExitDb(titf)(dbOut, "tiTfOne", tfu, tf);
+	tiTfExitDb(titf)(serial, dbOut, "tiTfOne", tfu, tf);
 }
 
 local void
@@ -1216,8 +1229,9 @@ tiTfPrint(FILE *fout, Stab stab, String str, TFormUsesList tful0)
 {
 	TFormUsesList	tful;
 	Length		i;
+	Length		count = listLength(TFormUses)(tful0);
+	fprintf(dbOut, "%s - %ld forms\n", str, count);
 
-	fprintf(dbOut, "%s\n", str);
 	if (stab) {
 		fprintf(dbOut, "Symbol Table Level %ld.",
 			car(stab)->lexicalLevel);
@@ -1233,36 +1247,49 @@ tiTfPrint(FILE *fout, Stab stab, String str, TFormUsesList tful0)
 		if (tful0) fnewline(dbOut);
 	}
 
-	for (i = 0, tful = tful0; tful; i += 1, tful = cdr(tful)) {
+	for (i=0, tful = tful0; tful; i++, tful = cdr(tful)) {
 		fnewline(dbOut);
-		fprintf(dbOut, "%d. ", (int) i);
+		fprintf(dbOut, "%ld. ", i);
 		tfuPrint(dbOut, car(tful));
 	}
+	fprintf(dbOut, "%ld/%ld. %s.", count, count, str);
+	fnewline(dbOut);
 
 	findent -= 2;
 	fnewline(dbOut);
 }
 
+static int tiTfEntrySerial;
+static int tiTfEntryDepth;
+
 void
-tiTfEnter(FILE *fout, String str, TFormUses tfu, TForm tf)
+tiTfEnter(int *pserial, FILE *fout, String str, TFormUses tfu, TForm tf)
 {
-	fprintf(fout, ">>%s:\n", str);
+	*pserial = tiTfEntrySerial++;
+	tiTfEntryDepth++;
+	fprintf(fout, ">>(enter %d:%d)%s:\n", *pserial, tiTfEntryDepth, str);
 	findent += 2;
-	fnewline(fout);
 	if (tfu) tfuPrint(fout, tfu); else tfPrint(fout, tf);
 	findent -= 2;
 	fnewline(fout);
 }
 
 void
-tiTfExit(FILE *fout, String str, TFormUses tfu, TForm tf)
+tiTfExit(int serial, FILE *fout, String str, TFormUses tfu, TForm tf)
 {
-	fprintf(fout, "<<%s:\n", str);
+	fprintf(fout, "<<(exit %d:%d)%s:\n", serial, tiTfEntryDepth, str);
 	findent += 2;
-	fnewline(fout);
 	if (tfu) tfuPrint(fout, tfu); else tfPrint(fout, tf);
 	findent -= 2;
 	fnewline(fout);
+	tiTfEntryDepth--;
+}
+
+void
+tiTfSkip(int serial, FILE *fout, String str)
+{
+	fprintf(fout, "<<(skip %d:%d)%s:\n", serial, tiTfEntryDepth, str);
+	tiTfEntryDepth--;
 }
 
 /*****************************************************************************
@@ -1488,6 +1515,7 @@ tiTfSyntax1(Stab stab, TFormUses tfu, TForm tf, AbSynList params)
 local Bool
 tiTfFloat1(Stab stab, TForm tf)
 {
+	int serial;
 	TForm	ntf;
 	Stab	nstab;
 
@@ -1495,12 +1523,12 @@ tiTfFloat1(Stab stab, TForm tf)
 	if (nstab == NULL)
 		return false;
 
-	tiTfEnterDb(titfOne)(dbOut, "tiTfFloat1", NULL, tf);
+	tiTfEnterDb(titfOne)(&serial, dbOut, "tiTfFloat1", NULL, tf);
 
 	ntf = typeInferTForm(nstab, tf);
 	tfTransferSemantics(ntf, tf);
 
-	tiTfExitDb(titfOne)(dbOut, "tiTfFloat1", NULL, tf);
+	tiTfExitDb(titfOne)(serial, dbOut, "tiTfFloat1", NULL, tf);
 
 	return true;
 }
@@ -1513,8 +1541,9 @@ tiTfMap1(Stab stab, TFormUses tfu, TForm tf, AbSynList params)
 	TForm	tfarg = tfMapArg(tf);
 	TForm	tfret = tfMapRet(tf);
 	Length	i;
-
-	tiTfEnterDb(titfOne)(dbOut, "tiTfMap1", NULL, tf);
+	int 	serial;
+	
+	tiTfEnterDb(titfOne)(&serial, dbOut, "tiTfMap1", NULL, tf);
 
 	if (nstab != stab) {
 		stabSeeOuterImports(nstab);
@@ -1537,7 +1566,7 @@ tiTfMap1(Stab stab, TFormUses tfu, TForm tf, AbSynList params)
 	tiTfTopDown1	(stab, tf);
 	tiTfMeaning1	(stab, tf);
 
-	tiTfExitDb(titfOne)(dbOut, "tiTfMap1", NULL, tf);
+	tiTfExitDb(titfOne)(serial, dbOut, "tiTfMap1", NULL, tf);
 }
 
 local Bool
@@ -1574,8 +1603,9 @@ tiTfThird1(Stab stab, TFormUses tfu, TForm tf, AbSynList params)
 	TForm	tfw = tfDefineVal(tf);
 	Symbol	sym = tiTfUsesSymbol(tfu);
 	AbSyn	ab, abc, abw;
-
-	tiTfEnterDb(titfOne)(dbOut, "tiTfThird1", tfu, tf);
+	int     serial;
+	
+	tiTfEnterDb(titfOne)(&serial, dbOut, "tiTfThird1", tfu, tf);
 
 	tiTfPushDefinee0(sym);
 
@@ -1629,7 +1659,7 @@ tiTfThird1(Stab stab, TFormUses tfu, TForm tf, AbSynList params)
 	tfCheckConsts(tf);
 	tiTfMeaning1(stab, tf);
 
-	tiTfExitDb(titfOne)(dbOut, "tiTfThird1", tfu, tf);
+	tiTfExitDb(titfOne)(serial, dbOut, "tiTfThird1", tfu, tf);
 }
 
 /*
@@ -1699,8 +1729,8 @@ tiTfCategory1(Stab stab, TFormUses tfu, TForm tf, AbSynList params)
 	Symbol	sym = tiTfUsesSymbol(tfu);
 	AbSyn	ab, abw, aba, abt = NULL;
 	Stab	nstab;
-
-	tiTfEnterDb(titfOne)(dbOut, "tiTfCategory1", NULL, tf);
+	int 	serial;
+	tiTfEnterDb(titfOne)(&serial, dbOut, "tiTfCategory1", NULL, tf);
 
 	tiTfPushDefinee0(sym);
 
@@ -1832,7 +1862,7 @@ tiTfCategory1(Stab stab, TFormUses tfu, TForm tf, AbSynList params)
 	tiTfMeaning1(stab, tfDefineDecl(tf));
 	tiTfMeaning1(stab, tf);
 	
-	tiTfExitDb(titfOne)(dbOut, "tiTfCategory1", NULL, tf);
+	tiTfExitDb(titfOne)(serial, dbOut, "tiTfCategory1", NULL, tf);
 }
 
 local void
@@ -1842,8 +1872,9 @@ tiTfUnknown1(Stab stab, TFormUses tfu, TForm tf, AbSynList params)
 	TForm	tfr = tfDefineVal(tf);
 	Symbol	sym = tiTfUsesSymbol(tfu);
 	AbSyn	ab, abl, abr;
-
-	tiTfEnterDb(titfOne)(dbOut, "tiTfUnknown1", NULL, tf);
+	int     serial;
+	
+	tiTfEnterDb(titfOne)(&serial, dbOut, "tiTfUnknown1", NULL, tf);
 
 	tiTfPushDefinee0(sym);
 
@@ -1875,16 +1906,17 @@ tiTfUnknown1(Stab stab, TFormUses tfu, TForm tf, AbSynList params)
 	}
 	tiTfMeaning1(stab, tf);
 
-	tiTfExitDb(titfOne)(dbOut, "tiTfUnknown1", NULL, tf);
+	tiTfExitDb(titfOne)(serial, dbOut, "tiTfUnknown1", NULL, tf);
 }
 
 /* Convert syntax tforms to pending tforms. */
 local void
 tiTfPending1(Stab stab, TForm tf)
 {
-	tiTfEnterDb(titfOne)(dbOut, "tiTfPending1", NULL, tf);
+	int serial;
+	tiTfEnterDb(titfOne)(&serial, dbOut, "tiTfPending1", NULL, tf);
 	tfPendingFrSyntax(stab, tfGetExpr(tf), tf);
-	tiTfExitDb(titfOne)(dbOut, "tiTfPending1", NULL, tf);
+	tiTfExitDb(titfOne)(serial, dbOut, "tiTfPending1", NULL, tf);
 }
 
 local AbLogic tiTfCondition(Stab stab, TForm tf);
@@ -1897,7 +1929,8 @@ tiTfBottomUp1(Stab stab, TFormUses tfu, TForm tf)
 	AbSyn		absyn = tfGetExpr(tf);
 	TForm		type = tfTypeTuple;
 	AbLogic    fluid(abCondKnown);
-
+	int 	   serial;
+	
 	abCondKnown = tiTfCondition(stab, tf);
 
 	if (abUse(absyn) == AB_Use_Define || abUse(absyn) == AB_Use_Assign)
@@ -1905,11 +1938,11 @@ tiTfBottomUp1(Stab stab, TFormUses tfu, TForm tf)
 	else if (abUse(absyn) == AB_Use_Except)
 		type = tfTuple(tfCategory);
 
-	tiTfEnterDb(titfOne)(dbOut, "tiTfBottomUp1", tfu, tf);
+	tiTfEnterDb(titfOne)(&serial, dbOut, "tiTfBottomUp1", tfu, tf);
 	ol = tiTfPushDeclarees(tiTfGetDeclarees(tfu));
 	tiBottomUp(stab, absyn, type);
 	tiTfPopDeclarees(ol);
-	tiTfExitDb(titfOne)(dbOut, "tiTfBottomUp1", tfu, tf);
+	tiTfExitDb(titfOne)(serial, dbOut, "tiTfBottomUp1", tfu, tf);
 
 	Return(Nothing);
 }
@@ -1951,9 +1984,10 @@ tiTfCondition(Stab stab, TForm tf)
 local void
 tiTfAudit1(Stab stab, TForm tf)
 {
-	tiTfEnterDb(titfOne)(dbOut, "tiTfAudit1", NULL, tf);
+	int serial;
+	tiTfEnterDb(titfOne)(&serial, dbOut, "tiTfAudit1", NULL, tf);
 	typeInferAudit(stab, tfGetExpr(tf));
-	tiTfExitDb(titfOne)(dbOut, "tiTfAudit1", NULL, tf);
+	tiTfExitDb(titfOne)(serial, dbOut, "tiTfAudit1", NULL, tf);
 }
 
 /* Perform top-down analysis to generate semantics for each AbSyn. */
@@ -1964,7 +1998,8 @@ tiTfTopDown1(Stab stab, TForm tf)
 	AbSyn		absyn = tfGetExpr(tf);
 	TForm		type = tfTypeTuple;
 	AbLogic         fluid(abCondKnown);
-
+	int		serial;
+	
 	abCondKnown = tiTfCondition(stab, tf);
 
 	if (abUse(absyn) == AB_Use_Define || abUse(absyn) == AB_Use_Assign)
@@ -1972,9 +2007,9 @@ tiTfTopDown1(Stab stab, TForm tf)
 	else if (abUse(absyn) == AB_Use_Except)
 		type = tfTuple(tfCategory);
 
-	tiTfEnterDb(titfOne)(dbOut, "tiTfTopDown1", NULL, tf);
+	tiTfEnterDb(titfOne)(&serial, dbOut, "tiTfTopDown1", NULL, tf);
 	tiTopDown(stab, absyn, type);
-	tiTfExitDb(titfOne)(dbOut, "tiTfTopDown1", NULL, tf);
+	tiTfExitDb(titfOne)(serial, dbOut, "tiTfTopDown1", NULL, tf);
 
 	Return(Nothing);
 }
@@ -1983,9 +2018,10 @@ tiTfTopDown1(Stab stab, TForm tf)
 local void
 tiTfMeaning1(Stab stab, TForm tf)
 {
-	tiTfEnterDb(titfOne)(dbOut, "tiTfMeaning1", NULL, tf);
+	int serial;
+	tiTfEnterDb(titfOne)(&serial, dbOut, "tiTfMeaning1", NULL, tf);
 	tfMeaning(stab, tfGetExpr(tf), tf);
-	tiTfExitDb(titfOne)(dbOut, "tiTfMeaning1", NULL, tf);
+	tiTfExitDb(titfOne)(serial, dbOut, "tiTfMeaning1", NULL, tf);
 }
 
 /* Fill the extension type using the type form as the type of an extendee. */
@@ -1993,8 +2029,9 @@ local void
 tiTfExtend1(Stab stab, TFormUses tfu)
 {
 	AbSynList	alist;
-
-	tiTfEnterDb(titfOne)(dbOut, "tiTfExtend1", tfu, tfu->tf);
+	int		serial;
+	
+	tiTfEnterDb(titfOne)(&serial, dbOut, "tiTfExtend1", tfu, tfu->tf);
 
 	for (alist = tfu->extendees; alist; alist = cdr(alist)) {
 		AbSyn	ab = car(alist), abt;
@@ -2051,7 +2088,7 @@ tiTfExtend1(Stab stab, TFormUses tfu)
 		}
 	}
 		
-	tiTfExitDb(titfOne)(dbOut, "tiTfExtend1", tfu, tfu->tf);
+	tiTfExitDb(titfOne)(serial, dbOut, "tiTfExtend1", tfu, tfu->tf);
 }
 
 local void
@@ -2077,11 +2114,11 @@ tiTfImport1(Stab stab, TFormUses tfu)
 {
 	Scope("tiTfImport1");
 	AbLogic    fluid(abCondKnown);
-
+	int 	serial;
 	TForm	tf = tfFollow(tfu->tf);
 	abCondKnown = tiTfCondition(stab, tf);
 
-	tiTfEnterDb(titfOne)(dbOut, "tiTfImport1", tfu, tf);
+	tiTfEnterDb(titfOne)(&serial, dbOut, "tiTfImport1", tfu, tf);
 
 	if (tiTfDoingDefault == DEF_State_NotYet )
 		Return(Nothing);
@@ -2123,7 +2160,7 @@ tiTfImport1(Stab stab, TFormUses tfu)
 		strFree(s);
 	}
 
-	tiTfExitDb(titfOne)(dbOut, "tiTfImport1", tfu, tf);
+	tiTfExitDb(titfOne)(serial, dbOut, "tiTfImport1", tfu, tf);
 	Return(Nothing);
 }
 
@@ -2207,9 +2244,18 @@ tiTfGetDeclareeTable(TFormUsesList tful0)
 	}
 
 	if (DEBUG(titf)) {
+		TableIterator it;
 		fprintf(dbOut, ">>tiTfGetDeclareeTable:\n");
-		tblPrint(dbOut, tbl, (TblPrKeyFun) symPrint,
-			 (TblPrEltFun) tfulPrint);
+		for (tblITER(it, tbl); tblMORE(it); tblSTEP(it)) {
+			Symbol 		sym    = (Symbol) tblKEY(it);
+			TFormUsesList   tful   = (TFormUsesList) tblELT(it);
+			Length count = listLength(TFormUses)(tful);
+			int i = 0;
+			listIter(TFormUses, tfu, tful, {
+					i++;
+					afprintf(dbOut, " %d/%ld %pSymbol -- %pTFormUses\n", i, count, sym, tfu);
+				});
+		}
 		fnewline(dbOut);
 	}
 

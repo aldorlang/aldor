@@ -1,0 +1,111 @@
+@SET_MAKE@
+AM_DEFAULT_VERBOSITY = @AM_DEFAULT_VERBOSITY@
+VPATH = @srcdir@
+
+builddir	:= @builddir@
+testdir		:= @top_builddir@/aldor/test
+top_builddir	:= @top_builddir@
+
+abs_builddir	:= @abs_builddir@
+top_builddir	:= @top_builddir@
+abs_top_builddir:= @abs_top_builddir@
+srcdir		:= @srcdir@
+abs_srcdir	:= @abs_srcdir@
+top_srcdir	:= @top_srcdir@
+abs_top_srcdir	:= @abs_top_srcdir@
+abs_libdir	:= $(abs_builddir)
+subdir		:= $(subst $(abs_top_builddir)/,,$(abs_builddir))
+top_srcdir	:= @top_srcdir@
+
+utils := tassert rtexns
+aptests := exquo
+
+fmtests := x rectest enumtest clos strtable1 simple apply \
+           nestcond silly cexp lself0 selfcond lself \
+	   lself2 catdef2 args1a args1 args2a args2 \
+	   strtable1 rec2 lit gener0 gener_fns gtools xarr \
+	   xdom
+ctests  := rectest enumtest multinever maptuple cimp1 \
+           gener0 xit xits xiter lit xarr
+otests  := enumtest rec2
+xtests := enumtest cross seq small lit xit xits xiter generlist xmap xfold genrec \
+		testlist
+
+jtests := enumtest halt gener0 xit xiter
+
+jruntests := small \
+	     xiter xit genlist0a genlist1a gencross0 gencross1 \
+	     xgenerpkg0 xgenerpkg1 xmap where1 xdom gdom xfold gencross_empty genrec \
+	     testlist
+lsptests  := enumtest gener0 genlist0a testlist
+
+out/ao/lself.ao: out/ao/lself0.ao
+out/ao/lself2.ao: out/ao/lself0.ao
+
+out/ao/args1.ao: out/ao/args1a.ao
+out/ao/args2.ao: out/ao/args2a.ao
+
+out/ao/xlist.ao: out/ao/x.ao
+out/ao/gener.ao: out/ao/x.ao
+out/ao/gener0.ao: out/ao/x.ao
+out/ao/generlist.ao: out/ao/x.ao
+out/ao/generlist1.ao: out/ao/x.ao
+out/ao/gener_fns.ao: out/ao/x.ao
+out/ao/gencross0.ao: out/ao/x.ao
+out/ao/gencross1.ao: out/ao/x.ao
+out/ao/gencross1a.ao: out/ao/x.ao
+out/ao/gtools.ao: out/ao/x.ao
+out/ao/genrec.ao: out/ao/x.ao
+out/ao/xit.ao: out/ao/x.ao
+out/ao/xits.ao: out/ao/x.ao
+out/ao/xmap.ao: out/ao/x.ao
+out/ao/xdom.ao: out/ao/x.ao
+out/ao/xfold.ao: out/ao/x.ao
+out/ao/xgenerpkg0.ao: out/ao/x.ao
+out/ao/xgenerpkg1.ao: out/ao/x.ao
+out/ao/selfcond.ao: out/ao/lself0.ao
+
+out/ao/generlist1.ao: generlist.as
+out/ao/genlist1a.ao: genlist0a.as
+
+out/ao/xgenerpkg0.ao: xgenerpkg.as
+out/ao/xgenerpkg1.ao: xgenerpkg.as
+
+opt1_AXLFLAGS=-Y$(foamdir)/al -I $(foamsrcdir)/al -lRuntimeLib=foam -Q9
+strtable1_AXLFLAGS=-Y$(foamdir)/al -I $(foamsrcdir)/al -lRuntimeLib=foam -Q9
+
+c_AXLFLAGS=-Q3
+cimp1_AXLFLAGS=-Q3
+xarr_opts = -Q9 -Qinline-all
+xfold_opts = -Q3
+testlist_opts = -Q3
+
+#badtests := opt1 jcatch fcall
+badtests := jcatch fcall
+
+#xarr_opts += -WD+crin -WD+optf -WD+inlProg -WD+inlCallInfo
+
+jimport_opts := -Q3
+jthrow_opts := -Q3
+halt_opts := -Q3
+jlist_opts :=
+
+lself_opts = -Y out/ao
+lself2_opts = -Y out/ao
+args1_opts = -Y out/ao
+args2_opts = -Y out/ao
+
+gx_opts += -Q3
+gener1a_opts += -Q3
+xm1_opts += -Q3
+xn1_opts += -Q3
+xit_opts += -Q3
+xits_opts += -Q3
+xiter_opts += -Q3
+xgenerpkg_opts += -Q3
+xmap_opts += -Q8
+xdom_opts += -Q3
+gdom_opts += -Q3
+lit_opts += -Q3
+
+include $(top_srcdir)/aldor/test/test-common.mk
