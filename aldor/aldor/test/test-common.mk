@@ -3,10 +3,13 @@
 include $(testdir)/test-config.mk
 include $(top_srcdir)/mk/step.mk
 include $(top_builddir)/lib/config.mk
+include $(top_builddir)/aldor/test/test-config.mk
+
+testcommon = $(abs_testsrcdir)/test-common.mk
 
 $(call am_define_steps,\
-    ALDOR ALDOR_AP ALDOR_CMD ALDOR_EXE ALDOR_FM ALDOR_GENC \
-    ALDOR_JAVATEST ALDOR_OBJ JAVAC ALDOR_JAVA JAVA_CP JUNIT CLEANONE)
+    ALDOR ALDOR_AP ALDOR_CMD ALDOR_EXE ALDOR_FM ALDOR_GENC LSP_SCRIPT LSP_TEST \
+    ALDOR_JAVATEST ALDOR_OBJ JAVAC ALDOR_JAVA JAVAC JAVA_CP JUNIT CLEANONE)
 
 all: really-all
 
@@ -33,10 +36,11 @@ foamlibdir    = $(abs_top_builddir)/aldor/lib/libfoamlib
 foamsrcdir    = $(abs_top_srcdir)/aldor/lib/libfoam
 foamdir       = $(abs_top_builddir)/aldor/lib/libfoam
 
+utilsrcdir   = $(abs_top_srcdir)/aldor/test/utils
 
-_aptests := $(sort $(aptests))
+_aptests    := $(sort $(aptests))
 _jruntests  := $(if $(BUILD_JAVA), $(sort $(jruntests)),)
-_junittests := $(if $(HAS_JUNIT), $(sort $(junittests)),)
+_junittests := $(if $(HAS_JUNIT),  $(sort $(junittests)),)
 _jtests     := $(if $(BUILD_JAVA), $(sort $(jtests) $(_jruntests)),)
 _lsptests   := $(if $(BUILD_LISP), $(sort $(lsptests)))
 _xtests     := $(sort $(xtests))
@@ -99,7 +103,7 @@ out/java/$1.class: $(patsubst %,out/java/%.class,$(subst .,/,$($(1)_classes)))
 endef
 
 $(foreach jtest,$(utils) $(_jtests), $(eval $(call java_import_dependency_template,$(jtest))))
-$(foreach junit,$(_junittests), $(eval $(call junit_class_dependency_template,$(junit))))
+$(foreach junit,$(_junittests),      $(eval $(call junit_class_dependency_template,$(junit))))
 
 allsrcjava := $(foreach jtest,$(_jtests),$(patsubst %,out/java/%.java,$(subst .,/,$($(jtest)_srcjava))))
 
@@ -136,10 +140,13 @@ define aldor_args
 	-Y$(foamlibdir)/al	\
 	-Y out/ao		\
 	-I$(foamsrclibdir)/al	\
+	-I$(utilsrcdir)		\
 	-lAxlLib=foamlib 		\
 	$(AXLFLAGS) $($*_AXLFLAGS)	\
-	-Fao=out/ao/$*.ao $(srcdir)/$*.as
+	-Fao=out/ao/$*.ao $(if $($*_loc),$($*_loc)/$*.as,$(srcdir)/$*.as)
 endef
+
+$(foreach u,$(utils), $(eval $(u)_loc=$(utilsrcdir)))
 
 .PHONY: all-ap
 all-ap: $(patsubst %, out/ao/%.ap, $(_aotests))
@@ -150,8 +157,9 @@ $(patsubst %, out/ap/%.ap, $(_aotests)): out/ap/%.ap: %.as
 
 .PHONY: all-ao
 all-ao: $(patsubst %, out/ao/%.ao, $(_aotests))
+$(patsubst %, out/ao/%.ao, $(_aotests)): out/ao/%.ao: %.as
 $(patsubst %, out/ao/%.ao, $(utils) $(_aotests)): $(aldorexedir)/aldor
-$(patsubst %, out/ao/%.ao, $(utils) $(_aotests)): out/ao/%.ao: %.as
+$(patsubst %, out/ao/%.ao, $(utils) $(_aotests)): out/ao/%.ao:
 	$(AM_V_ALDOR)			\
 	mkdir -p $$(dirname $@);	\
 	$(AM_DBG) $(aldorexedir)/aldor $($*_opts) $(aldor_args)
@@ -174,13 +182,12 @@ $(patsubst %, %.exe, $(_xtests)): %.exe: %.o rtexns.o tassert.o
 		      -Cargs="-Wconfig=$(aldorsrcdir)/aldor.conf -I$(aldorsrcdir) $(UNICLFLAGS)" \
 		      -Fx=$@ out/ao/$*.ao rtexns.o tassert.o
 
-#		      -Fmain=bobthebuilder.c		\
-
 classpath=$(abs_top_builddir)/aldor/lib/java/src/foamj.jar:$(abs_top_builddir)/aldor/lib/libfoam/al/foam.jar:$(abs_top_builddir)/aldor/lib/libfoamlib/al/foamlib.jar
 $(patsubst %, %-javatest,$(_jruntests)): %-javatest: out/java/aldorcode/%.class
 	$(AM_V_ALDOR_JAVATEST) java -cp out/java:$(classpath) aldorcode.$*
 
 $(patsubst %,out/java/%.class,$(_junittests)): out/java/%.class: %.java
+	$(AM_V_JAVAC) \
 	(mkdir -p $$(dirname $@); \
 	 cd $(builddir)/out/java; \
          javac -d . -cp $(classpath)/../src/foamj.jar:$(JUNIT_JAR):. \
@@ -195,9 +202,10 @@ $(addsuffix -junittest,$(_junittests)): %-junittest: out/java/%.class
 
 check-java: $(patsubst %,%-javatest,$(_jruntests)) $(patsubst %,%-junittest,$(_junittests))
 
-$(patsubst %,out/lsp/%_in.lsp, $(_lsptests)): out/lsp/%_in.lsp: Makefile
-	mkdir -p out/lsp;				\
-	(echo '(load "$(srcdir)/prelude.lsp")';		\
+$(patsubst %,out/lsp/%_in.lsp, $(_lsptests)): out/lsp/%_in.lsp: Makefile $(testcommon)
+	@mkdir -p out/lsp				
+	$(AM_V_LSP_SCRIPT) 				\
+	(echo '(load "$(utilsrcdir)/prelude.lsp")';	\
 	 echo '(load "$(foamsrcdir)/foam_l.lsp")';	\
 	 echo '(load "$(foamdir)/al/runtime.lsp")';	\
 	 echo '(load "$(foamlibdir)/al/array.lsp")';	\
@@ -224,6 +232,18 @@ $(addsuffix -lsptest, $(_lsptests)): %-lsptest: $(srcdir)/prelude.lsp out/lsp/%.
 	cat out/lsp/$*_in.lsp
 	sbcl --non-interactive --load out/lsp/$*_in.lsp
 
+.PHONY: $(patsubst %,%-lspsbcl,$(_lsptests))
+
+$(patsubst %,%-lspsbcl,$(_lsptests)): %-lspsbcl: Makefile $(testcommon)
+	sbcl --load out/lsp/$*_in.lsp
+
+.PHONY: all-lsp-tests
+check: all-lsp-tests
+all-lsp-tests: $(patsubst %, %-lsptest, $(_lsptests))
+$(addsuffix -lsptest, $(_lsptests)): %-lsptest: $(srcdir)/prelude.lsp out/lsp/%.lsp out/lsp/%_in.lsp out/lsp/tassert.lsp
+	$(AM_V_LSP_TEST) 	\
+	(sbcl --non-interactive --load out/lsp/$*_in.lsp)
+
 $(addsuffix -xtest,$(_xtests)): %-xtest: %.exe
 	$(AM_V_ALDOR_EXE) ./$*.exe
 
@@ -243,6 +263,7 @@ define check_template
 check-$(1): $(patsubst %, %-javatest,  $(filter $(1), $(_jruntests)))
 check-$(1): $(patsubst %, %-junittest, $(filter $(1), $(_junittests)))
 check-$(1): $(patsubst %, %-xtest,     $(filter $(1), $(_xtests)))
+check-$(1): $(patsubst %, %-lsptest,   $(filter $(1), $(_lsptests)))
 .PHONY: check-$(1)
 endef
 
@@ -254,6 +275,8 @@ clean-$(1):
 		  $(patsubst %, out/fm/%.fm, $(filter $(1), $(_fmtests)))	\
 		  $(patsubst %, out/c/%.c,   $(filter $(1), $(_ctests)))	\
 		  $(patsubst %, %.exe,       $(filter $(1), $(_xtests)))	\
+		  $(patsubst %, out/lsp/%.lsp,    	   $(filter $(1), $(_lsptests)))	\
+		  $(patsubst %, out/lsp/%_in.lsp, 	   $(filter $(1), $(_lsptests)))	\
 		  $(patsubst %, out/java/aldorcode/%.java, $(filter $(1), $(_jtests))); do \
 		rm -f $$$$ii; \
 	done
@@ -287,7 +310,7 @@ check-makefile:
 	set -e; for i in $(_alltests); do make clean && make all-$$i; done
 
 # Check all files are in git
-all-check-source: $(patsubst %,check-source-%, $(utils) $(_aotests))
+all-check-source: $(patsubst %,check-source-%, $(_aotests))
 $(patsubst %,check-source-%, $(utils) $(_aotests)): check-source-%:
 	@(cd $(srcdir); git ls-files --error-unmatch $*.as)
 

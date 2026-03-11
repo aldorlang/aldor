@@ -374,3 +374,9 @@ _tblSTEP(TableIterator *pit)
 	pit->link = pit->curr[0];
 	return 1;
 }
+
+int
+_tblBUCKET(Table tbl, TableIterator *pit)
+{
+	return pit->curr - tbl->buckv;
+}

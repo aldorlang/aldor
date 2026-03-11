@@ -223,14 +223,14 @@
 (defmacro |SFloTimes| (x y) `(the |SFlo| (* (the |SFlo| ,x) (the |SFlo| ,y))))
 (defmacro |SFloTimesPlus| (x y z)
   `(the |SFlo| (+ (* (the |SFlo| ,x) (the |SFlo| ,y)) (the |SFlo| ,z))))
-(defmacro |SFloDivide|	(x y) `(the |SFlo| (/ (the |SFlo| ,x) (the |SFlo| ,y))))
-(defmacro |SFloRPlus|  (x y r) `(error "unimplemented operation -- SFloRPlus"))
-(defmacro |SFloRMinus| (x y r) `(error "unimplemented operation -- SFloRTimes"))
-(defmacro |SFloRTimes| (x y r) `(error "unimplemented operation -- SFloRTimes"))
-(defmacro |SFloRTimesPlus| (x y z r) `(error "unimplemented operation -- SFloTimesPlus"))
-(defmacro |SFloRDivide|(x y r) `(error "unimplemented operation -- SFloDivide"))
-(defmacro |SFloDissemble| (x) `(error "unimplemented operation -- SFloDissemble"))
-(defmacro |SFloAssemble| (w x y) `(error "unimplemented operation -- SFloAssemble"))
+(defmacro |SFloDivide|	   (x y)     `(the |SFlo| (/ (the |SFlo| ,x) (the |SFlo| ,y))))
+(defmacro |SFloRPlus|      (x y r)   (declare (ignorable x y r))   `(error "unimplemented operation -- SFloRPlus"))
+(defmacro |SFloRMinus|     (x y r)   (declare (ignorable x y r))   `(error "unimplemented operation -- SFloRTimes"))
+(defmacro |SFloRTimes|     (x y r)   (declare (ignorable x y r))   `(error "unimplemented operation -- SFloRTimes"))
+(defmacro |SFloRDivide|    (x y r)   (declare (ignorable x y r))   `(error "unimplemented operation -- SFloDivide"))
+(defmacro |SFloDissemble|  (x)       (declare (ignorable x))       `(error "unimplemented operation -- SFloDissemble"))
+(defmacro |SFloAssemble|   (w x y)   (declare (ignorable w x y))   `(error "unimplemented operation -- SFloAssemble"))
+(defmacro |SFloRTimesPlus| (x y z r) (declare (ignorable x y z r)) `(error "unimplemented operation -- SFloTimesPlus"))
 
 ;; These are no longer foam builtins
 ;;(defmacro |SFloRound|    (x) `(the |BInt| (round (the |SFlo| ,x))))
@@ -260,14 +260,13 @@
 (defmacro |DFloTimesPlus| (x y z)
   `(the |DFlo| (+ (* (the |DFlo| ,x) (the |DFlo| ,y)) (the |DFlo| ,z))))
 
-(defmacro |DFloRPlus|  (x y r) `(error "unimplemented operation -- DFloRPlus"))
-(defmacro |DFloRMinus| (x y r) `(error "unimplemented operation -- DFloRTimes"))
-(defmacro |DFloRTimes| (x y r) `(error "unimplemented operation -- DFloRTimes"))
-(defmacro |DFloRTimesPlus| (x y z r) `(error "unimplemented operation -- DFloTimesPlus"))
-(defmacro |DFloRDivide|(x y r) `(error "unimplemented operation -- DFloDivide"))
-
-(defmacro |DFloDissemble| (x) `(error "unimplemented operation -- DFloDissemble"))
-(defmacro |DFloAssemble| (w x y z) `(error "unimplemented operation -- DFloAssemble"))
+(defmacro |DFloRPlus|      (x y r)   (declare (ignorable x y r)) `(error "unimplemented operation -- DFloRPlus"))
+(defmacro |DFloRMinus|     (x y r)   (declare (ignorable x y r)) `(error "unimplemented operation -- DFloRTimes"))
+(defmacro |DFloRTimes|     (x y r)   (declare (ignorable x y r)) `(error "unimplemented operation -- DFloRTimes"))
+(defmacro |DFloRDivide|    (x y r)   (declare (ignorable x y r)) `(error "unimplemented operation -- DFloDivide"))
+(defmacro |DFloDissemble|  (x)       (declare (ignorable x))     `(error "unimplemented operation -- DFloDissemble"))
+(defmacro |DFloAssemble|   (w x y z) (declare (ignorable w x y z)) `(error "unimplemented operation -- DFloAssemble"))
+(defmacro |DFloRTimesPlus| (x y z r) (declare (ignorable x y z r)) `(error "unimplemented operation -- DFloTimesPlus"))
 
 ;; Not builtins anymore
 ;;(defmacro |DFloRound|    (x) `(the |BInt| (round (the |DFlo| ,x))))
@@ -410,12 +409,12 @@
 ;;(defvar |FoamOutputString|
 ;;  (make-array 80 :element-type 'string-char :adjustable t :fill-pointer 0))
 (defun |FormatNumber| (c arr i)
-  (setq str (format nil "~a" c))
-  (replace arr str :start1 i)
+  (let ((str (format nil "~a" c)))
+    (replace arr str :start1 i)
 ;;  (incf i (fill-pointer |FoamOutputString|))
 ;;  (if (> i (length arr)) (error "not enough space"))
 ;;  (setf (fill-pointer |FoamOutputString|) 0)
-  (+ i (length str)))
+    (+ i (length str))))
 
 (defmacro |FormatSFlo| (c arr i) `(|FormatNumber| ,c ,arr ,i))
 (defmacro |FormatDFlo| (c arr i) `(|FormatNumber| ,c ,arr ,i))
@@ -480,6 +479,18 @@
 (defparameter null-char-string (string (code-char 0)))
 (defmacro |MakeLit| (s) `(concatenate 'string ,s null-char-string))
 
+;; functions have associated info; add it here
+;; In a hurry -> O(n) lookup..
+(defvar foam-function-list ())
+
+(defun alloc-prog-info (fun val)
+  (setq foam-function-list (cons (cons fun val) foam-function-list)))
+
+(defun foam-function-info (fun)
+  (let ((xx (assoc fun foam-function-list)))
+    (if (null xx) nil
+      (cdr xx))))
+
 ;; functions are represented by symbols, with the symbol-value being some
 ;; information, and the symbol-function is the function itself.
 ;; 1-valued lisp should represent progs as either a pair or defstruct.
@@ -500,16 +511,8 @@
     (if (null aa) 0
       (setf (FoamProgInfoStruct-hashval aa) y))))
 
-;; In a hurry -> O(n) lookup..
-(defvar foam-function-list ())
-
-(defun alloc-prog-info (fun val)
-  (setq foam-function-list (cons (cons fun val) foam-function-list)))
-
-(defun foam-function-info (fun)
-  (let ((xx (assoc fun foam-function-list)))
-    (if (null xx) nil
-      (cdr xx))))
+(proclaim '(ftype (function (t) (values t)) insert-types))
+(proclaim '(ftype (function (t) (values t)) type2init))
 
 ;; Accessors and constructors
 (defmacro |DDecl| (name &rest args)
@@ -536,6 +539,7 @@
 	  (t `(list ,@init-args)))))
 
 (defmacro |RElt| (name field index rec)
+  (declare (ignore field))
   (let ((count (length (get name 'struct-args))))
     (cond ((> count 2) `(svref ,rec ,index))
 	  ((= count 2)
@@ -543,6 +547,7 @@
 	  (t `(car ,rec)))))
 
 (defmacro |SetRElt| (name field index rec val)
+  (declare (ignore field))
   (let ((count (length (get name 'struct-args))))
     (cond ((> count 2) `(setf (svref ,rec ,index) ,val))
 	  ((= count 2)
@@ -556,6 +561,7 @@
   `(setf (aref ,name ,index) ,val))
 
 (defmacro |MakeLevel| (builder struct)
+  (declare (ignore builder))
   (let ((args (get struct 'struct-args)))
     (if (get struct 'struct-args)
 	`(make-array ,(length args))
@@ -563,15 +569,19 @@
 
 
 (defmacro |EElt| (accessor n var)
+  (declare (ignore accessor))
   `(svref ,var ,n))
 
 (defmacro |SetEElt| (accessor n var val)
+  (declare (ignore accessor))
   `(setf (svref ,var ,n) ,val))
 
 (defmacro |Lex| (accessor n var)
+  (declare (ignore accessor))
   `(svref ,var ,n))
 
 (defmacro |SetLex| (accessor n var val)
+  (declare (ignore accessor))
   `(progn ;; (print ',accessor)
 	  (setf (svref ,var ,n) ,val)))
 
@@ -593,7 +603,9 @@
 		  (env (|ClosEnv| c)))
 	      (funcall fun ,@args env))))))
 
-(defmacro |FoamFree| (o) '())
+(defmacro |FoamFree| (o)
+  (declare (ignore o))
+  '())
 
 ;; Generators.
 ;; A coroutine is (list cr-impl env0-constructor)
@@ -601,6 +613,32 @@
 ;; An iterator is (vector lastresult step state env1 env0 cr-impl)
 ;; A record-descriptor is a lambda returning a new state record
 ;; An env-descriptor is a lambda returning a new env0, or null
+
+(defmacro |GenerValue| (g)
+  `(|GenIterValue| ,g))
+
+(defun |GenIterValue| (it)
+  (svref it 0))
+
+(defun |GenIterStep| (it)
+  (svref it 1))
+
+(defun |GenIterState| (it)
+  (svref it 2))
+
+(defun |GenIterEnv1| (it)
+  (svref it 3))
+
+(defun |GenIterEnv0| (it)
+  (svref it 4))
+
+(defun |GenIterGenerProg| (it)
+  (svref it 5))
+
+(defun |GenIterSetResult| (it newstep newresult)
+  (setf (svref it 0) newresult)
+  (setf (svref it 1) newstep))
+
 (defmacro |Gener| (e1 rec id)
   `(let ((rl (lambda () (|RNew| ,rec)))
 	 (cr ,id))
@@ -629,31 +667,6 @@
     (|GenIterSetResult| it newstep newresult)
     (= newstep -1)))
 
-(defmacro |GenerValue| (g)
-  `(|GenIterValue| ,g))
-
-(defun |GenIterValue| (it)
-  (svref it 0))
-
-(defun |GenIterStep| (it)
-  (svref it 1))
-
-(defun |GenIterState| (it)
-  (svref it 2))
-
-(defun |GenIterEnv1| (it)
-  (svref it 3))
-
-(defun |GenIterEnv0| (it)
-  (svref it 4))
-
-(defun |GenIterGenerProg| (it)
-  (svref it 5))
-
-(defun |GenIterSetResult| (it newstep newresult)
-  (setf (svref it 0) newresult)
-  (setf (svref it 1) newstep))
-
 ;; macros for defining things
 ;; Example:
 ;; (declare-prog
@@ -666,20 +679,28 @@
                      ,(car name-result))))
 
 (defmacro declare-type (name type)
-  `(proclaim '(type ,name ,type)))
+  `(progn (proclaim '(type ,type ,name))
+	  (defvar ,name)))
 
 (defmacro defprog (type temps &rest body)
   `(progn (defun ,(caar type) ,(mapcar #'car (cadr type))
-	    (typed-let ,temps ,@body))
+	    (declare (ignorable ,@(mapcar #'car (cadr type))))
+	    (typed-let ,temps
+		       (declare (ignorable ,@(mapcar #'car temps)))
+		       ,@body))
 	  (alloc-prog-info #',(caar type) (make-FoamProgInfoStruct))))
 
 (defmacro defcoroutine (cr-name type env temps &rest body)
   `(progn (defun ,(caar type) ,(mapcar #'car (cadr type))
-	    (typed-let ,temps ,@body))
+	    (declare (ignorable ,(car env) ,@(mapcar #'car (cadr type))))
+	    (typed-let ,temps
+		       (declare (ignorable ,@(mapcar #'car temps)))
+		       ,@body))
 	  (let ((the-cr #',(caar type)))
 	    (alloc-prog-info the-cr (make-FoamProgInfoStruct))
 	    (defconstant ,cr-name
-	      (list the-cr (lambda (,(car env)) ,(cadr env))))))
+	      (list the-cr (lambda (,(car env)) (declare (ignorable ,(car env)))
+			     ,(cadr env)))))))
 
 (defmacro defspecials (&rest lst)
   `(proclaim '(special ,@lst)))
@@ -715,10 +736,15 @@
 
 ;;; Boot macros
 (defmacro file-exports (lst)
-  `(eval-when (load eval)
-	      (when (fboundp 'process-export-entry)
-		    (mapcar #'process-export-entry ,lst))
-	nil))
+  `(when (fboundp 'process-export-entry)
+    (mapcar #'process-export-entry ,lst)))
+
+(defun process-export-entry (x)
+  `(export ,(car x)))
+;;  `(eval-when (load eval)
+;;	      (when (fboundp 'process-export-entry)
+;;		    (mapcar #'process-export-entry ,lst))
+;;	nil))
 
 (defmacro file-imports (lst)
   `(eval-when (load eval)
@@ -842,7 +868,8 @@
 	  (aux i1)))
 
 ;; function for compiling and loading from lisp
-
+(proclaim '(ftype (function (t) (values t)) system))
+	  
 (defun compile-as-file (file &optional (opts nil))
   (let* ((path (pathname file))
 	 (name (pathname-name path))
@@ -900,10 +927,14 @@
 (defun |fiGetDebugVar| () *foam-debug-var*)
 
 (defun |fiSetDebugVar| (x) (setq *foam-debug-var* x))
-(defun |fiSetDebugger| (x y) ())
-(defun |fiGetDebugger| (x) ())
+(defun |fiSetDebugger| (x y) (declare (ignore x y)) ())
+(defun |fiGetDebugger| (x) (declare (ignore x)) ())
 
 ;; Output ports
+(defvar |G-stdoutVar|)
+(defvar |G-stdinVar|)
+(defvar |G-stderrVar|)
+
 (setq |G-stdoutVar| t)
 (setq |G-stdinVar| t)
 (setq |G-stderrVar| t)
@@ -917,19 +948,20 @@
 (defmacro |politicallySound| (u v) 
  `(or (eql ,u ,v) (eq ,u ,v)))
 
+
+(defun |magicEq1| (u v)
+ (cond ( (and (atom u) (atom v)) (|politicallySound| u v))
+       ( (or (atom u) (atom v)) nil)
+       ( (|politicallySound| (car u) (car v)) (|magicEq1| (cdr u) (cdr v)))
+       (t nil )))
+
 (defun |PtrMagicEQ| (u v) 
 ;; I find (as-eg4) that these buggers can be numbers 
  (cond ( (or (NULL u) (NULL v)) nil)
        ( (and (ATOM u) (ATOM v)) (eql u v))
        ( (or (ATOM u) (ATOM v)) nil)
        ( (equal (length u) (length v)) (|magicEq1| u v)) 
-       nil ))
-
-(defun |magicEq1| (u v)
- (cond ( (and (atom u) (atom v)) (|politicallySound| u v))
-       ( (or (atom u) (atom v)) nil)
-       ( (|politicallySound| (car u) (car v)) (|magicEq1| (cdr u) (cdr v)))
-       nil ))
+       (t nil )))
 
 (defconstant |hashZ1| 1100661313)
 (defconstant |hashZ2| 1433925857)

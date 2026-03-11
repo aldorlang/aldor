@@ -91,7 +91,7 @@ host_triplet = @host@
 subdir = lib/algebra/doc
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ax_lib_readline.m4 \
-	$(top_srcdir)/m4/build_id.m4 \
+	$(top_srcdir)/m4/build_id.m4 $(top_srcdir)/m4/ci.m4 \
 	$(top_srcdir)/m4/documentation-tests.m4 \
 	$(top_srcdir)/m4/error-on-warn.m4 $(top_srcdir)/m4/git.m4 \
 	$(top_srcdir)/m4/interp-tests.m4 \
@@ -278,7 +278,9 @@ VCSVERSION = @VCSVERSION@
 VERSION = @VERSION@
 YACC = @YACC@
 YACC_EXISTS = @YACC_EXISTS@
+YC = @YC@
 YFLAGS = @YFLAGS@
+YQ = @YQ@
 abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
 abs_top_builddir = @abs_top_builddir@

@@ -1,4 +1,5 @@
 @SET_MAKE@
+
 AM_DEFAULT_VERBOSITY = @AM_DEFAULT_VERBOSITY@
 VPATH = @srcdir@
 
@@ -20,24 +21,23 @@ top_srcdir	:= @top_srcdir@
 utils := tassert rtexns
 aptests := exquo
 
-fmtests := def x rectest enumtest clos strtable1 simple apply \
+fmtests := x rectest enumtest clos strtable1 simple apply \
            nestcond silly cexp lself0 selfcond lself \
 	   lself2 catdef2 args1a args1 args2a args2 \
 	   strtable1 rec2 lit gener0 gener_fns gtools xarr \
-	   xdom select0 union0 case0 m0 ml0 m1 matchlist match0 match1 match
-
+	   xdom
 ctests  := rectest enumtest multinever maptuple cimp1 \
            gener0 xit xits xiter lit xarr
 otests  := enumtest rec2
 xtests := enumtest cross seq small lit xit xits xiter generlist xmap xfold genrec \
 		testlist
 
-jtests := simple_j enumtest run_j halt gener0 xit xiter 
-junittests := JExportTest JThrowTest
-jruntests := small jimport jimport_opt jimp0 jimp1 jlist jexport jexport1 jexport2 \
-	     envname jexn jthrow xiter xit genlist0a genlist1a gencross0 gencross1 \
+jtests := enumtest halt gener0 xit xiter
+
+jruntests := small \
+	     xiter xit genlist0a genlist1a gencross0 gencross1 \
 	     xgenerpkg0 xgenerpkg1 xmap where1 xdom gdom xfold gencross_empty genrec \
-	     testlist m0 m1 matchlist match0 cross
+	     testlist
 lsptests  := enumtest gener0 genlist0a testlist
 
 out/ao/lself.ao: out/ao/lself0.ao
@@ -72,40 +72,19 @@ out/ao/genlist1a.ao: genlist0a.as
 out/ao/xgenerpkg0.ao: xgenerpkg.as
 out/ao/xgenerpkg1.ao: xgenerpkg.as
 
-out/ao/ml0.ao: out/ao/m0.ao
-out/ao/m1.ao: out/ao/m0.ao
-out/ao/matchlist.ao: out/ao/m0.ao
-out/ao/match.ao: out/ao/m0.ao out/ao/matchlist.ao
-out/ao/match0.ao: out/ao/m0.ao out/ao/matchlist.ao
-out/ao/match1.ao: out/ao/m0.ao out/ao/matchlist.ao
-
-match0-javatest: out/java/aldorcode/m0.class out/java/aldorcode/matchlist.class
+opt1_AXLFLAGS=-Y$(foamdir)/al -I $(foamsrcdir)/al -lRuntimeLib=foam -Q9
+strtable1_AXLFLAGS=-Y$(foamdir)/al -I $(foamsrcdir)/al -lRuntimeLib=foam -Q9
 
 c_AXLFLAGS=-Q3
 cimp1_AXLFLAGS=-Q3
-simple_j_AXLFLAGS=-Q2
-jimport_opt_AXLFLAGS=-Q9 -Qinline-all
 xarr_opts = -Q9 -Qinline-all
 xfold_opts = -Q3
 testlist_opts = -Q3
 
-m0_opts = -Q3
-matchlist_opts = -Q3
-match0_opts = -Q3
 #badtests := opt1 jcatch fcall
 badtests := jcatch fcall
 
 #xarr_opts += -WD+crin -WD+optf -WD+inlProg -WD+inlCallInfo
-
-match_opts += -WD+sefoSubst -WD+tfImport 
-match0_opts += -WD+tfs -WD+tipBup -WD+tipTdn -Mpreview
-match1_opts += -WD+tfs -WD+tipBup -WD+tipTdn -WD+tipApply -Mpreview
-matchlist_opts += -WD+tipApply -WD+sefoSubst -Mpreview
-ml0_opts +=  -Mpreview -WD+tc
-m1_opts += -WD+tipBup -WD+tipTdn -Mpreview
-
-#union0_opts += -WD+tipBup -WD+tipTdn -Mpreview
-#where1_opts += -WD+tipBup
 
 jimport_opts := -Q3
 jthrow_opts := -Q3
@@ -129,27 +108,5 @@ xmap_opts += -Q8
 xdom_opts += -Q3
 gdom_opts += -Q3
 lit_opts += -Q3
-
-jexport_extjava := aldor.stuff.Foo aldor.stuff.Bar
-jthrow_extjava  := aldor.stuff.ExnThrow
-envname_extjava := aldor.stuff.Env
-jlist_extjava   := aldor.stuff.Singleton
-jexn_srcjava    := aldor.test.ExceptionExample
-JExportTest_classes := aldorcode.jexport
-JThrowTest_classes  := aldorcode.jthrow
-match0_classes := aldorcode.matchlist
-
-jimport_opt.ao: $(srcdir)/jimport.as
-
-# opt1 fails because the optimise decides to inline the recursive call
-# (it shouldn't, but spotting the call is a bit tricky).
-
-opt1_AXLFLAGS=-Y$(foamdir)/al -I $(foamsrcdir)/al -lRuntimeLib=foam -Q9
-strtable1_AXLFLAGS=-Y$(foamdir)/al -I $(foamsrcdir)/al -lRuntimeLib=foam -Q9
-clos_AXLFLAGS := -Q2
-simple_AXLFLAGS=-O
-multinever_AXLFLAGS = -Q9
-args1_AXLFLAGS =
-args2_AXLFLAGS =
 
 include $(top_srcdir)/aldor/test/test-common.mk

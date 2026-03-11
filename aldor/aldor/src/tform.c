@@ -319,7 +319,7 @@ tfNewEmpty(TFormTag tag, Length argc)
 	tf->queries	= listNil(TForm);
 	tf->cascades	= listNil(TQual);
 
-	tf->conditions = NULL;;
+	tf->conditions = NULL;
 
 	tf->sigma	= NULL;
 	tf->varId	= 0;
@@ -8692,7 +8692,7 @@ local Bool
 abCheckJavaImportId(ErrorSet errors, AbSyn id)
 {
 	Syme syme = abSyme(id);
-	Bool ret = true;;
+	Bool ret = true;
 	if (!errorSetPrintf(errors, abIsJavaImportId(id),
 			    "%pAbSyn is not a valid java type\n", id)) {
 		ret = false;

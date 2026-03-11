@@ -132,6 +132,8 @@ extern Bool	tpossHasUTForm(TPoss, UTForm);
 		 */
 extern Bool	tpossHasIntersection(TPoss tp1, TPoss tp2);
 
+extern TPoss	tpossFilterEmpty	(TPoss tposs);
+
 /*
  * Abstract iteration over type possibility sets:
  *

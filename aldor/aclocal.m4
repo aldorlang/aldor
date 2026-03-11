@@ -1203,6 +1203,7 @@ AC_SUBST([am__untar])
 
 m4_include([m4/ax_lib_readline.m4])
 m4_include([m4/build_id.m4])
+m4_include([m4/ci.m4])
 m4_include([m4/documentation-tests.m4])
 m4_include([m4/error-on-warn.m4])
 m4_include([m4/git.m4])

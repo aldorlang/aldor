@@ -1,7 +1,7 @@
 SUBDIRS =	\
 	rtypes  \
-	core
-
+	core	\
+	java
 
 config.mk: $(srcdir)/test-config.mk.in
 

@@ -131,7 +131,7 @@ ptrTSetIterNext(PointerTSetIter tsetIter)
 local Pointer
 ptrTSetIterElt(PointerTSetIter tsetIter)
 {
-	return tblKEY(tsetIter->iter);;
+	return tblKEY(tsetIter->iter);
 }
 
 local Bool

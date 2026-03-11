@@ -19,8 +19,6 @@ default i:Int;
 a : ClosedSegment Int:= 1..10;
 l := [i for i in a];
 
-print <<l<<newline;
-
 m : List Int :=	[i2 for i2 in b] where b := 1..4
 assertEquals([1,2,3,4], m)
 

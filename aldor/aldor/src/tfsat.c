@@ -2037,7 +2037,7 @@ tfSatExportLazySelfSubst(SymeList mods, Sefo Sab, AbSub *lazySelfSubst)
 		sigma = absFrSymes(stabFile(), mods, Sab);
 		*lazySelfSubst = sigma;
 	}
-	return sigma;;
+	return sigma;
 }
 
 
