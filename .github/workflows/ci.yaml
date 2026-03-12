@@ -30,14 +30,16 @@ jobs:
         cd debian && rm -rf aldor/DEBIAN && tar zcf aldor-linux-x86_64-${{ github.sha }}.tar.gz aldor/
         mv aldor-linux-x86_64-${{ github.sha }}.tar.gz ../
         mv ../../aldor_${pkg_version}_amd64.deb ../
+	find ../.. -name \*.deb
+	ls -la ..
 
     - name: Upload Linux binaries
       uses: actions/upload-artifact@v4
       with:
         name: aldor-linux-x86_64-binary
         path: |
-            aldor-linux-x86_64-${{ github.sha }}.tar.gz
-            aldor_${pkg_version}_amd64.deb
+           aldor-linux-x86_64-${{ github.sha }}.tar.gz
+           aldor_${pkg_version}_amd64.deb
 
   build-linux-latest:
     runs-on: ubuntu-latest
