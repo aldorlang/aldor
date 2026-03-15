@@ -1,6 +1,6 @@
-name: Aldor CI
+name: Aldor Release
 
-on: [pull_request]
+on: [push]
 
 jobs:
   build-linux:
@@ -27,35 +27,30 @@ jobs:
 
     - name: Create artifact archives
       run: |
-        cd debian && rm -rf aldor/DEBIAN && tar zcf aldor-linux-x86_64-${{ github.sha }}.tar.gz aldor/
-        mv aldor-linux-x86_64-${{ github.sha }}.tar.gz ../
+        cd debian && rm -rf aldor/DEBIAN && tar zcf aldor-linux-x86_64-${{ env.pkg_version }}.tar.gz aldor/
+        mv aldor-linux-x86_64-${{ env.pkg_version }}.tar.gz ../
         mv ../../aldor_${pkg_version}_amd64.deb ../
+        echo env pkg version ${{ env.pkg_version }}
+        echo env ref name ${{ env.GITHUB_REF_NAME }}
+        echo gh  ref name ${{ github.ref_name }}
+        find ../.. -name \*.deb
+        ls -la ..
 
     - name: Upload Linux binaries
       uses: actions/upload-artifact@v4
       with:
         name: aldor-linux-x86_64-binary
         path: |
-           aldor-linux-x86_64-${{ github.sha }}.tar.gz
-           aldor_${pkg_version}_amd64.deb
+           aldor-linux-x86_64-${{ env.pkg_version }}.tar.gz
+           aldor_${{ env.pkg_version }}_amd64.deb
 
-  build-linux-latest:
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-
-    steps:
-    - uses: actions/checkout@v2
-
-    - name: install dependencies
-      run: sudo apt-get install libgmp-dev debhelper fakeroot build-essential devscripts
-
-    - name: build
-      run: dpkg-buildpackage -b -us -uc
-
-#  build-macos:
-#    runs-on: macos-10.15
-
-#    steps:
-#    - uses: actions/checkout@v2
-#    - name: build
-#      run: sh ./build-macos.sh
+    - name: Create latest release
+      uses: softprops/action-gh-release@v2
+      if: github.ref_type == 'branch'
+      with:
+        body: Most recent build (${{ github.ref_name }})
+        name: Latest ${{ github.ref_name }} build
+        tag_name: test-latest-${{ github.ref_name }}
+        files: |
+           aldor-linux-x86_64-${{ github.pkg_version }}.tar.gz
+           aldor_${{ env.pkg_version }}_amd64.deb
