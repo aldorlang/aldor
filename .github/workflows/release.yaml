@@ -30,6 +30,8 @@ jobs:
         cd debian && rm -rf aldor/DEBIAN && tar zcf aldor-linux-x86_64-${{ github.sha }}.tar.gz aldor/
         mv aldor-linux-x86_64-${{ github.sha }}.tar.gz ../
         mv ../../aldor_${pkg_version}_amd64.deb ../
+        echo env ref name ${{ env.GITHUB_REF_NAME }}
+        echo gh  ref name ${{ github.ref_name }}
         find ../.. -name \*.deb
         ls -la ..
 
@@ -45,8 +47,9 @@ jobs:
       uses: softprops/action-gh-release@v2
       if: github.ref_type == 'branch'
       with:
-        body: Most recent build (${{ env.GITHUB_REF_NAME }})
-        tag_name: latest-${{ env.GITHUB_REF_NAME }}
+        body: Most recent build (${{ github.ref_name }})
+        name: Latest ${{ github.ref_name }} build
+        tag_name: test-latest
         files: |
            aldor-linux-x86_64-${{ github.sha }}.tar.gz
            aldor_${pkg_version}_amd64.deb
