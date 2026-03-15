@@ -31,18 +31,9 @@ jobs:
         mv aldor-linux-x86_64-${{ env.pkg_version }}.tar.gz ../
         mv ../../aldor_${pkg_version}_amd64.deb ../
         echo env pkg version ${{ env.pkg_version }}
-        echo env ref name ${{ env.GITHUB_REF_NAME }}
         echo gh  ref name ${{ github.ref_name }}
         find ../.. -name \*.deb
         ls -la ..
-
-    - name: Upload Linux binaries
-      uses: actions/upload-artifact@v4
-      with:
-        name: aldor-linux-x86_64-binary
-        path: |
-           aldor-linux-x86_64-${{ env.pkg_version }}.tar.gz
-           aldor_${{ env.pkg_version }}_amd64.deb
 
     - name: Create latest release
       uses: softprops/action-gh-release@v2
@@ -52,5 +43,5 @@ jobs:
         name: Latest ${{ github.ref_name }} build
         tag_name: test-latest-${{ github.ref_name }}
         files: |
-           aldor-linux-x86_64-${{ github.pkg_version }}.tar.gz
+           aldor-linux-x86_64-${{ env.pkg_version }}.tar.gz
            aldor_${{ env.pkg_version }}_amd64.deb
