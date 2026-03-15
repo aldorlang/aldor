@@ -1,0 +1,47 @@
+name: Aldor Release
+
+on: [push]
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 30
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: install dependencies
+      run: sudo apt-get install libgmp-dev debhelper fakeroot devscripts
+
+    - name: Capture version
+      run: |
+         export EMAIL=build-agent@aldorlang.example.com
+         cfg_version=$(grep AC_INIT ./aldor/configure.ac | awk -F, '{print $2}' | tr -d '[]')
+         version="${cfg_version}+$(date +%Y%m%d)"
+         dch --newversion $version 'Build'
+         dch -r Relase
+         echo "pkg_version=${version}" >> "$GITHUB_ENV"
+         echo "Building version ${version}"
+
+    - name: build
+      run: dpkg-buildpackage -b -us -uc
+
+    - name: Create artifact archives
+      run: |
+        cd debian && rm -rf aldor/DEBIAN && tar zcf aldor-linux-x86_64-${{ env.pkg_version }}.tar.gz aldor/
+        mv aldor-linux-x86_64-${{ env.pkg_version }}.tar.gz ../
+        mv ../../aldor_${pkg_version}_amd64.deb ../
+        echo env pkg version ${{ env.pkg_version }}
+        echo gh  ref name ${{ github.ref_name }}
+        find ../.. -name \*.deb
+        ls -la ..
+
+    - name: Create latest release
+      uses: softprops/action-gh-release@v2
+      if: github.ref_type == 'branch'
+      with:
+        body: Most recent build (${{ github.ref_name }})
+        name: Latest ${{ github.ref_name }} build
+        tag_name: test-latest-${{ github.ref_name }}
+        files: |
+           aldor-linux-x86_64-${{ env.pkg_version }}.tar.gz
+           aldor_${{ env.pkg_version }}_amd64.deb

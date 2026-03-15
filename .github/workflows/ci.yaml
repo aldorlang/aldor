@@ -1,6 +1,6 @@
 name: Aldor CI
 
-on: [push, pull_request]
+on: [pull_request]
 
 jobs:
   build-linux:
@@ -36,8 +36,8 @@ jobs:
       with:
         name: aldor-linux-x86_64-binary
         path: |
-            aldor-linux-x86_64-${{ github.sha }}.tar.gz
-            aldor_${pkg_version}_amd64.deb
+           aldor-linux-x86_64-${{ github.sha }}.tar.gz
+           aldor_${pkg_version}_amd64.deb
 
   build-linux-latest:
     runs-on: ubuntu-latest
