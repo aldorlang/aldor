@@ -1,6 +1,6 @@
-name: Aldor CI
+name: Aldor Release
 
-on: [pull_request]
+on: [push]
 
 jobs:
   build-linux:
@@ -30,6 +30,8 @@ jobs:
         cd debian && rm -rf aldor/DEBIAN && tar zcf aldor-linux-x86_64-${{ github.sha }}.tar.gz aldor/
         mv aldor-linux-x86_64-${{ github.sha }}.tar.gz ../
         mv ../../aldor_${pkg_version}_amd64.deb ../
+        find ../.. -name \*.deb
+        ls -la ..
 
     - name: Upload Linux binaries
       uses: actions/upload-artifact@v4
@@ -39,23 +41,12 @@ jobs:
            aldor-linux-x86_64-${{ github.sha }}.tar.gz
            aldor_${pkg_version}_amd64.deb
 
-  build-linux-latest:
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-
-    steps:
-    - uses: actions/checkout@v2
-
-    - name: install dependencies
-      run: sudo apt-get install libgmp-dev debhelper fakeroot build-essential devscripts
-
-    - name: build
-      run: dpkg-buildpackage -b -us -uc
-
-#  build-macos:
-#    runs-on: macos-10.15
-
-#    steps:
-#    - uses: actions/checkout@v2
-#    - name: build
-#      run: sh ./build-macos.sh
+    - name: Create latest release
+      uses: softprops/action-gh-release@v2
+      if: github.ref_type == 'branch'
+      with:
+        body: Most recent build (${{ env.GITHUB_REF_NAME }})
+        tag_name: latest-${{ env.GITHUB_REF_NAME }}
+        files: |
+           aldor-linux-x86_64-${{ github.sha }}.tar.gz
+           aldor_${pkg_version}_amd64.deb
