@@ -947,7 +947,6 @@ distclean-generic:
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
-@CI_CHECK_FALSE@releasecheck-local:
 clean: clean-recursive
 
 clean-am: clean-generic clean-libtool mostlyclean-am
@@ -1044,8 +1043,14 @@ uninstall-am:
 .PRECIOUS: Makefile
 
 
-@CI_CHECK_TRUE@releasecheck-local:
-@CI_CHECK_TRUE@	$(YQ) $(top_srcdir)/../.github/workflows/ci.yaml > /dev/null
+@CI_CHECK_TRUE@all: ci-check
+@CI_CHECK_TRUE@ci-check:
+@CI_CHECK_TRUE@	@set -e; \
+@CI_CHECK_TRUE@	for file in $$(find $(top_srcdir)/../.github/workflows -name \*.yaml); \
+@CI_CHECK_TRUE@	do \
+@CI_CHECK_TRUE@	  echo Checking $$file; \
+@CI_CHECK_TRUE@	  $(YQ) $$file > /dev/null; \
+@CI_CHECK_TRUE@	done
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
