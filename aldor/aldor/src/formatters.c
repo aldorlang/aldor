@@ -25,6 +25,9 @@ local int tfFormatterAlt(OStream stream, int lvl, Pointer p);
 local int tfListFormatter(OStream stream, Pointer p);
 local int tfuFormatter(OStream stream, Pointer p);
 
+local int sefoFormatter(OStream stream, Pointer p);
+local int sefoListFormatter(OStream stream, Pointer p);
+
 local int tpossFormatter(OStream stream, Pointer p);
 local int fvFormatter(OStream stream, Pointer p);
 local int absFormatter(OStream stream, Pointer p);
@@ -74,6 +77,9 @@ fmttsInit()
 	fmtRegisterAlt("TForm", tfFormatterAlt);
 	fmtRegister("TFormList", tfListFormatter);
 	fmtRegister("TFormUses", tfuFormatter);
+
+	fmtRegister("Sefo", sefoFormatter);
+	fmtRegister("SefoList", sefoListFormatter);
 
 	fmtRegister("FreeVar", fvFormatter);
 	fmtRegister("TPoss", tpossFormatter);
@@ -331,6 +337,22 @@ tfuFormatter(OStream ostream, Pointer p)
 {
 	TFormUses tfu = (TFormUses) p;
 	return tfuOStreamPrint(ostream, tfu);
+}
+
+
+local int
+sefoFormatter(OStream ostream, Pointer p)
+{
+	Sefo sefo = (Sefo) p;
+	return sefoOStreamWrite(ostream, sefo);
+}
+
+
+local int
+sefoListFormatter(OStream ostream, Pointer p)
+{
+	SefoList list = (SefoList) p;
+	return listFormat(Sefo)(ostream, "Sefo", list);
 }
 
 
