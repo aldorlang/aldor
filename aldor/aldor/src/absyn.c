@@ -74,8 +74,6 @@ abInit(void)
 
 	fmtRegister("AbSyn", abFormatter);
 	fmtRegister("AbSynList", abFormatterList);
-	fmtRegister("Sefo", abFormatter);
-	fmtRegister("SefoList", abFormatterList);
 	fmtRegisterI("AbTag", abTagFormatter);
 	fmtRegisterLI("AbEmbed", abEmbedFormatter);
 }
