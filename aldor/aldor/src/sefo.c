@@ -246,7 +246,7 @@ sstStackPop(void)
 
 	if (!sstStack)
 		bug("sstStackPop: popping empty stack");
-	
+
 	frame = sstStack->prev;
 	stoFree((Pointer) sstStack);
 	sstStack = frame;
@@ -366,9 +366,7 @@ sstPrSefo(FILE *fout, int n, Sefo sefo)
 {
 	int	cc = 0;
 
-	cc += fprintf(fout, "\tArg%d: ", n);
-	cc += sefoPrint(fout, sefo);
-	cc += fprintf(fout, "\n");
+	cc += afprintf(fout, "\tArg%d: %pSefo\n", n, sefo);
 
 	return cc;
 }
@@ -377,12 +375,9 @@ local int
 sstPrSyme(FILE *fout, int n, Syme syme)
 {
 	int	cc = 0;
-	OStream ostream = ostreamNewFrFile(fout);
-	cc += fprintf(fout, "\tArg%d: ", n);
-	cc += symePrint(fout, syme);
-	cc += fprintf(fout, "\n");
-	ostreamClose(ostream);
-	ostreamFree(ostream);
+
+	cc += afprintf(fout, "\tArg%d: %pSyme\n", n, syme);
+
 	return cc;
 }
 
@@ -390,9 +385,9 @@ local int
 sstPrTForm(FILE *fout, int n, TForm tform)
 {
 	int	cc = 0;
-	cc += fprintf(fout, "\tArg%d: ", n);
-	cc += tformPrint(fout, tform);
-	cc += fprintf(fout, "\n");
+
+	cc += afprintf(fout, "\tArg%d: %pTForm\n", n, tform);
+
 	return cc;
 }
 
@@ -400,9 +395,9 @@ local int
 sstPrAbSub(FILE *fout, int n, AbSub sigma)
 {
 	int	cc = 0;
-	cc += fprintf (fout, "\tArg%d: ", n);
-	cc += absPrint(fout, sigma);
-	cc += fprintf (fout, "\n");
+
+	cc += afprintf(fout, "\tArg%d: %pAbSub\n", n, sigma);
+
 	return cc;
 }
 
@@ -410,11 +405,9 @@ local int
 sstPrSefoList(FILE *fout, int n, SefoList sefos)
 {
 	int	i, cc = 0;
-	cc += fprintf(fout, "\tArg%d:\n", n);
+	cc += afprintf(fout, "\tArg%d:\n", n);
 	for (i = 0; sefos; sefos = cdr(sefos), i++) {
-		cc += fprintf(fout, "%d. ", i);
-		cc += sefoPrint(fout, car(sefos));
-		cc += fprintf(fout, "\n");
+		cc += afprintf(fout, "%d. %pSefo\n", i, car(sefos));
 	}
 	return cc;
 }
@@ -423,13 +416,12 @@ local int
 sstPrSymeList(FILE *fout, int n, SymeList symes)
 {
 	int	i, cc = 0;
-	cc += fprintf(fout, "\tArg%d:\n", n);
+	cc += afprintf(fout, "\tArg%d:\n", n);
 
 	for (i = 0; symes; symes = cdr(symes), i++) {
-		cc += fprintf(fout, "%d. ", i);
-		cc += symePrint(fout, car(symes));
-		cc += fprintf(fout, "\n");
+		cc += afprintf(fout, "%d. %pSyme\n", i, car(symes));
 	}
+
 	return cc;
 }
 
@@ -437,12 +429,10 @@ local int
 sstPrTFormList(FILE *fout, int n, TFormList tforms)
 {
 	int	i, cc = 0;
-	cc += fprintf(fout, "\tArg%d:\n", n);
+	cc += afprintf(fout, "\tArg%d:\n", n);
 
 	for (i = 0; tforms; tforms = cdr(tforms), i++) {
-		cc += fprintf(fout, "%d. ", i);
-		cc += tformPrint(fout, car(tforms));
-		cc += fprintf(fout, "\n");
+		cc += afprintf(fout, "%d. %pTForm\n", i, car(tforms));
 	}
 	return cc;
 }
@@ -450,16 +440,16 @@ sstPrTFormList(FILE *fout, int n, TFormList tforms)
 local int
 sstPrBool(FILE *fout, int n, Bool flag)
 {
-	return fprintf(fout, "\tArg%d: %s\n", n, flag ? "true" : "false");
+	return afprintf(fout, "\tArg%d: %s\n", n, flag ? "true" : "false");
 }
 
 local int
 sstPrLib(FILE *fout, int n, Lib lib)
 {
 	int	cc = 0;
-	cc += fprintf(fout, "\tArg%d: ", n);
-	cc += fprintf(fout, "%s", fnameUnparseStatic(lib->name));
-	cc += fprintf(fout, "\n");
+	cc += afprintf(fout, "\tArg%d: ", n);
+	cc += afprintf(fout, "%s", fnameUnparseStatic(lib->name));
+	cc += afprintf(fout, "\n");
 	return cc;
 }
 
@@ -1985,11 +1975,11 @@ tformStructSimilar(TForm tf1, TForm tf2)
 		return false;
 	if (tfArgc(tf1) != tfArgc(tf2))
 		return false;
-	
+
 	for (i=0; i<tfArgc(tf1); i++)
 		if (!tformStructSimilar(tfArgv(tf1)[i], tfArgv(tf2)[i]))
 		    return false;
-	
+
 	return true;
 }
 
