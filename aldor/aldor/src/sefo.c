@@ -960,7 +960,7 @@ sstNextDB(String where, Pointer arg1, Pointer arg2)
 
 	sstStackPush(where, arg1, arg2);
 
-	if (sstMarkMask <= 1) return;
+	//if (sstMarkMask <= 1) return;
 
 	fprintf(dbOut, "-> sstNext (%s) [%d]\n", where, sstSerialDebug);
 
@@ -979,7 +979,7 @@ sstDoneDB(void)
 
 	sstStackPop();
 
-	if (sstMarkMask <= 1) return;
+	//if (sstMarkMask <= 1) return;
 
 	fprintf(dbOut, "<- sstDone\n");
 
