@@ -8,7 +8,9 @@ include $(top_builddir)/aldor/test/test-config.mk
 testcommon = $(abs_testsrcdir)/test-common.mk
 
 $(call am_define_steps,\
-    ALDOR ALDOR_AP ALDOR_CMD ALDOR_EXE ALDOR_FM ALDOR_GENC LSP_SCRIPT LSP_TEST \
+    ALDOR ALDOR_AP ALDOR_CMD ALDOR_EXE ALDOR_FM ALDOR_GENC \
+    ALDOR_OUT ALDOR_OUTDIFF \
+    LSP_SCRIPT LSP_TEST \
     ALDOR_JAVATEST ALDOR_OBJ JAVAC ALDOR_JAVA JAVAC JAVA_CP JUNIT CLEANONE)
 
 all: really-all
@@ -48,7 +50,9 @@ _otests     := $(sort $(otests) $(_xtests))
 _ctests     := $(sort $(ctests) $(_otests))
 _fmtests    := $(sort $(fmtests) $(_jtests) $(_ctests))
 _aotests    := $(sort $(_fmtests) $(_ctests) $(_xtests))
-_alltests   := $(sort $(_aptests) $(_fmtests) $(_ctests) $(_otests) $(_xtests) $(_jtests))
+_difftests  := $(sort $(difftests))
+_alltests   := $(sort $(_aptests) $(_fmtests) $(_ctests) $(_otests) $(_xtests) $(_jtests) $(_difftests))
+
 
 nfile := -Nfile=$(aldorsrcdir)/aldor.conf
 
@@ -202,6 +206,32 @@ $(addsuffix -junittest,$(_junittests)): %-junittest: out/java/%.class
 
 check-java: $(patsubst %,%-javatest,$(_jruntests)) $(patsubst %,%-junittest,$(_junittests))
 
+# Error messages
+.PHONY: all-difftest
+all-difftest: $(patsubst %, %-difftest, $(_difftests))
+
+.PHONY: $(addsuffix -difftest, $(_difftests))
+
+$(patsubst %, out/diff/%.out, $(_difftests)): out/diff/%.out:
+	$(AM_V_ALDOR_OUT)		\
+	mkdir -p $$(dirname $@);	\
+	if $(AM_DBG) $(aldorexedir)/aldor $($*_opts) $(aldor_args) > $@; then false; fi
+
+$(patsubst %, out/diff/%.out, $(_difftests)): out/diff/%.out: %.as
+$(patsubst %, out/diff/%.out, $(_difftests)): out/ao/tassert.ao
+
+$(patsubst %, %-difftest, $(_difftests)): %-difftest: out/diff/%.out %.expected
+	$(AM_V_ALDOR_OUTDIFF) \
+	diff -u $(srcdir)/$*.expected out/diff/$*.out
+
+$(patsubst %, install-out-%, $(_difftests)): install-out-%: out/diff/%.out
+	cp out/diff/$*.out $(srcdir)/$*.expected
+
+.PHONY: $(patsubst %, show-installed-%, $(_difftests))
+$(patsubst %, show-installed-%, $(_difftests)): show-installed-%:
+	@cat $(srcdir)/$*.expected
+
+# Lisp
 $(patsubst %,out/lsp/%_in.lsp, $(_lsptests)): out/lsp/%_in.lsp: Makefile $(testcommon)
 	@mkdir -p out/lsp				
 	$(AM_V_LSP_SCRIPT) 				\
@@ -256,6 +286,7 @@ all-$(1): $(patsubst %, out/ao/%.ao, $(filter $(1), $(_aotests)))
 all-$(1): $(patsubst %, out/fm/%.fm, $(filter $(1), $(_fmtests)))
 all-$(1): $(patsubst %, out/c/%.c,   $(filter $(1), $(_ctests)))
 all-$(1): $(patsubst %, out/java/aldorcode/%.java, $(filter $(1), $(_jtests)))
+all-$(1): $(patsubst %, %-difftest, $(filter $(1), $(_difftests)))
 .PHONY: all-$(1)
 endef
 
@@ -274,6 +305,7 @@ clean-$(1):
 		  $(patsubst %, out/ao/%.ao, $(filter $(1), $(_aotests)))	\
 		  $(patsubst %, out/fm/%.fm, $(filter $(1), $(_fmtests)))	\
 		  $(patsubst %, out/c/%.c,   $(filter $(1), $(_ctests)))	\
+		  $(patsubst %, out/diff/%.out,   $(filter $(1), $(_difftests)))\
 		  $(patsubst %, %.exe,       $(filter $(1), $(_xtests)))	\
 		  $(patsubst %, out/lsp/%.lsp,    	   $(filter $(1), $(_lsptests)))	\
 		  $(patsubst %, out/lsp/%_in.lsp, 	   $(filter $(1), $(_lsptests)))	\
