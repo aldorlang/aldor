@@ -260,22 +260,18 @@ $(patsubst %,out/lsp/%_in.lsp, $(_lsptests)): out/lsp/%_in.lsp: Makefile $(testc
 	 echo '(|CCall| |G-$*|)') > $@
 
 .PHONY: all-lsp-tests
-all-lsp-tests: $(patsubst %, %-lsptest, $(_lsptests))
-$(addsuffix -lsptest, $(_lsptests)): %-lsptest: $(srcdir)/prelude.lsp out/lsp/%.lsp out/lsp/%_in.lsp out/lsp/tassert.lsp
-	cat out/lsp/$*_in.lsp
-	sbcl --non-interactive --load out/lsp/$*_in.lsp
-
 .PHONY: $(patsubst %,%-lspsbcl,$(_lsptests))
+all-lsp-tests: $(patsubst %, %-lsptest, $(_lsptests))
+check: all-lsp-tests
+
+$(addsuffix -lsptest, $(_lsptests)): %-lsptest: $(srcdir)/prelude.lsp out/lsp/%.lsp out/lsp/%_in.lsp out/lsp/tassert.lsp
+	$(AM_V_LSP_TEST) 	\
+	(sbcl --non-interactive --load out/lsp/$*_in.lsp)
 
 $(patsubst %,%-lspsbcl,$(_lsptests)): %-lspsbcl: Makefile $(testcommon)
 	sbcl --load out/lsp/$*_in.lsp
 
-.PHONY: all-lsp-tests
-check: all-lsp-tests
 all-lsp-tests: $(patsubst %, %-lsptest, $(_lsptests))
-$(addsuffix -lsptest, $(_lsptests)): %-lsptest: $(srcdir)/prelude.lsp out/lsp/%.lsp out/lsp/%_in.lsp out/lsp/tassert.lsp
-	$(AM_V_LSP_TEST) 	\
-	(sbcl --non-interactive --load out/lsp/$*_in.lsp)
 
 $(addsuffix -xtest,$(_xtests)): %-xtest: %.exe
 	$(AM_V_ALDOR_EXE) ./$*.exe
