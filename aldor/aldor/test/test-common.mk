@@ -159,7 +159,7 @@ $(patsubst %, out/ap/%.ap, $(_aotests)): out/ap/%.ap: %.as
 	mkdir -p $$(dirname $@);	\
 	$(aldorexedir)/aldor $(nfile) -Fap=$@ $(srcdir)/$*.as
 
-.PHONY: all-ao
+.PHONY: all-ao echo-ao
 all-ao: $(patsubst %, out/ao/%.ao, $(_aotests))
 $(patsubst %, out/ao/%.ao, $(_aotests)): out/ao/%.ao: %.as
 $(patsubst %, out/ao/%.ao, $(utils) $(_aotests)): $(aldorexedir)/aldor
@@ -172,6 +172,9 @@ $(patsubst %, out/ao/%.cmd, $(_aotests)): out/ao/%.cmd: %.as
 	$(AM_V_ALDOR_CMD)	 \
 	mkdir -p $$(dirname $@); \
 	echo run '$(aldor_args)' > $@
+
+echo-ao:
+	@echo $(patsubst %, out/ao/%.ao, $(_aotests))
 
 .PHONY: all-exe
 all-exe: $(patsubst %, %.exe, $(_xtests))
