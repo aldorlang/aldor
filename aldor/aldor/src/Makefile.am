@@ -282,6 +282,7 @@ libphase_a_SOURCES =	\
 	scobind.c	\
 	syscmd.c	\
 	terror.c	\
+	ti_audit.c	\
 	ti_bup.c	\
 	ti_decl.c	\
 	ti_sef.c	\
