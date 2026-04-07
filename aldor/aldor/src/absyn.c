@@ -27,6 +27,7 @@ Bool	abDebug		= false;
 local int       abFormatter     (OStream stream, Pointer p);
 local int       abFormatterList (OStream ostream, Pointer p);
 local int       abTagFormatter  (OStream ostream, int p);
+local int       abStateFormatter (OStream ostream, int p);
 local int       abEmbedFormatter (OStream ostream, long p);
 local void	abPosNodeSpan0	(AbSyn X, AbSyn *pA, AbSyn *pB);
 local SrcPos	abLeafEnd	(AbSyn ab);
@@ -75,6 +76,7 @@ abInit(void)
 	fmtRegister("AbSyn", abFormatter);
 	fmtRegister("AbSynList", abFormatterList);
 	fmtRegisterI("AbTag", abTagFormatter);
+	fmtRegisterI("AbState", abStateFormatter);
 	fmtRegisterLI("AbEmbed", abEmbedFormatter);
 }
 
@@ -2221,6 +2223,46 @@ local struct abEmbedInfo abEmbedInfoVals[] = {
 	{"ApplyPatCall",    	AB_Embed_ApplyPatCall},
 	{ NULL, -1}
 };
+
+/*****************************************************************************
+ *
+ * :: State Info
+ *
+ ****************************************************************************/
+
+struct abStateInfo {
+	char *name;
+	AbEmbed val;
+};
+
+local struct abStateInfo abStateInfoVals[] = {
+	{"AbSyn", AB_State_AbSyn},
+	{"Poss", AB_State_HasPoss},
+	{"Unique", AB_State_HasUnique},
+	{"Error", AB_State_Error}
+};
+
+String
+abStateName(AbSyn ab)
+{
+	int state = abState(ab);
+	if (state < 0 || state >= AB_State_LIMIT) {
+		return "*BUG*";
+	}
+	return abStateInfoVals[state].name;
+}
+
+local int
+abStateFormatter(OStream ostream, int p)
+{
+	int tag = (int) p;
+	if (tag < 0 || tag >= AB_State_LIMIT)	{
+		return ostreamPrintf(ostream, "AbState[%d]", tag);
+	}
+	else {
+		return ostreamPrintf(ostream, "%s", abStateInfoVals[tag].name);
+	}
+}
 
 
 /*****************************************************************************

@@ -266,6 +266,8 @@ enum ab_state {
 
 typedef Enum(ab_state)	AbState;
 
+String abStateName(AbSyn ab);
+
 /*
  * AbEmbed
  */
