@@ -1378,7 +1378,7 @@ symeCheckHas(SymeCContext conditionContext, Sefo dom, Sefo cat)
 	tfcat = abTForm(cat) ? abTForm(cat) : tiTopFns()->tiGetTopLevelTForm(ablogTrue(), cat);
 
 	/* D has C iff typeof(D) satisfies C. */
-	result = tfSat(tfSatBupMask(), tfdom, tfcat);
+	result = tfSat(tfsAddUnify(tfSatBupMask()), tfdom, tfcat);
 
 #if 0
 	symeCheckHasMemo(dom, cat, result);

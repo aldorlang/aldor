@@ -355,7 +355,7 @@ local void 	scoCondPush  	(Stab, AbSyn, Bool);
 local void 	scoCondPop	(void);
 local ScoConditionList  scoConditions	(void);
 local DefnPos scoConditionToDefnPos(ScoConditionList);
-local TfCondElt scoCondListCondElt();
+local TfCondElt scoCondListCondElt(void);
 
 /*
  * IdInfo
@@ -461,12 +461,13 @@ local void	  scobindLambda		      (AbSyn);
 local void	  scobindRepeat		      (AbSyn);
 local void	  scobindWhere		      (AbSyn);
 local void	  scobindWith		      (AbSyn);
+local void	  scobindLambdaVars	      (AbSyn);
 
 local Bool	  scobindTFormMustBeUnique	(AbSyn ab);
 
 #define abSetTFormCond(a,t) if (! abTForm(a)) abSetTForm((a), (t))
 
-#if 1
+#if 0
 #define scobindRetNeedsDefn(ab) \
 	(abIsTheId(ab, ssymCategory) || abHasTag(ab, AB_With))
 
@@ -478,7 +479,6 @@ scobindRetNeedsDefn(AbSyn ab)
 {
 	if (abIsTheId(ab, ssymCategory) || abHasTag(ab, AB_With))
 		return true;
-
 	return false;
 }
 
@@ -690,6 +690,7 @@ scobindValue(AbSyn absyn)
 
 	case AB_Lambda:
 	case AB_PLambda:
+		scobindLambdaVars(absyn);
 		scobindLevel(absyn, scobindLambda, scobindLambdaFlags);
 		break;
 
@@ -929,6 +930,7 @@ scobindLambdaList(void)
 
 		scoCondList = info->scoCondList;
 		scobindPushDefine(lhs);
+		scobindLambdaVars(rhs);
 		scobindLevel(rhs, scobindLambda, scobindLambdaFlags);
 		scobindPopDefine(lhs);
 		
@@ -1005,12 +1007,44 @@ scobindAdd(AbSyn absyn)
 }
 
 local void
+scobindLambdaVars(AbSyn absyn)
+{
+  /*
+	AbSyn	ret = absyn->abLambda.rtype;
+
+	if (ret && abIsNotNothing(ret)) {
+		AbSyn	*retv	= abArgvAs(AB_Comma, ret);
+		Length	i, retc	= abArgcAs(AB_Comma, ret);
+		for (i = 0; i < retc; i += 1) {
+			AbSyn	reti = retv[i];
+			if (abHasTag(reti, AB_Blank)) {
+				stabAddVar(scoStab, abTForm(reti), absyn);
+			}
+		}
+	}
+
+	AbSyn  *argv = abArgvAs(AB_Comma, absyn->abLambda.param);
+	Length  argc = abArgcAs(AB_Comma, absyn->abLambda.param);
+
+	for (int i=0; i<argc; i++) {
+		AbSyn	argi = argv[i];
+		if (!abHasTag(argi, AB_Declare))
+			continue;
+		AbSyn typei = argi->abDeclare.type;
+		if (abHasTag(typei, AB_Blank)) {
+			stabAddVar(scoStab, abTForm(typei), absyn);
+		}
+	}
+  */
+}
+
+local void
 scobindLambda(AbSyn absyn)
 {
 	TForm	tf;
 	AbSyn	ret = absyn->abLambda.rtype;
 	Bool	save = scoIsInAdd;
-
+	TFormList vars = listNil(TForm);
 	scobindParam(absyn->abLambda.param);
 	if (ret && abIsNotNothing(ret)) {
 		AbSyn	*retv	= abArgvAs(AB_Comma, ret);
@@ -3689,6 +3723,7 @@ scobindSetMeaning(AbSyn ab, Syme syme)
 				    symeString(syme), s);
 			strFree(s);
 		}
+
 		abSetSyme(ab, syme);
 	}
 }

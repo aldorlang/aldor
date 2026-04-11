@@ -15,7 +15,6 @@ LList(X: with): with
     isNil: % -> PPartial()
 
     bracket: MachineInteger -> % -> PPartial Tuple X
-
 == add
     Rep == Record(elt: X, r: %)
     import from Pointer, Rep
@@ -37,6 +36,19 @@ LList(X: with): with
     bracket(n: MachineInteger)(l: %): PPartial Tuple X == never
 
 #if 0
+
+    braket: TupleShape -> % -> PPartial Tuple X
+
+...
+    FullMatch(S, A, B): with
+        shape: () -> S
+
+    Shape: with
+        argCount: % -> MachineInteger
+	isWildcard: (%, MachineInteger) -> %
+
+    bracket: (s: Shape, %) -> PPartial T
+
 Foo: with
     plus: FullMatch( (%, %), %)
 == add

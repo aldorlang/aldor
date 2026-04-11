@@ -173,9 +173,10 @@ am_libphase_a_OBJECTS = abcheck.$(OBJEXT) abnorm.$(OBJEXT) \
 	optfoam.$(OBJEXT) opttools.$(OBJEXT) parseby.$(OBJEXT) \
 	phase.$(OBJEXT) rdln.$(OBJEXT) scan.$(OBJEXT) \
 	scobind.$(OBJEXT) syscmd.$(OBJEXT) terror.$(OBJEXT) \
-	ti_bup.$(OBJEXT) ti_decl.$(OBJEXT) ti_sef.$(OBJEXT) \
-	ti_tdn.$(OBJEXT) ti_util.$(OBJEXT) tinfer.$(OBJEXT) \
-	usedef.$(OBJEXT) yldlocs.$(OBJEXT)
+	ti_audit.$(OBJEXT) ti_bup.$(OBJEXT) ti_decl.$(OBJEXT) \
+	ti_sef.$(OBJEXT) ti_solve.$(OBJEXT) ti_tdn.$(OBJEXT) \
+	ti_util.$(OBJEXT) tinfer.$(OBJEXT) usedef.$(OBJEXT) \
+	yldlocs.$(OBJEXT)
 libphase_a_OBJECTS = $(am_libphase_a_OBJECTS)
 libport_a_AR = $(AR) $(ARFLAGS)
 libport_a_LIBADD =
@@ -193,16 +194,16 @@ am_libstruct_a_OBJECTS = ablogic.$(OBJEXT) abpretty.$(OBJEXT) \
 	freevar.$(OBJEXT) formatters.$(OBJEXT) ftype.$(OBJEXT) \
 	gf_syme.$(OBJEXT) infenv.$(OBJEXT) javasig.$(OBJEXT) \
 	lib.$(OBJEXT) loops.$(OBJEXT) optinfo.$(OBJEXT) \
-	output.$(OBJEXT) sefo.$(OBJEXT) simpl.$(OBJEXT) \
-	spesym.$(OBJEXT) srcline.$(OBJEXT) stab.$(OBJEXT) \
-	susage.$(OBJEXT) syme.$(OBJEXT) symeset.$(OBJEXT) \
-	symcoinfo.$(OBJEXT) tfcond.$(OBJEXT) tconst.$(OBJEXT) \
-	tfcontext.$(OBJEXT) tform.$(OBJEXT) tfsat.$(OBJEXT) \
-	tfknown.$(OBJEXT) ti_top.$(OBJEXT) token.$(OBJEXT) \
-	tposs.$(OBJEXT) tqual.$(OBJEXT) ufind.$(OBJEXT) \
-	unify.$(OBJEXT) utform.$(OBJEXT) utype.$(OBJEXT) \
-	utyperes.$(OBJEXT) uvar.$(OBJEXT) version.$(OBJEXT) \
-	wildimp.$(OBJEXT)
+	output.$(OBJEXT) orenv.$(OBJEXT) sefo.$(OBJEXT) \
+	simpl.$(OBJEXT) spesym.$(OBJEXT) srcline.$(OBJEXT) \
+	stab.$(OBJEXT) susage.$(OBJEXT) syme.$(OBJEXT) \
+	symeset.$(OBJEXT) symcoinfo.$(OBJEXT) tfcond.$(OBJEXT) \
+	tconst.$(OBJEXT) tfcontext.$(OBJEXT) tform.$(OBJEXT) \
+	tfsat.$(OBJEXT) tfknown.$(OBJEXT) ti_top.$(OBJEXT) \
+	token.$(OBJEXT) tposs.$(OBJEXT) tqual.$(OBJEXT) \
+	ufind.$(OBJEXT) unify.$(OBJEXT) utform.$(OBJEXT) \
+	utype.$(OBJEXT) utyperes.$(OBJEXT) uvar.$(OBJEXT) \
+	version.$(OBJEXT) wildimp.$(OBJEXT)
 libstruct_a_OBJECTS = $(am_libstruct_a_OBJECTS)
 libtest_a_AR = $(AR) $(ARFLAGS)
 libtest_a_LIBADD =
@@ -291,6 +292,7 @@ am__objects_1 = test/testall-test_abcheck.$(OBJEXT) \
 	test/testall-test_of_cprop.$(OBJEXT) \
 	test/testall-test_of_crinlin.$(OBJEXT) \
 	test/testall-test_of_peep.$(OBJEXT) \
+	test/testall-test_orenv.$(OBJEXT) \
 	test/testall-test_ostream.$(OBJEXT) \
 	test/testall-test_printf.$(OBJEXT) \
 	test/testall-test_retyp.$(OBJEXT) \
@@ -307,7 +309,7 @@ am__objects_1 = test/testall-test_abcheck.$(OBJEXT) \
 	test/testall-test_tinfer.$(OBJEXT) \
 	test/testall-test_tposs.$(OBJEXT) \
 	test/testall-test_tset.$(OBJEXT) \
-	test/testall-test_ufind.$(OBJEXT)
+	test/testall-test_infenv.$(OBJEXT)
 am_testall_OBJECTS = $(am__objects_1) test/testall-abquick.$(OBJEXT) \
 	test/testall-testall.$(OBJEXT) test/testall-testlib.$(OBJEXT) \
 	testall-cmdline.$(OBJEXT) testall-axlcomp.$(OBJEXT)
@@ -412,31 +414,32 @@ am__depfiles_remade = ./$(DEPDIR)/abcheck.Po ./$(DEPDIR)/ablogic.Po \
 	./$(DEPDIR)/of_rrfmt.Po ./$(DEPDIR)/of_util.Po \
 	./$(DEPDIR)/opsys.Po ./$(DEPDIR)/optfoam.Po \
 	./$(DEPDIR)/optinfo.Po ./$(DEPDIR)/opttools.Po \
-	./$(DEPDIR)/ostream.Po ./$(DEPDIR)/output.Po \
-	./$(DEPDIR)/parseby.Po ./$(DEPDIR)/path.Po \
-	./$(DEPDIR)/phase.Po ./$(DEPDIR)/priq.Po ./$(DEPDIR)/rdln.Po \
-	./$(DEPDIR)/scan.Po ./$(DEPDIR)/scobind.Po ./$(DEPDIR)/sefo.Po \
-	./$(DEPDIR)/sexpr.Po ./$(DEPDIR)/showexp-showexports.Po \
-	./$(DEPDIR)/simpl.Po ./$(DEPDIR)/spesym.Po \
-	./$(DEPDIR)/srcline.Po ./$(DEPDIR)/srcpos.Po \
-	./$(DEPDIR)/stab.Po ./$(DEPDIR)/stdc.Po ./$(DEPDIR)/store.Po \
-	./$(DEPDIR)/strops.Po ./$(DEPDIR)/structtest.Po \
-	./$(DEPDIR)/susage.Po ./$(DEPDIR)/symbol.Po \
-	./$(DEPDIR)/symcoinfo.Po ./$(DEPDIR)/syme.Po \
-	./$(DEPDIR)/symeset.Po ./$(DEPDIR)/syscmd.Po \
-	./$(DEPDIR)/table.Po ./$(DEPDIR)/tconst.Po \
-	./$(DEPDIR)/termtype.Po ./$(DEPDIR)/terror.Po \
-	./$(DEPDIR)/test.Po ./$(DEPDIR)/testall-axlcomp.Po \
-	./$(DEPDIR)/testall-cmdline.Po ./$(DEPDIR)/textansi.Po \
-	./$(DEPDIR)/textcolour.Po ./$(DEPDIR)/texthp.Po \
-	./$(DEPDIR)/tfcond.Po ./$(DEPDIR)/tfcontext.Po \
-	./$(DEPDIR)/tfknown.Po ./$(DEPDIR)/tform.Po \
-	./$(DEPDIR)/tfsat.Po ./$(DEPDIR)/ti_bup.Po \
+	./$(DEPDIR)/orenv.Po ./$(DEPDIR)/ostream.Po \
+	./$(DEPDIR)/output.Po ./$(DEPDIR)/parseby.Po \
+	./$(DEPDIR)/path.Po ./$(DEPDIR)/phase.Po ./$(DEPDIR)/priq.Po \
+	./$(DEPDIR)/rdln.Po ./$(DEPDIR)/scan.Po ./$(DEPDIR)/scobind.Po \
+	./$(DEPDIR)/sefo.Po ./$(DEPDIR)/sexpr.Po \
+	./$(DEPDIR)/showexp-showexports.Po ./$(DEPDIR)/simpl.Po \
+	./$(DEPDIR)/spesym.Po ./$(DEPDIR)/srcline.Po \
+	./$(DEPDIR)/srcpos.Po ./$(DEPDIR)/stab.Po ./$(DEPDIR)/stdc.Po \
+	./$(DEPDIR)/store.Po ./$(DEPDIR)/strops.Po \
+	./$(DEPDIR)/structtest.Po ./$(DEPDIR)/susage.Po \
+	./$(DEPDIR)/symbol.Po ./$(DEPDIR)/symcoinfo.Po \
+	./$(DEPDIR)/syme.Po ./$(DEPDIR)/symeset.Po \
+	./$(DEPDIR)/syscmd.Po ./$(DEPDIR)/table.Po \
+	./$(DEPDIR)/tconst.Po ./$(DEPDIR)/termtype.Po \
+	./$(DEPDIR)/terror.Po ./$(DEPDIR)/test.Po \
+	./$(DEPDIR)/testall-axlcomp.Po ./$(DEPDIR)/testall-cmdline.Po \
+	./$(DEPDIR)/textansi.Po ./$(DEPDIR)/textcolour.Po \
+	./$(DEPDIR)/texthp.Po ./$(DEPDIR)/tfcond.Po \
+	./$(DEPDIR)/tfcontext.Po ./$(DEPDIR)/tfknown.Po \
+	./$(DEPDIR)/tform.Po ./$(DEPDIR)/tfsat.Po \
+	./$(DEPDIR)/ti_audit.Po ./$(DEPDIR)/ti_bup.Po \
 	./$(DEPDIR)/ti_decl.Po ./$(DEPDIR)/ti_sef.Po \
-	./$(DEPDIR)/ti_tdn.Po ./$(DEPDIR)/ti_top.Po \
-	./$(DEPDIR)/ti_util.Po ./$(DEPDIR)/timer.Po \
-	./$(DEPDIR)/tinfer.Po ./$(DEPDIR)/token.Po \
-	./$(DEPDIR)/tposs.Po ./$(DEPDIR)/tqual.Po \
+	./$(DEPDIR)/ti_solve.Po ./$(DEPDIR)/ti_tdn.Po \
+	./$(DEPDIR)/ti_top.Po ./$(DEPDIR)/ti_util.Po \
+	./$(DEPDIR)/timer.Po ./$(DEPDIR)/tinfer.Po \
+	./$(DEPDIR)/token.Po ./$(DEPDIR)/tposs.Po ./$(DEPDIR)/tqual.Po \
 	./$(DEPDIR)/ttable.Po ./$(DEPDIR)/ufind.Po \
 	./$(DEPDIR)/unify.Po ./$(DEPDIR)/usedef.Po \
 	./$(DEPDIR)/utform.Po ./$(DEPDIR)/util.Po ./$(DEPDIR)/utype.Po \
@@ -469,6 +472,7 @@ am__depfiles_remade = ./$(DEPDIR)/abcheck.Po ./$(DEPDIR)/ablogic.Po \
 	test/$(DEPDIR)/testall-test_fptr.Po \
 	test/$(DEPDIR)/testall-test_gencr.Po \
 	test/$(DEPDIR)/testall-test_genfoam.Po \
+	test/$(DEPDIR)/testall-test_infenv.Po \
 	test/$(DEPDIR)/testall-test_int.Po \
 	test/$(DEPDIR)/testall-test_java.Po \
 	test/$(DEPDIR)/testall-test_jcode.Po \
@@ -477,6 +481,7 @@ am__depfiles_remade = ./$(DEPDIR)/abcheck.Po ./$(DEPDIR)/ablogic.Po \
 	test/$(DEPDIR)/testall-test_of_cprop.Po \
 	test/$(DEPDIR)/testall-test_of_crinlin.Po \
 	test/$(DEPDIR)/testall-test_of_peep.Po \
+	test/$(DEPDIR)/testall-test_orenv.Po \
 	test/$(DEPDIR)/testall-test_ostream.Po \
 	test/$(DEPDIR)/testall-test_printf.Po \
 	test/$(DEPDIR)/testall-test_retyp.Po \
@@ -493,7 +498,6 @@ am__depfiles_remade = ./$(DEPDIR)/abcheck.Po ./$(DEPDIR)/ablogic.Po \
 	test/$(DEPDIR)/testall-test_tisef.Po \
 	test/$(DEPDIR)/testall-test_tposs.Po \
 	test/$(DEPDIR)/testall-test_tset.Po \
-	test/$(DEPDIR)/testall-test_ufind.Po \
 	test/$(DEPDIR)/testall-testall.Po \
 	test/$(DEPDIR)/testall-testlib.Po
 am__mv = mv -f
@@ -1079,6 +1083,7 @@ libstruct_a_SOURCES = \
 	loops.c		\
 	optinfo.c	\
 	output.c	\
+	orenv.c		\
 	sefo.c		\
 	simpl.c		\
 	spesym.c	\
@@ -1178,9 +1183,11 @@ libphase_a_SOURCES = \
 	scobind.c	\
 	syscmd.c	\
 	terror.c	\
+	ti_audit.c	\
 	ti_bup.c	\
 	ti_decl.c	\
 	ti_sef.c	\
+	ti_solve.c	\
 	ti_tdn.c	\
 	ti_util.c	\
 	tinfer.c	\
@@ -1216,6 +1223,7 @@ testsuite = \
 	test/test_of_cprop.c	\
 	test/test_of_crinlin.c	\
 	test/test_of_peep.c	\
+	test/test_orenv.c	\
 	test/test_ostream.c	\
 	test/test_printf.c	\
 	test/test_retyp.c	\
@@ -1232,8 +1240,10 @@ testsuite = \
 	test/test_tinfer.c	\
 	test/test_tposs.c	\
 	test/test_tset.c	\
-	test/test_ufind.c
+	test/test_infenv.c
 
+
+#test/test_ufind.c
 testall_SOURCES = \
 	$(testsuite)	\
 	test/abquick.c	\
@@ -1539,6 +1549,8 @@ test/testall-test_of_crinlin.$(OBJEXT): test/$(am__dirstamp) \
 	test/$(DEPDIR)/$(am__dirstamp)
 test/testall-test_of_peep.$(OBJEXT): test/$(am__dirstamp) \
 	test/$(DEPDIR)/$(am__dirstamp)
+test/testall-test_orenv.$(OBJEXT): test/$(am__dirstamp) \
+	test/$(DEPDIR)/$(am__dirstamp)
 test/testall-test_ostream.$(OBJEXT): test/$(am__dirstamp) \
 	test/$(DEPDIR)/$(am__dirstamp)
 test/testall-test_printf.$(OBJEXT): test/$(am__dirstamp) \
@@ -1571,7 +1583,7 @@ test/testall-test_tposs.$(OBJEXT): test/$(am__dirstamp) \
 	test/$(DEPDIR)/$(am__dirstamp)
 test/testall-test_tset.$(OBJEXT): test/$(am__dirstamp) \
 	test/$(DEPDIR)/$(am__dirstamp)
-test/testall-test_ufind.$(OBJEXT): test/$(am__dirstamp) \
+test/testall-test_infenv.$(OBJEXT): test/$(am__dirstamp) \
 	test/$(DEPDIR)/$(am__dirstamp)
 test/testall-abquick.$(OBJEXT): test/$(am__dirstamp) \
 	test/$(DEPDIR)/$(am__dirstamp)
@@ -1742,6 +1754,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/optfoam.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/optinfo.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/opttools.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/orenv.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ostream.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/output.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/parseby.Po@am__quote@ # am--include-marker
@@ -1784,9 +1797,11 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tfknown.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tform.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tfsat.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ti_audit.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ti_bup.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ti_decl.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ti_sef.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ti_solve.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ti_tdn.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ti_top.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ti_util.Po@am__quote@ # am--include-marker
@@ -1836,6 +1851,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@test/$(DEPDIR)/testall-test_fptr.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@test/$(DEPDIR)/testall-test_gencr.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@test/$(DEPDIR)/testall-test_genfoam.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@test/$(DEPDIR)/testall-test_infenv.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@test/$(DEPDIR)/testall-test_int.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@test/$(DEPDIR)/testall-test_java.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@test/$(DEPDIR)/testall-test_jcode.Po@am__quote@ # am--include-marker
@@ -1844,6 +1860,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@test/$(DEPDIR)/testall-test_of_cprop.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@test/$(DEPDIR)/testall-test_of_crinlin.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@test/$(DEPDIR)/testall-test_of_peep.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@test/$(DEPDIR)/testall-test_orenv.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@test/$(DEPDIR)/testall-test_ostream.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@test/$(DEPDIR)/testall-test_printf.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@test/$(DEPDIR)/testall-test_retyp.Po@am__quote@ # am--include-marker
@@ -1860,7 +1877,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@test/$(DEPDIR)/testall-test_tisef.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@test/$(DEPDIR)/testall-test_tposs.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@test/$(DEPDIR)/testall-test_tset.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@test/$(DEPDIR)/testall-test_ufind.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@test/$(DEPDIR)/testall-testall.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@test/$(DEPDIR)/testall-testlib.Po@am__quote@ # am--include-marker
 
@@ -2818,6 +2834,20 @@ test/testall-test_of_peep.obj: test/test_of_peep.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testall_CFLAGS) $(CFLAGS) -c -o test/testall-test_of_peep.obj `if test -f 'test/test_of_peep.c'; then $(CYGPATH_W) 'test/test_of_peep.c'; else $(CYGPATH_W) '$(srcdir)/test/test_of_peep.c'; fi`
 
+test/testall-test_orenv.o: test/test_orenv.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testall_CFLAGS) $(CFLAGS) -MT test/testall-test_orenv.o -MD -MP -MF test/$(DEPDIR)/testall-test_orenv.Tpo -c -o test/testall-test_orenv.o `test -f 'test/test_orenv.c' || echo '$(srcdir)/'`test/test_orenv.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) test/$(DEPDIR)/testall-test_orenv.Tpo test/$(DEPDIR)/testall-test_orenv.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='test/test_orenv.c' object='test/testall-test_orenv.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testall_CFLAGS) $(CFLAGS) -c -o test/testall-test_orenv.o `test -f 'test/test_orenv.c' || echo '$(srcdir)/'`test/test_orenv.c
+
+test/testall-test_orenv.obj: test/test_orenv.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testall_CFLAGS) $(CFLAGS) -MT test/testall-test_orenv.obj -MD -MP -MF test/$(DEPDIR)/testall-test_orenv.Tpo -c -o test/testall-test_orenv.obj `if test -f 'test/test_orenv.c'; then $(CYGPATH_W) 'test/test_orenv.c'; else $(CYGPATH_W) '$(srcdir)/test/test_orenv.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) test/$(DEPDIR)/testall-test_orenv.Tpo test/$(DEPDIR)/testall-test_orenv.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='test/test_orenv.c' object='test/testall-test_orenv.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testall_CFLAGS) $(CFLAGS) -c -o test/testall-test_orenv.obj `if test -f 'test/test_orenv.c'; then $(CYGPATH_W) 'test/test_orenv.c'; else $(CYGPATH_W) '$(srcdir)/test/test_orenv.c'; fi`
+
 test/testall-test_ostream.o: test/test_ostream.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testall_CFLAGS) $(CFLAGS) -MT test/testall-test_ostream.o -MD -MP -MF test/$(DEPDIR)/testall-test_ostream.Tpo -c -o test/testall-test_ostream.o `test -f 'test/test_ostream.c' || echo '$(srcdir)/'`test/test_ostream.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) test/$(DEPDIR)/testall-test_ostream.Tpo test/$(DEPDIR)/testall-test_ostream.Po
@@ -3042,19 +3072,19 @@ test/testall-test_tset.obj: test/test_tset.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testall_CFLAGS) $(CFLAGS) -c -o test/testall-test_tset.obj `if test -f 'test/test_tset.c'; then $(CYGPATH_W) 'test/test_tset.c'; else $(CYGPATH_W) '$(srcdir)/test/test_tset.c'; fi`
 
-test/testall-test_ufind.o: test/test_ufind.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testall_CFLAGS) $(CFLAGS) -MT test/testall-test_ufind.o -MD -MP -MF test/$(DEPDIR)/testall-test_ufind.Tpo -c -o test/testall-test_ufind.o `test -f 'test/test_ufind.c' || echo '$(srcdir)/'`test/test_ufind.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) test/$(DEPDIR)/testall-test_ufind.Tpo test/$(DEPDIR)/testall-test_ufind.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='test/test_ufind.c' object='test/testall-test_ufind.o' libtool=no @AMDEPBACKSLASH@
+test/testall-test_infenv.o: test/test_infenv.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testall_CFLAGS) $(CFLAGS) -MT test/testall-test_infenv.o -MD -MP -MF test/$(DEPDIR)/testall-test_infenv.Tpo -c -o test/testall-test_infenv.o `test -f 'test/test_infenv.c' || echo '$(srcdir)/'`test/test_infenv.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) test/$(DEPDIR)/testall-test_infenv.Tpo test/$(DEPDIR)/testall-test_infenv.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='test/test_infenv.c' object='test/testall-test_infenv.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testall_CFLAGS) $(CFLAGS) -c -o test/testall-test_ufind.o `test -f 'test/test_ufind.c' || echo '$(srcdir)/'`test/test_ufind.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testall_CFLAGS) $(CFLAGS) -c -o test/testall-test_infenv.o `test -f 'test/test_infenv.c' || echo '$(srcdir)/'`test/test_infenv.c
 
-test/testall-test_ufind.obj: test/test_ufind.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testall_CFLAGS) $(CFLAGS) -MT test/testall-test_ufind.obj -MD -MP -MF test/$(DEPDIR)/testall-test_ufind.Tpo -c -o test/testall-test_ufind.obj `if test -f 'test/test_ufind.c'; then $(CYGPATH_W) 'test/test_ufind.c'; else $(CYGPATH_W) '$(srcdir)/test/test_ufind.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) test/$(DEPDIR)/testall-test_ufind.Tpo test/$(DEPDIR)/testall-test_ufind.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='test/test_ufind.c' object='test/testall-test_ufind.obj' libtool=no @AMDEPBACKSLASH@
+test/testall-test_infenv.obj: test/test_infenv.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testall_CFLAGS) $(CFLAGS) -MT test/testall-test_infenv.obj -MD -MP -MF test/$(DEPDIR)/testall-test_infenv.Tpo -c -o test/testall-test_infenv.obj `if test -f 'test/test_infenv.c'; then $(CYGPATH_W) 'test/test_infenv.c'; else $(CYGPATH_W) '$(srcdir)/test/test_infenv.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) test/$(DEPDIR)/testall-test_infenv.Tpo test/$(DEPDIR)/testall-test_infenv.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='test/test_infenv.c' object='test/testall-test_infenv.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testall_CFLAGS) $(CFLAGS) -c -o test/testall-test_ufind.obj `if test -f 'test/test_ufind.c'; then $(CYGPATH_W) 'test/test_ufind.c'; else $(CYGPATH_W) '$(srcdir)/test/test_ufind.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testall_CFLAGS) $(CFLAGS) -c -o test/testall-test_infenv.obj `if test -f 'test/test_infenv.c'; then $(CYGPATH_W) 'test/test_infenv.c'; else $(CYGPATH_W) '$(srcdir)/test/test_infenv.c'; fi`
 
 test/testall-abquick.o: test/abquick.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testall_CFLAGS) $(CFLAGS) -MT test/testall-abquick.o -MD -MP -MF test/$(DEPDIR)/testall-abquick.Tpo -c -o test/testall-abquick.o `test -f 'test/abquick.c' || echo '$(srcdir)/'`test/abquick.c
@@ -3651,6 +3681,7 @@ distclean: distclean-am
 	-rm -f ./$(DEPDIR)/optfoam.Po
 	-rm -f ./$(DEPDIR)/optinfo.Po
 	-rm -f ./$(DEPDIR)/opttools.Po
+	-rm -f ./$(DEPDIR)/orenv.Po
 	-rm -f ./$(DEPDIR)/ostream.Po
 	-rm -f ./$(DEPDIR)/output.Po
 	-rm -f ./$(DEPDIR)/parseby.Po
@@ -3693,9 +3724,11 @@ distclean: distclean-am
 	-rm -f ./$(DEPDIR)/tfknown.Po
 	-rm -f ./$(DEPDIR)/tform.Po
 	-rm -f ./$(DEPDIR)/tfsat.Po
+	-rm -f ./$(DEPDIR)/ti_audit.Po
 	-rm -f ./$(DEPDIR)/ti_bup.Po
 	-rm -f ./$(DEPDIR)/ti_decl.Po
 	-rm -f ./$(DEPDIR)/ti_sef.Po
+	-rm -f ./$(DEPDIR)/ti_solve.Po
 	-rm -f ./$(DEPDIR)/ti_tdn.Po
 	-rm -f ./$(DEPDIR)/ti_top.Po
 	-rm -f ./$(DEPDIR)/ti_util.Po
@@ -3745,6 +3778,7 @@ distclean: distclean-am
 	-rm -f test/$(DEPDIR)/testall-test_fptr.Po
 	-rm -f test/$(DEPDIR)/testall-test_gencr.Po
 	-rm -f test/$(DEPDIR)/testall-test_genfoam.Po
+	-rm -f test/$(DEPDIR)/testall-test_infenv.Po
 	-rm -f test/$(DEPDIR)/testall-test_int.Po
 	-rm -f test/$(DEPDIR)/testall-test_java.Po
 	-rm -f test/$(DEPDIR)/testall-test_jcode.Po
@@ -3753,6 +3787,7 @@ distclean: distclean-am
 	-rm -f test/$(DEPDIR)/testall-test_of_cprop.Po
 	-rm -f test/$(DEPDIR)/testall-test_of_crinlin.Po
 	-rm -f test/$(DEPDIR)/testall-test_of_peep.Po
+	-rm -f test/$(DEPDIR)/testall-test_orenv.Po
 	-rm -f test/$(DEPDIR)/testall-test_ostream.Po
 	-rm -f test/$(DEPDIR)/testall-test_printf.Po
 	-rm -f test/$(DEPDIR)/testall-test_retyp.Po
@@ -3769,7 +3804,6 @@ distclean: distclean-am
 	-rm -f test/$(DEPDIR)/testall-test_tisef.Po
 	-rm -f test/$(DEPDIR)/testall-test_tposs.Po
 	-rm -f test/$(DEPDIR)/testall-test_tset.Po
-	-rm -f test/$(DEPDIR)/testall-test_ufind.Po
 	-rm -f test/$(DEPDIR)/testall-testall.Po
 	-rm -f test/$(DEPDIR)/testall-testlib.Po
 	-rm -f Makefile
@@ -3968,6 +4002,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -f ./$(DEPDIR)/optfoam.Po
 	-rm -f ./$(DEPDIR)/optinfo.Po
 	-rm -f ./$(DEPDIR)/opttools.Po
+	-rm -f ./$(DEPDIR)/orenv.Po
 	-rm -f ./$(DEPDIR)/ostream.Po
 	-rm -f ./$(DEPDIR)/output.Po
 	-rm -f ./$(DEPDIR)/parseby.Po
@@ -4010,9 +4045,11 @@ maintainer-clean: maintainer-clean-am
 	-rm -f ./$(DEPDIR)/tfknown.Po
 	-rm -f ./$(DEPDIR)/tform.Po
 	-rm -f ./$(DEPDIR)/tfsat.Po
+	-rm -f ./$(DEPDIR)/ti_audit.Po
 	-rm -f ./$(DEPDIR)/ti_bup.Po
 	-rm -f ./$(DEPDIR)/ti_decl.Po
 	-rm -f ./$(DEPDIR)/ti_sef.Po
+	-rm -f ./$(DEPDIR)/ti_solve.Po
 	-rm -f ./$(DEPDIR)/ti_tdn.Po
 	-rm -f ./$(DEPDIR)/ti_top.Po
 	-rm -f ./$(DEPDIR)/ti_util.Po
@@ -4062,6 +4099,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -f test/$(DEPDIR)/testall-test_fptr.Po
 	-rm -f test/$(DEPDIR)/testall-test_gencr.Po
 	-rm -f test/$(DEPDIR)/testall-test_genfoam.Po
+	-rm -f test/$(DEPDIR)/testall-test_infenv.Po
 	-rm -f test/$(DEPDIR)/testall-test_int.Po
 	-rm -f test/$(DEPDIR)/testall-test_java.Po
 	-rm -f test/$(DEPDIR)/testall-test_jcode.Po
@@ -4070,6 +4108,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -f test/$(DEPDIR)/testall-test_of_cprop.Po
 	-rm -f test/$(DEPDIR)/testall-test_of_crinlin.Po
 	-rm -f test/$(DEPDIR)/testall-test_of_peep.Po
+	-rm -f test/$(DEPDIR)/testall-test_orenv.Po
 	-rm -f test/$(DEPDIR)/testall-test_ostream.Po
 	-rm -f test/$(DEPDIR)/testall-test_printf.Po
 	-rm -f test/$(DEPDIR)/testall-test_retyp.Po
@@ -4086,7 +4125,6 @@ maintainer-clean: maintainer-clean-am
 	-rm -f test/$(DEPDIR)/testall-test_tisef.Po
 	-rm -f test/$(DEPDIR)/testall-test_tposs.Po
 	-rm -f test/$(DEPDIR)/testall-test_tset.Po
-	-rm -f test/$(DEPDIR)/testall-test_ufind.Po
 	-rm -f test/$(DEPDIR)/testall-testall.Po
 	-rm -f test/$(DEPDIR)/testall-testlib.Po
 	-rm -f Makefile

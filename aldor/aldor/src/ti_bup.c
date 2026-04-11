@@ -12,7 +12,9 @@
 #include "debug.h"
 #include "fluid.h"
 #include "format.h"
+#include "infenv.h"
 #include "lib.h"
+#include "orenv.h"
 #include "sefo.h"
 #include "spesym.h"
 #include "stab.h"
@@ -25,8 +27,10 @@
 #include "ti_bup.h"
 #include "ti_tdn.h"
 #include "ti_util.h"
+#include "ti_solve.h"
 #include "terror.h"
 #include "tinfer.h"
+#include "tfknown.h"
 #include "tposs.h"
 #include "util.h"
 
@@ -39,6 +43,8 @@
 Bool	tipBupDebug	= false;
 #define tipBupDEBUG	DEBUG_IF(tipBup)	afprintf
 #define tipApplyDEBUG	DEBUG_IF(tipApply)	afprintf
+#define tipDefineDEBUG	DEBUG_IF(tipDefine)	afprintf
+#define tipAddDEBUG	DEBUG_IF(tipAdd)	afprintf
 
 /*****************************************************************************
  *
@@ -173,6 +179,7 @@ local void	tibupYield	(Stab, AbSyn, TForm);
 local void tibup0RefImps(Stab, AbSyn, TForm);
 local void tibup0ResetTPoss(AbSyn ab, TPoss poss);
 
+local TPoss tpossFilterSatisfiers(AbSyn absyn, TPoss T);
 /*****************************************************************************
  *
  * :: Bottom up pass
@@ -191,7 +198,9 @@ tiBottomUp(Stab stab, AbSyn absyn, TForm type)
 	Bool	   fluid(tloopBreakCount);
 	SymbolList fluid(terrorIdComplaints);
 	AbLogic    fluid(abCondKnown);
-	
+	InferEnv   fluid(tfkInfEnvKnown);
+
+	tfkInfEnvKnown	   = NULL;
 	tuniYieldTPoss	   = tuniInappropriateTPoss;
 	tuniYieldType	   = tfUnknown;
 	tuniReturnTPoss	   = tuniInappropriateTPoss;
@@ -202,10 +211,13 @@ tiBottomUp(Stab stab, AbSyn absyn, TForm type)
 	abCondKnown        = abCondKnown ? ablogCopy(abCondKnown) : ablogTrue();
 
 	tibup(stab, absyn, type);
-
 	listFree(Symbol)(terrorIdComplaints);
 	ablogFree(abCondKnown);
 	
+	tibupAudit(stab, absyn);
+
+	tiSolve(stab, absyn);
+
 	tibupAudit(stab, absyn);
 
 	ReturnNothing;
@@ -757,8 +769,10 @@ tibup0ApplyFilterAll(Stab stab, AbSyn absyn, TForm type, TPoss opTypes,
 
 	/* Filter opTypes based on the argument and return types. */
 	for (tpossITER(it, opTypes); tpossMORE(it); tpossSTEP(it)) {
-		TForm	opType = tpossELT(it), retType;
-		AbSub	sigma;
+		UTFContext opUTFC = tpossUCELT(it);
+		TForm  opType = tpossELT(it);
+		TForm retType;
+		AbSub  sigma;
 
 		opType = tfDefineeType(opType);
 
@@ -766,7 +780,8 @@ tibup0ApplyFilterAll(Stab stab, AbSyn absyn, TForm type, TPoss opTypes,
 		if (!tfIsAnyMap(opType)) continue;
 		retType = tfMapRet(opType);
 		sigma	= absNew(stab);
-
+		InferEnv newEnv = infEnvCopy(uctxtInfEnv(opUTFC));
+		tfkSetEnv(newEnv);
 		result = tfSatMapArgs(mask, sigma, opType, absyn, argc, argf);
 
 		if (tfSatSucceed(result)) {
@@ -774,12 +789,13 @@ tibup0ApplyFilterAll(Stab stab, AbSyn absyn, TForm type, TPoss opTypes,
 			if (tfIsPatMatch(opType)) {
 				retType = tfPattern(retType);
 			}
-			result = tfSat(mask, retType, type);
+			result = tfSat(tfsAddUnify(mask), retType, type);
 			if (tfSatSucceed(result)) {
-				nopTypes = tpossAdd1(nopTypes, opType);
-				retTypes = tpossAdd1(retTypes, retType);
+				nopTypes = tpossAdd1UTFContext(nopTypes, uctxtNewConst(newEnv, opType));
+				retTypes = tpossAdd1UTFContext(retTypes, uctxtNewConst(newEnv, retType));
 			}
 		}
+		tfkClearEnv();
 
 		absFreeDeeply(sigma);
 	}
@@ -959,7 +975,7 @@ tibupId(Stab stab, AbSyn absyn, TForm type)
 	if (tpossIsEmpty(tp) && !tibup0IdSkipComplaint(absyn))
 		tibup0IdComplain(absyn);
 
-	abTPoss(absyn) = tp;
+	abTPoss(absyn) = tpossSatisfiesType(tp, type);
 }
 
 local Bool
@@ -1416,7 +1432,8 @@ tpossFilterSatisfiers(AbSyn absyn, TPoss T)
 }
 
 local void
-tibupDefinePattern(AbSyn absyn) {
+tibupDefinePattern(AbSyn absyn)
+{
 	AbSyn rhs = absyn->abDefine.rhs;
 
 	if (abUse(rhs) == AB_Use_Pattern) {
@@ -1452,17 +1469,16 @@ tibupDefine(Stab stab, AbSyn absyn, TForm type)
 		tibup(stab, rhs, type);
 		tpnew = abReferTPoss(rhs);
 
+		/* Filter out void types */
 		tprhs = tpossFilterEmpty(tpnew);
 
 		/* Update the tposs for the RHS */
 		/* abTPoss(rhs) = tpossRefer(tprhs); */
 		tpossFree(tpnew);
 
-
 		/* Compute types for LHS based on RHS set */
 		tibup0InferLhs(stab, absyn, lhs, rhs, tprhs);
 		tibup(stab, lhs, type);
-
 
 		/* Check that we have at least one type for RHS */
 		if (tpossIsEmpty(tprhs))
@@ -1471,23 +1487,21 @@ tibupDefine(Stab stab, AbSyn absyn, TForm type)
 
 	tiTfPopDefinee(lhs);
 
+	TPoss rposs;
 	if (abTag(lhs) == AB_Declare)
 	{
 		AbSyn idtype   = lhs->abDeclare.type;
-		abTPoss(absyn) = abReferTPoss(idtype);
+		rposs = abReferTPoss(idtype);
 	}
-	else
-		abTPoss(absyn) = abReferTPoss(rhs);
-
+	else {
+		rposs = abReferTPoss(rhs);
+		//abState(rhs) = AB_State_HasPoss;
+	}
+	abTPoss(absyn) = rposs;
 
 	if (DEBUG(tipDefine)) {
-		TPoss	abtposs = abReferTPoss(absyn);
-		fprintf(dbOut,"Bup: Define of ");
-		abPrint(dbOut, lhs);
-		fprintf(dbOut," has %d types ", tpossCount(abtposs));
-		tpossPrint(dbOut, abtposs);
-		fnewline(dbOut);
-		tpossFree(abtposs);
+		tipDefineDEBUG(dbOut, "Bup: Define of %pAbSyn has %d types %pTPoss\n",
+			       lhs, tpossCount(rposs), rposs);
 	}
 }
 
@@ -1507,7 +1521,7 @@ tibup0InferLhs(Stab stab, AbSyn absyn, AbSyn lhs, AbSyn rhs, TPoss tprhs)
 	AbSub	sigma;
 
 	if (!tpossIsUnique(tprhs)) return;
-	trhs = tpossUnique(tprhs);
+	trhs = uctxtInferredType(tpossUniqueUTFContext(tprhs));
 	tfFollow(trhs);
 	if (tfIsUnknown(trhs)) return;
 
@@ -1823,10 +1837,18 @@ tibupLambda(Stab stab, AbSyn absyn, TForm type)
 	typeInferAs(stab, param, tfUnknown);
 	tibup(stab, body,  tf);
 
-	/* There can be only one type for this lambda ... */
-	tf = tfAnyMap(tfFullFrAbSyn(stab, param), tf, pack ? AB_MAP_Packed : AB_MAP_Generic);
-	abTPoss(absyn) = tpossSingleton(tf);
+	TForm paramTf = tfFullFrAbSyn(stab, param);
 
+	if (tformHasVar(paramTf) || tformHasVar(tf)) {
+		TPoss possFinal = tpossSatisfiesType(abTPoss(body), tf);
+		// Merge infEnv from returns....
+		TPoss mapPoss = tpossLambda(tpossSingleton(paramTf), possFinal, pack ? AB_MAP_Packed : AB_MAP_Generic);
+		abTPoss(absyn) = tpossSatisfiesType(mapPoss, type);
+	}
+	else {
+		tf = tfAnyMap(paramTf, tf, pack ? AB_MAP_Packed : AB_MAP_Generic);
+		abTPoss(absyn) = tpossSatisfiesType(tpossSingleton(tf), type);
+	}
 	listFree(Symbol)(terrorIdComplaints);
 	ReturnNothing;
 }
@@ -1870,10 +1892,14 @@ tibupSequence0(Stab stab, AbSyn absyn, TForm type)
 		tibup0NoValue(stab, absyn, type, ALDOR_E_TinContextSeq);
 	else {
 		AbSyn	arg;
-		TPoss tp;
+		TPoss tp, tpBody;
 
-		for (i = 0; i < n-1; i++)
+		tpBody = tpossSingleton(tfUnknown);
+		for (i = 0; i < n-1; i++) {
 			tibup(stab, abArgv(absyn)[i], tfUnknown);
+			//TPoss tpExtra = tpossConst(abTPoss(abArgv(absyn)[i]), tfUnknown);
+			//tpBody = tpossIntersect(tpBody, tpExtra);
+		}
 
 		arg = abArgv(absyn)[n-1];
 		tibup0FarValue(stab, absyn, type, arg, &tuniExitTPoss);
@@ -1884,6 +1910,8 @@ tibupSequence0(Stab stab, AbSyn absyn, TForm type)
 			tuniExitTPoss = abReferTPoss(arg);
 
 		tp = tpossSatisfiesType(tuniExitTPoss, type);
+		//tp = tpossIntersect(tpossUnknown(tpBody), tuniExitTPoss);
+		//tp = tpossSatisfiesType(tp, type);
 
 		/*
 		 * If this context is completely unconstrained
@@ -2334,6 +2362,8 @@ tibup0RefImps(Stab stab, AbSyn absyn, TForm type)
  * :: Add:  [D] add (a: A == ...)
  *
  ***************************************************************************/
+local SymeList	tibupAddInferMissings		(Stab, AbSyn, SymeList, SymeList, OrEnv *);
+local TPoss	tibupAddInferMissingExport	(Stab, SymeList, Syme);
 
 local void
 tibupAdd(Stab stab, AbSyn absyn, TForm type)
@@ -2342,16 +2372,22 @@ tibupAdd(Stab stab, AbSyn absyn, TForm type)
 	SymbolList	fluid(terrorIdComplaints);
 	AbSyn		base	= absyn->abAdd.base;
 	AbSyn		capsule = absyn->abAdd.capsule;
-	SymeList	symes;
+	SymeList	symes, mods;
 	TForm		tfw;
+	OrEnv 		orEnv;
 
 	terrorIdComplaints = listNil(Symbol);
 
 	tiGetTForm(stab, base);
 	typeInferCheck(stab, base, tfDomain);
 	symes = tiAddSymes(stab, capsule, abTForm(base), type, (SymeList*)NULL);
+	mods = tiAddMods(stab, abTForm(base), type);
 
 	typeInferAs(stab, capsule, tfUnknown);
+
+	symes = tibupAddInferMissings(stab, capsule, mods, symes, &orEnv);
+	tipAddDEBUG(dbOut, "bupAdd: Missing: %pSymeList\n", symes);
+	//tipAddDEBUG(dbOut, "bupAdd: OrEnv: %pOrEnv\n", orEnv);
 
 	if (symes) {
 		if (tiIsSoftMissing()) {
@@ -2368,13 +2404,58 @@ tibupAdd(Stab stab, AbSyn absyn, TForm type)
 	else
 		tfw = tfWithFrAbSyn(absyn);
 
-	abTPoss(absyn) = tpossSingleton(tfw);
-	if (!tfSatisfies(tfw, type)) 
+	TPoss poss = orEnvToTPoss(tfw, orEnv);
+	tipAddDEBUG(dbOut, "bupAdd: %pOrEnv\n", orEnv);
+	tipAddDEBUG(dbOut, "bupAdd: %pTPoss\n", poss);
+	abTPoss(absyn) = poss;
+	if (!tpossSatisfiesType(poss, type))
 		abState(absyn) = AB_State_Error;
 
 	listFree(Symbol)(terrorIdComplaints);
 	ReturnNothing;
 }
+
+local SymeList
+tibupAddInferMissings(Stab stab, AbSyn absyn, SymeList mods, SymeList symes, OrEnv *substs)
+{
+	SymeList unmatched = listNil(Syme);
+	OrEnv final = orEnvOne(infEnvEmpty());
+	while (symes != listNil(Syme)) {
+		Syme syme = car(symes);
+		symes = cdr(symes);
+		TPoss poss = tibupAddInferMissingExport(stab, mods, syme);
+		if (!tpossIsEmpty(poss)) {
+			final = orEnvAnd(final, orEnvFrTPoss(poss));
+		}
+		else {
+			unmatched = listCons(Syme)(syme, unmatched);
+		}
+	}
+	*substs = final;
+	return listNReverse(Syme)(unmatched);
+}
+
+local TPoss
+tibupAddInferMissingExport(Stab stab, SymeList mods, Syme syme)
+{
+	SymeList esymes = stabGetExportedSymesById(stab, symeId(syme));
+
+	tipAddDEBUG(dbOut, "bupAdd: Missing Export %pSyme Found %d candidates\n", syme, listLength(Syme)(esymes));
+	TPoss tposs = tpossEmpty();
+	while (esymes != listNil(Syme)) {
+		Syme esyme = car(esymes);
+		esymes = cdr(esymes);
+		InferEnv infEnv = infEnvNew();
+		Bool r = tformUnifyMod(infEnv, mods, symeType(syme), symeType(esyme));
+		if (r &!infEnvIsFailed(infEnv)) {
+			tpossAdd1InferEnv(tposs, symeType(esyme), infEnv);
+		}
+	}
+
+	tipAddDEBUG(dbOut, "bupAdd: Missing Export %pSyme TPoss %pTPoss\n", syme, tposs);
+	return tposs;
+}
+
 
 /****************************************************************************
  *
@@ -2533,11 +2614,12 @@ tibupIf(Stab stab, AbSyn absyn, TForm type)
 	else if (abIsNotNothing(elseAlt)) {
 		TPoss	thenPoss = abReferTPoss(thenAlt);
 		TPoss	elsePoss = abReferTPoss(elseAlt);
-
-		abResetTPoss(absyn, tpossIntersect(thenPoss, elsePoss));
+		TPoss   midPoss = tpossIntersect(thenPoss, elsePoss);
+		abResetTPoss(absyn, tpossSatisfiesType(midPoss, type));
 
 		tpossFree(thenPoss);
 		tpossFree(elsePoss);
+		tpossFree(midPoss);
 	}
 
 	/* One branch present. */
@@ -2636,15 +2718,19 @@ tibupCollect(Stab stab, AbSyn absyn, TForm type)
 
 	for (tpossITER(tit,bposs); tpossMORE(tit); tpossSTEP(tit)){
 		TForm	t = tpossELT(tit);
+		InferEnv infEnv = tpossINFENV(tit);
 		TForm   retType;
 		SatMask result;
 		tfFollow(t);
+		InferEnv newEnv = infEnvCopy(infEnv);
+		tfkSetEnv(newEnv);
 		if (tfIsMulti(t)) t = tfCrossFrMulti(t);
 		retType = tibup0CollectGenerator(iterType, t);
-		result = tfSat(tfSatBupMask(), retType, type);
+		result = tfSat(tfsAddUnify(tfSatBupMask()), retType, type);
 		if (tfSatSucceed(result)) {
 			cposs = tpossAdd1(cposs, retType);
 		}
+		tfkClearEnv();
 	}
 	abTPoss(absyn) = cposs;
 
@@ -3015,8 +3101,8 @@ tibupRestrictTo(Stab stab, AbSyn absyn, TForm type)
 	TForm tf = tiGetTForm(stab, absyn->abRestrictTo.type);
 
 	tibup(stab, absyn->abRestrictTo.expr, tf);
-
-	abTPoss(absyn) = tpossSingleton(tf);
+	OrEnv env = orEnvFrTPoss(abTPoss(absyn->abRestrictTo.expr));
+	abTPoss(absyn) = orEnvToTPoss(tf, env);
 }
 
 /****************************************************************************
@@ -3031,7 +3117,10 @@ tibupPretendTo(Stab stab, AbSyn absyn, TForm type)
 	TForm tf = tiGetTForm(stab, absyn->abPretendTo.type);
 
 	tibup(stab, absyn->abPretendTo.expr, tfUnknown);
-	abTPoss(absyn) = tpossSingleton(tf);
+	TPoss poss = tpossSingleton(tf);
+	abTPoss(absyn) = tpossSatisfiesType(poss, type);
+	//abTPoss(absyn) = tpossSingleton(tf);
+
 }
 
 /***************************************************************************
@@ -3146,7 +3235,16 @@ local void
 tibupBlank(Stab stab, AbSyn absyn, TForm type)
 {
 	// Not ideal, a 'Vx, Pattern(x)' type would be nice
-	abTPoss(absyn) = tpossSingleton(tfPattern(tfExit));
+	if (abUse(absyn) == AB_Use_Pattern || abUse(absyn) == AB_Use_PatLocation) {
+		abTPoss(absyn) = tpossSingleton(tfPattern(tfExit));
+	}
+	else if (abUse(absyn) == AB_Use_Type) {
+		// Ideally, 'typeof(abTForm(absyn))'
+		abTPoss(absyn) = tpossSingleton(tfType);
+	}
+	else {
+		abTPoss(absyn) = tpossEmpty();
+	}
 }
 
 /***************************************************************************

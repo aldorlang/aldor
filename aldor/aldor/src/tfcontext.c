@@ -1,6 +1,9 @@
 #include "tfcontext.h"
 
+#include "format.h"
+#include "infenv.h"
 #include "store.h"
+#include "sefo.h"
 #include "tform.h"
 #include "util.h"
 /*
@@ -27,7 +30,7 @@ ctxtAlloc(TForm tf, InferEnv inf)
 TFContext
 ctxtEmpty(TForm tf)
 {
-	return ctxtAlloc(tf, NULL);
+	return ctxtAlloc(tf, infEnvEmpty());
 }
 
 TFContext
@@ -37,6 +40,13 @@ ctxtCopy(TFContext tfc, TForm tf)
 }
 
 TFContext
+ctxtCopyUTFContext(UTFContext utfc, TForm tf)
+{
+	return ctxtAlloc(tf, uctxtInfEnv(utfc));
+}
+
+
+TFContext
 ctxtFollowOnly(TFContext tfc)
 {
 	TForm tf = tfFollowOnly(ctxtTForm(tfc));
@@ -44,6 +54,17 @@ ctxtFollowOnly(TFContext tfc)
 		return tfc;
 	}
 	return ctxtCopy(tfc, tf);
+}
+
+int
+ctxtOStreamWrite(OStream os, TFContext tfc)
+{
+	if (infEnvIsEmpty(uctxtInfEnv(tfc)))
+		return tformOStreamWrite(os, false, ctxtTForm(tfc));
+	else {
+		return ostreamPrintf(os, "[C: %pTForm (%pInferEnv)]",
+				     ctxtTForm(tfc), uctxtInfEnv(tfc));
+	}
 }
 
 /*
@@ -68,9 +89,15 @@ uctxtNew(InferEnv env, UTForm utf)
 }
 
 UTFContext
+uctxtNewConst(InferEnv env, TForm tf)
+{
+  return uctxtAlloc(utformNewConstant(tf), env);
+}
+
+UTFContext
 uctxtEmpty(UTForm utf)
 {
-	return uctxtAlloc(utf, NULL);
+	return uctxtAlloc(utf, infEnvEmpty());
 }
 
 UTFContext
@@ -92,14 +119,16 @@ uctxtFollowOnly(UTFContext uctxt)
 Bool
 uctxtEqual(UTFContext utfc1, UTFContext utfc2)
 {
-	bug("Needs work");
-	return false;
+	if (utfc1 == utfc2)
+		return true;
+	return infEnvEqual(uctxtInfEnv(utfc1), uctxtInfEnv(utfc2))
+		&& utformEqual(uctxtUTForm(utfc1), uctxtUTForm(utfc2));
 }
 
 Bool
 uctxtIsEmpty(UTFContext utfc)
 {
-	return uctxtInfEnv(utfc) == NULL;
+	return infEnvIsEmpty(uctxtInfEnv(utfc));
 }
 
 Bool
@@ -112,4 +141,31 @@ TForm
 uctxtUTFConstOrFail(UTFContext utfc)
 {
 	return utformConstOrFail(uctxtUTForm(utfc));
+}
+
+TForm
+uctxtInferredType(UTFContext utfc)
+{
+	if (utfc == NULL) {
+		return NULL;
+	}
+	InferEnv infEnv = uctxtInfEnv(utfc);
+	TForm tf = uctxtUTFConstOrFail(utfc);
+
+	if (infEnvIsEmpty(infEnv)) {
+		return tf;
+	}
+	return tformFollowVars(infEnv, tf);
+}
+
+
+int
+uctxtOStreamWrite(OStream os, UTFContext utfc)
+{
+	if (infEnvIsEmpty(uctxtInfEnv(utfc)))
+		return utfOStreamWrite(os, false, uctxtUTForm(utfc));
+	else {
+		return ostreamPrintf(os, "[C: %pUTForm (%pInferEnv)]",
+				     uctxtUTForm(utfc), uctxtInfEnv(utfc));
+	}
 }

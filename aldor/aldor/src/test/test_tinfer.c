@@ -33,6 +33,10 @@ void testTinferMutualReference();
 void testTinferValueConditional();
 void testTinferValueConditionalAliased();
 void testTinferImport();
+void testTinferVars();
+void testRestrict();
+void testPretend();
+void testUnknownType();
 
 void tinferTest()
 {
@@ -53,7 +57,12 @@ void tinferTest()
 
 	TEST(testTinferValueConditional);
 	TEST(testTinferImport);
-	/*TEST(testTinferValueConditionalAliased);*/
+	TEST(testTinferVars);
+	TEST(testUnknownType);
+
+	TEST(testRestrict);
+	TEST(testPretend);
+	//TEST(testTinferValueConditionalAliased);
 	fini();
 }
 
@@ -80,8 +89,11 @@ extern int tfsParentDebug;
 extern int tfsExportDebug;
 extern int tipBupDebug;
 extern int tipAddDebug;
+extern int tipTdnDebug;
+extern int tipSolveDebug;
 extern int titfOneDebug;
 extern int tipTdnDebug;
+extern int tpossIntersectDebug;
 extern int sefoEqualDebug;
 extern int titfDebug;
 extern int tfDebug;
@@ -579,6 +591,91 @@ testTinferImport()
 	tfqTypeInferFails(stabFile(), "f(): T == { inline from 'a', 'b' }");
 	tfqTypeInfer(stabFile(), "f(): 'a' == { import from 'a'; a }");
 	tfqTypeInfer(stabFile(), "X: Category == with { import from 'a' }");
+
+	finiFile();
+}
+
+void
+testTinferVars()
+{
+	initFile();
+	stdscope(stabFile());
+
+	tfqTypeInfer(stabFile(), "T: with == add");
+	tfqTypeInfer(stabFile(), "xtrue: Boolean == never");
+	tfqTypeInfer(stabFile(), "xfalse: Boolean == never");
+	tfqTypeInfer(stabFile(), "test: Boolean -> Boolean == never");
+	tfqTypeInfer(stabFile(), "coerce: T -> Boolean == never");
+
+	tfqTypeInfer(stabFile(), "f(a: ?): Boolean == a");
+	tfqTypeInfer(stabFile(), "g(x: ?): Boolean == if x then xtrue else x");
+
+	tfqTypeInfer(stabFile(), "f(a: ?, b: ?): Boolean == if a then b else a");
+	tfqTypeInfer(stabFile(), "f(a: ?, b: ?): ? == if a then b else a");
+	tfqTypeInfer(stabFile(), "f(a: ?, b: ?, c: T): ? == if a then b else a");
+
+	ENABLE_DEBUG(tipBupDebug);
+	ENABLE_DEBUG(tipSolveDebug);
+	ENABLE_DEBUG(tpossIntersectDebug);
+
+	tfqTypeInfer(stabFile(), "g(qq: ?): Boolean == qq::Boolean");
+
+	finiFile();
+}
+
+void
+testRestrict()
+{
+	initFile();
+	stdscope(stabFile());
+
+	tfqTypeInfer(stabFile(), "T: with == add");
+
+	ENABLE_DEBUG(tipBupDebug);
+	ENABLE_DEBUG(tipTdnDebug);
+	ENABLE_DEBUG(tipSolveDebug);
+	ENABLE_DEBUG(tpossIntersectDebug);
+
+	tfqTypeInfer(stabFile(), "res(x: ?): ? == x@T");
+
+	finiFile();
+}
+
+void
+testPretend()
+{
+	initFile();
+	stdscope(stabFile());
+
+	tfqTypeInfer(stabFile(), "T: with == add");
+	tfqTypeInfer(stabFile(), "xtrue: Boolean == never");
+	tfqTypeInfer(stabFile(), "xfalse: Boolean == never");
+	tfqTypeInfer(stabFile(), "test: Boolean -> Boolean == never");
+	tfqTypeInfer(stabFile(), "coerce: T -> Boolean == never");
+
+	ENABLE_DEBUG(tipBupDebug);
+	ENABLE_DEBUG(tipTdnDebug);
+	ENABLE_DEBUG(tipSolveDebug);
+	ENABLE_DEBUG(tpossIntersectDebug);
+
+	tfqTypeInfer(stabFile(), "res(): ? == xtrue pretend T");
+
+	finiFile();
+}
+
+
+void
+testUnknownType()
+{
+	initFile();
+	stdscope(stabFile());
+
+	ENABLE_DEBUG(tipBupDebug);
+	ENABLE_DEBUG(tipTdnDebug);
+	ENABLE_DEBUG(tipSolveDebug);
+	ENABLE_DEBUG(tpossIntersectDebug);
+
+	tfqTypeInferFails(stabFile(), "res(x: ?): ? == never");
 
 	finiFile();
 }

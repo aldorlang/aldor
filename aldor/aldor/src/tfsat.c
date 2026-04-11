@@ -119,6 +119,7 @@ struct maskInfo tfSatMaskInfo[] = {
 	{"UnaryToCross"},
 	{"UnaryToMulti"},
 	{"AnyToPattern"},
+	{"PPartialToPat"},
 	{"Unify"},
 	{"AnyEmbed"},
 
@@ -176,6 +177,7 @@ struct maskInfo tfSatMaskInfo[] = {
 				 TFS_Commit		| \
 				 TFS_Missing		| \
 				 TFS_Sigma		| \
+				 TFS_Unify		| \
 				 TFS_Info		)
 
 #define TFS_EmbedMask		(\
@@ -351,6 +353,12 @@ SatMask
 tfSatWithPatContext(SatMask mask)
 {
 	return mask | TFS_AnyToPattern;
+}
+
+SatMask
+tfSatWithUnify(SatMask mask)
+{
+	return mask | TFS_Unify;
 }
 
 
@@ -539,32 +547,38 @@ tfsEmbedResult(TForm tf, AbEmbed embed)
  *
  *****************************************************************************/
 
+SatMask
+tfsAddUnify(SatMask mask)
+{
+	return tfkHasInferEnv() ? (mask | TFS_Unify) : mask;
+}
+
 Bool
 tfSatisfies(TForm S, TForm T)
 {
 	SatMask		mask = TFS_Commit | TFS_UsualMask;
-	return tfSatBit(mask, S, T);
+	return tfSatBit(tfsAddUnify(mask), S, T);
 }
 
 Bool
 tfSatisfies1(AbSyn Sab, TForm S, TForm T)
 {
 	SatMask		mask = TFS_Commit | TFS_UsualMask | TFS_Conditions;
-	return tfSatSucceed(tfSat1(mask, Sab, S, T));
+	return tfSatSucceed(tfSat1(tfsAddUnify(mask), Sab, S, T));
 }
 
 Bool
 tfSatValues(TForm S, TForm T)
 {
 	SatMask		mask = TFS_Commit | TFS_NAnyToNoneMask;
-	return tfSatBit(mask, S, T);
+	return tfSatBit(tfsAddUnify(mask), S, T);
 }
 
 Bool
 tfSatReturn(TForm S, TForm T)
 {
 	SatMask		mask = TFS_Commit | TFS_UsualMask;
-	return tfSatBit(mask, S, T);
+	return tfSatBit(tfsAddUnify(mask), S, T);
 }
 
 Bool
@@ -697,6 +711,7 @@ SatMask
 tfSatMapArgs(SatMask mask, AbSub sigma, TForm S,
 	     AbSyn ab, Length argc, AbSynGetter argf)
 {
+	mask = tfsAddUnify(mask);
 	assert(tfIsAnyMap(S));
 	/*
 	if (tfIsPPartialMap(S) && tfSatEmbedPartialToPat(mask)) {
@@ -952,6 +967,12 @@ tfSat(SatMask mask, TForm S, TForm T)
 }
 
 SatMask
+tfSatU(SatMask mask, TForm S, TForm T)
+{
+	return tfSat(tfsAddUnify(mask), S, T);
+}
+
+SatMask
 tfSat1(SatMask mask, AbSyn Sab, TForm S, TForm T)
 {
 	SatMask		result = tfSatFalse(mask);
@@ -966,7 +987,7 @@ tfSat1(SatMask mask, AbSyn Sab, TForm S, TForm T)
 	/* If we can determine satisfaction w/o using tfFollow, do so. */
 	if (tfIsSubst(S)) {
 		tfsDEBUG(dbOut, "(%d - skip subst\n", serialThis);
-		result = tfSat(mask & ~TFS_Pending, tfSubstArg(S), T);
+		result = tfSat(mask & ~TFS_Pending & ~TFS_Unify, tfSubstArg(S), T);
 		tfsDEBUG(dbOut, " %d - skip subst - %oBool)\n", serialThis, tfSatSucceed(result));
 		if (tfSatSucceed(result))
 			return result;
@@ -982,7 +1003,7 @@ tfSat1(SatMask mask, AbSyn Sab, TForm S, TForm T)
 	if (DEBUG(tfs)) {
 		fprintf(dbOut, "->Tfs: %*s%d= ", tfsDepthNo, "", serialThis);
 		tfPrint(dbOut, S);
-		fprintf(dbOut, " satisfies ");
+		fprintf(dbOut, " %ssatisfies ", tfSatAllow(mask, TFS_Unify) ? "u" : "");
 		tfPrint(dbOut, T);
 		fnewline(dbOut);
 	}
@@ -1017,7 +1038,21 @@ tfSat1(SatMask mask, AbSyn Sab, TForm S, TForm T)
 
 	else if (tfIsUnknown(S))
 		result = tfSatFalse(mask);
-
+	/*
+	 * tfVar
+	 */
+	else if (tfIsVar(S)) {
+		if (tfSatAllow(mask, TFS_Unify)) {
+			tfkAddSatConstraint(S, S, T);
+			result = tfSatTrue(mask);
+		}
+	}
+	else if (tfIsVar(T)) {
+		if (tfSatAllow(mask, TFS_Unify)) {
+			tfkAddSatConstraint(T, T, S);
+			result = tfSatTrue(mask);
+		}
+	}
 	/*
 	 * tfSyntax
 	 */
@@ -1636,6 +1671,28 @@ tfSatMulti(SatMask mask, TForm S, TForm T)
 
 /******************************************************************************
  *
+ * :: Maps
+ *
+ *****************************************************************************/
+
+SatMask
+tfSatIsMap(SatMask mask, TForm tf)
+{
+	tf = tfFollowOnly(tf);
+	if (tfIsAnyMap(tf))
+		return tfSatTrue(mask);
+	if (tfIsVariable(tf) && tfSatAllow(mask, TFS_Unify)) {
+		TForm argTf = tfVarNew();
+		TForm retTf = tfVarNew();
+		tfkAddSatConstraint(tf, tf, tfMap(argTf, retTf));
+		return tfSatTrue(mask);
+	}
+	return tfSatFalse(mask);
+}
+
+
+/******************************************************************************
+ *
  * :: Exceptions
  *
  *****************************************************************************/
@@ -1965,7 +2022,10 @@ tfSatExport(SatMask mask, SymeList mods, AbSyn Sab, SymeList S, Syme t, AbSub *l
 
 		tfsExportDEBUG(dbOut, "tfSatExport[%d.%d]:: Test %pSyme %pTForm %pAbSynList\n",
 			       serialThis, iterThis, s, symeType(s), symeCondition(s));
-		if (!symeEqualModConditions(mods, s, t))
+
+		if (tfSatAllow(mask, TFS_Unify) && !symeUnifyModConditions(tfkInfEnvKnown, mods, s, t))
+			continue;
+		if (!tfSatAllow(mask, TFS_Unify) && !symeEqualModConditions(mods, s, t))
 			continue;
 		satConditions = tfSatConditions(mask, mods, s, t);
 		if (tfSatSucceed(satConditions)) {

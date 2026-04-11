@@ -296,6 +296,9 @@ ALDOR_F_TinRestrictOops		"Use of restrict (@) in the presence of embeddings is n
 ALDOR_W_TinEarlyImport          "import from %s before its exports could be determined"
 
 ALDOR_R_TinInferring            "Inferring %s: %s."
+ALDOR_E_TinVarNotInferred       "Failed to infer a type"
+
+ALDOR_E_TinExportNotMatched       "Failed to match export %s"
 
 ALDOR_W_TqNotBuiltin		"`%s: %s' is not exported by Builtin."
 

@@ -14,6 +14,7 @@
 #include "ti_sef.h"
 #include "tinfer.h"
 #include "terror.h"
+#include "tfknown.h"
 #include "util.h"
 #include "sefo.h"
 #include "lib.h"
@@ -178,7 +179,9 @@ tiSefo(Stab stab, Sefo sefo)
 	TForm	fluid(tuniReturnTForm);
 	TForm	fluid(tuniYieldTForm);
 	TForm	fluid(tuniExitTForm);
+	InferEnv fluid(tfkInfEnvKnown);
 
+	tfkInfEnvKnown  = NULL;
 	tuniReturnTForm = tfNone();
 	tuniYieldTForm	= tfNone();
 	tuniExitTForm	= tfNone();

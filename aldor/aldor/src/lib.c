@@ -1694,6 +1694,10 @@ libPutSymeTypes(Lib lib)
 			tf = symeExporter(syme);
 			tfFollow(tf);
 		}
+		else if (tfIsVar(symeType(syme))) {
+			tf = symeType(syme);
+			tfFollow(tf);
+		}
 		else if (symeIsSelf(syme))
 			tf = tfType;
 		else

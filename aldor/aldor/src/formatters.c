@@ -6,8 +6,10 @@
 #include "format.h"
 #include "formatters.h"
 #include "freevar.h"
+#include "infenv.h"
 #include "java/javacode.h"
 #include "ostream.h"
+#include "orenv.h"
 #include "sefo.h"
 #include "stab.h"
 #include "susage.h"
@@ -15,7 +17,9 @@
 #include "syme.h"
 #include "symeset.h"
 #include "tconst.h"
+#include "tfcontext.h"
 #include "tfsat.h"
+#include "ti_solve.h" // TODO: Need to break this into datatype and inference
 #include "tposs.h"
 #include "ttable.h"
 #include "usedef.h"
@@ -80,8 +84,14 @@ local int utypeResultFormatter(OStream stream, Pointer p);
 
 local int utfSatMaskListFormatter(OStream ostream, Pointer p);
 
+local int tfContextFormatter(OStream ostream, Pointer p);
 local int utfContextFormatter(OStream ostream, Pointer p);
 local int utfContextListFormatter(OStream ostream, Pointer p);
+
+local int infEnvFormatter(OStream ostream, Pointer p);
+local int infEnvListFormatter(OStream ostream, Pointer p);
+
+local int orEnvFormatter(OStream ostream, Pointer p);
 
 void
 fmttsInit()
@@ -146,8 +156,14 @@ fmttsInit()
 	fmtRegister("USatMask", utfSatMaskFormatter);
 	fmtRegister("USatMaskList", utfSatMaskListFormatter);
 
+	fmtRegister("TFContext", tfContextFormatter);
+
 	fmtRegister("UTFContext", utfContextFormatter);
 	fmtRegister("UTFContextList", utfContextListFormatter);
+
+	fmtRegister("InferEnv", infEnvFormatter);
+	fmtRegister("InferEnvList", infEnvListFormatter);
+	fmtRegister("OrEnv", orEnvFormatter);
 }
 
 
@@ -524,15 +540,47 @@ utfSatMaskListFormatter(OStream ostream, Pointer p)
 }
 
 local int
+tfContextFormatter(OStream ostream, Pointer p)
+{
+	TFContext utfc = (TFContext) p;
+
+	return ctxtOStreamWrite(ostream, utfc);
+}
+
+local int
 utfContextFormatter(OStream ostream, Pointer p)
 {
 	UTFContext utfc = (UTFContext) p;
 
-	return utformFormatter(ostream, (Pointer) uctxtUTForm(utfc));
+	return uctxtOStreamWrite(ostream, utfc);
 }
 
 local int
 utfContextListFormatter(OStream ostream, Pointer p)
 {
 	return listFormat(USatMask)(ostream, "UTFContext", p);
+}
+
+
+local int
+infEnvFormatter(OStream ostream, Pointer p)
+{
+	InferEnv infEnv = (InferEnv) p;
+
+	return infEnvOStreamWrite(ostream, infEnv);
+}
+
+local int
+infEnvListFormatter(OStream ostream, Pointer p)
+{
+	return listFormat(InferEnv)(ostream, "InferEnv", p);
+}
+
+local int
+orEnvFormatter(OStream ostream, Pointer p)
+{
+	OrEnv        orEnv = (OrEnv) p;
+	InferEnvList content = orEnvContent(orEnv);
+	return ostreamPrintf(ostream, "(Or[%d] %pInferEnvList)",
+			     listLength(InferEnv)(content), content);
 }

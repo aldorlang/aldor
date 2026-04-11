@@ -23,12 +23,29 @@
 #include "syme.h"
 #include "tconst.h"
 #include "terror.h"
+#include "tfknown.h"
 #include "tfsat.h"
 #include "tposs.h"
 #include "unify.h"
 #include "utform.h"
 #include "util.h"
 #include "utyperes.h"
+
+/*****************************************************************************
+ *
+ * :: Selective debug stuff
+ *
+ ****************************************************************************/
+
+Bool	tpossLambdaDebug	= false;
+Bool	tpossSatTypeDebug	= false;
+Bool	tpossSelectSatDebug	= false;
+Bool	tpossIntersectDebug	= false;
+
+#define tpossLambdaDEBUG	DEBUG_IF(tpossLambda)	 afprintf
+#define tpossSatTypeDEBUG	DEBUG_IF(tpossSatType)	 afprintf
+#define tpossSelectSatDEBUG	DEBUG_IF(tpossSelectSat) afprintf
+#define tpossIntersectDEBUG	DEBUG_IF(tpossIntersect) afprintf
 
 /*
  *   Each node is given a set of possible meanings.
@@ -70,6 +87,15 @@ tpossCons(TPoss tp, UTForm t)
 	assert(tp);
 	t = utformFollowOnly(t);
 	tp->possl = listCons(UTFContext)(uctxtEmpty(t), tp->possl);
+	tp->possc += 1;
+}
+
+local void
+tpossConsUTFC(TPoss tp, UTFContext utfc)
+{
+	assert(tp);
+	utfc = uctxtFollowOnly(utfc);
+	tp->possl = listCons(UTFContext)(utfc, tp->possl);
 	tp->possc += 1;
 }
 
@@ -127,6 +153,20 @@ tpossSingleton(TForm t)
 }
 
 TPoss
+tpossUnknown(TPoss tposs)
+{
+	TPoss tpNew = tpossEmpty();
+	TPossIterator	it;
+	UTForm unk = utformNewConstant(tfUnknown);
+
+	for (tpossITER(it, tposs); tpossMORE(it); tpossSTEP(it)) {
+		UTFContext utfc = tpossUCELT(it);
+		tpossAdd1UTFContext(tpNew, uctxtNew(uctxtInfEnv(utfc), unk));
+	}
+	return tpNew;
+}
+
+TPoss
 tpossFrSymes(SymeList symes)
 {
 	TPoss	tp = tpossEmpty();
@@ -161,12 +201,14 @@ tpossFilterEmpty(TPoss tposs)
 
 	for (tpossITER(tit, tposs); tpossMORE(tit); tpossSTEP(tit)) {
 		/* Get the next type possibility */
+		UTFContext utfc = tpossUCELT(tit);
 		TForm t = tpossELT(tit);
 
 		/* Is it an empty multi? */
 		if (tfIsMulti(t) && !tfArgc(t)) continue;
+
 		/* No - add it to the set of possible types */
-		tprhs = tpossAdd1(tprhs, t);
+		tprhs = tpossAdd1UTFContext(tprhs, utfc);
 	}
 	return tprhs;
 }
@@ -242,11 +284,24 @@ tpossHasUTForm(TPoss tp, UTForm t)
                 if (utfIsConstant(s) && utformCanUnify(s, t))
                         continue;
                 // Can turn s into t
-                if (utformCanUnify(s, utformNewConstant(utformTForm(t))))
-                       return true;
+                if (utformCanUnify(s, utformNewConstant(utformTForm(t)))) {
+			if (!infEnvIsEmpty(uctxtInfEnv(car(l)))) {
+				afprintf(dbOut, "TP %pTPoss form: %pUTForm\n", tp, t);
+				bug("tpossHasUTForm: Possible iffyness");
+			}
+			return true;
+		}
         }
 
         return false;
+}
+
+Bool
+tpossHasUTFContext(TPoss tp, UTFContext t)
+{
+	if (tpossHasUTForm(tp, t->utform) && infEnvIsEmpty(t->infEnv))
+		return true;
+	return false;
 }
 
 TPoss
@@ -257,6 +312,21 @@ tpossAdd1UTForm(TPoss tp, UTForm t)
 	return tp;
 }
 
+TPoss
+tpossAdd1UTFContext(TPoss tp, UTFContext utfc)
+{
+	if (!tpossHasUTFContext(tp, utfc))
+		tpossConsUTFC(tp, utfc);
+	return tp;
+}
+
+TPoss
+tpossAdd1InferEnv(TPoss tp, TForm tf, InferEnv infEnv)
+{
+	return tpossAdd1UTFContext(tp, uctxtNewConst(infEnv, tf));
+}
+
+
 Bool
 tpossHasIntersection(TPoss tp1, TPoss tp2)
 {
@@ -265,7 +335,6 @@ tpossHasIntersection(TPoss tp1, TPoss tp2)
 	tpossFree(tp);
 	return flg;
 }
-
 
 TPoss
 tpossRefer(TPoss tp)
@@ -306,6 +375,7 @@ tpossFree(TPoss tp)
 	if (tp == NULL)
 		return;
 	if (--tp->refc > 0) return;
+	assert(tp->refc == 0);
 	if (!debugflag) {
 		listFree(UTFContext)(tp->possl);
 		stoFree((Pointer) tp);
@@ -410,15 +480,16 @@ tpossIntersect_Orig(TPoss S, TPoss T)
 {
 	UTFContextList LS, LT, l = 0;
 	UTForm carLS, carLT;
-	
+
 	if (S == NULL || T == NULL)
 		return NULL;
-	
+
 	/* If T is free of duplicates, then the result will also be. */
 	for (LT = T->possl; LT; LT = cdr(LT)) {
 		car(LT) = uctxtFollowOnly(car(LT));
 		carLT = uctxtUTForm(car(LT));
-		for (LS = S->possl; LS; LS = cdr(LS)) {
+
+	for (LS = S->possl; LS; LS = cdr(LS)) {
 			car(LS) = uctxtFollowOnly(car(LS));
 			carLS = uctxtUTForm(car(LS));
 			if (utfSatisfies(carLS, carLT)) {
@@ -440,37 +511,70 @@ tpossIntersect_Orig(TPoss S, TPoss T)
 }
 
 TPoss
+tpossConst(TPoss tp, TForm tf)
+{
+	TPossIterator tpit;
+	if (tpossIsEmpty(tp))
+		return tpossEmpty();
+
+	TPoss tpNew = tpossEmpty();
+	for (tpossITER(tpit, tp); tpossMORE(tpit); tpossSTEP(tpit)) {
+		InferEnv env = tpossINFENV(tpit);
+		tpossAdd1UTFContext(tpNew, uctxtNewConst(env, tf));
+	}
+	return tpNew;
+}
+
+TPoss
 tpossIntersect(TPoss S, TPoss T)
 {
+	static int serialCount = 0;
+	int serialId = serialCount++;
 	UTFContextList LS, LT, l = 0;
 	UTForm carLS, carLT;
-	
+
 	if (S == NULL || T == NULL)
 		return NULL;
-	
+
+	tpossIntersectDEBUG(dbOut, "(TP Intersect(%d)\n", serialId);
+	tpossIntersectDEBUG(dbOut, " TP Intersect(%d) - S: %pTPoss\n", serialId, S);
+	tpossIntersectDEBUG(dbOut, " TP Intersect(%d) - T: %pTPoss\n", serialId, T);
+
 	/* If T is free of duplicates, then the result will also be. */
 	for (LT = T->possl; LT; LT = cdr(LT)) {
 		car(LT) = uctxtFollowOnly(car(LT));
+
 		carLT = uctxtUTForm(car(LT));
-		for (LS = S->possl; LS; LS = cdr(LS)) {
+		Bool found = false;
+		for (LS = S->possl; LS && !found; LS = cdr(LS)) {
 			InferEnv newEnv = infEnvMerge(uctxtInfEnv(car(LT)), uctxtInfEnv(car(LS)));
-			if (infEnvIsFailed(newEnv))
+			if (infEnvIsFailed(newEnv)) {
 				continue;
+			}
+
+			tfkSetEnv(newEnv);
 			car(LS) = uctxtFollowOnly(car(LS));
 			carLS = uctxtUTForm(car(LS));
-			if (infEnvSatisfies(newEnv, utformConstOrFail(carLS), utformConstOrFail(carLT))) {
+			if (tfSatisfies(utformConstOrFail(carLS), utformConstOrFail(carLT))) {
 				l = listCons(UTFContext)(uctxtNew(newEnv, carLT), l);
+				found = true;
+				tfkClearEnv();
 				break;
 			}
-			if (infEnvSatisfies(newEnv, utformConstOrFail(carLT), utformConstOrFail(carLS))) {
+			if (tfSatisfies(utformConstOrFail(carLT), utformConstOrFail(carLS))) {
 				if (!listMember(UTFContext)(l, car(LS), uctxtEqual))
 					l = listCons(UTFContext)(uctxtNew(newEnv, carLS), l);
 			}
+
+			tfkClearEnv();
 		}
 	}
 
 	l = listNReverse(UTFContext)(l);
-	return tpossFrTheUTFContextList(l);
+	TPoss final = tpossFrTheUTFContextList(l);
+	tpossIntersectDEBUG(dbOut, " TP Intersect(%d) --> %pTPoss\n", serialId, final);
+	tpossIntersectDEBUG(dbOut, " TP Intersect(%d0))\n", serialId);
+	return final;
 }
 
 TPoss
@@ -511,6 +615,13 @@ tpossUniqueUTForm(TPoss tp)
 {
 	car(tp->possl) = uctxtFollowOnly(car(tp->possl));
 	return uctxtUTForm(car(tp->possl));
+}
+
+UTFContext
+tpossUniqueUTFContext(TPoss tp)
+{
+	car(tp->possl) = uctxtFollowOnly(car(tp->possl));
+	return car(tp->possl);
 }
 
 Bool
@@ -620,6 +731,38 @@ tpossSelectSatisfier(TPoss tp, TForm t)
 	return r;
 }
 
+UTFContext
+tpossSelectSatisfierContext(TPoss tp, TFContext tfc)
+{
+	UTFContextList l;
+	UTFContext  r = 0;
+	TForm t = ctxtTForm(tfc);
+	Bool  failed = false;
+	if (tp == NULL)
+		return 0;
+
+	for (l = tp->possl; l && !failed; l = cdr(l)) {
+/*		car(l) = tfFollowOnly(car(l));	    */
+		InferEnv newEnv = infEnvMerge(uctxtInfEnv(car(l)), ctxtInfEnv(tfc));
+		tfkSetEnv(newEnv);
+		if (tfSatValues(uctxtUTFConstOrFail(car(l)), t)) {
+			if (!r) {
+				tpossSelectSatDEBUG(dbOut, "PossSet: Success: %pInferEnv %pTForm %pTForm\n",
+						    newEnv, uctxtUTFConstOrFail(car(l)), t);
+				r = uctxtNew(newEnv, uctxtUTForm(car(l)));
+			}
+			else {
+				failed = true;
+				r = NULL;
+				tpossSelectSatDEBUG(dbOut, "PossSat: Failed: %pInferEnv %p\n", newEnv,
+						    uctxtUTFConstOrFail(car(l)), t);
+			}
+		}
+		tfkClearEnv();
+	}
+	return r;
+}
+
 local UTFContext
 tpossJoin(USatMask mask, UTForm S, UTForm T)
 {
@@ -659,22 +802,31 @@ tpossSatisfiesType(TPoss S, TForm T)
 {
 	UTFContextList LS, l = listNil(UTFContext);
 	UTForm uT;
+	TForm  Tp;
 
 	if (S == NULL)
 		return NULL;
-
+	tpossSatTypeDEBUG(dbOut, "(TP SatType: %pTPoss\n", S);
+	tpossSatTypeDEBUG(dbOut, " TP SatType: %pTForm\n", T);
 	T = tfFollowOnly(T);
 
-	if (tfIsUnknown(T) || tpossIsPending(S, T))
+	if (tfIsUnknown(T) || tpossIsPending(S, T)) {
+		tpossSatTypeDEBUG(dbOut, " TP SatType: Pending)\n");
 		return tpossRefer(S);
+	}
 
-	uT = utformNewConstant(T);
-	for (LS = S->possl; LS; LS = cdr(LS))
-		if (utfSatisfies(uctxtUTForm(car(LS)), uT))
-			l = listCons(UTFContext)(car(LS), l);
-
+	for (LS = S->possl; LS; LS = cdr(LS)) {
+		InferEnv newEnv = infEnvCopy(uctxtInfEnv(car(LS)));
+		tfkSetEnv(newEnv);
+		if (tfSatisfies(uctxtUTFConstOrFail(car(LS)), T)) {
+			l = listCons(UTFContext)(uctxtNew(newEnv, uctxtUTForm(car(LS))), l);
+		}
+		tfkClearEnv();
+	}
 	l = listNReverse(UTFContext)(l);
-	return tpossFrTheUTFContextList(l);
+	TPoss res = tpossFrTheUTFContextList(l);
+	tpossSatTypeDEBUG(dbOut, " TP SatType: %pTPoss)\n", res);
+	return res;
 }
 
 Bool
@@ -783,7 +935,7 @@ tpossPattern(TPoss tp)
 {
 	TPoss tpNew;
 	TPossIterator tit;
-	
+
 	tpNew = tpossEmpty();
 	for (tpossITER(tit, tp); tpossMORE(tit); tpossSTEP(tit)) {
 		tpossCons(tpNew, utformNewConstant(tfPattern(tpossELT(tit))));
@@ -822,6 +974,30 @@ tpossPatternCase(TPoss tpit)
 	return tparg;
 }
 
+TPoss
+tpossLambda(TPoss argPoss, TPoss retPoss, AbMapType mapType)
+{
+	TPoss		tpL;
+	TPossIterator	argIt, retIt;
+	tpL = tpossEmpty();
+	for (tpossITER(argIt, argPoss); tpossMORE(argIt); tpossSTEP(argIt)) {
+		UTFContext arg = tpossUCELT(argIt);
+		for (tpossITER(retIt, retPoss); tpossMORE(retIt); tpossSTEP(retIt)) {
+			UTFContext ret = tpossUCELT(retIt);
+			InferEnv ee = infEnvMerge(uctxtInfEnv(arg), uctxtInfEnv(ret));
+			if (!infEnvIsFailed(ee)) {
+				TForm tfL = tfAnyMap(utformConstOrFail(utformFollow(uctxtUTForm(arg))),
+						     utformConstOrFail(utformFollow(uctxtUTForm(ret))), mapType);
+				tpossAdd1UTFContext(tpL, uctxtNew(ee, utformNewConstant(tfL)));
+			}
+		}
+	}
+	tpossLambdaDEBUG(dbOut, "(TPossLambda\n  %pTPoss\n  %pTPoss\n", argPoss, retPoss);
+	tpossLambdaDEBUG(dbOut, " TPossLambda:\n  %pTPoss)\n", tpL);
+
+	return tpL;
+}
+
 TForm
 tpossELT_(TPossIterator *ip)
 {
@@ -832,4 +1008,10 @@ UTForm
 tpossUELT_(TPossIterator *ip)
 {
 	return uctxtUTForm(car(ip->possl));
+}
+
+UTFContext
+tpossUCELT_(TPossIterator *ip)
+{
+	return car(ip->possl);
 }

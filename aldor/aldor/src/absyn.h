@@ -319,6 +319,7 @@ struct abSeman {
 	AbEmbed embed;		/* Implicit embedding for product contexts. */
 	SImpl   impl;		/* Syme implementation, if any */
 	SymeList self;          /* value of '%' for withs */
+  //Syme     infSyme;	/* syme for purposes of type inference */
 };
 
 typedef struct abSeman *AbSeman;

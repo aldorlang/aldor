@@ -21,6 +21,7 @@ local void testTiBupApplyMixed();
 local void testTiBupApplyImplicit();
 local void testTiBupApplyErrorOnArg();
 local void testTiBupGenCross();
+local void testTiBupCaseBase();
 local void testTiBupCase0();
 local void testTiBupCase1();
 local void testTiBupCase2();
@@ -32,7 +33,7 @@ void
 tibupTest()
 {
 	init();
-	/*
+
 	TEST(testTiBupCollect1);
 	TEST(testTiBupCollect2);
 	TEST(testTiTdnPretend);
@@ -42,14 +43,15 @@ tibupTest()
 	TEST(testTiBupApplyErrorOnArg);
 	TEST(testTiBupGenCross);
 
+	TEST(testTiBupCaseBase);
 	TEST(testTiBupCase0);
 	TEST(testTiTdnSelect);
 
 	TEST(testTiBupCase1);
 	TEST(testTiBupCase2);
-	*/
+
 	TEST(testTiTdnCase1);
-	//TEST(testTiTdnCase2);
+	TEST(testTiTdnCase2);
 
 	fini();
 }
@@ -397,6 +399,38 @@ testTiBupGenCross()
 }
 
 local void
+testTiBupCaseBase()
+{
+	String Boolean_imp = "import from Boolean";
+	String t_def = "true: Boolean == never";
+	String X_def = "X: with == add";
+	String x_def = "x: X == never";
+
+	StringList lines = listList(String)(4, Boolean_imp, t_def, X_def, x_def);
+	AbSynList absynList = listCons(AbSyn)(stdtypes(), abqParseLines(lines));
+	AbSyn absyn = abNewSequenceL(sposNone, absynList);
+
+	initFile();
+	Stab stab = stabFile();
+	abPutUse(absyn, AB_Use_NoValue);
+	scopeBind(stab, absyn);
+	typeInfer(stab, absyn);
+
+	tipBupDebug = true;
+	tipTdnDebug = true;
+	tipPatternDebug = true;
+	tipApplyDebug = true;
+
+	AbSyn test1 = abqParse("if x case ? then true");
+	abPutUse(test1, AB_Use_NoValue);
+	tiBottomUp(stab, test1, tfUnknown);
+	AbSyn applyCase1 = abFindNode(test1, AB_Apply);
+	testAIntEqual("one pattern", AB_State_HasUnique, abState(applyCase1));
+
+	finiFile();
+}
+
+local void
 testTiBupCase0()
 {
 	String Boolean_imp = "import from Boolean";
@@ -413,23 +447,26 @@ testTiBupCase0()
 	tipTdnDebug = true;
 	tipPatternDebug = true;
 	tipApplyDebug = true;
-	tfsDebug = true;
+	//tfsDebug = true;
 	Stab stab = stabFile();
 	abPutUse(absyn, AB_Use_NoValue);
 	scopeBind(stab, absyn);
 	typeInfer(stab, absyn);
 
 	AbSyn test1 = abqParse("if x case ? then true");
+	abPutUse(test1, AB_Use_NoValue);
 	tiBottomUp(stab, test1, tfUnknown);
 	AbSyn applyCase1 = abFindNode(test1, AB_Apply);
 	testAIntEqual("one pattern", AB_State_HasUnique, abState(applyCase1));
 
 	AbSyn test2 = abqParse("if (x, x) case (?,?) then true");
+	abPutUse(test2, AB_Use_NoValue);
 	tiBottomUp(stab, test2, tfUnknown);
 	AbSyn applyCase2 = abFindNode(test2, AB_Apply);
 	testAIntEqual("two pattern", AB_State_HasUnique, abState(applyCase2));
 
 	AbSyn test3 = abqParse("if () case () then true");
+	abPutUse(test3, AB_Use_NoValue);
 	tiBottomUp(stab, test3, tfUnknown);
 
 	finiFile();

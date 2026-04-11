@@ -31,6 +31,7 @@ void ostreamTest(void);
 void ofPeepTest(void);
 void ofCPropTest(void);
 void ofCrinTest(void);
+void orEnvTest(void);
 void printfTest(void);
 void retypeTest(void);
 void scobindTest(void);

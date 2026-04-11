@@ -10,6 +10,7 @@
 #include "debug.h"
 #include "format.h"
 #include "genfoam.h"
+#include "infenv.h"
 #include "ostream.h"
 #include "spesym.h"
 #include "srcpos.h"
@@ -37,6 +38,7 @@ Bool	sefoSubstDebug	= false;
 Bool	sefoUnionDebug	= false;
 Bool	sefoInterDebug	= false;
 Bool	sefoCloseDebug	= false;
+Bool	sefoUnifyDebug	= false;
 
 #define sstDEBUG	DEBUG_IF(sst)		afprintf
 #define sstMarkDEBUG	DEBUG_IF(sstMark)	afprintf
@@ -48,6 +50,7 @@ Bool	sefoCloseDebug	= false;
 #define sefoUnionDEBUG	DEBUG_IF(sefoUnion)	afprintf
 #define sefoInterDEBUG	DEBUG_IF(sefoInter)	afprintf
 #define sefoCloseDEBUG	DEBUG_IF(sefoClose)	afprintf
+#define sefoUnifyDEBUG	DEBUG_IF(sefoUnify)	afprintf
 
 #define SefoSubstTUnique
 #undef  SefoSubstShare
@@ -105,7 +108,7 @@ local Bool		symeEqual0		(SymeList, Syme, Syme);
 local Bool		tformEqual0		(SymeList, TForm, TForm);
 local Bool		sefoListEqual0		(SymeList, SefoList, SefoList);
 local Bool		symeListEqual0		(SymeList, SymeList, SymeList);
-local Bool		tformListEqual0		(SymeList,TFormList,TFormList);
+local Bool		tformListEqual0		(SymeList, TFormList,TFormList);
 local Bool		sefoIsDefinedType	(Sefo);
 
 local Bool		symeTypeEqual0		(SymeList, Syme, Syme);
@@ -115,6 +118,16 @@ local Bool		symeOriginEqual0	(SymeList, Syme, Syme);
 local Bool		tformEqualCheckSymes	(TForm);
 local Sefo		sefoEqualMods		(Sefo);
 local AbEqualValue	sefoIdEqual		(void *, Sefo, Sefo);
+
+local Bool		sefoUnifyMod0		(InferEnv, SymeList, Sefo, Sefo);
+local Bool		symeUnifyMod0		(InferEnv, SymeList, Syme, Syme);
+local Bool		tformUnifyMod0		(InferEnv, SymeList, TForm, TForm);
+local Bool		sefoListUnifyMod0	(InferEnv, SymeList, SefoList, SefoList);
+local Bool		symeListUnifyMod0	(InferEnv, SymeList, SymeList, SymeList);
+local Bool		tformListUnifyMod0	(InferEnv, SymeList,TFormList,TFormList);
+local Bool		symeOriginUnifyMod0	(InferEnv, SymeList, Syme, Syme);
+local Bool		symeTypeUnifyMod0	(InferEnv, SymeList, Syme, Syme);
+local Bool		tformUnifyVars		(InferEnv, SymeList, TForm, TForm);
 
 local void		sfvInitTable		(void);
 local void		sfvFiniTable		(void);
@@ -327,6 +340,34 @@ sstStackPrint(FILE *fout)
 			cc += sstPrSymeList(fout, 2, frame->arg2.symes);
 		}
 		else if (strEqual(where, "tformListEqualMod")) {
+			cc += sstPrTFormList(fout, 1, frame->arg1.tforms);
+			cc += sstPrTFormList(fout, 2, frame->arg2.tforms);
+		}
+
+		/*
+		 * UnifyMod
+		 */
+		else if (strEqual(where, "sefoUnifyMod")) {
+			cc += sstPrSefo(fout, 1, frame->arg1.sefo);
+			cc += sstPrSefo(fout, 2, frame->arg2.sefo);
+		}
+		else if (strEqual(where, "symeUnifyMod")) {
+			cc += sstPrSyme(fout, 1, frame->arg1.syme);
+			cc += sstPrSyme(fout, 2, frame->arg2.syme);
+		}
+		else if (strEqual(where, "tformUnifyMod")) {
+			cc += sstPrTForm(fout, 1, frame->arg1.tform);
+			cc += sstPrTForm(fout, 2, frame->arg2.tform);
+		}
+		else if (strEqual(where, "sefoListUnifyMod")) {
+			cc += sstPrSefoList(fout, 1, frame->arg1.sefos);
+			cc += sstPrSefoList(fout, 2, frame->arg2.sefos);
+		}
+		else if (strEqual(where, "symeListUnifyMod")) {
+			cc += sstPrSymeList(fout, 1, frame->arg1.symes);
+			cc += sstPrSymeList(fout, 2, frame->arg2.symes);
+		}
+		else if (strEqual(where, "tformListUnifyMod")) {
 			cc += sstPrTFormList(fout, 1, frame->arg1.tforms);
 			cc += sstPrTFormList(fout, 2, frame->arg2.tforms);
 		}
@@ -1275,6 +1316,9 @@ tformOStreamPrint0(OStream ostream, Bool deep, TForm tf)
 
 	if (tfIsSym(tf))
 		;
+	else if (tfIsVar(tf)) {
+		cc += ostreamPrintf(ostream, "(%d)", tfVarId(tf));
+	}
 	else if (tfIsAbSyn(tf)) {
 		cc += ostreamPrintf(ostream, " ");
 		cc += sefoOStreamPrint0(ostream, deep, tfGetExpr(tf));
@@ -1603,6 +1647,58 @@ symeEqualModConditions(SymeList mods, Syme syme1, Syme syme2)
 /*
  * Local functions.
  */
+#if 0
+enum eqMask {
+	Eq
+};
+
+typedef enum eqMask EqMask;
+
+typedef struct eqMods {
+	Bool hasSubst;
+	SymeList symes;
+	InferEnv infEnv;
+} *EqMods;
+
+#define eqModsSymes(eqMods) ((eqMods)->symes)
+#define eqModsInfEnv(eqMods) ((eqMods)->infEnv)
+
+local EqMods
+eqModsNew(SymeList symes)
+{
+	return eqModsInfEnv(symes, infEnvFailed());
+}
+
+local void
+eqModsFree(EqMods mods)
+{
+	stoFree(mods);
+}
+
+local EqMods
+eqModsInfEnv(InferEnv env)
+{
+	return eqModsInfEnv(listNil(Syme), env);
+}
+
+local EqMods
+eqModsModWithInfEnv(SymeList symes, InferEnv infEnv)
+{
+	EqMods eqMods = (EqMods) stoAlloc(sizeof(*eqMods));
+	eqMods->hasSubst = false;
+	eqMods->symes = symes;
+	eqMods->infEnv = infEnvFailed();
+}
+
+local Bool
+eqModUnify(EqMods eqmods, TForm tf1, TForm tf2)
+{
+	if (infEnvFailed(eqModsInfEnv(eqmods)))
+		return false;
+	afprintf(dbOut, "Unify %pTForm %pTForm\n", tf1, tf2);
+	return false;
+}
+#endif
 
 #define			symeModsAllowAlpha(mods)		\
 	((mods) && cdr(mods) && !symeIsSelf(car(mods)) &&	\
@@ -2219,6 +2315,415 @@ sefoEqualMods(Sefo sefo)
 
 /*****************************************************************************
  *
+ * :: sefoUnify
+ *
+ ****************************************************************************/
+
+Bool
+sefoUnifyMod(InferEnv infEnv, SymeList mods, Sefo sefo1, Sefo sefo2)
+{
+	Bool	eq;
+
+	sstNext("sefoUnifyMod", sefo1, sefo2);
+	eq = sefoUnifyMod0(infEnv, mods, sefo1, sefo2);
+	sstDoneSefo(sefo1);
+
+	return eq;
+}
+
+Bool
+symeUnifyMod(InferEnv infEnv, SymeList mods, Syme syme1, Syme syme2)
+{
+	Bool	eq;
+
+	sstNext("symeUnifyMod", syme1, syme2);
+	eq = symeUnifyMod0(infEnv, mods, syme1, syme2);
+	sstDoneSyme(syme1);
+
+	return eq;
+
+}
+
+Bool
+tformUnifyMod(InferEnv infEnv, SymeList mods, TForm tf1, TForm tf2)
+{
+	Bool	eq;
+
+	sstNext("tformUnifyMod", tf1, tf2);
+	eq = tformUnifyMod0(infEnv, mods, tf1, tf2);
+	sstDoneSyme(syme1);
+
+	return eq;
+}
+
+Bool
+symeUnifyModConditions(InferEnv infEnv, SymeList mods, Syme syme1,  Syme syme2)
+{
+	Bool eq;
+
+	symeSetPopConds(syme1);
+	symeSetPopConds(syme2);
+	eq = symeUnifyMod(infEnv, mods, syme1, syme2);
+	symeClrPopConds(syme2);
+	symeClrPopConds(syme1);
+
+	return eq;
+}
+
+
+local Bool
+sefoUnifyMod0(InferEnv infEnv, SymeList mods, Sefo sefo1, Sefo sefo2)
+{
+	Bool result = true;
+	Length	serial = 0;
+
+	sstSerialDebug += 1;
+	serial = sstSerialDebug;
+
+	sefoUnifyDEBUG(dbOut, "(sefoUnify[%d]: %pSefo %pSefo\n",
+		       (int) serial, sefo1, sefo2);
+	// TODO: FIXME!
+	result = sefoEqual0(mods, sefo1, sefo2);
+	sefoUnifyDEBUG(dbOut, "  sefoUnify[%d] = %oBool)\n", (int) serial, result);
+	return result;
+}
+
+local Bool
+symeUnifyMod0(InferEnv infEnv, SymeList mods, Syme syme1, Syme syme2)
+{
+	Bool	result = true;
+	Length	serial = 0;
+
+	sstSerialDebug += 1;
+	serial = sstSerialDebug;
+
+	if (syme1 == syme2)
+		return true;
+
+	else if (!syme1 || !syme2)
+		return false;
+
+	sefoUnifyDEBUG(dbOut, "(symeUnify[%d]: %pSyme %pSyme\n",
+		       (int) serial, syme1, syme2);
+
+	if (symeIsArchive(syme1) && symeIsLibrary(syme2))
+		result = symeEqual0(mods, syme1, syme2);
+	else if (symeIsArchive(syme2) && symeIsLibrary(syme1))
+		result = symeEqual0(mods, syme1, syme2);
+
+	else if (symeId(syme1) != symeId(syme2)) {
+		if (symeModsAllowAlpha(mods))
+			result = listMember(Syme)(mods, syme1, symeEq) &&
+				 listMember(Syme)(mods, syme2, symeEq);
+		else
+			result = false;
+	}
+
+	else if (sstSymeIsMarked(syme1))
+		result = true;
+
+	else if (symeExtendEqual0(mods, syme1, syme2))
+		result = true;
+
+	else if (listMember(Syme)(mods, syme1, symeEq) &&
+		 listMember(Syme)(mods, syme2, symeEq))
+		result = true;
+
+	else if (symeIsSelf(syme1))
+		result = false;
+
+	else if (symeIsSelfSelf(syme1)) {
+		sefoUnifyDEBUG(dbOut, "  symeUnify: %% via symeEqual..\n");
+		result = symeEqual0(mods, syme1, syme2);
+	}
+
+	else if (symeIsTwin(syme1, syme2)) {
+		if (symeIsImport(syme1) && symeIsImport(syme2))
+			result = symeOriginUnifyMod0(infEnv, mods, syme1, syme2);
+		else
+			result = true;
+	}
+
+	else {
+		sstMarkSyme(syme1);
+		result = (symeOriginUnifyMod0(infEnv, mods, syme1, syme2) &&
+			  sefoListUnifyMod0(infEnv, mods, symeCondition(syme1),
+					 symeCondition(syme2)) &&
+			  symeTypeUnifyMod0(infEnv, mods, syme1, syme2));
+	}
+
+	sefoUnifyDEBUG(dbOut, "  symeUnify[%d] = %oBool)\n", (int) serial, result);
+
+	return result;
+}
+
+local Bool
+symeTypeUnifyMod0(InferEnv infEnv, SymeList mods, Syme syme1, Syme syme2)
+{
+	if ((symeIsLazy(syme1) && symeIsImport(syme1)) ||
+	    (symeIsLazy(syme2) && symeIsImport(syme2)))
+		return symeTypeCode(syme1) == symeTypeCode(syme2);
+	else if (tfIsTrigger(syme1->type) || tfIsTrigger(syme2->type))
+		return symeTypeCode(syme1) == symeTypeCode(syme2);
+	else
+		return tformUnifyMod0(infEnv, mods, symeType(syme1), symeType(syme2));
+}
+
+local Bool
+symeOriginUnifyMod0(InferEnv infEnv, SymeList mods, Syme syme1, Syme syme2)
+{
+	Bool	result = true;
+	Length	serial = 0;
+
+	sstSerialDebug += 1;
+	serial = sstSerialDebug;
+
+	if (DEBUG(sefoUnify)) {
+		fprintf(dbOut, "-> symeOriginUnify[%d]:", (int) serial);
+		fnewline(dbOut);
+		symePrintDb(syme1);
+		symePrintDb(syme2);
+	}
+
+	if (symeKind(syme1) != symeKind(syme2))
+		result = false;
+
+	else if (symeOrigin(syme1) == symeOrigin(syme2))
+		result = true;
+
+	else switch (symeKind(syme1)) {
+	case SYME_Builtin:
+		result = (symeBuiltin(syme1) == symeBuiltin(syme2));
+		break;
+	case SYME_Foreign:
+		result = forgEqual(symeForeign(syme1), symeForeign(syme2));
+		break;
+	case SYME_Import:
+		result = tformUnifyMod0(infEnv, mods, symeExporter(syme1),
+					symeExporter(syme2));
+		break;
+	case SYME_Library:
+		result = libEqual(symeLibrary(syme1), symeLibrary(syme2));
+		break;
+	case SYME_Archive:
+		result = arEqual(symeArchive(syme1), symeArchive(syme2));
+		break;
+	case SYME_Export:
+	case SYME_Extend:
+		result = true;
+		break;
+	default:
+		bugBadCase(symeKind(syme1));
+	}
+
+	if (DEBUG(sefoUnify)) {
+		afprintf(dbOut, "<- symeOriginUnify[%d] = %oBool", (int) serial, result);
+		fnewline(dbOut);
+	}
+
+	return result;
+}
+
+local Bool
+tformUnifyMod0(InferEnv infEnv, SymeList mods, TForm tf1, TForm tf2)
+{
+	Bool	result = true;
+	Length	serial = 0;
+#if CheckSimilar
+	Bool    similar = true;
+#endif
+	tf1 = tfFollowOnly(tf1);
+	tf2 = tfFollowOnly(tf2);
+
+
+	if (tf1 == tf2) return true;
+
+	/* Only use tfFollow if exactly one of the types is lazy. */
+	if (tfIsSubst(tf1) != tfIsSubst(tf2)) {
+		if (!tformStructSimilar(tf1, tf2)) {
+#if CheckSimilar
+			afprintf(dbOut, "(Similar test failed:\n\t%pTForm\n\t%pTForm\n", tf1, tf2);
+			similar = false;
+#else
+			return false;
+#endif
+		}
+		tfFollow(tf1);
+		tfFollow(tf2);
+	}
+
+	/* If we can determine equality w/o using tfFollow, do so. */
+	if (tfIsSubst(tf1) || tfIsSubst(tf2)) {
+		assert(tfIsSubst(tf1) && tfIsSubst(tf2));
+		if (tfSubstSigma(tf1) == tfSubstSigma(tf2) &&
+		    tformUnifyMod0(infEnv, mods, tfSubstArg(tf1), tfSubstArg(tf2)))
+			return true;
+	}
+	/* Can we shortcut cases where tfIsVar(tfX)? */
+	tfFollow(tf1);
+	tfFollow(tf2);
+
+	/* Only use tfDefineeType if both types are fully analyzed. */
+	if (!tfIsSyntax(tf1) && !tfIsSyntax(tf2)) {
+		tf1 = tfDefineeType(tf1);
+		tf2 = tfDefineeType(tf2);
+	}
+
+	/* The tfDefineeType of a type might also be a syntax type. */
+	if (tfIsSyntax(tf1) || tfIsSyntax(tf2))
+		return abEqualModDeclares(tfExpr(tf1), tfExpr(tf2));
+
+	sstSerialDebug += 1;
+	serial = sstSerialDebug;
+
+	if (DEBUG(sefoUnify)) {
+		afprintf(dbOut, "-> tformUnify[%d]: %pTForm\n", (int) serial, tf1);
+		afprintf(dbOut, "   tformUnify[%d]: %pTForm\n", (int) serial, tf2);
+	}
+
+	if (tf1 == tf2)
+		result = true;
+
+	else if (tfTag(tf1) == TF_Variable || tfTag(tf2) == TF_Variable) {
+		//result = tfVarId(tf1) == tfVarId(tf2);
+		result = tformUnifyVars(infEnv, mods, tf1, tf2);
+	}
+	else if ((tfIsLibrary(tf1) || tfIsArchive(tf1)) &&
+		 (tfIsLibrary(tf2) || tfIsArchive(tf2)))
+		result = true;
+
+	else if ((tfTag(tf1) != tfTag(tf2)) || (tfArgc(tf1) != tfArgc(tf2)))
+		result = false;
+
+	else if (tfIsSym(tf1))
+		result = true;
+
+	else if (tfTag(tf1) == TF_General)
+		result = sefoUnifyMod0(infEnv, mods, tfGetExpr(tf1), tfGetExpr(tf2));
+	else if (tfIsRecord(tf1) || tfIsRawRecord(tf1) ||
+		 tfIsUnion(tf1) || tfIsEnum(tf1) || tfIsPPartial(tf1)) {
+		Length	i;
+		for (i = 0; result && i < tfArgc(tf1); i += 1) {
+			Symbol	sym1 = tfCompoundId(tf1, i);
+			Symbol	sym2 = tfCompoundId(tf2, i);
+			if (!sym1 || !sym2 || sym1 == sym2)
+				result = tformUnifyMod0(infEnv, mods, tfArgv(tf1)[i],
+							tfArgv(tf2)[i]);
+			else
+				result = false;
+		}
+	}
+	/* ??? Do we need to special-case TrailingArray */
+	else if (tfIsNode(tf1)) {
+		Length	i;
+		for (i = 0; result && i < tfArgc(tf1); i += 1)
+			result = tformUnifyMod0(infEnv, mods, tfArgv(tf1)[i],
+						tfArgv(tf2)[i]);
+	}
+	else
+		bugBadCase(tfTag(tf1));
+
+	if (result && tfIsWith(tf1) &&
+	    (tfUseCatExports(tf1) || tfUseCatExports(tf2)))
+		result = symeListUnifyMod0(infEnv, mods, tfParents(tf1),
+					tfParents(tf2));
+
+	if (result && tfIsThird(tf1) &&
+	    (tfUseThdExports(tf1) || tfUseThdExports(tf2)))
+		result = symeListUnifyMod0(infEnv, mods, tfGetThdExports(tf1),
+					   tfGetThdExports(tf2));
+
+	if (result && tformEqualCheckSymes(tf1) && tformEqualCheckSymes(tf2))
+		result = symeListUnifyMod0(infEnv, mods, tfSymes(tf1), tfSymes(tf2));
+
+	if (!result) {
+		if (tfIsDefinedType(tf1))
+			result = tformUnifyMod0(infEnv, mods, tfDefinedVal(tf1), tf2);
+
+		else if (tfIsDefinedType(tf2))
+			result = tformUnifyMod0(infEnv, mods, tf1, tfDefinedVal(tf2));
+	}
+
+	if (DEBUG(sefoUnify)) {
+		afprintf(dbOut, "<- tformUnify[%d] = %oBool\n",(int) serial, result);
+	}
+#if CheckSimilar
+	if (result && !similar)
+		bug("tformEqual, dissimilar, but the same!");
+#endif
+	return result;
+}
+
+local Bool
+tformUnifyVars(InferEnv infEnv, SymeList mods, TForm tf1, TForm tf2)
+{
+	Bool result;
+	if (!tfIsVar(tf1) && tfIsVar(tf2)) {
+		return tformUnifyVars(infEnv, mods, tf2, tf1);
+	}
+	assert(tfIsVar(tf1));
+	sefoUnifyDEBUG(dbOut, "(Unify: %pTForm --> %pTForm\n", tf1, tf2);
+	result = infEnvExtend(infEnv, tf1, tf2);
+	sefoUnifyDEBUG(dbOut, " Unify: %oBool)\n", result);
+	return result;
+}
+
+local Bool
+sefoListUnifyMod0(InferEnv infEnv, SymeList mods, SefoList sefos1, SefoList sefos2)
+{
+	/* Quick check for empty and identical lists. */
+	if (sefos1 == sefos2)
+		return true;
+
+	if (listLength(Sefo)(sefos1) != listLength(Sefo)(sefos2))
+		return false;
+
+	for (; sefos1 && sefos2; sefos1 = cdr(sefos1), sefos2 = cdr(sefos2))
+		if (!sefoUnifyMod0(infEnv, mods, car(sefos1), car(sefos2)))
+			return false;
+
+	return true;
+
+}
+
+local Bool
+symeListUnifyMod0(InferEnv infEnv, SymeList mods, SymeList symes1, SymeList symes2)
+{
+	/* Quick check for empty and identical lists. */
+	if (symes1 == symes2)
+		return true;
+
+	if (listLength(Syme)(symes1) != listLength(Syme)(symes2))
+		return false;
+
+	for (; symes1 && symes2; symes1 = cdr(symes1), symes2 = cdr(symes2))
+		if (!symeUnifyMod0(infEnv, mods, car(symes1), car(symes2)))
+			return false;
+
+	return true;
+}
+
+local Bool
+tformListUnifyMod0(InferEnv infEnv, SymeList mods, TFormList tl1, TFormList tl2)
+{
+	/* Quick check for empty and identical lists. */
+	if (tl1 == tl2)
+		return true;
+
+	if (listLength(TForm)(tl1) != listLength(TForm)(tl2))
+		return false;
+
+	for (; tl1 && tl2; tl1 = cdr(tl1), tl2 = cdr(tl2))
+		if (!tformUnifyMod0(infEnv, mods, car(tl1), car(tl2)))
+			return false;
+
+	return true;
+}
+
+
+
+/*****************************************************************************
+ *
  * :: sefoCopy
  *
  ****************************************************************************/
@@ -2567,7 +3072,7 @@ sefoFreeVars0(TForm *pa, TForm parent, Sefo sefo)
 
 		/*!! assert(syme); */
 		if (!syme) {
-			afprintf(dbOut, " sefoFree[%d]: No Syme\n", (int) serial);
+			afprintf(dbOut, " sefoFree[%d]: No Syme %pAbSyn\n", (int) serial, sefo);
 			return;
 		}
 
@@ -2823,6 +3328,147 @@ local void
 tqualListUnboundVars0(TForm *pa, TForm parent, TQualList tquals)
 {
 	tqualListFreeVars0(pa, parent, tquals);
+}
+
+/*****************************************************************************
+ *
+ * :: vars
+ *
+ ****************************************************************************/
+
+local AbSub substFollowVars(InferEnv infEnv, AbSub sigma);
+
+Bool
+tformHasVar(TForm tf)
+{
+	if (tfIsVar(tf)) {
+		return true;
+	}
+	if (tfIsGeneral(tf)) {
+		return sefoHasVar(tfGetExpr(tf));
+	}
+	if (tfIsTrigger(tf))
+		return false;
+	if (!tfIsNode(tf)) {
+		return false;
+	}
+	for (int i=0; i<tfArgc(tf); i++) {
+		if (tformHasVar(tfArgv(tf)[i]))
+		    return true;
+	}
+	return false;
+}
+
+Bool
+sefoHasVar(Sefo sf)
+{
+	if (abTag(sf) == AB_Blank)
+		return true;
+	if (abIsLeaf(sf))
+		return false;
+	for (int i=0; i < abArgc(sf); i++) {
+		if (sefoHasVar(abArgv(sf)[i]))
+			return true;
+	}
+	return false;
+}
+
+TForm
+tformFollowVars(InferEnv env, TForm tf)
+{
+	//assert(tfIsMeaning(tf));
+	if (!tformHasVar(tf)) {
+		return tf;
+	}
+	if (tfIsVar(tf)) {
+		TForm theTf = infEnvFollow(env, tf);
+		return tfIsVar(theTf) ? theTf : tformFollowVars(env, theTf);
+	}
+	if (tfIsGeneral(tf) && tformHasVar(tf)) {
+		bug("Need a symbol table");
+		return NULL;
+	}
+	if (tfIsGeneral(tf)) {
+		return tf;
+	}
+	if (!tfIsNode(tf)) {
+		return tf;
+	}
+
+	if (tfIsSubst(tf)) {
+		return tfSubst(substFollowVars(env, tfSubstSigma(tf)), tformFollowVars(env, tfSubstArg(tf)));
+	}
+
+	TFormList parts = listNil(TForm);
+	TForm final;
+	Bool needsNode;
+	for (int i=0; i<tfArgc(tf); i++) {
+		TForm orig = tfArgv(tf)[i];
+		TForm inner = tformFollowVars(env, orig);
+		if (orig != inner) {
+			needsNode = true;
+		}
+		parts = listCons(TForm)(inner, parts);
+	}
+	if (!needsNode) {
+		return tf;
+	}
+	else {
+		parts = listNReverse(TForm)(parts);
+		final = tfNewEmpty(tfTag(tf), tfArgc(tf));
+		for (int i=0; i<tfArgc(final); i++) {
+			tfArgv(final)[i] = car(parts);
+			parts = cdr(parts);
+		}
+		tfSetMeaning(final);
+	}
+
+//
+	if (tfSymes(tf) && !tfSymes(final))
+		tfSetSymes(final, tfSymes(tf));
+
+	if (tfQueries(tf))
+		tfSetQueries(final, tfQueries(tf));
+	if (tfCascades(tf)) {
+		tfSetCascades(final, tfCascades(tf));
+		tfHasCascades(final) = true;
+	}
+
+	if (tfGetStab(tf))
+		tfSetStab(final, tfStab(tf));
+
+	if (tfSelf(tf)) {
+		SymeList ssymes;
+		ssymes = listCopy(Syme)(tfSelf(tf));
+		tfSetSelf(final, ssymes);
+		tfHasSelf(final) = tfHasSelf(tf);
+	}
+	if (tfFVars(tf)) {
+		tfSetFVars(final, tfFVars(tf));
+	}
+	if (tfHasExpr(final)) tfSetNeedsSefo(final);
+
+	listFree(TForm)(parts);
+	return final;
+}
+
+local AbSub
+substFollowVars(InferEnv infEnv, AbSub sigma)
+{
+	return sigma;
+}
+
+Sefo
+sefoFollowVars(InferEnv infEnv, Sefo sf)
+{
+	if (abTag(sf) == AB_Blank) {
+		bug("not implemented");
+		return sf;
+	}
+	if (abIsLeaf(sf))
+		return sf;
+	// Expand here...
+	return sf;
 }
 
 /*****************************************************************************

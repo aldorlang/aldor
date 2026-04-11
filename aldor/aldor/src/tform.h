@@ -63,6 +63,7 @@ enum tformTag {
 	TF_Record,
 	TF_Reference,
 	TF_Subst,
+	TF_InferEnv,
 	TF_Third,
 	TF_Trigger,
         TF_TrailingArray,
@@ -160,6 +161,7 @@ struct tform {
 	SefoList tests;
 
 	AbSub			sigma;		/* Subst. for TF_Subst. */
+	InferEnv		infEnv;		/* Env for TF_InfEnv */
 	AInt			varId;          /* Serial id for TF_Variable */
 
 	FreeVar			fv;		/* Free vars for subst. */
@@ -581,6 +583,7 @@ extern TForm		tfAssign		(TForm, AbSyn);
 /*
  * tfMap		Type of an expression which is a function.
  */
+extern TForm		tfMap			(TForm, TForm);
 extern TForm		tfAnyMap		(TForm, TForm, AbMapType);
 extern AbMapType        tfAbMapType		(TForm);
 #define			tfIsAnyMap(tf)		\
@@ -782,8 +785,11 @@ extern Bool		tfIsPPartialMap		(TForm);
  */
 
 extern TForm		tfVarNew	(void);
+
 extern TForm		tfVarFrId	(AInt);
 extern AInt		tfVarId		(TForm);
+extern TForm		tfVarFix	(TForm, InferEnv);
+extern Bool		tfIsVarInferred (TForm);
 #define			tfIsVar(tf)	(tfTag(tf) == TF_Variable)
 /*
  * TfAnyGenerator	We have two generator types.
@@ -809,6 +815,18 @@ extern TForm		tfSubst			(AbSub, TForm);
 #define			tfSubstArg(tf)		tfFollowArg(tf, 0)
 #define			tfIsSubstOf(tf,fin)	\
 	(tfIsSubst(fin) && tfSubstArg(fin) == (tf))
+
+/*
+ * tfInferEnv		Type which has a pending inference variable
+ *
+ *	Inference is allowed to create lazy type forms whose ultimate
+ *	value is determined by performing the dereferencing specified by
+ *	tf->infEnv on tf->argv[0].
+ */
+extern TForm		tfInfSubst		(InferEnv, TForm);
+#define			tfIsInfSubst(tf)	(tfTag(tf) == TF_InferEnv)
+#define			tfInfSubstEnv(tf)	((tf)->infEnv)
+#define			tfInfSubstArg(tf)	tfFollowArg(tf, 0)
 
 /*
  * tfSyntax		Type which has not been semantically analyzed.

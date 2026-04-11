@@ -2,12 +2,14 @@
 #include "ablogic.h"
 #include "debug.h"
 #include "util.h"
+#include "infenv.h"
 
 Bool	tfKnownDebug	= false;
 #define tfKNownDEBUG	DEBUG_IF(tfKnown)	afprintf
 
 AbLogic	abCondKnown = NULL;	  /* Conditions with known value (tinfer) */
 
+InferEnv     tfkInfEnvKnown;
 
 /******************************************************************************
  *
@@ -67,4 +69,29 @@ Bool
 ablogIsListKnown(SefoList sefolist)
 {
 	return ablogIsListImplied(abCondKnown, sefolist);
+}
+
+void
+tfkSetEnv(InferEnv infEnv)
+{
+	assert(tfkInfEnvKnown == NULL);
+	tfkInfEnvKnown = infEnv;
+}
+
+void
+tfkClearEnv()
+{
+	tfkInfEnvKnown = NULL;
+}
+
+Bool
+tfkAddSatConstraint(TForm var, TForm S, TForm T)
+{
+	return infEnvExtend(tfkInfEnvKnown, S, T);
+}
+
+Bool
+tfkHasInferEnv()
+{
+	return tfkInfEnvKnown != NULL;
 }

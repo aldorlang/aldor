@@ -2912,7 +2912,6 @@ gen0Define(AbSyn absyn)
 
 	syme = abSyme(id);
 
-
 	if (symeIsExport(syme) || symeIsExtend(syme)) {
 		/*
 		 * If conditional exports weren't bad enough, some
@@ -5397,7 +5396,7 @@ gen0FindDefs(AbSyn absyn, AbSyn lhs, Stab stab, GFindDefMask mask)
 				symeSetClosure(syme, foam);
 			}
 			if (!markParams) {
-				TForm	ret = tfMapRet(symeType(syme));
+				TForm	ret = tfMapRet(tfFollowFn(symeType(syme)));
 				markParams = tfSatCat(ret) || tfSatDom(ret);
 			}
 		}

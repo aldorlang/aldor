@@ -65,6 +65,20 @@ extern Bool		tformListEqualMod	(SymeList,TFormList,TFormList);
 extern Bool		symeEqualModConditions	(SymeList, Syme,  Syme);
 
 /*
+ * sstEqualUnify
+ */
+
+extern Bool 		sefoUnifyMod		(InferEnv, SymeList, Sefo, Sefo);
+extern Bool 		symeUnifyMod		(InferEnv, SymeList, Syme, Syme);
+extern Bool 		tformUnifyMod		(InferEnv, SymeList, TForm, TForm);
+
+extern Bool 		sefoListUnifyMod	(InferEnv, SymeList, SefoList, SefoList);
+extern Bool 		symeListUnifyMod	(InferEnv, SymeList, SymeList, SymeList);
+extern Bool 		tformListUnifyMod	(InferEnv, SymeList, TFormList, TFormList);
+
+extern Bool		symeUnifyModConditions	(InferEnv, SymeList, Syme,  Syme);
+
+/*
  * sefoCopy
  */
 extern Sefo		sefoCopy		(Sefo);
@@ -148,6 +162,20 @@ extern void		symeListFrBuffer0	(Buffer);
 
 
 extern SymeList		 sefoSymes		(Sefo);
+
+/*
+ * hasVar
+ */
+
+extern Bool		tformHasVar		(TForm);
+extern Bool		sefoHasVar		(Sefo);
+
+/*
+ * followVars
+ */
+extern TForm		tformFollowVars		(InferEnv, TForm);
+extern Sefo		sefoFollowVars		(InferEnv, Sefo);
+
 /*
  * Debugging
  */

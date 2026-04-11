@@ -183,6 +183,7 @@ libstruct_a_SOURCES =	\
 	loops.c		\
 	optinfo.c	\
 	output.c	\
+	orenv.c		\
 	sefo.c		\
 	simpl.c		\
 	spesym.c	\
@@ -286,6 +287,7 @@ libphase_a_SOURCES =	\
 	ti_bup.c	\
 	ti_decl.c	\
 	ti_sef.c	\
+	ti_solve.c	\
 	ti_tdn.c	\
 	ti_util.c	\
 	tinfer.c	\
@@ -328,6 +330,7 @@ testsuite =			\
 	test/test_of_cprop.c	\
 	test/test_of_crinlin.c	\
 	test/test_of_peep.c	\
+	test/test_orenv.c	\
 	test/test_ostream.c	\
 	test/test_printf.c	\
 	test/test_retyp.c	\
@@ -344,7 +347,9 @@ testsuite =			\
 	test/test_tinfer.c	\
 	test/test_tposs.c	\
 	test/test_tset.c	\
-	test/test_ufind.c
+	test/test_infenv.c
+
+#test/test_ufind.c
 
 testall_SOURCES =	\
 	$(testsuite)	\

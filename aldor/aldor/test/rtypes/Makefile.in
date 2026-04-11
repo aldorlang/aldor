@@ -17,19 +17,48 @@ abs_libdir	:= $(abs_builddir)
 subdir		:= $(subst $(abs_top_builddir)/,,$(abs_builddir))
 top_srcdir	:= @top_srcdir@
 
-utils := tassert rtexns
-aptests := 
+all:
 
-fmtests := rtype_blank
+utils := tassert rtexns
+
+triv_tests = triv1 triv2 triv3 triv triv4 triv6 triv7
+trivfail_tests = trivfail
+trivl_tests = trivl1 trivl2
+trivdom_tests = trivdom trivdom2 trivdom3
+
+aptests :=
+
+fmtests := l0 l1 ll $(triv_tests) $(trivl_tests) $(trivdom_tests)	\
+	   ltype rtype0 noret2 noretl noret dtype0 fact
 ctests  :=
 otests  :=
-xtests := 
+xtests :=
+difftests := $(trivfail_tests)
+jtests :=
+junittests :=
+jruntests :=
+lsptests  :=
 
-jtests := 
-junittests := 
-jruntests := 
-lsptests  := 
+notyet := domain1
 
-rtype_blank_opts := -WD+tipBup
+$(patsubst %,out/ao/%.ao, $(triv_tests) $(trivl_tests) l1 ll): out/ao/l0.ao
+$(patsubst %,out/ao/%.ao, triv6): out/ao/l1.ao
+$(patsubst %,out/ao/%.ao, $(triv_tests) $(trivl_tests) $(trivdom_tests)): out/ao/ll.ao
+
+
+triv_opts :=
+triv1_opts :=
+triv2_opts :=
+triv3_opts :=
+triv5_opts :=
+trivl1_opts :=
+trivdom_opts := -WD+tipBup -WD+tipAdd -WD+tfs -WD+tpossIntersect
+trivdom3_opts := -WD+tipBup -WD+tipAdd -WD+tfs -WD+tpossIntersect
+fact_opts :=
+
+ltype_opts :=
+rtype0_opts :=
+dtype0_opts :=
+noretl_opts :=
 
 include $(top_srcdir)/aldor/test/test-common.mk

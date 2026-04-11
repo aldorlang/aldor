@@ -27,6 +27,7 @@ extern SatMask		tfSatTdnInfoMask	(void);
 extern SatMask		tfSatSefMask		(void);
 extern SatMask		tfSatTErrorMask		(void);
 extern SatMask		tfSatWithPatContext	(SatMask);
+extern SatMask		tfSatWithUnify		(SatMask);
 extern String		tfSatMaskToString	(SatMask);
 
 
@@ -72,6 +73,12 @@ extern Bool		tfSatValues	(TForm S, TForm T);
  */
 extern Bool		tfSatReturn	(TForm S, TForm T);
  
+extern SatMask 		tfsAddUnify	(SatMask mask);
+/*
+ * Extends mask with Unify if tfKnown has an infEnv.
+ * (dubious that it should be here, it should be the default)
+ */
+
 /******************************************************************************
  *
  * :: Type orders
@@ -104,6 +111,7 @@ extern Bool		tfSatCase	(TForm S, TForm T);
  *
  *****************************************************************************/
 
+extern SatMask		tfSatIsMap	(SatMask, TForm);
 extern SatMask		tfSatMap	(SatMask, Stab, TForm, TForm,
 					 AbSyn, Length, AbSynGetter);
 extern Bool		tfSatBit	(SatMask, TForm S, TForm T);

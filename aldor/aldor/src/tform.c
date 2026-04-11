@@ -35,6 +35,7 @@
 #include "fint.h"
 #include "format.h"
 #include "freevar.h"
+#include "infenv.h"
 #include "lib.h"
 #include "sefo.h"
 #include "spesym.h"
@@ -323,6 +324,7 @@ tfNewEmpty(TFormTag tag, Length argc)
 
 	tf->sigma	= NULL;
 	tf->varId	= 0;
+	tf->infEnv      = NULL;
 	tf->fv		= NULL;
 	tf->rho		= NULL;
 
@@ -919,7 +921,7 @@ tfpBlank(Stab stab, AbSyn ab)
 	TForm	tf;
 
 	if (abIsUnknown(ab)) {
-		tf = tfUnknown;
+		tf = tfType;
 	}
 	else {
 		tf = stabRegisterVar(stab, ab);
@@ -7249,11 +7251,27 @@ tfIsReferenceFn(TForm tf)
  */
 
 TForm
-tfVar()
+tfVarNew()
 {
-	TForm	tf = tfNewNode(TF_Variable, 0);
+	TForm	tf = tfNewNode(TF_Variable, 1);
 	tf->varId = tfVarCounter;
+	tf->infEnv = NULL;
 	tfVarCounter++;
+	return tf;
+}
+
+Bool
+tfIsVarInferred(TForm tf)
+{
+	return tfIsVar(tf) && tf->infEnv != NULL;
+}
+
+TForm
+tfVarFix(TForm tf, InferEnv infEnv)
+{
+	assert(tfIsVar(tf));
+	tf->infEnv = infEnv;
+	//tfTag(tf) = TF_InferEnv;
 	return tf;
 }
 
@@ -7437,6 +7455,33 @@ tfSubstPush(TForm tf)
 }
 
 /*
+ * tfInferEnv
+ */
+static int TFInferEnvCount = 0;
+
+
+TForm
+tfInfSubst(InferEnv env, TForm arg)
+{
+	TForm	tf = tfNewNode(TF_InferEnv, 1, arg);
+	tfInfSubstEnv(tf) = env;
+	tfSetMeaningArgs(tf);
+	TFInferEnvCount += 1;
+	return tf;
+}
+
+
+TForm
+tfInfSubstPush(TForm tf)
+{
+	assert(tfIsInfSubst(tf));
+	assert(tf->infEnv);
+	assert(tf->varId);
+
+	return infEnvFollow(tf->infEnv, tf);
+}
+
+/*
  * tfTrigger
  */
 
@@ -7551,8 +7596,13 @@ tfFollowFn(TForm tf)
 			tf = tf->argv[0];
 		else if (tfIsSubst(tf))
 			tf = tfSubstPush(tf);
+		else if (tfIsInfSubst(tf))
+			tf = tfInfSubstPush(tf);
 		else if (tfIsTrigger(tf))
 			libGetAllSymes(tfTriggerLib(tf));
+		else if (tfIsVarInferred(tf)) {
+			tf = infEnvFollow(tf->infEnv, tf);
+		}
 		else
 			done = true;
 	}
@@ -8856,6 +8906,7 @@ struct tform_info tformInfoTable[] = {
 	{TF_Record,	"Record",       "Record",       0, 0},
 	{TF_Reference,	"Reference",    "Ref",		0, 1},
 	{TF_Subst,	"Subst",        "Subst",        0, 1},
+	{TF_InferEnv,	"InferEnv",     "InferEnv",     0, 1},
 	{TF_Third,	"Third",        "Third",        0, 2},
 	{TF_Trigger,	"Trigger",      "Trigger",      0, 1},
 	{TF_TrailingArray,"TrailingArray",    "TrailingArray",0, 1},

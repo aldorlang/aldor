@@ -324,6 +324,7 @@ abCopy(AbSyn ab)
 
 	abnew->abHdr.pos = spstackCopy(ab->abHdr.pos);
 	abFlags(abnew) = abFlags(ab);
+	abUse(abnew) = abUse(ab);
 
 	if (abHasTag(ab, AB_Id) && abComment(ab))
 		abSetComment(abnew, docCopy(abComment(ab)));
@@ -664,8 +665,14 @@ abEqual(AbSyn a, AbSyn b)
 		switch (abTag(a)) {
 		case AB_Id:
 		case AB_IdSy:
-		case AB_Blank:
-			return abLeafSym(a) == abLeafSym(b);
+		case AB_Blank: {
+			Symbol symA = abLeafSym(a);
+			Symbol symB = abLeafSym(a);
+			if (symA == ssymVariable && symB == ssymVariable) {
+				return sposEqual(abPos(a), abPos(b));
+			}
+			return (abLeafSym(a) == abLeafSym(b));
+		}
 		case AB_LitInteger:
 		case AB_LitString:
 		case AB_LitFloat:
@@ -1832,8 +1839,12 @@ abTransferSemantics(AbSyn from, AbSyn to)
 	if (from == to)
 		return;
 
+	/* PAB: Not sure of the purpose of this.
+	 * Likely to be value based matching.. so skip it
+
 	if (abHasTag(to, AB_Blank))
 		return;
+	*/
 
 	if (abTag(from) != abTag(to)) {
 		from = abEqualMods(from);
@@ -2044,7 +2055,7 @@ abResetTPoss(AbSyn ab, TPoss tp)
 }
 
 /*
- * Important: this function may increase the reference count
+ * Important: this function will increase the reference count
  * on the returned tposs. If you want to use this function for
  * debugging purposes you must call tpossFree when you have
  * finished with it otherwise it will hang around forever.

@@ -12,6 +12,7 @@
 #include "debug.h"
 #include "fluid.h"
 #include "format.h"
+#include "infenv.h"
 #include "lib.h"
 #include "sefo.h"
 #include "simpl.h"
@@ -39,10 +40,14 @@
  *
  ****************************************************************************/
 
-Bool	condApplyDebug	= false;
-Bool	tipTdnDebug	= false;
-#define condApplyDEBUG	DEBUG_IF(condApply)	afprintf
-#define tipTdnDEBUG	DEBUG_IF(tipTdn)	afprintf
+Bool	condApplyDebug	  = false;
+Bool	tipTdnDebug	  = false;
+Bool	tipTdnLambdaDebug = false;
+
+#define condApplyDEBUG		DEBUG_IF(condApply)	afprintf
+#define tipTdnDEBUG		DEBUG_IF(tipTdn)	afprintf
+#define tipTdnLambdaDEBUG	DEBUG_IF(tipTdnLambda)	afprintf
+#define tipDefineDEBUG		DEBUG_IF(tipDefine)	afprintf
 
 /*****************************************************************************
  *
@@ -177,7 +182,9 @@ tiTopDown(Stab stab, AbSyn absyn, TForm type)
 	TForm	fluid(tuniYieldTForm);
 	TForm	fluid(tuniExitTForm);
 	AbLogic fluid(abCondKnown);
+	InferEnv fluid(tfkInfEnvKnown);
 
+	tfkInfEnvKnown  = NULL;
 	tuniReturnTForm	= tfNone();
 	tuniYieldTForm	= tfNone();
 	tuniExitTForm	= tfNone();
@@ -596,7 +603,7 @@ titdnId(Stab stab, AbSyn absyn, TFContext tfc)
 			syme = symeNewLexVar(absyn->abId.sym, tf, car(stab));
 		}
 		else
-			syme = tiGetMeaning(stab, absyn, ctxtTForm(tfc));
+			syme = tiGetMeaning(stab, absyn, tfc);
 
 
 		/*
@@ -760,7 +767,8 @@ titdn0Literal(Symbol sym, Stab stab, AbSyn absyn, TFContext tfc)
 			tfFollow(tf);
 			if (!tfIsLitOpType(tf)) continue;
 
-			result = tfSat(mask, tfMapRet(tf), ctxtTForm(tfc));
+			result = tfSat(tfsAddUnify(mask),
+				       tfMapRet(tf), ctxtTForm(tfc));
 			if (tfSatPending(result) && cdr(ml0)) {
 				terrorApplyNotAnalyzed(absyn, absyn, tf);
 				return false;
@@ -921,6 +929,7 @@ titdnApply(Stab stab, AbSyn absyn, TFContext tfc)
 	 * first.
 	 */
 	for (tpossITER(it, opTypes); tpossMORE(it); tpossSTEP(it)) {
+		InferEnv opInfEnv = tpossINFENV(it);
 		TForm	opType = tpossELT(it);
 		SatMask	result;
 
@@ -939,11 +948,14 @@ titdnApply(Stab stab, AbSyn absyn, TFContext tfc)
 		if (tfIsFunctionMap(opType) && abUse(absyn) == AB_Use_Pattern) {
 			continue;
 		}
-		
+
+		InferEnv env = infEnvMerge(ctxtInfEnv(tfc), opInfEnv);
+		tfkSetEnv(env);
 		result = tfSatMap(mask, stab, opType, ctxtTForm(tfc), absyn, abApplyArgc(absyn), abApplyArgf);
 		if (DEBUG(tipApply)) {
 			afprintf(dbOut, "--> tdnApply - SatMap %s\n", tfSatMaskToString(result));
 		}
+		tfkClearEnv();
 		
 		if (tfSatSucceed(result)) {
 			if (!tfSatPending(result)) {
@@ -1065,7 +1077,9 @@ titdnApply(Stab stab, AbSyn absyn, TFContext tfc)
 		abAddTContext(imp, tfMapMultiArgEmbed(opType, parmc));
 
 		mask = tfSatTdnMask();
+		tfkSetEnv(ctxtInfEnv(tfc));
 		result = tfSatMap(mask, stab, opType, ctxtTForm(tfc), absyn, abArgc(absyn), abArgf);
+		tfkClearEnv();
 	}
 	else {
 		int parmc;
@@ -1090,27 +1104,31 @@ titdnApply(Stab stab, AbSyn absyn, TFContext tfc)
  * :: Define:	a == e
  * X
  ***************************************************************************/
+local void titdn0UpdateMeanings(Stab stab, AbSyn ab, InferEnv infEnv);
 
 local Bool
 titdnDefine(Stab stab, AbSyn absyn, TFContext tfc)
 {
 	AbSyn		lhs = absyn->abDefine.lhs;
 	AbSyn		rhs = absyn->abDefine.rhs;
+	UTFContext	rtfc;
 	TForm		rtype, ltype, idtype;
 	TPoss		idtposs;
 
 	if (tfIsNone(ctxtTForm(tfc))) tfc = ctxtCopy(tfc, tfUnknown);
 
-	idtype = tiDefineFilter(absyn, ctxtTForm(tfc));
+	idtype  = tiDefineFilter(absyn, ctxtTForm(tfc));
 	idtposs = tiDefineTPoss(absyn);
 
-	rtype = tpossSelectSatisfier(idtposs, idtype);
-	if (!rtype) {
+	rtfc = tpossSelectSatisfierContext(idtposs, ctxtCopy(tfc, idtype));
+	if (!rtfc) {
 		terrorNotUniqueType(ALDOR_E_TinDefnMeans, absyn, idtype, idtposs);
 		return false;
 	}
 
 	/* If the r.h. type satisfies the constraint, relax on the l.h. */
+	rtype = utformConstOrFail(uctxtUTForm(rtfc));
+	tfkSetEnv(uctxtInfEnv(rtfc));
 	if (abState(lhs) == AB_State_HasUnique &&
 	    tfSatValues(abTUnique(lhs), rtype))
 		ltype = abTUnique(lhs);
@@ -1122,36 +1140,47 @@ titdnDefine(Stab stab, AbSyn absyn, TFContext tfc)
 		else
 			ltype = rtype;
 	}
+	tfkClearEnv();
 
-	if (DEBUG(tipDefine)) {
-		fprintf(dbOut, "************** Defining: ");
-		abPrettyPrint(dbOut, lhs);
-		fnewline(dbOut);
-	}
+	tipDefineDEBUG(dbOut, "************** Defining: %pAbSyn %pTForm %pInferEnv\n", lhs, rtype, uctxtInfEnv(rtfc));
 
-	titdn(stab, lhs, ctxtCopy(tfc, ltype));
-	titdn(stab, rhs, ctxtCopy(tfc, rtype));
+	titdn(stab, lhs, ctxtCopyUTFContext(rtfc, ltype));
+	titdn(stab, rhs, ctxtCopyUTFContext(rtfc, rtype));
 
 	if (abTag(lhs) == AB_Declare) {
-		rtype = tpossSelectSatisfier(abTPoss(absyn), ctxtTForm(tfc));
-		if (!rtype) {
+		rtfc = tpossSelectSatisfierContext(abTPoss(absyn), ctxtCopyUTFContext(rtfc, ctxtTForm(tfc)));
+		if (!rtfc) {
 			terrorNotUniqueType(ALDOR_E_TinDefnMeans, absyn,
 					    ctxtTForm(tfc), abTPoss(absyn));
 			return false;
 		}
 	}
 
+	titdn0UpdateMeanings(stab, lhs, uctxtInfEnv(rtfc));
+	abTUnique(absyn) = uctxtInferredType(rtfc);
+
+	tipDefineDEBUG(dbOut, "Tdn: Define of %pAbSyn has type %pTForm\n ", lhs, abTUnique(absyn));
 	
-	abTUnique(absyn) = rtype;
-	
-	if (DEBUG(tipDefine)) {
-		fprintf(dbOut,"Tdn: Define of ");
-		abPrint(dbOut, lhs);
-		fprintf(dbOut," has type ");
-		tfPrint(dbOut, rtype);
-		fnewline(dbOut);
-	}
 	return true;
+}
+
+local void
+titdn0UpdateMeanings(Stab stab, AbSyn absyn, InferEnv infEnv)
+{
+	/*
+	if (!abSyme(absyn)) {
+		return;
+	}
+
+	Syme syme = symeExtensionFull(abSyme(absyn));
+	if (tformHasVar(symeType(syme))) {
+		Syme newSyme = symeNew(symeKind(syme), symeId(syme), tfInfSubst(infEnv, symeType(syme)), symeDefLevel(syme));
+		tipDefineDEBUG(dbOut, "TdnDefine::Updated %pSyme %pTForm\n", syme, symeType(newSyme));
+		symeSetExtension(syme, newSyme);
+		symeSetInfExtend(syme);
+		abSetSyme(absyn, newSyme);
+	}
+	*/
 }
 
 /****************************************************************************
@@ -1248,7 +1277,7 @@ titdnDeclare(Stab stab, AbSyn absyn, TFContext tfc)
 	rtype = tpossSelectSatisfier(abTPoss(absyn), ctxtTForm(tfc));
 	if (!rtype) rtype = tfUnknown;
 	abTUnique(absyn) = rtype;
-
+	titdn0UpdateMeanings(stab, id, ctxtInfEnv(tfc));
 	if (DEBUG(tipDeclare)) {
 		fprintf(dbOut,"Tdn: Declare of ");
 		abPrint(dbOut, id);
@@ -1321,6 +1350,7 @@ titdnGoto(Stab stab, AbSyn absyn, TFContext tfc)
  * :: PLambda:	(a: A): B +->* b
  *
  ***************************************************************************/
+local Bool titdn0PLambdaFix(Stab, AbSyn, AbSyn);
 
 local Bool
 titdnLambda(Stab stab, AbSyn absyn, TFContext tfc)
@@ -1349,8 +1379,16 @@ titdnLambda(Stab stab, AbSyn absyn, TFContext tfc)
 	titdn(stab, body, ctxtCopy(tfc, tuniReturnTForm));
 
 	abtposs = abTPoss(absyn);
-	if (tiCheckLambdaType(ctxtTForm(tfc)) || !tfIsAnyMap(ctxtTForm(tfc)))
-		rtype = tpossSelectSatisfier(abtposs, ctxtTForm(tfc));
+
+	tipTdnLambdaDEBUG(dbOut, "(TdnLambda: Poss: %pTPoss\n", abtposs);
+	tipTdnLambdaDEBUG(dbOut, " TdnLambda: LambdaType %oBool IsAnyMap %oBool\n",
+			  tiCheckLambdaType(ctxtTForm(tfc)),
+			  tfIsAnyMap(ctxtTForm(tfc)));
+
+	if (tiCheckLambdaType(ctxtTForm(tfc)) || !tfIsAnyMap(ctxtTForm(tfc))) {
+		UTFContext satisfier = tpossSelectSatisfierContext(abtposs, tfc);
+		rtype = uctxtInferredType(satisfier);
+	}
 	else
 		rtype = ctxtTForm(tfc);
 
@@ -1358,26 +1396,35 @@ titdnLambda(Stab stab, AbSyn absyn, TFContext tfc)
 		terrorNotUniqueType(ALDOR_E_TinExprMeans, absyn, ctxtTForm(tfc), abtposs);
 		result = false;
 	}
-
 	else if (abHasTag(absyn, AB_PLambda)) {
-		Bool tres;
-
-		while (abTag(body) == AB_Label)
-			body = body->abLabel.expr;
-		abReturnsList = listCons(AbSyn)(body, abReturnsList);
-		tres = titdn0PLambdaArgs(stab, param) &&
-			 titdn0PLambdaRets(stab, abReturnsList);
-
-		/* Return false if either result or tres are false */
+		Bool tres = titdn0PLambdaFix(stab, param, body);
 		result = result ? tres : result;
 	}
 
 	/* Only allowed to set abTUnique if successful */
 	if (result) abTUnique(absyn) = rtype;
 
+	tipTdnLambdaDEBUG(dbOut, " TdnLambda: Result: %pTForm)\n", rtype);
+
 	listFree(AbSyn)(abReturnsList);
 	Return(result);
 }
+
+local Bool
+titdn0PLambdaFix(Stab stab, AbSyn param, AbSyn body)
+{
+	Bool tres;
+
+	while (abTag(body) == AB_Label)
+		body = body->abLabel.expr;
+	abReturnsList = listCons(AbSyn)(body, abReturnsList);
+	tres = titdn0PLambdaArgs(stab, param) &&
+		titdn0PLambdaRets(stab, abReturnsList);
+
+	/* Return false if either result or tres are false */
+	return tres;
+}
+
 
 local Bool
 titdn0PLambdaArgs(Stab stab, AbSyn param)
