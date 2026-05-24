@@ -25,10 +25,10 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	    cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ ;; \
 	esac;
 
-AM_DBG := $(if $(filter 1,$(DBG)), gdb --args, $(DBG))
-AM_DBG_J := $(if $(filter 1,$(DBG_J)), gdb --args, $(DBG_J))
-AM_DBG_C := $(if $(filter 1,$(DBG_C)), gdb --args, $(DBG_C))
-AM_DBG_FM := $(if $(filter 1,$(DBG_FM)), gdb --args, $(DBG_FM))
+AM_DBG := $(if $(filter 1,$(DBG)),gdb --args,$(DBG))
+AM_DBG_J := $(if $(filter 1,$(DBG_J)), gdb --args,$(DBG_J))
+AM_DBG_C := $(if $(filter 1,$(DBG_C)), gdb --args,$(DBG_C))
+AM_DBG_FM := $(if $(filter 1,$(DBG_FM)), gdb --args,$(DBG_FM))
 
 aldorsrcdir   = $(abs_top_srcdir)/aldor/src
 aldorexedir   = $(abs_top_builddir)/aldor/src
@@ -216,9 +216,13 @@ all-difftest: $(patsubst %, %-difftest, $(_difftests))
 .PHONY: $(addsuffix -difftest, $(_difftests))
 
 $(patsubst %, out/diff/%.out, $(_difftests)): out/diff/%.out:
-	$(AM_V_ALDOR_OUT)		\
-	mkdir -p $$(dirname $@);	\
-	if $(AM_DBG) $(aldorexedir)/aldor $($*_opts) $(aldor_args) > $@; then false; fi
+	@$(AM_V_ALDOR_OUT) 		\
+	(mkdir -p $$(dirname $@);	\
+	if test "$(AM_DBG)" = "" ; then  \
+		if $(aldorexedir)/aldor $($*_opts) $(aldor_args) > $@ ; then false; else true ; fi; \
+	else	\
+		$(AM_DBG) $(aldorexedir)/aldor $($*_opts) $(aldor_args); \
+	fi)
 
 $(patsubst %, out/diff/%.out, $(_difftests)): out/diff/%.out: %.as
 $(patsubst %, out/diff/%.out, $(_difftests)): out/ao/tassert.ao
@@ -355,6 +359,7 @@ mostlyclean:
 	rm -rf $(builddir)/out
 	rm -f $(patsubst %,%.o,$(utils) $(_otests))
 	rm -f $(patsubst %,%.exe,$(_xtests))
+
 clean: mostlyclean
 
 distclean: clean
