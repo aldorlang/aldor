@@ -62,7 +62,7 @@ tiAuditOne(int idx, Stab stab, AbSyn ab)
 		String s = tiAuditPrettyString(ab, 50);
 		afprintf(dbOut, "[%d:%d] %oAbState(%d): \"%s\" %pTPoss\n", tiAuditCallIdx, idx, abState(ab), tpossCount(tposs), s, tposs);
 		if (tpossCount(tposs) == 0 || abState(ab) == AB_State_Error) {
-			afprintf(dbOut, "[%d:%d] ***\n", tiAuditCallIdx, idx);
+			afprintf(dbOut, "[%d:%d] *** %d %s\n", tiAuditCallIdx, idx, tpossCount(tposs), abStateName(ab));
 		}
 	}
 	tpossFree(tposs);
