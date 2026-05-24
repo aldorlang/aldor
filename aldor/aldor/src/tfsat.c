@@ -107,8 +107,8 @@ struct maskInfo tfSatMaskInfo[] = {
 	{"Info"},
 	{"Conditions"},
 	{"Pending"},
-	{"AnyToNone"},
 	{"Sefo"},
+	{"AnyToNone"},
 	{"CrossToTuple"},
 	{"CrossToMulti"},
 	{"CrossToUnary"},
@@ -143,10 +143,10 @@ struct maskInfo tfSatMaskInfo[] = {
 #define TFS_Conditions		(((SatMask) 1) << 5)
 
 #define	TFS_Pending		(((SatMask) 1) << 6)
-#define	TFS_AnyToNone		(((SatMask) 1) << 7)
-#define	TFS_Sefo		(((SatMask) 1) << 8)
+#define	TFS_Sefo		(((SatMask) 1) << 7)
 
-#define	TFS_EmbedShift		9
+#define	TFS_EmbedShift		8
+#define	TFS_AnyToNone		(((SatMask) 1) << 8)
 #define	TFS_CrossToTuple	(((SatMask) 1) << 9)
 #define	TFS_CrossToMulti	(((SatMask) 1) << 10)
 #define	TFS_CrossToUnary	(((SatMask) 1) << 11)
@@ -182,8 +182,8 @@ struct maskInfo tfSatMaskInfo[] = {
 
 #define TFS_EmbedMask		(\
 				TFS_Pending		| \
-				TFS_AnyToNone		| \
 				TFS_Sefo		| \
+				TFS_AnyToNone		| \
 				TFS_CrossToTuple	| \
 				TFS_CrossToMulti	| \
 				TFS_CrossToUnary	| \
@@ -438,18 +438,21 @@ tfSatEmbedType(TForm tf1, TForm tf2)
 	t1 = tfTag(tf1);
 	t2 = tfTag(tf2);
 
-	if (t1 == t2)				return AB_Embed_Identity;
+	if (t1 == t2) {
+		if (t2 == TF_Multiple && tfMultiArgc(tf1) == 0) return AB_Embed_AnyToNone;
+		return AB_Embed_Identity;
+	}
 	else if (t1 == TF_Exit)			return AB_Embed_Identity;
 	else if (t1 == TF_Cross) {
 		if	(t2 == TF_Tuple)	return AB_Embed_CrossToTuple;
 		else if (t2 == TF_Cross)	return AB_Embed_Identity;
-		else if (t2 == TF_Multiple)	return AB_Embed_CrossToMulti;
+		else if (t2 == TF_Multiple)	return tfMultiArgc(tf2) == 0 ? AB_Embed_AnyToNone: AB_Embed_CrossToMulti;
 		else				return AB_Embed_CrossToUnary;
 	}
 	else if (t1 == TF_Multiple) {
 		if	(t2 == TF_Tuple)	return AB_Embed_MultiToTuple;
 		else if (t2 == TF_Cross)	return AB_Embed_MultiToCross;
-		else if (t2 == TF_Multiple)	return AB_Embed_Identity;
+		else if (t2 == TF_Multiple)	return tfMultiArgc(tf2) == 0 ? AB_Embed_AnyToNone: AB_Embed_Identity;
 		else				return AB_Embed_MultiToUnary;
 	}
 	else if (t1 == TF_Map) {
@@ -459,7 +462,7 @@ tfSatEmbedType(TForm tf1, TForm tf2)
 	else {
 		if	(t2 == TF_Tuple)	return AB_Embed_UnaryToTuple;
 		else if (t2 == TF_Cross)	return AB_Embed_UnaryToCross;
-		else if (t2 == TF_Multiple)	return AB_Embed_UnaryToMulti;
+		else if (t2 == TF_Multiple)	return tfMultiArgc(tf2) == 0 ? AB_Embed_AnyToNone: AB_Embed_UnaryToMulti;
 		else				return AB_Embed_Identity;
 	}
 }

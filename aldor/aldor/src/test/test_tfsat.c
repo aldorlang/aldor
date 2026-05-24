@@ -42,7 +42,7 @@ testTfSatEmbed()
 	SatMask result;
 
 	Syme g;
-	TForm E, tf1, tf2;
+	TForm E, tf0, tfCrossEE, tfMultEE;
 
 	AbSub sigma;
 
@@ -64,30 +64,49 @@ testTfSatEmbed()
 
 	g = uniqueMeaning(stab, "g");
 	E = symeType(g);
-	tf1 = tfCross(2, E, E);
-	tf2 = tfMulti(2, E, E);
-	
+	tf0 = tfMulti(0);
+	tfCrossEE = tfCross(2, E, E);
+	tfMultEE = tfMulti(2, E, E);
+
 	sigma = absNew(stab);
 
 	mask = tfSatTdnMask();
-	result = tfSat(mask, tf1, tf2);
-	
+	result = tfSat(mask, tfCrossEE, tfMultEE);
+
 	testTrue("", tfSatSucceed(result));
 	testIntEqual("", AB_Embed_CrossToMulti, tfSatAbEmbed(result));
 
 	mask = tfSatTdnMask();
-	result = tfSat(mask, tf2, tf1);
-	
+	result = tfSat(mask, tfMultEE, tfCrossEE);
+
 	testTrue("", tfSatSucceed(result));
 	testIntEqual("", AB_Embed_MultiToCross, tfSatAbEmbed(result));
 
-	result = tfSat(mask, tf2, tfSubst(sigma, tf1));
+	result = tfSat(mask, tfMultEE, tfSubst(sigma, tfCrossEE));
 	testTrue("", tfSatSucceed(result));
 	testIntEqual("", AB_Embed_MultiToCross, tfSatAbEmbed(result));
 
-	result = tfSat(mask, tfSubst(sigma, tf1), tf2);
+	result = tfSat(mask, tfSubst(sigma, tfCrossEE), tfMultEE);
 	testTrue("", tfSatSucceed(result));
 	testIntEqual("", AB_Embed_CrossToMulti, tfSatAbEmbed(result));
+
+	result = tfSat(mask, E, tf0);
+	testTrue("satAnyToNone", tfSatSucceed(result));
+	testIntEqual("", AB_Embed_AnyToNone, tfSatAbEmbed(result));
+
+	result = tfSat(mask, tf0, tf0);
+	afprintf(stdout, "s1 %s", tfSatMaskToString(result));
+	testTrue("satAnyToNone", tfSatSucceed(result));
+	testIntEqual("s1", 0, tfSatAbEmbed(result));
+
+	result = tfSat(mask, tfMultEE, tf0);
+	afprintf(stdout, "s2 %s", tfSatMaskToString(result));
+	testTrue("satAnyToNoneMult", tfSatSucceed(result));
+	testIntEqual("s2", AB_Embed_AnyToNone, tfSatAbEmbed(result));
+
+	testIntEqual("E->tf0", AB_Embed_AnyToNone, tfSatEmbedType(E, tf0));
+	testIntEqual("C->tf0", AB_Embed_AnyToNone, tfSatEmbedType(tfCrossEE, tf0));
+	testIntEqual("M->tf0", AB_Embed_Identity, tfSatEmbedType(tfMultEE, tf0));
 
 	finiFile();
 }
