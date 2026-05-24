@@ -11,5 +11,5 @@ DD: with
     f: TT -> TT
 == add
     f(x: ?, y: ?): % == x
-    f(x: ?):? == x
+    f(x: ?): ? == x
 

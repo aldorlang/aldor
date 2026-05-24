@@ -12,7 +12,6 @@ struct ufTable {
 
 UFTable uftNew		(void);
 UFTable uftTheEmpty	(void);
-UFTable uftCopy		(UFTable);
 Length  uftSize		(UFTable);
 
 Bool  uftIsEmpty	(UFTable);

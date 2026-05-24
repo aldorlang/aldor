@@ -579,8 +579,5 @@ infEnvListFormatter(OStream ostream, Pointer p)
 local int
 orEnvFormatter(OStream ostream, Pointer p)
 {
-	OrEnv        orEnv = (OrEnv) p;
-	InferEnvList content = orEnvContent(orEnv);
-	return ostreamPrintf(ostream, "(Or[%d] %pInferEnvList)",
-			     listLength(InferEnv)(content), content);
+	return orEnvOStreamWrite(ostream, (OrEnv) p);
 }

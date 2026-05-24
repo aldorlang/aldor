@@ -33,7 +33,9 @@ void testTinferMutualReference();
 void testTinferValueConditional();
 void testTinferValueConditionalAliased();
 void testTinferImport();
-void testTinferVars();
+void testTinferVars1();
+void testTinferVars2();
+void testCoerce();
 void testRestrict();
 void testPretend();
 void testUnknownType();
@@ -41,6 +43,10 @@ void testUnknownType();
 void tinferTest()
 {
 	init();
+
+
+	TEST(testTinferVars1);
+	TEST(testTinferVars2);
 
 	TEST(testSimpleTInfer);
 
@@ -57,10 +63,10 @@ void tinferTest()
 
 	TEST(testTinferValueConditional);
 	TEST(testTinferImport);
-	TEST(testTinferVars);
 	TEST(testUnknownType);
 
 	TEST(testRestrict);
+	TEST(testCoerce);
 	TEST(testPretend);
 	//TEST(testTinferValueConditionalAliased);
 	fini();
@@ -84,6 +90,7 @@ testSimpleTInfer()
 
 
 extern int ablogDebug;
+extern int infEnvDebug;
 extern int tfsDebug;
 extern int tfsParentDebug;
 extern int tfsExportDebug;
@@ -91,6 +98,7 @@ extern int tipBupDebug;
 extern int tipAddDebug;
 extern int tipTdnDebug;
 extern int tipSolveDebug;
+extern int tipAuditDebug;
 extern int titfOneDebug;
 extern int tipTdnDebug;
 extern int tpossIntersectDebug;
@@ -131,9 +139,6 @@ testConditionalTInfer()
 	Stab stab;
 
 	initFile();
-	ablogDebug = 0;
-	tipBupDebug = 0;
-	tfDebug = 0;
 	stab = stabFile();
 
 	abPutUse(absyn, AB_Use_NoValue);
@@ -191,8 +196,6 @@ testSelfTInfer()
 	tf = tfFullFrAbSyn(stab, sefo);
 
 	symePrintDb(d);
-	tipBupDebug = tipTdnDebug = tfsDebug = tfsParentDebug = tfsExportDebug = 0;
-	sefoEqualDebug = 0;
 
 	dSefo = abFrSyme(d);
 	tiSefo(stab, dSefo);
@@ -249,9 +252,6 @@ testConditionalTInfer2()
 	Stab stab;
 
 	initFile();
-	ablogDebug = 0;
-	tipBupDebug = 0;
-	titfDebug = 0;
 	stab = stabFile();
 
 	abPutUse(absyn, AB_Use_NoValue);
@@ -289,10 +289,6 @@ testTinfer3()
 	Stab stab;
 
 	initFile();
-	ablogDebug = 0;
-	tipBupDebug = 0;
-	titfDebug = 0;
-	tfDebug = 0;
 	stab = stabFile();
 
 	abPutUse(absyn, AB_Use_NoValue);
@@ -358,12 +354,6 @@ testConditionalTInfer4()
 	Stab stab;
 
 	initFile();
-	tfImportDebug = 0;
-	ablogDebug = 0;
-	tipBupDebug = 0;
-	titfDebug = 0;
-	tfDebug = 0;
-
 	stab = stabFile();
 
 	abPutUse(absyn, AB_Use_NoValue);
@@ -399,15 +389,7 @@ testConditionalAdd()
 	Stab stab;
 
 	initFile();
-	tfImportDebug = 0;
-	ablogDebug = 0;
-	tipBupDebug = 1;
-	titfDebug = 0;
-	titfOneDebug = 0;
-	tfDebug = 0;
-	tcDebug = 0;
-	tipAddDebug = 0;
-	tfImportDebug = 0;
+	ENABLE_DEBUG(tipBupDebug);
 
 	stab = stabFile();
 
@@ -479,7 +461,7 @@ testTinfer9()
 	code = listCons(AbSyn)(stdtypes(), abqParseLines(lines));
 	absyn = abNewSequenceL(sposNone, code);
 	stab = stabFile();
-	tipLitDebug = 1;
+	ENABLE_DEBUG(tipLitDebug);
 
 	abPutUse(absyn, AB_Use_NoValue);
 	scopeBind(stab, absyn);
@@ -568,7 +550,8 @@ testTinferValueConditional()
 	code = listCons(AbSyn)(stdtypes(), abqParseLines(lines));
 	absyn = abNewSequenceL(sposNone, code);
 	stab = stabFile();
-	tfImportDebug = 1;
+	ENABLE_DEBUG(tfImportDebug);
+
 	abPutUse(absyn, AB_Use_NoValue);
 	scopeBind(stab, absyn);
 	typeInfer(stab, absyn);
@@ -596,10 +579,11 @@ testTinferImport()
 }
 
 void
-testTinferVars()
+testTinferVars1()
 {
 	initFile();
 	stdscope(stabFile());
+
 
 	tfqTypeInfer(stabFile(), "T: with == add");
 	tfqTypeInfer(stabFile(), "xtrue: Boolean == never");
@@ -607,18 +591,40 @@ testTinferVars()
 	tfqTypeInfer(stabFile(), "test: Boolean -> Boolean == never");
 	tfqTypeInfer(stabFile(), "coerce: T -> Boolean == never");
 
+	ENABLE_DEBUG(tipSolveDebug);
+	ENABLE_DEBUG(tipBupDebug);
+	ENABLE_DEBUG(infEnvDebug);
+
 	tfqTypeInfer(stabFile(), "f(a: ?): Boolean == a");
 	tfqTypeInfer(stabFile(), "g(x: ?): Boolean == if x then xtrue else x");
 
+	finiFile();
+}
+
+void
+testTinferVars2()
+{
+	initFile();
+	stdscope(stabFile());
+
+
+	tfqTypeInfer(stabFile(), "T: with == add");
+	tfqTypeInfer(stabFile(), "xtrue: Boolean == never");
+	tfqTypeInfer(stabFile(), "xfalse: Boolean == never");
+	tfqTypeInfer(stabFile(), "test: Boolean -> Boolean == never");
+	tfqTypeInfer(stabFile(), "coerce: T -> Boolean == never");
+
+	ENABLE_DEBUG(tipSolveDebug);
+	ENABLE_DEBUG(tipBupDebug);
+	ENABLE_DEBUG(infEnvDebug);
+	ENABLE_DEBUG(tipAuditDebug);
+
+
+	tfqTypeInfer(stabFile(), "f(a: ?, b: ?): Boolean == a or b");
 	tfqTypeInfer(stabFile(), "f(a: ?, b: ?): Boolean == if a then b else a");
+
 	tfqTypeInfer(stabFile(), "f(a: ?, b: ?): ? == if a then b else a");
 	tfqTypeInfer(stabFile(), "f(a: ?, b: ?, c: T): ? == if a then b else a");
-
-	ENABLE_DEBUG(tipBupDebug);
-	ENABLE_DEBUG(tipSolveDebug);
-	ENABLE_DEBUG(tpossIntersectDebug);
-
-	tfqTypeInfer(stabFile(), "g(qq: ?): Boolean == qq::Boolean");
 
 	finiFile();
 }
@@ -631,12 +637,34 @@ testRestrict()
 
 	tfqTypeInfer(stabFile(), "T: with == add");
 
+	ENABLE_DEBUG(infEnvDebug);
 	ENABLE_DEBUG(tipBupDebug);
-	ENABLE_DEBUG(tipTdnDebug);
-	ENABLE_DEBUG(tipSolveDebug);
-	ENABLE_DEBUG(tpossIntersectDebug);
+	ENABLE_DEBUG(tipAuditDebug);
 
 	tfqTypeInfer(stabFile(), "res(x: ?): ? == x@T");
+
+	finiFile();
+}
+
+
+void
+testCoerce()
+{
+	initFile();
+	stdscope(stabFile());
+
+	tfqTypeInfer(stabFile(), "T: with == add");
+	tfqTypeInfer(stabFile(), "coerce: T -> Boolean == never");
+
+	tfqTypeInfer(stabFile(), "T: with == add");
+
+	ENABLE_DEBUG(infEnvDebug);
+	ENABLE_DEBUG(tipBupDebug);
+	//ENABLE_DEBUG(tipTdnDebug);
+	//ENABLE_DEBUG(tipSolveDebug);
+	//ENABLE_DEBUG(tpossIntersectDebug);
+
+	tfqTypeInfer(stabFile(), "g(qq: ?): Boolean == qq::Boolean");
 
 	finiFile();
 }

@@ -8,17 +8,18 @@
 extern Bool	tipSolveDebug;
 #define tipSolveDEBUG	DEBUG_IF(tipSolve)	afprintf
 
-local void orEnvAdd(OrEnv orEnv, InferEnv env);
-
 /*
  * :: OrEnv
  *
  * Or(InferEnv_1, InferEnv_2, ...)
  */
+static int orEnvSerial = 0;
+
 OrEnv
 orEnvNewNone(void)
 {
 	OrEnv e = (OrEnv) stoAlloc(OB_Other, sizeof(*e));
+	e->serialNo = orEnvSerial++;
 	e->envs = listNil(InferEnv);
 	return e;
 }
@@ -88,9 +89,14 @@ orEnvIsEmpty(OrEnv orEnv)
 OrEnv
 orEnvAnd(OrEnv orEnv1, OrEnv orEnv2)
 {
+	static int count;
+	int serialNo = count++;
 	OrEnvIterator it1;
 	OrEnvIterator it2;
 	OrEnv envs = orEnvNewNone();
+
+	tipSolveDEBUG(dbOut, "(OrEnvAnd[%d]: 1: %pOrEnv\n", serialNo, orEnv1);
+	tipSolveDEBUG(dbOut, " OrEnvAnd[%d]: 2: %pOrEnv\n", serialNo, orEnv2);
 
 	for (orEnvITER(it1, orEnv1); orEnvMORE(it1); orEnvSTEP(it1)) {
 		for (orEnvITER(it2, orEnv2); orEnvMORE(it2); orEnvSTEP(it2)) {
@@ -100,10 +106,11 @@ orEnvAnd(OrEnv orEnv1, OrEnv orEnv2)
 			orEnvAdd(envs, m);
 		}
 	}
+	tipSolveDEBUG(dbOut, "OrEnvAnd[%d]: --> %pOrEnv)\n", serialNo, envs);
 	return envs;
 }
 
-local void
+void
 orEnvAdd(OrEnv orEnv, InferEnv env)
 {
 	OrEnvIterator it;
@@ -149,6 +156,16 @@ InferEnv
 orEnvElt(OrEnvIterator *it)
 {
 	return car(it->li);
+}
+
+int
+orEnvOStreamWrite(OStream os, OrEnv orEnv)
+{
+	InferEnvList content = orEnvContent(orEnv);
+
+	return ostreamPrintf(os, "(Or[%d](%d) %pInferEnvList)",
+			     orEnv->serialNo,
+			     listLength(InferEnv)(content), content);
 }
 
 /*

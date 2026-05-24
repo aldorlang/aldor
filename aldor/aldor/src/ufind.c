@@ -4,6 +4,7 @@
 #include "cport.h"
 #include "int.h"
 #include "store.h"
+#include "util.h"
 
 struct ufElt {
 	AInt    id; // Not strictly needed, but might be helpful
@@ -26,15 +27,6 @@ uftNew()
 	tbl->elts = tblNew((TblHashFun) utfHashVarFun, (TblEqFun) utfEqVarFun);
 
 	return tbl;
-}
-
-UFTable
-uftCopy(UFTable tbl)
-{
-	UFTable newTbl = (UFTable) stoAlloc(OB_Other, sizeof(*tbl));
-	newTbl->elts = tblCopy(tbl->elts);
-
-	return newTbl;
 }
 
 UFTable
@@ -80,14 +72,22 @@ uftUnion(UFTable tbl, TForm id1, TForm id2)
 	if (uf1 == uf2) {
 		return;
 	}
-
+	if (uf1->data != NULL && uf2->data != NULL) {
+		bug("Merge needed");
+	}
+	
+	Pointer data = uf1->data == NULL ? uf2->data : uf1->data;
 	if (uftEltCount(uf1) < uftEltCount(uf2)) {
 		uf1->parent = uf2;
+		uf1->data = NULL;
 		uf2->count += uf1->count;
+		uf2->data = data;
 	}
 	else {
 		uf2->parent = uf1;
+		uf2->data = NULL;
 		uf1->count += uf2->count;
+		uf1->data = data;
 	}
 }
 
@@ -167,7 +167,7 @@ local UFElt
 uftCreateElt(TForm tf)
 {
 	UFElt elt = (UFElt) stoAlloc(OB_Other, sizeof(*elt));
-	//elt->id = id;
+	elt->id = 0;
 	elt->parent = NULL;
 	elt->count = 1; // Just me
 	elt->data = NULL;

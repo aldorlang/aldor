@@ -27,6 +27,8 @@ extern UTFContext uctxtNew(InferEnv, UTForm);
 extern UTFContext uctxtNewConst(InferEnv, TForm);
 extern UTFContext uctxtCopy(UTFContext, UTForm);
 extern UTFContext uctxtFollowOnly(UTFContext);
+extern UTFContext uctxtEmbedResult(UTFContext, AbEmbed);
+
 extern Bool       uctxtEqual(UTFContext, UTFContext);
 extern Bool       uctxtIsEmpty(UTFContext);
 extern Bool       uctxtUTFIsConstant(UTFContext);

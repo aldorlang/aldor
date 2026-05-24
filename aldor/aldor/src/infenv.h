@@ -3,7 +3,10 @@
 #include "axlobs.h"
 #include "ufind.h"
 
+typedef struct unifyError *UnifyError;
+
 DECLARE_LIST(InferEnv);
+DECLARE_LIST(UnifyError);
 
 InferEnv infEnvFailed	(void);
 InferEnv infEnvEmpty	(void);
@@ -19,6 +22,7 @@ InferEnv infEnvSatisfies  (InferEnv, TForm, TForm);
 InferEnv infEnvMerge	  (InferEnv, InferEnv);
 Bool     infEnvIsEmpty	  (InferEnv);
 Bool     infEnvIsFailed	  (InferEnv);
+Bool     infEnvIsFailedVar(InferEnv, TForm);
 Bool     infEnvIsImmutable(InferEnv);
 
 Bool	 infEnvExtend(InferEnv, TForm, TForm);
@@ -28,9 +32,6 @@ TForm infEnvFollow(InferEnv env, TForm tf);
 int infEnvOStreamWrite(OStream, InferEnv);
 
 Bool infEnvEqual(InferEnv e1, InferEnv e2);
-
-typedef struct uinfo *UInfo;
-TForm varInfoTForm(UInfo info);
 
 //InferEnv infEnvAdd	(InferEnv, TForm, TForm);
 /**
@@ -49,6 +50,7 @@ InferEnv infEnvMerge	(InferEnv, InferEnv);
  * Updates each contained tf with its determined value
  */
 void	 infEnvCommit       (InferEnv);
+void	 infEnvSetImmutable (InferEnv);
 
 /**
  * Iteration
@@ -66,9 +68,11 @@ struct inferEnvIterator {
 #define infEnvSTEP(x) uftSTEP((x).uftIter)
 #define infEnvKEY(x)  uftKEY(x.uftIter)
 #define infEnvELT(x)  _infEnvELT(&x)
+#define infEnvFAIL(x) _infEnvFAIL(&x)
 #define infEnvREP(x)  uftREP(x.uftIter)
 
 void _infEnvITER(InferEnvIterator *, InferEnv);
 TForm _infEnvELT(InferEnvIterator *);
+UnifyErrorList _infEnvFAIL(InferEnvIterator *);
 
 #endif

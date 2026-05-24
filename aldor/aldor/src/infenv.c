@@ -16,6 +16,13 @@ Bool	infEnvUnifyDebug	= false;
 #define infEnvDEBUG	DEBUG_IF(infEnv)	afprintf
 #define infEnvUnifyDEBUG	DEBUG_IF(infEnvUnify)	afprintf
 
+struct unifyError {
+	int errorCode;
+	AbSyn src;
+	TForm tf1;
+	TForm tf2;
+};
+
 // NB: Maybe failed should be represented by tbl=NULL
 struct inferEnv {
 	Bool	  failed;
@@ -24,35 +31,25 @@ struct inferEnv {
 	UFTable   tbl;
 };
 
-// We store VarInfo in the UFTable
-struct uinfo {
-	SExpr failInfo;
-	TForm tform;
-};
-typedef struct UInfo *UVarInfo;
+CREATE_LIST(UnifyError);
 
 static struct inferEnv theEmptyInferEnv  = { false, true, listNil(TForm), NULL };
 static struct inferEnv theFailedInferEnv = { true,  true, listNil(TForm), NULL };
 
-UInfo
-varInfoNew(TForm tf)
+static int infEnvSerial = 0;
+
+UnifyError
+unifyErrorNew(int errCode, AbSyn src, TForm tf1, TForm tf2)
 {
-	UInfo info = (UInfo) stoAlloc(OB_Other, sizeof(*info));
-	info->tform = tf;
-	info->failInfo = sxNil;
-	return info;
+	UnifyError err = (UnifyError) stoAlloc(OB_Other, sizeof(*err));
+	err->errorCode = 0;
+	err->src = src;
+	err->tf1 = tf1;
+	err->tf2 = tf2;
+
+	return err;
 }
 
-TForm
-varInfoTForm(UInfo info)
-{
-	return info->tform;
-}
-
-void
-varInfoSetFailure(UInfo info, SExpr error)
-{
-}
 
 #define infEnvTable(infEnv) ((infEnv)->tbl)
 
@@ -71,11 +68,22 @@ infEnvNew()
 InferEnv
 infEnvCopy(InferEnv infEnv)
 {
+	InferEnvIterator it;
 	InferEnv newEnv = infEnvNew();
 	newEnv->failed = infEnv->failed;
 	newEnv->immutable = false;
 	newEnv->vars = listCopy(TForm)(infEnv->vars);
-	newEnv->tbl = infEnv->tbl == NULL ? uftNew() : uftCopy(infEnv->tbl);
+	for (infEnvITER(it, infEnv); infEnvMORE(it); infEnvSTEP(it)) {
+		TForm tfk = infEnvKEY(it);
+		TForm tfv = infEnvELT(it);
+		TForm tfr = infEnvREP(it); // expression
+		if (tfr == tfk && tfv == NULL)
+			;
+		else if (tfr == tfk)
+			infEnvExtend(newEnv, tfk, tfv);
+		else
+			infEnvExtend(newEnv, tfk, tfr);
+	}
 
 	return newEnv;
 }
@@ -95,7 +103,7 @@ infEnvEmpty()
 InferEnv
 infEnvFailed()
 {
-	return &theEmptyInferEnv;
+	return &theFailedInferEnv;
 }
 
 Bool
@@ -114,25 +122,9 @@ infEnvIsEmpty(InferEnv infEnv)
 
 
 void
-infEnvRegister(InferEnv infEnv, TForm tf)
+infEnvRegister(InferEnv env, TForm tf)
 {
-	infEnv->vars = listCons(TForm)(tf, infEnv->vars);
-}
-
-void
-infEnvSet(InferEnv infEnv, TForm tf1, TForm tf2)
-{
-	assert(tfIsVar(tf1));
-	assert(!infEnvIsImmutable(infEnv));
-	assert(!infEnvIsFailed(infEnv));
-
-	if (tfIsVar(tf2)) {
-		uftUnion(infEnvTable(infEnv), tf1, tf2);
-	}
-	else {
-		UInfo info = varInfoNew(tf2);
-		uftSetData(infEnvTable(infEnv), tf1, info);
-	}
+	env->vars = listCons(TForm)(tf, env->vars);
 }
 
 void
@@ -140,7 +132,6 @@ infEnvSetFailed(InferEnv env)
 {
 	env->failed = true;
 }
-
 
 TForm
 infEnvFollow(InferEnv env, TForm tf)
@@ -153,9 +144,19 @@ infEnvFollow(InferEnv env, TForm tf)
 	if (elt == NULL) {
 		return tf;
 	}
-	UInfo info = (UInfo) uftEltData(elt);
+	TForm ptf = (TForm) uftEltData(elt);
+	return ptf == NULL ? uftEltTForm(elt): ptf;
+}
 
-	return info == NULL ? tf : varInfoTForm(info);
+TForm
+infEnvTForm(InferEnv env, TForm tf)
+{
+	assert(tfIsVar(tf));
+	UFElt elt = (UFElt) uftProbe(infEnvTable(env), tf);
+	if (elt == NULL) {
+		return NULL;
+	}
+	return (TForm) uftEltData(elt);
 }
 
 Bool
@@ -181,14 +182,9 @@ infEnvEqual(InferEnv env1, InferEnv env2)
 		return false;
 	}
 	for (infEnvITER(it, env1); infEnvMORE(it) && ok; infEnvSTEP(it)) {
-		TForm tfi = infEnvREP(it);
-		UFElt ue = uftProbe(infEnvTable(env2), tfi);
-		if (ue == NULL) {
-			ok = false;
-		}
-		else {
-			ok = tfEqual(tfi, uftEltTForm(ue));
-		}
+		TForm tfi = infEnvFollow(env1, infEnvREP(it));
+		TForm tfi2 = infEnvFollow(env2, infEnvREP(it));
+		ok = tfEqual(tfi, tfi2);
 	}
 	return ok;
 }
@@ -207,11 +203,7 @@ _infEnvITER(InferEnvIterator *it, InferEnv e)
 TForm
 _infEnvELT(InferEnvIterator *it)
 {
-	UInfo info = (UInfo) uftELT(it->uftIter);
-	if (info == NULL) {
-		return NULL;
-	}
-	return varInfoTForm(info);
+	return (TForm) uftELT(it->uftIter);
 }
 
 /*
@@ -219,16 +211,17 @@ _infEnvELT(InferEnvIterator *it)
  */
 
 int
-infEnvOStreamWrite(OStream os, InferEnv infEnv)
+infEnvOStreamWrite(OStream os, InferEnv env)
 {
 	InferEnvIterator it;
 	int n = 0;
-	n += ostreamPrintf(os, "(InfEnv", infEnvIsFailed(infEnv) ? "failed" : "");
+	n += ostreamPrintf(os, "(InfEnv", infEnvIsFailed(env) ? "failed" : "");
 
-	for (infEnvITER(it, infEnv); infEnvMORE(it); infEnvSTEP(it)) {
+	for (infEnvITER(it, env); infEnvMORE(it); infEnvSTEP(it)) {
 		TForm tfk = infEnvKEY(it);
 		TForm tfv = infEnvELT(it);
 		TForm tfr = infEnvREP(it);
+
 		n += ostreamPrintf(os, " ");
 		if (tfr == tfk && tfv == NULL)
 			n += ostreamPrintf(os, "(%pTForm)", tfk);
@@ -242,11 +235,6 @@ infEnvOStreamWrite(OStream os, InferEnv infEnv)
 
 }
 
-/*
- * :: ::Higher level functions
- */
-Bool infEnvUnifyTForm(InferEnv env, TForm tf1, TForm tf2);
-Bool infEnvUnifySefo(InferEnv env, Sefo sefo1, Sefo sefo2);
 
 /*
  * :: Constraints
@@ -259,19 +247,62 @@ infEnvExtend(InferEnv env, TForm S, TForm T)
 	assert(tfIsVariable(S));
 	assert(!infEnvIsImmutable(env));
 
-	TForm val = infEnvFollow(env, S);
-	if (val == NULL) {
-		infEnvSet(env, S, T);
+	infEnvDEBUG(dbOut, "(InfEnvExtend: %pInferEnv %pTForm %pTForm\n", env, S, T);
+	if (S == T) {
 		result = true;
 	}
-	else {
-		result = infEnvUnifyTForm(env, val, T);
+	else if (tfIsVariable(T)
+		 && uftProbe(infEnvTable(env), S) != NULL
+		 && uftProbe(infEnvTable(env), S) == uftProbe(infEnvTable(env), T)) {
+		infEnvDEBUG(dbOut, " InfEnvExtend: Same\n");
+		result = true;
 	}
+	else if (tfIsVariable(T)) {
+		TForm tfS = infEnvTForm(env, S);
+		TForm tfT = infEnvTForm(env, T);
+		if (tfS != NULL && tfT != NULL) {
+			result = tformUnifyMod(env, listNil(Syme), tfS, tfT);
+			if (result) {
+				uftSetData(infEnvTable(env), S, NULL);
+				uftSetData(infEnvTable(env), T, NULL);
+				uftUnion(infEnvTable(env), S, T);
+				uftSetData(infEnvTable(env), S, tfS);
+				infEnvDEBUG(dbOut, " InfEnvExtend.. Merge both: %pInferEnv\n", env);
+			}
+		}
+		else {
+			uftSetData(infEnvTable(env), S, tfS == NULL ? tfT : tfS);
+			uftSetData(infEnvTable(env), T, NULL);
+			uftUnion(infEnvTable(env), S, T);
+			result = true;
+		}
+	}
+	else {
+		TForm tfS = infEnvTForm(env, S);
+		if (tfS) {
+			result = tformUnifyMod(env, listNil(Syme), tfS, T);
+		}
+		else {
+			uftSetData(infEnvTable(env), S, T);
+			result = true;
+		}
+	}
+	if (!result) {
+		infEnvSetFailed(env);
+	}
+	infEnvDEBUG(dbOut, " InfEnvExtend: %oBool %pInferEnv)\n", result, env);
 	return result;
 }
+
 /*
  * :: Unification
  */
+#if 0
+/*
+ * :: ::Higher level functions
+ */
+Bool infEnvUnifyTForm(InferEnv env, TForm tf1, TForm tf2);
+Bool infEnvUnifySefo(InferEnv env, Sefo sefo1, Sefo sefo2);
 
 Bool
 infEnvUnifyTForm(InferEnv env, TForm tf1, TForm tf2)
@@ -305,21 +336,16 @@ infEnvUnifyTForm(InferEnv env, TForm tf1, TForm tf2)
 		result = true;
 	}
 	else if (tfTag(tf1) != tfTag(tf2)) {
-		infEnvSetFailed(env);
 		result = false;
 	}
 	else if (tfIsGeneral(tf1)) {
 		result = infEnvUnifySefo(env, tfExpr(tf1), tfExpr(tf2));
 	}
 	else if (tf1->argc != tf2->argc) {
-		infEnvSetFailed(env);
 		result = false;
 	}
 	else {
 		result = tformUnifyMod(env, listNil(Syme), tf1, tf2);
-		if (!result) {
-			infEnvSetFailed(env);
-		}
 	}
 	infEnvUnifyDEBUG(dbOut, " infenv(%d:%d): result: %pInferEnv)\n", serialNo, depth, env);
 	infEnvUnifyDEBUG(dbOut, " infenv(%d:%d): result: %oBool)\n", serialNo, depth, result);
@@ -366,11 +392,12 @@ infEnvUnifySefo(InferEnv env, Sefo sefo1, Sefo sefo2)
 		}
 		result = !infEnvIsFailed(env);
 	}
-	infEnvDEBUG(dbOut, " infEnvUnifySefo(%d:%d): %pInferEnv)\n", serialNo, depth, result);
+	infEnvDEBUG(dbOut, " infEnvUnifySefo(%d:%d): %oBool %pInferEnv)\n", serialNo, depth, result, env);
 	depth--;
 	return result;
 }
 
+#endif
 /*
  * Always return an unaliased mutable object, or failed
  */
@@ -378,16 +405,26 @@ InferEnv
 infEnvMerge(InferEnv env1, InferEnv env2)
 {
 	InferEnvIterator iter;
-
+	static int instance = 0;
+	int serialNo = instance++;
+	
 	if (infEnvIsFailed(env1) || infEnvIsFailed(env2)) {
+		infEnvDEBUG(dbOut, "(Merge(%d) %pInferEnv %pInferEnv\n", serialNo, env1, env2);
+		infEnvDEBUG(dbOut, " Merge(%d) FAIL)\n", serialNo);
 		return infEnvFailed();
 	}
 	if (infEnvIsEmpty(env1)) {
+		infEnvDEBUG(dbOut, "(Merge(%d) <<Empty>> %pInferEnv)\n", serialNo, env2);
 		return infEnvCopy(env2);
 	}
 	if (infEnvIsEmpty(env2)) {
+		infEnvDEBUG(dbOut, "(Merge(%d) %pInferEnv <<Empty>>)\n", serialNo, env1);
 		return infEnvCopy(env1);
 	}
+	infEnvDEBUG(dbOut, "(Merge(%d):\n", serialNo);
+	infEnvDEBUG(dbOut, " Merge(%d) %pInferEnv\n", serialNo, env1);
+	infEnvDEBUG(dbOut, " Merge(%d) %pInferEnv\n", serialNo, env2);
+
 	InferEnv newEnv = infEnvCopy(env1);
 	for (infEnvITER(iter, env2); infEnvMORE(iter); infEnvSTEP(iter)) {
 		TForm tfk = infEnvKEY(iter); // var
@@ -401,7 +438,7 @@ infEnvMerge(InferEnv env1, InferEnv env2)
 		TForm tfr = infEnvREP(iter); // canonical
 		TForm tfv = infEnvELT(iter); // expression
 
-		infEnvDEBUG(dbOut, "Merge %d %pTForm %pTForm\n", infEnvMORE(iter), tfk, tfr);
+		infEnvDEBUG(dbOut, "Merge %pTForm %pTForm\n", tfk, tfr);
 
 		infEnvExtend(newEnv, tfk, tfr);
 		if (tfv != NULL) {
@@ -410,7 +447,8 @@ infEnvMerge(InferEnv env1, InferEnv env2)
 		if (infEnvIsFailed(newEnv))
 			break;
 	}
-	infEnvDEBUG(dbOut, "Merge Complete %pInferEnv\n", newEnv);
+
+	infEnvDEBUG(dbOut, " Merge(%d) Complete %pInferEnv)\n", serialNo, newEnv);
 
 	return newEnv;
 }
@@ -424,13 +462,21 @@ infEnvCommit(InferEnv infEnv)
 	if (infEnvIsEmpty(infEnv)) {
 		return;
 	}
+
 	for (infEnvITER(it, infEnv); infEnvMORE(it); infEnvSTEP(it)) {
 		TForm tfk = infEnvKEY(it);
+		TForm tfr = infEnvREP(it); // expression
 
 		if (tfIsVar(tfk)) {
 			tfVarFix(tfk, infEnv);
 		}
 	}
+	infEnv->immutable = true;
+}
+
+void
+infEnvSetImmutable(InferEnv infEnv)
+{
 	infEnv->immutable = true;
 }
 

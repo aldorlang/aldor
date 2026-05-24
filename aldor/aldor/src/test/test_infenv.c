@@ -15,22 +15,30 @@ void testInfEnv_1(void);
 void testInfEnv_2(void);
 void testInfEnv_3(void);
 void testInfEnv_4(void);
+void testInfEnv_5(void);
+void testInfEnv_6(void);
+void testInfEnv_Copy(void);
 
 void
 infEnvTest()
 {
 	init();
 
+	TEST(testInfEnv_4);
+	TEST(testInfEnv_5);
+
 	TEST(testInfEnv_0);
 	TEST(testInfEnv_1);
 	TEST(testInfEnv_2);
 	TEST(testInfEnv_3);
-	TEST(testInfEnv_4);
+	TEST(testInfEnv_6);
+	TEST(testInfEnv_Copy);
 
 	fini();
 }
 
 extern Bool tfsDebug;
+extern Bool infEnvDebug;
 
 void
 testInfEnv_0()
@@ -143,8 +151,6 @@ testInfEnv_2()
 	scopeBind(stab, absyn);
 	typeInfer(stab, absyn);
 
-	tfsDebug = 1;
-
 	TForm tfX = tfqTypeForm(stab, "X");
 	TForm tf99 = tfVarFrId(99);
 	TForm tf98 = tfVarFrId(98);
@@ -194,15 +200,13 @@ testInfEnv_3()
 	scopeBind(stab, absyn);
 	typeInfer(stab, absyn);
 
-	tfsDebug = 1;
-
 	TForm tfX = tfqTypeForm(stab, "X");
 	TForm tf99 = tfVarFrId(99);
 
 	InferEnv env = infEnvCopy(infEnvEmpty());
 
-	infEnvSet(env, tf99, tfX);
-	infEnvSet(env, tf99, tfX);
+	infEnvExtend(env, tf99, tfX);
+	infEnvExtend(env, tf99, tfX);
 
 	TForm tfR = infEnvFollow(env, tfX);
 
@@ -229,8 +233,6 @@ testInfEnv_4()
 	scopeBind(stab, absyn);
 	typeInfer(stab, absyn);
 
-	tfsDebug = 1;
-
 	TForm tfZ = tfqTypeForm(stab, "Z");
 	TForm tf99 = tfVarFrId(99);
 	TForm tf98 = tfVarFrId(98);
@@ -239,6 +241,8 @@ testInfEnv_4()
 	TForm tfMap99_98 = tfMap(tf99, tf98);
 	TForm tfMap98_99 = tfMap(tf98, tf99);
 	InferEnv env = infEnvCopy(infEnvEmpty());
+
+	ENABLE_DEBUG(infEnvDebug);
 
 	infEnvExtend(env, tf97, tfMap99_98);
 	infEnvExtend(env, tf97, tfMap98_99);
@@ -252,5 +256,119 @@ testInfEnv_4()
 	testTrue("", tformEqual(tfR, tfX));
 
 	finiFile();
+}
+
+void
+testInfEnv_5()
+{
+	String Z_def = "Z: with == add";
+	String S_def = "S: with == add";
+
+	StringList lines = listList(String)(2, Z_def, S_def);
+	AbSynList code = listCons(AbSyn)(stdtypes(), abqParseLines(lines));
+	AbSyn absyn = abNewSequenceL(sposNone, code);
+
+	Stab stab;
+
+	initFile();
+	stab = stabFile();
+	abPutUse(absyn, AB_Use_NoValue);
+	scopeBind(stab, absyn);
+	typeInfer(stab, absyn);
+
+	ENABLE_DEBUG(infEnvDebug);
+
+	TForm tfZ = tfqTypeForm(stab, "Z");
+	TForm tfS = tfqTypeForm(stab, "S");
+	TForm tf99 = tfVarFrId(99);
+
+	InferEnv env1 = infEnvCopy(infEnvEmpty());
+	InferEnv env2 = infEnvCopy(infEnvEmpty());
+	infEnvExtend(env1, tf99, tfZ);
+	infEnvExtend(env2, tf99, tfS);
+
+	InferEnv envR = infEnvMerge(env1, env2);
+	afprintf(dbOut, "Result: %pInferEnv\n", envR);
+	testTrue("env failed", infEnvIsFailed(envR));
+
+	finiFile();
+}
+
+void
+testInfEnv_6()
+{
+	String Z_def = "Z: with == add";
+	String S_def = "S: with == add";
+
+	StringList lines = listList(String)(2, Z_def, S_def);
+	AbSynList code = listCons(AbSyn)(stdtypes(), abqParseLines(lines));
+	AbSyn absyn = abNewSequenceL(sposNone, code);
+
+	Stab stab;
+
+	initFile();
+	stab = stabFile();
+	abPutUse(absyn, AB_Use_NoValue);
+	scopeBind(stab, absyn);
+	typeInfer(stab, absyn);
+
+	ENABLE_DEBUG(infEnvDebug);
+
+	TForm tfZ = tfqTypeForm(stab, "Z");
+	TForm tfS = tfqTypeForm(stab, "S");
+	TForm tf99 = tfVarFrId(99);
+	TForm tf98 = tfVarFrId(98);
+
+	InferEnv env1 = infEnvCopy(infEnvEmpty());
+	infEnvExtend(env1, tf99, tf98);
+	infEnvExtend(env1, tf99, tfS);
+
+	afprintf(dbOut, "Result: %pInferEnv\n", env1);
+	testFalse("env failed", infEnvIsFailed(env1));
+
+	InferEnv env2 = infEnvCopy(infEnvEmpty());
+	infEnvExtend(env2, tf99, tfS);
+	infEnvExtend(env2, tf99, tf98);
+
+	afprintf(dbOut, "Result: %pInferEnv\n", env2);
+	testFalse("env failed", infEnvIsFailed(env2));
+
+	finiFile();
+}
+
+void
+testInfEnv_Copy()
+{
+	String Z_def = "Z: with == add";
+	String S_def = "S: with == add";
+
+	StringList lines = listList(String)(2, Z_def, S_def);
+	AbSynList code = listCons(AbSyn)(stdtypes(), abqParseLines(lines));
+	AbSyn absyn = abNewSequenceL(sposNone, code);
+
+	Stab stab;
+
+	initFile();
+	stab = stabFile();
+	abPutUse(absyn, AB_Use_NoValue);
+	scopeBind(stab, absyn);
+	typeInfer(stab, absyn);
+
+	TForm tfZ = tfqTypeForm(stab, "Z");
+	TForm tfS = tfqTypeForm(stab, "S");
+	TForm tf99 = tfVarFrId(99);
+	TForm tf98 = tfVarFrId(98);
+
+	InferEnv env1 = infEnvCopy(infEnvEmpty());
+	infEnvExtend(env1, tf99, tf98);
+	infEnvExtend(env1, tf99, tfS);
+
+	InferEnv env2 = infEnvCopy(env1);
+
+	testTrue("", tfEqual(infEnvFollow(env2, tf99), infEnvFollow(env1, tf99)));
+	testTrue("", tfEqual(infEnvFollow(env2, tf98), infEnvFollow(env1, tf98)));
+
+	finiFile();
+
 }
 

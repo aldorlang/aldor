@@ -1840,9 +1840,11 @@ tibupLambda(Stab stab, AbSyn absyn, TForm type)
 	TForm paramTf = tfFullFrAbSyn(stab, param);
 
 	if (tformHasVar(paramTf) || tformHasVar(tf)) {
-		TPoss possFinal = tpossSatisfiesType(abTPoss(body), tf);
-		// Merge infEnv from returns....
-		TPoss mapPoss = tpossLambda(tpossSingleton(paramTf), possFinal, pack ? AB_MAP_Packed : AB_MAP_Generic);
+	  TPoss possFinal0 = tpossSatisfiesType(abTPoss(body), tf);
+	  TPoss possFinal  = tpossConst(possFinal0, tf);
+
+	  // Merge infEnv from returns....
+	  TPoss mapPoss = tpossLambda(tpossSingleton(paramTf), possFinal, pack ? AB_MAP_Packed : AB_MAP_Generic);
 		abTPoss(absyn) = tpossSatisfiesType(mapPoss, type);
 	}
 	else {
@@ -3101,8 +3103,8 @@ tibupRestrictTo(Stab stab, AbSyn absyn, TForm type)
 	TForm tf = tiGetTForm(stab, absyn->abRestrictTo.type);
 
 	tibup(stab, absyn->abRestrictTo.expr, tf);
-	OrEnv env = orEnvFrTPoss(abTPoss(absyn->abRestrictTo.expr));
-	abTPoss(absyn) = orEnvToTPoss(tf, env);
+	TPoss filteredPoss = tpossSatisfiesType(abTPoss(absyn->abRestrictTo.expr), tf);
+	abTPoss(absyn) = tpossConst(filteredPoss, tf);
 }
 
 /****************************************************************************
@@ -3120,7 +3122,6 @@ tibupPretendTo(Stab stab, AbSyn absyn, TForm type)
 	TPoss poss = tpossSingleton(tf);
 	abTPoss(absyn) = tpossSatisfiesType(poss, type);
 	//abTPoss(absyn) = tpossSingleton(tf);
-
 }
 
 /***************************************************************************

@@ -25,7 +25,7 @@ fmtests := x rectest enumtest clos strtable1 simple apply \
            nestcond silly cexp lself0 selfcond lself \
 	   lself2 catdef2 args1a args1 args2a args2 \
 	   strtable1 rec2 lit gener0 gener_fns gtools xarr \
-	   xdom fix0
+	   xdom fix0 cross2
 
 ctests  := rectest enumtest multinever maptuple cimp1 \
            gener0 xit xits xiter lit xarr

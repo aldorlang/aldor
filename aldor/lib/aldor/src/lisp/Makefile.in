@@ -15,7 +15,7 @@ abs_top_srcdir	:= @abs_top_srcdir@
 subdir		:= $(subst $(abs_top_builddir)/,,$(abs_builddir))
 
 # Build starts here
-library = sal_sexpr
+library = sal_sexpr sal_sexpr2
 
 @BUILD_JAVA_TRUE@javalibrary := $(library)
 
@@ -24,3 +24,5 @@ library = sal_sexpr
 include $(abs_top_srcdir)/lib/aldor/src/common.mk
 
 sal_sexpr.aldortest.exe sal_sexpr.aldortest-exec-interp sal_sexpr.aldortest-exec-java: sal_sexpr.asy
+
+sal_sexpr2_AXLFLAGS := -WD+tipBup -Mpreview -WD+tipTdn -WD+tipAudit

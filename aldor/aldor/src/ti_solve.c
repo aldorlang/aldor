@@ -6,10 +6,11 @@
 #include "tposs.h"
 #include "stab.h"
 #include "sefo.h"
+#include "sexpr.h"
 
 local OrEnv tisOrEnv(AbSyn ab, OrEnv known);
 local void tisApply (AbSyn ab, OrEnv whole);
-local Bool tisCanCommit (InferEnv);
+local void tisCommit(InferEnv);
 local void tisApplyOrEnv(AbSyn ab, OrEnv whole);
 
 Bool	tipSolveDebug	= false;
@@ -39,31 +40,35 @@ tiSolve(Stab stab, AbSyn ab)
 			stabInfEnvApply(stab, orEnvSingleton(whole));
 		}
 
-		if (orEnvIsSingleton(whole) && tisCanCommit(orEnvSingleton(whole))) {
+		if (orEnvIsSingleton(whole)) {
 			tipSolveDEBUG(dbOut, "Committing %pOrEnv\n", whole);
-			infEnvCommit(orEnvSingleton(whole));
+			InferEnv infEnv = orEnvSingleton(whole);
+			if (infEnvIsFailed(infEnv)) {
+				comsgError(ab, ALDOR_E_TinVarNotInferred);
+			}
+			else {
+				tisCommit(infEnv);
+			}
 		}
 	}
 	tipSolveDEBUG(dbOut, " Solve(%d): Complete)\n", serialNo);
 }
 
-local Bool
-tisCanCommit(InferEnv infEnv)
+local void
+tisCommit(InferEnv infEnv)
 {
 	InferEnvIterator it;
-
-	if (infEnvIsFailed(infEnv))
-		return false;
+	infEnvSetImmutable(infEnv);
 
 	for (infEnvITER(it, infEnv); infEnvMORE(it); infEnvSTEP(it)) {
 		TForm key = infEnvKEY(it);
 		TForm elt = infEnvELT(it);
+		TForm rep = infEnvREP(it);
 
-		if (elt == NULL || tfIsVar(elt)) {
-			return false;
+		if (tfIsVar(key) && elt != NULL) {
+			tfVarFix(key, infEnv);
 		}
 	}
-	return true;
 }
 
 local OrEnv

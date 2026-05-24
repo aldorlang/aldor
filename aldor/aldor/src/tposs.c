@@ -998,6 +998,20 @@ tpossLambda(TPoss argPoss, TPoss retPoss, AbMapType mapType)
 	return tpL;
 }
 
+TPoss
+tpossEmbedded(TPoss tposs, TForm tf)
+{
+	TPossIterator it;
+	TPoss final = tpossEmpty();
+	for (tpossITER(it, tposs); tpossMORE(it); tpossSTEP(it)) {
+		UTFContext ptfc = tpossUCELT(it);
+		TForm ptf = tpossELT(it);
+		AbEmbed e = tfSatEmbedType(ptf, tf);
+		tpossAdd1UTFContext(final, uctxtEmbedResult(ptfc, e));
+	}
+	return final;
+}
+
 TForm
 tpossELT_(TPossIterator *ip)
 {

@@ -21,14 +21,15 @@ all:
 
 utils := tassert rtexns
 
-triv_tests = triv1 triv2 triv3 triv triv4 triv6 triv7
+triv_tests = triv1 triv2 triv3 triv triv4 triv5 triv6 triv7
 trivfail_tests = trivfail
 trivl_tests = trivl1 trivl2
-trivdom_tests = trivdom trivdom2 trivdom3
-
+trivdom_tests = trivdom trivdom2 trivdom3 trivdom4 trivdom5 trivdom6 cons
+overload_tests = overload1
 aptests :=
 
 fmtests := l0 l1 ll $(triv_tests) $(trivl_tests) $(trivdom_tests)	\
+	   $(overload_tests)						\
 	   ltype rtype0 noret2 noretl noret dtype0 fact
 ctests  :=
 otests  :=
@@ -50,12 +51,14 @@ triv_opts :=
 triv1_opts :=
 triv2_opts :=
 triv3_opts :=
-triv5_opts :=
+triv5_opts := -WD+tipBup -WD+tipAdd -WD+infEnv -WD+tipSolve -WD+tipAudit -Mpreview
 trivl1_opts :=
 trivdom_opts := -WD+tipBup -WD+tipAdd -WD+tfs -WD+tpossIntersect
-trivdom3_opts := -WD+tipBup -WD+tipAdd -WD+tfs -WD+tpossIntersect
+trivdom3_opts := -WD+tipBup -WD+tipAdd -WD+infEnv -WD+tipSolve
+trivdom6_opts := -WD+tipBup -WD+tipAdd -WD+infEnv -WD+tipSolve -Mpreview -WD+tipAudit -WD+tipApply
+trivfail_opts :=
 fact_opts :=
-
+cons_opts := -WD+tipBup -WD+tipAdd -WD+infEnv -WD+tipSolve -WD+tipAudit -Mpreview -WD+tipSolve
 ltype_opts :=
 rtype0_opts :=
 dtype0_opts :=

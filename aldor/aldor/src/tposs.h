@@ -123,6 +123,11 @@ TPoss tpossLambda(TPoss argPoss, TPoss retPoss, AbMapType mapType);
 		/*
 		 * Return A -> R for each combination of arg and ret
 		 */
+TPoss tpossEmbedded(TPoss tposs, TForm tf);
+		/*
+		 * Return tposs where each element is embedded into tf
+		 */
+
 extern Bool	tpossIsHaving		(TPoss tp, TFormPredicate pred);
 		/*
 		 * Is there any type form in tp which satisfies the predicate?

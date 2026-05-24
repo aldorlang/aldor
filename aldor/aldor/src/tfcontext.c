@@ -5,6 +5,7 @@
 #include "store.h"
 #include "sefo.h"
 #include "tform.h"
+#include "tfsat.h"
 #include "util.h"
 /*
  * TFContext
@@ -156,6 +157,19 @@ uctxtInferredType(UTFContext utfc)
 		return tf;
 	}
 	return tformFollowVars(infEnv, tf);
+}
+
+UTFContext
+uctxtEmbedResult(UTFContext utfc, AbEmbed e)
+{
+	TForm otf = utformConstOrFail(uctxtUTForm(utfc));
+	TForm ntf = tfsEmbedResult(utformConstOrFail(uctxtUTForm(utfc)), e);
+	if (otf == ntf) {
+		return utfc;
+	}
+	else {
+		return uctxtCopy(utfc, utformNewConstant(ntf));
+	}
 }
 
 

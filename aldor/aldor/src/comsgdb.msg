@@ -297,6 +297,8 @@ ALDOR_W_TinEarlyImport          "import from %s before its exports could be dete
 
 ALDOR_R_TinInferring            "Inferring %s: %s."
 ALDOR_E_TinVarNotInferred       "Failed to infer a type"
+ALDOR_E_TinVarInferFail         "Failed to infer a type %s"
+ALDOR_E_TinVarFreeVar            "Type is unconstrained"
 
 ALDOR_E_TinExportNotMatched       "Failed to match export %s"
 
