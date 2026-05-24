@@ -29,6 +29,7 @@
 #include "comsg.h"
 #include "strops.h"
 #include "table.h"
+#include "tfknown.h"
 #include "ti_top.h"
 
 local Foam         gen0AddBody1           (AbSyn, Stab, AbSyn);
@@ -1663,6 +1664,13 @@ gen0RtTypeHash(TForm tf, TForm otf)
 			otfl = listCons(TForm)(tfMultiArgN(otf, i), otfl);
 		}
 		break;
+	case TF_PPartial:
+		assert(tfTag(tf) == tfTag(otf));
+		for (i = 0; i < tfPPartialArgc(tf); i++) {
+			tfl  = listCons(TForm)(tfPPartialArgN(tf, i), tfl);
+			otfl = listCons(TForm)(tfPPartialArgN(otf, i), otfl);
+		}
+		break;
 	case TF_Tuple:
 		assert(tfTag(tf) == tfTag(otf));
 		tfl  = listCons(TForm)(tfTupleArg( tf), listNil(TForm));
@@ -1714,25 +1722,6 @@ gen0RtTypeHash(TForm tf, TForm otf)
 	return hash;
 }
 
-local Bool
-tfMapArgIsTuple(TForm tf)
-{
-	if (tfMapArgc(tf) != 1)
-		return false;
-	if (abTUnique(tfExpr(tfMapArg(tf))) == NULL)
-		return false;
-	return tfIsTypeTuple(abTUnique(tfExpr(tfMapArg(tf))));
-}
-
-local Bool
-tfMapRetIsTuple(TForm tf)
-{
-	if (tfMapRetc(tf) != 1)
-		return false;
-	if (abTUnique(tfExpr(tfMapRet(tf))) == NULL)
-		return false;
-	return tfIsTypeTuple(abTUnique(tfExpr(tfMapRet(tf))));
-}
 
 local Foam
 gen0RtTypeHashMap(TForm tf, TForm otf)
@@ -1885,6 +1874,10 @@ gen0RtTypeHashAsGeneral(TForm tf)
 	case TF_Tuple:
 		tfl = listCons(TForm)(tfTupleArg(tf), listNil(TForm));
 		break;
+	case TF_PPartial:
+		for (i = 0; i < tfPPartialArgc(tf); i += 1)
+			tfl = listCons(TForm)(tfPPartialArgN(tf, i), tfl);
+		break;
 	case TF_Reference:
 		tfl = listCons(TForm)(tfReferenceArg(tf), listNil(TForm));
 		break;
@@ -1970,6 +1963,7 @@ gen0RtSefoIsSpecialOp(AbSyn ab)
 	return	sym == ssymArrow	||
 		sym == ssymPackedArrow	||
 		sym == ssymCross	||
+		sym == ssymPPartial	||
 		sym == ssymRawRecord	||
 		sym == ssymRecord	||
 		sym == ssymUnion	||
@@ -1984,6 +1978,7 @@ gen0RtSymSpecialTag(Symbol sym)
 	if (sym == ssymArrow)		return (int)TF_Map;
 	if (sym == ssymPackedArrow)	return (int)TF_PackedMap;
 	if (sym == ssymCross)		return (int)TF_Cross;
+	if (sym == ssymPPartial)	return (int)TF_PPartial;
 	if (sym == ssymRawRecord)	return (int)TF_RawRecord;
 	if (sym == ssymRecord)		return (int)TF_Record;
 	if (sym == ssymUnion)		return (int)TF_Union;

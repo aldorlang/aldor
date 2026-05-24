@@ -147,6 +147,7 @@ AC_CONFIG_FILES(
    aldor/test/Makefile
    aldor/test/test-config.mk
    aldor/test/core/Makefile
+   aldor/test/rtypes/Makefile
    aldor/test/java/Makefile
    aldor/test/utils/Makefile
    aldor/tools/Makefile
@@ -233,5 +234,14 @@ AC_CONFIG_FILES(
    lib/ax0/src/Makefile
    lib/ax0/src/al/Makefile
    lib/ax0/test/Makefile
+
+   dnl Type library
+   lib/types/Makefile
+   lib/types/include/Makefile
+   lib/types/src/Makefile
+   lib/types/src/base/Makefile
+   lib/types/src/types/Makefile
+   lib/types/src/hm/Makefile
+   lib/types/src/xsubsts/Makefile
 )
 AC_OUTPUT

@@ -116,6 +116,15 @@ enum abSynTag {
 
 typedef Enum(abSynTag)	AbSynTag;
 
+/*
+ * AbFlags
+ */
+enum ab_flag {
+	AB_Flag_OldIter = 0,
+	AB_Flag_NewIter = 1,
+	AB_Flag_Unknown = 2
+};
+typedef Enum(ab_flag) AbFlag;
 
 /******************************************************************************
  *
@@ -132,6 +141,7 @@ typedef Enum(abSynTag)	AbSynTag;
 # define abNewAssert(p,e)	abNew(AB_Assert,	p,1, e)
 # define abNewAssign(p,l,r)	abNew(AB_Assign,	p,2, l,r)
 # define abNewBlank(p,s)	abNew(AB_Blank,		p,1, s)
+# define abNewUnknown(p,s)	abNewMod(AB_Blank,	p,AB_Flag_Unknown,1, s)
 # define abNewBreak(p,l)	abNew(AB_Break,		p,1, l)
 # define abNewBuiltin(p,b)	abNew(AB_Builtin,	p,1, b)
 # define abNewCoerceTo(p,a,t)	abNew(AB_CoerceTo,	p,2, a,t)
@@ -151,12 +161,12 @@ typedef Enum(abSynTag)	AbSynTag;
 # define abNewFluid(p,b)	abNew(AB_Fluid,		p,1, b)
 # define abNewFix(p,b)		abNew(AB_Fix,		p,1, b)
 # define abNewFor(p,v,i,c)	abNew(AB_For,		p,3, v,i,c)
-# define abNewXFor(p,v,i,c)	abNewMod(AB_For,        p,1, 3,v,i,c)
+# define abNewXFor(p,v,i,c)	abNewMod(AB_For,        p,AB_Flag_NewIter, 3,v,i,c)
 # define abNewForeignImport(p,w,o) abNew(AB_ForeignImport,p,2, w,o)
 # define abNewForeignExport(p,w,o) abNew(AB_ForeignExport,p,2, w,o)
 # define abNewFree(p,b)		abNew(AB_Free,		p,1, b)
 # define abNewGenerate(p,n,e)	abNew(AB_Generate,	p,2, n,e)
-# define abNewXGenerate(p,n,e)	abNewMod(AB_Generate,	p,1,2, n,e)
+# define abNewXGenerate(p,n,e)	abNewMod(AB_Generate,	p,AB_Flag_NewIter,2, n,e)
 # define abNewGoto(p,l)		abNew(AB_Goto,		p,1, l)
 # define abNewHas(p,a,b)	abNew(AB_Has,		p,2, a,b)
 # define abNewHide(p,e)		abNew(AB_Hide,		p,1, e)
@@ -232,21 +242,15 @@ enum ab_use {
 	AB_Use_Default,		/* Default variable declaration. */
 	AB_Use_Except,		/* Value in "except" RHS */
 	AB_Use_Elided,		/* Used where real syntax was dropped. */
+	AB_Use_PatLocation,	/* Expression may form part of a pattern. */
+	AB_Use_Pattern,		/* Expression forms part of a pattern. */
 	AB_Use_LIMIT
 };
 
 typedef Enum(ab_use)	AbUse;
 
-/*
- * AbFlags
- */
-enum ab_flag {
-	AB_Flag_OldIter = 0,
-	AB_Flag_NewIter = 1
-};
-typedef Enum(ab_flag) AbFlag;
-
 #define abFlag_IsNewIter(ab) (abFlags(ab) == AB_Flag_NewIter)
+#define abFlag_IsUnknown(ab) (abFlags(ab) == AB_Flag_Unknown)
 
 /*
  * AbState
@@ -262,6 +266,8 @@ enum ab_state {
 
 typedef Enum(ab_state)	AbState;
 
+String abStateName(AbSyn ab);
+
 /*
  * AbEmbed
  */
@@ -271,26 +277,34 @@ typedef	ULong		AbEmbed;
 #define			AB_Embed_Fail			((AbEmbed) 0)
 
 #define			AB_Embed_Identity		(((AbEmbed) 1) << 0)
-#define			AB_Embed_CrossToTuple		(((AbEmbed) 1) << 1)
-#define			AB_Embed_CrossToMulti		(((AbEmbed) 1) << 2)
-#define			AB_Embed_CrossToUnary		(((AbEmbed) 1) << 3)
-#define			AB_Embed_MultiToTuple		(((AbEmbed) 1) << 4)
-#define			AB_Embed_MultiToCross		(((AbEmbed) 1) << 5)
-#define			AB_Embed_MultiToUnary		(((AbEmbed) 1) << 6)
-#define			AB_Embed_UnaryToTuple		(((AbEmbed) 1) << 7)
-#define			AB_Embed_UnaryToCross		(((AbEmbed) 1) << 8)
-#define			AB_Embed_UnaryToMulti		(((AbEmbed) 1) << 9)
-#define			AB_Embed_UnaryToRaw		(((AbEmbed) 1) << 10)
-#define			AB_Embed_RawToUnary		(((AbEmbed) 1) << 11)
-#define			AB_Embed_ApplyMultiToTuple	(((AbEmbed) 1) << 12)
-#define			AB_Embed_ApplyMultiToCross	(((AbEmbed) 1) << 13)
+#define			AB_Embed_AnyToNone		(((AbEmbed) 1) << 1)
+#define			AB_Embed_CrossToTuple		(((AbEmbed) 1) << 2)
+#define			AB_Embed_CrossToMulti		(((AbEmbed) 1) << 3)
+#define			AB_Embed_CrossToUnary		(((AbEmbed) 1) << 4)
+#define			AB_Embed_MultiToTuple		(((AbEmbed) 1) << 5)
+#define			AB_Embed_MultiToCross		(((AbEmbed) 1) << 6)
+#define			AB_Embed_MultiToUnary		(((AbEmbed) 1) << 7)
+#define			AB_Embed_UnaryToTuple		(((AbEmbed) 1) << 8)
+#define			AB_Embed_UnaryToCross		(((AbEmbed) 1) << 9)
+#define			AB_Embed_UnaryToMulti		(((AbEmbed) 1) << 10)
+#define			AB_Embed_UnaryToRaw		(((AbEmbed) 1) << 11)
+#define			AB_Embed_RawToUnary		(((AbEmbed) 1) << 12)
+#define			AB_Embed_ApplyMultiToTuple	(((AbEmbed) 1) << 13)
+#define			AB_Embed_ApplyMultiToCross	(((AbEmbed) 1) << 14)
+
+#define			AB_Embed_ApplyCase		(((AbEmbed) 1) << 15)
+#define			AB_Embed_ApplyPatCall		(((AbEmbed) 1) << 16)
 
 #define			AB_Embed_ArgMask		(~AB_Embed_ApplyMask)
 #define			AB_Embed_ApplyMask		\
 	(AB_Embed_ApplyMultiToTuple | AB_Embed_ApplyMultiToCross)
 
+#define AB_Embed_BitCount 14
+
 #define		abEmbedArg(ab)		(abTContext(ab) & AB_Embed_ArgMask)
 #define		abEmbedApply(ab)	(abTContext(ab) & AB_Embed_ApplyMask)
+
+String abEmbedToString(AbEmbed embed);
 
 /*
  * AbSeman
@@ -306,6 +320,7 @@ struct abSeman {
 	AbEmbed embed;		/* Implicit embedding for product contexts. */
 	SImpl   impl;		/* Syme implementation, if any */
 	SymeList self;          /* value of '%' for withs */
+  //Syme     infSyme;	/* syme for purposes of type inference */
 };
 
 typedef struct abSeman *AbSeman;
@@ -857,6 +872,23 @@ extern struct ab_info	abInfoTable[];
 
 /******************************************************************************
  *
+ * :: Table of information for use values
+ *
+ *****************************************************************************/
+
+struct ab_use_info {
+	AbUse use;
+	String str;
+};
+
+extern struct ab_use_info	abUseInfoTable[];
+
+#define abUseInfo(tag)	((tag) >= AB_Use_LIMIT ? abUseInfoTable[AB_Use_LIMIT] : abUseInfoTable[(tag)])
+
+extern Bool abUseIsPattern(AbUse use);
+
+/******************************************************************************
+ *
  * :: Operations on nodes
  *
  *****************************************************************************/
@@ -877,6 +909,7 @@ extern struct ab_info	abInfoTable[];
 # define abSetPos(a,p)	  ((a)->abHdr.pos=spstackSetFirst ((a)->abHdr.pos,(p)))
 
 # define abUse(a)	  ((a)->abHdr.use)
+# define abUseIsPat(a)    (abUse(a) == AB_Use_PatLocation || abUse(a) == AB_Use_Pattern)
 # define abState(a)	  ((a)->abHdr.state)
 # define abFlags(a)	  ((a)->abHdr.flags)
 # define abArgc(a)	  ((a)->abHdr.argc)
@@ -897,13 +930,16 @@ extern struct ab_info	abInfoTable[];
 # define abSymeImpl(a)	  ((a)->abHdr.seman ? (a)->abHdr.seman->impl	 : 0)
 # define abSelf(a)	  ((a)->abHdr.seman ? (a)->abHdr.seman->self	 : 0)
 
+# define abCommaArgc(ab)  (abArgc(ab))
+# define abCommaArg(ab, i) ((ab)->abComma.argv[(i)])
+
 # define abRepeatIterc(a) (abArgc(a)-1) /* -1 for body */
 # define abCollectIterc(a)(abArgc(a)-1) /* -1 for body */
 # define abImplicitSyme(a)(abImplicit(a) ? abSyme(abImplicit(a)) : 0)
 
 # define abCopyPos(a)	  abNewNothing(abPos(a))
 
-#define			abIsUnknown(a)		abHasTag(a, AB_Blank)
+extern Bool abIsUnknown(AbSyn);
 
 #define			abIsNothing(a)		abHasTag(a, AB_Nothing)
 #define			abIsNotNothing(a)	!abIsNothing(a)
@@ -932,11 +968,22 @@ extern struct ab_info	abInfoTable[];
 #define			abIsJoin(a)		abIsApplyOf(a, ssymJoin)
 
 #define			abIsAnyMap(a)		\
-	(abIsGenericMap(a) || abIsPackedMap(a))
+	(abIsGenericMap(a) || abIsPackedMap(a) || abIsPatMatch(a))
 #define			abIsGenericMap(a)	\
 	(abIsApplyOf(a, ssymArrow) && abApplyArgc(a) == 2)
 #define			abIsPackedMap(a)	\
 	(abIsApplyOf(a, ssymPackedArrow) && abApplyArgc(a) == 2)
+#define			abIsPatMatch(a)	\
+	(abIsApplyOf(a, ssymPatMatch) && abApplyArgc(a) == 2)
+
+enum abMapType {
+	AB_MAP_Generic,
+	AB_MAP_Packed,
+	AB_MAP_PatMatch,
+};
+typedef Enum(abMapType) AbMapType;
+
+extern AbMapType abMapType	(AbSyn ab);
 
 #define			abMapArg(a)		abApplyArg(a, 0)
 #define			abMapRet(a)		abApplyArg(a, 1)
@@ -1041,6 +1088,10 @@ extern void	abPosSpan		(AbSyn, SrcPos *pmin, SrcPos *pmax);
  *:: Tree searching
  */
 
+extern AbSyn	abFindNode		(AbSyn ab, AbSynTag tag);
+		/*
+		 * Return node with tag 'tag' - depth first
+		 */
 extern Bool	abHasSymbol		(AbSyn, Symbol);
 		/*
 		 * Return true iff the tree has an abId with the given symbol.

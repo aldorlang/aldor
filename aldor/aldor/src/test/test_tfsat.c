@@ -15,6 +15,9 @@ local void testTfSatEmbed();
 local void testTfSatEmbedExcept();
 local void testTfSatRec();
 local void testTfSatEnum();
+local void testTfSatExitPattern();
+local void testTfSatEmbedPattern();
+
 extern int tfsDebug;
 
 void
@@ -25,6 +28,8 @@ tfsatTest()
 	TEST(testTfSatEmbedExcept);
 	TEST(testTfSatRec);
 	TEST(testTfSatEnum);
+	TEST(testTfSatExitPattern);
+	TEST(testTfSatEmbedPattern);
 	fini();
 }
 
@@ -37,7 +42,7 @@ testTfSatEmbed()
 	SatMask result;
 
 	Syme g;
-	TForm E, tf1, tf2;
+	TForm E, tf0, tfCrossEE, tfMultEE;
 
 	AbSub sigma;
 
@@ -53,36 +58,55 @@ testTfSatEmbed()
 	stab = stabFile();
 
 	abPutUse(absyn, AB_Use_NoValue);
-	abPrintDb(absyn);
+
 	scopeBind(stab, absyn);
 	typeInfer(stab, absyn);
 
 	g = uniqueMeaning(stab, "g");
 	E = symeType(g);
-	tf1 = tfCross(2, E, E);
-	tf2 = tfMulti(2, E, E);
-	
+	tf0 = tfMulti(0);
+	tfCrossEE = tfCross(2, E, E);
+	tfMultEE = tfMulti(2, E, E);
+
 	sigma = absNew(stab);
 
 	mask = tfSatTdnMask();
-	result = tfSat(mask, tf1, tf2);
-	
+	result = tfSat(mask, tfCrossEE, tfMultEE);
+
 	testTrue("", tfSatSucceed(result));
 	testIntEqual("", AB_Embed_CrossToMulti, tfSatAbEmbed(result));
 
 	mask = tfSatTdnMask();
-	result = tfSat(mask, tf2, tf1);
-	
+	result = tfSat(mask, tfMultEE, tfCrossEE);
+
 	testTrue("", tfSatSucceed(result));
 	testIntEqual("", AB_Embed_MultiToCross, tfSatAbEmbed(result));
 
-	result = tfSat(mask, tf2, tfSubst(sigma, tf1));
+	result = tfSat(mask, tfMultEE, tfSubst(sigma, tfCrossEE));
 	testTrue("", tfSatSucceed(result));
 	testIntEqual("", AB_Embed_MultiToCross, tfSatAbEmbed(result));
 
-	result = tfSat(mask, tfSubst(sigma, tf1), tf2);
+	result = tfSat(mask, tfSubst(sigma, tfCrossEE), tfMultEE);
 	testTrue("", tfSatSucceed(result));
 	testIntEqual("", AB_Embed_CrossToMulti, tfSatAbEmbed(result));
+
+	result = tfSat(mask, E, tf0);
+	testTrue("satAnyToNone", tfSatSucceed(result));
+	testIntEqual("", AB_Embed_AnyToNone, tfSatAbEmbed(result));
+
+	result = tfSat(mask, tf0, tf0);
+	afprintf(stdout, "s1 %s", tfSatMaskToString(result));
+	testTrue("satAnyToNone", tfSatSucceed(result));
+	testIntEqual("s1", 0, tfSatAbEmbed(result));
+
+	result = tfSat(mask, tfMultEE, tf0);
+	afprintf(stdout, "s2 %s", tfSatMaskToString(result));
+	testTrue("satAnyToNoneMult", tfSatSucceed(result));
+	testIntEqual("s2", AB_Embed_AnyToNone, tfSatAbEmbed(result));
+
+	testIntEqual("E->tf0", AB_Embed_AnyToNone, tfSatEmbedType(E, tf0));
+	testIntEqual("C->tf0", AB_Embed_AnyToNone, tfSatEmbedType(tfCrossEE, tf0));
+	testIntEqual("M->tf0", AB_Embed_Identity, tfSatEmbedType(tfMultEE, tf0));
 
 	finiFile();
 }
@@ -114,7 +138,7 @@ testTfSatEmbedExcept()
 	stab = stabFile();
 
 	abPutUse(absyn, AB_Use_NoValue);
-	abPrintDb(absyn);
+
 	scopeBind(stab, absyn);
 	typeInfer(stab, absyn);
 
@@ -188,7 +212,6 @@ testTfSatRec()
 	rtf = symeType(r);
 	s = uniqueMeaning(stab, "s");
 	stf = symeType(s);
-	aprintf("R: %pTForm S: %pTForm\n", rtf, stf);
 
 	testTrue("def eq", tfSatisfies(rtf, stf));
 
@@ -216,5 +239,60 @@ testTfSatEnum()
 	tf2 = tfqTypeForm(stabFile(), "'y'");
 
 	testFalse("enum0", tfSatisfies(tf1, tf2));
+	finiFile();
+}
+
+local void
+testTfSatExitPattern()
+{
+	String T_def = "T: with == add";
+	StringList lines;
+	AbSynList code;
+	AbSyn absyn;
+	TForm tf1, tf2;
+	Stab stab;
+	initFile();
+	stdscope(stabFile());
+
+	lines = listList(String)(1, T_def);
+
+	code = listCons(AbSyn)(stdtypes(), abqParseLines(lines));
+	absyn = abNewSequenceL(sposNone, code);
+	stab = stabFile();
+
+	tf1 = tfExit;
+	tf2 = tfPattern(tfqTypeForm(stab, "Integer"));
+
+	testTrue("exitPattern", tfSatisfies(tf1, tf2));
+	
+	finiFile();
+}
+
+local void
+testTfSatEmbedPattern()
+{
+	String T_def = "T: with == add";
+	StringList lines;
+	AbSynList code;
+	AbSyn absyn;
+	TForm tf1, tf2;
+	Stab stab;
+	SatMask satMask;
+
+	initFile();
+	stdscope(stabFile());
+	tfsDebug = 1;
+	
+	lines = listList(String)(1, T_def);
+
+	code = listCons(AbSyn)(stdtypes(), abqParseLines(lines));
+	absyn = abNewSequenceL(sposNone, code);
+	stab = stabFile();
+
+	tf1 = tfqTypeForm(stab, "Integer");
+	tf2 = tfPattern(tfqTypeForm(stab, "Integer"));
+	satMask = tfSat(tfSatWithPatContext(tfSatBupMask()), tf1, tf2);
+	testTrue("embedPattern", tfSatSucceed(satMask));
+	
 	finiFile();
 }

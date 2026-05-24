@@ -634,7 +634,7 @@ terrorApply (Stab stab, AbSyn absyn, TForm type)
 		    tfSatisfies(tfMapRet(tpossUnique(opTypes)), tfCategory)) {
 			terrorNotUniqueType(ALDOR_E_TinOpMeans, absyn, type, abTPoss(op));
 		}
-		else if (tpossCount(opTypes) == 0)
+		else if (tpossIsEmpty(opTypes))
 			terrorMeaningsOutOfScope(stab, absyn, op, type,
 						 abApplyArgc(absyn), abApplyArgf);
 		else
@@ -720,7 +720,7 @@ terrorImplicit (Stab stab, AbSyn absyn, TForm type)
 		NotReached(return);
 	}
 		
-	if (tpossCount(opTypes) == 0)
+	if (tpossIsEmpty(opTypes))
 		terrorMeaningsOutOfScope(stab, absyn, op, type, argc, argf);
 	else
 		terrorApplyFType(absyn, type, abTPoss(absyn),
@@ -767,7 +767,7 @@ terrorNoTypes(Msg msg, AbSyn ab, TForm type, TPoss tposs)
 
 
 	terrorClip = comsgOkAbbrev() ? CLIP : ABPP_UNCLIPPED;
-	assert(!tpossCount(tposs));
+	assert(tpossIsEmpty(tposs));
 
 	obuf = bufNew();
 	fmt  = comsgString(msg);
@@ -876,7 +876,7 @@ void terrorSequence(Stab stab, AbSyn absyn, TForm type)
 
 	for (abl = abExitsList; abl; abl = cdr(abl)) {
 		if (abState(car(abl)) == AB_State_HasPoss &&
-		    tpossCount(abTPoss(car(abl))) == 0)
+		    tpossIsEmpty(abTPoss(car(abl))))
 			return;
 	}
 
@@ -908,7 +908,7 @@ bputFirstExitTypes(AbSyn ab, String strKind)
 		bufPrintf(obuf, fmt, strKind, s);
 		strFree(s);
 	}
-	else if (tpossCount(abTPoss(ab)) == 1) {
+	else if (tpossIsUnique(abTPoss(ab))) {
 		fmt = comsgString(ALDOR_E_TinFirstExitType);
 		s = fmtTForm(tpossUnique(abTPoss(ab)));
 		bufPrintf(obuf, fmt, strKind, s);
@@ -942,7 +942,7 @@ bputOtherExitTypes(AbSyn ab, String strKind)
 		bufPrintf(obuf, fmt, strKind, s);
 		strFree(s);
 	}
-	else if (tpossCount(abTPoss(ab)) == 1) {
+	else if (tpossIsUnique(abTPoss(ab))) {
 		fmt = comsgString(ALDOR_N_TinOtherExitType);
 		s = fmtTForm(tpossUnique(abTPoss(ab)));
 		bufPrintf(obuf, fmt, strKind, s);
@@ -1023,7 +1023,7 @@ terrorSetBang(Stab stab, AbSyn ab, Length argc, AbSynGetter argf)
 
 	for (i = 0 ; i < argc ; i++) {
 		argi = argf(ab, i);
-		if (tpossCount(abGoodTPoss((argi))) == 0) {
+		if (tpossIsEmpty(abGoodTPoss((argi)))) {
 			s = fmtAbSyn(argi);
 			if (abTag(argi) == AB_Id) {
 				fmt = comsgString(ALDOR_D_TinNoMeaningForId);
@@ -1057,7 +1057,7 @@ terrorSetBang(Stab stab, AbSyn ab, Length argc, AbSynGetter argf)
 			}
 		}
 		else if (abState(argi) == AB_State_HasPoss &&
-	    		tpossCount(abTPoss(argi))) {
+			 !tpossIsEmpty(abTPoss(argi))) {
 			fmt = comsgString(ALDOR_D_TinPossInterps);
 			bufPrintf(obuf, fmt, s);
 			bputTPoss(obuf, abTPoss(argi));
@@ -1073,7 +1073,7 @@ terrorSetBang(Stab stab, AbSyn ab, Length argc, AbSynGetter argf)
 	}
 
 	if (abState(rhs) == AB_State_HasPoss &&
-	    tpossCount(abTPoss(rhs))) {
+	    !tpossIsEmpty(abTPoss(rhs))) {
 
 		s0 = abIsNothing(rhs) ? strCopy("?")  : fmtAbSyn(rhs);
 		fmt = comsgString(ALDOR_D_TinPossTypesRhs);
@@ -1620,7 +1620,7 @@ bputBadArgType0(TRejectInfo trInfo, Stab stab, Buffer obuf, AbSyn ab, AbSyn op,
 			bputAbTPoss(obuf, 4, abArgi, 
 				    ALDOR_D_TinRejectedType,
 				    ALDOR_D_TinRejectedTypes);
-			if (tpossCount(parTypes) == 1) {
+			if (tpossIsUnique(parTypes)) {
 				fmt = comsgString(ALDOR_D_TinExpectedType);
 				fmtParType = fmtTForm(tpossUnique(parTypes));
 				bufPrintf(obuf, "\n    ");
@@ -1796,7 +1796,7 @@ terrorApplyFType(AbSyn ab, TForm type, TPoss tposs, AbSyn op, Stab stab,
 	obuf = bufNew();
 	fmtOp = fmtAbSyn(op);
 	
-	if (tpossCount(tposs) == 0)   /* => 0 possible types */
+	if (tpossIsEmpty(tposs))   /* => 0 possible types */
 		noMeaningsForOperator(obuf,type,ab,op,stab,argc,argf,
 				      fmtOp);
 
@@ -1848,7 +1848,7 @@ terrorAssign(AbSyn ab, TForm type, TPoss tposs)
 
         if (abState(lhs) == AB_State_Error || 
 	    (abState(lhs) == AB_State_HasPoss &&
-	    tpossCount(abTPoss(lhs)) == 0)) {
+	    tpossIsEmpty(abTPoss(lhs)))) {
 		fmt = comsgString(ALDOR_E_TinCantInferLhs);
 		bufPrintf(obuf, fmt);
 		abp = abNewNothing(abPos(lhs));
@@ -1863,7 +1863,7 @@ terrorAssign(AbSyn ab, TForm type, TPoss tposs)
 		/* Prevent error msg at the upper level */
 		if (abState(lhs) == AB_State_HasPoss) {
 			TForm type = tpossUnique(abTPoss(lhs));
-			assert(tpossCount(abTPoss(lhs)) == 1);
+			assert(tpossIsUnique(abTPoss(lhs)));
 			
 			bputContextType(obuf, type);
 			
@@ -2357,12 +2357,12 @@ bputAbTPoss(Buffer obuf, int indent, AbSyn ab, Msg singmsg, Msg plurmsg)
 
 	switch (abState(ab)) {
 	case AB_State_HasPoss: {
-		if (tpossCount(abTPoss(ab)) == 0 ||
-		    (tpossCount(abTPoss(ab)) == 1 &&
+		if (tpossIsEmpty(abTPoss(ab)) ||
+		    (tpossIsUnique(abTPoss(ab)) &&
 		     tfIsUnknown(tpossUnique(abTPoss(ab)))))
 			return;
 		
-		if (tpossCount(abTPoss(ab)) != 1) {
+		if (!tpossIsUnique(abTPoss(ab))) {
 			fmt = comsgString(plurmsg);
 			bufPutcTimes(obuf, ' ', indent);
 			bufPrintf(obuf, fmt);	

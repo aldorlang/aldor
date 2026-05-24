@@ -14,7 +14,8 @@ define Memory: Category == Exception with;
 
 define Memory: Memory@Category == add; 
 
-ZeroDivide(R: Ring)(v: R == 1+1): ZeroDivide(R) == add {
+-- FIXME: Implicit import of R should have made 1 and '+' available without the '$'
+ZeroDivide(R: Ring)(v: R == 1$R +$R 1$R): ZeroDivide(R) == add {
 	n: R == v;
 } 
 

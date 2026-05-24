@@ -111,13 +111,14 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_CLEAN_FILES = aldor/lib/libfoamlib/al/Makefile \
 	aldor/lib/libfoam/al/Makefile aldor/lib/java/src/Makefile \
 	aldor/lib/java/test/Makefile aldor/test/core/Makefile \
-	aldor/test/java/Makefile aldor/test/utils/Makefile \
-	lib/aldor/doc/tex/Makefile lib/aldor/src/lang/Makefile \
-	lib/aldor/src/base/Makefile lib/aldor/src/arith/Makefile \
-	lib/aldor/src/datastruc/Makefile lib/aldor/src/lisp/Makefile \
-	lib/aldor/src/test/Makefile lib/aldor/src/util/Makefile \
-	lib/aldor/src/gmp/Makefile lib/algebra/doc/tex/Makefile \
-	lib/algebra/src/util/Makefile lib/algebra/src/numbers/Makefile \
+	aldor/test/rtypes/Makefile aldor/test/java/Makefile \
+	aldor/test/utils/Makefile lib/aldor/doc/tex/Makefile \
+	lib/aldor/src/lang/Makefile lib/aldor/src/base/Makefile \
+	lib/aldor/src/arith/Makefile lib/aldor/src/datastruc/Makefile \
+	lib/aldor/src/lisp/Makefile lib/aldor/src/test/Makefile \
+	lib/aldor/src/util/Makefile lib/aldor/src/gmp/Makefile \
+	lib/algebra/doc/tex/Makefile lib/algebra/src/util/Makefile \
+	lib/algebra/src/numbers/Makefile \
 	lib/algebra/src/extree/Makefile \
 	lib/algebra/src/extree/operators/Makefile \
 	lib/algebra/src/extree/parser/Makefile \
@@ -148,7 +149,9 @@ CONFIG_CLEAN_FILES = aldor/lib/libfoamlib/al/Makefile \
 	lib/algebra/src/multpoly/multpolypkg/Makefile \
 	lib/algebra/src/multpoly/multpolytest/Makefile \
 	lib/algebra/src/test/Makefile lib/axllib/src/al/Makefile \
-	lib/axldem/src/al/Makefile lib/ax0/src/al/Makefile
+	lib/axldem/src/al/Makefile lib/ax0/src/al/Makefile \
+	lib/types/src/base/Makefile lib/types/src/types/Makefile \
+	lib/types/src/hm/Makefile lib/types/src/xsubsts/Makefile
 CONFIG_CLEAN_VPATH_FILES =
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
@@ -211,6 +214,7 @@ am__DIST_COMMON = $(srcdir)/Makefile.in \
 	$(top_srcdir)/aldor/lib/libfoamlib/al/Makefile.in \
 	$(top_srcdir)/aldor/test/core/Makefile.in \
 	$(top_srcdir)/aldor/test/java/Makefile.in \
+	$(top_srcdir)/aldor/test/rtypes/Makefile.in \
 	$(top_srcdir)/aldor/test/utils/Makefile.in \
 	$(top_srcdir)/amaux/compile $(top_srcdir)/amaux/config.guess \
 	$(top_srcdir)/amaux/config.sub $(top_srcdir)/amaux/install-sh \
@@ -260,7 +264,11 @@ am__DIST_COMMON = $(srcdir)/Makefile.in \
 	$(top_srcdir)/lib/algebra/src/util/Makefile.in \
 	$(top_srcdir)/lib/ax0/src/al/Makefile.in \
 	$(top_srcdir)/lib/axldem/src/al/Makefile.in \
-	$(top_srcdir)/lib/axllib/src/al/Makefile.in AUTHORS \
+	$(top_srcdir)/lib/axllib/src/al/Makefile.in \
+	$(top_srcdir)/lib/types/src/base/Makefile.in \
+	$(top_srcdir)/lib/types/src/hm/Makefile.in \
+	$(top_srcdir)/lib/types/src/types/Makefile.in \
+	$(top_srcdir)/lib/types/src/xsubsts/Makefile.in AUTHORS \
 	amaux/compile amaux/config.guess amaux/config.sub \
 	amaux/depcomp amaux/install-sh amaux/ltmain.sh amaux/missing \
 	amaux/ylwrap
@@ -503,6 +511,8 @@ aldor/lib/java/test/Makefile: $(top_builddir)/config.status $(top_srcdir)/aldor/
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 aldor/test/core/Makefile: $(top_builddir)/config.status $(top_srcdir)/aldor/test/core/Makefile.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
+aldor/test/rtypes/Makefile: $(top_builddir)/config.status $(top_srcdir)/aldor/test/rtypes/Makefile.in
+	cd $(top_builddir) && $(SHELL) ./config.status $@
 aldor/test/java/Makefile: $(top_builddir)/config.status $(top_srcdir)/aldor/test/java/Makefile.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 aldor/test/utils/Makefile: $(top_builddir)/config.status $(top_srcdir)/aldor/test/utils/Makefile.in
@@ -598,6 +608,14 @@ lib/axllib/src/al/Makefile: $(top_builddir)/config.status $(top_srcdir)/lib/axll
 lib/axldem/src/al/Makefile: $(top_builddir)/config.status $(top_srcdir)/lib/axldem/src/al/Makefile.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 lib/ax0/src/al/Makefile: $(top_builddir)/config.status $(top_srcdir)/lib/ax0/src/al/Makefile.in
+	cd $(top_builddir) && $(SHELL) ./config.status $@
+lib/types/src/base/Makefile: $(top_builddir)/config.status $(top_srcdir)/lib/types/src/base/Makefile.in
+	cd $(top_builddir) && $(SHELL) ./config.status $@
+lib/types/src/types/Makefile: $(top_builddir)/config.status $(top_srcdir)/lib/types/src/types/Makefile.in
+	cd $(top_builddir) && $(SHELL) ./config.status $@
+lib/types/src/hm/Makefile: $(top_builddir)/config.status $(top_srcdir)/lib/types/src/hm/Makefile.in
+	cd $(top_builddir) && $(SHELL) ./config.status $@
+lib/types/src/xsubsts/Makefile: $(top_builddir)/config.status $(top_srcdir)/lib/types/src/xsubsts/Makefile.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 
 mostlyclean-libtool:
@@ -947,6 +965,7 @@ distclean-generic:
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
+@CI_CHECK_FALSE@releasecheck-local:
 clean: clean-recursive
 
 clean-am: clean-generic clean-libtool mostlyclean-am

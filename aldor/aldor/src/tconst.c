@@ -15,6 +15,7 @@
 #include "tconst.h"
 #include "tfsat.h"
 #include "tform.h"
+#include "tfknown.h"
 #include "ablogic.h"
 
 Bool	tcDebug		= false;
@@ -80,12 +81,14 @@ tcFini(void)
 void
 tcSatPush(TForm S, TForm T)
 {
+	tcDEBUG(dbOut, "tcSatPush: %d %pTForm %pTForm\n", listLength(TConst)(tcParents), S, T);
 	tcNewSat(NULL, NULL, S, T, NULL);
 }
 
 void
 tcSatPop(void)
 {
+	tcDEBUG(dbOut, "tcSatPop: %d %pTConst\n", listLength(TConst)(tcParents), car(tcParents));
 	tcParents = listFreeCons(TConst)(tcParents);
 }
 
@@ -169,6 +172,7 @@ tcPush(TConst tc)
 void
 tcPop(TConst tc)
 {
+	tcDEBUG(dbOut, "tcPop: %pTConst\n", tc);
 	listPop(TConst, tc, tfConsts(tcOwner(tc)), tcEq);
 }
 
@@ -230,15 +234,19 @@ tcNew(TConstTag tag, TForm owner, AbLogic known, AbSyn id, AbSyn ab0, Length arg
 
 	tc->id = id;
 
-	if (owner == NULL) return;
+	if (owner == NULL) {
+		tcDEBUG(dbOut, "tcNewSat: No Owner %pTConst\n", tc);
+		return;
+	}
 
 	if (tcStack && tcEqual(tc, car(tcStack))) {
 		tcFree(tc);
 		tc = car(tcStack);
 		assert(owner != tc->owner);
 		tc->owner = owner;
+		tcDEBUG(dbOut, "tcNewEq: %ld, newOwner: %p %pTForm\n", tc->serial, owner, owner);
 	}
-	tcDEBUG(dbOut, "tcNewSat: %pTForm owns %pTConst\n", tcOwner(tc), tc);
+	tcDEBUG(dbOut, "tcNewSat: %p %pTForm owns %pTConst\n", tcOwner(tc), tcOwner(tc), tc);
 	tcPush(tc);
 }
 
@@ -279,6 +287,7 @@ tcMove(TForm ntf, TForm otf)
  * :: tcCheck.
  *
  *****************************************************************************/
+local void		tcCheck			(TConst);
 
 void
 tfCheckConsts(TForm tf)
@@ -291,7 +300,7 @@ tfCheckConsts(TForm tf)
 	}
 }
 
-void
+local void
 tcCheck(TConst tc)
 {
 	Bool	result;

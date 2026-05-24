@@ -628,14 +628,13 @@ Id
 	{ $$ = abNewOfToken(AB_Id,    $1); }
 | KW_Tilde
 	{ $$ = abNewOfToken(AB_Id,    $1); }
-;
 /*
  * Bob's experimental stuff from Id above. However, until Bob tells
  * us what the point of AB_Blank is we cannot accept ? identifiers.
- *
- * | TK_Blank
- *	{ $$ = abNewOfToken(AB_Blank, $1); }
  */
+| TK_Blank
+	{ $$ = abNewOfToken(AB_Blank, $1); }
+;
 
 Literal
 : TK_Int

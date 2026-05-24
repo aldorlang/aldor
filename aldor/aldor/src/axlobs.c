@@ -89,6 +89,10 @@ struct ob_info	obInfo[] = {
 	{OB_Lib,	"OB_Lib",	1},
 	{OB_Archive,	"OB_Archive",	1},
 	{OB_SymeSet,	"OB_SymeSet",	1},
+	{OB_UTForm,	"OB_UTForm",	1},
+	{OB_TFContext,	"OB_TFContext",	1},
+	{OB_UTFContext,	"OB_UTFContext",1},
+	{OB_InferEnv,	"OB_InferEnv",	1},
 	{ -1, NULL, 1}
 };
 

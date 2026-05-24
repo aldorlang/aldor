@@ -7,6 +7,7 @@
  ****************************************************************************/
 
 #include "axlobs.h"
+#include "buffer.h"
 #include "debug.h"
 #include "format.h"
 #include "opsys.h"
@@ -26,6 +27,8 @@ Bool	abDebug		= false;
 local int       abFormatter     (OStream stream, Pointer p);
 local int       abFormatterList (OStream ostream, Pointer p);
 local int       abTagFormatter  (OStream ostream, int p);
+local int       abStateFormatter (OStream ostream, int p);
+local int       abEmbedFormatter (OStream ostream, long p);
 local void	abPosNodeSpan0	(AbSyn X, AbSyn *pA, AbSyn *pB);
 local SrcPos	abLeafEnd	(AbSyn ab);
 
@@ -72,9 +75,9 @@ abInit(void)
 
 	fmtRegister("AbSyn", abFormatter);
 	fmtRegister("AbSynList", abFormatterList);
-	fmtRegister("Sefo", abFormatter);
-	fmtRegister("SefoList", abFormatterList);
 	fmtRegisterI("AbTag", abTagFormatter);
+	fmtRegisterI("AbState", abStateFormatter);
+	fmtRegisterLI("AbEmbed", abEmbedFormatter);
 }
 
 AbSyn
@@ -90,6 +93,7 @@ abNewEmpty(AbSynTag abtag, Length argc)
 
 	ab->abGen.hdr.tag	= abtag;
 	ab->abGen.hdr.argc	= argc;
+	ab->abGen.hdr.flags	= 0;
 
 	ab->abGen.hdr.pos	= spstackEmpty;
 	ab->abGen.hdr.state	= AB_State_AbSyn;
@@ -319,6 +323,8 @@ abCopy(AbSyn ab)
 			abArgv(abnew)[i] = abCopy(abArgv(ab)[i]);
 
 	abnew->abHdr.pos = spstackCopy(ab->abHdr.pos);
+	abFlags(abnew) = abFlags(ab);
+	abUse(abnew) = abUse(ab);
 
 	if (abHasTag(ab, AB_Id) && abComment(ab))
 		abSetComment(abnew, docCopy(abComment(ab)));
@@ -392,6 +398,26 @@ abContains(AbSyn ab, AbSyn target)
 		return false;
 	}
 }
+
+AbSyn
+abFindNode(AbSyn ab, AbSynTag tag)
+{
+	if (abTag(ab) == tag)
+		return ab;
+	if (abIsLeaf(ab)) {
+		return NULL;
+	}
+	else {
+		for (int i=0; i<abArgc(ab); i++) {
+			AbSyn next = abFindNode(abArgv(ab)[i], tag);
+			if (next != NULL) {
+				return next;
+			}
+		}
+		return NULL;
+	}
+}
+
 
 /*
  * To find a node in a given tree:  path = abPathToNode(r,n, eql, &len, 0);
@@ -639,8 +665,14 @@ abEqual(AbSyn a, AbSyn b)
 		switch (abTag(a)) {
 		case AB_Id:
 		case AB_IdSy:
-		case AB_Blank:
-			return abLeafSym(a) == abLeafSym(b);
+		case AB_Blank: {
+			Symbol symA = abLeafSym(a);
+			Symbol symB = abLeafSym(a);
+			if (symA == ssymVariable && symB == ssymVariable) {
+				return sposEqual(abPos(a), abPos(b));
+			}
+			return (abLeafSym(a) == abLeafSym(b));
+		}
 		case AB_LitInteger:
 		case AB_LitString:
 		case AB_LitFloat:
@@ -1141,6 +1173,22 @@ abNewApplyDeclaredArg(AbSyn app)
       return a;
 }
 
+AbMapType
+abMapType(AbSyn ab)
+{
+	if (abIsGenericMap(ab)) {
+		return AB_MAP_Generic;
+	}
+	if (abIsPackedMap(ab)) {
+		return AB_MAP_Packed;
+	}
+	if (abIsPatMatch(ab)) {
+		return AB_MAP_PatMatch;
+	}
+	bug("not reached");
+}
+
+
 /*
  * Allocate a new comma for copied arguments of an application.
  */
@@ -1310,6 +1358,15 @@ abPosSpan(AbSyn ab, SrcPos *pmin, SrcPos *pmax)
 
 	if (pmin) *pmin = abPos(A);
 	if (pmax) *pmax = abEnd(B);
+}
+
+Bool
+abIsUnknown(AbSyn ab)
+{
+	if (!abHasTag(ab, AB_Blank))
+		return false;
+
+	return abFlag_IsUnknown(ab);
 }
 
 /******************************************************************************
@@ -1692,6 +1749,31 @@ abTagFormatter(OStream ostream, int p)
 	}
 }
 
+struct ab_use_info abUseInfoTable[] = {
+	{AB_Use_Declaration, "Declaration"},
+	{AB_Use_Type, "Type"},
+	{AB_Use_Label, "Label"},
+	{AB_Use_Assign, "Assign"},
+	{AB_Use_Define, "Define"},
+	{AB_Use_Value, "Value"},
+	{AB_Use_RetValue, "RetValue"},
+	{AB_Use_NoValue, "NoValue"},
+	{AB_Use_Iterator, "Iterator"},
+	{AB_Use_Default, "Default"},
+	{AB_Use_Except,	 "Except"},
+	{AB_Use_Elided,	 "Elided"},
+	{AB_Use_PatLocation, "PatLocation"},
+	{AB_Use_Pattern,     "Pattern"},
+	{AB_Use_LIMIT,     "LIMIT"},
+};
+
+Bool
+abUseIsPattern(AbUse use)
+{
+	return use == AB_Use_Pattern || use == AB_Use_PatLocation;
+}
+
+
 
 /*
  * Equality preserving functions for abTransferSemantics.
@@ -1757,8 +1839,12 @@ abTransferSemantics(AbSyn from, AbSyn to)
 	if (from == to)
 		return;
 
+	/* PAB: Not sure of the purpose of this.
+	 * Likely to be value based matching.. so skip it
+
 	if (abHasTag(to, AB_Blank))
 		return;
+	*/
 
 	if (abTag(from) != abTag(to)) {
 		from = abEqualMods(from);
@@ -1969,7 +2055,7 @@ abResetTPoss(AbSyn ab, TPoss tp)
 }
 
 /*
- * Important: this function may increase the reference count
+ * Important: this function will increase the reference count
  * on the returned tposs. If you want to use this function for
  * debugging purposes you must call tpossFree when you have
  * finished with it otherwise it will hang around forever.
@@ -2119,6 +2205,83 @@ abDumpPosition(AbSyn ab)
 	}
 }
 
+/*****************************************************************************
+ *
+ * :: Embed Info
+ *
+ ****************************************************************************/
+struct abEmbedInfo {
+	char *name;
+	AbEmbed val;
+};
+
+local struct abEmbedInfo abEmbedInfoVals[] = {
+	{"Identity",		AB_Embed_Identity},
+	{"CrossToTuple",	AB_Embed_CrossToTuple},
+	{"CrossToMulti",	AB_Embed_CrossToMulti},
+	{"CrossToUnary",	AB_Embed_CrossToUnary},
+	{"MultiToTuple",	AB_Embed_MultiToTuple},
+	{"MultiToCross",	AB_Embed_MultiToCross},
+	{"MultiToUnary",	AB_Embed_MultiToUnary},
+	{"UnaryToTuple",	AB_Embed_UnaryToTuple},
+	{"UnaryToCross",	AB_Embed_UnaryToCross},
+	{"UnaryToMulti",	AB_Embed_UnaryToMulti},
+	{"UnaryToRaw",		AB_Embed_UnaryToRaw},
+	{"RawToUnary",		AB_Embed_RawToUnary},
+	{"ApplyMultiToTuple",	AB_Embed_ApplyMultiToTuple},
+	{"ApplyMultiToCross",	AB_Embed_ApplyMultiToCross},
+	{"ApplyCase",		AB_Embed_ApplyCase},
+	{"ApplyPatCall",    	AB_Embed_ApplyPatCall},
+	{ NULL, -1}
+};
+
+/*****************************************************************************
+ *
+ * :: State Info
+ *
+ ****************************************************************************/
+
+struct abStateInfo {
+	char *name;
+	AbEmbed val;
+};
+
+local struct abStateInfo abStateInfoVals[] = {
+	{"AbSyn", AB_State_AbSyn},
+	{"Poss", AB_State_HasPoss},
+	{"Unique", AB_State_HasUnique},
+	{"Error", AB_State_Error}
+};
+
+String
+abStateName(AbSyn ab)
+{
+	int state = abState(ab);
+	if (state < 0 || state >= AB_State_LIMIT) {
+		return "*BUG*";
+	}
+	return abStateInfoVals[state].name;
+}
+
+local int
+abStateFormatter(OStream ostream, int p)
+{
+	int tag = (int) p;
+	if (tag < 0 || tag >= AB_State_LIMIT)	{
+		return ostreamPrintf(ostream, "AbState[%d]", tag);
+	}
+	else {
+		return ostreamPrintf(ostream, "%s", abStateInfoVals[tag].name);
+	}
+}
+
+
+/*****************************************************************************
+ *
+ * :: Formatting
+ *
+ ****************************************************************************/
+
 local int
 abFormatter(OStream ostream, Pointer p)
 {
@@ -2131,4 +2294,35 @@ abFormatterList(OStream ostream, Pointer p)
 {
 	AbSynList list = (AbSynList) p;
 	return listFormat(AbSyn)(ostream, "AbSyn", list);
+}
+
+local int
+abEmbedFormatter(OStream ostream, long e)
+{
+	AbEmbed embed = (AbEmbed) e;
+	int n = 0;
+	char *sep = "";
+
+	if (e == 0) {
+		n += ostreamWrite(ostream, "Fail", strlen("Identity"));
+	}
+	for (int i=0; i < AB_Embed_BitCount; i++) {
+		if (embed & abEmbedInfoVals[i].val) {
+			String name = abEmbedInfoVals[i].name;
+			n += ostreamWrite(ostream, sep, strlen(sep));
+			n += ostreamWrite(ostream, name, strlen(name));
+			sep = "|";
+		}
+	}
+	return n;
+}
+
+String
+abEmbedToString(AbEmbed embed)
+{
+	Buffer buf = bufNew();
+	OStream ostream = ostreamNewFrBuffer(buf);
+	abEmbedFormatter(ostream, embed);
+	ostreamFree(ostream);
+	return bufLiberate(buf);
 }

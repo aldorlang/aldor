@@ -18,6 +18,7 @@ alldomains	:= $(asdomains) $(apdomains)
 docdomains      := $(asdomains) $(documentation)
 
 libsubdir	:= $(subst $(abs_libdir)/,,$(abs_builddir)/.)
+libsubdirname	:= $(subst $(abs_libdir)/,,$(abs_builddir))
 
 space=$(subst @,,@ @)
 
@@ -53,8 +54,8 @@ aldor_common_args :=				\
 AM_DBG := $(if $(filter 1,$(DBG)), gdb --args, $(DBG))
 $(addsuffix .c, $(library)): %.c: %.ao %.dep
 	$(AM_V_AO2C)				\
-	$(AM_DBG) $(aldorexedir)/aldor			\
-	  $(aldor_common_args)			\
+	$(AM_DBG) $(aldorexedir)/aldor		\
+	  $(aldor_common_args)	$($*_AXLFLAGS)	\
 	  -Fc=$(builddir)/$@			\
 	  $<	
 
@@ -139,8 +140,9 @@ help:
 	@echo '%.fm	- generate foam file'
 	@echo ''
 	@echo 'useful variables:'
-	@echo '	DBG 	- prefix for any aldor invocations'
-	@echo '	DBG=1 	- shortcut for DBG="gdb --args"'
+	@echo '	DBG 	   - prefix for any aldor invocations'
+	@echo '	DBG=1 	   - shortcut for DBG="gdb --args"'
+	@echo ' TESTDIRS=x - run tests only in given directories'
 
 define dep_template
 $1.ao: $1.dep $(addsuffix .ao,$($1_deps))
@@ -322,7 +324,8 @@ $(aldortestjavas): %-aldortest-exec-java: Makefile %.as
 endif
 endif
 
-check: $(aldortests) $(aldortestjavas)
+isTest := $(or $(if $(TESTDIRS),,1),$(filter $(libsubdirname),$(TESTDIRS)))
+check: $(if $(isTest), $(aldortests) $(aldortestjavas),)
 
 # 
 # :: Automake requires this little lot

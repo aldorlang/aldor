@@ -1,0 +1,5 @@
+"./../../../../aldor/aldor/aldor/test/rtypes/trivfail.as", line 8: 
+unrestricted(x: ?): ? == x
+................^...^
+[L8 C17] #2 (Error) Failed to infer a type
+

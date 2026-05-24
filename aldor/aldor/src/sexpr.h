@@ -264,6 +264,7 @@ extern void	sxiInit			(void);
 #define SXRW_SrcPos	(1L<<2)
 #define SXRW_NoSrcPos	(1L<<3)
 #define SXRW_Packages	(1L<<4)
+#define SXRW_NoBreaks	(1L<<5)
 
 #define SXRW_AsIs	(0L)
 #define SXRW_Default	(SXRW_FoldCase | SXRW_NoSrcPos)
@@ -271,6 +272,7 @@ extern void	sxiInit			(void);
 extern SExpr	sxiRead			(FILE *,FileName *,int *,SExpr,ULong);
 extern int 	sxiWrite		(FILE *, SExpr, ULong);
 extern String   sxiFormat		(SExpr sx);
+extern String   sxiFormatWide		(SExpr sx);
 extern void     sxiToBuffer             (Buffer buf, SExpr sx);
 extern void sxiToBufferFormatted(Buffer buf, SExpr s, ULong flags);
 

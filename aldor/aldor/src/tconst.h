@@ -88,6 +88,5 @@ extern void		tcNewSat1		(TForm, AbLogic, AbSyn, TForm, TForm, AbSyn);
 extern void		tcMove			(TForm, TForm);
 
 extern void		tfCheckConsts		(TForm);
-extern void		tcCheck			(TConst);
 
 #endif /* !_TCONST_H_ */

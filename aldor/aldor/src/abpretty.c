@@ -15,6 +15,7 @@
 #include "strops.h"
 #include "syme.h"
 #include "tform.h"
+#include "utform.h"
 
 #define CONTINUED	"..."
 #define NCONTINUED	(sizeof("...") - 1)
@@ -142,6 +143,23 @@ tfPrettyPrintClippedIn(FILE *fout, TForm tf, long maxchars, int ind)
 	int	cc = fprintf(fout, "%s", s);
 	strFree(s);
 	return cc;
+}
+
+/*
+ * UTForm functions
+ */
+
+String
+utfPrettyClippedIn(UTForm utf, long maxchars, int ind)
+{
+	return tfPrettyClippedIn(utformTForm(utf), maxchars, ind);
+}
+
+
+int
+utfPrettyPrintClippedIn(FILE *fout, UTForm utf, long maxchars, int ind)
+{
+	return tfPrettyPrintClippedIn(fout, utformTForm(utf), maxchars, ind);
 }
 
 /*

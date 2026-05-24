@@ -335,6 +335,7 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 SUBDIRS = \
+	rtypes  \
 	core	\
 	java
 
@@ -659,6 +660,8 @@ uninstall-am:
 
 .PRECIOUS: Makefile
 
+
+config.mk: $(srcdir)/test-config.mk.in
 
 all-recursive: test-config.mk
 

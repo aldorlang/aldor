@@ -243,6 +243,7 @@ extern Foam		genFoamVal		(AbSyn);
 extern Foam		genFoamValAs		(TForm tf, AbSyn);
 extern Foam		genFoamType		(AbSyn);
 extern Foam 	   	genFoamBit	  	(AbSyn);
+extern Foam		genFoamCast		(Foam, AbSyn, FoamTag);
 
 extern String		gen0GlobalName		(String, Syme);
 extern void		genGlobalInfo		(Foam, String *, 
@@ -256,15 +257,33 @@ extern Bool 		gen0IsCatInner		(void);
 
 extern Foam	        gen0CharArray	  	(String);
 
+extern AInt 	   	gen0CrossFormatNumber  (TForm tf);
 extern AInt		gen0RecordFormatNumber	(TForm);
 extern AInt		gen0MultiFormatNumber	(TForm);
+extern AInt		gen0TrailingFormatNumber(TForm);
+extern AInt		gen0PPartialFormatNumber(TForm);
 extern AInt		gen0MFmtNumberForSig	(int, FoamTag*);
 extern AInt	   	gen0MakeTupleFormat  	(void);
 extern AInt 		gen0StdDeclFormat	(Length, String *, FoamTag *, AInt *);
 extern void 		gen0SetDDeclUsage	(AInt, FoamDDeclTag);
 
 extern int		gen0RootEnv		(void);
+extern Foam		gen0ApplySyme	  	(FoamTag, Syme, SImpl, Length, Foam **);
+extern void		gen0SetTemp		(Foam, Foam);
+extern Foam		gen0FoamCast		(Foam, AbSyn, FoamTag);
+extern FoamTag	   	gen0FoamType		(Foam);
+extern Foam		gen0SetValue		(Foam, AbSyn);
 
-extern void gen0ComputeSideEffects(Foam prog);
+extern Foam		gen0CCallFrFoam		(FoamTag type, Foam op, Length argc, Foam **pargv);
+
+extern void	   gen0SetTemp		  (Foam, Foam);
+
+extern FoamTag	   gen0FoamType		  (Foam foam);
+extern Foam	   gen0ApplySyme	  (FoamTag, Syme, SImpl, Length, Foam **);
+
+extern Foam	   gen0SetValue		  (Foam, AbSyn);
+
+extern void     gen0ComputeSideEffects  (Foam prog);
+extern Foam	gen0CCallFrFoam		(FoamTag, Foam, Length, Foam **);
 
 #endif /* !_GF_UTIL_H_ */

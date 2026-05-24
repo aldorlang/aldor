@@ -21,8 +21,12 @@
 #include "stab.h"
 #include "store.h"
 #include "terror.h"
+#include "tfknown.h"
 #include "ti_top.h"
 #include "util.h"
+#include "unify.h"
+#include "utform.h"
+#include "utyperes.h"
 
 Bool	tfsDebug	= false;
 Bool	tfsMultiDebug	= false;
@@ -76,7 +80,11 @@ extern Stab		stabFindLevel		(Stab, Syme);
  *	TFS_MultiToUnary		(S) -> S
  *	TFS_UnaryToTuple		S -> Tuple(S)
  *	TFS_UnaryToCross		S -> Cross(S)
- *	TFS_UnaryToMulti		S -> (S)
+ *	TFS_PPartialToPat		[S -> PPartial T] -> PatMatch(T, S)
+
+ *	TFS_Unify			ForAll(x, S) -> S'
+ *      TFS_Any                         S -> ForAll(x, x)
+ *      TFS_AnyToPattern                S -> Pattern(S)
  *
  *	(error return modes)
  *	TFS_Fail
@@ -99,8 +107,8 @@ struct maskInfo tfSatMaskInfo[] = {
 	{"Info"},
 	{"Conditions"},
 	{"Pending"},
-	{"AnyToNone"},
 	{"Sefo"},
+	{"AnyToNone"},
 	{"CrossToTuple"},
 	{"CrossToMulti"},
 	{"CrossToUnary"},
@@ -110,12 +118,18 @@ struct maskInfo tfSatMaskInfo[] = {
 	{"UnaryToTuple"},
 	{"UnaryToCross"},
 	{"UnaryToMulti"},
+	{"AnyToPattern"},
+	{"PPartialToPat"},
+	{"Unify"},
+	{"AnyEmbed"},
+
 	{"Fail"},
 	{"ExportsMissing"},
 	{"EmbedFail"},
 	{"ArgMissing"},
 	{"BadArgType"},
 	{"DifferentArity"},
+	{"UnifyFail"},
 	{NULL}
 };
 
@@ -129,10 +143,10 @@ struct maskInfo tfSatMaskInfo[] = {
 #define TFS_Conditions		(((SatMask) 1) << 5)
 
 #define	TFS_Pending		(((SatMask) 1) << 6)
-#define	TFS_AnyToNone		(((SatMask) 1) << 7)
-#define	TFS_Sefo		(((SatMask) 1) << 8)
+#define	TFS_Sefo		(((SatMask) 1) << 7)
 
-#define	TFS_EmbedShift		9
+#define	TFS_EmbedShift		8
+#define	TFS_AnyToNone		(((SatMask) 1) << 8)
 #define	TFS_CrossToTuple	(((SatMask) 1) << 9)
 #define	TFS_CrossToMulti	(((SatMask) 1) << 10)
 #define	TFS_CrossToUnary	(((SatMask) 1) << 11)
@@ -142,16 +156,20 @@ struct maskInfo tfSatMaskInfo[] = {
 #define	TFS_UnaryToTuple	(((SatMask) 1) << 15)
 #define	TFS_UnaryToCross	(((SatMask) 1) << 16)
 #define	TFS_UnaryToMulti	(((SatMask) 1) << 17)
+#define TFS_AnyToPattern	(((SatMask) 1) << 18)
+#define TFS_PPartialToPat	(((SatMask) 1) << 19)
+#define	TFS_Unify		(((SatMask) 1) << 20)
+#define	TFS_AnyEmbed		(((SatMask) 1) << 21)
 
-#define	TFS_Fail		(((SatMask) 1) << 18)
-#define	TFS_ExportsMissing	(((SatMask) 1) << 19)
-#define	TFS_EmbedFail		(((SatMask) 1) << 20)
-#define	TFS_ArgMissing		(((SatMask) 1) << 21)
-#define	TFS_BadArgType		(((SatMask) 1) << 22)
-#define	TFS_DifferentArity	(((SatMask) 1) << 23)
+#define	TFS_Fail		(((SatMask) 1) << 22)
+#define	TFS_ExportsMissing	(((SatMask) 1) << 23)
+#define	TFS_EmbedFail		(((SatMask) 1) << 24)
+#define	TFS_ArgMissing		(((SatMask) 1) << 25)
+#define	TFS_BadArgType		(((SatMask) 1) << 26)
+#define	TFS_DifferentArity	(((SatMask) 1) << 27)
+#define	TFS_UnifyFail		(((SatMask) 1) << 28)
 
-
-#define	TFS_BitsWidth		24
+#define	TFS_BitsWidth		29
 #define	TFS_BitsMask		((((SatMask) 1) << TFS_BitsWidth) - 1)
 
 #define	TFS_ModeMask		(\
@@ -159,12 +177,13 @@ struct maskInfo tfSatMaskInfo[] = {
 				 TFS_Commit		| \
 				 TFS_Missing		| \
 				 TFS_Sigma		| \
+				 TFS_Unify		| \
 				 TFS_Info		)
 
 #define TFS_EmbedMask		(\
 				TFS_Pending		| \
-				TFS_AnyToNone		| \
 				TFS_Sefo		| \
+				TFS_AnyToNone		| \
 				TFS_CrossToTuple	| \
 				TFS_CrossToMulti	| \
 				TFS_CrossToUnary	| \
@@ -181,7 +200,8 @@ struct maskInfo tfSatMaskInfo[] = {
 				TFS_EmbedFail		| \
 				TFS_ArgMissing		| \
 				TFS_BadArgType		| \
-				TFS_DifferentArity	)
+				TFS_DifferentArity	| \
+				TFS_UnifyFail     	)
 
 #define	TFS_ParnMask		(~TFS_BitsMask)
 
@@ -202,8 +222,11 @@ struct maskInfo tfSatMaskInfo[] = {
 #define			tfSatSigma(m)		((m) & TFS_Sigma)
 #define			tfSatInfo(m)		((m) & TFS_Info)
 #define			tfSatUseConditions(m)	((m) & TFS_Conditions)
+#define			tfSatUnify(m)		((m) & TFS_Unify)
+#define			tfSatAnyArg(m)		((m) & TFS_Any)
 
 #define			tfSatAllow(m,c)		((m) & (c))
+#define			tfSatWithout(m,c)	((m) & ~(c))
 
 #define			tfSatResult(m,c)	(tfSatMode(m) | (c))
 #define			tfSatParNFail(m, r, n)	(tfSatMode(m) | (r) | tfsParNBits(n))
@@ -260,8 +283,6 @@ local SymeList	tfSatParentsFilterTable	(SymeTSet, SymeList);
 
 local void	tfSatSetPendingFail	(TForm);
 
-local String    tfSatMaskToString(SatMask mask);
-
 /******************************************************************************
  *
  * :: Type form satisfaction bit mask accessors.
@@ -284,6 +305,12 @@ SatMask
 tfSatTdnMask(void)
 {
 	return TFS_Commit | TFS_UsualMask | TFS_Conditions;
+}
+
+SatMask
+tfSatReturnMask(void)
+{
+	return TFS_Commit | TFS_UsualMask;
 }
 
 SatMask
@@ -321,6 +348,19 @@ tfSatFailedExportsMissing(SatMask mask)
 {
 	return mask & TFS_ExportsMissing;
 }
+
+SatMask
+tfSatWithPatContext(SatMask mask)
+{
+	return mask | TFS_AnyToPattern;
+}
+
+SatMask
+tfSatWithUnify(SatMask mask)
+{
+	return mask | TFS_Unify;
+}
+
 
 Bool
 tfSatFailedEmbedFail(SatMask mask)
@@ -398,24 +438,31 @@ tfSatEmbedType(TForm tf1, TForm tf2)
 	t1 = tfTag(tf1);
 	t2 = tfTag(tf2);
 
-	if (t1 == t2)				return AB_Embed_Identity;
+	if (t1 == t2) {
+		if (t2 == TF_Multiple && tfMultiArgc(tf1) == 0) return AB_Embed_AnyToNone;
+		return AB_Embed_Identity;
+	}
 	else if (t1 == TF_Exit)			return AB_Embed_Identity;
 	else if (t1 == TF_Cross) {
 		if	(t2 == TF_Tuple)	return AB_Embed_CrossToTuple;
 		else if (t2 == TF_Cross)	return AB_Embed_Identity;
-		else if (t2 == TF_Multiple)	return AB_Embed_CrossToMulti;
+		else if (t2 == TF_Multiple)	return tfMultiArgc(tf2) == 0 ? AB_Embed_AnyToNone: AB_Embed_CrossToMulti;
 		else				return AB_Embed_CrossToUnary;
 	}
 	else if (t1 == TF_Multiple) {
 		if	(t2 == TF_Tuple)	return AB_Embed_MultiToTuple;
 		else if (t2 == TF_Cross)	return AB_Embed_MultiToCross;
-		else if (t2 == TF_Multiple)	return AB_Embed_Identity;
+		else if (t2 == TF_Multiple)	return tfMultiArgc(tf2) == 0 ? AB_Embed_AnyToNone: AB_Embed_Identity;
 		else				return AB_Embed_MultiToUnary;
+	}
+	else if (t1 == TF_Map) {
+		if (t2 == TF_PatMatch)		return AB_Embed_ApplyPatCall;
+		else				return AB_Embed_Identity;
 	}
 	else {
 		if	(t2 == TF_Tuple)	return AB_Embed_UnaryToTuple;
 		else if (t2 == TF_Cross)	return AB_Embed_UnaryToCross;
-		else if (t2 == TF_Multiple)	return AB_Embed_UnaryToMulti;
+		else if (t2 == TF_Multiple)	return tfMultiArgc(tf2) == 0 ? AB_Embed_AnyToNone: AB_Embed_UnaryToMulti;
 		else				return AB_Embed_Identity;
 	}
 }
@@ -433,6 +480,17 @@ tfsEmbedResult(TForm tf, AbEmbed embed)
 		tf = tfDefinedVal(tf);
 	}
 
+	if (embed & AB_Embed_ApplyPatCall) {
+		return tfPatMatch(tfPPartialAsMapArg(tfMapRet(tf)), tfMapArg(tf));
+	}
+
+	/* See comment in tiTfTopDown 
+	if ((embed & AB_Embed_Identity) && embed != AB_Embed_Identity) {
+		afprintf(dbOut, "Embed %oAbEmbed %pTForm\n", embed, tf);
+		bug("odd embed");
+	}
+	*/
+	
 	if (embed & AB_Embed_Identity || embed == 0)
 		return tf;
 
@@ -479,6 +537,10 @@ tfsEmbedResult(TForm tf, AbEmbed embed)
 		return tfMulti(1, tf);
 	}
 
+	if (embed & AB_Embed_ApplyPatCall) {
+		return tfPatMatch(tfPPartialAsMapArg(tfMapRet(tf)), tfMapArg(tf));
+	}
+
 	return tf;
 }
 
@@ -488,32 +550,38 @@ tfsEmbedResult(TForm tf, AbEmbed embed)
  *
  *****************************************************************************/
 
+SatMask
+tfsAddUnify(SatMask mask)
+{
+	return tfkHasInferEnv() ? (mask | TFS_Unify) : mask;
+}
+
 Bool
 tfSatisfies(TForm S, TForm T)
 {
 	SatMask		mask = TFS_Commit | TFS_UsualMask;
-	return tfSatBit(mask, S, T);
+	return tfSatBit(tfsAddUnify(mask), S, T);
 }
 
 Bool
 tfSatisfies1(AbSyn Sab, TForm S, TForm T)
 {
 	SatMask		mask = TFS_Commit | TFS_UsualMask | TFS_Conditions;
-	return tfSatSucceed(tfSat1(mask, Sab, S, T));
+	return tfSatSucceed(tfSat1(tfsAddUnify(mask), Sab, S, T));
 }
 
 Bool
 tfSatValues(TForm S, TForm T)
 {
 	SatMask		mask = TFS_Commit | TFS_NAnyToNoneMask;
-	return tfSatBit(mask, S, T);
+	return tfSatBit(tfsAddUnify(mask), S, T);
 }
 
 Bool
 tfSatReturn(TForm S, TForm T)
 {
 	SatMask		mask = TFS_Commit | TFS_UsualMask;
-	return tfSatBit(mask, S, T);
+	return tfSatBit(tfsAddUnify(mask), S, T);
 }
 
 Bool
@@ -576,6 +644,37 @@ tfSatSubList(AbSyn ab)
 
 /******************************************************************************
  *
+ * :: tfSatCase
+ * (maybe not needed)
+ *****************************************************************************/
+
+Bool
+tfSatCase(TForm S, TForm T)
+{
+	if (tfIsMulti(T)) {
+		Bool ok = true;
+		Length argc = tfAsMultiArgc(S);
+		if (argc != tfMultiArgc(T)) {
+			return false;
+		}
+		
+		for (int i=0; i<tfArgc(T) && ok; i++) {
+			ok = tfSatisfies(tfPattern(tfAsMultiArgN(S, argc, i)), tfMultiArgN(T, i));
+		}
+		return ok;
+	}
+	else if (!tfIsPattern(T)) {
+		return false;
+	}
+	else if (tfIsExit(tfPatternArg(T))) {
+		return true;
+	}
+	return tfSatisfies(tfPattern(S), T);
+}
+
+
+/******************************************************************************
+ *
  * :: tfSatMap
  *
  *****************************************************************************/
@@ -596,10 +695,14 @@ tfSatMap(SatMask mask, Stab stab, TForm S, TForm T,
 	result = tfSatMapArgs(mask, sigma, S, ab, argc, argf);
 	if (tfSatSucceed(result)) {
 		Sret = tformSubst(sigma, Sret);
+		if (tfIsPatMatch(S)) {
+			Sret = tfPattern(Sret);
+		}
 		result = tfSatEmbed(result) | tfSat1(mask, ab, Sret, T);
 
-		if (tfSatSucceed(result) && tfSatCommit(mask))
+		if (tfSatSucceed(result) && tfSatCommit(mask)) {
 			abTUnique(ab) = Sret;
+		}
 	}
 
 	absFreeDeeply(sigma);
@@ -611,6 +714,13 @@ SatMask
 tfSatMapArgs(SatMask mask, AbSub sigma, TForm S,
 	     AbSyn ab, Length argc, AbSynGetter argf)
 {
+	mask = tfsAddUnify(mask);
+	assert(tfIsAnyMap(S));
+	/*
+	if (tfIsPPartialMap(S) && tfSatEmbedPartialToPat(mask)) {
+		
+	}
+	*/
 	return tfSatAsMulti(mask, sigma, tfMapArg(S), S, ab, argc, argf);
 }
 
@@ -622,7 +732,12 @@ tfSatAsMulti(SatMask mask, AbSub sigma, TForm S, TForm TScope,
 	Length		i, parmc, usedc;
 	int		serialThis;
 	Bool		packed = tfIsPackedMap(TScope);
+	Bool 		pattern = tfIsPatMatch(TScope);
 	AbSyn		abc = NULL;
+
+	if (DEBUG(tfsMulti)) {
+		afprintf(dbOut, "SatAsMulti: S: %pTForm Scope: %pTForm\n", S, TScope);
+	}
 
 	if (tfAsMultiEmbed(S, argc) == AB_Embed_Fail)
 		return tfSatResult(mask, TFS_EmbedFail);
@@ -666,7 +781,9 @@ tfSatAsMulti(SatMask mask, AbSub sigma, TForm S, TForm TScope,
 		syme = tfDefineeSyme(tfi);
 		tfi  = tfDefineeType(tfi);
 		tfi  = tformSubst(sigma, tfi);
-
+		if (pattern) {
+			tfi = tfPattern(tfi);
+		}
 		/* Check to see if abi satisfies tfi. */
 		if (!def && !tfSatSigma(mask)) {
 			maski = tfSatArg(mask, abi, tfi);
@@ -808,7 +925,7 @@ tfSatArg(SatMask mask, AbSyn ab, TForm T)
 local SatMask
 tfSatArgPoss(SatMask mask, AbSyn Sab, TForm T)
 {
-	TFormList	l;
+	UTFormList	l;
 	SatMask		result;
 	TPoss S = abTPoss(Sab);
 
@@ -822,8 +939,8 @@ tfSatArgPoss(SatMask mask, AbSyn Sab, TForm T)
 
 	TPossIterator ip;
 	for (tpossITER(ip, S); tpossMORE(ip); tpossSTEP(ip)) {
-		TForm s = tpossELT(ip);
-		result = tfSat1(mask, Sab, s, T);
+		UTForm s = tpossUELT(ip);
+		result = tfSat1(mask, Sab, utformConstOrFail(s), T);
 		if (tfSatSucceed(result))
 			return result;
 	}
@@ -853,6 +970,12 @@ tfSat(SatMask mask, TForm S, TForm T)
 }
 
 SatMask
+tfSatU(SatMask mask, TForm S, TForm T)
+{
+	return tfSat(tfsAddUnify(mask), S, T);
+}
+
+SatMask
 tfSat1(SatMask mask, AbSyn Sab, TForm S, TForm T)
 {
 	SatMask		result = tfSatFalse(mask);
@@ -867,7 +990,7 @@ tfSat1(SatMask mask, AbSyn Sab, TForm S, TForm T)
 	/* If we can determine satisfaction w/o using tfFollow, do so. */
 	if (tfIsSubst(S)) {
 		tfsDEBUG(dbOut, "(%d - skip subst\n", serialThis);
-		result = tfSat(mask & ~TFS_Pending, tfSubstArg(S), T);
+		result = tfSat(mask & ~TFS_Pending & ~TFS_Unify, tfSubstArg(S), T);
 		tfsDEBUG(dbOut, " %d - skip subst - %oBool)\n", serialThis, tfSatSucceed(result));
 		if (tfSatSucceed(result))
 			return result;
@@ -883,7 +1006,7 @@ tfSat1(SatMask mask, AbSyn Sab, TForm S, TForm T)
 	if (DEBUG(tfs)) {
 		fprintf(dbOut, "->Tfs: %*s%d= ", tfsDepthNo, "", serialThis);
 		tfPrint(dbOut, S);
-		fprintf(dbOut, " satisfies ");
+		fprintf(dbOut, " %ssatisfies ", tfSatAllow(mask, TFS_Unify) ? "u" : "");
 		tfPrint(dbOut, T);
 		fnewline(dbOut);
 	}
@@ -918,7 +1041,21 @@ tfSat1(SatMask mask, AbSyn Sab, TForm S, TForm T)
 
 	else if (tfIsUnknown(S))
 		result = tfSatFalse(mask);
-
+	/*
+	 * tfVar
+	 */
+	else if (tfIsVar(S)) {
+		if (tfSatAllow(mask, TFS_Unify)) {
+			tfkAddSatConstraint(S, S, T);
+			result = tfSatTrue(mask);
+		}
+	}
+	else if (tfIsVar(T)) {
+		if (tfSatAllow(mask, TFS_Unify)) {
+			tfkAddSatConstraint(T, T, S);
+			result = tfSatTrue(mask);
+		}
+	}
 	/*
 	 * tfSyntax
 	 */
@@ -936,6 +1073,21 @@ tfSat1(SatMask mask, AbSyn Sab, TForm S, TForm T)
 	else if (tfIsRaw(T))
 		result = tfSat(mask, S, tfRawType(tfRawArg(T)));
 
+	/*
+	 * tfPattern
+	 */
+	else if (tfIsPattern(T)) {
+		if (tfIsPatternExit(T)) {
+			result = tfSatTrue(mask);
+		}
+		else if (tfIsPattern(S)) {
+			result = tfSat(mask, tfPatternArg(S), tfPatternArg(T));
+		}
+		else if (tfSatAllow(mask, TFS_AnyToPattern)) {
+			result = tfSat(tfSatWithout(mask, TFS_AnyToPattern), S, tfPatternArg(T));
+			result = tfSatResult(result, TFS_AnyToPattern);
+		}
+	}
 	/*
 	 * tfExcept
 	 */
@@ -1278,8 +1430,34 @@ tfSatEach(SatMask mask, TForm S, TForm T)
 	return result;
 }
 
+local SatMask tfSatMap1(SatMask mask, TForm S, TForm T);
+
 local SatMask
 tfSatMap0(SatMask mask, TForm S, TForm T)
+{
+	assert(tfIsAnyMap(T));
+
+	if (!tfIsAnyMap(S)) {
+		return tfSatFalse(mask);
+	}
+	if (tfIsPatMatch(S) && tfIsPatMatch(T)) {
+		return tfSatMap1(mask, S, T);
+	}
+	else if (tfIsFunctionMap(S) && tfIsFunctionMap(T)) {
+		return tfSatMap1(mask, S, T);
+	}
+	else if (tfSatAllow(mask, TFS_AnyToPattern)
+		 && tfIsPPartialMap(S)) {
+		TForm patS = tfsEmbedResult(S, AB_Embed_ApplyPatCall);
+		SatMask r = tfSatMap1(mask, patS, T);
+		tfsDEBUG(dbOut, "SatPPartial %oBool - %oSatMask %pTForm %pTForm\n", tfSatSucceed(r), r, patS, T);
+		return tfSatSucceed(r) ? tfSatResult(mask, TFS_PPartialToPat) : tfSatFalse(mask);
+	}
+	return tfSatFalse(mask);
+}
+
+local SatMask
+tfSatMap1(SatMask mask, TForm S, TForm T)
 {
 	SatMask		result = tfSatFalse(mask);
 	SatMask		mask0 = tfSatInner(mask);
@@ -1370,7 +1548,7 @@ tfSatTuple(SatMask mask, TForm S, TForm T)
 	else if (!tfSatEmbed(mask))
 		/* result = tfSatFalse(mask) */;
 
-	else if (tfIsCross(S)) {
+	else if (tfIsCross(tfDefineeTypeSubst(S))) {
 		/* Embed Cross(A, ..., A) in Tuple(A). */
 		if (tfSatAllow(mask, TFS_CrossToTuple) &&
 		    tfSatSucceed(tfSatEvery(mask, S, Targ)))
@@ -1491,6 +1669,28 @@ tfSatMulti(SatMask mask, TForm S, TForm T)
 	}
 
 	return result;
+}
+
+
+/******************************************************************************
+ *
+ * :: Maps
+ *
+ *****************************************************************************/
+
+SatMask
+tfSatIsMap(SatMask mask, TForm tf)
+{
+	tf = tfFollowOnly(tf);
+	if (tfIsAnyMap(tf))
+		return tfSatTrue(mask);
+	if (tfIsVariable(tf) && tfSatAllow(mask, TFS_Unify)) {
+		TForm argTf = tfVarNew();
+		TForm retTf = tfVarNew();
+		tfkAddSatConstraint(tf, tf, tfMap(argTf, retTf));
+		return tfSatTrue(mask);
+	}
+	return tfSatFalse(mask);
 }
 
 
@@ -1825,7 +2025,10 @@ tfSatExport(SatMask mask, SymeList mods, AbSyn Sab, SymeList S, Syme t, AbSub *l
 
 		tfsExportDEBUG(dbOut, "tfSatExport[%d.%d]:: Test %pSyme %pTForm %pAbSynList\n",
 			       serialThis, iterThis, s, symeType(s), symeCondition(s));
-		if (!symeEqualModConditions(mods, s, t))
+
+		if (tfSatAllow(mask, TFS_Unify) && !symeUnifyModConditions(tfkInfEnvKnown, mods, s, t))
+			continue;
+		if (!tfSatAllow(mask, TFS_Unify) && !symeEqualModConditions(mods, s, t))
 			continue;
 		satConditions = tfSatConditions(mask, mods, s, t);
 		if (tfSatSucceed(satConditions)) {
@@ -2129,9 +2332,7 @@ tfSatParentsFilterTable(SymeTSet tbl, SymeList nsymes)
 
 }
 
-
-
-local String
+String
 tfSatMaskToString(SatMask mask)
 {
 	String sep="";
@@ -2154,6 +2355,1217 @@ tfSatMaskToString(SatMask mask)
 		ostreamFree(os);
 		return bufLiberate(b);
 	}
+}
+
+/******************************************************************************
+ *
+ * :: Universally quantified types
+ *
+ *****************************************************************************/
+
+CREATE_LIST(USatMask);
+
+static int utfSatMaskInstances;
+
+local USatMask utfSatArgPoss(SatMask mask, AbSyn Sab, UTForm T);
+local USatMaskList utfSatArgAsList(SatMask mask, AbSyn ab, UTForm T);
+local USatMaskList utfSatArgPossAsList(SatMask, AbSyn ab, UTForm T);
+local USatMask utfSatTYPE(SatMask mask, UTForm S);
+local USatMask utfSatCAT(SatMask mask, UTForm S);
+local USatMask utfSatTuple(SatMask mask, UTForm S, UTForm T);
+local USatMask utfSatMulti(SatMask mask, UTForm S, UTForm T);
+local USatMask utfSatCross(SatMask mask, UTForm S, UTForm T);
+local USatMask utfSatMultiLHS(SatMask mask, UTForm S, UTForm T);
+local USatMask utfSatCrossLHS(SatMask mask, UTForm S, UTForm T);
+
+local USatMask utfSatEvery(SatMask mask, UTForm S, UTForm T);
+local USatMask utfSatEach(SatMask mask, UTForm S, UTForm T);
+
+local USatMask utfSatResultEmbed(USatMask mask, SatMask moreMask);
+local USatMask utfSatResult(SatMask mask, SatMask moreMask, UTypeResult result);
+local USatMask utfSatTrue(SatMask mask);
+local USatMask utfSatFalse(SatMask mask);
+local USatMask utfSatFail(SatMask mask, SatMask fail);
+local USatMask utfSatSimple(SatMask mask, SatMask result);
+local USatMask  utfSatEmbed(USatMask result);
+local UTypeResult utfSatMaskLiberate(USatMask umask);
+local USatMask utfSatUsePending(SatMask mask, UTForm S, UTForm T);
+local USatMask utfSatMaskCombine(SatMask mask, USatMask mask1, USatMask mask2);
+
+local Bool utfSatMapCheckConstant(UTForm S, UTForm T,
+				  AbSyn ab, Length argc, AbSynGetter argf);
+
+local Bool utfSatMapExtendSigma(UTForm TScope, UTForm tfi, AbSyn abi, int pi, AbSub sigma);
+
+/*
+ * Succeed if S satisfies T.
+ */
+Bool
+utfSatBit(SatMask mask, UTForm S, UTForm T)
+{
+	USatMask result = utfSat(mask, S, T);
+	SatMask resultMask = result->mask;
+	utfSatMaskFree(result);
+	return tfSatSucceed(resultMask);
+}
+
+Bool
+utfSatisfies(UTForm utfS, UTForm utfT)
+{
+	SatMask	mask = TFS_Commit | TFS_UsualMask;
+	return utfSatBit(mask, utfS, utfT);
+}
+
+local USatMask
+utfSatResult(SatMask mask, SatMask moreMask, UTypeResult result)
+{
+	USatMask umask = (USatMask) stoAlloc(OB_Other, sizeof(*umask));
+	umask->mask = tfSatResult(mask, moreMask);
+	umask->result = result;
+
+	utfSatMaskInstances++;
+	if (tfSatSucceed(umask->mask) && result == NULL)
+		bug("oops");
+	return umask;
+}
+
+local USatMask
+utfSatResultEmbed(USatMask mask, SatMask moreMask)
+{
+	if (tfSatSucceed(utfSatMaskMask(mask))) {
+		mask->mask = tfSatResult(mask->mask, moreMask);
+	}
+	return mask;
+}
+
+local void
+utfSatResultFree(USatMask mask)
+{
+	utfSatMaskInstances--;
+	utypeResultFree(mask->result);
+	stoFree(mask);
+}
+
+SatMask
+utfSatMaskMask(USatMask mask)
+{
+	return mask->mask;
+}
+
+UTypeResult
+utfSatMaskResult(USatMask mask)
+{
+	return mask->result;
+}
+
+
+local USatMask
+utfSatTrue(SatMask mask)
+{
+	return utfSatSimple(mask, TFS_Succeed);
+}
+
+local USatMask
+utfSatFalse(SatMask mask)
+{
+	return utfSatSimple(mask, TFS_Fail);
+}
+
+local USatMask
+utfSatFail(SatMask mask, SatMask fail)
+{
+	return utfSatSimple(mask, fail);
+}
+
+local USatMask
+utfSatSimple(SatMask mask, SatMask result)
+{
+	return utfSatResult(mask, result,
+			    tfSatSucceed(result) ? utypeResultEmpty(): utypeResultFailed());
+}
+
+local USatMask
+utfSatEmbed(USatMask result)
+{
+	SatMask mask = tfSatEmbed(utfSatMaskMask(result));
+	return utfSatResult(mask, 0,
+			    utfSatMaskLiberate(result));
+}
+
+
+Bool
+utfSatSucceed(USatMask umask)
+{
+	return tfSatSucceed(umask->mask);
+}
+
+Bool
+utfSatPending(USatMask umask)
+{
+	return tfSatPending(umask->mask);
+}
+
+local USatMask
+utfSatUsePending(SatMask mask, UTForm S, UTForm T)
+{
+	return utfSatSimple(mask, tfSatUsePending(mask, utformTForm(S), utformTForm(T)));
+}
+
+local Bool
+utfSatCommit(USatMask mask)
+{
+	return tfSatCommit(utfSatMaskMask(mask));
+}
+
+local USatMask
+utfSatMaskCopy(USatMask mask)
+{
+	return utfSatResult(TFS_Succeed, utfSatMaskMask(mask),
+			    utypeResultCopy(utfSatMaskResult(mask)));
+}
+
+local UTypeResult
+utfSatMaskLiberate(USatMask umask)
+{
+	UTypeResult result = umask->result;
+	umask->result = utypeResultFailed();
+	utfSatMaskFree(umask);
+	return result;
+}
+
+
+void
+utfSatMaskFree(USatMask umask)
+{
+	utypeResultFree(umask->result);
+	stoFree(umask);
+	utfSatMaskInstances--;
+	if (utfSatMaskInstances < 0)
+		bug("Double free");
+}
+
+local USatMask
+utfSatMaskCombine(SatMask mask, USatMask mask1, USatMask mask2)
+{
+	if (utfSatSucceed(mask1) && utfSatSucceed(mask2)) {
+		SatMask resultMask = mask1->mask | mask2->mask;
+		UTypeResult result1 = utfSatMaskLiberate(mask1);
+		UTypeResult result2 = utfSatMaskLiberate(mask2);
+		UTypeResult newResult = utypeResultMerge(result1, result2);
+
+		if (newResult == NULL) {
+			return utfSatSimple(mask, TFS_UnifyFail);
+		}
+		else {
+			return utfSatResult(mask, resultMask, newResult);
+		}
+	}
+	else if (utfSatSucceed(mask1)) {
+		utfSatMaskFree(mask1);
+		return mask2;
+	}
+	else {
+		utfSatMaskFree(mask2);
+		return mask1;
+	}
+}
+
+local USatMaskList
+utfSatMaskCross(USatMaskList masks1, USatMaskList masks2)
+{
+	USatMaskList newResults = listNil(USatMask);;
+
+	while (masks1 != listNil(USatMask)) {
+		USatMaskList masksi = masks2;
+		USatMask mask = car(masks1);
+		masks1 = cdr(masks1);
+		if (!utfSatSucceed(mask)) {
+			continue;
+		}
+		while (masksi != listNil(USatMask)) {
+			USatMask maski = car(masksi);
+			masksi = cdr(masksi);
+			if (!utfSatSucceed(maski)) {
+				continue;
+			}
+			USatMask result = utfSatMaskCombine(TFS_Succeed, utfSatMaskCopy(mask), utfSatMaskCopy(maski));
+			if (utfSatSucceed(result)) {
+				newResults = listCons(USatMask)(result,
+								newResults);
+			}
+		}
+	}
+	return newResults;
+}
+
+local USatMask
+utfSatParNFail(SatMask mask, SatMask fail, int n)
+{
+	return utfSatResult(mask, fail | tfsParNBits(n), utypeResultFailed());
+}
+
+USatMask
+utfSatMap0(SatMask mask, UTForm S, UTForm T)
+{
+	USatMask result = utfSatFalse(mask);
+	SatMask  mask0 = tfSatInner(mask);
+	TForm    Stf = utformTForm(S);
+	TForm    Ttf = utformTForm(T);
+
+	if (!(tfTag(Ttf) == tfTag(Stf) && tfMapArgc(Ttf) == tfMapArgc(Stf)))
+		/* result = tfSatFalse(mask) */;
+
+	else if (tfIsDependentMap(Stf) && tfIsPending(Stf)
+		 && tfSatAllow(mask, TFS_Pending)) {
+		result = utfSatUsePending(mask, S, T);
+	}
+	else if (tfIsDependentMap(Stf)) {
+		bug("Not implemented");
+	}
+	else {
+		tfSatPushMapConds(Ttf);
+		result = utfSat(mask0, utfMapArg(T), utfMapArg(S));
+		if (utfSatSucceed(result)) {
+			result = utfSatMaskCombine(mask, utfSatEmbed(result),
+						   utfSat(mask0, utfMapRet(S), utfMapRet(T)));
+		}
+		tfSatPopMapConds(Ttf);
+	}
+
+	return result;
+}
+
+USatMask
+utfSatMapArgs(SatMask mask, AbSub sigma, UTForm S,
+	      AbSyn ab, Length argc, AbSynGetter argf)
+{
+	USatMask result;
+	static int count = 0;
+	int serialThis = count++;
+
+	if (DEBUG(tfs)) {
+		afprintf(dbOut, "(utfSatMapArgs: %d %pSefo %pUTForm\n", serialThis, ab, S);
+	}
+	result = utfSatAsMulti(mask, sigma, utfMapArg(S), S, ab, argc, argf);
+	if (DEBUG(tfs)) {
+		afprintf(dbOut, " utfSatMapArgs: %d %s)\n", serialThis,
+			 tfSatMaskToString(utfSatMaskMask(result)));
+	}
+	return result;
+}
+
+USatMaskList
+utfSatMapArgsList(SatMask mask, AbSub sigma, UTForm S,
+	      AbSyn ab, Length argc, AbSynGetter argf)
+{
+	USatMaskList result;
+	utformFollow(S);
+	result = utfSatAsMultiList(mask, sigma, utfMapArg(S), S, ab, argc, argf);
+
+	return result;
+}
+
+local Bool
+utfSatMapCommit(SatMask mask, UTForm TScope, Stab absStabSigma, UTForm tfi, AbSyn abi);
+
+USatMask
+utfSatAsMulti(SatMask mask, AbSub sigma, UTForm S, UTForm TScope,
+	      AbSyn ab, Length argc, AbSynGetter argf)
+{
+	static int count;
+	USatMask result = utfSatTrue(mask);
+	AbSyn    abc = NULL;
+	AbEmbed  embed;
+	Length   usedc = 0, parmc;
+	Bool	 packed = utfIsPackedMap(TScope);
+	int      i;
+	int      serialThis = count++;
+
+	utformFollow(S);
+
+	embed = utfAsMultiEmbed(S, argc);
+	if (embed == AB_Embed_Fail)
+		return utfSatSimple(mask, TFS_EmbedFail);
+
+	tfsDepthNo++;
+
+	if (DEBUG(tfsMulti) || DEBUG(tfs)) {
+		afprintf(dbOut, "(utfSatAsMulti: %*s%d S: %pUTForm\n", tfsDepthNo, "",
+			 serialThis, S);
+		afprintf(dbOut, " utfSatAsMulti: %*s%d Tab: %pSefo\n", tfsDepthNo, "",
+			 serialThis, ab);
+		afprintf(dbOut, " utfSatAsMulti: %*s%d TScope: %pUTForm\n", tfsDepthNo, "",
+			 serialThis, TScope);
+	}
+
+	parmc = utfMultiHasDefaults(S) ? utfAsMultiArgc(S) : argc;
+	if (parmc != 1 && utfIsTuple(utfDefineeType(S))) {
+		abc = abNewEmpty(AB_Comma, parmc);
+	}
+
+	for (i=0; i<parmc; i++) {
+		AbSyn	abi;
+		UTForm	tfi;
+		USatMask maski = utfSatTrue(mask);
+		Length ai, pi;
+		Bool def;
+
+		pi   = (utformTForm(S)->rho ? utformTForm(S)->rho[i] : i);
+		tfi = utfAsMultiArgN(S, parmc, pi);
+		abi = utfAsMultiSelectArg(ab, argc, i, argf, tfi, &def, &ai);
+
+		if (DEBUG(tfsMulti) || DEBUG(tfs)) {
+			afprintf(dbOut, " utfSatAsMulti: %*s%d %d %d: %oBool %pSefo\n", tfsDepthNo, "",
+				 serialThis, i, pi, def, abi);
+			afprintf(dbOut, " utfSatAsMulti: %*s%d %d %d: %pUTForm\n", tfsDepthNo, "",
+				 serialThis, i, pi, tfi);
+			afprintf(dbOut, " utfSatAsMulti: %*s%d %d %d: %pUTypeResult\n", tfsDepthNo, "",
+				 serialThis, i, pi, result->result);
+		}
+		if (!abi) {
+			utfSatMaskFree(result);
+			result = utfSatParNFail(mask, TFS_ArgMissing, i);
+			break;
+		}
+
+		if (!def) usedc++;
+
+		tfi = utfDefineeType(tfi);
+		tfi = utformSubst(sigma, tfi);
+
+		if (!def && !tfSatSigma(mask)) {
+			maski = utfSatArg(mask, abi, tfi);
+			if (!utfSatSucceed(maski)) {
+				utfSatMaskFree(result);
+				result = utfSatParNFail(mask, TFS_BadArgType, i);
+				break;
+			}
+			if (utfSatPending(maski)) {
+				utfSatMaskFree(result);
+				result = utfSatSimple(mask, TFS_Pending);
+			}
+			else {
+				result = utfSatMaskCombine(mask, result, maski);
+			}
+		}
+
+		if (tfSatCommit(mask) && packed) {
+			if (!tiTopFns()->tiUnaryToRaw(absStab(sigma), abi, utformConstOrFail(tfi))) {
+				result = utfSatParNFail(mask, TFS_BadArgType, pi);
+				break;
+			}
+		}
+		if (tfSatCommit(mask)) {
+			if (!utfSatMapCommit(mask, TScope, absStab(sigma), tfi, abi)) {
+				result = utfSatParNFail(mask, TFS_BadArgType, pi);
+				break;
+			}
+		}
+		if (!utfSatMapExtendSigma(TScope, tfi, abi, pi, sigma)) {
+			result = utfSatParNFail(mask, TFS_BadArgType, pi);
+		}
+
+		if (abc) {
+			abArgv(abc)[i] = sefoCopy(abi);
+		}
+	}
+
+	if (utfSatSucceed(result) && tfSatCommit(mask) && packed)
+		if (!tiTopFns()->tiRawToUnary(absStab(sigma), ab, tfMapRet(utformConstOrFail(TScope))))
+			result = utfSatSimple(mask, TFS_EmbedFail);
+
+	if (utfSatSucceed(result) && usedc < argc)
+		result = utfSatSimple(mask, TFS_DifferentArity);
+
+	if (DEBUG(tfsMulti) || DEBUG(tfs)) {
+		afprintf(dbOut, " utfSatAsMulti: %*s%d= %pUTypeResult\n", tfsDepthNo, "",
+			 serialThis, utfSatMaskResult(result));
+		afprintf(dbOut, " utfSatAsMulti: %*s%d= %s!)\n", tfsDepthNo, "",
+			 serialThis, tfSatMaskToString(utfSatMaskMask(result)));
+	}
+	tfsDepthNo -= 1;
+
+	return result;
+}
+
+USatMaskList
+utfSatAsMultiList(SatMask mask, AbSub sigma, UTForm S, UTForm TScope,
+	      AbSyn ab, Length argc, AbSynGetter argf)
+{
+	USatMaskList results;
+	Length parmc, i, ai;
+	AbEmbed embed;
+	Bool def;
+	int usedc;
+
+	S = utformFollow(S);
+
+	embed = utfAsMultiEmbed(S, argc);
+	if (embed == AB_Embed_Fail)
+		return listSingleton(USatMask)(utfSatFail(mask, TFS_EmbedFail));
+
+	tfsDepthNo++;
+
+	assert(!tfSatSigma(mask));
+
+	results = listSingleton(USatMask)(utfSatTrue(mask));
+
+	parmc = utfMultiHasDefaults(S) ? utfAsMultiArgc(S) : argc;
+
+	usedc = 0;
+	for (i=0; i<parmc; i++) {
+		int    pi  = (utformTForm(S)->rho ? utformTForm(S)->rho[i] : i);
+		UTForm tfi = utfAsMultiArgN(S, parmc, pi);
+		AbSyn  abi = utfAsMultiSelectArg(ab, argc, i, argf, tfi, &def, &ai);
+
+		if (!abi) {
+			listFreeDeeply(USatMask)(results, utfSatMaskFree);
+			results = listSingleton(USatMask)(utfSatParNFail(mask, TFS_ArgMissing, i));
+			break;
+		}
+		if (!def) usedc++;
+
+		tfi = utfDefineeType(tfi);
+		tfi = utformSubst(sigma, tfi);
+
+		if (!def) {
+			USatMaskList masksi;
+			masksi = utfSatArgAsList(mask, abi, tfi);
+			if (masksi == listNil(USatMask)) {
+				listFreeDeeply(USatMask)(results, utfSatMaskFree);
+				results = listSingleton(USatMask)(utfSatParNFail(mask, TFS_BadArgType, i));
+				break;
+			}
+			else if (utfSatPending(car(masksi))) {
+				listFreeDeeply(USatMask)(results, utfSatMaskFree);
+				results = listSingleton(USatMask)(utfSatSimple(mask, TFS_Pending));
+			}
+			else {
+				results = utfSatMaskCross(results, masksi);
+			}
+		}
+		if (!utfSatMapExtendSigma(TScope, tfi, abi, pi, sigma)) {
+			results = listSingleton(USatMask)(utfSatParNFail(mask, TFS_BadArgType, pi));
+			break;
+		}
+	}
+
+	tfsDepthNo--;
+
+	return results;
+}
+
+local Bool
+utfSatMapCommit(SatMask mask, UTForm TScope, Stab absStabSigma, UTForm tfi, AbSyn abi)
+{
+	Bool success = true;
+	Bool packed = utfIsPackedMap(TScope);
+
+	// Infer argument types - we should be ok, but just in case
+	tiTopFns()->tiBottomUp(absStabSigma, abi, tfUnknown);
+	tiTopFns()->tiTopDown(absStabSigma, abi, utformConstOrFail(tfi));
+	if (abUse(abi) != AB_Use_Type) {
+		// Make sure embedding is ok
+		USatMask checkMask = utfSatArg(mask, abi, tfi);
+		abAddTContext(abi, tfSatAbEmbed(tfSatEmbed(checkMask->mask)));
+	}
+
+	if (packed) {
+		if (!tiTopFns()->tiUnaryToRaw(absStabSigma, abi, utformConstOrFail(tfi))) {
+			success = false;
+		}
+	}
+
+	return success;
+}
+
+
+local Bool
+utfSatMapExtendSigma(UTForm TScope, UTForm tfi, AbSyn abi, int pi, AbSub sigma)
+{
+	Syme syme = utfDefineeSyme(tfi);
+	Bool success = true;
+
+	if (syme && (tfSymeInducesDependency(syme, utformTForm(TScope))
+		     || listMemq(Syme)(tfSymes(utformTForm(TScope)), syme)
+		     || listMember(Syme)(tfSymes(utformTForm(TScope)), syme, symeEqual))) {
+		abi = sefoCopy(abi);
+		tiTopFns()->tiBottomUp(absStab(sigma), abi, tfUnknown);
+		tiTopFns()->tiTopDown (absStab(sigma), abi, utformConstOrFail(tfi));
+
+		if (abState(abi) == AB_State_HasUnique) {
+			if (absFVars(sigma)) absSetFVars(sigma, NULL);
+			sigma = absExtend(syme, abi, sigma);
+		}
+		else {
+			success = false;
+		}
+	}
+	return success;
+}
+
+
+USatMask
+utfSatArg(SatMask mask, AbSyn ab, UTForm T)
+{
+	USatMask result;
+
+	mask &= ~TFS_AnyToNone;
+
+	/* We'd rather not use pending embeddings to decide argc questions. */
+	if (utfIsMulti(T) && utfIsPending(T))
+		mask &= ~TFS_Pending;
+
+	switch (abState(ab)) {
+	case AB_State_HasPoss:
+		result = utfSatArgPoss(mask, ab, T);
+		break;
+
+	case AB_State_HasUnique:
+		result = utfSat1(mask, ab, utformNewConstant(abTUnique(ab)), T);
+		break;
+
+	default:
+		result = utfSatFalse(mask);
+		break;
+	}
+
+	return result;
+}
+
+
+local USatMask
+utfSatTYPE(SatMask mask, UTForm utf)
+{
+	assert(!utfIsAny(utf));
+	return utfSatSimple(mask, tfSatTYPE(mask, utformTForm(utf)));;
+}
+
+local USatMask
+utfSatCAT(SatMask mask, UTForm utf)
+{
+	assert(!utfIsAny(utf));
+	return utfSatSimple(mask, tfSatCAT(mask, utformTForm(utf)));
+}
+
+local USatMask
+utfSatMultiLHS(SatMask mask, UTForm S, UTForm T)
+{
+	USatMask result = utfSatFalse(mask);
+
+	/* Embed Multi(S) in S. */
+	if (tfSatAllow(mask, TFS_MultiToUnary) &&
+	    utfMultiArgc(S) == 1) {
+		UTForm Sarg = utfMultiArgN(S, int0);
+		result = utfSat(tfSatInner(mask), Sarg, T);
+		result = utfSatResultEmbed(result, TFS_MultiToUnary);
+	}
+	else if (utfIsConstant(T)) {
+		/* Delta-equality of T with cross/multi */
+		TForm Tnorm = tfDefineeBaseType(utformTForm(T));
+		if (tfIsCross(Tnorm))
+			result = utfSatCross(mask, S, utformNewConstant(Tnorm));
+		else if (tfIsMulti(Tnorm))
+			result = utfSatMulti(mask, S, utformNewConstant(Tnorm));
+	}
+	return result;
+}
+
+local USatMask
+utfSatCrossLHS(SatMask mask, UTForm S, UTForm T)
+{
+	USatMask result = utfSatFalse(mask);
+	/* Embed Cross(S) in S. */
+	if (tfSatAllow(mask, TFS_CrossToUnary) &&
+	    utfCrossArgc(S) == 1) {
+		UTForm Sarg = utfCrossArgN(S, int0);
+		result = utfSat(tfSatInner(mask), Sarg, T);
+		result = utfSatResultEmbed(result, TFS_CrossToUnary);
+	}
+	else if (utfIsAny(T)) {
+		UTypeResult unify = utformUnify(S, T);
+		result = utfSatResult(mask, TFS_Unify, unify);
+	}
+	else if (utfIsConstant(T)) {
+		/* Delta-equality of T with cross/multi */
+		TForm Tnorm = tfDefineeBaseType(utformTForm(T));
+		UTForm UTnorm = utformNewConstant(Tnorm);
+		if (tfIsCross(Tnorm))
+			result = utfSatCross(mask, S, utformNewConstant(Tnorm));
+		else if (tfIsMulti(Tnorm))
+			result = utfSatMulti(mask, S, utformNewConstant(Tnorm));
+	}
+
+	return result;
+}
+
+local USatMaskList
+utfSatArgAsList(SatMask mask, AbSyn ab, UTForm T)
+{
+	USatMaskList results;
+	mask &= ~TFS_AnyToNone;
+
+	if (utfIsMulti(T) && utfIsPending(T))
+		mask &= ~TFS_Pending;
+
+	switch (abState(ab)) {
+	case AB_State_HasUnique:
+		results = listSingleton(USatMask)(utfSat1(mask, ab, utformNewConstant(abTUnique(ab)), T));
+		break;
+	case AB_State_HasPoss:
+		results = utfSatArgPossAsList(mask, ab, T);
+		break;
+	default:
+		results = listNil(USatMask);
+	}
+	return results;
+}
+
+local USatMask
+utfSatArgPoss(SatMask mask, AbSyn Sab, UTForm T)
+{
+	TPossIterator it;
+	USatMask result;
+	TPoss S = abTPoss(Sab);
+	int i=0, count;
+
+	if (DEBUG(tfs)) {
+		count = tpossCount(S);
+		afprintf(dbOut, "utfSatArgPoss: 0/%d %pSefo %pUTForm\n", count, Sab, T);
+	}
+	for (tpossITER(it, S); tpossMORE(it); tpossSTEP(it)) {
+		UTForm	utf = tpossUELT(it);
+		result = utfSat1(mask, Sab, utf, T);
+		if (utfSatSucceed(result)) {
+			if (DEBUG(tfs)) {
+				afprintf(dbOut, "utfSatArgPoss: %d/%d %pAbSyn %pUTForm --> %d Succeed\n",
+					 i, count, Sab, T, utfSatSucceed(result));
+			}
+			return result;
+		}
+		i++;
+	}
+	if (DEBUG(tfs)) {
+		afprintf(dbOut, "utfSatArgPoss: %d/%d FAILED\n", i, count);
+	}
+	return utfSatFalse(mask);
+}
+
+
+USatMaskList
+utfSatArgPossAsList(SatMask mask, AbSyn Sab, UTForm T)
+{
+	USatMaskList results = listNil(USatMask);
+	TPossIterator it;
+	TPoss S = abTPoss(Sab);
+	Bool simpleFound = false;;
+	int i=0, count;
+
+	for (tpossITER(it, S); tpossMORE(it); tpossSTEP(it)) {
+		UTForm	utf = tpossUELT(it);
+		USatMask result = utfSat1(mask, Sab, utf, T);
+		if (utfSatPending(result)) {
+			listFreeDeeply(USatMask)(results, utfSatResultFree);
+			results = listSingleton(USatMask)(utfSatSimple(mask, TFS_Pending));
+			break;
+		}
+		else if (utfSatSucceed(result) && utypeResultIsEmpty(result->result)) {
+			if (!simpleFound) {
+				results = listCons(USatMask)(result, results);
+				simpleFound = true;
+			}
+		}
+		else if (utfSatSucceed(result)) {
+			results = listCons(USatMask)(result, results);
+		}
+		i++;
+	}
+	if (results == listNil(USatMask)) {
+		results = listSingleton(USatMask)(utfSatFail(mask, TFS_BadArgType));
+	}
+	return results;
+}
+
+
+USatMask
+utfSat1(SatMask mask, AbSyn Sab, UTForm S, UTForm T)
+{
+	UTypeResult unify;
+	UTForm uS;
+	UTForm uT;
+	SatMask result;
+	USatMask final;
+	int serialThis;
+
+	S = utfDefineeType(S);
+	T = utfDefineeType(T);
+
+	tfsSerialNo += 1;
+	tfsDepthNo  += 1;
+	serialThis   = tfsSerialNo;
+
+	if (DEBUG(tfs)) {
+		afprintf(dbOut, "%*s(UtfSat: %d %d: %pUTForm sat %pUTForm\n", tfsDepthNo, "", serialThis, tfsDepthNo, S, T);
+	}
+	if (S == T)
+		final = utfSatTrue(mask);
+	else if (utfIsConstant(S) && utfIsConstant(T)) {
+		result = tfSat1(mask, Sab, utformTForm(S), utformTForm(T));
+		final = utfSatSimple(mask, result);
+	}
+	else if (utfIsConstant(S) && tfIsUnknown(utformTForm(S))) {
+		final = utfSatFalse(mask);
+	}
+	else if (utfIsConstant(T) && tfIsUnknown(utformTForm(T))) {
+		final = utfSatTrue(mask);
+	}
+	else if (tfIsType(utformTForm(T))) {
+		final = utfSatTYPE(mask, S);
+	}
+	else if (tfIsCategory(utformTForm(T)) || tfIsCategorySyntax(utformTForm(T)))
+		final = utfSatCAT(mask, S);
+	else if (utfIsExit(S))
+		final = utfSatTrue(mask);
+	else if (tfIsSyntax(utformTForm(S)) || tfIsSyntax(utformTForm(T))) {
+		if (tfSatAllow(mask, TFS_Pending))
+			final = utfSatUsePending(mask, S, T);
+	}
+	else if (utfIsRaw(S))
+		final = utfSat(mask, utfRawType(utfRawArg(S)), T);
+	else if (utfIsRaw(T))
+		final = utfSat(mask, S, utfRawType(utfRawArg(T)));
+
+	else if (tfIsTuple(utformTForm(T))) {
+		final = utfSatTuple(mask, S, T);
+	}
+	else if (tfIsMulti(utformTForm(T))) {
+		final = utfSatMulti(mask, S, T);
+	}
+	else if (tfIsCross(utformTForm(T))) {
+		final = utfSatCross(mask, S, T);
+	}
+	else if (utfIsAnyMap(T)) {
+		final = utfSatMap0(mask, S, T);
+	}
+	else if (utfIsCross(S)) {
+		final = utfSatCrossLHS(mask, S, T);
+	}
+	else if (utfIsMulti(S)) {
+		final = utfSatMultiLHS(mask, S, T);
+	}
+	else {
+		unify = utformUnify(S, T);
+		// At this point, validate the result condition
+		if (utypeResultIsFail(unify)) {
+			final = utfSatSimple(mask, TFS_UnifyFail);
+		}
+		else {
+			uS = utypeResultApplyTForm(unify, S);
+			uT = utypeResultApplyTForm(unify, T);
+			result = tfSat1(mask, Sab, utformTForm(uS), utformTForm(uT));
+			final = utfSatResult(result, TFS_Unify, unify);
+		}
+	}
+
+	if (DEBUG(tfs)) {
+		afprintf(dbOut, "%*s UtfSat %d --> %s\n", tfsDepthNo, "", serialThis, tfSatMaskToString(utfSatMaskMask(final)));
+		afprintf(dbOut, "%*s UtfSat %d --> %pUTypeResult\n", tfsDepthNo, "", serialThis, utfSatMaskResult(final));
+		if (utfSatMaskResult(final) && utfSatMaskResult(final)->conditions != listNil(Sefo))
+			afprintf(dbOut, "%*s UtfSat %d --> %pAbSynList\n", tfsDepthNo, "", serialThis,
+				 utfSatMaskResult(final)->conditions);
+		afprintf(dbOut, "%*s UtfSat %d)\n", tfsDepthNo, "", serialThis);
+	}
+	tfsDepthNo--;
+	return final;
+}
+
+USatMask
+utfSat(SatMask mask, UTForm S, UTForm T)
+{
+	return utfSat1(mask, NULL, S, T);
+}
+
+USatMask
+utfSatMap(SatMask mask, Stab stab, UTForm S, UTForm T,
+	  AbSyn ab, Length argc, AbSynGetter argf)
+{
+	static int utfSatCount = 0;
+	int count = utfSatCount++;
+	USatMask	result;
+	UTForm		Sret;
+	AbSub		sigma;
+
+	assert(utformIsAnyMap(S));
+
+	if (utfSatMapCheckConstant(S, T, ab, argc, argf)) {
+		return utfSatSimple(mask, tfSatMap(mask, stab, utformConstOrFail(S), utformConstOrFail(T), ab, argc, argf));
+	}
+
+	Sret = utfMapRet(S);
+
+	sigma = absNew(stab);
+	tfsDEBUG(dbOut, "(utfSatMap(%d): %pUTForm ++ %pUTForm\n", count, S, T);
+	result = utfSatMapArgs(mask, sigma, S, ab, argc, argf);
+	tfsDEBUG(dbOut, " utfSatMap(%d): Args: %d %pUTypeResult)\n", count, utfSatSucceed(result), result->result);
+	if (utfSatSucceed(result)) {
+		UTypeResult unifyResult;
+		USatMask    retResult;
+		SatMask     retMask;
+
+		Sret = utformSubst(sigma, Sret);
+
+		retResult = utfSat1(mask, ab, Sret, T);
+		unifyResult = utypeResultMerge(result->result, retResult->result);
+		retMask = tfSatEmbed(utfSatMaskMask(result)) | utfSatMaskMask(retResult);
+		if (utypeResultIsFail(unifyResult))
+			retMask = retMask | TFS_UnifyFail;
+		result = utfSatResult(mask, retMask, unifyResult);
+
+		if (utfSatSucceed(result) && tfSatCommit(mask) && utfIsConstant(Sret))
+			abTUnique(ab) = utformConstOrFail(Sret);
+	}
+
+	tfsDEBUG(dbOut, " utfSatMap(%d): ---> %d %pUTypeResult)\n", count, utfSatSucceed(result), result->result);
+	absFreeDeeply(sigma);
+
+	return result;
+
+}
+
+local Bool
+utfSatMapCheckConstant(UTForm S, UTForm T,
+		       AbSyn ab, Length argc, AbSynGetter argf)
+{
+	TForm Stf, Ttf;
+	int i;
+
+	if (!utfIsConstant(S))
+		return false;
+	if (!utfIsConstant(T))
+		return false;
+	Stf = utformTForm(S);
+	Ttf = utformTForm(T);
+
+	if (tfAsMultiEmbed(tfMapArg(Stf), argc) == AB_Embed_Fail)
+		return true;
+
+	for (i=0; i<argc; i++) {
+		Length parmc = tfMapHasDefaults(Stf) ? tfMapArgc(Stf) : argc;
+		Length ai;
+		Bool   def;
+		int    pi  = Stf->rho ? Stf->rho[i] : i;
+		TForm  tfi = tfAsMultiArgN(tfMapArg(Stf), parmc, pi);
+		AbSyn  abi = tfAsMultiSelectArg(ab, argc, i, argf, tfi, &def, &ai);
+
+		if (abState(abi) == AB_State_HasUnique)
+			continue;
+		else if (abState(abi) == AB_State_HasPoss
+			 && !tpossIsConstant(abTPoss(abi)))
+			return false;
+		else if (abState(abi) == AB_State_Error)
+			return false;
+	}
+	return true;;
+}
+
+
+Length
+utfSatArgN(AbSyn ab, Length argc, AbSynGetter argf, Length parN, UTForm S)
+{
+	return tfSatArgN(ab, argc, argf, parN, utformTForm(S));
+}
+
+USatMask
+utfSatTuple(SatMask mask, UTForm S, UTForm T)
+{
+	TForm Ttuple = utformTForm(T);
+	TForm Stf = utformTForm(S);
+	USatMask result = utfSatFalse(mask);
+
+	if (tfIsTuple(Stf)) {
+		result = utfSat1(mask, NULL, utfTupleArg(S), utfTupleArg(T));
+	}
+	else if (utfIsAny(S)) {
+		UTypeResult unify = utformUnify(S, T);
+		if (utypeResultIsFail(unify)) {
+			result = utfSatSimple(mask, TFS_UnifyFail);
+		}
+		else {
+			result = utfSatResult(mask, TFS_Unify, unify);
+		}
+	}
+	else if (!tfSatEmbed(mask)) {
+		result = utfSatFalse(mask);
+	}
+	else if (tfIsCross(Stf) && tfSatAllow(mask, TFS_CrossToTuple)) {
+		result = utfSatEvery(mask, S, utfTupleArg(T));
+		result = utfSatResultEmbed(result, TFS_CrossToTuple);
+	}
+	else if (tfIsMulti(Stf) && tfSatAllow(mask, TFS_MultiToTuple)) {
+		result = utfSatEvery(mask, S, utfTupleArg(T));
+		result = utfSatResultEmbed(result, TFS_MultiToTuple);
+	}
+	else if (!tfIsMulti(Stf)) {
+		if (tfSatAllow(mask, TFS_UnaryToTuple)) {
+			UTForm Targ = utfTupleArg(T);
+			UTypeResult unify = utformUnify(S, Targ);
+			if (!utypeResultIsFail(unify)) {
+				result = utfSat(mask, S, Targ);
+				result = utfSatResultEmbed(result, TFS_UnaryToTuple);
+			}
+		}
+	}
+	return result;
+}
+
+
+local USatMask
+utfSatMulti(SatMask mask, UTForm S, UTForm T)
+{
+	Length		argc = utfMultiArgc(T);
+	UTForm		Targ = utfMultiArgN(T, int0);
+	USatMask	result = utfSatFalse(mask);
+	USatMask	tmp;
+
+	if (utfIsMulti(S)) {
+		if (utfMultiArgc(S) == argc) {
+			result = utfSatEach(mask, S, T);
+		}
+		/* Embed S in Multi(). */
+		else if (tfSatAllow(mask, TFS_AnyToNone) && argc == 0) {
+			result = utfSatSimple(mask, TFS_AnyToNone);
+		}
+	}
+	else if (!tfSatEmbed(mask))
+		/* result = utfSatFalse(mask) */;
+	else if (utfIsCross(S)) {
+		/* Embed Cross(A, ..., B) in Multi(A, ..., B). */
+		if (tfSatAllow(mask, TFS_CrossToMulti) &&
+		    utfCrossArgc(S) == argc) {
+			tmp = utfSatEach(mask, S, T);
+			if (utfSatSucceed(tmp))
+				result = utfSatResult(mask, TFS_CrossToMulti, utfSatMaskResult(tmp));
+		}
+		/* Embed S in Multi(S). */
+		else if (tfSatAllow(mask, TFS_UnaryToMulti) &&
+			 argc == 1 &&
+			 utfSatSucceed(tmp = utfSat(tfSatInner(mask), S, Targ))) {
+			result = utfSatResult(mask, TFS_UnaryToMulti, utfSatMaskResult(tmp));
+		}
+		/* Embed S in Multi(). */
+		else if (tfSatAllow(mask, TFS_AnyToNone) && argc == 0)
+			result = utfSatSimple(mask, TFS_AnyToNone);
+	}
+	else {
+		/* Embed S in Multi(S). */
+		if (tfSatAllow(mask, TFS_UnaryToMulti) &&
+		    argc == 1 &&
+		    utfSatSucceed(tmp = utfSat(tfSatInner(mask), S, Targ))) {
+			result = utfSatResult(mask, TFS_UnaryToMulti, utfSatMaskResult(tmp));
+		}
+		/* Embed S in Multi(). */
+		else if (tfSatAllow(mask, TFS_AnyToNone) && argc == 0)
+			result = utfSatSimple(mask, TFS_AnyToNone);
+	}
+
+	return result;
+}
+
+local USatMask
+utfSatCross(SatMask mask, UTForm S, UTForm T)
+{
+	USatMask result = utfSatFalse(mask);
+	USatMask tmp;
+	Length   argc = utfCrossArgc(T);
+
+	if (utfIsCross(S)) {
+		if (utfCrossArgc(S) == argc) {
+			result = utfSatEach(mask, S, T);
+		}
+		/* Embed S in Cross(S). */
+		else if (tfSatAllow(mask, TFS_UnaryToCross) &&
+			 argc == 1) {
+			UTForm	Targ = utfCrossArgN(T, int0);
+			tmp = utfSat(tfSatInner(mask), S, Targ);
+			result = utfSatResultEmbed(tmp, TFS_UnaryToCross);
+		}
+	}
+
+	else if (!tfSatEmbed(mask))
+		/* result = tfSatFalse(mask) */;
+
+	else if (utfIsMulti(S)) {
+		/* Embed Multi(A, ..., B) in Cross(A, ..., B). */
+		if (tfSatAllow(mask, TFS_MultiToCross) &&
+		    utfMultiArgc(S) == argc) {
+			tmp = utfSatEach(mask, S, T);
+			if (utfSatSucceed(tmp)) {
+				result = utfSatResultEmbed(tmp, TFS_MultiToCross);
+			}
+		}
+	}
+
+	else {
+		/* Embed S in Cross(S). */
+		if (tfSatAllow(mask, TFS_UnaryToCross) &&
+		    argc == 1) {
+			UTForm	Targ = utfCrossArgN(T, int0);
+			tmp = utfSat(tfSatInner(mask), S, Targ);
+			result = utfSatResultEmbed(tmp, TFS_UnaryToCross);
+		}
+	}
+
+	return result;
+}
+
+local USatMask
+utfSatEvery(SatMask mask, UTForm S, UTForm T)
+{
+	UTypeResult unify = utypeResultEmpty();
+	USatMask result = utfSatTrue(mask);
+
+	for (Length i=0; i<utfArgc(S); i++) {
+		USatMask eltResult;
+		eltResult = utfSat(mask, utfArgN(S, i), T);
+		result = utfSatMaskCombine(mask, result, eltResult);
+	}
+	return result;
+}
+
+local USatMask
+utfSatEach(SatMask mask, UTForm S, UTForm T)
+{
+	USatMask	result = utfSatTrue(mask);
+	USatMask	tmp;
+	Stab		stab = utfGetStab(T);
+	AbSub		sigma;
+	Length		i, argc = utfArgc(S);
+
+	assert(utfArgc(S) == utfArgc(T));
+
+	for (i = 0; !stab && i < argc; i += 1) {
+		TForm	Ttf = tfArgv(utformTForm(T))[i];
+		Syme	Tsyme = tfDefineeSyme(Ttf);
+
+		if (Tsyme) stab = stabFindLevel(stabFile(), Tsyme);
+	}
+
+	sigma = absNew(stab);
+	for (i = 0; utfSatSucceed(result) && i < argc; i += 1) {
+		UTForm	Sarg = utfArgN(S, i);
+		UTForm	Targ = utformSubst(sigma, utfArgN(T, i));
+		Syme	Ssyme = utfDefineeSyme(Sarg);
+		Syme	Tsyme = utfDefineeSyme(Targ);
+		AbSyn	ab = NULL;
+
+		if (!utfSatSucceed(tmp = utfSat(tfSatInner(mask), Sarg, Targ))) {
+			result = utfSatFalse(mask);
+		}
+		else {
+			result = utfSatMaskCombine(mask, result, tmp);
+		}
+
+		if (Ssyme && Ssyme != Tsyme)
+			ab = abFrSyme(Ssyme);
+		else if (utfIsDefine(Sarg))
+			ab = tfGetExpr(utformTForm(utfDefineVal(Sarg)));
+
+		/* Extend the sublist for dependent symes. */
+		if (stab && ab && Tsyme) {
+			tiTopFns()->tiBottomUp(stab, ab, tfUnknown);
+			tiTopFns()->tiTopDown (stab, ab, utformTForm(Targ));
+			if (abState(ab) == AB_State_HasUnique) {
+				if (absFVars(sigma))
+					absSetFVars(sigma, NULL);
+				sigma = absExtend(Tsyme, ab, sigma);
+			}
+			else
+				result = utfSatFalse(mask);
+		}
+	}
+
+	absFree(sigma);
+	return result;
+}
+
+UTForm
+utfSatMapArgAnyTuple(Stab stab, UTForm utf)
+{
+	UTForm arg;
+	utf = utformFollow(utf);
+	assert(utfIsAnyMap(utf));
+
+	arg = utfMapArg(utf);
+	if (!utfIsAny(arg))
+		return NULL;
+
+	AbSub sigma = absNew(stabFile());
+	Syme syme = symeNewLexConst(symGen(), tfType, car(stabFile()));
+	utf = utformNew(listCons(Syme)(syme, utformVars(utf)), utformTForm(utf));
+	TForm tupleAny = tfTuple(tfFrSyme(stabFile(), syme));
+	AbSyn expr = tfExpr(tupleAny);
+	tiTopFns()->tiBottomUp(stab, expr, tfUnknown);
+	tiTopFns()->tiTopDown(stab, expr, tfUnknown);
+	absExtend(tfIdSyme(utformTForm(arg)), expr, sigma);
+	UTForm utfTuple = utformSubst(sigma, utf);
+	absFree(sigma);
+	if (tfsDebug) {
+		afprintf(dbOut, "AnyTuple %pUTForm %pAbSub %pUTForm\n", utf, sigma, utfTuple);
+	}
+	return utfTuple;
+}
+
+UTForm
+utfSatMapArgAnyCross(Stab stab, Length argc, UTForm utf)
+{
+	UTForm arg;
+	utf = utformFollow(utf);
+	assert(utfIsAnyMap(utf));
+
+	arg = utfMapArg(utf);
+	if (!utfIsAny(arg))
+		return NULL;
+
+	if (argc < 2)
+		return NULL;
+
+	SymeList vars = listNil(Syme);
+	TFormList tfl = listNil(TForm);
+	for (int i = 0; i < argc; i++) {
+		Syme syme = symeNewLexConst(symGen(), tfType, car(stabFile()));
+		TForm tfi = tfFrSyme(stabFile(), syme);
+		vars = listCons(Syme)(syme, vars);
+		tfl = listCons(TForm)(tfi, tfl);
+	}
+	AbSub sigma = absNew(stabFile());
+	TForm tfc = tfCrossFrList(listNReverse(TForm)(tfl));
+
+	AbSyn expr = tfExpr(tfc);
+	tiTopFns()->tiBottomUp(stab, expr, tfUnknown);
+	tiTopFns()->tiTopDown(stab, expr, tfUnknown);
+	absExtend(tfIdSyme(utformTForm(arg)), expr, sigma);
+	SymeList ovars = listNRemove(Syme)(listCopy(Syme)(utformVars(utf)), tfIdSyme(utformTForm(arg)), (Bool (*)(Syme, Syme)) ptrEqualFn);
+	UTForm utfCrossFn = utformNew(listConcat(Syme)(listNReverse(Syme)(vars), ovars),
+				      tformSubst(sigma, utformTForm(utf)));
+	absFree(sigma);
+	if (tfsDebug) {
+		afprintf(dbOut, "AnyTuple %pUTForm %pAbSub %pUTForm\n", utf, sigma, utfCrossFn);
+	}
+
+	return utfCrossFn;
+}
+
+int
+utfSatMaskFormatter(OStream ostream, Pointer p)
+{
+	USatMask mask = (USatMask) p;
+	int c = 0;
+
+	c += ostreamPrintf(ostream, "{%s / %pUTypeResult}",
+			   tfSatMaskToString(utfSatMaskMask(mask)),
+			   utfSatMaskResult(mask));
+
+	return c;
 }
 
 /******************************************************************************

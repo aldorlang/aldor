@@ -35,6 +35,7 @@
 #include "fint.h"
 #include "format.h"
 #include "freevar.h"
+#include "infenv.h"
 #include "lib.h"
 #include "sefo.h"
 #include "spesym.h"
@@ -62,6 +63,7 @@ Bool	tfHasDebug		= false;
 Bool	tfHashDebug		= false;
 Bool	tfImportDebug		= false;
 Bool	tfMapDebug		= false;
+Bool	tfPatMatchDebug		= false;
 Bool	tfMultiDebug		= false;
 Bool	tfCatDebug		= false;
 Bool	tfWithDebug		= false;
@@ -77,6 +79,7 @@ Bool	symeRefreshDebug	= false;
 #define tfHashDEBUG		DEBUG_IF(tfHash)	afprintf
 #define tfImportDEBUG		DEBUG_IF(tfImport)	afprintf
 #define tfMapDEBUG		DEBUG_IF(tfMap)		afprintf
+#define tfPatMatchDEBUG		DEBUG_IF(tfPatMatch)	afprintf
 #define tfMultiDEBUG		DEBUG_IF(tfMulti)	afprintf
 #define tfCatDEBUG		DEBUG_IF(tfCat)		afprintf
 #define tfWithDEBUG		DEBUG_IF(tfWith)	afprintf
@@ -150,11 +153,14 @@ local SymeList		tfSymesFrDeclare	(Sefo);
 local SymeList		tfSymesFrCross		(TForm);
 local SymeList		tfSymesFrMulti		(TForm);
 local SymeList		tfSymesFrMap		(TForm);
+local SymeList		tfSymesFrPatMatch	(TForm);
+local SymeList		tfSymesFrPattern	(TForm);
 local SymeList		tfSymesFrEnum		(Stab, TForm, Sefo);
 local void		tfCheckDenseArgs	(TForm, Sefo);
 local SymeList		tfSymesFrRawRecord	(Stab, TForm, Sefo);
 local SymeList		tfSymesFrRecord		(Stab, TForm, Sefo);
 local SymeList		tfSymesFrUnion		(Stab, TForm, Sefo);
+local SymeList		tfSymesFrPPartial	(Stab, TForm, Sefo);
 local SymeList		tfSymesFrTrailingArray	(Stab, TForm, Sefo);
 local SymeList		tfSymesFrAdd		(Sefo);
 local SymeList		tfSymesFrDefault	(Sefo);
@@ -212,6 +218,15 @@ local void		tfSetDomImports		(TForm, SymeSet);
 local void		tfSetDomExports		(TForm, SymeList);
 
 local SymeSet 		tfStabCreateDomImportSet(Stab stab, TForm tf);
+
+/******************************************************************************
+ *
+ * :: Type variables
+ *
+ *****************************************************************************/
+
+static AInt tfVarCounter;
+
 /******************************************************************************
  *
  * :: Debugging facilities
@@ -308,6 +323,8 @@ tfNewEmpty(TFormTag tag, Length argc)
 	tf->conditions = NULL;
 
 	tf->sigma	= NULL;
+	tf->varId	= 0;
+	tf->infEnv      = NULL;
 	tf->fv		= NULL;
 	tf->rho		= NULL;
 
@@ -413,7 +430,7 @@ tfInit(void)
 
 	if (isInit) return;
 
-	abUnknown = abNewBlank(sposNone, symIntern("?"));
+	abUnknown = abNewUnknown(sposNone, symIntern("?"));
 
 	tfUnknown	= tfNewSymbol(TF_Unknown);
 	tfExit		= tfNewSymbol(TF_Exit);
@@ -437,6 +454,8 @@ tfInit(void)
 	for (i=SYME_FIELD_START; i<SYME_FIELD_LIMIT; i++)
 		assert(symeFieldInfo[i].tag == i);
 
+	tfVarCounter = 0;
+	
 	isInit = true;
 }
 
@@ -574,7 +593,6 @@ local TForm	tfp0General	(Stab, AbSyn);
 local TForm	tfp0Float	(Stab, AbSyn);
 
 local TForm	tfpNothing	(Stab, AbSyn);
-local TForm	tfpBlank	(Stab, AbSyn);
 local TForm	tfpId		(Stab, AbSyn);
 local TForm	tfpDeclare	(Stab, AbSyn);
 local TForm	tfpDefine	(Stab, AbSyn);
@@ -583,6 +601,7 @@ local TForm	tfpComma	(Stab, AbSyn);
 local TForm	tfpAdd		(Stab, AbSyn);
 local TForm	tfpWith		(Stab, AbSyn);
 local TForm	tfpIf		(Stab, AbSyn);
+local TForm	tfpBlank	(Stab, AbSyn);
 local TForm	tfpExcept	(Stab, AbSyn);
 local TForm	tfpApply	(Stab, AbSyn);
 
@@ -732,6 +751,8 @@ tfp0OpSyme(Stab stab, Syme syme, Symbol sym, Length argc)
 
 	if ((argc == 2 && sym == ssymArrow)		||
 	    (argc == 2 && sym == ssymPackedArrow)	||
+	    (argc == 2 && sym == ssymPatMatch)		||
+	    (argc == 1 && sym == ssymPattern)		||
 	    (argc == 1 && sym == ssymTuple)		||
 	    (argc == 1 && sym == ssymGenerator)		||
 	    (argc == 1 && sym == ssymXGenerator)	||
@@ -740,6 +761,7 @@ tfp0OpSyme(Stab stab, Syme syme, Symbol sym, Length argc)
 
 	    (sym == ssymCross)		||
 	    (sym == ssymEnum)		||
+	    (sym == ssymPPartial)	||
 	    (sym == ssymRawRecord)	||
 	    (sym == ssymRecord)		||
 	    (sym == ssymTrailingArray)	||
@@ -773,6 +795,9 @@ tfp0OpTForm(Symbol sym, Length argc)
 
 	     if (sym == ssymArrow)		tag = TF_Map;
 	else if (sym == ssymPackedArrow)	tag = TF_PackedMap;
+	else if (sym == ssymPatMatch)		tag = TF_PatMatch;
+	else if (sym == ssymPattern)		tag = TF_Pattern;
+	else if (sym == ssymPPartial)		tag = TF_PPartial;
 	else if (sym == ssymTuple)		tag = TF_Tuple;
 	else if (sym == ssymGenerator)		tag = TF_Generator;
 	else if (sym == ssymXGenerator)		tag = TF_XGenerator;
@@ -834,6 +859,12 @@ tfp0FoamType(TForm tf)
 	case TF_Map:
 		tag = FOAM_Clos;
 		break;
+	case TF_PatMatch:
+		tag = FOAM_Clos;
+		break;
+	case TF_Pattern:
+		tag = FOAM_Word;
+		break;
 	case TF_PackedMap:
 		tag = FOAM_Clos;
 		break;
@@ -842,6 +873,9 @@ tfp0FoamType(TForm tf)
 		break;
 	case TF_Multiple:
 		tag = FOAM_NOp;
+		break;
+	case TF_PPartial:
+		tag = FOAM_Rec;
 		break;
 	case TF_RawRecord:
 		tag = FOAM_RRec;
@@ -886,11 +920,12 @@ tfpBlank(Stab stab, AbSyn ab)
 {
 	TForm	tf;
 
-#ifdef UseTypeVariables
-	tf = tfNewNode(TF_Variable, 1, tfUnknown);
-#else
-	tf = tfUnknown;
-#endif
+	if (abIsUnknown(ab)) {
+		tf = tfType;
+	}
+	else {
+		tf = stabRegisterVar(stab, ab);
+	}
 
 	return tf;
 }
@@ -1330,13 +1365,14 @@ tfmNothing(Stab stab, AbSyn ab, TForm tf)
 local TForm
 tfmBlank(Stab stab, AbSyn ab, TForm tf)
 {
-#ifdef UseTypeVariables
-	assert(tfIsVariable(tf));
-#else
-	assert(tfIsUnknown(tf));
-#endif
+	AInt id;
 
-	return tfm0General(stab, ab, tf);
+	if (abIsUnknown(ab)) {
+		return tfm0General(stab, ab, tf);
+	}
+	else {
+		return tfm0General(stab, ab, tf);
+	}
 }
 
 local TForm
@@ -1512,6 +1548,12 @@ tfGetSymes(Stab stab, TForm tf, AbSyn ab)
 	case TF_PackedMap:
 		symes = tfSymesFrMap(tf);
 		break;
+	case TF_PatMatch:
+		symes = tfSymesFrPatMatch(tf);
+		break;
+	case TF_Pattern:
+		symes = tfSymesFrPattern(tf);
+		break;
 	case TF_Cross:
 		symes = tfSymesFrCross(tf);
 		break;
@@ -1529,6 +1571,9 @@ tfGetSymes(Stab stab, TForm tf, AbSyn ab)
 		break;
 	case TF_Union:
 		symes = tfSymesFrUnion(stab, tf, ab);
+		break;
+	case TF_PPartial:
+		symes = tfSymesFrPPartial(stab, tf, ab);
 		break;
 	default:
 		break;
@@ -1659,6 +1704,21 @@ tfToAbSyn0(TForm tf, Bool pretty)
 		ab = abNewApply2(sposNone, abNewId(sposNone, ssymArrow),
 				 tfDisownExpr(tfMapArg(tf), pretty),
 				 tfDisownExpr(tfMapRet(tf), pretty));
+		break;
+	case TF_PatMatch:
+		ab = abNewApply2(sposNone, abNewId(sposNone, ssymPatMatch),
+				 tfDisownExpr(tfPatMatchWhole(tf), pretty),
+				 tfDisownExpr(tfPatMatchParts(tf), pretty));
+		break;
+	case TF_Pattern:
+		ab = abNewApply1(sposNone, abNewId(sposNone, ssymPattern),
+				 tfDisownExpr(tfPatternArg(tf), pretty));
+		break;
+	case TF_PPartial:
+		ab = abNewEmpty(AB_Apply, 1+tfArgc(tf));
+		abApplyOp(ab) = abNewId(sposNone, ssymPPartial);
+		for (i = 0; i < tfArgc(tf); i += 1 )
+			abArgv(ab)[i+1] = tfDisownExpr(tfArgv(tf)[i], pretty);
 		break;
 	case TF_Meet:
 		ab = abNewEmpty(AB_Apply, tfArgc(tf) + 1);
@@ -1914,7 +1974,7 @@ tfSyntaxMap(Stab stab, AbSyn map, TForm tfret)
 	else
 		tfarg = tfSyntaxFrAbSyn(stab, abarg);
 
-	tf = tfAnyMap(tfarg, tfret, abIsPackedMap(map));
+	tf = tfAnyMap(tfarg, tfret, abMapType(map));
 	ab = tfExpr(tf);
 
 	tfSetPending(tf);
@@ -2030,7 +2090,7 @@ tfSyntaxExtendMap(Stab stab, AbSyn map, TForm tfret)
 		tfarg = tfDeclare(id, tfUnknown);
 	}
 
-	return tfAnyMap(tfarg, tfret, abIsPackedMap(map));
+	return tfAnyMap(tfarg, tfret, abMapType(map));
 }
 
 /*
@@ -2560,7 +2620,8 @@ tfGetStab(TForm tf)
 	((tag) == TF_Tuple 	 	|| (tag) == TF_Record \
 	 || (tag) == TF_RawRecord	|| (tag) == TF_Reference \
 	 || (tag) == TF_Generator	|| (tag) == TF_Union \
-	 || (tag) == TF_TrailingArray   || (tag) == TF_Enumerate)
+	 || (tag) == TF_TrailingArray   || (tag) == TF_Enumerate \
+	 || (tag) == TF_PPartial)
 
 TForm
 tfGetCategory(TForm tf)
@@ -3834,7 +3895,7 @@ tfGetDomExports(TForm tf)
 
 	tf = tfIgnoreExceptions(tf);
 
-	if (tfHasSelf(tf) && tfIsId(tf) && symeExtension(tfIdSyme(tf))) {
+	if (tfHasSelf(tf) && tfIsId(tf) && tfIdSyme(tf) && symeExtension(tfIdSyme(tf))) {
 		return tfGetDomExports(tfFrSyme(stabFile(), symeExtensionFull(tfIdSyme(tf))));
 	}
 
@@ -3873,8 +3934,11 @@ tfGetDomExports(TForm tf)
 	else {
 		SymeList exps, vexps;
 		TForm cat, val = (TForm)NULL;
-		if (tfIsEnum(tf) || tfIsRecord(tf) || tfIsRawRecord(tf) ||
-		    tfIsTrailingArray(tf) || tfIsUnion(tf))
+		if (tfIsEnum(tf)
+		    || tfIsRecord(tf) || tfIsRawRecord(tf)
+		    || tfIsPPartial(tf)
+		    || tfIsTrailingArray(tf)
+		    || tfIsUnion(tf))
 			tfSetDomExports(tf, listCopy(Syme)(tfSymes(tf)));
 		tfGetDomSelf(tf);
 		cat = tfGetCategory(tf);
@@ -4935,6 +4999,9 @@ tfTagHasSymes(TFormTag tag)
 	case TF_Declare:
 	case TF_Cross:
 	case TF_Map:
+	case TF_PatMatch:
+	case TF_Pattern:
+	case TF_PPartial:
 	case TF_PackedMap:
 	case TF_Multiple:
 	case TF_Enumerate:
@@ -5092,6 +5159,18 @@ tfSymesFrMap(TForm tf)
 	}
 
 	return symes;
+}
+
+local SymeList
+tfSymesFrPatMatch(TForm tf)
+{
+	return listNil(Syme);
+}
+
+local SymeList
+tfSymesFrPattern(TForm tf)
+{
+	return listNil(Syme);
 }
 
 local SymeList
@@ -5500,6 +5579,7 @@ tfSymesFrUnion(Stab stab, TForm tf, Sefo sefo)
 		Sefo	argi = abDefineeIdOrElse(abApplyArg(sefo, i), NULL);
 		TForm	tfe;
 		TForm   tfc;
+		TForm   tfp;
 		Syme    prmi, vali;
 		String  pname;
 		if (! argi) continue;
@@ -5507,6 +5587,7 @@ tfSymesFrUnion(Stab stab, TForm tf, Sefo sefo)
 
 		/*
 		 * [ ]:	    Ai -> me
+		 * [ ]:     PatMatch(Ai, me)
 		 * union:   Ai -> me
 		 */
 		tfe  = tfEnum(stab, argi);
@@ -5526,6 +5607,10 @@ tfSymesFrUnion(Stab stab, TForm tf, Sefo sefo)
 		syme = tfNewRepSyme(stab, ssymTheUnion, tfm, code);
 		symes = listCons(Syme)(syme, symes);
 
+		tfp = tfPatMatch(tfc, me);
+		syme = tfNewRepSyme(stab, ssymBracket, tfp, code);
+		symes = listCons(Syme)(syme, symes);
+		
 		/*
 		 * case:  (me, Enumerate(ni: Type)) -> Boolean
 		 * apply: (me, Enumerate(ni: Type)) -> Ai
@@ -5559,6 +5644,43 @@ tfSymesFrUnion(Stab stab, TForm tf, Sefo sefo)
 	symes = listNReverse(Syme)(symes);
 
 	stabSetSubstable(stab);
+	return symes;
+}
+
+local SymeList
+tfSymesFrPPartial(Stab stab, TForm tf, Sefo sefo)
+{
+	SymeList symes = listNil(Syme);
+	TForm tfc0, tfc, tfm;
+	TForm me = tfFrSelf(stab, tf);
+	Syme syme;
+	Hash code = abHash(sefo);
+	Length argc, i;
+
+	argc = abApplyArgc(sefo);
+	tfc = tfNewEmpty(TF_Multiple, argc);
+	for (i = 0; i < argc; i += 1)
+		tfc->argv[i] = tf->argv[i];
+	tfSetStab(tfc, abStab(sefo));
+	tfSetSymes(tfc, tfSymesFrMulti(tfc));
+	tfSetStab(tfc, NULL);
+
+	tfm = tfMap(tfc, me);
+	tfSetStab(tfm, abStab(sefo));
+	tfSetSymes(tfm, tfSymesFrMap(tfm));
+	tfSetStab(tfm, NULL);
+
+	syme = tfNewRepSyme(stab, ssymTheSuccess, tfm, code);
+	symes = listCons(Syme)(syme, symes);
+
+	tfm = tfMap(tfMulti(0), me);
+	syme = tfNewRepSyme(stab, ssymTheFailed, tfm, code);
+	symes = listCons(Syme)(syme, symes);
+	
+	stabSetSubstable(stab);
+	afprintf(dbOut, "PPartial symes %pSymeList %pTForm %pAbSyn\n", symes, tf, sefo);
+	afprintf(dbOut, "TF1 %pTForm\n", symeType(car(symes)));
+	afprintf(dbOut, "TF2 %pTForm\n", symeType(car(cdr(symes))));
 	return symes;
 }
 
@@ -6376,12 +6498,35 @@ tfAssign(TForm tf, AbSyn val)
  */
 
 TForm
-tfAnyMap(TForm arg, TForm ret, Bool packed)
+tfAnyMap(TForm arg, TForm ret, AbMapType mapType)
 {
-	if (packed)
-		return tfPackedMap(arg, ret);
-	else
+	switch (mapType) {
+	case AB_MAP_Generic:
 		return tfMap(arg, ret);
+	case AB_MAP_Packed:
+		return tfPackedMap(arg, ret);
+	case AB_MAP_PatMatch:
+		return tfPatMatch(arg, ret);
+	default:
+		bugBadCase(mapType);
+		return NULL;
+	}
+}
+
+AbMapType
+tfAbMapType(TForm tf)
+{
+	switch (tfTag(tf)) {
+	case TF_Map:
+		return AB_MAP_Generic;
+	case TF_PatMatch:
+		return AB_MAP_Generic;
+	case TF_PackedMap:
+		return AB_MAP_Generic;
+	default:
+		bugBadCase(tfTag(tf));
+		//NotReached(tfTag(tf));
+	}
 }
 
 TForm
@@ -7100,6 +7245,168 @@ tfIsReferenceFn(TForm tf)
 	return tfIsReference(tf);
 }
 
+
+/*
+ * tfVariable
+ */
+
+TForm
+tfVarNew()
+{
+	TForm	tf = tfNewNode(TF_Variable, 1);
+	tf->varId = tfVarCounter;
+	tf->infEnv = NULL;
+	tfVarCounter++;
+	return tf;
+}
+
+Bool
+tfIsVarInferred(TForm tf)
+{
+	return tfIsVar(tf) && tf->infEnv != NULL;
+}
+
+TForm
+tfVarFix(TForm tf, InferEnv infEnv)
+{
+	assert(tfIsVar(tf));
+	tf->infEnv = infEnv;
+	//tfTag(tf) = TF_InferEnv;
+	return tf;
+}
+
+/*
+ * tfVariable
+ */
+
+TForm
+tfVarFrId(AInt id)
+{
+	TForm	tf = tfNewNode(TF_Variable, 0);
+	tf->varId = id;
+	return tf;
+}
+
+AInt
+tfVarId(TForm tf)
+{
+	assert(tfTag(tf) == TF_Variable);
+	return tf->varId;
+}
+
+
+/*
+ * tfPPartial
+ */
+
+TForm
+tfPPartial(TForm arg)
+{
+	TForm	tf = tfNewNode(TF_PPartial, 1, arg);
+	tfSetMeaningArgs(tf);
+	return tf;
+}
+
+Bool
+tfIsPPartialMap(TForm opTf)
+{
+	Bool result;
+	if (!tfIsFunctionMap(opTf)) {
+		result = false;
+	}
+	else {
+		TForm ret = tfMapRet(opTf);
+		tfFollow(ret);
+		result = tfIsPPartial(ret);
+	}
+	afprintf(dbOut, "IsPPartialMap %pTForm %oBool\n", opTf, result);
+	return result;
+}
+
+TForm
+tfPPartialAsMapArg(TForm tf)
+{
+	assert(tfIsPPartial(tf));
+	if (tfArgc(tf) == 1) {
+		return tfArgv(tf)[0];
+	}
+	else {
+		// Empty multiple if tfArgc(tf) == 0
+		TForm multi = tfNewEmpty(TF_Multiple, tfArgc(tf));
+		for (int i=0; i<tfArgc(tf); i++) {
+			tfArgv(multi)[i] = tfArgv(tf)[i];
+		}
+		return multi;
+	}
+}
+
+/*
+ * tfMatcher
+ * Like a map, but the other way round..
+ *
+ * cons: (T, L) -[matcher]-> L
+ * implicitly:
+ * cons: L -> PPartial(T, L)
+ */
+
+TForm
+tfPatMatch(TForm arg1, TForm arg2)
+{
+	TForm tf = tfNewNode(TF_PatMatch, 2, arg1, arg2);
+	tfSetMeaningArgs(tf);
+	return tf;
+}
+
+TForm
+tfPattern(TForm arg1)
+{
+	TForm tf = tfNewNode(TF_Pattern, 1, arg1);
+	tfSetMeaningArgs(tf);
+	return tf;
+}
+
+Bool
+tfIsPatternExit(TForm tf)
+{
+	if (!tfIsPattern(tf)) {
+		return false;
+	}
+	return tfIsExit(tfPatternArg(tf));
+}
+
+Bool
+tfIsPatternCaseArg(TForm tf)
+{
+	/* NB: We really ought to bind a symbol to 'case' instead of this */
+	if (tfIsMulti(tf)) {
+		for (int i=0; i<tfArgc(tf); i++) {
+			if (!tfIsPattern(tfArgv(tf)[i])) {
+				return false;
+			}
+		}
+		return true;
+	}
+	return tfIsPattern(tf);
+}
+
+TForm
+tfPatternCase(TForm arg1)
+{
+	if (!tfIsMulti(arg1)) {
+		TForm arg2 = tfPattern(arg1);
+		TForm whole = tfMap(tfMulti(2, arg1, arg2), tfBoolean);
+		tfSetMeaningArgs(arg1);
+		return whole;
+	}
+	else {
+		TForm arg2 = tfNewEmpty(TF_Multiple, tfArgc(arg1));
+		for (int i=0; i<tfArgc(arg1); i++) {
+			tfArgv(arg2)[i] = tfPattern(tfArgv(arg1)[i]);
+		}
+		return tfMap(tfMulti(2, arg1, arg2), tfBoolean);
+	}
+}
+
 /*
  * tfSubst
  */
@@ -7145,6 +7452,33 @@ tfSubstPush(TForm tf)
 
 	assert(tf->argv[0] != tf);
 	return tf->argv[0];
+}
+
+/*
+ * tfInferEnv
+ */
+static int TFInferEnvCount = 0;
+
+
+TForm
+tfInfSubst(InferEnv env, TForm arg)
+{
+	TForm	tf = tfNewNode(TF_InferEnv, 1, arg);
+	tfInfSubstEnv(tf) = env;
+	tfSetMeaningArgs(tf);
+	TFInferEnvCount += 1;
+	return tf;
+}
+
+
+TForm
+tfInfSubstPush(TForm tf)
+{
+	assert(tfIsInfSubst(tf));
+	assert(tf->infEnv);
+	assert(tf->varId);
+
+	return infEnvFollow(tf->infEnv, tf);
 }
 
 /*
@@ -7262,8 +7596,13 @@ tfFollowFn(TForm tf)
 			tf = tf->argv[0];
 		else if (tfIsSubst(tf))
 			tf = tfSubstPush(tf);
+		else if (tfIsInfSubst(tf))
+			tf = tfInfSubstPush(tf);
 		else if (tfIsTrigger(tf))
 			libGetAllSymes(tfTriggerLib(tf));
+		else if (tfIsVarInferred(tf)) {
+			tf = infEnvFollow(tf->infEnv, tf);
+		}
 		else
 			done = true;
 	}
@@ -7492,7 +7831,7 @@ tfExtendEmpty(TForm tmpl, Length argc)
 				tfArgv(tfarg)[i] = tfNewEmpty(TF_Meet, argc);
 		}
 		tfret = tfNewEmpty(TF_Join, argc);
-		tf = tfAnyMap(tfarg, tfret, tfIsPackedMap(tmpl));
+		tf = tfAnyMap(tfarg, tfret, tfAbMapType(tmpl));
 		tfSetStab(tf, tfStab(tmpl));
 	}
 	else
@@ -8228,8 +8567,8 @@ extern TfCond tfFloatConditions(Stab stab, TForm tf)
 	return tfConditions(tf);
 }
 
-extern 
-TfCond tfConditions(TForm tf)
+TfCond
+tfConditions(TForm tf)
 {
 	tfFollow(tf);
 	return tf->conditions;
@@ -8268,11 +8607,74 @@ tfConditionalStab(TForm tf)
 	return tfConditions(tf)->conditions->first->stab;
 }
 
+Bool
+tfIsWildcardImport(TForm tf)
+{
+	tfFollow(tf);
+	if (!tfIsGeneral(tf)) {
+		return false;
+	}
+	else if (!tfIsId(tf)) {
+		return false;
+	}
+	else if (tfIdSyme(tf) == NULL) {
+		return false;
+	}
+	else {
+		Syme syme = tfIdSyme(tf);
+		TForm type = symeType(syme);
+		if (tfIsAnyMap(type)) {
+			return true;
+		}
+	}
+	return false;
+}
+
+
+/******************************************************************************
+ *
+ * :: Utilities
+ *
+ *****************************************************************************/
+
+Bool
+tfMapArgIsTuple(TForm tf)
+{
+	if (tfMapArgc(tf) != 1)
+		return false;
+	if (abGetCategory(tfExpr(tfMapArg(tf))) == NULL)
+		return false;
+	return tfIsTypeTuple(abGetCategory(tfExpr(tfMapArg(tf))));
+}
+
+Bool
+tfMapRetIsTuple(TForm tf)
+{
+	if (tfMapRetc(tf) != 1)
+		return false;
+	if (abGetCategory(tfExpr(tfMapRet(tf))) == NULL)
+		return false;
+	return tfIsTypeTuple(abGetCategory(tfExpr(tfMapRet(tf))));
+}
+
+extern TForm
+tfIs_(char *file, int line, TFormTag tag, TForm tf)
+{
+	if (tfTag(tf) != tag) {
+		afprintf(dbOut, "bug: %s:%d: Expected %s, found %pTForm\n", file, line, tag, tfTag(tf), tf);
+		bug("Bad tform");
+	}
+	return tf;
+}
+
+
+
 /******************************************************************************
  *
  * :: Java
  *
  *****************************************************************************/
+
 local Bool tfCheckJavaImport(ErrorSet errors, TForm tf);
 local Bool tfJavaCheckArg(ErrorSet errors, Stab stab, TForm self, TForm arg);
 local Bool abCheckJavaImport(ErrorSet errors, AbSyn ab);
@@ -8496,11 +8898,15 @@ struct tform_info tformInfoTable[] = {
 	{TF_Meet,	"Meet",         "Meet",         0, TF_NARY},
 	{TF_Multiple,	"Multiple",	"Multiple",     0, TF_NARY},
 	{TF_PackedMap,	"PackedMap",	"->*",          0, 2},
+	{TF_PatMatch,	"PatMatch",	"PatMatch",     0, 2},
+	{TF_Pattern,	"Pattern",	"Pattern",      0, 1},
+	{TF_PPartial,	"PPartial",	"PPartial*",    0, 1},
 	{TF_Raw,	"Raw",		"Raw",          0, 1},
 	{TF_RawRecord,	"RawRecord",    "RawRecord",    0, 0},
 	{TF_Record,	"Record",       "Record",       0, 0},
 	{TF_Reference,	"Reference",    "Ref",		0, 1},
 	{TF_Subst,	"Subst",        "Subst",        0, 1},
+	{TF_InferEnv,	"InferEnv",     "InferEnv",     0, 1},
 	{TF_Third,	"Third",        "Third",        0, 2},
 	{TF_Trigger,	"Trigger",      "Trigger",      0, 1},
 	{TF_TrailingArray,"TrailingArray",    "TrailingArray",0, 1},

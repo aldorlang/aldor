@@ -25,6 +25,7 @@
 #include "table.h"
 #include "strops.h"
 #include "symbol.h"
+#include "tfknown.h"
 
 extern	Bool genfExportDebug;	/* gf_add.c */
 Bool	genfImplicitDebug	= false;

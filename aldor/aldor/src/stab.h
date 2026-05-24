@@ -30,10 +30,12 @@ struct tformUses {
 	BPack(Bool)	isCategoryImport;
 	BPack(Bool)	isCatConditionImport;
 	ULong		serialNo;
+	BPack(Bool)	isVar;
 	TForm		tf;
 	TQual		exports;
 	TQual		imports;
 	TQual		inlines;
+	AbSyn		body;			/* For variables */
 	TQualList       cascades;
 	AbSynList	extension;
 	AbSynList	extendees;
@@ -84,6 +86,9 @@ struct stabLevel {
 	SymeList	boundSymes;		/* List of bound symes       */
 	SymeList	extendSymes;		/* List of extend symes      */
 	Table           exportedTypes;          /* types exported to foreign */
+	TFormList       varList;
+	AInt            varCount;
+	InferEnv        infEnv;
 };
 
 /******************************************************************************
@@ -196,6 +201,10 @@ extern void		stabSetSyme		(Stab, AbSyn, Syme, AbLogic);
 extern Bool		stabIsUndeclaredId	(Stab, Symbol);
 extern void		stabDeclareId		(Stab, Symbol, TForm);
 
+extern TForm		stabRegisterVar		(Stab, AbSyn);
+extern TFormList	stabRegisteredVars	(Stab);
+
+
 extern Bool             stabIsChild             (Stab parent, Stab child);
 
 extern int		stabPrint		(FILE *, Stab);
@@ -205,8 +214,10 @@ extern int		tfulPrint		(FILE *, TFormUsesList);
 extern int		tfuOStreamPrint		(OStream, TFormUses);
 
 extern SymeList		stabGetExportedSymes	(Stab);
+extern SymeList		stabGetExportedSymesById(Stab, Symbol);
 extern TQualList	stabImportFrom		(Stab, TQual);
 
+extern void stabAddVar(Stab, TForm, AbSyn);
 /*
  * TForms
  */
@@ -259,4 +270,6 @@ struct typesUsed {
 
 struct typesUsed *getAllTypesUsed(StabLevel sl);
 
+extern InferEnv stabInfEnv(Stab stab);
+extern void stabInfEnvApply(Stab stab, InferEnv infEnv);
 #endif /* _STAB_H_ */

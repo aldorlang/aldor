@@ -30,6 +30,7 @@ extern OStream	ostreamNewFrBuffer	(Buffer b);
 extern OStream	ostreamNewFrFile	(FILE *);
 extern void	ostreamInitFrFile	(OStream, FILE *);
 
+extern OStream	ostreamDevNull		(void);
 extern OStream	ostreamNewFrDevNull	(void);
 extern void	ostreamFree		(OStream);
 
@@ -37,4 +38,19 @@ extern int	ostreamWrite		(OStream o, const char *s, int n);
 extern void	ostreamWriteChar	(OStream o, char c);
 extern void	ostreamClose		(OStream o);
 
+/*
+ * :: Text Size.. for when we want to abbreviate a bit
+ */
+
+typedef struct textSizing {
+	int nChars;
+	int nLines;
+	int maxWidth;
+	int cpos;
+} *TextSizing;
+
+OStream ostreamNewFrTextSizing(TextSizing txtSizing);
+
+TextSizing textSizingNew(void);
+void textSizingFree(TextSizing);
 #endif /* OSTREAM_H_ */

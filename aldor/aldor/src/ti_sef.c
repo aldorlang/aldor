@@ -14,6 +14,7 @@
 #include "ti_sef.h"
 #include "tinfer.h"
 #include "terror.h"
+#include "tfknown.h"
 #include "util.h"
 #include "sefo.h"
 #include "lib.h"
@@ -178,7 +179,9 @@ tiSefo(Stab stab, Sefo sefo)
 	TForm	fluid(tuniReturnTForm);
 	TForm	fluid(tuniYieldTForm);
 	TForm	fluid(tuniExitTForm);
+	InferEnv fluid(tfkInfEnvKnown);
 
+	tfkInfEnvKnown  = NULL;
 	tuniReturnTForm = tfNone();
 	tuniYieldTForm	= tfNone();
 	tuniExitTForm	= tfNone();
@@ -673,7 +676,7 @@ tisefLambda(Stab stab, Sefo sefo)
 	tfret = tiGetTForm(stab, sefo->abLambda.rtype);
 
 	if (tfarg && tfret)
-		abTUnique(sefo) = tfAnyMap(tfarg, tfret, pack);
+		abTUnique(sefo) = tfAnyMap(tfarg, tfret, pack ? AB_MAP_Packed : AB_MAP_Generic);
 	else
 		abTUnique(sefo) = tfUnknown;
 

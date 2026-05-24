@@ -1,0 +1,11 @@
+library_deps := base types
+
+tp_xenv_deps := tp_xtypes
+tp_xtypes_deps :=
+tp_fvset_deps := tp_xenv
+tp_xscopes_deps := tp_xenv
+tp_xsubst_deps  := tp_fvset
+tp_xposs_deps   := tp_xsubst tp_xsat
+tp_xsat_deps    := tp_xtypes tp_xsubst tp_xenv
+tp_xstate_deps  := tp_xposs tp_xenv
+tp_xinfer_deps  := tp_xscopes tp_xstate tp_xsubst tp_xposs tp_xsat

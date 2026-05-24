@@ -136,7 +136,9 @@ ALDOR_E_ChkMissingRetType "Function return type must be specified."
 ALDOR_D_ChkUseFromHint    "  Maybe you want to use `import from ...'."
 ALDOR_E_ChkSelectSeq	"`select <E> in' must be followed by a sequence."
 ALDOR_E_ChkSelectExits    "Unexpected `=>' in select"
-ALDOR_E_ChkMustExportJavaToPackage "Java exports must specify a package";
+ALDOR_E_ChkMustExportJavaToPackage "Java exports must specify a package"
+ALDOR_E_BlankOutsidePattern "Wildcard outside a pattern context."
+ALDOR_E_BadPatternContent "Unguarded identifier in pattern"
 
 ALDOR_W_FunnyJuxta        "Suspicious juxtaposition.  Check for missing `;'.\n\
 Check indentation if you are using `#pile'."
@@ -294,6 +296,11 @@ ALDOR_F_TinRestrictOops		"Use of restrict (@) in the presence of embeddings is n
 ALDOR_W_TinEarlyImport          "import from %s before its exports could be determined"
 
 ALDOR_R_TinInferring            "Inferring %s: %s."
+ALDOR_E_TinVarNotInferred       "Failed to infer a type"
+ALDOR_E_TinVarInferFail         "Failed to infer a type %s"
+ALDOR_E_TinVarFreeVar            "Type is unconstrained"
+
+ALDOR_E_TinExportNotMatched       "Failed to match export %s"
 
 ALDOR_W_TqNotBuiltin		"`%s: %s' is not exported by Builtin."
 
@@ -863,3 +870,4 @@ ALDOR_S_Syme_Foreign 	"foreign"
 ALDOR_S_Syme_Fluid    	"fluid variable"
 ALDOR_S_Syme_Trigger  	"trigger"
 ALDOR_S_Syme_Temp  	"temporary"
+ALDOR_S_Syme_Var  	"type var"

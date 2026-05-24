@@ -31,7 +31,6 @@ extern void	genSetSmallHashCodes	(Bool);
 
 extern Foam	gen0ApplyReturn		(AbSyn, Syme, TForm, Foam);
 extern Foam	gen1ApplyReturn		(AbSyn, Syme, TForm, Foam, Foam *);
-extern Foam	gen0CCallFrFoam		(FoamTag, Foam, Length, Foam **);
 
 extern Bool	gen0IsFortranCall	(AbSyn);
 

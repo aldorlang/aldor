@@ -339,7 +339,8 @@ SUBDIRS = \
 	algebra	\
 	axllib	\
 	axldem	\
-	ax0
+	ax0	\
+	types
 
 all: all-recursive
 
