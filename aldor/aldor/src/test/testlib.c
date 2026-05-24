@@ -222,6 +222,8 @@ init()
 	sposInit();
 	ablogInit();
 	comsgInit();
+	comsgClearErrorMax();
+
 	initted = true;
 }
 
