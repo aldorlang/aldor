@@ -8567,8 +8567,8 @@ extern TfCond tfFloatConditions(Stab stab, TForm tf)
 	return tfConditions(tf);
 }
 
-extern 
-TfCond tfConditions(TForm tf)
+TfCond
+tfConditions(TForm tf)
 {
 	tfFollow(tf);
 	return tf->conditions;
