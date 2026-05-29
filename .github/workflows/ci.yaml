@@ -40,7 +40,12 @@ jobs:
            aldor_${pkg_version}_amd64.deb
 
   build-linux-latest:
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        gcc-version: [13, 15, latest]
+        os: [ubuntu-latest]
+
+    runs-on: ${{ matrix.os }}
     timeout-minutes: 30
 
     steps:
@@ -48,6 +53,11 @@ jobs:
 
     - name: install dependencies
       run: sudo apt-get install libgmp-dev debhelper fakeroot build-essential devscripts
+
+    - name: Set up GCC
+      uses: egor-tensin/setup-gcc@v2
+      with:
+        version: ${{ matrix.gcc-version }}
 
     - name: build
       run: dpkg-buildpackage -b -us -uc
