@@ -218,6 +218,10 @@ main(int argc, char *argv[])
 	loadConfiguration();
 	handleOptions(largc, largv);
 
+	if (dbgLevel > 2) {
+		printf("Running unicl with system %s\n", uclSysName);
+	}
+
 	if (!setupState())
 		exit(2);
 

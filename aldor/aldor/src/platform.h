@@ -174,15 +174,20 @@
 
      /* GCC 2.96 shipped with RH 7.0 is severly broken ... */
 # if defined(__GNUC_MINOR__) && __GNUC__ == 2 && __GNUC_MINOR__ == 96
-#   if defined(HW_AXP)
+#  if defined(HW_AXP)
 #     define     CONFIG "LINUX(gcc-2_96, alpha)"
 #     define     CONFIGSYS "linuxglibc-2_96-alpha"
-#   else
+#  else
 #     define     CONFIG "LINUX(gcc-2_96)"
 #     define     CONFIGSYS "linuxglibc-2_96"
 #   endif
 # else
 #  include <features.h>
+#  if defined(HAVE_STD_GNU17)
+#    define LANGSUFFIX "-gnu17"
+#  else
+#    define LANGSUFFIX ""
+#  endif
 #  if defined(__clang__)
 #    define CONFIG "LINUX(clang)"
 #    define CONFIGSYS "linuxclang"
@@ -210,7 +215,7 @@
 #      define      CONFIGSYS "linuxglibc2.6"
 #    elif defined (__GLIBC_MINOR__) && __GLIBC_MINOR__ >= 10
 #      define      CONFIG "LINUX(glibc2.10+)"
-#      define      CONFIGSYS "linuxglibc2.10+"
+#      define      CONFIGSYS ("linuxglibc2.10+" LANGSUFFIX)
 #    else
 #      define      CONFIG "LINUX(glibc-unknown)" 
 #      define      CONFIGSYS "linuxglibc-unknown"
