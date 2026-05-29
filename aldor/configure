@@ -5382,6 +5382,19 @@ printf "%s\n" "$res" >&6; }
 	 LIB_CC_FLAGS="${cfg_no_builtin_mismatch} ${cfg_no_incompatible_pointer_types} ${cfg_no_deprecated_non_prototype}"
 
 
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking $CC supports gnu17" >&5
+printf %s "checking $CC supports gnu17... " >&6; }
+ { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking $CC supports -std=gnu17" >&5
+printf %s "checking $CC supports -std=gnu17... " >&6; }; echo "" > conftest-std=gnu17.c;
+ res=no
+ if $CC -Werror -std=gnu17 -c conftest-std=gnu17.c > /dev/null 2>&1; then cfg_gnu17="-std=gnu17"; res=yes; fi;
+ { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $res" >&5
+printf "%s\n" "$res" >&6; }
+ if test "" = "$cfg_gnu17"; then cfg_has_gnu17=1; else cfg_has_gnu17=0; fi
+
+printf "%s\n" "#define HAVE_STD_GNU17 $cfg_has_gnu17" >>confdefs.h
+
+ CFLAGS="$CFLAGS $cfg_gnu17"
 
 disable_interp_tests=no
 # Check whether --enable-interpreter-tests was given.
@@ -9792,10 +9805,6 @@ _lt_linker_boilerplate=`cat conftest.err`
 $RM -r conftest*
 
 
-## CAVEAT EMPTOR:
-## There is no encapsulation within the following macros, do not change
-## the running order or otherwise move them around unless you know exactly
-## what you are doing...
 if test -n "$compiler"; then
 
 lt_prog_compiler_no_builtin_flag=
