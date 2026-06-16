@@ -83,6 +83,17 @@ struct ostreamOps ostreamDevNullOps = {
 	ostreamNullClose,
 };
 
+local OStream ostreamTheDevNull = NULL;
+
+OStream
+oStreamDevNull()
+{
+	if (ostreamTheDevNull == NULL) {
+		ostreamTheDevNull = ostreamNewFrDevNull();
+	}
+	return ostreamTheDevNull;
+}
+
 OStream 
 ostreamNewFrDevNull(void)
 {
@@ -90,6 +101,7 @@ ostreamNewFrDevNull(void)
 	s->ops = &ostreamDevNullOps;
 	return s;
 }
+
 
 local void 
 ostreamNullWriteChar(OStream os, char c)
@@ -164,3 +176,91 @@ ostreamFree(OStream s)
 }
 
 
+/*
+ * :: Sizing
+ */
+
+TextSizing
+textSizingNew(void)
+{
+	TextSizing sz = (TextSizing) stoAlloc(OB_Other, sizeof(*sz));
+	sz->nChars   = 0;
+	sz->nLines   = 0;
+	sz->cpos     = 0;
+	sz->maxWidth = 0;
+	return sz;
+}
+
+void
+textSizingFree(TextSizing txtSz)
+{
+	stoFree(txtSz);
+}
+
+
+local void ostreamSizingWriteChar(OStream os, char c);
+local int ostreamSizingWriteString(OStream os, const char *s, int n);
+local void ostreamSizingClose(OStream os);
+
+
+struct ostreamOps ostreamSizingOps = {
+	ostreamSizingWriteChar,
+	ostreamSizingWriteString,
+	ostreamSizingClose,
+};
+
+OStream
+ostreamNewFrTextSizing(TextSizing txtSizing)
+{
+	OStream s = (OStream) stoAlloc(OB_Other, sizeof(*s));
+	s->ops = &ostreamSizingOps;
+	s->data.obj = txtSizing;
+	return s;
+}
+
+local void
+ostreamSizingWriteChar(OStream os, char c)
+{
+	TextSizing sz = (TextSizing) os->data.obj;
+	sz->nChars++;
+	if (c == '\n') {
+		sz->nLines++;
+		sz->cpos = 0;
+	}
+	else {
+		sz->cpos++;
+		if (sz->maxWidth < sz->cpos) {
+			sz->maxWidth = sz->cpos;
+		}
+	}
+}
+
+local int
+ostreamSizingWriteString(OStream os, const char *s, int n)
+{
+	int i;
+	if (n == -1) {
+		i = 0;
+		while (s[i] != '\0') {
+			ostreamSizingWriteChar(os, s[i]);
+			i++;
+		}
+		return i;
+	}
+	else {
+		for (i=0; i<n; i++) {
+			ostreamSizingWriteChar(os, s[i]);
+		}
+	}
+	return n;
+}
+
+local void
+ostreamSizingClose(OStream os)
+{
+	TextSizing sz = (TextSizing) os->data.obj;
+
+	if (sz->cpos != 0) {
+		sz->nLines++;
+	}
+}

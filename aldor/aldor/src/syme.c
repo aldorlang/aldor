@@ -1378,7 +1378,7 @@ symeCheckHas(SymeCContext conditionContext, Sefo dom, Sefo cat)
 	tfcat = abTForm(cat) ? abTForm(cat) : tiTopFns()->tiGetTopLevelTForm(ablogTrue(), cat);
 
 	/* D has C iff typeof(D) satisfies C. */
-	result = tfSat(tfSatBupMask(), tfdom, tfcat);
+	result = tfSat(tfsAddUnify(tfSatBupMask()), tfdom, tfcat);
 
 #if 0
 	symeCheckHasMemo(dom, cat, result);
@@ -1891,6 +1891,7 @@ struct symeInfo symeInfo[] = {
 	{SYME_Trigger, "SYME_Trigger", 	"trigger",	    ALDOR_S_Syme_Trigger},
 	{SYME_Temp,    "SYME_Temp", 	"temp",	            ALDOR_S_Syme_Temp},
 	{SYME_Has,     "SYME_Has", 	"has",	            ALDOR_S_Syme_Temp},
+	{SYME_Var,     "SYME_Var", 	"var",	            ALDOR_S_Syme_Var},
 };
 
 /******************************************************************************

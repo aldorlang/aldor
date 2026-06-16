@@ -6,6 +6,7 @@
 
 local void testMapType();
 local void testFilterEmpty();
+local void testHasUTForm();
 
 void
 tpossTest()
@@ -13,6 +14,7 @@ tpossTest()
 	init();
 	TEST(testMapType);
 	TEST(testFilterEmpty);
+	TEST(testHasUTForm);
 	fini();
 }
 
@@ -50,4 +52,17 @@ testFilterEmpty()
 	tpossAdd1(tp, tfMulti(1, tfMap(tfNone(), tfNone())));
 	tpr = tpossFilterEmpty(tp);
 	testIntEqual("", 1, tpossCount(tpr));
+}
+
+local void
+testHasUTForm()
+{
+	TPoss tp = tpossEmpty();
+
+	TForm tf1 = tfCross(0);
+	TForm tf2 = tfCross(1, tfCross(0));
+
+	tpossAdd1(tp, tf1);
+	testFalse("", tpossHasUTForm(tp, utformNewConstant(tf2)));
+	testTrue("", tpossHasUTForm(tp, utformNewConstant(tf1)));
 }

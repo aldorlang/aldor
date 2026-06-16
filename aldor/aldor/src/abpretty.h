@@ -24,6 +24,9 @@ extern String tfPrettyClippedIn	  	(TForm, long clip, int indent);
 extern int    tfPrettyPrint  		(FILE *, TForm);
 extern int    tfPrettyPrintClippedIn	(FILE *, TForm, long clip, int indent);
 
+extern String utfPrettyClippedIn  	(UTForm, long clip, int indent);
+extern int    utfPrettyPrintClippedIn	(FILE *, UTForm, long clip, int indent);
+
 extern String symePretty       		(Syme);
 extern String symePrettyClippedIn  	(Syme, long clip, int indent);
 

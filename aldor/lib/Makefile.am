@@ -3,7 +3,8 @@ SUBDIRS =	\
 	algebra	\
 	axllib	\
 	axldem	\
-	ax0
+	ax0	\
+	types
 
 config.mk: $(srcdir)/config.mk.in
 all-recursive: config.mk

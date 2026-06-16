@@ -57,6 +57,13 @@ typedef struct _ExpInfo * 	   ExpInfo;
 typedef struct _InvInfo *	   InvInfo;
 typedef union _SImpl *		   SImpl;
 
+typedef struct uvar *		   UVar;
+typedef struct utform * 	   UTForm;
+typedef struct utype *		   UType;
+typedef struct utypeResult *	   UTypeResult;
+
+typedef struct wildImp *	   WildImport;
+
 #if EDIT_1_0_n1_AB
 typedef struct foamuses_struct *   FoamUses;
 typedef struct ssa_struct *        SSA;
@@ -64,7 +71,9 @@ typedef struct domtree_struct *    DominatorTree;
 #endif
 typedef struct foreign_origin * ForeignOrigin;
 
-
+typedef struct tfContext *TFContext;
+typedef struct utfContext *UTFContext;
+typedef struct inferEnv *InferEnv;
 
 /*
  * Declare necessary lists
@@ -91,8 +100,12 @@ DECLARE_LIST(Foam);
 DECLARE_LIST(CCode);
 DECLARE_LIST(UdInfo);
 DECLARE_LIST(DepDag);
+DECLARE_LIST(UTForm);
 
 DECLARE_LIST(SymeList);
+
+DECLARE_LIST(TFContext);
+DECLARE_LIST(UTFContext);
 
 /*
  * Declare necessary sets
@@ -125,7 +138,13 @@ DECLARE_TSET(Syme);
 # define OB_Lib			(OB_AXLGEN_LIMIT + 13)
 # define OB_Archive		(OB_AXLGEN_LIMIT + 14)
 # define OB_SymeSet		(OB_AXLGEN_LIMIT + 15)
-# define OB_LIMIT		(OB_AXLGEN_LIMIT + 16)
+
+#define OB_UTForm		(OB_AXLGEN_LIMIT + 16)
+#define OB_TFContext		(OB_AXLGEN_LIMIT + 17)
+#define OB_UTFContext		(OB_AXLGEN_LIMIT + 18)
+#define OB_InferEnv		(OB_AXLGEN_LIMIT + 19)
+
+# define OB_LIMIT		(OB_AXLGEN_LIMIT + 20)
 
 /*
  * Structure containing information about each type.

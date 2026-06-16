@@ -77,4 +77,6 @@ extern SymeList		tqGetBuiltinImports	(Stab, TQual);
 extern Bool		tqHasImport		(TQual, Syme);
 extern TQualList	tqListFrArgs		(Stab, TForm *, Length);
 
+extern Bool tqIsWildcard(TQual tq);
+
 #endif /* !_TQUAL_H_ */

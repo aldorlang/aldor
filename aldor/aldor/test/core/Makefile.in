@@ -1,4 +1,5 @@
 @SET_MAKE@
+
 AM_DEFAULT_VERBOSITY = @AM_DEFAULT_VERBOSITY@
 VPATH = @srcdir@
 
@@ -24,7 +25,8 @@ fmtests := x rectest enumtest clos strtable1 simple apply \
            nestcond silly cexp lself0 selfcond lself \
 	   lself2 catdef2 args1a args1 args2a args2 \
 	   strtable1 rec2 lit gener0 gener_fns gtools xarr \
-	   xdom
+	   xdom fix0 cross2
+
 ctests  := rectest enumtest multinever maptuple cimp1 \
            gener0 xit xits xiter lit xarr
 otests  := enumtest rec2
@@ -37,6 +39,7 @@ jruntests := small \
 	     xiter xit genlist0a genlist1a gencross0 gencross1 \
 	     xgenerpkg0 xgenerpkg1 xmap where1 xdom gdom xfold gencross_empty genrec \
 	     testlist
+
 lsptests  := enumtest gener0 genlist0a testlist
 
 out/ao/lself.ao: out/ao/lself0.ao

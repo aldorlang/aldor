@@ -57,7 +57,6 @@ extern const int TabZero;
 #define abDeclareId(a)   ((a)->abDeclare.id)
 #define abDeclareType(a) ((a)->abDeclare.type)
 #define abSeqArg(a,i)    ((a)->abSequence.argv[(i)])
-#define abCommaArg(a,i)  ((a)->abComma.argv[(i)])
 #define abWithin(a)      ((a)->abWith.within)
 #define abWithBase(a)    ((a)->abWith.base)
 #define abAddBase(a)     ((a)->abAdd.base)

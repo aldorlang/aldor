@@ -9,6 +9,7 @@ local void testAbSynFormatList();
 local void testAbParse();
 local void testExquo();
 local void testAbContains();
+local void testAbEmbedFormat();
 local void testAbSynFormatOne(String name, String expect, AbSyn absyn);
 
 void
@@ -20,6 +21,7 @@ absynTest()
 	TEST(testAbParse);
 	TEST(testExquo);
 	TEST(testAbContains);
+	TEST(testAbEmbedFormat);
 	fini();
 }
 
@@ -108,4 +110,13 @@ testAbContains()
 	ab2 = abqParse("A has B");
 	testTrue("1", abContains(ab2, id("A")));
 
+}
+
+local void
+testAbEmbedFormat()
+{
+	testStringEqual("eq", "MultiToTuple",
+			abEmbedToString(AB_Embed_MultiToTuple));
+	testStringEqual("eq", "MultiToTuple|ApplyMultiToCross",
+			abEmbedToString(AB_Embed_MultiToTuple | AB_Embed_ApplyMultiToCross));
 }

@@ -15,6 +15,7 @@
 #include "comsg.h"
 #include "comsgdb.h"
 
+#define RTYPE 0
 /*****************************************************************************
  *
  * Local function declarations
@@ -764,8 +765,8 @@ abCheckLambda(AbSyn absyn)
 #if RTYPE
 	if (!rtype)
 		comsgError(absyn, ALDOR_E_ChkMissingRetType);
-#endif
 	abCheckParam(param);
+#endif
 
 	for (i = 0; i < abArgc(param); i += 1) {
 		AbSyn	pari = abDefineeIdOrElse(abArgv(param)[i], NULL);

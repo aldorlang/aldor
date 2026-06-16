@@ -21,6 +21,7 @@
 
 static int failed = 0;
 static int count = 0;
+static PointerList debugList;
 
 local void testFail(String testname, String fmt, ...);
 
@@ -187,6 +188,12 @@ finiFile()
 	macexFiniFile();
 
 	cmdDebugReset();
+
+	while (debugList != listNil(Pointer)) {
+		int *p = (int *) car(debugList);
+		*p = 0;
+		debugList = cdr(debugList);
+	}
 	inFile = false;
 }
 
@@ -215,6 +222,8 @@ init()
 	sposInit();
 	ablogInit();
 	comsgInit();
+	comsgClearErrorMax();
+
 	initted = true;
 }
 
@@ -227,4 +236,9 @@ fini()
 		testFail("<fini>", "Missing fini");
 
 	dbFini();
+}
+
+void _debug(int *flg)
+{
+	debugList = listCons(Pointer)(flg, debugList);
 }

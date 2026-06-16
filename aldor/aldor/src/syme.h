@@ -39,6 +39,7 @@ enum symeTag {
 	SYME_Trigger,
         SYME_Temp,
         SYME_Has,
+        SYME_Var,
     SYME_LIMIT
 };
 

@@ -24,7 +24,9 @@ void init(void);
 void fini(void);
 void initFile(void);
 void finiFile(void);
+void _debug(int *);
 
 #define TEST(x) showTest(#x, x)
 
+#define ENABLE_DEBUG(x) {_debug(&x); x = 1;}
 #endif

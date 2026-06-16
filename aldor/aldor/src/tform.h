@@ -55,11 +55,15 @@ enum tformTag {
 	TF_Meet,
 	TF_Multiple,
 	TF_PackedMap,
+	TF_PatMatch,
+	TF_Pattern,
+	TF_PPartial,
 	TF_Raw,
 	TF_RawRecord,
 	TF_Record,
 	TF_Reference,
 	TF_Subst,
+	TF_InferEnv,
 	TF_Third,
 	TF_Trigger,
         TF_TrailingArray,
@@ -157,6 +161,9 @@ struct tform {
 	SefoList tests;
 
 	AbSub			sigma;		/* Subst. for TF_Subst. */
+	InferEnv		infEnv;		/* Env for TF_InfEnv */
+	AInt			varId;          /* Serial id for TF_Variable */
+
 	FreeVar			fv;		/* Free vars for subst. */
 	Length			*rho;		/* Dep. multi. permutation. */
 
@@ -459,6 +466,8 @@ extern TForm		tfUnknown;
 #define			tfIsUnknownMap(tf)	\
 	(tfIsAnyMap(tf) && tfIsUnknown(tfMapRet(tf)))
 
+#define tfIs(tag, _tf)  tfIs_(__FILE__, __LINE__, tag, _tf)
+extern TForm tfIs_(char *file, int line, TFormTag tag, TForm tf);
 /*
  * tfExit		Type of an expression which does not return.
  */
@@ -574,10 +583,15 @@ extern TForm		tfAssign		(TForm, AbSyn);
 /*
  * tfMap		Type of an expression which is a function.
  */
-extern TForm		tfAnyMap		(TForm, TForm, Bool);
+extern TForm		tfMap			(TForm, TForm);
+extern TForm		tfAnyMap		(TForm, TForm, AbMapType);
+extern AbMapType        tfAbMapType		(TForm);
 #define			tfIsAnyMap(tf)		\
-	(tfIsMap(tf) || tfIsPackedMap(tf))
+	(tfIsMap(tf) || tfIsPackedMap(tf) || tfIsPatMatch(tf))
 
+#define			tfIsFunctionMap(tf)		\
+	(tfIsMap(tf) || tfIsPackedMap(tf))
+  
 extern TForm		tfPackedMap		(TForm arg, TForm ret);
 #define			tfIsPackedMap(tf)	(tfTag(tf) == TF_PackedMap)
 
@@ -600,6 +614,8 @@ extern Length		tfMapRetc		(TForm);
 extern TForm		tfMapRetN		(TForm, Length);
 extern TForm		tfMapMultiRetN		(TForm, Length, Length);
 extern AbEmbed		tfMapMultiRetEmbed	(TForm, Length);
+extern Bool		tfMapRetIsTuple		(TForm tf);
+extern Bool		tfMapArgIsTuple		(TForm tf);
 
 /*
  * tfCross		Type of cross products.	 Possibly heterogeneous.
@@ -736,7 +752,48 @@ extern Bool		tfIsXGeneratorFn	(TForm);
 #define			tfXGeneratorArg(tf)	tfFollowArg(tf, 0)
 
 /*
- * TfAnyGenerator	We have two generator types. */
+ * tfPatMatch		Type of a Pattern Matcher object
+ */
+extern TForm		tfPatMatch		(TForm, TForm);
+#define			tfIsPatMatch(tf)	(tfTag(tf) == TF_PatMatch)
+#define			tfPatMatchWhole(tf)	tfFollowArg(tfIs(TF_PatMatch, tf), 0)
+#define			tfPatMatchParts(tf)	tfFollowArg(tf, 1)
+
+/*
+ * tfPattern		Type of Pattern - we work carry the pattern-ness of a result in the type
+ */
+extern TForm		tfPattern		(TForm);
+extern Bool		tfIsPatternExit		(TForm);
+extern Bool		tfIsPatternCaseArg	(TForm);
+extern TForm		tfPatternCase		(TForm);
+#define			tfIsPattern(tf)		(tfTag(tf) == TF_Pattern)
+#define			tfPatternArg(tf)	tfFollowArg(tfIs(TF_Pattern, tf), 0)
+
+/*
+ * tfPPartial		Type of a Pattern Match result
+ */
+extern TForm		tfPPartial		(TForm);
+extern TForm		tfPPartialAsMapArg	(TForm);
+extern Bool		tfIsPPartialMap		(TForm);
+#define			tfIsPPartial(tf)	(tfTag(tf) == TF_PPartial)
+#define			tfPPartialArgN(tf, i)	tfFollowArg(tfIs(TF_PPartial, tf), i)
+#define			tfPPartialArgc(tf)	tfArgc(tfIs(TF_PPartial, tf))
+
+
+/*
+ * tfVar		Substitutable
+ */
+
+extern TForm		tfVarNew	(void);
+
+extern TForm		tfVarFrId	(AInt);
+extern AInt		tfVarId		(TForm);
+extern TForm		tfVarFix	(TForm, InferEnv);
+extern Bool		tfIsVarInferred (TForm);
+#define			tfIsVar(tf)	(tfTag(tf) == TF_Variable)
+/*
+ * TfAnyGenerator	We have two generator types.
+ */
 
 typedef enum { TFG_Generator, TFG_XGenerator } TfGenType;
 
@@ -758,6 +815,18 @@ extern TForm		tfSubst			(AbSub, TForm);
 #define			tfSubstArg(tf)		tfFollowArg(tf, 0)
 #define			tfIsSubstOf(tf,fin)	\
 	(tfIsSubst(fin) && tfSubstArg(fin) == (tf))
+
+/*
+ * tfInferEnv		Type which has a pending inference variable
+ *
+ *	Inference is allowed to create lazy type forms whose ultimate
+ *	value is determined by performing the dereferencing specified by
+ *	tf->infEnv on tf->argv[0].
+ */
+extern TForm		tfInfSubst		(InferEnv, TForm);
+#define			tfIsInfSubst(tf)	(tfTag(tf) == TF_InferEnv)
+#define			tfInfSubstEnv(tf)	((tf)->infEnv)
+#define			tfInfSubstArg(tf)	tfFollowArg(tf, 0)
 
 /*
  * tfSyntax		Type which has not been semantically analyzed.
@@ -943,6 +1012,9 @@ extern TForm		tfCatFrDom(TForm);
 extern Bool		tfDomHasImplicit(TForm);
 extern Bool		tfCatHasImplicit(TForm);
 extern Syme		tfImplicitExport(Stab, SymeList, Syme);
+
+extern Bool		tfIsWildcardImport(TForm tf);
+
 
 /*****************************************************************************
  *

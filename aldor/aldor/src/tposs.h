@@ -11,9 +11,10 @@
 
 #include "axlobs.h"
 #include "tform.h"
+#include "tfcontext.h"
 
 struct tposs {
-	TFormList	possl;
+	UTFContextList	possl;
 	int		possc;
 	int		refc;
 };
@@ -22,11 +23,22 @@ typedef TPoss	(*TPossGetter)		(Pointer, Length);
 
 extern TPoss	tpossEmpty		(void);
 extern TPoss	tpossSingleton		(TForm);
+extern TPoss	tpossSingletonUTForm	(UTForm);
 extern TPoss	tpossFrSymes		(SymeList);
 extern TPoss	tpossDeclare		(Syme, TPoss);
 extern TPoss	tpossMulti		(Length, Pointer, TPossGetter);
 extern TPoss	tpossAdd1		(TPoss, TForm);
+extern TPoss	tpossAdd1UTForm		(TPoss, UTForm);
+extern TPoss	tpossAdd1InferEnv	(TPoss, TForm, InferEnv);
+extern TPoss	tpossAdd1UTFContext	(TPoss, UTFContext);
+
 extern TPoss	tpossFrTheList		(TFormList);
+extern TPoss    tpossFrTheUTFormList	(UTFormList);
+extern TPoss	tpossFrTheUTFContextList(UTFContextList);
+extern TPoss    tpossUnknown		(TPoss);
+
+extern UTForm     tpossUniqueUTForm	(TPoss);
+extern UTFContext tpossUniqueUTFContext	(TPoss);
 
 extern TPoss	tpossRefer		(TPoss);
 extern TPoss	tpossCopy		(TPoss);
@@ -36,6 +48,7 @@ extern int	tpossPrint		(FILE *, TPoss);
 extern int	tpossPrintDb		(TPoss);
 extern int      tpossOStreamWrite       (OStream, TPoss);
 
+extern Bool	tpossIsEmpty		(TPoss);
 extern Bool	tpossIsUnique		(TPoss);
 extern TPoss	tpossIntersect   	(TPoss,  TPoss);
 extern TPoss	tpossUnion		(TPoss,  TPoss);
@@ -54,7 +67,8 @@ extern Bool	tpossHasSatisfier	(TPoss tp, TForm t);
 		 * which satisfies the target type t?
 		 */
 
-extern TForm	tpossSelectSatisfier	(TPoss tp, TForm t);
+extern TForm		tpossSelectSatisfier		(TPoss tp, TForm t);
+extern UTFContext	tpossSelectSatisfierContext	(TPoss tp, TFContext utfc);
 		/*
 		 * Select the unique member of the type possibility set tp
 		 * which satisfies the target type t, or return zero if there
@@ -81,6 +95,11 @@ extern Bool	tpossHasNonMapType	(TPoss);
 		 * Does the type possibility set contain a non-mapping type?
 		 */
 
+extern TPoss   tpossConst		(TPoss, TForm);
+		/*
+		 * Return a tposs for tf, but with envs of given tposs
+		 */
+
 
 extern TPoss	tpossGeneratorArg	(TPoss tp);
 extern TPoss	tpossAnyGeneratorArg	(TPoss tp);
@@ -88,10 +107,49 @@ extern TPoss	tpossAnyGeneratorArg	(TPoss tp);
 		 * Return the type possibilities X such that tp is Generator(X).
 		 */
 
+extern TPoss	tpossPattern(TPoss tp);
+		/*
+		 * Return the type possibilities Pattern(X) for X in tp
+		 */
+extern TPoss	tpossPatternArg(TPoss tp);
+		/*
+		 * Return the type possibilities X where Pattern(X) is in tp
+		 */
+extern TPoss	tpossPatternCase(TPoss tp);
+		/*
+		 * Return the type (X, Pattern X) -> Bool
+		 */
+TPoss tpossLambda(TPoss argPoss, TPoss retPoss, AbMapType mapType);
+		/*
+		 * Return A -> R for each combination of arg and ret
+		 */
+TPoss tpossEmbedded(TPoss tposs, TForm tf);
+		/*
+		 * Return tposs where each element is embedded into tf
+		 */
+
 extern Bool	tpossIsHaving		(TPoss tp, TFormPredicate pred);
 		/*
 		 * Is there any type form in tp which satisfies the predicate?
 		 */
+
+extern Bool	tpossIsConstant(TPoss tp);
+		/*
+		 * Are all types in tp constant
+		 * (This is the negation of tpossHasAnyUTForm)
+		 */
+
+extern Bool	tpossHasAnyUTForm(TPoss tp);
+		/*
+		 * Are any types in tp universally qualified
+		 */
+
+extern Bool	tpossHasUTForm(TPoss, UTForm);
+		/*
+		 * Does the TP contain (implicitly) the supplied type?
+		 * NB: May give false negatives.
+		 */
+extern Bool	tpossHasIntersection(TPoss tp1, TPoss tp2);
 
 extern TPoss	tpossFilterEmpty	(TPoss tposs);
 
@@ -105,14 +163,19 @@ extern TPoss	tpossFilterEmpty	(TPoss tposs);
  * }
  */
 typedef struct {
-	TFormList	possl;
+	UTFContextList	possl;
 } TPossIterator;
 
-extern TForm tpossELT_(TPossIterator *ip);
+extern UTFContext tpossUCELT_(TPossIterator *ip);
+extern TForm	 tpossELT_(TPossIterator *ip);
+extern UTForm 	 tpossUELT_(TPossIterator *ip);
 
 #define tpossITER(ip,p)	((ip).possl = (p ? (p)->possl : NULL))
 #define tpossMORE(ip)   ((ip).possl)
 #define tpossSTEP(ip)	((ip).possl = cdr((ip).possl))
 #define tpossELT(ip)    tpossELT_(&ip)
+#define tpossUELT(ip)	tpossUELT_(&ip)
+#define tpossUCELT(ip)	tpossUCELT_(&ip)
+#define tpossINFENV(ip)	uctxtInfEnv(tpossUCELT_(&ip))
 
 #endif /* !_TPOSS_H_ */

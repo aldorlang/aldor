@@ -14,6 +14,7 @@
 #include "doc.h"
 #include "fint.h"
 #include "format.h"
+#include "infenv.h"
 #include "lib.h"
 #include "sefo.h"
 #include "simpl.h"
@@ -23,16 +24,19 @@
 #include "strops.h"
 #include "table.h"
 #include "tfsat.h"
+#include "tfknown.h"
 #include "tposs.h"
 #include "tqual.h"
 
 Bool	stabDebug	= false;
 Bool	stabImportDebug	= false;
 Bool	stabConstDebug	= false;
+Bool	stabVarDebug	= false;
 
 #define stabDEBUG	DEBUG_IF(stab)		afprintf
 #define stabImportDEBUG	DEBUG_IF(stabImport)	afprintf
 #define stabConstDEBUG	DEBUG_IF(stabConst)	afprintf
+#define stabVarDEBUG	DEBUG_IF(stabVar)	afprintf
 
 /****************************************************************************
  *
@@ -190,6 +194,7 @@ stabNewFile(Stab globalStab)
 	StabLevel slev = stabNewLevel(1, 1, sposNone, true, false); /* large level */
 
 	Stab fileStab = listCons(StabLevel) (slev, globalStab);
+	slev->infEnv  = infEnvEmpty();
 	assert(listLength(StabLevel)(globalStab) == 1);
 
 	stabClrSubstable(fileStab);
@@ -554,7 +559,6 @@ stabNewLevel(int levno, int lamno, SrcPos spos, Bool isLargeLevel, Bool isGenera
 
 	slev->tformsUsed.list	= listNil(TFormUses);
 	slev->tformsUnused	= listNil(TForm);
-
 	/*
 	 * large levels have a non-0 hash table for faster lookup of tforms.
 	 */
@@ -564,6 +568,9 @@ stabNewLevel(int levno, int lamno, SrcPos spos, Bool isLargeLevel, Bool isGenera
 	slev->boundSymes	= listNil(Syme);
 	slev->extendSymes	= listNil(Syme);
 	slev->exportedTypes     = NULL;
+	slev->varList		= listNil(TForm);
+	slev->varCount		= 0;
+	slev->infEnv            = NULL;
 
 	return slev;
 }
@@ -685,7 +692,7 @@ stabGetEntry(Stab stab0, Symbol id, Bool recurse)
 			findent -= 3;
 		}
 
-		if (tp && tpossCount(tp)) {
+		if (tp && !tpossIsEmpty(tp)) {
 			TPossIterator	tit;
 
 			findent += 2;
@@ -1411,6 +1418,57 @@ stabDefBuiltin(Stab stab, Symbol id, TForm tform, FoamBValTag builtin)
 	return stabAddMeaning(stab, syme);
 }
 
+TForm
+stabRegisterVar(Stab stab, AbSyn ab)
+{
+	assert(stab != NULL);
+
+	if (stabLevelIsLocked(stab)) {
+		return stabRegisterVar(cdr(stab), ab);
+	}
+	AInt id    = car(stab)->varCount++;
+	AInt varId = car(stab)->serialNo * 1000 + id;
+	stabVarDEBUG(dbOut, "Registered var %d for %pAbSyn\n", varId, ab);
+	TForm tf = tfVarFrId(varId);
+
+	car(stab)->varList = listCons(TForm)(tf, car(stab)->varList);
+	return tf;
+}
+
+TFormList
+stabRegisteredVars(Stab stab)
+{
+	return car(stab)->varList;
+}
+
+InferEnv
+stabInfEnv(Stab stab)
+{
+	if (car(stab)->infEnv == NULL) {
+		return stabInfEnv(cdr(stab));
+	}
+	return car(stab)->infEnv;
+}
+
+void
+stabInfEnvApply(Stab stab, InferEnv env)
+{
+	SymeList symes;
+	if (infEnvIsEmpty(env)) {
+		return;
+	}
+	car(stab)->infEnv = car(stab)->infEnv == NULL ? env : infEnvMerge(car(stab)->infEnv, env);
+	/*
+	for (symes = stabGetBoundSymes(stab); symes; symes = cdr(symes)) {
+		Syme	syme = car(symes);
+		TForm newTf = tformFollowVars(env, symeType(syme));
+		afprintf(dbOut, "Setting type of %pSymbol to %pTForm\n", symeId(syme), newTf);
+		symeSetType(syme, newTf);
+	}
+	*/
+
+}
+
 /******************************************************************************
  *
  * :: Shadow Stuff
@@ -1736,6 +1794,14 @@ stabGetExportedSymes(Stab stab)
 	return exports;
 }
 
+SymeList
+stabGetExportedSymesById(Stab stab, Symbol id)
+{
+	// FIXME: This should be the default.
+	SymeList symes = stabGetExportedSymes(stab);
+	return symeListSubListById(symes, id);
+}
+
 TQualList
 stabImportFrom(Stab stab, TQual tq)
 {
@@ -1981,10 +2047,12 @@ tfuNew(TForm tf)
 	tu->isCatConditionImport= false;
 	tu->isParamImport	= false;
 	tu->serialNo		= tfuCounter++;
+	tu->isVar		= false;
 	tu->tf			= tf;
 	tu->exports		= NULL;
 	tu->imports		= NULL;
 	tu->inlines		= NULL;
+	tu->body		= NULL;
 	tu->cascades		= listNil(TQual);
 	tu->extension		= listNil(AbSyn);
 	tu->extendees		= listNil(AbSyn);
@@ -2171,6 +2239,14 @@ stabQualifiedInlineTForm(Stab stab, AbSyn ab, TForm tf)
 	tfuSetQualified(tfu->inlines, tfu->tf, tfSyntaxFrAbSyn(stab, ab));
 
 	return tf;
+}
+
+void
+stabAddVar(Stab stab, TForm tf, AbSyn ab)
+{
+	TFormUses tfu = tfuSetFlag(stab, tf, tformDoNothing);
+	tfu->isVar = true;
+	tfu->body  = ab;
 }
 
 /*

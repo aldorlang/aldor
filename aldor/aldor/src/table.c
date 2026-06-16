@@ -138,6 +138,13 @@ tblSize(Table t)
 	return t->count;
 }
 
+Bool
+tblIsEmpty(Table t)
+{
+	return tblSize(t) == 0;
+}
+
+
 #if 0
 #define BUCKET_SEARCH(t,x,b,h,k,efun,ACTION) {				\
 	register struct TblSlot *p = 0;					\

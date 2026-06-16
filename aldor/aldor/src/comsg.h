@@ -43,6 +43,7 @@ struct comsg {
  * :: Functions to control behaviour.
  */
 extern int	comsgSetOption	  (String);	       /* 0 => OK, -1 => err */
+extern void	comsgClearErrorMax(void);
 extern void	comsgSetInteractiveOption (void);
 extern int	comsgSelectByName (String, Bool isOn); /* 0 => OK, -1 => err */
 

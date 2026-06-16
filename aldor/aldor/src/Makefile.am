@@ -177,11 +177,13 @@ libstruct_a_SOURCES =	\
 	formatters.c	\
 	ftype.c		\
 	gf_syme.c	\
+	infenv.c	\
 	javasig.c	\
 	lib.c		\
 	loops.c		\
 	optinfo.c	\
 	output.c	\
+	orenv.c		\
 	sefo.c		\
 	simpl.c		\
 	spesym.c	\
@@ -191,15 +193,25 @@ libstruct_a_SOURCES =	\
 	syme.c		\
 	symeset.c	\
 	symcoinfo.c	\
-	tconst.c	\
 	tfcond.c	\
+	tconst.c	\
+	tfcontext.c	\
 	tform.c		\
 	tfsat.c		\
+	tfknown.c	\
 	ti_top.c	\
 	token.c		\
 	tposs.c		\
 	tqual.c		\
-	version.c
+	ufind.c		\
+	unify.c		\
+	utform.c	\
+	utype.c		\
+	utyperes.c	\
+	uvar.c		\
+	version.c	\
+	wildimp.c
+
 #libstruct_a_LIBADD = libgen.a libport.a
 structtest_SOURCES = structtest.c
 structtest_LDADD = libstruct.a libgen.a libport.a spesym.o -lm
@@ -225,15 +237,18 @@ libphase_a_SOURCES =	\
 	genstyle.c	\
 	gf_add.c	\
 	gf_excpt.c	\
+	gf_embed.c	\
 	gf_fortran.c	\
 	gf_gener.c	\
 	gf_implicit.c	\
 	gf_imps.c	\
 	gf_java.c	\
+	gf_match.c	\
 	gf_prog.c	\
 	gf_reference.c	\
 	gf_rtime.c	\
 	gf_seq.c	\
+	gf_special.c	\
 	gf_xgener.c	\
 	gf_cgener.c	\
 	include.c	\
@@ -268,10 +283,13 @@ libphase_a_SOURCES =	\
 	scobind.c	\
 	syscmd.c	\
 	terror.c	\
+	ti_audit.c	\
 	ti_bup.c	\
 	ti_decl.c	\
 	ti_sef.c	\
+	ti_solve.c	\
 	ti_tdn.c	\
+	ti_util.c	\
 	tinfer.c	\
 	usedef.c	\
 	yldlocs.c
@@ -288,10 +306,12 @@ testsuite =			\
 	test/test_ablogic.c 	\
 	test/test_abnorm.c	\
 	test/test_absyn.c 	\
+	test/test_abuse.c 	\
 	test/test_annabs.c 	\
 	test/test_archive.c	\
 	test/test_bigint.c 	\
 	test/test_bitv.c 	\
+	test/test_blank.c 	\
 	test/test_errorset.c	\
 	test/test_float.c	\
 	test/test_flog.c	\
@@ -310,6 +330,7 @@ testsuite =			\
 	test/test_of_cprop.c	\
 	test/test_of_crinlin.c	\
 	test/test_of_peep.c	\
+	test/test_orenv.c	\
 	test/test_ostream.c	\
 	test/test_printf.c	\
 	test/test_retyp.c	\
@@ -325,7 +346,10 @@ testsuite =			\
 	test/test_tfsat.c	\
 	test/test_tinfer.c	\
 	test/test_tposs.c	\
-	test/test_tset.c
+	test/test_tset.c	\
+	test/test_infenv.c
+
+#test/test_ufind.c
 
 testall_SOURCES =	\
 	$(testsuite)	\

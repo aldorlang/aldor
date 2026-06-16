@@ -6,8 +6,10 @@
 #include "format.h"
 #include "formatters.h"
 #include "freevar.h"
+#include "infenv.h"
 #include "java/javacode.h"
 #include "ostream.h"
+#include "orenv.h"
 #include "sefo.h"
 #include "stab.h"
 #include "susage.h"
@@ -15,15 +17,23 @@
 #include "syme.h"
 #include "symeset.h"
 #include "tconst.h"
+#include "tfcontext.h"
 #include "tfsat.h"
+#include "ti_solve.h" // TODO: Need to break this into datatype and inference
 #include "tposs.h"
 #include "ttable.h"
 #include "usedef.h"
+#include "utform.h"
+#include "utype.h"
+#include "utyperes.h"
 
 local int tfFormatter(OStream stream, Pointer p);
 local int tfFormatterAlt(OStream stream, int lvl, Pointer p);
 local int tfListFormatter(OStream stream, Pointer p);
 local int tfuFormatter(OStream stream, Pointer p);
+
+local int sefoFormatter(OStream stream, Pointer p);
+local int sefoListFormatter(OStream stream, Pointer p);
 
 local int tpossFormatter(OStream stream, Pointer p);
 local int fvFormatter(OStream stream, Pointer p);
@@ -58,6 +68,7 @@ local int errorSetFormatter(OStream stream, Pointer p);
 local int javaCodeFormatter(OStream stream, Pointer p);
 
 local int boolFormatter(OStream ostream, int p);
+local int abUseFormatter(OStream ostream, int p);
 
 local int slotUsageFormatter(OStream ostream, Pointer p);
 local int slotUsageListFormatter(OStream ostream, Pointer p);
@@ -65,15 +76,36 @@ local int slotUsageListFormatter(OStream ostream, Pointer p);
 local int udInfoFormatter(OStream ostream, Pointer p);
 local int udInfoListFormatter(OStream ostream, Pointer p);
 
+local int utypeFormatter(OStream stream, Pointer p);
+local int utformFormatter(OStream stream, Pointer p);
+local int utformListFormatter(OStream stream, Pointer p);
+local int utformFormatterAlt(OStream ostream, int lvl, Pointer p);
+local int utypeResultFormatter(OStream stream, Pointer p);
+
+local int utfSatMaskListFormatter(OStream ostream, Pointer p);
+
+local int tfContextFormatter(OStream ostream, Pointer p);
+local int utfContextFormatter(OStream ostream, Pointer p);
+local int utfContextListFormatter(OStream ostream, Pointer p);
+
+local int infEnvFormatter(OStream ostream, Pointer p);
+local int infEnvListFormatter(OStream ostream, Pointer p);
+
+local int orEnvFormatter(OStream ostream, Pointer p);
+
 void
 fmttsInit()
 {
 	fmtRegisterI("Bool", boolFormatter);
+	fmtRegisterI("AbUseTag", abUseFormatter);
 
 	fmtRegister("TForm", tfFormatter);
 	fmtRegisterAlt("TForm", tfFormatterAlt);
 	fmtRegister("TFormList", tfListFormatter);
 	fmtRegister("TFormUses", tfuFormatter);
+
+	fmtRegister("Sefo", sefoFormatter);
+	fmtRegister("SefoList", sefoListFormatter);
 
 	fmtRegister("FreeVar", fvFormatter);
 	fmtRegister("TPoss", tpossFormatter);
@@ -111,7 +143,27 @@ fmttsInit()
 	fmtRegister("Symbol", symbolFormatter);
 
 	fmtRegister("ErrorSet", errorSetFormatter);
+
 	fmtRegister("JavaCode", javaCodeFormatter);
+
+	fmtRegister("UType", utypeFormatter);
+	fmtRegister("UTypeResult", utypeResultFormatter);
+
+	fmtRegister("UTForm", utformFormatter);
+	fmtRegister("UTFormList", utformListFormatter);
+	fmtRegisterAlt("UTForm", utformFormatterAlt);
+
+	fmtRegister("USatMask", utfSatMaskFormatter);
+	fmtRegister("USatMaskList", utfSatMaskListFormatter);
+
+	fmtRegister("TFContext", tfContextFormatter);
+
+	fmtRegister("UTFContext", utfContextFormatter);
+	fmtRegister("UTFContextList", utfContextListFormatter);
+
+	fmtRegister("InferEnv", infEnvFormatter);
+	fmtRegister("InferEnvList", infEnvListFormatter);
+	fmtRegister("OrEnv", orEnvFormatter);
 }
 
 
@@ -306,8 +358,15 @@ tconstFormatter(OStream ostream, Pointer p)
 {
 	TConst tc = (TConst) p;
 	int i;
-
-	i = ostreamPrintf(ostream, "[TC: %d %pTForm %pTForm]", tc->serial, tc->argv[0], tc->argv[1]);
+	int parent = tc->parent == NULL ? -1 : tc->parent->serial;
+	if (tc->owner == NULL) {
+		i = ostreamPrintf(ostream, "[TC: %d owner: -- p: %d:: %pTForm satisfies %pTForm]",
+				  tc->serial, parent, tc->argv[0], tc->argv[1]);
+	}
+	else {
+		i = ostreamPrintf(ostream, "[TC: %d owner: %p p: %d:: %pTForm satisfies %pTForm]",
+				  tc->serial, tc->owner, parent, tc->argv[0], tc->argv[1]);
+	}
 
 	return i;
 }
@@ -331,6 +390,22 @@ tfuFormatter(OStream ostream, Pointer p)
 {
 	TFormUses tfu = (TFormUses) p;
 	return tfuOStreamPrint(ostream, tfu);
+}
+
+
+local int
+sefoFormatter(OStream ostream, Pointer p)
+{
+	Sefo sefo = (Sefo) p;
+	return sefoOStreamWrite(ostream, sefo);
+}
+
+
+local int
+sefoListFormatter(OStream ostream, Pointer p)
+{
+	SefoList list = (SefoList) p;
+	return listFormat(Sefo)(ostream, "Sefo", list);
 }
 
 
@@ -377,6 +452,12 @@ stringListFormatter(OStream ostream, Pointer p)
 }
 
 local int
+abUseFormatter(OStream ostream, int p)
+{
+	return ostreamPrintf(ostream, "%s", abUseInfo(p).str);
+}
+
+local int
 boolFormatter(OStream ostream, int p)
 {
 	Bool flg = p;
@@ -415,4 +496,88 @@ udInfoListFormatter(OStream ostream, Pointer p)
 {
 	UdInfoList list = (UdInfoList) p;
 	return listFormat(UdInfo)(ostream, "UdInfo", list);
+}
+
+local int
+utypeFormatter(OStream ostream, Pointer p)
+{
+	UType utype = (UType) p;
+	return utypeOStreamWrite(ostream, utype);
+}
+
+local int
+utformFormatter(OStream ostream, Pointer p)
+{
+	UTForm utf = (UTForm) p;
+	return utfOStreamWrite(ostream, false, utf);
+}
+
+local int
+utformFormatterAlt(OStream ostream, int lvl, Pointer p)
+{
+	UTForm utf = (UTForm) p;
+	return utfOStreamWrite(ostream, lvl > 0, utf);
+}
+
+local int
+utformListFormatter(OStream ostream, Pointer p)
+{
+	UTFormList list = (UTFormList) p;
+	return listFormat(UTForm)(ostream, "UTForm", list);
+}
+
+local int
+utypeResultFormatter(OStream ostream, Pointer p)
+{
+	return utypeResultOStreamWrite(ostream, (UTypeResult) p);
+}
+
+local int
+utfSatMaskListFormatter(OStream ostream, Pointer p)
+{
+	USatMaskList list = (USatMaskList) p;
+	return listFormat(USatMask)(ostream, "USatMask", list);
+}
+
+local int
+tfContextFormatter(OStream ostream, Pointer p)
+{
+	TFContext utfc = (TFContext) p;
+
+	return ctxtOStreamWrite(ostream, utfc);
+}
+
+local int
+utfContextFormatter(OStream ostream, Pointer p)
+{
+	UTFContext utfc = (UTFContext) p;
+
+	return uctxtOStreamWrite(ostream, utfc);
+}
+
+local int
+utfContextListFormatter(OStream ostream, Pointer p)
+{
+	return listFormat(USatMask)(ostream, "UTFContext", p);
+}
+
+
+local int
+infEnvFormatter(OStream ostream, Pointer p)
+{
+	InferEnv infEnv = (InferEnv) p;
+
+	return infEnvOStreamWrite(ostream, infEnv);
+}
+
+local int
+infEnvListFormatter(OStream ostream, Pointer p)
+{
+	return listFormat(InferEnv)(ostream, "InferEnv", p);
+}
+
+local int
+orEnvFormatter(OStream ostream, Pointer p)
+{
+	return orEnvOStreamWrite(ostream, (OrEnv) p);
 }

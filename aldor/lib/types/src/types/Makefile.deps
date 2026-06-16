@@ -1,0 +1,15 @@
+library_deps := base
+
+tp_env_deps      := tp_typeterm 
+tp_infer2_deps   := tp_counter tp_env tp_scopes tp_state tp_tposs2 tp_typeterm tp_unify2
+tp_ptt_deps      := tp_typeterm
+tp_sat_deps      := tp_typeterm tp_unify2
+tp_simple_deps   := tp_env tp_typeterm
+tp_scopes_deps	 := tp_counter tp_env
+tp_state_deps    := tp_env tp_typeterm tp_tposs2
+tp_test_deps     := tp_typeterm
+tp_tposs_deps    := tp_sat tp_typeterm tp_unify2
+tp_tposs2_deps   := tp_sat tp_typeterm tp_unify2
+tp_typeterm_deps := 
+tp_unify2_deps   := tp_counter tp_typeterm tp_ptt
+tp_testcases_deps := tp_infer2

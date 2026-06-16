@@ -41,6 +41,9 @@ Symbol	ssymBoolean,
 	ssymMeet,
 	ssymPackedMap,
 	ssymPointer,
+        ssymPatMatch,
+        ssymPattern,
+        ssymPPartial,
 	ssymRaw,
 	ssymRawRecord,
 	ssymRecord,
@@ -73,6 +76,7 @@ Symbol	ssymArrow,
 	ssymTheCase,
 	ssymTheDispose,
 	ssymTheExplode,
+	ssymTheFailed,
 	ssymTheFloat,
 	ssymTheInteger,
 	ssymTheToJava,
@@ -83,6 +87,7 @@ Symbol	ssymArrow,
 	ssymTheRawRecord,
 	ssymTheRecord,
 	ssymTheString,
+	ssymTheSuccess,
 	ssymTheTest,
 	ssymTheTrailingArray,
 	ssymTheUnion,
@@ -182,6 +187,9 @@ ssymInit(void)
 	ssymMap           = symIntern("Map");
 	ssymMeet          = symIntern("Meet");
 	ssymPackedMap     = symIntern("PackedMap");
+	ssymPPartial      = symIntern("PPartial");
+	ssymPatMatch      = symIntern("PatMatch");
+	ssymPattern       = symIntern("Pattern");
 	ssymPointer       = symIntern("Pointer");
 	ssymRaw           = symIntern("Raw");
 	ssymRawRecord     = symIntern("RawRecord");
@@ -215,6 +223,7 @@ ssymInit(void)
 	ssymTheCase	  = symIntern("case");
 	ssymTheDispose    = symIntern("dispose!");
 	ssymTheExplode    = symIntern("explode");
+	ssymTheFailed     = symIntern("failed");
 	ssymTheFloat	  = symIntern("float");
 	ssymTheInteger	  = symIntern("integer");
 	ssymTheToJava	  = symIntern("toJava");
@@ -225,6 +234,7 @@ ssymInit(void)
 	ssymTheRecord     = symIntern("record");
 	ssymTheStdout	  = symIntern("stdout");
 	ssymTheString	  = symIntern("string");
+	ssymTheSuccess	  = symIntern("success");
 	ssymTheTest	  = symIntern("test");
 	ssymTheTrailingArray= symIntern("trailing");
 	ssymTheUnion      = symIntern("union");

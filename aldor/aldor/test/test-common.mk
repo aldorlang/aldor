@@ -8,7 +8,9 @@ include $(top_builddir)/aldor/test/test-config.mk
 testcommon = $(abs_testsrcdir)/test-common.mk
 
 $(call am_define_steps,\
-    ALDOR ALDOR_AP ALDOR_CMD ALDOR_EXE ALDOR_FM ALDOR_GENC LSP_SCRIPT LSP_TEST\
+    ALDOR ALDOR_AP ALDOR_CMD ALDOR_EXE ALDOR_FM ALDOR_GENC \
+    ALDOR_OUT ALDOR_OUTDIFF \
+    LSP_SCRIPT LSP_TEST \
     ALDOR_JAVATEST ALDOR_OBJ JAVAC ALDOR_JAVA JAVAC JAVA_CP JUNIT CLEANONE)
 
 all: really-all
@@ -23,10 +25,10 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	    cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ ;; \
 	esac;
 
-AM_DBG := $(if $(filter 1,$(DBG)), gdb --args, $(DBG))
-AM_DBG_J := $(if $(filter 1,$(DBG_J)), gdb --args, $(DBG_J))
-AM_DBG_C := $(if $(filter 1,$(DBG_C)), gdb --args, $(DBG_C))
-AM_DBG_FM := $(if $(filter 1,$(DBG_FM)), gdb --args, $(DBG_FM))
+AM_DBG := $(if $(filter 1,$(DBG)),gdb --args,$(DBG))
+AM_DBG_J := $(if $(filter 1,$(DBG_J)), gdb --args,$(DBG_J))
+AM_DBG_C := $(if $(filter 1,$(DBG_C)), gdb --args,$(DBG_C))
+AM_DBG_FM := $(if $(filter 1,$(DBG_FM)), gdb --args,$(DBG_FM))
 
 aldorsrcdir   = $(abs_top_srcdir)/aldor/src
 aldorexedir   = $(abs_top_builddir)/aldor/src
@@ -48,7 +50,9 @@ _otests     := $(sort $(otests) $(_xtests))
 _ctests     := $(sort $(ctests) $(_otests))
 _fmtests    := $(sort $(fmtests) $(_jtests) $(_ctests))
 _aotests    := $(sort $(_fmtests) $(_ctests) $(_xtests))
-_alltests   := $(sort $(_aptests) $(_fmtests) $(_ctests) $(_otests) $(_xtests) $(_jtests))
+_difftests  := $(sort $(difftests))
+_alltests   := $(sort $(_aptests) $(_fmtests) $(_ctests) $(_otests) $(_xtests) $(_jtests) $(_difftests))
+
 
 nfile := -Nfile=$(aldorsrcdir)/aldor.conf
 
@@ -155,7 +159,7 @@ $(patsubst %, out/ap/%.ap, $(_aotests)): out/ap/%.ap: %.as
 	mkdir -p $$(dirname $@);	\
 	$(aldorexedir)/aldor $(nfile) -Fap=$@ $(srcdir)/$*.as
 
-.PHONY: all-ao
+.PHONY: all-ao echo-ao
 all-ao: $(patsubst %, out/ao/%.ao, $(_aotests))
 $(patsubst %, out/ao/%.ao, $(_aotests)): out/ao/%.ao: %.as
 $(patsubst %, out/ao/%.ao, $(utils) $(_aotests)): $(aldorexedir)/aldor
@@ -168,6 +172,9 @@ $(patsubst %, out/ao/%.cmd, $(_aotests)): out/ao/%.cmd: %.as
 	$(AM_V_ALDOR_CMD)	 \
 	mkdir -p $$(dirname $@); \
 	echo run '$(aldor_args)' > $@
+
+echo-ao:
+	@echo $(patsubst %, out/ao/%.ao, $(_aotests))
 
 .PHONY: all-exe
 all-exe: $(patsubst %, %.exe, $(_xtests))
@@ -202,6 +209,36 @@ $(addsuffix -junittest,$(_junittests)): %-junittest: out/java/%.class
 
 check-java: $(patsubst %,%-javatest,$(_jruntests)) $(patsubst %,%-junittest,$(_junittests))
 
+# Error messages
+.PHONY: all-difftest
+all-difftest: $(patsubst %, %-difftest, $(_difftests))
+
+.PHONY: $(addsuffix -difftest, $(_difftests))
+
+$(patsubst %, out/diff/%.out, $(_difftests)): out/diff/%.out:
+	@$(AM_V_ALDOR_OUT) 		\
+	(mkdir -p $$(dirname $@);	\
+	if test "$(AM_DBG)" = "" ; then  \
+		if $(aldorexedir)/aldor $($*_opts) $(aldor_args) > $@ ; then false; else true ; fi; \
+	else	\
+		$(AM_DBG) $(aldorexedir)/aldor $($*_opts) $(aldor_args); \
+	fi)
+
+$(patsubst %, out/diff/%.out, $(_difftests)): out/diff/%.out: %.as
+$(patsubst %, out/diff/%.out, $(_difftests)): out/ao/tassert.ao
+
+$(patsubst %, %-difftest, $(_difftests)): %-difftest: out/diff/%.out %.expected
+	$(AM_V_ALDOR_OUTDIFF) \
+	diff -u $(srcdir)/$*.expected out/diff/$*.out
+
+$(patsubst %, install-out-%, $(_difftests)): install-out-%: out/diff/%.out
+	cp out/diff/$*.out $(srcdir)/$*.expected
+
+.PHONY: $(patsubst %, show-installed-%, $(_difftests))
+$(patsubst %, show-installed-%, $(_difftests)): show-installed-%:
+	@cat $(srcdir)/$*.expected
+
+# Lisp
 $(patsubst %,out/lsp/%_in.lsp, $(_lsptests)): out/lsp/%_in.lsp: Makefile $(testcommon)
 	@mkdir -p out/lsp				
 	$(AM_V_LSP_SCRIPT) 				\
@@ -224,20 +261,21 @@ $(patsubst %,out/lsp/%_in.lsp, $(_lsptests)): out/lsp/%_in.lsp: Makefile $(testc
 	 echo '(load "out/lsp/tassert.lsp")';		\
 	 echo '(load "out/lsp/$*.lsp")';		\
 	 echo '(in-package :FOAM-USER)';		\
-	 echo '(print "calling G-$*")';			\
 	 echo '(|CCall| |G-$*|)') > $@
 
+.PHONY: all-lsp-tests
 .PHONY: $(patsubst %,%-lspsbcl,$(_lsptests))
+all-lsp-tests: $(patsubst %, %-lsptest, $(_lsptests))
+check: all-lsp-tests
+
+$(addsuffix -lsptest, $(_lsptests)): %-lsptest: $(srcdir)/prelude.lsp out/lsp/%.lsp out/lsp/%_in.lsp out/lsp/tassert.lsp
+	$(AM_V_LSP_TEST) 	\
+	(sbcl --non-interactive --load out/lsp/$*_in.lsp)
 
 $(patsubst %,%-lspsbcl,$(_lsptests)): %-lspsbcl: Makefile $(testcommon)
 	sbcl --load out/lsp/$*_in.lsp
 
-.PHONY: all-lsp-tests
-check: all-lsp-tests
 all-lsp-tests: $(patsubst %, %-lsptest, $(_lsptests))
-$(addsuffix -lsptest, $(_lsptests)): %-lsptest: $(srcdir)/prelude.lsp out/lsp/%.lsp out/lsp/%_in.lsp out/lsp/tassert.lsp
-	$(AM_V_LSP_TEST) 	\
-	(sbcl --non-interactive --load out/lsp/$*_in.lsp)
 
 $(addsuffix -xtest,$(_xtests)): %-xtest: %.exe
 	$(AM_V_ALDOR_EXE) ./$*.exe
@@ -251,6 +289,7 @@ all-$(1): $(patsubst %, out/ao/%.ao, $(filter $(1), $(_aotests)))
 all-$(1): $(patsubst %, out/fm/%.fm, $(filter $(1), $(_fmtests)))
 all-$(1): $(patsubst %, out/c/%.c,   $(filter $(1), $(_ctests)))
 all-$(1): $(patsubst %, out/java/aldorcode/%.java, $(filter $(1), $(_jtests)))
+all-$(1): $(patsubst %, %-difftest, $(filter $(1), $(_difftests)))
 .PHONY: all-$(1)
 endef
 
@@ -269,6 +308,7 @@ clean-$(1):
 		  $(patsubst %, out/ao/%.ao, $(filter $(1), $(_aotests)))	\
 		  $(patsubst %, out/fm/%.fm, $(filter $(1), $(_fmtests)))	\
 		  $(patsubst %, out/c/%.c,   $(filter $(1), $(_ctests)))	\
+		  $(patsubst %, out/diff/%.out,   $(filter $(1), $(_difftests)))\
 		  $(patsubst %, %.exe,       $(filter $(1), $(_xtests)))	\
 		  $(patsubst %, out/lsp/%.lsp,    	   $(filter $(1), $(_lsptests)))	\
 		  $(patsubst %, out/lsp/%_in.lsp, 	   $(filter $(1), $(_lsptests)))	\
@@ -319,6 +359,7 @@ mostlyclean:
 	rm -rf $(builddir)/out
 	rm -f $(patsubst %,%.o,$(utils) $(_otests))
 	rm -f $(patsubst %,%.exe,$(_xtests))
+
 clean: mostlyclean
 
 distclean: clean

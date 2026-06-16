@@ -25,11 +25,14 @@
 #include "tconst.h"
 #include "terror.h"
 #include "tfcond.h"
+#include "tfknown.h"
+#include "infenv.h"
 #include "tfsat.h"
 #include "ti_bup.h"
 #include "ti_sef.h"
 #include "ti_tdn.h"
 #include "ti_top.h"
+#include "ti_solve.h"
 #include "tinfer.h"
 #include "tposs.h"
 #include "tqual.h"
@@ -51,6 +54,7 @@ Bool	tipIdDebug		= false;
 Bool	tipLitDebug		= false;
 Bool	tipEmbedDebug		= false;
 Bool	tipExtendDebug		= false;
+Bool	tipPatternDebug		= false;
 
 Bool	titfDebug		= false;
 Bool	titfOneDebug		= false;
@@ -100,6 +104,8 @@ enum def_state {
 };
 
 typedef Enum(def_state)	DefaultState;
+
+void typeInferComplete(Stab stab, AbSyn absyn);
 
 /* typeInferTForms helper functions. */
 
@@ -164,6 +170,7 @@ local void		tiTfBottomUp1		(Stab, TFormUses, TForm);
 local void		tiTfAudit1		(Stab, TForm);
 local void		tiTfTopDown1		(Stab, TForm);
 local void		tiTfMeaning1		(Stab, TForm);
+local void		tiTfVars1		(Stab, TFormUses, TForm);
 local void		tiTfExtend1		(Stab, TFormUses);
 local void		tiTfImport1		(Stab, TFormUses);
 local void		tiTfDefault1		(Stab, Sefo);
@@ -174,6 +181,7 @@ local Table		tiTfGetDeclareeTable	(TFormUsesList);
 local void		tiTfFreeDeclareeTable	(Table);
 local void		tiTfCollectHasDependees	(TFormUsesList, TFormUses);
 local void		tiTfCollectDependees	(Table, TFormUses, TForm);
+local void		tiTfCollectBlankDependees(Table, TFormUses, AbSyn);
 local void		tiTfCollectSefoDependees(Table, TFormUses, Sefo);
 local void		tiTfCollectSymDependees	(Table, TFormUses, Symbol);
 local void		tiTfAddDependee		(TFormUses, TFormUses);
@@ -200,6 +208,7 @@ local void		tiTopCliqueAddEdge	(TFormUses, TFormUses);
 local void		tiTopCliqueDelEdge	(TFormUses, TFormUses);
 local Bool		tiTopEqual		(TFormUses, TFormUses);
 
+local void tiVarsCommit(Stab stab, AbSyn absyn);
 /*****************************************************************************
  *
  * :: Main entry points for type inference
@@ -248,9 +257,26 @@ typeInferAs(Stab stab, AbSyn absyn, TForm type)
 	if (abState(absyn) != AB_State_HasUnique) {
 		tiBottomUp    (stab, absyn, type);
 		typeInferAudit(stab, absyn);
+		tiVarsCommit  (stab, absyn);
 		tiTopDown     (stab, absyn, type);
 	}
 	return abTUnique(absyn);
+}
+
+local void
+tiVarsCommit(Stab stab, AbSyn absyn)
+{
+  /*
+	TPoss poss = tpossRefer(abTPoss(absyn));
+	if (abState(absyn) != AB_State_HasPoss) {
+		return;
+	}
+	if (!tpossIsUnique(poss)) {
+		return;
+	}
+	InferEnv infEnv = uctxtInfEnv(tpossUniqueUTFContext(poss));
+	infEnvCommit(infEnv);
+  */
 }
 
 TForm
@@ -261,6 +287,7 @@ typeInfer(Stab stab, AbSyn absyn)
 	tcInit();
 	typeInferTForms(stab);
 	tf = typeInferAs(stab, absyn, tfUnknown);
+	typeInferComplete(stab, absyn);
 	tcFini();
 
 	return tf;
@@ -294,6 +321,12 @@ typeInferCheck(Stab stab, AbSyn absyn, TForm type)
 		abTPoss(absyn) = tpossSingleton(tf);
 		tiTopDown(stab, absyn, type);
 	}
+}
+
+void
+typeInferComplete(Stab stab, AbSyn absyn)
+{
+	tisCheck(stab, absyn);
 }
 
 void
@@ -470,6 +503,19 @@ tiCheckSymeConditionalImplementation(Stab stab, Syme syme, Syme implSyme)
  * Return the symes which could not be found in the add. Tell the caller
  * about symes we've added to the stab.
  */
+
+SymeList
+tiAddMods(Stab stab, TForm base, TForm context)
+{
+	SymeList aself  = tfGetSelfFrStab(stab);
+	SymeList mods;
+	mods = listNConcat(Syme)(listCopy(Syme)(tfGetDomSelf(base)),
+				 listCopy(Syme)(tfGetCatSelf(context)));
+	mods = listNConcat(Syme)(aself, mods);
+
+	return mods;
+}
+
 SymeList
 tiAddSymes(Stab astab, AbSyn capsule, TForm base, TForm context, SymeList *p)
 {
@@ -502,11 +548,8 @@ tiAddSymes(Stab astab, AbSyn capsule, TForm base, TForm context, SymeList *p)
 	/* Does the context satisfy DenseStorageCategory? */
 	hasImplicit = tfCatHasImplicit(context);
 
+	mods = tiAddMods(astab, base, context);
 
-	mods = listNConcat(Syme)(listCopy(Syme)(tfGetDomSelf(base)),
-				 listCopy(Syme)(tfGetCatSelf(context)));
-	mods = listNConcat(Syme)(aself, mods);
-	
 	symes = tfGetCatExports(context);	
 	for ( ; symes; symes = cdr(symes)) {
 		Syme		syme = car(symes), xsyme = NULL;
@@ -687,13 +730,21 @@ tiMergeSyme(Syme syme, SymeList symes)
 }
 
 Syme
-tiGetMeaning(Stab stab, AbSyn absyn, TForm type)
+tiGetMeaning(Stab stab, AbSyn absyn, TFContext context)
 {
 	SatMask		mask = tfSatBupMask();
+	TForm 		type = ctxtTForm(context);
 	Length		nsymec, psymec;
 	Syme		nsyme, psyme, syme;
 	SymeList	symes, nsymes, sl;
 
+	// FIXME: This should be an embedding..
+	if (abUse(absyn) == AB_Use_Pattern || abUse(absyn) == AB_Use_PatLocation) {
+		mask = tfSatWithPatContext(mask);
+	}
+
+	InferEnv newEnv = infEnvCopy(ctxtInfEnv(context));
+	tfkSetEnv(newEnv);
 	symes = stabGetMeanings(stab, abCondKnown, abIdSym(absyn));
 	nsymes = listNil(Syme);		/* Possible (non-pending) meanings */
 	nsymec = 0;			/* Number of non-pending matches */
@@ -706,7 +757,7 @@ tiGetMeaning(Stab stab, AbSyn absyn, TForm type)
 		TForm	mtype = symeType(syme);
 		SatMask	result;
 
-		result = tfSat1(mask, absyn, mtype, type);
+		result = tfSat1(tfsAddUnify(mask), absyn, mtype, type);
 		if (tfSatSucceed(result)) {
 			if (!tfSatPending(result)
 			    && symeUseIdentifier(absyn, syme)
@@ -720,6 +771,7 @@ tiGetMeaning(Stab stab, AbSyn absyn, TForm type)
 		}
 
 	}
+	tfkClearEnv();
 
 	syme = NULL;
 	if (psymec == 1 && !tfIsUnknown(symeType(psyme)))
@@ -1082,6 +1134,7 @@ tiTfOne(Stab stab, TFormUses tfu, TForm tf)
 	if (tfIsSyntax(tf) || tfIsPending(tf) || tfu == NULL) {
 		tiTfPending1	(stab, tf);
 		tiTfBottomUp1	(stab, tfu, tf);
+		tiTfVars1	(stab, tfu, tf);
 		tiTfAudit1	(stab, tf);
 		tiTfTopDown1	(stab, tf);
 		tiTfMeaning1	(stab, tf);
@@ -1120,6 +1173,10 @@ tiTfCycle(Stab stab, TFormUsesList tful)
 	titfStabDEBUG(dbOut, "[audit]\n");
 	for (tfl=tful0; tfl; tfl=cdr(tfl))
 		tiTfAudit1(stab, car(tfl)->tf);
+
+	titfStabDEBUG(dbOut, "[vars]\n");
+	for (tfl=tful0; tfl; tfl=cdr(tfl))
+		tiTfVars1(stab, car(tfl), car(tfl)->tf);
 
 	titfStabDEBUG(dbOut, "[top down]\n");
 	for (tfl=tful0; tfl; tfl=cdr(tfl))
@@ -1232,6 +1289,8 @@ tiTfPrint(FILE *fout, Stab stab, String str, TFormUsesList tful0)
 	Length		count = listLength(TFormUses)(tful0);
 	fprintf(dbOut, "%s - %ld forms\n", str, count);
 
+	fprintf(dbOut, "((%s\n", str);
+
 	if (stab) {
 		fprintf(dbOut, "Symbol Table Level %ld.",
 			car(stab)->lexicalLevel);
@@ -1256,7 +1315,7 @@ tiTfPrint(FILE *fout, Stab stab, String str, TFormUsesList tful0)
 	fnewline(dbOut);
 
 	findent -= 2;
-	fnewline(dbOut);
+	fprintf(dbOut, " ))\n");
 }
 
 static int tiTfEntrySerial;
@@ -1563,6 +1622,7 @@ tiTfMap1(Stab stab, TFormUses tfu, TForm tf, AbSynList params)
 
 	tiTfBottomUp1	(stab, tfu, tf);
 	tiTfAudit1	(stab, tf);
+	tiTfVars1	(stab, tfu, tf);
 	tiTfTopDown1	(stab, tf);
 	tiTfMeaning1	(stab, tf);
 
@@ -1990,7 +2050,21 @@ tiTfAudit1(Stab stab, TForm tf)
 	tiTfExitDb(titfOne)(serial, dbOut, "tiTfAudit1", NULL, tf);
 }
 
+local void
+tiTfVars1(Stab stab, TFormUses tfu, TForm tf)
+{
+	if (tfu && tfu->isVar && tfu->body != NULL) {
+		afprintf(dbOut, "Vars: %pTForm\n", tf);
+		if (abStab(tfu->body) != NULL) {
+			typeInferAs(abStab(tfu->body), tfu->body, tfUnknown);
+		}
+	}
+}
+
 /* Perform top-down analysis to generate semantics for each AbSyn. */
+/* TypeTuple as a default is a compromise.. When we look at the context
+ * we may have to switch from that to 'Type'
+ */
 local void
 tiTfTopDown1(Stab stab, TForm tf)
 {
@@ -2006,6 +2080,8 @@ tiTfTopDown1(Stab stab, TForm tf)
 		type = tfUnknown;
 	else if (abUse(absyn) == AB_Use_Except)
 		type = tfTuple(tfCategory);
+	else if (abTag(absyn) == AB_Blank)
+		type = tfType;
 
 	tiTfEnterDb(titfOne)(&serial, dbOut, "tiTfTopDown1", NULL, tf);
 	tiTopDown(stab, absyn, type);
@@ -2317,14 +2393,26 @@ tiTfCollectSefoDependees(Table tbl, TFormUses S, Sefo sefo)
 		assert(sym);
 		tiTfCollectSymDependees(tbl, S, sym);
 	}
-
 	else if (abIsSymTag(abTag(sefo)))
 		tiTfCollectSymDependees(tbl, S, abLeafSym(sefo));
-
+	else if (abHasTag(sefo, AB_Blank))
+		 tiTfCollectBlankDependees(tbl, S, sefo);
 	else if (tiTfDoDefault(sefo)) {
 		Length	i;
 		for (i = 0; i < abArgc(sefo); i += 1)
 			tiTfCollectSefoDependees(tbl, S, abArgv(sefo)[i]);
+	}
+}
+
+local void
+tiTfCollectBlankDependees(Table tbl, TFormUses S, AbSyn ab)
+{
+	TForm tfb = abTForm(ab);
+	if (tfb != NULL) {
+		TFormUsesList tful = tblElt(tbl, tfb, listNil(TFormUses));
+		for (; tful; tful = cdr(tful)) {
+			tiTfAddDependee(S, car(tful));
+		}
 	}
 }
 

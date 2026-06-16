@@ -217,3 +217,12 @@ Lisp: with == add;
 
 Foreign(T: Type): with == add;
 
++++ PPartial(Tuple Type) is the union type of tuples and a singleton type (interpreted as a failure)
+PPartial(T: Tuple Type): with == add;
+
++++ Pattern(Type) is the type of patterns evaluating as Type (in reality, an unevaluated pattern)
+Pattern(T: Tuple Type): with == add;
+
++++ PatMatch(S: Tuple Type, T: Tuple) is the type of pattern match operations.
++++ Best to think of it as a failing inverse of an actual operation.. eg cons(a, b) or nil()
+PatMatch(S: Tuple Type, T: Tuple Type): with == add;

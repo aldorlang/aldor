@@ -1,0 +1,58 @@
+
+
+Unifier:
+-- Given an existing paramerised term, creates another which
+1) Is a subtype
+2) Will match another
+
+-- Contains:
+1) A set of free variables, FV
+2) a substitution, S
+3) a param set, P
+4) Maybe a fail
+
+-- operations 
+on a simple term, forall(X, t)
+- U(t) .. forall(X + FV, subst(S, t))
+On a paramSet,
+- U(ps) .. subst all terms
+
+-- Composition?
+W = U+V
+
+----
+
+Given TypeTerms, A and B, Unify(A, B) is a unifier, U, such that
+U(B) <= A
+and is the most general (ie. u <= A implies u <= U)
+
+UnifierPair:
+-- Given 2 terms, A and B, find a pair of unifiers U, V such that
+UnifyPair(A, B) --> 
+--
+Examples
+U(Vx.x, int) == (success, (x -> int), fv: [], {})
+U(Vx.x, Vy.y) == (success, (x -> y), fv: [y], {})
+U(Vx.x, Vy.(list y)) == (success, x -> list k, [k]
+----------------
+
+Work in terms of pairs...
+
+A pair:
+1) A set of free variables, FV
+2) substitutions, SL and SR
+3) a param set, P
+4) Maybe a fail
+
+Properties:
+Given (v, sl, sr) = Unify(A, B)
+SL.A = SR.B
+
+
+Unify(Vx.x, E) = ((x -> E), (), [])
+
+
+
+
+
+

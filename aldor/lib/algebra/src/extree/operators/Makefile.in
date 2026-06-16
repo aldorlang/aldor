@@ -15,6 +15,6 @@ abs_top_srcdir	:= @abs_top_srcdir@
 subdir		:= $(subst $(abs_top_builddir)/,,$(abs_builddir))
 
 # Build starts here
-library = sit_OPand sit_OPassgn sit_OPbigO sit_OPcase sit_OPcplex sit_OPequal sit_OPexpt sit_OPfact sit_OPif sit_OPless sit_OPlist sit_OPllist sit_OPmatrx sit_OPminus sit_OPmore sit_OPnoteq sit_OPplus sit_OPprefx sit_OPquot sit_OPsubsc sit_OPtimes sit_OPvect 
+library = sit_OPand sit_OPassgn sit_OPbigO sit_OPcase sit_OPcplex sit_OPequal sit_OPexpt sit_OPfact sit_OPfn sit_OPif sit_OPless sit_OPlist sit_OPllist sit_OPmatrx sit_OPminus sit_OPmore sit_OPnoteq sit_OPplus sit_OPprefx sit_OPquot sit_OPsubsc sit_OPtimes sit_OPvect
 
 include $(abs_top_srcdir)/lib/algebra/src/common.mk

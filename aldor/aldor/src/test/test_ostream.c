@@ -8,6 +8,7 @@
 void testBuffer(void);
 void testBuffer2(void);
 void testNull(void);
+void testSizing();
 
 void
 ostreamTest()
@@ -15,6 +16,7 @@ ostreamTest()
 	TEST(testBuffer);
 	TEST(testBuffer2);
 	TEST(testNull);
+	TEST(testSizing);
 }
 
 void
@@ -70,4 +72,17 @@ testNull()
 		ostreamClose(s);
 		ostreamFree(s);
 	}
+}
+
+void
+testSizing()
+{
+	TextSizing sz = textSizingNew();
+	OStream os = ostreamNewFrTextSizing(sz);
+	ostreamWrite(os, "Hello\nWorld", -1);
+	ostreamClose(os);
+	testIntEqual("chars", 11, sz->nChars);
+	testIntEqual("lines", 2, sz->nLines);
+	testIntEqual("cpos", 5, sz->cpos);
+	textSizingFree(sz);
 }

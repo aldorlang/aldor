@@ -72,10 +72,11 @@ extern void		tiTfPopDefinee0		(Symbol);
 extern Bool		tiTfDoDefault		(Sefo);
 extern void		tiTfImportCascades	(Stab stab, TQualList tq);
 extern SymeList		tiAddSymes		(Stab, AbSyn, TForm, TForm, SymeList *);
+extern SymeList		tiAddMods		(Stab, TForm, TForm);
 extern TForm		tiGetTForm		(Stab, AbSyn);
 extern TForm		tiGetTFormContext	(Stab, AbLogic, AbSyn);
 
-extern Syme		tiGetMeaning		(Stab, AbSyn, TForm);
+extern Syme		tiGetMeaning		(Stab, AbSyn, TFContext);
 extern Syme		tiGetExtendee		(Stab, AbSyn, TForm);
 extern Bool		tiUnaryToRaw		(Stab, AbSyn, TForm);
 extern Bool		tiRawToUnary		(Stab, AbSyn, TForm);
@@ -105,6 +106,7 @@ extern Bool	tipFarDebug;
 extern Bool	tipIdDebug;
 extern Bool	tipLitDebug;
 extern Bool	tipEmbedDebug;
+extern Bool	tipPatternDebug;
 
 #define tipAddDEBUG		DEBUG_IF(tipAdd)     afprintf
 #define tipApplyDEBUG		DEBUG_IF(tipApply)   afprintf
@@ -115,5 +117,6 @@ extern Bool	tipEmbedDebug;
 #define tipIdDEBUG		DEBUG_IF(tipId)      afprintf
 #define tipLitDEBUG		DEBUG_IF(tipLit)     afprintf
 #define tipEmbedDEBUG		DEBUG_IF(tipEmbed)   afprintf
+#define tipPatternDEBUG		DEBUG_IF(tipPattern) afprintf
 
 #endif /* !_TINFER_H_ */

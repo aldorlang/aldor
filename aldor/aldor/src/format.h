@@ -45,22 +45,27 @@ extern int ostreamVPrintf(OStream ostream, const char *fmt, va_list argp);
 
 typedef int (*PFormatFn)(OStream stream, Pointer p);
 typedef int (*IFormatFn)(OStream stream, int np);
+typedef int (*LIFormatFn)(OStream stream, long np);
 typedef int (*AltPFormatFn)(OStream stream, int alt, Pointer p);
 typedef int (*AltIFormatFn)(OStream stream, int alt, int np);
 
+// FIXME: This structure should be refactored into a union
 typedef struct format {
 	const char *name;
 	PFormatFn pfn;
 	AltPFormatFn apfn;
 	IFormatFn ifn;
 	AltIFormatFn aifn;
+	LIFormatFn lifn;
 	Bool nullOk;
+	Bool isLong;
 } *Format;
 
 
 extern void   fmtRegister(const char *name, PFormatFn fn);
 extern void   fmtRegisterAlt(const char *name, AltPFormatFn fn);
 extern void   fmtRegisterI(const char *name, IFormatFn fn);
+extern void   fmtRegisterLI(const char *name, LIFormatFn fn);
 extern void   fmtRegisterIAlt(const char *name, AltIFormatFn fn);
 extern void   fmtRegisterFull(const char *name, PFormatFn fn, Bool nullOk);
 extern Format fmtMatch(const char *fmtTxt);

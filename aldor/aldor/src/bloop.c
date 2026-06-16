@@ -981,7 +981,7 @@ bloopMeans(void)
 			}
 			else
 				fprintf(fout, comsgString(ALDOR_M_BreakMsgNTypes), n);
-			for (tpossITER(ti,tp),i=1; tpossMORE(ti); tpossSTEP(ti),i++) {
+			for (tpossITER(ti, tp),i=1; tpossMORE(ti); tpossSTEP(ti),i++) {
 				if (bloopInterface) {
 					sprintf(str, "%d: ", i);
 					strcat(msg, str);

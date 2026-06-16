@@ -78,8 +78,8 @@ Partial(T:Type): with {
 \Params{{\em x} & \% & a partial element\\ }
 \Retval{Returns the element x converted to an element of T, provided that
 x is not \failed.}
-	valueOr: (%, T) -> T;
 #endif
+	valueOr: (%, T) -> T;
 #if ALDOC
 \alpage{valueOr}
 \Usage{\name~x}
@@ -88,6 +88,13 @@ x is not \failed.}
 \Retval{Returns the element x converted to an element of T, provided that
 x is not \failed.}
 #endif
+	map: (%, T -> T) -> %;
+#if 0	
+	unit: T -> %
+	map: (%, T->A) -> %[A]
+	flatMap: %[%] -> %
+	free: % -> FreeMonoid T
+#endif	   
 } == add {
 	Rep == Record(val:T);
 	import from Rep;
@@ -105,6 +112,8 @@ x is not \failed.}
 	}
 
 	valueOr(x: %, def: T): T == if failed? x then def else retract x;
+
+        map(x: %, f: T -> T): % == if failed? x then x else [f retract x];
 
 	if T has PrimitiveType then {
 		(x:%) = (y:%):Boolean == {

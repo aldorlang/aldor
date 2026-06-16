@@ -335,6 +335,12 @@ comsgSetInteractiveOption()
 	comsgErrorMax 	= EMAX_NONE;
 }
 
+void
+comsgClearErrorMax()
+{
+	comsgErrorMax = EMAX_NONE;
+}
+
 Bool
 comsgOkAbbrev(void)
 {

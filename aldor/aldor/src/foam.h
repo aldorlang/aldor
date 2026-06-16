@@ -687,7 +687,8 @@ struct foamGener {
 	Foam                    prog;
 };
 
-#define foamNewGenIter(g)   foamNew(FOAM_GenIter, 1, g)
+#define foamNewGenIterEmpty(g, n)   foamNew(FOAM_GenIter, 1 + n, g)
+extern Foam foamNewGenIter(Foam g, Length n, ...);
 
 struct foamGenIter {
 	struct foamHdr          hdr;
