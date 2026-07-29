@@ -3151,6 +3151,7 @@ gen0TrailingSet(Syme syme, TForm key, Length argc, AbSyn *argv, Foam *vals)
 /*
  * Return the format number of a given record type.
  */
+
 AInt
 gen0RecordFormatNumber(TForm tf)
 {

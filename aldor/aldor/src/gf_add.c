@@ -88,10 +88,10 @@ static ExportState 	gen0ExportState;
 static Foam		gen0HasSelf;
 
 Bool	genfExportDebug = false;
-Bool	gfaddDebug	= false;
+Bool	gfAddDebug	= false;
 
 #define genfExportDEBUG		DEBUG_IF(genfExport)	afprintf
-#define gfaddDEBUG		DEBUG_IF(gfadd)		afprintf
+#define gfAddDEBUG		DEBUG_IF(gfAdd)		afprintf
 
 local void
 gen0ClashCheck(AbSyn ab)
@@ -2732,7 +2732,7 @@ gen0AllSymesAllocated(AbSyn ab)
 		/* Unallocated symes normally cause false return value. */
 		result = !(syme && gen0FoamKind(syme) == FOAM_LIMIT);
 
-		if (DEBUG(gfadd)) {
+		if (DEBUG(gfAdd)) {
 			fprintf(dbOut, "syme [%c]: ", result ? ' ' :
 				symeLib(syme) &&
 				(symeIsExport(syme) || symeIsExtend(syme)) ?
