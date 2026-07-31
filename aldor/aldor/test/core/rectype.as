@@ -1,6 +1,7 @@
 #include "foamlib"
 #pile
 
+-- This ought to work but fails in genfoam due to Rep being recursive
 XRec: with 
     =: (%, %) -> Boolean
 == add 

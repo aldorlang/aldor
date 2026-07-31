@@ -5,6 +5,7 @@
  * Copyright (c) 1990-2007 Aldor Software Organization Ltd (Aldor.org).
  *
  *****************************************************************************/
+#define RTYPE 1
 
 #include "abpretty.h"
 #include "abuse.h"
